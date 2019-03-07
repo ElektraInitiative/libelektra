@@ -16,20 +16,20 @@ class ElektraGenTemplate : public GenTemplate
 	struct Params
 	{
 		static const char * InitFunctionName;
-		static const char * TagPrefix;
-		static const char * OptimizeFromString;
+		static const char * HelpFunctionName;
+		static const char * SpecloadFunctionName;
+		static const char * OptimizeEnumFromString;
 		static const char * AdditionalHeaders;
-		static const char * ExperimentalStructs;
 	};
 
 public:
 	ElektraGenTemplate ()
 	: GenTemplate ("elektra", { ".c", ".h" },
 		       { { Params::InitFunctionName, false },
-			 { Params::TagPrefix, false },
-			 { Params::OptimizeFromString, false },
-			 { Params::AdditionalHeaders, false },
-			 { Params::ExperimentalStructs, false } })
+			 { Params::HelpFunctionName, false },
+			 { Params::SpecloadFunctionName, false },
+			 { Params::OptimizeEnumFromString, false },
+			 { Params::AdditionalHeaders, false } })
 	{
 	}
 

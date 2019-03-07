@@ -31,16 +31,81 @@ extern "C" {
 /**
  * Initializes an instance of Elektra for the application '{{{ parent_key }}}'.
  *
- * @param error A reference to an ElektraError pointer. Will be passed to elektraOpen().
+ * This MUST be called before anything was written to stdout, otherwise specload will fail.
+ * If you have to write to stdout before calling this, you must handle the specload
+ * communication yourself. You may use {{{ specload_function_name }}.
  *
- * @return A newly allocated instance of Elektra. Has to be disposed of with elektraClose().
+ * @param elektra A reference to where the Elektra instance shall be stored.
+ *                Has to be disposed of with elektraClose().
+ * @param error   A reference to an ElektraError pointer. Will be passed to elektraOpen().
+ *
+ * @retval 0  on success, @p elektra will be set, @p error will be unchanged
+ * @retval -1 on error, @p elektra will be unchanged, @p error will set
+ * @retval 1  specload mode, exit as soon as possible and must DO NOT write anything to stdout,
+ *            @p elektra and @p error are both unchanged
+ * @retval 2  help mode, '-h' or '--help' was specified call {{{ help_function_name }}} and exit
+ *            @p elektra and @p error are both unchanged
  *
  * @see elektraOpen
  */// {{=/*% %*/=}}
-Elektra * /*%& init_function_name %*/ (ElektraError ** error)
+int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = /*%& defaults %*/;
-	return elektraOpen ("/*% parent_key %*/", defaults, error);
+	Elektra * e = elektraOpen ("/*% parent_key %*/", defaults, error);
+
+	if (e == NULL)
+	{
+		return -1;
+	}
+
+	if (elektraGetBoolean (elektra, "/*% specload_name %*/"))
+	{
+		elektraClose (e);
+		return /*%& specload_function_name %*/ ();
+	}
+
+	if (0 /* TODO: check if help mode */)
+	{
+		elektraClose (e);
+		/*%& help_function_name %*/ ();
+		return 2;
+	}
+
+	*elektra = e;
+	return 0;
+}
+
+/**
+ * Sends the specification over stdout in the format expected by specload.
+ *
+ * You MUST not output anything to stdout before or after invoking this function
+ * and should exit as soon as possible after calling this function.
+ *
+ * @retval 1 on success
+ * @retval -1 on error
+ */
+int /*%& specload_function_name %*/ (void)
+{
+	Key * errorKey = keyNew (0, KEY_END);
+
+	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
+
+	int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);
+
+	elektraInvokeClose (specload, errorKey);
+	keyDel (errorKey);
+	ksDel (specloadConf);
+
+	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? 1 : -1;
+}
+
+/**
+ * Outputs the help message
+ */
+void /*%& help_function_name %*/ (void)
+{
+	// TODO
 }
 
 // -------------------------
@@ -143,7 +208,6 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 // Struct accessor functions
 // -------------------------
 
-/*%# generate_structs? %*/
 /*%# structs %*/
 /*%# alloc? %*/
 ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
@@ -183,13 +247,11 @@ ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 		strcpy (refField, field);
 		strcpy (&refField[nameLen], refname);
 		/*%# alloc? %*/
-		// FIXME: unsupported
-		//  result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+		result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
 		/*%/ alloc? %*/
 		/*%^ alloc? %*/
-		// FIXME: unsupported
-		//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-		//  ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
+		result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+		ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
 		/*%/ alloc? %*/
 		elektraFree (refField);
 	}
@@ -227,13 +289,11 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 		strcpy (refField, field);
 		strcpy (&refField[nameLen], refname);
 		/*%# alloc? %*/
-		// FIXME: unsupported
-		//  result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+		result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
 		/*%/ alloc? %*/
 		/*%^ alloc? %*/
-		// FIXME: unsupported
-		//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-		//  ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
+		result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
 		/*%/ alloc? %*/
 		elektraFree (refField);
 	}
@@ -341,7 +401,6 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_nam
 	/*%/ fields %*/
 }
 /*%/ structs %*/
-/*%/ generate_structs? %*/
 
 #ifdef __cplusplus
 }
