@@ -626,7 +626,6 @@ static kainjow::mustache::list getKeyArgs (const kdb::Key & key, const size_t pa
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
-	// TODO: partials
 	if (parentKey.substr (0, 5) != "spec/")
 	{
 		throw CommandAbortException ("parentKey has to be in spec namespace");

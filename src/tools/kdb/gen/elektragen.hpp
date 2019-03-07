@@ -25,6 +25,8 @@ class ElektraGenTemplate : public GenTemplate
 public:
 	ElektraGenTemplate ()
 	: GenTemplate ("elektra", { ".c", ".h" },
+		       { "enum.c", "struct.c", "enum.decl.h", "struct.decl.h", "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h",
+			 "keys.tags.h" },
 		       { { Params::InitFunctionName, false },
 			 { Params::HelpFunctionName, false },
 			 { Params::SpecloadFunctionName, false },

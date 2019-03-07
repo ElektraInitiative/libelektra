@@ -15,9 +15,10 @@
 
 #include "elektragen.hpp"
 
-GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> parts,
+GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> parts, std::vector<std::string> partials,
 			  const std::unordered_map<std::string, bool> & parameters)
-: _templateBaseName (std::move (templateBaseName)), _parts (std::move (parts)), _parameters (), _requiredParameters ()
+: _templateBaseName (std::move (templateBaseName)), _parts (std::move (parts)), _partials (std::move (partials)), _parameters (),
+  _requiredParameters ()
 {
 	std::for_each (parameters.begin (), parameters.end (), [this](const std::pair<std::string, bool> & p) {
 		_parameters[p.first] = "";
@@ -51,7 +52,12 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 
 	auto tmpl = mustache (kdbgenTemplates.at (name));
 	tmpl.set_custom_escape (GenTemplate::escapeFunction);
-	tmpl.render (getTemplateData (outputName, ks, parentKey), [&](const std::string & str) { output << str; });
+	auto data = getTemplateData (outputName, ks, parentKey);
+	for (const auto & partial : getPartials ())
+	{
+		data[partial.first] = partial.second;
+	}
+	tmpl.render (data, [&](const std::string & str) { output << str; });
 }
 
 std::string GenTemplate::escapeFunction (const std::string & str)
@@ -131,6 +137,24 @@ void GenTemplate::clearParameters ()
 std::vector<std::string> GenTemplate::getParts () const
 {
 	return _parts;
+}
+
+std::unordered_map<std::string, kainjow::mustache::partial> GenTemplate::getPartials () const
+{
+	using namespace kainjow::mustache;
+
+	std::unordered_map<std::string, partial> partials;
+
+	for (const auto & partialFile : _partials)
+	{
+		partials["partial." + partialFile] = [&]() {
+			auto name = _templateBaseName + "_" + partialFile;
+			std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+			return kdbgenTemplates.at (name);
+		};
+	}
+
+	return partials;
 }
 
 template <class genClass>
