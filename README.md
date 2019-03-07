@@ -163,7 +163,7 @@ And in terms of quality, we want:
 
 ## News
 
-Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
+Go to the [website](https://www.libelektra.org), see the [news](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
 
 ## Download
 
