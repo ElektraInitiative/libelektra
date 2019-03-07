@@ -1,7 +1,7 @@
 - infos = Information about the cache plugin is in keys below
 - infos/author = Mihael Pranjic <mpranj@limun.org>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = resolver mmapstorage
 - infos/provides =
 - infos/recommends =
 - infos/placements = pregetcache postgetcache
