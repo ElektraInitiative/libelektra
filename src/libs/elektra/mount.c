@@ -301,13 +301,18 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		ELEKTRA_NOT_NULL (config);
 		// config holds a newly allocated KeySet
 		const char * pluginName = keyString (cur);
-		if (!pluginName || pluginName[0] == '\0') return 0;
+		if (!pluginName || pluginName[0] == '\0')
+		{
+			ksDel (config);
+			return 0;
+		}
 
 		// loading the new plugin
 		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
 		if (!(*plugin))
 		{
 			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
+			ksDel (config);
 			return -1;
 		}
 
