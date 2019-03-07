@@ -115,6 +115,8 @@ private:
 	std::vector<std::string> _parts;
 	std::unordered_map<std::string, std::string> _parameters;
 	std::unordered_set<std::string> _requiredParameters;
+
+	static std::string escapeFunction (const std::string & str);
 };
 
 /**

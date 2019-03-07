@@ -50,7 +50,60 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 
 	auto tmpl = mustache (kdbgenTemplates.at (name));
+	tmpl.set_custom_escape (GenTemplate::escapeFunction);
 	tmpl.render (getTemplateData (outputName, ks, parentKey), [&](const std::string & str) { output << str; });
+}
+
+std::string GenTemplate::escapeFunction (const std::string & str)
+{
+	std::stringstream ss;
+	for (const auto & c : str)
+	{
+		switch (c)
+		{
+		case '\a':
+			ss << "\\a";
+			break;
+		case '\b':
+			ss << "\\b";
+			break;
+		case '\f':
+			ss << "\\f";
+			break;
+		case '\n':
+			ss << "\\n";
+			break;
+		case '\r':
+			ss << "\\r";
+			break;
+		case '\t':
+			ss << "\\t";
+			break;
+		case '\v':
+			ss << "\\v";
+			break;
+		case '\\':
+			ss << "\\\\";
+			break;
+		case '\'':
+			ss << "\\'";
+			break;
+		case '"':
+			ss << "\\\"";
+			break;
+		default:
+			if (isprint (c))
+			{
+				ss << c;
+			}
+			else
+			{
+				ss << "\\x" << std::hex << std::setw (2) << static_cast<unsigned char> (c);
+			}
+		}
+	}
+
+	return ss.str ();
 }
 
 std::string GenTemplate::getParameter (const std::string & name, const std::string & defaultValue) const

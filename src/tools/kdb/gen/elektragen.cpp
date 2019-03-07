@@ -74,7 +74,7 @@ private:
 	kainjow::mustache::list getFields (const kdb::Key & structKey, const kdb::KeySet & structKeys, bool allocating,
 					   const std::string & tagName, size_t & maxFieldNameLen, std::string & fieldsString);
 
-	static inline std::string getFieldName (const kdb::Key & key);
+	static inline std::string getFieldName (const kdb::Key & key, const std::string & fieldKeyName);
 	static inline bool shouldGenerateTypeDef (const kdb::Key & key);
 
 public:
@@ -372,9 +372,11 @@ bool StructProcessor::shouldAllocate (const kdb::Key & key)
 	return key.hasMeta ("gen/struct/alloc") && key.getMeta<std::string> ("gen/struct/alloc") == "1";
 }
 
-std::string StructProcessor::getFieldName (const kdb::Key & key)
+std::string StructProcessor::getFieldName (const kdb::Key & key, const std::string & fieldKeyName)
 {
-	return key.hasMeta ("gen/struct/field") ? key.getMeta<std::string> ("gen/struct/field") : key.getBaseName ();
+	std::string result = key.hasMeta ("gen/struct/field") ? key.getMeta<std::string> ("gen/struct/field") : fieldKeyName;
+	std::replace_if (result.begin (), result.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+	return result;
 }
 
 static void processStructRef (const kdb::Key & key, const kdb::Key & parentKey, const kdb::KeySet & allKeys, const std::string & tagName,
@@ -437,14 +439,14 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 	for (const kdb::Key & key : structKeys)
 	{
 		auto parts = getKeyParts (key);
-		std::string fieldName = parts[0];
+		std::string fieldKeyName = parts[0];
 		for (auto it = parts.begin () + baseParts + 1; it != parts.end (); ++it)
 		{
-			fieldName += "_" + *it;
+			fieldKeyName += "_" + *it;
 		}
-		fieldName = snakeCaseToCamelCase (fieldName);
+		fieldKeyName = snakeCaseToCamelCase (fieldKeyName);
 
-		maxFieldNameLen = std::max (maxFieldNameLen, fieldName.size ());
+		maxFieldNameLen = std::max (maxFieldNameLen, fieldKeyName.size ());
 
 		const std::string & type = ::getType (key);
 
@@ -489,10 +491,10 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 			allocate = true;
 		}
 
-		auto name = getFieldName (key);
+		auto name = getFieldName (key, fieldKeyName);
 
 		fields.emplace_back (object{ { "name", name },
-					     { "key_name", fieldName },
+					     { "key_name", fieldKeyName },
 					     { "native_type", nativeType },
 					     { "type_name", typeName },
 					     { "alloc?", allocate },
@@ -571,10 +573,11 @@ static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long
 					"Replaces occurence no. " + indexStr + " of " + kind + " in the keyname.";
 }
 
-static kainjow::mustache::list getKeyArgs (const kdb::Key & key, std::string & fmtString)
+static kainjow::mustache::list getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, std::string & fmtString)
 {
 	using namespace kainjow::mustache;
 	auto parts = getKeyParts (key);
+	parts.erase (parts.begin (), parts.begin () + parentKeyParts);
 
 	std::stringstream fmt;
 
@@ -623,7 +626,7 @@ static kainjow::mustache::list getKeyArgs (const kdb::Key & key, std::string & f
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
-	// TODO: string escape function, partials
+	// TODO: partials
 	if (parentKey.substr (0, 5) != "spec/")
 	{
 		throw CommandAbortException ("parentKey has to be in spec namespace");
@@ -640,9 +643,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto optimizeFromString = getParameter (Params::OptimizeEnumFromString, "on") != "off";
 
+	auto cascadingParent = parentKey.substr (5);
+
 	auto data = object{ { "header_file", headerFile },
 			    { "include_guard", includeGuard },
-			    { "parent_key", parentKey.substr (5) },
+			    { "parent_key", cascadingParent },
 			    { "init_function_name", initFunctionName },
 			    { "help_function_name", helpFunctionName },
 			    { "specload_function_name", specloadFunctionName },
@@ -660,6 +665,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	kdb::KeySet spec;
 
+	auto parentKeyParts = getKeyParts (specParent);
+
 	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{
 		kdb::Key key = *it;
@@ -675,7 +682,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		name.erase (0, sizeof ("spec") - 1);
 
 		std::string fmtString;
-		list args = getKeyArgs (key, fmtString);
+		list args = getKeyArgs (key, parentKeyParts.size (), fmtString);
 
 		if (!key.hasMeta ("default"))
 		{
@@ -711,7 +718,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		auto tagName = getTagName (key, specParent.getName ());
 
-		object keyObject = { { "name", name.substr (parentKey.size () + 1) },
+		object keyObject = { { "name", name.substr (cascadingParent.size () + 2) }, // + 2 to remove slash
 				     { "native_type", nativeType },
 				     { "macro_name", snakeCaseToMacroCase (tagName) },
 				     { "tag_name", snakeCaseToCamelCase (tagName) },
