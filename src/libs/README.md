@@ -80,7 +80,7 @@ libelektra-plugin.so
 libelektra-proposal.so
 ```
 
-**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internas of libcore and as
+**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internals of libcore and as
 such must always fit to the exact same version.
 
 ### Libmeta
