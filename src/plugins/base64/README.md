@@ -36,7 +36,9 @@ sudo kdb umount /tests/base64/test
 
 . All encoded binary values will look something like this:
 
-    @BASE64SGVsbG8gV29ybGQhCg==
+```
+@BASE64SGVsbG8gV29ybGQhCg==
+```
 
 .
 
