@@ -19,6 +19,10 @@
 
 #include "colors.h"
 
+// clang-format off
+
+// clang-format on
+
 typedef enum
 {
 	ELEKTRA_ENUM_DISJOINTED_BLACK = 0,
@@ -78,38 +82,57 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 
 
+// clang-format off
+
+// clang-format on
+
+#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+
+
+
+
+
+// clang-format off
+
+// clang-format on
 
 // clang-format off
 
 /**
- * Tag name for 'disjointed'
- * 
- */// 
+* Tag name for 'disjointed'
+* 
+*/// 
 #define ELEKTRA_TAG_DISJOINTED Disjointed
 
 /**
- * Tag name for 'existinggentype'
- * 
- */// 
+* Tag name for 'existinggentype'
+* 
+*/// 
 #define ELEKTRA_TAG_EXISTINGGENTYPE Existinggentype
 
 /**
- * Tag name for 'gentype'
- * 
- */// 
+* Tag name for 'gentype'
+* 
+*/// 
 #define ELEKTRA_TAG_GENTYPE Gentype
 
 /**
- * Tag name for 'gentype2'
- * 
- */// 
+* Tag name for 'gentype2'
+* 
+*/// 
 #define ELEKTRA_TAG_GENTYPE2 Gentype2
 
 /**
- * Tag name for 'myenum'
- * 
- */// 
+* Tag name for 'myenum'
+* 
+*/// 
 #define ELEKTRA_TAG_MYENUM Myenum
+// clang-format on
+
+
+// clang-format off
+
 // clang-format on
 
 // local helper macros to determine the length of a 64 bit integer
@@ -134,6 +157,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 #define elektra_len01(x) ((x) < 10ULL ? 1 : elektra_len02 (x))
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
+
 
 
 
@@ -166,6 +190,7 @@ static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra, ElektraEnumDisjo
 }
 
 
+
 /**
  * Get the value of 'existinggentype'.
  *
@@ -193,6 +218,7 @@ static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra, ExistingCol
 	
 	ELEKTRA_SET (EnumExistingColors) (elektra, "existinggentype", value, error);
 }
+
 
 
 /**
@@ -224,6 +250,7 @@ static inline void ELEKTRA_SET (Gentype) (Elektra * elektra, Colors value,  Elek
 }
 
 
+
 /**
  * Get the value of 'gentype2'.
  *
@@ -251,6 +278,7 @@ static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra, Colors value,  Ele
 	
 	ELEKTRA_SET (EnumColors) (elektra, "gentype2", value, error);
 }
+
 
 
 /**
@@ -303,55 +331,64 @@ static inline void ELEKTRA_SET (Myenum) (Elektra * elektra, ElektraEnumMyenum va
 #undef elektra_len00
 #undef elektra_len
 
-Elektra * loadConfiguration (ElektraError ** error);
+
+int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+void printHelpMessage (void);
+int specloadSend (void);
+
 
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  *
  * @return The value stored at the given key and index.
- */
+ */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  *
  * @return The value stored at the given key and index.
- */
+ */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
- */
+ */// 
 #define elektraGet2(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param result  Points to the struct into which results will be stored.
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
- */
+ */// 
 #define elektraGet2V(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with the loadConfiguration().
  * @param tag     The codegenerated Tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
- */
+ */// 
 #define elektraSet(elektra, tag, value, error) ELEKTRA_GET (tag) (elektra, value, error)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with the loadConfiguration().
  * @param tag     The codegenerated Tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
- */
+ */// 
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
 
 #endif // ENUM_ACTUAL_H

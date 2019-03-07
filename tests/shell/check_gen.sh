@@ -42,11 +42,11 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 
 		test_params=$(cat "$test_folder/$test_name.params")
 
-		parent_key="$MOUNTPOINT/gen/$template/$test_name"
+		parent_key="spec$MOUNTPOINT/gen/$template/$test_name"
 
 		echo "running test $test_name with parent key $parent_key"
 
-		$KDB import "spec$parent_key" ni < "$test_path"
+		$KDB import "$parent_key" ni < "$test_path"
 		succeed_if "couldn't import data"
 
 		old_dir=$(pwd)
@@ -100,9 +100,9 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		fi
 		rm "$output_folder$test_name.stderr"
 
-		data_list=$($KDB ls "spec$parent_key")
+		data_list=$($KDB ls "$parent_key")
 		if [ -n "$data_list" ]; then
-			$KDB rm -r "spec$parent_key"
+			$KDB rm -r "$parent_key"
 			succeed_if "couldn't remove data"
 		fi
 

@@ -126,11 +126,11 @@ static std::string getTagName (const kdb::Key & key, const std::string & parentK
 	return name;
 }
 
-static std::string snakeCaseToCamelCase (const std::string & s)
+static std::string snakeCaseToCamelCase (const std::string & s, bool upper = false)
 {
 	std::string result;
 	result.resize (s.size ());
-	auto upcase = true;
+	auto upcase = upper;
 	std::transform (s.begin (), s.end (), result.begin (), [&upcase](char c) {
 		int x = upcase ? toupper (c) : c;
 		upcase = c == '_';
@@ -138,6 +138,11 @@ static std::string snakeCaseToCamelCase (const std::string & s)
 	});
 	result.erase (std::remove (result.begin (), result.end (), '_'), result.end ());
 	return result;
+}
+
+static inline std::string snakeCaseToPascalCase (const std::string & s)
+{
+	return snakeCaseToCamelCase (s, true);
 }
 
 static std::string snakeCaseToMacroCase (const std::string & s)
@@ -298,7 +303,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 std::string EnumProcessor::getType (const kdb::Key & key, const std::string & tagName, bool & genType)
 {
 	genType = key.hasMeta ("gen/enum/type");
-	return genType ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToCamelCase (tagName);
+	return genType ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToPascalCase (tagName);
 }
 
 bool EnumProcessor::shouldGenerateTypeDef (const kdb::Key & key)
@@ -359,7 +364,7 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 std::string StructProcessor::getType (const kdb::Key & key, const std::string & tagName, bool & genType)
 {
 	genType = key.hasMeta ("gen/struct/type");
-	return genType ? key.getMeta<std::string> ("gen/struct/type") : snakeCaseToCamelCase (tagName);
+	return genType ? key.getMeta<std::string> ("gen/struct/type") : snakeCaseToPascalCase (tagName);
 }
 
 bool StructProcessor::shouldGenerateTypeDef (const kdb::Key & key)
@@ -439,7 +444,7 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 	for (const kdb::Key & key : structKeys)
 	{
 		auto parts = getKeyParts (key);
-		std::string fieldKeyName = parts[0];
+		std::string fieldKeyName = parts[baseParts];
 		for (auto it = parts.begin () + baseParts + 1; it != parts.end (); ++it)
 		{
 			fieldKeyName += "_" + *it;
@@ -455,17 +460,17 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 								 "long",       "unsigned_long", "long_long",  "unsigned_long_long",
 								 "float",      "double",	"long_double" };
 
-		if (allowedTypes.find (type) == allowedTypes.end ())
-		{
-			auto msg = "The key '" + key.getName ();
-			msg += "' has an unsupported type ('" + type + "')!";
-			throw CommandAbortException (msg);
-		}
-
 		if (type == "struct")
 		{
 			auto msg = "The key '" + key.getName ();
 			msg += "' has an unsupported type ('" + type + "')! Cannot have structs inside structs, please use struct_ref.";
+			throw CommandAbortException (msg);
+		}
+
+		if (allowedTypes.find (type) == allowedTypes.end ())
+		{
+			auto msg = "The key '" + key.getName ();
+			msg += "' has an unsupported type ('" + type + "')!";
 			throw CommandAbortException (msg);
 		}
 
@@ -478,7 +483,7 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 			throw CommandAbortException (msg);
 		}
 
-		auto typeName = snakeCaseToCamelCase (type);
+		auto typeName = snakeCaseToPascalCase (type);
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
 
 		bool allocate;
@@ -713,14 +718,14 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		}
 
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
-		auto typeName = snakeCaseToCamelCase (type);
+		auto typeName = snakeCaseToPascalCase (type);
 
 		auto tagName = getTagName (key, specParent.getName ());
 
 		object keyObject = { { "name", name.substr (cascadingParent.size () + 2) }, // + 2 to remove slash
 				     { "native_type", nativeType },
 				     { "macro_name", snakeCaseToMacroCase (tagName) },
-				     { "tag_name", snakeCaseToCamelCase (tagName) },
+				     { "tag_name", snakeCaseToPascalCase (tagName) },
 				     { "type_name", typeName } };
 
 		if (!args.empty ())

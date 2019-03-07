@@ -19,6 +19,9 @@
 
 
 
+// clang-format off
+
+// clang-format on
 
 
 
@@ -27,40 +30,60 @@
 
 // clang-format off
 
+// clang-format on
+
+#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+
+
+
+
+
+// clang-format off
+
+// clang-format on
+
+// clang-format off
+
 /**
- * Tag name for 'mydouble'
- * 
- */// 
+* Tag name for 'mydouble'
+* 
+*/// 
 #define ELEKTRA_TAG_MYDOUBLE Mydouble
 
 /**
- * Tag name for 'myfloatarray/#'
- * 
- * Required arguments:
- * 
- * - kdb_long_long_t index0: Replaces occurence no. 0 of # in the keyname.
- * 
- * 
- */// 
+* Tag name for 'myfloatarray/#'
+* 
+* Required arguments:
+* 
+* - kdb_long_long_t index0: Replaces occurence no. 0 of # in the keyname.
+* 
+* 
+*/// 
 #define ELEKTRA_TAG_MYFLOATARRAY Myfloatarray
 
 /**
- * Tag name for 'myint'
- * 
- */// 
+* Tag name for 'myint'
+* 
+*/// 
 #define ELEKTRA_TAG_MYINT Myint
 
 /**
- * Tag name for 'mystring'
- * 
- */// 
+* Tag name for 'mystring'
+* 
+*/// 
 #define ELEKTRA_TAG_MYSTRING Mystring
 
 /**
- * Tag name for 'print'
- * 
- */// 
+* Tag name for 'print'
+* 
+*/// 
 #define ELEKTRA_TAG_PRINT Print
+// clang-format on
+
+
+// clang-format off
+
 // clang-format on
 
 // local helper macros to determine the length of a 64 bit integer
@@ -85,6 +108,7 @@
 #define elektra_len01(x) ((x) < 10ULL ? 1 : elektra_len02 (x))
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
+
 
 
 
@@ -117,6 +141,7 @@ static inline void ELEKTRA_SET (Mydouble) (Elektra * elektra, kdb_double_t value
 }
 
 
+
 /**
  * Get the value of 'myfloatarray/#'.
  *
@@ -128,7 +153,7 @@ static inline kdb_float_t ELEKTRA_GET (Myfloatarray) (Elektra * elektra ,
 								    kdb_long_long_t index0 
 								     )
 {
-	char * name = elektraFormat ("spec/tests/script/gen/elektra/simple/myfloatarray/%*.*s%lld",   elektra_len (index0),
+	char * name = elektraFormat ("myfloatarray/%*.*s%lld",   elektra_len (index0),
 				     elektra_len (index0), "#___________________",  index0  );
 	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
 	elektraFree (name);
@@ -149,12 +174,13 @@ static inline void ELEKTRA_SET (Myfloatarray) (Elektra * elektra, kdb_float_t va
 						    kdb_long_long_t index0,
 						      ElektraError ** error)
 {
-	char * name = elektraFormat ("spec/tests/script/gen/elektra/simple/myfloatarray/%*.*s%lld",   elektra_len (index0),
+	char * name = elektraFormat ("myfloatarray/%*.*s%lld",   elektra_len (index0),
 				     elektra_len (index0), "#___________________",  index0  );
 	ELEKTRA_SET (Float) (elektra, name, value, error);
 	elektraFree (name);
 	
 }
+
 
 
 /**
@@ -186,6 +212,7 @@ static inline void ELEKTRA_SET (Myint) (Elektra * elektra, kdb_long_t value,  El
 }
 
 
+
 /**
  * Get the value of 'mystring'.
  *
@@ -213,6 +240,7 @@ static inline void ELEKTRA_SET (Mystring) (Elektra * elektra, const char * value
 	
 	ELEKTRA_SET (String) (elektra, "mystring", value, error);
 }
+
 
 
 /**
@@ -265,55 +293,64 @@ static inline void ELEKTRA_SET (Print) (Elektra * elektra, kdb_boolean_t value, 
 #undef elektra_len00
 #undef elektra_len
 
-Elektra * loadConfiguration (ElektraError ** error);
+
+int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+void printHelpMessage (void);
+int specloadSend (void);
+
 
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  *
  * @return The value stored at the given key and index.
- */
+ */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  *
  * @return The value stored at the given key and index.
- */
+ */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
- */
+ */// 
 #define elektraGet2(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param result  Points to the struct into which results will be stored.
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
- */
+ */// 
 #define elektraGet2V(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with the loadConfiguration().
  * @param tag     The codegenerated Tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
- */
+ */// 
 #define elektraSet(elektra, tag, value, error) ELEKTRA_GET (tag) (elektra, value, error)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with the loadConfiguration().
  * @param tag     The codegenerated Tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
- */
+ */// 
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
 
 #endif // SIMPLE_ACTUAL_H

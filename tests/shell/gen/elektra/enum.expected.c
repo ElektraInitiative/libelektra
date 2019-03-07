@@ -22,24 +22,28 @@ extern "C" {
 #include <string.h>
 
 #include <kdbhelper.h>
+#include <kdbinvoke.h>
 
 #include <elektra/conversion.h>
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/enum'.
+ * Initializes an instance of Elektra for the application 'tests/script/gen/elektra/enum'.
  *
- * @param error A reference to an ElektraError pointer. Will be passed to elektraOpen().
- *
- * @return A newly allocated instance of Elektra. Has to be disposed of with elektraClose().
+ * This MUST be called before anything was written to stdout, otherwise specload will fail.
+ * If you have to write to stdout before calling this, you must handle the specload
+ * communication yourself. You may use  and exit
+ *            @p elektra and @p error are both unchanged
  *
  * @see elektraOpen
  */// 
-Elektra * loadConfiguration (ElektraError ** error)
+int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (5,
+	KeySet * defaults = ksNew (6,
 	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0",
 	"black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/elektra/specload", KEY_META, "default", "0", KEY_META, "opt",
+	"--elektra-spec", KEY_META, "opt/arg", "none", KEY_META, "type", "boolean", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0",
 	"cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan",
 	KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
@@ -59,8 +63,92 @@ Elektra * loadConfiguration (ElektraError ** error)
 	KEY_END),
 	KS_END);
 ;
-	return elektraOpen ("/tests/script/gen/elektra/enum", defaults, error);
+	Elektra * e = elektraOpen ("tests/script/gen/elektra/enum", defaults, error);
+
+	if (e == NULL)
+	{
+		return -1;
+	}
+
+	if (elektraGetBoolean (e, "spec/tests/script/gen/elektra/enum/elektra/specload"))
+	{
+		elektraClose (e);
+		return specloadSend ();
+	}
+
+	if (0 /* TODO: check if help mode */)
+	{
+		elektraClose (e);
+		printHelpMessage ();
+		return 2;
+	}
+
+	*elektra = e;
+	return 0;
 }
+
+/**
+ * Sends the specification over stdout in the format expected by specload.
+ *
+ * You MUST not output anything to stdout before or after invoking this function
+ * and should exit as soon as possible after calling this function.
+ *
+ * @retval 1 on success
+ * @retval -1 on error
+ */
+int specloadSend (void)
+{
+	KeySet * spec = ksNew (6,
+	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0",
+	"black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/elektra/specload", KEY_META, "default", "0", KEY_META, "opt",
+	"--elektra-spec", KEY_META, "opt/arg", "none", KEY_META, "type", "boolean", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0",
+	"cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan",
+	KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none",
+	KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#1/value", "1",
+	KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META, "check/enum/#3", "blue",
+	KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "blue", KEY_META, "gen/enum/type", "Colors", KEY_META,
+	"type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0",
+	"none", KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META,
+	"check/enum/#1/value", "1", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META,
+	"check/enum/#3", "blue", KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "red", KEY_META,
+	"gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/myenum", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red",
+	KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META,
+	"check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum",
+	KEY_END),
+	KS_END);
+;
+
+	Key * errorKey = keyNew (0, KEY_END);
+
+	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
+
+	int result = elektraInvoke2Args (specload, "sendspec", spec, NULL);
+
+	elektraInvokeClose (specload, errorKey);
+	keyDel (errorKey);
+	ksDel (specloadConf);
+	ksDel (spec);
+
+	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? 1 : -1;
+}
+
+/**
+ * Outputs the help message
+ */
+void printHelpMessage (void)
+{
+	// TODO
+}
+
+// clang-format off
+
+// clang-format on
 
 // -------------------------
 // Enum conversion functions
@@ -406,9 +494,16 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	elektraFree (string);
 }
 
+
+// clang-format off
+
+// clang-format on
+
 // -------------------------
 // Struct accessor functions
 // -------------------------
+
+
 
 
 

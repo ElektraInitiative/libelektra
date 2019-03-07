@@ -24,6 +24,7 @@ extern "C" {
 #include <string.h>
 
 #include <kdbhelper.h>
+#include <kdbinvoke.h>
 
 #include <elektra/conversion.h>
 
@@ -58,7 +59,7 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 		return -1;
 	}
 
-	if (elektraGetBoolean (elektra, "/*% specload_name %*/"))
+	if (elektraGetBoolean (e, "/*% specload_name %*/"))
 	{
 		elektraClose (e);
 		return /*%& specload_function_name %*/ ();
@@ -86,16 +87,19 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
  */
 int /*%& specload_function_name %*/ (void)
 {
+	KeySet * spec = /*%& defaults %*/;
+
 	Key * errorKey = keyNew (0, KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
 
-	int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);
+	int result = elektraInvoke2Args (specload, "sendspec", spec, NULL);
 
 	elektraInvokeClose (specload, errorKey);
 	keyDel (errorKey);
 	ksDel (specloadConf);
+	ksDel (spec);
 
 	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? 1 : -1;
 }
