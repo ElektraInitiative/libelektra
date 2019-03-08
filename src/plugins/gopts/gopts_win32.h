@@ -39,6 +39,8 @@ static int loadArgs (char *** argvp)
 
 	LocalFree (args);
 
+	*argvp = argv;
+
 	return nArgs;
 }
 
