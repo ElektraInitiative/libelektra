@@ -267,3 +267,4 @@ binding during run-time.
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
+- [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
