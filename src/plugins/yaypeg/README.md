@@ -130,6 +130,17 @@ kdb ls user/tests/yaypeg
 # RET: 5
 # STDERR: .*config.yaml:1:1: Missing closing double quote or incorrect value inside flow scalar.*
 
+printf "'Single" > `kdb file user/tests/yaypeg`
+kdb ls user/tests/yaypeg
+# RET: 5
+# STDERR: .*config.yaml:1:7: Missing closing single quote or incorrect value inside flow scalar.*
+
+printf "'\07'" > `kdb file user/tests/yaypeg`
+kdb ls user/tests/yaypeg
+# RET: 5
+# STDERR: .*config.yaml:1:1: Missing closing single quote or incorrect value inside flow scalar.*
+
+
 # Store syntactically correct data
 printf 'dummy' > `kdb file user/tests/yaypeg`
 

@@ -792,9 +792,12 @@ struct nb_single_char : sor<c_quoted_quote, seq<not_at<one<'\''>>, nb_json>>
 struct ns_single_char : seq<not_at<s_white>, nb_single_char>
 {
 };
-// [120]
+// [120] (Modified)
 struct nb_single_text;
-struct c_single_quoted : seq<one<'\''>, nb_single_text, one<'\''>>
+struct closing_single_quote : one<'\''>
+{
+};
+struct c_single_quoted : seq<one<'\''>, nb_single_text, must<closing_single_quote>>
 {
 };
 // [121]
@@ -1188,6 +1191,8 @@ template <>
 char const * const errors<escaped_choices>::errorMessage = "Unexpected escape character";
 template <>
 char const * const errors<closing_double_quote>::errorMessage = "Missing closing double quote or incorrect value inside flow scalar";
+template <>
+char const * const errors<closing_single_quote>::errorMessage = "Missing closing single quote or incorrect value inside flow scalar";
 
 // -- Parse Tree Selector ------------------------------------------------------
 
