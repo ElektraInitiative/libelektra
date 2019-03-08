@@ -16,6 +16,10 @@
 /**
  * Check whether a reference is redundant (i.e. it can be expressed in less characters) or not.
  *
+ * This can be used to give a warning to users, because redundant references are often
+ * mistakes. Using "../some/key/../path" instead of "../some/path" may indicate, that either
+ * a mistake was made while editing, or the concept of references was misunderstood.
+ *
  * @param reference the reference to check
  * @retval 1 if the reference is redundant
  * @retval 0 otherwise
