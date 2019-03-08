@@ -1187,7 +1187,7 @@ char const * const errors<tao::TAO_PEGTL_NAMESPACE::eof>::errorMessage = "Incomp
 template <>
 char const * const errors<escaped_choices>::errorMessage = "Unexpected escape character";
 template <>
-char const * const errors<closing_double_quote>::errorMessage = "Missing closing double quote for flow scalar";
+char const * const errors<closing_double_quote>::errorMessage = "Missing closing double quote or incorrect value inside flow scalar";
 
 // -- Parse Tree Selector ------------------------------------------------------
 
