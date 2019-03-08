@@ -89,6 +89,25 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
+### YAy PEG
+
+- The plugin now includes the input that could not be parsed in error messages. _(René Schwaiger)_
+- We improved the error messages for certain errors slightly. For example, the error message for the input
+
+  ```yaml
+  "double quoted
+  ```
+
+  now includes the following text
+
+  ```
+  1:14: Missing closing double quote or incorrect value inside flow scalar
+        "double quoted
+                      ^
+  ```
+
+  . _(René Schwaiger)_
+
 ### Quickdump
 
 - [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
