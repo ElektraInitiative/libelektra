@@ -15,9 +15,7 @@ The YAy PEG plugin use a parser based on [PEGTL](https://github.com/taocpp/PEGTL
 
 ## Dependencies
 
-This plugin requires [PEGTL](https://github.com/taocpp/PEGTL/blob/2.7.x/doc/Installing-and-Using.md) `2.7.1`. Previous versions of the
-library might work too. However, neither the current development version of PEGTL (`3.0`), nor the latest version of PEGTL `2.7.x` can be
-used by the plugin because of the issue referenced [here](https://github.com/taocpp/PEGTL/issues/143).
+This plugin requires [PEGTL](https://github.com/taocpp/PEGTL/blob/2.7.x/doc/Installing-and-Using.md) `2.7.1` or later.
 
 ## Examples
 
