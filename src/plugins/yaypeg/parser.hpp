@@ -741,7 +741,7 @@ struct nb_double_text;
 struct closing_double_quote : one<'"'>
 {
 };
-struct c_double_quoted : seq<one<'"'>, must<nb_double_text>, must<closing_double_quote>>
+struct c_double_quoted : seq<one<'"'>, nb_double_text, must<closing_double_quote>>
 {
 };
 // [110]
@@ -1186,8 +1186,6 @@ template <>
 char const * const errors<tao::TAO_PEGTL_NAMESPACE::eof>::errorMessage = "Incomplete document, expected “end of file”";
 template <>
 char const * const errors<escaped_choices>::errorMessage = "Unexpected escape character";
-template <>
-char const * const errors<nb_double_text>::errorMessage = "Incorrect value inside double quoted string";
 template <>
 char const * const errors<closing_double_quote>::errorMessage = "Missing closing double quote for flow scalar";
 
