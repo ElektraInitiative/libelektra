@@ -131,4 +131,20 @@ sudo kdb umount user/tests/yaypeg
 
 ## Limitations
 
-The plugin has the same limitations as [YAMBi ](../yambi/).
+- The plugin does **not support**
+
+  - **block scalars**,
+  - **flow collections**,
+  - **tags**,
+  - **anchors & aliases**, and
+  - **multiple documents**
+
+  .
+
+### Comments
+
+While the parser does read comments, the [listener](listener.cpp) does currently not add metakeys for them. This means that comments will be lost, if you modify a key set.
+
+### Error Messages
+
+Visualized error messages (containing `^` markers) might not point to the correct error location, if the input contains tabs or unicode characters with a length other than `1`.
