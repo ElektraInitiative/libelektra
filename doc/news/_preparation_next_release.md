@@ -182,7 +182,7 @@ you up to date with the multi-language support provided by Elektra.
   compiler errors. This update has the advantage, that certain tools such as [TextMate](https://macromates.com) are able to convert the
   location data, providing additional features, such as clickable links to the error source. _(René Schwaiger)_
 
-- <<TODO>>
+- We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - <<TODO>>
 
 ## Tests
