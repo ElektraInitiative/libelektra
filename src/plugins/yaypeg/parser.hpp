@@ -736,9 +736,12 @@ struct nb_double_char : sor<c_ns_esc_char, seq<not_at<one<'\\', '"'>>, nb_json>>
 struct ns_double_char : seq<not_at<s_white>, nb_double_char>
 {
 };
-// [109]
+// [109] (Modified)
 struct nb_double_text;
-struct c_double_quoted : seq<one<'"'>, nb_double_text, one<'"'>>
+struct closing_double_quote : one<'"'>
+{
+};
+struct c_double_quoted : seq<one<'"'>, must<nb_double_text>, must<closing_double_quote>>
 {
 };
 // [110]
@@ -1183,6 +1186,10 @@ template <>
 char const * const errors<tao::TAO_PEGTL_NAMESPACE::eof>::errorMessage = "Incomplete document, expected “end of file”";
 template <>
 char const * const errors<escaped_choices>::errorMessage = "Unexpected escape character";
+template <>
+char const * const errors<nb_double_text>::errorMessage = "Incorrect value inside double quoted string";
+template <>
+char const * const errors<closing_double_quote>::errorMessage = "Missing closing double quote for flow scalar";
 
 // -- Parse Tree Selector ------------------------------------------------------
 

@@ -114,6 +114,15 @@ printf '  I’d like to be a tree\n' >> `kdb file user/tests/yaypeg`
 kdb get user/tests/yaypeg/Fluttershy
 #> I’d like to be a tree
 
+# Add double quoted scalar with missing closing quote character
+printf '"nothing,nowhere.' > `kdb file user/tests/yaypeg`
+kdb ls user/tests/yaypeg
+# RET: 5
+# STDERR: .*config.yaml:1:17: Missing closing double quote for flow scalar.*
+
+# Fix syntax error
+printf '"nothing,nowhere."' > `kdb file user/tests/yaypeg`
+
 # Undo modifications
 kdb rm -r user/tests/error
 kdb rm -r user/tests/yaypeg
