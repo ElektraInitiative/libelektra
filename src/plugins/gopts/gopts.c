@@ -63,7 +63,10 @@ int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 	else if (ret == 1)
 	{
-		// TODO: help message ????
+		Key * helpKey = keyNew ("proc/elektra/gopts/help", KEY_VALUE, "1", KEY_END);
+		keyCopyAllMeta (helpKey, parentKey);
+		ksAppendKey (returned, helpKey);
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;

@@ -20,6 +20,22 @@ if (gopts_source)
 			    gopts.c
 			    ${gopts_source}
 		    LINK_ELEKTRA elektra-opts
-		    ADD_TEST
 		    TEST_README)
+
+	if (ADDTESTING_PHASE)
+		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
+
+		add_executable (elektra-gopts-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c" ${TEST_SOURCES})
+		target_link_elektra (elektra-gopts-testapp elektra-core elektra-invoke elektra-opts)
+
+		set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-gopts-testapp")
+		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
+
+		add_plugintest (gopts INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 120)
+
+		if (BUILD_SHARED)
+			add_dependencies (elektra-gopts-testapp elektra-gopts)
+		endif (BUILD_SHARED)
+		add_dependencies (testmod_gopts elektra-gopts-testapp)
+	endif ()
 endif ()

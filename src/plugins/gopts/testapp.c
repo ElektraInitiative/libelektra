@@ -1,0 +1,108 @@
+/**
+ * @file
+ *
+ * @brief Tests for specload plugin
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+#include <stdio.h>
+
+#include <kdb.h>
+#include <kdbopts.h>
+#include <kdbplugin.h>
+
+#include <tests_plugin.h>
+
+#include "testdata.h"
+
+extern char ** environ;
+
+static KeySet * getSpec (const char * name, Key ** parentKey)
+{
+	if (strcmp (name, TEST_EMPTY) == 0)
+	{
+		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+		return TEST_KS_EMPTY;
+	}
+
+	if (strcmp (name, TEST_SINGLEOPT) == 0)
+	{
+		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+		return TEST_KS_SINGLEOPT;
+	}
+
+	if (strcmp (name, TEST_TWOOPT) == 0)
+	{
+		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+		return TEST_KS_TWOOPT;
+	}
+
+	if (strcmp (name, TEST_SINGLEENV) == 0)
+	{
+		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+		return TEST_KS_SINGLEENV;
+	}
+
+	if (strcmp (name, TEST_TWOENV) == 0)
+	{
+		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+		return TEST_KS_TWOENV;
+	}
+
+	if (strcmp (name, TEST_MIXED) == 0)
+	{
+		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+		return TEST_KS_MIXED;
+	}
+
+	yield_error ("unknown spec name");
+	exit (EXIT_FAILURE);
+}
+
+/**
+ * NOTE: this application has to be called in a non-standard way!!
+ * argv[0] must be the name of the specification to use
+ * argv[1] must be the application name
+ * then we continue with the normal arguments
+ *
+ * argc must therefore be >= 2
+ */
+int main (int argc, const char ** argv)
+{
+	Key * parentKey;
+	KeySet * ks = getSpec (argv[0], &parentKey);
+
+	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
+
+	KeySet * conf = ksNew (0, KS_END);
+
+	PLUGIN_OPEN ("gopts");
+
+	Key * parentKey2;
+	KeySet * ks2 = getSpec (argv[0], &parentKey2);
+
+	bool pluginFailed = plugin->kdbGet (plugin, ks2, parentKey2) == ELEKTRA_PLUGIN_STATUS_ERROR;
+
+	if (pluginFailed != libFailed)
+	{
+		ksDel (ks);
+		keyDel (parentKey);
+		ksDel (ks2);
+		keyDel (parentKey2);
+		char buf[256];
+		strcpy (buf, "elektraGetOpts have different results plugin->get: ");
+		strncat (buf, argv[0], 128);
+		yield_error (buf);
+
+		return nbError;
+	}
+
+	compare_key (parentKey, parentKey2);
+	compare_keyset (ks, ks2);
+
+	PLUGIN_CLOSE ();
+
+	return nbError;
+}

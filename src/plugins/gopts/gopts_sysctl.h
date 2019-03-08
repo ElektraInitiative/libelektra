@@ -16,8 +16,6 @@
 
 #include <kdbhelper.h>
 
-// TODO: error handling
-
 extern char ** environ;
 
 static int loadArgs (char *** argvp)
@@ -28,16 +26,23 @@ static int loadArgs (char *** argvp)
 	mib[2] = KERN_PROC_ARGS;
 	mib[3] = -1;
 	size_t size;
-	sysctl (mib, 4, NULL, &size, NULL, 0);
+	if (sysctl (mib, 4, NULL, &size, NULL, 0) == -1)
+	{
+		return 0;
+	}
 	char * buf = elektraMalloc (size);
-	sysctl (mib, 4, buf, &size, NULL, 0);
+	if (sysctl (mib, 4, buf, &size, NULL, 0) == -1)
+	{
+		elektraFree (buf);
+		return 0;
+	}
 
 	size_t pos = 0;
 	int argc = 0;
 	while (pos < size)
 	{
 		pos += strlen (buf + pos) + 1;
-		argc++;
+		++argc;
 	}
 
 	char ** argv = elektraMalloc (argc * sizeof (char *));

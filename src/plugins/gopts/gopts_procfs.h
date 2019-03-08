@@ -17,8 +17,6 @@
 
 #include <kdbhelper.h>
 
-// TODO: error handling
-
 extern char ** environ;
 
 static int loadArgs (char *** argvp)
@@ -42,7 +40,7 @@ static int loadArgs (char *** argvp)
 	int argc = 0;
 	while (getdelim (&arg, &size, 0, cmdline) != -1)
 	{
-		argc++;
+		++argc;
 	}
 	free (arg);
 	rewind (cmdline);
@@ -54,7 +52,7 @@ static int loadArgs (char *** argvp)
 	while (getdelim (&arg, &size, 0, cmdline) != -1)
 	{
 		argv[index] = elektraStrDup (arg);
-		index++;
+		++index;
 	}
 	free (arg);
 	fclose (cmdline);

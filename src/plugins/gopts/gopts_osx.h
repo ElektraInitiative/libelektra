@@ -15,8 +15,6 @@
 
 #include <kdbhelper.h>
 
-// TODO: error handling
-
 extern char ** environ;
 
 static int loadArgs (char *** argvp)
