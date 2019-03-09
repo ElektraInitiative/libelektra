@@ -101,7 +101,7 @@ To get an idea of Elektra, you can take a look at the
 In the GitHub repository the full documentation is available, including:
 
 - [tutorials](/doc/tutorials/),
-- [faq](/doc/help/elektra-faq.md),
+- [FAQ](/doc/help/elektra-faq.md),
 - [glossary](/doc/help/elektra-glossary.md), and
 - [concepts and man pages](/doc/help/elektra-introduction.md)
 
