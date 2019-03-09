@@ -1117,6 +1117,33 @@ struct action<ns_flow_node>
 	}
 };
 
+// -- Error Handling -----------------------------------------------------------
+
+/**
+ * @brief This templated control struct specifies an error messages for a `must` grammar rule with name `Rule`.
+ */
+template <typename Rule>
+/* For detailed debugging information, please use the control class `tracer` instead of `normal`. */
+struct errors : public tao::TAO_PEGTL_NAMESPACE::normal<Rule>
+{
+	static char const * const errorMessage;
+
+	/**
+	 * @brief The parser calls this method if the grammar rule `must<Rule>` failed.
+	 *
+	 * @param input This variable stores the state of the parser input, at the time parsing failed.
+	 */
+	template <typename Input, typename... States>
+	static void raise (const Input & input, States &&...)
+	{
+		throw tao::TAO_PEGTL_NAMESPACE::parse_error (errorMessage, input);
+	}
+};
+
+/* Define an error message for the only `must` grammar rule: `if_must<l_yaml_stream, eof>` */
+template <>
+char const * const errors<tao::TAO_PEGTL_NAMESPACE::eof>::errorMessage = "Incomplete document, expected “end of file”";
+
 // -- Parse Tree Selector ------------------------------------------------------
 
 /**
