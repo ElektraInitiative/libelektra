@@ -51,7 +51,10 @@ Export column `column name`:
 
 First line should determine the headers:
 
-    kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
+```bash
+kdb mount test.csv /csv csvstorage \
+  "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
+```
 
 ### Usage
 
