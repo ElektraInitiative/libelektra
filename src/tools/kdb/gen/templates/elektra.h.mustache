@@ -13,6 +13,10 @@
 #ifndef /*%& include_guard %*/
 #define /*%& include_guard %*/
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <elektra.h>
 
 #include <kdbhelper.h>
@@ -87,5 +91,9 @@ int /*%& specload_function_name %*/ (void);
  * @param ...     Variable arguments depending on the given tag.
  */// {{=/*% %*/=}}
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // /*%& include_guard %*/
