@@ -12,6 +12,8 @@
 Suppose you have a plugin bar that exports the function `foo(Key *k)`.
 Then you can mount:
 
-    kdb mount file.dump /example/iterate dump iterate when=bar foo Key
+```sh
+kdb mount file.dump /example/iterate dump iterate when=bar foo Key
+```
 
 Which will execute `foo(k)` for every key that has the metadata `when`.
