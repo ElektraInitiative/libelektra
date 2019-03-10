@@ -327,7 +327,7 @@ int elektraHexcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (hexcode)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("hexcode",

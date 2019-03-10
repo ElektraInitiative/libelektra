@@ -25,6 +25,7 @@ Any change of this configuration does require to re-run `grunt full` (or `kdb bu
 in order to re-compile the project.
 
 To run the application, basically two options are available:
+
 - Use the built-in webserver of `grunt`, which can be configured in the
   [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory)
   or `kdb run-@tool@` from anywhere.
@@ -138,12 +139,13 @@ which comes bundled with [Node.js](https://nodejs.org/) (preferred installation)
 ### Compiling
 
 The `@tool@` has full CMake integration, which does actually only two things:
+
 - Install (copy) the project files to a target directory.
 - Run `npm install` in this target directory, which does
- - resolve all `npm` dependencies (into the directory [node_modules](node_modules/)).
- - run `grunt full` to compile all application sources ([resources](resources/) dir)
-   into working production files ([public](public/) dir) and
-   copy required `npm` dependencies in the `public` folder.
+- resolve all `npm` dependencies (into the directory [node_modules](node_modules/)).
+- run `grunt full` to compile all application sources ([resources](resources/) dir)
+  into working production files ([public](public/) dir) and
+  copy required `npm` dependencies in the `public` folder.
 
 ### Installing
 
@@ -179,6 +181,7 @@ The `submenu` type can be used to create a menu point that has a (hoverable) sub
 but does itself not link to any page. It can only be used in the top hierarchy of the structure file.
 
 This field type supports following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
   e.g. `http://example.com/docs` for the subsequent example)
@@ -200,27 +203,28 @@ It takes a text file as input (often README.md) and creates with the help of som
 regex patterns a section of the website which contains parsed links of the input file.
 
 This field type support following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
   e.g. `http://example.com/plugins` for the subsequent example)
 - `options` (object) with further options:
-    - `path` (string) containing the path from the repository root to the text file to parse
-    - `target_file` (array[string]) containing some filenames that should be
-      targeted for parsed links that are no files (i.e. links to directories)
-    - `parsing` (object) with further options:
-        - `start_regex` (string, optional) defines the start point from where on
-          the following regex types should be parsed
-        - `entry_regex` (string) defines a regex that will create links to
-          files within a website section
-        - `section_regex` (string, optional) can additionally be used to
-          parse group names which will make the section links look nicer
-        - `stop_regex` (string, optional) defines the end point up to
-          which the text file will be parsed
-    - `name` (object) with further options:
-        - `make_pretty` (boolean) whether the link names within the
-          text file which will also be used on the website should be made pretty
-          (e.g. first-capitalize, etc.);
-          this option is discouraged for this structure element type
+  - `path` (string) containing the path from the repository root to the text file to parse
+  - `target_file` (array[string]) containing some filenames that should be
+    targeted for parsed links that are no files (i.e. links to directories)
+  - `parsing` (object) with further options:
+    - `start_regex` (string, optional) defines the start point from where on
+      the following regex types should be parsed
+    - `entry_regex` (string) defines a regex that will create links to
+      files within a website section
+    - `section_regex` (string, optional) can additionally be used to
+      parse group names which will make the section links look nicer
+    - `stop_regex` (string, optional) defines the end point up to
+      which the text file will be parsed
+  - `name` (object) with further options:
+    - `make_pretty` (boolean) whether the link names within the
+      text file which will also be used on the website should be made pretty
+      (e.g. first-capitalize, etc.);
+      this option is discouraged for this structure element type
 
 Example:
 
@@ -250,13 +254,14 @@ It will try to find one of the target files (i.e. readme) within the sub-directo
 create a link to them. All this is done in a newly created website section.
 
 This field type supports following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
   e.g. `http://example.com/tools` for the subsequent example)
 - `options` (object) with further options:
-    - `path` (string) containing the path from the repository root to the directory to enumerate
-    - `target_file` (array[string]) containing some filenames that should be targeted within the sub-directories 
-      (e.g. find file `README.md` in directory `mydir` to use it as information file for the directory)
+  - `path` (string) containing the path from the repository root to the directory to enumerate
+  - `target_file` (array[string]) containing some filenames that should be targeted within the sub-directories
+    (e.g. find file `README.md` in directory `mydir` to use it as information file for the directory)
 
 Example:
 
@@ -277,13 +282,14 @@ but instead of sub-directories it enumerates files within a directory.
 It does also create a new website section.
 
 This field type supports following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
   e.g. `http://example.com/manpages` for the subsequent example)
 - `options` (object) with further options:
-    - `path` (string) containing the path from the repository root to the directory to enumerate
-    - `blacklist` (array[string]) containing some filenames that should
-      be excluded from the result (e.g. CMakeLists.txt)
+  - `path` (string) containing the path from the repository root to the directory to enumerate
+  - `blacklist` (array[string]) containing some filenames that should
+    be excluded from the result (e.g. CMakeLists.txt)
 
 Example:
 
@@ -304,6 +310,7 @@ entirely customizable within the structure configuration file.
 This type can be used instead of the `parsereadme` type if a mix of many types is required.
 
 This field type supports following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
   e.g. `http://example.com/getstarted` for the subsequent example)
@@ -323,10 +330,11 @@ Example:
 The `staticref` element type can be used in a `staticlist` to create a reference to another website part.
 
 This field type support following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `options` (object) with further options:
-    - `path` (string) containing a reference, which can either be the `ref`
-      attribute of another element or an even more specific reference
+  - `path` (string) containing a reference, which can either be the `ref`
+    attribute of another element or an even more specific reference
 
 Example:
 
@@ -344,9 +352,10 @@ The `staticfile` element type can be used in a `staticlist` to create a menu poi
 The file is then a page in the section created by the `staticlist`.
 
 This field type support following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `options` (object) with further options:
-    - `path` (string) containing the path to a file
+  - `path` (string) containing the path to a file
 
 Example:
 
@@ -364,10 +373,11 @@ The `link` element type can be used to create a simple link to whatever is desir
 It is recommended to use it only for external links.
 
 This field type support following attributes:
+
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (_currently unused_)
 - `options` (object) with further options:
-    - `path` (string) containing the path of the link
+  - `path` (string) containing the path of the link
 
 Example:
 

@@ -15,6 +15,6 @@
 int elektraLineGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraLineSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (line);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

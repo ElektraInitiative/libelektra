@@ -81,7 +81,7 @@ If you want to only log messages below a specific directory prefix, then please 
    	    strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp")))
    		goto end;
    #endif
-    ```
+   ```
 
    .
 
@@ -99,4 +99,3 @@ There are four log levels (ERROR is reserved for aborts within `ELEKTRA_ASSERT`)
 - `ELEKTRA_LOG_NOTICE`, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
 - `ELEKTRA_LOG`, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
 - `ELEKTRA_LOG_DEBUG`, for less important logs, see #ELEKTRA_LOG_LEVEL_DEBUG
-

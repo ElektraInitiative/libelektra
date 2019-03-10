@@ -58,7 +58,7 @@ int elektraDiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/dini/exports/close", KEY_FUNC, elektraDiniClose, KEY_END),
 			       keyNew ("system/elektra/modules/dini/exports/get", KEY_FUNC, elektraDiniGet, KEY_END),
 			       keyNew ("system/elektra/modules/dini/exports/set", KEY_FUNC, elektraDiniSet, KEY_END),
-#include ELEKTRA_README (dini)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/dini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -97,7 +97,7 @@ int elektraDiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return ret;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dini)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("dini",

@@ -1,5 +1,4 @@
-elektra-plugins(7) -- plugins overview
-======================================
+# elektra-plugins(7) -- plugins overview
 
 Multiple plugins can be mounted into the [key database](/doc/help/elektra-glossary.md) (KDB).
 On every access to the key data base they are executed and thus can change
@@ -18,22 +17,22 @@ The plugins are:
 
 All plugins implement the same interface:
 
--  `kdbOpen()` calls `elektraPluginOpen()` of every plugin
-    to let them do their initialisation.
--  `kdbGet()` requests `elektraPluginGet()` of every plugin in the queried
-    backends to return a key set.
--  `kdbSet()` usually calls `elektraPluginSet()` of every plugin
-    in the queried backends to store the configuration.
--  `kdbSet()` also calls `elektraPluginError()`
-    for every plugin when an error happens.
-    Because of `elektraPluginError()`, plugins are guaranteed to have
-    their chance for necessary cleanups.
--  `kdbClose()` makes sure that plugins can finally free their
-    own resources in `elektraPluginClose()`.
--  `kdbCheckConfig()` can be called manually to ensure a plugin is
-   configured properly.
--  `kdbGenConfig()` can be called to produce all valid configurations
-   of a plugin.
+- `kdbOpen()` calls `elektraPluginOpen()` of every plugin
+  to let them do their initialisation.
+- `kdbGet()` requests `elektraPluginGet()` of every plugin in the queried
+  backends to return a key set.
+- `kdbSet()` usually calls `elektraPluginSet()` of every plugin
+  in the queried backends to store the configuration.
+- `kdbSet()` also calls `elektraPluginError()`
+  for every plugin when an error happens.
+  Because of `elektraPluginError()`, plugins are guaranteed to have
+  their chance for necessary cleanups.
+- `kdbClose()` makes sure that plugins can finally free their
+  own resources in `elektraPluginClose()`.
+- `kdbCheckConfig()` can be called manually to ensure a plugin is
+  configured properly.
+- `kdbGenConfig()` can be called to produce all valid configurations
+  of a plugin.
 
 ### KDB-Interface
 
@@ -59,8 +58,8 @@ determined (resolvers will be automatically added by kdb mount):
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
 - [noresolver](noresolver/) does not resolve, but can act as one
 - [gitresolver](gitresolver/) checks out and commits files to a local git repository
-and afterwards the configuration file must be synced with
-harddisc (recommended to add at every kdb mount):
+  and afterwards the configuration file must be synced with
+  harddisc (recommended to add at every kdb mount):
 - [curlget](curlget/) fetches configuration file from a remote host
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
 - [multifile](multifile/)
@@ -77,6 +76,7 @@ Read and write everything a KeySet might contain:
 - [dini](dini/) uses by default the ini plugin but has legacy support for dump
 - [ini](ini/) supports a range of INI file formats.
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
+- [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
 
 Read (and write) standard config files:
 
@@ -90,7 +90,7 @@ Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):
 
 - [ni](ni/) parses INI files based on (including metadata)
-    [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
+  [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
 - [tcl](tcl/)-like config files (including metadata).
 
 Only suited for import/export:
@@ -122,12 +122,14 @@ productive use:
 - [yawn](yawn/) reads YAML data using [YAEP](https://github.com/vnmakarov/yaep)
 - [yaypeg](yaypeg/) reads YAML data using a PEG parser combinators based on [PEGTL](https://github.com/taocpp/PEGTL)
 - [mmapstorage](mmapstorage/) uses binary, not portable memory mapped file for a high performance storage
+- [specload](specload/) calls an external application to request its specification, depends on [quickdump](quickdump/)
 
-[YAML]: http://www.yaml.org
+[yaml]: http://www.yaml.org
 
 ### System Information
 
 Information compiled in Elektra:
+
 - version is a built-in plugin directly within the
   core so that it cannot give wrong version information
 - [constants](constants/) various constants, including version
@@ -142,7 +144,7 @@ files:
 
 ### Filter
 
-*Filter plugins* process keys and their values in both
+_Filter plugins_ process keys and their values in both
 directions.
 In one direction they undo what they do in the other direction.
 Most filter plugins available now encode and decode values.
@@ -195,7 +197,6 @@ Log/Send out all changes to configuration to:
 Notification of key changes:
 
 - [internalnotification](internalnotification/) get updates automatically when registered keys were changed
-
 
 ### Debug
 

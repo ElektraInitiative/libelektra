@@ -411,6 +411,12 @@ Plugin * elektraPluginMissing (void)
 static int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * error ELEKTRA_UNUSED)
 {
 	KeySet * info = elektraVersionKeySet ();
+	keySetMeta (info->array[0], "restrict/write", "1");
+	keySetMeta (info->array[0], "restrict/remove", "1");
+	for (size_t i = 1; i < info->size; i++)
+	{
+		keyCopyAllMeta (info->array[i], info->array[0]);
+	}
 	ksAppend (returned, info);
 	ksDel (info);
 	return 1;

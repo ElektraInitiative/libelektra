@@ -70,9 +70,10 @@ int elektraKeyToBoolean (const Key * key ELEKTRA_UNUSED, kdb_boolean_t * variabl
 #define TYPE_NAME Boolean
 #define TYPE kdb_boolean_t
 #define KDB_TYPE KDB_TYPE_BOOLEAN
+#define PRE_CHECK_CONVERSION ((string[0] == '0' || string[0] == '1') && string[1] == '\0')
 #define PRE_CHECK_FAIL_BLOCK
 #define CHECK_FAIL_BLOCK
-#define TO_VALUE (strcmp (string, "1") == 0)
+#define TO_VALUE (string[0] == '1')
 #define NAME_MACRO(TYPE_NAME) CAT (elektraKeyTo, TYPE_NAME)
 #define CODE_ONLY 1
 #define KEY_PARAM_NAME key
@@ -268,7 +269,7 @@ int elektraKeyToUnsignedLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_long_
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= UINT32_MAX)
 #define CHECK_FAIL_BLOCK
 #define VALUE_TYPE unsigned long long
-#define TO_VALUE (strtoull (string, &end, 10))
+#define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
 #define NAME_MACRO(TYPE_NAME) CAT (elektraKeyTo, TYPE_NAME)
 #define CODE_ONLY 1
 #define KEY_PARAM_NAME key
@@ -334,7 +335,7 @@ int elektraKeyToUnsignedLongLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_l
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= UINT64_MAX)
 #define CHECK_FAIL_BLOCK
 #define VALUE_TYPE unsigned long long
-#define TO_VALUE (strtoull (string, &end, 10))
+#define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
 #define NAME_MACRO(TYPE_NAME) CAT (elektraKeyTo, TYPE_NAME)
 #define CODE_ONLY 1
 #define KEY_PARAM_NAME key
@@ -439,6 +440,7 @@ int elektraKeyToLongDouble (const Key * key ELEKTRA_UNUSED, kdb_long_double_t * 
 
 #undef KDB_TYPE
 }
+
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
@@ -578,7 +580,7 @@ char * elektraUnsignedLongLongToString (kdb_unsigned_long_long_t value)
  */
 char * elektraFloatToString (kdb_float_t value)
 {
-	return elektraFormat ("%f", value);
+	return elektraFormat ("%.9g", value);
 }
 
 /**
@@ -592,7 +594,7 @@ char * elektraFloatToString (kdb_float_t value)
  */
 char * elektraDoubleToString (kdb_double_t value)
 {
-	return elektraFormat ("%f", value);
+	return elektraFormat ("%.17g", value);
 }
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
@@ -608,7 +610,7 @@ char * elektraDoubleToString (kdb_double_t value)
  */
 char * elektraLongDoubleToString (kdb_long_double_t value)
 {
-	return elektraFormat ("%Lf", value);
+	return elektraFormat ("%.21Lg", value);
 }
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE

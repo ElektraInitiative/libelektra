@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = libc maintained unittest writeonly
+- infos/status = maintained unittest libc writeonly
 - infos/metadata = check/reference check/reference/restrict
 - infos/description = Plugin for validating singular or recursive references
 
@@ -28,6 +28,7 @@ represents a reference between to keys. The plugin will produce an error, if thi
 is not a directed acyclic graph or contains any invalid references.
 
 ### Resolution of references
+
 The plugin will try to resolve all keys marked with the metakey `check/reference` as references.
 The only exception to this rule is, if the value of such a key is a valid array name (i.e. `#0`,
 `#_10`, ...). In that case, the plugin will try to resolve the values of the array elements,
@@ -35,21 +36,21 @@ directly below the marked key. And treats the marked key as referencing multiple
 
 The resolution of the references into key names goes as follows:
 
-* If the reference value starts with `./` or `../`, it will be interpreted as relative to
+- If the reference value starts with `./` or `../`, it will be interpreted as relative to
   the current key or the parent of the current key.
-* If the reference value starts with `@/`, it will be relative to the parent-key used in the
+- If the reference value starts with `@/`, it will be relative to the parent-key used in the
   call to `kdbGet`.
-* All other values are treated as absolute and interpreted as a keyname directly.
-* `.` and `..` will be treated the same way as in Unix paths. However, the plugin will emit
+- All other values are treated as absolute and interpreted as a keyname directly.
+- `.` and `..` will be treated the same way as in Unix paths. However, the plugin will emit
   warnings, if `.` is used anywhere other than before the first slash. Equally using `..`
   after a path segment other than `..` itself, will result in a warning. This is because these
   use cases are redundant and might be (or result in) mistakes. Here are a few examples of what
   results in warnings, and what doesn't:
-  * `./system/key` no warning
-  * `system/key` no warning
-  * `system/./key` warning, redundant use of `.`
-  * `../../../key` no warning
-  * `../key/../otherkey`warning, redundant use of `.`
+  - `./system/key` no warning
+  - `system/key` no warning
+  - `system/./key` warning, redundant use of `.`
+  - `../../../key` no warning
+  - `../key/../otherkey`warning, redundant use of `.`
 
 ### Construction of the reference graph
 
@@ -132,6 +133,6 @@ sudo kdb umount user/tests/reference
 
 The [examples](examples/) directory contains a few examples:
 
-* [alternative](examples/alternative/) shows how the `alternative` value of `check/reference` gets processed.
-* [complex](examples/complex/) shows how the plugin can be used together with the spec plugin, to
+- [alternative](examples/alternative/) shows how the `alternative` value of `check/reference` gets processed.
+- [complex](examples/complex/) shows how the plugin can be used together with the spec plugin, to
   validate complex recursive structures.

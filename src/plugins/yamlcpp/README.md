@@ -23,7 +23,7 @@ You can mount this plugin via `kdb mount`:
 sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 ```
 
-. To unmount the plugin use  `kdb umount`:
+. To unmount the plugin use `kdb umount`:
 
 ```sh
 sudo kdb umount /tests/yamlcpp
@@ -190,20 +190,19 @@ The plugin supports metadata. The example below shows how a basic `Key` includin
 
 ```yaml
 key without metadata: value
-key with metadata:
-  !elektra/meta
-    - value2
-    - metakey: metavalue
-      empty metakey:
-      another metakey: another metavalue
+key with metadata: !elektra/meta
+  - value2
+  - metakey: metavalue
+    empty metakey:
+    another metakey: another metavalue
 ```
 
 . As we can see above the value containing metadata is marked by the tag handle `!elektra/meta`. The data type contains a list with two elements. The first element of this list specifies the value of the key, while the second element contains a map saving the metadata for the key. The data above represents the following key set in Elektra if we mount the file directly to the namespace `user`:
 
-|            Name           |  Value |     Metaname    |     Metavalue     |
-|:-------------------------:|:------:|:---------------:|:-----------------:|
+|           Name            | Value  |    Metaname     |     Metavalue     |
+| :-----------------------: | :----: | :-------------: | :---------------: |
 | user/key without metadata | value1 |        —        |         —         |
-| user/key with metadata    | value2 |     metakey     |     metavalue     |
+|  user/key with metadata   | value2 |     metakey     |     metavalue     |
 |                           |        |  empty metakey  |         —         |
 |                           |        | another metakey | another metavalue |
 
@@ -333,11 +332,11 @@ One of the limitations of this plugin is, that it only supports values inside [l
 
 ```yaml
 root:
-  subtree:    🍂
+  subtree: 🍂
   below root: leaf
 level 1:
   level 2:
-    level 3:  🍁
+    level 3: 🍁
 ```
 
 stores all of the values (`🍂`, `leaf` and `🍁`) in the leaves of the mapping. The drawing below makes this situation a little bit clearer.
@@ -346,24 +345,24 @@ stores all of the values (`🍂`, `leaf` and `🍁`) in the leaves of the mappin
 
 The key set that this plugin creates using the data above looks like this (assuming we mount the plugin to `user/tests/yamlcpp`):
 
-|     Name                                      | Value |
-|-----------------------------------------------|-------|
-| user/tests/yamlcpp/level                      |       |
-| user/tests/yamlcpp/level 1/level 2            |       |
-| user/tests/yamlcpp/level 1/level 2/level 3    | 🍁    |
-| user/tests/yamlcpp/root                       |       |
-| user/tests/yamlcpp/root/below root            | leaf  |
-| user/tests/yamlcpp/root/subtree               | 🍂    |
+| Name                                       | Value |
+| ------------------------------------------ | ----- |
+| user/tests/yamlcpp/level                   |       |
+| user/tests/yamlcpp/level 1/level 2         |       |
+| user/tests/yamlcpp/level 1/level 2/level 3 | 🍁    |
+| user/tests/yamlcpp/root                    |       |
+| user/tests/yamlcpp/root/below root         | leaf  |
+| user/tests/yamlcpp/root/subtree            | 🍂    |
 
 . Now why is this plugin unable to store values outside leaf nodes? For example, why can we not store a value inside `user/tests/yamlcpp/level 1/level 2`? To answer this question we need to look at the YAML representation:
 
 ```yaml
 level 1:
   level 2:
-    level 3:  🍁
+    level 3: 🍁
 ```
 
-. In a naive approach we might just try to add a value e.g.  `🙈` right next to level 2:
+. In a naive approach we might just try to add a value e.g. `🙈` right next to level 2:
 
 ```yaml
 level 1:
@@ -371,13 +370,13 @@ level 1:
     level 3:  🍁
 ```
 
-. This however would be not correct, since then the YAML node `level 2` would contain both a scalar value (`🙈`) and a mapping (`{ level 3:  🍁 }`). We could solve this dilemma using a list:
+. This however would be not correct, since then the YAML node `level 2` would contain both a scalar value (`🙈`) and a mapping (`{ level 3: 🍁 }`). We could solve this dilemma using a list:
 
 ```yaml
 level 1:
   level 2:
     - 🙈
-    - level 3:  🍁
+    - level 3: 🍁
 ```
 
 . However, if we use this approach we are not able to support Elektra’s array type properly.
@@ -402,8 +401,7 @@ directory/file       = Leaf Data
 . Consequently the YAML plugin will store the key set as
 
 ```yaml
-directory:
-  ___dirdata = Directory Data
+directory: ___dirdata = Directory Data
   file       = Leaf Data
 ```
 
@@ -441,11 +439,11 @@ sudo kdb umount user/tests/yamlcpp
 - The plugin currently lacks proper **type support** for scalars.
 - If Elektra uses YAML CPP as **default storage** plugin, multiple tests of the test suite fail. However, if you mount YAML CPP at `/`:
 
-   ```
-   kdb mount default.yaml / yamlcpp
-   ```
+  ```
+  kdb mount default.yaml / yamlcpp
+  ```
 
-   all tests should work correctly. The problem here is that Elektra does not load additional required plugins (`infos/needs`) for a
-   default storage plugin.
+  all tests should work correctly. The problem here is that Elektra does not load additional required plugins (`infos/needs`) for a
+  default storage plugin.
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp

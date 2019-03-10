@@ -16,6 +16,6 @@
 int elektraConditionalsGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraConditionalsSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

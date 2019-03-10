@@ -32,7 +32,7 @@ int elektraPathSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 int elektraPathError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (path);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #define ERRORMSG_LENGTH 1000
 

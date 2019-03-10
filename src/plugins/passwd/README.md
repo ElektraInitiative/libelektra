@@ -51,4 +51,3 @@ If the config key `index` is set to `name` passwd entries will be sorted by name
     passwd = x
     shell = /bin/zsh
     uid = 0
-

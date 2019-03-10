@@ -15,6 +15,6 @@
 int elektraIpaddrGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraIpaddrSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ipaddr);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

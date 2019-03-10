@@ -16,7 +16,7 @@
 int elektraDateGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDateSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (date);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 
 /*

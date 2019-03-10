@@ -23,6 +23,7 @@ fi
 printf "Checking %s\n" "$ACTUAL_PLUGINS"
 
 for PLUGIN in $ACTUAL_PLUGINS; do
+	ARGS=""
 	case "$PLUGIN" in
 	'jni')
 		# References:
@@ -47,6 +48,12 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		# exclude due to issue 1781
 		continue
 		;;
+	"specload")
+		ARGS="-c app=$(dirname "$KDB")/elektra-specload-testapp"
+		# exclude; cannot open on travis?
+		# https://travis-ci.com/kodebach/libelektra/jobs/179018147#L2180
+		continue
+		;;
 	esac
 
 	ASAN='@ENABLE_ASAN@'
@@ -62,8 +69,8 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	fi
 
 	> $FILE
-	"$KDB" check "$PLUGIN" 1> "$FILE" 2> "$FILE"
-	succeed_if "check of plugin $PLUGIN failed"
+	"$KDB" check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	succeed_if "check of plugin $PLUGIN with args $ARGS failed"
 
 	test ! -s $FILE
 	succeed_if "check of plugin $PLUGIN produced: \"$(cat $FILE)\""

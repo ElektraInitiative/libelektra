@@ -39,11 +39,14 @@ scalar : PLAIN_SCALAR         # 0
 map : MAP_START pairs MAP_END # 1 ;
 pairs : pair       # 0
       | pairs pair # pairs (0 1)
+      | pairs error
       ;
 pair : KEY key VALUE child_comments_empty # pair (1 3) ;
 key : scalar # key (0) ;
 
 sequence : SEQUENCE_START elements SEQUENCE_END # sequence(1) ;
 elements : element # 0
-         | elements element # elements(0 1) ;
+         | elements element # elements(0 1)
+         | elements error
+         ;
 element : ELEMENT child # element(1) ;

@@ -20,17 +20,17 @@ if [ -n "$CLANG_FORMAT" ]; then
 fi
 
 if [ -z "${CLANG_FORMAT}" ]; then
-	printf 'ClangFormat:   %s\n' "$LOCATION"
-	printf 'Version Info:  %s\n' "$VERSION"
-	printf 'Major Version: %s\n' "$MAJOR_VERSION"
-	echo "Please install clang-format $MIN_VERSION, or 7"
+	printf >&2 'ClangFormat:   %s\n' "$LOCATION"
+	printf >&2 'Version Info:  %s\n' "$VERSION"
+	printf >&2 'Major Version: %s\n' "$MAJOR_VERSION"
+	printf >&2 'Please install clang-format %s, or 7' "$MIN_VERSION"
 	exit 1
 fi
 
 cd "$SOURCE" || {
-	printf 'Unable to change into source directory'
+	printf >&2 'Unable to change into source directory'
 	exit 1
 }
 
-find . \( \( -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' \) -and -not -regex '^./src/tools/gen.*' \) \
-	-exec "$CLANG_FORMAT" -style=file -i {} +
+source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*')
+printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i

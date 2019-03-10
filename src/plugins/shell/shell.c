@@ -53,7 +53,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system/elektra/modules/shell/exports/get", KEY_FUNC, elektraShellGet, KEY_END),
 			       keyNew ("system/elektra/modules/shell/exports/set", KEY_FUNC, elektraShellSet, KEY_END),
 			       keyNew ("system/elektra/modules/shell/exports/error", KEY_FUNC, elektraShellError, KEY_END),
-#include ELEKTRA_README (shell)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/shell/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -142,7 +142,7 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (shell)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("shell", ELEKTRA_PLUGIN_GET, &elektraShellGet, ELEKTRA_PLUGIN_SET, &elektraShellSet,
 				    ELEKTRA_PLUGIN_ERROR, &elektraShellError, ELEKTRA_PLUGIN_END);

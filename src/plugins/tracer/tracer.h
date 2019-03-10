@@ -16,4 +16,4 @@ int elektraTracerGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTracerSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTracerError (Plugin * handle, KeySet * returned, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (tracer);
+Plugin * ELEKTRA_PLUGIN_EXPORT;

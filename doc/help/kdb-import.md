@@ -1,5 +1,4 @@
-kdb-import(1) -- Import an existing configuration into the key database
-=======================================================================
+# kdb-import(1) -- Import an existing configuration into the key database
 
 ## SYNOPSIS
 
@@ -26,7 +25,7 @@ Conflicts when importing can be resolved using a strategy with the `-s` argument
 
 Specific to `kdb import` the following strategy exists:
 
-- `validate`: 
+- `validate`:
   apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
@@ -66,7 +65,6 @@ The other strategies are implemented by the merge framework and are documented i
   Specifies which default namespace should be used when setting a cascading name.
   By default the namespace is user, except `kdb` is used as root, then `system`
   is the default (`validate` strategy only).
-
 
 ## EXAMPLES
 

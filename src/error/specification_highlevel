@@ -41,21 +41,25 @@ number:4
 severity:error
 name:CONVERSION_TO_STRING
 visibility:public
-description:A value of type '%1$s' could not be converted to string.
-args:1
+description:The value of key '%2$s' with type '%1$s' could not be converted to string.
+args:2
 type1:KDBType
 arg1:sourceType
+type2:const char *
+arg2:keyname
 
 number:5
 severity:error
 name:CONVERSION_FROM_STRING
 visibility:public
-description:The value '%2$s' could not be converted to type '%1$s'.
-args:2
+description:The value '%3$s' of key '%2$s' could not be converted to type '%1$s'.
+args:3
 type1:KDBType
 arg1:targetType
 type2:const char *
-arg2:sourceValue
+arg2:keyname
+type3:const char *
+arg3:sourceValue
 
 number:6
 severity:error

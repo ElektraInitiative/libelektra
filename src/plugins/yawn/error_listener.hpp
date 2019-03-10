@@ -13,6 +13,8 @@
 
 #include <yaep.h>
 
+#include "location.hpp"
+
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
 namespace yawn
@@ -28,7 +30,32 @@ class ErrorListener
 	/** This variable stores the last error message produced by the parser. */
 	std::string message;
 
+	/** This member stores the source of the error (e.g. a path to the parsed file). */
+	std::string source;
+
+	/** This member stores the content of `source` as UTF-8 encoded string. */
+	std::string input;
+
+	/**
+	 * @brief This method returns a Clang-like error message for a given error.
+	 *
+	 * @param location This parameter stores the location of the error.
+	 * @param prefix This variable stores as prefix that this function prepends
+	 *               to every line of the visualized error message.
+	 *
+	 * @return A string representation of the error
+	 */
+	std::string visualizeError (Location const & location, std::string const & prefix);
+
 public:
+	/**
+	 * @brief This constructor creates a new error listener using the given arguments.
+	 *
+	 * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+	 * @param text This variable stores the content of `errorSource` as UTF-8 encoded string.
+	 */
+	ErrorListener (std::string const & errorSource, std::string const & text);
+
 	/**
 	 * @brief This method reacts to syntax errors reported by YAEP’s parsing
 	 *        engine.

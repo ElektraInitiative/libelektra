@@ -20,7 +20,6 @@ Instead we want to include every configuration file matching a given pattern.
 
 The multifile-resolver does so by calling resolver and storage plugins for each file matching a given pattern.
 
-
 ## Plugin Configuration
 
 - `recursive`:

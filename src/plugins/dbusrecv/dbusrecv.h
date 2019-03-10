@@ -59,6 +59,6 @@ int elektraDbusRecvOpen (Plugin * handle, Key * errorKey);
 int elektraDbusRecvClose (Plugin * handle, Key * errorKey);
 int elektraDbusRecvGet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dbus);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

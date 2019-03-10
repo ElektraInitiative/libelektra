@@ -81,7 +81,7 @@ plugin these storage plugins are also able to represent directory values properl
 
 ### Array Values
 
-The Directory value plugin also converts array values. Let us take  a look at an example key set:
+The Directory value plugin also converts array values. Let us take a look at an example key set:
 
 ```
 user/array    = Array Value
@@ -101,7 +101,7 @@ user/array/#2         = Third Value
 ```
 
 , since then `user/array` **would not be an array** any more. Instead the plugin inserts a new element at index 0 with the **value prefix**
-`___dirdata: `:
+`___dirdata:`:
 
 ```
 user/array            =
@@ -181,8 +181,8 @@ sudo kdb umount user/tests/directoryvalue
 - **Escaping** is currently **not possible**. If you use the Directory Value plugin you can not
 
   - use the name `___dirdata` as the last part of a normal key,
-  - use `___dirdata: ` at the beginning of a normal value in the first array element
+  - use `___dirdata:` at the beginning of a normal value in the first array element
 
   !
 
-- The plugin is [quite slow](https://issues.libelektra/2281).
+- The plugin is [quite slow](https://issues.libelektra.org/2281).

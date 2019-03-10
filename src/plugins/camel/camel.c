@@ -691,7 +691,7 @@ static KeySet * contractCamel (void)
 		      keyNew ("system/elektra/modules/camel/exports", KEY_END),
 		      keyNew ("system/elektra/modules/camel/exports/get", KEY_FUNC, elektraCamelGet, KEY_END),
 		      keyNew ("system/elektra/modules/camel/exports/set", KEY_FUNC, elektraCamelSet, KEY_END),
-#include ELEKTRA_README (camel)
+#include ELEKTRA_README
 		      keyNew ("system/elektra/modules/camel/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
@@ -763,7 +763,7 @@ int elektraCamelSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (camel)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("camel", ELEKTRA_PLUGIN_GET, &elektraCamelGet, ELEKTRA_PLUGIN_SET, &elektraCamelSet,
 				    ELEKTRA_PLUGIN_END);

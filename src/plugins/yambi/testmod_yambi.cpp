@@ -25,17 +25,15 @@ using CppKey = kdb::Key;
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
 	CppKeySet modules{ 0, KS_END };                                                                                                    \
-	CppKeySet config{ 0, KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
+	CppKeySet config{ 0, KS_END };                                                                                                     \
 	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
-	Plugin * plugin = elektraPluginOpen ("yambi", modules.getKeySet (), config.getKeySet (), *parent);                                 \
-	exit_if_fail (plugin != NULL, "Could not open yambi plugin")
+	Plugin * plugin = elektraPluginOpen ("yambi", modules.getKeySet (), config.getKeySet (), *parent);
 
 #define CLOSE_PLUGIN()                                                                                                                     \
+	config.release ();                                                                                                                 \
 	elektraPluginClose (plugin, 0);                                                                                                    \
-	elektraModulesClose (modules.getKeySet (), 0);                                                                                     \
-	ksDel (modules.release ());                                                                                                        \
-	config.release ()
+	elektraModulesClose (modules.getKeySet (), 0)
 
 #define PREFIX "user/tests/yambi/"
 

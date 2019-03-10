@@ -1,6 +1,7 @@
 # Command-line Options
 
 ## Introduction
+
 Many applications use command-line options and environment variables as a way to override configuration values.
 In Elektra this can be automated by providing a specification that maps command-line options and environment variables
 to keys in the KDB.
@@ -14,6 +15,7 @@ will be preferred over any stored values in a cascading lookup.
 To use `elektraGetOpts` you need to link against `elektra-opts`, `elektra-meta` and `elektra-ease`.
 
 ## Options
+
 To define a command-line option either set the `opt` metakey to the short option you want to use, or set `opt/long` to
 the long option you want to use. For short options, only the first character of the given value will be used ('\0' is ignored).
 Short and long options can be used simultaneously.
@@ -27,24 +29,27 @@ While you can specify multiple options (or environment variables, see below) for
 at the same time. Using two or more options (or variables) that are all linked to the same key, will result in an error.
 
 ### Option Arguments
+
 Per default an option is expected to have an argument. Arguments to short and long options are given in the same way
 as with `getopt_long(3)` (i.e. `-oarg`, `-o arg`, `--option arg` or `--option=arg`).
 
 To change whether an option expects an argument set `opt/arg` to either `"none"` or `"optional"` (the default is `"required"`).
 
-* If you choose `"none"`, the corresponding key will be set to `"1"`, if the option is used. This value can be changed
+- If you choose `"none"`, the corresponding key will be set to `"1"`, if the option is used. This value can be changed
   by setting `opt/flagvalue`.
-* An option that is set to `"optional"` is treated the same as with `"none"`, except that you can also set the value
+- An option that is set to `"optional"` is treated the same as with `"none"`, except that you can also set the value
   with the long option form `--option=value`. This also means that `opt/flagvalue` is used, if no argument is given.
   Contrary to `getopt_long(3)` options with optional arguments can still have short forms. They just cannot have an
   argument in this form.
 
 ## Environment Variables
+
 Elektra also supports parsing environment variables in a similar manner. For these there are however, less configuration
 options. You can simply specify one or more environment variables for a key using the `env` metakey (or `env/#` meta-array
 for multiple).
 
 ## Arrays
+
 Both options and environment variables expose special behavior, if used in combination with arrays.
 
 If an option is specified on a key with basename `#`, the option can be used repeatedly. All occurrences will be collected
@@ -54,11 +59,13 @@ Environment variables obviously cannot be repeated, instead a behavior similar t
 the variable will be split at each ';' character. On all other systems ':' is used as a separator.
 
 ## Arguments (Parameters)
+
 All unused elements of `argv` are be collected into an array. You can access this array by specifying `args=remaining` on a
 key with basename `#`. The array will be copied into this key. As is the case with getopt(3) processing of options will stop,
 if `--` is encountered in `argv`.
 
 ## Help Message
+
 When one of the help options `-h` and `--help` is encountered in `argv`, `elektraGetOpts` only reads the specification, but
 does not create any keys in the `proc` namespace. It will however, generate a help message that can be accessed with
 `elektraGetOptsHelpMessage`.
@@ -70,29 +77,33 @@ The options list will contain exactly one entry for each key that has at least o
 all the options for the key are listed and then (possibly on the next line, if there are a lot of options), the description
 for the key is listed. The description is taken from the `opt/help` or alternatively the `description` metakey.
 
-**Note:** `opt/help` is specified *only once per key*. That means even if the key uses `opt/#0`, `opt/#1`, etc. (unlike most
+**Note:** `opt/help` is specified _only once per key_. That means even if the key uses `opt/#0`, `opt/#1`, etc. (unlike most
 other metadata) the description will always be taken from `opt/help` directly, because there can only be one description. In
-general we recommend using `description`, because it is used by other parts of Elektra as well. `opt/help` is intended to 
+general we recommend using `description`, because it is used by other parts of Elektra as well. `opt/help` is intended to
 provide a less verbose description more suitable for the command-line.
 
 The help message can be modified in a few different ways:
-* The `usage` argument of `elektraGetOptsHelpMessage` can be used to replace the default usage line.
-* The `prefix` argument of `elektraGetOptsHelpMessage` can be used to insert text between the usage line and the options list.
-* An option can can be hidden from the help message by setting `opt/hidden` to `"1"`. This hides both the long and short form
+
+- The `usage` argument of `elektraGetOptsHelpMessage` can be used to replace the default usage line.
+- The `prefix` argument of `elektraGetOptsHelpMessage` can be used to insert text between the usage line and the options list.
+- An option can can be hidden from the help message by setting `opt/hidden` to `"1"`. This hides both the long and short form
   of the option. If you want to hide just one form, use an array of two options an hide just one index.
-* If the option has an `"optional"` or `"required"` argument, the string `ARG` will be used as a placeholder by default. You
+- If the option has an `"optional"` or `"required"` argument, the string `ARG` will be used as a placeholder by default. You
   can change this, by setting `opt/arg/help` for the corresponding option.
 
 ## Precedence
+
 The order of precedence is simple:
-* If a short option for a key is found, it will always be used. 
-* If none of the short options for a key are found, we look for long options.
-* Neither short nor long options are found, environment variables are considered.
+
+- If a short option for a key is found, it will always be used.
+- If none of the short options for a key are found, we look for long options.
+- Neither short nor long options are found, environment variables are considered.
 
 ## Limitations
-* Both options and environment variables can only be specified on a single key. If you need to have the
+
+- Both options and environment variables can only be specified on a single key. If you need to have the
   value of one option/environment variable in multiple keys, you may use `fallback`s.
-* `-` and `h` cannot be used as short options, because they would collide with, the "option end marker" and the help option
+- `-` and `h` cannot be used as short options, because they would collide with, the "option end marker" and the help option
   respectively. `help` cannot be used as a long option, because it would collide with the help option.
 
 ## Examples
@@ -166,7 +177,7 @@ description = output version information and exit
 args = remaining
 env = FILES
 description = the files that shall be deleted
- ```
+```
 
 If this specification is used in a program called `erm` (for Elektra rm), which is called like this:
 
@@ -176,19 +187,19 @@ FILES="one.txt:other.log" VERBOSE=1 erm -fi --recursive
 
 The following keys will be created by `elektraGetOpts` (assuming the specification is mounted at `spec/sw/org/erm/#0/current`):
 
-* `proc/sw/org/erm/#0/current/force = "1"`
-* `proc/sw/org/erm/#0/current/interactive = "always"`
-* `proc/sw/org/erm/#0/current/recursive = "1"`
-* `proc/sw/org/erm/#0/current/verbose = "1"`
-* `proc/sw/org/erm/#0/current/files [array] = "#1"`
-* `proc/sw/org/erm/#0/current/files/#0 = "one.txt"`
-* `proc/sw/org/erm/#0/current/files/#1 = "other.log"`
+- `proc/sw/org/erm/#0/current/force = "1"`
+- `proc/sw/org/erm/#0/current/interactive = "always"`
+- `proc/sw/org/erm/#0/current/recursive = "1"`
+- `proc/sw/org/erm/#0/current/verbose = "1"`
+- `proc/sw/org/erm/#0/current/files [array] = "#1"`
+- `proc/sw/org/erm/#0/current/files/#0 = "one.txt"`
+- `proc/sw/org/erm/#0/current/files/#1 = "other.log"`
 
 Calling `FILES="abcd.txt" erm 123.txt 456.txt` meanwhile will result in:
 
-* `proc/sw/org/erm/#0/current/files [array] = "#1"`
-* `proc/sw/org/erm/#0/current/files/#0 = "123.txt"`
-* `proc/sw/org/erm/#0/current/files/#1 = "456.txt"`
+- `proc/sw/org/erm/#0/current/files [array] = "#1"`
+- `proc/sw/org/erm/#0/current/files/#0 = "123.txt"`
+- `proc/sw/org/erm/#0/current/files/#1 = "456.txt"`
 
 NOTE: `proc/sw/org/erm/#0/current/files [array] = "#1"` means the `array` metadata of `proc/sw/org/erm/#0/current/files` is `#1`.
 

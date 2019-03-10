@@ -622,7 +622,7 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (gpgme)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,

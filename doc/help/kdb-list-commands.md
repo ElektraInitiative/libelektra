@@ -1,5 +1,4 @@
-kdb-list-commands(1) -- List commands available to Elektra
-==========================================================
+# kdb-list-commands(1) -- List commands available to Elektra
 
 ## SYNOPSIS
 

@@ -14,13 +14,7 @@
 #include <kdbhelper.h>
 
 #define EXPECT_KEYVALUE(Key, Value) EXPECT_PRED2 (keyHasValue, Key, Value)
-#define EXPECT_KEYVALUE_START(Key, Value) EXPECT_PRED2 (keyHasValueStart, Key, Value)
 #define EXPECT_KEYMETA(Key, Meta, Value) EXPECT_PRED3 (keyHasMetaValue, Key, Meta, Value)
-
-static inline bool keyHasValueStart (const kdb::Key & key, const std::string & value)
-{
-	return key && key.getString ().substr (0, value.size ()) == value;
-}
 
 static inline bool keyHasValue (const kdb::Key & key, const std::string & value)
 {
@@ -32,6 +26,7 @@ static inline bool keyHasMetaValue (const kdb::Key & key, const std::string & me
 	return key && key.getMeta<std::string> (metaName) == value;
 }
 
+/* TODO: re-add once we have a stable public error API
 constexpr const char * severityString (ElektraErrorSeverity severity)
 {
 	return severity == ELEKTRA_ERROR_SEVERITY_ERROR ? "ERROR" : (severity == ELEKTRA_ERROR_SEVERITY_WARNING ? "WARNING" : "FATAL");
@@ -87,6 +82,7 @@ static std::ostream & operator<< (std::ostream & os, ElektraError ** error)
 	}
 	return os;
 }
+ */
 
 class Highlevel : public ::testing::Test
 {
@@ -127,8 +123,10 @@ protected:
 	static void fatalErrorHandler (ElektraError * error)
 	{
 		std::stringstream msg;
-		msg << "fatal error " << elektraErrorCode (error) << " in test "
-		    << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": " << &error << std::endl;
+		msg << "fatal error in test " << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": "
+		    << elektraErrorDescription (error) << std::endl;
+
+		elektraErrorReset (&error);
 
 		throw std::runtime_error (msg.str ());
 	}
@@ -145,7 +143,8 @@ protected:
 		elektraFatalErrorHandler (elektra, &fatalErrorHandler);
 	}
 
-	void setValues (std::initializer_list<kdb::Key> values)
+	template <class T>
+	void setValues (T values)
 	{
 		using namespace kdb;
 		KDB kdb;
@@ -157,6 +156,11 @@ protected:
 			config.append (value);
 		}
 		kdb.set (config, testRoot);
+	}
+
+	void setValues (std::initializer_list<kdb::Key> values)
+	{
+		setValues<std::initializer_list<kdb::Key>> (values);
 	}
 
 	void setArrays (std::initializer_list<std::vector<kdb::Key>> arrays)
@@ -198,6 +202,141 @@ protected:
 
 const std::string Highlevel::configFile = "kdbFileHighlevel.dump";
 const std::string Highlevel::testRoot = "/tests/highlevel/"; // DO NOT use namespace here, namespace would break testing::Mountpoint
+
+TEST_F (Highlevel, CharTestGet)
+{
+	std::vector<kdb::Key> keys;
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		char s[] = { static_cast<char> (c), '\0' };
+		auto name = "char/_" + std::to_string (c);
+		keys.push_back (makeKey (KDB_TYPE_CHAR, name.c_str (), s));
+	}
+	setValues (keys);
+
+	createElektra ();
+
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		try
+		{
+			EXPECT_EQ (elektraGetChar (elektra, name.c_str ()), c) << "char " + name + " wrong";
+		}
+		catch (std::runtime_error &)
+		{
+			ADD_FAILURE () << "unexpected std::runtime_error thrown for " + name;
+		}
+	}
+}
+
+TEST_F (Highlevel, CharTestSet)
+{
+	std::vector<kdb::Key> keys;
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		keys.push_back (makeKey (KDB_TYPE_CHAR, name.c_str (), c == '_' ? "0" : "_"));
+	}
+	setValues (keys);
+
+	createElektra ();
+
+	ElektraError * error = nullptr;
+
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		elektraSetChar (elektra, name.c_str (), c, &error);
+		if (error != nullptr)
+		{
+			ADD_FAILURE () << "error for char " + name;
+		}
+	}
+
+	using namespace kdb;
+	KDB kdb;
+	KeySet config;
+
+	kdb.get (config, testRoot);
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		char s[] = { static_cast<char> (c), '\0' };
+		EXPECT_KEYVALUE (config.lookup (testRoot + name), s) << "Wrong key value. for char " + name;
+	}
+}
+
+TEST_F (Highlevel, IntegerBordersGet)
+{
+	setValues ({
+		makeKey (KDB_TYPE_OCTET, "octet/below", "-1"),
+		makeKey (KDB_TYPE_OCTET, "octet/min", "0"),
+		makeKey (KDB_TYPE_OCTET, "octet/max", "255"),
+		makeKey (KDB_TYPE_OCTET, "octet/above", "256"),
+		makeKey (KDB_TYPE_SHORT, "short/below", "-32769"),
+		makeKey (KDB_TYPE_SHORT, "short/min", "-32768"),
+		makeKey (KDB_TYPE_SHORT, "short/max", "32767"),
+		makeKey (KDB_TYPE_SHORT, "short/above", "32768"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/below", "-1"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/min", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/max", "65535"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/above", "65536"),
+		makeKey (KDB_TYPE_LONG, "long/below", "-2147483649"),
+		makeKey (KDB_TYPE_LONG, "long/min", "-2147483648"),
+		makeKey (KDB_TYPE_LONG, "long/max", "2147483647"),
+		makeKey (KDB_TYPE_LONG, "long/above", "2147483648"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/below", "-1"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/min", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/max", "4294967295"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/above", "4294967296"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/below", "-9223372036854775809"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/min", "-9223372036854775808"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/max", "9223372036854775807"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/above", "9223372036854775808"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/below", "-1"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/min", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/max", "18446744073709551615"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/above", "18446744073709551616"),
+	});
+
+	createElektra ();
+
+	EXPECT_EQ (elektraGetOctet (elektra, "octet/min"), 0) << "octet/min wrong";
+	EXPECT_EQ (elektraGetOctet (elektra, "octet/max"), 0xff) << "octet/max wrong";
+	EXPECT_EQ (elektraGetShort (elektra, "short/min"), -0x8000) << "short/min wrong";
+	EXPECT_EQ (elektraGetShort (elektra, "short/max"), 0x7fFF) << "short/max wrong";
+	EXPECT_EQ (elektraGetUnsignedShort (elektra, "unsignedshort/min"), 0) << "unsignedshort/min wrong";
+	EXPECT_EQ (elektraGetUnsignedShort (elektra, "unsignedshort/max"), 0xffFF) << "unsignedshort/max wrong";
+	EXPECT_EQ (elektraGetLong (elektra, "long/min"), -0x80000000) << "long/min wrong";
+	EXPECT_EQ (elektraGetLong (elektra, "long/max"), 0x7fFFffFF) << "long/max wrong";
+	EXPECT_EQ (elektraGetUnsignedLong (elektra, "unsignedlong/min"), 0) << "unsignedlong/min wrong";
+	EXPECT_EQ (elektraGetUnsignedLong (elektra, "unsignedlong/max"), 0xffFFffFF) << "unsignedlong/max wrong";
+	EXPECT_EQ (elektraGetLongLong (elektra, "longlong/min"), -0x8000000000000000) << "longlong/min wrong";
+	EXPECT_EQ (elektraGetLongLong (elektra, "longlong/max"), 0x7fFFffFFffFFffFF) << "longlong/max wrong";
+	EXPECT_EQ (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/min"), 0) << "unsignedlonglong/min wrong";
+	EXPECT_EQ (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/max"), 0xffFFffFFffFFffFF) << "unsignedlonglong/max wrong";
+
+	EXPECT_THROW (elektraGetOctet (elektra, "octet/below"), std::runtime_error) << "octet/below accepted";
+	EXPECT_THROW (elektraGetOctet (elektra, "octet/above"), std::runtime_error) << "octet/above accepted";
+	EXPECT_THROW (elektraGetShort (elektra, "short/below"), std::runtime_error) << "short/below wrong";
+	EXPECT_THROW (elektraGetShort (elektra, "short/above"), std::runtime_error) << "short/above wrong";
+	EXPECT_THROW (elektraGetUnsignedShort (elektra, "unsignedshort/below"), std::runtime_error) << "unsignedshort/below wrong";
+	EXPECT_THROW (elektraGetUnsignedShort (elektra, "unsignedshort/above"), std::runtime_error) << "unsignedshort/above wrong";
+	EXPECT_THROW (elektraGetLong (elektra, "long/below"), std::runtime_error) << "long/below wrong";
+	EXPECT_THROW (elektraGetLong (elektra, "long/above"), std::runtime_error) << "long/above wrong";
+	EXPECT_THROW (elektraGetUnsignedLong (elektra, "unsignedlong/below"), std::runtime_error) << "unsignedlong/below wrong";
+	EXPECT_THROW (elektraGetUnsignedLong (elektra, "unsignedlong/above"), std::runtime_error) << "unsignedlong/above wrong";
+	EXPECT_THROW (elektraGetLongLong (elektra, "longlong/below"), std::runtime_error) << "longlong/below wrong";
+	EXPECT_THROW (elektraGetLongLong (elektra, "longlong/above"), std::runtime_error) << "longlong/above wrong";
+	EXPECT_THROW (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/below"), std::runtime_error) << "unsignedlonglong/below wrong";
+	EXPECT_THROW (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/above"), std::runtime_error) << "unsignedlonglong/above wrong";
+}
 
 TEST_F (Highlevel, PrimitveGetters)
 {
@@ -276,8 +415,8 @@ TEST_F (Highlevel, ArrayGetters)
 	EXPECT_STREQ (elektraGetStringArrayElement (elektra, "stringarraykey", 1), "String 2") << "Wrong key value.";
 
 	EXPECT_EQ (elektraArraySize (elektra, "booleanarraykey"), 2) << "Wrong array size";
-	EXPECT_EQ (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 0), 0) << "Wrong key value.";
-	EXPECT_TRUE (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 1)) << "Wrong key value.";
+	EXPECT_EQ (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 0), false) << "Wrong key value.";
+	EXPECT_EQ (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 1), true) << "Wrong key value.";
 
 	EXPECT_EQ (elektraArraySize (elektra, "chararraykey"), 2) << "Wrong array size";
 	EXPECT_EQ (elektraGetCharArrayElement (elektra, "chararraykey", 0), 'c') << "Wrong key value.";
@@ -366,7 +505,7 @@ TEST_F (Highlevel, PrimitiveSetters)
 	elektraSetUnsignedLong (elektra, "unsignedlongkey", 1, &error);
 	elektraSetLongLong (elektra, "longlongkey", 1, &error);
 	elektraSetUnsignedLongLong (elektra, "unsignedlonglongkey", 1, &error);
-	elektraSetFloat (elektra, "floatkey", 1.1, &error);
+	elektraSetFloat (elektra, "floatkey", 1.1f, &error);
 	elektraSetDouble (elektra, "doublekey", 1.1, &error);
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
@@ -386,7 +525,7 @@ TEST_F (Highlevel, PrimitiveSetters)
 	elektraSetUnsignedLong (elektra, "newunsignedlongkey", 1, &error);
 	elektraSetLongLong (elektra, "newlonglongkey", 1, &error);
 	elektraSetUnsignedLongLong (elektra, "newunsignedlonglongkey", 1, &error);
-	elektraSetFloat (elektra, "newfloatkey", 1.1, &error);
+	elektraSetFloat (elektra, "newfloatkey", 1.1f, &error);
 	elektraSetDouble (elektra, "newdoublekey", 1.1, &error);
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
@@ -418,12 +557,19 @@ TEST_F (Highlevel, PrimitiveSetters)
 	EXPECT_KEYVALUE (config.lookup (testRoot + "unsignedlonglongkey"), "1") << "Wrong key value.";
 
 
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "floatkey"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "doublekey"), "1.1") << "Wrong key value.";
+	std::stringstream ss;
+	ss << std::setprecision (9) << 1.1f;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "floatkey"), ss.str ()) << "Wrong key value.";
+
+	ss.str ("");
+	ss << std::setprecision (17) << 1.1;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "doublekey"), ss.str ()) << "Wrong key value.";
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "longdoublekey"), "1.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (21) << 1.1L;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "longdoublekey"), ss.str ()) << "Wrong key value.";
 
 #endif
 
@@ -439,12 +585,19 @@ TEST_F (Highlevel, PrimitiveSetters)
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newlonglongkey"), "1") << "Wrong key value.";
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newunsignedlonglongkey"), "1") << "Wrong key value.";
 
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newfloatkey"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newdoublekey"), "1.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (9) << 1.1f;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newfloatkey"), ss.str ()) << "Wrong key value.";
+
+	ss.str ("");
+	ss << std::setprecision (17) << 1.1;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newdoublekey"), ss.str ()) << "Wrong key value.";
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newlongdoublekey"), "1.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (21) << 1.1L;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newlongdoublekey"), ss.str ()) << "Wrong key value.";
 
 #endif
 }
@@ -513,8 +666,8 @@ TEST_F (Highlevel, ArraySetters)
 	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedlonglongarraykey", 0, 1, &error);
 	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedlonglongarraykey", 1, 2, &error);
 
-	elektraSetFloatArrayElement (elektra, "floatarraykey", 0, 1.1, &error);
-	elektraSetFloatArrayElement (elektra, "floatarraykey", 1, 2.1, &error);
+	elektraSetFloatArrayElement (elektra, "floatarraykey", 0, 1.1f, &error);
+	elektraSetFloatArrayElement (elektra, "floatarraykey", 1, 2.1f, &error);
 
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 1, 2.1, &error);
@@ -564,8 +717,8 @@ TEST_F (Highlevel, ArraySetters)
 	elektraSetUnsignedLongLongArrayElement (elektra, "newunsignedlonglongarraykey", 0, 1, &error);
 	elektraSetUnsignedLongLongArrayElement (elektra, "newunsignedlonglongarraykey", 1, 2, &error);
 
-	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 0, 1.1, &error);
-	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 1, 2.1, &error);
+	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 0, 1.1f, &error);
+	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 1, 2.1f, &error);
 
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 1, 2.1, &error);
@@ -629,18 +782,30 @@ TEST_F (Highlevel, ArraySetters)
 	EXPECT_KEYVALUE (config.lookup (testRoot + "unsignedlonglongarraykey/#1"), "2") << "Wrong key value.";
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "floatarraykey"), "array", "#1") << "Wrong array size";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "floatarraykey/#0"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "floatarraykey/#1"), "2.1") << "Wrong key value.";
+	std::stringstream ss;
+	ss << std::setprecision (9) << 1.1f;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "floatarraykey/#0"), ss.str ()) << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (9) << 2.1f;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "floatarraykey/#1"), ss.str ()) << "Wrong key value.";
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "doublearraykey"), "array", "#1") << "Wrong array size";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "doublearraykey/#0"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "doublearraykey/#1"), "2.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (17) << 1.1;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "doublearraykey/#0"), ss.str ()) << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (17) << 2.1;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "doublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "longdoublearraykey"), "array", "#1") << "Wrong array size";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "longdoublearraykey/#0"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "longdoublearraykey/#1"), "2.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (21) << 1.1L;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "longdoublearraykey/#0"), ss.str ()) << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (21) << 2.1L;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "longdoublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
 #endif
 	// Check new keys.
@@ -678,18 +843,30 @@ TEST_F (Highlevel, ArraySetters)
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newunsignedlonglongarraykey/#1"), "2") << "Wrong key value.";
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "newfloatarraykey"), "array", "#1") << "Wrong array size";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newfloatarraykey/#0"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newfloatarraykey/#1"), "2.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (9) << 1.1f;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newfloatarraykey/#0"), ss.str ()) << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (9) << 2.1f;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newfloatarraykey/#1"), ss.str ()) << "Wrong key value.";
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "newdoublearraykey"), "array", "#1") << "Wrong array size";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newdoublearraykey/#0"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newdoublearraykey/#1"), "2.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (17) << 1.1;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newdoublearraykey/#0"), ss.str ()) << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (17) << 2.1;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newdoublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "newlongdoublearraykey"), "array", "#1") << "Wrong array size";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newlongdoublearraykey/#0"), "1.1") << "Wrong key value.";
-	EXPECT_KEYVALUE_START (config.lookup (testRoot + "newlongdoublearraykey/#1"), "2.1") << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (21) << 1.1L;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newlongdoublearraykey/#0"), ss.str ()) << "Wrong key value.";
+	ss.str ("");
+	ss << std::setprecision (21) << 2.1L;
+	EXPECT_KEYVALUE (config.lookup (testRoot + "newlongdoublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
 #endif
 }
@@ -754,15 +931,15 @@ TEST_F (Highlevel, Generic)
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_LONG), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG_LONG), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_FLOAT), 1.1, &error);
+	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_FLOAT), 1.1f, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_DOUBLE), 1.1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE), 1.1, &error);
+	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE), 1.1L, &error);
 
 	ASSERT_EQ (error, nullptr) << "elektraSet* failed" << &error << std::endl;
 
 	// Check values.
 	EXPECT_STREQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_STRING)), "A string") << "Wrong key value.";
-	EXPECT_TRUE (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN))) << "Wrong key value.";
+	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN)), true) << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_CHAR)), 'c') << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_OCTET)), 1) << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_SHORT)), 1) << "Wrong key value.";
@@ -775,110 +952,6 @@ TEST_F (Highlevel, Generic)
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_FLOAT)), 1.1f) << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_DOUBLE)), 1.1) << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE)), 1.1L) << "Wrong key value.";
-}
-
-
-typedef enum
-{
-	ELEKTRA_ENUM_TEST_ON = 1,
-	ELEKTRA_ENUM_TEST_OFF = 0,
-	ELEKTRA_ENUM_TEST_BLANK = 2
-} ElektraEnumTest;
-
-static int _elektraKeyToElektraEnumTest (const ckdb::Key * key, ElektraEnumTest * variable)
-{
-	kdb_long_t longVariable;
-	int result = elektraKeyToLong (key, &longVariable);
-	if (result)
-	{
-		*variable = static_cast<ElektraEnumTest> (longVariable);
-	}
-	return result;
-}
-
-extern "C" {
-using namespace ckdb;
-ELEKTRA_TAG_DECLARATIONS (ElektraEnumTest, EnumTest)
-ELEKTRA_TAG_DEFINITIONS (ElektraEnumTest, EnumTest, KDB_TYPE_ENUM, elektraLongToString, _elektraKeyToElektraEnumTest)
-}
-
-TEST_F (Highlevel, Enum)
-{
-	createElektra ();
-
-	ElektraError * error = nullptr;
-	elektraSetEnumInt (elektra, "enumkey", ELEKTRA_ENUM_TEST_ON, &error);
-
-	ASSERT_EQ (error, nullptr) << "elektraSet* failed" << &error << std::endl;
-
-	EXPECT_EQ (elektraGetEnumInt (elektra, "enumkey"), static_cast<int> (ELEKTRA_ENUM_TEST_ON)) << "Wrong key value.";
-
-	EXPECT_EQ (elektraGetEnum (elektra, "enumkey", ElektraEnumTest), ELEKTRA_ENUM_TEST_ON) << "Wrong key value.";
-}
-
-TEST_F (Highlevel, EnumArray)
-{
-	createElektra ();
-
-	ElektraError * error = nullptr;
-
-	elektraSetEnumIntArrayElement (elektra, "enumkey", 0, ELEKTRA_ENUM_TEST_ON, &error);
-	elektraSetEnumIntArrayElement (elektra, "enumkey", 1, ELEKTRA_ENUM_TEST_ON, &error);
-	elektraSetEnumIntArrayElement (elektra, "enumkey", 2, ELEKTRA_ENUM_TEST_OFF, &error);
-	elektraSetEnumIntArrayElement (elektra, "enumkey", 3, ELEKTRA_ENUM_TEST_OFF, &error);
-	elektraSetEnumIntArrayElement (elektra, "enumkey", 4, ELEKTRA_ENUM_TEST_BLANK, &error);
-
-	ASSERT_EQ (error, nullptr) << "elektraSet* failed" << &error << std::endl;
-
-	EXPECT_EQ (elektraGetEnumIntArrayElement (elektra, "enumkey", 0), static_cast<int> (ELEKTRA_ENUM_TEST_ON)) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumIntArrayElement (elektra, "enumkey", 1), static_cast<int> (ELEKTRA_ENUM_TEST_ON)) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumIntArrayElement (elektra, "enumkey", 2), static_cast<int> (ELEKTRA_ENUM_TEST_OFF)) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumIntArrayElement (elektra, "enumkey", 3), static_cast<int> (ELEKTRA_ENUM_TEST_OFF)) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumIntArrayElement (elektra, "enumkey", 4), static_cast<int> (ELEKTRA_ENUM_TEST_BLANK)) << "Wrong key value.";
-
-	EXPECT_EQ (elektraGetEnumArrayElement (elektra, "enumkey", 0, ElektraEnumTest), ELEKTRA_ENUM_TEST_ON) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumArrayElement (elektra, "enumkey", 1, ElektraEnumTest), ELEKTRA_ENUM_TEST_ON) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumArrayElement (elektra, "enumkey", 2, ElektraEnumTest), ELEKTRA_ENUM_TEST_OFF) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumArrayElement (elektra, "enumkey", 3, ElektraEnumTest), ELEKTRA_ENUM_TEST_OFF) << "Wrong key value.";
-	EXPECT_EQ (elektraGetEnumArrayElement (elektra, "enumkey", 4, ElektraEnumTest), ELEKTRA_ENUM_TEST_BLANK) << "Wrong key value.";
-}
-
-TEST_F (Highlevel, EnumGeneric)
-{
-	createElektra ();
-
-	ElektraError * error = nullptr;
-
-	ELEKTRA_TAG_VALUE (TEST_ENUM, "enumkey", EnumTest)
-
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), ELEKTRA_ENUM_TEST_BLANK, &error);
-
-	ASSERT_EQ (error, nullptr) << "elektraSet* failed" << &error << std::endl;
-
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_ENUM)), ELEKTRA_ENUM_TEST_BLANK) << "Wrong key value.";
-}
-
-TEST_F (Highlevel, EnumArrayGeneric)
-{
-	createElektra ();
-
-	ElektraError * error = nullptr;
-
-	ELEKTRA_TAG_VALUE (TEST_ENUM, "enumkey", EnumTest)
-
-	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 0, ELEKTRA_ENUM_TEST_ON, &error);
-	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 1, ELEKTRA_ENUM_TEST_ON, &error);
-	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 2, ELEKTRA_ENUM_TEST_OFF, &error);
-	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 3, ELEKTRA_ENUM_TEST_OFF, &error);
-	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 4, ELEKTRA_ENUM_TEST_BLANK, &error);
-
-	ASSERT_EQ (error, nullptr) << "elektraSet* failed" << &error << std::endl;
-
-	EXPECT_EQ (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 0), ELEKTRA_ENUM_TEST_ON) << "Wrong key value.";
-	EXPECT_EQ (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 1), ELEKTRA_ENUM_TEST_ON) << "Wrong key value.";
-	EXPECT_EQ (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 2), ELEKTRA_ENUM_TEST_OFF) << "Wrong key value.";
-	EXPECT_EQ (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 3), ELEKTRA_ENUM_TEST_OFF) << "Wrong key value.";
-	EXPECT_EQ (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 4), ELEKTRA_ENUM_TEST_BLANK) << "Wrong key value.";
 }
 
 TEST_F (Highlevel, Raw)
@@ -937,27 +1010,8 @@ TEST_F (Highlevel, EnforceMetadata)
 
 	EXPECT_NE (elektraFindKey (elektra, "testkey", "long"), nullptr);
 
-	try
-	{
-		elektraFindKey (elektra, "testkey", "string");
-		ADD_FAILURE () << "expected std::runtime_error to be thrown";
-	}
-	catch (const std::runtime_error & err)
-	{
-		std::stringstream msg;
-		msg << "fatal error " << ELEKTRA_ERROR_CODE_WRONG_TYPE;
-
-		std::string errMsg = err.what ();
-
-		auto expected = msg.str ();
-		auto actual = errMsg.substr (0, expected.length ());
-
-		EXPECT_EQ (expected, actual);
-	}
-	catch (...)
-	{
-		ADD_FAILURE () << "expected std::runtime_error to be thrown";
-	}
+	EXPECT_THROW (elektraFindKey (elektra, "testkey", "string"), std::runtime_error);
+	// TODO: check error code once error API is public and stable
 
 	EXPECT_NE (elektraFindKey (elektra, "testkey", nullptr), nullptr);
 }

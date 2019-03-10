@@ -8,13 +8,13 @@ go to a specific commit of Elektra. Then you can
 run a benchmark. Afterwards you commit all information
 you have collected.
 
-This has the advantage that it is reproduceable.
+This has the advantage that it is reproducible.
 Everyone can go anytime back to the benchmark commits
 and run the same benchmarks again.
 
 For running benchmarks you can use on Unix:
 
-   make benchmark_<filename>_callgrind
+    make benchmark_<filename>_callgrind
 
 which will run the callgrind tool of Valgrind on it.
 
@@ -35,8 +35,17 @@ Example:
 To run the OPMPHM build time benchmark you need 2008 seeds.
 First generate the seeds:
 
-	scripts/generate-seeds 2008 mySeedFile
+    scripts/generate-seeds 2008 mySeedFile
 
 Then pass it to the benchmark:
 
-	cat mySeedFile | benchmark_opmphm opmphmbuildtime
+    cat mySeedFile | benchmark_opmphm opmphmbuildtime
+
+## plugingetset
+
+The `benchmark_plugingetset` is different than the other benchmarks. It doesn't do any benchmarking by itself.
+Instead it simple takes 3 arguments `<path> <parent> <plugin>`. It then looks for the file `test.<plugin>.in` under the path `<path>`
+and calls the `get` method of plugin `<plugin>` on this file with parent Key `<parent>`. Lastly it calls the `set` method of `<plugin>`
+on the file `test.<plugin>.out` with parent Key `<parent>`.
+
+`benchmark_plugingetset` can used with `time` (or similar programs) compare the speed of two (or more) storage plugins for specific files.

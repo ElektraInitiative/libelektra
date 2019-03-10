@@ -82,8 +82,7 @@ int nextToken (void ** attribute)
 void syntaxError (int errorToken, void * errorTokenData, int ignoredToken, void * ignoredTokenData, int recoveredToken,
 		  void * recoveredTokenData)
 {
-	return errorListenerAdress->syntaxError (errorToken, errorTokenData, ignoredToken, ignoredTokenData, recoveredToken,
-						 recoveredTokenData);
+	errorListenerAdress->syntaxError (errorToken, errorTokenData, ignoredToken, ignoredTokenData, recoveredToken, recoveredTokenData);
 }
 
 /**
@@ -153,7 +152,7 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 
 	if (errorListener.getNumberOfErrors () > 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), (filename + ":" + errorListener.getErrorMessage ()).c_str ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), errorListener.getErrorMessage ().c_str ());
 		return -1;
 	}
 	return 0;
@@ -190,11 +189,11 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	auto input = openFile (filename, parent);
 	if (!input.good ()) return -1;
 
-	ErrorListener errorListener;
-	errorListenerAdress = &errorListener;
-
 	Lexer lexer{ input };
 	lexerAddress = &lexer;
+
+	ErrorListener errorListener{ filename, lexer.getText () };
+	errorListenerAdress = &errorListener;
 
 	int ambiguousOutput;
 	struct yaep_tree_node * root = nullptr;

@@ -10,7 +10,7 @@
 
 #define PYTHON_PLUGIN_FUNCTION(func) ELEKTRA_PLUGIN_FUNCTION (func)
 
-#define PYTHON_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT (module)
+#define PYTHON_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT
 
 extern "C" {
 #include <kdbplugin.h>

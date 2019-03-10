@@ -7,7 +7,7 @@ echo
 check_version
 
 #override for specific testing
-#PLUGINS="ini"
+#PLUGINS="quickdump"
 
 for PLUGIN in $PLUGINS; do
 	if is_not_rw_storage; then
@@ -36,6 +36,10 @@ for PLUGIN in $PLUGINS; do
 		# all tests for dump.. (takes long time)
 		TESTS=
 		# tests taking not soo long:
+		TESTS="basic string umlauts binary naming"
+		;;
+	"quickdump")
+		MOUNT_PLUGIN="$PLUGIN"
 		TESTS="basic string umlauts binary naming"
 		;;
 	*)

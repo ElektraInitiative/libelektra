@@ -33,6 +33,6 @@ int elektraSemlockClose (Plugin * handle, Key * errorKey);
 int elektraSemlockGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSemlockSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (semlock);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

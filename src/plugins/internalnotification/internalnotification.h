@@ -19,7 +19,7 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * ks, Key * parentKe
 int elektraInternalnotificationClose (Plugin * handle, Key * errorKey);
 int elektraInternalnotificationOpen (Plugin * handle, Key * errorKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 // Not exported by plugin; used for testing
 void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);

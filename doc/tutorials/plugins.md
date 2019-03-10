@@ -13,7 +13,6 @@ This file serves as a tutorial on how to write a storage plugin (which includes 
   settings to configuration files.
 - Resolver plugins are more complicated and not covered by this tutorial.
 
-
 ## Basics
 
 First, there are a few basic points to understand about Elektra plugins. This first section will explain the basic layout of a plugin
@@ -83,7 +82,7 @@ In Elektra, multiple plugins form a backend. If every plugin would do
 whatever it likes to do, there would be chaos and backends would be
 unpredictable.
 
-To avoid this situation, plugins export a so called *contract*. In this
+To avoid this situation, plugins export a so called _contract_. In this
 contract the plugin states how nicely it will behave and what other
 plugins can depend on.
 
@@ -116,7 +115,6 @@ The `README.md` will be used by:
 - the mount tool, e.g. to correctly place and order plugins
 - to know dependencies between plugin and what metadata they process
 
-
 ### Content of `README.md`
 
 The first lines must look like:
@@ -148,8 +146,8 @@ The only difference for filter plugins is that their `infos/provides` and `infos
 The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
-	keyNew ("system/elektra/modules/yajl/infos/licence",
-		KEY_VALUE, "BSD", KEY_END),
+    keyNew ("system/elektra/modules/yajl/infos/licence",
+    	KEY_VALUE, "BSD", KEY_END),
 
 ## Including `readme_pluginname.c`
 
@@ -210,7 +208,6 @@ where this is already done correctly):
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 ```
 
-
 ## CMake
 
 For every plugin you have to write a `CMakeLists.txt`. If your plugin has
@@ -221,9 +218,9 @@ In order to understand how to write the `CMakeLists.txt`, you need to know that
 the same file is included multiple times for different reasons.
 
 1. The first time, only the name of plugins and directories are enquired.
-    In this phase, only the `add_plugin` should be executed.
+   In this phase, only the `add_plugin` should be executed.
 2. The second time (if the plugin is actually requested), the `CMakeLists.txt`
-    is used to detect if all dependencies are actually available.
+   is used to detect if all dependencies are actually available.
 
 This means that in the first time, only the `add_plugin` should be executed
 and in the second time the detection code together with `add_plugin`.
@@ -270,7 +267,7 @@ Important is that you pass the information which packages are found as boolean.
 The plugin will actually be added iff all of the `DEPENDENCIES` are true.
 
 Note that no code should be outside of `if (DEPENDENCY_PHASE)`. It would be executed twice otherwise. The only exception is
-`add_plugin` which *must* be called twice to successfully add a plugin.
+`add_plugin` which _must_ be called twice to successfully add a plugin.
 
 > Please note that the parameters passed to `add_plugin` need to be constant between all invocations.
 > Some `find_package` cache their variables, others do not, which might lead to toggling variables.
@@ -278,8 +275,6 @@ Note that no code should be outside of `if (DEPENDENCY_PHASE)`. It would be exec
 
 If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
 you should also read the information there.
-
-
 
 ## Coding
 
@@ -363,8 +358,8 @@ be called and the mounted file will be updated.
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
-even if a critical error occurs, we write the error to the parentKey. The error does not necessarily have to be in a configuration. 
-If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`. 
+even if a critical error occurs, we write the error to the parentKey. The error does not necessarily have to be in a configuration.
+If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`.
 
 The first parameter of `ELEKTRA_SET_ERROR` is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
@@ -437,6 +432,6 @@ For further information see [the API documentation](https://doc.libelektra.org/a
 ## Note on Direct Method Calls via External Integrations
 
 Some applications want to call Elektra methods directly via native access.
-A `KeySet` is a data structure over which functions can iterate. If you want to start again from to first element, 
-you have to explicitly call `rewind()` to set the internal pointer to the start. 
+A `KeySet` is a data structure over which functions can iterate. If you want to start again from to first element,
+you have to explicitly call `rewind()` to set the internal pointer to the start.
 Any plugin expects the passed `KeySet` to be **rewinded**.

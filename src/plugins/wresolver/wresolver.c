@@ -343,7 +343,7 @@ int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/wresolver/exports/set", KEY_FUNC, elektraWresolverSet, KEY_END),
 			keyNew ("system/elektra/modules/wresolver/exports/error", KEY_FUNC, elektraWresolverError, KEY_END),
 			keyNew ("system/elektra/modules/wresolver/exports/checkfile", KEY_FUNC, elektraWresolverCheckFile, KEY_END),
-#include ELEKTRA_README (wresolver)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/wresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -441,7 +441,7 @@ int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (wresolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("wresolver",

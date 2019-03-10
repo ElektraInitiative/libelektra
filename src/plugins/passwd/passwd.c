@@ -176,7 +176,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 			       keyNew ("system/elektra/modules/passwd/exports", KEY_END),
 			       keyNew ("system/elektra/modules/passwd/exports/get", KEY_FUNC, elektraPasswdGet, KEY_END),
 			       keyNew ("system/elektra/modules/passwd/exports/set", KEY_FUNC, elektraPasswdSet, KEY_END),
-#include ELEKTRA_README (passwd)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/passwd/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -353,7 +353,7 @@ int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return rc; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (passwd)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("passwd",

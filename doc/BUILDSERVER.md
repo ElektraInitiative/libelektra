@@ -7,9 +7,9 @@ of the Elektra homepage.
 We reworked our build system to use a more modern Jenkinsfile approach with
 benefits such as
 
-* tracking modifications to our build process in SCM
-* tracking changes to the build environment
-* speeding up builds
+- tracking modifications to our build process in SCM
+- tracking changes to the build environment
+- speeding up builds
 
 .
 
@@ -20,9 +20,9 @@ This section aims to give an introduction into this setup.
 ### Multibranch Pipeline Jobs (libelektra)
 
 We use the Jenkins Job type called
-[Multibranch Pipeline](https://jenkins.io/doc/book/pipeline/multibranch/#creating-a-multibranch-pipeline) 
+[Multibranch Pipeline](https://jenkins.io/doc/book/pipeline/multibranch/#creating-a-multibranch-pipeline)
 provided by the
-[Pipeline Multibranch  Plugin](https://wiki.jenkins.io/display/JENKINS/Pipeline+Multibranch+Plugin)
+[Pipeline Multibranch Plugin](https://wiki.jenkins.io/display/JENKINS/Pipeline+Multibranch+Plugin)
 for our CI tests called `libelektra`.
 
 Simplified a Multibranch Pipeline Job acts as an umbrella job that spawns
@@ -39,7 +39,6 @@ Summarized libelektra's job purpose is to combine the where
 (our GIT repository), with a when (tracking changes via polling or webhooks)
 with a how (pointing to the Jenkinsfile + configuration).
 
-
 ### Jenkinsfiles
 
 Jenkinsfiles describe what actions the build system should execute on what
@@ -48,15 +47,15 @@ Currently Elektra uses two different files.
 
 #### Jenkinsfile.daily
 
-* Jenkinsfile.daily is for daily maintanence tasks, like cleaning up build servers.
-* [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
-* [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
+- Jenkinsfile.daily is for daily maintanence tasks, like cleaning up build servers.
+- [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
+- [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
 
 #### Jenkinsfile
 
-* Triggered on code changes and is for testing changes to the codebase.
-* [Buildjob: libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
-* [Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile)
+- Triggered on code changes and is for testing changes to the codebase.
+- [Buildjob: libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
+- [Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile)
 
 #### DSL
 
@@ -136,9 +135,10 @@ Helper functions for easily adding new tests are available
 
 The `withDockerEnv` helper makes sure to print the following information at the
 start of a test branch:
-* branch name
-* build machine
-* docker image id
+
+- branch name
+- build machine
+- docker image id
 
 Coverage reports are generated automatically when using the buildAndTest helper
 and the appropriate Cmake flags for coverage generation have been set. They are
@@ -177,20 +177,21 @@ It is easiest to add via the BlueOcean interface.
 
 Most of the default settings should be ok, however some settings need to be
 verified or added to build Elektra correctly:
-* In Branch Sources under Behaviours `Filter by name` should be
-    added to exclude the `debian` branch from being build.
-    The reason for this is that the `debian` branch is not providing a
-    Jenkinsfile.
-* `Advanced clone behaviors` should be added and the path to the git mirror
-    needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
-    This reference repository is created and maintained by our
-    [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).
-* Under Property strategy you can add `Trigger build on pull request comment`.
-    `jenkins build (libelektra|all) please` is a good starting point.
-    This functionality is provided by the
-    [GitHub PR Comment Build Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+PR+Comment+Build+Plugin).
-* For Build Configuration you want to specify `by Jenkinsfile` and add the
-    script path: `scripts/jenkins/Jenkinsfile`.
+
+- In Branch Sources under Behaviours `Filter by name` should be
+  added to exclude the `debian` branch from being build.
+  The reason for this is that the `debian` branch is not providing a
+  Jenkinsfile.
+- `Advanced clone behaviors` should be added and the path to the git mirror
+  needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
+  This reference repository is created and maintained by our
+  [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).
+- Under Property strategy you can add `Trigger build on pull request comment`.
+  `jenkins build (libelektra|all) please` is a good starting point.
+  This functionality is provided by the
+  [GitHub PR Comment Build Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+PR+Comment+Build+Plugin).
+- For Build Configuration you want to specify `by Jenkinsfile` and add the
+  script path: `scripts/jenkins/Jenkinsfile`.
 
 ### Adding a Jenkins node
 
@@ -233,12 +234,13 @@ red to indicate failure).
 ## Reproducing buildserver errors locally
 
 First you have to determine which image is used.
-This is described above in *Understanding Jenkins output*.
+This is described above in _Understanding Jenkins output_.
 
 Afterwards you can download it from our registry via `docker pull`.
 Pay attention that you have to use **hub-public.libelektra.org** as this subdomain
 does not require authentification for GET operations used by the Docker client.
 As an example:
+
 ```
 docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e
 ```
@@ -246,7 +248,7 @@ docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff
 You can also rebuild the images locally, which is useful if you want to test changes
 you made to the Dockerfiles themselves.
 Locate which Dockerfile you need by looking up the reference the stage that used it in the Jenkinsfile.
-For *alpine* this would be `DOCKER_IMAGES.alpine`.
+For _alpine_ this would be `DOCKER_IMAGES.alpine`.
 You can search for this entry in the Jenkinsfile to find that this image is build from the
 context `./scripts/docker/alpine/3.8` and uses `./scripts/docker/alpine/3.8/Dockerfile` as a
 Dockerfile.
@@ -255,7 +257,6 @@ Now you can build the image as described in
 
 You can find more information on how to use our images in
 [scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#testing-elektra-via-docker-images).
-
 
 ## Modify test environments
 
@@ -288,10 +289,10 @@ is executed according to a cron schedule.
 The following phrases can be used as comments to manually trigger a specific
 build:
 
-* jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
-* jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
-* jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
-* jenkins build [monthly](https://build.libelektra.org/jenkins/job/libelektra-monthly/) please
+- jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
+- jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
+- jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
+- jenkins build [monthly](https://build.libelektra.org/jenkins/job/libelektra-monthly/) please
 
 Additionally `jenkins build all please` can be used to trigger all build jobs
 relevant for PR's.
@@ -320,7 +321,6 @@ need to confirm by saying:
 or if just the pull request should be checked:
 
     .*build\W+allow.*
-
 
 ## Issues with the build environment
 

@@ -1,10 +1,10 @@
 # Bindings
 
 [Elektra’s API](https://doc.libelektra.org/api/latest/html/) is written in C,
-but many different bindings allow *applications* in different programming languages
+but many different bindings allow _applications_ in different programming languages
 to use Elektra.
 
-Note that a binding does not automatically allow you to implement *plugins*
+Note that a binding does not automatically allow you to implement _plugins_
 in the respective programming languages, but you additionally need an
 [Interpreter Plugin](/src/plugins/README.md). Nevertheless, bindings
 can be immediately used in applications without plugins.

@@ -7,13 +7,12 @@ contains multiple libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
 
-
 ## Libelektra
 
     libelektra.so
 
 Libelektra is now only a stub for legacy applications. It basically only links all previous libraries
-together. It should *not* be used for new applications or plugins.
+together. It should _not_ be used for new applications or plugins.
 
 ## Libfull
 
@@ -36,7 +35,7 @@ Should only be used on embedded systems (where whole application stack is done b
     libelektra-kdb.so
     <kdb.h> (kdb*)
 
-Contains kdb* symbols and applications should link against it.
+Contains `kdb*` symbols and applications should link against it.
 
 # Exported symbols
 

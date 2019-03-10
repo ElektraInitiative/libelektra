@@ -1,10 +1,8 @@
-kdb-convert(1) -- Convert configuration files using elektra
-===========================================================
+# kdb-convert(1) -- Convert configuration files using elektra
 
 ## SYNOPSIS
 
 `kdb convert [<import-format>] [<export-format>] [<import-file>] [export-file]`
-
 
 ## DESCRIPTION
 
@@ -35,7 +33,6 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
 - `-v`, `--verbose`:
   Explain what is happening.
 
-
 ## EXAMPLES
 
 To convert an Elektra dump file to xml:<br>
@@ -47,4 +44,3 @@ Another way to convert an Elektra dump file to xml:<br>
 To print an xml file using the `line` format:<br>
 `cat ../tests/xml_file.xml | kdb convert xmltool line`<br>
 Note that this command won't save the output, it will just display it to `stdout`.
-

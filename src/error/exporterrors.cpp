@@ -524,6 +524,7 @@ static ostream & printPrivate (ostream & os, parse_t & p)
 	   << endl
 	   << "#include <elektra/types.h>" << endl
 	   << "#include <elektra/error.h>" << endl
+	   << "#include <kdbprivate.h>" << endl
 	   << endl
 	   << "#ifdef __cplusplus" << endl
 	   << "extern \"C\" {" << endl

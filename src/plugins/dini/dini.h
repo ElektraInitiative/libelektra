@@ -19,7 +19,7 @@ int elektraDiniClose (Plugin * handle, Key * errorKey);
 int elektraDiniGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDiniSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dini);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 typedef struct
 {

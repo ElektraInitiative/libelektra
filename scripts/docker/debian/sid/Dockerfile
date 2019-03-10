@@ -5,52 +5,57 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-        curl \
+        antlr4 \
+        automake \
+        autotools-dev \
         build-essential \
+        checkinstall \
         clang-6.0 \
         clang-format-6.0 \
-        autotools-dev \
-        automake \
         cmake \
+        curl \
+        dh-lua \
+        gawk \
+        git \
+        gobject-introspection \
+        icheck \
+        lcov \
+        libantlr4-runtime-dev \
+        libaugeas-dev \
+        libboost-all-dev \
+        libbotan-2-dev \
+        libdbus-1-dev \
+        libev-dev \
+        libgirepository1.0-dev \
+        libgit2-dev \
+        libglib2.0-dev \
+        liblua5.3-dev \
+        libpcre++-dev \
+        libpcre3-dev \
+        libpython3-dev \
+        libssl-dev \
+        libsystemd-dev \
+        libuv1-dev \
+        libxerces-c-dev \
+        libyajl-dev \
+        libzmq3-dev \
+        llvm \
+        maven \
+        moreutils \
+        ninja-build \
+        npm \
+        openjdk-8-jdk \
         pkg-config \
-        ruby-dev \
         python-dev \
         python-pip \
         python3-dev \
-        libpython3-dev \
-        dh-lua \
-        liblua5.3-dev \
-        tclcl-dev \
-        libaugeas-dev \
-        libbotan-2-dev \
-        libyajl-dev \
-        git \
-        libgit2-dev \
-        libboost-all-dev \
-        libssl-dev \
-        libdbus-1-dev \
-        libpcre3-dev \
-        libpcre++-dev \
-        libglib2.0-dev \
-        libxerces-c-dev \
-        swig3.0 \
-        libuv1-dev \
-        libev-dev \
-        libzmq3-dev \
-        checkinstall \
-        openjdk-8-jdk \
-        maven \
-        gobject-introspection \
-        libgirepository1.0-dev \
-        systemd \
-        libsystemd-dev \
-        llvm \
+        ruby-dev \
         sloccount \
-        gawk \
-        lcov \
-        icheck \
+        swig3.0 \
+        systemd \
+        tao-pegtl-dev \
+        tclcl-dev \
         valgrind \
-        moreutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install cmake-format==0.4.5 pyyaml
@@ -71,6 +76,9 @@ RUN echo '\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
 RUN ldconfig
+
+# Prettier
+RUN npm install --global prettier@1.16.4
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

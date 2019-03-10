@@ -1,5 +1,4 @@
-elektra-related -- related configuration systems
-================================================
+# elektra-related -- related configuration systems
 
 Settings and preferences are ubiquitous in every software.
 For this reason,
@@ -28,7 +27,6 @@ Another feature mostly missing in these libraries is cascading.
 It is not difficult to implement, but
 disturbing if it is not available at all or does not work correctly.
 
-
 ## Augeas
 
 Augeas is not intended for applications themselves, so it only
@@ -42,12 +40,11 @@ be implemented using lenses. Lenses are a promising technology,
 which allow mapping from and to configuration files to be specified
 with a single program.
 
-
 ## Uniconf
 
 A project that shares some of the goals with Elektra,
 but uses a different
-approach is *Uniconf*.
+approach is _Uniconf_.
 Besides a stand-alone library it supports a daemon mode.
 With the daemon running, it has the
 disadvantage of protocol overhead and a single point of failure.
@@ -56,7 +53,7 @@ when configuration files change and
 can work in a distributed mode.
 The project does not solve the problem of how to configure the
 configuration system. So we still have to pass a so-called
-*moniker string*
+_moniker string_
 that contains the knowledge
 where to find the configuration. The plugin system is
 flexible, but does not depend on the key name. So it is not possible to

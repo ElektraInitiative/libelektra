@@ -19,7 +19,6 @@ The plugin has the following configuration options:
 
 - `script`: path to the Ruby plugin to use (mandatory)
 
-
 ## Usage
 
 Mount a configuration file using this plugin, which specifying the concrete Ruby Elektra plugin:

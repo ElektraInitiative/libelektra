@@ -4,8 +4,8 @@
 
 The crypto plugin applies cryptographic operations to Keys and KeySets.
 In order to do that it needs keys and initialization vectors (IV).
-The problem is how to retrieve or derivate those keys in a safe way and how 
-to pass them on to the underlying crypto libraries (OpenSSL and libgcrypt 
+The problem is how to retrieve or derivate those keys in a safe way and how
+to pass them on to the underlying crypto libraries (OpenSSL and libgcrypt
 at the time of writing).
 
 ## Constraints

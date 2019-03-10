@@ -1,5 +1,4 @@
-kdb-restore -- Restore from backup
-==================================
+# kdb-restore -- Restore from backup
 
 ## SYNOPSES
 
@@ -17,5 +16,6 @@ kdb restore 1500000000
 ```
 
 ## SEE ALSO
+
 - [kdb-backup(7)](kdb-backup.md)
 - [kdb-stash(7)](kdb-stash.md)

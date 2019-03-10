@@ -122,7 +122,7 @@ int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 			       keyNew ("system/elektra/modules/ipaddr/exports", KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports/get", KEY_FUNC, elektraIpaddrGet, KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports/set", KEY_FUNC, elektraIpaddrSet, KEY_END),
-#include ELEKTRA_README (ipaddr)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/ipaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -147,7 +147,7 @@ int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ipaddr)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("ipaddr",

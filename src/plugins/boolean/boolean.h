@@ -17,6 +17,6 @@ int elektraBooleanClose (Plugin * handle, Key * errorKey);
 int elektraBooleanGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraBooleanSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (boolean);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

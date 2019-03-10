@@ -40,6 +40,7 @@ In Mozilla preference files `.` is used to separate sections, while elektra uses
 will all result in `lockPref("a.lock.key", "lock");`
 
 ## Example
+
 ```sh
 # Backup-and-Restore:user/tests/mozprefs
 

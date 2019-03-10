@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-PLUGINS" "7" "January 2019" "" ""
+.TH "ELEKTRA\-PLUGINS" "7" "March 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
@@ -104,6 +104,9 @@ ini \fIini/\fR supports a range of INI file formats\.
 .
 .IP "\(bu" 4
 dump \fIdump/\fR makes a dump of a KeySet in an Elektra\-specific format
+.
+.IP "\(bu" 4
+quickdump \fIquickdump/\fR uses binary portable format based on dump \fIdump/\fR, but more efficient
 .
 .IP "" 0
 .
@@ -209,10 +212,24 @@ yaypeg \fIyaypeg/\fR reads YAML data using a PEG parser combinators based on PEG
 .IP "\(bu" 4
 mmapstorage \fImmapstorage/\fR uses binary, not portable memory mapped file for a high performance storage
 .
+.IP "\(bu" 4
+specload \fIspecload/\fR calls an external application to request its specification, depends on quickdump \fIquickdump/\fR
+.
 .IP "" 0
 .
 .SS "System Information"
-Information compiled in Elektra: \- version is a built\-in plugin directly within the core so that it cannot give wrong version information \- constants \fIconstants/\fR various constants, including version information \- desktop \fIdesktop/\fR contains information which desktop is currently running
+Information compiled in Elektra:
+.
+.IP "\(bu" 4
+version is a built\-in plugin directly within the core so that it cannot give wrong version information
+.
+.IP "\(bu" 4
+constants \fIconstants/\fR various constants, including version information
+.
+.IP "\(bu" 4
+desktop \fIdesktop/\fR contains information which desktop is currently running
+.
+.IP "" 0
 .
 .P
 Providing information found on the system not available in persistent files:

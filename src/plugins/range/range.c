@@ -475,7 +475,7 @@ int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 			       keyNew ("system/elektra/modules/range/exports/get", KEY_FUNC, elektraRangeGet, KEY_END),
 			       keyNew ("system/elektra/modules/range/exports/set", KEY_FUNC, elektraRangeSet, KEY_END),
 			       keyNew ("system/elektra/modules/range/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
-#include ELEKTRA_README (range)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/range/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -507,7 +507,7 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (range)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("range",

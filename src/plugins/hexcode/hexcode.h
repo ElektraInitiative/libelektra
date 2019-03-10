@@ -32,6 +32,6 @@ int elektraHexcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHexcodeOpen (Plugin * handle, Key *);
 int elektraHexcodeClose (Plugin * handle, Key * k);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (hexcode);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

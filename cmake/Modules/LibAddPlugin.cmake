@@ -76,6 +76,7 @@ function (add_plugintest testname)
 		     TEST_LINK_ELEKTRA
 		     LINK_PLUGIN
 		     ENVIRONMENT
+		     TIMEOUT
 		     WORKING_DIRECTORY)
 
 		cmake_parse_arguments (ARG
@@ -118,6 +119,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
+		restore_variable (${PLUGIN_NAME} ARG_TIMEOUT)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
@@ -223,6 +225,13 @@ function (add_plugintest testname)
 		add_test (NAME ${testexename}
 			  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 			  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+
+		if (ARG_TIMEOUT)
+			set_tests_properties (${testexename}
+					      PROPERTIES TIMEOUT
+							 "${ARG_TIMEOUT}")
+		endif (ARG_TIMEOUT)
+
 		set_property (TEST ${testexename}
 			      PROPERTY ENVIRONMENT
 				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"

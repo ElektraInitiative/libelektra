@@ -78,7 +78,6 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on https://build.libelektra.org/
-- Not many warnings on https://build.libelektra.org/view/compiler%20warnings/
 
 If version numbers are correct in
 - CMakeLists.txt

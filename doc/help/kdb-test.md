@@ -1,5 +1,4 @@
-kdb-test(1) -- Run test(s) on the key database
-==============================================
+# kdb-test(1) -- Run test(s) on the key database
 
 ## SYNOPSIS
 

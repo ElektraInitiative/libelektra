@@ -53,7 +53,7 @@ ksNew (50,
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/freeHandle",
 		KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(freeHandle),
 		KEY_END),
-#include ELEKTRA_README(resolver)
+#include ELEKTRA_README
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version",
 		KEY_VALUE, PLUGINVERSION, KEY_END),
 	KS_END);

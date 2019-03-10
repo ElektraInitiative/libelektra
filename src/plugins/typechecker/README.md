@@ -225,10 +225,10 @@ type behavior can be observed when getting/setting a key in a specification.
 
 ## Dependencies
 
-* ghc >= 8.0.1 and <= 8.2
-* ghc-pkg, usually bundled with ghc
-* cabal, the haskell build system, usually bundled with ghc
-* augeas, which provides libfa utilized by this plugin
+- ghc >= 8.0.1 and <= 8.2
+- ghc-pkg, usually bundled with ghc
+- cabal, the haskell build system, usually bundled with ghc
+- augeas, which provides libfa utilized by this plugin
 
 Furthermore the following haskell dependencies need to be installed to the sandbox
 as explained in the [bindings readme](/src/bindings/haskell/README.md):

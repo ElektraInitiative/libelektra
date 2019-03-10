@@ -1,5 +1,4 @@
-kdb-list-tools(1) - List all external tools available to Elektra
-================================================================
+# kdb-list-tools(1) - List all external tools available to Elektra
 
 ## SYNOPSIS
 
@@ -17,11 +16,9 @@ The tool itself is extern.
 - `KDB_EXEC_PATH`:
   Path to additional external tools.
 
-
 ## OPTIONS
 
 Currently no option provided.
-
 
 ## SEE ALSO
 

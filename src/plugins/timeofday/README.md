@@ -44,4 +44,3 @@ shows the time from invocation to invocation.
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 
     kdb check -c "logmodule=" timeofday
-

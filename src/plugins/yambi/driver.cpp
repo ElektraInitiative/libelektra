@@ -13,6 +13,8 @@
 #include <fstream>
 #include <stdexcept>
 
+#include <kdbconfig.h>
+
 #include "driver.hpp"
 
 using std::ifstream;
@@ -23,11 +25,7 @@ using std::to_string;
 using kdb::Key;
 using kdb::KeySet;
 
-using yy::Parser;
-
-// -- Macros -------------------------------------------------------------------
-
-#define DEBUG_LEVEL 0
+using yambi::Parser;
 
 // -- Functions ----------------------------------------------------------------
 
@@ -74,6 +72,42 @@ string scalarToText (string const & text)
 	return text;
 }
 
+/**
+ * @brief This function returns a Clang-like error message for a given error.
+ *
+ * @param location This parameter stores the location of the error.
+ * @param input This value stores the textual input where the error occurred.
+ * @param prefix This variable stores as prefix that this function prepends
+ *               to every line of the visualized error message.
+ *
+ * @return A string representation of the error
+ */
+string visualizeError (location_type const & location, string const & input, string const & prefix)
+{
+	string::size_type start = 0;
+	string::size_type end = 0;
+	for (size_t currentLine = 1; currentLine <= location.begin.line; currentLine++)
+	{
+		size_t offset = (end == 0 ? 0 : 1);
+		start = end + offset;
+		end = input.find ("\n", end + offset);
+	}
+
+	string errorLine = input.substr (start, end - start);
+
+	errorLine = prefix + errorLine + "\n" + prefix + string (location.begin.column - 1, ' ');
+	// We assume that an error does not span more than one line
+	start = location.begin.column;
+	end = location.end.column;
+	for (size_t current = start; current <= end; current++)
+	{
+		errorLine += "^";
+	}
+
+	return errorLine;
+}
+
+
 } // namespace
 
 // -- Class --------------------------------------------------------------------
@@ -109,9 +143,18 @@ int Driver::parse (const string & filepath)
 
 	Lexer lexer{ input };
 	Parser parser{ lexer, *this };
-	parser.set_debug_level (DEBUG_LEVEL);
 
-	return -parser.parse ();
+#if DEBUG
+	parser.set_debug_level (1);
+#endif
+	numberOfErrors = 0;
+	auto status = parser.parse ();
+	if (status == 0 && numberOfErrors > 0)
+	{
+		status = 1;
+	}
+
+	return -status;
 }
 
 /**
@@ -131,10 +174,16 @@ KeySet Driver::getKeySet () const
  * @param location This value specifies the location of the erroneous input.
  * @param message This value stores the error message emitted by the Bison
  *                parser.
+ * @param input This value stores the current input of the lexer/parser as text
  */
-void Driver::error (const location_type & location, const string & message)
+void Driver::error (const location_type & location, const string & message, string const & input)
 {
-	errorMessage = filename + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": " + message;
+	numberOfErrors++;
+	auto position = filename + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": ";
+	auto indent = string (position.length (), ' ');
+
+	errorMessage += "\n" + position + message + "\n";
+	errorMessage += visualizeError (location, input, indent);
 }
 
 /**

@@ -28,7 +28,7 @@ int elektraTclGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentK
 int elektraTclSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraTclError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (tcl);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 } // end extern "C"
 

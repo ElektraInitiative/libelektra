@@ -133,7 +133,7 @@ int elektraTracerError (Plugin * handle, KeySet * returned, Key * parentKey)
 	return nr_keys;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (tracer)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("tracer",

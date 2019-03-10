@@ -57,6 +57,7 @@ additional_commands:
       TEST_LINK_ELEKTRA: +
       LINK_PLUGIN: +
       WORKING_DIRECTORY: +
+      TIMEOUT: 1
 
   download_project:
     kwargs:

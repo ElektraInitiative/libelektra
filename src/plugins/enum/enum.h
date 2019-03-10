@@ -16,6 +16,6 @@
 int elektraEnumGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraEnumSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (enum);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

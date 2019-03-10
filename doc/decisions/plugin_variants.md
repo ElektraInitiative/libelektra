@@ -5,7 +5,7 @@
 Some plugins are generic in the sense that they cannot fully
 define their contract statically.
 (Note: if they can decide it statically, you should prefer
- [compilation variants](/doc/tutorials/compilation-variants.md).)
+[compilation variants](/doc/tutorials/compilation-variants.md).)
 Instead their contract is based on their
 configuration. We will call every combination of plugins+configuration
 where we get a different contract **plugin variant**.
@@ -13,7 +13,6 @@ where we get a different contract **plugin variant**.
 The current issue is that there is no way to enumerate
 possible plugin variants as needed to list all functionality
 of Elektra.
-
 
 ## Constraints
 
@@ -31,12 +30,10 @@ of Elektra.
   optimization, that plugins do not need to be reopened required
   multiple times.
 
-
 ## Assumptions
 
 - The number of variants needs to be bounded:
   plugin variants need to be fully enumerable
-
 
 ## Considered Alternatives
 
@@ -50,7 +47,6 @@ are:
   of writing
 - Does not fit with the `checkconf` ([see here](https://git.libelektra.org/issues/559))
   approach.
-
 
 ## Decision
 
@@ -69,14 +65,15 @@ Best implementation candidate was:
 4. If the bool key `disable` (for a plugin or a variant) is true the plugin or a variant of the
    plugin will not be available.
 5. Empty `config` and `infos` mean:
- - `config`: The "default variant" (without any parameter) should be also available
-   (has useful functionality)
- - `infos`: It is not possible to determine the changes of the contract,
-   the user need to instantiate the plugin and enquiry the contract.
+   - `config`: The "default variant" (without any parameter) should be also available
+     (has useful functionality)
+   - `infos`: It is not possible to determine the changes of the contract,
+     the user need to instantiate the plugin and enquiry the contract.
 
 ### Example
 
 `genconf` for augeas yields:
+
 ```
 system/access
 system/access/config
@@ -91,12 +88,14 @@ system/aliases/infos/provides = storage/aliases
 ```
 
 `genconf` for python might yield:
+
 ```
 user/configparser/config
 user/configparser/config/script = python_configparser.py
 ```
 
 The user/admin specifies:
+
 ```
 system/elektra/plugins/jni/disable = 1
 system/elektra/plugins/augeas/variants/access
@@ -118,14 +117,13 @@ As result we get:
    but it will be considered as specified.
 4. the plugin `jni` will not be available
 
-
 To have a space-separated simpleini one would use:
+
 ```
 system/elektra/plugins/simpleini/variants/spacesep
 system/elektra/plugins/simpleini/variants/spacesep/config
 system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ```
-
 
 ## Rationale
 
@@ -138,11 +136,11 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ## Implications
 
 - `genconf` needs to be implemented for the plugins:
- - augeas
- - jni
- - lua
- - python
- - python2
+  - augeas
+  - jni
+  - lua
+  - python
+  - python2
 - `PluginDatabase` needs an extension to list all plugin variants
 - `kdb list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`
@@ -155,6 +153,7 @@ overrides of other plugin information (contract information) does not work yet.
 
 It is also not possible to add additional information to a variant,
 only overrides work. E.g.
+
 ```
 system/elektra/plugins/augeas/variants/aliases
 system/elektra/plugins/augeas/variants/aliases/override = 1
@@ -162,19 +161,20 @@ system/elektra/plugins/augeas/variants/aliases/config
 system/elektra/plugins/augeas/variants/aliases/config/lens = Aliases.lns
 system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
 ```
+
 works, while
+
 ```
 system/elektra/plugins/augeas/variants/aliases
 system/elektra/plugins/augeas/variants/aliases/config
 system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
 ```
-gets ignored.
 
+gets ignored.
 
 ## Related decisions
 
 - [Global Plugins](global_plugins.md)
-
 
 ## Notes
 

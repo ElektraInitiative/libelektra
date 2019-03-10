@@ -24,11 +24,10 @@ When the `checkLE` key is present, the plugin checks the file for consistent lin
 When the `checkEncoding` key is present, the plugin validates the file encoding supplied by the key `encoding`, or, if not present, defaults to `UTF-8`
 
 `reject/null`
-When the `rejectNull` key is present, the plugin rejects the file if a NULL-Byte is found. 
+When the `rejectNull` key is present, the plugin rejects the file if a NULL-Byte is found.
 
 `/reject/bom`
 When the `rejectBom` key is present, the plugin rejects the file if any BOM markers are found.
 
 `/reject/unprintable`
 When the `rejectUnprintable` key is preset, the plugin rejects the file if an unprintable character is present (except `\r` and `\n`).
-

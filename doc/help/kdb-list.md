@@ -1,5 +1,4 @@
-kdb-list(1) -- List plugins available to Elektra
-================================================
+# kdb-list(1) -- List plugins available to Elektra
 
 ## SYNOPSIS
 
