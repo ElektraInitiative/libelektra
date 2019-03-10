@@ -104,6 +104,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
 - We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
 
+### Boolean
+
+- Added `infos/ordering = type` so that the plugin gets loaded before the `type` plugin. This is needed because values have to be canonicalized
+  before the type plugin does its checks.
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
