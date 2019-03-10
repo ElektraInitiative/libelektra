@@ -48,9 +48,14 @@ int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	char ** argv;
+	char ** argv = NULL;
 	int argc = loadArgs (&argv);
 	char ** envp = loadEnvp ();
+
+	if (argv == NULL || envp == NULL)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	int ret = elektraGetOpts (returned, argc, (const char **) argv, (const char **) envp, parentKey);
 
