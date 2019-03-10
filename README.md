@@ -20,8 +20,8 @@ applications' configurations, leveraging easy application integration.
 
 ## Often used links
 
-- [build server](https://build.libelektra.org/)
-- [website](https://www.libelektra.org)
+- [Build server](https://build.libelektra.org/)
+- [Website](https://www.libelektra.org)
 - [API docu](https://doc.libelektra.org/api/latest/html/)
 
 ## Overview
