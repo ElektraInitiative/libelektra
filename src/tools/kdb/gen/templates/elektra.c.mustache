@@ -10,15 +10,11 @@
 {{=/*% %*/=}}
 // clang-format on
 
-#include "/*%& header_file %*/"
+#include "/*% header_file %*/"
 
 /*%# more_headers %*/
-#include "/*%& . %*/"
+#include "/*% . %*/"
 /*%/ more_headers %*/
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -115,7 +111,3 @@ void /*%& help_function_name %*/ (void)
 /*%> partial.enum.c %*/
 
 /*%> partial.struct.c %*/
-
-#ifdef __cplusplus
-}
-#endif
