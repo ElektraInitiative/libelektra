@@ -91,6 +91,35 @@ std::uint32_t lastMatchedUtf32 (Input & input)
 	return character;
 }
 
+/**
+ * @brief This function returns a Clang-like error message for a given error.
+ *
+ * @param input This parameter stores the input at the time an error occurred.
+ * @param prefix This variable stores as prefix that this function prepends
+ *               to every line of the visualized error message.
+ *
+ * @return A string representation of the error
+ */
+template <typename Input>
+std::string visualizeError (Input const & input, std::string const & prefix)
+{
+	std::string::size_type start = 0;
+	std::string::size_type end = 0;
+	auto text = std::string{ input.begin (), input.end () };
+	for (size_t currentLine = 1; currentLine <= input.position ().line; currentLine++)
+	{
+		size_t offset = (end == 0 ? 0 : 1);
+		start = end + offset;
+		end = text.find ("\n", end + offset);
+	}
+
+	std::string errorLine = text.substr (start, end - start);
+
+	errorLine = prefix + errorLine + "\n" + prefix + std::string (input.position ().byte_in_line, ' ') + "^";
+
+	return errorLine;
+}
+
 } // namespace
 
 // -- Rules & Actions ----------------------------------------------------------
@@ -535,12 +564,15 @@ struct ns_esc_32_bit : seq<one<'U'>, rep<8, ns_hex_digit>>
 {
 };
 
-// [62]
-struct c_ns_esc_char
-: seq<one<'\\'>,
-      sor<ns_esc_null, ns_esc_bell, ns_esc_backspace, ns_esc_horizontal_tab, ns_esc_line_feed, ns_esc_vertical_tab, ns_esc_form_feed,
-	  ns_esc_carriage_return, ns_esc_escape, ns_esc_space, ns_esc_double_quote, ns_esc_slash, ns_esc_backslash, ns_esc_next_line,
-	  ns_esc_non_breaking_space, ns_esc_line_separator, ns_esc_paragraph_separator, ns_esc_8_bit, ns_esc_16_bit, ns_esc_32_bit>>
+// [62] (Modified)
+struct escaped_choices
+: sor<ns_esc_null, ns_esc_bell, ns_esc_backspace, ns_esc_horizontal_tab, ns_esc_line_feed, ns_esc_vertical_tab, ns_esc_form_feed,
+      ns_esc_carriage_return, ns_esc_escape, ns_esc_space, ns_esc_double_quote, ns_esc_slash, ns_esc_backslash, ns_esc_next_line,
+      ns_esc_non_breaking_space, ns_esc_line_separator, ns_esc_paragraph_separator, ns_esc_8_bit, ns_esc_16_bit, ns_esc_32_bit>
+{
+};
+
+struct c_ns_esc_char : seq<if_must<one<'\\'>, escaped_choices>>
 {
 };
 
@@ -704,9 +736,12 @@ struct nb_double_char : sor<c_ns_esc_char, seq<not_at<one<'\\', '"'>>, nb_json>>
 struct ns_double_char : seq<not_at<s_white>, nb_double_char>
 {
 };
-// [109]
+// [109] (Modified)
 struct nb_double_text;
-struct c_double_quoted : seq<one<'"'>, nb_double_text, one<'"'>>
+struct closing_double_quote : one<'"'>
+{
+};
+struct c_double_quoted : seq<one<'"'>, nb_double_text, must<closing_double_quote>>
 {
 };
 // [110]
@@ -757,9 +792,12 @@ struct nb_single_char : sor<c_quoted_quote, seq<not_at<one<'\''>>, nb_json>>
 struct ns_single_char : seq<not_at<s_white>, nb_single_char>
 {
 };
-// [120]
+// [120] (Modified)
 struct nb_single_text;
-struct c_single_quoted : seq<one<'\''>, nb_single_text, one<'\''>>
+struct closing_single_quote : one<'\''>
+{
+};
+struct c_single_quoted : seq<one<'\''>, nb_single_text, must<closing_single_quote>>
 {
 };
 // [121]
@@ -1116,6 +1154,45 @@ struct action<ns_flow_node>
 		ELEKTRA_LOG_DEBUG ("`ns_flow_node`: “%s”", input.string ().c_str ());
 	}
 };
+
+// -- Error Handling -----------------------------------------------------------
+
+/**
+ * @brief This templated control struct specifies an error messages for a `must` grammar rule with name `Rule`.
+ */
+template <typename Rule>
+/* For detailed debugging information, please use the control class `tracer` instead of `normal`. */
+struct errors : public tao::TAO_PEGTL_NAMESPACE::normal<Rule>
+{
+	static char const * const errorMessage;
+
+	/**
+	 * @brief The parser calls this method if the grammar rule `must<Rule>` failed.
+	 *
+	 * @param input This variable stores the state of the parser input, at the time parsing failed.
+	 */
+	template <typename Input, typename... States>
+	static void raise (const Input & input, States &&...)
+	{
+		tao::TAO_PEGTL_NAMESPACE::position pos = input.position ();
+		std::string location = pos.source + ":" + std::to_string (pos.line) + ":" + std::to_string (pos.byte_in_line) + ": ";
+
+		std::string message = "\n" + location + errorMessage;
+		message += "\n" + visualizeError (input, std::string (location.length (), ' '));
+
+		throw std::runtime_error (message);
+	}
+};
+
+/* Define an error message for the only `must` grammar rule: `if_must<l_yaml_stream, eof>` */
+template <>
+char const * const errors<tao::TAO_PEGTL_NAMESPACE::eof>::errorMessage = "Incomplete document, expected “end of file”";
+template <>
+char const * const errors<escaped_choices>::errorMessage = "Unexpected escape character";
+template <>
+char const * const errors<closing_double_quote>::errorMessage = "Missing closing double quote or incorrect value inside flow scalar";
+template <>
+char const * const errors<closing_single_quote>::errorMessage = "Missing closing single quote or incorrect value inside flow scalar";
 
 // -- Parse Tree Selector ------------------------------------------------------
 
