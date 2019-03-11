@@ -204,7 +204,7 @@ you up to date with the multi-language support provided by Elektra.
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
-
+- Improved the documentation for the type plugin. _(Michael Zronek)_
 - <<TODO>>
 
 ## Tests
