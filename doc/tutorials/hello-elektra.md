@@ -33,7 +33,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    cmake ..
    ```
 
-   . If everything worked until now, then CMake should print messages that look something like this:
+   If everything worked until now, then CMake should print messages that look something like this:
 
    ```
    -- The C compiler identification is AppleClang 8.1.0.8020042
@@ -62,7 +62,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    make
    ```
 
-   . If the last step completed successfully, then the build directory now contains the application `hello`.
+   If the last step completed successfully, then the build directory now contains the application `hello`.
 
 7. You can now run your Elektra application by calling `./hello` inside the build directory. The output of the application should look something like this:
 
