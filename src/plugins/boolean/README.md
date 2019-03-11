@@ -36,6 +36,18 @@ kdb rm -r user/tests/boolean
 sudo kdb umount user/tests/boolean
 ```
 
+```sh
+sudo kdb mount config.ecf user/tests/boolean dump boolean type
+kdb set user/tests/boolean/truthiness 0
+kdb setmeta user/tests/boolean/truthiness type boolean
+
+kdb set user/tests/boolean/truthiness yes
+
+# Undo changes
+kdb rm -r user/tests/boolean
+sudo kdb umount user/tests/boolean
+```
+
 ## Configuration
 
 - `on/true` specifies the normalized value for `TRUE`. Default: `1`
