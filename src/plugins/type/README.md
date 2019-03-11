@@ -22,6 +22,10 @@ The type checker plugin supports all basic CORBA types:
 `octet`. When checking `any` it will always be successful, regardless
 of the content.
 
+The metadata `check/type` can be used to override the `type` metadata.
+This can be useful if the type to check differs to the type for code generation
+or the highlevel API. In most cases though, `type` will be enough to specify.
+
 ## Deprecation
 
 `empty` and `FSType` are deprecated. Please use regular expressions

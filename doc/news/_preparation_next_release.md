@@ -89,6 +89,25 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
+### YAy PEG
+
+- The plugin now includes the input that could not be parsed in error messages. _(René Schwaiger)_
+- We improved the error messages for certain errors slightly. For example, the error message for the input
+
+  ```yaml
+  "double quoted
+  ```
+
+  now includes the following text
+
+  ```
+  1:14: Missing closing double quote or incorrect value inside flow scalar
+        "double quoted
+                      ^
+  ```
+
+  . _(René Schwaiger)_
+
 ### Quickdump
 
 - [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
@@ -102,7 +121,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
   specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
-- We also export `elektraSpecloadSendSpec` to abstract over the dependency on `quickdump`. _(Klemens Böswirth)_
+- We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
 
 ## Libraries
 
@@ -182,7 +201,11 @@ you up to date with the multi-language support provided by Elektra.
   compiler errors. This update has the advantage, that certain tools such as [TextMate](https://macromates.com) are able to convert the
   location data, providing additional features, such as clickable links to the error source. _(René Schwaiger)_
 
-- <<TODO>>
+- We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
+- Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
+  provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
+- Improved the documentation for the type plugin. _(Michael Zronek)_
+- Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
 - <<TODO>>
 
 ## Tests

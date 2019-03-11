@@ -80,7 +80,7 @@ int elektraSpecloadOpen (Plugin * handle, Key * errorKey)
 	Specload * specload = elektraMalloc (sizeof (Specload));
 
 	KeySet * conf = elektraPluginGetConfig (handle);
-	if (ksLookupByName (conf, "system/module", 0) != NULL)
+	if (ksLookupByName (conf, "system/module", 0) != NULL || ksLookupByName (conf, "system/sendspec", 0) != NULL)
 	{
 		elektraFree (specload);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -129,7 +129,7 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
  * Sends the given specification (@p spec) over stdout, to be received by the process using specload.
  *
  * Note: To use this function with elektraInvoke2Args, call elektraInvokeOpen with a config containing
- * the key 'system/module'. This postpones the check for an existent app until elektraSpecloadGet is called.
+ * the key 'system/sendspec'. This postpones the check for an existent app until elektraSpecloadGet is called.
  *
  * @param handle A specload plugin handle.
  * @param spec   The specification to send.
