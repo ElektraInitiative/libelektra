@@ -72,25 +72,9 @@ int elektraBooleanClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	return 1; // success
 }
 
-static int isTrue (const char * value, const char ** trueValues)
+static int arrayContains (const char ** array, const char * value)
 {
-	char ** ptr = (char **) trueValues;
-	int retVal = 0;
-	while (*ptr)
-	{
-		if (!strcasecmp (value, *ptr))
-		{
-			retVal = 1;
-			break;
-		}
-		++ptr;
-	}
-	return retVal;
-}
-
-static int isFalse (const char * value, const char ** falseValues)
-{
-	char ** ptr = (char **) falseValues;
+	const char ** ptr = array;
 	int retVal = 0;
 	while (*ptr)
 	{
@@ -255,14 +239,14 @@ int elektraBooleanGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			const char * value = keyString (key);
 
-			if (isTrue (value, trueValues))
+			if (arrayContains (trueValues, value))
 			{
 				keySetMeta (key, "internal/boolean/origvalue", keyString (key));
 				keySetMeta (key, "internal/boolean/normvalue", data->trueValue);
 				ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->trueValue);
 				keySetString (key, data->trueValue);
 			}
-			else if (isFalse (value, falseValues))
+			else if (arrayContains (falseValues, value))
 			{
 				keySetMeta (key, "internal/boolean/origvalue", keyString (key));
 				keySetMeta (key, "internal/boolean/normvalue", data->falseValue);
@@ -335,16 +319,16 @@ int elektraBooleanSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				continue;
 			}
 
-			if (isTrue (value, trueValues))
+			if (arrayContains (trueValues, value))
 			{
-				if (originalValue != NULL && isTrue (originalValue, trueValues))
+				if (originalValue != NULL && arrayContains (trueValues, originalValue))
 				{
 					keySetString (key, originalValue);
 				}
 			}
-			else if (isFalse (value, falseValues))
+			else if (arrayContains (falseValues, value))
 			{
-				if (originalValue != NULL && isFalse (originalValue, trueValues))
+				if (originalValue != NULL && arrayContains (falseValues, originalValue))
 				{
 					keySetString (key, originalValue);
 				}
