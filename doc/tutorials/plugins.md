@@ -349,7 +349,7 @@ for (/* each key */)
 // close the file
 ```
 
-The full-blown code can be found at [line plugin](https://libelektra.org/tree/master/src/plugins/line/line.c).
+The full-blown code can be found at [line plugin](https://master.libelektra.org/src/plugins/line/line.c).
 
 As you can see, all `elektraLineSet` does is open a file, take each `Key` from the `KeySet` (remember they are named `#1`, `#2` ... `#_22`) in order,
 and write each key as its own line in the file. Since we don't care about the name of the `Key` in this case (other than for order), we just write
