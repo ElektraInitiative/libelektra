@@ -50,7 +50,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    -- Detecting CXX compiler ABI info - done
    -- Detecting CXX compile features
    -- Detecting CXX compile features - done
-   -- Elektra 0.8.19 found
+   -- Elektra 0.8.26 found
    -- Configuring done
    -- Generating done
    -- Build files have been written to: Hello/build
@@ -69,13 +69,13 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    ```
    Open key database
    Retrieve key set
-   Number of mappings: 0
-   Add new key system/test/hello
-   Number of mappings: 1
+   Number of key-value pairs: 0
+   Add key user/test/hello
+   Number of key-value pairs: 1
 
    hello, elektra
 
-   Delete mappings
+   Delete key-value pairs inside memory
    Close key database
    ```
 
