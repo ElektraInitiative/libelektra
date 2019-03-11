@@ -23,8 +23,8 @@ The type checker plugin supports all basic CORBA types:
 of the content.
 
 The metadata `check/type` can be used to override the `type` metadata.
-This can be useful for code generation. In most cases though, `type` will
-be enough to specify.
+This can be useful if the type to check differs to the type for code generation
+or the highlevel API. In most cases though, `type` will be enough to specify.
 
 ## Deprecation
 
