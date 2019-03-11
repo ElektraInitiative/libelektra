@@ -48,10 +48,10 @@ that allow the plugin to work:
 - `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation.
   This is not needed for storage plugins as the resolver already takes care to unlink the configuration files in such situations.
 - `elektraPluginClose()` is used to free resources that might be required for the plugin.
-- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plugin exists and what the name of the above functions are.
+- `ELEKTRA_PLUGIN_EXPORT` simply lets Elektra know that the plugin exists and what the name of the above functions are.
 
 Most simply put: most plugins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
-and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
+and `ELEKTRA_EXPORT_PLUGIN`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called [`template`](/src/plugins/template/) and a new plugin can be created by calling the
@@ -420,7 +420,7 @@ The last function, one that is always needed in a plugin, is `ELEKTRA_PLUGIN_EXP
 the plugin exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
 
 ```c
-Plugin *ELEKTRA_PLUGIN_EXPORT(line)
+Plugin *ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport("line",
 	ELEKTRA_PLUGIN_GET, &elektraLineGet,
