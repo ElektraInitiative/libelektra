@@ -102,4 +102,5 @@ TODO: Describe difference between keys that store null values (binary data) and 
 TODO: Describe how to store arrays properly (`array` metadata): Just add a link to `arrays.md`
 TODO: Add information on how plugins should store comment (meta)data
 TODO: Document that a plugin should keep the ordering of key-value pairs of a document intact, when writing data back to the configuration file
+TODO: Add section about relative keys (See also: https://issues.libelektra.org/51)
 -->
