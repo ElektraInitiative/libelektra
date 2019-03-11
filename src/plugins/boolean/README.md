@@ -42,6 +42,7 @@ kdb set user/tests/boolean/truthiness 0
 kdb setmeta user/tests/boolean/truthiness type boolean
 
 kdb set user/tests/boolean/truthiness yes
+# RET: 0
 
 # Undo changes
 kdb rm -r user/tests/boolean
