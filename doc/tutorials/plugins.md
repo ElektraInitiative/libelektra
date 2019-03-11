@@ -32,7 +32,7 @@ All plugins use the same basic interface. This interface consists of five basic 
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
-where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for my line plugin this function would be
+where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for the line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may also define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
 
@@ -56,7 +56,7 @@ and `ELEKTRA_EXPORT_PLUGIN`.
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called [`template`](/src/plugins/template/) and a new plugin can be created by calling the
 [copy-template script](/scripts/copy-template) .
-For example for my plugin I called `scripts/copy-template line`. Afterwards two
+For example, the author of the [line plugin](/src/plugins/line/) used the command `scripts/copy-template line` to create the initial version of the plugin. Afterwards two
 important things are left to be done:
 
 - remove all functions (and their exports) from the plugin that are not needed. For example not every plugin actually makes use of the `elektraPluginOpen()` function.
@@ -97,7 +97,7 @@ generate_readme(pluginname)
 ```
 
 It will generate a `readme_plugginname.c` (in the build-directory) out of the
-README.md of the plugin’s source directory.
+`README.md` of the plugin’s source directory.
 
 But prefer to use
 
@@ -136,7 +136,7 @@ All these clauses need to be present for every plugin.
 
 The information of clauses are limited to a single line, starting with
 `-` (so that the file renders nicely in Markdown), followed by the clause
-itself separated with `=`.
+itself separated by `=`.
 Only for the description an unlimited amount of lines can be
 used (until the end of the file).
 
@@ -169,7 +169,7 @@ if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 
 The `elektraPluginContract()` is a method implemented by the plugin developer
 containing the parts of the contract not specified in `README.md`.
-An example of this function (taken from the `yajl` plugin):
+An example of this function (taken from the [`yajl`](/src/plugins/yajl/) plugin):
 
 ```c
 static inline KeySet *elektraYajlContract()
