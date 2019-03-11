@@ -104,6 +104,29 @@ static void test_userValue (const char * type)
 	PLUGIN_CLOSE ();
 }
 
+static void test_changeValue (const char * type)
+{
+	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("boolean");
+	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "0", KEY_META, type, "boolean", KEY_END), KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t1", 0)), "0"), "key t1 has wrong value");
+
+	keySetString (ksLookupByName (ks, "user/tests/boolean/t1", 0), "yes");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t1", 0)), "yes"), "key t1 has wrong value");
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t1", 0)), "1"), "key t1 has wrong value");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("BOOLEAN     TESTS\n");
@@ -119,6 +142,9 @@ int main (int argc, char ** argv)
 	test_defaultRestore ("check/type");
 	test_defaultError ("check/type");
 	test_userValue ("check/type");
+	test_changeValue ("type");
+	test_changeValue ("check/type");
+
 	print_result ("testmod_boolean");
 
 	return nbError;

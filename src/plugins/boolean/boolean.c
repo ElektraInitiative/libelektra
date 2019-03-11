@@ -12,37 +12,41 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 
-
 #define DEFAULT_TRUE_VALUE "1"
 #define DEFAULT_FALSE_VALUE "0"
 
-typedef enum
-{
-	TRUE = 1 << 0,
-	FALSE = 1 << 1,
-	WARNING = 1 << 2,
-} InvalidAction;
-
 typedef struct
 {
-	char * trueValue;
-	char * falseValue;
-	InvalidAction invalid;
+	const char * trueValue;
+	const char * falseValue;
+	const char * invalidValue;
+	bool warnInvalid;
 	char ** trueValues;
 	char ** falseValues;
 } BoolData;
+
+static const char * defaultTrueValues[] = {
+	"TRUE", "1", "ON", "ENABLE", "ENABLED", "YES", NULL,
+};
+static const char * defaultFalseValues[] = {
+	"FALSE", "0", "OFF", "DISABLE", "DISABLED", "NO", "NOT", NULL,
+};
 
 int elektraBooleanClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 	// this function is optional
 	BoolData * data = elektraPluginGetData (handle);
-	if (!data) return 1;
+	if (!data)
+	{
+		return 1;
+	}
 	if (data->trueValues)
 	{
 		char ** ptr = (data->trueValues);
@@ -100,63 +104,6 @@ static int isFalse (const char * value, const char ** falseValues)
 	return retVal;
 }
 
-static void normalize (Key * key, Key * parentKey, BoolData * data)
-{
-	const char * defaultTrueValues[] = {
-		"TRUE", "1", "ON", "ENABLE", "ENABLED", "YES", NULL,
-	};
-	const char * defaultFalseValues[] = {
-		"FALSE", "0", "OFF", "DISABLE", "DISABLED", "NO", "NOT", NULL,
-	};
-	const char * value = keyString (key);
-	const char ** falseValues = (const char **) data->falseValues;
-	const char ** trueValues = (const char **) data->trueValues;
-	const char ** falseStrings = falseValues ? falseValues : defaultFalseValues;
-	const char ** trueStrings = trueValues ? trueValues : defaultTrueValues;
-	if (isTrue (value, trueStrings))
-	{
-		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->trueValue);
-		keySetString (key, data->trueValue);
-	}
-	else if (isFalse (value, falseStrings))
-	{
-		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->falseValue);
-		keySetString (key, data->falseValue);
-	}
-	else
-	{
-		ELEKTRA_LOG_DEBUG ("Neither true nor false value");
-		keySetMeta (key, "boolean/invalid", "");
-		switch ((data->invalid & ~(WARNING)))
-		{
-		case TRUE:
-			if (data->invalid & WARNING)
-			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
-						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
-						      keyString (key), data->trueValue);
-			}
-			keySetMeta (key, "origvalue", keyString (key));
-			keySetString (key, data->trueValue);
-			break;
-		case FALSE:
-			if (data->invalid & WARNING)
-			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
-						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
-						      keyString (key), data->falseValue);
-			}
-			keySetMeta (key, "origvalue", keyString (key));
-			keySetString (key, data->falseValue);
-			break;
-		case WARNING:
-			break;
-		}
-	}
-}
-
 static void strToArray (Key * key, char *** array)
 {
 	int count = 1;
@@ -164,7 +111,10 @@ static void strToArray (Key * key, char *** array)
 	char * ptr = (char *) values;
 	while (*ptr)
 	{
-		if (*ptr == ';') ++count;
+		if (*ptr == ';')
+		{
+			++count;
+		}
 		++ptr;
 	}
 	*array = elektraCalloc ((count + 1) * sizeof (char *));
@@ -175,7 +125,6 @@ static void strToArray (Key * key, char *** array)
 	if (!token)
 	{
 		elektraFree (array);
-		array = NULL;
 	}
 	else
 	{
@@ -199,55 +148,53 @@ static void parseConfig (KeySet * config, BoolData * data)
 {
 	Key * trueKey = ksLookupByName (config, "/on/true", 0);
 	Key * falseKey = ksLookupByName (config, "/on/false", 0);
-	const char * trueValue = trueKey ? keyString (trueKey) : DEFAULT_TRUE_VALUE;
-	const char * falseValue = falseKey ? keyString (falseKey) : DEFAULT_FALSE_VALUE;
+
+	data->trueValue = trueKey ? keyString (trueKey) : DEFAULT_TRUE_VALUE;
+	data->falseValue = falseKey ? keyString (falseKey) : DEFAULT_FALSE_VALUE;
 
 	Key * invalidKey = ksLookupByName (config, "/on/invalid", 0);
 	Key * invalidWarningKey = ksLookupByName (config, "/on/invalid/warning", 0);
-	data->invalid = 0;
-	if (!invalidKey && !invalidWarningKey)
-	{
-		data->invalid = (TRUE | WARNING);
-	}
+
+	data->warnInvalid = true;
+	data->invalidValue = data->trueValue;
+
 	if (invalidKey)
 	{
 		if (!strcasecmp (keyString (invalidKey), "FALSE"))
 		{
-			data->invalid |= FALSE;
+			data->invalidValue = data->falseValue;
 		}
 		else
 		{
-			data->invalid |= TRUE;
+			data->invalidValue = data->trueValue;
 		}
 	}
+
 	if (invalidWarningKey)
 	{
-		if (!strcasecmp (keyString (invalidWarningKey), "TRUE"))
-			data->invalid |= WARNING;
-		else if (!strcasecmp (keyString (invalidWarningKey), "FALSE"))
-			data->invalid &= WARNING;
+		if (!strcasecmp (keyString (invalidWarningKey), "FALSE"))
+		{
+			data->warnInvalid = false;
+		}
 		else
-			data->invalid |= WARNING;
+		{
+			data->warnInvalid = true;
+		}
 	}
-	data->trueValue = (char *) trueValue;
-	data->falseValue = (char *) falseValue;
+
+	data->trueValues = NULL;
+	data->falseValues = NULL;
+
 	Key * validTrueKey = ksLookupByName (config, "/true", 0);
-	Key * validFalseKey = ksLookupByName (config, "/false", 0);
 	if (validTrueKey)
 	{
 		strToArray (validTrueKey, &data->trueValues);
 	}
-	else
-	{
-		data->trueValues = NULL;
-	}
+
+	Key * validFalseKey = ksLookupByName (config, "/false", 0);
 	if (validFalseKey)
 	{
 		strToArray (validFalseKey, &data->falseValues);
-	}
-	else
-	{
-		data->falseValues = NULL;
 	}
 }
 
@@ -261,11 +208,14 @@ static int isBool (const Key * key)
 	}
 
 	boolMeta = keyGetMeta (key, "check/type");
-	if (boolMeta && !strcmp (keyString (boolMeta), "boolean")) return 1;
+	if (boolMeta && !strcmp (keyString (boolMeta), "boolean"))
+	{
+		return 1;
+	}
 	return 0;
 }
 
-int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraBooleanGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/boolean"))
 	{
@@ -291,6 +241,10 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		parseConfig (config, data);
 		elektraPluginSetData (handle, data);
 	}
+
+	const char ** trueValues = data->trueValues != NULL ? (const char **) data->trueValues : defaultTrueValues;
+	const char ** falseValues = data->falseValues != NULL ? (const char **) data->falseValues : defaultFalseValues;
+
 	Key * key;
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != NULL)
@@ -299,19 +253,40 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
 		if (isBoolean)
 		{
-			normalize (key, parentKey, data);
+			const char * value = keyString (key);
+
+			if (isTrue (value, trueValues))
+			{
+				keySetMeta (key, "internal/boolean/origvalue", keyString (key));
+				keySetMeta (key, "internal/boolean/normvalue", data->trueValue);
+				ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->trueValue);
+				keySetString (key, data->trueValue);
+			}
+			else if (isFalse (value, falseValues))
+			{
+				keySetMeta (key, "internal/boolean/origvalue", keyString (key));
+				keySetMeta (key, "internal/boolean/normvalue", data->falseValue);
+				ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->falseValue);
+				keySetString (key, data->falseValue);
+			}
+			else
+			{
+				ELEKTRA_LOG_DEBUG ("Neither true nor false value");
+				if (data->warnInvalid)
+				{
+					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
+							      "Key %s with value %s is not a valid boolean. Defaulting to %s.",
+							      keyName (key), keyString (key), data->invalidValue);
+				}
+				keySetMeta (key, "internal/boolean/origvalue", keyString (key));
+				keySetString (key, data->invalidValue);
+			}
 		}
 	}
 	return 1; // success
 }
 
-static void restoreValue (Key * key, const char * origValue)
-{
-	keySetString (key, origValue);
-	keySetMeta (key, "origvalue", 0);
-}
-
-int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraBooleanSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	// get all keys
 	// this function is optional
@@ -324,32 +299,68 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		parseConfig (config, data);
 		elektraPluginSetData (handle, data);
 	}
-	const char * trueValue = data->trueValue;
-	const char * falseValue = data->falseValue;
+
+	const char ** trueValues = data->trueValues != NULL ? (const char **) data->trueValues : defaultTrueValues;
+	const char ** falseValues = data->falseValues != NULL ? (const char **) data->falseValues : defaultFalseValues;
 
 	ksRewind (returned);
 	Key * key;
-	int retVal = 1;
 	while ((key = ksNext (returned)) != NULL)
 	{
 		uint8_t isBoolean = isBool (key);
 		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
 		if (isBoolean)
 		{
-			if (!keyGetMeta (key, "origvalue")) normalize (key, parentKey, data);
-			const Key * originalValue = keyGetMeta (key, "origvalue");
-			if (!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue)) ||
-			    (keyGetMeta (key, "boolean/invalid")))
+			const char * value = keyString (key);
+			const Key * origValue = keyGetMeta (key, "internal/boolean/origvalue");
+			const char * originalValue = origValue == NULL ? NULL : keyString (origValue);
+			const Key * norm = keyGetMeta (key, "internal/boolean/normvalue");
+			const char * normValue = origValue == NULL ? NULL : keyString (norm);
+
+			if (norm == NULL && strcmp (value, data->invalidValue) == 0)
 			{
-				keySetMeta (key, "boolean/invalid", 0);
+				// unchanged invalid value
 				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
-						    keyString (originalValue));
-				retVal = -1;
+						    keyString (key));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
-			if (originalValue) restoreValue (key, keyString (originalValue));
+
+
+			if (strcmp (value, normValue) == 0)
+			{
+				// unchanged valid (no warning) normalized value
+				keySetString (key, originalValue);
+				keySetMeta (key, "internal/boolean/origvalue", NULL);
+				keySetMeta (key, "internal/boolean/normvalue", NULL);
+				continue;
+			}
+
+			if (isTrue (value, trueValues))
+			{
+				if (originalValue != NULL && isTrue (originalValue, trueValues))
+				{
+					keySetString (key, originalValue);
+				}
+			}
+			else if (isFalse (value, falseValues))
+			{
+				if (originalValue != NULL && isFalse (originalValue, trueValues))
+				{
+					keySetString (key, originalValue);
+				}
+			}
+			else
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
+						    keyString (key));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			keySetMeta (key, "internal/boolean/origvalue", NULL);
+			keySetMeta (key, "internal/boolean/normvalue", NULL);
 		}
 	}
-	return retVal; // success
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS; // success
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
