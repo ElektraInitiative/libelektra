@@ -83,11 +83,17 @@ brew install elektra
 
 . We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
 
-## Generic
+## Windows
+
+Please refer to the section OS independent below.
+
+## OS independent
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-To install Elektra use:
+After you completed building Elektra on your own, there are multiple options  how to install it. For example, with make or cPack tools.
+
+### MAKE
 
     sudo make install
     sudo ldconfig  # See troubleshooting below
@@ -102,7 +108,7 @@ or in the build directory (will not honor DESTDIR!):
 
     xargs rm < install_manifest.txt
 
-## CPack
+### CPack
 
 First follow the steps in [COMPILE](COMPILE.md).
 
