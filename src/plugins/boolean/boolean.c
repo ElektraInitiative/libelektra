@@ -315,7 +315,7 @@ int elektraBooleanSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			const Key * origValue = keyGetMeta (key, "internal/boolean/origvalue");
 			const char * originalValue = origValue == NULL ? NULL : keyString (origValue);
 			const Key * norm = keyGetMeta (key, "internal/boolean/normvalue");
-			const char * normValue = origValue == NULL ? NULL : keyString (norm);
+			const char * normValue = norm == NULL ? NULL : keyString (norm);
 
 			if (norm == NULL && strcmp (value, data->invalidValue) == 0)
 			{
@@ -326,7 +326,7 @@ int elektraBooleanSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			}
 
 
-			if (strcmp (value, normValue) == 0)
+			if (normValue != NULL && strcmp (value, normValue) == 0)
 			{
 				// unchanged valid (no warning) normalized value
 				keySetString (key, originalValue);
