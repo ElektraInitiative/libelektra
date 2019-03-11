@@ -205,6 +205,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
 - Improved the documentation for the type plugin. _(Michael Zronek)_
+- Corrected typos in [Hello, Elektra](https://www.libelektra.org/tutorials/hello-elektra) tutorial. _(Anastasiia Ulianova)_
 - <<TODO>>
 
 ## Tests
