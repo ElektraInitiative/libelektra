@@ -67,5 +67,5 @@ kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
 
 ## Limitations
 
-- will be excluded in Mac OS X
+- will be excluded in macOS
 - cannot parse entries where key or value is missing
