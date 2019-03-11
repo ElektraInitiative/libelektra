@@ -135,7 +135,7 @@ An extensive tutorial describing the installation and configuration can be found
 
 ### Compiling
 
-Compile Elektra as normal as per the [COMPILE document](https://libelektra.org/tree/master/doc/COMPILE.md),
+Compile Elektra as normal as per the [COMPILE document](https://master.libelektra.org/doc/COMPILE.md),
 but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
 
 For instance:
@@ -144,7 +144,7 @@ For instance:
 ### Installing
 
 You can now install Elektra as you normally would or as described
-in the [install documentation](https://libelektra.org/tree/master/doc/INSTALL.md).
+in the [install documentation](https://master.libelektra.org/doc/INSTALL.md).
 
 ## Implementation notes and hints for Front-Ends
 
@@ -163,7 +163,7 @@ This limitation comes from the usage of regex patterns instead of atomic compari
 In terms of usability this is sufficient, but not the best possible.
 Therefore it would be advisable to implement live-validation for frontends with more granularity.
 Information about allowed input formats can be found in the
-[API description](https://libelektra.org/tree/master/doc/rest_api/snippet_sharing/api-description.apib).
+[API description](https://master.libelektra.org/doc/api_blueprints/snippet-sharing.apib).
 
 ## Benchmarks
 
