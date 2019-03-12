@@ -123,6 +123,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
 - We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
 
+### Syslog
+
+- We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
