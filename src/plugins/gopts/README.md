@@ -5,15 +5,15 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage
-- infos/status = recommended productive maintained nodep libc experimental unfinished
+- infos/status = recommended productive maintained nodep libc experimental
 - infos/metadata =
 - infos/description = Parses command-line options using elektra-opts
 
-NOTE: placements should be between getstorage and postgetstorage
 
 ## Introduction
 
-TODO
+This plugin is very simple in what it does. It uses system specific methods of accessing `argc` and `argv` outside of `main` and then calls
+`elektraGetOpts` to do options processing.
 
 ## Usage
 
@@ -25,4 +25,5 @@ TODO
 
 ## Limitations
 
-TODO
+- `infos/placements` should actually be between getstorage and postgetstorage. There should be a position procgetstorage that should be used
+  by all plugins that only write to the `proc` namespace.
