@@ -58,21 +58,18 @@ static KeySet * getSpec (const char * name, Key ** parentKey)
 	}
 
 	yield_error ("unknown spec name");
+	printf ("specname: %s\n", name);
 	exit (EXIT_FAILURE);
 }
 
-/**
- * NOTE: this application has to be called in a non-standard way!!
- * argv[0] must be the name of the specification to use
- * argv[1] must be the application name
- * then we continue with the normal arguments
- *
- * argc must therefore be >= 2
- */
 int main (int argc, const char ** argv)
 {
+	const char * specname = argv[1];
+	const char * appname = argv[0];
+	argv[1] = appname;
+
 	Key * parentKey;
-	KeySet * ks = getSpec (argv[0], &parentKey);
+	KeySet * ks = getSpec (specname, &parentKey);
 
 	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
 
@@ -81,12 +78,13 @@ int main (int argc, const char ** argv)
 	PLUGIN_OPEN ("gopts");
 
 	Key * parentKey2;
-	KeySet * ks2 = getSpec (argv[0], &parentKey2);
+	KeySet * ks2 = getSpec (specname, &parentKey2);
 
 	bool pluginFailed = plugin->kdbGet (plugin, ks2, parentKey2) == ELEKTRA_PLUGIN_STATUS_ERROR;
 
 	if (pluginFailed != libFailed)
 	{
+		PLUGIN_CLOSE ();
 		ksDel (ks);
 		keyDel (parentKey);
 		ksDel (ks2);
@@ -103,6 +101,11 @@ int main (int argc, const char ** argv)
 	compare_keyset (ks, ks2);
 
 	PLUGIN_CLOSE ();
+
+	ksDel (ks);
+	keyDel (parentKey);
+	ksDel (ks2);
+	keyDel (parentKey2);
 
 	return nbError;
 }

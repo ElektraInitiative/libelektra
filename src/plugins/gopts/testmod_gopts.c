@@ -25,15 +25,16 @@
 // version 6 and 7 of clang-format don't agree whether it is supposed to be *[] or * [] so disable it here
 // TODO: re-enable clang-format once version 7 is used on build server
 // clang-format off
-#define ARGS(NAME, ...) ((const char *[]){ NAME, TESTAPP_PATH, __VA_ARGS__, NULL })
+#define ARGS(NAME, ...) ((const char *[]){ TESTAPP_PATH, NAME, __VA_ARGS__, NULL })
 #define ENVP(...) ((const char *[]){ __VA_ARGS__, NULL })
 
-#define NO_ARGS(NAME) ((const char *[]){ NAME, TESTAPP_PATH, NULL })
+#define NO_ARGS(NAME) ((const char *[]){ TESTAPP_PATH, NAME, NULL })
 #define NO_ENVP ((const char *[]){ NULL })
 // clang-format on
 
 static void run_test (const char ** argv, const char ** envp)
 {
+	printf ("test %s\n", argv[1]);
 	pid_t pid;
 
 
