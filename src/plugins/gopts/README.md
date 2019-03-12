@@ -9,7 +9,6 @@
 - infos/metadata =
 - infos/description = Parses command-line options using elektra-opts
 
-
 ## Introduction
 
 This plugin is very simple in what it does. It uses system specific methods of accessing `argc` and `argv` outside of `main` and then calls
