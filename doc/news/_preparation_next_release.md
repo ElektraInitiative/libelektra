@@ -185,6 +185,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
 
   ```
