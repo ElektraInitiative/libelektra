@@ -26,10 +26,10 @@
 // TODO: re-enable clang-format once version 7 is used on build server
 // clang-format off
 #define ARGS(NAME, ...) ((const char *[]){ TESTAPP_PATH, NAME, __VA_ARGS__, NULL })
-#define ENVP(...) ((const char *[]){ __VA_ARGS__, NULL })
+#define ENVP(LD_LIB_PATH, ...) ((const char *[]){ LD_LIB_PATH, __VA_ARGS__, NULL })
 
 #define NO_ARGS(NAME) ((const char *[]){ TESTAPP_PATH, NAME, NULL })
-#define NO_ENVP ((const char *[]){ NULL })
+#define NO_ENVP(LD_LIB_PATH) ((const char *[]){ LD_LIB_PATH, NULL })
 // clang-format on
 
 static void run_test (const char ** argv, const char ** envp)
@@ -83,57 +83,60 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	run_test (NO_ARGS (TEST_EMPTY), NO_ENVP);
+	const char * ldLibPath = getenv ("LD_LIBRARY_PATH");
 
-	run_test (NO_ARGS (TEST_SINGLEOPT), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "-capple"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "-capple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "-c", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "-c", "apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "--longopt=apple"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "--longopt=apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "--longopt", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "--longopt", "apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_SINGLEOPT, "noopt"), NO_ENVP);
+	run_test (NO_ARGS (TEST_EMPTY), NO_ENVP (ldLibPath));
 
-	run_test (NO_ARGS (TEST_SINGLEENV), NO_ENVP);
-	run_test (NO_ARGS (TEST_SINGLEENV), ENVP ("ENV_VAR=apple"));
-	run_test (NO_ARGS (TEST_SINGLEENV), ENVP ("OTHER_ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_SINGLEOPT), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "-capple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "-capple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "-c", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "-c", "apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "--longopt=apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "--longopt=apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "--longopt", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "--longopt", "apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_SINGLEOPT, "noopt"), NO_ENVP (ldLibPath));
 
-	run_test (NO_ARGS (TEST_TWOOPT), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-capple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-capple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-c", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-c", "apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt=apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt=apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt", "apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "noopt"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-bapple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-bapple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-b", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-b", "apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt2=apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt2=apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt2", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt2", "apple", "morearg"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-bapple", "-capple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "-bapple", "morearg", "-c", "apple"), NO_ENVP);
-	run_test (ARGS (TEST_TWOOPT, "--longopt2", "apple", "--longopt", "apple"), NO_ENVP);
+	run_test (NO_ARGS (TEST_SINGLEENV), NO_ENVP (ldLibPath));
+	run_test (NO_ARGS (TEST_SINGLEENV), ENVP (ldLibPath, "ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_SINGLEENV), ENVP (ldLibPath, "OTHER_ENV_VAR=apple"));
 
-	run_test (NO_ARGS (TEST_TWOENV), NO_ENVP);
-	run_test (NO_ARGS (TEST_TWOENV), ENVP ("ENV_VAR=apple"));
-	run_test (NO_ARGS (TEST_TWOENV), ENVP ("OTHER_ENV_VAR=apple"));
-	run_test (NO_ARGS (TEST_TWOENV), ENVP ("ENV_VAR=apple", "OTHER_ENV_VAR=apple"));
-	run_test (NO_ARGS (TEST_TWOENV), ENVP ("OTHER_OTHER_ENV_VAR=apple"));
-	run_test (NO_ARGS (TEST_TWOENV), ENVP ("ENV_VAR=apple", "OTHER_ENV_VAR=apple", "OTHER_OTHER_ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_TWOOPT), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-capple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-capple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-c", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-c", "apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt=apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt=apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt", "apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "noopt"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-bapple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-bapple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-b", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-b", "apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt2=apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt2=apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt2", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt2", "apple", "morearg"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-bapple", "-capple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "-bapple", "morearg", "-c", "apple"), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_TWOOPT, "--longopt2", "apple", "--longopt", "apple"), NO_ENVP (ldLibPath));
 
-	run_test (NO_ARGS (TEST_MIXED), NO_ENVP);
-	run_test (ARGS (TEST_MIXED, "-capple"), ENVP ("ENV_VAR=apple"));
-	run_test (ARGS (TEST_MIXED, "-c", "apple"), ENVP ("OTHER_ENV_VAR=apple"));
-	run_test (ARGS (TEST_MIXED, "--longopt=apple"), ENVP ("ENV_VAR=apple", "OTHER_ENV_VAR=apple", "OTHER_OTHER_ENV_VAR=apple"));
-	run_test (ARGS (TEST_MIXED, "--longopt", "apple"), ENVP ("OTHER_ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_TWOENV), NO_ENVP (ldLibPath));
+	run_test (NO_ARGS (TEST_TWOENV), ENVP (ldLibPath, "ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_TWOENV), ENVP (ldLibPath, "OTHER_ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_TWOENV), ENVP (ldLibPath, "ENV_VAR=apple", "OTHER_ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_TWOENV), ENVP (ldLibPath, "OTHER_OTHER_ENV_VAR=apple"));
+	run_test (NO_ARGS (TEST_TWOENV), ENVP (ldLibPath, "ENV_VAR=apple", "OTHER_ENV_VAR=apple", "OTHER_OTHER_ENV_VAR=apple"));
+
+	run_test (NO_ARGS (TEST_MIXED), NO_ENVP (ldLibPath));
+	run_test (ARGS (TEST_MIXED, "-capple"), ENVP (ldLibPath, "ENV_VAR=apple"));
+	run_test (ARGS (TEST_MIXED, "-c", "apple"), ENVP (ldLibPath, "OTHER_ENV_VAR=apple"));
+	run_test (ARGS (TEST_MIXED, "--longopt=apple"),
+		  ENVP (ldLibPath, "ENV_VAR=apple", "OTHER_ENV_VAR=apple", "OTHER_OTHER_ENV_VAR=apple"));
+	run_test (ARGS (TEST_MIXED, "--longopt", "apple"), ENVP (ldLibPath, "OTHER_ENV_VAR=apple"));
 
 	print_result ("testmod_gopts");
 
