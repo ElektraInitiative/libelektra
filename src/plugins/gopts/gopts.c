@@ -13,6 +13,13 @@
 #include <kdbhelper.h>
 #include <kdbopts.h>
 
+static int loadArgs (char *** argvp);
+static char ** loadEnvp (void);
+static void cleanupArgs (int argc, char ** argv);
+static void cleanupEnvp (char ** envp);
+
+#include "gopts_impl.c"
+
 #if defined(ELEKTRA_GOPTS_PROCFS)
 #include "gopts_procfs.h"
 #elif defined(ELEKTRA_GOPTS_OSX)
@@ -22,12 +29,6 @@
 #elif defined(ELEKTRA_GOPTS_SYSCTL)
 #include "gopts_sysctl.h"
 #else
-// define anyway to get rid of IDE warnings
-static int loadArgs (char *** argvp);
-static char ** loadEnvp (void);
-static void cleanupArgs (int argc, char ** argv);
-static void cleanupEnvp (char ** envp);
-
 #error "No implementation available"
 #endif
 

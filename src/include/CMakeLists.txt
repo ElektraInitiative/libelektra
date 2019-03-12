@@ -69,20 +69,6 @@ endif (ENABLE_OPTIMIZATIONS)
 
 test_big_endian (ELEKTRA_BIG_ENDIAN)
 
-if (WIN32)
-	set (ELEKTRA_GOPTS_WIN32 ON)
-elseif (MacOSX)
-	set (ELEKTRA_GOPTS_OSX ON)
-else ()
-	try_compile (SYSCTL_TEST ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_SOURCE_DIR}/src/plugins/gopts/sysctl_test.c")
-
-	if (SYSCTL_TEST)
-		set (ELEKTRA_GOPTS_SYSCTL ON)
-	elseif (EXISTS "/proc/mounts")
-		set (ELEKTRA_GOPTS_PROCFS ON)
-	endif ()
-endif ()
-
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdb.h")
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h")

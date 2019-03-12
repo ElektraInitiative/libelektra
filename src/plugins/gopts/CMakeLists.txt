@@ -1,20 +1,26 @@
 include (LibAddMacros)
 
 if (WIN32)
+	set (ELEKTRA_GOPTS_WIN32 ON)
 	set (gopts_source gopts_win32.h)
 elseif (MacOSX)
+	set (ELEKTRA_GOPTS_OSX ON)
 	set (gopts_source gopts_osx.h)
 else ()
 	try_compile (SYSCTL_TEST ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_SOURCE_DIR}/src/plugins/gopts/sysctl_test.c")
 
 	if (SYSCTL_TEST)
+		set (ELEKTRA_GOPTS_SYSCTL ON)
 		set (gopts_source gopts_sysctl.h)
 	elseif (EXISTS "/proc/mounts")
+		set (ELEKTRA_GOPTS_PROCFS ON)
 		set (gopts_source gopts_procfs.h)
 	endif ()
 endif ()
 
 if (gopts_source)
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gopts_impl.c.in" "${CMAKE_CURRENT_BINARY_DIR}/gopts_impl.c" @ONLY)
+
 	add_plugin (gopts
 		    SOURCES gopts.h
 			    gopts.c
