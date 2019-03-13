@@ -182,6 +182,8 @@ you up to date with the multi-language support provided by Elektra.
   compiler errors. This update has the advantage, that certain tools such as [TextMate](https://macromates.com) are able to convert the
   location data, providing additional features, such as clickable links to the error source. _(René Schwaiger)_
 
+- fixed some broken links in the documentation
+
 - <<TODO>>
 - <<TODO>>
 
