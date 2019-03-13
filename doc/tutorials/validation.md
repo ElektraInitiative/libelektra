@@ -219,7 +219,7 @@ A _Specfile_ contains metadata, among others, that defines how
 the configuration settings should be validated.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata
-(altough the specfile is stored in the dump format, we can still create it using
+(although the specfile is stored in the dump format, we can still create it using
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 
 ```sh
