@@ -2,7 +2,7 @@
 
 ## Introduction
 
-When programming in Java it is possible to access the kdb database, changing values of existing keys or adding new ones and a few other things. It is also possible to write plugins for elektra in Java but we will focus on using the java
+When programming in Java it is possible to access the kdb database, changing values of existing keys or adding new ones and a few other things. It is also possible to write plugins for Elektra in Java but we will focus on using the Java
 binding in this tutorial.
 
 ## First Steps
@@ -26,7 +26,7 @@ You can also pass a `Key` object with an empty string on the first line. The pas
 
 ## Fetching keys
 
-First I will show how to get a key which was already saved in the database. The first thing we need to do is to create a `KeySet` in which our key(s) will be loaded.
+First I will show you how to get a key which was already saved in the database. The first thing we need to do is to create a `KeySet` in which our key(s) will be loaded.
 
 ```java
 KeySet set = KeySet.create();
@@ -49,7 +49,7 @@ the method call `set.lookup("user/my/test").getString()` would return `it_works!
 
 ## Saving Keys
 
-Next I will show how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
+Next I will show you how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
 
 ```java
 KeySet set = KeySet.create();
