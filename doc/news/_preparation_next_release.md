@@ -208,6 +208,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved the documentation for the type plugin. _(Michael Zronek)_
 - Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
 - Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
+- Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
 - <<TODO>>
 
 ## Tests
