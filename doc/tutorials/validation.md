@@ -222,7 +222,7 @@ Particularly a _Specfile_ contains metadata that defines
 - the behavior of these plugins.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata
-(altough the specfile is stored in the dump format, we can still create it using
+(although the specfile is stored in the dump format, we can still create it using
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 
 ```sh
