@@ -5,7 +5,7 @@ The [plugin tutorial](plugins.md) already covers some of the most interesting pa
 - [arrays](arrays.md), and
 - [metadata](../dev/metadata.md),
 
-takes more work. Before you continue with this text, please make sure that you read all of the linked documents.
+takes more work. Before you continue with this text, please make sure that you read all of the linked documents above.
 
 ## Don’t Add Additional Keys
 
@@ -38,7 +38,7 @@ kdb ls user/tests/storage/root
 sudo kdb umount user/tests/storage
 ```
 
-.
+. For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/holes.md).
 
 ## Support Values Inside Non-Leaf Keys
 
