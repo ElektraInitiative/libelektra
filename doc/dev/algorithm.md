@@ -109,7 +109,9 @@ during an initial request or when no update is available.
 
 The synopsis of the function is:
 
-    int kdbGet(KDB *handle, KeySet *returned, Key * parentKey);
+```c
+int kdbGet(KDB *handle, KeySet *returned, Key * parentKey);
+```
 
 The user passes a key set, called `returned`.
 If the user invokes `kdbGet()` the first time, he or she will usually
@@ -144,10 +146,12 @@ For example, a generator plugin in the backend (A) always emits
 following keys. (A) and (B) indicate from which backend the
 key comes from.
 
-    user/sw/generator/akey (A)
-    user/sw/generator/dir (A)
-    user/sw/generator/dir/outside1 (A)
-    user/sw/generator/dir/outside2 (A)
+```
+user/sw/generator/akey (A)
+user/sw/generator/dir (A)
+user/sw/generator/dir/outside1 (A)
+user/sw/generator/dir/outside2 (A)
+```
 
 It will still
 return these keys even if the plugin is not responsible for some
@@ -155,20 +159,24 @@ of them anymore. This can happen if another backend B is mounted
 to `user/sw/generator/dir`. In the example it yields the
 following keys:
 
-    user/sw/generator/dir (B)
-    user/sw/generator/dir/new (B)
-    user/sw/generator/dir/outside1 (B)
-    user/sw/generator/outside (B)
+```
+user/sw/generator/dir (B)
+user/sw/generator/dir/new (B)
+user/sw/generator/dir/outside1 (B)
+user/sw/generator/outside (B)
+```
 
 In this situation `kdbGet()` is responsible to pop all three keys at,
 and below, `user/sw/generator/dir` of backend (A) and the key
 `user/sw/generator/outside` of backend (B). The user will get the
 resulting key set:
 
-    user/sw/generator/akey (A)
-    user/sw/generator/dir (B)
-    user/sw/generator/dir/new (B)
-    user/sw/generator/dir/outside1 (B)
+```
+user/sw/generator/akey (A)
+user/sw/generator/dir (B)
+user/sw/generator/dir/new (B)
+user/sw/generator/dir/outside1 (B)
+```
 
 Note that the key exactly at the mount point comes from the backend mounted
 at `user/sw/generator/dir`.
@@ -288,7 +296,9 @@ performance is important.
 
 The synopsis of the function is:
 
-    int kdbSet(KDB *handle, KeySet *returned, Key * parentKey);
+```c
+int kdbSet(KDB *handle, KeySet *returned, Key * parentKey);
+```
 
 The user passes the configuration using the `KeySet` `returned`. The key
 set will not be changed by `kdbSet()`. The `parentKey` provides a way

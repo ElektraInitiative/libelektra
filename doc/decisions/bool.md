@@ -27,8 +27,10 @@ Use, depending on what your default should be:
 
 Example:
 
-    if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
-    if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
+```c
+if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
+if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
+```
 
 In the documentation it should mention that a bool is used
 and which is the default.

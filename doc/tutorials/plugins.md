@@ -146,8 +146,10 @@ The only difference for filter plugins is that their `infos/provides` and `infos
 The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
-    keyNew ("system/elektra/modules/yajl/infos/licence",
-    	KEY_VALUE, "BSD", KEY_END),
+```c
+keyNew ("system/elektra/modules/yajl/infos/licence",
+        KEY_VALUE, "BSD", KEY_END);
+```
 
 ## Including `readme_pluginname.c`
 

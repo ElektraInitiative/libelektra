@@ -54,22 +54,22 @@ For the values `true` and `false`, the strings `"true"` and `"false"` can be use
 
 The following example configuration in CppCMS style
 
-```
+```json
 {
-    "service": {
-        "api": "http"
-        "port": 8080,
-        "ip": "0.0.0.0"
-    },
-    "security": {
-        "display_error_messages": true
-    }
+  "service": {
+    "api": "http",
+    "port": 8080,
+    "ip": "0.0.0.0"
+  },
+  "security": {
+    "display_error_messages": true
+  }
 }
 ```
 
 can be realized within Elektra like
 
-```
+```sh
 kdb set @config_root@@config_default_profile@/cppcms/service/api "http"
 kdb set @config_root@@config_default_profile@/cppcms/service/port 8080
 kdb set @config_root@@config_default_profile@/cppcms/service/ip "0.0.0.0"
@@ -94,7 +94,7 @@ To configure the rest-backend as service, it is possible to use `systemd` on mos
 1. Create a new service file with the following command
    (and make sure the paths of `ExecStart` match your installation of Elektra):
 
-   ```
+   ```sh
    cat > /etc/systemd/system/@tool@.service << EOF
    [Unit]
    Description=Start the REST backend for sharing of configuration snippets

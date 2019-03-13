@@ -6,15 +6,12 @@ VALIDATOR=/usr/bin/xmllint
 
 SCHEMA=$srcdir/xmlschema/elektra.xsd
 
-if [ ! -f $SCHEMA ]
-then
+if [ ! -f $SCHEMA ]; then
 	echo "Schema $SCHEMA not found, will do nothing"
 	exit 0
 fi
 
-
-if [ ! -x "$VALIDATOR" ]
-then
+if [ ! -x "$VALIDATOR" ]; then
 	echo "Tool $VALIDATOR not found, will do nothing"
 	exit 0
 fi
@@ -32,4 +29,3 @@ $VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/fstab.xml > /dev/null || exit 5
 $VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/passwd.xml > /dev/null || exit 5
 
 exit 0
-
