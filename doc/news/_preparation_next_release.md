@@ -261,6 +261,7 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
 - We added a (very) basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
+- Write Elektra with capital letter in cascading tutorial. _(Vlad - Ioan Balan)_
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
 
   ```
