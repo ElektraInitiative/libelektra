@@ -56,7 +56,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    -- Build files have been written to: Hello/build
    ```
 
-6. No it’s time to build your application. For that step run `make` inside the folder `Hello/build`:
+6. Now it’s time to build your application. For that step run `make` inside the folder `Hello/build`:
 
    ```sh
    make

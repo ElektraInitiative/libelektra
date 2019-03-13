@@ -206,6 +206,7 @@ you up to date with the multi-language support provided by Elektra.
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
 - Improved the documentation for the type plugin. _(Michael Zronek)_
 - Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
+- Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
 - <<TODO>>
 
 ## Tests
