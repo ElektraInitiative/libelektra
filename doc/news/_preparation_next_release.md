@@ -211,7 +211,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- We now check the source code of the repository with [LGTM](https://lgtm.com). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
