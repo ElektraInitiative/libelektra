@@ -25,7 +25,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- <<_arampaa_ Fixed typos in cassandra.ini>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
