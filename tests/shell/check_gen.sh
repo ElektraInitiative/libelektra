@@ -23,18 +23,18 @@ else
 	exit
 fi
 
-base_output_folder=@CMAKE_CURRENT_BINARY_DIR@/gen
+base_output_folder="@CMAKE_CURRENT_BINARY_DIR@/gen"
 
 $KDB mount "${base_output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
 
-for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
+for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 	[ -e "$test_folder" ] || continue
 	output_folder="$base_output_folder/$(basename "$test_folder")/"
 	mkdir -p "$output_folder"
 
 	template=$(basename "$test_folder")
 	echo "testing template $template"
-	for test_path in ${test_folder}*.data.ini; do
+	for test_path in "$test_folder"*.data.ini; do
 		[ -e "$test_path" ] || continue
 
 		test_file=${test_path##*/}
@@ -107,11 +107,11 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		fi
 
 		if [ "$gen" != "0" ]; then
-			rm ${output_folder}${test_name}.actual*
+			rm "$output_folder$test_name".actual*
 			continue
 		fi
 
-		for expected_part in ${test_folder}${test_name}.expected*; do
+		for expected_part in "$test_folder$test_name".expected*; do
 			[ -e "$expected_part" ] || continue
 
 			part=${expected_part#"$test_folder$test_name.expected"}
@@ -161,7 +161,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 			cd "$old_dir"
 		fi
 
-		for actual_part in ${output_folder}${test_name}.actual*; do
+		for actual_part in "$output_folder$test_name".actual*; do
 			[ -e "$actual_part" ] || continue
 
 			part=${actual_part#"$output_folder$test_name.actual"}
