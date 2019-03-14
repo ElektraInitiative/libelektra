@@ -425,6 +425,13 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 
+### Code generation
+
+`kdb gen` is now no longer an external tool implemented via python, but rather a first class command of the `kdb` tool. For now it only
+supports code generation for use with the highlevel API.
+
+. _(Klemens Böswirth)_
+
 ## Scripts
 
 - The `reformat-source` script now also formats `tests/shell/include_common.sh.in`. Additionally it ensures that the file is 1000 lines long,
