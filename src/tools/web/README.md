@@ -3,7 +3,7 @@
 _an API and web user interface to remotely manage Elektra instances_
 
 The configuration view of elektra-web is similar to the tree view of the
-[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
+[qt-gui](https://master.libelektra.org/src/tools/qt-gui), but with
 dynamic fields rendered via key metadata.
 
 ## Dependencies
