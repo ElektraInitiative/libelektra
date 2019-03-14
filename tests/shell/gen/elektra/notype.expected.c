@@ -14,10 +14,6 @@
 
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -30,18 +26,25 @@ extern "C" {
 /**
  * Initializes an instance of Elektra for the application 'tests/script/gen/elektra/notype'.
  *
- * This MUST be called before anything was written to stdout, otherwise specload will fail.
- * If you have to write to stdout before calling this, you must handle the specload
- * communication yourself. You may use  and exit
+ * This can be invoked as many times as you want, however it is not a cheap operation,
+ * so you should try to reuse the Elektra handle as much as possible.
+ *
+ * @param elektra A reference to where the Elektra instance shall be stored.
+ *                Has to be disposed of with elektraClose().
+ * @param error   A reference to an ElektraError pointer. Will be passed to elektraOpen().
+ *
+ * @retval 0  on success, @p elektra will be set, @p error will be unchanged
+ * @retval -1 on error, @p elektra will be unchanged, @p error will set
+ * @retval 1  specload mode, exit as soon as possible and must DO NOT write anything to stdout,
+ *            @p elektra and @p error are both unchanged
+ * @retval 2  help mode, '-h' or '--help' was specified call printHelpMessage and exit
  *            @p elektra and @p error are both unchanged
  *
  * @see elektraOpen
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (1,
-	keyNew ("spec/tests/script/gen/elektra/notype/elektra/specload", KEY_META, "default", "0", KEY_META, "opt",
-	"--elektra-spec", KEY_META, "opt/arg", "none", KEY_META, "type", "boolean", KEY_END),
+	KeySet * defaults = ksNew (0,
 	KS_END);
 ;
 	Elektra * e = elektraOpen ("tests/script/gen/elektra/notype", defaults, error);
@@ -49,12 +52,6 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	if (e == NULL)
 	{
 		return -1;
-	}
-
-	if (elektraGetBoolean (e, "spec/tests/script/gen/elektra/notype/elektra/specload"))
-	{
-		elektraClose (e);
-		return specloadSend ();
 	}
 
 	if (0 /* TODO: check if help mode */)
@@ -69,19 +66,25 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 }
 
 /**
- * Sends the specification over stdout in the format expected by specload.
+ * Checks whether specload mode was invoked and if so, sends the specification over stdout
+ * in the format expected by specload.
  *
- * You MUST not output anything to stdout before or after invoking this function
- * and should exit as soon as possible after calling this function.
+ * You MUST not output anything to stdout before invoking this function. Ideally invoking this
+ * is the first thing you do in your main()-function.
  *
- * @retval 1 on success
- * @retval -1 on error
+ * This function will ONLY RETURN, if specload mode was NOT invoked. Otherwise it will call `exit()`.
+ *
+ * @param argc pass the value of argc from main
+ * @param argv pass the value of argv from main
  */
-int specloadSend (void)
+void specloadCheck (int argc, const char ** argv)
 {
-	KeySet * spec = ksNew (1,
-	keyNew ("spec/tests/script/gen/elektra/notype/elektra/specload", KEY_META, "default", "0", KEY_META, "opt",
-	"--elektra-spec", KEY_META, "opt/arg", "none", KEY_META, "type", "boolean", KEY_END),
+	if (argc != 2 || strcmp (argv[1], "--elektra-specload") != 0)
+	{
+		return;
+	}
+
+	KeySet * spec = ksNew (0,
 	KS_END);
 ;
 
@@ -97,7 +100,7 @@ int specloadSend (void)
 	ksDel (specloadConf);
 	ksDel (spec);
 
-	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? 1 : -1;
+	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 /**
@@ -136,7 +139,3 @@ void printHelpMessage (void)
 
 
 
-
-#ifdef __cplusplus
-}
-#endif
