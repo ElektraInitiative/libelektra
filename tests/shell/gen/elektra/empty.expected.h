@@ -13,6 +13,10 @@
 #ifndef EMPTY_ACTUAL_H
 #define EMPTY_ACTUAL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <elektra.h>
 
 #include <kdbhelper.h>
@@ -102,7 +106,7 @@
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
 void printHelpMessage (void);
-int specloadSend (void);
+void specloadCheck (int argc, const char ** argv);
 
 
 /**
@@ -158,5 +162,9 @@ int specloadSend (void);
  * @param ...     Variable arguments depending on the given tag.
  */// 
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // EMPTY_ACTUAL_H

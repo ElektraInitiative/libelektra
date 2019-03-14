@@ -643,7 +643,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto includeGuard = createIncludeGuard (headerFile);
 	auto initFunctionName = getParameter (Params::InitFunctionName, "loadConfiguration");
 	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
-	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "specloadSend");
+	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "specloadCheck");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto optimizeFromString = getParameter (Params::OptimizeEnumFromString, "on") != "off";
 
@@ -800,21 +800,14 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	}
 
 	// TODO: make configurable?
-	auto specloadName = parentKey + "/elektra/specload";
-	if (ks.lookup (specloadName))
-	{
-		throw CommandAbortException ("Couldn't add '" + specloadName + "': Already exists!");
-	}
-
-	spec.append (kdb::Key (specloadName, KEY_META, "type", "boolean", KEY_META, "default", "0", KEY_META, "opt/arg", "none", KEY_META,
-			       "opt", "--elektra-spec", KEY_END));
+	auto specloadArg = "--elektra-specload";
 
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
 	data["structs"] = structs;
 	data["defaults"] = keySetToCCode (spec);
-	data["specload_name"] = specloadName;
+	data["specload_arg"] = specloadArg;
 
 	return data;
 }
