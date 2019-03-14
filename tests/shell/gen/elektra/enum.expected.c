@@ -167,10 +167,10 @@ ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 
 	switch (string[0])
 {
-case 'w':
-return ELEKTRA_ENUM_DISJOINTED_WHITE;
 case 'b':
 return ELEKTRA_ENUM_DISJOINTED_BLACK;
+case 'w':
+return ELEKTRA_ENUM_DISJOINTED_WHITE;
 }
 
 	
@@ -199,14 +199,14 @@ ELEKTRA_KEY_TO_SIGNATURE (Colors, EnumColors)
 
 	switch (string[0])
 {
-case 'r':
-return COLORS_RED;
 case 'b':
 return COLORS_BLUE;
-case 'n':
-return COLORS_NONE;
 case 'g':
 return COLORS_GREEN;
+case 'n':
+return COLORS_NONE;
+case 'r':
+return COLORS_RED;
 }
 
 	
@@ -238,13 +238,9 @@ ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 
 	switch (string[0])
 {
-case 'r':
-return ELEKTRA_ENUM_MYENUM_RED;
 case 'b':
 switch (string[1])
 {
-case 'r':
-return ELEKTRA_ENUM_MYENUM_BROWN;
 case 'l':
 switch (string[2])
 {
@@ -262,6 +258,8 @@ return ELEKTRA_ENUM_MYENUM_BLUE;
 break;
 }
 break;
+case 'r':
+return ELEKTRA_ENUM_MYENUM_BROWN;
 }
 break;
 case 'g':
@@ -270,14 +268,16 @@ switch (string[1])
 case 'r':
 switch (string[2])
 {
-case 'e':
-return ELEKTRA_ENUM_MYENUM_GREEN;
 case 'a':
 return ELEKTRA_ENUM_MYENUM_GRAY;
+case 'e':
+return ELEKTRA_ENUM_MYENUM_GREEN;
 }
 break;
 }
 break;
+case 'r':
+return ELEKTRA_ENUM_MYENUM_RED;
 }
 
 	

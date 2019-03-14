@@ -41,7 +41,7 @@ public:
 	std::string createSwitch ();
 
 private:
-	std::unordered_map<char, std::unique_ptr<EnumTrie>> children;
+	std::map<char, std::unique_ptr<EnumTrie>> children;
 	std::string stringValue;
 	std::string name;
 
