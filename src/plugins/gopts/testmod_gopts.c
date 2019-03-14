@@ -66,7 +66,11 @@ static void run_test (const char ** argv, const char ** envp)
 		}
 	} while (!WIFEXITED (status) && !WIFSIGNALED (status));
 
-	exit_if_fail (!WIFSIGNALED (status), "child process was killed by signal");
+	if (WIFSIGNALED (status))
+	{
+		printf ("child process was killed by signal: %d", WTERMSIG (status));
+		exit (1);
+	}
 
 	if (WIFEXITED (status) && WEXITSTATUS (status) != 0)
 	{
