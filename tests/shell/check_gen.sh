@@ -25,7 +25,7 @@ fi
 
 base_output_folder="@CMAKE_CURRENT_BINARY_DIR@/gen"
 
-$KDB mount "${base_output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
+"$KDB" mount "${base_output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
 
 for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 	[ -e "$test_folder" ] || continue
@@ -46,12 +46,12 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 		echo "running test $test_name with parent key $parent_key"
 
-		$KDB import "$parent_key" ni < "$test_path"
+		"$KDB" import "$parent_key" ni < "$test_path"
 		succeed_if "couldn't import data"
 
 		old_dir=$(pwd)
 		cd "$output_folder"
-		$KDB gen "$template" "$parent_key" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
+		"$KDB" gen "$template" "$parent_key" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
 			test "1" == "0"
@@ -102,7 +102,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 		data_list=$($KDB ls "$parent_key")
 		if [ -n "$data_list" ]; then
-			$KDB rm -r "$parent_key"
+			"$KDB" rm -r "$parent_key"
 			succeed_if "couldn't remove data"
 		fi
 
@@ -185,7 +185,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 	echo
 done
 
-$KDB umount "$SPEC_ROOT/gen"
+"$KDB" umount "$SPEC_ROOT/gen"
 rm -f "${output_folder}spec-data.ini"
 
 end_script
