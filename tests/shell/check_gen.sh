@@ -66,7 +66,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			if [ -s "$output_folder$test_name.stdout.diff" ]; then
 				test "1" = "0"
 				succeed_if "stdout of $test_name didn't match the expected output."
-				if [ "$nodiff" == "" ]; then
+				if [ "$nodiff" = "" ]; then
 					echo "Here is the diff:"
 					cat "$output_folder$test_name.stdout.diff"
 					echo
@@ -87,7 +87,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
 				test "1" = "0"
 				succeed_if "stderr of $test_name didn't match the expected output."
-				if [ "$nodiff" == "" ]; then
+				if [ "$nodiff" = "" ]; then
 					echo "Here is the diff:"
 					cat "$output_folder$test_name.stderr.diff"
 					echo
@@ -126,7 +126,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			if [ -s "$diff_part" ]; then
 				test "1" = "0"
 				succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
-				if [ "$nodiff" == "" ]; then
+				if [ "$nodiff" = "" ]; then
 					echo "Here is the diff:"
 					cat "$diff_part"
 					echo
@@ -147,7 +147,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				test "1" = "0"
 				succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
 
-				if [ "$nodiff" == "" ]; then
+				if [ "$nodiff" = "" ]; then
 					echo "Here is the log:"
 					cat "$output_folder$test_name.check.log"
 					echo
