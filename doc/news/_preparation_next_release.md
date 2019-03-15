@@ -219,9 +219,25 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- We now check the source code of the repository with [LGTM](https://lgtm.com). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### Source Code Checks
+
+- We now check the source code of the repository with [LGTM][]. _(René Schwaiger)_
+- We fixed various warnings about
+
+  - missing or duplicated include guards,
+  - undefined behavior,
+  - incorrect format specifiers,
+  - unnecessary statements,
+  - short names for global variables, and
+  - empty `if`-statements
+
+  reported by [LGTM][]. _(René Schwaiger)_
+
+[lgtm]: https://lgtm.com
 
 ## Build
 
