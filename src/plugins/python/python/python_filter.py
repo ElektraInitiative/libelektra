@@ -1,5 +1,4 @@
 import kdb
-import configparser
 
 class ElektraPlugin(object):
 	def __init__(self):
