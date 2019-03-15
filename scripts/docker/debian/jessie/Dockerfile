@@ -44,7 +44,7 @@ RUN apt-get update && apt-get -y install \
     gawk \
     lcov \
     valgrind \
-    xxd && \
+    vim && \
     rm -rf /var/lib/apt/lists/*
 
 # Google Test
