@@ -172,7 +172,9 @@ Elektra uses a [git repository at GitHub](https://github.com/ElektraInitiative/l
 
 You can clone the latest version of Elektra by running:
 
-         git clone https://github.com/ElektraInitiative/libelektra.git
+```sh
+git clone https://github.com/ElektraInitiative/libelektra.git
+```
 
 Releases can be downloaded from [here](https://www.libelektra.org/ftp/elektra/releases/).
 

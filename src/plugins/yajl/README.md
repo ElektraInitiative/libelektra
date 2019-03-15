@@ -55,11 +55,15 @@ data loss.
 In JSON it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
 
-    ###empty_array
+```
+###empty_array
+```
 
 and
 
-    ___empty_map
+```
+___empty_map
+```
 
 Arrays are mapped to Elektra’s array convention #0, #1,..
 

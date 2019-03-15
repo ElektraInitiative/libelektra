@@ -4,7 +4,7 @@ This file serves as a tutorial on how to write a storage plugin (which includes 
 
 ## Types of Plugins
 
-- Storage plugins are used by Elektra in order to store data in the Elektra Key Database
+- [Storage plugins](storage-plugins.md) are used by Elektra in order to store data in the Elektra Key Database
   in an intelligent way. They act as a liaison between configuration files and the Key Database. Storage plugins are largely responsible for
   the functionality of Elektra and they allow many of its advanced features to work.
   These plugins act as sources and destinations of configuration settings.
@@ -32,7 +32,7 @@ All plugins use the same basic interface. This interface consists of five basic 
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
-where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for my line plugin this function would be
+where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for the line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may also define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
 
@@ -48,15 +48,15 @@ that allow the plugin to work:
 - `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation.
   This is not needed for storage plugins as the resolver already takes care to unlink the configuration files in such situations.
 - `elektraPluginClose()` is used to free resources that might be required for the plugin.
-- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plugin exists and what the name of the above functions are.
+- `ELEKTRA_PLUGIN_EXPORT` simply lets Elektra know that the plugin exists and what the name of the above functions are.
 
 Most simply put: most plugins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
-and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
+and `ELEKTRA_EXPORT_PLUGIN`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called [`template`](/src/plugins/template/) and a new plugin can be created by calling the
 [copy-template script](/scripts/copy-template) .
-For example for my plugin I called `scripts/copy-template line`. Afterwards two
+For example, the author of the [line plugin](/src/plugins/line/) used the command `scripts/copy-template line` to create the initial version of the plugin. Afterwards two
 important things are left to be done:
 
 - remove all functions (and their exports) from the plugin that are not needed. For example not every plugin actually makes use of the `elektraPluginOpen()` function.
@@ -97,7 +97,7 @@ generate_readme(pluginname)
 ```
 
 It will generate a `readme_plugginname.c` (in the build-directory) out of the
-README.md of the plugin’s source directory.
+`README.md` of the plugin’s source directory.
 
 But prefer to use
 
@@ -136,7 +136,7 @@ All these clauses need to be present for every plugin.
 
 The information of clauses are limited to a single line, starting with
 `-` (so that the file renders nicely in Markdown), followed by the clause
-itself separated with `=`.
+itself separated by `=`.
 Only for the description an unlimited amount of lines can be
 used (until the end of the file).
 
@@ -146,8 +146,10 @@ The only difference for filter plugins is that their `infos/provides` and `infos
 The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
-    keyNew ("system/elektra/modules/yajl/infos/licence",
-    	KEY_VALUE, "BSD", KEY_END),
+```c
+keyNew ("system/elektra/modules/yajl/infos/licence",
+        KEY_VALUE, "BSD", KEY_END);
+```
 
 ## Including `readme_pluginname.c`
 
@@ -167,7 +169,7 @@ if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 
 The `elektraPluginContract()` is a method implemented by the plugin developer
 containing the parts of the contract not specified in `README.md`.
-An example of this function (taken from the `yajl` plugin):
+An example of this function (taken from the [`yajl`](/src/plugins/yajl/) plugin):
 
 ```c
 static inline KeySet *elektraYajlContract()
@@ -347,7 +349,7 @@ for (/* each key */)
 // close the file
 ```
 
-The full-blown code can be found at [line plugin](https://libelektra.org/tree/master/src/plugins/line/line.c).
+The full-blown code can be found at [line plugin](https://master.libelektra.org/src/plugins/line/line.c).
 
 As you can see, all `elektraLineSet` does is open a file, take each `Key` from the `KeySet` (remember they are named `#1`, `#2` ... `#_22`) in order,
 and write each key as its own line in the file. Since we don't care about the name of the `Key` in this case (other than for order), we just write
@@ -418,7 +420,7 @@ The last function, one that is always needed in a plugin, is `ELEKTRA_PLUGIN_EXP
 the plugin exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
 
 ```c
-Plugin *ELEKTRA_PLUGIN_EXPORT(line)
+Plugin *ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport("line",
 	ELEKTRA_PLUGIN_GET, &elektraLineGet,

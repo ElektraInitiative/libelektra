@@ -41,18 +41,22 @@ Thus we recommend to either mount `/tmp` to a RAM disk or specify another path a
 
 If you encounter the following error at `kdb mount`:
 
-    The command kdb mount terminated unsuccessfully with the info:
-    Too many plugins!
-    The plugin sync can't be positioned at position precommit anymore.
-    Try to reduce the number of plugins!
+```
+The command kdb mount terminated unsuccessfully with the info:
+Too many plugins!
+The plugin sync can't be positioned at position precommit anymore.
+Try to reduce the number of plugins!
 
-    Failed because precommit with 7 is larger than 6
-    Please report the issue at https://issues.libelektra.org/
+Failed because precommit with 7 is larger than 6
+Please report the issue at https://issues.libelektra.org/
+```
 
 you might want to consider disabling the sync plugin by entering:
 
-    kdb set /sw/elektra/kdb/#0/current/plugins ""
-    kdb set system/sw/elektra/kdb/#0/current/plugins ""
+```sh
+kdb set /sw/elektra/kdb/#0/current/plugins ""
+kdb set system/sw/elektra/kdb/#0/current/plugins ""
+```
 
 Please note that this is a workaround until a more sustainable solution is found.
 
@@ -74,25 +78,36 @@ Please refer to [crypto](../crypto/).
 
 You can mount the plugin with encryption enabled like this:
 
-    kdb mount test.ecf /t fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```sh
+kdb mount test.ecf /t fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```
 
 If you only want to sign the configuration file, you can mount the plugin like this:
 
-    kdb mount test.ecf /t fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```sh
+kdb mount test.ecf /t fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```
 
 Both options `encrypt/key` and `sign/key` can be combined:
 
-    kdb mount test.ecf /t fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```sh
+kdb mount test.ecf /t fcrypt \
+  "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```
 
 If you create a key under `/t`
 
-    kdb set /t/a "hello world"
+```sh
+kdb set /t/a "hello world"
+```
 
 you will notice that you can not read the plain text of `test.ecf` because it has been encrypted by GPG.
 
 But you can still access `/t/a` with `kdb get`:
 
-    kdb get /t/a
+```sh
+kdb get /t/a
+```
 
 If you are looking for a more interactive example, have a look at the following ASCIIcast at:
 
@@ -105,8 +120,10 @@ If you are looking for a more interactive example, have a look at the following 
 The GPG signature keys can be specified as `sign/key` directly.
 If you want to use more than one key for signing, just enumerate like:
 
-    sign/key/#0
-    sign/key/#1
+```
+sign/key/#0
+sign/key/#1
+```
 
 If more than one key is defined, every private key is used to sign the file of the backend.
 
@@ -116,7 +133,9 @@ Note that the signed file is stored in the internal format of GPG.
 So you only see binary data when opening the signed configuration file directly.
 However, you can simply display the plain text content of the file by using GPG:
 
-    gpg2 -d signed.ecf
+```sh
+gpg2 -d signed.ecf
+```
 
 ### GPG Configuration
 

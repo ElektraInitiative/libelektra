@@ -42,12 +42,13 @@ If the config key `index` is set to `name` passwd entries will be sorted by name
 
 ## Usage
 
-    kdb mount /etc/passwd system/passwd passwd index=name
-    kdb export system/passwd/root
-
-    gecos = root
-    gid = 0
-    home = /root
-    passwd = x
-    shell = /bin/zsh
-    uid = 0
+```sh
+kdb mount /etc/passwd system/passwd passwd index=name
+kdb export system/passwd/root
+#> gecos = root
+#> gid = 0
+#> home = /root
+#> passwd = x
+#> shell = /bin/zsh
+#> uid = 0
+```

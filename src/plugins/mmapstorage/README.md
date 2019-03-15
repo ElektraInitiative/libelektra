@@ -23,11 +23,15 @@ Therefore, the files must not be edited by hand. Files written by mmapstorage ar
 
 Mount mmapstorage using `kdb mount`:
 
-    sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
+```sh
+sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
+```
 
 Unmount mmapstorage using `kdb umount`:
 
-    sudo kdb umount user/tests/mmapstorage
+```sh
+sudo kdb umount user/tests/mmapstorage
+```
 
 ## Compiling
 

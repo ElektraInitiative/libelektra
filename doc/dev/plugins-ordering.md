@@ -52,16 +52,18 @@ names to be referred to in the contract.
 
 Here you see a table that contains all names:
 
-    0     prerollback       getresolver         setresolver
-    1     prerollback       pregetstorage      presetstorage
-    2     prerollback       pregetstorage      presetstorage
-    3     prerollback       pregetstorage      presetstorage
-    4     prerollback       pregetstorage      presetstorage
-    5      rollback            getstorage         setstorage
-    6    postrollback      postgetstorage      precommit
-    7    postrollback      postgetstorage         commit
-    8    postrollback      postgetstorage     postcommit
-    9    postrollback      postgetstorage     postcommit
+| Slot | Error        | Get            | Set           |
+| ---- | ------------ | -------------- | ------------- |
+| 0    | prerollback  | getresolver    | setresolver   |
+| 1    | prerollback  | pregetstorage  | presetstorage |
+| 2    | prerollback  | pregetstorage  | presetstorage |
+| 3    | prerollback  | pregetstorage  | presetstorage |
+| 4    | prerollback  | pregetstorage  | presetstorage |
+| 5    | rollback     | getstorage     | setstorage    |
+| 6    | postrollback | postgetstorage | precommit     |
+| 7    | postrollback | postgetstorage | commit        |
+| 8    | postrollback | postgetstorage | postcommit    |
+| 9    | postrollback | postgetstorage | postcommit    |
 
 . How the placement is influenced using `infos/placement`, `infos/ordering`
 and `infos/stacking` is described in

@@ -918,7 +918,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					retval = -1;
 				}
 			}
-			else if (data->putProto == PROTO_SMB)
+			else if (data->putProto == PROTO_SMB) // lgtm [cpp/empty-block]
 			{
 			}
 			else

@@ -156,13 +156,9 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 				{
 					retval = 0;
 				}
-				else if (result > 0)
+				else
 				{
 					retval = 1;
-				}
-				else if (result < 0)
-				{
-					retval = -1;
 				}
 			}
 			else

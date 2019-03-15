@@ -21,12 +21,12 @@ int main (void)
 	printf ("Retrieve key set\n");
 	kdbGet (handle, config, root);
 
-	printf ("Number of key-value pairs: %zu\n", ksGetSize (config));
+	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
 
 	Key * key = keyNew ("user/test/hello", KEY_VALUE, "elektra", KEY_END);
 	printf ("Add key %s\n", keyName (key));
 	ksAppendKey (config, key);
-	printf ("Number of key-value pairs: %zu\n", ksGetSize (config));
+	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
 	printf ("\n%s, %s\n\n", keyBaseName (key), keyString (key));
 
 	// If you want to store the key database on disk, then please uncomment the following two lines
