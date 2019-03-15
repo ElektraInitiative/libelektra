@@ -58,7 +58,7 @@ None.
 ```sh
 # Mount a backend using quickdump
 kdb mount quickdump.eqd user/tests/quickdump quickdump
-#> RET: 0
+# RET: 0
 
 # Set some keys and metakeys
 kdb set user/tests/quickdump/key value
@@ -71,7 +71,7 @@ kdb set user/tests/quickdump/otherkey "other value"
 
 # Show resulting file
 xxd $(kdb file user/tests/quickdump/key)
-#> 00000000: 454b 4442 0000 0001 0300 0000 0000 0000  EKDB............
+#> 00000000: 454b 4442 0000 0002 0300 0000 0000 0000  EKDB............
 #> 00000010: 6b65 7973 0500 0000 0000 0000 7661 6c75  keys........valu
 #> 00000020: 656d 0400 0000 0000 0000 6d65 7461 0900  em........meta..
 #> 00000030: 0000 0000 0000 6d65 7461 7661 6c75 6500  ......metavalue.
@@ -80,22 +80,22 @@ xxd $(kdb file user/tests/quickdump/key)
 #> 00000060: 616c 7565 00                             alue.
 
 # Change mounted file:
-#  - change key from 'value' to 'new value'
+#  - change key from 'value' to 'other value'
 #  - add copy metadata instruction to otherkey
-xxd -r << EOF > $(kdb file user/tests/quickdump/key)
-00000000: 454b 4442 0000 0001 0300 0000 0000 0000  EKDB............
-00000010: 6b65 7973 0900 0000 0000 0000 6f74 6865  keys........othe
-00000020: 7220 7661 6c75 656d 0400 0000 0000 0000  r valuem........
-00000030: 6d65 7461 0900 0000 0000 0000 6d65 7461  meta........meta
-00000040: 7661 6c75 6500 0800 0000 0000 0000 6f74  value.........ot
-00000050: 6865 726b 6579 730b 0000 0000 0000 006f  herkeys........o
-00000060: 7468 6572 2076 616c 7565 6303 0000 0000  ther valuec.....
-00000070: 0000 006b 6579 0400 0000 0000 0000 6d65  ...key........me
-00000080: 7461 00                                  ta.
-EOF
+printf "" > /tmp/quickdumpfile
+echo "00000000: 454b 4442 0000 0002 0300 0000 0000 0000  EKDB............" >> /tmp/quickdumpfile
+echo "00000010: 6b65 7973 0b00 0000 0000 0000 6f74 6865  keys........othe" >> /tmp/quickdumpfile
+echo "00000020: 7220 7661 6c75 656d 0400 0000 0000 0000  r valuem........" >> /tmp/quickdumpfile
+echo "00000030: 6d65 7461 0900 0000 0000 0000 6d65 7461  meta........meta" >> /tmp/quickdumpfile
+echo "00000040: 7661 6c75 6500 0800 0000 0000 0000 6f74  value.........ot" >> /tmp/quickdumpfile
+echo "00000050: 6865 726b 6579 730b 0000 0000 0000 006f  herkeys........o" >> /tmp/quickdumpfile
+echo "00000060: 7468 6572 2076 616c 7565 6303 0000 0000  ther valuec....." >> /tmp/quickdumpfile
+echo "00000070: 0000 006b 6579 0400 0000 0000 0000 6d65  ...key........me" >> /tmp/quickdumpfile
+echo "00000080: 7461 00                                  ta."              >> /tmp/quickdumpfile
+xxd -r /tmp/quickdumpfile > $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
-#> new value
+#> other value
 
 kdb getmeta user/tests/quickdump/key meta
 #> metavalue

@@ -168,8 +168,16 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	kdb_unsigned_long_long_t magic;
 	if (fread (&magic, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
 	{
-		fclose (file);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		if (feof (file) && ftell (file) == 0)
+		{
+			fclose (file);
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
+		else
+		{
+			fclose (file);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 	}
 	magic = be64toh (magic); // magic number is written big endian so EKDB magic string is readable
 
@@ -182,6 +190,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		break;
 	default:
 		fclose (file);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_READ_FAILED, parentKey, "Unknown magic number " ELEKTRA_UNSIGNED_LONG_LONG_F, magic);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -224,6 +233,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey, "missing key type");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -256,6 +266,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					fclose (file);
+					ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey, "");
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);
@@ -282,6 +293,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_READ_FAILED, parentKey, "Unknown key type %c", type);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -291,6 +303,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			{
 				keyDel (k);
 				fclose (file);
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
@@ -350,8 +363,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				if (sourceKey == NULL)
 				{
 					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_WRITE_FAILED, parentKey,
-							    "Could not copy meta data from key '%s': Key not found",
-							    &nameBuffer.string[nameBuffer.offset]);
+							    "Could not copy meta data from key '%s': Key not found", nameBuffer.string);
 					keyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
@@ -380,6 +392,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
 				fclose (file);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_READ_FAILED, parentKey, "Unknown meta type %c", type);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
