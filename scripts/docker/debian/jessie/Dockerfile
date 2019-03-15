@@ -43,7 +43,8 @@ RUN apt-get update && apt-get -y install \
     libsystemd-dev \
     gawk \
     lcov \
-    valgrind && \
+    valgrind \
+    xxd && \
     rm -rf /var/lib/apt/lists/*
 
 # Google Test

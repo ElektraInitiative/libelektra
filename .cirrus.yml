@@ -18,6 +18,7 @@ bsd_task:
       ninja
       yajl
       yaml-cpp
+      vim
 
   script:
     - &create_and_chage_to_build_dir mkdir build && cd build
