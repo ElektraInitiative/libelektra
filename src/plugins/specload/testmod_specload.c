@@ -56,7 +56,7 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("spec/tests/specload", KEY_VALUE, srcdir_file ("specload/basics.quickdump"), KEY_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/basics.quickdump"), KEY_END);
 	KeySet * conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 
 	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
@@ -86,7 +86,7 @@ static void test_newfile (void)
 
 	exit_if_fail (access (srcdir_file ("specload/new.quickdump"), F_OK) == -1, "srcdir_file specload/new.quickdump shouldn't exist");
 
-	Key * parentKey = keyNew ("spec/tests/specload", KEY_VALUE, srcdir_file ("specload/new.quickdump"), KEY_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/new.quickdump"), KEY_END);
 	KeySet * conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 
 	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
@@ -116,7 +116,7 @@ static void test_add (void)
 {
 	printf ("test add\n");
 
-	Key * parentKey = keyNew ("spec/tests/specload", KEY_VALUE, srcdir_file ("specload/add.quickdump"), KEY_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/add.quickdump"), KEY_END);
 	KeySet * conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 
 	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
@@ -127,7 +127,7 @@ static void test_add (void)
 
 	FILE * backup = backupFile (srcdir_file ("specload/add.quickdump"));
 	KeySet * ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_VALUE, "0", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_VALUE, "0", KEY_END));
 	KeySet * orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "adding values should fail");
 	compare_keyset (orig, ks);
@@ -137,7 +137,7 @@ static void test_add (void)
 
 	backup = backupFile (srcdir_file ("specload/add.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "default", "0", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_META, "default", "0", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding default should work");
 	compare_keyset (orig, ks);
@@ -147,7 +147,7 @@ static void test_add (void)
 
 	backup = backupFile (srcdir_file ("specload/add.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "type", "string", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_META, "type", "string", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding type should work");
 	compare_keyset (orig, ks);
@@ -157,7 +157,7 @@ static void test_add (void)
 
 	backup = backupFile (srcdir_file ("specload/add.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "description", "Lorem ipsum", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_META, "description", "Lorem ipsum", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding description should work");
 	compare_keyset (orig, ks);
@@ -167,7 +167,7 @@ static void test_add (void)
 
 	backup = backupFile (srcdir_file ("specload/add.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding opt/help should work");
 	compare_keyset (orig, ks);
@@ -183,7 +183,7 @@ static void test_edit (void)
 {
 	printf ("test edit\n");
 
-	Key * parentKey = keyNew ("spec/tests/specload", KEY_VALUE, srcdir_file ("specload/edit.quickdump"), KEY_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/edit.quickdump"), KEY_END);
 	KeySet * conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 
 	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
@@ -194,8 +194,8 @@ static void test_edit (void)
 
 	FILE * backup = backupFile (srcdir_file ("specload/edit.quickdump"));
 	KeySet * ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "1", KEY_META, "default", "0", KEY_META, "description",
-				 "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "1", KEY_META, "default", "0", KEY_META, "description", "Lorem ipsum",
+				 KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	KeySet * orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "changing values should fail");
 	compare_keyset (orig, ks);
@@ -205,8 +205,8 @@ static void test_edit (void)
 
 	backup = backupFile (srcdir_file ("specload/edit.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "default", "1", KEY_META, "description",
-				 "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "default", "1", KEY_META, "description", "Lorem ipsum",
+				 KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing default should work");
 	compare_keyset (orig, ks);
@@ -216,8 +216,8 @@ static void test_edit (void)
 
 	backup = backupFile (srcdir_file ("specload/edit.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "description",
-				 "Lorem ipsum edit", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "description", "Lorem ipsum edit",
+				 KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing description should work");
 	compare_keyset (orig, ks);
@@ -227,8 +227,8 @@ static void test_edit (void)
 
 	backup = backupFile (srcdir_file ("specload/edit.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "description",
-				 "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt edit", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "description", "Lorem ipsum",
+				 KEY_META, "opt/help", "Lorem ipsum opt edit", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing opt/help should work");
 	compare_keyset (orig, ks);
@@ -244,7 +244,7 @@ static void test_remove (void)
 {
 	printf ("test remove\n");
 
-	Key * parentKey = keyNew ("spec/tests/specload", KEY_VALUE, srcdir_file ("specload/remove.quickdump"), KEY_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/remove.quickdump"), KEY_END);
 	KeySet * conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 
 	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
@@ -255,8 +255,8 @@ static void test_remove (void)
 
 	FILE * backup = backupFile (srcdir_file ("specload/remove.quickdump"));
 	KeySet * ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_META, "description", "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt",
-				 KEY_END));
+	ksAppendKey (ks,
+		     keyNew (PARENT_KEY "/key", KEY_META, "description", "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	KeySet * orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "removing values should fail");
 	compare_keyset (orig, ks);
@@ -266,7 +266,7 @@ static void test_remove (void)
 
 	backup = backupFile (srcdir_file ("specload/remove.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "removing description should work");
 	compare_keyset (orig, ks);
@@ -276,7 +276,7 @@ static void test_remove (void)
 
 	backup = backupFile (srcdir_file ("specload/remove.quickdump"));
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "description", "Lorem ipsum", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "description", "Lorem ipsum", KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "removing opt/help should work");
 	compare_keyset (orig, ks);
