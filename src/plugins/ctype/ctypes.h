@@ -7,12 +7,13 @@
  *
  */
 
-#ifndef ELEKTRA_TYPES_HPP
-#define ELEKTRA_TYPES_HPP
+#ifndef ELEKTRA_CTYPES_HPP
+#define ELEKTRA_CTYPES_HPP
 
 #include <stdbool.h>
 
 #include <kdb.h>
+#include <kdbplugin.h>
 #include <kdbtypes.h>
 
 bool elektraCTypeCheckAny (const Key * key);
@@ -22,7 +23,9 @@ bool elektraCTypeCheckWChar (const Key * key);
 bool elektraCTypeCheckString (const Key * key);
 bool elektraCTypeCheckWString (const Key * key);
 
+bool elektraCTypeNormalizeBoolean (Plugin * handle, Key * key);
 bool elektraCTypeCheckBoolean (const Key * key);
+bool elektraCTypeRestoreBoolean (Plugin * handle, Key * key);
 
 bool elektraCTypeCheckFloat (const Key * key);
 bool elektraCTypeCheckDouble (const Key * key);

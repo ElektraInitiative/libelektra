@@ -8,8 +8,8 @@
  */
 
 
-#ifndef ELEKTRA_PLUGIN_TYPE_H
-#define ELEKTRA_PLUGIN_TYPE_H
+#ifndef ELEKTRA_PLUGIN_CTYPE_H
+#define ELEKTRA_PLUGIN_CTYPE_H
 
 #include <stdbool.h>
 
@@ -21,12 +21,16 @@ namespace ckdb
 {
 #endif
 
-bool elektraCTypeCheckType (const Key * key);
+typedef struct _Type Type;
+
 int elektraCTypeGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCTypeSet (Plugin * handle, KeySet * ks, Key * parentKey);
-bool elektraCTypeValidateKey (Key * key, Key * errorKey);
+int elektraCTypeCheckConf (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ctype);
+bool elektraCTypeCheckType (const Key * key);
+bool elektraCTypeValidateKey (Plugin * handle, Key * key, Key * errorKey);
+
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #ifdef __cplusplus
 }

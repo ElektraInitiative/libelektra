@@ -9,6 +9,7 @@
 
 #include "ctypes.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,6 +36,16 @@
 		}                                                                                                                          \
 		elektraFree (string);                                                                                                      \
 	}
+
+#define DEFAULT_BOOLEANS                                                                                                                   \
+	ksNew (11, keyNew ("user/booleans", KEY_VALUE, "#4", KEY_END), keyNew ("user/booleans/#0/true", KEY_VALUE, "yes", KEY_END),        \
+	       keyNew ("user/booleans/#0/false", KEY_VALUE, "no", KEY_END), keyNew ("user/booleans/#1/true", KEY_VALUE, "true", KEY_END),  \
+	       keyNew ("user/booleans/#1/false", KEY_VALUE, "false", KEY_END), keyNew ("user/booleans/#2/true", KEY_VALUE, "on", KEY_END), \
+	       keyNew ("user/booleans/#2/false", KEY_VALUE, "off", KEY_END),                                                               \
+	       keyNew ("user/booleans/#3/true", KEY_VALUE, "enabled", KEY_END),                                                            \
+	       keyNew ("user/booleans/#3/false", KEY_VALUE, "disabled", KEY_END),                                                          \
+	       keyNew ("user/booleans/#4/true", KEY_VALUE, "enable", KEY_END),                                                             \
+	       keyNew ("user/booleans/#4/false", KEY_VALUE, "disable", KEY_END), KS_END)
 
 bool elektraCTypeCheckAny (const Key * key ELEKTRA_UNUSED)
 {
@@ -73,10 +84,87 @@ bool elektraCTypeCheckWString (const Key * key)
 	return result > 0 && result < max;
 }
 
+bool elektraCTypeNormalizeBoolean (Plugin * handle, Key * key)
+{
+	const char * value = keyString (key);
+
+	if ((value[0] == '1' || value[0] == '0') && value[1] == '\0')
+	{
+		return true;
+	}
+
+	KeySet * config = ksDup (elektraPluginGetConfig (handle));
+
+	Key * parent = ksLookupByName (config, "/booleans", 0);
+	const char * max = keyString (parent);
+	if (parent == NULL || strlen (max) == 0)
+	{
+		ksDel (config);
+		config = DEFAULT_BOOLEANS;
+		parent = ksLookupByName (config, "/booleans", 0);
+		max = keyString (parent);
+	}
+
+	kdb_long_long_t index = 0;
+	char buffer[10 + ELEKTRA_MAX_ARRAY_SIZE + 6];
+	strcpy (buffer, "/booleans/");
+	char * indexPos = &buffer[10];
+	elektraWriteArrayNumber (indexPos, index);
+
+	char * origValue = elektraStrDup (value);
+
+	while (strcmp (indexPos, max) <= 0)
+	{
+		char * subPos = &buffer[strlen (buffer)];
+		strcpy (subPos, "/true");
+		Key * trueKey = ksLookupByName (config, buffer, 0);
+		strcpy (subPos, "/false");
+		Key * falseKey = ksLookupByName (config, buffer, 0);
+
+		const char * trueValue = trueKey == NULL ? "1" : keyString (trueKey);
+		const char * falseValue = falseKey == NULL ? "0" : keyString (falseKey);
+
+		if (strcasecmp (trueValue, value) == 0)
+		{
+			keySetString (key, "1");
+			keySetMeta (key, "origvalue", origValue);
+			elektraFree (origValue);
+			ksDel (config);
+			return true;
+		}
+		else if (strcasecmp (falseValue, value) == 0)
+		{
+			keySetString (key, "0");
+			keySetMeta (key, "origvalue", origValue);
+			elektraFree (origValue);
+			ksDel (config);
+			return true;
+		}
+
+		++index;
+		elektraWriteArrayNumber (indexPos, index);
+	}
+
+	elektraFree (origValue);
+	ksDel (config);
+	return false;
+}
+
 bool elektraCTypeCheckBoolean (const Key * key)
 {
 	const char * value = keyString (key);
 	return (value[0] == '1' || value[0] == '0') && value[1] == '\0';
+}
+
+bool elektraCTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
+{
+	const Key * orig = keyGetMeta (key, "origvalue");
+	if (orig != NULL)
+	{
+		keySetString (key, keyString (orig));
+	}
+
+	return true;
 }
 
 bool elektraCTypeCheckFloat (const Key * key)

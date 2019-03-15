@@ -5,5 +5,6 @@ add_plugin (ctype
 		    ctypes.c
 	    LINK_ELEKTRA elektra-highlevel
 			 elektra-meta
+			 elektra-ease
 	    ADD_TEST
 	    TEST_README)

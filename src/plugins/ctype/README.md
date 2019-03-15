@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = check
 - infos/needs =
-- infos/placements = presetstorage
+- infos/placements = postgetstorage presetstorage
 - infos/status = maintained nodep libc unfinished
 - infos/metadata = check/type type check/enum check/enum/# check/enum/multi
 - infos/description = type checker using COBRA data types
@@ -137,6 +137,39 @@ kdb set user/tests/ctype/multivalue all_small
 # cleanup
 kdb rm -r user/tests/ctype
 sudo kdb umount user/tests/ctype
+```
+
+For booleans:
+
+```sh
+# Mount plugin
+sudo kdb mount config.ecf user/tests/boolean dump ctype
+
+# By default the plugin uses `1` (true) and `0` (false) to represent boolean values
+kdb set user/tests/boolean/truthiness false
+kdb setmeta user/tests/boolean/truthiness type boolean
+kdb get user/tests/boolean/truthiness
+#> 0
+
+# The plugin does not change ordinary values
+kdb set user/tests/boolean/key value
+kdb get user/tests/boolean/key
+#> value
+
+# Undo changes
+kdb rm -r user/tests/boolean
+sudo kdb umount user/tests/boolean
+```
+
+```sh
+sudo kdb mount config.ecf user/tests/boolean dump ctype
+kdb set user/tests/boolean/truthiness 0
+kdb setmeta user/tests/boolean/truthiness type boolean
+ kdb set user/tests/boolean/truthiness yes
+# RET: 0
+ # Undo changes
+kdb rm -r user/tests/boolean
+sudo kdb umount user/tests/boolean
 ```
 
 ## Limitations
