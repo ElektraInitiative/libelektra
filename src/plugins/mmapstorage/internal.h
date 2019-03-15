@@ -6,8 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-#ifndef ELEKTRA_MMAPSTORAGE_INTERNAL_H
-#define ELEKTRA_MMAPSTORAGE_INTERNAL_H
 
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
