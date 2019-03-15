@@ -115,13 +115,17 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Specload
 
-- The [specload](https://www.libelektra.org/plugins/specload) pluign is a special storage plugin. Instead of using a storage file
+- The [specload](https://www.libelektra.org/plugins/specload) plugin is a special storage plugin. Instead of using a storage file
   it calls an external application to request its specification. For the transfer it relies on the
   [quickdump](https://www.libelektra.org/plugins/quickdump) plugin. _(Klemens Böswirth)_
 - Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
   specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
 - We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
+
+### Syslog
+
+- We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
 
 ## Libraries
 
@@ -210,13 +214,30 @@ you up to date with the multi-language support provided by Elektra.
 - Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
 - Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
 - Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
+- We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - <<TODO>>
 
 ## Tests
 
-- We now check the source code of the repository with [LGTM](https://lgtm.com). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### Source Code Checks
+
+- We now check the source code of the repository with [LGTM][]. _(René Schwaiger)_
+- We fixed various warnings about
+
+  - missing or duplicated include guards,
+  - undefined behavior,
+  - incorrect format specifiers,
+  - unnecessary statements,
+  - short names for global variables, and
+  - empty `if`-statements
+
+  reported by [LGTM][]. _(René Schwaiger)_
+
+[lgtm]: https://lgtm.com
 
 ## Build
 
