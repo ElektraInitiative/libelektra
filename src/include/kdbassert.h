@@ -6,6 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#ifndef ELEKTRA_KDBASSERT_H
+#define ELEKTRA_KDBASSERT_H
+
 #include <kdbconfig.h>
 #include <kdbmacros.h>
 
@@ -40,4 +43,6 @@ void elektraAbort (const char * expression, const char * function, const char * 
 #define ELEKTRA_ASSERT(EXPR, ...)
 #endif
 #define ELEKTRA_NOT_NULL(argument) ELEKTRA_ASSERT (argument, "The variable `" #argument "` contains `NULL`.")
+#endif
+
 #endif
