@@ -27,6 +27,7 @@ RUN apt-get update && apt-get -y install \
         valgrind \
         checkinstall \
         swig \
+        vim \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
