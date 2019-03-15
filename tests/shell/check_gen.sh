@@ -54,7 +54,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		"$KDB" gen "$template" "$parent_key" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
-			test "1" == "0"
+			test "1" = "0"
 			succeed_if "kdb gen failed: "
 			cat "$output_folder$test_name.stderr"
 		fi
@@ -64,7 +64,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			diff -u "$output_folder$test_name.stdout" "$test_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
 
 			if [ -s "$output_folder$test_name.stdout.diff" ]; then
-				[ "1" == "0" ]
+				test "1" = "0"
 				succeed_if "stdout of $test_name didn't match the expected output."
 				if [ "$nodiff" == "" ]; then
 					echo "Here is the diff:"
@@ -85,7 +85,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			diff -u "$output_folder$test_name.stderr" "$test_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
-				test "1" == "0"
+				test "1" = "0"
 				succeed_if "stderr of $test_name didn't match the expected output."
 				if [ "$nodiff" == "" ]; then
 					echo "Here is the diff:"
@@ -100,7 +100,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		fi
 		rm "$output_folder$test_name.stderr"
 
-		data_list=$($KDB ls "$parent_key")
+		data_list=$("$KDB" ls "$parent_key")
 		if [ -n "$data_list" ]; then
 			"$KDB" rm -r "$parent_key"
 			succeed_if "couldn't remove data"
@@ -124,7 +124,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			diff -u "$actual_part" "$expected_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
 
 			if [ -s "$diff_part" ]; then
-				[ "1" == "0" ]
+				test "1" = "0"
 				succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
 				if [ "$nodiff" == "" ]; then
 					echo "Here is the diff:"
@@ -144,7 +144,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 			sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
 			if [ "$?" != "0" ]; then
-				[ "1" == "0" ]
+				test "1" = "0"
 				succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
 
 				if [ "$nodiff" == "" ]; then
@@ -178,7 +178,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				continue
 			fi
 
-			[ "1" == "0" ]
+			test "1" = "0"
 			succeed_if "additional part ${actual_part}"
 		done
 	done
