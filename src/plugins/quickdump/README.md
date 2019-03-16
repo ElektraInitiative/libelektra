@@ -94,7 +94,7 @@ od -A n -t x1 $(kdb file user/tests/quickdump/key)
 #  - add copy metadata instruction to otherkey
 # Note: this is a weird solution, but it works without xxd
 printf "" > /tmp/quickdumpfile
-printf "$(printf '\\x%s' 45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # EKDB............ 
+printf "$(printf '\\x%s' 45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # EKDB............
 printf "$(printf '\\x%s' 6b 65 79 73 0b 00 00 00 00 00 00 00 6f 74 68 65)" >> /tmp/quickdumpfile # keys........othe
 printf "$(printf '\\x%s' 72 20 76 61 6c 75 65 6d 04 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # r valuem........
 printf "$(printf '\\x%s' 6d 65 74 61 09 00 00 00 00 00 00 00 6d 65 74 61)" >> /tmp/quickdumpfile # meta........meta
@@ -102,7 +102,7 @@ printf "$(printf '\\x%s' 76 61 6c 75 65 00 08 00 00 00 00 00 00 00 6f 74)" >> /t
 printf "$(printf '\\x%s' 68 65 72 6b 65 79 73 0b 00 00 00 00 00 00 00 6f)" >> /tmp/quickdumpfile # herkeys........o
 printf "$(printf '\\x%s' 74 68 65 72 20 76 61 6c 75 65 63 03 00 00 00 00)" >> /tmp/quickdumpfile # ther valuec.....
 printf "$(printf '\\x%s' 00 00 00 6b 65 79 04 00 00 00 00 00 00 00 6d 65)" >> /tmp/quickdumpfile # ...key........me
-printf "$(printf '\\x%s' 74 61 00)"                                        >> /tmp/quickdumpfile # ta.             
+printf "$(printf '\\x%s' 74 61 00)"                                        >> /tmp/quickdumpfile # ta.
 mv /tmp/quickdumpfile $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
