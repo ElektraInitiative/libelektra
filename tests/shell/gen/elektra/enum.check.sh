@@ -12,10 +12,11 @@ char * elektraEnumExistingColorsToString (ExistingColors value);
 #endif // COLORS_H
 EOF
 
-@CMAKE_C_COMPILER@ -c enum.actual.c -I @CMAKE_BINARY_DIR@/src/include -I @CMAKE_SOURCE_DIR@/src/include -o enum.actual.o && rm enum.actual.o
+"@CMAKE_C_COMPILER@" -c enum.actual.c -I "@CMAKE_BINARY_DIR@/src/include" -I "@CMAKE_SOURCE_DIR@/src/include" -o enum.actual.o && rm enum.actual.o
 
 res=$?
 
 rm colors.h
 
 exit $res
+
