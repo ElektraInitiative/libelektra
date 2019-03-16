@@ -80,16 +80,19 @@ kdb set user/tests/quickdump/otherkey "other value"
 # 00000060: 616c 7565 00                             alue.
 
 
-# Change mounted file:
-cp $(kdb file user/tests/quickdump/key) /tmp/a.tmp
+# Change mounted file (in a very stupid way to enable shell-recorder testing):
+cp $(kdb file user/tests/quickdump/key) a.tmp
 
 # 1. change key from 'value' to 'other value'
-(head -c 20 /tmp/a.tmp; printf "\x0b\x00\x00\x00\x00\x00\x00\x00other value"; tail -c +34 /tmp/a.tmp) > /tmp/b.tmp
+(head -c 20 a.tmp; printf "%b\0\0\0\0\0\0\0other value" '\0013'; tail -c +34 a.tmp) > b.tmp
 
-rm /tmp/a.tmp
+rm a.tmp
 
 # 2. add copy metadata instruction to otherkey
-(head -c -1 /tmp/b.tmp; printf "c\x03\x00\x00\x00\x00\x00\x00\x00key\x04\x00\x00\x00\x00\x00\x00\x00meta\x00") > $(kdb file user/tests/quickdump/key)
+(head -c -1 b.tmp; printf "c%b\0\0\0\0\0\0\0key%b\0\0\0\0\0\0\0meta\0" '\0003' '\0004') > c.tmp
+
+rm b.tmp
+mv c.tmp $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
 #> other value
