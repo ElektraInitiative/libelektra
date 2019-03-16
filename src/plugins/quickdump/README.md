@@ -84,12 +84,12 @@ kdb set user/tests/quickdump/otherkey "other value"
 cp $(kdb file user/tests/quickdump/key) a.tmp
 
 # 1. change key from 'value' to 'other value'
-(head -c 20 a.tmp; printf "%b\0\0\0\0\0\0\0other value" '\0013'; tail -c +34 a.tmp) > b.tmp
+(head -c 20 a.tmp; printf "%b\0\0\0\0\0\0\0other value" '\0013'; tail -c 68 a.tmp) > b.tmp
 
 rm a.tmp
 
 # 2. add copy metadata instruction to otherkey
-(head -c -1 b.tmp; printf "c%b\0\0\0\0\0\0\0key%b\0\0\0\0\0\0\0meta\0" '\0003' '\0004') > c.tmp
+(head -c 106 b.tmp; printf "c%b\0\0\0\0\0\0\0key%b\0\0\0\0\0\0\0meta\0" '\0003' '\0004') > c.tmp
 
 rm b.tmp
 mv c.tmp $(kdb file user/tests/quickdump/key)
