@@ -19,4 +19,3 @@ res=$?
 rm colors.h
 
 exit $res
-
