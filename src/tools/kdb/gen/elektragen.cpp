@@ -11,6 +11,7 @@
 #include "elektragen.hpp"
 
 #include <command.hpp>
+#include <kdbhelper.h>
 #include <kdbtypes.h>
 #include <modules.hpp>
 
@@ -394,10 +395,10 @@ static void processStructRef (const kdb::Key & key, const kdb::Key & parentKey, 
 	}
 
 	auto restrict = key.getMeta<std::string> ("check/reference/restrict");
-	restrict = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
+	char * rawResolved = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
 
-	auto restrictKey = allKeys.lookup (restrict);
-	elektraFree (restrict);
+	auto restrictKey = allKeys.lookup (rawResolved);
+	ckdb::elektraFree (rawResolved);
 
 	if (!restrictKey)
 	{
