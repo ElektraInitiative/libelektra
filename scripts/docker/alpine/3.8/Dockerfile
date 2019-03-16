@@ -8,8 +8,7 @@ RUN apk update \
         file \
         curl \
         yaml-cpp-dev \
-        bison \
-        vim
+        bison
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

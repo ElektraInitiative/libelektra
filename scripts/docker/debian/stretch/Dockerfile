@@ -79,8 +79,6 @@ RUN apt-get update \
         bison \
         uuid-dev \
         ninja-build \
-        bsdmainutils \
-        xxd \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck

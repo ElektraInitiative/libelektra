@@ -56,7 +56,6 @@ RUN apt-get update && apt-get -y install \
         tao-pegtl-dev \
         tclcl-dev \
         valgrind \
-        xxd \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install cmake-format==0.4.5 pyyaml

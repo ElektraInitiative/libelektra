@@ -43,9 +43,7 @@ RUN apt-get update && apt-get -y install \
     libsystemd-dev \
     gawk \
     lcov \
-    valgrind \
-    bsdmainutils \
-    vim && \
+    valgrind && \
     rm -rf /var/lib/apt/lists/*
 
 # Google Test

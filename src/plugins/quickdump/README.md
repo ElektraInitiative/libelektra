@@ -69,30 +69,41 @@ kdb setmeta user/tests/quickdump/key meta "metavalue"
 kdb set user/tests/quickdump/otherkey "other value"
 #> Create a new key user/tests/quickdump/otherkey with string "other value"
 
-# Show resulting file
-hexdump -v -e '"%08_ax: " 16/1 "%02x " "  "' -e '16/1 "%_p" "\n"' $(kdb file user/tests/quickdump/key)
-#> 00000000: 45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00  EKDB............
-#> 00000010: 6b 65 79 73 05 00 00 00 00 00 00 00 76 61 6c 75  keys........valu
-#> 00000020: 65 6d 04 00 00 00 00 00 00 00 6d 65 74 61 09 00  em........meta..
-#> 00000030: 00 00 00 00 00 00 6d 65 74 61 76 61 6c 75 65 00  ......metavalue.
-#> 00000040: 08 00 00 00 00 00 00 00 6f 74 68 65 72 6b 65 79  ........otherkey
-#> 00000050: 73 0b 00 00 00 00 00 00 00 6f 74 68 65 72 20 76  s........other v
-#> 00000060: 61 6c 75 65 00                                   alue.
+# Show resulting file (we use od for the shell recorder test, so that it works everywhere)
+od -A n -t x1 $(kdb file user/tests/quickdump/key)
+#>  45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00
+#>  6b 65 79 73 05 00 00 00 00 00 00 00 76 61 6c 75
+#>  65 6d 04 00 00 00 00 00 00 00 6d 65 74 61 09 00
+#>  00 00 00 00 00 00 6d 65 74 61 76 61 6c 75 65 00
+#>  08 00 00 00 00 00 00 00 6f 74 68 65 72 6b 65 79
+#>  73 0b 00 00 00 00 00 00 00 6f 74 68 65 72 20 76
+#>  61 6c 75 65 00
+
+# This corresponds to the following xxd output:
+# 00000000: 454b 4442 0000 0002 0300 0000 0000 0000  EKDB............
+# 00000010: 6b65 7973 0500 0000 0000 0000 7661 6c75  keys........valu
+# 00000020: 656d 0400 0000 0000 0000 6d65 7461 0900  em........meta..
+# 00000030: 0000 0000 0000 6d65 7461 7661 6c75 6500  ......metavalue.
+# 00000040: 0800 0000 0000 0000 6f74 6865 726b 6579  ........otherkey
+# 00000050: 730b 0000 0000 0000 006f 7468 6572 2076  s........other v
+# 00000060: 616c 7565 00                             alue.
+
 
 # Change mounted file:
 #  - change key from 'value' to 'other value'
 #  - add copy metadata instruction to otherkey
+# Note: this is a weird solution, but it works without xxd
 printf "" > /tmp/quickdumpfile
-echo "00000000: 45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00  EKDB............" >> /tmp/quickdumpfile
-echo "00000010: 6b 65 79 73 0b 00 00 00 00 00 00 00 6f 74 68 65  keys........othe" >> /tmp/quickdumpfile
-echo "00000020: 72 20 76 61 6c 75 65 6d 04 00 00 00 00 00 00 00  r valuem........" >> /tmp/quickdumpfile
-echo "00000030: 6d 65 74 61 09 00 00 00 00 00 00 00 6d 65 74 61  meta........meta" >> /tmp/quickdumpfile
-echo "00000040: 76 61 6c 75 65 00 08 00 00 00 00 00 00 00 6f 74  value.........ot" >> /tmp/quickdumpfile
-echo "00000050: 68 65 72 6b 65 79 73 0b 00 00 00 00 00 00 00 6f  herkeys........o" >> /tmp/quickdumpfile
-echo "00000060: 74 68 65 72 20 76 61 6c 75 65 63 03 00 00 00 00  ther valuec....." >> /tmp/quickdumpfile
-echo "00000070: 00 00 00 6b 65 79 04 00 00 00 00 00 00 00 6d 65  ...key........me" >> /tmp/quickdumpfile
-echo "00000080: 74 61 00                                         ta."              >> /tmp/quickdumpfile
-xxd -r /tmp/quickdumpfile > $(kdb file user/tests/quickdump/key)
+printf "$(printf '\\x%s' 45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # EKDB............ 
+printf "$(printf '\\x%s' 6b 65 79 73 0b 00 00 00 00 00 00 00 6f 74 68 65)" >> /tmp/quickdumpfile # keys........othe
+printf "$(printf '\\x%s' 72 20 76 61 6c 75 65 6d 04 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # r valuem........
+printf "$(printf '\\x%s' 6d 65 74 61 09 00 00 00 00 00 00 00 6d 65 74 61)" >> /tmp/quickdumpfile # meta........meta
+printf "$(printf '\\x%s' 76 61 6c 75 65 00 08 00 00 00 00 00 00 00 6f 74)" >> /tmp/quickdumpfile # value.........ot
+printf "$(printf '\\x%s' 68 65 72 6b 65 79 73 0b 00 00 00 00 00 00 00 6f)" >> /tmp/quickdumpfile # herkeys........o
+printf "$(printf '\\x%s' 74 68 65 72 20 76 61 6c 75 65 63 03 00 00 00 00)" >> /tmp/quickdumpfile # ther valuec.....
+printf "$(printf '\\x%s' 00 00 00 6b 65 79 04 00 00 00 00 00 00 00 6d 65)" >> /tmp/quickdumpfile # ...key........me
+printf "$(printf '\\x%s' 74 61 00)"                                        >> /tmp/quickdumpfile # ta.             
+mv /tmp/quickdumpfile $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
 #> other value
