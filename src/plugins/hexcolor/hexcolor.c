@@ -8,24 +8,26 @@
  */
 
 #include "hexcolor.h"
-
+#include <regex.h>
 #include <kdbhelper.h>
 
-
-int elektraHexcolorOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int validateKey(Key * key, Key * parentKey) 
 {
-	// plugin initialization logic
-	// this function is optional
+	const Key * meta = keyGetMeta(key, "check/hexcolor");
+	if (!meta) return 1;
+	const char* value = keyString(key);
+	
+	const char * regexString = "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$";
+	
+	regex_t regex;
+	regmatch_t offsets;
+	int compile_failure = regcomp (&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
+	if (compile_failure) return -1;
+	int has_match = regexec (&regex, value, 0, &offsets, 0);
+	regfree (&regex);
 
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
+	return !has_match ? 1 : 0;
 
-int elektraHexcolorClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// free all plugin resources and shut it down
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -35,12 +37,9 @@ int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/hexcolor", KEY_VALUE, "hexcolor plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/hexcolor/exports", KEY_END),
-			       keyNew ("system/elektra/modules/hexcolor/exports/open", KEY_FUNC, elektraHexcolorOpen, KEY_END),
-			       keyNew ("system/elektra/modules/hexcolor/exports/close", KEY_FUNC, elektraHexcolorClose, KEY_END),
 			       keyNew ("system/elektra/modules/hexcolor/exports/get", KEY_FUNC, elektraHexcolorGet, KEY_END),
 			       keyNew ("system/elektra/modules/hexcolor/exports/set", KEY_FUNC, elektraHexcolorSet, KEY_END),
 			       keyNew ("system/elektra/modules/hexcolor/exports/error", KEY_FUNC, elektraHexcolorError, KEY_END),
-			       keyNew ("system/elektra/modules/hexcolor/exports/checkconf", KEY_FUNC, elektraHexcolorCheckConfig, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system/elektra/modules/hexcolor/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -57,8 +56,16 @@ int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 {
 	// set all keys
 	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		const Key * meta = keyGetMeta (cur, "check/hexcolor");
+		if (!meta) continue;
+		int rc = validateKey (cur, parentKey);
+		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraHexcolorError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -69,20 +76,10 @@ int elektraHexcolorError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraHexcolorCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("hexcolor",
-		ELEKTRA_PLUGIN_OPEN,	&elektraHexcolorOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraHexcolorClose,
 		ELEKTRA_PLUGIN_GET,	&elektraHexcolorGet,
 		ELEKTRA_PLUGIN_SET,	&elektraHexcolorSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraHexcolorError,
