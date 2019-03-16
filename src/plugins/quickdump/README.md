@@ -69,17 +69,8 @@ kdb setmeta user/tests/quickdump/key meta "metavalue"
 kdb set user/tests/quickdump/otherkey "other value"
 #> Create a new key user/tests/quickdump/otherkey with string "other value"
 
-# Show resulting file (we use od for the shell recorder test, so that it works everywhere)
-od -A n -t x1 $(kdb file user/tests/quickdump/key)
-#>  45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00
-#>  6b 65 79 73 05 00 00 00 00 00 00 00 76 61 6c 75
-#>  65 6d 04 00 00 00 00 00 00 00 6d 65 74 61 09 00
-#>  00 00 00 00 00 00 6d 65 74 61 76 61 6c 75 65 00
-#>  08 00 00 00 00 00 00 00 6f 74 68 65 72 6b 65 79
-#>  73 0b 00 00 00 00 00 00 00 6f 74 68 65 72 20 76
-#>  61 6c 75 65 00
-
-# This corresponds to the following xxd output:
+# Show resulting file (not part of test, because xxd is not available everywhere)
+# xxd $(kdb file user/tests/quickdump/key)
 # 00000000: 454b 4442 0000 0002 0300 0000 0000 0000  EKDB............
 # 00000010: 6b65 7973 0500 0000 0000 0000 7661 6c75  keys........valu
 # 00000020: 656d 0400 0000 0000 0000 6d65 7461 0900  em........meta..
@@ -90,20 +81,15 @@ od -A n -t x1 $(kdb file user/tests/quickdump/key)
 
 
 # Change mounted file:
-#  - change key from 'value' to 'other value'
-#  - add copy metadata instruction to otherkey
-# Note: this is a weird solution, but it works without xxd
-printf "" > /tmp/quickdumpfile
-printf "$(printf '\\x%s' 45 4b 44 42 00 00 00 02 03 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # EKDB............
-printf "$(printf '\\x%s' 6b 65 79 73 0b 00 00 00 00 00 00 00 6f 74 68 65)" >> /tmp/quickdumpfile # keys........othe
-printf "$(printf '\\x%s' 72 20 76 61 6c 75 65 6d 04 00 00 00 00 00 00 00)" >> /tmp/quickdumpfile # r valuem........
-printf "$(printf '\\x%s' 6d 65 74 61 09 00 00 00 00 00 00 00 6d 65 74 61)" >> /tmp/quickdumpfile # meta........meta
-printf "$(printf '\\x%s' 76 61 6c 75 65 00 08 00 00 00 00 00 00 00 6f 74)" >> /tmp/quickdumpfile # value.........ot
-printf "$(printf '\\x%s' 68 65 72 6b 65 79 73 0b 00 00 00 00 00 00 00 6f)" >> /tmp/quickdumpfile # herkeys........o
-printf "$(printf '\\x%s' 74 68 65 72 20 76 61 6c 75 65 63 03 00 00 00 00)" >> /tmp/quickdumpfile # ther valuec.....
-printf "$(printf '\\x%s' 00 00 00 6b 65 79 04 00 00 00 00 00 00 00 6d 65)" >> /tmp/quickdumpfile # ...key........me
-printf "$(printf '\\x%s' 74 61 00)"                                        >> /tmp/quickdumpfile # ta.
-mv /tmp/quickdumpfile $(kdb file user/tests/quickdump/key)
+cp $(kdb file user/tests/quickdump/key) /tmp/a.tmp
+
+# 1. change key from 'value' to 'other value'
+(head -c 20 /tmp/a.tmp; printf "\x0b\x00\x00\x00\x00\x00\x00\x00other value"; tail -c +34 /tmp/a.tmp) > /tmp/b.tmp
+
+rm /tmp/a.tmp
+
+# 2. add copy metadata instruction to otherkey
+(head -c -1 /tmp/b.tmp; printf "c\x03\x00\x00\x00\x00\x00\x00\x00key\x04\x00\x00\x00\x00\x00\x00\x00meta\x00") > $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
 #> other value
