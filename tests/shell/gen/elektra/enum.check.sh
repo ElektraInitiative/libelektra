@@ -12,10 +12,20 @@ char * elektraEnumExistingColorsToString (ExistingColors value);
 #endif // COLORS_H
 EOF
 
-"@CMAKE_C_COMPILER@" -c enum.actual.c -I "@CMAKE_BINARY_DIR@/src/include" -I "@CMAKE_SOURCE_DIR@/src/include" -o enum.actual.o && rm enum.actual.o
+cat << EOF > CMakeLists.txt
+cmake_minimum_required(VERSION 3.0)
 
+add_library (dummy OBJECT enum.actual.c)
+target_include_directories(dummy PRIVATE "@CMAKE_BINARY_DIR@/src/include" "@CMAKE_SOURCE_DIR@/src/include")
+EOF
+
+mkdir build && cd build
+
+cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
 
-rm colors.h
+cd ..
+rm -r build
+rm CMakeLists.txt colors.h
 
 exit $res
