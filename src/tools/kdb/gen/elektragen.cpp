@@ -397,6 +397,8 @@ static void processStructRef (const kdb::Key & key, const kdb::Key & parentKey, 
 	restrict = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
 
 	auto restrictKey = allKeys.lookup (restrict);
+	elektraFree (restrict);
+
 	if (!restrictKey)
 	{
 		throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () + "' resolves to an unspecified key.");
