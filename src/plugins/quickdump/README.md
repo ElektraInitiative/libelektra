@@ -57,7 +57,7 @@ None.
 
 ```sh
 # Mount a backend using quickdump
-kdb mount quickdump.eqd user/tests/quickdump quickdump
+sudo kdb mount quickdump.eqd user/tests/quickdump quickdump
 # RET: 0
 
 # Set some keys and metakeys
@@ -108,7 +108,7 @@ kdb getmeta user/tests/quickdump/otherkey meta
 
 # Cleanup
 kdb rm -r user/tests/quickdump
-kdb umount user/tests/quickdump
+sudo kdb umount user/tests/quickdump
 ```
 
 ## Limitations
