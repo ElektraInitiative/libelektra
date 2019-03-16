@@ -28,6 +28,7 @@ RUN apt-get update && apt-get -y install \
         checkinstall \
         swig \
         vim \
+        bsdmainutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test

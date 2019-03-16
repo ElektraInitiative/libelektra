@@ -44,6 +44,7 @@ RUN apt-get update && apt-get -y install \
     gawk \
     lcov \
     valgrind \
+	bsdmainutils \
     vim && \
     rm -rf /var/lib/apt/lists/*
 
