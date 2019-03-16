@@ -16,7 +16,7 @@ RUN dpkg --add-architecture i386 \
         gcc-multilib \
         g++-multilib \
         file \
-		bsdmainutils \
+        bsdmainutils \
         xxd \
     && rm -rf /var/lib/apt/lists/*
 
