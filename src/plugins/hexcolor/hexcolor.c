@@ -7,11 +7,12 @@
  *
  */
 
+#include <kdberrors.h>
 #include "hexcolor.h"
 #include <regex.h>
 #include <kdbhelper.h>
 
-int is_valid_key(Key * key)
+int is_valid_key(Key * key, Key * parentKey)
 {
 	const Key * meta = keyGetMeta(key, "check/hexcolor");
 	if (!meta) return 1;
@@ -22,10 +23,15 @@ int is_valid_key(Key * key)
 	regmatch_t offsets;
 	int compile_failure = regcomp (&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
 	if (compile_failure) return -1;
-	int match = regexec (&regex, value, 0, &offsets, 0);
-	regfree (&regex);
 	// regexec returns 0 on a successful match
-	return !match;
+	int match = !(regexec (&regex, value, 0, &offsets, 0));
+	regfree (&regex);
+	
+	if(!match) {
+		ELEKTRA_SET_ERRORF (213, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
+	}
+
+	return match;
 
 }
 
@@ -60,7 +66,7 @@ int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	{
 		const Key * meta = keyGetMeta (cur, "check/hexcolor");
 		if (!meta) continue;
-		int is_valid = is_valid_key (cur);
+		int is_valid = is_valid_key (cur, parentKey);
 		if (!is_valid) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;

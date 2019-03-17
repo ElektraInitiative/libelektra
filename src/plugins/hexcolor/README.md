@@ -7,7 +7,7 @@
 - infos/placements = presetstorage
 - infos/status = maintained unittest nodep
 - infos/metadata = check/hexcolor
-- infos/description = Validation of Hexcolors
+- infos/description = Validation of hexcolors
 
 ## Introduction
 
@@ -16,21 +16,6 @@ plugin written in C.
 
 ## Usage
 
-You can use `scripts/copy-hexcolor`
-to automatically rename everything to your
-plugin name:
-
-```bash
-cd src/plugins
-../../scripts/copy-hexcolor yourplugin
-```
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
 - add your plugin in `src/plugins/README.md`
 - and rewrite the rest of this `README.md` to give a great
   explanation of what your plugin does
@@ -42,13 +27,26 @@ None.
 ## Examples
 
 ```sh
-# Backup-and-Restore: user/tests/hexcolor
+sudo kdb mount /tests/color.ini /tests/ipaddr ini hexcolor
+#> Mount a config file with the hexcolor plugin
 
-kdb set user/tests/hexcolor/key value
-#> Create a new key user/tests/hexcolor/key with string "value"
+kdb setmeta /tests/color/hex check/hexcolor any
+#> Check the /tests/color/hex key for validity
 
-kdb get /tests/hexcolor/key
-#> value
+kdb set /tests/color/hex "#fff"
+#> Suceeds, since the value is a valid hexcolor. Quotes are important!
+
+kdb set /tests/color/hex "#a1C2b3"
+#> Suceeds, since the value is a valid hexcolor. Quotes are important!
+
+kdb set /tests/color/hex fff
+#> Throws an error: value of key is not a valid hex-formatted color
+
+kdb set /tests/color/hex "fff"
+#> Throws an error: value of key is not a valid hex-formatted color
+
+kdb set /tests/color/hex "#12345"
+#> Throws an error: value of key is not a valid hex-formatted color
 ```
 
 ## Limitations

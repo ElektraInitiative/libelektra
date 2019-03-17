@@ -1345,3 +1345,10 @@ description:the contract was malformed
 severity:error
 ingroup:kdb
 macro:MALFORMED_CONTRACT
+
+number:214
+description:value of key is not a valid hex-formatted color
+severity:error
+ingroup:plugin
+module:hexcolor
+
