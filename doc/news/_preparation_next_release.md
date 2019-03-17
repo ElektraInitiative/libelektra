@@ -228,6 +228,13 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Source Code Checks
 
+- The formatting instructions printed by [`check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also work correctly, if
+
+  - the `diff` output does not start with the test number added by CTest, and
+  - you use a non-POSIX shell such as [`fish`](https://www.fishshell.com)
+
+  . _(René Schwaiger)_
+
 - We now check the source code of the repository with [LGTM][]. _(René Schwaiger)_
 - We fixed various warnings about
 
