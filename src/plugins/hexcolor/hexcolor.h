@@ -13,12 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraHexcolorOpen (Plugin * handle, Key * errorKey);
-int elektraHexcolorClose (Plugin * handle, Key * errorKey);
 int elektraHexcolorGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHexcolorSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraHexcolorError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraHexcolorCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
