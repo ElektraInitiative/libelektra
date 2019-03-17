@@ -113,6 +113,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
   [dump](https://www.libelektra.org/plugins/dump) format, which is also quicker too read. _(Klemens Böswirth)_
 
+### Reference
+
+- Fixed missing Metadata in README and METADATA.ini.
+
 ### Specload
 
 - The [specload](https://www.libelektra.org/plugins/specload) plugin is a special storage plugin. Instead of using a storage file
