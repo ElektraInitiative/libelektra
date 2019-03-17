@@ -92,7 +92,9 @@ rm a.tmp
 (head -c 106 b.tmp; printf "c%b\0\0\0\0\0\0\0key%b\0\0\0\0\0\0\0meta\0" '\0003' '\0004') > c.tmp
 
 rm b.tmp
-mv c.tmp $(kdb file user/tests/quickdump/key)
+
+# test file name, so KDB isn't destroyed if mounting failed
+[ "x$(kdb file user/tests/quickdump/key)" != "x$(kdb file user)" ] && mv c.tmp $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
 #> other value
