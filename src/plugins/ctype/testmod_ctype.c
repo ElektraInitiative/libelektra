@@ -225,7 +225,7 @@ void test_wchar (void)
 			if (!checkType (k))
 			{
 				yield_error ("the following should check successfully as wchar:");
-				printf ("0x%lx\n", i);
+				printf ("0x%zx\n", i);
 			}
 		}
 		int x ELEKTRA_UNUSED = wctomb (NULL, 0);
