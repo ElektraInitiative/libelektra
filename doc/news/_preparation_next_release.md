@@ -212,6 +212,7 @@ you up to date with the multi-language support provided by Elektra.
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
 - Improved the documentation for the type plugin. _(Michael Zronek)_
 - Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
+- Improved readability in README. _(Philipp Gackstatter)_
 - Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
 - Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
