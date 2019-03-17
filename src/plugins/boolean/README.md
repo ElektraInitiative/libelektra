@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested nodep configurable
+- infos/status = recommended productive reviewed conformant compatible coverage specific unittest tested nodep configurable obsolete
 - infos/metadata =
 - infos/description = canonicalizes boolean values
 
