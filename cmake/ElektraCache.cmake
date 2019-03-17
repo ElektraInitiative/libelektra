@@ -224,14 +224,14 @@ endif (ENABLE_TESTING)
 
 option (BUILD_TESTING "Build main test suite (does not affect plugins+bindings)" ON)
 if (BUILD_TESTING)
-	option (INSTALL_TESTING "Install testcases" ON)
+	option (INSTALL_TESTING "Install test cases" ON)
 else (BUILD_TESTING)
 
 	# install testing makes no sense if it is not build (even though the option would not harm)
 	set (INSTALL_TESTING
 	     OFF
 	     CACHE BOOL
-		   "Install testcases"
+		   "Install test cases"
 	     FORCE)
 endif (BUILD_TESTING)
 

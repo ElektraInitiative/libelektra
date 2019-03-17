@@ -1153,7 +1153,7 @@ static void test_ksLookupName (void)
 	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
-	// a positive testcase
+	// a positive test case
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 
@@ -2055,7 +2055,7 @@ static void test_ksLookupPop (void)
 	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
-	// a positive testcase
+	// a positive test case
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
@@ -2086,7 +2086,7 @@ static void test_ksLookupPop (void)
 	succeed_if (ksLookupByName (ks, "user/named/k/ey", KDB_O_POP) == 0, "seperation that should be");
 	succeed_if (ksLookupByName (ks, "user/na/med/key", KDB_O_POP) == 0, "seperation that should be");
 
-	// a positive testcase
+	// a positive test case
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");

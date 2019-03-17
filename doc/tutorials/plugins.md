@@ -242,7 +242,7 @@ So usually you would have:
 if (DEPENDENCY_PHASE)
 	find_package (LibXml2 QUIET)
 	if (LIBXML2_FOUND)
-		# add testdata, testcases...
+		# add testdata, test cases...
 	else ()
 		remove_plugin (xmltool "libxml2 not found")
 	endif ()

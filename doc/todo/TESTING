@@ -168,11 +168,11 @@ most plugins (especially storage) do only basic or no tests
 	fstab
 	hosts
 
-= Missing Testcases =
+= Missing test cases =
 
 test cases for locking file
 
-more testcases for kdb interface
+more test cases for kdb interface
 	also mount! and check for functionality regressions
 	ls over multiple mountpoints
 
@@ -233,7 +233,7 @@ import/export:
 	with all plugins
 	with automated kdb tests
 
-kdb testcases:
+kdb test cases:
 	for mount/umount
 	for import/export/convert
 	using chroot

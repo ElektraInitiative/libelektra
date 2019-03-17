@@ -504,7 +504,7 @@ int TestCommand::execute (Cmdline const & cl)
 
 	doTests (cl.arguments);
 
-	cerr << "We got " << nrError << " errors in " << nrTest << " testcases." << endl;
+	cerr << "We got " << nrError << " errors in " << nrTest << " test cases." << endl;
 
 	cout << "Test suite is now finished." << endl;
 	cout << "Now restoring the original keyset." << endl;

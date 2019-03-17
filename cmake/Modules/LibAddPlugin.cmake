@@ -152,7 +152,7 @@ function (add_plugintest testname)
 				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
 			endif ()
 		else ()
-			set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be tested
+			set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that test case+plugin to be tested
 												 # have same name:
 		endif ()
 		list (APPEND TEST_SOURCES
