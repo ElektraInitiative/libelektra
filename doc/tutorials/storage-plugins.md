@@ -35,6 +35,7 @@ kdb ls user/tests/storage/root
 #> user/tests/storage/root/level1/level2/level3
 
 # Undo modifications to the key database
+kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
@@ -92,6 +93,7 @@ kdb get user/tests/storage/root/level1/level2/level3
 #> 🐣
 
 # Undo modifications to the key database
+kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
