@@ -254,7 +254,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
-- <<TODO>>
+- Added a new error concept to be implemented soon. _(Michael Zronek)_
 
 ## Tests
 
@@ -292,45 +292,9 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-#### Misc
-
-- The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
-  See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
-- We now specify
-  - version number,
-  - project description, and
-  - homepage URL
-  in the CMake [`project`](https://cmake.org/cmake/help/latest/command/project.html) command. *(René Schwaiger)*
-- We fixed the detection of Python for the [Python 2 binding](https://www.libelektra.org/bindings/swig_python2) on macOS. *(René Schwaiger)*
-- Worked out a new error concept. *(Michael Zronek)*
-
-#### Find Modules
-
-- The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error
-  message anymore, if it is unable to locate Augeas in the `pkg-config` search path. *(René Schwaiger)*
-- The CMake find module [`FindLua.cmake`](https://master.libelektra.org/cmake/Modules/FindLua.cmake) does not print an error message
-  anymore, if it is unable to locate a Lua executable. *(René Schwaiger)*
-- We added code that makes sure you can compile [IO GLIB](https://www.libelektra.org/bindings/io_glib) on macOS, even if `pkg-config`
-  erroneously reports that GLIB requires linking to the library `intl` (part of [GNU gettext](https://www.gnu.org/software/gettext)).
-  *(René Schwaiger)*
-- We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
-  compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
-- The CMake find module [`FindLibOpenSSL.cmake`](https://master.libelektra.org/cmake/Modules/FindLibOpenSSL.cmake) does not require
-  `pkg-config` anymore. The updated code also fixes some linker problems on macOS (and probably other operating systems too), where the
-  build system is not able to link to OpenSSL using only the name of the OpenSSL libraries. *(René Schwaiger)*
-- We simplified the CMake find module [`FindLibgcrypt.cmake`](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake).The update
-  fixes problems on macOS, where the build system excluded the plugin `crypto_gcrypt`, although
-  [Libgcrypt](https://gnupg.org/software/libgcrypt) was installed on the system. *(René Schwaiger)*
-- We now use the [official CMake find module for `iconv`](https://github.com/Kitware/CMake/blob/master/Modules/FindIconv.cmake). This
-  update fixes linker problems with the [`iconv`](http://libelektra.org/plugins/iconv) and
-  [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*
-- The [CMake find module for Botan](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake) does not require `pkg-config` anymore.
-  *(René Schwaiger)*
-- The [CMake find module for libgit2](https://master.libelektra.org/cmake/Modules/FindLibGit2.cmake) now also exports the version number of
-  libgit2. *(René Schwaiger)*
-- We added a CMake find module for [libuv](https://libuv.org) and fixed a problem on macOS, where the build system was
-  [unable to locate the header file of libuv](https://cirrus-ci.com/task/4852008365326336 ). *(René Schwaiger)*
-- We added a CMake find module for [ZeroMQ](http://zeromq.org) to fix build problems on macOS. *(René Schwaiger)*
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Docker
 
