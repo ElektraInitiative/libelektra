@@ -101,7 +101,6 @@ function (generate_code ANTLR_EXECUTABLE)
 			    DEPENDS ${GRAMMAR_FILE}
 				    ${TOKEN_FILE}
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	add_custom_target (parser_generated DEPENDS ${PARSER_SOURCE_FILE})
 
 	set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE} PROPERTIES GENERATED TRUE)
 	if (CMAKE_COMPILER_IS_GNUCXX)
@@ -115,7 +114,7 @@ function (generate_code ANTLR_EXECUTABLE)
 					 PARSER_MODIFIED_SOURCE_FILE=${PARSER_MODIFIED_SOURCE_FILE}
 					 -P
 					 ${CMAKE_CURRENT_SOURCE_DIR}/RenameSymbols.cmake
-			    DEPENDS parser_generated
+			    DEPENDS ${PARSER_SOURCE_FILE}
 				    RenameSymbols.cmake
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
