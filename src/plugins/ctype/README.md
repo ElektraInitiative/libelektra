@@ -29,7 +29,7 @@ The type checker plugin supports these types:
 
 ## Enums
 
-If a key is set to the type `enum` the plugin will look for the meta data array `check/enum/#`.
+If a key is set to the type `enum` the plugin will look for the metadata array `check/enum/#`.
 
 For example:
 
