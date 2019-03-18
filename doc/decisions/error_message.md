@@ -130,17 +130,19 @@ information at all.
 The grouping of errors will allow developers to filter for specific as well as more general errors to correctly
 react to them programmatically. Even though there are currently just 8 categories they will reserved up to 1500 error numbers.
 This will permit additional subgrouping of errors in case it might be needed in the future. Imagine the case where
-"Recourse" errors is too general because developers saw a need for splitting the errors in "permission" and "existence" errors.
+"Resource" errors is too general because developers saw a need for splitting the errors in "permission" and "existence" errors.
 They can simply take the current 1-50 numbers and make "permission" range from 1-25 and "existence" to 26-50. This will also allow
-backwards compatibility by applications just checking for recourse errors in general.
+backwards compatibility by applications just checking for resource errors in general.
 Splitting/merging/rearranging any category should only be done by a decision (such as this file here) because elektra developers
 should not be able to generate a new category as they wish because it would lead to the same proliferation of errors as we have now.
 
 Warnings will be removed from the specification file. Any current warning will use the function
 ```
-elektraAddWarning(Key * parentKey, const char * message)
+ELEKTRA_ADD_WARNING(Key * parentKey, const char * message)
 ```
-Note that no error number is present anymore as it is not needed.
+Note that no error number is present anymore as it is not needed. The macro 
+__LINE__ and __FILE__ will still be present such as it is now for better debugging
+purposes.
 
 The API for the errors will be extended as following:
 ```
