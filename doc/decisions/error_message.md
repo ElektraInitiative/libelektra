@@ -81,20 +81,23 @@ Configfile: ...../<file>.25676:1549919217.284067.tmp
 ```
 
 The new default error message will look like this:
+
 ```
 Sorry, plugin <PLUGIN> issued error #<NR>:
 Validation of key "<key>" with string "<value>" failed.
 ```
+
 The error #<NR> will be the color red while <PLUGIN> will be the color blue.
 
 Optionally a third line indicating a solution can be added. Eg. for a permission related error there would be a third line:
+
 ```
 Possible Solution: Retry the command as sudo (sudo !!)
 ```
 
 To avoid losing information, the user can use the command line argument `-v` (verbose) to show
 `Mountpoint`, `Configfile` in addition to the current error message.
-Furthermore a developer can use the command line argument `-d` (debug) 
+Furthermore a developer can use the command line argument `-d` (debug)
 to show `At` for debugging purposes.
 
 All "fatal" errors will be converted to "errors" as the distinguishment is not relevant.
@@ -105,16 +108,16 @@ The remaining ~130 errors will be categorizes into logical groups with subgroups
 Each group and subgroup will receive a range of numbers such as in the HTTP protocol.
 
 - Permanent errors (1-500)
-    - Resource (1-50)
-    - Parsing (51 - 100)
-    - Installation (101 - 150)
-    - Logical (151 - 200)
+  - Resource (1-50)
+  - Parsing (51 - 100)
+  - Installation (101 - 150)
+  - Logical (151 - 200)
 - Temporary (501 - 1000)
-    - Conflict (501 - 600)
-    - Timeout (601 - 701)
+  - Conflict (501 - 600)
+  - Timeout (601 - 701)
 - Validation (1001 - 1500)
-    - Syntactic (1001 - 1100)
-    - Semantic (1101 - 1200)
+  - Syntactic (1001 - 1100)
+  - Semantic (1101 - 1200)
 
 ## Rationale
 
@@ -135,14 +138,17 @@ Splitting/merging/rearranging any category should only be done by a decision (su
 should not be able to generate a new category as they wish because it would lead to the same proliferation of errors as we have now.
 
 Warnings will be removed from the specification file. Any current warning will use the function
+
 ```
 ELEKTRA_ADD_WARNING(Key * parentKey, const char * message)
 ```
+
 Note that no error number is present anymore as it is not needed. The macro
-__LINE__ and __FILE__ will still be present such as it is now for better debugging
+**LINE** and **FILE** will still be present such as it is now for better debugging
 purposes.
 
 The API for the errors will be extended as following:
+
 ```
 // Already present
 ELEKTRA_SET_ERROR (nr, parentKey, message);
@@ -155,7 +161,6 @@ ELEKTRA_SET_ERROR_WITH_SOLUTIONF(nr, parentKey, solution, message, ...)
 
 The vararg will affect the message and not the solution such as before.
 
-
 ## Implications
 
 The specification file will stay but should be untouched in most of the cases in the future. Also the C++ code generation
@@ -164,6 +169,5 @@ file which uses the specification will stay as it is easier to change categories
 Current errors will be migrated. The migration of each and every error can be seen here: [google docs](https://docs.google.com/spreadsheets/d/1-vXNZ7pN9wlMFByIMLbFt_HieyJpop0UyksbgAvmGK4/edit?usp=sharing).
 
 ## Related decisions
-
 
 ## Notes
