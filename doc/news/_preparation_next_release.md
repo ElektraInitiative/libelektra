@@ -115,7 +115,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Reference
 
-- Fixed missing Metadata in README and METADATA.ini.
+- Fixed missing Metadata in README and METADATA.ini. _(Michael Zronek)_
 
 ### Specload
 
