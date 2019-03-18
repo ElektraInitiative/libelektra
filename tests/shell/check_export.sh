@@ -40,7 +40,7 @@ for PLUGIN in $PLUGINS; do
 	diff "$DATADIR"/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	test "$("$KDB" set $ROOT/key "value")" = "Create a new key $ROOT/key with string value"
+	test "$("$KDB" set $ROOT/key "value")" = "Create a new key $ROOT/key with string \"value\""
 	succeed_if "Could not set $ROOT/key"
 
 	"$KDB" export $ROOT $PLUGIN > $FILE
