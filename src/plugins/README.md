@@ -225,9 +225,9 @@ copied by the `spec` plugin just before):
 - [network](network/) by using network APIs
 - [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
-- [type](type/) using run-time type checking (CORBA types/)
+- [type](type/) obsolete plugin for run-time type checking (CORBA types/), use `newtype` instead
 - [enum](enum/) compares the keyvalue against a list of valid values
-- [ctype](ctype/) type checking (CORBA types) and enum functionality, written in C
+- [newtype](newtype/) type checking (CORBA types) and enum functionality
 - [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
