@@ -8,7 +8,7 @@
 - infos/metadata = check/type type check/type/min check/type/max
 - infos/description = type checker using COBRA data types
 
-**This plugin is obsolete:** Please use the `ctype` plugin instead.
+**This plugin is obsolete:** Please use the `newtype` plugin instead.
 
 ## Introduction
 

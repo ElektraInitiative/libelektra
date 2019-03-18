@@ -8,8 +8,8 @@
  */
 
 
-#include "ctype.h"
-#include "ctypes.h"
+#include "newtype.h"
+#include "types.h"
 
 #include <kdbease.h>
 #include <kdberrors.h>
@@ -22,32 +22,32 @@ struct _Type
 	bool (*restore) (Plugin * handle, Key * key);
 };
 
-static const Type elektraTypesList[] = { { "any", NULL, &elektraCTypeCheckAny, NULL },
-					 { "empty", NULL, &elektraCTypeCheckEmpty, NULL },
-					 { "string", NULL, &elektraCTypeCheckString, NULL },
-					 { "wstring", NULL, &elektraCTypeCheckWString, NULL },
-					 { "char", NULL, &elektraCTypeCheckChar, NULL },
-					 { "wchar", NULL, &elektraCTypeCheckWChar, NULL },
-					 { "octet", NULL, &elektraCTypeCheckChar, NULL },
-					 { "short", NULL, &elektraCTypeCheckShort, NULL },
-					 { "long", NULL, &elektraCTypeCheckLong, NULL },
-					 { "long_long", NULL, &elektraCTypeCheckLongLong, NULL },
-					 { "unsigned_short", NULL, &elektraCTypeCheckUnsignedShort, NULL },
-					 { "unsigned_long", NULL, &elektraCTypeCheckUnsignedLong, NULL },
-					 { "unsigned_long_long", NULL, &elektraCTypeCheckUnsignedLongLong, NULL },
-					 { "float", NULL, &elektraCTypeCheckFloat, NULL },
-					 { "double", NULL, &elektraCTypeCheckDouble, NULL },
+static const Type elektraNewTypesList[] = { { "any", NULL, &elektraNewTypeCheckAny, NULL },
+					 { "empty", NULL, &elektraNewTypeCheckEmpty, NULL },
+					 { "string", NULL, &elektraNewTypeCheckString, NULL },
+					 { "wstring", NULL, &elektraNewTypeCheckWString, NULL },
+					 { "char", NULL, &elektraNewTypeCheckChar, NULL },
+					 { "wchar", NULL, &elektraNewTypeCheckWChar, NULL },
+					 { "octet", NULL, &elektraNewTypeCheckChar, NULL },
+					 { "short", NULL, &elektraNewTypeCheckShort, NULL },
+					 { "long", NULL, &elektraNewTypeCheckLong, NULL },
+					 { "long_long", NULL, &elektraNewTypeCheckLongLong, NULL },
+					 { "unsigned_short", NULL, &elektraNewTypeCheckUnsignedShort, NULL },
+					 { "unsigned_long", NULL, &elektraNewTypeCheckUnsignedLong, NULL },
+					 { "unsigned_long_long", NULL, &elektraNewTypeCheckUnsignedLongLong, NULL },
+					 { "float", NULL, &elektraNewTypeCheckFloat, NULL },
+					 { "double", NULL, &elektraNewTypeCheckDouble, NULL },
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-					 { "long_double", NULL, &elektraCTypeCheckLongDouble, NULL },
+					 { "long_double", NULL, &elektraNewTypeCheckLongDouble, NULL },
 #endif
-					 { "boolean", &elektraCTypeNormalizeBoolean, &elektraCTypeCheckBoolean,
-					   &elektraCTypeRestoreBoolean },
-					 { "enum", NULL, &elektraCTypeCheckEnum, NULL },
+					 { "boolean", &elektraNewTypeNormalizeBoolean, &elektraNewTypeCheckBoolean,
+					   &elektraNewTypeRestoreBoolean },
+					 { "enum", NULL, &elektraNewTypeCheckEnum, NULL },
 					 { NULL, NULL, NULL, NULL } };
 
 static const Type * findType (const char * name)
 {
-	const Type * cur = &elektraTypesList[0];
+	const Type * cur = &elektraNewTypesList[0];
 	while (cur->name != NULL)
 	{
 		if (strcmp (cur->name, name) == 0)
@@ -76,7 +76,7 @@ static const char * getTypeName (const Key * key)
 	return strlen (type) == 0 ? NULL : type;
 }
 
-bool elektraCTypeCheckType (const Key * key)
+bool elektraNewTypeCheckType (const Key * key)
 {
 	const char * typeName = getTypeName (key);
 	if (typeName == NULL)
@@ -88,7 +88,7 @@ bool elektraCTypeCheckType (const Key * key)
 	return type != NULL && type->check (key);
 }
 
-bool elektraCTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
+bool elektraNewTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 {
 	const char * typeName = getTypeName (key);
 	if (typeName == NULL)
@@ -128,19 +128,19 @@ bool elektraCTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 	return true;
 }
 
-int elektraCTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraNewTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/ctype"))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/newtype"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/ctype", KEY_VALUE, "ctype plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/ctype/exports", KEY_END),
-			       keyNew ("system/elektra/modules/ctype/exports/get", KEY_FUNC, elektraCTypeGet, KEY_END),
-			       keyNew ("system/elektra/modules/ctype/exports/set", KEY_FUNC, elektraCTypeSet, KEY_END),
-			       keyNew ("system/elektra/modules/ctype/exports/checkconf", KEY_FUNC, elektraCTypeCheckConf, KEY_END),
-			       keyNew ("system/elektra/modules/ctype/exports/validateKey", KEY_FUNC, elektraCTypeValidateKey, KEY_END),
+			ksNew (30, keyNew ("system/elektra/modules/newtype", KEY_VALUE, "newtype plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports", KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports/get", KEY_FUNC, elektraNewTypeGet, KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports/set", KEY_FUNC, elektraNewTypeSet, KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports/checkconf", KEY_FUNC, elektraNewTypeCheckConf, KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports/validateKey", KEY_FUNC, elektraNewTypeValidateKey, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/ctype/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system/elektra/modules/newtype/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -191,7 +191,7 @@ int elektraCTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraCTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraNewTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	cursor_t cursor = ksGetCursor (returned);
 
@@ -245,7 +245,7 @@ int elektraCTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraCTypeCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf)
+int elektraNewTypeCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf)
 {
 	Key * parent = ksLookupByName (conf, "booleans", 0);
 	const char * max = keyString (parent);
@@ -280,9 +280,9 @@ int elektraCTypeCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf)
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-	return elektraPluginExport("ctype",
-		ELEKTRA_PLUGIN_GET,	&elektraCTypeGet,
-		ELEKTRA_PLUGIN_SET,	&elektraCTypeSet,
+	return elektraPluginExport("newtype",
+		ELEKTRA_PLUGIN_GET,	&elektraNewTypeGet,
+		ELEKTRA_PLUGIN_SET,	&elektraNewTypeSet,
 		ELEKTRA_PLUGIN_END);
 	// clang-format on
 }

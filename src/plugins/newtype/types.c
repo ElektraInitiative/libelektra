@@ -7,7 +7,7 @@
  *
  */
 
-#include "ctypes.h"
+#include "types.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,34 +47,34 @@
 	       keyNew ("user/booleans/#4/true", KEY_VALUE, "enable", KEY_END),                                                             \
 	       keyNew ("user/booleans/#4/false", KEY_VALUE, "disable", KEY_END), KS_END)
 
-bool elektraCTypeCheckAny (const Key * key ELEKTRA_UNUSED)
+bool elektraNewTypeCheckAny (const Key * key ELEKTRA_UNUSED)
 {
 	return true;
 }
 
-bool elektraCTypeCheckEmpty (const Key * key)
+bool elektraNewTypeCheckEmpty (const Key * key)
 {
 	return strlen (keyString (key)) == 0;
 }
 
-bool elektraCTypeCheckChar (const Key * key)
+bool elektraNewTypeCheckChar (const Key * key)
 {
 	return strlen (keyString (key)) == 1;
 }
 
 
-bool elektraCTypeCheckWChar (const Key * key)
+bool elektraNewTypeCheckWChar (const Key * key)
 {
 	wchar_t out[2];
 	return mbstowcs (out, keyString (key), 2) == 1;
 }
 
-bool elektraCTypeCheckString (const Key * key)
+bool elektraNewTypeCheckString (const Key * key)
 {
 	return strlen (keyString (key)) != 0;
 }
 
-bool elektraCTypeCheckWString (const Key * key)
+bool elektraNewTypeCheckWString (const Key * key)
 {
 	const char * value = keyString (key);
 	size_t max = strlen (value) + 1;
@@ -84,7 +84,7 @@ bool elektraCTypeCheckWString (const Key * key)
 	return result > 0 && result < max;
 }
 
-bool elektraCTypeNormalizeBoolean (Plugin * handle, Key * key)
+bool elektraNewTypeNormalizeBoolean (Plugin * handle, Key * key)
 {
 	const char * value = keyString (key);
 
@@ -150,13 +150,13 @@ bool elektraCTypeNormalizeBoolean (Plugin * handle, Key * key)
 	return false;
 }
 
-bool elektraCTypeCheckBoolean (const Key * key)
+bool elektraNewTypeCheckBoolean (const Key * key)
 {
 	const char * value = keyString (key);
 	return (value[0] == '1' || value[0] == '0') && value[1] == '\0';
 }
 
-bool elektraCTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
+bool elektraNewTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
 {
 	const Key * orig = keyGetMeta (key, "origvalue");
 	if (orig != NULL)
@@ -167,14 +167,14 @@ bool elektraCTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckFloat (const Key * key)
+bool elektraNewTypeCheckFloat (const Key * key)
 {
 	kdb_float_t value;
 	CHECK_TYPE (key, value, elektraKeyToFloat)
 	return true;
 }
 
-bool elektraCTypeCheckDouble (const Key * key)
+bool elektraNewTypeCheckDouble (const Key * key)
 {
 	kdb_double_t value;
 	CHECK_TYPE (key, value, elektraKeyToDouble)
@@ -182,7 +182,7 @@ bool elektraCTypeCheckDouble (const Key * key)
 }
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-bool elektraCTypeCheckLongDouble (const Key * key)
+bool elektraNewTypeCheckLongDouble (const Key * key)
 {
 	kdb_long_double_t value;
 	CHECK_TYPE (key, value, elektraKeyToLongDouble)
@@ -191,7 +191,7 @@ bool elektraCTypeCheckLongDouble (const Key * key)
 
 #endif
 
-bool elektraCTypeCheckShort (const Key * key)
+bool elektraNewTypeCheckShort (const Key * key)
 {
 	kdb_short_t value;
 	CHECK_TYPE (key, value, elektraKeyToShort)
@@ -199,7 +199,7 @@ bool elektraCTypeCheckShort (const Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckLong (const Key * key)
+bool elektraNewTypeCheckLong (const Key * key)
 {
 	kdb_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToLong)
@@ -207,7 +207,7 @@ bool elektraCTypeCheckLong (const Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckLongLong (const Key * key)
+bool elektraNewTypeCheckLongLong (const Key * key)
 {
 	kdb_long_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToLongLong)
@@ -215,7 +215,7 @@ bool elektraCTypeCheckLongLong (const Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckUnsignedShort (const Key * key)
+bool elektraNewTypeCheckUnsignedShort (const Key * key)
 {
 	kdb_unsigned_short_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedShort)
@@ -223,7 +223,7 @@ bool elektraCTypeCheckUnsignedShort (const Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckUnsignedLong (const Key * key)
+bool elektraNewTypeCheckUnsignedLong (const Key * key)
 {
 	kdb_unsigned_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedLong)
@@ -231,7 +231,7 @@ bool elektraCTypeCheckUnsignedLong (const Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckUnsignedLongLong (const Key * key)
+bool elektraNewTypeCheckUnsignedLongLong (const Key * key)
 {
 	kdb_unsigned_long_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedLongLong)
@@ -239,7 +239,7 @@ bool elektraCTypeCheckUnsignedLongLong (const Key * key)
 	return true;
 }
 
-bool elektraCTypeCheckEnum (const Key * key)
+bool elektraNewTypeCheckEnum (const Key * key)
 {
 	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
 
