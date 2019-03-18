@@ -38,7 +38,8 @@ struct Action : qi::grammar<Iterator, unicode::space_type>
 	Action (kdb::KeySet & ks, kdb::Key & parent) : Action::base_type (query), p (ks, parent)
 	{
 		query = '{' >> *(pair) > '}';
-		pair = '{' >> key > '=' >> val >> *('{' >> metakey > '=' >> metaval > '}') > '}';
+		pair = '{' >> key > '=' >> val >> *('{' >> metakey > '=' >> metaval > '}') > '}'; // lgtm [cpp/comparison-precedence]
+
 
 		key = (+(qi::char_ - qi::char_ ("={}[]<>")))[boost::bind (&Printer::add_key, &p, _1)];
 		val = (+(qi::char_ - qi::char_ ("={}[]<>")))[boost::bind (&Printer::add_val, &p, _1)];

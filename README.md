@@ -164,7 +164,7 @@ And in terms of quality, we want:
 
 ## News
 
-Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
+Go to the [website](https://www.libelektra.org), see the [news](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
 
 ## Download
 
@@ -172,7 +172,9 @@ Elektra uses a [git repository at GitHub](https://github.com/ElektraInitiative/l
 
 You can clone the latest version of Elektra by running:
 
-         git clone https://github.com/ElektraInitiative/libelektra.git
+```sh
+git clone https://github.com/ElektraInitiative/libelektra.git
+```
 
 Releases can be downloaded from [here](https://www.libelektra.org/ftp/elektra/releases/).
 

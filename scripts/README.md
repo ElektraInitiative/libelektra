@@ -2,8 +2,10 @@
 
 ## SYNOPSIS
 
-    kdb find-tools [-h] [--warnings] [--good] [--alltags] [-n NAME] [-a AUTHOR] [-d DATE]
-                   [-t TAGS [TAGS ...]] [-b BRIEF] [-e EXECUTE]
+```sh
+kdb find-tools [-h] [--warnings] [--good] [--alltags] [-n NAME] [-a AUTHOR] [-d DATE]
+               [-t TAGS [TAGS ...]] [-b BRIEF] [-e EXECUTE]
+```
 
 ## DESCRIPTION
 
@@ -46,17 +48,14 @@ Beware, that these metatags should be applied at the beginning of the file (in t
 
 ## Example
 
-\verbatim
-
-        <Start of File>
-        #!/bin/sh
-        #
-        # @author Kurt Micheli <kurt.micheli@libelektra.org>
-        # @brief This is a example of a build script
-        # @date 31.10.2018
-        # @tags configure, build
-
-\endverbatim
+```sh
+#!/bin/sh
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief This is a example of a build script
+# @date 31.10.2018
+# @tags configure, build
+```
 
 ## Notes
 

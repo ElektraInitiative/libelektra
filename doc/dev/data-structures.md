@@ -120,9 +120,11 @@ every parent key must exist before the user
 can append a key to a key set.
 For example, the key set with the keys
 
-    system
-    system/elektra
-    system/elektra/mountpoints
+```
+system
+system/elektra
+system/elektra/mountpoints
+```
 
 would allow the
 key `system/elektra/mountpoints/tcl` to be added,
@@ -154,9 +156,11 @@ The worst-case of the complexity applies when the inserting works
 without a parent key.
 For example, with the keys
 
-    user/sw/apps/abc/current/bindings
-    user/sw/apps/abc/current/bindings/key1
-    user/sw/apps/abc/current/bindings/key2
+```
+user/sw/apps/abc/current/bindings
+user/sw/apps/abc/current/bindings/key1
+user/sw/apps/abc/current/bindings/key2
+```
 
 the weak consistency would allow inserting
 `user/sw/apps/abc/current/bindings/key3`
@@ -318,16 +322,18 @@ an initial key set is split into many key sets.
 These key sets are stored in the `Split` object.
 `Split` advanced to the central data structure for the algorithm:
 
-    typedef struct _Split	Split;
+```c
+typedef struct _Split	Split;
 
-    struct _Split {
-    	size_t size;
-    	size_t alloc;
-    	KeySet **keysets;
-    	Backend **handles;
-    	Key **parents;
-    	int *syncbits;
-    };
+struct _Split {
+	size_t size;
+	size_t alloc;
+	KeySet **keysets;
+	Backend **handles;
+	Key **parents;
+	int *syncbits;
+};
+```
 
 The data structure `Split` contains the following fields:
 

@@ -61,4 +61,6 @@ You can now install Elektra as you normally would or as described in the [instal
 
 The following command will launch the Qt-GUI:
 
-    kdb qt-gui
+```sh
+kdb qt-gui
+```

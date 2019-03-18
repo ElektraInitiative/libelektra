@@ -22,17 +22,21 @@ value with the string value of the Key. If no match is found an error is returne
 Alternatively, if `check/enum` starts with `#`, a meta array `check/enum` is used.
 For example:
 
-    check/enum = #3
-    check/enum/#0 = small
-    check/enum/#1 = middle
-    check/enum/#2 = large
-    check/enum/#3 = huge
+```
+check/enum = #3
+check/enum/#0 = small
+check/enum/#1 = middle
+check/enum/#2 = large
+check/enum/#3 = huge
+```
 
 Furthermore `check/enum/multi` may contain a separator character, that separates
 multiple allowed occurrences.
 For example:
 
-    check/enum/multi = _
+```
+check/enum/multi = _
+```
 
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.

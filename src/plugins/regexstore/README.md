@@ -17,7 +17,9 @@ Currently it can only read and the potential harm is limited.
 
 In the configuration, below the key (that must also exist)
 
-    regexstore
+```
+regexstore
+```
 
 other keys define which regex are applied on a text file.
 
@@ -52,28 +54,38 @@ is added, overlapping regex need to be disallowed.
 
 First mount the regexstore with some at least one config key:
 
-    kdb mount vimrc /vim regexstore "regexstore=root,regexstore/map/#2=#1 map ([^
-    ]*) ([^
-    ]*)"
+```sh
+kdb mount vimrc /vim regexstore "regexstore=root,regexstore/map/#2=#1 map ([^
+]*) ([^
+]*)"
+```
 
 (the character classes contain a space and a newline)
 
 So lets say we have a .vimrc with the content:
 
-    something else...
-    map map Q :qa<CR>
-    something else...
-    map <C-Q> :qa<CR>
-    something else...
+```
+something else...
+map map Q :qa<CR>
+something else...
+map <C-Q> :qa<CR>
+something else...
+```
 
 then we will get two keys with:
 
-    user/vim/map/:qa<CR>
+```
+user/vim/map/:qa<CR>
+```
 
 ### emacs config
 
-    kdb mount emacs /emacs
+```sh
+kdb mount emacs /emacs
+```
 
 Suppose we want to match:
 
-    (global-set-key (kbd "<escape>")      'keyboard-escape-quit)
+```lisp
+(global-set-key (kbd "<escape>")      'keyboard-escape-quit)
+```

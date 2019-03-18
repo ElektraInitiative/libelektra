@@ -68,6 +68,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The build system now disables the plugin, if you installed a version of ANTLR 4 that does not support ANTLR’s C++ runtime (like ANTLR
   `4.5.x` or earlier). _(René Schwaiger)_
+- We fixed an ambiguity in the [YAML grammar](https://master.libelektra.org/src/plugins/yanlr/YAML.g4). _(René Schwaiger)_
+- The build system now regenerates the modified parsing code, every time we update the grammar file. _(René Schwaiger)_
 
 ### YAwn
 
@@ -115,13 +117,17 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Specload
 
-- The [specload](https://www.libelektra.org/plugins/specload) pluign is a special storage plugin. Instead of using a storage file
+- The [specload](https://www.libelektra.org/plugins/specload) plugin is a special storage plugin. Instead of using a storage file
   it calls an external application to request its specification. For the transfer it relies on the
   [quickdump](https://www.libelektra.org/plugins/quickdump) plugin. _(Klemens Böswirth)_
 - Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
   specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
 - We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
+
+### Syslog
+
+- We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
 
 ## Libraries
 
@@ -185,6 +191,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- We added a (very) basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
+- The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
 
   ```
@@ -204,6 +212,12 @@ you up to date with the multi-language support provided by Elektra.
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
+- Improved the documentation for the type plugin. _(Michael Zronek)_
+- Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
+- Improved readability in README. _(Philipp Gackstatter)_
+- Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
+- Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
+- We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - <<TODO>>
@@ -213,6 +227,29 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### Source Code Checks
+
+- The formatting instructions printed by [`check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also work correctly, if
+
+  - the `diff` output does not start with the test number added by CTest, and
+  - you use a non-POSIX shell such as [`fish`](https://www.fishshell.com)
+
+  . _(René Schwaiger)_
+
+- We now check the source code of the repository with [LGTM][]. _(René Schwaiger)_
+- We fixed various warnings about
+
+  - missing or duplicated include guards,
+  - undefined behavior,
+  - incorrect format specifiers,
+  - unnecessary statements,
+  - short names for global variables, and
+  - empty `if`-statements
+
+  reported by [LGTM][]. _(René Schwaiger)_
+
+[lgtm]: https://lgtm.com
 
 ## Build
 

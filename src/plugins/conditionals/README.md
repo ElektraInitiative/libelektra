@@ -32,7 +32,9 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 
 ### Assign Syntax
 
-    (IF-condition) ? ('ThenValue') : ('ElseValue')
+```
+(IF-condition) ? ('ThenValue') : ('ElseValue')
+```
 
 Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
 
@@ -56,7 +58,9 @@ For multiple assign statements use `assign/condition` as a meta array. The first
 
 ## Example
 
-    (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
+```
+(this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
+```
 
 Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/other/key` ELSE `or/key` MUST BE LESS THAN `125`
 

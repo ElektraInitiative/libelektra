@@ -18,12 +18,14 @@ This plugin is an implementation of a parser and generator of the /etc/fstab fil
 
 For each device in fstab elektra will store the following keys:
 
-    pseudoname/device
-    pseudoname/mpoint
-    pseudoname/type
-    pseudoname/options
-    pseudoname/dumpfreq
-    pseudoname/passno
+```sh
+pseudoname/device
+pseudoname/mpoint
+pseudoname/type
+pseudoname/options
+pseudoname/dumpfreq
+pseudoname/passno
+```
 
 Each represents a column in fstab.
 
@@ -46,8 +48,10 @@ entries. All entries you set will be appended to the other filesystems.
 So if you get the filesystems and change the type of the file system
 of the rootfs and set it again the resulting fstab will be like:
 
-    /dev/sda6       /               ext3>----   >----defaults,errors=remount-ro 0 1
-    /dev/sda6       /               jfs>----   >----defaults,errors=remount-ro 0 1
+```
+/dev/sda6       /               ext3>----   >----defaults,errors=remount-ro 0 1
+/dev/sda6       /               jfs>----   >----defaults,errors=remount-ro 0 1
+```
 
 which will be not like you desired!
 
@@ -58,35 +62,45 @@ can't use any comments.
 
 Specification:
 
-    [/_]
-    type = array
-    explanation = the name of the key is the mount point (so the former
-      mpoint is not needed); the value is the number of entries in the
-      array
-    [/_/#]
-    explanation = an entry in the array
-    [/_/#/device]
-    [/_/#/type]
-    [/_/#/options]
-    [/_/#/dumpfreq]
-    [/_/#/passno]
+```ini
+[/_]
+type = array
+explanation = the name of the key is the mount point (so the former
+  mpoint is not needed); the value is the number of entries in the
+  array
+[/_/#]
+explanation = an entry in the array
+[/_/#/device]
+[/_/#/type]
+[/_/#/options]
+[/_/#/dumpfreq]
+[/_/#/passno]
+```
 
 Example: A fstab that looks like:
 
-    /dev/sr0        /media/cdrom   udf,iso9660 user,noauto     0       0
+```
+/dev/sr0        /media/cdrom   udf,iso9660 user,noauto     0       0
+```
 
 would have a key name that is an array (so the value is the number of
 children, in this case 1):
 
-    system/filesystems/\/media\/cdrom
+```
+system/filesystems/\/media\/cdrom
+```
 
 with the array entry:
 
-    system/filesystems/\/media\/cdrom0/#0/
+```
+system/filesystems/\/media\/cdrom0/#0/
+```
 
 So when following line is added
 
-    /dev/sr0        /media/cdrom   ramfs user,noauto     0       0
+```
+/dev/sr0        /media/cdrom   ramfs user,noauto     0       0
+```
 
 Implementation hint: use `keyAddBaseName()` to get escaping of `/`, then
 add array items below it
@@ -104,4 +118,6 @@ Spaces in the names are replaced by \040 in the fstab.
 
 Mount the plugin:
 
-    kdb mount /etc/fstab system/filesystems fstab struct type path
+```sh
+kdb mount /etc/fstab system/filesystems fstab struct type path
+```
