@@ -1,4 +1,4 @@
-# Error message & handling concept
+#Error message & handling concept
 
 ## Problem
 
@@ -32,11 +32,9 @@ The current error concept has disadvantages in following regards:
 
 ## Considered Alternatives
 
-* Removing the specification file without requiring error numbers
-* Possible variations on what message should be displayed, 
-eg. to keep the mountpoint information or on how wordings should be (with or without 
-"Sorry, ...", coloring of certain parts of a message, etc.)
-* Adding the key of the occurred error to the API which permits reading information from
+- Removing the specification file without requiring error numbers
+- Possible variations on what message should be displayed
+- Adding the key of the occurred error to the API which permits reading information from
 additional metadata such as an error message provided by a specification author. 
 Reason against: The description of the key should already provide such information.
 Doing it in an extra key would imply redundant information.
@@ -106,17 +104,17 @@ Unused marked errors will be removed from the specification.
 The remaining ~130 errors will be categorizes into logical groups with subgroups.
 Each group and subgroup will receive a range of numbers such as in the HTTP protocol.
 
-* Permanent errors (1-500)
-    * Resource (1-50)
-    * Parsing (51 - 100)
-    * Installation (101 - 150)
-    * Logical (151 - 200)
-* Temporary (501 - 1000)
-    * Conflict (501 - 600)
-    * Timeout (601 - 701)
-* Validation (1001 - 1500)
-    * Syntactic (1001 - 1100)
-    * Semantic (1101 - 1200)
+- Permanent errors (1-500)
+    - Resource (1-50)
+    - Parsing (51 - 100)
+    - Installation (101 - 150)
+    - Logical (151 - 200)
+- Temporary (501 - 1000)
+    - Conflict (501 - 600)
+    - Timeout (601 - 701)
+- Validation (1001 - 1500)
+    - Syntactic (1001 - 1100)
+    - Semantic (1101 - 1200)
 
 ## Rationale
 
@@ -140,7 +138,7 @@ Warnings will be removed from the specification file. Any current warning will u
 ```
 ELEKTRA_ADD_WARNING(Key * parentKey, const char * message)
 ```
-Note that no error number is present anymore as it is not needed. The macro 
+Note that no error number is present anymore as it is not needed. The macro
 __LINE__ and __FILE__ will still be present such as it is now for better debugging
 purposes.
 
@@ -169,5 +167,3 @@ Current errors will be migrated. The migration of each and every error can be se
 
 
 ## Notes
-
-
