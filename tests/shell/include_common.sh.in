@@ -203,8 +203,12 @@ check_set_mv_rm() {
 #
 
 is_not_rw_storage() {
-	test ! "x$("$KDB" plugin-info $PLUGIN provides 2> /dev/null)" = "xstorage" \
-		-o "x$PLUGIN" = "xhosts" \
+	echo $("$KDB" plugin-info $PLUGIN provides 2> /dev/null) | fgrep -qw "storage"     
+	if [ $? != 0 ]; then
+	  return 0
+	fi
+	
+	test "x$PLUGIN" = "xhosts" \
 		-o "x$PLUGIN" = "xfstab" \
 		-o "x$PLUGIN" = "xline" \
 		-o "x$PLUGIN" = "xuname" \
@@ -217,7 +221,8 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xsimplespeclang" \
 		-o "x$PLUGIN" = "xmozprefs" \
 		-o "x$PLUGIN" = "xfile" \
-		-o "x$PLUGIN" = "xruby"
+		-o "x$PLUGIN" = "xruby" \
+		-o "x$PLUGIN" = "xdesktop"
 }
 
 is_plugin_available() {
