@@ -205,6 +205,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
 
+- Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - <<TODO>>
 
 ## Tests
