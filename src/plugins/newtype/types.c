@@ -315,3 +315,47 @@ bool elektraNewTypeCheckEnum (const Key * key)
 
 	return true;
 }
+
+void elektraNewTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
+{
+	const Key * maxKey = keyGetMeta (key, "check/enum");
+	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+
+	if (max == NULL)
+	{
+		ELEKTRA_SET_ERRORF (52, errorKey,
+				    "The type 'enum' failed to match for '%s' with string: %s\n"
+				    "No values allowed! (check/enum is an empty array, or parent isn't set to last element)",
+				    keyName (key), keyString (key));
+		return;
+	}
+
+	char * errorMessage = elektraFormat (
+		"The type 'enum' failed to match for '%s' with string: %s\n"
+		"Allowed values:",
+		keyName (key), keyString (key));
+
+	char elem[sizeof ("check/enum/") + ELEKTRA_MAX_ARRAY_SIZE];
+	strcpy (elem, "check/enum/");
+	char * indexStart = elem + sizeof ("check/enum/") - 1;
+
+	kdb_long_long_t index = 0;
+	elektraWriteArrayNumber (indexStart, index);
+	while (strcmp (indexStart, max) <= 0)
+	{
+		const Key * enumKey = keyGetMeta (key, elem);
+		const char * name = enumKey != NULL ? keyString (enumKey) : "";
+		if (strlen (name) > 0)
+		{
+			char * newErrorMessage = elektraFormat ("%s '%s'", errorMessage, name);
+			elektraFree (errorMessage);
+			errorMessage = newErrorMessage;
+		}
+
+		++index;
+		elektraWriteArrayNumber (indexStart, index);
+	}
+
+	ELEKTRA_SET_ERROR (52, errorKey, errorMessage);
+	elektraFree (errorMessage);
+}

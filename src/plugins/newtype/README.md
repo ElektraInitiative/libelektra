@@ -62,31 +62,31 @@ For example, using the array from above, a key with value `large` will be conver
 
 ```sh
 #Mount the plugin
-sudo kdb mount typetest.dump user/tests/type dump type
+sudo kdb mount typetest.dump user/tests/newtype dump newtype
 
 #Store a character value
-kdb set user/tests/type/key a
+kdb set user/tests/newtype/key a
 
 #Only allow character values
-kdb setmeta user/tests/type/key check/type char
-kdb get user/tests/type/key
+kdb setmeta user/tests/newtype/key type char
+kdb get user/tests/newtype/key
 #> a
 
 #If we store another character everything works fine
-kdb set user/tests/type/key b
-kdb get user/tests/type/key
+kdb set user/tests/newtype/key b
+kdb get user/tests/newtype/key
 #> b
 
 #If we try to store a string Elektra will not change the value
-kdb set user/tests/type/key 'Not a char'
+kdb set user/tests/newtype/key 'Not a char'
 # RET:5
 # ERROR:52
-kdb get user/tests/type/key
+kdb get user/tests/newtype/key
 #> b
 
 #Undo modifications to the database
-kdb rm user/tests/type/key
-sudo kdb umount user/tests/type
+kdb rm user/tests/newtype/key
+sudo kdb umount user/tests/newtype
 ```
 
 For enums:
@@ -94,21 +94,21 @@ For enums:
 ```sh
 # Backup-and-Restore:/tests/enum
 
-sudo kdb mount typeenum.ecf user/tests/type dump type
+sudo kdb mount typeenum.ecf user/tests/newtype dump newtype
 
 # valid initial value + setup valid enum list
-kdb set user/tests/type/value middle
-kdb setmeta user/tests/type/value check/enum '#2'
-kdb setmeta user/tests/type/value 'check/enum/#0' 'low'
-kdb setmeta user/tests/type/value 'check/enum/#1' 'middle'
-kdb setmeta user/tests/type/value 'check/enum/#2' 'high'
-kdb setmeta user/tests/type/value check/type enum
+kdb set user/tests/newtype/value middle
+kdb setmeta user/tests/newtype/value check/enum '#2'
+kdb setmeta user/tests/newtype/value 'check/enum/#0' 'low'
+kdb setmeta user/tests/newtype/value 'check/enum/#1' 'middle'
+kdb setmeta user/tests/newtype/value 'check/enum/#2' 'high'
+kdb setmeta user/tests/newtype/value type enum
 
 # should succeed
-kdb set user/tests/type/value low
+kdb set user/tests/newtype/value low
 
 # should fail with error 52
-kdb set user/tests/type/value no
+kdb set user/tests/newtype/value no
 # RET:5
 # ERROR:52
 ```
@@ -117,59 +117,59 @@ Or with multi-enums:
 
 ```sh
 # valid initial value + setup array with valid enums
-kdb set user/tests/type/multivalue middle_small
-kdb setmeta user/tests/type/multivalue check/enum/#0 small
-kdb setmeta user/tests/type/multivalue check/enum/#1 middle
-kdb setmeta user/tests/type/multivalue check/enum/#2 large
-kdb setmeta user/tests/type/multivalue check/enum/#3 huge
-kdb setmeta user/tests/type/multivalue check/enum/multi _
-kdb setmeta user/tests/type/multivalue check/enum "#3"
-kdb setmeta user/tests/type/multivalue check/type enum
+kdb set user/tests/newtype/multivalue middle_small
+kdb setmeta user/tests/newtype/multivalue check/enum/#0 small
+kdb setmeta user/tests/newtype/multivalue check/enum/#1 middle
+kdb setmeta user/tests/newtype/multivalue check/enum/#2 large
+kdb setmeta user/tests/newtype/multivalue check/enum/#3 huge
+kdb setmeta user/tests/newtype/multivalue check/enum/multi _
+kdb setmeta user/tests/newtype/multivalue check/enum "#3"
+kdb setmeta user/tests/newtype/multivalue type enum
 
 # should succeed
-kdb set user/tests/type/multivalue small_middle
+kdb set user/tests/newtype/multivalue small_middle
 
 # should fail with error 52
-kdb set user/tests/type/multivalue all_small
+kdb set user/tests/newtype/multivalue all_small
 # RET:5
 # ERROR:52
 
 # cleanup
-kdb rm -r user/tests/type
-sudo kdb umount user/tests/type
+kdb rm -r user/tests/newtype
+sudo kdb umount user/tests/newtype
 ```
 
 For booleans:
 
 ```sh
 # Mount plugin
-sudo kdb mount config.ecf user/tests/type dump type
+sudo kdb mount config.ecf user/tests/newtype dump newtype
 
 # By default the plugin uses `1` (true) and `0` (false) to represent boolean values
-kdb set user/tests/type/truthiness false
-kdb setmeta user/tests/type/truthiness type boolean
-kdb get user/tests/type/truthiness
+kdb set user/tests/newtype/truthiness false
+kdb setmeta user/tests/newtype/truthiness type boolean
+kdb get user/tests/newtype/truthiness
 #> 0
 
 # The plugin does not change ordinary values
-kdb set user/tests/type/key value
-kdb get user/tests/type/key
+kdb set user/tests/newtype/key value
+kdb get user/tests/newtype/key
 #> value
 
 # Undo changes
-kdb rm -r user/tests/type
-sudo kdb umount user/tests/type
+kdb rm -r user/tests/newtype
+sudo kdb umount user/tests/newtype
 ```
 
 ```sh
-sudo kdb mount config.ecf user/tests/type dump type
-kdb set user/tests/type/truthiness 0
-kdb setmeta user/tests/type/truthiness type boolean
- kdb set user/tests/type/truthiness yes
+sudo kdb mount config.ecf user/tests/newtype dump newtype
+kdb set user/tests/newtype/truthiness 0
+kdb setmeta user/tests/newtype/truthiness type boolean
+ kdb set user/tests/newtype/truthiness yes
 # RET: 0
  # Undo changes
-kdb rm -r user/tests/type
-sudo kdb umount user/tests/type
+kdb rm -r user/tests/newtype
+sudo kdb umount user/tests/newtype
 ```
 
 ## Limitations

@@ -20,30 +20,35 @@ struct _Type
 	bool (*normalize) (Plugin * handle, Key * key);
 	bool (*check) (const Key * key);
 	bool (*restore) (Plugin * handle, Key * key);
+	void (*setError) (Plugin * handle, Key * errorKey, const Key * key);
 };
 
-static const Type elektraNewTypesList[] = { { "any", NULL, &elektraNewTypeCheckAny, NULL },
-					 { "empty", NULL, &elektraNewTypeCheckEmpty, NULL },
-					 { "string", NULL, &elektraNewTypeCheckString, NULL },
-					 { "wstring", NULL, &elektraNewTypeCheckWString, NULL },
-					 { "char", NULL, &elektraNewTypeCheckChar, NULL },
-					 { "wchar", NULL, &elektraNewTypeCheckWChar, NULL },
-					 { "octet", NULL, &elektraNewTypeCheckChar, NULL },
-					 { "short", NULL, &elektraNewTypeCheckShort, NULL },
-					 { "long", NULL, &elektraNewTypeCheckLong, NULL },
-					 { "long_long", NULL, &elektraNewTypeCheckLongLong, NULL },
-					 { "unsigned_short", NULL, &elektraNewTypeCheckUnsignedShort, NULL },
-					 { "unsigned_long", NULL, &elektraNewTypeCheckUnsignedLong, NULL },
-					 { "unsigned_long_long", NULL, &elektraNewTypeCheckUnsignedLongLong, NULL },
-					 { "float", NULL, &elektraNewTypeCheckFloat, NULL },
-					 { "double", NULL, &elektraNewTypeCheckDouble, NULL },
+static void elektraNewTypeSetDefaultError (Plugin * handle, Key * errorKey, const Key * key);
+
+static const Type elektraNewTypesList[] = {
+	{ "any", NULL, &elektraNewTypeCheckAny, NULL, &elektraNewTypeSetDefaultError },
+	{ "empty", NULL, &elektraNewTypeCheckEmpty, NULL, &elektraNewTypeSetDefaultError },
+	{ "string", NULL, &elektraNewTypeCheckString, NULL, &elektraNewTypeSetDefaultError },
+	{ "wstring", NULL, &elektraNewTypeCheckWString, NULL, &elektraNewTypeSetDefaultError },
+	{ "char", NULL, &elektraNewTypeCheckChar, NULL, &elektraNewTypeSetDefaultError },
+	{ "wchar", NULL, &elektraNewTypeCheckWChar, NULL, &elektraNewTypeSetDefaultError },
+	{ "octet", NULL, &elektraNewTypeCheckChar, NULL, &elektraNewTypeSetDefaultError },
+	{ "short", NULL, &elektraNewTypeCheckShort, NULL, &elektraNewTypeSetDefaultError },
+	{ "long", NULL, &elektraNewTypeCheckLong, NULL, &elektraNewTypeSetDefaultError },
+	{ "long_long", NULL, &elektraNewTypeCheckLongLong, NULL, &elektraNewTypeSetDefaultError },
+	{ "unsigned_short", NULL, &elektraNewTypeCheckUnsignedShort, NULL, &elektraNewTypeSetDefaultError },
+	{ "unsigned_long", NULL, &elektraNewTypeCheckUnsignedLong, NULL, &elektraNewTypeSetDefaultError },
+	{ "unsigned_long_long", NULL, &elektraNewTypeCheckUnsignedLongLong, NULL, &elektraNewTypeSetDefaultError },
+	{ "float", NULL, &elektraNewTypeCheckFloat, NULL, &elektraNewTypeSetDefaultError },
+	{ "double", NULL, &elektraNewTypeCheckDouble, NULL, &elektraNewTypeSetDefaultError },
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-					 { "long_double", NULL, &elektraNewTypeCheckLongDouble, NULL },
+	{ "long_double", NULL, &elektraNewTypeCheckLongDouble, NULL, &elektraNewTypeSetDefaultError },
 #endif
-					 { "boolean", &elektraNewTypeNormalizeBoolean, &elektraNewTypeCheckBoolean,
-					   &elektraNewTypeRestoreBoolean },
-					 { "enum", NULL, &elektraNewTypeCheckEnum, NULL },
-					 { NULL, NULL, NULL, NULL } };
+	{ "boolean", &elektraNewTypeNormalizeBoolean, &elektraNewTypeCheckBoolean, &elektraNewTypeRestoreBoolean,
+	  &elektraNewTypeSetDefaultError },
+	{ "enum", NULL, &elektraNewTypeCheckEnum, NULL, &elektraNewTypeSetErrorEnum },
+	{ NULL, NULL, NULL, NULL, NULL }
+};
 
 static const Type * findType (const char * name)
 {
@@ -88,6 +93,12 @@ bool elektraNewTypeCheckType (const Key * key)
 	return type != NULL && type->check (key);
 }
 
+static void elektraNewTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
+{
+	ELEKTRA_SET_ERRORF (52, errorKey, "The type '%s' failed to match for '%s' with string: %s", getTypeName (key), keyName (key),
+			    keyString (key));
+}
+
 bool elektraNewTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 {
 	const char * typeName = getTypeName (key);
@@ -99,29 +110,27 @@ bool elektraNewTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 	const Type * type = findType (typeName);
 	if (type == NULL)
 	{
-		ELEKTRA_SET_ERRORF (52, errorKey, "The type %s failed to match for %s with string: %s", getTypeName (key), keyName (key),
-				    keyString (key));
+		ELEKTRA_SET_ERRORF (52, errorKey, "Unknown type '%s' for key '%s'", typeName, keyName (key));
 		return false;
 	}
 
 	if (type->normalize != NULL && !type->normalize (handle, key))
 	{
-		ELEKTRA_SET_ERRORF (52, errorKey, "The type %s failed to match for %s with string: %s", getTypeName (key), keyName (key),
-				    keyString (key));
+		ELEKTRA_SET_ERRORF (52, errorKey, "The value '%s' of key %s could not be normalized (type is '%s')", keyString (key),
+				    keyName (key), typeName);
 		return false;
 	}
 
 	if (!type->check (key))
 	{
-		ELEKTRA_SET_ERRORF (52, errorKey, "The type %s failed to match for %s with string: %s", getTypeName (key), keyName (key),
-				    keyString (key));
+		type->setError (handle, errorKey, key);
 		return false;
 	}
 
 	if (type->restore != NULL && !type->restore (handle, key))
 	{
-		ELEKTRA_SET_ERRORF (52, errorKey, "The type %s failed to match for %s with string: %s", getTypeName (key), keyName (key),
-				    keyString (key));
+		ELEKTRA_SET_ERRORF (52, errorKey, "The normalized value '%s' of key %s could not be restored (type is '%s')",
+				    keyString (key), keyName (key), typeName);
 		return false;
 	}
 
@@ -163,24 +172,22 @@ int elektraNewTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		const Type * type = findType (typeName);
 		if (type == NULL)
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			ELEKTRA_SET_ERRORF (52, parentKey, "Unknown type '%s' for key '%s'", typeName, keyName (cur));
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (type->normalize != NULL && !type->normalize (handle, cur))
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			ELEKTRA_SET_ERRORF (52, parentKey, "The value '%s' of key %s could not be normalized (type is '%s')",
+					    keyString (cur), keyName (cur), typeName);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (!type->check (cur))
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			type->setError (handle, parentKey, cur);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -209,32 +216,30 @@ int elektraNewTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		const Type * type = findType (typeName);
 		if (type == NULL)
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			ELEKTRA_SET_ERRORF (52, parentKey, "Unknown type '%s' for key '%s'", typeName, keyName (cur));
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (type->normalize != NULL && !type->normalize (handle, cur))
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			ELEKTRA_SET_ERRORF (52, parentKey, "The value '%s' of key %s could not be normalized (type is '%s')",
+					    keyString (cur), keyName (cur), typeName);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (!type->check (cur))
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			type->setError (handle, parentKey, cur);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (type->restore != NULL && !type->restore (handle, cur))
 		{
-			ELEKTRA_SET_ERRORF (52, parentKey, "The type %s failed to match for %s with string: %s", getTypeName (cur),
-					    keyName (cur), keyString (cur));
+			ELEKTRA_SET_ERRORF (52, parentKey, "The normalized value '%s' of key %s could not be restored (type is '%s')",
+					    keyString (cur), keyName (cur), typeName);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
