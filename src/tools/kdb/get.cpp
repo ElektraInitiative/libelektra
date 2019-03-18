@@ -157,6 +157,10 @@ int GetCommand::execute (Cmdline const & cl)
 	{
 		if (cl.verbose)
 		{
+			if (k.getName ()[0] == '/')
+			{
+				cout << "The key was not found in any other namespace, taking the default from the metadata" << std::endl;
+			}
 			cout << "The resulting keyname is " << k.getName () << std::endl;
 			cout << "The resulting value size is " << k.getStringSize () << std::endl;
 		}

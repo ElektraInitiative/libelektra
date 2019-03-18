@@ -51,17 +51,48 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To get the value of a key:<br>
-`kdb get user/example/key`
+```sh
+# Backup-and-Restore: user/tests/get/examples
 
-To get the value of a key using a cascading lookup:<br>
-`kdb get /example/key`
+# Create the keys we use for the examples
+kdb set user/tests/get/examples/kdb-get/key myKey
+kdb setmeta /tests/get/examples/kdb-get/anotherKey default defaultValue
 
-To get the value of a key without adding a newline to the end of it:<br>
-`kdb get -n /example/key`
+# To get the value of a key:
+kdb get user/tests/get/examples/kdb-get/key
+#> myKey
 
-To explain why a specific key was used (for cascading keys):<br>
-`kdb get -v /example/key`
+# To get the value of a key using a cascading lookup:
+kdb get /tests/get/examples/kdb-get/key
+#> myKey
+
+# To get the value of a key without adding a newline to the end of it:
+kdb get -n /tests/get/examples/kdb-get/key
+#> myKey
+
+# To explain why a specific key was used (for cascading keys):
+kdb get -v /tests/get/examples/kdb-get/key
+#> got 3 keys
+#> searching spec/tests/get/examples/kdb-get/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching proc/tests/get/examples/kdb-get/key, found: <nothing>, options: 
+#>     searching dir/tests/get/examples/kdb-get/key, found: <nothing>, options: 
+#>     searching user/tests/get/examples/kdb-get/key, found: user/tests/get/examples/kdb-get/key, options: 
+#> The resulting keyname is user/tests/get/examples/kdb-get/key
+#> The resulting value size is 6
+#> myKey
+
+# Output if only a default value is set for a key:
+kdb get -v /tests/get/examples/kdb-get/anotherKey
+#> got 3 keys
+#> searching spec/tests/get/examples/kdb-get/anotherKey, found: spec/tests/get/examples/kdb-get/anotherKey, options: KDB_O_CALLBACK
+#> The key was not found in any other namespace, taking the default from the metadata
+#> The resulting keyname is /tests/get/examples/kdb-get/anotherKey
+#> The resulting value size is 13
+#> defaultValue
+
+kdb rm user/tests/get/examples/kdb-get/key
+kdb rmmeta spec/tests/get/examples/kdb-get/anotherKey default
+```
 
 To use bookmarks:<br>
 `kdb get +kdb/format`
