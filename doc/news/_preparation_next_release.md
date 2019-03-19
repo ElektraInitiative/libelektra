@@ -255,6 +255,9 @@ you up to date with the multi-language support provided by Elektra.
 
   reported by [LGTM][]. _(René Schwaiger)_
 
+- The `reformat-source` script now also formats `tests/shell/include_common.sh.in`. Additionally it ensures that the file is 1000 lines long,
+  so that line numbers of files using it are easier to read. _(Klemens Böswirth)_
+
 [lgtm]: https://lgtm.com
 
 ## Build
