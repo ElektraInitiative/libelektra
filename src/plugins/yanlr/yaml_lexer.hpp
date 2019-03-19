@@ -249,11 +249,11 @@ class YAMLLexer : public TokenSource
 	void scanPlainScalar ();
 
 	/**
-	 * @brief This method counts the number of non space characters that can be
+	 * @brief This method counts the number of non-space characters that can be
 	 *        part of a plain scalar at position `offset`.
 	 *
 	 * @param offset This parameter specifies an offset to the current input
-	 *               position, where this function searches for non space
+	 *               position, where this function searches for non-space
 	 *               characters.
 	 *
 	 * @return The number of non-space characters at the input position `offset`

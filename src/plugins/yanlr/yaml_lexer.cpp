@@ -464,18 +464,18 @@ void YAMLLexer::scanPlainScalar ()
 }
 
 /**
- * @brief This method counts the number of non space characters that can be part
+ * @brief This method counts the number of non-space characters that can be part
  *        of a plain scalar at position `offset`.
  *
  * @param offset This parameter specifies an offset to the current input
- *               position, where this function searches for non space
+ *               position, where this function searches for non-space
  *               characters.
  *
  * @return The number of non-space characters at the input position `offset`
  */
 size_t YAMLLexer::countPlainNonSpace (size_t const offset) const
 {
-	ELEKTRA_LOG_DEBUG ("Scan non space characters");
+	ELEKTRA_LOG_DEBUG ("Scan non-space characters");
 	string const stop = " \n";
 
 	size_t lookahead = offset + 1;
