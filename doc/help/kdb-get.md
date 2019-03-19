@@ -74,9 +74,9 @@ kdb get -n /tests/get/examples/kdb-get/key
 kdb get -v /tests/get/examples/kdb-get/key
 #> got 3 keys
 #> searching spec/tests/get/examples/kdb-get/key, found: <nothing>, options: KDB_O_CALLBACK
-#>     searching proc/tests/get/examples/kdb-get/key, found: <nothing>, options: 
-#>     searching dir/tests/get/examples/kdb-get/key, found: <nothing>, options: 
-#>     searching user/tests/get/examples/kdb-get/key, found: user/tests/get/examples/kdb-get/key, options: 
+#>     searching proc/tests/get/examples/kdb-get/key, found: <nothing>
+#>     searching dir/tests/get/examples/kdb-get/key, found: <nothing>
+#>     searching user/tests/get/examples/kdb-get/key, found: user/tests/get/examples/kdb-get/key
 #> The resulting keyname is user/tests/get/examples/kdb-get/key
 #> The resulting value size is 6
 #> myKey
@@ -91,7 +91,7 @@ kdb get -v /tests/get/examples/kdb-get/anotherKey
 #> defaultValue
 
 kdb rm user/tests/get/examples/kdb-get/key
-kdb rmmeta spec/tests/get/examples/kdb-get/anotherKey default
+kdb rm spec/tests/get/examples/kdb-get/anotherKey
 ```
 
 To use bookmarks:<br>
