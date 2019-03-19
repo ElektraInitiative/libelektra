@@ -31,7 +31,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ### NewType
 
-- A rewrite of the `type` plugin in C. Also provides enum and boolean functionality. 
+- A rewrite of the `type` plugin in C. Also provides enum and boolean functionality.
   In a future release this may replace the `type` plugin. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
