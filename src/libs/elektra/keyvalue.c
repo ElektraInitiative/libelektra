@@ -364,6 +364,8 @@ ssize_t keySetString (Key * key, const char * newStringValue)
 	else
 		ret = keySetRaw (key, newStringValue, elektraStrLen (newStringValue));
 
+	keySetMeta (key, "origvalue", 0);
+
 	return ret;
 }
 

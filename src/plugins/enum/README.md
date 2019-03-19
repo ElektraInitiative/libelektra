@@ -5,9 +5,11 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = productive maintained unittest tested nodep libc
+- infos/status = unittest tested nodep libc obsolete
 - infos/metadata = check/enum check/enum/# check/enum/multi
 - infos/description = validates values against enum
+
+**This plugin is obsolete:** Please use the `newtype` plugin instead.
 
 ## Introduction
 
