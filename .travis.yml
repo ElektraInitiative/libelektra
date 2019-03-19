@@ -118,7 +118,6 @@ matrix:
           -shell;\
           -simplespeclang;\
           -struct;\
-          -sync;\
           -syslog;\
           -tcl;\
           -template;\

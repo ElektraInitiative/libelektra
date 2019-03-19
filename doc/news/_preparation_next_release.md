@@ -113,7 +113,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Quickdump
 
 - [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
-  [dump](https://www.libelektra.org/plugins/dump) format, which is also quicker too read. _(Klemens Böswirth)_
+  [dump](https://www.libelektra.org/plugins/dump) format, which is also quicker too read. Contrary to dump, quickdump only stores
+  keynames relative to the parent key. This allows easy relocation of configurations. _(Klemens Böswirth)_
 
 ### Reference
 
