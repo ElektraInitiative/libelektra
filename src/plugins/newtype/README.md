@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained nodep libc tested unittest recommended
-- infos/metadata = check/type type check/enum check/enum/# check/enum/multi
+- infos/metadata = check/type type check/enum check/enum/# check/enum/delimiter
 - infos/description = type checker using COBRA data types
 
 ## Introduction
@@ -42,12 +42,12 @@ For example:
 Only the values listed in this array will be accepted. The array indices don't have to be continuous, using e.g. only `#1`, `#2` and
 `#4` is also allowed. Just make sure `check/enum` is set to the largest index in the array.
 
-Furthermore `check/enum/multi` may contain a separator character, that separates multiple allowed occurrences.
-If `check/enum/multi` contain more than a single character validation will fail.
+Furthermore `check/enum/delimiter` may contain a separator character, that separates multiple allowed occurrences.
+If `check/enum/delimiter` contain more than a single character validation will fail.
 
 For example:
 
-    check/enum/multi = _
+    check/enum/delimiter = _
 
 Then the value `middle_small` would validate. `middle_small_small` would be allowed as well, because multi-values are treated like bitfields.
 
@@ -122,7 +122,7 @@ kdb setmeta user/tests/newtype/multivalue check/enum/#0 small
 kdb setmeta user/tests/newtype/multivalue check/enum/#1 middle
 kdb setmeta user/tests/newtype/multivalue check/enum/#2 large
 kdb setmeta user/tests/newtype/multivalue check/enum/#3 huge
-kdb setmeta user/tests/newtype/multivalue check/enum/multi _
+kdb setmeta user/tests/newtype/multivalue check/enum/delimiter _
 kdb setmeta user/tests/newtype/multivalue check/enum "#3"
 kdb setmeta user/tests/newtype/multivalue type enum
 

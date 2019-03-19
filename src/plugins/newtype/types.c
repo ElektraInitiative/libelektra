@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Only a destructor
+ * @brief
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -241,7 +241,7 @@ bool elektraNewTypeCheckUnsignedLongLong (const Key * key)
 
 bool elektraNewTypeCheckEnum (const Key * key)
 {
-	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
+	const Key * multiEnum = keyGetMeta (key, "check/enum/delimiter");
 
 	const Key * maxKey = keyGetMeta (key, "check/enum");
 	const char * max = maxKey == NULL ? NULL : keyString (maxKey);

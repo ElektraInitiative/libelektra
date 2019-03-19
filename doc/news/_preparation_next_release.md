@@ -29,7 +29,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+### NewType
+
+- A rewrite of the `type` plugin in C. Also provides enum and boolean functionality. 
+  In a future release this may replace the `type` plugin. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 
@@ -133,10 +136,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Syslog
 
 - We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
-
-### CType
-
-- A rewrite of the `type` plugin in C. Also provides enum and boolean functionality. _(Klemens Böswirth)_
 
 ## Libraries
 
