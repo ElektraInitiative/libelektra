@@ -224,6 +224,8 @@ you up to date with the multi-language support provided by Elektra.
 - Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
 - Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
+
+- Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - <<TODO>>
 
 ## Tests
