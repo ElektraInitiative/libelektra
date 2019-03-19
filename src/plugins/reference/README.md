@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = presetstorage
 - infos/status = maintained unittest libc writeonly
-- infos/metadata = check/reference check/reference/restrict
+- infos/metadata = check/reference check/reference/restrict check/reference/restrict/#
 - infos/description = Plugin for validating singular or recursive references
 
 ## Introduction
