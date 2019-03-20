@@ -121,5 +121,4 @@ char const * ErrorListener::message ()
 {
 	return errorMessage.c_str ();
 }
-
 }

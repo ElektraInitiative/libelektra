@@ -402,5 +402,4 @@ public:
 	 */
 	Ref<antlr4::TokenFactory<antlr4::CommonToken>> getTokenFactory () override;
 };
-
 }

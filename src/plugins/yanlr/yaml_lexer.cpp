@@ -589,5 +589,4 @@ void YAMLLexer::scanElement ()
 	tokens.push_back (commonToken (ELEMENT, getPosition (), input->index () + 1));
 	forward (2);
 }
-
 }

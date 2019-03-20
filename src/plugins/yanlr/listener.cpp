@@ -197,5 +197,4 @@ void KeyListener::exitElement (ElementContext * context __attribute__ ((unused))
 {
 	parents.pop (); // Remove the key for the current array entry
 }
-
 }

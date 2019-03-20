@@ -109,5 +109,4 @@ public:
 	 */
 	virtual void exitElement (YAML::ElementContext * context) override;
 };
-
 }

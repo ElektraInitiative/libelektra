@@ -59,5 +59,4 @@ public:
 	 */
 	char const * message ();
 };
-
 }
