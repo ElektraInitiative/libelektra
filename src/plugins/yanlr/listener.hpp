@@ -29,6 +29,9 @@ using CppKeySet = kdb::KeySet;
 
 // -- Class --------------------------------------------------------------------
 
+namespace yanlr
+{
+
 /**
  * @brief This class creates a key set by listening to matches of grammar rules
  *        specified via YAML.g4.
@@ -119,3 +122,5 @@ public:
 	 */
 	virtual void exitElement (ElementContext * context) override;
 };
+
+}

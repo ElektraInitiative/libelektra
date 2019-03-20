@@ -59,6 +59,9 @@ string scalarToText (string const & text)
 
 // -- Class --------------------------------------------------------------------
 
+namespace yanlr
+{
+
 /**
  * @brief This constructor creates a new empty key storage using the given
  *        parent key.
@@ -181,4 +184,6 @@ void KeyListener::enterElement (ElementContext * context __attribute__ ((unused)
 void KeyListener::exitElement (ElementContext * context __attribute__ ((unused)))
 {
 	parents.pop (); // Remove the key for the current array entry
+}
+
 }

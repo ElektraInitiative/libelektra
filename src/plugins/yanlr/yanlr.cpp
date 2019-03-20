@@ -26,6 +26,7 @@ using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 
 using yanlr::ErrorListener;
+using yanlr::KeyListener;
 using yanlr::YAML;
 using yanlr::YAMLLexer;
 
