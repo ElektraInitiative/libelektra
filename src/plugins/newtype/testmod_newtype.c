@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for data type checker
+ * @brief
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

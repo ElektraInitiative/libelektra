@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Implementation of entry points
+ * @brief
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -137,6 +137,93 @@ bool elektraNewTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 	return true;
 }
 
+static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** result, Key * errorKey)
+{
+	Key * parent = ksLookupByName (config, "/booleans", 0);
+	const char * max = keyString (parent);
+	if (parent == NULL || strlen (max) == 0)
+	{
+		*result = NULL;
+		return -1;
+	}
+
+	kdb_long_long_t index = 0;
+	char buffer[10 + ELEKTRA_MAX_ARRAY_SIZE + 6];
+	strcpy (buffer, "/booleans/");
+	char * indexPos = &buffer[10];
+	elektraWriteArrayNumber (indexPos, index);
+
+	if (strcmp (indexPos, max) > 0)
+	{
+		*result = NULL;
+		return 0;
+	}
+
+	kdb_long_long_t size = 0;
+	*result = elektraMalloc (sizeof (struct boolean_pair));
+	while (strcmp (indexPos, max) <= 0)
+	{
+		char * subPos = &buffer[strlen (buffer)];
+		strcpy (subPos, "/true");
+		Key * trueKey = ksLookupByName (config, buffer, 0);
+		strcpy (subPos, "/false");
+		Key * falseKey = ksLookupByName (config, buffer, 0);
+
+		*subPos = '\0';
+		if ((trueKey == NULL) != (falseKey == NULL))
+		{
+			ELEKTRA_SET_ERRORF (52, errorKey, "You must set both true and false for a boolean pair (config key: '%s')", buffer);
+			elektraFree (*result);
+			*result = NULL;
+			return -2;
+		}
+
+
+		elektraRealloc ((void **) result, (size + 1) * sizeof (struct boolean_pair));
+
+		result[size]->trueValue = keyString (trueKey);
+		result[size]->falseValue = keyString (falseKey);
+		++size;
+
+		++index;
+		elektraWriteArrayNumber (indexPos, index);
+	}
+
+	return size;
+}
+
+int elektraNewTypeOpen (Plugin * handle, Key * errorKey)
+{
+	KeySet * conf = elektraPluginGetConfig (handle);
+	NewTypeData * data = elektraMalloc (sizeof (NewTypeData));
+
+	kdb_long_long_t result = readBooleans (conf, &data->booleans, errorKey);
+	if (result < -1)
+	{
+		elektraFree (data);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (result == -1)
+	{
+		data->booleans = elektraMalloc (sizeof (struct boolean_pair) * 5);
+		data->booleans[0] = (struct boolean_pair){ "yes", "no" };
+		data->booleans[1] = (struct boolean_pair){ "true", "false" };
+		data->booleans[2] = (struct boolean_pair){ "on", "off" };
+		data->booleans[3] = (struct boolean_pair){ "enabled", "disabled" };
+		data->booleans[4] = (struct boolean_pair){ "enable", "disable" };
+		data->booleanCount = 5;
+	}
+	else
+	{
+		data->booleanCount = result;
+	}
+
+	elektraPluginSetData (handle, data);
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 int elektraNewTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/newtype"))
@@ -144,8 +231,10 @@ int elektraNewTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/newtype", KEY_VALUE, "newtype plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/newtype/exports", KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports/open", KEY_FUNC, elektraNewTypeOpen, KEY_END),
 			       keyNew ("system/elektra/modules/newtype/exports/get", KEY_FUNC, elektraNewTypeGet, KEY_END),
 			       keyNew ("system/elektra/modules/newtype/exports/set", KEY_FUNC, elektraNewTypeSet, KEY_END),
+			       keyNew ("system/elektra/modules/newtype/exports/close", KEY_FUNC, elektraNewTypeClose, KEY_END),
 			       keyNew ("system/elektra/modules/newtype/exports/checkconf", KEY_FUNC, elektraNewTypeCheckConf, KEY_END),
 			       keyNew ("system/elektra/modules/newtype/exports/validateKey", KEY_FUNC, elektraNewTypeValidateKey, KEY_END),
 #include ELEKTRA_README
@@ -250,35 +339,24 @@ int elektraNewTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraNewTypeCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf)
+
+int elektraNewTypeClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	Key * parent = ksLookupByName (conf, "booleans", 0);
-	const char * max = keyString (parent);
-	if (parent == NULL || strlen (max) == 0)
+	NewTypeData * data = elektraPluginGetData (handle);
+	elektraFree (data->booleans);
+	elektraFree (data);
+	elektraPluginSetData (handle, NULL);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int elektraNewTypeCheckConf (Key * errorKey, KeySet * conf)
+{
+	struct boolean_pair * pairs;
+	if (readBooleans (conf, &pairs, errorKey) < -1)
 	{
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	kdb_long_long_t index = 0;
-	char buffer[9 + ELEKTRA_MAX_ARRAY_SIZE + 6];
-	strcpy (buffer, "booleans/");
-	char * indexPos = &buffer[9];
-
-	while (strcmp (buffer, max) <= 0)
-	{
-		elektraWriteArrayNumber (indexPos, index);
-
-		char * subPos = &buffer[strlen (buffer)];
-		strcpy (subPos, "/true");
-		Key * trueKey = ksLookupByName (conf, buffer, 0);
-		strcpy (subPos, "/false");
-		Key * falseKey = ksLookupByName (conf, buffer, 0);
-
-		if ((trueKey == NULL) != (falseKey == NULL))
-		{
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-	}
+	elektraFree (pairs);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -286,8 +364,10 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("newtype",
+		ELEKTRA_PLUGIN_OPEN,	&elektraNewTypeOpen,
 		ELEKTRA_PLUGIN_GET,	&elektraNewTypeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraNewTypeSet,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraNewTypeClose,
 		ELEKTRA_PLUGIN_END);
 	// clang-format on
 }
