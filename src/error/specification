@@ -310,10 +310,11 @@ ingroup:plugin
 module:network
 
 number:52
-description:could not type check value of key
+description:error in the type plugin
 severity:error
 ingroup:plugin
 module:type
+macro:TYPE
 
 number:53
 description:could not check the structure of the keyset

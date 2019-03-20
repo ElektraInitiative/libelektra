@@ -24,8 +24,35 @@ The type checker plugin supports these types:
 - `empty` only matches empty key values.
 - `octet` and `char` are equivalent to each other.
 - `enum` will do enum checking as described below.
+- `boolean` only allows the values `1` and `0`. See also [Normalization](#normalization).
 - To use `wchar` and `wstring` the function `mbstowcs(3)` must be able convert the key value into a wide character string. `wstring`s can
   be of any non-zero length, `wchar` must have exactly length 1.
+
+## Normalization
+
+Some types support normalization in addition to the standard type checking. This means that an extended set of allowed values is normalized
+into a different (in most cases standardized) set before type checking. The normalized values will be passed on from `kdbGet` to the rest of
+Elektra and your application. During `kdbSet` changed values are also normalized before type checking and at the end of `kdbSet`, if
+everything was successful, the values are restored to the ones originally provided by the user (no matter if they were changed before
+`kdbSet` or already present in `kdbGet`).
+
+Currently only the type `boolean` supports this feature.
+
+### Booleans
+
+The values that are accepted as `boolean`s are configured during mounting:
+
+```
+sudo kdb mount typetest.dump user/tests/newtype dump newtype booleans=#1 booleans/#0/true=a booleans/#0/false=b booleans/#0/true=t booleans/#1/false=f
+```
+
+The above line defines that the array of allowed boolean pairs. `booleans=#1` defines the last element of the array as `#1`. For each
+element `#` the keys `boolean/#/true` and `boolean/#/false` define the true and false value respectively. True value are normalized to `1`,
+false values to `0`.
+
+Even though we didn't specify them the values `1` and `0` are still accepted, because normalized values are always okay to use. If no
+configuration is given, the allowed values default to `1`, `yes`, `on`, `true`, `enabled` and `enable` as true values and `0`, `no`, `off`,
+`false`, `disabled` and `disable` as false values.
 
 ## Enums
 
@@ -50,13 +77,6 @@ For example:
     check/enum/delimiter = _
 
 Then the value `middle_small` would validate. `middle_small_small` would be allowed as well, because multi-values are treated like bitfields.
-
-### Enum Conversion
-
-If a key is set to type `enum` and additionally the metadata `check/enum/convert` is set to `1`, the plugin will convert the string value
-into its index on kdbGet and back again on kdbSet.
-
-For example, using the array from above, a key with value `large` will be converted into the value `2`.
 
 ## Example
 
