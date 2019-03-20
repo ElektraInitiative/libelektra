@@ -48,32 +48,32 @@ plugin instead.
 
 ```sh
 # Mount the plugin
-sudo kdb mount typetest.dump user/tests/type dump type
+sudo kdb mount typetest.dump user/tests/cpptype dump cpptype
 
 # Store a character value
-kdb set user/tests/type/key a
+kdb set user/tests/cpptype/key a
 
 # Only allow character values
-kdb setmeta user/tests/type/key check/type char
-kdb get user/tests/type/key
+kdb setmeta user/tests/cpptype/key check/type char
+kdb get user/tests/cpptype/key
 #> a
 
 # If we store another character everything works fine
-kdb set user/tests/type/key b
-kdb get user/tests/type/key
+kdb set user/tests/cpptype/key b
+kdb get user/tests/cpptype/key
 #> b
 
 # If we try to store a string Elektra will not change the value
-kdb set user/tests/type/key 'Not a char'
-# STDERR: .*Description: could not type check value of key.*
+kdb set user/tests/cpptype/key 'Not a char'
+# STDERR: .*Description: error in the type plugin.*
 # ERROR:  52
 # RET:    5
-kdb get user/tests/type/key
+kdb get user/tests/cpptype/key
 #> b
 
 # Undo modifications to the database
-kdb rm user/tests/type/key
-sudo kdb umount user/tests/type
+kdb rm user/tests/cpptype/key
+sudo kdb umount user/tests/cpptype
 ```
 
 ## Limitations

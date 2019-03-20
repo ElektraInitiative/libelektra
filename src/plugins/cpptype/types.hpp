@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef ELEKTRA_TYPES_HPP
-#define ELEKTRA_TYPES_HPP
+#ifndef ELEKTRA_CPPTYPE_TYPES_HPP
+#define ELEKTRA_CPPTYPE_TYPES_HPP
 
 #include <locale>
 #include <map>
