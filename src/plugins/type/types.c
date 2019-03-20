@@ -8,7 +8,7 @@
  */
 
 #include "types.h"
-#include "newtype.h"
+#include "type.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -39,34 +39,34 @@
 		elektraFree (string);                                                                                                      \
 	}
 
-bool elektraNewTypeCheckAny (const Key * key ELEKTRA_UNUSED)
+bool elektraTypeCheckAny (const Key * key ELEKTRA_UNUSED)
 {
 	return true;
 }
 
-bool elektraNewTypeCheckEmpty (const Key * key)
+bool elektraTypeCheckEmpty (const Key * key)
 {
 	return strlen (keyString (key)) == 0;
 }
 
-bool elektraNewTypeCheckChar (const Key * key)
+bool elektraTypeCheckChar (const Key * key)
 {
 	return strlen (keyString (key)) == 1;
 }
 
 
-bool elektraNewTypeCheckWChar (const Key * key)
+bool elektraTypeCheckWChar (const Key * key)
 {
 	wchar_t out[2];
 	return mbstowcs (out, keyString (key), 2) == 1;
 }
 
-bool elektraNewTypeCheckString (const Key * key)
+bool elektraTypeCheckString (const Key * key)
 {
 	return strlen (keyString (key)) != 0;
 }
 
-bool elektraNewTypeCheckWString (const Key * key)
+bool elektraTypeCheckWString (const Key * key)
 {
 	const char * value = keyString (key);
 	size_t max = strlen (value) + 1;
@@ -76,11 +76,11 @@ bool elektraNewTypeCheckWString (const Key * key)
 	return result > 0 && result < max;
 }
 
-bool elektraNewTypeNormalizeBoolean (Plugin * handle, Key * key)
+bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 {
 	const char * value = keyString (key);
 
-	NewTypeData * data = elektraPluginGetData (handle);
+	TypeData * data = elektraPluginGetData (handle);
 
 	const Key * trueOverride = keyGetMeta (key, "check/boolean/true");
 	const Key * falseOverride = keyGetMeta (key, "check/boolean/false");
@@ -135,13 +135,13 @@ bool elektraNewTypeNormalizeBoolean (Plugin * handle, Key * key)
 	return false;
 }
 
-bool elektraNewTypeCheckBoolean (const Key * key)
+bool elektraTypeCheckBoolean (const Key * key)
 {
 	const char * value = keyString (key);
 	return (value[0] == '1' || value[0] == '0') && value[1] == '\0';
 }
 
-bool elektraNewTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
+bool elektraTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
 {
 	const Key * orig = keyGetMeta (key, "origvalue");
 	if (orig != NULL)
@@ -152,14 +152,14 @@ bool elektraNewTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckFloat (const Key * key)
+bool elektraTypeCheckFloat (const Key * key)
 {
 	kdb_float_t value;
 	CHECK_TYPE (key, value, elektraKeyToFloat)
 	return true;
 }
 
-bool elektraNewTypeCheckDouble (const Key * key)
+bool elektraTypeCheckDouble (const Key * key)
 {
 	kdb_double_t value;
 	CHECK_TYPE (key, value, elektraKeyToDouble)
@@ -167,7 +167,7 @@ bool elektraNewTypeCheckDouble (const Key * key)
 }
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-bool elektraNewTypeCheckLongDouble (const Key * key)
+bool elektraTypeCheckLongDouble (const Key * key)
 {
 	kdb_long_double_t value;
 	CHECK_TYPE (key, value, elektraKeyToLongDouble)
@@ -176,7 +176,7 @@ bool elektraNewTypeCheckLongDouble (const Key * key)
 
 #endif
 
-bool elektraNewTypeCheckShort (const Key * key)
+bool elektraTypeCheckShort (const Key * key)
 {
 	kdb_short_t value;
 	CHECK_TYPE (key, value, elektraKeyToShort)
@@ -184,7 +184,7 @@ bool elektraNewTypeCheckShort (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckLong (const Key * key)
+bool elektraTypeCheckLong (const Key * key)
 {
 	kdb_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToLong)
@@ -192,7 +192,7 @@ bool elektraNewTypeCheckLong (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckLongLong (const Key * key)
+bool elektraTypeCheckLongLong (const Key * key)
 {
 	kdb_long_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToLongLong)
@@ -200,7 +200,7 @@ bool elektraNewTypeCheckLongLong (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckUnsignedShort (const Key * key)
+bool elektraTypeCheckUnsignedShort (const Key * key)
 {
 	kdb_unsigned_short_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedShort)
@@ -208,7 +208,7 @@ bool elektraNewTypeCheckUnsignedShort (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckUnsignedLong (const Key * key)
+bool elektraTypeCheckUnsignedLong (const Key * key)
 {
 	kdb_unsigned_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedLong)
@@ -216,7 +216,7 @@ bool elektraNewTypeCheckUnsignedLong (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckUnsignedLongLong (const Key * key)
+bool elektraTypeCheckUnsignedLongLong (const Key * key)
 {
 	kdb_unsigned_long_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedLongLong)
@@ -308,7 +308,7 @@ static char * calculateStringValue (KeySet * validValues, char delimiter, kdb_un
 	return stringValue;
 }
 
-bool elektraNewTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
+bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 {
 	const Key * normalize = keyGetMeta (key, "check/enum/normalize");
 	if (normalize == NULL || strcmp (keyString (normalize), "1") != 0)
@@ -392,7 +392,7 @@ bool elektraNewTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckEnum (const Key * key)
+bool elektraTypeCheckEnum (const Key * key)
 {
 	const Key * normalize = keyGetMeta (key, "check/enum/normalize");
 	if (normalize != NULL && strcmp (keyString (normalize), "1") == 0)
@@ -449,7 +449,7 @@ bool elektraNewTypeCheckEnum (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeRestoreEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
+bool elektraTypeRestoreEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 {
 	const Key * orig = keyGetMeta (key, "origvalue");
 	if (orig != NULL)
@@ -460,7 +460,7 @@ bool elektraNewTypeRestoreEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 	return true;
 }
 
-void elektraNewTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
+void elektraTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
 {
 	const Key * maxKey = keyGetMeta (key, "check/enum");
 	const char * max = maxKey == NULL ? NULL : keyString (maxKey);

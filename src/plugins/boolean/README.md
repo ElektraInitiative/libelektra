@@ -9,7 +9,7 @@
 - infos/metadata =
 - infos/description = canonicalizes boolean values
 
-**This plugin is obsolete:** Please use the `newtype` plugin instead.
+**This plugin is obsolete:** Please use the `type` plugin instead.
 
 ## Introduction
 

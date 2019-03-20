@@ -241,7 +241,7 @@ int init (int argc, char ** argv);
 				strcat (errorMsg, "\"");                                                                                   \
                                                                                                                                            \
 				yield_error (errorMsg);                                                                                    \
-				printf ("\tcompared: " #ps1 " and " #ps2 "\n");                                                            \
+				printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                      \
 			}                                                                                                                  \
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}

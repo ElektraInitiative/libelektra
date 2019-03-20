@@ -8,7 +8,7 @@
  */
 
 
-#include "newtype.h"
+#include "type.h"
 
 #include <kdbmodule.h>
 #include <kdbplugin.h>
@@ -16,20 +16,20 @@
 
 static bool checkType (const Key * key)
 {
-	return elektraNewTypeCheckType (key);
+	return elektraTypeCheckType (key);
 }
 
 void test_validate (void)
 {
-	Key * parentKey = keyNew ("system/elektra/modules/newtype", KEY_END);
+	Key * parentKey = keyNew ("system/elektra/modules/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 
-	PLUGIN_OPEN ("newtype");
+	PLUGIN_OPEN ("type");
 
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	Key * key;
-	key = ksLookupByName (ks, "system/elektra/modules/newtype/exports/validateKey", 0);
+	key = ksLookupByName (ks, "system/elektra/modules/type/exports/validateKey", 0);
 	exit_if_fail (key, "key not found");
 
 	union
@@ -315,18 +315,18 @@ void test_wstring (void)
 
 static void test_enum (void)
 {
-	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
+	Key * parentKey = keyNew ("user/tests/type/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
 			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
 	Key * k2 =
-		keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
+		keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
 			KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
-	Key * k3 = keyNew ("user/tests/newtype/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
+	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
 			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
-	PLUGIN_OPEN ("newtype");
+	PLUGIN_OPEN ("type");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
@@ -338,22 +338,22 @@ static void test_enum (void)
 
 static void test_enumMulti (void)
 {
-	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * parentKey = keyNew ("user/tests/type/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
 			   "MIDDLE", KEY_END);
-	Key * k2 = keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "LOW_MIDDLE", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "LOW_MIDDLE", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
 			   "MIDDLE", KEY_END);
-	Key * k3 = keyNew ("user/tests/newtype/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k3 = keyNew ("user/tests/type/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
 			   "MIDDLE", KEY_END);
-	Key * k4 = keyNew ("user/tests/newtype/enum/invalid2", KEY_VALUE, "MIDDLE_FAIL", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k4 = keyNew ("user/tests/type/enum/invalid2", KEY_VALUE, "MIDDLE_FAIL", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
 			   "MIDDLE", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (3, k1, k2, KS_END);
-	PLUGIN_OPEN ("newtype");
+	PLUGIN_OPEN ("type");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
@@ -379,20 +379,20 @@ static void test_enumMulti (void)
 
 static void test_enumNormalize (void)
 {
-	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
+	Key * parentKey = keyNew ("user/tests/type/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
 			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/normalize", "1",
 			   KEY_END);
-	Key * k2 = keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum",
+	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum",
 			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH",
 			   KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k3 = keyNew ("user/tests/newtype/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
+	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
 			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_META, "check/enum/normalize", "1",
 			   KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
-	PLUGIN_OPEN ("newtype");
+	PLUGIN_OPEN ("type");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if_same_string (keyString (k1), "0");
@@ -425,31 +425,31 @@ static void test_enumNormalize (void)
 
 static void test_enumMultiNormalize (void)
 {
-	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "none", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * parentKey = keyNew ("user/tests/type/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "none", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k2 = keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "low", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "low", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k3 = keyNew ("user/tests/newtype/enum/valid3", KEY_VALUE, "high", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "high", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k4 = keyNew ("user/tests/newtype/enum/valid4", KEY_VALUE, "high_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k4 = keyNew ("user/tests/type/enum/valid4", KEY_VALUE, "high_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k5 = keyNew ("user/tests/newtype/enum/valid5", KEY_VALUE, "none_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k5 = keyNew ("user/tests/type/enum/valid5", KEY_VALUE, "none_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k6 = keyNew ("user/tests/newtype/enum/valid6", KEY_VALUE, "low_low_high", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k6 = keyNew ("user/tests/type/enum/valid6", KEY_VALUE, "low_low_high", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k7 = keyNew ("user/tests/newtype/enum/valid7", KEY_VALUE, "low_high", KEY_META, "check/enum/delimiter", "_", KEY_META,
+	Key * k7 = keyNew ("user/tests/type/enum/valid7", KEY_VALUE, "low_high", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (7, k1, k2, k3, k4, k5, k6, k7, KS_END);
-	PLUGIN_OPEN ("newtype");
+	PLUGIN_OPEN ("type");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if_same_string (keyString (k1), "0");
@@ -499,22 +499,22 @@ static void test_enumMultiNormalize (void)
 
 static void test_booleanDefault (const char * type)
 {
-	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("newtype");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/newtype/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
+	PLUGIN_OPEN ("type");
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t2", 0)), "1"), "key t2 has wrong value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/f1", 0)), "0"), "key f1 has wrong value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/f2", 0)), "0"), "key f2 has wrong value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/on", 0)), "1"), "key on has wrong value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/off", 0)), "0"), "key off has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t2", 0)), "1"), "key t2 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/f1", 0)), "0"), "key f1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/f2", 0)), "0"), "key f2 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/on", 0)), "1"), "key on has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/off", 0)), "0"), "key off has wrong value");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -524,18 +524,18 @@ static void test_booleanDefault (const char * type)
 
 static void test_booleanDefaultRestore (const char * type)
 {
-	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("newtype");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/newtype/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
+	PLUGIN_OPEN ("type");
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t2", 0)), "tRUe"), "restoring value in key t2 failed");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t2", 0)), "tRUe"), "restoring value in key t2 failed");
 	ksDel (ks);
 	keyDel (parentKey);
 
@@ -544,17 +544,17 @@ static void test_booleanDefaultRestore (const char * type)
 
 static void test_booleanDefaultError (const char * type)
 {
-	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("newtype");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/newtype/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/nt", KEY_VALUE, "i'm not true", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/nf", KEY_VALUE, "i'm not false", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
-			     keyNew ("user/tests/newtype/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
+	PLUGIN_OPEN ("type");
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/nt", KEY_VALUE, "i'm not true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/nf", KEY_VALUE, "i'm not false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbSet was not successful");
 	ksDel (ks);
@@ -565,17 +565,17 @@ static void test_booleanDefaultError (const char * type)
 
 static void test_booleanUserValue (const char * type)
 {
-	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("user/booleans", KEY_VALUE, "#0", KEY_END),
 			       keyNew ("user/booleans/#0/true", KEY_VALUE, "strangeTrueValue", KEY_END),
 			       keyNew ("user/booleans/#0/false", KEY_VALUE, "0", KEY_END), KS_END);
-	PLUGIN_OPEN ("newtype");
+	PLUGIN_OPEN ("type");
 	KeySet * ks =
-		ksNew (30, keyNew ("user/tests/newtype/t1", KEY_VALUE, "strangeTrueValue", KEY_META, type, "boolean", KEY_END), KS_END);
+		ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "strangeTrueValue", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "strangeTrueValue"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "strangeTrueValue"), "key t1 has wrong value");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -585,28 +585,28 @@ static void test_booleanUserValue (const char * type)
 
 static void test_booleanChangeValue (const char * type)
 {
-	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("newtype");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/newtype/t1", KEY_VALUE, "0", KEY_META, type, "boolean", KEY_END), KS_END);
+	PLUGIN_OPEN ("type");
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "0", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "0"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "0"), "key t1 has wrong value");
 
-	keySetString (ksLookupByName (ks, "user/tests/newtype/t1", 0), "yes");
+	keySetString (ksLookupByName (ks, "user/tests/type/t1", 0), "yes");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "yes"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "yes"), "key t1 has wrong value");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 
-	keySetString (ksLookupByName (ks, "user/tests/newtype/t1", 0), "1");
+	keySetString (ksLookupByName (ks, "user/tests/type/t1", 0), "1");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -616,28 +616,28 @@ static void test_booleanChangeValue (const char * type)
 
 static void test_booleanOverride (const char * type)
 {
-	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("newtype");
-	Key * k1 = keyNew ("user/tests/newtype/t1", KEY_VALUE, "t", KEY_META, type, "boolean", KEY_META, "check/boolean/true", "t",
+	PLUGIN_OPEN ("type");
+	Key * k1 = keyNew ("user/tests/type/t1", KEY_VALUE, "t", KEY_META, type, "boolean", KEY_META, "check/boolean/true", "t",
 			   KEY_META, "check/boolean/false", "f", KEY_END);
 	KeySet * ks = ksNew (30, k1, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "t"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "t"), "key t1 has wrong value");
 
 	keySetString (k1, "1");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "t"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "t"), "key t1 has wrong value");
 
 	keySetString (k1, "t");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "t"), "key t1 has wrong value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "t"), "key t1 has wrong value");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -647,7 +647,7 @@ static void test_booleanOverride (const char * type)
 
 int main (int argc, char ** argv)
 {
-	printf ("NEWTYPE     TESTS\n");
+	printf ("TYPE     TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
@@ -684,7 +684,7 @@ int main (int argc, char ** argv)
 	test_booleanChangeValue ("check/type");
 	test_booleanOverride ("check/type");
 
-	print_result ("testmod_newtype");
+	print_result ("testmod_type");
 
 	return nbError;
 }
