@@ -162,7 +162,7 @@ Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
  * @param lineNumber This number specifies the line number of the position.
  * @param columnOffset This number specifies the offset to the beginning of the line.
  */
-YAMLLexer::TokenPosition::TokenPosition (size_t byteIndex, size_t lineNumber, size_t columnOffset)
+YAMLLexer::Position::Position (size_t byteIndex, size_t lineNumber, size_t columnOffset)
 : index{ byteIndex }, line{ lineNumber }, column{ columnOffset }
 {
 }
@@ -172,9 +172,9 @@ YAMLLexer::TokenPosition::TokenPosition (size_t byteIndex, size_t lineNumber, si
  *
  * @return A position containing the current byte index, line number and column offset.
  */
-YAMLLexer::TokenPosition YAMLLexer::getPosition ()
+YAMLLexer::Position YAMLLexer::getPosition ()
 {
-	return TokenPosition (input->index (), line, column);
+	return Position (input->index (), line, column);
 }
 
 /**
@@ -190,7 +190,7 @@ YAMLLexer::TokenPosition YAMLLexer::getPosition ()
  *
  * @return A token with the specified parameters
  */
-unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, TokenPosition const & start, size_t stop, string text = "")
+unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, Position const & start, size_t stop, string text = "")
 #if defined(__clang__)
 	// Ignore warning about call on pointer of wrong object type (`CommonTokenFactory` instead of `TokenFactory<CommonToken>`)
 	// This should not be a problem, since `CommonTokenFactory` inherits from `TokenFactory<CommonToken>`.
@@ -559,7 +559,7 @@ void YAMLLexer::scanValue ()
 		throw ParseCancellationException ("Unable to locate key for value");
 	}
 	auto const start =
-		TokenPosition{ simpleKey.first->getStartIndex (), simpleKey.first->getLine (), simpleKey.first->getCharPositionInLine () };
+		Position{ simpleKey.first->getStartIndex (), simpleKey.first->getLine (), simpleKey.first->getCharPositionInLine () };
 	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
 	if (addIndentation (start.column, Level::Type::MAP))
 	{

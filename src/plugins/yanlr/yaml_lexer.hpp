@@ -68,14 +68,14 @@ class YAMLLexer : public TokenSource
 		}
 	};
 
-	/** This structure represents the (start) position of a certain token. */
-	struct TokenPosition
+	/** This structure represents the position inside the input. */
+	struct Position
 	{
-		/** This parameter stores the offset of the token, beginning from the start of the input, as number of bytes. */
+		/** This parameter stores the offset to the start of the input in bytes. */
 		size_t index;
-		/** This parameter stores the line where the token begins. */
+		/** This parameter stores the line number. */
 		size_t line;
-		/** This parameter stores the column offset of the start of the token inside `line`. */
+		/** This parameter stores the column offset inside `line`. */
 		size_t column;
 
 		/**
@@ -85,7 +85,7 @@ class YAMLLexer : public TokenSource
 		 * @param lineNumber This number specifies the line number of the position.
 		 * @param columnOffset This number specifies the offset to the beginning of the line.
 		 */
-		TokenPosition (size_t byteIndex, size_t lineNumber, size_t columnOffset);
+		Position (size_t byteIndex, size_t lineNumber, size_t columnOffset);
 	};
 
 	/** This variable stores the input that this lexer scans. */
@@ -146,7 +146,7 @@ class YAMLLexer : public TokenSource
 	 *
 	 * @return A position containing the current byte index, line number and column offset.
 	 */
-	TokenPosition getPosition ();
+	Position getPosition ();
 
 	/**
 	 * @brief This function creates a new token with the specified parameters.
@@ -161,7 +161,7 @@ class YAMLLexer : public TokenSource
 	 *
 	 * @return A token with the specified parameters
 	 */
-	unique_ptr<CommonToken> commonToken (size_t type, TokenPosition const & start, size_t stop, string text);
+	unique_ptr<CommonToken> commonToken (size_t type, Position const & start, size_t stop, string text);
 
 	/**
 	 * @brief This function adds an indentation value if the given value is smaller
