@@ -79,14 +79,38 @@ bool elektraNewTypeNormalizeBoolean (Plugin * handle, Key * key)
 {
 	const char * value = keyString (key);
 
+	NewTypeData * data = elektraPluginGetData (handle);
+
+	const Key * trueOverride = keyGetMeta (key, "check/boolean/true");
+	const Key * falseOverride = keyGetMeta (key, "check/boolean/false");
+
+	if ((trueOverride == NULL) != (falseOverride == NULL))
+	{
+		return false;
+	}
+	else if (trueOverride != NULL)
+	{
+		if (strcasecmp (keyString (trueOverride), value) == 0 || strcmp ("1", value) == 0)
+		{
+			keySetString (key, "1");
+			keySetMeta (key, "origvalue", keyString (trueOverride));
+			return true;
+		}
+		else if (strcasecmp (keyString (falseOverride), value) == 0 || strcmp ("0", value) == 0)
+		{
+			keySetString (key, "0");
+			keySetMeta (key, "origvalue", keyString (falseOverride));
+			return true;
+		}
+		return false;
+	}
+
 	if ((value[0] == '1' || value[0] == '0') && value[1] == '\0')
 	{
 		return true;
 	}
 
 	char * origValue = elektraStrDup (value);
-
-	NewTypeData * data = elektraPluginGetData (handle);
 
 	for (kdb_long_long_t i = 0; i < data->booleanCount; ++i)
 	{

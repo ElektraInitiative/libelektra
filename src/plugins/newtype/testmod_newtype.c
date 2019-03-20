@@ -514,6 +514,37 @@ static void test_booleanChangeValue (const char * type)
 	PLUGIN_CLOSE ();
 }
 
+static void test_booleanOverride (const char * type)
+{
+	Key * parentKey = keyNew ("user/tests/newtype", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("newtype");
+	Key * k1 = keyNew ("user/tests/newtype/t1", KEY_VALUE, "t", KEY_META, type, "boolean", KEY_META, "check/boolean/true", "t",
+			   KEY_META, "check/boolean/false", "f", KEY_END);
+	KeySet * ks = ksNew (30, k1, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "t"), "key t1 has wrong value");
+
+	keySetString (k1, "1");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "t"), "key t1 has wrong value");
+
+	keySetString (k1, "t");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "1"), "key t1 has wrong value");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/newtype/t1", 0)), "t"), "key t1 has wrong value");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("NEWTYPE     TESTS\n");
@@ -541,12 +572,14 @@ int main (int argc, char ** argv)
 	test_booleanDefaultRestore ("type");
 	test_booleanUserValue ("type");
 	test_booleanChangeValue ("type");
+	test_booleanOverride ("type");
 
 	test_booleanDefault ("check/type");
 	test_booleanDefaultError ("check/type");
 	test_booleanDefaultRestore ("check/type");
 	test_booleanUserValue ("check/type");
 	test_booleanChangeValue ("check/type");
+	test_booleanOverride ("check/type");
 
 	print_result ("testmod_newtype");
 

@@ -54,6 +54,18 @@ Even though we didn't specify them the values `1` and `0` are still accepted, be
 configuration is given, the allowed values default to `1`, `yes`, `on`, `true`, `enabled` and `enable` as true values and `0`, `no`, `off`,
 `false`, `disabled` and `disable` as false values.
 
+The accepted values can also be overridden on a per-key-basis. Simply add the metakey `check/boolean/true` and `check/boolean/false` to set
+the accepted true and false values. Only a single true/false value can be chosen. This is intended for use cases, where normally you prefer
+to use only e.g. `1`, `0` and `true`, `false`, but what to override that for a key where e.g. `enabled` and `disabled` make more sense
+contextually (e.g. for something like `/log/debug`). Because of this intention restoring also works differently, when `check/boolean/true`
+and `check/boolean/false` are used. In this case we will always restore to the chosen override values.
+
+Note: The values `1` and `0` are accepted, even if overrides are used. This means you can set a key with overrides to `0` (or `1`) and during
+`kdbSet` it will be restored to the false (or true) override value.
+
+It is an error to specify only one of `boolean/#/true` and `boolean/#/false` or `check/boolean/true` and `check/boolean/false`.
+_Boolean always come in pairs!_
+
 ## Enums
 
 If a key is set to the type `enum` the plugin will look for the metadata array `check/enum/#`.
