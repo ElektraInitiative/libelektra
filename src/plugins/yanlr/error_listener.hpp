@@ -17,6 +17,9 @@ using antlr4::Token;
 using std::exception_ptr;
 using std::string;
 
+namespace yanlr
+{
+
 // -- Class --------------------------------------------------------------------
 
 /**
@@ -63,3 +66,5 @@ public:
 	 */
 	char const * message ();
 };
+
+}

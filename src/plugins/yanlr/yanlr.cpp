@@ -25,7 +25,9 @@
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 
+using yanlr::ErrorListener;
 using yanlr::YAML;
+using yanlr::YAMLLexer;
 
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;
@@ -34,7 +36,6 @@ using ParserATNSimulator = antlr4::atn::ParserATNSimulator;
 using PredictionMode = antlr4::atn::PredictionMode;
 using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
-using yanlr::YAMLLexer;
 
 using std::ifstream;
 

@@ -65,6 +65,9 @@ string visualizeError (Recognizer * recognizer, Token * offendingSymbol, size_t 
 }
 }
 
+namespace yanlr
+{
+
 // -- Class --------------------------------------------------------------------
 
 /**
@@ -109,4 +112,6 @@ void ErrorListener::syntaxError (Recognizer * recognizer, Token * offendingSymbo
 char const * ErrorListener::message ()
 {
 	return errorMessage.c_str ();
+}
+
 }
