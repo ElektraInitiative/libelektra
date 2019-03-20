@@ -32,6 +32,11 @@ using antlr4::ParseCancellationException;
 namespace yanlr
 {
 
+using antlr4::CharStream;
+using antlr4::CommonToken;
+using antlr4::Token;
+using antlr4::TokenFactory;
+
 /**
  * @brief This constructor creates a new YAML lexer for the given input.
  *

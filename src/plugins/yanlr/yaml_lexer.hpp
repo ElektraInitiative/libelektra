@@ -32,19 +32,12 @@ using std::stack;
 using std::string;
 using std::unique_ptr;
 
-using antlr4::CharStream;
-using antlr4::CommonToken;
-using antlr4::CommonTokenFactory;
-using antlr4::Token;
-using antlr4::TokenFactory;
-using antlr4::TokenSource;
-
 namespace yanlr
 {
 
 // -- Class --------------------------------------------------------------------
 
-class YAMLLexer : public TokenSource
+class YAMLLexer : public antlr4::TokenSource
 {
 	/** This class stores information about indentation that starts a new block node. */
 	class Level
@@ -92,16 +85,16 @@ class YAMLLexer : public TokenSource
 	};
 
 	/** This variable stores the input that this lexer scans. */
-	CharStream * input;
+	antlr4::CharStream * input;
 
 	/** This queue stores the list of tokens produced by the lexer. */
-	deque<unique_ptr<CommonToken>> tokens;
+	deque<unique_ptr<antlr4::CommonToken>> tokens;
 
 	/** The lexer uses this factory to produce tokens. */
-	Ref<TokenFactory<CommonToken>> factory = CommonTokenFactory::DEFAULT;
+	Ref<antlr4::TokenFactory<antlr4::CommonToken>> factory = antlr4::CommonTokenFactory::DEFAULT;
 
 	/** This pair stores the token source (this lexer) and the current `input`. */
-	pair<TokenSource *, CharStream *> source;
+	pair<antlr4::TokenSource *, antlr4::CharStream *> source;
 
 	/**
 	 * This variable saves the current line position of the lexer inside
@@ -142,7 +135,7 @@ class YAMLLexer : public TokenSource
 	 * use a single token here. If we need support for flow collections we have
 	 * to store a candidate for each flow level (block context = flow level 0).
 	 */
-	pair<unique_ptr<CommonToken>, size_t> simpleKey;
+	pair<unique_ptr<antlr4::CommonToken>, size_t> simpleKey;
 
 	/**
 	 * @brief This function returns the current position of the lexer inside the input.
@@ -164,7 +157,7 @@ class YAMLLexer : public TokenSource
 	 *
 	 * @return A token with the specified parameters
 	 */
-	unique_ptr<CommonToken> commonToken (size_t type, Position const & start, size_t stop, string text);
+	unique_ptr<antlr4::CommonToken> commonToken (size_t type, Position const & start, size_t stop, string text);
 
 	/**
 	 * @brief This function adds an indentation value if the given value is smaller
@@ -354,7 +347,7 @@ public:
 	 *
 	 * @param stream This character stream stores the data this lexer scans.
 	 */
-	YAMLLexer (CharStream * stream);
+	YAMLLexer (antlr4::CharStream * stream);
 
 	/**
 	 * @brief This method retrieves the current (not already emitted) token
@@ -362,7 +355,7 @@ public:
 	 *
 	 * @return A token of the token stream produced by the lexer
 	 */
-	unique_ptr<Token> nextToken () override;
+	unique_ptr<antlr4::Token> nextToken () override;
 
 	/**
 	 * @brief This method retrieves the current line index.
@@ -383,7 +376,7 @@ public:
 	 *
 	 * @return The input of the lexer
 	 */
-	CharStream * getInputStream () override;
+	antlr4::CharStream * getInputStream () override;
 
 	/**
 	 * @brief This method retrieves the name of the source the lexer is
@@ -400,14 +393,14 @@ public:
 	 *                     should use to create tokens.
 	 */
 	template <typename T1>
-	void setTokenFactory (TokenFactory<T1> * tokenFactory);
+	void setTokenFactory (antlr4::TokenFactory<T1> * tokenFactory);
 
 	/**
 	 * @brief Retrieve the current token factory.
 	 *
 	 * @return The factory the scanner uses to create tokens
 	 */
-	Ref<TokenFactory<CommonToken>> getTokenFactory () override;
+	Ref<antlr4::TokenFactory<antlr4::CommonToken>> getTokenFactory () override;
 };
 
 }

@@ -20,6 +20,12 @@ using antlr4::CommonTokenStream;
 
 namespace
 {
+
+using std::string;
+
+using antlr4::Recognizer;
+using antlr4::Token;
+
 /**
  * @brief This function returns a Clang-like error message for a given error.
  *
@@ -65,10 +71,12 @@ string visualizeError (Recognizer * recognizer, Token * offendingSymbol, size_t 
 }
 }
 
+// -- Class --------------------------------------------------------------------
+
 namespace yanlr
 {
 
-// -- Class --------------------------------------------------------------------
+using antlr4::Recognizer;
 
 /**
  * @brief This constructor creates a new error listener using the given arguments.
