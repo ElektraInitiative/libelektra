@@ -41,7 +41,9 @@ bool elektraNewTypeCheckUnsignedShort (const Key * key);
 bool elektraNewTypeCheckUnsignedLong (const Key * key);
 bool elektraNewTypeCheckUnsignedLongLong (const Key * key);
 
+bool elektraNewTypeNormalizeEnum (Plugin * handle, Key * key);
 bool elektraNewTypeCheckEnum (const Key * key);
+bool elektraNewTypeRestoreEnum (Plugin * handle, Key * key);
 void elektraNewTypeSetErrorEnum (Plugin * handle, Key * errorKey, const Key * key);
 
 #endif

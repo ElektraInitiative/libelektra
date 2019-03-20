@@ -10,6 +10,7 @@
 #include "types.h"
 #include "newtype.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -223,9 +224,8 @@ bool elektraNewTypeCheckUnsignedLongLong (const Key * key)
 	return true;
 }
 
-bool elektraNewTypeCheckEnum (const Key * key)
+static bool enumValidValues (const Key * key, KeySet * validValues, char * delim)
 {
-	const Key * multiEnum = keyGetMeta (key, "check/enum/delimiter");
 
 	const Key * maxKey = keyGetMeta (key, "check/enum");
 	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
@@ -235,7 +235,6 @@ bool elektraNewTypeCheckEnum (const Key * key)
 		return false;
 	}
 
-	KeySet * validValues = ksNew (0, KS_END);
 	char elem[sizeof ("check/enum/") + ELEKTRA_MAX_ARRAY_SIZE];
 	strcpy (elem, "check/enum/");
 	char * indexStart = elem + sizeof ("check/enum/") - 1;
@@ -248,30 +247,180 @@ bool elektraNewTypeCheckEnum (const Key * key)
 		const char * name = enumKey != NULL ? keyString (enumKey) : "";
 		if (strlen (name) > 0)
 		{
-			ksAppendKey (validValues, keyNew (name, KEY_META_NAME, KEY_END));
+			kdb_unsigned_long_long_t val = index;
+			ksAppendKey (validValues, keyNew (name, KEY_META_NAME, KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t),
+							  KEY_VALUE, &val, KEY_END));
 		}
 
 		++index;
 		elektraWriteArrayNumber (indexStart, index);
 	}
 
-	char delim = 0;
+	const Key * multiEnum = keyGetMeta (key, "check/enum/delimiter");
 	if (multiEnum != NULL)
 	{
 		const char * delimString = keyString (multiEnum);
 
 		if (strlen (delimString) != 1)
 		{
+			ksDel (validValues);
 			return false;
 		}
-		delim = delimString[0];
+		*delim = delimString[0];
+	}
+
+	return true;
+}
+
+static char * calculateStringValue (KeySet * validValues, char delimiter, kdb_unsigned_long_long_t value)
+{
+	char * stringValue = elektraStrDup ("");
+
+	ksRewind (validValues);
+	Key * cur = NULL;
+	while ((cur = ksNext (validValues)) != NULL)
+	{
+		const kdb_unsigned_long_long_t * val = keyValue (cur);
+		if (delimiter == 0 && *val == value)
+		{
+			elektraFree (stringValue);
+			return elektraStrDup (keyName (cur));
+		}
+		else if (delimiter != 0)
+		{
+			if (*val == 0 && value == 0 && stringValue[0] == '\0')
+			{
+				elektraFree (stringValue);
+				return elektraStrDup (keyName (cur));
+			}
+			else if (*val != 0 && (*val & value) == *val)
+			{
+				char * tmp = stringValue[0] == '\0' ? elektraFormat ("%s", keyName (cur)) :
+								      elektraFormat ("%s%c%s", stringValue, delimiter, keyName (cur));
+				elektraFree (stringValue);
+				stringValue = tmp;
+
+				value &= ~*val;
+			}
+		}
+	}
+
+	return stringValue;
+}
+
+bool elektraNewTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
+{
+	const Key * normalize = keyGetMeta (key, "check/enum/normalize");
+	if (normalize == NULL || strcmp (keyString (normalize), "1") != 0)
+	{
+		return true;
+	}
+
+	KeySet * validValues = ksNew (0, KS_END);
+	char delim = 0;
+	if (!enumValidValues (key, validValues, &delim))
+	{
+		return false;
 	}
 
 	char * values = elektraStrDup (keyString (key));
 	char * value = values;
 	char * next;
 
-	if (multiEnum != NULL)
+	if (isdigit (values[0]))
+	{
+		kdb_unsigned_long_long_t val = ELEKTRA_UNSIGNED_LONG_LONG_S (values, NULL, 10);
+		char * origValue = calculateStringValue (validValues, delim, val);
+		if (origValue == NULL)
+		{
+			ksDel (validValues);
+			elektraFree (values);
+			return false;
+		}
+
+		keySetMeta (key, "origvalue", origValue);
+
+		elektraFree (origValue);
+		ksDel (validValues);
+		elektraFree (values);
+		return true;
+	}
+
+	kdb_unsigned_long_long_t normalized = 0;
+	if (delim != 0)
+	{
+		while ((next = strchr (value, delim)) != NULL)
+		{
+			*next = '\0';
+			Key * cur = ksLookupByName (validValues, value, 0);
+			if (cur == NULL)
+			{
+				ksDel (validValues);
+				elektraFree (values);
+				return false;
+			}
+
+			const kdb_unsigned_long_long_t * val = keyValue (cur);
+			normalized |= *val;
+			value = next + 1;
+		}
+	}
+
+	Key * cur = ksLookupByName (validValues, value, 0);
+	if (cur == NULL)
+	{
+		ksDel (validValues);
+		elektraFree (values);
+		return false;
+	}
+
+	const kdb_unsigned_long_long_t * val = keyValue (cur);
+	normalized |= *val;
+
+	ksDel (validValues);
+	elektraFree (values);
+
+	char * origValue = elektraStrDup (keyString (key));
+	char * normValue = elektraFormat (ELEKTRA_UNSIGNED_LONG_LONG_F, normalized);
+
+	keySetString (key, normValue);
+	keySetMeta (key, "origvalue", origValue);
+
+	elektraFree (origValue);
+	elektraFree (normValue);
+
+	return true;
+}
+
+bool elektraNewTypeCheckEnum (const Key * key)
+{
+	const Key * normalize = keyGetMeta (key, "check/enum/normalize");
+	if (normalize != NULL && strcmp (keyString (normalize), "1") == 0)
+	{
+		// was already implicitly checked during normalization
+		return true;
+	}
+
+	const Key * maxKey = keyGetMeta (key, "check/enum");
+	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+
+	if (max == NULL)
+	{
+		return false;
+	}
+
+	KeySet * validValues = ksNew (0, KS_END);
+	char delim = 0;
+	if (!enumValidValues (key, validValues, &delim))
+	{
+		return false;
+	}
+
+	char * values = elektraStrDup (keyString (key));
+	char * value = values;
+	char * next;
+
+	if (delim != 0)
 	{
 		while ((next = strchr (value, delim)) != NULL)
 		{
@@ -296,6 +445,17 @@ bool elektraNewTypeCheckEnum (const Key * key)
 
 	ksDel (validValues);
 	elektraFree (values);
+
+	return true;
+}
+
+bool elektraNewTypeRestoreEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
+{
+	const Key * orig = keyGetMeta (key, "origvalue");
+	if (orig != NULL)
+	{
+		keySetString (key, keyString (orig));
+	}
 
 	return true;
 }

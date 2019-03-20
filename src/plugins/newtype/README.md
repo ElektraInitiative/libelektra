@@ -28,6 +28,34 @@ The type checker plugin supports these types:
 - To use `wchar` and `wstring` the function `mbstowcs(3)` must be able convert the key value into a wide character string. `wstring`s can
   be of any non-zero length, `wchar` must have exactly length 1.
 
+## Enums
+
+If a key is set to the type `enum` the plugin will look for the metadata array `check/enum/#`.
+
+For example:
+
+```
+check/enum = #3
+check/enum/#0 = small
+check/enum/#1 = middle
+check/enum/#2 = large
+check/enum/#3 = huge
+```
+
+Only the values listed in this array will be accepted. The array indices don't have to be continuous, using e.g. only `#1`, `#2` and
+`#4` is also allowed. Just make sure `check/enum` is set to the largest index in the array.
+
+Furthermore `check/enum/delimiter` may contain a separator character, that separates multiple allowed occurrences.
+If `check/enum/delimiter` contain more than a single character validation will fail.
+
+For example:
+
+```
+check/enum/delimiter = _
+```
+
+Then the value `middle_small` would validate. `middle_small_small` would be allowed as well, because multi-values are treated like bitfields.
+
 ## Normalization
 
 Some types support normalization in addition to the standard type checking. This means that an extended set of allowed values is normalized
@@ -36,7 +64,7 @@ Elektra and your application. During `kdbSet` changed values are also normalized
 everything was successful, the values are restored to the ones originally provided by the user (no matter if they were changed before
 `kdbSet` or already present in `kdbGet`).
 
-Currently only the type `boolean` supports this feature.
+Note: If normalization is used often times, you will get a normalization error instead of a type checking error.
 
 ### Booleans
 
@@ -47,10 +75,10 @@ sudo kdb mount typetest.dump user/tests/newtype dump newtype booleans=#1 boolean
 ```
 
 The above line defines that the array of allowed boolean pairs. `booleans=#1` defines the last element of the array as `#1`. For each
-element `#` the keys `boolean/#/true` and `boolean/#/false` define the true and false value respectively. True value are normalized to `1`,
+element `#` the keys `boolean/#/true` and `boolean/#/false` define the true and false value respectively. True values are normalized to `1`,
 false values to `0`.
 
-Even though we didn't specify them the values `1` and `0` are still accepted, because normalized values are always okay to use. If no
+Even though we didn't specify them the values `1` and `0` are still accepted. The normalized values are always okay to use. If no
 configuration is given, the allowed values default to `1`, `yes`, `on`, `true`, `enabled` and `enable` as true values and `0`, `no`, `off`,
 `false`, `disabled` and `disable` as false values.
 
@@ -61,34 +89,54 @@ contextually (e.g. for something like `/log/debug`). Because of this intention r
 and `check/boolean/false` are used. In this case we will always restore to the chosen override values.
 
 Note: The values `1` and `0` are accepted, even if overrides are used. This means you can set a key with overrides to `0` (or `1`) and during
-`kdbSet` it will be restored to the false (or true) override value.
+`kdbSet` it will be restored to the false (or true) override value. (This is useful for the high-level API.)
 
 It is an error to specify only one of `boolean/#/true` and `boolean/#/false` or `check/boolean/true` and `check/boolean/false`.
 _Boolean always come in pairs!_
 
-## Enums
+### Enums
 
-If a key is set to the type `enum` the plugin will look for the metadata array `check/enum/#`.
+Enums also support normalization. Contrary to boolean normalization, enum normalization is always configured on a per-key-basis.
 
-For example:
+Simply set the metakey `check/enum/normalize` to `1` in order to normalize the string values to there indexes. Any other value is ignored.
 
-    check/enum = #3
-    check/enum/#0 = small
-    check/enum/#1 = middle
-    check/enum/#2 = large
-    check/enum/#3 = huge
+Take for example a key with the following enum configuration:
 
-Only the values listed in this array will be accepted. The array indices don't have to be continuous, using e.g. only `#1`, `#2` and
-`#4` is also allowed. Just make sure `check/enum` is set to the largest index in the array.
+```
+check/enum = #3
+check/enum/#0 = small
+check/enum/#1 = medium
+check/enum/#3 = huge
+```
 
-Furthermore `check/enum/delimiter` may contain a separator character, that separates multiple allowed occurrences.
-If `check/enum/delimiter` contain more than a single character validation will fail.
+The value `small` will be normalized to `0`, `medium` to `1` and `huge` to `3`. During restore the values `0`, `1` and `3` will be restored
+to `small`, `medium` and `huge`.
 
-For example:
+If you use normalization, you can pass string values or indices to `kdbGet` and `kdbSet`, but you will always get back indices from `kdbGet`
+and string values from `kdbSet`. (Therefore you can seamlessly use `elektraGetUnsignedLongLong` from high-level API for normalized enums.)
 
-    check/enum/delimiter = _
+The plugin also supports normalizing enums that use `check/enum/delimiter`, however be careful which indexes you use in this case. The indexes
+of all values are simple bitwise or-ed (using `|`). In the above example `small_medium` would be normalized to `1` (`0 | 1 == 1`), the same
+value as `medium`. This means during restore the value emitted will be `medium`.
 
-Then the value `middle_small` would validate. `middle_small_small` would be allowed as well, because multi-values are treated like bitfields.
+A version that would work with delimiter and normalization is:
+
+```
+check/enum = #4
+check/enum/#0 = none
+check/enum/#1 = small
+check/enum/#2 = medium
+check/enum/#4 = huge
+```
+
+Here `small_medium` is normalized to `3`, which is a unique value.
+During restore with delimiters the values might not be restored to there original form, but may be restored to an equivalent representation.
+e.g. `small_none` may be restored to just `small` or `small_medium` may be restored to `medium_small`
+This has technical reasons and we do not guarantee any restriction on what representation is produced during restore, other than the
+normalized value being the same as for the user provided representation.
+
+**_IMPORTANT:_** Do **not** use normalization together with enums, whose string values start with digits (e.g. `check/enum/#0 = 1abc`). This
+breaks normalization! Indices are differentiated from string value by whether they start with a digit.
 
 ## Example
 

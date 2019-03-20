@@ -318,34 +318,20 @@ static void test_enum (void)
 	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
 			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
-	Key * k2 = keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "LOW MIDDLE", KEY_META, "check/enum/delimiter", " ", KEY_META,
-			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
-			   "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
+	Key * k2 =
+		keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
+			KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 	Key * k3 = keyNew ("user/tests/newtype/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
 			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks;
+	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
 	PLUGIN_OPEN ("newtype");
 
-	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k1);
-	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
-	ksDel (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
 
-	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k2);
-	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
-
-	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k3);
-	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
-	ksDel (ks);
-
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
@@ -366,33 +352,147 @@ static void test_enumMulti (void)
 			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
 			   "MIDDLE", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks;
+	KeySet * ks = ksNew (3, k1, k2, KS_END);
 	PLUGIN_OPEN ("newtype");
 
-	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k1);
-	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
-	ksDel (ks);
-
-	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k2);
-	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k3);
 	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k4);
 	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_enumNormalize (void)
+{
+	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/normalize", "1",
+			   KEY_END);
+	Key * k2 = keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum",
+			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH",
+			   KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k3 = keyNew ("user/tests/newtype/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
+			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_META, "check/enum/normalize", "1",
+			   KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
+	PLUGIN_OPEN ("newtype");
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+	succeed_if_same_string (keyString (k1), "0");
+	succeed_if_same_string (keyString (k2), "1");
+	succeed_if_same_string (keyString (k3), "2");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
+	succeed_if_same_string (keyString (k1), "LOW");
+	succeed_if_same_string (keyString (k2), "MIDDLE");
+	succeed_if_same_string (keyString (k3), "HIGH");
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+	succeed_if_same_string (keyString (k1), "0");
+	succeed_if_same_string (keyString (k2), "1");
+	succeed_if_same_string (keyString (k3), "2");
+
+	keySetString (k1, "0");
+	keySetString (k2, "LOW");
+	keySetString (k3, "0");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
+	succeed_if_same_string (keyString (k1), "LOW");
+	succeed_if_same_string (keyString (k2), "LOW");
+	succeed_if_same_string (keyString (k3), "LOW");
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_enumMultiNormalize (void)
+{
+	Key * parentKey = keyNew ("user/tests/newtype/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/newtype/enum/valid1", KEY_VALUE, "none", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k2 = keyNew ("user/tests/newtype/enum/valid2", KEY_VALUE, "low", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k3 = keyNew ("user/tests/newtype/enum/valid3", KEY_VALUE, "high", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k4 = keyNew ("user/tests/newtype/enum/valid4", KEY_VALUE, "high_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k5 = keyNew ("user/tests/newtype/enum/valid5", KEY_VALUE, "none_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k6 = keyNew ("user/tests/newtype/enum/valid6", KEY_VALUE, "low_low_high", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k7 = keyNew ("user/tests/newtype/enum/valid7", KEY_VALUE, "low_high", KEY_META, "check/enum/delimiter", "_", KEY_META,
+			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
+			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (7, k1, k2, k3, k4, k5, k6, k7, KS_END);
+	PLUGIN_OPEN ("newtype");
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+	succeed_if_same_string (keyString (k1), "0");
+	succeed_if_same_string (keyString (k2), "1");
+	succeed_if_same_string (keyString (k3), "2");
+	succeed_if_same_string (keyString (k4), "3");
+	succeed_if_same_string (keyString (k5), "1");
+	succeed_if_same_string (keyString (k6), "3");
+	succeed_if_same_string (keyString (k7), "3");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
+	succeed_if_same_string (keyString (k1), "none");
+	succeed_if_same_string (keyString (k2), "low");
+	succeed_if_same_string (keyString (k3), "high");
+	succeed_if_same_string (keyString (k4), "high_low");
+	succeed_if_same_string (keyString (k5), "none_low");
+	succeed_if_same_string (keyString (k6), "low_low_high");
+	succeed_if_same_string (keyString (k7), "low_high");
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+	succeed_if_same_string (keyString (k1), "0");
+	succeed_if_same_string (keyString (k2), "1");
+	succeed_if_same_string (keyString (k3), "2");
+	succeed_if_same_string (keyString (k4), "3");
+	succeed_if_same_string (keyString (k5), "1");
+	succeed_if_same_string (keyString (k6), "3");
+	succeed_if_same_string (keyString (k7), "3");
+
+	keySetString (k1, "3");
+	keySetString (k2, "0");
+	keySetString (k3, "1");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
+	succeed_if_same_string (keyString (k1), "high_low");
+	succeed_if_same_string (keyString (k2), "none");
+	succeed_if_same_string (keyString (k3), "low");
+	succeed_if_same_string (keyString (k4), "high_low");
+	succeed_if_same_string (keyString (k5), "none_low");
+	succeed_if_same_string (keyString (k6), "low_low_high");
+	succeed_if_same_string (keyString (k7), "low_high");
+
+
+	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
@@ -566,6 +666,9 @@ int main (int argc, char ** argv)
 
 	test_enum ();
 	test_enumMulti ();
+
+	test_enumNormalize ();
+	test_enumMultiNormalize ();
 
 	test_booleanDefault ("type");
 	test_booleanDefaultError ("type");

@@ -46,7 +46,7 @@ static const Type elektraNewTypesList[] = {
 #endif
 	{ "boolean", &elektraNewTypeNormalizeBoolean, &elektraNewTypeCheckBoolean, &elektraNewTypeRestoreBoolean,
 	  &elektraNewTypeSetDefaultError },
-	{ "enum", NULL, &elektraNewTypeCheckEnum, NULL, &elektraNewTypeSetErrorEnum },
+	{ "enum", &elektraNewTypeNormalizeEnum, &elektraNewTypeCheckEnum, &elektraNewTypeRestoreEnum, &elektraNewTypeSetErrorEnum },
 	{ NULL, NULL, NULL, NULL, NULL }
 };
 
