@@ -27,7 +27,6 @@ static void elektraTypeSetDefaultError (Plugin * handle, Key * errorKey, const K
 
 static const Type elektraTypesList[] = {
 	{ "any", NULL, &elektraTypeCheckAny, NULL, &elektraTypeSetDefaultError },
-	{ "empty", NULL, &elektraTypeCheckEmpty, NULL, &elektraTypeSetDefaultError },
 	{ "string", NULL, &elektraTypeCheckString, NULL, &elektraTypeSetDefaultError },
 	{ "wstring", NULL, &elektraTypeCheckWString, NULL, &elektraTypeSetDefaultError },
 	{ "char", NULL, &elektraTypeCheckChar, NULL, &elektraTypeSetDefaultError },
@@ -44,8 +43,7 @@ static const Type elektraTypesList[] = {
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 	{ "long_double", NULL, &elektraTypeCheckLongDouble, NULL, &elektraTypeSetDefaultError },
 #endif
-	{ "boolean", &elektraTypeNormalizeBoolean, &elektraTypeCheckBoolean, &elektraTypeRestoreBoolean,
-	  &elektraTypeSetDefaultError },
+	{ "boolean", &elektraTypeNormalizeBoolean, &elektraTypeCheckBoolean, &elektraTypeRestoreBoolean, &elektraTypeSetDefaultError },
 	{ "enum", &elektraTypeNormalizeEnum, &elektraTypeCheckEnum, &elektraTypeRestoreEnum, &elektraTypeSetErrorEnum },
 	{ NULL, NULL, NULL, NULL, NULL }
 };

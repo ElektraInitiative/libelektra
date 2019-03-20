@@ -21,7 +21,6 @@ The type checker plugin supports these types:
 
 - Checking `any` will always be successful, regardless of the content.
 - `string` matches any non-empty key value.
-- `empty` only matches empty key values.
 - `octet` and `char` are equivalent to each other.
 - `enum` will do enum checking as described below.
 - `boolean` only allows the values `1` and `0`. See also [Normalization](#normalization).

@@ -44,11 +44,6 @@ bool elektraTypeCheckAny (const Key * key ELEKTRA_UNUSED)
 	return true;
 }
 
-bool elektraTypeCheckEmpty (const Key * key)
-{
-	return strlen (keyString (key)) == 0;
-}
-
 bool elektraTypeCheckChar (const Key * key)
 {
 	return strlen (keyString (key)) == 1;
