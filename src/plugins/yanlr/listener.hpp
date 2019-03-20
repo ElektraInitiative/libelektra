@@ -18,11 +18,11 @@ using std::stack;
 using std::string;
 using std::to_string;
 
-using antlr::YAMLBaseListener;
-using ValueContext = antlr::YAML::ValueContext;
-using PairContext = antlr::YAML::PairContext;
-using SequenceContext = antlr::YAML::SequenceContext;
-using ElementContext = antlr::YAML::ElementContext;
+using yanlr::YAMLBaseListener;
+using ValueContext = yanlr::YAML::ValueContext;
+using PairContext = yanlr::YAML::PairContext;
+using SequenceContext = yanlr::YAML::SequenceContext;
+using ElementContext = yanlr::YAML::ElementContext;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
