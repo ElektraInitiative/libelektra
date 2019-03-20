@@ -39,6 +39,9 @@ using antlr4::Token;
 using antlr4::TokenFactory;
 using antlr4::TokenSource;
 
+namespace yanlr
+{
+
 // -- Class --------------------------------------------------------------------
 
 class YAMLLexer : public TokenSource
@@ -406,3 +409,5 @@ public:
 	 */
 	Ref<TokenFactory<CommonToken>> getTokenFactory () override;
 };
+
+}

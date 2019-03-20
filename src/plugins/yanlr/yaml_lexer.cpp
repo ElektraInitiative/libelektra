@@ -29,6 +29,9 @@ using antlr4::ParseCancellationException;
 
 // -- Class --------------------------------------------------------------------
 
+namespace yanlr
+{
+
 /**
  * @brief This constructor creates a new YAML lexer for the given input.
  *
@@ -580,4 +583,6 @@ void YAMLLexer::scanElement ()
 	}
 	tokens.push_back (commonToken (ELEMENT, getPosition (), input->index () + 1));
 	forward (2);
+}
+
 }

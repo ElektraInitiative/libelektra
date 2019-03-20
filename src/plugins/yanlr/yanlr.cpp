@@ -34,6 +34,7 @@ using ParserATNSimulator = antlr4::atn::ParserATNSimulator;
 using PredictionMode = antlr4::atn::PredictionMode;
 using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
+using yanlr::YAMLLexer;
 
 using std::ifstream;
 
