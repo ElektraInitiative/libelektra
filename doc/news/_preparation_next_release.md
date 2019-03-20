@@ -29,10 +29,27 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### Type
+### Type (new version)
 
-- A rewrite of the `type` plugin in C. Also provides enum and boolean functionality.
-  In a future release this may replace the `type` plugin. _(Klemens Böswirth)_
+The `type` plugin was completely rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
+
+The new `type` plugin also provides the functionality of the `enum` and the `boolean` plugin. These plugins are now considered obsolete and
+you should use `type` instead.
+
+A few notes on compatibility:
+
+- the new `type` does not support the full feature set of `enum` and `boolean`, but it supports the features we consider useful.
+- the new `type` doesn't support `FSType` and `empty`. These have been deprecated for a long time and there are good alternatives available.
+- the new `type` supports `enum`, `wchar` and `wstring` as types, whereas the old `cpptype` would throw an error for these. In most cases
+  this won't be a problem, but you should be aware of this breaking change.
+- the new `type` does not support `check/type/min` and `check/type/max`, please use the `range` plugin.
+
+To switch from `enum` to the new `type`, you have to add either `check/type=enum` or `type=enum`. Without a `check/type` or `type` metakey,
+the `type` plugin will ignore the key. We now also support converting enum values to and from integer values (see
+[README](https://www.libelektra.org/plugins/type)).
+
+To switch from `boolean` to the new `type`, you don't have to do anything, if you used the default config. If you used a custom configuration
+please take a look at the [README](https://www.libelektra.org/plugins/type).
 
 ### <<HIGHLIGHT2>>
 

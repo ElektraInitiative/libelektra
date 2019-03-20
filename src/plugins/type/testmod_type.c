@@ -321,8 +321,8 @@ static void test_enum (void)
 	Key * k2 =
 		keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
 			KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
-	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
-			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_END);
+	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
@@ -339,9 +339,9 @@ static void test_enum (void)
 static void test_enumMulti (void)
 {
 	Key * parentKey = keyNew ("user/tests/type/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/delimiter", "_", KEY_META,
-			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
-			   "MIDDLE", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/delimiter", "_", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
+			   KEY_END);
 	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "LOW_MIDDLE", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1",
 			   "MIDDLE", KEY_END);
@@ -383,11 +383,11 @@ static void test_enumNormalize (void)
 	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
 			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/normalize", "1",
 			   KEY_END);
-	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum",
-			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH",
+	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "MIDDLE", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH",
 			   KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum",
-			   "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_META, "check/enum/normalize", "1",
+	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_META, "check/enum/normalize", "1",
 			   KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -426,15 +426,15 @@ static void test_enumNormalize (void)
 static void test_enumMultiNormalize (void)
 {
 	Key * parentKey = keyNew ("user/tests/type/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "none", KEY_META, "check/enum/delimiter", "_", KEY_META,
-			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
-			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "low", KEY_META, "check/enum/delimiter", "_", KEY_META,
-			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
-			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
-	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "high", KEY_META, "check/enum/delimiter", "_", KEY_META,
-			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
-			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/enum/valid1", KEY_VALUE, "none", KEY_META, "check/enum/delimiter", "_", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "low",
+			   KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k2 = keyNew ("user/tests/type/enum/valid2", KEY_VALUE, "low", KEY_META, "check/enum/delimiter", "_", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "low",
+			   KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
+	Key * k3 = keyNew ("user/tests/type/enum/valid3", KEY_VALUE, "high", KEY_META, "check/enum/delimiter", "_", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "low",
+			   KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
 	Key * k4 = keyNew ("user/tests/type/enum/valid4", KEY_VALUE, "high_low", KEY_META, "check/enum/delimiter", "_", KEY_META,
 			   "check/type", "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1",
 			   "low", KEY_META, "check/enum/#2", "high", KEY_META, "check/enum/normalize", "1", KEY_END);
@@ -570,8 +570,7 @@ static void test_booleanUserValue (const char * type)
 			       keyNew ("user/booleans/#0/true", KEY_VALUE, "strangeTrueValue", KEY_END),
 			       keyNew ("user/booleans/#0/false", KEY_VALUE, "0", KEY_END), KS_END);
 	PLUGIN_OPEN ("type");
-	KeySet * ks =
-		ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "strangeTrueValue", KEY_META, type, "boolean", KEY_END), KS_END);
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "strangeTrueValue", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -619,8 +618,8 @@ static void test_booleanOverride (const char * type)
 	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("type");
-	Key * k1 = keyNew ("user/tests/type/t1", KEY_VALUE, "t", KEY_META, type, "boolean", KEY_META, "check/boolean/true", "t",
-			   KEY_META, "check/boolean/false", "f", KEY_END);
+	Key * k1 = keyNew ("user/tests/type/t1", KEY_VALUE, "t", KEY_META, type, "boolean", KEY_META, "check/boolean/true", "t", KEY_META,
+			   "check/boolean/false", "f", KEY_END);
 	KeySet * ks = ksNew (30, k1, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1"), "key t1 has wrong value");
