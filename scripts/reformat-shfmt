@@ -34,5 +34,5 @@ fi
 
 comment_lines=$((999 - end_line))
 head -n "$end_line" 'tests/shell/include_common.sh.in' > a.tmp && mv a.tmp 'tests/shell/include_common.sh.in'
-printf "%${comment_lines}s" | sed 's/ /#\n/g' >> 'tests/shell/include_common.sh.in'
+awk -v LINES="${comment_lines}" 'BEGIN { for (c = 0; c < LINES; c++) printf "#\n"; }' >> 'tests/shell/include_common.sh.in'
 echo "# empty lines up to 1000 so that line numbers in the resulting scripts are more useful" >> 'tests/shell/include_common.sh.in'
