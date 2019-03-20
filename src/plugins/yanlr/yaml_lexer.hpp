@@ -68,6 +68,26 @@ class YAMLLexer : public TokenSource
 		}
 	};
 
+	/** This structure represents the (start) position of a certain token. */
+	struct TokenPosition
+	{
+		/** This parameter stores the offset of the token, beginning from the start of the input, as number of bytes. */
+		size_t index;
+		/** This parameter stores the line where the token begins. */
+		size_t line;
+		/** This parameter stores the column offset of the start of the token inside `line`. */
+		size_t column;
+
+		/**
+		 * @brief This constructor creates a position from the given arguments.
+		 *
+		 * @param byteIndex This number specifies the byte offset of the position relative to the start of the input.
+		 * @param lineNumber This number specifies the line number of the position.
+		 * @param columnOffset This number specifies the offset to the beginning of the line.
+		 */
+		TokenPosition (size_t byteIndex, size_t lineNumber, size_t columnOffset);
+	};
+
 	/** This variable stores the input that this lexer scans. */
 	CharStream * input;
 
@@ -122,11 +142,18 @@ class YAMLLexer : public TokenSource
 	pair<unique_ptr<CommonToken>, size_t> simpleKey;
 
 	/**
+	 * @brief This function returns the current position of the lexer inside the input.
+	 *
+	 * @return A position containing the current byte index, line number and column offset.
+	 */
+	TokenPosition getPosition ();
+
+	/**
 	 * @brief This function creates a new token with the specified parameters.
 	 *
 	 * @param type This parameter specifies the type of the token this function
 	 *             should create.
-	 * @param start This number specifies the start index of the returned token
+	 * @param start This variable specifies the start position of the returned token
 	 *              inside the character stream `input`.
 	 * @param stop This number specifies the stop index of the returned token
 	 *             inside the character stream `input`.
@@ -134,7 +161,7 @@ class YAMLLexer : public TokenSource
 	 *
 	 * @return A token with the specified parameters
 	 */
-	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop, string text);
+	unique_ptr<CommonToken> commonToken (size_t type, TokenPosition const & start, size_t stop, string text);
 
 	/**
 	 * @brief This function adds an indentation value if the given value is smaller
