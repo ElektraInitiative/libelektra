@@ -70,6 +70,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   `4.5.x` or earlier). _(René Schwaiger)_
 - We fixed an ambiguity in the [YAML grammar](https://master.libelektra.org/src/plugins/yanlr/YAML.g4). _(René Schwaiger)_
 - The build system now regenerates the modified parsing code, every time we update the grammar file. _(René Schwaiger)_
+- The plugin now reports the location of syntax errors correctly. _(René Schwaiger)_
 
 ### YAwn
 

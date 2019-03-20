@@ -97,7 +97,7 @@ function (generate_code ANTLR_EXECUTABLE)
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
-			    COMMAND ${ANTLR_EXECUTABLE} -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
+			    COMMAND ${ANTLR_EXECUTABLE} -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package yanlr ${GRAMMAR_FILE}
 			    DEPENDS ${GRAMMAR_FILE}
 				    ${TOKEN_FILE}
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
