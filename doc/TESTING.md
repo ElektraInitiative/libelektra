@@ -88,6 +88,20 @@ You have some options to avoid running them as root:
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
 
+## Manual Testing
+
+Running executables in the build directory needs some preparation.
+Here we assume that `build` is the build directory and it is the
+top-level of Elektra's source code:
+
+```
+cd build
+. ../scripts/run_dev_env
+```
+
+After sourcing `run_dev_env`, you can directly execute `kdb` and other
+binaries built with Elektra (such as the examples).
+
 ## Recommended Environment
 
 The tests are designed to disable themselves if some necessary tools are
