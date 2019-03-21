@@ -245,7 +245,7 @@ kdb setmeta user/tests/yamlcpp/typetest/number check/type short
 
 kdb set user/tests/yamlcpp/typetest/number "One"
 # RET: 5
-# STDERR: .*The type short failed to match for .*/number with string: One.*
+# STDERR: .*error in the type plugin.*
 # ERROR: 52
 
 kdb get user/tests/yamlcpp/typetest/number

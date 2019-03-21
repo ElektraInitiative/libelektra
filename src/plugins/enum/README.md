@@ -9,7 +9,7 @@
 - infos/metadata = check/enum check/enum/# check/enum/multi
 - infos/description = validates values against enum
 
-**This plugin is obsolete:** Please use the `newtype` plugin instead.
+**This plugin is obsolete:** Please use the `type` plugin instead.
 
 ## Introduction
 
