@@ -500,6 +500,12 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 	return updateNeededOccurred;
 }
 
+typedef enum
+{
+	FIRST,
+	LAST
+} UpdatePass;
+
 /**
  * @internal
  * @brief Do the real update.
@@ -507,7 +513,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
  * @retval -1 on error
  * @retval 0 on success
  */
-static int elektraGetDoUpdate (Split * split, Key * parentKey)
+static int elektraGetDoUpdate (Split * split, Key * parentKey, UpdatePass run)
 {
 	const int bypassedSplits = 1;
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
@@ -522,7 +528,19 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 		keySetName (parentKey, keyName (split->parents[i]));
 		keySetString (parentKey, keyString (split->parents[i]));
 
-		for (size_t p = 1; p < NR_OF_PLUGINS; ++p)
+		size_t start, end;
+		if (run == FIRST)
+		{
+			start = 1;
+			end = STORAGE_PLUGIN + 1;
+		}
+		else
+		{
+			start = STORAGE_PLUGIN + 1;
+			end = NR_OF_PLUGINS;
+		}
+
+		for (size_t p = start; p < end; ++p)
 		{
 			int ret = 0;
 			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
@@ -540,12 +558,6 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 	}
 	return 0;
 }
-
-typedef enum
-{
-	FIRST,
-	LAST
-} UpdatePass;
 
 static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 {
@@ -577,11 +589,14 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 					      UpdatePass run)
 {
 	const int bypassedSplits = 1;
-	int pgs_done = 0;
-	int pgc_done = 0;
 
-	elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT);
-	elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE);
+	if (run == FIRST)
+	{
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
+	}
 
 	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 
@@ -611,18 +626,24 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 		{
 			int ret = 0;
 
-			if (!pgs_done && (p == (STORAGE_PLUGIN + 1)) && handle->globalPlugins[POSTGETSTORAGE][FOREACH])
+			if (p == (STORAGE_PLUGIN + 1) && handle->globalPlugins[PROCGETSTORAGE][FOREACH])
 			{
-				pgs_done = 1;
+				keySetName (parentKey, keyName (initialParent));
+				ksRewind (ks);
+				handle->globalPlugins[PROCGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[PROCGETSTORAGE][FOREACH], ks,
+											parentKey);
+				keySetName (parentKey, keyName (split->parents[i]));
+			}
+			if (p == (STORAGE_PLUGIN + 2) && handle->globalPlugins[POSTGETSTORAGE][FOREACH])
+			{
 				keySetName (parentKey, keyName (initialParent));
 				ksRewind (ks);
 				handle->globalPlugins[POSTGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[POSTGETSTORAGE][FOREACH], ks,
 											parentKey);
 				keySetName (parentKey, keyName (split->parents[i]));
 			}
-			else if (!pgc_done && (p == (NR_OF_PLUGINS - 1)) && handle->globalPlugins[POSTGETCLEANUP][FOREACH])
+			else if (p == (NR_OF_PLUGINS - 1) && handle->globalPlugins[POSTGETCLEANUP][FOREACH])
 			{
-				pgc_done = 1;
 				keySetName (parentKey, keyName (initialParent));
 				ksRewind (ks);
 				handle->globalPlugins[POSTGETCLEANUP][FOREACH]->kdbGet (handle->globalPlugins[POSTGETCLEANUP][FOREACH], ks,
@@ -647,16 +668,25 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 
 			if (ret == -1)
 			{
+				keySetName (parentKey, keyName (initialParent));
 				// Ohh, an error occurred,
 				// lets stop the process.
 				elektraGlobalError (handle, ks, parentKey, GETSTORAGE, DEINIT);
+				elektraGlobalError (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 				// elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 				return -1;
 			}
 		}
 	}
-	elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, DEINIT);
-	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+
+	if (run == FIRST)
+	{
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, DEINIT);
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+		elektraGlobalError (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
+		// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+	}
 	return 0;
 }
 
@@ -813,6 +843,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case 0: // We don't need an update so let's do nothing
+
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
+
 		keySetName (parentKey, keyName (initialParent));
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
@@ -836,7 +872,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH])
+	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH] ||
+	    handle->globalPlugins[PROCGETSTORAGE][FOREACH])
 	{
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (NULL, split, NULL, parentKey, initialParent, FIRST) == -1)
@@ -874,7 +911,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		/* Now do the real updating,
 		   but not for bypassed keys in split->size-1 */
 		clearError (parentKey);
-		if (elektraGetDoUpdate (split, parentKey) == -1)
+		// do everything up to position get_storage
+		if (elektraGetDoUpdate (split, parentKey, FIRST) == -1)
 		{
 			goto error;
 		}
@@ -882,6 +920,23 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		{
 			copyError (parentKey, oldError);
 		}
+
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
+
+		clearError (parentKey);
+		// do the rest
+		if (elektraGetDoUpdate (split, parentKey, LAST) == -1)
+		{
+			goto error;
+		}
+		else
+		{
+			copyError (parentKey, oldError);
+		}
+
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
