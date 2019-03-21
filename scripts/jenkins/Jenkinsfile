@@ -925,6 +925,7 @@ coveralls -b '${buildDir}' \
           }
           if(testMem || testNokdb || testAll) {
             xunitUpload("${buildDir}/Testing/**/*.xml")
+            xunitUpload("/tmp/tmp.*/*")
           }
           deleteDir()
         }
