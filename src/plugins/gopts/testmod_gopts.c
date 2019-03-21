@@ -68,7 +68,7 @@ static void run_test (const char ** argv, const char ** envp)
 
 	if (WIFSIGNALED (status))
 	{
-		printf ("child process was killed by signal: %d", WTERMSIG (status));
+		printf ("child process was killed by signal: %s", strsignal (WTERMSIG (status)));
 		exit (1);
 	}
 
@@ -87,7 +87,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	const char * ldLibPath = getenv ("LD_LIBRARY_PATH");
+	char * ldLibPath = elektraFormat ("LD_LIBRARY_PATH=%s", getenv ("LD_LIBRARY_PATH"));
 
 	run_test (NO_ARGS (TEST_EMPTY), NO_ENVP (ldLibPath));
 
@@ -141,6 +141,8 @@ int main (int argc, char ** argv)
 	run_test (ARGS (TEST_MIXED, "--longopt=apple"),
 		  ENVP (ldLibPath, "ENV_VAR=apple", "OTHER_ENV_VAR=apple", "OTHER_OTHER_ENV_VAR=apple"));
 	run_test (ARGS (TEST_MIXED, "--longopt", "apple"), ENVP (ldLibPath, "OTHER_ENV_VAR=apple"));
+
+	elektraFree (ldLibPath);
 
 	print_result ("testmod_gopts");
 
