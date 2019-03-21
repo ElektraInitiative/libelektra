@@ -180,7 +180,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- <<TODO>>
+- `kdbGet` now calls global postgetstorage plugins with the parent key passed to `kdbGet`, instead of a random mountpoint. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 

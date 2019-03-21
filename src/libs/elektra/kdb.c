@@ -894,6 +894,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		splitMerge (split, ks);
 	}
 
+	keySetName (parentKey, keyName (initialParent));
+
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
