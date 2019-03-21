@@ -855,6 +855,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
+          artifacts.add("/tmp/tmp.*/*")
         }
 
         try {
@@ -925,7 +926,6 @@ coveralls -b '${buildDir}' \
           }
           if(testMem || testNokdb || testAll) {
             xunitUpload("${buildDir}/Testing/**/*.xml")
-            xunitUpload("/tmp/tmp.*/*")
           }
           deleteDir()
         }
