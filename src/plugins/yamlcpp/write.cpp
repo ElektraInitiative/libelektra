@@ -220,7 +220,17 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 #ifdef HAVE_LOGGER
 		ostringstream output;
 		output << data;
-		ELEKTRA_LOG_DEBUG ("Converted key data “%s”", output.str ().c_str ());
+
+		ELEKTRA_LOG_DEBUG ("Converted Data:");
+		ELEKTRA_LOG_DEBUG ("__________");
+
+		istringstream stream (output.str ());
+		for (string line; std::getline (stream, line);)
+		{
+			ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+		}
+
+		ELEKTRA_LOG_DEBUG ("__________");
 #endif
 	}
 }
@@ -240,10 +250,18 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	addKeys (data, mappings, parent);
 
 #ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Write Data:");
+	ELEKTRA_LOG_DEBUG ("__________");
+
 	ostringstream outputString;
 	outputString << data;
+	istringstream stream (outputString.str ());
+	for (string line; std::getline (stream, line);)
+	{
+		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+	}
 
-	ELEKTRA_LOG_DEBUG ("Write data “%s”", outputString.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("__________");
 #endif
 
 	output << data;
