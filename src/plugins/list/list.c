@@ -33,6 +33,8 @@ typedef enum
 	getEnd
 } GetPlacements;
 
+static const char * getStrings[] = { "pregetstorage", "procgetstorage", "postgetstorage", "postgetcleanup" };
+
 typedef enum
 {
 	preSetStorage = 0,
@@ -42,12 +44,16 @@ typedef enum
 	setEnd
 } SetPlacements;
 
+static const char * setStrings[] = { "presetstorage", "presetcleanup", "precommit", "postcommit" };
+
 typedef enum
 {
 	preRollback = 0,
 	postRollback,
 	errEnd
 } ErrPlacements;
+
+static const char * errStrings[] = { "prerollback", "postrollback" };
 
 typedef enum
 {
@@ -113,7 +119,6 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 		if (sub)
 		{
 			const char * setString = keyString (sub);
-			const char * setStrings[] = { "presetstorage", "presetcleanup", "precommit", "postcommit" };
 			SetPlacements setPlacement = preSetStorage;
 			while (setPlacement != setEnd)
 			{
@@ -130,7 +135,6 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 		if (sub)
 		{
 			const char * getString = keyString (sub);
-			const char * getStrings[] = { "pregetstorage", "procgetstorage", "postgetstorage", "postgetcleanup" };
 			GetPlacements getPlacement = preGetStorage;
 			while (getPlacement != getEnd)
 			{
@@ -147,7 +151,6 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 		if (sub)
 		{
 			const char * errString = keyString (sub);
-			const char * errStrings[] = { "prerollback", "postrollback" };
 			ErrPlacements errPlacement = preRollback;
 			while (errPlacement != errEnd)
 			{
@@ -215,7 +218,6 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (key)
 	{
 		const char * setString = keyString (key);
-		const char * setStrings[] = { "presetstorage", "presetcleanup", "precommit", "postcommit" };
 		SetPlacements setPlacement = preSetStorage;
 		while (setPlacement != setEnd)
 		{
@@ -230,7 +232,6 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (key)
 	{
 		const char * getString = keyString (key);
-		const char * getStrings[] = { "pregetstorage", "postgetstorage", "postgetcleanup" };
 		GetPlacements getPlacement = preGetStorage;
 		while (getPlacement != getEnd)
 		{
@@ -245,7 +246,6 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (key)
 	{
 		const char * errString = keyString (key);
-		const char * errStrings[] = { "prerollback", "postrollback" };
 		ErrPlacements errPlacement = preRollback;
 		while (errPlacement != errEnd)
 		{
