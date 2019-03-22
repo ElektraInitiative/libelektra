@@ -344,48 +344,22 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  * @param mappings This keyset specifies all keys and values this function adds to `data`.
  * @param parent This key is the root of all keys stored in `mappings`.
  */
-void addKeysArray (YAML::Node & data, KeySet const & mappings, Key const & parent)
+void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bool const isArray = false)
 {
 	for (auto key : mappings)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
 				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
-		addKeyArray (data, keyIterator, key);
 
-#ifdef HAVE_LOGGER
-		ostringstream output;
-		output << data;
-
-		ELEKTRA_LOG_DEBUG ("Converted Data:");
-		ELEKTRA_LOG_DEBUG ("__________");
-
-		istringstream stream (output.str ());
-		for (string line; std::getline (stream, line);)
+		if (isArray)
 		{
-			ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+			addKeyArray (data, keyIterator, key);
 		}
-
-		ELEKTRA_LOG_DEBUG ("__________");
-#endif
-	}
-}
-
-/**
- * @brief This function adds a key set to a YAML node.
- *
- * @param data This node stores the data specified via `mappings`.
- * @param mappings This keyset specifies all keys and values this function adds to `data`.
- * @param parent This key is the root of all keys stored in `mappings`.
- */
-void addKeysNoArray (YAML::Node & data, KeySet const & mappings, Key const & parent)
-{
-	for (auto key : mappings)
-	{
-		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
-		NameIterator keyIterator = relativeKeyIterator (key, parent);
-		addKeyNoArray (data, keyIterator, key);
+		else
+		{
+			addKeyNoArray (data, keyIterator, key);
+		}
 
 #ifdef HAVE_LOGGER
 		ostringstream output;
@@ -424,8 +398,8 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	tie (arrayParents, std::ignore) = splitArrayParentsOther (mappings);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, mappings);
 
-	addKeysArray (data, arrays, parent);
-	addKeysNoArray (data, nonArrays, parent);
+	addKeys (data, arrays, parent, true);
+	addKeys (data, nonArrays, parent);
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Write Data:");
