@@ -33,6 +33,9 @@
 	ksDel (keySet);                                                                                                                    \
 	PLUGIN_CLOSE ()
 
+/* We use this prefix in all header files that contain test data. */
+#define PREFIX "user/examples/yamlcpp/"
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 static void test_contract (void)
