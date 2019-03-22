@@ -251,6 +251,42 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
  * @param key This parameter specifies the key that should be added to `data`.
  */
+void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
+{
+	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
+
+#ifdef HAVE_LOGGER
+	ostringstream output;
+	output << data;
+	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+#endif
+
+	if (keyIterator == key.end ())
+	{
+		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
+		data = createLeafNode (key);
+		return;
+	}
+	if (keyIterator == --key.end ())
+	{
+		data[*keyIterator] = createLeafNode (key);
+		return;
+	}
+
+	YAML::Node node;
+
+	node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
+	data[*keyIterator] = node;
+	addKeyNoArray (node, ++keyIterator, key);
+}
+
+/**
+ * @brief This function adds a key to a YAML node.
+ *
+ * @param data This node stores the data specified via `keyIterator`.
+ * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
+ * @param key This parameter specifies the key that should be added to `data`.
+ */
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 {
 	auto const isArrayAndIndex = isArrayIndex (keyIterator);
@@ -299,42 +335,6 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 		data[*keyIterator] = node;
 	}
 	addKeyArray (node, ++keyIterator, key);
-}
-
-/**
- * @brief This function adds a key to a YAML node.
- *
- * @param data This node stores the data specified via `keyIterator`.
- * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
- * @param key This parameter specifies the key that should be added to `data`.
- */
-void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
-{
-	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
-
-#ifdef HAVE_LOGGER
-	ostringstream output;
-	output << data;
-	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
-#endif
-
-	if (keyIterator == key.end ())
-	{
-		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
-		data = createLeafNode (key);
-		return;
-	}
-	if (keyIterator == --key.end ())
-	{
-		data[*keyIterator] = createLeafNode (key);
-		return;
-	}
-
-	YAML::Node node;
-
-	node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
-	data[*keyIterator] = node;
-	addKeyNoArray (node, ++keyIterator, key);
 }
 
 /**
