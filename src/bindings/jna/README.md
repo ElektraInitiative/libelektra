@@ -1,6 +1,6 @@
 - infos =
 - infos/author = Markus Raab <elektra@libelektra.org>
-- infos/status = experimental maintained
+- infos/status = maintained
 - infos/provides =
 - infos/description =
 
