@@ -254,7 +254,7 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 {
 	auto const isArrayAndIndex = isArrayIndex (keyIterator);
-	auto const isArray = isArrayAndIndex.first;
+	auto const isArrayElement = isArrayAndIndex.first;
 	auto const arrayIndex = isArrayAndIndex.second;
 
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
@@ -273,7 +273,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 	}
 	if (keyIterator == --key.end ())
 	{
-		if (isArray)
+		if (isArrayElement)
 		{
 			addEmptyArrayElements (data, arrayIndex - data.size ());
 			data.push_back (createLeafNode (key));
@@ -288,7 +288,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 
 	YAML::Node node;
 
-	if (isArray)
+	if (isArrayElement)
 	{
 		node = (data[arrayIndex] && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
 		data[arrayIndex] = node;
