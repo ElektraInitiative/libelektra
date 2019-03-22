@@ -84,7 +84,7 @@ You have some options to avoid running them as root:
 3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
    the home directory (`~`) use cmake options:
    `-DKDB_DB_SYSTEM="~/.config/kdb/system" -DKDB_DB_SPEC="~/.config/kdb/spec"`
-   (for another example with ini see `scripts/configure-home`)
+   (for an example of a full CMake invocation see `scripts/configure-home`)
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
 
