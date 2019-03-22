@@ -27,6 +27,7 @@
 typedef enum
 {
 	preGetStorage = 0,
+	procGetStorage,
 	postGetStorage,
 	postGetCleanup,
 	getEnd
@@ -64,12 +65,12 @@ typedef struct
 
 	ErrPlacements errPlacements[2]; // prerollback and postrollback
 	SetPlacements setPlacements[4]; // presetstorage, presetcleanup, precommit and postcommit
-	GetPlacements getPlacements[3]; // pregetstorage, postgetstorage, postgetclenaup
+	GetPlacements getPlacements[4]; // pregetstorage, procgetstorage, postgetstorage, postgetclenaup
 
 	// each keyset contains the list of plugin names for a given placement
 	KeySet * setKS[4];
 	KeySet * errKS[2];
-	KeySet * getKS[3];
+	KeySet * getKS[4];
 	KeySet * plugins;
 	KeySet * modules;
 
@@ -129,7 +130,7 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 		if (sub)
 		{
 			const char * getString = keyString (sub);
-			const char * getStrings[] = { "pregetstorage", "postgetstorage", "postgetcleanup" };
+			const char * getStrings[] = { "pregetstorage", "procgetstorage", "postgetstorage", "postgetcleanup" };
 			GetPlacements getPlacement = preGetStorage;
 			while (getPlacement != getEnd)
 			{

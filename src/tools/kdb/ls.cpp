@@ -15,7 +15,12 @@
 #include <kdb.hpp>
 #include <keysetio.hpp>
 
+#include <modules.hpp>
+
+#include <kdbproposal.h>
+
 using namespace kdb;
+using namespace kdb::tools;
 using namespace std;
 
 LsCommand::LsCommand () : kdb (root)

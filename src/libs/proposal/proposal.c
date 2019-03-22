@@ -368,6 +368,19 @@ int keyRel2 (const Key * key, const Key * check, KeyRelType which)
 	return retVal;
 }
 
+/**
+ * Sets whether automatic options processing via gopts is enabled.
+ *
+ * @param handle  contains internal information of @link kdbOpen() opened @endlink key database
+ * @param enabled (boolean) whether options processing should be enabled
+ *
+ * @retval  0 on succes
+ * @retval -1 on error
+ */
+int elektraEnableOptionsProcessing (KDB * handle, int enabled)
+{
+	return ksAppendKey (handle->global, keyNew ("user/gopts/enabled", KEY_VALUE, enabled ? "1" : "0", KEY_END)) < 0 ? -1 : 0;
+}
 
 /**
  * @}

@@ -56,6 +56,11 @@ public:
 	virtual inline int set (KeySet & returned, std::string const & keyname);
 	virtual inline int set (KeySet & returned, Key & parentKey);
 
+	inline ckdb::KDB * getKDB ()
+	{
+		return handle;
+	}
+
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
 };
