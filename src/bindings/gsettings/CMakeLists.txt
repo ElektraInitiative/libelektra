@@ -36,7 +36,7 @@ add_library (elektrasettings SHARED elektrasettingsbackend.c ${ELEKTRA_HEADERS})
 set (GSETTINGS_MODULE_PRIORITY
      50
      CACHE STRING
-	   "GIO Module Priority. Higher than 100 means dconf backend will be default.")
+	   "GIO Module Priority. Higher than 100 means the Elektra gsettings backend will be default.")
 target_compile_definitions (elektrasettings PRIVATE G_ELEKTRA_SETTINGS_MODULE_PRIORITY=${GSETTINGS_MODULE_PRIORITY})
 if (GELEKTRA_LIBRARY)
 	include (LibFindMacros)
