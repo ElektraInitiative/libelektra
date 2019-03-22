@@ -188,7 +188,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
-
 ### <<Binding2>>
 
 ### <<Binding3>>
