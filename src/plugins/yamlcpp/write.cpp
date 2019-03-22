@@ -113,7 +113,7 @@ KeySetPair splitArrayOther (KeySet const & arrayParents, KeySet const & keys)
 	KeySet others = keys.dup ();
 	KeySet arrays;
 
-	for (auto parent : arrayParents)
+	for (auto const & parent : arrayParents)
 	{
 		arrays.append (others.cut (parent));
 	}
