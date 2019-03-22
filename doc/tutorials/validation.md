@@ -318,6 +318,7 @@ Before we look further let us undo the modifications to the key database.
 ```sh
 kdb rm -r spec/tests/tutorial
 kdb rm -r system/tests/tutorial
+kdb rm -rf user/tests/tutorial
 kdb umount spec/tests/tutorial
 kdb umount /tests/tutorial
 kdb rm -rf spec
