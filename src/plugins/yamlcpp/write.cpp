@@ -389,8 +389,6 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
  */
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
-	ofstream output (parent.getString ());
-	auto data = YAML::Node ();
 
 	KeySet arrayParents;
 	KeySet arrays;
@@ -398,6 +396,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	tie (arrayParents, std::ignore) = splitArrayParentsOther (mappings);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, mappings);
 
+	auto data = YAML::Node ();
 	addKeys (data, arrays, parent, true);
 	addKeys (data, nonArrays, parent);
 
@@ -416,5 +415,6 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	ELEKTRA_LOG_DEBUG ("__________");
 #endif
 
+	ofstream output (parent.getString ());
 	output << data;
 }
