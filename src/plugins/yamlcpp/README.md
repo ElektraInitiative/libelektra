@@ -138,6 +138,7 @@ sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Add some key value pairs
 kdb set user/tests/yamlcpp/key value
+kdb set user/tests/yamlcpp/array
 kdb set user/tests/yamlcpp/array/#0 scalar
 kdb set user/tests/yamlcpp/array/#1/key value
 kdb set user/tests/yamlcpp/array/#1/🔑 🙈

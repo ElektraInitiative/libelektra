@@ -138,6 +138,13 @@ static void test_array (void)
 	);
 }
 
+static void test_map_array_key (void)
+{
+	test_write_read (
+#include "yamlcpp/mapping_with_array_key.h"
+	);
+}
+
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
 
 int main (int argc, char ** argv)
@@ -151,6 +158,7 @@ int main (int argc, char ** argv)
 	test_flat ();
 	test_nested ();
 	test_array ();
+	test_map_array_key ();
 
 	print_result ("testmod_yamlcpp");
 
