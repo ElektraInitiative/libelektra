@@ -181,7 +181,13 @@ compiled against an older 0.8 version of Elektra will continue to work
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+- JNA is now not experimental anymore. _(Markus Raab)_
+- gsettings is not default anymore. _(Markus Raab)_
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ### <<Binding2>>
 
