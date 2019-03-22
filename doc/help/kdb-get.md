@@ -54,6 +54,10 @@ This command will return the following values as an exit status:
 ```sh
 # Backup-and-Restore: user/tests/get/examples
 
+# We use the `dump` plugin, since some storage plugins, e.g. INI,
+# create intermediate keys.
+sudo kdb mount get.ecf user/tests/get/examples/kdb-get dump
+
 # Create the keys we use for the examples
 kdb set user/tests/get/examples/kdb-get/key myKey
 kdb setmeta /tests/get/examples/kdb-get/anotherKey default defaultValue
@@ -92,6 +96,7 @@ kdb get -v /tests/get/examples/kdb-get/anotherKey
 
 kdb rm user/tests/get/examples/kdb-get/key
 kdb rm spec/tests/get/examples/kdb-get/anotherKey
+sudo kdb umount user/tests/get/examples/kdb-get
 ```
 
 To use bookmarks:<br>
