@@ -23,18 +23,22 @@ fi
 
 if [ "$SOURCE" = "$BUILD" ]; then
 	if echo $* | grep FORCE_IN_SOURCE_BUILD=ON; then
-		echo "Warning: in source build!"
+		echo "Warning: in-source build!"
 		echo "It is recommended to create a new directory and run $SELF there"
 		echo "Proceeding as requested"
 	else
-		echo "Error: in source build!"
-		echo "It is recommended to create a new directory and run $SELF there"
-		echo "You can force an in-tree build with -DFORCE_IN_SOURCE_BUILD=ON"
+		echo "Error: in-source build!"
+		echo "It is recommended to create a new directory and run $SELF there:"
+		echo 'For example by executing "mkdir build && cd build".'
+		echo "Alternatively, you can force an in-source build with -DFORCE_IN_SOURCE_BUILD=ON"
 		exit 1
 	fi
 fi
 
 if [ "$SCRIPTS" = "$BUILD" ]; then
-	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
+	echo "You seem to be in the scripts directory!"
+	echo "Create a new directory,"
+	echo 'for example by executing "mkdir ../build && cd ../build",'
+	echo "and run $SELF there"
 	exit 1
 fi
