@@ -84,6 +84,41 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
+### YAML CPP
+
+- The plugin now handles keys that are part of a map, but use a basename ending with [array syntax](../tutorials/arrays.md) correctly. For example, in a key set that contains keys with the following names:
+
+  ```
+  user/array/#0
+  user/array/#1
+  user/map/#0
+  user/map/key
+  user/map/#1
+  ```
+
+  , `user/array/#0` and `user/array/#1` represent array elements, while `user/map/#0`, and `user/map/#1` do not, since the key set also contains the key `user/map/key`. The following [Markdown Shell Recorder][] snippet shows the new behavior of the plugin:
+
+  ```sh
+  kdb mount config.yaml user yamlcpp
+  kdb set user/array/#0 one
+  kdb set user/array/#1 two
+  kdb set user/map/#0   three
+  kdb set user/map/key  four
+  kdb set user/map/#1   five
+  kdb file user | xargs cat
+  #> array:
+  #>   - one
+  #>   - two
+  #> map:
+  #>   "#0": three
+  #>   "#1": five
+  #>   key: four
+  ```
+
+  .
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
 ### Yan LR
 
 - The build system now disables the plugin, if you installed a version of ANTLR 4 that does not support ANTLR’s C++ runtime (like ANTLR
