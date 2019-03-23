@@ -71,6 +71,14 @@ bool isArrayParent (Key const & parent, KeySet const & keys)
 /**
  * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
  *
+ * @note This function also adds empty parent keys for arrays, if they did not exist beforehand. For example for the key set that **only**
+ *       contains the keys:
+ *
+ *       - `user/array/#0`, and
+ *       - `user/array/#1`
+ *
+ *       the function will add the array parent `user/array` to the returned array parent key set.
+ *
  * @param keys This parameter contains the key set this function splits.
  *
  * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
@@ -257,7 +265,7 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 }
 
 /**
- * @brief This function adds a key to a YAML node.
+ * @brief This function adds a key that is not part of any array to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
@@ -293,7 +301,7 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 }
 
 /**
- * @brief This function adds a key to a YAML node.
+ * @brief This function adds a key that is either, element of an array, or an array parent to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
@@ -355,6 +363,8 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  * @param data This node stores the data specified via `mappings`.
  * @param mappings This keyset specifies all keys and values this function adds to `data`.
  * @param parent This key is the root of all keys stored in `mappings`.
+ * @param isArray This value specifies if the keys inside `keys` are all part of an array (either element or parent), or if none of them is
+ *                part of an array.
  */
 void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bool const isArray = false)
 {
