@@ -849,7 +849,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 	ksAppendKey (global, lastParentValue);
 	ksAppendKey (global, lastInitalParentName);
 
-	ELEKTRA_LOG_WARNING ("SIZE STORAGE STORE STUFF");
+	ELEKTRA_LOG_DEBUG ("SIZE STORAGE STORE STUFF");
 	for (size_t i = 0; i < split->size; ++i)
 	{
 		// TODO: simplify this code below, seems like this affacts only the last split anyway
@@ -940,7 +940,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 
 int splitCacheCheckState (Split * split, KeySet * global)
 {
-	ELEKTRA_LOG_WARNING ("SIZE STORAGE CHCK");
+	ELEKTRA_LOG_DEBUG ("SIZE STORAGE CHCK");
 	Key * key = 0;
 	char * name = 0;
 
@@ -1020,7 +1020,7 @@ error:
 
 int splitCacheLoadState (Split * split, KeySet * global)
 {
-	ELEKTRA_LOG_WARNING ("SIZE STORAGE LOAD");
+	ELEKTRA_LOG_DEBUG ("SIZE STORAGE LOAD");
 	Key * key = 0;
 	char * name = 0;
 
