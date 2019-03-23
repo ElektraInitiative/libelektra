@@ -82,19 +82,31 @@ KeySetPair splitArrayParentsOther (KeySet const & keys)
 
 	keys.rewind ();
 	Key previous;
-	for (previous = keys.next (); keys.next (); previous = keys.current ())
+	for (; keys.next (); previous = keys.current ())
 	{
-		bool const previousIsArray =
-			previous.hasMeta ("array") ||
-			(keys.current ().isBelow (previous) && keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
+		bool previousIsArray = previous && previous.hasMeta ("array");
+
+		if (!previousIsArray && keys.current ().getBaseName ()[0] == '#')
+		{
+			if (!keys.current ().isDirectBelow (previous))
+			{
+				Key directParent{ keys.current ().getName (), KEY_END };
+				ckdb::keySetBaseName (*directParent, NULL);
+				previousIsArray = isArrayParent (directParent, keys);
+				if (previousIsArray)
+				{
+					arrayParents.append (directParent);
+				}
+			}
+			else
+			{
+				previousIsArray = isArrayParent (previous, keys);
+			}
+		}
 
 		(previousIsArray ? arrayParents : others).append (previous);
 	}
-	(previous.hasMeta ("array") ? arrayParents : others).append (previous);
-
-	ELEKTRA_ASSERT (arrayParents.size () + others.size () == keys.size (),
-			"Number of keys in split key sets: %zu ≠ number in given key set %zu", arrayParents.size () + others.size (),
-			keys.size ());
+	(previous && previous.hasMeta ("array") ? arrayParents : others).append (previous);
 
 	return make_pair (arrayParents, others);
 }
