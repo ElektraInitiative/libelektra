@@ -556,7 +556,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	name = strcat (name, pk->filename);
 	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
 
-	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
+	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
@@ -586,7 +586,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 
 	/* Persist modification times for cache */
-	if (global != NULL)
+	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
 		Key * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
