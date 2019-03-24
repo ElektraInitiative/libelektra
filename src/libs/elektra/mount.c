@@ -320,7 +320,8 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
+			"pregetstorage procgetstorage postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
 			KEY_END),
 #ifndef __MINGW32__
@@ -343,7 +344,8 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
 }
 
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
