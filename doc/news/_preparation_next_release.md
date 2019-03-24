@@ -253,6 +253,7 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
+- Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
 - <<TODO>>
 
 ## Tests
