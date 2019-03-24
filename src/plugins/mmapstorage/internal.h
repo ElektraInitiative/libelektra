@@ -37,6 +37,16 @@
 /** Mmap format version */
 #define ELEKTRA_MMAP_FORMAT_VERSION (1)
 
+/** Suppress warnings in cache mode to debug level */
+#define ELEKTRA_MMAP_LOG_WARNING(...)                                                                                                      \
+	if (mode == MODE_GLOBALCACHE)                                                                                                      \
+	{                                                                                                                                  \
+		ELEKTRA_LOG_DEBUG (__VA_ARGS__);                                                                                           \
+	}                                                                                                                                  \
+	else                                                                                                                               \
+	{                                                                                                                                  \
+		ELEKTRA_LOG_WARNING (__VA_ARGS__);                                                                                         \
+	}
 
 /** Flags for mmap file format. We intentionally do not use enums,
 	such that the flags can be fit into uint8_t. */

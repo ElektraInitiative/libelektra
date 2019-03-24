@@ -63,14 +63,14 @@ typedef enum
  *
  * @return file descriptor
  */
-static int openFile (Key * parentKey, int flag, mode_t mode)
+static int openFile (Key * parentKey, int flag, mode_t openMode, PluginMode mode)
 {
 	int fd;
 	ELEKTRA_LOG_DEBUG ("opening file %s", keyString (parentKey));
 
-	if ((fd = open (keyString (parentKey), flag, mode)) == -1)
+	if ((fd = open (keyString (parentKey), flag, openMode)) == -1)
 	{
-		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error opening file %s", keyString (parentKey));
 	}
 	return fd;
 }
@@ -85,13 +85,13 @@ static int openFile (Key * parentKey, int flag, mode_t mode)
  * @retval 1 on success
  * @retval -1 if ftruncate() failed
  */
-static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
+static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED, PluginMode mode)
 {
 	ELEKTRA_LOG_DEBUG ("truncating file %s", keyString (parentKey));
 
 	if ((ftruncate (fd, mmapsize)) == -1)
 	{
-		ELEKTRA_LOG_WARNING ("error truncating file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error truncating file %s", keyString (parentKey));
 		return -1;
 	}
 	return 1;
@@ -106,13 +106,13 @@ static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED
  * @retval 1 on success
  * @retval -1 if stat() failed
  */
-static int statFile (struct stat * sbuf, Key * parentKey)
+static int statFile (struct stat * sbuf, Key * parentKey, PluginMode mode)
 {
 	ELEKTRA_LOG_DEBUG ("stat() on file %s", keyString (parentKey));
 
 	if (stat (keyString (parentKey), sbuf) == -1)
 	{
-		ELEKTRA_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
 		return -1;
 	}
 	return 1;
@@ -129,14 +129,14 @@ static int statFile (struct stat * sbuf, Key * parentKey)
  *
  * @return pointer to mapped region on success, MAP_FAILED on failure
  */
-static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
+static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED, PluginMode mode)
 {
 	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
 
 	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+		ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
 		return MAP_FAILED;
 	}
 	return mappedRegion;
@@ -388,7 +388,7 @@ static int verifyMagicData (char * mappedRegion)
  * @retval 0 if checksum was correct
  * @retval -1 if there was a checksum mismatch
  */
-static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
+static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader, PluginMode mode)
 {
 	// if file was written without checksum, we skip the check
 	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_CHECKSUM)) return 0;
@@ -398,8 +398,8 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
 
 	if (checksum != mmapHeader->checksum)
 	{
-		ELEKTRA_LOG_WARNING ("old checksum: %ul", mmapHeader->checksum);
-		ELEKTRA_LOG_WARNING ("new checksum: %ul", checksum);
+		ELEKTRA_MMAP_LOG_WARNING ("old checksum: %ul", mmapHeader->checksum);
+		ELEKTRA_MMAP_LOG_WARNING ("new checksum: %ul", checksum);
 		return -1;
 	}
 	return 0;
@@ -930,13 +930,13 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 
-	if ((fd = openFile (parentKey, O_RDONLY, 0)) == -1)
+	if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
 	{
 		goto error;
 	}
 
 	struct stat sbuf;
-	if (statFile (&sbuf, parentKey) != 1)
+	if (statFile (&sbuf, parentKey, mode) != 1)
 	{
 		goto error;
 	}
@@ -946,7 +946,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		// empty mmap file
 		if (close (fd) != 0)
 		{
-			ELEKTRA_LOG_WARNING ("could not close");
+			ELEKTRA_MMAP_LOG_WARNING ("could not close");
 			goto error;
 		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -958,10 +958,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	mappedRegion = mmapFile ((void *) 0, fd, sbuf.st_size, MAP_PRIVATE, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fd, sbuf.st_size, MAP_PRIVATE, parentKey, mode);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_LOG_WARNING ("mappedRegion == MAP_FAILED");
+		ELEKTRA_MMAP_LOG_WARNING ("mappedRegion == MAP_FAILED");
 		goto error;
 	}
 
@@ -970,33 +970,33 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	if (readHeader (mappedRegion, &mmapHeader, &mmapMetaData) == -1)
 	{
 		// config file was corrupt
-		ELEKTRA_LOG_WARNING ("could not read mmap information header");
+		ELEKTRA_MMAP_LOG_WARNING ("could not read mmap information header");
 		goto error;
 	}
 
 	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS) && mode == MODE_GLOBALCACHE)
 	{
-		ELEKTRA_LOG_WARNING ("plugin in global cache mode, but file does not contain timestamps");
+		ELEKTRA_MMAP_LOG_WARNING ("plugin in global cache mode, but file does not contain timestamps");
 	}
 
 	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader->allocSize)
 	{
 		// config file size mismatch
-		ELEKTRA_LOG_WARNING ("mmap file size differs from metadata, file was altered");
+		ELEKTRA_MMAP_LOG_WARNING ("mmap file size differs from metadata, file was altered");
 		goto error;
 	}
 
 	if (readFooter (mappedRegion, mmapHeader) == -1)
 	{
 		// config file was corrupt/truncated
-		ELEKTRA_LOG_WARNING ("could not read mmap information footer: file was altered");
+		ELEKTRA_MMAP_LOG_WARNING ("could not read mmap information footer: file was altered");
 		goto error;
 	}
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
-	if (verifyChecksum (mappedRegion, mmapHeader) != 0)
+	if (verifyChecksum (mappedRegion, mmapHeader, mode) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("checksum failed");
+		ELEKTRA_MMAP_LOG_WARNING ("checksum failed");
 		goto error;
 	}
 #endif
@@ -1004,7 +1004,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	if (verifyMagicData (mappedRegion) != 0)
 	{
 		// magic data could not be read properly, indicating unreadable format or different architecture
-		ELEKTRA_LOG_WARNING ("mmap magic data could not be read properly");
+		ELEKTRA_MMAP_LOG_WARNING ("mmap magic data could not be read properly");
 		goto error;
 	}
 
@@ -1013,7 +1013,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	if (close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not close");
+		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 		goto error;
 	}
 
@@ -1022,17 +1022,17 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 error:
 	if (errno != 0)
 	{
-		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 	}
 
 	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, sbuf.st_size) != 0))
 	{
-		ELEKTRA_LOG_WARNING ("could not munmap");
+		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 	}
 	if ((fd != -1) && close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not close");
+		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
 	errno = errnosave;
@@ -1056,9 +1056,12 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 {
 	// set all keys
 	KeySet * global = 0;
+	PluginMode mode = MODE_STORAGE;
+
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("mmapstorage global position called");
+		mode = MODE_GLOBALCACHE;
 	}
 
 	int errnosave = errno;
@@ -1068,11 +1071,11 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
 	{
-		ELEKTRA_LOG_WARNING ("could not unlink");
+		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
 		goto error;
 	}
 
-	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
+	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR, mode)) == -1)
 	{
 		goto error;
 	}
@@ -1086,16 +1089,16 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, global, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %" PRIu64, mmapHeader.allocSize);
 
-	if (truncateFile (fd, mmapHeader.allocSize, parentKey) != 1)
+	if (truncateFile (fd, mmapHeader.allocSize, parentKey, mode) != 1)
 	{
 		goto error;
 	}
 
-	mappedRegion = mmapFile ((void *) 0, fd, mmapHeader.allocSize, MAP_SHARED, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fd, mmapHeader.allocSize, MAP_SHARED, parentKey, mode);
 	ELEKTRA_LOG_DEBUG ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_LOG_WARNING ("mappedRegion == MAP_FAILED");
+		ELEKTRA_MMAP_LOG_WARNING ("mappedRegion == MAP_FAILED");
 		goto error;
 	}
 
@@ -1104,19 +1107,19 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
 	if (msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not msync");
+		ELEKTRA_MMAP_LOG_WARNING ("could not msync");
 		goto error;
 	}
 
 	if (munmap (mappedRegion, mmapHeader.allocSize) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not munmap");
+		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 		goto error;
 	}
 
 	if (close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not close");
+		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 		goto error;
 	}
 
@@ -1127,17 +1130,17 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 error:
 	if (errno != 0)
 	{
-		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
 	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
 	{
-		ELEKTRA_LOG_WARNING ("could not munmap");
+		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 	}
 	if ((fd != -1) && close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not close");
+		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
