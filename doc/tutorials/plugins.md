@@ -414,14 +414,14 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 }
 ```
 
-The `elektraPluginCheckConf` function is exported via the plugin's contract. The following example demonstrates how to export the `checkconf` function (see chapter [Contract](Contract) for further details):
+The `elektraPluginCheckConf` function is exported via the plugin's contract. The following example demonstrates how to export the `checkconf` function (see section [Contract](#contract) for further details):
 
 ```c
 keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConfig, KEY_END),
 ```
 
 Within the `checkconf` function all of the plugin configuration values should be validated.
-Errors should be reported via Elektra's error handling mechanism (see the section about [ELEKTRA_SET_ERROR](`ELEKTRA_SET_ERROR`) for further details).
+Errors should be reported via Elektra's error handling mechanism (see section [ELEKTRA_SET_ERROR](#elektra_set_error) for further details).
 If `checkconf` encounters a configuration value, that is not strictly invalid but can not be parsed by the plugin (e.g. a parameter which is not part of the plugin configuration), then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_WARNING`.
 
 ### `ELEKTRA_PLUGIN_EXPORT`
