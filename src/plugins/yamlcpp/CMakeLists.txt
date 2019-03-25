@@ -23,6 +23,7 @@ endif (DEPENDENCY_PHASE)
 add_plugin (yamlcpp
 	    CPP
 	    ADD_TEST
+	    CPP_TEST
 	    TEST_README
 	    INSTALL_TEST_DATA
 	    TEST_REQUIRED_PLUGINS base64
