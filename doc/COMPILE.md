@@ -427,15 +427,16 @@ one would use:
 cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 ```
 
-#### `ELEKTRA_DEBUG_BUILD` and `ELEKTRA_VERBOSE_BUILD`
-
-Only needed by Elektra developers.
-Make the library to output logging information.
-It is not recommended to use these options.
-
 #### BUILD_DOCUMENTATION
 
 Build documentation with doxygen (API) and ronn (man pages).
+
+If ronn is not found, already compiled man pages will be
+used instead.
+
+> Note: Turning off building the documentation, also turns off
+> installing the documentation, see https://issues.libelektra.org/2522
+> Then no man pages are available.
 
 #### Developer Options
 
