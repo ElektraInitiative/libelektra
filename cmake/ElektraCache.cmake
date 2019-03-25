@@ -433,4 +433,7 @@ mark_as_advanced (FORCE # The following settings might be relevant to a few user
 		  Qt5DBus_DIR
 		  GPGME_EXECUTABLE
 		  YAEP_LIBRARY_CPP
+		  GLib_LIBRARY
+		  LibGit2_VERSION_HEADER
+		  libuv_VERSION_HEADER
 		  Qt5Svg_DIR)
