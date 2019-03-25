@@ -845,9 +845,12 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
 	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
 	Key * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
+	Key * lastSplitSize =
+		keyNew (KDB_CACHE_PREFIX "/lastSplitSize", KEY_BINARY, KEY_SIZE, sizeof (size_t), KEY_VALUE, &(split->size), KEY_END);
 	ksAppendKey (global, lastParentName);
 	ksAppendKey (global, lastParentValue);
 	ksAppendKey (global, lastInitalParentName);
+	ksAppendKey (global, lastSplitSize);
 
 	ELEKTRA_LOG_DEBUG ("SIZE STORAGE STORE STUFF");
 	for (size_t i = 0; i < split->size; ++i)
@@ -944,6 +947,18 @@ int splitCacheCheckState (Split * split, KeySet * global)
 	Key * key = 0;
 	char * name = 0;
 
+	Key * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", KDB_O_NONE);
+	if (lastSplitSize && keyGetValueSize (lastSplitSize) == sizeof (size_t))
+	{
+		size_t lastSize = 0;
+		keyGetBinary (lastSplitSize, &lastSize, sizeof (size_t));
+		if (lastSize != split->size) return -1;
+	}
+	else
+	{
+		return -1;
+	}
+
 	for (size_t i = 0; i < split->size; ++i)
 	{
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
@@ -1023,6 +1038,18 @@ int splitCacheLoadState (Split * split, KeySet * global)
 	ELEKTRA_LOG_DEBUG ("SIZE STORAGE LOAD");
 	Key * key = 0;
 	char * name = 0;
+
+	Key * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", KDB_O_NONE);
+	if (lastSplitSize && keyGetValueSize (lastSplitSize) == sizeof (size_t))
+	{
+		size_t lastSize = 0;
+		keyGetBinary (lastSplitSize, &lastSize, sizeof (size_t));
+		if (lastSize != split->size) return -1;
+	}
+	else
+	{
+		return -1;
+	}
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
