@@ -11,16 +11,6 @@ if [ -d "$1" ]; then
 	SOURCE=$(readlink -f "$1")
 fi
 
-# set JAVA_HOME if you want to use a non-default Java.
-#cd /opt
-#JAVA_IN_OPT=$(readlink -f $(find . -maxdepth 1 -name 'jdk*' -print -quit))
-#
-#if [ "x$JAVA_HOME" = "x" -a "x$JAVA_IN_OPT" != "x" ]
-#then
-#	export JAVA_HOME="$JAVA_IN_OPT"
-#fi
-#echo "Using java home: $JAVA_HOME"
-
 if [ "$SOURCE" = "$BUILD" ]; then
 	if echo $* | grep FORCE_IN_SOURCE_BUILD=ON; then
 		echo "Warning: in-source build!"
