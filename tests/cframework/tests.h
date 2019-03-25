@@ -298,7 +298,7 @@ int init (int argc, char ** argv);
 				{                                                                                                          \
 					nbError++;                                                                                         \
 					printf ("%s:%d: error in %s: Comparison of the keys with name \"%s\" failed. The value of the "    \
-						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"",                                            \
+						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"\n",                                          \
 						__FILE__, __LINE__, __func__, keyName (mmk1), keyName (meta), keyString (meta),            \
 						keyString (metaCmp));                                                                      \
 					break;                                                                                             \
