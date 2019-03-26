@@ -30,8 +30,6 @@ static void test_basics (void)
 	// no global keyset, so not caching anything
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
 
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbError was not successful");
-
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();

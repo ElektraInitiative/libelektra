@@ -256,8 +256,6 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
 			       keyNew ("system/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
 			       keyNew ("system/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/error", KEY_FUNC, elektraCacheError, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/checkconf", KEY_FUNC, elektraCacheCheckConfig, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -340,50 +338,6 @@ error:
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
-int elektraCacheError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	ELEKTRA_LOG_DEBUG ("CACHE FLUSH");
-
-	CacheHandle * ch = elektraPluginGetData (handle);
-	if (ch->cacheStorage->global == 0)
-	{
-		ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
-	}
-
-	if (elektraPluginGetGlobalKeySet (handle) == 0)
-	{
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE; // TODO: do we fail silently here?
-	}
-
-	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	Key * cacheFile = keyDup (parentKey);
-	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
-	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("CACHE error (flush) cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey),
-			   keyString (parentKey));
-
-	// load cache from storage
-	keySetString (cacheFile, cacheFileName);
-	elektraFree (cacheFileName);
-
-	unlink (keyString (cacheFile));
-
-	keyDel (cacheFile);
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraCacheCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -392,6 +346,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_CLOSE,	&elektraCacheClose,
 		ELEKTRA_PLUGIN_GET,	&elektraCacheGet,
 		ELEKTRA_PLUGIN_SET,	&elektraCacheSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraCacheError,
 		ELEKTRA_PLUGIN_END);
 }

@@ -17,8 +17,6 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey);
 int elektraCacheClose (Plugin * handle, Key * errorKey);
 int elektraCacheGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCacheSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCacheError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCacheCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
