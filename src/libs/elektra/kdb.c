@@ -1389,7 +1389,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
-	// 	keySetName(parentKey, "/");
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
