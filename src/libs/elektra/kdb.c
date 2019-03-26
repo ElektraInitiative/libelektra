@@ -764,6 +764,39 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
+static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * initialParent)
+{
+	ELEKTRA_LOG_DEBUG ("CACHE HIT");
+	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
+	ELEKTRA_LOG_DEBUG ("CACHE initial parent: %s, %s", keyName (initialParent), keyString (initialParent));
+
+	if (splitCacheLoadState (split, handle->global) != 0) return -1;
+
+	ksRewind (*cache);
+	if (ks->size == 0)
+	{
+		ELEKTRA_LOG_DEBUG ("replacing keyset with cached keyset");
+		ksClose (ks);
+		ks->array = (*cache)->array;
+		ks->size = (*cache)->size;
+		ks->alloc = (*cache)->alloc;
+		ks->flags = (*cache)->flags;
+		elektraFree (*cache);
+		*cache = 0;
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("appending cached keyset (ks was not empty)");
+		ksAppend (ks, *cache);
+		ksDel (*cache);
+		*cache = 0;
+	}
+	keyDel (*cacheParent);
+	*cacheParent = 0;
+
+	return 0;
+}
+
 
 /**
  * @brief Retrieve keys in an atomic and universal way.
@@ -925,33 +958,10 @@ cachefail:
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		ELEKTRA_LOG_DEBUG ("CACHE HIT");
-		ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (cacheParent), keyString (cacheParent));
-		ELEKTRA_LOG_DEBUG ("CACHE initial parent: %s, %s", keyName (initialParent), keyString (initialParent));
-
-		splitCacheLoadState (split, handle->global); // TODO: check retval, handle errors
-
-		ksRewind (cache);
-		if (ks->size == 0)
+		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, initialParent) != 0)
 		{
-			ELEKTRA_LOG_DEBUG ("replacing keyset with cached keyset");
-			ksClose (ks);
-			ks->array = cache->array;
-			ks->size = cache->size;
-			ks->alloc = cache->alloc;
-			ks->flags = cache->flags;
-			elektraFree (cache);
-			cache = 0;
+			goto error;
 		}
-		else
-		{
-			ELEKTRA_LOG_DEBUG ("appending cached keyset (ks was not empty)");
-			ksAppend (ks, cache);
-			ksDel (cache);
-			cache = 0;
-		}
-		keyDel (cacheParent);
-		cacheParent = 0;
 
 		keySetName (parentKey, keyName (initialParent));
 
