@@ -344,11 +344,6 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
-// 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1", KEY_VALUE, "cache", KEY_END),
-// 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1/placements", KEY_VALUE, "cache", KEY_END),
-// 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1/placements/get", KEY_VALUE, "pregetcache postgetcache",
-// KEY_END), 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1/placements/set", KEY_VALUE, "postsetcache",
-// KEY_END),
 #endif
 		keyNew ("system/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),

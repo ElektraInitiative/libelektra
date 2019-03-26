@@ -829,7 +829,6 @@ void splitPrepare (Split * split)
 	}
 }
 
-
 static char * elektraStrConcat (const char * a, const char * b)
 {
 	size_t len = strlen (a) + strlen (b) + 1;

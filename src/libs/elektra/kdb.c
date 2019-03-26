@@ -1052,6 +1052,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 	else
 	{
+
 		/* Now do the real updating,
 		   but not for bypassed keys in split->size-1 */
 		clearError (parentKey);
@@ -1103,6 +1104,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	ksRewind (ks);
+
 	keySetName (parentKey, keyName (initialParent));
 
 	splitUpdateFileName (split, handle, parentKey);
@@ -1422,7 +1424,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 	ELEKTRA_LOG ("after splitBuildup");
-
 
 	// 1.) Search for syncbits
 	int syncstate = splitDivide (split, handle, ks);

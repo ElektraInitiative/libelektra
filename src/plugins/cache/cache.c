@@ -20,10 +20,12 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
-#include <fcntl.h>    // access()
-#include <stdio.h>    // rename(), sprintf()
-#include <sys/time.h> // gettimeofday()
-#include <unistd.h>   // access()
+#include <fcntl.h>     // access()
+#include <stdio.h>     // rename(), sprintf()
+#include <sys/stat.h>  // elektraMkdirParents
+#include <sys/time.h>  // gettimeofday()
+#include <sys/types.h> // elektraMkdirParents
+#include <unistd.h>    // access()
 
 #define KDB_CACHE_STORAGE "mmapstorage"
 #define POSTFIX_SIZE 50
@@ -75,8 +77,6 @@ static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch)
 	return 0;
 }
 
-#include <sys/stat.h>
-#include <sys/types.h>
 static int elektraMkdirParents (const char * pathname)
 {
 	if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
@@ -181,7 +181,6 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
 		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
 		ELEKTRA_ASSERT (0 != 0, "mountpoint empty, invalid cache file name");
 	}
-	// cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (parentKey));
 	ELEKTRA_LOG_DEBUG ("cache dir: %s", cacheFileName);
 
 	if (cacheFileName)
@@ -305,7 +304,6 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (elektraPluginGetGlobalKeySet (handle) == 0)
 	{
-		// ELEKTRA_ASSERT (0 != 0, "WHY AM I NOT GLOBAL KS");
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE; // TODO: do we fail silently here?
 	}
 
@@ -321,7 +319,6 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// write cache to temp file
 	keySetString (cacheFile, tmpFile);
-	// elektraFree (cacheFileName);
 	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
@@ -358,7 +355,6 @@ int elektraCacheError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 	if (elektraPluginGetGlobalKeySet (handle) == 0)
 	{
-		// ELEKTRA_ASSERT (0 != 0, "WHY AM I NOT GLOBAL KS");
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE; // TODO: do we fail silently here?
 	}
 
