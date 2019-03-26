@@ -764,6 +764,33 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
+static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key * parentkey, Key * initialParent, Key * cacheParent)
+{
+	// prune old cache info
+	elektraCacheCutMeta (handle);
+
+	if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		ELEKTRA_LOG_DEBUG ("CACHE MISS: could not fetch cache");
+		elektraCacheCutMeta (handle);
+		return;
+	}
+	ELEKTRA_ASSERT (elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0, "parentKey name differs from initial");
+	if (elektraCacheCheckParent (handle->global, cacheParent, parentKey) != 0)
+	{
+		// parentKey in cache does not match, needs rebuild
+		ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+		elektraCacheCutMeta (handle);
+		return;
+	}
+	if (splitCacheCheckState (split, handle->global) == -1)
+	{
+		ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
+		elektraCacheCutMeta (handle);
+		return;
+	}
+}
+
 static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * initialParent)
 {
 	ELEKTRA_LOG_DEBUG ("CACHE HIT");
@@ -928,32 +955,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
-		// prune old cache info
-		elektraCacheCutMeta (handle);
-
-		if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-		{
-			ELEKTRA_LOG_DEBUG ("CACHE MISS: could not fetch cache");
-			elektraCacheCutMeta (handle);
-			goto cachefail;
-		}
-		ELEKTRA_ASSERT (elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0, "parentKey name differs from initial");
-		if (elektraCacheCheckParent (handle->global, cacheParent, parentKey) != 0)
-		{
-			// parentKey in cache does not match, needs rebuild
-			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-			elektraCacheCutMeta (handle);
-			goto cachefail;
-		}
-		if (splitCacheCheckState (split, handle->global) == -1)
-		{
-			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-			elektraCacheCutMeta (handle);
-			goto cachefail;
-		}
+		elektraCacheLoad (handle, split, cache, parentKey, initialParent, cacheParent);
 	}
 
-cachefail:
 	// Check if a update is needed at all
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
