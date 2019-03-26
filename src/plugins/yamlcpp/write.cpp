@@ -97,7 +97,7 @@ KeySet splitArrayParents (KeySet const & keys)
 			continue;
 		}
 
-		if (keys.current ().getBaseName ()[0] == '#' && keys.current ().isBelow (previous))
+		if (keys.current ().getBaseName ()[0] == '#')
 		{
 			if (!keys.current ().isDirectBelow (previous))
 			{
