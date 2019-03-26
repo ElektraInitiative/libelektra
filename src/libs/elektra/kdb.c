@@ -764,7 +764,7 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
-static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key * parentkey, Key * initialParent, Key * cacheParent)
+static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key * parentKey, Key * initialParent, Key * cacheParent)
 {
 	// prune old cache info
 	elektraCacheCutMeta (handle);
@@ -791,11 +791,10 @@ static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key *
 	}
 }
 
-static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * initialParent)
+static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent)
 {
 	ELEKTRA_LOG_DEBUG ("CACHE HIT");
 	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
-	ELEKTRA_LOG_DEBUG ("CACHE initial parent: %s, %s", keyName (initialParent), keyString (initialParent));
 
 	if (splitCacheLoadState (split, handle->global) != 0) return -1;
 
@@ -962,7 +961,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, initialParent) != 0)
+		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent) != 0)
 		{
 			goto error;
 		}
