@@ -69,7 +69,7 @@ bool isArrayParent (Key const & parent, KeySet const & keys)
 }
 
 /**
- * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
+ * @brief This function returns all array parents for a given key set.
  *
  * @note This function also adds empty parent keys for arrays, if they did not exist beforehand. For example for the key set that **only**
  *       contains the keys:
@@ -77,46 +77,39 @@ bool isArrayParent (Key const & parent, KeySet const & keys)
  *       - `user/array/#0`, and
  *       - `user/array/#1`
  *
- *       the function will add the array parent `user/array` to the returned array parent key set.
+ *       the function will add the array parent `user/array` to the returned key set.
  *
- * @param keys This parameter contains the key set this function splits.
+ * @param keys This parameter contains the key set this function searches for array parents.
  *
- * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
+ * @return A key sets that contains all array parents stored in `keys`
  */
-KeySetPair splitArrayParentsOther (KeySet const & keys)
+KeySet splitArrayParents (KeySet const & keys)
 {
 	KeySet arrayParents;
-	KeySet others;
 
 	keys.rewind ();
 	Key previous;
 	for (; keys.next (); previous = keys.current ())
 	{
-		bool previousIsArray = previous && previous.hasMeta ("array");
+		if (keys.current ().hasMeta ("array"))
+		{
+			arrayParents.append (keys.current ());
+			continue;
+		}
 
-		if (!previousIsArray && keys.current ().getBaseName ()[0] == '#')
+		if (keys.current ().getBaseName ()[0] == '#' && keys.current ().isBelow (previous))
 		{
 			if (!keys.current ().isDirectBelow (previous))
 			{
 				Key directParent{ keys.current ().getName (), KEY_END };
 				ckdb::keySetBaseName (*directParent, NULL);
-				previousIsArray = isArrayParent (directParent, keys);
-				if (previousIsArray)
-				{
-					arrayParents.append (directParent);
-				}
+				if (isArrayParent (*directParent, keys)) arrayParents.append (directParent);
 			}
-			else
-			{
-				previousIsArray = isArrayParent (previous, keys);
-			}
+			if (isArrayParent (*previous, keys)) arrayParents.append (previous);
 		}
-
-		(previousIsArray ? arrayParents : others).append (previous);
 	}
-	(previous && previous.hasMeta ("array") ? arrayParents : others).append (previous);
 
-	return make_pair (arrayParents, others);
+	return arrayParents;
 }
 
 /**
@@ -139,6 +132,35 @@ KeySetPair splitArrayOther (KeySet const & arrayParents, KeySet const & keys)
 	}
 
 	return make_pair (arrays, others);
+}
+
+/**
+ * @brief This function removes all **non-essential** array metadata from a given key set.
+ *
+ * @param keys This parameter contains the key set this function modifies.
+ *
+ * @return A copy of `keys` that only contains array metadata for empty arrays
+ */
+KeySet removeArrayMetaData (KeySet const & keys)
+{
+	KeySet result;
+	for (auto const & key : keys)
+	{
+		result.append (key.dup ());
+	}
+
+	Key previous;
+	result.rewind ();
+	while (result.next ())
+	{
+		if (result.current ().isBelow (previous)) previous.delMeta ("array");
+		previous = result.current ();
+	}
+
+	ELEKTRA_ASSERT (keys.size () == result.size (), "Size of input and output keys set is different (%zu ≠ %zu)", keys.size (),
+			result.size ());
+
+	return result;
 }
 
 /**
@@ -411,16 +433,18 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
  */
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
+	auto keys = removeArrayMetaData (mappings);
 
 	KeySet arrayParents;
 	KeySet arrays;
 	KeySet nonArrays;
-	tie (arrayParents, std::ignore) = splitArrayParentsOther (mappings);
-	tie (arrays, nonArrays) = splitArrayOther (arrayParents, mappings);
+
+	arrayParents = splitArrayParents (keys);
+	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
 
 	auto data = YAML::Node ();
-	addKeys (data, arrays, parent, true);
 	addKeys (data, nonArrays, parent);
+	addKeys (data, arrays, parent, true);
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Write Data:");
