@@ -47,71 +47,6 @@
 
 #include <kdbinternal.h>
 
-// TODO: remove
-
-#include <unistd.h>
-
-void output_meta (Key * k)
-{
-	const Key * meta;
-
-	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k)) != 0)
-	{
-		ELEKTRA_LOG_DEBUG (", %s: %s", keyName (meta), (const char *) keyValue (meta));
-	}
-	ELEKTRA_LOG_DEBUG ("\n");
-}
-
-void output_key (Key * k)
-{
-	// output_meta will print endline
-	ELEKTRA_LOG_DEBUG ("key: %s, string: %s", keyName (k), keyString (k));
-	output_meta (k);
-}
-
-void output_keyset (KeySet * ks)
-{
-	Key * k;
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		output_key (k);
-	}
-}
-void logSplitDebug (KDB * handle)
-{
-	return; // TODO: enable if you need it
-
-	if (!handle->split)
-	{
-		ELEKTRA_LOG_DEBUG ("!!!!! NO SPLIT in KDB");
-		return;
-	}
-	ELEKTRA_LOG_DEBUG (">>>> NEW KDB SPLIT");
-	ELEKTRA_LOG_DEBUG (">>>> alloc: %zu", handle->split->alloc);
-	ELEKTRA_LOG_DEBUG (">>>> size: %zu", handle->split->size);
-
-	for (size_t i = 0; i < handle->split->size; i++)
-	{
-		ELEKTRA_LOG_DEBUG (">>>> NEW SPLIT: %zu", i);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle specsize:\t%zi", handle->split->handles[i]->specsize);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle dirsize:\t%zi", handle->split->handles[i]->dirsize);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle usersize:\t%zi", handle->split->handles[i]->usersize);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle systemsize:\t%zi", handle->split->handles[i]->systemsize);
-
-		ELEKTRA_LOG_DEBUG (">>>> syncbits: %u", handle->split->syncbits[i]);
-		ELEKTRA_LOG_DEBUG (">>>> parent key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (handle->split->parents[i]),
-				   keyString (handle->split->parents[i]), strlen (keyString (handle->split->parents[i])),
-				   keyGetValueSize (handle->split->parents[i]));
-		ELEKTRA_LOG_DEBUG (">>>> keyset size: %zi", ksGetSize (handle->split->keysets[i]));
-
-		output_keyset (handle->split->keysets[i]);
-		ELEKTRA_LOG_DEBUG (">>>> END SPLIT: %zu", i);
-	}
-}
-
-// TODO: remove end
 
 /**
  * @defgroup kdb KDB
@@ -1012,8 +947,6 @@ cachefail:
 		keyDel (cacheParent);
 		cacheParent = 0;
 
-		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT LOAD CACHE");
-		logSplitDebug (handle);
 		keySetName (parentKey, keyName (initialParent));
 
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
@@ -1036,9 +969,6 @@ cachefail:
 		cache = 0;
 		keyDel (cacheParent);
 		cacheParent = 0;
-
-		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT NO UPDATE");
-		logSplitDebug (handle);
 
 		keySetName (parentKey, keyName (initialParent));
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
@@ -1151,9 +1081,6 @@ cachefail:
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
-
-	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT GET FROM BACKENDS");
-	logSplitDebug (handle);
 
 	ksRewind (ks);
 	keySetName (parentKey, keyName (initialParent));
@@ -1519,9 +1446,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	ELEKTRA_LOG ("after 2.) Search for changed sizes");
 
 	splitPrepare (split);
-
-	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT SET AFTER PREPARE");
-	logSplitDebug (handle);
 
 	clearError (parentKey); // clear previous error to set new one
 	if (elektraSetPrepare (split, parentKey, &errorKey, handle->globalPlugins) == -1)
