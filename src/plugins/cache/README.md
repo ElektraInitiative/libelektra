@@ -16,39 +16,16 @@ to improve performance when reading configuration files.
 
 ## Usage
 
-You can use `scripts/copy-cache`
-to automatically rename everything to your
-plugin name:
-
-    cd src/plugins
-    ../../scripts/copy-cache yourplugin
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+The cache plugin is compiled and enabled on compatible systems by default.
+No actions are needed to enable it.
 
 ## Dependencies
 
-None.
-
-## Examples
-
-```sh
-# Backup-and-Restore: user/tests/cache
-
-kdb set user/tests/cache/key value
-#> Create a new key user/tests/cache/key with string "value"
-
-kdb get /tests/cache/key
-#> value
-```
+POSIX compliant system (including XSI extensions).
+The plugin is only compiled if the plugins `resolver` and `mmapstorage`
+are also available.
 
 ## Limitations
 
-None.
+The cache files are located in the user's home directory below `~/.cache/elektra/` and
+shall not be altered, otherwise the behavior is undefined.
