@@ -260,7 +260,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- The [CFramework](https://master.libelektra.org/tests/cframework) now also compares the names of meta keys. _(René Schwaiger)_
 
 ### Source Code Checks
 
