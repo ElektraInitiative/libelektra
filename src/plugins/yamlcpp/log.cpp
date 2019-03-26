@@ -26,10 +26,10 @@ void logKeySet (kdb::KeySet const & keys)
 		key.rewindMeta ();
 		while (kdb::Key meta = key.nextMeta ())
 		{
-			metadata += ", “" + meta.getName () + "” : “" + meta.getString () + "”";
+			metadata += ", “" + meta.getName () + "”: “" + meta.getString () + "”";
 		}
 
-		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s” %s", key.getName ().c_str (),
+		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”%s", key.getName ().c_str (),
 				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str (),
 				   metadata.c_str ());
 	}
