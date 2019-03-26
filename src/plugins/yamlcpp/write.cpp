@@ -410,7 +410,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 		output << data;
 
 		ELEKTRA_LOG_DEBUG ("Converted Data:");
-		ELEKTRA_LOG_DEBUG ("__________");
+		ELEKTRA_LOG_DEBUG ("——————————");
 
 		istringstream stream (output.str ());
 		for (string line; std::getline (stream, line);)
@@ -418,7 +418,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 			ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
 		}
 
-		ELEKTRA_LOG_DEBUG ("__________");
+		ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 	}
 }
@@ -448,7 +448,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Write Data:");
-	ELEKTRA_LOG_DEBUG ("__________");
+	ELEKTRA_LOG_DEBUG ("——————————");
 
 	ostringstream outputString;
 	outputString << data;
@@ -458,7 +458,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
 	}
 
-	ELEKTRA_LOG_DEBUG ("__________");
+	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
 	ofstream output (parent.getString ());
