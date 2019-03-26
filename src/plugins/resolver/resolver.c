@@ -410,6 +410,26 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	return 0;
 }
 
+/**
+ * @brief Generate key name for the cache
+ *
+ * @param filename the name of the config file
+ * @ret pointer to the generated key name
+ */
+static char * elektraCacheKeyName (char * filename)
+{
+	char * name = 0;
+	size_t len = strlen (KDB_CACHE_PREFIX) + strlen ("/") + strlen (ELEKTRA_PLUGIN_NAME) + strlen (filename) + 1;
+	name = elektraMalloc (len);
+	name = strcpy (name, KDB_CACHE_PREFIX);
+	name = strcat (name, "/");
+	name = strcat (name, ELEKTRA_PLUGIN_NAME);
+	name = strcat (name, filename);
+
+	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
+	return name;
+}
+
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 {
 	KeySet * resolverConfig = elektraPluginGetConfig (handle);
@@ -549,16 +569,11 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	/* Check if cache update needed */
 	KeySet * global;
 	char * name = 0;
-	size_t len = strlen (KDB_CACHE_PREFIX) + strlen ("/") + strlen (ELEKTRA_PLUGIN_NAME) + strlen (pk->filename) + 1;
-	name = elektraMalloc (len);
-	name = strcpy (name, KDB_CACHE_PREFIX);
-	name = strcat (name, "/");
-	name = strcat (name, ELEKTRA_PLUGIN_NAME);
-	name = strcat (name, pk->filename);
-	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
 
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
+		name = elektraCacheKeyName (pk->filename);
+
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
