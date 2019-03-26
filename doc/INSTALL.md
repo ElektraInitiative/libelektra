@@ -93,7 +93,7 @@ First follow the steps in [COMPILE](COMPILE.md).
 
 After you completed building Elektra on your own, there are multiple options  how to install it. For example, with make or cPack tools.
 
-### MAKE
+### make
 
     sudo make install
     sudo ldconfig  # See troubleshooting below
