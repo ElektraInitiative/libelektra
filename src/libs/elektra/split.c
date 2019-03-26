@@ -952,7 +952,9 @@ int splitCacheCheckState (Split * split, KeySet * global)
 	{
 		size_t lastSize = 0;
 		keyGetBinary (lastSplitSize, &lastSize, sizeof (size_t));
-		if (lastSize != split->size) return -1;
+		ELEKTRA_LOG_DEBUG ("Split size check: lastSize %ld, cur size: %ld", lastSize, split->size);
+		int bypassedSplits = 1;
+		if (lastSize != split->size + bypassedSplits) return -1;
 	}
 	else
 	{
@@ -1044,7 +1046,9 @@ int splitCacheLoadState (Split * split, KeySet * global)
 	{
 		size_t lastSize = 0;
 		keyGetBinary (lastSplitSize, &lastSize, sizeof (size_t));
-		if (lastSize != split->size) return -1;
+		ELEKTRA_LOG_DEBUG ("Split size check: lastSize %ld, cur size: %ld", lastSize, split->size);
+		int bypassedSplits = 1;
+		if (lastSize != split->size + bypassedSplits) return -1;
 	}
 	else
 	{
