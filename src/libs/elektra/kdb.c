@@ -764,7 +764,8 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
-static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key * parentKey, Key * initialParent, Key * cacheParent)
+static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED,
+			      Key * cacheParent)
 {
 	// prune old cache info
 	elektraCacheCutMeta (handle);
