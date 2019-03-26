@@ -549,9 +549,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	/* Check if cache update needed */
 	KeySet * global;
 	char * name = 0;
-	size_t len = strlen (KDB_CACHE_PREFIX) + strlen (ELEKTRA_PLUGIN_NAME) + strlen (pk->filename) + 1;
+	size_t len = strlen (KDB_CACHE_PREFIX) + strlen("/") + strlen (ELEKTRA_PLUGIN_NAME) + strlen (pk->filename) + 1;
 	name = elektraMalloc (len);
 	name = strcpy (name, KDB_CACHE_PREFIX);
+	name = strcat (name, "/");
 	name = strcat (name, ELEKTRA_PLUGIN_NAME);
 	name = strcat (name, pk->filename);
 	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);

@@ -478,8 +478,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
 			ELEKTRA_LOG_DEBUG ("backend: %s,%s ;; ret: %d", keyName (split->parents[i]), keyString (split->parents[i]), ret);
-			ELEKTRA_LOG_DEBUG ("elektraGetCheckUpdateNeeded : backendUpdateSize thingy");
-			// if (ret != ELEKTRA_PLUGIN_STATUS_CACHE_HIT)
+
 			backendUpdateSize (backend, split->parents[i], 0);
 		}
 		// TODO: set error in else case!
@@ -758,6 +757,13 @@ static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * in
 	return 0;
 }
 
+static void elektraCacheCutMeta (KDB * handle)
+{
+	Key * parentKey = keyNew (KDB_CACHE_PREFIX, KEY_END);
+	ksDel (ksCut (handle->global, parentKey));
+	keyDel (parentKey);
+}
+
 
 /**
  * @brief Retrieve keys in an atomic and universal way.
@@ -890,12 +896,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
 		// prune old cache info
-		ksClear (handle->global); // TODO: only cut out our part of global keyset
+		elektraCacheCutMeta (handle);
 
 		if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 		{
 			ELEKTRA_LOG_DEBUG ("CACHE MISS: could not fetch cache");
-			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			elektraCacheCutMeta (handle);
 			goto cachefail;
 		}
 		ELEKTRA_ASSERT (elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0, "parentKey name differs from initial");
@@ -903,13 +909,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		{
 			// parentKey in cache does not match, needs rebuild
 			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			elektraCacheCutMeta (handle);
 			goto cachefail;
 		}
 		if (splitCacheCheckState (split, handle->global) == -1)
 		{
 			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			elektraCacheCutMeta (handle);
 			goto cachefail;
 		}
 	}
@@ -1064,12 +1070,12 @@ cachefail:
 			ELEKTRA_LOG_DEBUG ("CACHE ERROR: could not store cache");
 			// we must remove the stored split state from the global keyset
 			// if there was an error, otherwise we get erroneous cache hits
-			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			elektraCacheCutMeta (handle);
 		}
 	}
 	else
 	{
-		ksClear (handle->global); // TODO: only cut out our part of global keyset
+		elektraCacheCutMeta (handle);
 	}
 	keyDel (cacheParent);
 	cacheParent = 0;
