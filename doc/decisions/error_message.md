@@ -40,7 +40,7 @@ Reason against: The description of the key should already provide such informati
 Doing it in an extra key would imply redundant information.
 * Removal of warnings with error codes from the specification file.
 
-Various FLOSS projects:
+Various projects and standards:
 * [GStreamer](https://github.com/GStreamer/gstreamer): 
     This project uses 4 domain type errors which are suited to their project:
     CORE, LIBRARY, RESOURCE or STREAM. Every domain type has further sub error codes which are numbered from 1-x where 1 is a
@@ -63,6 +63,17 @@ Various FLOSS projects:
     Etcd's approach for errors are tightly coupled to the programming language Go as well as the [gRPC](https://grpc.io/) standard which currently has 
     [16 codes](https://godoc.org/google.golang.org/grpc/codes) defined. Some of these errors are similar or identical to those which will be used in elektra.
     Every error of etcd is associated with one of these categories and gets its own error message which is specified in [this](https://github.com/etcd-io/etcd/blob/master/etcdserver/api/v3rpc/rpctypes/error.go) file. This concept though does not allow easy subclassing which might be useful (eg. further split FailedPrecondition into more specific errors like semantic and syntactic errors)
+* [Windows Registry](https://docs.microsoft.com/en-us/windows/desktop/sysinfo/registry):
+    The registry does not use any specific error concept but takes the standard [Win32 Error Codes](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/18d8fbe8-a967-4f1c-ae50-99ca8e491d2d). These are neither hierarchical nor have any special ordering. Basically it is the same as elektra has now except for no duplicated
+    errors.
+* Mac OS X plist:
+    Just like Windows, plist uses standard Mac OS X errors which is a [huge catalog](http://krypted.com/lists/comprehensive-list-of-mac-os-x-error-codes/) of unordered
+    return codes as integers.
+* [SNMP Standard](http://www.snmp.com/protocol/):
+    Being a standard network protocol, error codes are very specific to the domain itself. A list can be found [here](https://docs.microsoft.com/en-us/windows/desktop/snmp/snmp-error-codes) and would not meet the needs of elektra at all.
+* POSIX:
+    Returning a non-zero value and retrieving the concrete information from `errno` would not suffice for elektra as it is too simple. It would not solve any of our current
+    problems like having excessive uncategorized codes for errors.
 
 ## Decision
 
