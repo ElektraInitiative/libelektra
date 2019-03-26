@@ -7,6 +7,7 @@
  */
 
 #include "write.hpp"
+#include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
 #include <kdbassert.h>
@@ -108,6 +109,11 @@ KeySet splitArrayParents (KeySet const & keys)
 			if (isArrayParent (*previous, keys)) arrayParents.append (previous);
 		}
 	}
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Array parents:");
+	logKeySet (arrayParents);
+#endif
 
 	return arrayParents;
 }
