@@ -10,6 +10,7 @@
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
 #include "yamlcpp.hpp"
+#include "log.hpp"
 #include "read.hpp"
 #include "write.hpp"
 using namespace yamlcpp;
@@ -41,30 +42,6 @@ KeySet * contractYamlCpp (void)
 		      keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END), KS_END);
 }
-
-#ifdef HAVE_LOGGER
-/**
- * @brief This function uses Elektra’s logging facility to print the contents of a key set.
- *
- * @param keys This parameter stores the key set this function prints.
- */
-void logKeySet (kdb::KeySet const & keys)
-{
-	for (auto key : keys)
-	{
-		std::string metadata;
-		key.rewindMeta ();
-		while (kdb::Key meta = key.nextMeta ())
-		{
-			metadata += ", “" + meta.getName () + "” : “" + meta.getString () + "”";
-		}
-
-		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s” %s", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str (),
-				   metadata.c_str ());
-	}
-}
-#endif
 
 }
 
