@@ -171,7 +171,17 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 #ifdef HAVE_LOGGER
 	ostringstream data;
 	data << config;
-	ELEKTRA_LOG_DEBUG ("Read data “%s”", data.str ().c_str ());
+
+	ELEKTRA_LOG_DEBUG ("Read Data:");
+	ELEKTRA_LOG_DEBUG ("——————————");
+
+	istringstream stream (data.str ());
+	for (string line; std::getline (stream, line);)
+	{
+		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+	}
+
+	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
 	convertNodeToKeySet (config, mappings, parent);
