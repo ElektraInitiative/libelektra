@@ -38,6 +38,7 @@ RUN apt-get update && apt-get -y install \
         libuv1-dev \
         libxerces-c-dev \
         libyajl-dev \
+        libyaml-cpp-dev \
         libzmq3-dev \
         llvm \
         maven \
