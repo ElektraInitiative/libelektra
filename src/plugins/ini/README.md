@@ -87,7 +87,7 @@ If you want to use another character, then please specify the configuration opti
 
 The ini plugin handles repeating keys by turning them into an elektra array when the `array` config is set.
 
-For example a ini file looking like:
+For example an ini file looking like:
 
 ```ini
 [sec]

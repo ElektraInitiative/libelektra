@@ -326,5 +326,5 @@ or if just the pull request should be checked:
 
 If you have issues that are related to the build system you can open a normal
 issue and tag it with `build` and `question`.
-If you feel like your inquiry does not warrant a issue on its own, please use
+If you feel like your inquiry does not warrant an issue on its own, please use
 [our buildserver issue](https://issues.libelektra.org/160).

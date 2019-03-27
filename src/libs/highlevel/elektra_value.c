@@ -163,7 +163,7 @@ kdb_char_t elektraGetChar (Elektra * elektra, const char * keyname)
 }
 
 /**
- * Gets a octet value.
+ * Gets an octet value.
  *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
@@ -361,7 +361,7 @@ void elektraSetChar (Elektra * elektra, const char * keyname, kdb_char_t value, 
 }
 
 /**
- * Sets a octet value.
+ * Sets an octet value.
  *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.

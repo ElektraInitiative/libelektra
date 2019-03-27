@@ -258,7 +258,6 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
 - We added a (very) basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
@@ -286,10 +285,10 @@ you up to date with the multi-language support provided by Elektra.
 - Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
 - Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
-
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
 - Added a new error concept to be implemented soon. _(Michael Zronek)_
+- We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
 
 ## Tests
 

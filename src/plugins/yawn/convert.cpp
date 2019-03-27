@@ -113,7 +113,7 @@ string parseGrammar (yaep & parser, CppKey & error)
  * @param filename This variable stores location of the file for which this function creates an input stream
  * @param error This function stores an error message in this key, if it was unable to access `filename`.
  *
- * @return A input stream that contains the content of `filename`, if creating the stream was successful
+ * @return an input stream that contains the content of `filename`, if creating the stream was successful
  */
 ifstream openFile (string const & filename, CppKey & error)
 {
@@ -174,7 +174,7 @@ namespace yawn
  *                 function converts.
  *
  * @retval -2 if the file could not be opened for reading
- * @retval -1 if there was a error converting the YAML file
+ * @retval -1 if there was an error converting the YAML file
  * @retval  0 if parsing was successful and the function did not change the
  *            given key set
  * @retval  1 if parsing was successful and the function did change `keySet`

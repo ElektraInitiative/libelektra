@@ -23,7 +23,7 @@ If you are looking for something special, then there are two ways:
 2. Full Text Search:
    - `kdb find-tools -n NAME` to search for a script name.
    - `kdb find-tools -b BRIEF` to search for a short text.
-   - `kdb find-tools -a AUTHOR` to search for a author.
+   - `kdb find-tools -a AUTHOR` to search for an author.
    - `kdb find-tools -d DATE` to search for a creation date.
    - `kdb find-tools -e EXECUTE` to search for a type.
 
@@ -52,7 +52,7 @@ Beware, that these metatags should be applied at the beginning of the file (in t
 #!/bin/sh
 #
 # @author Kurt Micheli <kurt.micheli@libelektra.org>
-# @brief This is a example of a build script
+# @brief This is an example of a build script
 # @date 31.10.2018
 # @tags configure, build
 ```
