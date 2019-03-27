@@ -5,7 +5,7 @@
 - infos/provides = storage/quickdump
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = tested nodep libc compatible preview
+- infos/status = maintained compatible tested nodep libc preview
 - infos/metadata =
 - infos/description = much quicker version of dump (2x or more in most cases)
 

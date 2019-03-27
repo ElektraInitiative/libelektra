@@ -5,7 +5,7 @@
 - infos/provides = storage/specload
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = nodep libc configurable experimental unfinished
+- infos/status = maintained nodep libc configurable experimental unfinished
 - infos/metadata =
 - infos/description = loads a specification from an external application
 
