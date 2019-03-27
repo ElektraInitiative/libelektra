@@ -215,8 +215,8 @@ KeySetPair splitArrayParentsOther (CppKeySet const & keys)
 	for (previous = keys.next (); keys.next (); previous = keys.current ())
 	{
 		bool const previousIsArray =
-			previous.hasMeta ("array") ||
-			(keys.current ().isBelow (previous) && keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
+			previous.hasMeta ("array") || (keys.current ().isDirectBelow (previous) &&
+						       keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
 
 		(previousIsArray ? arrayParents : others).append (previous);
 	}
