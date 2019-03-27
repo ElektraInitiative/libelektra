@@ -209,6 +209,7 @@ void Plugin::check (vector<string> & warnings)
 		pp.push_back ("getresolver");
 		pp.push_back ("pregetstorage");
 		pp.push_back ("getstorage");
+		pp.push_back ("procgetstorage");
 		pp.push_back ("postgetstorage");
 		pp.push_back ("setresolver");
 		pp.push_back ("presetstorage");

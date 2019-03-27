@@ -1763,9 +1763,26 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 	while ((condition = ksNext (pluginsContract)) != NULL)
 	{
 		// only handle 'system/plugins/<mountpoint>/<pluginname>' keys
-		if (keyGetLevelsBelow (cutpoint, condition) != 2)
+		const char * condUNameBase = keyUnescapedName (condition);
+		const char * condUName = condUNameBase;
+		condUName += sizeof ("system\0plugins"); // skip known common part
+
+		size_t condUSize = keyGetUnescapedNameSize (condition);
+		if (condUNameBase + condUSize <= condUName)
 		{
-			continue;
+			continue; // base key
+		}
+
+		condUName += strlen (condUName) + 1; // skip mountpoint
+		if (condUNameBase + condUSize <= condUName)
+		{
+			continue; // mountpoint key
+		}
+
+		condUName += strlen (condUName) + 1; // skip pluginname
+		if (condUNameBase + condUSize > condUName)
+		{
+			continue; // key below 'system/plugins/<mountpoint>/<pluginname>'
 		}
 
 		const char * mountpoint = keyUnescapedName (condition);
