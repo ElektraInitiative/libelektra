@@ -61,8 +61,8 @@ you use the function `elektraSpecloadSendSpec` exported as `"system/elektra/modu
 ```c
 Key * errorKey = keyNew (0, KEY_END);
 
-// add 'system/module' key to suppress checking the 'app' key in elektraSpecloadOpen
-KeySet * specloadConf = ksNew (1, keyNew ("system/module", KEY_END), KS_END);
+// add 'system/sendspec' key to suppress checking the 'app' key in elektraSpecloadOpen
+KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
 
 int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);

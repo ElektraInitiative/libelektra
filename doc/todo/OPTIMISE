@@ -96,13 +96,6 @@ many globbing statements
 
 == DATA STRUCTURES ==
 
-Implement order preserving perfect hashing functions
-	O(1) lookup, but keep O(n) ordered iteration
-	http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.51.5566&rep=rep1&type=pdf
-	ksLookup(,, KDB_O_HASH) or KDB_O_HASH_HEURISTIC to avoid
-	rebuilding on seldom lookups
-	if hash is available it will be used regardless of options
-
 improve memory footprint C structures:
 	http://www.catb.org/esr/structure-packing/?src=yc
 

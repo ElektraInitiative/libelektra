@@ -22,7 +22,7 @@
 using namespace elektra;
 
 
-TEST (type, version)
+TEST (cpptype, version)
 {
 	try
 	{
@@ -50,22 +50,22 @@ TEST (type, version)
 	}
 }
 
-TEST (type, validate)
+TEST (cpptype, validate)
 {
-	ckdb::Key * parentKey = ckdb::keyNew ("system/elektra/modules/type", KEY_END);
+	ckdb::Key * parentKey = ckdb::keyNew ("system/elektra/modules/cpptype", KEY_END);
 	ckdb::KeySet * conf = ckdb::ksNew (0, KS_END);
 
 	ckdb::KeySet * modules = ckdb::ksNew (0, KS_END);
 	ckdb::elektraModulesInit (modules, 0);
 	ckdb::Key * errorKey = ckdb::keyNew ("", KEY_END);
-	ckdb::Plugin * plugin = ckdb::elektraPluginOpen ("type", modules, conf, errorKey);
+	ckdb::Plugin * plugin = ckdb::elektraPluginOpen ("cpptype", modules, conf, errorKey);
 	ckdb::keyDel (errorKey);
-	exit_if_fail (plugin != 0, "could not open type plugin");
+	exit_if_fail (plugin != 0, "could not open cpptype plugin");
 
 	ckdb::KeySet * ks = ckdb::ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	ckdb::Key * key;
-	key = ckdb::ksLookupByName (ks, "system/elektra/modules/type/exports/validateKey", 0);
+	key = ckdb::ksLookupByName (ks, "system/elektra/modules/cpptype/exports/validateKey", 0);
 	exit_if_fail (key, "key not found");
 
 	union
@@ -136,7 +136,7 @@ TEST (type, short)
 	succeed_if (tc.check (k), "should succeed (empty value)");
 }
 
-TEST (type, unsignedShort)
+TEST (cpptype, unsignedShort)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -176,7 +176,7 @@ TEST (type, unsignedShort)
 	succeed_if (tc.check (k), "should succeed (empty value)");
 }
 
-TEST (type, float)
+TEST (cpptype, float)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -218,7 +218,7 @@ TEST (type, float)
 	succeed_if (tc.check (k), "should check successfully");
 }
 
-TEST (type, bool)
+TEST (cpptype, bool)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -235,7 +235,7 @@ TEST (type, bool)
 	succeed_if (!tc.check (k), "should fail");
 }
 
-TEST (type, none)
+TEST (cpptype, none)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -252,7 +252,7 @@ TEST (type, none)
 	succeed_if (tc.check (k), "should check successfully");
 }
 
-TEST (type, enforce)
+TEST (cpptype, enforce)
 {
 	KeySet config;
 	// enforce key just needs to be present
@@ -271,7 +271,7 @@ TEST (type, enforce)
 	succeed_if (!tc.check (k), "should check successfully");
 }
 
-TEST (type, min)
+TEST (cpptype, min)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -391,7 +391,7 @@ void test_max ()
 	succeed_if (tc.check (k), "should succeed (empty value)");
 }
 
-TEST (type, minmax)
+TEST (cpptype, minmax)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -486,7 +486,7 @@ TEST (type, minmax)
 	succeed_if (tc.check (k), "should succeed (empty value)");
 }
 
-TEST (type, char)
+TEST (cpptype, char)
 {
 	KeySet config;
 	TypeChecker tc (config);
@@ -512,7 +512,7 @@ TEST (type, char)
 	}
 }
 
-TEST (type, octet)
+TEST (cpptype, octet)
 {
 	KeySet config;
 	TypeChecker tc (config);

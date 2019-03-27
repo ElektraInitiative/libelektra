@@ -598,8 +598,9 @@ ApplicationWindow {
 
 			Label {
 				id: path
-				anchors.fill: parent
-				anchors.leftMargin: defaultMargins
+				Layout.fillHeight: true
+				Layout.fillWidth: true
+                                Layout.leftMargin : defaultMargins
 				text: treeView.currentNode === null ? "" : treeView.currentNode.path + (keyAreaSelectedItem === null ? "" : "/" + keyAreaSelectedItem.name)
 			}
 		}

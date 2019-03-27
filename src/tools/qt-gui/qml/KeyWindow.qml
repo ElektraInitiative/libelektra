@@ -81,7 +81,11 @@ BasicWindow {
 				}
 			}
 		}
-
+                Label {
+                    id: metaKeyLabel
+                    Layout.topMargin: defaultMargins
+                    text: "Metakeys:"
+                }
 		BasicRectangle {
 			id: metaArea
 
@@ -133,7 +137,7 @@ BasicWindow {
 		Button {
 			id: addButton
 
-			anchors.horizontalCenter: parent.horizontalCenter
+                        Layout.alignment : Qt.AlignHCenter
 			action: Action {
 				text: qsTr("&New Meta Key")
 				onTriggered: qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})  //add visual item

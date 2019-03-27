@@ -25,7 +25,10 @@
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 
-using antlr::YAML;
+using yanlr::ErrorListener;
+using yanlr::KeyListener;
+using yanlr::YAML;
+using yanlr::YAMLLexer;
 
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;

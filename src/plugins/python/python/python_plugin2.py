@@ -1,7 +1,6 @@
 class ElektraPlugin(object):
 	def __init__(self):
 		self.x = 1
-		pass
 
 	def open(self, config, errorKey):
 		print("[CLASS-PYTHON-2] open -->")

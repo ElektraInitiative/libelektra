@@ -8,15 +8,15 @@
 
 #include <kdb.h>
 
-Key * c;
+Key * copy;
 
 //! [Basic Copy All]
 void l (Key * k)
 {
-	// receive c
-	keyCopyAllMeta (k, c);
+	// receive copy
+	keyCopyAllMeta (k, copy);
 	// the caller will see the changed key k
-	// with all the metadata from c
+	// with all the metadata from copy
 }
 //! [Basic Copy All]
 
@@ -47,10 +47,10 @@ void o (KeySet * ks)
 int main (void)
 {
 	Key * k = keyNew ("user/key", KEY_END);
-	c = keyNew ("user/copy", KEY_END);
+	copy = keyNew ("user/copy", KEY_END);
 	l (k);
 	keyDel (k);
-	keyDel (c);
+	keyDel (copy);
 
 	KeySet * ks = ksNew (20, KS_END);
 	o (ks);

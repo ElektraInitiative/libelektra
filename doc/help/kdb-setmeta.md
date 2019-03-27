@@ -57,12 +57,16 @@ and a metakey `namespace/#0` associated with it to the value `system`:<br>
 
 To create an override link for a `/test` key:
 
-    kdb set /overrides/test "example override"
-    sudo kdb setmeta spec/test override/#0 /overrides/test
+```sh
+kdb set /overrides/test "example override"
+sudo kdb setmeta spec/test override/#0 /overrides/test
+```
 
 To remove it:
 
-    sudo kdb setmeta spec/test override/#0
+```sh
+sudo kdb setmeta spec/test override/#0
+```
 
 ## SEE ALSO
 

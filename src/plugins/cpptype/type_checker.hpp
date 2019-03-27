@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef ELEKTRA_TYPE_CHECKER_HPP
-#define ELEKTRA_TYPE_CHECKER_HPP
+#ifndef ELEKTRA_CPPTYPE_TYPE_CHECKER_HPP
+#define ELEKTRA_CPPTYPE_TYPE_CHECKER_HPP
 
 #include <locale>
 #include <map>

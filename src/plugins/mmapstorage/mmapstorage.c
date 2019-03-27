@@ -657,7 +657,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 
 	memcpy ((dest + OFFSET_REAL_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM
-	uint32_t checksum = checksum = crc32 (0L, Z_NULL, 0);
+	uint32_t checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, (const unsigned char *) (dest + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
 	mmapHeader->checksum = checksum;
 #endif

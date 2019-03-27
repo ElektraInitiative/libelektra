@@ -19,7 +19,7 @@ The format is also useful for IPC and streaming, because of this it is used by t
 
 ## Format
 
-A `quickdump` file starts with the magic number `0x454b444200000001`. The first 4 bytes are the ASCII codes for `EKDB` (for Elektra KDB),
+A `quickdump` file starts with the magic number `0x454b444200000002`. The first 4 bytes are the ASCII codes for `EKDB` (for Elektra KDB),
 followed by a version number. This 64-bit is always stored as big-endian (i.e. the way it is written above).
 
 After the magic number the file is just a list of Keys. Each Key consists of a name, a value and any number of metakey names and values.
@@ -27,12 +27,19 @@ Each name and value is written as a 64-bit length `n` followed by exactly `n` by
 Therefore the length also does not account for that. When reading a string, the plugin allocates `n+1` bytes and sets the last one to `0`.
 Note that ALL lengths are stored in little-endian format, because most modern machines are little-endian.
 
+We don't store the full name of the key. Instead we only store the name relative to the parent key.
+
 The end of a key is marked by a null byte. This cannot be confused with null bytes embedded in binary key values, because of the length
 prefixes before each key and metavalue.
 
 To distinguish between binary and string keys the (length of the) key value is prefixed with either a `b` or an `s`. Each metakey is
 prefixed with an `m`, unless we detect that the same metakey was already present on a previous key (e.g. through `keyCopyMeta`). In this
 case the prefix `c` is used and instead of the metakey name and value, we write the name of the previous key and the metakey name.
+
+### Version 1
+
+The old format used the magic number `0x454b444200000001` and stored the full keynames, instead of one relative to the parent key. It can
+still be read by this plugin, but we will always write the new format.
 
 ## Usage
 
@@ -48,10 +55,10 @@ None.
 
 ## Examples
 
-```
+```sh
 # Mount a backend using quickdump
-kdb mount quickdump.eqd user/tests/quickdump quickdump
-#> RET: 0
+sudo kdb mount quickdump.eqd user/tests/quickdump quickdump
+# RET: 0
 
 # Set some keys and metakeys
 kdb set user/tests/quickdump/key value
@@ -62,38 +69,35 @@ kdb setmeta user/tests/quickdump/key meta "metavalue"
 kdb set user/tests/quickdump/otherkey "other value"
 #> Create a new key user/tests/quickdump/otherkey with string "other value"
 
-# Show resulting file
-xxd $(kdb file user/tests/quickdump/key)
-#> 00000000: 454b 4442 0000 0001 1800 0000 0000 0000  EKDB............
-#> 00000010: 7573 6572 2f74 6573 7473 2f71 7569 636b  user/tests/quick
-#> 00000020: 6475 6d70 2f6b 6579 7305 0000 0000 0000  dump/keys.......
-#> 00000030: 0076 616c 7565 6d04 0000 0000 0000 006d  .valuem........m
-#> 00000040: 6574 6109 0000 0000 0000 006d 6574 6176  eta........metav
-#> 00000050: 616c 7565 001d 0000 0000 0000 0075 7365  alue.........use
-#> 00000060: 722f 7465 7374 732f 7175 6963 6b64 756d  r/tests/quickdum
-#> 00000070: 702f 6f74 6865 726b 6579 730b 0000 0000  p/otherkeys.....
-#> 00000080: 0000 006f 7468 6572 2076 616c 7565 00    ...other value.
+# Show resulting file (not part of test, because xxd is not available everywhere)
+# xxd $(kdb file user/tests/quickdump/key)
+# 00000000: 454b 4442 0000 0002 0300 0000 0000 0000  EKDB............
+# 00000010: 6b65 7973 0500 0000 0000 0000 7661 6c75  keys........valu
+# 00000020: 656d 0400 0000 0000 0000 6d65 7461 0900  em........meta..
+# 00000030: 0000 0000 0000 6d65 7461 7661 6c75 6500  ......metavalue.
+# 00000040: 0800 0000 0000 0000 6f74 6865 726b 6579  ........otherkey
+# 00000050: 730b 0000 0000 0000 006f 7468 6572 2076  s........other v
+# 00000060: 616c 7565 00                             alue.
 
-# Change mounted file:
-#  - change user/tests/quickdump/key from 'value' to 'new value'
-#  - add copy metadata instruction to user/tests/quickdump/otherkey
-xxd -r << EOF > $(kdb file user/tests/quickdump/key)
-00000000: 454b 4442 0000 0001 1800 0000 0000 0000  EKDB............
-00000010: 7573 6572 2f74 6573 7473 2f71 7569 636b  user/tests/quick
-00000020: 6475 6d70 2f6b 6579 7309 0000 0000 0000  dump/keys.......
-00000030: 006e 6577 2076 616c 7565 6d04 0000 0000  .new valuem.....
-00000040: 0000 006d 6574 6109 0000 0000 0000 006d  ...meta........m
-00000050: 6574 6176 616c 7565 001d 0000 0000 0000  etavalue........
-00000060: 0075 7365 722f 7465 7374 732f 7175 6963  .user/tests/quic
-00000070: 6b64 756d 702f 6f74 6865 726b 6579 730b  kdump/otherkeys.
-00000080: 0000 0000 0000 006f 7468 6572 2076 616c  .......other val
-00000090: 7565 6318 0000 0000 0000 0075 7365 722f  uec........user/
-000000a0: 7465 7374 732f 7175 6963 6b64 756d 702f  tests/quickdump/
-000000b0: 6b65 7904 0000 0000 0000 006d 6574 6100  key........meta.
-EOF
+
+# Change mounted file (in a very stupid way to enable shell-recorder testing):
+cp $(kdb file user/tests/quickdump/key) a.tmp
+
+# 1. change key from 'value' to 'other value'
+(head -c 20 a.tmp; printf "%b\0\0\0\0\0\0\0other value" '\0013'; tail -c 68 a.tmp) > b.tmp
+
+rm a.tmp
+
+# 2. add copy metadata instruction to otherkey
+(head -c 106 b.tmp; printf "c%b\0\0\0\0\0\0\0key%b\0\0\0\0\0\0\0meta\0" '\0003' '\0004') > c.tmp
+
+rm b.tmp
+
+# test file name, so KDB isn't destroyed if mounting failed
+[ "x$(kdb file user/tests/quickdump/key)" != "x$(kdb file user)" ] && mv c.tmp $(kdb file user/tests/quickdump/key)
 
 kdb get user/tests/quickdump/key
-#> new value
+#> other value
 
 kdb getmeta user/tests/quickdump/key meta
 #> metavalue
@@ -106,7 +110,7 @@ kdb getmeta user/tests/quickdump/otherkey meta
 
 # Cleanup
 kdb rm -r user/tests/quickdump
-kdb umount user/tests/quickdump
+sudo kdb umount user/tests/quickdump
 ```
 
 ## Limitations
