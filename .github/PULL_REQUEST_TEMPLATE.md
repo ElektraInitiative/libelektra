@@ -30,9 +30,7 @@ not want the PR to be reviewed:
 
 @markus2330 please review my pull request
 
-
 ## Merging
 
 Please add the "ready to merge" label when the build server and you say
 that everything is ready to be merged.
-
