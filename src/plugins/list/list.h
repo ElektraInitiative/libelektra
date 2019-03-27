@@ -21,6 +21,8 @@ int elektraListSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
 int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig);
+int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey);
+int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * errorKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

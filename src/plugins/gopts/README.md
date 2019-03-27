@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = postgetstorage
+- infos/placements = procgetstorage
 - infos/status = recommended productive maintained nodep libc experimental
 - infos/metadata =
 - infos/description = Parses command-line options using elektra-opts

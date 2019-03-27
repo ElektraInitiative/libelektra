@@ -9,7 +9,9 @@
 
 #include "gopts.h"
 
+#include <kdbassert.h>
 #include <kdbconfig.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbopts.h>
 
@@ -33,7 +35,7 @@ static void cleanupEnvp (char ** envp);
 #endif
 
 
-int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gopts"))
 	{
@@ -47,16 +49,6 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ksDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	}
-
-	KeySet * globalKS = elektraPluginGetGlobalKeySet (handle);
-	if (globalKS != NULL)
-	{
-		Key * enabled = ksLookupByName (globalKS, "user/gopts/enabled", 0);
-		if (enabled == NULL || strcmp (keyString (enabled), "1") != 0)
-		{
-			return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-		}
 	}
 
 	char ** argv = NULL;

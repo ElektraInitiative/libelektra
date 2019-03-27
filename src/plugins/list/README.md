@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
-- infos/placements = presetstorage pregetstorage postgetstorage precommit postcommit prerollback postrollback
+- infos/placements = presetstorage pregetstorage postgetstorage precommit postcommit prerollback postrollback procgetstorage
 - infos/status = maintained unittest nodep libc configurable global
 - infos/description = delegates work to a list of plugins
 

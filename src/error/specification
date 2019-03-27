@@ -1339,3 +1339,9 @@ severity:error
 ingroup:plugin
 module:specload
 macro:SPECLOAD
+
+number:213
+description:the contract was malformed
+severity:error
+ingroup:kdb
+macro:MALFORMED_CONTRACT
