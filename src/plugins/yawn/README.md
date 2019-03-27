@@ -98,7 +98,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length)"-
 #> config.yaml:2:1: Syntax error on input “-”
 #>                  - Burst
-#>                  ^^
+#>                  ^
 #> config.yaml:3:19: Syntax error on input “end of map”
 #>                    Holon : Anamnesis
 #>                                     ^
