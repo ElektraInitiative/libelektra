@@ -72,6 +72,7 @@ Read about [compiling elektra](/doc/COMPILE.md).
 - [Merge](/doc/tutorials/merge.md)
 - [Namespaces](/doc/tutorials/namespaces.md)
 - [Plugins](/doc/tutorials/plugins.md)
+- [Java Plugins](/doc/tutorials/java-plugins.md)
 
 [List of all available Plugins](/src/plugins/) and get started by developing
 your own plugins @ref plugin.
