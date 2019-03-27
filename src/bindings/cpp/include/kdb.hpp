@@ -243,7 +243,7 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
  * @param parentKey The parentKey to use.
  *
  * @throw KDBException if there were problems with the contract or the database
- * @throw MalformedContractException if the contract was malformed
+ * @throw ContractException if the contract couldn't be ensured
  */
 int KDB::ensure (const KeySet & contract, Key & parentKey)
 {
@@ -255,7 +255,7 @@ int KDB::ensure (const KeySet & contract, Key & parentKey)
 	}
 	if (ret == 1)
 	{
-		throw MalformedContractException (parentKey);
+		throw ContractException (parentKey);
 	}
 	return ret;
 }

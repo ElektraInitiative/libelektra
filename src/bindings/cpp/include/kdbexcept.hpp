@@ -65,14 +65,14 @@ protected:
 	mutable std::string m_str;
 };
 
-class MalformedContractException : public KDBException
+class ContractException : public KDBException
 {
 public:
-	explicit MalformedContractException (Key key) : KDBException (key)
+	explicit ContractException (Key key) : KDBException (key)
 	{
 	}
 
-	~MalformedContractException () noexcept override = default;
+	~ContractException () noexcept override = default;
 
 	const char * what () const noexcept override
 	{

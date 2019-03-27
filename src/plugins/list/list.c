@@ -644,12 +644,55 @@ static Key * findPluginInConfig (KeySet * config, const char * pluginName)
 		if (strcmp (keyString (cur), pluginName) == 0)
 		{
 			// found plugin
-			return cur;
+			Key * result = keyDup (cur);
+			keyDel (configBase);
+			ksDel (array);
+			return result;
 		}
 	}
+
+	keyDel (configBase);
+	ksDel (array);
 	return NULL;
 }
 
+static void resetPlugins (Plugin * handle, Key * errorKey)
+{
+	Placements * placements = elektraPluginGetData (handle);
+	ksClear (placements->getKS[0]);
+	ksClear (placements->getKS[1]);
+	ksClear (placements->getKS[2]);
+	ksClear (placements->setKS[0]);
+	ksClear (placements->setKS[1]);
+	ksClear (placements->setKS[2]);
+	ksClear (placements->setKS[3]);
+	ksClear (placements->errKS[0]);
+	ksClear (placements->errKS[1]);
+	Key * cur;
+	ksRewind (placements->plugins);
+	while ((cur = ksNext (placements->plugins)) != NULL)
+	{
+		Plugin * slave;
+		slave = *(Plugin **) keyValue (cur);
+		elektraPluginClose (slave, errorKey);
+	}
+	ksClear (placements->plugins);
+}
+
+/**
+ * Adds a plugin in all the intended positions (given in its infos/placements key).
+ * If the plugin is already added, effectively equivalent to calling ksDel() on pluginConfig.
+ *
+ * @param handle       A handle of the list plugin
+ * @param pluginName   The plugin to add
+ * @param pluginConfig The config for the plugin, if it has to be mounted; the KeySet is consumed,
+ *                     don't call ksDel() on it afterwards.
+ * @param errorKey     Used for error reporting
+ *
+ * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS   if the plugin was added
+ * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin was added already
+ * @retval #ELEKTRA_PLUGIN_STATUS_ERROR     on NULL pointers and other errors
+ */
 int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey)
 {
 	if (handle == NULL || pluginName == NULL || pluginConfig == NULL)
@@ -661,8 +704,11 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	KeySet * config = elektraPluginGetConfig (handle);
 
 	// check if plugin already added
-	if (findPluginInConfig (config, pluginName) != NULL)
+	Key * pluginKey = findPluginInConfig (config, pluginName);
+	if (pluginKey != NULL)
 	{
+		keyDel (pluginKey);
+		ksDel (pluginConfig); // consume config
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 
@@ -674,12 +720,13 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	keySetString (pluginItem, pluginName);
 	keyDel (configBase);
 
-	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, config, errorKey);
+	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, pluginConfig, errorKey);
 
-	// Create key with plugin handle
-	Key * pluginHandle = keyDup (pluginItem);
-	keyAddName (pluginHandle, "handle");
-	keySetBinary (pluginHandle, &plugin, sizeof (plugin));
+	// Store key with plugin handle
+	Key * searchKey = keyNew ("/", KEY_END);
+	keyAddBaseName (searchKey, pluginName);
+	keySetBinary (searchKey, &plugin, sizeof (plugin));
+	ksAppendKey (placements->plugins, searchKey);
 
 	// Find plugin placements
 	char * placementList = getPluginPlacementList (plugin);
@@ -689,7 +736,6 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 
 	// Append keys to list plugin configuration
 	ksAppendKey (config, pluginItem);
-	ksAppendKey (config, pluginHandle);
 	ksAppendKey (config, pluginPlacements);
 
 	// Add get placements
@@ -701,6 +747,8 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 		keySetString (getPlacements, getPlacementsString);
 		ksAppendKey (config, getPlacements);
 	}
+	elektraFree (getPlacementsString);
+
 
 	// Add set placements
 	char * setPlacementsString = extractSetPlacements (placementList);
@@ -711,6 +759,7 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 		keySetString (setPlacements, setPlacementsString);
 		ksAppendKey (config, setPlacements);
 	}
+	elektraFree (setPlacementsString);
 
 	// Add error placements
 	char * errorPlacementsString = extractErrorPlacements (placementList);
@@ -721,17 +770,27 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 		keySetString (errorPlacements, errorPlacementsString);
 		ksAppendKey (config, errorPlacements);
 	}
-
+	elektraFree (errorPlacementsString);
+	elektraFree (placementList);
 	ksDel (array);
 
 	// reload configuration
-	if (elektraListClose (handle, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
+	resetPlugins (handle, errorKey);
 	return elektraListOpen (handle, errorKey);
 }
 
+/**
+ * Removes a plugin from all the intended positions (given in its infos/placements key).
+ * If the plugin isn't present, nothing happens.
+ *
+ * @param handle       A handle of the list plugin
+ * @param pluginName   The plugin to remove
+ * @param errorKey     Used for error reporting
+ *
+ * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS   if the plugin was added
+ * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin was added already
+ * @retval #ELEKTRA_PLUGIN_STATUS_ERROR     on NULL pointers and other errors
+ */
 int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * errorKey)
 {
 	if (handle == NULL || pluginName == NULL)
@@ -758,6 +817,7 @@ int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * er
 	if (pluginHandle != NULL)
 	{
 		elektraPluginClose (*((Plugin **) keyValue (pluginHandle)), errorKey);
+		keyDel (pluginHandle);
 	}
 
 	// Look for plugin via plugins
@@ -771,16 +831,15 @@ int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * er
 	if (searchKey != NULL)
 	{
 		elektraPluginClose (*((Plugin **) keyValue (searchKey)), errorKey);
+		keyDel (searchKey);
 	}
 
 	// Remove plugin data from config
 	ksDel (ksCut (config, pluginItem));
+	keyDel (pluginItem);
 
 	// reload configuration
-	if (elektraListClose (handle, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
+	resetPlugins (handle, errorKey);
 	return elektraListOpen (handle, errorKey);
 }
 
