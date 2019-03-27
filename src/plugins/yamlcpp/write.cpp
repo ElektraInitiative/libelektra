@@ -106,7 +106,10 @@ KeySet splitArrayParents (KeySet const & keys)
 				ckdb::keySetBaseName (*directParent, NULL);
 				if (isArrayParent (*directParent, keys)) arrayParents.append (directParent);
 			}
-			if (isArrayParent (*previous, keys)) arrayParents.append (previous);
+			else if (isArrayParent (*previous, keys))
+			{
+				arrayParents.append (previous);
+			}
 		}
 	}
 
