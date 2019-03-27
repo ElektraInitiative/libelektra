@@ -42,7 +42,6 @@ KeySet * contractYamlCpp (void)
 		      keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END), KS_END);
 }
-
 }
 
 // ====================
