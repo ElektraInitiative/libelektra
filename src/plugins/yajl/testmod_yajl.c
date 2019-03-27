@@ -753,6 +753,7 @@ int main (int argc, char ** argv)
 	// it easy to generate it..
 	test_readWrite ("yajl/empty_object.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/empty_array.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/top_level_value.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/rfc_object.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/rfc_array.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/testdata_array_mixed.json", ksNew (0, KS_END));
