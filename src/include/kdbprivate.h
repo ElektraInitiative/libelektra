@@ -323,9 +323,6 @@ struct _KDB
 
 	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
 
-	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
-	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/

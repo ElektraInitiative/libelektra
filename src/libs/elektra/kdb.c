@@ -1650,7 +1650,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * 	  If it was already mounted, it will me unmounted and mounted again.
  * 	  This can be used to ensure the plugin is mounted with a certain configuration.
  * - Keys below `system/plugins/<mountpoint>/<pluginname>/config` are extracted and used
- *   as the plugins config KeySet during mounting. If keys are given, an empty KeySet is used.
+ *   as the plugins config KeySet during mounting. `system/plugins/<mountpoint>/<pluginname>`
+ *   will be repleced by `user` in the keynames. If no keys are given, an empty KeySet is used.
  *
  * There are a few special values for `<mountpoint>`:
  * - `global` is used to indicate the plugin should (un)mounted as a global plugin.
@@ -1762,6 +1763,12 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		Key * pluginCutpoint = keyNew (keyName (condition), KEY_END);
 		keyAddBaseName (pluginCutpoint, "config");
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
+		ksAppendKey (pluginConfig, pluginCutpoint);
+		{
+			KeySet * newPluginConfig = elektraRenameKeys (pluginConfig, "user");
+			ksDel (pluginConfig);
+			pluginConfig = newPluginConfig;
+		}
 
 		if (strcmp (mountpoint, "global") == 0)
 		{
@@ -1769,7 +1776,6 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 			if (!ensureGlobalPluginState (handle, pluginName, pluginState, pluginConfig, parentKey))
 			{
 				keyDel (cutpoint);
-				keyDel (pluginCutpoint);
 				ksDel (pluginConfig);
 				ksDel (pluginsContract);
 				return 1;
@@ -1784,7 +1790,6 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 						    "non-global conditions at the moment.",
 						    keyName (condition), pluginStateString);
 				keyDel (cutpoint);
-				keyDel (pluginCutpoint);
 				ksDel (pluginConfig);
 				ksDel (pluginsContract);
 				return -1;
@@ -1798,13 +1803,10 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 			if (!ensurePluginState (handle, mountpoint, pluginName, pluginState, pluginConfig, parentKey))
 			{
 				keyDel (cutpoint);
-				keyDel (pluginCutpoint);
 				ksDel (pluginsContract);
 				return 1;
 			}
 		}
-
-		keyDel (pluginCutpoint);
 	}
 	keyDel (cutpoint);
 	ksDel (pluginsContract);
