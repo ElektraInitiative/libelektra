@@ -99,9 +99,79 @@ sudo kdb umount user/tests/storage
 
 . To make sure that your storage plugin works correctly, please just replace `yamlcpp` with the name of your plugin and verify that the test above still works.
 
+## Support Array And Non-Array Data Properly
+
+You already learned about the array syntax in the [array tutorial](arrays.md). Now it is time to check, if your storage plugin supports array and non-array keys properly. Let us look at an concrete example. In the key set that contains keys with the following names:
+
+```
+user/tests/storage/array/#0
+user/tests/storage/array/#1
+user/tests/storage/map/#0
+user/tests/storage/map/key
+user/tests/storage/map/#1
+```
+
+the keys:
+
+- `user/tests/storage/array/#0`, and
+- `user/tests/storage/array/#1`
+
+represent array elements, while
+
+- `user/tests/storage/map/#0`, and
+- `user/tests/storage/map/#1`
+
+do not, since the key set also contains the key **`user/tests/storage/map/key`**. The following example shows that the storage plugin [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) handles this situation properly:
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/storage yamlcpp
+
+# Create an array containing two elements
+kdb set user/tests/storage/array/#0 one
+kdb set user/tests/storage/array/#1 two
+
+# The plugin creates an array parent key
+# that stores the basename of the last element
+kdb getmeta user/tests/storage/array array
+#> #1
+
+# Add an array that contains a single element
+kdb set user/tests/storage/map/#0
+kdb getmeta user/tests/storage/map array
+#> #0
+
+# After we add `user/tests/storage/map/key`,
+# `user/tests/storage/map` is not an array any more.
+kdb set user/tests/storage/map/key three
+kdb getmeta user/tests/storage/map array
+# RET: 1
+
+# Adding a another key that uses array syntax below
+# `user/tests/storage/map` does not change this.
+kdb set user/tests/storage/map/#1 four
+kdb getmeta user/tests/storage/map array
+# RET: 1
+
+# If we remove the key `user/tests/storage/map/key`, then
+# `user/tests/storage/map` represents an array again.
+kdb rm user/tests/storage/map/key
+kdb ls user/tests/storage/map
+#> user/tests/storage/map
+#> user/tests/storage/map/#0
+#> user/tests/storage/map/#1
+kdb getmeta user/tests/storage/map array
+#> #1
+
+# Undo modifications to the key database
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
+
+.
+
 <!--
 TODO: Describe difference between keys that store null values (binary data) and empty values (string data)
-TODO: Describe how to store arrays properly (`array` metadata): Just add a link to `arrays.md`
 TODO: Add information on how plugins should store comment (meta)data
 TODO: Document that a plugin should keep the ordering of key-value pairs of a document intact, when writing data back to the configuration file
 TODO: Add section about relative keys (See also: https://issues.libelektra.org/51)
