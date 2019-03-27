@@ -104,8 +104,8 @@ kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/er
 #>                                     ^
 
 # Fix syntax errors
-printf -- 'Brutus: \n'         >  `kdb file user/tests/yawn`
-printf -- ' - Burst\n'          >> `kdb file user/tests/yawn`
+printf -- 'Brutus: \n'         > `kdb file user/tests/yawn`
+printf -- ' - Burst\n'        >> `kdb file user/tests/yawn`
 printf -- 'Holon : Anamnesis' >> `kdb file user/tests/yawn`
 kdb ls user/tests/yawn
 #> user/tests/yawn/Brutus
