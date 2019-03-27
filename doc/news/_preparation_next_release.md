@@ -61,7 +61,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAMBi
 
-- The plugin is now able detect multiple syntax errors in a file. _(René Schwaiger)_
+- [YAMBi](https://www.libelektra.org/plugins/yambi) is now able detect multiple syntax errors in a file. _(René Schwaiger)_
 - The error message now includes more information about the location of syntax errors. For example, for the incorrect YAML input `config.yaml`:
 
   ```yaml
