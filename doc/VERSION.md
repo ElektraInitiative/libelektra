@@ -1,6 +1,6 @@
 # Version
 
-The version of Elektra is handeled with the kdb.h macros
+The version of Elektra is handled with the kdb.h macros
 `KDB_VERSION` which is a string and `KDB_VERSION_MAJOR`,
 `KDB_VERSION_MINOR` and `KDB_VERSION_MICRO` which are
 numbers. They represent the public announced version
@@ -8,10 +8,12 @@ information.
 
 The same information can be retrieved at run-time using
 
-    system/elektra/version/constants/KDB_VERSION
-    system/elektra/version/constants/KDB_VERSION_MAJOR
-    system/elektra/version/constants/KDB_VERSION_MICRO
-    system/elektra/version/constants/KDB_VERSION_MINOR
+```
+system/elektra/version/constants/KDB_VERSION
+system/elektra/version/constants/KDB_VERSION_MAJOR
+system/elektra/version/constants/KDB_VERSION_MICRO
+system/elektra/version/constants/KDB_VERSION_MINOR
+```
 
 This is the API to programs using Elektra. Its interface
 is defined in [src/include/kdb.h](/src/include/kdb.h.in).

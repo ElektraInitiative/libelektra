@@ -120,4 +120,4 @@ compiled included the `#ifdef` the other (base variant called
 `myplugin`) without.
 
 Currently compilation variants are used in
-[the resolver plugin](https://libelektra.org/tree/master/src/plugins/resolver/resolver.c).
+[the resolver plugin](https://master.libelektra.org/src/plugins/resolver/resolver.c).

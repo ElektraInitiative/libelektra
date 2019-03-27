@@ -10,13 +10,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-Key * c;
+Key * copy;
 
 //! [Basic Usage]
 void h (Key * k)
 {
 	// receive key c
-	keyCopy (k, c);
+	keyCopy (k, copy);
 	// the caller will see the changed key k
 }
 //! [Basic Usage]
@@ -38,14 +38,14 @@ void j (Key * k)
 
 	// receive key c
 	memcpy (value, keyValue (k), size);
-	keyCopy (k, c);
+	keyCopy (k, copy);
 	if (bstring)
 		keySetString (k, value);
 	else
 		keySetBinary (k, value, size);
 	free (value);
 	// the caller will see the changed key k
-	// with the name and metadata from c (except
+	// with the name and metadata from copy (except
 	// metadata "binary", which stayed the same)
 }
 //! [Copy Without Value]
@@ -53,10 +53,10 @@ void j (Key * k)
 //! [Individual Copy]
 void i (Key * k)
 {
-	keySetName (k, keyName (c));
-	keySetString (k, keyString (c));
-	keyCopyAllMeta (k, c);
-	// k is not a copy of c even if everything was successfully,
+	keySetName (k, keyName (copy));
+	keySetString (k, keyString (copy));
+	keyCopyAllMeta (k, copy);
+	// k is not a copy of copy even if everything was successfully,
 	// because it still contains metadata from k
 }
 //! [Individual Copy]
@@ -65,7 +65,7 @@ int main (void)
 {
 	Key * k = keyNew ("user/hello", KEY_VALUE, "my content", KEY_END);
 
-	c = keyNew ("user/copy", KEY_VALUE, "copies content", KEY_END);
+	copy = keyNew ("user/copy", KEY_VALUE, "copies content", KEY_END);
 
 	h (k);
 	g (k);
@@ -73,5 +73,5 @@ int main (void)
 	i (k);
 
 	keyDel (k);
-	keyDel (c);
+	keyDel (copy);
 }

@@ -12,11 +12,11 @@
 
 #include <kdbplugin.h>
 
+extern "C" {
+
 using ckdb::Key;
 using ckdb::KeySet;
 using ckdb::Plugin;
-
-extern "C" {
 
 int elektraYanlrGet (Plugin *, KeySet *, Key *);
 

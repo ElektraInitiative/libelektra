@@ -41,18 +41,24 @@ reading in one of these links above.
 
 A C or C++ source file that wants to use Elektra should include:
 
-    #include <kdb.h>
+```c
+#include <kdb.h>
+```
 
 To link an executable with the Elektra library, one way is to
 use the `pkg-config` tool:
 
-    $ gcc -o application `pkg-config --cflags --libs elektra` application.c
+```sh
+gcc -o application `pkg-config --cflags --libs elektra` application.c
+```
 
 Another way is to use CMake:
 
-    find_package(Elektra REQUIRED)
-    include_directories (${ELEKTRA_INCLUDE_DIR})
-    target_link_libraries (application ${ELEKTRA_LIBRARIES})
+```cmake
+find_package(Elektra REQUIRED)
+include_directories (${ELEKTRA_INCLUDE_DIR})
+target_link_libraries (application ${ELEKTRA_LIBRARIES})
+```
 
 Read about [compiling elektra](/doc/COMPILE.md).
 

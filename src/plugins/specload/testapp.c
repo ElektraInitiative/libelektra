@@ -24,15 +24,15 @@
 
 static int outputKeySet (KeySet * ks)
 {
-	Key * errorKey = keyNew (0, KEY_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
-	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
+	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
-	int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);
+	int result = elektraInvoke2Args (specload, "sendspec", ks, parentKey);
 
-	elektraInvokeClose (specload, errorKey);
-	keyDel (errorKey);
+	elektraInvokeClose (specload, parentKey);
+	keyDel (parentKey);
 	ksDel (specloadConf);
 
 	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE;

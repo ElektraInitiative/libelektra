@@ -19,14 +19,18 @@ implemented. The python plugin is especially useful to write filter and logging 
 The python plugin requires the configuration parameter **script** holding the file path to a
 python script. The mount command would look like
 
-    kdb mount file.ini /python python script=/path/to/filter_script.py
+```sh
+kdb mount file.ini /python python script=/path/to/filter_script.py
+```
 
 if the **ini** plugin should be used for storage and the python plugin only serves to invoke the
 filter script.
 
 For a Python script that serves as INI storage plugin itself, one uses
 
-    kdb mount file.json /python python script=python_configparser.py
+```sh
+kdb mount file.json /python python script=python_configparser.py
+```
 
 ### Plugin Configuration
 
@@ -58,7 +62,9 @@ implement all functions therefore.
 
 Access to **kdb** can be retrieved using the Python import
 
-    import kdb
+```py
+import kdb
+```
 
 ## Example
 

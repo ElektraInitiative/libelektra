@@ -27,16 +27,14 @@ InfoCommand::InfoCommand ()
 int InfoCommand::execute (Cmdline const & cl)
 {
 	std::string subkey;
-	if (cl.arguments.size () == 1)
+	if (cl.arguments.size () < 1 || cl.arguments.size () > 2)
 	{
+		throw invalid_argument ("Need 1 or 2 argument(s)");
 	}
-	else if (cl.arguments.size () == 2)
+
+	if (cl.arguments.size () == 2)
 	{
 		subkey = cl.arguments[1];
-	}
-	else
-	{
-		throw invalid_argument ("Need at 1 or 2 argument(s)");
 	}
 	std::string name = cl.arguments[0];
 

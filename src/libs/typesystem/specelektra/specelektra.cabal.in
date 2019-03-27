@@ -6,7 +6,7 @@ description:         A type system for libelektra based on regular expressions. 
                      the regexes are compatible with each other, e.g. if a Key a falls back to a
                      Key b, this is only possible if the regex representing Key b is contained or
                      equal to the regex representing the content of Key a.
-homepage:            https://git.libelektra.org/tree/master/src/plugins/typechecker
+homepage:            https://master.libelektra.org/src/plugins/typechecker
 license:             BSD3
 author:              Armin Wurzinger
 maintainer:          e1528532@libelektra.org

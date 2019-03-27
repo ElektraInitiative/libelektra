@@ -61,40 +61,56 @@ Alternatively, (with the option announce=once) only a single message is send:
 
 The recommended way is to globally mount the plugin:
 
-    kdb global-mount dbus
+```sh
+kdb global-mount dbus
+```
 
 Alternatively one can mount the plugin additionally to a storage plugin, e.g.:
 
-    kdb mount file.dump / dump dbus
+```sh
+kdb mount file.dump / dump dbus
+```
 
 For openicc one would use (mounts with announce=once):
 
-    kdb mount-openicc
+```sh
+kdb mount-openicc
+```
 
 ### Shell
 
 Then we can receive the notification events using:
 
-    dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```sh
+dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```
 
 Or via the supplied test program:
 
-    kdb testmod_dbus receive_session
+```sh
+kdb testmod_dbus receive_session
+```
 
 We can trigger a message with:
 
-    kdb set user/dbus/x b
+```sh
+kdb set user/dbus/x b
+```
 
 Note that changes in `user` fire on the dbus `session`,
 and changes in namespace `system` in the dbus `system` bus.
 To receive `system` changes we will use:
 
-    kdb testmod_dbus receive_system
-    dbus-monitor --system type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```sh
+kdb testmod_dbus receive_system
+dbus-monitor --system type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```
 
 And then fire it with:
 
-    kdb set system/dbus/y a
+```sh
+kdb set system/dbus/y a
+```
 
 ### C
 
@@ -110,21 +126,27 @@ Here a small example for QDBusConnection:
 
 Place this in your Qt class header:
 
-    public slots:
-      void configChanged( QString msg );
+```cpp
+public slots:
+  void configChanged( QString msg );
+```
 
 Put this in your Qt class, e.g. the constructor:
 
-    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
-                                           this, SLOT( configChanged( QString ) )) )
-        fprintf(stderr, "=================== Done connect\n" );
+```cpp
+if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                       this, SLOT( configChanged( QString ) )) )
+    fprintf(stderr, "=================== Done connect\n" );
+```
 
 Here comes the org.libelektra signals:
 
-    void SynnefoApp::configChanged( QString msg )
-    {
-      fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
-    };
+```cpp
+void SynnefoApp::configChanged( QString msg )
+{
+  fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
+};
+```
 
 ### Python
 

@@ -8,7 +8,7 @@
  */
 
 
-#include "type.hpp"
+#include "cpptype.hpp"
 
 #include "type_checker.hpp"
 
@@ -33,7 +33,7 @@ static void setError (Key * key, Key * errorKey)
 
 extern "C" {
 
-int elektraTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey)
+int elektraCppTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey)
 {
 	kdb::KeySet config;
 	elektra::TypeChecker tc (config);
@@ -50,38 +50,38 @@ int elektraTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey)
 	return ret;
 }
 
-int elektraTypeOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
+int elektraCppTypeOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	/* plugin initialization logic */
 	return TC::open (handle, errorKey);
 }
 
-int elektraTypeClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
+int elektraCppTypeClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	/* free all plugin resources and shut it down */
 	return TC::close (handle, errorKey);
 }
 
-int elektraTypeGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key *)
+int elektraCppTypeGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key *)
 {
 	/* configuration only */
 	KeySet * n;
 	ksAppend (returned,
-		  n = ksNew (30, keyNew ("system/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
-			     keyNew ("system/elektra/modules/type/exports", KEY_END),
-			     keyNew ("system/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
-			     keyNew ("system/elektra/modules/type/exports/close", KEY_FUNC, elektraTypeClose, KEY_END),
-			     keyNew ("system/elektra/modules/type/exports/get", KEY_FUNC, elektraTypeGet, KEY_END),
-			     keyNew ("system/elektra/modules/type/exports/set", KEY_FUNC, elektraTypeSet, KEY_END),
-			     keyNew ("system/elektra/modules/type/exports/validateKey", KEY_FUNC, elektraTypeValidateKey, KEY_END),
-#include "readme_type.c"
-			     keyNew ("system/elektra/modules/type/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+		  n = ksNew (30, keyNew ("system/elektra/modules/cpptype", KEY_VALUE, "cpptype plugin waits for your orders", KEY_END),
+			     keyNew ("system/elektra/modules/cpptype/exports", KEY_END),
+			     keyNew ("system/elektra/modules/cpptype/exports/open", KEY_FUNC, elektraCppTypeOpen, KEY_END),
+			     keyNew ("system/elektra/modules/cpptype/exports/close", KEY_FUNC, elektraCppTypeClose, KEY_END),
+			     keyNew ("system/elektra/modules/cpptype/exports/get", KEY_FUNC, elektraCppTypeGet, KEY_END),
+			     keyNew ("system/elektra/modules/cpptype/exports/set", KEY_FUNC, elektraCppTypeSet, KEY_END),
+			     keyNew ("system/elektra/modules/cpptype/exports/validateKey", KEY_FUNC, elektraCppTypeValidateKey, KEY_END),
+#include ELEKTRA_README
+			     keyNew ("system/elektra/modules/cpptype/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 
 	return 1; /* success */
 }
 
-int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraCppTypeSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	int ret = 1;
 
@@ -99,11 +99,11 @@ int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-	return elektraPluginExport("type",
-		ELEKTRA_PLUGIN_OPEN,	&elektraTypeOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraTypeClose,
-		ELEKTRA_PLUGIN_GET,	&elektraTypeGet,
-		ELEKTRA_PLUGIN_SET,	&elektraTypeSet,
+	return elektraPluginExport("cpptype",
+		ELEKTRA_PLUGIN_OPEN,	&elektraCppTypeOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraCppTypeClose,
+		ELEKTRA_PLUGIN_GET,	&elektraCppTypeGet,
+		ELEKTRA_PLUGIN_SET,	&elektraCppTypeSet,
 		ELEKTRA_PLUGIN_END);
 }
 

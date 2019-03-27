@@ -6,14 +6,18 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_KDB_IO_HPP
-#define ELEKTRA_KDB_IO_HPP
+#ifndef ELEKTRA_COLOREDKDB_IO_HPP
+#define ELEKTRA_COLOREDKDB_IO_HPP
 
 /*
  * @brief See examples/cpp_example_userio.cpp for how to use
  * USER_DEFINED_IO
  */
 #define USER_DEFINED_IO
+
+/* Do not include `keyio.hpp` and `keysetio.hpp` */
+#ifndef ELEKTRA_KDB_IO_HPP
+#define ELEKTRA_KDB_IO_HPP
 
 #include "ansicolors.hpp"
 
@@ -112,4 +116,5 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 }
 } // namespace kdb
 
+#endif
 #endif

@@ -3,7 +3,7 @@
 _an API and web user interface to remotely manage Elektra instances_
 
 The configuration view of elektra-web is similar to the tree view of the
-[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
+[qt-gui](https://master.libelektra.org/src/tools/qt-gui), but with
 dynamic fields rendered via key metadata.
 
 ## Dependencies
@@ -67,7 +67,7 @@ If you want to host elektra-web with the client and elektrad on the same
 instance, after starting elektrad via `kdb run-elektrad`, you can run start the
 client as follows:
 
-```
+```sh
 INSTANCE="http://localhost:33333" kdb run-web
 ```
 
@@ -75,7 +75,7 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 
 For example (`advanced` visibility, `user` is default):
 
-```
+```sh
 INSTANCE="advanced@http://localhost:33333" kdb run-web
 ```
 
@@ -90,7 +90,7 @@ when starting `elektrad` and the `client`.
 
 For example:
 
-```
+```sh
 KDB="/usr/local/custom/bin/kdb" kdb run-elektrad
 KDB="/usr/local/custom/bin/kdb" kdb run-web
 ```
@@ -171,19 +171,19 @@ updated by running `npm update`.
 
 Run the following command in the `scripts/docker/web/` directory, replacing `1.5.0` with the latest version:
 
-```
+```sh
 docker build -t elektra/web:1.5.0 -t elektra/web:latest .
 ```
 
 Test the image:
 
-```
+```sh
 docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web:1.5.0
 ```
 
 Publish it to the docker registry:
 
-```
+```sh
 docker push elektra/web:1.5.0
 ```
 

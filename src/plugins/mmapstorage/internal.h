@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
+#define ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
+
 #define SIZEOF_KEY (sizeof (Key))
 #define SIZEOF_KEY_PTR (sizeof (Key *))
 #define SIZEOF_KEYSET (sizeof (KeySet))
@@ -106,3 +109,5 @@ struct _mmapFooter
 	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
 	// clang-format on
 };
+
+#endif

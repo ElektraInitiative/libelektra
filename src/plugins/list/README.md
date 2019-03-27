@@ -50,19 +50,21 @@ Plugin specific config.
 
 ## Example
 
-    placements/get = "postgetstorage"
-    config/cut = "will/be/overridden/for/plugin/#0"
-    plugins/#0 = "rename"
-    plugins/#0/placements   plugin placements
-    plugins/#0/placements/get = "postgetstorage"
-    plugins/#0/config   pluginconfig goes here
-    plugins/#0/config/cut = "will/be/stripped"
-    plugins/#1 = "keytometa"
-    plugins/#1/placements
-    plugins/#1/placements/get = "postgetstorage"
-    plugins/#2 = "enum"
-    plugins/#2/placements
-    plugins/#2/placements/get = "postgetstorage"
+```
+placements/get = "postgetstorage"
+config/cut = "will/be/overridden/for/plugin/#0"
+plugins/#0 = "rename"
+plugins/#0/placements   plugin placements
+plugins/#0/placements/get = "postgetstorage"
+plugins/#0/config   pluginconfig goes here
+plugins/#0/config/cut = "will/be/stripped"
+plugins/#1 = "keytometa"
+plugins/#1/placements
+plugins/#1/placements/get = "postgetstorage"
+plugins/#2 = "enum"
+plugins/#2/placements
+plugins/#2/placements/get = "postgetstorage"
+```
 
 would have the callstack:
 
