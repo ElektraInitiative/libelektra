@@ -115,20 +115,20 @@ All "fatal" errors will be converted to "errors" as the distinguishment is not r
 
 Unused marked errors will be removed from the specification.
 
-The remaining ~130 errors will be categorizes into logical groups with subgroups.
-Each group and subgroup will receive a range of numbers such as in the HTTP protocol.
+Errors will be categorizes into logical groups with subgroups.
+Each error will be made up of 5 characters, where the first 2 character indicate the highest level
+and character 3 to 5 will be used for subgrouping.
 
-- Permanent errors (1-500)
-  - Resource (1-50)
-  - Parsing (51 - 100)
-  - Installation (101 - 150)
-  - Logical (151 - 200)
-- Temporary (501 - 1000)
-  - Conflict (501 - 600)
-  - Timeout (601 - 701)
-- Validation (1001 - 1500)
-  - Syntactic (1001 - 1100)
-  - Semantic (1101 - 1200)
+- Permanent errors (01000)
+  - Resource (01100)
+  - Parsing (01200)
+  - Installation (01300)
+  - Logical (01400)
+- Conflict (02000)
+- Timeout (03000)
+- Validation (04000)
+  - Syntactic (04100)
+  - Semantic (04200)
 
 ## Rationale
 
@@ -140,23 +140,46 @@ A new metakey `error/solution` will be implemented and attached to the parentkey
 information at all.
 
 The grouping of errors will allow developers to filter for specific as well as more general errors to correctly
-react to them programmatically. Even though there are currently just 8 categories they will reserved up to 1500 error numbers.
-This will permit additional subgrouping of errors in case it might be needed in the future. Imagine the case where
+react to them programmatically.
+The new concept will permit additional subgrouping of errors in case it might be needed in the future. Imagine the case where
 "Resource" errors is too general because developers saw a need for splitting the errors in "permission" and "existence" errors.
-They can simply take the current 1-50 numbers and make "permission" range from 1-25 and "existence" to 26-50. This will also allow
+They can simply take the current subclass 01100 and make "permission" be 01110 and "existence" be 01120. This will also allow
 backwards compatibility by applications just checking for resource errors in general.
 Splitting/merging/rearranging any category should only be done by a decision (such as this file here) because elektra developers
 should not be able to generate a new category as they wish because it would lead to the same proliferation of errors as we have now.
 
-Warnings will be removed from the specification file. Any current warning will use the function
+The classification as of now is done with the following concept in mind:
 
-```
-ELEKTRA_ADD_WARNING(Key * parentKey, const char * message)
-```
+- Permanent errors
+    Generally errors which require changes by a user which are not getting fixed by eg. retrying.
+- Resource
+    The class of errors which require certain permissions (opening a file) or where some directory/file is missing.
+    One possible reaction to these kind of errors is to try a different directory/file or create a missing resource.
+- Parsing
+    Errors while parsing files such as ini/yml/etc.
+    Reactions could be to trim line endings/ try different encodings or even try another input at all.
+- Installation
+    Errors in the installation process such as missing plugins or more generic errors in beneath
+    the plugins/core (see #144,145,151 for example) which cannot be fixed programmatically but needs
+    further investigation. 
+- Logical
+    These errors indicate a bug in beneath elektra and should never have happened.
+- Conflict
+    Conflicts indicate temporary problems but also could be harmful such as overwriting a file after a merge conflict.
+- Timeout
+    These errors indicate temporary failures such as connection timeouts or not enough space available. Retrying at a later point in time (or
+    immediately) will most likely fix the problem. 
+- Validation
+    These errors usually indicate wrong values for certain keys such as an invalid port number or wrong types. Such errors require user action and
+    retry with a different value.
+- Syntactic
+    Syntactic failures indicate a wrong notation or missing characters for example. They require a certain form which was given by the user.
+- Semantic
+    Semantic errors are failures which indicate a different expectation of the program than from the user concerning the meaning of a value.
+    One example would be a wrong type or out-of-range errors.
 
-Note that no error number is present anymore as it is not needed. The macro
-**LINE** and **FILE** will still be present such as it is now for better debugging
-purposes.
+These categories are chosen because they can help developers to react programmatically and cover the majority of use cases to our present knowledge.
+If there is ever the need for another reaction based category, it can be extended very easily.
 
 The API for the errors will be extended as following:
 
@@ -164,20 +187,26 @@ The API for the errors will be extended as following:
 // Already present
 ELEKTRA_SET_ERROR (nr, parentKey, message);
 ELEKTRA_SET_ERRORF(nr, parentKey, message, ...);
+ELEKTRA_ADD_WARNING(nr, parentKey, message);
+ELEKTRA_ADD_WARNINGF(nr, parentKey, message, ...)
 
 // Extended API
 ELEKTRA_SET_ERROR_WITH_SOLUTION(nr, parentKey, solution, message)
 ELEKTRA_SET_ERROR_WITH_SOLUTIONF(nr, parentKey, solution, message, ...)
+ELEKTRA_ADD_WARNING_WITH_SOLUTION(nr, parentKey, solution, message);
+ELEKTRA_ADD_WARNING_WITH_SOLUTIONF(nr, parentKey, solution, message, ...)
 ```
-
 The vararg will affect the message and not the solution such as before.
+
+The macro **LINE** and **FILE** will still be present such as it is now for better debugging
+purposes.
 
 ## Implications
 
 The specification file will stay but should be untouched in most of the cases in the future. Also the C++ code generation
-file which uses the specification will stay as it is easier to change categories. The elektra warning part will be removed though.
+file which uses the specification will stay as it is easier to change categories.
 
-Current errors will be migrated. The migration of each and every error can be seen here: [google docs](https://docs.google.com/spreadsheets/d/1-vXNZ7pN9wlMFByIMLbFt_HieyJpop0UyksbgAvmGK4/edit?usp=sharing).
+Current errors will be migrated.
 
 ## Related decisions
 
