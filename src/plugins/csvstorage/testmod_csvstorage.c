@@ -199,6 +199,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	testread ("csvstorage/valid.csv");
+	testread ("csvstorage/validDos.csv");
 	testreadfixcolcount ("csvstorage/valid.csv");
 	testreadwriteinvalid ("csvstorage/invalid_columns.csv");
 	testwriteinvalidheader ("csvstorage/invalid_columns_header2.csv");

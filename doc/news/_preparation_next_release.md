@@ -59,6 +59,8 @@ please take a look at the [README](https://www.libelektra.org/plugins/type).
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+- Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
+
 ### YAMBi
 
 - [YAMBi](https://www.libelektra.org/plugins/yambi) is now able detect multiple syntax errors in a file. _(René Schwaiger)_
