@@ -94,7 +94,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAwn
 
-- The plugin is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
+- [YAwn](https://www.libelektra.org/plugins/yawn) is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
 - We also improved the error messages of YAwn, which now also contain the input that caused a syntax error. For example, for the input
 
   ```yaml
