@@ -330,14 +330,6 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1", KEY_VALUE, "gopts", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1/placements", KEY_VALUE, "gopts", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#1/placements/get", KEY_VALUE, "procgetstorage", KEY_END),
-#else
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "gopts", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "gopts", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "procgetstorage", KEY_END),
 #endif
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
