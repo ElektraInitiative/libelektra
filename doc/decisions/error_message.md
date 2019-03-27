@@ -69,8 +69,8 @@ Various projects and standards:
 - [Windows Registry](https://docs.microsoft.com/en-us/windows/desktop/sysinfo/registry):
   The registry does not use any specific error concept but takes the standard [Win32 Error Codes](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/18d8fbe8-a967-4f1c-ae50-99ca8e491d2d). These are neither hierarchical nor have any special ordering. Basically it is the same as elektra has now except for no duplicated
   errors.
-- Mac OS X plist:
-  Just like Windows, plist uses standard Mac OS X errors which is a [huge catalog](http://krypted.com/lists/comprehensive-list-of-mac-os-x-error-codes/) of unordered
+- macOS X plist:
+  Just like Windows, plist uses standard macOS X errors which is a [huge catalog](http://krypted.com/lists/comprehensive-list-of-mac-os-x-error-codes/) of unordered
   return codes as integers.
 - [SNMP Standard](http://www.snmp.com/protocol/):
   Being a standard network protocol, error codes are very specific to the domain itself. A list can be found [here](https://docs.microsoft.com/en-us/windows/desktop/snmp/snmp-error-codes) and would not meet the needs of elektra at all.
