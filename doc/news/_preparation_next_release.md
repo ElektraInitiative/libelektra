@@ -254,6 +254,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
+- Added a basic tutorial on [How-To: Write a Java Plugin](../tutorials/java-plugins.md) _(Miruna Orsa)_
 - <<TODO>>
 
 ## Tests
