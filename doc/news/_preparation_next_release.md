@@ -338,7 +338,7 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
+- Added github build status badges to website @hesirui
 - <<TODO>>
 - <<TODO>>
 
