@@ -1601,6 +1601,7 @@ static int ensureGlobalPluginState (KDB * handle, const char * pluginName, enum 
 	}
 	default:
 		ELEKTRA_ASSERT (0, "missing switch case");
+		return 0;
 	}
 }
 
@@ -1634,6 +1635,7 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
 			  // mountpoint, pluginName, pluginConfig, errorKey);
 	default:
 		ELEKTRA_ASSERT (0, "missing switch case");
+		return 0;
 	}
 }
 
