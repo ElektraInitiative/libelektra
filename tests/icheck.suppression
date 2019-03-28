@@ -4,5 +4,5 @@
 // the following entry: elektraArrayDecName
 elektraIsReferenceRedundant
 elektraResolveReference
-kdbEnsure
 elektraFindGlobalPlugin
+kdbEnsure
