@@ -97,6 +97,7 @@ static void test_keyGetLevelsBelow (void)
 	succeed_if (keyGetLevelsBelow (grandparent, oneLvl) == 2, "getLevelsBelow returned wrong value");
 	succeed_if (keyGetLevelsBelow (grandparent, threeLvl) == 4, "getLevelsBelow returned wrong value");
 	succeed_if (keyGetLevelsBelow (threeLvl, grandparent) == 0, "getLevelsBelow returned wrong value");
+	keyDel (grandparent);
 	keyDel (parent);
 	keyDel (user);
 	keyDel (oneLvl);
