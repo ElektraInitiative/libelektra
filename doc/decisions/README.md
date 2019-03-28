@@ -37,6 +37,7 @@ section here.
 - [Array](array.md)
 - [Vendor Spec](vendor_spec.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
+- [Error concept](error_message.md)
 
 ## Drafts
 

@@ -254,7 +254,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
-- <<TODO>>
+- Added a new error concept to be implemented soon. _(Michael Zronek)_
 
 ## Tests
 
