@@ -223,10 +223,10 @@ public class KeySet implements java.lang.Iterable<Key> {
 	}
 
 	/**
-	 * Helper function that creates new key set with help of a cut point
+	 * Helper function that modifies this, cutting-out the given keys and returning them as a new KeySet
 	 *
 	 * @param cutpoint Key that is used as cutting point
-	 * @return New KeySet containing all keys until the cutting point, this if null was provided
+	 * @return New KeySet containing the cutted-out keys, this if null was provided
 	 */
 	public KeySet cut(final Key cutpoint) {
 		if (cutpoint == null)

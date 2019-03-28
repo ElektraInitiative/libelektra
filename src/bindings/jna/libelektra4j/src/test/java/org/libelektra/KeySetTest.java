@@ -158,10 +158,8 @@ public class KeySetTest {
 	public void test_keySetCut_shouldPass() {
 		final KeySet ks = KeySet.create(6, key, key2, key3, key4, key5, key6);
 		final KeySet ks2 = ks.cut(key4);
-		assertEquals(3, ks2.length());
+		assertEquals(5, ks.length());
 		assertNotNull(ks2.lookup(key4));
-		assertNotNull(ks2.lookup(key5));
-		assertNotNull(ks2.lookup(key6));
 	}
 
 	@Test
