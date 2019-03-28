@@ -16,13 +16,19 @@ This plugin is very simple in what it does. It uses system specific methods of a
 
 ## Usage
 
-TODO
+The preferred way of using this plugin is via `kdbEnsure`:
 
-## Examples
+```c
+KDB * kdb = kdbOpen (parentKey);
 
-TODO
+KeySet * contract = ksNew (1, keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
+int rc = kdbEnsure (kdb, contract, parentKey);
+if (rc != 0)
+{
+	// error handling
+}
 
-## Limitations
-
-- `infos/placements` should actually be between getstorage and postgetstorage. There should be a position procgetstorage that should be used
-  by all plugins that only write to the `proc` namespace.
+// gopts now mounted
+KeySet * ks;
+kdbGet (kdb, ks, parentKey);
+```

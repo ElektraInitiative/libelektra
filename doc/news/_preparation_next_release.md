@@ -51,7 +51,25 @@ the `type` plugin will ignore the key. We now also support converting enum value
 To switch from `boolean` to the new `type`, you don't have to do anything, if you used the default config. If you used a custom configuration
 please take a look at the [README](https://www.libelektra.org/plugins/type).
 
-### <<HIGHLIGHT2>>
+### kdbEnsure
+
+`kdbEnsure` is a new function in `elektra-kdb`. It can be used to ensure that a KDB instance meets certain conditions specified in a
+contract. In principle this a very powerful tool that may be used for a lot of things. For now it only supports a few conditions concerning
+plugins:
+
+- You can specify that a plugin should be mounted globally. This is can for example be used to enable the new [gopts](#gopts) plugin.
+- Conversely you can also define that a plugin should not be mounted globally, e.g. to disable the `spec` plugin, which is enabled by default.
+- Additionally you may want to enforce that a global plugin uses a certain configuration. For this case you can specify that the plugin
+  should be remounted, i.e. unmounted and immediately mounted again.
+- In future non-global plugins will support the same features. But because of the different architecture involved, for now only unmounting
+  non-global plugins is supported.
+
+All changes made by `kdbEnsure` are purely temporary. They will only apply to the KDB handle passed to the function.
+
+IMPORTANT: `kdbEnsure` only works, if the `list` plugin is mounted in all appropriate global positions.
+
+Note: `kdbEnsure` right now ignores the `infos/recommends` and `infos/needs` metadata of plugins, so you have to explicitly take care of
+dependencies. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 

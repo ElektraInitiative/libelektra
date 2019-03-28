@@ -846,6 +846,20 @@ int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * er
 	return elektraListOpen (handle, errorKey);
 }
 
+/**
+ * Find the handle of plugin.
+ *
+ * If elektraListGet(), elektraListSet() and elektraListError()
+ * haven't been called yet, only plugins added via elektraListMountPlugin()
+ * will be found. Other plugins aren't opened (and therefore don't have a handle)
+ * before get/set/error is called.
+ *
+ * @param handle     A handle of the list plugin
+ * @param pluginName The name of the plugin to look for
+ *
+ * @return the handle for the given plugin, or NULL if not found
+ * NULL is also returned if @p handle or @p pluginName are NULL
+ */
 Plugin * elektraListFindPlugin (Plugin * handle, const char * pluginName)
 {
 	if (handle == NULL || pluginName == NULL)

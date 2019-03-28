@@ -48,6 +48,23 @@ A list of set-placements for the plugin. Same for "get" and "error"
 
 Plugin specific config.
 
+## Exported functions
+
+The plugin exports a few useful functions:
+
+```c
+int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey)
+int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * errorKey)
+Plugin * elektraListFindPlugin (Plugin * handle, const char * pluginName)
+```
+
+`elektraListMountPlugin` can be used to add a new plugin to the config. The placement will be query from the plugin it self (from its
+`infos/placements` metadata). If the plugin is added already nothing happens, otherwise `pluginConfig` is used to open the plugin.
+
+`elektraListUnmountPlugin` is the opposite, it is used to remove a plugin from the config.
+
+Finally, `elektraListFindPlugin` looks for a plugin in the config, and if found returns its handle.
+
 ## Example
 
 ```
