@@ -17,7 +17,7 @@
 #include <kdbnotification.h>
 #include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
-#include <kdbprivate.h> // for elektraGetPluginFunction, kdb->globalPlugins and plugin->config
+#include <kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
 
 #include <stdio.h>
 
@@ -87,7 +87,7 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 
-	Plugin * notificationPlugin = elektraFindGlobalPlugin (kdb, "internalnotification");
+	Plugin * notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
 	// Allow open only once
 	if (notificationPlugin)
 	{
@@ -116,7 +116,7 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 
-	notificationPlugin = elektraFindGlobalPlugin (kdb, "internalnotification");
+	notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
 	if (notificationPlugin == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("kdbEnsure failed");
@@ -157,7 +157,7 @@ int elektraNotificationClose (KDB * kdb)
 		return 0;
 	}
 
-	Plugin * notificationPlugin = elektraFindGlobalPlugin (kdb, "internalnotification");
+	Plugin * notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
 	// Make sure open was called
 	if (notificationPlugin == NULL)
 	{
@@ -195,7 +195,7 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 {
 	ELEKTRA_NOT_NULL (kdb);
 
-	Plugin * notificationPlugin = elektraFindGlobalPlugin (kdb, "internalnotification");
+	Plugin * notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
 	if (notificationPlugin)
 	{
 		return notificationPlugin;

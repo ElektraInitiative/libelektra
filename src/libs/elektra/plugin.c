@@ -442,7 +442,6 @@ Plugin * elektraPluginVersion (void)
 	return returned;
 }
 
-
 /**
  * Searches the global plugins for a given plugin name.
  *
@@ -455,7 +454,7 @@ Plugin * elektraPluginVersion (void)
  *
  * @return the plugin handle, if found or NULL otherwise
  */
-Plugin * elektraFindGlobalPlugin (KDB * handle, const char * pluginName)
+Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName)
 {
 	Plugin * listPlugin = handle->globalPlugins[PREROLLBACK][MAXONCE]; // take any position
 	if (listPlugin != NULL && strcmp (listPlugin->name, "list") == 0)

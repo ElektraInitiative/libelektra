@@ -102,8 +102,6 @@ void * elektraPluginGetData (Plugin * plugin);
 
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
-Plugin * elektraFindGlobalPlugin (KDB * handle, const char * pluginName);
-
 #define PLUGINVERSION "1"
 
 

@@ -516,6 +516,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
+Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
