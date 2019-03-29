@@ -200,7 +200,7 @@ you up to date with the multi-language support provided by Elektra.
 - JNA is now not experimental anymore. _(Markus Raab)_
 - gsettings is not default anymore. _(Markus Raab)_
 
-- <<TODO>>
+- Add fix for creating the Key and KeySet objects in the HelloElektra.java file _(Dmytro Moiseiuk)_
 - <<TODO>>
 - <<TODO>>
 
