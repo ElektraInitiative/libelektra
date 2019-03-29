@@ -432,13 +432,13 @@ void Lexer::scanValue ()
 	}
 	size_t offset = simpleKey.second - emitted.size ();
 	auto key = move (simpleKey.first);
-	auto start = key->getLocation ().begin;
+	auto mapStartLocation = key->getLocation ();
 	tokens.insert (tokens.begin () + offset, move (key));
 	simpleKey.first = nullptr; // Remove key candidate
-	if (addIndentation (start.column, Level::Type::MAP))
+	if (addIndentation (mapStartLocation.begin.column, Level::Type::MAP))
 	{
-		location.begin = start;
-		tokens.insert (tokens.begin () + offset, createToken (Token::MAP_START, location));
+		mapStartLocation.end = mapStartLocation.begin;
+		tokens.insert (tokens.begin () + offset, createToken (Token::MAP_START, mapStartLocation));
 	}
 }
 
