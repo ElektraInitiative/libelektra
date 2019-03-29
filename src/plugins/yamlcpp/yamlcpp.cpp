@@ -10,6 +10,7 @@
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
 #include "yamlcpp.hpp"
+#include "log.hpp"
 #include "read.hpp"
 #include "write.hpp"
 using namespace yamlcpp;
@@ -23,12 +24,15 @@ using namespace ckdb;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
+namespace
+{
+
 /**
  * @brief This function returns a key set containing the contract of this plugin.
  *
  * @return A contract describing the functionality of this plugin.
  */
-static KeySet * contractYamlCpp (void)
+KeySet * contractYamlCpp (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/yamlcpp", KEY_VALUE, "yamlcpp plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/exports", KEY_END),
@@ -37,6 +41,7 @@ static KeySet * contractYamlCpp (void)
 #include ELEKTRA_README
 		      keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END), KS_END);
+}
 }
 
 // ====================
@@ -78,13 +83,6 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 				    parent.getString ().c_str (), exception.what ());
 	}
 
-#ifdef HAVE_LOGGER
-	for (auto key : keys)
-	{
-		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
-	}
-#endif
 
 	parent.release ();
 	keys.release ();
@@ -97,6 +95,11 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 {
 	kdb::Key parent = kdb::Key (parentKey);
 	kdb::KeySet keys = kdb::KeySet (returned);
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Write keys:");
+	logKeySet (keys);
+#endif
 
 	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
 
