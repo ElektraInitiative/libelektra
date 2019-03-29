@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# @author Klemens Böswirth <k.boeswirth+git@gmail.com>
+# @brief Calls all other reformat scripts
+# @date 29.03.2019
+# @tags reformat
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+cd "$SOURCE"
+
+for reformat in $(ls "$SCRIPTS_DIR"/reformat-*); do
+	[ "$reformat" = "scripts/reformat-all" ] && continue
+	echo "running $reformat..."
+	$reformat
+done
