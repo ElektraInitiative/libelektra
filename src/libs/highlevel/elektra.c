@@ -100,6 +100,44 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 }
 
 /**
+ * Calls kdbEnsure() on the internal KDB handle of this Elektra instance.
+ *
+ * @param elektra  Elektra instance to use.
+ * @param contract The contract to ensure.
+ * @param error    Pass a reference to an ElektraError pointer.
+ *                 Will only be set in case of an error.
+ *
+ * @see kdbEnsure()
+ */
+void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error)
+{
+	if (error == NULL)
+	{
+		elektraFatalError (elektra, elektraErrorNullError (__func__));
+		return;
+	}
+
+	Key * parentKey = keyDup (elektra->parentKey);
+	int rc = kdbEnsure (elektra->kdb, contract, parentKey);
+	if (rc == 0)
+	{
+		// if successful, refresh config
+		kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
+	}
+	else if (rc == 1)
+	{
+		const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
+		*error = elektraErrorEnsureFailed (reason);
+	}
+	else
+	{
+		*error = elektraErrorCreateFromKey (parentKey);
+	}
+
+	keyDel (parentKey);
+}
+
+/**
  * Promote an ElektraError to fatal and call the fatal error handler.
  *
  * @param elektra    Elektra instance whose fatal error handler shall be used.
@@ -109,6 +147,21 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 {
 	fatalError->severity = ELEKTRA_ERROR_SEVERITY_FATAL;
 	elektra->fatalErrorHandler (fatalError);
+}
+
+/**
+ * This function is only intended for use with code-generation.
+ *
+ * It looks for the key proc/elektra/gopts/help (absolute name) created by gopts,
+ * and returns it if found.
+ *
+ * @param elektra The Elektra instance to check
+ *
+ * @return the help key if found, NULL otherwise
+ */
+Key * elektraHelpKey (Elektra * elektra)
+{
+	return ksLookupByName (elektra->config, "proc/elektra/gopts/help", 0);
 }
 
 /**

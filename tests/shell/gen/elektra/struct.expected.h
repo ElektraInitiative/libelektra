@@ -386,7 +386,7 @@ static inline void ELEKTRA_SET (PersonName) (Elektra * elektra, const char * val
 
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
-void printHelpMessage (void);
+void printHelpMessage (const char * usage, const char * prefix);
 void specloadCheck (int argc, const char ** argv);
 
 

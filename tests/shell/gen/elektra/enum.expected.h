@@ -337,7 +337,7 @@ static inline void ELEKTRA_SET (Myenum) (Elektra * elektra, ElektraEnumMyenum va
 
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
-void printHelpMessage (void);
+void printHelpMessage (const char * usage, const char * prefix);
 void specloadCheck (int argc, const char ** argv);
 
 
