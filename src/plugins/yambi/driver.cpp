@@ -98,8 +98,9 @@ string visualizeError (location_type const & location, string const & input, str
 	errorLine = prefix + errorLine + "\n" + prefix + string (location.begin.column - 1, ' ');
 	// We assume that an error does not span more than one line
 	start = location.begin.column;
-	end = location.end.column;
-	for (size_t current = start; current <= end; current++)
+	end = location.end.column - 1;
+	errorLine += "^"; // Show at least one caret, even if the token is 0 characters long
+	for (size_t current = start; current < end; current++)
 	{
 		errorLine += "^";
 	}

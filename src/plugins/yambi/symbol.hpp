@@ -84,13 +84,13 @@ public:
 	}
 
 	/**
-	 * @brief This method returns the start position of this symbol.
+	 * @brief This method returns the location of this symbol.
 	 *
-	 * @return The start position of this symbol
+	 * @return The location of this symbol
 	 */
-	yambi::position getStart () const
+	yambi::location getLocation () const
 	{
-		return placement.begin;
+		return placement;
 	}
 
 	/**
