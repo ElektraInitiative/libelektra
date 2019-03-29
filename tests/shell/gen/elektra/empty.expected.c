@@ -15,12 +15,16 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <kdbhelper.h>
 #include <kdbinvoke.h>
+#include <kdbopts.h>
 
 #include <elektra/conversion.h>
+
+static Key * helpKey = NULL;
 
 
 /**
@@ -34,11 +38,12 @@
  * @param error   A reference to an ElektraError pointer. Will be passed to elektraOpen().
  *
  * @retval 0  on success, @p elektra will be set, @p error will be unchanged
- * @retval -1 on error, @p elektra will be unchanged, @p error will set
+ * @retval -1 on error, @p elektra will be unchanged, @p error will be set
  * @retval 1  specload mode, exit as soon as possible and must DO NOT write anything to stdout,
  *            @p elektra and @p error are both unchanged
  * @retval 2  help mode, '-h' or '--help' was specified call printHelpMessage and exit
  *            @p elektra and @p error are both unchanged
+ *            IMPORTANT: there will be memory leaks, if you don't call printHelpMessage !!
  *
  * @see elektraOpen
  */// 
@@ -54,10 +59,24 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		return -1;
 	}
 
-	if (0 /* TODO: check if help mode */)
+	KeySet * contract = ksNew (1,
+	keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	KS_END);
+;
+
+	ElektraError * err = NULL;
+	elektraEnsure (e, contract, &err);
+
+	if (err != NULL)
+	{
+		*error = err;
+		return -1;
+	}
+
+	helpKey = elektraHelpKey (e);
+	if (helpKey != NULL)
 	{
 		elektraClose (e);
-		printHelpMessage ();
 		return 2;
 	}
 
@@ -104,11 +123,34 @@ void specloadCheck (int argc, const char ** argv)
 }
 
 /**
- * Outputs the help message
+ * Extracts the help message from the @p errorKey used in elektraGetOpts().
+ *
+ * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
+ * @param usage	   If this is not NULL, it will be used instead of the default usage line.
+ * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
+ *
+ * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
+ * The returned string has to be freed with elektraFree().
  */
-void printHelpMessage (void)
+
+/**
+ * Outputs the help message to stdout
+ *
+ * @param usage	   If this is not NULL, it will be used instead of the default usage line.
+ * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
+ */
+void printHelpMessage (const char * usage, const char * prefix)
 {
-	// TODO
+	if (helpKey == NULL)
+	{
+		return;
+	}
+
+	char * help = elektraGetOptsHelpMessage (helpKey, usage, prefix);
+	printf ("%s", help);
+	elektraFree (help);
+	keyDel (helpKey);
+	helpKey = NULL;
 }
 
 // clang-format off

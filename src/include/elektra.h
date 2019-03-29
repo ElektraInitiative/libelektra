@@ -65,6 +65,8 @@ typedef struct _Elektra Elektra;
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 
+void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error);
+
 // endregion Basics
 
 // region Error-Handling
@@ -88,6 +90,8 @@ void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalError
 Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type);
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
+
+Key * elektraHelpKey (Elektra * elektra);
 
 // endregion Helpers for code generation
 

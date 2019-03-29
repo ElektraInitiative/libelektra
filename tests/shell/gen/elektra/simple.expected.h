@@ -299,7 +299,7 @@ static inline void ELEKTRA_SET (Print) (Elektra * elektra, kdb_boolean_t value, 
 
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
-void printHelpMessage (void);
+void printHelpMessage (const char * usage, const char * prefix);
 void specloadCheck (int argc, const char ** argv);
 
 

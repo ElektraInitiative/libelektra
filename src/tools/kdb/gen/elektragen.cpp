@@ -805,11 +805,15 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	// TODO: make configurable?
 	auto specloadArg = "--elektra-specload";
 
+	kdb::KeySet contract;
+	contract.append (kdb::Key ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
 	data["structs"] = structs;
 	data["defaults"] = keySetToCCode (spec);
+	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = specloadArg;
 
 	return data;
