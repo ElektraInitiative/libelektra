@@ -16,6 +16,13 @@ if ! which shfmt > /dev/null; then
 fi
 
 shell_files=$(shfmt -f 'scripts' 'src' 'tests/shell')
+if [ $# -gt 0 ]; then
+	tmpfile=$(mktemp /tmp/elektra-reformat-shfmt.XXXXXX)
+	printf "%s\n" "$@" > "$tmpfile"
+	shell_files=$(printf "%s\n" "$shell_files" | grep -x -F -f "$tmpfile")
+	rm "$tmpfile"
+fi
+
 non_ignored=$(printf "%s\n" "$shell_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs git check-ignore -vn | sed -nE 's/^::[[:blank:]]*(.*)$/\1/p')
 printf "%s\n" "$non_ignored" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs shfmt -s -sr -w
 shfmt -s -sr -w 'tests/shell/include_common.sh.in'
