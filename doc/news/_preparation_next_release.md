@@ -364,7 +364,7 @@ you up to date with the multi-language support provided by Elektra.
 
   , since they are [known to fail in high load scenarios](https://issues.libelektra.org/2439). _(René Schwaiger)_
 
-- <<TODO>>
+- We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
 - <<TODO>>
 
 ### Travis
