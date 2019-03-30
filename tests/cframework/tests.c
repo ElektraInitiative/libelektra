@@ -100,7 +100,7 @@ int init (int argc, char ** argv)
 
 /**Create a root key for a backend.
  *
- * @return a allocated root key */
+ * @return an allocated root key */
 Key * create_root_key (const char * backendName)
 {
 	Key * root = keyNew ("user/tests", KEY_END);
@@ -113,7 +113,7 @@ Key * create_root_key (const char * backendName)
 
 /**Create a configuration keyset for a backend.
  *
- * @return a allocated configuration keyset for a backend*/
+ * @return an allocated configuration keyset for a backend*/
 KeySet * create_conf (const char * filename)
 {
 	return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END);

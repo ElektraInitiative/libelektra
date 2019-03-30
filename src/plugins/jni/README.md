@@ -131,7 +131,7 @@ You need to pass :
 
 Additionally, you can set:
 
-- option allows you to pass a option to the jvm, default: `-verbose:gc,class,jni`
+- option allows you to pass an option to the jvm, default: `-verbose:gc,class,jni`
 - ignore allows you to ignore broken options, default: `false`
 - print allows you to print java exceptions for debugging purposes
 

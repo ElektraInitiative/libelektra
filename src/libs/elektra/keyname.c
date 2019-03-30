@@ -201,7 +201,7 @@ keyDel(key);
  *
  * @param key the key object to work with
  * @return a pointer to the keyname which must not be changed.
- * @retval "" when there is no (a empty) keyname
+ * @retval "" when there is no (an empty) keyname
  * @retval 0 on NULL pointer
  * @see keyGetNameSize() for the string length
  * @see keyGetFullName(), keyGetFullNameSize() to get the full name

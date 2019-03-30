@@ -50,7 +50,7 @@ can properly access them, for example, from configuration management tools.
 As an intermediate step, we can [mount](elektra-mounting.md)
 existing configuration files and operate on them.
 
-## Do we retain the old way of configuring things, i.e. manually editing a ini file in /etc?
+## Do we retain the old way of configuring things, i.e. manually editing an ini file in /etc?
 
 Absolutely, you can think of libelektra as a small library in C that
 reads a configuration file and returns a data structure if you do not

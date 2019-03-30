@@ -242,7 +242,7 @@ kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, 
 }
 
 /**
- * Gets a octet value array element.
+ * Gets an octet value array element.
  *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the array to look up.
@@ -455,7 +455,7 @@ void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, kdb_lo
 }
 
 /**
- * Sets a octet value array element.
+ * Sets an octet value array element.
  *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the array to write to.

@@ -83,7 +83,7 @@ for `intersect`.
 A type signature, inspired by Haskell's type signatures, typically has two parts. The first
 part describes its constraints followed by `=>`. Then its parameter's types follow separated
 by a `->`, where the last parameter type is the result type.
-A constraint can bei either a containment constraint or a intersection constraint, written
+A constraint can bei either a containment constraint or an intersection constraint, written
 `RegexContains` or `Intersectable` followed by two type variables. Type variables may as well
 be a string constant describing a regex as we will see in the next example. In our case
 `RegexContains b a` means that the regex stored in the type variable a is either equal to or

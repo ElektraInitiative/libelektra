@@ -762,7 +762,7 @@ ckdb::Key * Key::getKey () const
 }
 
 /**
- * Is a abbreviation for getKey.
+ * Is an abbreviation for getKey.
  *
  * @copydoc getKey
  *
