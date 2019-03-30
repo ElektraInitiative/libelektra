@@ -259,7 +259,8 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	yajl_gen_config (g, yajl_gen_beautify, 1);
 #endif
 
-	if (ksGetSize (returned) == 1 && keyGetValueSize (ksHead (returned)) > 1)
+	if (ksGetSize (returned) == 1 && !strcmp (keyName (parentKey), keyName (ksHead (returned))) &&
+	    keyGetValueSize (ksHead (returned)) > 1)
 	{
 		elektraGenValue (g, parentKey, ksHead (returned));
 		int ret = elektraGenWriteFile (g, parentKey);
