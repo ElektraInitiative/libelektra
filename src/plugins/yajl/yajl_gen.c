@@ -133,7 +133,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
  */
 static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 {
-	if (strcmp(keyName(parentKey), keyName(cur)) && !elektraGenOpenValue (g, cur))
+	if (strcmp (keyName (parentKey), keyName (cur)) && !elektraGenOpenValue (g, cur))
 	{
 		ELEKTRA_LOG_DEBUG ("Do not yield value");
 		return;
@@ -261,7 +261,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ksGetSize (returned) == 1 && keyGetValueSize (ksHead (returned)) > 1)
 	{
-		elektraGenValue(g, parentKey, ksHead (returned));
+		elektraGenValue (g, parentKey, ksHead (returned));
 		int ret = elektraGenWriteFile (g, parentKey);
 		yajl_gen_free (g);
 		return ret;
