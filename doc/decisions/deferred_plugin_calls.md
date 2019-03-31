@@ -96,7 +96,7 @@ Defining such a moment would break the lazy-loading constraint.
 It is recommended to use callbacks passed as `parameters`.
 Callback function declarations are not limited by this decision.
 
-## Related decisions
+## Related Decisions
 
 - Elektra's invoke functionality will be extended to also allow us to use
   deferred calls with new functions:

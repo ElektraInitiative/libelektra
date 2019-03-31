@@ -68,7 +68,7 @@ For that reason, the lens configuration option was supplied together with the mo
 
 ## Restrictions
 
-### Inner node values
+### Inner Node Values
 
 Currently no Augeas lens supports values for inner nodes.
 Unfortunately no validation plugin exists yet that would prevent such modifications early:
@@ -85,7 +85,7 @@ kdb set system/hosts/1 somevalue
 
 The operation simply fails with an undescriptive error.
 
-### Leaky abstraction of order
+### Leaky Abstraction of Order
 
 Most Augeas lenses require subtrees to be in a specific order. For example the hosts lens requires the ipaddr node
 of an entry to precede the canonical node. Unfortunately the Augeas storage plugin has no knowledge about this required

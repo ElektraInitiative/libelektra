@@ -29,7 +29,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### Type (new version)
+### Type (New Version)
 
 The `type` plugin was completely rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
 
@@ -292,6 +292,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
 - Added a new error concept to be implemented soon. _(Michael Zronek)_
 - We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
+- We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
 
 ## Tests
 

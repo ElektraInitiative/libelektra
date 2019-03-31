@@ -53,7 +53,7 @@ the assertion that failed).
 - Wont work for ABI compatibility tests
 - Mock only by extra framework
 
-## Related decisions
+## Related Decisions
 
 - [Script Testing](script_testing.md)
 

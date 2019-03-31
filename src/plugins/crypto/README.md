@@ -210,7 +210,7 @@ Shutdown is enabled in the unit tests to prevent memory leaks.
 
 ## Technical Details
 
-### Ciphers and Mode Of Operation
+### Ciphers and Mode of Operation
 
 All of the plugin variants use the Advanced Encryption Standard (AES) in Cipher Block Chaining Mode (CBC) with a key size of 256 bit.
 

@@ -30,7 +30,7 @@ If you are looking for something special, then there are two ways:
 All methods can be combined. For example if you search all bash scripts which do some configuration work.
 You can type `kdb find-tools -t configuration -e bash`.
 
-## The right Way to add your script to the find tools
+## The Right Way to Add Your Script to the Find Tools
 
 Meta Tags as comments in the beginning of a script are parsed.
 Mate Tags start with an `@`, here is a list of all Meta Tags:

@@ -1,4 +1,4 @@
-# Example: Validating complex recursive structures
+# Example: Validating Complex Recursive Structures
 
 Suppose you have some mutually recursive `struct`s in C. You want to map this structure
 onto a hierarchy inside your KDB. This by itself was always possible, but the reference

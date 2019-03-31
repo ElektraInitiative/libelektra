@@ -172,7 +172,7 @@ system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
 
 gets ignored.
 
-## Related decisions
+## Related Decisions
 
 - [Global Plugins](global_plugins.md)
 
