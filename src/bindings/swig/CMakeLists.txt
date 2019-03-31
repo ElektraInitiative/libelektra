@@ -1,7 +1,5 @@
 set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 
-# TODO change once new is supported on debian
-cmake_policy (SET CMP0078 OLD)
 find_swig ()
 if (NOT SWIG_FOUND)
 	exclude_binding (swig "neither swig2/3 found. Please install swig3.0 and set -DSWIG_EXECUTABLE=")
