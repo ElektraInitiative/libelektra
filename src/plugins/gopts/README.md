@@ -29,6 +29,6 @@ if (rc != 0)
 }
 
 // gopts now mounted
-KeySet * ks;
+KeySet * ks = ksNew (0, KS_END);
 kdbGet (kdb, ks, parentKey);
 ```
