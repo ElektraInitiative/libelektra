@@ -9,9 +9,11 @@
 #include "parser.hpp"
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 using namespace std;
+extern ostream cout;
 
 parse_t parse (std::string const & file)
 {
@@ -19,7 +21,6 @@ parse_t parse (std::string const & file)
 
 	parse_t result;
 
-	int number = 0;
 	int linenr = 0;
 	string line;
 	string lastIdentifier;
@@ -33,7 +34,6 @@ parse_t parse (std::string const & file)
 		{
 			result.push_back (currentMap);
 			currentMap.clear ();
-			++number;
 			continue;
 		}
 
@@ -49,8 +49,7 @@ parse_t parse (std::string const & file)
 			int cmpNumber;
 			std::istringstream istr (text);
 			istr >> cmpNumber;
-
-			if (number != cmpNumber) throw parse_error ("Given number for that entry wrong", linenr);
+			// std::cout << cmpNumber << endl;
 		}
 
 		if (!currentMap[identifier].empty ()) currentMap[identifier] += "\n";

@@ -76,7 +76,7 @@ private:
 		catch (const char * msg)
 		{
 #ifdef KDBERRORS_H
-			ELEKTRA_ADD_WARNING (69, errorKey, msg);
+			ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Could not create C++ plugin: %s", msg);
 #endif
 			return -1;
 		}

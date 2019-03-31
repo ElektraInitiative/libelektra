@@ -92,7 +92,7 @@ int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
 	ParseTree * tree = parser.yaml ();
 	if (parser.getNumberOfSyntaxErrors () > 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), errorListener.message ());
+		ELEKTRA_SET_ERROR (PARSING_CODE, parent.getKey (), errorListener.message ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	walker.walk (&listener, tree);
@@ -127,8 +127,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ifstream file (parent.getString ());
 	if (!file.is_open ())
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
-				    parent.getString ().c_str ());
+		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parent.getKey (), "Unable to open file “%s”", parent.getString ().c_str ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

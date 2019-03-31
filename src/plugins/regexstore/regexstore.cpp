@@ -43,12 +43,13 @@ std::string elektraRegexstorePos (std::string const & str, int offset, std::stri
 	int pos = index - '0';
 	if (pos < 0 || pos > 9)
 	{
-		ELEKTRA_ADD_WARNINGF (96, parentKey, "Regex Group %d for %s not between 0 and 9 read from %s", pos, text.c_str (), &index);
+		ELEKTRA_ADD_WARNINGF (VALIDATION_SYNTACTIC_CODE, parentKey, "Regex Group %d for %s not between 0 and 9 read from %s", pos,
+				      text.c_str (), &index);
 		return std::string ("");
 	}
 	if (offsets[pos].rm_so == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (96, parentKey, "Regex Group %d missing for %s", pos, text.c_str ());
+		ELEKTRA_ADD_WARNINGF (VALIDATION_SYNTACTIC_CODE, parentKey, "Regex Group %d missing for %s", pos, text.c_str ());
 		return std::string ("");
 	}
 	return str.substr (offset + offsets[pos].rm_so, offsets[pos].rm_eo - offsets[pos].rm_so);
@@ -69,8 +70,8 @@ Key * elektraRegexstoreProcess (Key * configKey, int * offset, std::string const
 	if (configString.length () < 3 && configString[0] != '#' && (configString[1] < '0' || configString[1] > '9') &&
 	    configString[2] != ' ')
 	{
-		ELEKTRA_ADD_WARNINGF (96, parentKey, "String %s of %s did not start with #<number><space>", configString.c_str (),
-				      keyName (configKey));
+		ELEKTRA_ADD_WARNINGF (VALIDATION_SYNTACTIC_CODE, parentKey, "String %s of %s did not start with #<number><space>",
+				      configString.c_str (), keyName (configKey));
 		return nullptr;
 	}
 
@@ -80,7 +81,8 @@ Key * elektraRegexstoreProcess (Key * configKey, int * offset, std::string const
 	{
 		char buffer[1000];
 		regerror (ret, &regex, buffer, 999);
-		ELEKTRA_ADD_WARNINGF (96, parentKey, "Could not compile regex %s, because: %s", configString.c_str () + 3, buffer);
+		ELEKTRA_ADD_WARNINGF (VALIDATION_SYNTACTIC_CODE, parentKey, "Could not compile regex %s, because: %s",
+				      configString.c_str () + 3, buffer);
 		regfree (&regex);
 		return nullptr;
 	}
@@ -97,7 +99,8 @@ Key * elektraRegexstoreProcess (Key * configKey, int * offset, std::string const
 	{
 		char buffer[1000];
 		regerror (ret, &regex, buffer, 999);
-		ELEKTRA_ADD_WARNINGF (96, parentKey, "Regex exec returned error (not in manual for linux), because: %s", buffer);
+		ELEKTRA_ADD_WARNINGF (VALIDATION_SYNTACTIC_CODE, parentKey,
+				      "Regex exec returned error (not in manual for linux), because: %s", buffer);
 		regfree (&regex);
 		return nullptr;
 	}
@@ -188,7 +191,7 @@ int elektraRegexstoreGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	Key * confParent = ksLookupByName (conf, "/regexstore", 0);
 	if (!confParent)
 	{
-		ELEKTRA_SET_ERROR (95, parentKey, "Key /regexstore not found in configuration");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, parentKey, "Key /regexstore not found in configuration");
 		return -1;
 	}
 	ksNext (conf); // skip root

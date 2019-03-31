@@ -112,20 +112,19 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "missing salt as metakey %s in key %s",
-				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
 
 	int result = ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Salt was not stored Base64 encoded.");
+		ELEKTRA_SET_ERROR (LOGICAL_CODE, errorKey, "Salt was not stored Base64 encoded.");
 		return -1;
 	}
 	else if (result == -2)
 	{
-		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 		return -1;
 	}
 	else if (result < -2)
@@ -155,8 +154,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate payload length
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -172,8 +170,8 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate restored salt length
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen, payloadLen);
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "restored salt has invalid length of %u (payload length is: %zu)",
+				    restoredSaltLen, payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -195,8 +193,7 @@ Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * conf
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in plugin configuration",
-				    ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "missing %s in plugin configuration", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return NULL;
 	}
 	Key * msg = keyDup (master);
@@ -226,7 +223,7 @@ kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey,
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_CRYPTO_CONFIG, errorKey,
+			ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey,
 					     "iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
 					     " is invalid. Using default value instead.");
 		}

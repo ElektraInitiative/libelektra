@@ -340,7 +340,7 @@ Basically the implementation of `elektraLineSet` can be described with the follo
 // open the file
 if (error)
 {
-	ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+	ELEKTRA_SET_ERROR(RESOURCE_CODE, parentKey, keyString(parentKey));
 }
 for (/* each key */)
 {
@@ -404,7 +404,7 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 		const char * value = keyString (cur);
 		if (strlen (value) > 3)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey,
+			ELEKTRA_SET_ERRORF (PARSING_CODE, errorKey,
 					    "value %s is more than 3 characters long",
 					    value);
 			return -1; // The configuration was not OK and could not be fixed

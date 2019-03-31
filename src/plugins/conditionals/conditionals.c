@@ -209,7 +209,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			}
 			if (elektraRealloc ((void **) &compareTo, endPos - rightSide) < 0)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
+				ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Out of memory");
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -228,7 +228,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 
 			if (elektraRealloc ((void **) &lookupName, len) < 0)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
+				ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Out of memory");
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -244,15 +244,16 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			{
 				if (!keyGetMeta (parentKey, "error"))
 				{
-					ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found but is required for the evaluation of %s",
-							    lookupName, condition);
+					ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+							    "Key %s not found but is required for the evaluation of %s", lookupName,
+							    condition);
 				}
 				result = FALSE;
 				goto Cleanup;
 			}
 			if (elektraRealloc ((void **) &compareTo, keyGetValueSize (key)) < 0)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
+				ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Out of memory");
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -268,7 +269,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 
 	if (elektraRealloc ((void **) &lookupName, len) < 0)
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Out of memory");
 		result = ERROR;
 		goto Cleanup;
 	}
@@ -291,8 +292,8 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 	{
 		if (!keyGetMeta (parentKey, "error"))
 		{
-			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found but is required for the evaluation of %s", lookupName,
-					    condition);
+			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+					    "Key %s not found but is required for the evaluation of %s", lookupName, condition);
 		}
 		result = FALSE;
 		goto Cleanup;
@@ -499,7 +500,7 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 	{
 		if (lastPtr <= firstPtr)
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey,
+			ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
 					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
@@ -523,7 +524,7 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		Key * assign = ksLookup (ks, lookupKey, KDB_O_NONE);
 		if (!assign)
 		{
-			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found", keyName (lookupKey));
+			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey, "Key %s not found", keyName (lookupKey));
 			keyDel (lookupKey);
 			return NULL;
 		}
@@ -537,14 +538,14 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 	{
 		if (firstPtr == lastPtr) // only one quote in the assign string, invalid syntax
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey,
+			ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
 					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
 		char * nextMark = strchr (firstPtr + 1, '\'');
 		if (nextMark != lastPtr) // more than two quotes, invalid syntax too
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey,
+			ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
 					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
@@ -563,7 +564,8 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 
 	if ((regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE)))
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey,
+				   "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
@@ -617,7 +619,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	CondResult ret;
 	if ((ret = regcomp (&regex1, regexString1, REGEX_FLAGS_CONDITION)))
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey,
+				   "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
@@ -625,7 +628,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if ((ret = regcomp (&regex2, regexString2, REGEX_FLAGS_CONDITION)))
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey,
+				   "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
@@ -634,7 +638,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if ((ret = regcomp (&regex3, regexString3, REGEX_FLAGS_CONDITION)))
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey,
+				   "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
@@ -647,8 +652,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	int nomatch = regexec (&regex1, conditionString, subMatches, m, 0);
 	if (nomatch)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
-				    conditionString);
+		ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
+				    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -657,8 +662,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if (m[1].rm_so == -1)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
-				    conditionString);
+		ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
+				    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -675,8 +680,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	nomatch = regexec (&regex2, conditionString, subMatches, m, 0);
 	if (nomatch)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
-				    conditionString);
+		ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
+				    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -685,8 +690,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if (m[1].rm_so == -1)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
-				    conditionString);
+		ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
+				    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -705,7 +710,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	{
 		if (m[1].rm_so == -1)
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey,
+			ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
 					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 					    conditionString);
 			regfree (&regex1);
@@ -745,12 +750,12 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			ret = parseCondition (key, thenexpr, suffixList, ks, parentKey);
 			if (ret == FALSE)
 			{
-				ELEKTRA_SET_ERRORF (135, parentKey, "Validation of Key %s: %s failed. (%s failed)",
+				ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey, "Validation of Key %s: %s failed. (%s failed)",
 						    keyName (key) + strlen (keyName (parentKey)) + 1, conditionString, thenexpr);
 			}
 			else if (ret == ERROR)
 			{
-				ELEKTRA_SET_ERRORF (134, parentKey,
+				ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
 						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 						    thenexpr);
 			}
@@ -781,13 +786,14 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 
 				if (ret == FALSE)
 				{
-					ELEKTRA_SET_ERRORF (135, parentKey, "Validation of Key %s: %s failed. (%s failed)",
+					ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+							    "Validation of Key %s: %s failed. (%s failed)",
 							    keyName (key) + strlen (keyName (parentKey)) + 1, conditionString, elseexpr);
 				}
 				else if (ret == ERROR)
 				{
 					ELEKTRA_SET_ERRORF (
-						134, parentKey,
+						VALIDATION_SYNTACTIC_CODE, parentKey,
 						"Invalid syntax: \"%s\". Check kdb info conditionals for additional information", elseexpr);
 				}
 			}
@@ -799,8 +805,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	else if (ret == ERROR)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
-				    condition);
+		ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, parentKey,
+				    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", condition);
 	}
 
 CleanUp:

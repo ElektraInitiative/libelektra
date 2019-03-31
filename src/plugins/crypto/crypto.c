@@ -79,7 +79,10 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 {
 	if (keyGetValueSize (k) < ((ssize_t) ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_PAYLOAD, errorKey, "%s", keyName (k));
+		ELEKTRA_SET_ERRORF (PARSING_CODE, errorKey,
+				    "The provided data could not be recognized as valid cryptographic payload. The data is possibly "
+				    "corrupted. Keyname: %s",
+				    keyName (k));
 		return 0; // failure
 	}
 
@@ -87,7 +90,10 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 	const kdb_octet_t * value = (kdb_octet_t *) keyValue (k);
 	if (memcmp (value, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_PAYLOAD, errorKey, "%s", keyName (k));
+		ELEKTRA_SET_ERRORF (PARSING_CODE, errorKey,
+				    "The provided data could not be recognized as valid cryptographic payload. The data is possibly "
+				    "corrupted. Keyname: %s",
+				    keyName (k));
 		return 0; // failure
 	}
 
@@ -95,7 +101,10 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 	const size_t versionOffset = ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2;
 	if (memcmp (&value[versionOffset], ELEKTRA_CRYPTO_PAYLOAD_VERSION, 2))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_VERSION, errorKey, "%s", keyName (k));
+		ELEKTRA_SET_ERRORF (
+			PARSING_CODE, errorKey,
+			"The version of the cryptographic payload is not compatible with the version of the plugin. Keyname: %s",
+			keyName (k));
 		return 0; // failure
 	}
 
@@ -147,7 +156,7 @@ static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (Key * errorKey
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_CRYPTO_CONFIG, errorKey,
+			ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey,
 					     "Master password length provided at " ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN
 					     " is invalid. Using default value instead.");
 		}

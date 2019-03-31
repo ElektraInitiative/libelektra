@@ -68,14 +68,14 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 
 			if (!backend)
 			{
-				ELEKTRA_ADD_WARNING (24, errorKey, "could not create missing backend");
+				ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "could not create missing backend");
 				ret = -1;
 				continue;
 			}
 
 			if (!backend->mountpoint)
 			{
-				ELEKTRA_ADD_WARNING (25, errorKey, "no mountpoint");
+				ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "backend has no mount point");
 				ret = -1;
 				backendClose (backend, errorKey);
 				continue;
@@ -83,7 +83,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 
 			if (mountBackend (kdb, backend, errorKey) == -1)
 			{
-				ELEKTRA_ADD_WARNING (24, errorKey, "mounting of backend failed");
+				ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "mounting of backend failed");
 				ret = -1;
 				/* mountBackend modified the refcounter. */
 				backend->refcounter = 1;
@@ -117,7 +117,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 
 	if (!kdb->defaultBackend)
 	{
-		ELEKTRA_ADD_WARNING (43, errorKey, "could not (re)open default backend");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "could not (re)open default backend");
 		return -1;
 	}
 
@@ -128,7 +128,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 
 		if (!kdb->initBackend)
 		{
-			ELEKTRA_ADD_WARNING (43, errorKey, "could not (re)open init backend");
+			ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "could not (re)open init backend");
 			return -1;
 		}
 	}
@@ -311,7 +311,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
 		if (!(*plugin))
 		{
-			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
+			ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Could not load plugin %s in process plugin", pluginName);
 			return -1;
 		}
 
@@ -474,7 +474,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	if (!root)
 	{
-		ELEKTRA_ADD_WARNING (23, errorKey, "no root key found for modules");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "no root key found for modules");
 		return -1;
 	}
 

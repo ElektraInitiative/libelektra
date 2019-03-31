@@ -66,7 +66,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		}
 		if (!saltHexString)
 		{
-			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 			return -1;
 		}
 		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
@@ -89,8 +89,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to create a cryptographic key for encryption because: %s",
-				    e.what ());
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "Failed to create a cryptographic key for encryption because: %s", e.what ());
 		return -1;
 	}
 }
@@ -140,8 +139,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey,
-				    "Failed to restore the cryptographic key for decryption because: %s", e.what ());
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "Failed to restore the cryptographic key for decryption because: %s",
+				    e.what ());
 		return -1;
 	}
 }
@@ -154,7 +153,7 @@ int elektraCryptoBotanInit (Key * errorKey)
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan initialization failed: %s", e.what ());
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "Botan initialization failed: %s", e.what ());
 		return -1; // failure
 	}
 	return 1; // success
@@ -238,7 +237,7 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", e.what ());
+		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, errorKey, "Encryption failed because: %s", e.what ());
 		elektraFree (salt);
 		return -1; // failure
 	}
@@ -310,7 +309,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s", e.what ());
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "Decryption failed because: %s", e.what ());
 		return -1; // failure
 	}
 
@@ -340,8 +339,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Failed to generate random string because: %s",
-				    e.what ());
+		ELEKTRA_SET_ERRORF (LOGICAL_CODE, errorKey, "Failed to generate random string because: %s", e.what ());
 		return 0;
 	}
 }

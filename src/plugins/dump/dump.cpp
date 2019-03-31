@@ -115,7 +115,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			ss >> version;
 			if (version != "1")
 			{
-				ELEKTRA_SET_ERROR (50, errorKey, version.c_str ());
+				ELEKTRA_SET_ERRORF (PARSING_CODE, errorKey, "Wrong version detected in dumpfile: %s", version.c_str ());
 				return -1;
 			}
 		}
@@ -188,7 +188,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else
 		{
-			ELEKTRA_SET_ERROR (49, errorKey, command.c_str ());
+			ELEKTRA_SET_ERRORF (PARSING_CODE, errorKey, "Wrong version detected in dumpfile: %s", command.c_str ());
 			return -1;
 		}
 	}

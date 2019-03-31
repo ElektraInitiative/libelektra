@@ -28,7 +28,7 @@ static void setError (Key * key, Key * errorKey)
 	msg += " with string: ";
 	const char * value = keyString (key);
 	if (value) msg += value;
-	ELEKTRA_SET_ERROR (52, errorKey, msg.c_str ());
+	ELEKTRA_SET_ERROR (VALIDATION_SEMANTIC_CODE, errorKey, msg.c_str ());
 }
 
 extern "C" {

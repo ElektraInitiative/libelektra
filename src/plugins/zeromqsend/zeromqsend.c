@@ -113,14 +113,13 @@ int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key
 		break;
 	case -1:
 		// connection timeout - hub not running
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT, parentKey,
-				     "could not connect to hub. Please start hub using `kdb run-hub-zeromq`.");
+		ELEKTRA_ADD_WARNING (TIMEOUT_CODE, parentKey, "could not connect to hub. Please start hub using `kdb run-hub-zeromq`.");
 		break;
 	case -2:
 		// subscription timeout - no applications are listening for notifications, can be ignored
 		break;
 	default:
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_ZEROMQSEND_ERROR, parentKey, "could not send notifications");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, parentKey, "could not send notifications");
 		break;
 	}
 
