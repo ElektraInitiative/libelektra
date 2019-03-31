@@ -7,7 +7,7 @@ validated and checked by Elektra.
 
 The structure we will use for this example is easily defined in C code:
 
-```C
+```c
 struct typeA {
   char *name;
   struct typeB *ref;
@@ -27,7 +27,7 @@ to it, while elements of type `typeB` shall contain an integer.
 
 The specification used for such a structure is as follows (using the syntax of the `ni` plugin):
 
-```INI
+```ini
 [rootkey/ref]
 check/reference = recursive
 check/reference/restrict = ../typeA/_
