@@ -185,12 +185,12 @@ On that behalf we have to make sure that the validation plugin is loaded for
 this key with:
 
 ```
-kdb mount tutorial.dump user/tutorial dump validation
+kdb mount tutorial.dump /tests/spec dump validation
 ```
 
 This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mount point
-**user/tutorial** and activates the validation plugin for the keys below the mount point.
-The validation plugin now uses the metadata of the keys below **user/tutorial**
+**/tests/spec** and activates the validation plugin for the keys below the mount point.
+The validation plugin now uses the metadata of the keys below **/tests/spec**
 to validate values before storing them in `tutorial.dump`.
 
 Although this is better than defining metadata in the same place as the data

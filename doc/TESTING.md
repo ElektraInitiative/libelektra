@@ -456,7 +456,7 @@ make coverage-genhtml
 
 The HTML files can be found in the build directory in the folder `coverage`.
 
-## See also
+## See Also
 
 - [COMPILE](COMPILE.md).
 - [INSTALL](INSTALL.md).

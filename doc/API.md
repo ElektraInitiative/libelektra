@@ -201,7 +201,7 @@ and then lookup details in the API description in @ref plugin.
 
 Read more about [mounting](/doc/help/elektra-mounting.md)
 
-## SEE ALSO
+## See Also
 
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)

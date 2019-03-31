@@ -723,7 +723,7 @@ For reference, you can look into the
 and the
 [CMake in OpenWRT](https://github.com/openwrt/openwrt/blob/master/include/cmake.mk).
 
-## See also
+## See Also
 
 - [INSTALL](INSTALL.md)
 - [TESTING](TESTING.md)

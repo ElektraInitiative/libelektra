@@ -45,7 +45,7 @@ libelektra-kdb.so
 
 Contains `kdb*` symbols and applications should link against it.
 
-# Exported symbols
+# Exported Symbols
 
 Exported symbols are defined in [libelektra-symbols.map](/src/libs/elektra/libelektra-symbols.map).
 The function names must confirm to this naming to conventions to be externally visible, e.g.,

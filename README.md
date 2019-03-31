@@ -18,7 +18,7 @@ and tools concerning their configuration tasks. Elektra abstracts from
 cross-platform-related issues and enables applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-## Often used links
+## Often Used Links
 
 - [Build server](https://build.libelektra.org/)
 - [Website](https://www.libelektra.org)

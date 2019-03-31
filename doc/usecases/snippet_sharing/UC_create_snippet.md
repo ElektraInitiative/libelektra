@@ -1,4 +1,4 @@
-# Use Case: Create configuration snippet
+# Use Case: Create Configuration Snippet
 
 ## Summary
 

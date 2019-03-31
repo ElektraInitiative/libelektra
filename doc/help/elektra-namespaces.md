@@ -108,7 +108,7 @@ The configuration is typically located below `KDB_DB_SYSTEM`.
 Other absolute paths, e.g. below `/opt` or `/usr/local/etc` are possible
 too.
 
-## cascading
+## Cascading
 
 Keys that are not in a namespace (i.e. start with an `/`) are called cascading
 keys. Cascading keys do not stem from a configuration source, but are

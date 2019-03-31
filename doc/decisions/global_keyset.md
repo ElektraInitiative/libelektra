@@ -32,6 +32,6 @@ which is simply not possible with metadata.
 
 Plugins are responsible for cleaning up their part of the global keyset.
 
-## Related decisions
+## Related Decisions
 
 ## Notes

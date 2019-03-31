@@ -28,7 +28,7 @@ with the respective `kdbGet`.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 
