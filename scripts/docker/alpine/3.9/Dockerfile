@@ -8,6 +8,7 @@ RUN apk update \
         curl \
         file \
         git \
+        ninja \
         yaml-cpp-dev
 
 # Google Test
