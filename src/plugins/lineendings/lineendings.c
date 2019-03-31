@@ -93,7 +93,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 			if (validLineEnding != NA && lineEnding != validLineEnding)
 			{
 				fclose (fp);
-				ELEKTRA_SET_ERRORF (114, parentKey, "Invalid line ending at line %lu", line);
+				ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Invalid line ending at line %lu", line);
 				return -2;
 			}
 			++line;
@@ -101,7 +101,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 		else if (lineEnding != found && found != NA)
 		{
 			fclose (fp);
-			ELEKTRA_SET_ERRORF (115, parentKey, "inconsistent line endings at line %lu", line);
+			ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "inconsistent line endings at line %lu", line);
 			return -3;
 		}
 		fc = sc;
@@ -151,7 +151,7 @@ int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 	switch (ret)
 	{
 	case (-1):
-		ELEKTRA_SET_ERRORF (113, parentKey, "Couldn't open file %s\n", keyString (parentKey));
+		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open file %s\n", keyString (parentKey));
 		return 1;
 		break;
 	case (-2):

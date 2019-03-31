@@ -46,6 +46,7 @@ nbproject/
 .idea/**/dictionaries
 .idea/**/shelf
 
+
 ## Generated files
 .idea/**/contentModel.xml
 
@@ -68,3 +69,5 @@ nbproject/
 modules.xml
 .idea/misc.xml
 *.ipr
+.idea/vcs.xml
+**/.vscode/*

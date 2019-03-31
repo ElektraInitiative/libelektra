@@ -135,7 +135,7 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 		case TRUE:
 			if (data->invalid & WARNING)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
+				ELEKTRA_ADD_WARNINGF (VALIDATION_SEMANTIC_CODE, parentKey,
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
 						      origvalue, data->trueValue);
 			}
@@ -145,7 +145,7 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 		case FALSE:
 			if (data->invalid & WARNING)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
+				ELEKTRA_ADD_WARNINGF (VALIDATION_SEMANTIC_CODE, parentKey,
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
 						      origvalue, data->falseValue);
 			}
@@ -343,7 +343,7 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			    (keyGetMeta (key, "boolean/invalid")))
 			{
 				keySetMeta (key, "boolean/invalid", 0);
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
+				ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey, "%s is not a valid boolean value",
 						    keyString (originalValue));
 				retVal = -1;
 			}

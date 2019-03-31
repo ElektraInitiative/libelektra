@@ -125,7 +125,7 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_WARNING (90, errorKey, "could not get ALLUSERSPROFILE for spec, using /");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "could not get ALLUSERSPROFILE for spec, using /");
 	}
 	else
 	{
@@ -163,13 +163,12 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 		char buf[256];
 		FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError (), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256,
 			       NULL);
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
+		ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
 		dir[0] = 0;
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld",
-				      dwRet);
+		ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
 		dir[0] = 0;
 	}
 	escapePath (dir);
@@ -177,7 +176,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	char dir[KDB_MAX_PATH_LENGTH];
 	if (getcwd (dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
+		ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
 		dir[0] = 0;
 	}
 #endif
@@ -203,14 +202,14 @@ static void elektraResolveUser (resolverHandle * p, Key * warningsKey)
 	else
 	{
 		strcpy (home, "");
-		ELEKTRA_ADD_WARNING (90, warningsKey, "could not get home (CSIDL_PROFILE), using /");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, warningsKey, "could not get home (CSIDL_PROFILE), using /");
 	}
 #else
 	char * home = (char *) getenv ("HOME");
 	if (!home)
 	{
 		home = "";
-		ELEKTRA_ADD_WARNING (90, warningsKey, "could not get home, using /");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, warningsKey, "could not get home, using /");
 	}
 #endif
 
@@ -226,7 +225,7 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_WARNING (90, errorKey, "could not get ALLUSERSPROFILE, using /");
+		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "could not get ALLUSERSPROFILE, using /");
 	}
 	else
 	{
@@ -258,7 +257,7 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 
 	if (!path)
 	{
-		ELEKTRA_SET_ERROR (34, errorKey, "Could not find file configuration");
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Could not find file configuration");
 		return -1;
 	}
 
@@ -386,7 +385,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	switch (pk->state)
 	{
 	case 0:
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_STATE, parentKey, "kdbSet() called before kdbGet()");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, parentKey, "kdbSet() called before kdbGet()");
 		return -1;
 	case 1:
 		++pk->state;
@@ -410,7 +409,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 	if (stat (pk->filename, &buf) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (29, parentKey, "could not stat config file \"%s\", ", pk->filename);
+		ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, parentKey, "could not stat config file \"%s\", ", pk->filename);
 		// no file found, nothing to do
 		return 0;
 	}
@@ -420,7 +419,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	{
 		// conflict
 		ELEKTRA_SET_ERRORF (
-			ELEKTRA_ERROR_CONFLICT, parentKey,
+			CONFLICT_CODE, parentKey,
 			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
 			(long) buf.st_mtime, (long) pk->mtime, pk->filename);
 		pk->state = 0; // invalid state, need to kdbGet again

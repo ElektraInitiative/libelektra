@@ -12,7 +12,7 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdberrors.h>   // ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT
+#include <kdberrors.h>   // TIMEOUT ERROR
 #include <kdbioplugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>
@@ -241,7 +241,7 @@ static void test_timeoutConnect (void)
 
 	plugin->kdbSet (plugin, ks, parentKey);
 
-	char * expectedWarningNumber = elektraFormat ("%d", ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT);
+	char * expectedWarningNumber = elektraFormat ("%d", TIMEOUT_CODE);
 	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
 	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#00/number")));
 

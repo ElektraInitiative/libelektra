@@ -270,7 +270,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 				return;
 			}
 
-			if (elektraKDBErrorCode (kdbSetError) != 30) // ELEKTRA_ERROR_CONFLICT = 30
+			if (elektraKDBErrorCode (kdbSetError) != 5) // CONFLICT = 5
 			{
 				*error = kdbSetError;
 				return;

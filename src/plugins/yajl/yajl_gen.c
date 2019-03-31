@@ -163,7 +163,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNING (78, parentKey, "got boolean which is neither true nor false");
+			ELEKTRA_ADD_WARNING (VALIDATION_SEMANTIC_CODE, parentKey, "got boolean which is neither true nor false");
 			yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 		}
 	}
@@ -173,7 +173,8 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	}
 	else
 	{ // unknown or unsupported type, render it as string but add warning
-		ELEKTRA_ADD_WARNINGF (78, parentKey, "the key %s has unknown type: %s", keyName (cur), keyString (type));
+		ELEKTRA_ADD_WARNINGF (VALIDATION_SEMANTIC_CODE, parentKey, "the key %s has unknown type: %s", keyName (cur),
+				      keyString (type));
 		yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 	}
 }

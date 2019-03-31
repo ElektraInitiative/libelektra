@@ -406,8 +406,9 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		else if (!lineContinuation)
 		{
 			keyDel (appendKey);
-			ELEKTRA_SET_ERRORF (141, handle->parentKey, "We found the key %s a second time in the INI file in section %s\n",
-					    keyName (existingKey), section);
+			ELEKTRA_SET_ERRORF (VALIDATION_SYNTACTIC_CODE, handle->parentKey,
+					    "We found the key %s a second time in the INI file in section %s\n", keyName (existingKey),
+					    section);
 			return -1;
 		}
 	}
@@ -779,14 +780,14 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		switch (ret)
 		{
 		case -1:
-			ELEKTRA_SET_ERROR (9, parentKey, "Unable to open the ini file");
+			ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Unable to open the ini file");
 			break;
 		case -2:
-			ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation error while reading the ini file");
+			ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Memory allocation error while reading the ini file");
 			break;
 		default:
-			ELEKTRA_SET_ERRORF (98, parentKey, "Could not parse ini file %s. First error at line %d", keyString (parentKey),
-					    ret);
+			ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Could not parse ini file %s. First error at line %d",
+					    keyString (parentKey), ret);
 			break;
 		}
 		ret = -1;
@@ -1417,7 +1418,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						else
 						{
 							ELEKTRA_SET_ERROR (
-								97, parentKey,
+								INSTALLATION_CODE, parentKey,
 								"Encountered a multiline value but multiline support is not enabled. "
 								"Have a look at kdb info ini for more details");
 							ret = -1;

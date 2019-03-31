@@ -253,7 +253,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (ret < 0)
 	{
 		elektraFree (keyArray);
-		ELEKTRA_SET_ERROR (87, parentKey, strerror (errno));
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, strerror (errno));
 		errno = errnosave;
 		return 0;
 	}

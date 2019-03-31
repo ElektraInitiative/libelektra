@@ -86,7 +86,7 @@ static int isExecutable (const char * file, Key * errorKey)
 	{
 		if (errorKey)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "gpg binary %s not found", file);
+			ELEKTRA_SET_ERRORF (RESOURCE_CODE, errorKey, "gpg binary %s not found", file);
 		}
 		return -1;
 	}
@@ -95,7 +95,7 @@ static int isExecutable (const char * file, Key * errorKey)
 	{
 		if (errorKey)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "gpg binary %s has no permission to execute", file);
+			ELEKTRA_SET_ERRORF (RESOURCE_CODE, errorKey, "gpg binary %s has no permission to execute", file);
 		}
 		return -2;
 	}
@@ -116,7 +116,7 @@ static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
 	char * result = elektraMalloc (resultLen);
 	if (!result)
 	{
-		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 		return NULL;
 	}
 	snprintf (result, resultLen, "%s/%s", dir, file);
@@ -146,7 +146,7 @@ static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
 		char * path = elektraMalloc (envPathLen);
 		if (!path)
 		{
-			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 			return -1;
 		}
 		memcpy (path, envPath, envPathLen);
@@ -196,7 +196,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 			*gpgBin = elektraMalloc (configPathLen + 1);
 			if (!(*gpgBin))
 			{
-				ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+				ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 				return -1;
 			}
 			strncpy (*gpgBin, configPath, configPathLen);
@@ -237,7 +237,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
 		if (!(*gpgBin))
 		{
-			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 			return -1;
 		}
 		return 1;
@@ -249,14 +249,14 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
 		if (!(*gpgBin))
 		{
-			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 			return -1;
 		}
 		return 1;
 	}
 
 	// no GPG for us :-(
-	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "no gpg binary found. Please make sure GnuPG is installed and executable.");
+	ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "no gpg binary found. Please make sure GnuPG is installed and executable.");
 	return -1;
 }
 
@@ -447,7 +447,7 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
 	{
 		if (isValidGpgKey (conf, rootValue) != 1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, GPG_ERROR_INVALID_KEY, rootValue);
+			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, GPG_ERROR_INVALID_KEY, rootValue);
 			return -1; // failure
 		}
 	}
@@ -462,7 +462,7 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
 			const char * childValue = keyString (k);
 			if (isValidGpgKey (conf, childValue) != 1)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, GPG_ERROR_INVALID_KEY, childValue);
+				ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, GPG_ERROR_INVALID_KEY, childValue);
 				return -1; // failure
 			}
 		}
@@ -619,14 +619,14 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	// initialize pipes
 	if (pipe (pipe_stdin))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "Pipe initialization failed");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "Pipe initialization failed");
 		elektraFree (argv[0]);
 		return -1;
 	}
 
 	if (pipe (pipe_stdout))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "Pipe initialization failed");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "Pipe initialization failed");
 		closePipe (pipe_stdin);
 		elektraFree (argv[0]);
 		return -1;
@@ -634,7 +634,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 
 	if (pipe (pipe_stderr))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "Pipe initialization failed");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "Pipe initialization failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		elektraFree (argv[0]);
@@ -645,7 +645,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	// estimated maximum output size = 2 * input (including headers, etc.)
 	if (msgKey && !(buffer = elektraMalloc (bufferSize)))
 	{
-		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (RESOURCE_CODE, errorKey, "Memory allocation failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -658,7 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 	case -1:
 		// fork() failed
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "fork failed");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "fork failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -718,7 +718,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "The communication with the GPG process failed.");
+			ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "The communication with the GPG process failed.");
 			closePipe (pipe_stdin);
 			closePipe (pipe_stdout);
 			closePipe (pipe_stderr);
@@ -748,23 +748,23 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 
 	case 1:
 		// bad signature
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG reported a bad signature");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "GPG reported a bad signature");
 		break;
 
 	case GPG_CALL_DUP_STDIN:
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdin.");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "failed to redirect stdin.");
 		break;
 
 	case GPG_CALL_DUP_STDOUT:
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdout.");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "failed to redirect stdout.");
 		break;
 
 	case GPG_CALL_DUP_STDERR:
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stderr.");
+		ELEKTRA_SET_ERROR (INSTALLATION_CODE, errorKey, "failed to redirect stderr.");
 		break;
 
 	case GPG_CALL_EXECV:
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
+		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, errorKey, "failed to start the gpg binary: %s", argv[0]);
 		break;
 
 	default:
@@ -774,7 +774,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		{
 			errorBuffer[0] = '\0';
 		}
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG failed with return value %d. %s", status, errorBuffer);
+		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, errorKey, "GPG failed with return value %d. %s", status, errorBuffer);
 		break;
 	}
 

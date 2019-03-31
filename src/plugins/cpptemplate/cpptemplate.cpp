@@ -63,7 +63,7 @@ int elektraCppTemplateOpen (Plugin * handle, Key * key)
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, key, error.what ());
+		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, key, "Uncaught Exception: %s", error.what ());
 	}
 
 	return status;

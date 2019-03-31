@@ -70,11 +70,11 @@ int elektraYambiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 	catch (runtime_error const & runtimeError)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, *parent, runtimeError.what ());
+		ELEKTRA_SET_ERROR (PARSING_CODE, *parent, runtimeError.what ());
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
+		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, *parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();

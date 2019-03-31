@@ -46,15 +46,15 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	{
 		if (status == -3)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”", filename.c_str ());
+			ELEKTRA_SET_ERRORF (RESOURCE_CODE, parent.getKey (), "Unable to open file “%s”", filename.c_str ());
 		}
 		else if (status == -2)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), "Parsing failed due to memory exhaustion");
+			ELEKTRA_SET_ERROR (PARSING_CODE, parent.getKey (), "Parsing failed due to memory exhaustion");
 		}
 		else if (status == -1)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), driver.getErrorMessage ().c_str ());
+			ELEKTRA_SET_ERROR (PARSING_CODE, parent.getKey (), driver.getErrorMessage ().c_str ());
 		}
 
 		return status;
