@@ -22,39 +22,35 @@ extern char ** environ;
 
 static KeySet * getSpec (const char * name, Key ** parentKey)
 {
+	*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+
 	if (strcmp (name, TEST_EMPTY) == 0)
 	{
-		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
 		return TEST_KS_EMPTY;
 	}
 
 	if (strcmp (name, TEST_SINGLEOPT) == 0)
 	{
-		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
 		return TEST_KS_SINGLEOPT;
 	}
 
 	if (strcmp (name, TEST_TWOOPT) == 0)
 	{
-		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
 		return TEST_KS_TWOOPT;
 	}
 
 	if (strcmp (name, TEST_SINGLEENV) == 0)
 	{
-		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
 		return TEST_KS_SINGLEENV;
 	}
 
 	if (strcmp (name, TEST_TWOENV) == 0)
 	{
-		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
 		return TEST_KS_TWOENV;
 	}
 
 	if (strcmp (name, TEST_MIXED) == 0)
 	{
-		*parentKey = keyNew ("spec/tests/gopts", KEY_END);
 		return TEST_KS_MIXED;
 	}
 

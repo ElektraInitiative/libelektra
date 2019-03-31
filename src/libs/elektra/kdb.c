@@ -1571,13 +1571,13 @@ enum PluginContractState
 };
 
 /**
- * Ensures a kdbEnsure() contract condition for a global plugin.
+ * Ensures a kdbEnsure() contract clause for a global plugin.
  *
  * @see kdbEnsure()
  *
  * @param handle       the KDB handle
  * @param pluginName   the name of the plugin
- * @param pluginState  the intended condition for the plugin
+ * @param pluginState  the intended clause for the plugin
  * @param pluginConfig the config KeySet for the plugin; is always consumed, i.e. you shouldn't ksDel() it after calling this
  * @param errorKey     used for error reporting
  *
@@ -1606,14 +1606,14 @@ static int ensureGlobalPluginState (KDB * handle, const char * pluginName, enum 
 }
 
 /**
- * Ensures a kdbEnsure() contract condition for a plugin under a certain mountpoint.
+ * Ensures a kdbEnsure() contract clause for a plugin under a certain mountpoint.
  *
  * @see kdbEnsure()
  *
  * @param handle       the KDB handle
  * @param mountpoint   the mountpoint to use
  * @param pluginName   the name of the plugin
- * @param pluginState  the intended condition for the plugin
+ * @param pluginState  the intended clause for the plugin
  * @param pluginConfig the config KeySet for the plugin; is always consumed, i.e. you shouldn't ksDel() it after calling this
  * @param errorKey     used for error reporting
  *
@@ -1629,8 +1629,10 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
 		ksDel (pluginConfig);
 		return ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey);
 	case PLUGIN_STATE_MOUNTED:
+		ELEKTRA_ASSERT (0, "not supported");
 		return 0; // TODO: ensurePluginMounted (handle, mountpoint, pluginName, pluginConfig, errorKey);
 	case PLUGIN_STATE_REMOUNT:
+		ELEKTRA_ASSERT (0, "not supported");
 		return 0; // TODO: ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey) && ensurePluginMounted (handle,
 			  // mountpoint, pluginName, pluginConfig, errorKey);
 	default:
@@ -1640,8 +1642,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
 }
 
 /**
- * This function can be used the given KDB @p handle meets certain conditions,
- * specified in @p contract. Currently the following conditions are supported:
+ * This function can be used the given KDB @p handle meets certain clauses,
+ * specified in @p contract. Currently the following clauses are supported:
  *
  * - `system/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
  *   `<pluginname>` for the mountpoint `<mountpoint>`:
@@ -1666,17 +1668,17 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * If `<mountpoint>` is NOT `global`, currently only `unmounted` is supported (not `mounted` and `remounted`).
  *
  * NOTE: This function only works properly, if the list plugin is mounted in all global positions.
- * If this is not the case, 1 will be returned, because this is seen as an implicit condition in the contract.
- * Additionally any contract that specifies conditions for the list plugin is rejected as malformed.
+ * If this is not the case, 1 will be returned, because this is seen as an implicit clause in the contract.
+ * Additionally any contract that specifies clauses for the list plugin is rejected as malformed.
  *
  * @param handle    contains internal information of @link kdbOpen() opened @endlink key database
  * @param contract  KeySet containing the contract described above.
- *                  Because of the implementation, this will always be `ksDel()`ed. <b>Even in error cases.</b>
+ *                  This will always be `ksDel()`ed. **Even in error cases.**
  * @param parentKey The parentKey used if the `parent` special value is used,
  *                  otherwise only used for error reporting.
  *
  * @retval  0 on success
- * @retval  1 if conditions of the contract are unmet
+ * @retval  1 if clauses of the contract are unmet
  * @retval -1 on NULL pointers, or malformed contract
  */
 int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
@@ -1699,15 +1701,15 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 	ksDel (contract);
 
 	ksRewind (pluginsContract);
-	Key * condition = NULL;
-	while ((condition = ksNext (pluginsContract)) != NULL)
+	Key * clause = NULL;
+	while ((clause = ksNext (pluginsContract)) != NULL)
 	{
 		// only handle 'system/plugins/<mountpoint>/<pluginname>' keys
-		const char * condUNameBase = keyUnescapedName (condition);
+		const char * condUNameBase = keyUnescapedName (clause);
 		const char * condUName = condUNameBase;
 		condUName += sizeof ("system\0plugins"); // skip known common part
 
-		size_t condUSize = keyGetUnescapedNameSize (condition);
+		size_t condUSize = keyGetUnescapedNameSize (clause);
 		if (condUNameBase + condUSize <= condUName)
 		{
 			continue; // base key
@@ -1725,14 +1727,14 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 			continue; // key below 'system/plugins/<mountpoint>/<pluginname>'
 		}
 
-		const char * mountpoint = keyUnescapedName (condition);
+		const char * mountpoint = keyUnescapedName (clause);
 		mountpoint += sizeof ("system\0plugins");
-		const char * pluginName = keyBaseName (condition);
-		const char * pluginStateString = keyString (condition);
+		const char * pluginName = keyBaseName (clause);
+		const char * pluginStateString = keyString (clause);
 
 		if (strcmp (pluginName, "list") == 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALFORMED_CONTRACT, parentKey, "Cannot specify conditions for the list plugin!!");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALFORMED_CONTRACT, parentKey, "Cannot specify clauses for the list plugin!!");
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
 			return -1;
@@ -1756,13 +1758,13 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 			ELEKTRA_SET_ERRORF (
 				ELEKTRA_ERROR_MALFORMED_CONTRACT, parentKey,
 				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used.",
-				keyName (condition), pluginStateString);
+				keyName (clause), pluginStateString);
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
 			return -1;
 		}
 
-		Key * pluginCutpoint = keyNew (keyName (condition), KEY_END);
+		Key * pluginCutpoint = keyNew (keyName (clause), KEY_END);
 		keyAddBaseName (pluginCutpoint, "config");
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
 		ksAppendKey (pluginConfig, pluginCutpoint);
@@ -1789,8 +1791,8 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 			{
 				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALFORMED_CONTRACT, parentKey,
 						    "The key '%s' contained the value '%s', but only 'unmounted' is supported for "
-						    "non-global conditions at the moment.",
-						    keyName (condition), pluginStateString);
+						    "non-global clauses at the moment.",
+						    keyName (clause), pluginStateString);
 				keyDel (cutpoint);
 				ksDel (pluginConfig);
 				ksDel (pluginsContract);

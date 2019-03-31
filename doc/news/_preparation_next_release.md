@@ -53,16 +53,15 @@ please take a look at the [README](https://www.libelektra.org/plugins/type).
 
 ### kdbEnsure
 
-`kdbEnsure` is a new function in `elektra-kdb`. It can be used to ensure that a KDB instance meets certain conditions specified in a
-contract. In principle this a very powerful tool that may be used for a lot of things. For now it only supports a few conditions concerning
+`kdbEnsure` is a new function in `elektra-kdb`. It can be used to ensure that a KDB instance meets certain clauses specified in a
+contract. In principle this a very powerful tool that may be used for a lot of things. For now it only supports a few clauses concerning
 plugins:
 
-- You can specify that a plugin should be mounted globally. This is can for example be used to enable the new [gopts](#gopts) plugin.
+- You can specify that a plugin should be mounted globally. This can for example be used to enable the new [gopts](#gopts) plugin.
 - Conversely you can also define that a plugin should not be mounted globally, e.g. to disable the `spec` plugin, which is enabled by default.
 - Additionally you may want to enforce that a global plugin uses a certain configuration. For this case you can specify that the plugin
   should be remounted, i.e. unmounted and immediately mounted again.
-- In future non-global plugins will support the same features. But because of the different architecture involved, for now only unmounting
-  non-global plugins is supported.
+- Because of the different architecture involved, for now only unmounting of non-global plugins is supported.
 
 All changes made by `kdbEnsure` are purely temporary. They will only apply to the KDB handle passed to the function.
 

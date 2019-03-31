@@ -62,6 +62,8 @@ public:
 
 protected:
 	Key m_key;
+
+private:
 	mutable std::string m_str;
 };
 
