@@ -344,7 +344,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- We updated the [Docker image for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 

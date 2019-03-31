@@ -1,14 +1,15 @@
-FROM alpine:3.8
+FROM alpine:3.9
 
 RUN apk update \
     && apk add --no-cache \
+        bison \
         build-base \
         cmake \
-        git \
-        file \
         curl \
-        yaml-cpp-dev \
-        bison
+        file \
+        git \
+        ninja \
+        yaml-cpp-dev
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
