@@ -60,6 +60,7 @@ please take a look at the [README](https://www.libelektra.org/plugins/type).
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
+
 ### YAJL
 
 - The plugin no allows setting a value to the mountpoint. This is represented as a top level value in json if no other key is present. _(Philipp Gackstatter)_
