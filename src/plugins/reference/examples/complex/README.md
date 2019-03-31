@@ -21,7 +21,7 @@ struct typeB {
 struct typeA *rootkey_ref;
 ```
 
-Starting with a refernce to an element of type `typeA`, we except an alternating chain of
+Starting with a reference to an element of type `typeA`, we except an alternating chain of
 `typeA` and `typeB`. In this chain each element of type `typeA` shall have a string attached
 to it, while elements of type `typeB` shall contain an integer.
 
