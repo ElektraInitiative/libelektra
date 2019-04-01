@@ -42,15 +42,17 @@ extern "C" {
 
 typedef struct
 {
-	const char * a;
-	kdb_long_t b;
+	const char *   a;
+	kdb_long_t   b;
 } ElektraStructMystruct;
 
 typedef struct
 {
-	kdb_short_t age;
-	kdb_float_t height;
-	const char * fullName;
+	kdb_short_t   age;
+	kdb_long_long_t   childrenSize;
+	Person  * []  children;
+	kdb_float_t   height;
+	const char *   fullName;
 } Person;
 
 
@@ -126,6 +128,19 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 */// 
 #define ELEKTRA_TAG_PERSON_AGE PersonAge
+
+/**
+* Tag name for 'person/_/children/#'
+* 
+* Required arguments:
+* 
+* - const char * name0: Replaces occurence no. 0 of _ in the keyname.
+* 
+* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* 
+* 
+*/// 
+#define ELEKTRA_TAG_PERSON_CHILDREN PersonChildren
 
 /**
 * Tag name for 'person/_/height'
@@ -429,6 +444,80 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra, kdb_short_t value
 	
 }
 
+
+// clang-format off
+
+// clang-format on
+
+
+/**
+ * Get the value of 'person/_/children/#'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ *
+ * @return the value of 'person/_/children/#', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
+ */// 
+static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
+								      const char * name0 , 
+								      kdb_long_long_t index1 
+								       )
+{
+	char * name = elektraFormat ("person/%s/children/%*.*s%lld",   name0 ,
+				        elektra_len (index1),
+				     elektra_len (index1), "#___________________",  index1  );
+	const char * actualName = elektraGetRawString (elektra, name);
+	elektraFree (name);
+	
+
+	if (actualName == NULL || strlen (actualName) == 0)
+	{
+		return NULL;
+	}
+
+	return ELEKTRA_GET (StructPerson) (elektra, actualName);
+}
+
+
+
+/**
+ * Set the value of 'person/_/children/#'.
+ *
+ * WARNING: if the given value does not reference a valid struct, from this specification,
+ * ELEKTRA_GET (PersonChildren) will fail. Use the `reference` plugin to ensure valid values.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'person/_/children/#', you must prefix it with '/tests/script/gen/elektra/struct' yourself.
+ *                This is because you may want to specify a namespace.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char * value,  
+						    const char * name0,
+						    kdb_long_long_t index1,
+						      ElektraError ** error)
+{
+	char * name = elektraFormat ("person/%s/children/%*.*s%lld",   name0 ,
+				        elektra_len (index1),
+				     elektra_len (index1), "#___________________",  index1  );
+	elektraSetRawString (elektra, name, value, "struct_ref", error);
+	elektraFree (name);
+	
+}
+
+
+
+/**
+ * Get the size of the array 'person/_/children/#'.
+ */// 
+static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra)
+{
+	char * name = elektraFormat ("person/%s/children",   name0 ,
+				      );
+	kdb_long_long_t size = elektraArraySize (elektra, name);
+	elektraFree (name);
+	
+	return size;
+}
 
 
 

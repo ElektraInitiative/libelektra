@@ -18,11 +18,19 @@ ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	/*%# fields %*/
 	/*%# is_struct? %*/
 	/*%# alloc? %*/
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/[i]);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
 	ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/);
+	/*%/ is_array? %*/
 	/*%/ alloc? %*/
 	/*%/ is_struct? %*/
 	/*%/ fields %*/
-	elektraFree (&ptr);
+	elektraFree (*ptr);
 	*ptr = NULL;
 }
 
@@ -35,30 +43,8 @@ ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	field[nameLen] = '/';
 	++nameLen;
 
-	/*%# fields %*/
-	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-	/*%# is_struct? %*/
-	const char * refname = elektraGetRawString (elektra, field);
-	if (refname != NULL && refname[0] != '\0')
-	{
-		char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
-		strcpy (refField, field);
-		strcpy (&refField[nameLen], refname);
-		/*%# alloc? %*/
-		result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
-		/*%/ alloc? %*/
-		/*%^ alloc? %*/
-		result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-		ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
-		/*%/ alloc? %*/
-		elektraFree (refField);
-	}
-	/*%/ is_struct? %*/
-	/*%^ is_struct? %*/
-	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
-	/*%/ is_struct? %*/
+	/*%> partial.struct.alloc.fields.c %*/
 
-	/*%/ fields %*/
 	elektraFree (field);
 	return result;
 }
@@ -77,30 +63,8 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	field[nameLen] = '/';
 	++nameLen;
 
-	/*%# fields %*/
-	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-	/*%# is_struct? %*/
-	const char * refname = elektraGetRawString (elektra, field);
-	if (refname != NULL && refname[0] != '\0')
-	{
-		char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
-		strcpy (refField, field);
-		strcpy (&refField[nameLen], refname);
-		/*%# alloc? %*/
-		result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
-		/*%/ alloc? %*/
-		/*%^ alloc? %*/
-		result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
-		/*%/ alloc? %*/
-		elektraFree (refField);
-	}
-	/*%/ is_struct? %*/
-	/*%^ is_struct? %*/
-	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
-	/*%/ is_struct? %*/
+	/*%> partial.struct.alloc.fields.c %*/
 
-	/*%/ fields %*/
 	elektraFree (field);
 	return result;
 }
@@ -115,14 +79,24 @@ ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 	++nameLen;
 
 	/*%# fields %*/
+	/*%^ is_array_size? %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-/*%# is_struct? %*/
+	/*%# is_struct? %*/
 /*%! should never happend %*/
 #error "struct reference inside non-allocating struct is not supported"
 	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
 	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+	/*%/ is_array? %*/
 	/*%/ is_struct? %*/
+	/*%/ is_array_size? %*/
 
 	/*%/ fields %*/
 	elektraFree (field);
@@ -142,14 +116,24 @@ ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_nam
 	++nameLen;
 
 	/*%# fields %*/
+	/*%^ is_array_size? %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-/*%# is_struct? %*/
+	/*%# is_struct? %*/
 /*%! should never happend %*/
 #error "struct reference inside non-allocating struct is not supported"
 	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
-	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+	/*%/ is_array? %*/
 	/*%/ is_struct? %*/
+	/*%/ is_array_size? %*/
 
 	/*%/ fields %*/
 	elektraFree (field);
@@ -165,12 +149,22 @@ ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
 	++nameLen;
 
 	/*%# fields %*/
+	/*%^ is_array_size? %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+	/*%/ is_array? %*/
 	if (error != NULL)
 	{
 		return;
 	}
+	/*%/ is_array_size? %*/
 
 	/*%/ fields %*/
 }
@@ -189,14 +183,23 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_nam
 	++nameLen;
 
 	/*%# fields %*/
+	/*%^ is_array_size? %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-	ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, value->/*%& name %*/, error);
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+	/*%/ is_array? %*/
 	if (error != NULL)
 	{
 		return;
 	}
+	/*%/ is_array_size? %*/
 
 	/*%/ fields %*/
 }
 /*%/ structs %*/
-

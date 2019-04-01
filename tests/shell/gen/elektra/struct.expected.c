@@ -49,17 +49,20 @@ static Key * helpKey = NULL;
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (8,
+	KeySet * defaults = ksNew (9,
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string",
 	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long",
 	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "check/reference", "recursive", KEY_META,
+	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "check/reference", "single", KEY_META,
 	"check/reference/restrict", "../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1",
 	KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short",
+	KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/children/#", KEY_META, "check/reference", "recursive",
+	KEY_META, "check/reference/restrict", "../../../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref",
 	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type",
 	"float", KEY_END),
@@ -118,17 +121,20 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (8,
+	KeySet * spec = ksNew (9,
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string",
 	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long",
 	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "check/reference", "recursive", KEY_META,
+	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "check/reference", "single", KEY_META,
 	"check/reference/restrict", "../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1",
 	KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short",
+	KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/children/#", KEY_META, "check/reference", "recursive",
+	KEY_META, "check/reference/restrict", "../../../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref",
 	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type",
 	"float", KEY_END),
@@ -218,11 +224,13 @@ ELEKTRA_GET_OUT_PTR_SIGNATURE (ElektraStructMystruct, StructMystruct)
 	++nameLen;
 
 	strncpy (&field[nameLen], "a", 1);
-
+	
+	
 	result->a = ELEKTRA_GET (String) (elektra, field);
 
 	strncpy (&field[nameLen], "b", 1);
-
+	
+	
 	result->b = ELEKTRA_GET (Long) (elektra, field);
 
 	elektraFree (field);
@@ -242,12 +250,14 @@ ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (ElektraStructMystruct, StructMystru
 	++nameLen;
 
 	strncpy (&field[nameLen], "a", 1);
-
-	result->a = ELEKTRA_GET_ARRAY_ELEMENT (String) (elektra, field, index);
+	
+	
+	result->a = ELEKTRA_GET (String) (elektra, field);
 
 	strncpy (&field[nameLen], "b", 1);
-
-	result->b = ELEKTRA_GET_ARRAY_ELEMENT (Long) (elektra, field, index);
+	
+	
+	result->b = ELEKTRA_GET (Long) (elektra, field);
 
 	elektraFree (field);
 }
@@ -261,6 +271,7 @@ ELEKTRA_SET_SIGNATURE (const ElektraStructMystruct *, StructMystruct)
 	++nameLen;
 
 	strncpy (&field[nameLen], "a", 1);
+	
 	ELEKTRA_SET (String) (elektra, field, value->a, error);
 	if (error != NULL)
 	{
@@ -268,6 +279,7 @@ ELEKTRA_SET_SIGNATURE (const ElektraStructMystruct *, StructMystruct)
 	}
 
 	strncpy (&field[nameLen], "b", 1);
+	
 	ELEKTRA_SET (Long) (elektra, field, value->b, error);
 	if (error != NULL)
 	{
@@ -290,14 +302,16 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const ElektraStructMystruct *, StructMystru
 	++nameLen;
 
 	strncpy (&field[nameLen], "a", 1);
-	ELEKTRA_SET_ARRAY_ELEMENT (String) (elektra, field, index, value->a, error);
+	
+	ELEKTRA_SET (String) (elektra, field, value->a, error);
 	if (error != NULL)
 	{
 		return;
 	}
 
 	strncpy (&field[nameLen], "b", 1);
-	ELEKTRA_SET_ARRAY_ELEMENT (Long) (elektra, field, index, value->b, error);
+	
+	ELEKTRA_SET (Long) (elektra, field, value->b, error);
 	if (error != NULL)
 	{
 		return;
@@ -313,8 +327,14 @@ ELEKTRA_STRUCT_FREE_SIGNATURE (Person *, StructPerson)
 
 	
 	
+	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
+	{
+		ELEKTRA_STRUCT_FREE (StructPerson) (&(*ptr)->children[i]);
+	}
 	
-	elektraFree (&ptr);
+	
+	
+	elektraFree (*ptr);
 	*ptr = NULL;
 }
 
@@ -322,22 +342,12 @@ ELEKTRA_GET_SIGNATURE (Person *, StructPerson)
 {
 	Person *result = elektraCalloc (sizeof (Person));
 	size_t nameLen = strlen (keyname);
-	char * field = elektraCalloc ((nameLen + 1 + 6 +1) * sizeof (char));
+	char * field = elektraCalloc ((nameLen + 1 + 8 +1) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
 
-	strncpy (&field[nameLen], "age", 6);
 	
-	result->age = ELEKTRA_GET (Short) (elektra, field);
-
-	strncpy (&field[nameLen], "height", 6);
-	
-	result->height = ELEKTRA_GET (Float) (elektra, field);
-
-	strncpy (&field[nameLen], "name", 6);
-	
-	result->fullName = ELEKTRA_GET (String) (elektra, field);
 
 	elektraFree (field);
 	return result;
@@ -347,7 +357,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson)
 {
 	Person *result = elektraCalloc (sizeof (Person));
 	size_t nameLen = strlen (keyname);
-	char * field = elektraCalloc ((nameLen + 1 + 6 +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
+	char * field = elektraCalloc ((nameLen + 1 + 8 +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
@@ -357,17 +367,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson)
 	field[nameLen] = '/';
 	++nameLen;
 
-	strncpy (&field[nameLen], "age", 6);
 	
-	result->age = ELEKTRA_GET_ARRAY_ELEMENT (Short) (elektra, field, index);
-
-	strncpy (&field[nameLen], "height", 6);
-	
-	result->height = ELEKTRA_GET_ARRAY_ELEMENT (Float) (elektra, field, index);
-
-	strncpy (&field[nameLen], "name", 6);
-	
-	result->fullName = ELEKTRA_GET_ARRAY_ELEMENT (String) (elektra, field, index);
 
 	elektraFree (field);
 	return result;
@@ -377,26 +377,42 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson)
 ELEKTRA_SET_SIGNATURE (const Person *, StructPerson)
 {
 	size_t nameLen = strlen (keyname);
-	char * field = elektraCalloc ((nameLen + 1 + 6 +1) * sizeof (char));
+	char * field = elektraCalloc ((nameLen + 1 + 8 +1) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
 
-	strncpy (&field[nameLen], "age", 6);
+	strncpy (&field[nameLen], "age", 8);
+	
 	ELEKTRA_SET (Short) (elektra, field, value->age, error);
 	if (error != NULL)
 	{
 		return;
 	}
 
-	strncpy (&field[nameLen], "height", 6);
+	
+
+	strncpy (&field[nameLen], "children", 8);
+	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
+	{
+		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, value->children, error);
+	}
+	
+	if (error != NULL)
+	{
+		return;
+	}
+
+	strncpy (&field[nameLen], "height", 8);
+	
 	ELEKTRA_SET (Float) (elektra, field, value->height, error);
 	if (error != NULL)
 	{
 		return;
 	}
 
-	strncpy (&field[nameLen], "name", 6);
+	strncpy (&field[nameLen], "name", 8);
+	
 	ELEKTRA_SET (String) (elektra, field, value->fullName, error);
 	if (error != NULL)
 	{
@@ -408,7 +424,7 @@ ELEKTRA_SET_SIGNATURE (const Person *, StructPerson)
 ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson)
 {
 	size_t nameLen = strlen (keyname);
-	char * field = elektraCalloc ((nameLen + 1 + 6 +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
+	char * field = elektraCalloc ((nameLen + 1 + 8 +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
@@ -418,27 +434,42 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson)
 	field[nameLen] = '/';
 	++nameLen;
 
-	strncpy (&field[nameLen], "age", 6);
-	ELEKTRA_SET_ARRAY_ELEMENT (Short) (elektra, field, index, value->age, error);
+	strncpy (&field[nameLen], "age", 8);
+	
+	ELEKTRA_SET (Short) (elektra, field, value->age, error);
 	if (error != NULL)
 	{
 		return;
 	}
 
-	strncpy (&field[nameLen], "height", 6);
-	ELEKTRA_SET_ARRAY_ELEMENT (Float) (elektra, field, index, value->height, error);
+	
+
+	strncpy (&field[nameLen], "children", 8);
+	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
+	{
+		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, value->children, error);
+	}
+	
 	if (error != NULL)
 	{
 		return;
 	}
 
-	strncpy (&field[nameLen], "name", 6);
-	ELEKTRA_SET_ARRAY_ELEMENT (String) (elektra, field, index, value->fullName, error);
+	strncpy (&field[nameLen], "height", 8);
+	
+	ELEKTRA_SET (Float) (elektra, field, value->height, error);
+	if (error != NULL)
+	{
+		return;
+	}
+
+	strncpy (&field[nameLen], "name", 8);
+	
+	ELEKTRA_SET (String) (elektra, field, value->fullName, error);
 	if (error != NULL)
 	{
 		return;
 	}
 
 }
-
 
