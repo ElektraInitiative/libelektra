@@ -7,10 +7,12 @@
 
 /*%# structs %*/
 /*%# generate_typedef? %*/
-typedef struct
+typedef struct /*%& native_type %*/
 {
 	/*%# fields %*/
-	/*%& native_type %*/ /*%# is_struct? %*/ */*%/ is_struct? %*/ /*%# is_array? %*/[] /*%/ is_array? %*/ /*%& name%*/;
+	/*%# is_struct? %*/ struct /*%& native_type %*/ * /*%# is_array? %*/ * /*%/ is_array? %*/ /*%& name%*/; /*%/ is_struct? %*/
+	/*%^ is_struct? %*/ /*%& native_type %*/ /*%# is_array? %*/ */*%/ is_array? %*/ /*%& name%*/;		/*%/ is_struct? %*/
+
 	/*%/ fields %*/
 } /*%& native_type %*/;
 

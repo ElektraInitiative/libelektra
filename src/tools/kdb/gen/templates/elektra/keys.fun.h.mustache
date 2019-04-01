@@ -93,7 +93,10 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 /**
  * Get the size of the array '{{{ name }}}'.
  */// {{=/*% %*/=}}
-static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra)
+static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra /*%# array_args? %*/,
+								/*%# args %*/
+								/*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+								/*%/ args %*/ /*%/ array_args? %*/)
 {
 	/*%# array_args? %*/
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
