@@ -19,6 +19,18 @@ extern char ** environ;
 #define BASE_KEY "/sw/org/erm/#0/current"
 #define SPEC_BASE_KEY "spec" BASE_KEY
 
+// -----------------
+// Helper methods
+// -----------------
+
+/*
+ * The methods below are only used, so that this example is self-contained.
+ * If you actually develop an application, you may use the `specload` plugin,
+ * but in any case the specification should be mounted into the KDB using `kdb mount`.
+ *
+ * DO NOT set/unset the specification inside of your application.
+ */
+
 static KeySet * createSpec (void)
 {
 	return ksNew (
@@ -94,6 +106,10 @@ static void removeSpec (void)
 	ksDel (ks);
 }
 
+// -----------------
+// Main example
+// -----------------
+
 int main (void)
 {
 	if (!setupSpec ())
@@ -105,7 +121,7 @@ int main (void)
 	Key * parentKey = keyNew (BASE_KEY, KEY_END);
 	KDB * kdb = kdbOpen (parentKey);
 
-	KeySet * contract = ksNew (1, keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
+	KeySet * contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
 	int rc = kdbEnsure (kdb, contract, parentKey);
 	if (rc == 1)
 	{

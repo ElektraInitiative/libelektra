@@ -1624,7 +1624,7 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * This function can be used the given KDB @p handle meets certain clauses,
  * specified in @p contract. Currently the following clauses are supported:
  *
- * - `system/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
+ * - `system/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
  *   `<pluginname>` for the mountpoint `<mountpoint>`:
  * 	- The value `unmounted` ensures the plugin is not mounted, at this mountpoint.
  * 	- The value `mounted` ensures the plugin is mounted, at this mountpoint.
@@ -1632,8 +1632,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * 	- The value `remount` always mounts the plugin, at this mountpoint.
  * 	  If it was already mounted, it will me unmounted and mounted again.
  * 	  This can be used to ensure the plugin is mounted with a certain configuration.
- * - Keys below `system/plugins/<mountpoint>/<pluginname>/config` are extracted and used
- *   as the plugins config KeySet during mounting. `system/plugins/<mountpoint>/<pluginname>`
+ * - Keys below `system/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
+ *   as the plugins config KeySet during mounting. `system/elektra/ensure/plugins/<mountpoint>/<pluginname>`
  *   will be repleced by `user` in the keynames. If no keys are given, an empty KeySet is used.
  *
  * There are a few special values for `<mountpoint>`:
@@ -1673,7 +1673,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		return -1;
 	}
 
-	Key * cutpoint = keyNew ("system/plugins", KEY_END);
+	Key * cutpoint = keyNew ("system/elektra/ensure/plugins", KEY_END);
 	KeySet * pluginsContract = ksCut (contract, cutpoint);
 
 	// delete unused part of contract immediately
@@ -1683,10 +1683,10 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 	Key * clause = NULL;
 	while ((clause = ksNext (pluginsContract)) != NULL)
 	{
-		// only handle 'system/plugins/<mountpoint>/<pluginname>' keys
+		// only handle 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
 		const char * condUNameBase = keyUnescapedName (clause);
 		const char * condUName = condUNameBase;
-		condUName += sizeof ("system\0plugins"); // skip known common part
+		condUName += sizeof ("system\0elektra\0ensure\0plugins"); // skip known common part
 
 		size_t condUSize = keyGetUnescapedNameSize (clause);
 		if (condUNameBase + condUSize <= condUName)
@@ -1703,11 +1703,11 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		condUName += strlen (condUName) + 1; // skip pluginname
 		if (condUNameBase + condUSize > condUName)
 		{
-			continue; // key below 'system/plugins/<mountpoint>/<pluginname>'
+			continue; // key below 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>'
 		}
 
 		const char * mountpoint = keyUnescapedName (clause);
-		mountpoint += sizeof ("system\0plugins");
+		mountpoint += sizeof ("system\0elektra\0ensure\0plugins");
 		const char * pluginName = keyBaseName (clause);
 		const char * pluginStateString = keyString (clause);
 
