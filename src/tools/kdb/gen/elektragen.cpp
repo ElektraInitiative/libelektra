@@ -77,6 +77,7 @@ private:
 
 	static inline std::string getFieldName (const kdb::Key & key, const std::string & fieldKeyName);
 	static inline bool shouldGenerateTypeDef (const kdb::Key & key);
+	static inline std::string arraySizeName (const kdb::Key & key, const std::string & arrayFieldName);
 
 public:
 	StructProcessor (const kdb::Key & parentKey_, const kdb::KeySet & allKeys_) : parentKey (parentKey_), allKeys (allKeys_)
@@ -384,6 +385,12 @@ bool StructProcessor::shouldAllocate (const kdb::Key & key)
 	return key.hasMeta ("gen/struct/alloc") && key.getMeta<std::string> ("gen/struct/alloc") == "1";
 }
 
+std::string StructProcessor::arraySizeName (const kdb::Key & key, const std::string & arrayFieldName)
+{
+	return key.hasMeta ("gen/struct/array/sizefield") ? key.getMeta<std::string> ("gen/struct/array/sizefield") :
+							    arrayFieldName + "Size";
+}
+
 std::string StructProcessor::getFieldName (const kdb::Key & key, const std::string & fieldKeyName)
 {
 	std::string result = key.hasMeta ("gen/struct/field") ? key.getMeta<std::string> ("gen/struct/field") : fieldKeyName;
@@ -453,8 +460,11 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 	for (const kdb::Key & key : structKeys)
 	{
 		auto parts = getKeyParts (key);
+		auto isArray = parts.back () == "#";
+
+		auto end = isArray ? parts.end () - 1 : parts.end ();
 		std::string fieldKeyName = parts[baseParts];
-		for (auto it = parts.begin () + baseParts + 1; it != parts.end (); ++it)
+		for (auto it = parts.begin () + baseParts + 1; it != end; ++it)
 		{
 			fieldKeyName += "_" + *it;
 		}
@@ -516,12 +526,23 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 
 		auto name = getFieldName (key, fieldKeyName);
 
-		fields.emplace_back (object{ { "name", name },
-					     { "key_name", fieldKeyName },
-					     { "native_type", nativeType },
-					     { "type_name", typeName },
-					     { "alloc?", allocate },
-					     { "is_struct?", isStruct } });
+		auto field = object{ { "name", name },		{ "key_name", fieldKeyName }, { "native_type", nativeType },
+				     { "type_name", typeName }, { "alloc?", allocate },       { "is_array?", isArray },
+				     { "is_struct?", isStruct } };
+
+		if (isArray)
+		{
+			auto sizeName = arraySizeName (key, fieldKeyName);
+
+			fields.emplace_back (object{ { "name", sizeName },
+						     { "is_array_size?", true },
+						     { "array_key", fieldKeyName },
+						     { "native_type", "kdb_long_long_t" } });
+
+			field["size_field"] = sizeName;
+		}
+
+		fields.emplace_back (field);
 
 		ss << nativeType << " " << name << "\n";
 	}
@@ -808,12 +829,17 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 					auto parts = getKeyParts (*cur);
 					if (parts.size () <= baseDepth + maxDepth)
 					{
-						if (std::any_of (parts.begin () + baseDepth, parts.end (),
-								 [](const std::string & s) { return s == "_" || s == "#"; }))
+						if (std::any_of (parts.begin () + baseDepth, parts.end () - 1,
+								 [](const std::string & s) { return s == "_" || s == "#"; }) ||
+						    parts.back () == "_")
 						{
 							throw CommandAbortException ("struct cannot contain globbed keys (_, #).");
 						}
 
+						subkeys.append (*cur);
+					}
+					else if (parts.size () <= baseDepth + maxDepth + 1 && parts.back () == "#")
+					{
 						subkeys.append (*cur);
 					}
 				}
