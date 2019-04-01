@@ -28,7 +28,7 @@ static Key * helpKey = NULL;
 
 
 /**
- * Initializes an instance of Elektra for the application 'tests/script/gen/elektra/enum'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/enum'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -71,7 +71,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KEY_END),
 	KS_END);
 ;
-	Elektra * e = elektraOpen ("tests/script/gen/elektra/enum", defaults, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/elektra/enum", defaults, error);
 
 	if (e == NULL)
 	{
@@ -117,7 +117,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  */
 void specloadCheck (int argc, const char ** argv)
 {
-	if (argc != 2 || strcmp (argv[1], "--elektra-specload") != 0)
+	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
 	{
 		return;
 	}
@@ -145,15 +145,15 @@ void specloadCheck (int argc, const char ** argv)
 	KS_END);
 ;
 
-	Key * errorKey = keyNew (0, KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/enum", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
-	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
+	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
-	int result = elektraInvoke2Args (specload, "sendspec", spec, NULL);
+	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
 
-	elektraInvokeClose (specload, errorKey);
-	keyDel (errorKey);
+	elektraInvokeClose (specload, parentKey);
+	keyDel (parentKey);
 	ksDel (specloadConf);
 	ksDel (spec);
 

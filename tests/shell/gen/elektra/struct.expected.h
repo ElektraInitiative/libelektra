@@ -20,6 +20,7 @@ extern "C" {
 #include <elektra.h>
 
 #include <kdbhelper.h>
+#include <string.h>
 
 
 
@@ -36,8 +37,8 @@ extern "C" {
 
 // clang-format on
 
-#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
-#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+#define ELEKTRA_STRUCT_FREE(typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
 typedef struct
 {
@@ -177,6 +178,41 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
 
+#define ELEKTRA_SIZE(tagName) elektraSize##tagName
+
+// clang-format off
+
+// clang-format on
+
+
+
+/**
+ * Get the value of 'mystruct'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param result  The value will be stored in the referenced variable.
+ */// 
+static inline void ELEKTRA_GET (Mystruct) (Elektra * elektra, ElektraStructMystruct *result )
+{
+	
+	ELEKTRA_GET (StructMystruct) (elektra, "mystruct", result);
+}
+
+
+/**
+ * Set the value of 'mystruct'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'mystruct'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (Mystruct) (Elektra * elektra, const ElektraStructMystruct * value,  ElektraError ** error)
+{
+	
+	ELEKTRA_SET (StructMystruct) (elektra, "mystruct", value, error);
+}
+
 
 
 
@@ -212,6 +248,7 @@ static inline void ELEKTRA_SET (MystructA) (Elektra * elektra, const char * valu
 
 
 
+
 /**
  * Get the value of 'mystruct/b'.
  *
@@ -241,6 +278,114 @@ static inline void ELEKTRA_SET (MystructB) (Elektra * elektra, kdb_long_t value,
 }
 
 
+// clang-format off
+
+// clang-format on
+
+
+/**
+ * Get the value of 'people/#'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ *
+ * @return the value of 'people/#', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
+ */// 
+static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
+								      kdb_long_long_t index0 
+								       )
+{
+	char * name = elektraFormat ("people/%*.*s%lld",   elektra_len (index0),
+				     elektra_len (index0), "#___________________",  index0  );
+	const char * actualName = elektraGetRawString (elektra, name);
+	elektraFree (name);
+	
+
+	if (actualName == NULL || strlen (actualName) == 0)
+	{
+		return NULL;
+	}
+
+	return ELEKTRA_GET (StructPerson) (elektra, actualName);
+}
+
+
+
+/**
+ * Set the value of 'people/#'.
+ *
+ * WARNING: if the given value does not reference a valid struct, from this specification,
+ * ELEKTRA_GET (People) will fail. Use the `reference` plugin to ensure valid values.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'people/#', you must prefix it with '/tests/script/gen/elektra/struct' yourself.
+ *                This is because you may want to specify a namespace.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,  
+						    kdb_long_long_t index0,
+						      ElektraError ** error)
+{
+	char * name = elektraFormat ("people/%*.*s%lld",   elektra_len (index0),
+				     elektra_len (index0), "#___________________",  index0  );
+	elektraSetRawString (elektra, name, value, "struct_ref", error);
+	elektraFree (name);
+	
+}
+
+
+
+/**
+ * Get the size of the array 'people/#'.
+ */// 
+static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra)
+{
+	
+	kdb_long_long_t size = elektraArraySize (elektra, "people");
+	return size;
+}
+// clang-format off
+
+// clang-format on
+
+
+/**
+ * Get the value of 'person/_'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ *
+ * @return the value of 'person/_', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
+ */// 
+static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
+								      const char * name0 
+								       )
+{
+	char * name = elektraFormat ("person/%s",   name0  );
+	Person *result = ELEKTRA_GET (StructPerson) (elektra, name);
+	elektraFree (name);
+	return result;
+	
+}
+
+
+
+/**
+ * Set the value of 'person/_'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'person/_'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value,  
+						    const char * name0,
+						      ElektraError ** error)
+{
+	char * name = elektraFormat ("person/%s",   name0  );
+	ELEKTRA_SET (StructPerson) (elektra, name, value, error);
+	elektraFree (name);
+	
+}
 
 
 
@@ -286,6 +431,7 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra, kdb_short_t value
 
 
 
+
 /**
  * Get the value of 'person/_/height'.
  *
@@ -322,6 +468,7 @@ static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra, kdb_float_t va
 	elektraFree (name);
 	
 }
+
 
 
 
@@ -362,6 +509,7 @@ static inline void ELEKTRA_SET (PersonName) (Elektra * elektra, const char * val
 	
 }
 
+
 #undef elektra_len19
 #undef elektra_len18
 #undef elektra_len17
@@ -394,7 +542,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  *
- * @return The value stored at the given key and index.
+ * @return The value stored at the given key.
  */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
@@ -404,7 +552,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  *
- * @return The value stored at the given key and index.
+ * @return The value stored at the given key.
  */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
@@ -428,7 +576,7 @@ void specloadCheck (int argc, const char ** argv);
 
 /**
  * @param elektra The elektra instance initialized with the loadConfiguration().
- * @param tag     The codegenerated Tag to write to.
+ * @param tag     The tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  */// 
@@ -437,12 +585,21 @@ void specloadCheck (int argc, const char ** argv);
 
 /**
  * @param elektra The elektra instance initialized with the loadConfiguration().
- * @param tag     The codegenerated Tag to write to.
+ * @param tag     The tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
  */// 
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+
+
+/**
+ * @param elektra The elektra instance initialized with loadConfiguration().
+ * @param tag     The array tag to look up.
+ *
+ * @return The size of the array below the given key.
+ */// 
+#define elektraSize(elektra, tag) ELEKTRA_SIZE (tag) (elektra)
 
 #ifdef __cplusplus
 }

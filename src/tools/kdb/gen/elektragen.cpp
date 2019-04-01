@@ -59,10 +59,10 @@ private:
 						  std::string & valuesString);
 
 	static inline bool shouldGenerateTypeDef (const kdb::Key & key);
-	static inline std::string getType (const kdb::Key & key, const std::string & tagName, bool & genType);
 
 public:
 	kainjow::mustache::object process (const kdb::Key & key, const std::string & tagName);
+	static inline std::string getType (const kdb::Key & key, const std::string & tagName, bool & genType);
 };
 
 class StructProcessor
@@ -89,12 +89,17 @@ public:
 	kainjow::mustache::object process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName);
 };
 
+static void escapeNonAlphaNum (std::string & str)
+{
+	std::replace_if (str.begin (), str.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+}
+
 static std::string createIncludeGuard (const std::string & fileName)
 {
 	std::string result;
 	result.resize (fileName.length ());
 	std::transform (fileName.begin (), fileName.end (), result.begin (), ::toupper);
-	std::replace_if (result.begin (), result.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+	escapeNonAlphaNum (result);
 	return result;
 }
 
@@ -279,6 +284,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 			auto name = prefix + "_";
 			const std::string & stringValue = key.getMeta<std::string> ("check/enum/" + cur);
 			name += camelCaseToMacroCase (stringValue);
+			escapeNonAlphaNum (name);
 			auto value = std::to_string (i);
 			if (key.hasMeta ("check/enum/" + cur + "/value"))
 			{
@@ -381,7 +387,7 @@ bool StructProcessor::shouldAllocate (const kdb::Key & key)
 std::string StructProcessor::getFieldName (const kdb::Key & key, const std::string & fieldKeyName)
 {
 	std::string result = key.hasMeta ("gen/struct/field") ? key.getMeta<std::string> ("gen/struct/field") : fieldKeyName;
-	std::replace_if (result.begin (), result.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+	escapeNonAlphaNum (result);
 	return result;
 }
 
@@ -411,10 +417,10 @@ static void processStructRef (const kdb::Key & key, const kdb::Key & parentKey, 
 	}
 
 	bool genType;
-	auto structType = StructProcessor::getType (key, tagName, genType);
+	auto structType = StructProcessor::getType (restrictKey, tagName, genType);
 	typeName = "Struct" + structType;
 	nativeType = genType ? structType : "Elektra" + typeName;
-	alloc = StructProcessor::shouldAllocate (key);
+	alloc = StructProcessor::shouldAllocate (restrictKey);
 }
 
 static std::vector<std::string> getKeyParts (const kdb::Key & key)
@@ -488,6 +494,15 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 
 		auto typeName = snakeCaseToPascalCase (type);
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
+
+		if (type == "enum")
+		{
+			bool genType;
+			auto enumType = EnumProcessor::getType (key, tagName, genType);
+
+			typeName = "Enum" + enumType;
+			nativeType = genType ? enumType : "Elektra" + typeName;
+		}
 
 		bool allocate;
 		if (isStruct)
@@ -625,6 +640,11 @@ static kainjow::mustache::list getKeyArgs (const kdb::Key & key, const size_t pa
 		args.back ()["last?"] = true;
 	}
 
+	if (args.size () > 1)
+	{
+		args[args.size () - 2]["last_but_one?"] = true;
+	}
+
 	fmtString = fmt.str ();
 	fmtString.pop_back ();
 
@@ -650,10 +670,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto optimizeFromString = getParameter (Params::OptimizeEnumFromString, "on") != "off";
 
-	auto cascadingParent = parentKey.substr (5);
+	auto cascadingParent = parentKey.substr (4);
 
 	auto data = object{ { "header_file", headerFile },
 			    { "include_guard", includeGuard },
+			    { "spec_parent_key", parentKey },
 			    { "parent_key", cascadingParent },
 			    { "init_function_name", initFunctionName },
 			    { "help_function_name", helpFunctionName },
@@ -671,6 +692,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	StructProcessor structProcessor (specParent, ks);
 
 	kdb::KeySet spec;
+	spec.append (ks.lookup (specParent));
 
 	auto parentKeyParts = getKeyParts (specParent);
 
@@ -725,15 +747,30 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		auto tagName = getTagName (key, specParent.getName ());
 
-		object keyObject = { { "name", name.substr (cascadingParent.size () + 2) }, // + 2 to remove slash
+		auto isArray = key.getBaseName () == "#";
+
+		object keyObject = { { "name", name.substr (cascadingParent.size () + 1) }, // + 2 to remove slash
 				     { "native_type", nativeType },
 				     { "macro_name", snakeCaseToMacroCase (tagName) },
 				     { "tag_name", snakeCaseToPascalCase (tagName) },
-				     { "type_name", typeName } };
+				     { "type_name", typeName },
+				     { "is_array?", isArray } };
 
 		if (!args.empty ())
 		{
 			keyObject["args?"] = object ({ { "args", args }, { "fmt_string", fmtString } });
+		}
+
+		if (isArray)
+		{
+			if (args.size () > 1)
+			{
+				// remove last argument and last part of format string
+				keyObject["array_args?"] = object ({ { "args", list{ args.begin (), args.end () - 1 } },
+								     { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
+			}
+			// remove last part ('/#') from name
+			keyObject["array_name"] = name.substr (cascadingParent.size () + 1, name.size () - cascadingParent.size () - 3);
 		}
 
 		if (type == "enum")
@@ -803,7 +840,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	}
 
 	// TODO: make configurable?
-	auto specloadArg = "--elektra-specload";
+	auto specloadArg = "--elektra-spec";
 
 	kdb::KeySet contract;
 	contract.append (kdb::Key ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
