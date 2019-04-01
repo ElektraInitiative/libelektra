@@ -502,6 +502,13 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 			throw CommandAbortException (msg);
 		}
 
+		if (!allocating && isArray)
+		{
+			auto msg = "Cannot have arrays inside non-allocating structs. The key '" + key.getName ();
+			msg += "' is an array appearing inside '" + structKey.getName () + ", which is a non-allocating struct.";
+			throw CommandAbortException (msg);
+		}
+
 		auto typeName = snakeCaseToPascalCase (type);
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
 
@@ -787,8 +794,10 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			if (args.size () > 1)
 			{
 				// remove last argument and last part of format string
-				keyObject["array_args?"] = object ({ { "args", list{ args.begin (), args.end () - 1 } },
-								     { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
+				auto arrayArgs = list{ args.begin (), args.end () - 1 };
+				arrayArgs.back ()["last?"] = true;
+				keyObject["array_args?"] =
+					object ({ { "args", arrayArgs }, { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
 			}
 			// remove last part ('/#') from name
 			keyObject["array_name"] = name.substr (cascadingParent.size () + 1, name.size () - cascadingParent.size () - 3);

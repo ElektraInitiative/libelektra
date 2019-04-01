@@ -19,7 +19,7 @@ ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	/*%# is_struct? %*/
 	/*%# alloc? %*/
 	/*%# is_array? %*/
-	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	for (kdb_long_long_t i = 0; i < (*ptr)->/*%& size_field %*/; ++i)
 	{
 		ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/[i]);
 	}
@@ -87,10 +87,8 @@ ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
 	/*%# is_array? %*/
-	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
-	{
-		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i);
-	}
+/*%! should never happend %*/
+#error "array inside non-allocating struct is not supported"
 	/*%/ is_array? %*/
 	/*%^ is_array? %*/
 	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
@@ -124,10 +122,8 @@ ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_nam
 	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
 	/*%# is_array? %*/
-	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
-	{
-		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i);
-	}
+/*%! should never happend %*/
+#error "array inside non-allocating struct is not supported"
 	/*%/ is_array? %*/
 	/*%^ is_array? %*/
 	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
@@ -154,7 +150,7 @@ ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
 	/*%# is_array? %*/
 	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
 	{
-		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i, value->/*%& name %*/[i], error);
 	}
 	/*%/ is_array? %*/
 	/*%^ is_array? %*/
@@ -188,7 +184,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_nam
 	/*%# is_array? %*/
 	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
 	{
-		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i, value->/*%& name %*/[i], error);
 	}
 	/*%/ is_array? %*/
 	/*%^ is_array? %*/
