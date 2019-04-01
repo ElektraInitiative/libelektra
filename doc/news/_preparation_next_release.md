@@ -346,7 +346,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - We updated the [Docker image for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
-- <<TODO>>
+- We now use the default JDK on Debian sid, since the package `openjdk-8-jdk` is not available in the official unstable repositories anymore. _(René Schwaiger)_
 - <<TODO>>
 
 ## Infrastructure
