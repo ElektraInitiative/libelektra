@@ -130,7 +130,8 @@ int elektraNotificationOpen (KDB * kdb)
 	if (!func)
 	{
 		// remove notification plugin again
-		contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
+		contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END),
+				  KS_END);
 		if (kdbEnsure (kdb, contract, parent) != 0)
 		{
 			ELEKTRA_LOG_WARNING ("kdbEnsure failed");
@@ -171,7 +172,8 @@ int elektraNotificationClose (KDB * kdb)
 
 	// Unmount the plugin
 	Key * parent = keyNew ("", KEY_END);
-	KeySet * contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
+	KeySet * contract =
+		ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
 	if (kdbEnsure (kdb, contract, parent) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("kdbEnsure failed");
