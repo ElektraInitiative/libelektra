@@ -102,15 +102,15 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv)
 
 	KeySet * spec = /*%& defaults %*/;
 
-	Key * errorKey = keyNew (0, KEY_END);
+	Key * parentKey = keyNew ("/*% spec_parent_key %*/", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
-	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
+	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
-	int result = elektraInvoke2Args (specload, "sendspec", spec, NULL);
+	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
 
-	elektraInvokeClose (specload, errorKey);
-	keyDel (errorKey);
+	elektraInvokeClose (specload, parentKey);
+	keyDel (parentKey);
 	ksDel (specloadConf);
 	ksDel (spec);
 

@@ -57,7 +57,12 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	{
 		data[partial.first] = partial.second;
 	}
-	tmpl.render (data, [&](const std::string & str) { output << str; });
+	tmpl.render (data, output);
+
+	if (!tmpl.is_valid ())
+	{
+		throw std::runtime_error ("Error during template rendering: " + tmpl.error_message ());
+	}
 }
 
 std::string GenTemplate::escapeFunction (const std::string & str)

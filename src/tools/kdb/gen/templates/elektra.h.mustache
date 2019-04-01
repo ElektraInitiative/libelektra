@@ -20,6 +20,7 @@ extern "C" {
 #include <elektra.h>
 
 #include <kdbhelper.h>
+#include <string.h>
 
 /*%# more_headers %*/
 #include "/*% . %*/"
@@ -42,7 +43,7 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv);
  * @param elektra The elektra instance initialized with {{{ init_function_name }}}().
  * @param tag     The tag to look up.
  *
- * @return The value stored at the given key and index.
+ * @return The value stored at the given key.
  */// {{=/*% %*/=}}
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
@@ -52,7 +53,7 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  *
- * @return The value stored at the given key and index.
+ * @return The value stored at the given key.
  */// {{=/*% %*/=}}
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
@@ -76,7 +77,7 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv);
 /*%={{ }}=%*/
 /**
  * @param elektra The elektra instance initialized with the {{{ init_function_name }}}().
- * @param tag     The codegenerated Tag to write to.
+ * @param tag     The tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  */// {{=/*% %*/=}}
@@ -85,12 +86,21 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv);
 /*%={{ }}=%*/
 /**
  * @param elektra The elektra instance initialized with the {{{ init_function_name }}}().
- * @param tag     The codegenerated Tag to write to.
+ * @param tag     The tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
  */// {{=/*% %*/=}}
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+
+/*%={{ }}=%*/
+/**
+ * @param elektra The elektra instance initialized with {{{ init_function_name }}}().
+ * @param tag     The array tag to look up.
+ *
+ * @return The size of the array below the given key.
+ */// {{=/*% %*/=}}
+#define elektraSize(elektra, tag) ELEKTRA_SIZE (tag) (elektra)
 
 #ifdef __cplusplus
 }

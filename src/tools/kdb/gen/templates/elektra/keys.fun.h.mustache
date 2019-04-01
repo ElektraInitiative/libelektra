@@ -25,13 +25,15 @@
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
 
+#define ELEKTRA_SIZE(tagName) elektraSize##tagName
+
 /*%# keys %*/
 /*%# is_struct? %*/
-/*%> .keys.fun.struct.h %*/
+/*%> partial.keys.fun.struct.h %*/
 /*%/ is_struct? %*/
 /*%^ is_struct? %*/
 /*%# is_struct_ref? %*/
-/*%> .keys.fun.structref.h %*/
+/*%> partial.keys.fun.structref.h %*/
 /*%/ is_struct_ref? %*/
 /*%^ is_struct_ref? %*/
 /*%={{ }}=%*/
@@ -86,6 +88,26 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 }
 /*%/ is_struct_ref? %*/
 /*%/ is_struct? %*/
+/*%# is_array? %*/
+/*%={{ }}=%*/
+/**
+ * Get the size of the array '{{{ name }}}'.
+ */// {{=/*% %*/=}}
+static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra)
+{
+	/*%# array_args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
+				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	kdb_long_long_t size = elektraArraySize (elektra, name);
+	elektraFree (name);
+	/*%/ array_args? %*/
+	/*%^ array_args? %*/
+	kdb_long_long_t size = elektraArraySize (elektra, "/*% array_name %*/");
+	/*%/ array_args? %*/
+	return size;
+}
+/*%/ is_array? %*/
 /*%/ keys %*/
 
 #undef elektra_len19

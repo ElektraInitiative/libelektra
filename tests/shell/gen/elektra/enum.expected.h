@@ -20,6 +20,7 @@ extern "C" {
 #include <elektra.h>
 
 #include <kdbhelper.h>
+#include <string.h>
 
 #include "colors.h"
 
@@ -90,8 +91,8 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 // clang-format on
 
-#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
-#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+#define ELEKTRA_STRUCT_FREE(typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
 
 
@@ -162,6 +163,8 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
 
+#define ELEKTRA_SIZE(tagName) elektraSize##tagName
+
 
 
 
@@ -195,6 +198,7 @@ static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra, ElektraEnumDisjo
 
 
 
+
 /**
  * Get the value of 'existinggentype'.
  *
@@ -222,6 +226,7 @@ static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra, ExistingCol
 	
 	ELEKTRA_SET (EnumExistingColors) (elektra, "existinggentype", value, error);
 }
+
 
 
 
@@ -255,6 +260,7 @@ static inline void ELEKTRA_SET (Gentype) (Elektra * elektra, Colors value,  Elek
 
 
 
+
 /**
  * Get the value of 'gentype2'.
  *
@@ -285,6 +291,7 @@ static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra, Colors value,  Ele
 
 
 
+
 /**
  * Get the value of 'myenum'.
  *
@@ -312,6 +319,7 @@ static inline void ELEKTRA_SET (Myenum) (Elektra * elektra, ElektraEnumMyenum va
 	
 	ELEKTRA_SET (EnumMyenum) (elektra, "myenum", value, error);
 }
+
 
 #undef elektra_len19
 #undef elektra_len18
@@ -345,7 +353,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  *
- * @return The value stored at the given key and index.
+ * @return The value stored at the given key.
  */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
@@ -355,7 +363,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  *
- * @return The value stored at the given key and index.
+ * @return The value stored at the given key.
  */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
@@ -379,7 +387,7 @@ void specloadCheck (int argc, const char ** argv);
 
 /**
  * @param elektra The elektra instance initialized with the loadConfiguration().
- * @param tag     The codegenerated Tag to write to.
+ * @param tag     The tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  */// 
@@ -388,12 +396,21 @@ void specloadCheck (int argc, const char ** argv);
 
 /**
  * @param elektra The elektra instance initialized with the loadConfiguration().
- * @param tag     The codegenerated Tag to write to.
+ * @param tag     The tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
  */// 
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+
+
+/**
+ * @param elektra The elektra instance initialized with loadConfiguration().
+ * @param tag     The array tag to look up.
+ *
+ * @return The size of the array below the given key.
+ */// 
+#define elektraSize(elektra, tag) ELEKTRA_SIZE (tag) (elektra)
 
 #ifdef __cplusplus
 }

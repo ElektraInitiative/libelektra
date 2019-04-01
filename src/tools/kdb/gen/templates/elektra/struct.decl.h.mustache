@@ -2,8 +2,8 @@
 {{=/*% %*/=}}
 // clang-format on
 
-#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
-#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+#define ELEKTRA_STRUCT_FREE(typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
 /*%# structs %*/
 /*%# generate_typedef? %*/
