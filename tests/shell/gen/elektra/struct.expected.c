@@ -327,7 +327,7 @@ ELEKTRA_STRUCT_FREE_SIGNATURE (Person *, StructPerson)
 
 	
 	
-	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
+	for (kdb_long_long_t i = 0; i < (*ptr)->childrenSize; ++i)
 	{
 		ELEKTRA_STRUCT_FREE (StructPerson) (&(*ptr)->children[i]);
 	}
@@ -347,7 +347,50 @@ ELEKTRA_GET_SIGNATURE (Person *, StructPerson)
 	field[nameLen] = '/';
 	++nameLen;
 
-	
+	// clang-format off
+
+// clang-format on
+
+strncpy (&field[nameLen], "age", 8);
+
+
+result->age = ELEKTRA_GET (Short) (elektra, field);
+
+
+
+strncpy (&field[nameLen], "children", 8);
+result->childrenSize = elektraArraySize (elektra, field);
+if (result->childrenSize > 0)
+{
+	result->children = elektraCalloc (sizeof (Person *) * result->childrenSize);
+	for (kdb_long_long_t i = 0; i < result->childrenSize; ++i)
+	{
+		const char * refname = elektraGetRawStringArrayElement (elektra, field, i);
+		if (refname != NULL && refname[0] != '\0')
+		{
+			char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
+			strcpy (refField, field);
+			strcpy (&refField[nameLen], refname);
+			result->children[i] = ELEKTRA_GET (StructPerson) (elektra, refField);
+			
+			elektraFree (refField);
+		}
+		
+	}
+}
+
+
+strncpy (&field[nameLen], "height", 8);
+
+
+result->height = ELEKTRA_GET (Float) (elektra, field);
+
+strncpy (&field[nameLen], "name", 8);
+
+
+result->fullName = ELEKTRA_GET (String) (elektra, field);
+
+
 
 	elektraFree (field);
 	return result;
@@ -367,7 +410,50 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson)
 	field[nameLen] = '/';
 	++nameLen;
 
-	
+	// clang-format off
+
+// clang-format on
+
+strncpy (&field[nameLen], "age", 8);
+
+
+result->age = ELEKTRA_GET (Short) (elektra, field);
+
+
+
+strncpy (&field[nameLen], "children", 8);
+result->childrenSize = elektraArraySize (elektra, field);
+if (result->childrenSize > 0)
+{
+	result->children = elektraCalloc (sizeof (Person *) * result->childrenSize);
+	for (kdb_long_long_t i = 0; i < result->childrenSize; ++i)
+	{
+		const char * refname = elektraGetRawStringArrayElement (elektra, field, i);
+		if (refname != NULL && refname[0] != '\0')
+		{
+			char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
+			strcpy (refField, field);
+			strcpy (&refField[nameLen], refname);
+			result->children[i] = ELEKTRA_GET (StructPerson) (elektra, refField);
+			
+			elektraFree (refField);
+		}
+		
+	}
+}
+
+
+strncpy (&field[nameLen], "height", 8);
+
+
+result->height = ELEKTRA_GET (Float) (elektra, field);
+
+strncpy (&field[nameLen], "name", 8);
+
+
+result->fullName = ELEKTRA_GET (String) (elektra, field);
+
+
 
 	elektraFree (field);
 	return result;
@@ -395,7 +481,7 @@ ELEKTRA_SET_SIGNATURE (const Person *, StructPerson)
 	strncpy (&field[nameLen], "children", 8);
 	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
 	{
-		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, value->children, error);
+		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, i, value->children[i], error);
 	}
 	
 	if (error != NULL)
@@ -447,7 +533,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson)
 	strncpy (&field[nameLen], "children", 8);
 	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
 	{
-		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, value->children, error);
+		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, i, value->children[i], error);
 	}
 	
 	if (error != NULL)

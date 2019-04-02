@@ -40,19 +40,33 @@ extern "C" {
 #define ELEKTRA_STRUCT_FREE(typeName) elektraFree##typeName
 #define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
-typedef struct
+typedef struct ElektraStructMystruct
 {
-	const char *   a;
-	kdb_long_t   b;
+	
+	 const char *  a;		
+
+	
+	 kdb_long_t  b;		
+
 } ElektraStructMystruct;
 
-typedef struct
+typedef struct Person
 {
-	kdb_short_t   age;
-	kdb_long_long_t   childrenSize;
-	Person  * []  children;
-	kdb_float_t   height;
-	const char *   fullName;
+	
+	 kdb_short_t  age;		
+
+	
+	 kdb_long_long_t  childrenSize;		
+
+	 struct Person *  *  children; 
+	
+
+	
+	 kdb_float_t  height;		
+
+	
+	 const char *  fullName;		
+
 } Person;
 
 
@@ -353,7 +367,7 @@ static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,
 /**
  * Get the size of the array 'people/#'.
  */// 
-static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra)
+static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra )
 {
 	
 	kdb_long_long_t size = elektraArraySize (elektra, "people");
@@ -509,10 +523,11 @@ static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char *
 /**
  * Get the size of the array 'person/_/children/#'.
  */// 
-static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra)
+static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
+								const char * name0 
+								 )
 {
-	char * name = elektraFormat ("person/%s/children",   name0 ,
-				      );
+	char * name = elektraFormat ("person/%s/children",   name0  );
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
 	

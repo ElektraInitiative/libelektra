@@ -192,7 +192,7 @@ static inline void ELEKTRA_SET (Myfloatarray) (Elektra * elektra, kdb_float_t va
 /**
  * Get the size of the array 'myfloatarray/#'.
  */// 
-static inline kdb_long_long_t ELEKTRA_SIZE (Myfloatarray) (Elektra * elektra)
+static inline kdb_long_long_t ELEKTRA_SIZE (Myfloatarray) (Elektra * elektra )
 {
 	
 	kdb_long_long_t size = elektraArraySize (elektra, "myfloatarray");
