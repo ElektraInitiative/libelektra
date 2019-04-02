@@ -1,0 +1,28 @@
+/**
+ * @file
+ *
+ * @brief Tests for gopts plugin
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+/* define if the gopts plugin shall use the procfs implementation */
+#ifndef ELEKTRA_GOPTS_PROCFS
+#cmakedefine ELEKTRA_GOPTS_PROCFS
+#endif
+
+/* define if the gopts plugin shall use the win32 api implementation */
+#ifndef ELEKTRA_GOPTS_WIN32
+#cmakedefine ELEKTRA_GOPTS_WIN32
+#endif
+
+/* define if the gopts plugin shall use the osx api implementation */
+#ifndef ELEKTRA_GOPTS_OSX
+#cmakedefine ELEKTRA_GOPTS_OSX
+#endif
+
+/* define if the gopts plugin shall use the sysctl implementation */
+#ifndef ELEKTRA_GOPTS_SYSCTL
+#cmakedefine ELEKTRA_GOPTS_SYSCTL
+#endif

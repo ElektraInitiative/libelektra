@@ -6,10 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
-#include <kdbopts.h>
 
+#include <kdbopts.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,6 +18,18 @@ extern char ** environ;
 
 #define BASE_KEY "/sw/org/erm/#0/current"
 #define SPEC_BASE_KEY "spec" BASE_KEY
+
+// -----------------
+// Helper methods
+// -----------------
+
+/*
+ * The methods below are only used, so that this example is self-contained.
+ * If you actually develop an application, you may use the `specload` plugin,
+ * but in any case the specification should be mounted into the KDB using `kdb mount`.
+ *
+ * DO NOT set/unset the specification inside of your application.
+ */
 
 static KeySet * createSpec (void)
 {
@@ -53,27 +66,103 @@ static KeySet * createSpec (void)
 		KS_END);
 }
 
-int main (int argc, const char ** argv)
+static int setupSpec (void)
 {
-	KeySet * ks = createSpec ();
-	Key * errorKey = keyNew (BASE_KEY, KEY_END);
+	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	KDB * kdb = kdbOpen (parentKey);
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, parentKey);
 
-	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, errorKey);
-	if (result == -1)
+	KeySet * existing = ksCut (ks, parentKey);
+	if (ksGetSize (existing) > 0)
 	{
-		fprintf (stderr, "ERROR: %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
-		keyDel (errorKey);
+		kdbClose (kdb, parentKey);
 		ksDel (ks);
+		ksDel (existing);
+		return 0;
+	}
+	ksDel (existing);
+
+	KeySet * spec = createSpec ();
+	ksAppend (ks, spec);
+	ksDel (spec);
+	kdbSet (kdb, ks, parentKey);
+	kdbClose (kdb, parentKey);
+	ksDel (ks);
+
+	return 1;
+}
+
+static void removeSpec (void)
+{
+	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	KDB * kdb = kdbOpen (parentKey);
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, parentKey);
+	KeySet * spec = ksCut (ks, parentKey);
+	ksDel (spec);
+	kdbSet (kdb, ks, parentKey);
+	kdbClose (kdb, parentKey);
+	ksDel (ks);
+}
+
+// -----------------
+// Main example
+// -----------------
+
+int main (void)
+{
+	if (!setupSpec ())
+	{
+		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
 		return EXIT_FAILURE;
 	}
 
-	if (result == 1)
+	Key * parentKey = keyNew (BASE_KEY, KEY_END);
+	KDB * kdb = kdbOpen (parentKey);
+
+	KeySet * contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
+	int rc = kdbEnsure (kdb, contract, parentKey);
+	if (rc == 1)
 	{
-		char * help = elektraGetOptsHelpMessage (errorKey, NULL, NULL);
-		fprintf (stderr, "%s\n", help);
-		elektraFree (help);
-		keyDel (errorKey);
+		fprintf (stderr, "ERROR: Contract could not be ensured!\n%s\n", keyString (keyGetMeta (parentKey, "error/reason")));
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
+		removeSpec ();
+		return EXIT_FAILURE;
+	}
+	else if (rc == -1)
+	{
+		fprintf (stderr, "ERROR: Contract malformed/NULL pointer!\n%s\n", keyString (keyGetMeta (parentKey, "error/reason")));
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
+		removeSpec ();
+		return EXIT_FAILURE;
+	}
+
+	KeySet * ks = ksNew (0, KS_END);
+	rc = kdbGet (kdb, ks, parentKey);
+
+	if (rc == -1)
+	{
+		fprintf (stderr, "ERROR: kdbGet failed! %s\n", keyString (keyGetMeta (parentKey, "error/reason")));
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
 		ksDel (ks);
+		removeSpec ();
+		return EXIT_FAILURE;
+	}
+
+	Key * helpKey = ksLookupByName (ks, "proc/elektra/gopts/help", 0);
+	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
+	{
+		char * help = elektraGetOptsHelpMessage (helpKey, NULL, NULL);
+		printf ("%s\n", help);
+		elektraFree (help);
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
+		ksDel (ks);
+		removeSpec ();
 		return EXIT_SUCCESS;
 	}
 
@@ -158,8 +247,11 @@ int main (int argc, const char ** argv)
 	}
 	printf ("\n");
 
-	keyDel (errorKey);
+	kdbClose (kdb, parentKey);
+	keyDel (parentKey);
 	ksDel (ks);
+
+	removeSpec ();
 
 	return EXIT_SUCCESS;
 }

@@ -51,7 +51,24 @@ the `type` plugin will ignore the key. We now also support converting enum value
 To switch from `boolean` to the new `type`, you don't have to do anything, if you used the default config. If you used a custom configuration
 please take a look at the [README](https://www.libelektra.org/plugins/type).
 
-### <<HIGHLIGHT2>>
+### kdbEnsure
+
+`kdbEnsure` is a new function in `elektra-kdb`. It can be used to ensure that a KDB instance meets certain clauses specified in a
+contract. In principle this a very powerful tool that may be used for a lot of things. For now it only supports a few clauses concerning
+plugins:
+
+- You can specify that a plugin should be mounted globally. This can for example be used to enable the new [gopts](#gopts) plugin.
+- Conversely you can also define that a plugin should not be mounted globally, e.g. to disable the `spec` plugin, which is enabled by default.
+- Additionally you may want to enforce that a global plugin uses a certain configuration. For this case you can specify that the plugin
+  should be remounted, i.e. unmounted and immediately mounted again.
+- Because of the different architecture involved, for now only unmounting of non-global plugins is supported.
+
+All changes made by `kdbEnsure` are purely temporary. They will only apply to the KDB handle passed to the function.
+
+IMPORTANT: `kdbEnsure` only works, if the `list` plugin is mounted in all appropriate global positions.
+
+Note: `kdbEnsure` right now ignores the `infos/recommends` and `infos/needs` metadata of plugins, so you have to explicitly take care of
+dependencies. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 
@@ -197,6 +214,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
 
+### gOpts
+
+- The [gopts](https://www.libelektra.org/plugins/gopts) plugin simply retrieves the values of `argc`, `argv` and `envp` needed for
+  [`elektraGetOpts`](https://www.libelektra.org/tutorials/command-line-options) and then makes the call. It is intended to be used as a
+  global plugin, so that command-line options are automatically parsed when `kdbGet` is called. _(Klemens Böswirth)_
+- The plugin works under WIN32 (via `GetCommandLineW` and `GetEnvironmentString`), MAC_OSX (`_NSGetArgc`, `_NSGetArgv`) and any system that
+  either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
+  `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -213,7 +239,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- <<TODO>>
+- `kdbGet` now calls global postgetstorage plugins with the parent key passed to `kdbGet`, instead of a random mountpoint. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
