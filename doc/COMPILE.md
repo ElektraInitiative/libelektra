@@ -200,8 +200,8 @@ The minimal set of plugins you should add:
   (e.g. an empty value).
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-By default nearly all plugins are added. Only experimental plugins
-will be omitted:
+By default CMake adds nearly all plugins if the dependencies are present.
+Only experimental plugins will be omitted by default:
 
 ```sh
 -DPLUGINS="ALL;-EXPERIMENTAL"
@@ -213,7 +213,9 @@ To add also experimental plugins, you can use:
 -DPLUGINS=ALL
 ```
 
-> Note that plugins get dropped automatically if dependences are not satisfied.
+> Note that plugins are excluded automatically if dependences are not satisfied.
+> So make sure to install all dependencies you need before you run `cmake`.
+> For example, to include the plugin `yajl`, make sure `libyajl-dev` is installed.
 
 To add all plugins except some plugins you can use:
 
