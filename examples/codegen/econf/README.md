@@ -1,7 +1,7 @@
-
 ## Setup
 
 ### CMake
+
 ```sh
 # execute in the current directory or replace $PWD accordingly
 DIR=$PWD
