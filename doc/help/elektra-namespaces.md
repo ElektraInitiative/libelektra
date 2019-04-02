@@ -51,7 +51,7 @@ notable exception: the default value (metadata `default`, see in
 cascading below) might be used if every other way as specified in the
 spec-key failed.
 
-Spec-keys typically include a explanation and description for the key
+Spec-keys typically include an explanation and description for the key
 itself (but not comments which are specific for individual keys).
 
 The spec configuration files are below `CMAKE_INSTALL_PREFIX/KDB_DB_SPEC`.
@@ -108,7 +108,7 @@ The configuration is typically located below `KDB_DB_SYSTEM`.
 Other absolute paths, e.g. below `/opt` or `/usr/local/etc` are possible
 too.
 
-## cascading
+## Cascading
 
 Keys that are not in a namespace (i.e. start with an `/`) are called cascading
 keys. Cascading keys do not stem from a configuration source, but are

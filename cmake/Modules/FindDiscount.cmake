@@ -26,7 +26,7 @@
 # ~~~
 
 # ~~~
-# DISCOUNT is a implementation of John Gruber's Markdown markup language.
+# DISCOUNT is an implementation of John Gruber's Markdown markup language.
 #
 # DISCOUNT is free software written by David Parsons <orc@pell.chi.il.us>;
 # it is released under a BSD-style license that allows you to do

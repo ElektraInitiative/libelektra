@@ -54,7 +54,7 @@ static char * parseRecord (char ** ptr, char delim, int * isQuoted, int * isCol,
 				++(*counter);
 				if (mode == PARSE) return NULL;
 			}
-			else if (*(*ptr + 1) == '\n')
+			else if (*(*ptr + 1) == '\n' || *(*ptr + 1) == '\r')
 			{
 				*isQuoted = 0;
 				*isCol = 0;
@@ -75,14 +75,14 @@ static char * parseRecord (char ** ptr, char delim, int * isQuoted, int * isCol,
 			if (mode == PARSE) return NULL;
 		}
 	}
-	else if (**ptr != '\n')
+	else if (**ptr != '\n' && **ptr != '\r')
 	{
 		if (!(*isCol))
 		{
 			*isCol = 1;
 		}
 	}
-	else // it's \n
+	else // it's \n or \r
 	{
 		if (mode == READLINE)
 		{
@@ -145,7 +145,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 	unsigned long len = elektraStrLen (line);
 	if (isQuoted)
 	{
-		if (line[len - 2] == '\n')
+		if (line[len - 2] == '\n' || line[len - 2] == '\r')
 		{
 			line[len - 2] = '\0';
 		}
@@ -154,7 +154,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 	}
 	else if (isCol)
 	{
-		if (line[len - 2] == '\n')
+		if (line[len - 2] == '\n' || line[len - 2] == '\r')
 		{
 			line[len - 2] = '\0';
 		}

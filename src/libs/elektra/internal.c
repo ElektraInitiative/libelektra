@@ -347,7 +347,7 @@ char * elektraStrDup (const char * s)
  * it must be correct.
  *
  * @return 0 if out of memory, a pointer otherwise
- * @param s must be a allocated buffer
+ * @param s must be an allocated buffer
  * @param l the length of s
  * @ingroup internal
  */

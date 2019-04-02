@@ -5,4 +5,6 @@ add_plugin (list
 		    list.c
 	    LINK_ELEKTRA elektra-kdb
 			 elektra-invoke
+			 elektra-ease
+			 elektra-proposal
 	    ADD_TEST)

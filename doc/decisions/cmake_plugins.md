@@ -84,7 +84,7 @@ It would:
 
 - need to adopt all CMakeLists.txt
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

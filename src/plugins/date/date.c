@@ -22,7 +22,7 @@
 
 
 //
-// use a ISO format string table to validate the key value
+// use an ISO format string table to validate the key value
 //
 
 static int individualIsoStringValidation (const char * date, const RepStruct * formats, ISOType opts)

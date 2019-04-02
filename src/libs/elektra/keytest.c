@@ -338,7 +338,7 @@ Example:
 key user/sw/app
 check user/sw/app/folder/key
 
-does not return true, because there is only a indirect relation
+does not return true, because there is only an indirect relation
 @endverbatim
  *
  * @param key the key object to work with
@@ -441,7 +441,7 @@ int keyIsDirectBelow (const Key * key, const Key * check)
  *@endcode
  *
  *
- * - If a invalid or null ptr key is passed, -1 is returned
+ * - If an invalid or null ptr key is passed, -1 is returned
  *
  *
  * - If the keys have no relations, but are not invalid, -2 is returned.

@@ -55,6 +55,6 @@ for these reasons.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes

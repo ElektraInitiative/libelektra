@@ -46,7 +46,7 @@ Develop shell recorder and tutorial wrapper.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

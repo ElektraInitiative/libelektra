@@ -1,4 +1,4 @@
-# Use Case: Create configuration snippet from existing snippet
+# Use Case: Create Configuration Snippet from Existing Snippet
 
 ## Summary
 

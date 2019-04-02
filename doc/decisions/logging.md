@@ -108,7 +108,7 @@ system can be achieved in `log.c`.
 The current VERBOSE would be turned off forever and the code within VERBOSE
 needs to be migrated to `ELEKTRA_LOG`.
 
-## Related decisions
+## Related Decisions
 
 - assertions
 

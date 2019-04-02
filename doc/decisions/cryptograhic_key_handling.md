@@ -68,6 +68,6 @@ The constraints considering the key handling are met.
 To manipulate the plugin configuration during the **mount phase** a hook is required within the `BackendBuilder`.
 See pull request [#733](https://github.com/ElektraInitiative/libelektra/pull/733) for full discussion.
 
-## Related decisions
+## Related Decisions
 
 ## Notes

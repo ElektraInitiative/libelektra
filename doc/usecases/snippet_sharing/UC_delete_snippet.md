@@ -1,4 +1,4 @@
-# Use Case: Delete configuration snippet
+# Use Case: Delete Configuration Snippet
 
 ## Summary
 

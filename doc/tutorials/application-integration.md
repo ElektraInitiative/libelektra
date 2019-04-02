@@ -277,6 +277,6 @@ In this specification you can define to consider or prefer configuration data
 from other applications or shared places. Doing so, we can achieve configuration
 integration.
 
-## SEE ALSO
+## See Also
 
 - [for advanced techniques e.g. transformations](https://www.libelektra.org/ftp/elektra/publications/raab2015sharing.pdf)

@@ -34,8 +34,9 @@ target_link_elektra (kdbintro elektra-kdb)
 target_link_elektra (kdbopen elektra-kdb)
 target_link_elektra (kdbset elektra-kdb)
 target_link_elektra (set_key elektra-kdb)
-target_link_elektra (opts elektra-opts)
+target_link_elektra (opts elektra-ease elektra-opts)
 target_link_elektra (optsSnippets elektra-opts)
+target_link_elektra (gopts elektra-ease elektra-opts elektra-kdb)
 
 # Notification examples
 

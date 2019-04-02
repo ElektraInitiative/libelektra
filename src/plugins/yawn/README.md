@@ -98,14 +98,14 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length)"-
 #> config.yaml:2:1: Syntax error on input “-”
 #>                  - Burst
-#>                  ^^
+#>                  ^
 #> config.yaml:3:19: Syntax error on input “end of map”
 #>                    Holon : Anamnesis
 #>                                     ^
 
 # Fix syntax errors
-printf -- 'Brutus: \n'         >  `kdb file user/tests/yawn`
-printf -- ' - Burst\n'          >> `kdb file user/tests/yawn`
+printf -- 'Brutus: \n'         > `kdb file user/tests/yawn`
+printf -- ' - Burst\n'        >> `kdb file user/tests/yawn`
 printf -- 'Holon : Anamnesis' >> `kdb file user/tests/yawn`
 kdb ls user/tests/yawn
 #> user/tests/yawn/Brutus

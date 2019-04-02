@@ -1,4 +1,4 @@
-# Use Case: Convert configuration snippet
+# Use Case: Convert Configuration Snippet
 
 ## Summary
 

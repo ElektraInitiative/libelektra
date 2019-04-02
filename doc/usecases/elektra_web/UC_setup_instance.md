@@ -1,4 +1,4 @@
-# Use Case: Setup instance
+# Use Case: Setup Instance
 
 ## Summary
 

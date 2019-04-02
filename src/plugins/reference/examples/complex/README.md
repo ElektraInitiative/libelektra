@@ -1,4 +1,4 @@
-# Example: Validating complex recursive structures
+# Example: Validating Complex Recursive Structures
 
 Suppose you have some mutually recursive `struct`s in C. You want to map this structure
 onto a hierarchy inside your KDB. This by itself was always possible, but the reference
@@ -7,7 +7,7 @@ validated and checked by Elektra.
 
 The structure we will use for this example is easily defined in C code:
 
-```C
+```c
 struct typeA {
   char *name;
   struct typeB *ref;
@@ -21,13 +21,13 @@ struct typeB {
 struct typeA *rootkey_ref;
 ```
 
-Starting with a refernce to an element of type `typeA`, we except an alternating chain of
+Starting with a reference to an element of type `typeA`, we except an alternating chain of
 `typeA` and `typeB`. In this chain each element of type `typeA` shall have a string attached
 to it, while elements of type `typeB` shall contain an integer.
 
 The specification used for such a structure is as follows (using the syntax of the `ni` plugin):
 
-```INI
+```ini
 [rootkey/ref]
 check/reference = recursive
 check/reference/restrict = ../typeA/_

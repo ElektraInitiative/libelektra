@@ -23,6 +23,7 @@ endif (DEPENDENCY_PHASE)
 add_plugin (yamlcpp
 	    CPP
 	    ADD_TEST
+	    CPP_TEST
 	    TEST_README
 	    INSTALL_TEST_DATA
 	    TEST_REQUIRED_PLUGINS base64
@@ -33,6 +34,8 @@ add_plugin (yamlcpp
 		    read.cpp
 		    write.hpp
 		    write.cpp
+		    log.hpp
+		    log.cpp
 	    INCLUDE_SYSTEM_DIRECTORIES ${YAML-CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${YAML-CPP_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease)

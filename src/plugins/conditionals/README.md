@@ -26,7 +26,7 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
-### Testing if Key exists
+### Testing if Key Exists
 
 `(! a/key)` evaluates to true if the key `a/key` doesn't exist, to false if it exists.
 

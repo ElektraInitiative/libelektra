@@ -322,7 +322,7 @@ sudo kdb umount user/tests/yamlcpp
 
 ## Dependencies
 
-This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called `libyaml-cpp-dev` . On macOS you can install the package `yaml-cpp` via [HomeBrew](https://brew.sh).
+This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called [`libyaml-cpp-dev`](https://packages.debian.org/libyaml-cpp-dev). On macOS you can install the package [`yaml-cpp`](https://repology.org/project/yaml-cpp) via [HomeBrew](https://brew.sh).
 
 ## Limitations
 

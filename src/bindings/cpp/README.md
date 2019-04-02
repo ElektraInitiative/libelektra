@@ -7,7 +7,7 @@
 The C++ binding is a 1:1 mapping of all C-functions into C++. In this
 README the advantages are described.
 
-## No explicit delete necessary
+## No Explicit Delete Necessary
 
 The objects will automatically be freed when they leave the scope. E.g.
 
@@ -69,7 +69,7 @@ This can be [customized](examples/cpp_example_userio.cpp).
 It can also be changed which exceptions are [thrown as shown
 here](examples/cpp_example_userexception.cpp).
 
-## Allow iterations
+## Allow Iterations
 
 Next to the C-style fashioned loop:
 
@@ -94,7 +94,7 @@ for (KeySet::iterator i = ks3.begin(); i != ks3.end(); ++i)
 Also C++11 iterators are supported, and of course reverse and const
 iterators, too.
 
-## Type safety
+## Type Safety
 
 [Contextual Values](include/contextual.hpp) allow a key to be used as
 native variables, see [here how they can be

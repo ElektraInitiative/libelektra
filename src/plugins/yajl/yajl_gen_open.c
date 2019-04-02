@@ -181,8 +181,8 @@ void elektraGenOpenInitial (yajl_gen g, Key * parentKey, const Key * first)
  *
  * It handles the first level entirely, except of values.
  *
- * _ .. is a arbitrary map
- * # .. is a arbitrary member of array
+ * _ .. is an arbitrary map
+ * # .. is an arbitrary member of array
  * Note that "test/" would not be contained in the string
  * given by argument.
  *

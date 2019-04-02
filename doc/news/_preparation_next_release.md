@@ -29,7 +29,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### Type (new version)
+### Type (New Version)
 
 The `type` plugin was completely rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
 
@@ -51,7 +51,24 @@ the `type` plugin will ignore the key. We now also support converting enum value
 To switch from `boolean` to the new `type`, you don't have to do anything, if you used the default config. If you used a custom configuration
 please take a look at the [README](https://www.libelektra.org/plugins/type).
 
-### <<HIGHLIGHT2>>
+### kdbEnsure
+
+`kdbEnsure` is a new function in `elektra-kdb`. It can be used to ensure that a KDB instance meets certain clauses specified in a
+contract. In principle this a very powerful tool that may be used for a lot of things. For now it only supports a few clauses concerning
+plugins:
+
+- You can specify that a plugin should be mounted globally. This can for example be used to enable the new [gopts](#gopts) plugin.
+- Conversely you can also define that a plugin should not be mounted globally, e.g. to disable the `spec` plugin, which is enabled by default.
+- Additionally you may want to enforce that a global plugin uses a certain configuration. For this case you can specify that the plugin
+  should be remounted, i.e. unmounted and immediately mounted again.
+- Because of the different architecture involved, for now only unmounting of non-global plugins is supported.
+
+All changes made by `kdbEnsure` are purely temporary. They will only apply to the KDB handle passed to the function.
+
+IMPORTANT: `kdbEnsure` only works, if the `list` plugin is mounted in all appropriate global positions.
+
+Note: `kdbEnsure` right now ignores the `infos/recommends` and `infos/needs` metadata of plugins, so you have to explicitly take care of
+dependencies. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 
@@ -59,9 +76,15 @@ please take a look at the [README](https://www.libelektra.org/plugins/type).
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+- Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
+
+### YAJL
+
+- The plugin no allows setting a value to the mountpoint. This is represented as a top level value in json if no other key is present. _(Philipp Gackstatter)_
+
 ### YAMBi
 
-- The plugin is now able detect multiple syntax errors in a file. _(René Schwaiger)_
+- [YAMBi](https://www.libelektra.org/plugins/yambi) is now able detect multiple syntax errors in a file. _(René Schwaiger)_
 - The error message now includes more information about the location of syntax errors. For example, for the incorrect YAML input `config.yaml`:
 
   ```yaml
@@ -84,6 +107,41 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
+### YAML CPP
+
+- The plugin now handles keys that are part of a map, but use a basename ending with [array syntax](../tutorials/arrays.md) correctly. For example, in a key set that contains keys with the following names:
+
+  ```
+  user/array/#0
+  user/array/#1
+  user/map/#0
+  user/map/key
+  user/map/#1
+  ```
+
+  , `user/array/#0` and `user/array/#1` represent array elements, while `user/map/#0`, and `user/map/#1` do not, since the key set also contains the key `user/map/key`. The following [Markdown Shell Recorder][] snippet shows the new behavior of the plugin:
+
+  ```sh
+  kdb mount config.yaml user yamlcpp
+  kdb set user/array/#0 one
+  kdb set user/array/#1 two
+  kdb set user/map/#0   three
+  kdb set user/map/key  four
+  kdb set user/map/#1   five
+  kdb file user | xargs cat
+  #> array:
+  #>   - one
+  #>   - two
+  #> map:
+  #>   "#0": three
+  #>   "#1": five
+  #>   key: four
+  ```
+
+  .
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
 ### Yan LR
 
 - The build system now disables the plugin, if you installed a version of ANTLR 4 that does not support ANTLR’s C++ runtime (like ANTLR
@@ -91,10 +149,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - We fixed an ambiguity in the [YAML grammar](https://master.libelektra.org/src/plugins/yanlr/YAML.g4). _(René Schwaiger)_
 - The build system now regenerates the modified parsing code, every time we update the grammar file. _(René Schwaiger)_
 - The plugin now reports the location of syntax errors correctly. _(René Schwaiger)_
+- The lexer for the plugin now emits start tokens for maps at the correct location inside the token stream. This update fixes a problem, where the plugin sometimes reported incorrect error messages for the _first_ syntax error in a YAML file. _(René Schwaiger)_
 
 ### YAwn
 
-- The plugin is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
+- [YAwn](https://www.libelektra.org/plugins/yawn) is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
 - We also improved the error messages of YAwn, which now also contain the input that caused a syntax error. For example, for the input
 
   ```yaml
@@ -155,6 +214,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
 
+### gOpts
+
+- The [gopts](https://www.libelektra.org/plugins/gopts) plugin simply retrieves the values of `argc`, `argv` and `envp` needed for
+  [`elektraGetOpts`](https://www.libelektra.org/tutorials/command-line-options) and then makes the call. It is intended to be used as a
+  global plugin, so that command-line options are automatically parsed when `kdbGet` is called. _(Klemens Böswirth)_
+- The plugin works under WIN32 (via `GetCommandLineW` and `GetEnvironmentString`), MAC_OSX (`_NSGetArgc`, `_NSGetArgv`) and any system that
+  either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
+  `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -171,7 +239,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- <<TODO>>
+- `kdbGet` now calls global postgetstorage plugins with the parent key passed to `kdbGet`, instead of a random mountpoint. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
@@ -200,7 +268,7 @@ you up to date with the multi-language support provided by Elektra.
 - JNA is now not experimental anymore. _(Markus Raab)_
 - gsettings is not default anymore. _(Markus Raab)_
 
-- <<TODO>>
+- Add fix for creating the Key and KeySet objects in the HelloElektra.java file _(Dmytro Moiseiuk)_
 - <<TODO>>
 - <<TODO>>
 
@@ -223,9 +291,9 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
 - We added a (very) basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
+- Write Elektra with capital letter in cascading tutorial. _(Vlad - Ioan Balan)_
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
 
   ```
@@ -251,9 +319,12 @@ you up to date with the multi-language support provided by Elektra.
 - Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
 - Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
-
 - Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
+- Added a new error concept to be implemented soon. _(Michael Zronek)_
+- We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
+- We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
+- We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
 - Added a basic tutorial on [How-To: Write a Java Plugin](../tutorials/java-plugins.md) _(Miruna Orsa)_
 - <<TODO>>
 
@@ -262,6 +333,7 @@ you up to date with the multi-language support provided by Elektra.
 - We now test the [Directory Value Plugin](https://www.libelektra.org/plugins/directoryvalue) with additional test data. _(René Schwaiger)_
 - <<TODO>>
 - The [CFramework](https://master.libelektra.org/tests/cframework) now also compares the names of meta keys. _(René Schwaiger)_
+- The [release notes check](../../scripts/run_check_release_notes) does not report an illegal number anymore, if the release notes were not updated at all. _(René Schwaiger)_
 
 ### Source Code Checks
 
@@ -286,6 +358,10 @@ you up to date with the multi-language support provided by Elektra.
 
 - The `reformat-source` script now also formats `tests/shell/include_common.sh.in`. Additionally it ensures that the file is 1000 lines long,
   so that line numbers of files using it are easier to read. _(Klemens Böswirth)_
+- The `reformat-*` scripts now allow you to specify a list of files that should be formatted. Only files actual suitable for the reformat script,
+  will reformat. So e.g. calling `reformat-cmake src/include/kdbprivate.h` doesn't change any files. _(Klemens Böswirth)_
+- The script `scripts/reformat-all` is a new convenience script that calls all other `reformat-*` scripts. _(Klemens Böswirth)_
+- The script `scripts/pre-commit-check-formatting` can be used as a pre-commit hook, to ensure files are formatted before committing. _(Klemens Böswirth)_
 
 [lgtm]: https://lgtm.com
 
@@ -299,8 +375,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
-- <<TODO>>
+- We updated the [Docker image for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
+- We now use the default JDK on Debian sid, since the package `openjdk-8-jdk` is not available in the official unstable repositories anymore. _(René Schwaiger)_
 - <<TODO>>
 
 ## Infrastructure
@@ -325,7 +401,7 @@ you up to date with the multi-language support provided by Elektra.
 
   , since they are [known to fail in high load scenarios](https://issues.libelektra.org/2439). _(René Schwaiger)_
 
-- <<TODO>>
+- We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
 - <<TODO>>
 
 ### Travis
@@ -339,7 +415,7 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
+- Added github build status badges to website _(hesirui)_
 - <<TODO>>
 - <<TODO>>
 

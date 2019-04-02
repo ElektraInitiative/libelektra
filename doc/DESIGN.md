@@ -143,7 +143,7 @@ Sometimes people confuse the terms “value”, “string” and “binary”:
 
 - A string is a char array, with a terminating `'\0'`.
 
-- Binary data is stored in a array of type void, and not terminated by
+- Binary data is stored in an array of type void, and not terminated by
   `'\0'`.
 
 See also [the glossary](/doc/help/elektra-glossary.md) for further

@@ -401,12 +401,12 @@ static int handleSubCountConflict (Key * parentKey, Key * key, Key * specKey, Ke
 	switch (onConflict)
 	{
 	case ERROR:
-		ELEKTRA_SET_ERRORF (142, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName (key),
+		ELEKTRA_SET_ERRORF (142, parentKey, "%s has an invalid number of subkeys: %s. Expected: %s\n", keyName (key),
 				    keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
 		ret = -1;
 		break;
 	case WARNING:
-		ELEKTRA_ADD_WARNINGF (143, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName (key),
+		ELEKTRA_ADD_WARNINGF (143, parentKey, "%s has an invalid number of subkeys: %s. Expected: %s\n", keyName (key),
 				      keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
 		break;
 	case INFO:
