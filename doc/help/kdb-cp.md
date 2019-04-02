@@ -56,6 +56,7 @@ This command will return the following values as an exit status:
 kdb set user/tests/cp/examples/kdb-cp/key key1
 kdb set user/tests/cp/examples/kdb-cp/key/first key
 kdb set user/tests/cp/examples/kdb-cp/key/second key
+kdb set user/tests/cp/examples/kdb-cp/cpkey key1
 kdb set user/tests/cp/examples/kdb-cp/cpkey/first key
 kdb set user/tests/cp/examples/kdb-cp/cpkey/second key
 kdb set user/tests/cp/examples/kdb-cp/cpkeyerror/first key
