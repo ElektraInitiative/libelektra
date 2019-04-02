@@ -19,9 +19,9 @@ static void onFatalError (ElektraError * error)
 
 void printTree (Tree * tree, int level)
 {
-	if(tree == NULL)
+	if (tree == NULL)
 	{
-		printf("(empty)\n");
+		printf ("(empty)\n");
 		return;
 	}
 
