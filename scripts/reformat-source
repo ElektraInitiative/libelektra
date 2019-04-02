@@ -38,6 +38,6 @@ if [ $# -gt 0 ]; then
 		exit 0
 	fi
 else
-	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*')
+	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*' | grep -v '^tests/shell/gen.*')
 fi
 printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i
