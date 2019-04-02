@@ -298,6 +298,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added a new error concept to be implemented soon. _(Michael Zronek)_
 - We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
 - We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
+- We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
 
 ## Tests
 
