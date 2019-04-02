@@ -568,10 +568,11 @@ void YAMLLexer::scanValue ()
 	}
 	auto const start =
 		Position{ simpleKey.first->getStartIndex (), simpleKey.first->getLine (), simpleKey.first->getCharPositionInLine () };
-	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
+	size_t offset = simpleKey.second - tokensEmitted;
+	tokens.insert (tokens.begin () + offset, move (simpleKey.first));
 	if (addIndentation (start.column, Level::Type::MAP))
 	{
-		tokens.push_front (commonToken (MAP_START, start, column, "start of map"));
+		tokens.insert (tokens.begin () + offset, commonToken (MAP_START, start, column, "start of map"));
 	}
 }
 
