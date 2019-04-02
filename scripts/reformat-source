@@ -32,16 +32,12 @@ cd "$SOURCE" || {
 	exit 1
 }
 
-<<<<<<< HEAD
 if [ $# -gt 0 ]; then
-	source_files=$(printf "%s\n" "$@" | grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' | grep -v '^src/tools/gen.*')
+	source_files=$(printf "%s\n" "$@" | grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' | grep -v '^src/tools/gen.*' | grep -v '^tests/shell/gen.*')
 	if [ -z "$source_files" ]; then
 		exit 0
 	fi
 else
 	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*')
 fi
-=======
-source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*' | grep -v '^tests/shell/gen.*')
->>>>>>> codegen: update tests
 printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i
