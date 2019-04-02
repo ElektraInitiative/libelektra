@@ -53,13 +53,16 @@ set (ELEKTRA_FALLTHROUGH "__attribute__ ((fallthrough))")
 if (ENABLE_ASAN)
 	if (CMAKE_C_COMPILER_ID MATCHES "Clang") # clang section
 		set (ELEKTRA_NO_SANITIZE_INTEGER "__attribute__ ((no_sanitize (\"integer\")))")
+		set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "__attribute__ ((no_sanitize (\"unsigned-integer-overflow\")))")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize (\"undefined\")))")
 	elseif (CMAKE_C_COMPILER_ID MATCHES "GNU") # others section
 		set (ELEKTRA_NO_SANITIZE_INTEGER "")
+		set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize_undefined))")
 	endif (CMAKE_C_COMPILER_ID MATCHES "Clang")
 else (ENABLE_ASAN)
 	set (ELEKTRA_NO_SANITIZE_INTEGER "")
+	set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "")
 	set (ELEKTRA_NO_SANITIZE_UNDEFINED "")
 endif (ENABLE_ASAN)
 
