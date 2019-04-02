@@ -400,12 +400,12 @@ void Lexer::scanValue ()
 	}
 	size_t offset = simpleKey.second - tokensEmitted;
 	tokens.insert (tokens.begin () + offset, *simpleKey.first);
-	auto start = simpleKey.first->getStart ();
+	auto mapStartLocation = simpleKey.first->getLocation ();
 	simpleKey.first = nullptr; // Remove key candidate
-	if (addIndentation (start.column, Level::Type::MAP))
+	if (addIndentation (mapStartLocation.begin.column, Level::Type::MAP))
 	{
-		location.begin = start;
-		tokens.insert (tokens.begin () + offset, Symbol (token::MAP_START, location, "MAPPING START"));
+		mapStartLocation.end = mapStartLocation.begin;
+		tokens.insert (tokens.begin () + offset, Symbol (token::MAP_START, mapStartLocation, "MAP START"));
 	}
 }
 

@@ -154,7 +154,7 @@ struct transitionTitle genTitleTransitionTable (void)
 	return out;
 }
 
-// Maps a given char to a int, used for the transition table
+// Maps a given char to an int, used for the transition table
 static int resolveChar (int c)
 {
 	if (c != '\n' && isblank (c)) return 3;

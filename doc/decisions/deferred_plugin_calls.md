@@ -96,7 +96,7 @@ Defining such a moment would break the lazy-loading constraint.
 It is recommended to use callbacks passed as `parameters`.
 Callback function declarations are not limited by this decision.
 
-## Related decisions
+## Related Decisions
 
 - Elektra's invoke functionality will be extended to also allow us to use
   deferred calls with new functions:
@@ -104,7 +104,7 @@ Callback function declarations are not limited by this decision.
 - `int elektraInvokeFunctionDeferred (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * ks)`
   which defers a call if the plugin exports `deferredCall`.
 - `void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)`
-  which executes deferred calls for a encapsulated plugin loaded with invoke.
+  which executes deferred calls for an encapsulated plugin loaded with invoke.
 
 - Functions supporting deferred calls should allow for multiple calls (i.e.
   they should be idempotent).

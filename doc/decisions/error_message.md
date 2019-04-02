@@ -190,6 +190,6 @@ file which uses the specification will stay as it is easier to change categories
 
 Current errors will be migrated.
 
-## Related decisions
+## Related Decisions
 
 ## Notes

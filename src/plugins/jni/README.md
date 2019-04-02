@@ -33,7 +33,7 @@ The Java plugin itself needs to have the following methods:
 
 ## Installation
 
-### Java prerequisites on Debian 9
+### Java Prerequisites on Debian 9
 
 openjdk-8 and 9 do not work reliable: jvm crashes without usable backtrace.
 
@@ -45,7 +45,7 @@ For example:
 JAVA_HOME=/usr/local/jdk-9.0.1
 ```
 
-### Java prerequisites on Debian 8
+### Java Prerequisites on Debian 8
 
 Please install java8 as package, e.g.
 [for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
@@ -70,7 +70,7 @@ and run:
 sudo ldconfig
 ```
 
-### Java prerequisites on macOS
+### Java Prerequisites on macOS
 
 macOS includes an old apple specific version of java, based on 1.6.
 However, for the jni plugin version 1.8 of Java is required, so either the openjdk or the oracle jdk has to be installed.
@@ -98,7 +98,7 @@ It has been experienced that if the project has been built already without this 
 As a result, it will be resolved wrong in future builds, even though the environment variable is set.
 To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
 
-### Enabling the plugin
+### Enabling the Plugin
 
 Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
 
@@ -131,7 +131,7 @@ You need to pass :
 
 Additionally, you can set:
 
-- option allows you to pass a option to the jvm, default: `-verbose:gc,class,jni`
+- option allows you to pass an option to the jvm, default: `-verbose:gc,class,jni`
 - ignore allows you to ignore broken options, default: `false`
 - print allows you to print java exceptions for debugging purposes
 

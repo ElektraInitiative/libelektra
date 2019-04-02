@@ -189,6 +189,8 @@ Most notably use:
 - Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
 - `README.md` and tutorials should be written exclusively with shell recorder syntax
   so that we know that the code in the tutorial produces output as expected
+- Please use [**title-case**](https://en.wiktionary.org/wiki/title_case) for headings in the general documentation.
+- For [man pages](help/) please use **only capital letters for subheadings** and only **small letters for the main header**. We use this header style to match the look and feel of man pages for Unix tools such as `ls` or `mkdir`.
 
 Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
 format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).

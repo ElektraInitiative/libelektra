@@ -45,6 +45,6 @@
 6. define necessary metadata
 7. mounting spec files
 
-## Related decisions
+## Related Decisions
 
 ## Notes

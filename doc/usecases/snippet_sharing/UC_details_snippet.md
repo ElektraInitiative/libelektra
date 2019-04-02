@@ -1,4 +1,4 @@
-# Use Case: View details for specific configuration snippet
+# Use Case: View Details for Specific Configuration Snippet
 
 ## Summary
 

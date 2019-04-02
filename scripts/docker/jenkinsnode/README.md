@@ -1,4 +1,4 @@
-# Configuring Elektra as a Jenkins build node with Docker
+# Configuring Elektra as a Jenkins Build Node with Docker
 
 This Dockerfile builds a dockerimage based on debian:stretch including all
 requirements to build Elektra and most of its bindings/plugins to act as a build

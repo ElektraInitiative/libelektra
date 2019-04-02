@@ -47,6 +47,6 @@ or the
 The [doc](io/doc/) directory contains an example binding for a fictive
 asynchronous I/O management library.
 
-## SEE ALSO
+## See Also
 
 - See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build, e.g. `ALL`.

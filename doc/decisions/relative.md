@@ -45,7 +45,7 @@ plugins should use relative paths so that import/export/remount works
 - xmltool (also supports relative)
 - tcl
 
-## Related decisions
+## Related Decisions
 
 None
 

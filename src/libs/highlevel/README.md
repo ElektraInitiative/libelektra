@@ -203,7 +203,7 @@ but, if you ever do need to use the raw type metadata using constants enables co
 There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is currently neither used nor supported by this API. However, we reserve it
 for a future expansion of this API.
 
-##### Note about floating point types
+##### Note about Floating Point Types
 
 We enforce a few minimum properties for floating point types. They are taken from the IEE-754 specification and are:
 

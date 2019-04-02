@@ -36,6 +36,6 @@ Remove files on empty KeySet.
 - less empty files are left
 - no invalid empty files (yajl bugs)
 
-## Related decisions
+## Related Decisions
 
 ## Notes

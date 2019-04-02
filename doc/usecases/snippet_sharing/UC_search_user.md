@@ -1,4 +1,4 @@
-# Use Case: Search for users
+# Use Case: Search for Users
 
 ## Summary
 

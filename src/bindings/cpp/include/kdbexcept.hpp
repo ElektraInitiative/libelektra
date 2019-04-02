@@ -60,10 +60,32 @@ public:
 		return m_str.c_str ();
 	}
 
-private:
+protected:
 	Key m_key;
+
+private:
 	mutable std::string m_str;
 };
+
+class ContractException : public KDBException
+{
+public:
+	explicit ContractException (Key key) : KDBException (key)
+	{
+	}
+
+	~ContractException () noexcept override = default;
+
+	const char * what () const noexcept override
+	{
+		if (!m_key)
+		{
+			return "Malformed contract";
+		}
+		return KDBException::what ();
+	}
+};
+
 } // namespace kdb
 
 #endif

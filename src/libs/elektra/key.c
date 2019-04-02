@@ -156,7 +156,7 @@ static Key * elektraKeyMalloc (void)
  * @deprecated The flags below are deprecated and ::KEY_META should be
  * preferred. They remain some time, however, for compatibility:
  * - ::KEY_DIR \n
- *   Define that the key is a directory rather than a ordinary key.
+ *   Define that the key is a directory rather than an ordinary key.
  *   This means its executable bits in its mode are set.
  *   But even without this option the key can have subkeys.
  *   See keySetDir().

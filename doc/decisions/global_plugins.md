@@ -71,7 +71,7 @@ With different semantics each:
 - `max once` (without any subposition) will be called maximum once per `kdbGet()/kdbSet()`
   outside the loop. It must be called after `init`, and before `deinit`.
 
-### Return values
+### Return Values
 
 If a global plugin returns:
 
@@ -81,7 +81,7 @@ If a global plugin returns:
 - `1`: `kdbGet()/kdbSet()` will continue as if no hook was
   executed
 
-### Detection within plugins
+### Detection Within Plugins
 
 So that plugins know in which position they currently are, the name of the position
 will be written as string in parentkey (not starting with slash to distinguish with
@@ -102,7 +102,7 @@ is present:
 infos/status global
 ```
 
-### Application-Specific global plugins
+### Application-Specific Global Plugins
 
 If you need a global plugin for your application `kdbAddGlobalPlugin`
 from libtools can be used. If the global plugin is already present,
@@ -134,14 +134,14 @@ that executes the transformation code)
 - preget: fetch all foreign keys (kdbGet)
 - postget: run transformation for all foreign keys
 
-### Global lock
+### Global Lock
 
 simplifies threading and process locking by not having to think about
 recursive cases.
 
 Now called `semlock`-plugin.
 
-### Shell plugins
+### Shell Plugins
 
 Run shell code at end of all plugins, e.g. especially doing
 
@@ -150,14 +150,14 @@ git add
 git commit
 ```
 
-### Inference plugins
+### Inference Plugins
 
 The globbing would be more natural (derived from specification).
 Or even more advanced ways to copy information from specification to the keys, e.g. type inference
 
 Now called `spec`-plugin.
 
-### Journalling plugins
+### Journalling Plugins
 
 It should be possible to write plugins which need all file names of all resolver plugins.
 E.g. journalling, global mmap.
@@ -194,7 +194,7 @@ getresolver/after/once
 
 ## Implications
 
-### Default global plugins
+### Default Global Plugins
 
 Its useful to have some important global plugins, e.g. locking by default.
 See #690.
@@ -204,7 +204,7 @@ Internal list to be used when no system/elektra/global_mountpoints/ exists.
 State diagrams of plugins need to be redrawn to also include global plugin
 states.
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

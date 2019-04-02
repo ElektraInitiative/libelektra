@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief A error listener reacting to mismatches of the grammar defined in `YAML.g4`
+ * @brief an error listener reacting to mismatches of the grammar defined in `YAML.g4`
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

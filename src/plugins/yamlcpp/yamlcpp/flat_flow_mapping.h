@@ -1,7 +1,5 @@
 // clang-format off
 
-#define PREFIX "user/examples/yamlcpp/"
-
 ksNew (10,
        keyNew (PREFIX "space invader", KEY_VALUE, "👾", KEY_END),
        keyNew (PREFIX "text", KEY_VALUE, "1337", KEY_END),

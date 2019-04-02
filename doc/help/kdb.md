@@ -59,7 +59,7 @@ within the KDB (key database):
 
 1. /sw/kdb/**profile**/ (for legacy configuration)
 2. /sw/elektra/kdb/#0/%/ (for empty profile, `%` in Elektra
-   is used to represent a emptiness)
+   is used to represent emptiness)
 3. /sw/elektra/kdb/#0/**profile**/ (for current profile,
    if no `-p` or `--profile` is given, `current` will be
    used)

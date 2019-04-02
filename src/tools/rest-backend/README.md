@@ -87,7 +87,7 @@ In detail, the options (without the base key `@config_root@`) are:
 @configuration-specification@
 ```
 
-### Configure as service
+### Configure as Service
 
 To configure the rest-backend as service, it is possible to use `systemd` on most systems.
 
@@ -146,7 +146,7 @@ For instance:
 You can now install Elektra as you normally would or as described
 in the [install documentation](https://master.libelektra.org/doc/INSTALL.md).
 
-## Implementation notes and hints for Front-Ends
+## Implementation Notes and Hints for Front-Ends
 
 The here described tool offers an API which can be consumed by either a command line tool
 like cURL or a custom frontend. In the following some hints for frontend implementations will be given.

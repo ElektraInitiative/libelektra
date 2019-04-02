@@ -172,7 +172,7 @@ do not work.
 
 Please open an issue if you plan to use the code.
 
-## See also
+## See Also
 
 If you want to know more read:
 

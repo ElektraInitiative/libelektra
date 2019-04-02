@@ -432,11 +432,11 @@ application (services, controllers, etc) by type-hinting the dependency name.
 
 For detailed information, the website of [Angular](https://angularjs.org/) should be visited.
 
-### Task configuration
+### Task Configuration
 
 All `grunt` tasks can be configured using the [Gruntfile.js](Gruntfile.js) in the application root directory.
 
-### Code formatting
+### Code Formatting
 
 The task `grunt jshint` can be used to check the code formatting of JS source files.
 

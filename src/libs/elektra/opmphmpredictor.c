@@ -65,7 +65,7 @@ inline void opmphmPredictorIncCountOpmphm (OpmphmPredictor * op)
 /**
  * @brief Increases the counter when the Binary Search was used for the ksLookup (...) .
  *
- * Prevents also a endless Binary Search usage by a simple heuristic.
+ * Prevents also an endless Binary Search usage by a simple heuristic.
  *
  * @param op the Predictor
  * @param n the number of elements in the KeySet

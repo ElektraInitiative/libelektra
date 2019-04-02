@@ -41,7 +41,7 @@ All plugins implement the same interface:
 - For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-## See also
+## See Also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
 For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
@@ -267,3 +267,4 @@ binding during run-time.
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
+- [gopts](gopts/) global plugin to automatically call `elektraGetOpts`

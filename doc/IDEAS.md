@@ -2,7 +2,7 @@
 
 Thank you for being interested in contributing to Elektra!
 
-## How can I get started?
+## How Can I Get Started?
 
 We prepared
 [good first issues](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
@@ -25,7 +25,7 @@ more interest to you:
 - Further configuration file formats could be supported.
 - The tools could be improved.
 
-## What are the requirements to participate?
+## What are the Requirements to Participate?
 
 Anyone can join!
 

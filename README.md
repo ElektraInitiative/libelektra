@@ -18,7 +18,7 @@ and tools concerning their configuration tasks. Elektra abstracts from
 cross-platform-related issues and enables applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-## Often used links
+## Often Used Links
 
 - [Build server](https://build.libelektra.org/)
 - [Website](https://www.libelektra.org)
@@ -125,7 +125,7 @@ You can read the documentation for the kdb tool, either
   plugins instead.
 - Postpone configuration decisions (such as which configuration files to use)
   from developers to system administrators and package maintainers to
-  provide a overall more consistent and user-friendly system.
+  provide an overall more consistent and user-friendly system.
   (Default behavior of applications still is in control of developers,
   you can even roll your own plugins to provide exactly the same behavior
   as your application has now.)

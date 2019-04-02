@@ -56,7 +56,7 @@ The convenience plugin should transform (it might be combined with a plugin that
 
 - change code with different behavior
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

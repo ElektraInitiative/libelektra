@@ -89,7 +89,6 @@ int keyRel2 (const Key * k1, const Key * k2, KeyRelType which);
 Key * keyAsCascading (const Key * key);
 int keyGetLevelsBelow (const Key * k1, const Key * k2);
 
-
 #ifdef __cplusplus
 }
 }
