@@ -893,7 +893,17 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (specKS);
 	int ret = doGlobbing (parentKey, ks, specKS, ch, GET, clean);
 	ksAppend (returned, specKS);
-	ksAppend (returned, ks);
+
+	Key * cur = ksCurrent (ks);
+	while (cur != NULL)
+	{
+		if (cur->key[0] != '/')
+		{
+			ksAppendKey (returned, cur);
+		}
+		cur = ksNext (ks);
+	}
+
 	ksDel (ks);
 	ksDel (specKS);
 	elektraFree (ch);
