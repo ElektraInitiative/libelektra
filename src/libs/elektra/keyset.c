@@ -756,7 +756,7 @@ ssize_t ksGetSize (const KeySet * ks)
 /**
  * @internal
  *
- * Binary search in a keyset that informs where key should be inserted.
+ * Binary search in a KeySet that informs where a key should be inserted.
  *
  * @code
 

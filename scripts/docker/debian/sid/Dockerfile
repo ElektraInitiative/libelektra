@@ -71,8 +71,6 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
-RUN ldconfig
-
 # Prettier
 RUN npm install --global prettier@1.16.4
 
