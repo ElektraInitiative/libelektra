@@ -82,6 +82,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin no allows setting a value to the mountpoint. This is represented as a top level value in json if no other key is present. _(Philipp Gackstatter)_
 
+- The plugin no longer lists empty parent keys with `kdb ls`. _(Philipp Gackstatter)_
+
 ### YAMBi
 
 - [YAMBi](https://www.libelektra.org/plugins/yambi) is now able detect multiple syntax errors in a file. _(René Schwaiger)_

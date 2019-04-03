@@ -269,6 +269,31 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 		}
 		keyDel (lookupKey);
 	}
+
+	ksRewind (returned);
+	Key * cur;
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		// Not sure atm if checking for dirdata is needed or the responsibility of yajl
+		Key * dirdata = keyDup (cur);
+		keySetBaseName (dirdata, "___dirdata");
+		ELEKTRA_LOG_DEBUG ("Searching for %s", keyName (dirdata));
+		Key * foundKey = ksLookup (returned, dirdata, 0);
+
+		if (foundKey == NULL)
+		{
+			ELEKTRA_LOG_DEBUG ("Did not find dirdata");
+			// I wonder if there's a better way for this check
+			if (keyGetValueSize (cur) < 2)
+			{
+				ELEKTRA_LOG_DEBUG ("Key has no value, delete %s", keyName (cur));
+				// Is this even a good idea considering the cursor still points at this key?
+				keyDel (ksLookup (returned, cur, KDB_O_POP));
+			}
+		}
+
+		keyDel (dirdata);
+	}
 }
 
 static inline KeySet * elektraGetModuleConfig (void)
