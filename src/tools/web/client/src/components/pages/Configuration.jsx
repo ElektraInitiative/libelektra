@@ -165,9 +165,11 @@ export default class Configuration extends Component {
       ]
 
       if (levels > 0) {
-        promises.push(
-          this.preload(childItems, newPaths, levels - 1)
-        )
+          if(NAMESPACES.includes(newPaths.indexOf(0))) {
+              promises.push(
+                  this.preload(childItems, newPaths, levels - 1)
+              )
+          }
       }
 
       return Promise.all(promises)
