@@ -83,7 +83,6 @@ kdb cp -r user/tests/cp/examples/kdb-cp/key user/tests/cp/examples/kdb-cp/cpkey
 # To copy keys below an existing key:
 kdb cp -r user/tests/cp/examples/kdb-cp/another user/tests/cp/examples/kdb-cp/another/key
 #>
-# Note that in this example, all keys in the `another` directory will be copied below `key` **except** `key`.
 
 kdb rm -r user/tests/cp/examples/kdb-cp/
 ```
