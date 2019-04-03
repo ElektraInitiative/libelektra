@@ -214,8 +214,11 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 	kdb_long_long_t size;
 	if (!elektraKeyToLongLong (restoreKey, &size))
 	{
+		keyDel (restoreKey);
 		return -2;
 	}
+
+	keyDel (restoreKey);
 
 	return size;
 }
