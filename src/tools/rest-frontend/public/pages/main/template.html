@@ -11,7 +11,7 @@
             </div>
             <div class="navbar-left col-md-6" style="text-align:center;margin-top:10px;">
                 <div class="input-group" ng-hide="$state.includes('main.entries.search')">
-                    <input type="text" class="form-control focus-logo-blue"
+                    <input id="searchbox" type="text" class="form-control focus-logo-blue"
                            placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}"
                            ng-model="$rootScope.entriesSearchString" on-key-enter="ctrl.goSearch()">
                     <span class="input-group-btn">
