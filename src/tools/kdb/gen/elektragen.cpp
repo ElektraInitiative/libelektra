@@ -122,6 +122,7 @@ static std::string getTagName (const kdb::Key & key, const std::string & parentK
 	name = std::regex_replace (name, std::regex ("/[#_]/"), "/");
 	name = std::regex_replace (name, std::regex ("[#_]/"), "/");
 	name = std::regex_replace (name, std::regex ("/[#_]"), "/");
+	name = std::regex_replace (name, std::regex (R"(/%(([^/]|(\\\\)*\\/|(\\\\)+)+)%/)"), "/$1/");
 
 	if (name[name.length () - 1] == '/')
 	{
@@ -624,7 +625,8 @@ static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long
 					"Replaces occurence no. " + indexStr + " of " + kind + " in the keyname.";
 }
 
-static kainjow::mustache::list getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, std::string & fmtString)
+static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyParts, kainjow::mustache::list & args,
+				  std::vector<kainjow::mustache::object> & context, std::string & fmtString)
 {
 	using namespace kainjow::mustache;
 	auto parts = getKeyParts (key);
@@ -632,40 +634,74 @@ static kainjow::mustache::list getKeyArgs (const kdb::Key & key, const size_t pa
 
 	std::stringstream fmt;
 
-	list args;
-	for (auto part : parts)
+	size_t ctxCount =
+		std::count_if (parts.begin (), parts.end (), [](const std::string & s) { return s.front () == '%' && s.back () == '%'; });
+
+	if (ctxCount > 0)
+	{
+		context.reserve (ctxCount); // optimization
+		--ctxCount;
+	}
+
+	size_t pos = 1;
+	size_t names = 1;
+	size_t indices = 1;
+	for (const auto & part : parts)
 	{
 		if (part == "_")
 		{
 			auto arg = object{ { "native_type", "const char *" },
-					   { "name", getArgName (key, args.size (), "name") },
+					   { "name", getArgName (key, names, "name") },
 					   { "index?", false },
-					   { "description", getArgDescription (key, args.size (), "_") } };
+					   { "description", getArgDescription (key, names, "_") } };
 			args.push_back (arg);
-			fmt << "%s/";
+			fmt << "%" + std::to_string (ctxCount + pos) + "$s/";
+			++pos;
+			++names;
 		}
 		else if (part == "#")
 		{
 			auto arg = object{ { "native_type", "kdb_long_long_t" },
-					   { "name", getArgName (key, args.size (), "index") },
+					   { "name", getArgName (key, indices, "index") },
 					   { "index?", true },
-					   { "description", getArgDescription (key, args.size (), "#") } };
+					   { "description", getArgDescription (key, indices, "#") } };
 			args.push_back (arg);
-			fmt << "%*.*s%lld/";
+			fmt << "%" + std::to_string (ctxCount + pos + 2) + "$*" + std::to_string (ctxCount + pos + 1) + "$.*" +
+					std::to_string (ctxCount + pos) + "$s%" + std::to_string (ctxCount + pos + 3) + "$lld/";
+			pos += 4;
+			++indices;
+		}
+		else if (part.front () == '%' && part.back () == '%')
+		{
+			// contextual value
+			auto name = part.substr (1, part.length () - 2);
+			auto cName = name;
+			escapeNonAlphaNum (cName);
+			auto ctx = object{ { "name", name },
+					   { "c_name", snakeCaseToCamelCase (cName) },
+					   { "key_name", "system/elektra/codegen/context/" + name },
+					   { "macro_name", snakeCaseToMacroCase (cName) },
+					   { "tag_name", snakeCaseToPascalCase (cName) } };
+			context.push_back (ctx);
+
+			fmt << "%" + std::to_string (pos) + "$s/";
+			++pos;
 		}
 		else
 		{
 			// escape backslashes first too avoid collision
-			part = std::regex_replace (part, std::regex ("[\\\\/]"), "\\\\$0");
-
-
-			fmt << part << "/";
+			fmt << std::regex_replace (part, std::regex ("[\\\\/]"), "\\\\$0") << "/";
 		}
 	}
 
 	if (!args.empty ())
 	{
 		args.back ()["last?"] = true;
+	}
+	else if (!context.empty ())
+	{
+		// keep comma if args present as well
+		context.back ()["last?"] = true;
 	}
 
 	if (args.size () > 1)
@@ -675,8 +711,6 @@ static kainjow::mustache::list getKeyArgs (const kdb::Key & key, const size_t pa
 
 	fmtString = fmt.str ();
 	fmtString.pop_back ();
-
-	return args;
 }
 
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
@@ -724,6 +758,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	auto parentKeyParts = getKeyParts (specParent);
 
+	std::unordered_map<std::string, object> contexts;
 	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{
 		kdb::Key key = *it;
@@ -739,7 +774,9 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		name.erase (0, sizeof ("spec") - 1);
 
 		std::string fmtString;
-		list args = getKeyArgs (key, parentKeyParts.size (), fmtString);
+		list args;
+		std::vector<object> context;
+		getKeyArgsAndContext (key, parentKeyParts.size (), args, context, fmtString);
 
 		if (!key.hasMeta ("default"))
 		{
@@ -786,7 +823,23 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (!args.empty ())
 		{
-			keyObject["args?"] = object ({ { "args", args }, { "fmt_string", fmtString } });
+			keyObject["args_or_context?"] = true;
+			keyObject["args?"] = true;
+			keyObject["args"] = args;
+			keyObject["fmt_string"] = fmtString;
+		}
+
+		if (!context.empty ())
+		{
+			keyObject["args_or_context?"] = true;
+			keyObject["context?"] = true;
+			keyObject["context"] = list (context.begin (), context.end ());
+			keyObject["fmt_string"] = fmtString;
+
+			for (auto & ctx : context)
+			{
+				contexts[ctx["name"].string_value ()] = ctx;
+			}
 		}
 
 		if (isArray)
@@ -796,8 +849,10 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				// remove last argument and last part of format string
 				auto arrayArgs = list{ args.begin (), args.end () - 1 };
 				arrayArgs.back ()["last?"] = true;
-				keyObject["array_args?"] =
-					object ({ { "args", arrayArgs }, { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
+				keyObject["array_args_or_context?"] =
+					object ({ { "args", arrayArgs },
+						  { "context", list (context.begin (), context.end ()) },
+						  { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
 			}
 			// remove last part ('/#') from name
 			keyObject["array_name"] = name.substr (cascadingParent.size () + 1, name.size () - cascadingParent.size () - 3);
@@ -880,6 +935,17 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	kdb::KeySet contract;
 	contract.append (kdb::Key ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
+	list totalContext;
+	kdb::KeySet defaultContext;
+
+	for (auto & p : contexts)
+	{
+		totalContext.push_back (p.second);
+		const auto & keyName = p.second["key_name"].string_value ();
+		// TODO: contextual defaults
+		defaultContext.append (kdb::Key (keyName, KEY_VALUE, "", KEY_END));
+	}
+
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
@@ -887,6 +953,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["defaults"] = keySetToCCode (spec);
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = specloadArg;
+	data["total_context"] = totalContext;
+	data["default_context"] = keySetToCCode (defaultContext);
 
 	return data;
 }

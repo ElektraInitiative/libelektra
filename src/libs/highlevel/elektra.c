@@ -95,6 +95,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
+	elektra->context = ksNew (0, KS_END);
 
 	return elektra;
 }
@@ -165,6 +166,20 @@ Key * elektraHelpKey (Elektra * elektra)
 }
 
 /**
+ * The contextual KeySet of an Elektra instance can in principle be used to store
+ * any meta information about this Elektra instance. The most important use-case are
+ * the code-generation features.
+ *
+ * @param elektra Elektra instance to access
+ *
+ * @return The contextual KeySet of this Elektra instance, you MUST NOT call ksDel() on it.
+ */
+KeySet * elektraContext (Elektra * elektra)
+{
+	return elektra->context;
+}
+
+/**
  * Sets the fatal error handler that will be called, whenever a fatal error occurs.
  *
  * Errors occurring in a function, which does not take a pointer to ElektraError,
@@ -192,6 +207,7 @@ void elektraClose (Elektra * elektra)
 	keyDel (elektra->parentKey);
 	ksDel (elektra->config);
 	keyDel (elektra->lookupKey);
+	ksDel (elektra->context);
 
 	elektraFree (elektra);
 }

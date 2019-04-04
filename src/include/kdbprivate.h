@@ -643,6 +643,7 @@ struct _Elektra
 	KeySet * config;
 	Key * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
+	KeySet * context;
 };
 
 struct _ElektraError

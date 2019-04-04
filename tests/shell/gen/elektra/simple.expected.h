@@ -24,6 +24,8 @@ extern "C" {
 
 
 
+#define ELEKTRA_CONTEXT_SET(contextTag) elektraSetContextualValue##contextTag
+
 // clang-format off
 
 // clang-format on
@@ -61,7 +63,7 @@ extern "C" {
 * 
 * Required arguments:
 * 
-* - kdb_long_long_t index0: Replaces occurence no. 0 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
 * 
 * 
 */// 
@@ -85,6 +87,22 @@ extern "C" {
 */// 
 #define ELEKTRA_TAG_PRINT Print
 // clang-format on
+
+
+// clang-format off
+
+// clang-format on
+
+// clang-format off
+
+// clang-format on
+
+
+// clang-format off
+
+// clang-format on
+
+
 
 
 // clang-format off
@@ -123,6 +141,7 @@ extern "C" {
  * Get the value of 'mydouble'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  *
  * @return the value of 'mydouble'.
  */// 
@@ -138,10 +157,12 @@ static inline kdb_double_t ELEKTRA_GET (Mydouble) (Elektra * elektra )
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'mydouble'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Mydouble) (Elektra * elektra, kdb_double_t value,  ElektraError ** error)
+static inline void ELEKTRA_SET (Mydouble) (Elektra * elektra,
+						    kdb_double_t value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (Double) (elektra, "mydouble", value, error);
@@ -154,15 +175,19 @@ static inline void ELEKTRA_SET (Mydouble) (Elektra * elektra, kdb_double_t value
  * Get the value of 'myfloatarray/#'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param index1 Replaces occurence no. 1 of # in the keyname.
  *
  * @return the value of 'myfloatarray/#'.
  */// 
 static inline kdb_float_t ELEKTRA_GET (Myfloatarray) (Elektra * elektra ,
-								    kdb_long_long_t index0 
-								     )
+								     kdb_long_long_t index1   )
 {
-	char * name = elektraFormat ("myfloatarray/%*.*s%lld",   elektra_len (index0),
-				     elektra_len (index0), "#___________________",  index0  );
+	
+
+	char * name = elektraFormat ("myfloatarray/%3$*2$.*1$s%4$lld", 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
 	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -175,15 +200,20 @@ static inline kdb_float_t ELEKTRA_GET (Myfloatarray) (Elektra * elektra ,
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'myfloatarray/#'.
+ * @param index1 Replaces occurence no. 1 of # in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Myfloatarray) (Elektra * elektra, kdb_float_t value,  
-						    kdb_long_long_t index0,
-						      ElektraError ** error)
+static inline void ELEKTRA_SET (Myfloatarray) (Elektra * elektra,
+						    kdb_float_t value,  
+						    kdb_long_long_t index1,   ElektraError ** error)
 {
-	char * name = elektraFormat ("myfloatarray/%*.*s%lld",   elektra_len (index0),
-				     elektra_len (index0), "#___________________",  index0  );
+	
+
+	char * name = elektraFormat ("myfloatarray/%3$*2$.*1$s%4$lld", 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
 	ELEKTRA_SET (Float) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -191,12 +221,14 @@ static inline void ELEKTRA_SET (Myfloatarray) (Elektra * elektra, kdb_float_t va
 
 /**
  * Get the size of the array 'myfloatarray/#'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  */// 
 static inline kdb_long_long_t ELEKTRA_SIZE (Myfloatarray) (Elektra * elektra )
 {
 	
-	kdb_long_long_t size = elektraArraySize (elektra, "myfloatarray");
-	return size;
+	return elektraArraySize (elektra, "myfloatarray");
 }
 
 
@@ -205,6 +237,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (Myfloatarray) (Elektra * elektra )
  * Get the value of 'myint'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  *
  * @return the value of 'myint'.
  */// 
@@ -220,10 +253,12 @@ static inline kdb_long_t ELEKTRA_GET (Myint) (Elektra * elektra )
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'myint'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Myint) (Elektra * elektra, kdb_long_t value,  ElektraError ** error)
+static inline void ELEKTRA_SET (Myint) (Elektra * elektra,
+						    kdb_long_t value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (Long) (elektra, "myint", value, error);
@@ -236,6 +271,7 @@ static inline void ELEKTRA_SET (Myint) (Elektra * elektra, kdb_long_t value,  El
  * Get the value of 'mystring'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  *
  * @return the value of 'mystring'.
  */// 
@@ -251,10 +287,12 @@ static inline const char * ELEKTRA_GET (Mystring) (Elektra * elektra )
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'mystring'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Mystring) (Elektra * elektra, const char * value,  ElektraError ** error)
+static inline void ELEKTRA_SET (Mystring) (Elektra * elektra,
+						    const char * value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (String) (elektra, "mystring", value, error);
@@ -267,6 +305,7 @@ static inline void ELEKTRA_SET (Mystring) (Elektra * elektra, const char * value
  * Get the value of 'print'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  *
  * @return the value of 'print'.
  */// 
@@ -282,10 +321,12 @@ static inline kdb_boolean_t ELEKTRA_GET (Print) (Elektra * elektra )
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'print'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Print) (Elektra * elektra, kdb_boolean_t value,  ElektraError ** error)
+static inline void ELEKTRA_SET (Print) (Elektra * elektra,
+						    kdb_boolean_t value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (Boolean) (elektra, "print", value, error);
@@ -382,6 +423,14 @@ void specloadCheck (int argc, const char ** argv);
  * @return The size of the array below the given key.
  */// 
 #define elektraSize(elektra, tag) ELEKTRA_SIZE (tag) (elektra)
+
+
+/**
+ * @param elektra    The elektra instance initialized with loadConfiguration().
+ * @param contextTag The context tag for the contextual value you want to set.
+ * @param value	     The actual value you want to set.
+ */// 
+#define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
 
 #ifdef __cplusplus
 }

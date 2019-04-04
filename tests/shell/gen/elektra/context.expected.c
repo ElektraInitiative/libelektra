@@ -10,7 +10,7 @@
 
 // clang-format on
 
-#include "empty.actual.h"
+#include "context.actual.h"
 
 
 
@@ -28,7 +28,7 @@ static Key * helpKey = NULL;
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/empty'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/context'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -49,10 +49,16 @@ static Key * helpKey = NULL;
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (0,
+	KeySet * defaults = ksNew (3,
+	keyNew ("spec/tests/script/gen/elektra/context/key/%date%/child", KEY_META, "default", "0", KEY_META, "type",
+	"boolean", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/context/key/%profile%/child/_/grandchildren/#", KEY_META, "default", "0",
+	KEY_META, "type", "long", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/context/key/%user\\/name%/child", KEY_META, "default", "", KEY_META, "type",
+	"string", KEY_END),
 	KS_END);
 ;
-	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/elektra/context", defaults, error);
 
 	if (e == NULL)
 	{
@@ -80,7 +86,10 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		return 2;
 	}
 
-	KeySet * defaultContext = ksNew (0,
+	KeySet * defaultContext = ksNew (3,
+	keyNew ("system/elektra/codegen/context/date", KEY_END),
+	keyNew ("system/elektra/codegen/context/profile", KEY_END),
+	keyNew ("system/elektra/codegen/context/user/name", KEY_END),
 	KS_END);
 ;
 	ksAppend (elektraContext (e), defaultContext);
@@ -109,11 +118,17 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (0,
+	KeySet * spec = ksNew (3,
+	keyNew ("spec/tests/script/gen/elektra/context/key/%date%/child", KEY_META, "default", "0", KEY_META, "type",
+	"boolean", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/context/key/%profile%/child/_/grandchildren/#", KEY_META, "default", "0",
+	KEY_META, "type", "long", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/context/key/%user\\/name%/child", KEY_META, "default", "", KEY_META, "type",
+	"string", KEY_END),
 	KS_END);
 ;
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/empty", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/context", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);

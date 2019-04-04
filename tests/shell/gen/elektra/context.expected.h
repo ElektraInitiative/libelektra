@@ -10,8 +10,8 @@
 
 // clang-format on
 
-#ifndef ENUM_ACTUAL_H
-#define ENUM_ACTUAL_H
+#ifndef CONTEXT_ACTUAL_H
+#define CONTEXT_ACTUAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,7 +22,7 @@ extern "C" {
 #include <kdbhelper.h>
 #include <string.h>
 
-#include "colors.h"
+
 
 #define ELEKTRA_CONTEXT_SET(contextTag) elektraSetContextualValue##contextTag
 
@@ -30,62 +30,8 @@ extern "C" {
 
 // clang-format on
 
-typedef enum
-{
-	ELEKTRA_ENUM_DISJOINTED_BLACK = 0,
-	ELEKTRA_ENUM_DISJOINTED_WHITE = 255,
-} ElektraEnumDisjointed;
 
 
-typedef enum
-{
-	COLORS_NONE = NO_VALUE,
-	COLORS_RED = 1,
-	COLORS_GREEN = 1 << 1,
-	COLORS_BLUE = 1 << 2,
-} Colors;
-
-typedef enum
-{
-	ELEKTRA_ENUM_MYENUM_RED = 0,
-	ELEKTRA_ENUM_MYENUM_GREEN = 1,
-	ELEKTRA_ENUM_MYENUM_BLUE = 2,
-	ELEKTRA_ENUM_MYENUM_BLUEISH = 3,
-	ELEKTRA_ENUM_MYENUM_BROWN = 4,
-	ELEKTRA_ENUM_MYENUM_GRAY = 5,
-} ElektraEnumMyenum;
-
-
-ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
-ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
-
-ELEKTRA_GET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
-ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
-ELEKTRA_SET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
-
-
-
-ELEKTRA_GET_SIGNATURE (ExistingColors, EnumExistingColors);
-ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors);
-ELEKTRA_SET_SIGNATURE (ExistingColors, EnumExistingColors);
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors);
-
-ELEKTRA_KEY_TO_SIGNATURE (Colors, EnumColors);
-ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors);
-
-ELEKTRA_GET_SIGNATURE (Colors, EnumColors);
-ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors);
-ELEKTRA_SET_SIGNATURE (Colors, EnumColors);
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors);
-
-ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
-ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
-
-ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
-ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
-ELEKTRA_SET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 
 
@@ -107,34 +53,29 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 // clang-format off
 
 /**
-* Tag name for 'disjointed'
+* Tag name for 'key/%date%/child'
 * 
 */// 
-#define ELEKTRA_TAG_DISJOINTED Disjointed
+#define ELEKTRA_TAG_KEY_DATE_CHILD KeyDateChild
 
 /**
-* Tag name for 'existinggentype'
+* Tag name for 'key/%profile%/child/_/grandchildren/#'
+* 
+* Required arguments:
+* 
+* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
+* 
+* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* 
 * 
 */// 
-#define ELEKTRA_TAG_EXISTINGGENTYPE Existinggentype
+#define ELEKTRA_TAG_KEY_PROFILE_CHILD_GRANDCHILDREN KeyProfileChildGrandchildren
 
 /**
-* Tag name for 'gentype'
+* Tag name for 'key/%user\/name%/child'
 * 
 */// 
-#define ELEKTRA_TAG_GENTYPE Gentype
-
-/**
-* Tag name for 'gentype2'
-* 
-*/// 
-#define ELEKTRA_TAG_GENTYPE2 Gentype2
-
-/**
-* Tag name for 'myenum'
-* 
-*/// 
-#define ELEKTRA_TAG_MYENUM Myenum
+#define ELEKTRA_TAG_KEY_USER__NAME_CHILD KeyUserNameChild
 // clang-format on
 
 
@@ -144,6 +85,20 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 // clang-format off
 
+/**
+* Context tag name for 'user/name'
+*/// 
+#define ELEKTRA_CONTEXT_USER_NAME UserName
+
+/**
+* Context tag name for 'date'
+*/// 
+#define ELEKTRA_CONTEXT_DATE Date
+
+/**
+* Context tag name for 'profile'
+*/// 
+#define ELEKTRA_CONTEXT_PROFILE Profile
 // clang-format on
 
 
@@ -151,7 +106,18 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 // clang-format on
 
-
+static inline void ELEKTRA_CONTEXT_SET (UserName) (Elektra * elektra, const char * value)
+{
+	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/user/name", KEY_VALUE, value, KEY_END));
+}
+static inline void ELEKTRA_CONTEXT_SET (Date) (Elektra * elektra, const char * value)
+{
+	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/date", KEY_VALUE, value, KEY_END));
+}
+static inline void ELEKTRA_CONTEXT_SET (Profile) (Elektra * elektra, const char * value)
+{
+	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/profile", KEY_VALUE, value, KEY_END));
+}
 
 
 // clang-format off
@@ -187,170 +153,166 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 
 /**
- * Get the value of 'disjointed'.
+ * Get the value of 'key/%date%/child'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 
  *
- * @return the value of 'disjointed'.
+ * @return the value of 'key/%date%/child'.
  */// 
-static inline ElektraEnumDisjointed ELEKTRA_GET (Disjointed) (Elektra * elektra )
+static inline kdb_boolean_t ELEKTRA_GET (KeyDateChild) (Elektra * elektra )
 {
+	const char * date = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/date", 0));
+
+	char * name = elektraFormat ("key/%1$s/child",  date  
+				     );
+	kdb_boolean_t result = ELEKTRA_GET (Boolean) (elektra, name);
+	elektraFree (name);
+	return result;
 	
-	return ELEKTRA_GET (EnumDisjointed) (elektra, "disjointed");
 }
 
 
 /**
- * Set the value of 'disjointed'.
+ * Set the value of 'key/%date%/child'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'disjointed'.
+ * @param value   The value of 'key/%date%/child'.
 
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra,
-						    ElektraEnumDisjointed value,  ElektraError ** error)
+static inline void ELEKTRA_SET (KeyDateChild) (Elektra * elektra,
+						    kdb_boolean_t value,  ElektraError ** error)
 {
+	const char * date = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/date", 0));
+
+	char * name = elektraFormat ("key/%1$s/child",  date  
+				     );
+	ELEKTRA_SET (Boolean) (elektra, name, value, error);
+	elektraFree (name);
 	
-	ELEKTRA_SET (EnumDisjointed) (elektra, "disjointed", value, error);
 }
 
 
 
 
 /**
- * Get the value of 'existinggentype'.
+ * Get the value of 'key/%profile%/child/_/grandchildren/#'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
-
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param index1 Replaces occurence no. 1 of # in the keyname.
  *
- * @return the value of 'existinggentype'.
+ * @return the value of 'key/%profile%/child/_/grandchildren/#'.
  */// 
-static inline ExistingColors ELEKTRA_GET (Existinggentype) (Elektra * elektra )
+static inline kdb_long_t ELEKTRA_GET (KeyProfileChildGrandchildren) (Elektra * elektra ,
+								     const char * name1 ,
+								      kdb_long_long_t index1   )
 {
+	const char * profile = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/profile", 0));
+
+	char * name = elektraFormat ("key/%1$s/child/%2$s/grandchildren/%5$*4$.*3$s%6$lld",  profile ,  
+				       name1 , 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
+	kdb_long_t result = ELEKTRA_GET (Long) (elektra, name);
+	elektraFree (name);
+	return result;
 	
-	return ELEKTRA_GET (EnumExistingColors) (elektra, "existinggentype");
 }
 
 
 /**
- * Set the value of 'existinggentype'.
+ * Set the value of 'key/%profile%/child/_/grandchildren/#'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'existinggentype'.
+ * @param value   The value of 'key/%profile%/child/_/grandchildren/#'.
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param index1 Replaces occurence no. 1 of # in the keyname.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (KeyProfileChildGrandchildren) (Elektra * elektra,
+						    kdb_long_t value,  
+						    const char * name1, 
+						    kdb_long_long_t index1,   ElektraError ** error)
+{
+	const char * profile = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/profile", 0));
+
+	char * name = elektraFormat ("key/%1$s/child/%2$s/grandchildren/%5$*4$.*3$s%6$lld",  profile ,  
+				       name1 , 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
+	ELEKTRA_SET (Long) (elektra, name, value, error);
+	elektraFree (name);
+	
+}
+
+/**
+ * Get the size of the array 'key/%profile%/child/_/grandchildren/#'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ */// 
+static inline kdb_long_long_t ELEKTRA_SIZE (KeyProfileChildGrandchildren) (Elektra * elektra ,
+								 const char * name1   )
+{
+	const char * profile = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/profile", 0));
+
+	char * name = elektraFormat ("key/%1$s/child/%2$s/grandchildren",  profile ,  
+				       name1 
+				     );
+	kdb_long_long_t size = elektraArraySize (elektra, name);
+	elektraFree (name);
+	return size;
+	
+}
+
+
+
+/**
+ * Get the value of 'key/%user\/name%/child'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+
+ *
+ * @return the value of 'key/%user\/name%/child'.
+ */// 
+static inline const char * ELEKTRA_GET (KeyUserNameChild) (Elektra * elektra )
+{
+	const char * userName = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/user/name", 0));
+
+	char * name = elektraFormat ("key/%1$s/child",  userName  
+				     );
+	const char * result = ELEKTRA_GET (String) (elektra, name);
+	elektraFree (name);
+	return result;
+	
+}
+
+
+/**
+ * Set the value of 'key/%user\/name%/child'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'key/%user\/name%/child'.
 
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra,
-						    ExistingColors value,  ElektraError ** error)
+static inline void ELEKTRA_SET (KeyUserNameChild) (Elektra * elektra,
+						    const char * value,  ElektraError ** error)
 {
+	const char * userName = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/user/name", 0));
+
+	char * name = elektraFormat ("key/%1$s/child",  userName  
+				     );
+	ELEKTRA_SET (String) (elektra, name, value, error);
+	elektraFree (name);
 	
-	ELEKTRA_SET (EnumExistingColors) (elektra, "existinggentype", value, error);
-}
-
-
-
-
-/**
- * Get the value of 'gentype'.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'gentype'.
- */// 
-static inline Colors ELEKTRA_GET (Gentype) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (EnumColors) (elektra, "gentype");
-}
-
-
-/**
- * Set the value of 'gentype'.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'gentype'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (Gentype) (Elektra * elektra,
-						    Colors value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (EnumColors) (elektra, "gentype", value, error);
-}
-
-
-
-
-/**
- * Get the value of 'gentype2'.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'gentype2'.
- */// 
-static inline Colors ELEKTRA_GET (Gentype2) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (EnumColors) (elektra, "gentype2");
-}
-
-
-/**
- * Set the value of 'gentype2'.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'gentype2'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra,
-						    Colors value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (EnumColors) (elektra, "gentype2", value, error);
-}
-
-
-
-
-/**
- * Get the value of 'myenum'.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'myenum'.
- */// 
-static inline ElektraEnumMyenum ELEKTRA_GET (Myenum) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (EnumMyenum) (elektra, "myenum");
-}
-
-
-/**
- * Set the value of 'myenum'.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'myenum'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (Myenum) (Elektra * elektra,
-						    ElektraEnumMyenum value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (EnumMyenum) (elektra, "myenum", value, error);
 }
 
 
@@ -457,4 +419,4 @@ void specloadCheck (int argc, const char ** argv);
 }
 #endif
 
-#endif // ENUM_ACTUAL_H
+#endif // CONTEXT_ACTUAL_H

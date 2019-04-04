@@ -92,6 +92,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
 
 Key * elektraHelpKey (Elektra * elektra);
+KeySet * elektraContext (Elektra * elektra);
 
 // endregion Helpers for code generation
 
