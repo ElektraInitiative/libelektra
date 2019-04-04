@@ -24,6 +24,8 @@ extern "C" {
 
 
 
+#define ELEKTRA_CONTEXT_SET(contextTag) elektraSetContextualValue##contextTag
+
 // clang-format off
 
 // clang-format on
@@ -115,7 +117,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - kdb_long_long_t index0: Replaces occurence no. 0 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
 * 
 * 
 */// 
@@ -126,7 +128,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name0: Replaces occurence no. 0 of _ in the keyname.
+* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -137,7 +139,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name0: Replaces occurence no. 0 of _ in the keyname.
+* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -148,7 +150,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name0: Replaces occurence no. 0 of _ in the keyname.
+* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
 * 
 * - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
 * 
@@ -161,7 +163,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name0: Replaces occurence no. 0 of _ in the keyname.
+* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -172,12 +174,28 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name0: Replaces occurence no. 0 of _ in the keyname.
+* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
 * 
 * 
 */// 
 #define ELEKTRA_TAG_PERSON_NAME PersonName
 // clang-format on
+
+
+// clang-format off
+
+// clang-format on
+
+// clang-format off
+
+// clang-format on
+
+
+// clang-format off
+
+// clang-format on
+
+
 
 
 // clang-format off
@@ -220,6 +238,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param result  The value will be stored in the referenced variable.
+
  */// 
 static inline void ELEKTRA_GET (Mystruct) (Elektra * elektra, ElektraStructMystruct *result )
 {
@@ -233,6 +252,7 @@ static inline void ELEKTRA_GET (Mystruct) (Elektra * elektra, ElektraStructMystr
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'mystruct'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
@@ -251,6 +271,7 @@ static inline void ELEKTRA_SET (Mystruct) (Elektra * elektra, const ElektraStruc
  * Get the value of 'mystruct/a'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  *
  * @return the value of 'mystruct/a'.
  */// 
@@ -266,10 +287,12 @@ static inline const char * ELEKTRA_GET (MystructA) (Elektra * elektra )
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'mystruct/a'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (MystructA) (Elektra * elektra, const char * value,  ElektraError ** error)
+static inline void ELEKTRA_SET (MystructA) (Elektra * elektra,
+						    const char * value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (String) (elektra, "mystruct/a", value, error);
@@ -282,6 +305,7 @@ static inline void ELEKTRA_SET (MystructA) (Elektra * elektra, const char * valu
  * Get the value of 'mystruct/b'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  *
  * @return the value of 'mystruct/b'.
  */// 
@@ -297,10 +321,12 @@ static inline kdb_long_t ELEKTRA_GET (MystructB) (Elektra * elektra )
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'mystruct/b'.
+
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (MystructB) (Elektra * elektra, kdb_long_t value,  ElektraError ** error)
+static inline void ELEKTRA_SET (MystructB) (Elektra * elektra,
+						    kdb_long_t value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (Long) (elektra, "mystruct/b", value, error);
@@ -316,15 +342,20 @@ static inline void ELEKTRA_SET (MystructB) (Elektra * elektra, kdb_long_t value,
  * Get the value of 'people/#'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+succeed_if_same_string ($1)
  *
  * @return the value of 'people/#', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
  */// 
 static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
-								      kdb_long_long_t index0 
+								      kdb_long_long_t index1 
 								       )
 {
-	char * name = elektraFormat ("people/%*.*s%lld",   elektra_len (index0),
-				     elektra_len (index0), "#___________________",  index0  );
+	
+
+	char * name = elektraFormat ("people/%3$*2$.*1$s%4$lld", 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
 	const char * actualName = elektraGetRawString (elektra, name);
 	elektraFree (name);
 	
@@ -348,15 +379,20 @@ static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'people/#', you must prefix it with '/tests/script/gen/elektra/struct' yourself.
  *                This is because you may want to specify a namespace.
+ * @param index1 Replaces occurence no. 1 of # in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,  
-						    kdb_long_long_t index0,
+static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,
+						      kdb_long_long_t index1,
 						      ElektraError ** error)
 {
-	char * name = elektraFormat ("people/%*.*s%lld",   elektra_len (index0),
-				     elektra_len (index0), "#___________________",  index0  );
+	
+
+	char * name = elektraFormat ("people/%3$*2$.*1$s%4$lld", 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
 	
@@ -366,12 +402,14 @@ static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,
 
 /**
  * Get the size of the array 'people/#'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+
  */// 
 static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra )
 {
 	
-	kdb_long_long_t size = elektraArraySize (elektra, "people");
-	return size;
+	return elektraArraySize (elektra, "people");
 }
 // clang-format off
 
@@ -382,14 +420,18 @@ static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra )
  * Get the value of 'person/_'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
  */// 
 static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
-								      const char * name0 
-								       )
+								       const char * name1   )
 {
-	char * name = elektraFormat ("person/%s",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s", 
+				       name1 
+				     );
 	Person *result = ELEKTRA_GET (StructPerson) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -403,14 +445,18 @@ static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_'.
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
 static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value,  
-						    const char * name0,
-						      ElektraError ** error)
+						    const char * name1,   ElektraError ** error)
 {
-	char * name = elektraFormat ("person/%s",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s", 
+				       name1 
+				     );
 	ELEKTRA_SET (StructPerson) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -425,14 +471,18 @@ static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value
  * Get the value of 'person/_/age'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/age'.
  */// 
 static inline kdb_short_t ELEKTRA_GET (PersonAge) (Elektra * elektra ,
-								    const char * name0 
-								     )
+								     const char * name1   )
 {
-	char * name = elektraFormat ("person/%s/age",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/age", 
+				       name1 
+				     );
 	kdb_short_t result = ELEKTRA_GET (Short) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -445,14 +495,19 @@ static inline kdb_short_t ELEKTRA_GET (PersonAge) (Elektra * elektra ,
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/age'.
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra, kdb_short_t value,  
-						    const char * name0,
-						      ElektraError ** error)
+static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra,
+						    kdb_short_t value,  
+						    const char * name1,   ElektraError ** error)
 {
-	char * name = elektraFormat ("person/%s/age",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/age", 
+				       name1 
+				     );
 	ELEKTRA_SET (Short) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -468,17 +523,22 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra, kdb_short_t value
  * Get the value of 'person/_/children/#'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+succeed_if_same_string ($1)
  *
  * @return the value of 'person/_/children/#', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
  */// 
 static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
-								      const char * name0 , 
+								      const char * name1 , 
 								      kdb_long_long_t index1 
 								       )
 {
-	char * name = elektraFormat ("person/%s/children/%*.*s%lld",   name0 ,
-				        elektra_len (index1),
-				     elektra_len (index1), "#___________________",  index1  );
+	
+
+	char * name = elektraFormat ("person/%1$s/children/%4$*3$.*2$s%5$lld", 
+				       name1 , 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
 	const char * actualName = elektraGetRawString (elektra, name);
 	elektraFree (name);
 	
@@ -502,17 +562,23 @@ static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/children/#', you must prefix it with '/tests/script/gen/elektra/struct' yourself.
  *                This is because you may want to specify a namespace.
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param index1 Replaces occurence no. 1 of # in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char * value,  
-						    const char * name0,
-						    kdb_long_long_t index1,
+static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char * value,
+						      const char * name1,
+						     kdb_long_long_t index1,
 						      ElektraError ** error)
 {
-	char * name = elektraFormat ("person/%s/children/%*.*s%lld",   name0 ,
-				        elektra_len (index1),
-				     elektra_len (index1), "#___________________",  index1  );
+	
+
+	char * name = elektraFormat ("person/%1$s/children/%4$*3$.*2$s%5$lld", 
+				       name1 , 
+				       elektra_len (index1), elektra_len (index1),
+				     "#___________________",  index1 
+				     );
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
 	
@@ -522,16 +588,22 @@ static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char *
 
 /**
  * Get the size of the array 'person/_/children/#'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  */// 
 static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
-								const char * name0 
-								 )
+								 const char * name1   )
 {
-	char * name = elektraFormat ("person/%s/children",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/children", 
+				       name1 
+				     );
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
-	
 	return size;
+	
 }
 
 
@@ -540,14 +612,18 @@ static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
  * Get the value of 'person/_/height'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/height'.
  */// 
 static inline kdb_float_t ELEKTRA_GET (PersonHeight) (Elektra * elektra ,
-								    const char * name0 
-								     )
+								     const char * name1   )
 {
-	char * name = elektraFormat ("person/%s/height",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/height", 
+				       name1 
+				     );
 	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -560,14 +636,19 @@ static inline kdb_float_t ELEKTRA_GET (PersonHeight) (Elektra * elektra ,
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/height'.
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra, kdb_float_t value,  
-						    const char * name0,
-						      ElektraError ** error)
+static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra,
+						    kdb_float_t value,  
+						    const char * name1,   ElektraError ** error)
 {
-	char * name = elektraFormat ("person/%s/height",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/height", 
+				       name1 
+				     );
 	ELEKTRA_SET (Float) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -580,14 +661,18 @@ static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra, kdb_float_t va
  * Get the value of 'person/_/name'.
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/name'.
  */// 
 static inline const char * ELEKTRA_GET (PersonName) (Elektra * elektra ,
-								    const char * name0 
-								     )
+								     const char * name1   )
 {
-	char * name = elektraFormat ("person/%s/name",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/name", 
+				       name1 
+				     );
 	const char * result = ELEKTRA_GET (String) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -600,14 +685,19 @@ static inline const char * ELEKTRA_GET (PersonName) (Elektra * elektra ,
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/name'.
+ * @param name1 Replaces occurence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (PersonName) (Elektra * elektra, const char * value,  
-						    const char * name0,
-						      ElektraError ** error)
+static inline void ELEKTRA_SET (PersonName) (Elektra * elektra,
+						    const char * value,  
+						    const char * name1,   ElektraError ** error)
 {
-	char * name = elektraFormat ("person/%s/name",   name0  );
+	
+
+	char * name = elektraFormat ("person/%1$s/name", 
+				       name1 
+				     );
 	ELEKTRA_SET (String) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -704,6 +794,14 @@ void specloadCheck (int argc, const char ** argv);
  * @return The size of the array below the given key.
  */// 
 #define elektraSize(elektra, tag) ELEKTRA_SIZE (tag) (elektra)
+
+
+/**
+ * @param elektra    The elektra instance initialized with loadConfiguration().
+ * @param contextTag The context tag for the contextual value you want to set.
+ * @param value	     The actual value you want to set.
+ */// 
+#define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
 
 #ifdef __cplusplus
 }

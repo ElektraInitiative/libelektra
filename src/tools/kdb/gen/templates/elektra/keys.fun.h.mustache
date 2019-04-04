@@ -41,25 +41,31 @@
  * Get the value of '{{{ name }}}'.
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
  *
  * @return the value of '{{{ name }}}'.
  */// {{=/*% %*/=}}
 static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
-								    /*%# args %*/
-								    /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
-								    /*%/ args %*/ /*%/ args? %*/)
+								    /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+								    /*%/ last? %*/ /*%/ args %*/ /*%/ args? %*/)
 {
-	/*%# args? %*/
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
-				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ args %*/);
+	/*%# args_or_context? %*/
+	/*%# context %*/
+	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
+	/*%/ context %*/
+
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
+				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
+				     "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+				     /*%/ args %*/);
 	/*%& native_type %*/ result = ELEKTRA_GET (/*%& type_name %*/) (elektra, name);
 	elektraFree (name);
 	return result;
-	/*%/ args? %*/
-	/*%^ args? %*/
+	/*%/ args_or_context? %*/
+	/*%^ args_or_context? %*/
 	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
-	/*%/ args? %*/
+	/*%/ args_or_context? %*/
 }
 
 /*%={{ }}=%*/
@@ -68,23 +74,30 @@ static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * el
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
  * @param value   The value of '{{{ name }}}'.
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// {{=/*% %*/=}}
-static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, /*%& native_type %*/ value, /*%# args? %*/ /*%# args %*/
-						    /*%& native_type %*/ /*%& name %*/,
-						    /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
+static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra,
+						    /*%& native_type %*/ value, /*%# args? %*/ /*%# args %*/
+						    /*%& native_type %*/ /*%& name %*/, /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
 {
-	/*%# args? %*/
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
-				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ args %*/);
+	/*%# args_or_context? %*/
+	/*%# context %*/
+	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
+	/*%/ context %*/
+
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
+				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
+				     "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+				     /*%/ args %*/);
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, name, value, error);
 	elektraFree (name);
-	/*%/ args? %*/
-	/*%^ args? %*/
+	/*%/ args_or_context? %*/
+	/*%^ args_or_context? %*/
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
-	/*%/ args? %*/
+	/*%/ args_or_context? %*/
 }
 /*%/ is_struct_ref? %*/
 /*%/ is_struct? %*/
@@ -92,23 +105,31 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 /*%={{ }}=%*/
 /**
  * Get the size of the array '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+{{# array_args_or_context? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ array_args_or_context? }}
  */// {{=/*% %*/=}}
-static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra /*%# array_args? %*/,
-								/*%# args %*/
-								/*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
-								/*%/ args %*/ /*%/ array_args? %*/)
+static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra /*%# array_args_or_context? %*/,
+								/*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+								/*%/ last? %*/ /*%/ args %*/ /*%/ array_args_or_context? %*/)
 {
-	/*%# array_args? %*/
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
-				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ args %*/);
+	/*%# array_args_or_context? %*/
+	/*%# context %*/
+	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
+	/*%/ context %*/
+
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
+				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
+				     "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+				     /*%/ args %*/);
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
-	/*%/ array_args? %*/
-	/*%^ array_args? %*/
-	kdb_long_long_t size = elektraArraySize (elektra, "/*% array_name %*/");
-	/*%/ array_args? %*/
 	return size;
+	/*%/ array_args_or_context? %*/
+	/*%^ array_args_or_context? %*/
+	return elektraArraySize (elektra, "/*% array_name %*/");
+	/*%/ array_args_or_context? %*/
 }
 /*%/ is_array? %*/
 /*%/ keys %*/

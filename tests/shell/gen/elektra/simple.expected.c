@@ -87,6 +87,12 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		return 2;
 	}
 
+	KeySet * defaultContext = ksNew (0,
+	KS_END);
+;
+	ksAppend (elektraContext (e), defaultContext);
+	ksDel (defaultContext);
+
 	*elektra = e;
 	return 0;
 }

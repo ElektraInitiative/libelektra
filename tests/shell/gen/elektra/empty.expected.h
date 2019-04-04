@@ -24,6 +24,8 @@ extern "C" {
 
 
 
+#define ELEKTRA_CONTEXT_SET(contextTag) elektraSetContextualValue##contextTag
+
 // clang-format off
 
 // clang-format on
@@ -51,6 +53,22 @@ extern "C" {
 // clang-format off
 
 // clang-format on
+
+
+// clang-format off
+
+// clang-format on
+
+// clang-format off
+
+// clang-format on
+
+
+// clang-format off
+
+// clang-format on
+
+
 
 
 // clang-format off
@@ -174,6 +192,14 @@ void specloadCheck (int argc, const char ** argv);
  * @return The size of the array below the given key.
  */// 
 #define elektraSize(elektra, tag) ELEKTRA_SIZE (tag) (elektra)
+
+
+/**
+ * @param elektra    The elektra instance initialized with loadConfiguration().
+ * @param contextTag The context tag for the contextual value you want to set.
+ * @param value	     The actual value you want to set.
+ */// 
+#define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
 
 #ifdef __cplusplus
 }
