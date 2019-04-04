@@ -86,11 +86,6 @@ extern "C" {
 // clang-format off
 
 /**
-* Context tag name for 'user/name'
-*/// 
-#define ELEKTRA_CONTEXT_USER_NAME UserName
-
-/**
 * Context tag name for 'date'
 */// 
 #define ELEKTRA_CONTEXT_DATE Date
@@ -99,6 +94,11 @@ extern "C" {
 * Context tag name for 'profile'
 */// 
 #define ELEKTRA_CONTEXT_PROFILE Profile
+
+/**
+* Context tag name for 'user/name'
+*/// 
+#define ELEKTRA_CONTEXT_USER_NAME UserName
 // clang-format on
 
 
@@ -106,10 +106,6 @@ extern "C" {
 
 // clang-format on
 
-static inline void ELEKTRA_CONTEXT_SET (UserName) (Elektra * elektra, const char * value)
-{
-	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/user/name", KEY_VALUE, value, KEY_END));
-}
 static inline void ELEKTRA_CONTEXT_SET (Date) (Elektra * elektra, const char * value)
 {
 	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/date", KEY_VALUE, value, KEY_END));
@@ -117,6 +113,10 @@ static inline void ELEKTRA_CONTEXT_SET (Date) (Elektra * elektra, const char * v
 static inline void ELEKTRA_CONTEXT_SET (Profile) (Elektra * elektra, const char * value)
 {
 	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/profile", KEY_VALUE, value, KEY_END));
+}
+static inline void ELEKTRA_CONTEXT_SET (UserName) (Elektra * elektra, const char * value)
+{
+	ksAppendKey (elektraContext (elektra), keyNew ("system/elektra/codegen/context/user/name", KEY_VALUE, value, KEY_END));
 }
 
 

@@ -758,7 +758,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	auto parentKeyParts = getKeyParts (specParent);
 
-	std::unordered_map<std::string, object> contexts;
+	std::map<std::string, object> contexts;
 	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{
 		kdb::Key key = *it;

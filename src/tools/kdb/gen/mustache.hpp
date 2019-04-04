@@ -36,9 +36,9 @@
 #include <cctype>
 #include <functional>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <sstream>
+#include <unordered_map>
 #include <vector>
 
 namespace kainjow
@@ -199,7 +199,7 @@ private:
 template <typename string_type>
 class basic_data;
 template <typename string_type>
-using basic_object = std::map<string_type, basic_data<string_type>>; // modified to maintain order
+using basic_object = std::unordered_map<string_type, basic_data<string_type>>;
 template <typename string_type>
 using basic_list = std::vector<basic_data<string_type>>;
 template <typename string_type>
