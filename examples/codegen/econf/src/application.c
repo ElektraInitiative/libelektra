@@ -29,7 +29,10 @@ void printFormatConf (const FormatConf * conf)
 	{
 		printf ("indent_size = " ELEKTRA_UNSIGNED_LONG_F "\n", conf->indentSize);
 	}
-	printf ("tab_width = " ELEKTRA_UNSIGNED_LONG_F "\n", conf->tabWidth);
+	if (conf->tabWidth > 0)
+	{
+		printf ("tab_width = " ELEKTRA_UNSIGNED_LONG_F "\n", conf->tabWidth);
+	}
 	if (conf->eol != LINE_END_NATIVE)
 	{
 		printf ("end_of_line = %s\n", ELEKTRA_TO_STRING (EnumLineEnd) (conf->eol));
