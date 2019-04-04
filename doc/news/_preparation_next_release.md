@@ -31,7 +31,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ### Type (New Version)
 
-The `type` plugin was completely rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
+The `type` plugin was newly rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
 
 The new `type` plugin also provides the functionality of the `enum` and the `boolean` plugin. These plugins are now considered obsolete and
 you should use `type` instead.
