@@ -369,7 +369,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- The build system now rebuilds the [JNA binding](https://www.libelektra.org/bindings/jna) with Maven, if you change any of the Java source files of the binding. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 

@@ -46,14 +46,46 @@ if (Java_JAVAC_EXECUTABLE)
 			      INPUT
 			      "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml")
 
-			# then copy over the source files in the build folder as thats the easiest way to handle it
-			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+			set (JNA_BINDING_PREFIX libelektra4j/src)
+			set (JNA_BINDING_NAMESPACE java/org/libelektra)
 
-			# compile it and build the jar
+			set (JNA_BINDING_SOURCE_DIRECTORY ${JNA_BINDING_PREFIX}/main/${JNA_BINDING_NAMESPACE})
+			set (JNA_BINDING_SOURCE_DIRECTORY_PLUGIN ${JNA_BINDING_SOURCE_DIRECTORY}/plugin)
+			set (JNA_BINDING_SOURCE_DIRECTORY_TEST ${JNA_BINDING_PREFIX}/test/${JNA_BINDING_NAMESPACE})
+
+			# The build system calls Maven to recompile the binding, if we change any of the following source files.
+			set (JNA_BINDING_SOURCE_FILES
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/Elektra.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/KDB.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/Key.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeyNameIterator.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeySet.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeySetIterator.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeyUtils.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/ExceptionTest.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/PropertiesStorage.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Return.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Template.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/AllTests.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBTest.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeySetTest.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeyTest.java)
+
+			# Compile the source files and build the jar. We copy the source files into the build folder as that is the easiest
+			# way to handle the integration between CMake and Maven.
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
+					    COMMAND ${CMAKE_COMMAND}
+						    ARGS -E
+							 copy_directory
+							 "${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j"
+							 "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
 					    COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
 					    WORKING_DIRECTORY libelektra4j
-					    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml")
+					    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+						    ${JNA_BINDING_SOURCE_FILES})
+
 			add_custom_target (jna
 					   ALL
 					   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
