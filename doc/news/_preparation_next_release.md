@@ -280,6 +280,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - `kdb get -v` now displays if the resulting value is a default-value defined by the metadata of the key. _(Thomas Bretterbauer)_
 - `kdb cp` now succeeds if target-keys already have the same values as the source-keys. _(Thomas Bretterbauer)_
+- `web-ui` issue #2441 is fixed in form of a workaround _(Josef Wechselauer)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
