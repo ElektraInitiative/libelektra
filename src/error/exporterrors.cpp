@@ -47,7 +47,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) ELEKTRA_SET_ERROR_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line)" << endl
 	   << endl
-	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Error %d: %s\", "
+	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Error %s: %s\", "
 	      "number, text); elektraSetError ## number\\"
 	   << endl
 	   << "	(key, text, file, #line); } while (0)" << endl
@@ -59,7 +59,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "#define ELEKTRA_ADD_WARNING_HELPER(number, key, text, file, line) ELEKTRA_ADD_WARNING_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line)" << endl
 	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNING_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Warning %d: %s\", "
+	   << "#define ELEKTRA_ADD_WARNING_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Warning %s: %s\", "
 	      "number, text);  elektraAddWarning ## number\\"
 	   << endl
 	   << "	(key, text, file, #line);} while (0)" << endl
@@ -102,17 +102,13 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			continue;
 		}
 
-		os << "#define " << p[i]["macro"] << " " << p[i]["number"] << endl;
+		os << "#define " << p[i]["macro"] << " " << p[i]["number"] << "" << endl;
 	}
 
 	os << endl << endl;
 
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
 
 		for (int f = 0; f < 2; ++f)
 		{
@@ -152,7 +148,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "" << endl
 			   << "	keySetMeta(warningKey, buffer, \"number description  module file line function reason\");" << endl
 			   << "	strcat(buffer, \"/number\" );" << endl
-			   << "	keySetMeta(warningKey, buffer, \"" << i << "\");" << endl
+			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["number"] << "\");" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" <<  endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
@@ -223,7 +219,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			      "reason\");"
 			   << endl
 			   << "		strcat(buffer, \"/number\" );" << endl
-			   << "		keySetMeta(errorKey, buffer, \"" << i << "\");" << endl
+			   << "		keySetMeta(errorKey, buffer, \"" << p[i]["number"] << "\");" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 			   << "		keySetMeta(errorKey, buffer, \"" << p[i]["description"] << "\");" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
@@ -291,11 +287,6 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "			KEY_VALUE, \"the specification of all error codes\", KEY_END)," << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
-
 		os << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "\"," << endl
 		   << "			KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/description\"," << endl
@@ -307,45 +298,24 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	}
 	os << "		KS_END);" << endl << "}" << endl;
 
-	os << "static inline void elektraTriggerWarnings (int nr, Key *parentKey, const char *message)" << endl
-	   << "{" << endl
-	   << "	switch (nr)" << endl
-	   << "	{" << endl;
+	os << "static inline void elektraTriggerWarnings (const char *nr, Key *parentKey, const char *message)" << endl << "{" << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
-
-		os << "		case " << i << ": ELEKTRA_ADD_WARNING (" << p[i]["number"] << ", parentKey, message);" << endl
-		   << "			break;" << endl;
+		os << "	if(strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
+		os << "		ELEKTRA_ADD_WARNING (" << p[i]["number"] << ", parentKey, message);" << endl
+		   << "		return;" << endl
+		   << "	}" << endl;
 	}
-	os << "		default: ELEKTRA_ADD_WARNING (LOGICAL_CODE, parentKey, \"Unknown warning code to trigger in default branch\");"
-	   << endl
-	   << "			 break;" << endl
-	   << "	}" << endl
-	   << "}" << endl
-	   << "" << endl;
-	os << "static inline void elektraTriggerError (int nr, Key *parentKey, const char *message)" << endl
-	   << "{" << endl
-	   << "	switch (nr)" << endl
-	   << "	{" << endl;
+	os << "	ELEKTRA_ADD_WARNING (01400, parentKey, \"Unkown warning code\");" << endl << "}" << endl << "" << endl;
+	os << "static inline void elektraTriggerError (const char *nr, Key *parentKey, const char *message)" << endl << "{" << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
-
-		os << "		case " << i << ": ELEKTRA_SET_ERROR (" << p[i]["number"] << ", parentKey, message);" << endl
-		   << "			break;" << endl;
+		os << "	if(strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
+		os << "		ELEKTRA_SET_ERROR (" << p[i]["number"] << ", parentKey, message);" << endl
+		   << "		return;" << endl
+		   << "	}" << endl;
 	}
-	os << "		default: ELEKTRA_SET_ERROR (LOGICAL_CODE, parentKey, \"Unknown error code to trigger in default branch\");" << endl
-	   << "			 break;" << endl
-	   << "	}" << endl
-	   << "}" << endl;
-
+	os << "	ELEKTRA_SET_ERROR (01400, parentKey, \"Unkown error code\");" << endl << "}" << endl;
 
 	os << "#endif" << endl;
 	return os;
