@@ -223,6 +223,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
   `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
 
+### crypto / fcrypt
+
+- Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
