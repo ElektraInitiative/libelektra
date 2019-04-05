@@ -17,34 +17,34 @@ ignore:true
 :It is for errors which are not relevant anymore
 :an empty line will start the next error specification
 
-number:1
+number:01100
 description:Resource
 macro:RESOURCE_CODE
 
-number:2
+number:01200
 description:Parsing
 macro:PARSING_CODE
 
-number:3
+number:01300
 description:Installation
 macro:INSTALLATION_CODE
 
-number:4
+number:01400
 description:Logical
 macro:LOGICAL_CODE
 
-number:5
+number:02000
 description:Conflict
 macro:CONFLICT_CODE
 
-number:6
+number:03000
 description:Timeout
 macro:TIMEOUT_CODE
 
-number:7
+number:04100
 description:Validation Syntactic
 macro:VALIDATION_SYNTACTIC_CODE
 
-number:8
+number:04200
 description:Validation Semantic
 macro:VALIDATION_SEMANTIC_CODE
