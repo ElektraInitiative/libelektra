@@ -47,16 +47,6 @@ int ImportCommand::execute (Cmdline const & cl)
 	kdb.get (originalKeys, root);
 	printWarnings (cerr, root);
 
-	KeySet originalAbsoluteKeys = *(new KeySet ());
-
-	for (Key k : originalKeys)
-	{
-		if (k.getName ()[0] != '/')
-		{
-			originalAbsoluteKeys.append (k);
-		}
-	}
-
 	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
 
@@ -78,11 +68,11 @@ int ImportCommand::execute (Cmdline const & cl)
 	if (cl.strategy == "validate")
 	{
 		KeySet toset = prependNamespace (importedKeys, cl.ns);
-		originalAbsoluteKeys.cut (prependNamespace (root, cl.ns));
-		originalAbsoluteKeys.append (toset);
+		originalKeys.cut (prependNamespace (root, cl.ns));
+		originalKeys.append (toset);
 
 		PluginPtr specPlugin = modules.load ("spec", cl.getPluginsConfig ());
-		if (specPlugin->get (originalAbsoluteKeys, root) == -1)
+		if (specPlugin->get (originalKeys, root) == -1)
 		{
 			printWarnings (cerr, root);
 			printError (cerr, errorKey);
@@ -92,15 +82,15 @@ int ImportCommand::execute (Cmdline const & cl)
 		if (cl.verbose)
 		{
 			cout.setf (std::ios_base::showbase);
-			std::cout << originalAbsoluteKeys << std::endl;
+			std::cout << originalKeys << std::endl;
 		}
 
-		kdb.set (originalAbsoluteKeys, root);
+		kdb.set (originalKeys, root);
 		printWarnings (cerr, root);
 		return 0;
 	}
 
-	KeySet base = originalAbsoluteKeys.cut (root);
+	KeySet base = originalKeys.cut (root);
 	importedKeys = importedKeys.cut (root);
 	if (cl.withoutElektra)
 	{
@@ -129,8 +119,8 @@ int ImportCommand::execute (Cmdline const & cl)
 		}
 
 		KeySet resultKeys = result.getMergedKeys ();
-		originalAbsoluteKeys.append (resultKeys);
-		kdb.set (originalAbsoluteKeys, root);
+		originalKeys.append (resultKeys);
+		kdb.set (originalKeys, root);
 		ret = 0;
 
 		printWarnings (cerr, root);
