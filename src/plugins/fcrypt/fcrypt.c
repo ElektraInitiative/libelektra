@@ -206,7 +206,7 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 	ksRewind (config);
 	while ((k = ksNext (config)) != 0)
 	{
-		if (keyIsBelow (k, root))
+		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
 		{
 			recipientCount++;
 		}
@@ -330,11 +330,12 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		ksRewind (pluginConfig);
 		while ((k = ksNext (pluginConfig)) != 0)
 		{
-			if (keyIsBelow (k, gpgRecipientRoot))
+			const char * kStringVal = keyString (k);
+			if (keyIsBelow (k, gpgRecipientRoot) && strlen (kStringVal) > 0)
 			{
 				argv[i++] = "-r";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
-				argv[i++] = (char *) keyString (k);
+				argv[i++] = (char *) kStringVal;
 			}
 		}
 	}
@@ -357,11 +358,12 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		ksRewind (pluginConfig);
 		while ((k = ksNext (pluginConfig)) != 0)
 		{
-			if (keyIsBelow (k, gpgSignatureRoot))
+			const char * kStringVal = keyString (k);
+			if (keyIsBelow (k, gpgSignatureRoot) && strlen (kStringVal) > 0)
 			{
 				argv[i++] = "-u";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
-				argv[i++] = (char *) keyString (k);
+				argv[i++] = (char *) kStringVal;
 			}
 		}
 	}
