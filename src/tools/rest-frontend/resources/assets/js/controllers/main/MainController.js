@@ -52,4 +52,12 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     Logger.info("Main template ready");
 
+    docsearch({
+        apiKey: '7d1e7bc1f97b53de246aaefa29484be9',
+        indexName: 'elektra',
+        inputSelector: '#searchbox',
+        debug: false // Set debug to true if you want to inspect the dropdown
+        });
+
+
 };
