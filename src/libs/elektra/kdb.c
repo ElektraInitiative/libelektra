@@ -792,12 +792,18 @@ static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key *
 	}
 }
 
-static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent)
+static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * parentKey,
+				  Key * initialParent)
 {
 	ELEKTRA_LOG_DEBUG ("CACHE HIT");
 	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
 
 	if (splitCacheLoadState (split, handle->global) != 0) return -1;
+
+	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
 
 	ksRewind (*cache);
 	if (ks->size == 0)
@@ -820,6 +826,11 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	}
 	keyDel (*cacheParent);
 	*cacheParent = 0;
+
+	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	return 0;
 }
@@ -962,16 +973,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent) != 0)
+		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent) != 0)
 		{
 			goto error;
 		}
 
-		keySetName (parentKey, keyName (initialParent));
-
-		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);
