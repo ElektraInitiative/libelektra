@@ -414,7 +414,7 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - Added github build status badges to website _(hesirui)_
-- <<TODO>>
+- Added Docsearch to Website _(hesirui)_
 - <<TODO>>
 
 ## Outlook
