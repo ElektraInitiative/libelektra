@@ -1,5 +1,6 @@
 file (GLOB HDR_FILES
-	   *.hpp)
+	   *.hpp
+	   newmerge.h)
 
 install (FILES ${HDR_FILES} DESTINATION include/${TARGET_INCLUDE_FOLDER})
 

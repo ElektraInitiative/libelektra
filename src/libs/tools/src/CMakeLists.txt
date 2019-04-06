@@ -5,7 +5,8 @@ add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
 
 file (GLOB_RECURSE SRC_FILES
-		   *.cpp)
+		   *.cpp
+		   newmerge.c)
 
 # ~~~
 # TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.

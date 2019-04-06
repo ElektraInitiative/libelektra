@@ -47,6 +47,7 @@
 #include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
+#include <newmerge.hpp>
 #include <remount.hpp>
 #include <rm.hpp>
 #include <set.hpp>
@@ -110,6 +111,7 @@ public:
 		m_factory.insert (std::make_pair ("file", std::make_shared<Cnstancer<FileCommand>> ()));
 		m_factory.insert (std::make_pair ("sget", std::make_shared<Cnstancer<ShellGetCommand>> ()));
 		m_factory.insert (std::make_pair ("merge", std::make_shared<Cnstancer<MergeCommand>> ()));
+		m_factory.insert (std::make_pair ("newmerge", std::make_shared<Cnstancer<NewMergeCommand>> ()));
 		m_factory.insert (std::make_pair ("list", std::make_shared<Cnstancer<ListCommand>> ()));
 		m_factory.insert (std::make_pair ("editor", std::make_shared<Cnstancer<EditorCommand>> ()));
 		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
