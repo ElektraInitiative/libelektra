@@ -7,6 +7,9 @@ if (FOUND_NAME EQUAL -1)
 	message (STATUS "Exclude Library notification because internalnotification plugin excluded")
 else ()
 	set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/notification.c")
+	include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
+	list (APPEND SOURCES
+		     $<TARGET_OBJECTS:cframework>)
 
 	set (LIBRARY_NAME elektra-notification)
 
