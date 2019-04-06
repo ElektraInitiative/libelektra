@@ -529,7 +529,7 @@ typedef enum
  * @retval -1 on error
  * @retval 0 on success
  */
-static int elektraGetDoUpdate (Split * split, Key * parentKey)
+static int elektraGetDoUpdate (Split * split, Key * parentKey, int * cacheData)
 {
 	const int bypassedSplits = 1;
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
@@ -549,6 +549,9 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 			int ret = 0;
 			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
+				// TODO: cache is currently incompatible with ini
+				if (strcmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
+
 				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
 			}
 
@@ -590,7 +593,7 @@ static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 }
 
 static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySet * ks, Key * parentKey, Key * initialParent,
-					      UpdatePass run)
+					      UpdatePass run, int * cacheData)
 {
 	const int bypassedSplits = 1;
 
@@ -673,6 +676,9 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				}
 				else
 				{
+					// TODO: cache is currently incompatible with ini
+					if (strcmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
+
 					KeySet * cutKS = prepareGlobalKS (ks, parentKey);
 					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
 					ksAppend (ks, cutKS);
@@ -1022,12 +1028,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	int cacheData = 1; // zero if data can not be cached (e.g. ini incompatibility)
 	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH] ||
 	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || handle->globalPlugins[PROCGETSTORAGE][INIT] ||
 	    handle->globalPlugins[PROCGETSTORAGE][MAXONCE] || handle->globalPlugins[PROCGETSTORAGE][DEINIT])
 	{
 		clearError (parentKey);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, FIRST) == -1)
+		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, FIRST, &cacheData) == -1)
 		{
 			goto error;
 		}
@@ -1047,7 +1054,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		splitMergeBackends (split, ks);
 
 		clearError (parentKey);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
+		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST, &cacheData) == -1)
 		{
 			goto error;
 		}
@@ -1063,7 +1070,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		   but not for bypassed keys in split->size-1 */
 		clearError (parentKey);
 		// do everything up to position get_storage
-		if (elektraGetDoUpdate (split, parentKey) == -1)
+		if (elektraGetDoUpdate (split, parentKey, &cacheData) == -1)
 		{
 			goto error;
 		}
@@ -1083,7 +1090,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		splitMergeBackends (split, ks);
 	}
 
-	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
 		if (elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
