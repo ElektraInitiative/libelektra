@@ -9,7 +9,8 @@
 #include "resolver.h"
 
 #include <kdbassert.h>
-#include <kdbhelper.h> // elektraStrDup
+#include <kdbhelper.h>  // elektraStrDup
+#include <kdbprivate.h> // KDB_CACHE_PREFIX
 #include <kdbproposal.h>
 
 #include "kdbos.h"
@@ -409,6 +410,26 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	return 0;
 }
 
+/**
+ * @brief Generate key name for the cache
+ *
+ * @param filename the name of the config file
+ * @ret pointer to the generated key name
+ */
+static char * elektraCacheKeyName (char * filename)
+{
+	char * name = 0;
+	size_t len = strlen (KDB_CACHE_PREFIX) + strlen ("/") + strlen (ELEKTRA_PLUGIN_NAME) + strlen (filename) + 1;
+	name = elektraMalloc (len);
+	name = strcpy (name, KDB_CACHE_PREFIX);
+	name = strcat (name, "/");
+	name = strcat (name, ELEKTRA_PLUGIN_NAME);
+	name = strcat (name, filename);
+
+	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
+	return name;
+}
+
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 {
 	KeySet * resolverConfig = elektraPluginGetConfig (handle);
@@ -545,9 +566,50 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return 0;
 	}
 
+	/* Check if cache update needed */
+	KeySet * global;
+	char * name = 0;
+
+	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
+	{
+		name = elektraCacheKeyName (pk->filename);
+
+		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
+		Key * time = ksLookupByName (global, name, KDB_O_NONE);
+		if (time && keyGetValueSize (time) == sizeof (struct timespec))
+		{
+			struct timespec cached;
+			keyGetBinary (time, &cached, sizeof (struct timespec));
+			if (cached.tv_sec == ELEKTRA_STAT_SECONDS (buf) && cached.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
+			{
+				ELEKTRA_LOG_DEBUG ("global-cache: no update needed, everything is fine");
+				ELEKTRA_LOG_DEBUG ("cached.tv_sec:\t%ld", cached.tv_sec);
+				ELEKTRA_LOG_DEBUG ("cached.tv_nsec:\t%ld", cached.tv_nsec);
+				ELEKTRA_LOG_DEBUG ("buf.tv_sec:\t%ld", ELEKTRA_STAT_SECONDS (buf));
+				ELEKTRA_LOG_DEBUG ("buf.tv_nsec:\t%ld", ELEKTRA_STAT_NANO_SECONDS (buf));
+				// update timestamp inside resolver
+				pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+				pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
+
+				if (name) elektraFree (name);
+				errno = errnoSave;
+				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
+			}
+		}
+	}
+
 	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
 	pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 
+	/* Persist modification times for cache */
+	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
+	{
+		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
+		Key * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		ksAppendKey (global, time);
+	}
+
+	if (name) elektraFree (name);
 	errno = errnoSave;
 	return 1;
 }
@@ -957,6 +1019,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		ret = -1;
 	}
 
+	ELEKTRA_LOG_DEBUG ("old.tv_sec:\t%ld", pk->mtime.tv_sec);
+	ELEKTRA_LOG_DEBUG ("old.tv_nsec:\t%ld", pk->mtime.tv_nsec);
 	struct stat buf;
 	if (fstat (fd, &buf) == -1)
 	{
@@ -987,6 +1051,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 
 	elektraUpdateFileTime (pk, pk->fd, parentKey);
+	ELEKTRA_LOG_DEBUG ("new.tv_sec:\t%ld", pk->mtime.tv_sec);
+	ELEKTRA_LOG_DEBUG ("new.tv_nsec:\t%ld", pk->mtime.tv_nsec);
 
 	if (buf.st_mode != pk->filemode)
 	{
