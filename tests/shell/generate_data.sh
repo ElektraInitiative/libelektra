@@ -1,7 +1,7 @@
 @INCLUDE_COMMON@
 
 #comment out next line to re-generate test data
-exit 0
+# exit 0
 
 echo
 echo ELEKTRA GENERATE DATA
