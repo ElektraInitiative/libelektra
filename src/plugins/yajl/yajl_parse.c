@@ -247,16 +247,17 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 		if (ksNext (returned) == NULL) break;
 
 		Key * peekDup = keyDup (ksCurrent (returned));
-		if(!strcmp(keyBaseName(peekDup), "___dirdata")) break;
-
 		keySetBaseName (peekDup, 0);
 
 		if (!strcmp (keyName (peekDup), keyName (cur)))
 		{
-			ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
-			keyDel (ksLookup (returned, cur, KDB_O_POP));
-			// Set cursor to position of the deleted key
-			ksSetCursor (returned, cursor);
+			const char* baseName = keyBaseName(ksCurrent (returned));
+			// TODO: Add test for empty array check
+			if(strcmp(baseName, "#0") && strcmp(baseName, "###empty_array")) {
+				ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
+				keyDel (ksLookup (returned, cur, KDB_O_POP));
+				ksSetCursor (returned, cursor);
+			}
 		}
 
 		keyDel (peekDup);

@@ -114,14 +114,8 @@ kdb get /tests/yajl/key
 #> value
 
 # Check the format of the configuration file
-# The Directory Value plugin creates the entry
-#     "___dirdata": "",
-# , since the plugin added an empty root key
-# (`user/tests/yajl/`).
-# See also: http://issues.libelektra.org/2132
 kdb file /tests/yajl/ | xargs cat
 #> {
-#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337
 #> }
@@ -138,7 +132,6 @@ kdb get /tests/yajl/piggy/#2
 # Check the format of the configuration file
 kdb file /tests/yajl | xargs cat
 #> {
-#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337,
 #>     "piggy": [
