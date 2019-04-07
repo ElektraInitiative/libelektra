@@ -19,7 +19,7 @@ then your plugin should only store those two keys. **Do not** add the keys
 - `user/tests/storage/root/level1`, or
 - `user/tests/storage/root/level1/level2`
 
-to the key set. One plugin that handles this situation properly is [YAML CPP](/src/plugins/yamlcpp/), as the following [Markdown Shell Recorder test](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) shows:
+to the key set. One plugin that handles this situation properly is [YAML CPP](/src/plugins/yamlcpp/), as the following [Markdown Shell Recorder][] test shows:
 
 ```sh
 # Mount plugin
@@ -40,6 +40,39 @@ sudo kdb umount user/tests/storage
 ```
 
 . For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/holes.md).
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
+## Convert Boolean Data
+
+Elektra uses [`0` and `1` to represent binary data](../decisions/bool.md). A storage plugin that uses other values (e.g. `false` and `true`) needs to convert these values to `0` and `1`. The [Markdown Shell Recorder][] test below shows that [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) handles the conversion from and to [YAML’s boolean type](https://yaml.org/spec/1.2/spec.html#id2803629) properly. In the test we also use the [`type` plugin](../../src/plugins/type/ReadMe.md) to makes sure that YAML CPP interacts correctly with this essential plugin.
+
+```sh
+# Mount plugin
+kdb mount config.yaml user/tests/storage yamlcpp type
+kdb set user/tests/storage/bool/value true
+kdb get user/tests/storage/bool/value
+#> 1
+
+kdb setmeta user/tests/storage/bool/value type boolean
+kdb set user/tests/storage/bool/value 1
+kdb get user/tests/storage/bool/value
+#> 1
+
+kdb set user/tests/storage/bool/value false
+kdb get user/tests/storage/bool/value
+#> 0
+
+kdb set user/tests/storage/bool/value 'non boolean'
+# RET: 5
+
+kdb get user/tests/storage/bool/value
+#> 0
+
+# Undo modifications to the key database
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
 
 ## Support Values Inside Non-Leaf Keys
 
