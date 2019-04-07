@@ -12,7 +12,8 @@ usr/lib/*/elektra4/libelektra-range.so
 usr/lib/*/elektra4/libelektra-file.so
 usr/lib/*/elektra4/libelektra-ipaddr.so
 usr/lib/*/elektra4/libelektra-process.so
-usr/lib/*/elektra4/libelektra-mmapstorage.so
-usr/lib/*/elektra4/libelektra-mmapstorage_crc.so
 usr/lib/*/elektra4/libelektra-reference.so
 usr/lib/*/elektra4/libelektra-gpgme.so
+usr/lib/*/elektra4/libelektra-mmapstorage.so
+usr/lib/*/elektra4/libelektra-mmapstorage_crc.so
+usr/lib/*/elektra4/libelektra-cache.so
