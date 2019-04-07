@@ -549,7 +549,7 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey, int * cacheData)
 			int ret = 0;
 			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
-				// TODO: cache is currently incompatible with ini
+				// TODO: cache is currently incompatible with ini (see #2592)
 				if (elektraStrCmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
 
 				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
@@ -666,6 +666,9 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			{
 				if (p <= STORAGE_PLUGIN)
 				{
+					// TODO: cache is currently incompatible with ini (see #2592)
+					if (elektraStrCmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
+
 					if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
 					{
 						// skip it, update is not needed
@@ -676,9 +679,6 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				}
 				else
 				{
-					// TODO: cache is currently incompatible with ini
-					if (elektraStrCmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
-
 					KeySet * cutKS = prepareGlobalKS (ks, parentKey);
 					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
 					ksAppend (ks, cutKS);
