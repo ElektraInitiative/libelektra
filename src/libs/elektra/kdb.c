@@ -550,7 +550,7 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey, int * cacheData)
 			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
 				// TODO: cache is currently incompatible with ini
-				if (strcmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
+				if (elektraStrCmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
 
 				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
 			}
@@ -677,7 +677,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				else
 				{
 					// TODO: cache is currently incompatible with ini
-					if (strcmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
+					if (elektraStrCmp (backend->getplugins[p]->name, "ini") == 0) *cacheData = 0;
 
 					KeySet * cutKS = prepareGlobalKS (ks, parentKey);
 					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
@@ -740,12 +740,12 @@ static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * in
 	Key * lastParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (cacheParent));
-	if (!lastParentName || strcmp (keyString (lastParentName), keyName (cacheParent))) return -1;
+	if (!lastParentName || elektraStrCmp (keyString (lastParentName), keyName (cacheParent))) return -1;
 
 	Key * lastParentValue = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (cacheParent));
-	if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (cacheParent))) return -1;
+	if (!lastParentValue || elektraStrCmp (keyString (lastParentValue), keyString (cacheParent))) return -1;
 
 	Key * lastInitalParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastInitialParentName", KDB_O_NONE);
 	Key * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
@@ -1584,7 +1584,7 @@ static int ensureListPluginMountedEverywhere (KDB * handle)
 						      -1 };
 
 	Plugin * list = handle->globalPlugins[expectedPositions[0]][MAXONCE];
-	if (list == NULL || strcmp (list->name, "list") != 0)
+	if (list == NULL || elektraStrCmp (list->name, "list") != 0)
 	{
 		ELEKTRA_LOG_WARNING ("list plugin not mounted at position %s/maxonce", GlobalpluginPositionsStr[expectedPositions[0]]);
 		return 0;
@@ -1707,7 +1707,7 @@ static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const c
 		Plugin * setPlugin = backend->setplugins[i];
 		Plugin * errorPlugin = backend->errorplugins[i];
 
-		if (setPlugin != NULL && strcmp (setPlugin->name, pluginName) == 0)
+		if (setPlugin != NULL && elektraStrCmp (setPlugin->name, pluginName) == 0)
 		{
 			if (elektraPluginClose (setPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{
@@ -1716,7 +1716,7 @@ static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const c
 			backend->setplugins[i] = NULL;
 		}
 
-		if (getPlugin != NULL && strcmp (getPlugin->name, pluginName) == 0)
+		if (getPlugin != NULL && elektraStrCmp (getPlugin->name, pluginName) == 0)
 		{
 			if (elektraPluginClose (getPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{
@@ -1725,7 +1725,7 @@ static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const c
 			backend->getplugins[i] = NULL;
 		}
 
-		if (errorPlugin != NULL && strcmp (errorPlugin->name, pluginName) == 0)
+		if (errorPlugin != NULL && elektraStrCmp (errorPlugin->name, pluginName) == 0)
 		{
 			if (elektraPluginClose (errorPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{
@@ -1908,7 +1908,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		const char * pluginName = keyBaseName (clause);
 		const char * pluginStateString = keyString (clause);
 
-		if (strcmp (pluginName, "list") == 0)
+		if (elektraStrCmp (pluginName, "list") == 0)
 		{
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALFORMED_CONTRACT, parentKey, "Cannot specify clauses for the list plugin!!");
 			keyDel (cutpoint);
@@ -1917,15 +1917,15 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		}
 
 		enum PluginContractState pluginState;
-		if (strcmp (pluginStateString, "unmounted") == 0)
+		if (elektraStrCmp (pluginStateString, "unmounted") == 0)
 		{
 			pluginState = PLUGIN_STATE_UNMOUNTED;
 		}
-		else if (strcmp (pluginStateString, "mounted") == 0)
+		else if (elektraStrCmp (pluginStateString, "mounted") == 0)
 		{
 			pluginState = PLUGIN_STATE_MOUNTED;
 		}
-		else if (strcmp (pluginStateString, "remount") == 0)
+		else if (elektraStrCmp (pluginStateString, "remount") == 0)
 		{
 			pluginState = PLUGIN_STATE_REMOUNT;
 		}
@@ -1950,7 +1950,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 			pluginConfig = newPluginConfig;
 		}
 
-		if (strcmp (mountpoint, "global") == 0)
+		if (elektraStrCmp (mountpoint, "global") == 0)
 		{
 
 			if (!ensureGlobalPluginState (handle, pluginName, pluginState, pluginConfig, parentKey))
@@ -1975,7 +1975,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 				return -1;
 			}
 
-			if (strcmp (mountpoint, "parent") == 0)
+			if (elektraStrCmp (mountpoint, "parent") == 0)
 			{
 				mountpoint = keyName (parentKey);
 			}

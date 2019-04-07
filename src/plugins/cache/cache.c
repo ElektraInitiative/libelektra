@@ -172,7 +172,7 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
 		cacheFileName = elektraStrConcat (cacheFileName, name);
 		elektraFree (tmp);
 	}
-	else if (strcmp (value, "default") == 0)
+	else if (elektraStrCmp (value, "default") == 0)
 	{
 		cacheFileName = elektraStrConcat (directory, "/default/");
 	}
