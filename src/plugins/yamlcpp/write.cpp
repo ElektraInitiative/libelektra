@@ -218,7 +218,7 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  * @param key This key specifies the data that should be saved in the YAML node returned by this function.
  *
  * @note Since YAML does not support non-empty binary data directly this function replaces data stored in binary keys with the string
- *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 before you use YAML CPP.
+ *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 plugin before you use YAML CPP.
  *
  * @returns A new YAML node containing the data specified in `key`
  */
