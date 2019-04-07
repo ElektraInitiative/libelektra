@@ -10,6 +10,8 @@ ROOT=$USER_ROOT
 FILE="$(mktempfile_elektra)"
 SIDE=$ROOT/../side_val
 
+RAN_ONCE=0
+
 cleanup() {
 	rm -f $FILE
 }
@@ -25,6 +27,8 @@ for PLUGIN in $PLUGINS; do
 		echo "-- $PLUGIN not a read-write storage"
 		continue
 	fi
+
+	RAN_ONCE=1
 
 	echo -------- $PLUGIN -----------
 
@@ -250,5 +254,8 @@ user/tests/script/key"
 	succeed_if "Could not remove $ROOT"
 
 done
+
+test $RAN_ONCE != 0
+succeed_if "check_import should run for at least one plugin"
 
 end_script

@@ -10,6 +10,8 @@ ROOT=$USER_ROOT
 FILE="$(mktempfile_elektra)"
 PLUGIN=$PLUGIN
 
+RAN_ONCE=0
+
 cleanup() {
 	rm -f $FILE
 }
@@ -25,6 +27,8 @@ for PLUGIN in $PLUGINS; do
 		echo "$PLUGIN not a read-write storage"
 		continue
 	fi
+
+	RAN_ONCE=1
 
 	echo -------- $PLUGIN -----------
 
@@ -71,5 +75,8 @@ for PLUGIN in $PLUGINS; do
 	succeed_if "Could not remove root"
 
 done
+
+test $RAN_ONCE != 0
+succeed_if "check_export should run for at least one plugin"
 
 end_script
