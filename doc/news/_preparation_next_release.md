@@ -152,6 +152,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
+- Fixed the `is_not_rw_storage` function. _(Lukas Kilian)_
+- We now ensure that the `check_import` and `check_export` tests run for at least one plugin. _(Lukas Kilian)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
