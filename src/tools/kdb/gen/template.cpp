@@ -9,6 +9,7 @@
 #include "template.hpp"
 
 #include <algorithm>
+#include <command.hpp>
 #include <fstream>
 
 #include "gen/templates.hpp"
@@ -39,7 +40,7 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 
 	if (missingParam != _requiredParameters.end ())
 	{
-		throw std::runtime_error ("missing required parameter " + *missingParam);
+		throw CommandAbortException ("missing required parameter " + *missingParam);
 	}
 
 	if (std::find (_parts.begin (), _parts.end (), part) == _parts.end ())
@@ -61,7 +62,7 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 
 	if (!tmpl.is_valid ())
 	{
-		throw std::runtime_error ("Error during template rendering: " + tmpl.error_message ());
+		throw CommandAbortException ("Error during template rendering: " + tmpl.error_message ());
 	}
 }
 

@@ -27,8 +27,15 @@
 const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
 const char * ElektraGenTemplate::Params::HelpFunctionName = "helpFn";
 const char * ElektraGenTemplate::Params::SpecloadFunctionName = "specloadFn";
-const char * ElektraGenTemplate::Params::OptimizeEnumFromString = "optimizeFromString";
+const char * ElektraGenTemplate::Params::EnumConversion = "enumConv";
 const char * ElektraGenTemplate::Params::AdditionalHeaders = "headers";
+
+enum class EnumConversion
+{
+	Default,
+	Trie,
+	Strcmp
+};
 
 class EnumTrie
 {
@@ -40,6 +47,8 @@ public:
 	}
 
 	std::string createSwitch ();
+
+	size_t getDepth ();
 
 private:
 	std::map<char, std::unique_ptr<EnumTrie>> children;
@@ -56,11 +65,17 @@ private:
 	std::unordered_map<std::string, std::pair<std::string, std::string>> enumTypes;
 
 	static kainjow::mustache::list getValues (const std::string & prefix, const kdb::Key & key, std::string & fromStringSwitch,
-						  std::string & valuesString);
+						  std::string & valuesString, size_t & trieDepth);
 
 	static inline bool shouldGenerateTypeDef (const kdb::Key & key);
 
+	EnumConversion conversion;
+
 public:
+	EnumProcessor (EnumConversion conversion_) : conversion (conversion_)
+	{
+	}
+
 	kainjow::mustache::object process (const kdb::Key & key, const std::string & tagName);
 	static inline std::string getType (const kdb::Key & key, const std::string & tagName, bool & genType);
 };
@@ -263,7 +278,7 @@ static std::string keySetToCCode (kdb::KeySet set)
 }
 
 kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, const kdb::Key & key, std::string & fromStringSwitch,
-						  std::string & valuesString)
+						  std::string & valuesString, size_t & trieDepth)
 {
 	using namespace kainjow::mustache;
 
@@ -302,6 +317,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 	}
 
 	EnumTrie trie (stringValues);
+	trieDepth = trie.getDepth ();
 	fromStringSwitch = trie.createSwitch ();
 
 	valuesString = ss.str ();
@@ -335,7 +351,8 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 	std::string fromStringSwitch;
 
 	std::string valuesString;
-	auto values = getValues (camelCaseToMacroCase (nativeType), key, fromStringSwitch, valuesString);
+	size_t trieDepth;
+	auto values = getValues (camelCaseToMacroCase (nativeType), key, fromStringSwitch, valuesString, trieDepth);
 
 	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
@@ -360,6 +377,8 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 		enumTypes[typeName] = std::make_pair (name, valuesString);
 	}
 
+	auto useTrie = conversion == EnumConversion::Trie || (conversion == EnumConversion::Default && trieDepth < 3);
+
 	return object{ { "new", isNew },
 		       { "name", name },
 		       { "tag_name", snakeCaseToMacroCase (tagName) },
@@ -367,6 +386,7 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 		       { "native_type", nativeType },
 		       { "generate_typedef?", generateTypeDef },
 		       { "values", values },
+		       { "switch_from_string?", useTrie },
 		       { "from_string_code", fromStringSwitch } };
 }
 
@@ -730,7 +750,22 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
 	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "specloadCheck");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
-	auto optimizeFromString = getParameter (Params::OptimizeEnumFromString, "on") != "off";
+	auto enumConversionString = getParameter (Params::EnumConversion, "default");
+
+	auto enumConversion = EnumConversion::Default;
+	if (enumConversionString == "trie")
+	{
+		enumConversion = EnumConversion::Trie;
+	}
+	else if (enumConversionString == "strcmp")
+	{
+		enumConversion = EnumConversion::Strcmp;
+	}
+	else if (enumConversionString != "default")
+	{
+		throw CommandAbortException ("enumConv must be one of: default, trie, strcmp");
+	}
+
 
 	auto cascadingParent = parentKey.substr (4);
 
@@ -741,7 +776,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			    { "init_function_name", initFunctionName },
 			    { "help_function_name", helpFunctionName },
 			    { "specload_function_name", specloadFunctionName },
-			    { "switch_from_string?", optimizeFromString },
 			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
 	list enums;
@@ -750,7 +784,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	auto specParent = kdb::Key (parentKey, KEY_END);
 
-	EnumProcessor enumProcessor;
+	EnumProcessor enumProcessor (enumConversion);
 	StructProcessor structProcessor (specParent, ks);
 
 	kdb::KeySet spec;
@@ -1055,4 +1089,18 @@ bool EnumTrie::createSwitch (std::stringstream & ss, size_t index)
 		return false;
 	}
 	return true;
+}
+
+size_t EnumTrie::getDepth ()
+{
+	if (children.empty ())
+	{
+		return 1;
+	}
+
+	std::vector<size_t> childDepths;
+	std::transform (children.begin (), children.end (), std::back_inserter (childDepths),
+			[](const std::pair<const char, std::unique_ptr<EnumTrie>> & p) { return p.second->getDepth (); });
+
+	return *std::max_element (childDepths.begin (), childDepths.end ()) + 1;
 }

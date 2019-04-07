@@ -284,51 +284,31 @@ ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 		return 0;
 	}
 
-	switch (string[0])
-{
-case 'b':
-switch (string[1])
-{
-case 'l':
-switch (string[2])
-{
-case 'u':
-switch (string[3])
-{
-case 'e':
-switch (string[4])
-{
-case 'i':
-return ELEKTRA_ENUM_MYENUM_BLUEISH;
-}
-return ELEKTRA_ENUM_MYENUM_BLUE;
-}
-break;
-}
-break;
-case 'r':
-return ELEKTRA_ENUM_MYENUM_BROWN;
-}
-break;
-case 'g':
-switch (string[1])
-{
-case 'r':
-switch (string[2])
-{
-case 'a':
-return ELEKTRA_ENUM_MYENUM_GRAY;
-case 'e':
-return ELEKTRA_ENUM_MYENUM_GREEN;
-}
-break;
-}
-break;
-case 'r':
-return ELEKTRA_ENUM_MYENUM_RED;
-}
-
 	
+	if (strcmp (string, "red") == 0)
+	{
+		return ELEKTRA_ENUM_MYENUM_RED;
+	}
+	if (strcmp (string, "green") == 0)
+	{
+		return ELEKTRA_ENUM_MYENUM_GREEN;
+	}
+	if (strcmp (string, "blue") == 0)
+	{
+		return ELEKTRA_ENUM_MYENUM_BLUE;
+	}
+	if (strcmp (string, "blueish") == 0)
+	{
+		return ELEKTRA_ENUM_MYENUM_BLUEISH;
+	}
+	if (strcmp (string, "brown") == 0)
+	{
+		return ELEKTRA_ENUM_MYENUM_BROWN;
+	}
+	if (strcmp (string, "gray") == 0)
+	{
+		return ELEKTRA_ENUM_MYENUM_GRAY;
+	}
 
 	return 0;
 }
