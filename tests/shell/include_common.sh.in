@@ -222,7 +222,18 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xmozprefs" \
 		-o "x$PLUGIN" = "xfile" \
 		-o "x$PLUGIN" = "xruby" \
-		-o "x$PLUGIN" = "xdesktop"
+		-o "x$PLUGIN" = "xdesktop" \
+		-o "x$PLUGIN" = "xc" \
+		-o "x$PLUGIN" = "xcpptemplate" \
+		-o "x$PLUGIN" = "xspecload" \
+		-o "x$PLUGIN" = "xmmapstorage" \
+		-o "x$PLUGIN" = "xmmapstorage_crc" \
+		-o "x$PLUGIN" = "xmultifile" \
+		-o "x$PLUGIN" = "xcamel" \
+		-o "x$PLUGIN" = "xsimpleini" \
+		-o "x$PLUGIN" = "xyambi" \
+		-o "x$PLUGIN" = "xtcl" \
+		-o "x$PLUGIN" = "xmini"
 }
 
 is_plugin_available() {

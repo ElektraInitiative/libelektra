@@ -1,7 +1,7 @@
 @INCLUDE_COMMON@
 
 #comment out next line to re-generate test data
-exit 0
+# exit 0
 
 echo
 echo ELEKTRA GENERATE DATA
@@ -22,13 +22,13 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" set $ROOT "root" > /dev/null
 	exit_if_fail "could not set root"
 
-	test $("$KDB" ls $ROOT) = $ROOT
+	test "$("$KDB" ls $ROOT)" = "$ROOT"
 	succeed_if "Root key not found"
 
 	"$KDB" export $ROOT $PLUGIN > "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb export"
 
-	test "$("$KDB" set $ROOT/key "value")" = "create a new key $ROOT/key with string value"
+	test "$("$KDB" set $ROOT/key "value")" = "Create a new key $ROOT/key with string \"value\""
 	succeed_if "Could not set $ROOT/key"
 
 	"$KDB" export $ROOT $PLUGIN > "$DATADIR"/two_value.$PLUGIN

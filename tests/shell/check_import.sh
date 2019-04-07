@@ -41,14 +41,16 @@ for PLUGIN in $PLUGINS; do
 	test "x$("$KDB" ls $ROOT)" = "x$ROOT"
 	succeed_if "Root key not found"
 
-	"$KDB" import $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
+	"$KDB" import $ROOT $PLUGIN "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
 	succeed_if "key name not correct one_value"
 
-	test "$("$KDB" get $ROOT)" = root
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]; then
+		test "$("$KDB" get $ROOT)" = root
+		succeed_if "root value not correct"
+	fi
 
 	"$KDB" export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"
@@ -61,7 +63,7 @@ for PLUGIN in $PLUGINS; do
 
 	echo "Import with empty root"
 
-	"$KDB" import $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
+	"$KDB" import $ROOT $PLUGIN "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
@@ -83,29 +85,31 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" rm -r $ROOT
 	succeed_if "Could not remove root"
 
-	echo "Import as stream (using cat)"
+	if [ "x$PLUGIN" != "xdini" ]; then
+		echo "Import as stream (using cat)"
 
-	cat "$DATADIR"/one_value.$PLUGIN | "$KDB" import $ROOT $PLUGIN
-	succeed_if "Could not run kdb import"
+		cat "$DATADIR"/one_value.$PLUGIN | "$KDB" import $ROOT $PLUGIN
+		succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
-	succeed_if "key name not correct one_value empty root"
+		test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+		succeed_if "key name not correct one_value empty root"
 
-	if [ "x$PLUGIN" != "xyajl" ]; then
-		#TODO: yajl currently cannot hold values within
-		#directories, do not hardcode that
-		test "$("$KDB" get $ROOT)" = root
-		succeed_if "root value not correct"
+		if [ "x$PLUGIN" != "xyajl" ]; then
+			#TODO: yajl currently cannot hold values within
+			#directories, do not hardcode that
+			test "$("$KDB" get $ROOT)" = root
+			succeed_if "root value not correct"
+		fi
+
+		"$KDB" export $ROOT $PLUGIN > $FILE
+		succeed_if "Could not run kdb export"
+
+		diff "$DATADIR"/one_value.$PLUGIN $FILE
+		succeed_if "Export file one_value.$PLUGIN was not equal"
+
+		"$KDB" rm -r $ROOT
+		succeed_if "Could not remove root"
 	fi
-
-	"$KDB" export $ROOT $PLUGIN > $FILE
-	succeed_if "Could not run kdb export"
-
-	diff "$DATADIR"/one_value.$PLUGIN $FILE
-	succeed_if "Export file one_value.$PLUGIN was not equal"
-
-	"$KDB" rm -r $ROOT
-	succeed_if "Could not remove root"
 
 	echo "Import with wrong root (overwrite)"
 
@@ -115,7 +119,7 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" set $ROOT "wrong_root" > /dev/null
 	exit_if_fail "could not set wrong_root"
 
-	"$KDB" import -s "import" $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
+	"$KDB" import -s "import" $ROOT $PLUGIN "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
@@ -177,7 +181,7 @@ user/tests/script/key"
 	"$KDB" set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	"$KDB" import -s "cut" $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
+	"$KDB" import -s "cut" $ROOT $PLUGIN "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
@@ -213,7 +217,7 @@ user/tests/script/key"
 	"$KDB" set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	"$KDB" import -s "cut" $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
+	"$KDB" import -s "cut" $ROOT $PLUGIN "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
