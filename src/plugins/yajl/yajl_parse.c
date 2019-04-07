@@ -251,9 +251,10 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 
 		if (!strcmp (keyName (peekDup), keyName (cur)))
 		{
-			const char* baseName = keyBaseName(ksCurrent (returned));
+			const char * baseName = keyBaseName (ksCurrent (returned));
 			// TODO: Add test for empty array check
-			if(strcmp(baseName, "#0") && strcmp(baseName, "###empty_array")) {
+			if (strcmp (baseName, "#0") && strcmp (baseName, "###empty_array"))
+			{
 				ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
 				keyDel (ksLookup (returned, cur, KDB_O_POP));
 				ksSetCursor (returned, cursor);
