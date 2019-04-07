@@ -49,6 +49,14 @@ TEST (RebasePath, ThrowsExceptionOnInvalidRebase)
 	EXPECT_THROW (rebasePath (target, oldParent, newParent), InvalidRebaseException);
 }
 
+TEST (RebasePath, CalculatesPathCorrectlyWithCascadingTarget)
+{
+	Key target = Key ("/test/k1", KEY_END);
+	Key oldParent = Key ("spec/test", KEY_END);
+	Key newParent = Key ("spec/test", KEY_END);
+
+	EXPECT_EQ ("spec/test/k1", rebasePath (target, oldParent, newParent));
+}
 
 TEST (RebaseKey, RebasesCorrectlyWithValidArguments)
 {
