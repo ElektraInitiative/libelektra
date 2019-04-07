@@ -140,6 +140,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
+- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
+
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ### Yan LR
