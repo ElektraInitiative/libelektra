@@ -320,6 +320,29 @@ kdb rm -r user/tests/yamlcpp
 sudo kdb umount user/tests/yamlcpp
 ```
 
+## Binary Values
+
+Elektra [saves binary data as either `0` or `1`](../../../doc/decisions/bool.md). The YAML CPP plugin supports this design decision by converting between YAML’s and Elektra’s boolean type.
+
+```sh
+# Mount YAML CPP plugin at `user/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
+# Manually add boolean key
+echo 'truth: true' > `kdb file user/tests/yamlcpp`
+
+kdb get user/tests/yamlcpp/truth
+#> 1
+
+# Add another boolean value
+kdb set user/tests/yamlcpp/success 0
+kdb get user/tests/yamlcpp/success
+#> 0
+
+# Undo modifications to the database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
+```
+
 ## Dependencies
 
 This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called [`libyaml-cpp-dev`](https://packages.debian.org/libyaml-cpp-dev). On macOS you can install the package [`yaml-cpp`](https://repology.org/project/yaml-cpp) via [HomeBrew](https://brew.sh).
