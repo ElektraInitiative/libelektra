@@ -12,7 +12,6 @@
 
 #include <kdbplugin.h>
 
-
 int elektraMacaddrOpen (Plugin * handle, Key * errorKey);
 int elektraMacaddrClose (Plugin * handle, Key * errorKey);
 int elektraMacaddrGet (Plugin * handle, KeySet * ks, Key * parentKey);
