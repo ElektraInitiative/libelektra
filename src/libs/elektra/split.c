@@ -1036,9 +1036,6 @@ error:
 
 int splitCacheLoadState (Split * split, KeySet * global)
 {
-	// TODO: enable loading again
-	return 0;
-
 	ELEKTRA_LOG_DEBUG ("SIZE STORAGE LOAD");
 	Key * key = 0;
 	char * name = 0;

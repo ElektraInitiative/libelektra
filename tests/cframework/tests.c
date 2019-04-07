@@ -295,7 +295,6 @@ void clear_sync (KeySet * ks)
 		keyClearSync (k);
 }
 
-#include <kdblogger.h>
 void output_meta (Key * k)
 {
 	const Key * meta;
@@ -303,15 +302,15 @@ void output_meta (Key * k)
 	keyRewindMeta (k);
 	while ((meta = keyNextMeta (k)) != 0)
 	{
-		ELEKTRA_LOG_DEBUG (", %s: %s", keyName (meta), (const char *) keyValue (meta));
+		printf (", %s: %s", keyName (meta), (const char *) keyValue (meta));
 	}
-	ELEKTRA_LOG_DEBUG ("\n");
+	printf ("\n");
 }
 
 void output_key (Key * k)
 {
 	// output_meta will print endline
-	ELEKTRA_LOG_DEBUG ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
+	printf ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
 	output_meta (k);
 }
 

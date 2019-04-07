@@ -47,45 +47,6 @@
 
 #include <kdbinternal.h>
 
-// TODO: remove
-
-#include <tests.h>
-#include <tests_plugin.h>
-
-
-#include <unistd.h>
-
-void logSplitDebug (KDB * handle)
-{
-	if (!handle->split)
-	{
-		ELEKTRA_LOG_DEBUG ("!!!!! NO SPLIT in KDB");
-		return;
-	}
-	ELEKTRA_LOG_DEBUG (">>>> NEW KDB SPLIT");
-	ELEKTRA_LOG_DEBUG (">>>> alloc: %zu", handle->split->alloc);
-	ELEKTRA_LOG_DEBUG (">>>> size: %zu", handle->split->size);
-
-	for (size_t i = 0; i < handle->split->size; i++)
-	{
-		ELEKTRA_LOG_DEBUG (">>>> NEW SPLIT: %zu", i);
-		Key * k = handle->split->parents[i];
-		ELEKTRA_LOG_DEBUG (">>>> backend handle specsize:\t%zi", handle->split->handles[i]->specsize);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle dirsize:\t%zi", handle->split->handles[i]->dirsize);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle usersize:\t%zi", handle->split->handles[i]->usersize);
-		ELEKTRA_LOG_DEBUG (">>>> backend handle systemsize:\t%zi", handle->split->handles[i]->systemsize);
-
-		ELEKTRA_LOG_DEBUG (">>>> syncbits: %u", handle->split->syncbits[i]);
-		ELEKTRA_LOG_DEBUG (">>>> parent key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (k), keyString (k),
-				   strlen (keyString (k)), keyGetValueSize (k));
-		ELEKTRA_LOG_DEBUG (">>>> keyset size: %zi", ksGetSize (handle->split->keysets[i]));
-
-		output_keyset (handle->split->keysets[i]);
-		ELEKTRA_LOG_DEBUG (">>>> END SPLIT: %zu", i);
-	}
-}
-
-// TODO: remove end
 
 /**
  * @defgroup kdb KDB
@@ -791,16 +752,9 @@ static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * in
 	ELEKTRA_LOG_DEBUG ("LAST initial PARENT name: %s", keyName (lastInitialParent));
 	ELEKTRA_LOG_DEBUG ("CURR initial PARENT name: %s", keyName (initialParent));
 
-	//	if (!keyIsBelowOrSame (lastInitialParent, initialParent))
-	//	{
-	//		ELEKTRA_LOG_DEBUG ("CACHE initial PARENT: key is not below or same");
-	//		keyDel (lastInitialParent);
-	//		return -1;
-	//	}
-
-	if (strcmp (keyString (lastInitalParentName), keyName (initialParent)) != 0)
+	if (!keyIsBelowOrSame (lastInitialParent, initialParent))
 	{
-		ELEKTRA_LOG_DEBUG ("CACHE initial PARENT: key is not same");
+		ELEKTRA_LOG_DEBUG ("CACHE initial PARENT: key is not below or same");
 		keyDel (lastInitialParent);
 		return -1;
 	}
@@ -876,14 +830,13 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 		ksDel (*cache);
 		*cache = 0;
 	}
-	// TODO: enable cleanup
-	// 	keyDel (*cacheParent);
-	// 	*cacheParent = 0;
+	keyDel (*cacheParent);
+	*cacheParent = 0;
 
-	//	keySetName (parentKey, keyName (initialParent));
-	//	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-	//	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-	//	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	return 0;
 }
@@ -994,8 +947,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	Split * split = splitNew ();
 
 	KeySet * cache = 0;
-	KeySet * cacheCompareKS = ksNew (0, KS_END);
-	int cachehit = 0;
 	Key * cacheParent = 0;
 
 	if (!handle || !ks)
@@ -1028,20 +979,16 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, cacheCompareKS, &cache, &cacheParent, parentKey, initialParent) != 0)
+		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent) != 0)
 		{
 			goto error;
 		}
 
-		//		splitUpdateFileName (split, handle, parentKey);
-		//		keyDel (initialParent);
-		//		splitDel (split);
-		//		errno = errnosave;
-		//		keyDel (oldError);
-
-		cachehit = 1;
-		goto debugbypass;
-
+		splitUpdateFileName (split, handle, parentKey);
+		keyDel (initialParent);
+		splitDel (split);
+		errno = errnosave;
+		keyDel (oldError);
 		return 1;
 	case 0: // We don't need an update so let's do nothing
 
@@ -1070,11 +1017,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		// otherwise fall trough
 	}
 
-	// TODO: enable this cleanup again
-	// ksDel (cache);
-	// cache = 0;
-
-debugbypass:
+	ksDel (cache);
+	cache = 0;
 
 	// Appoint keys (some in the bypass)
 	if (splitAppoint (split, handle, ks) == -1)
@@ -1164,18 +1108,6 @@ debugbypass:
 	keyDel (cacheParent);
 	cacheParent = 0;
 
-	if (cachehit == 1)
-	{
-		nbError = 0;
-		compare_keyset (ks, cacheCompareKS);
-		ELEKTRA_ASSERT (nbError == 0, "ERROR: cached keyset is not the same as from storage");
-		if (nbError != 0)
-		{
-			ELEKTRA_LOG_WARNING ("ERROR: cached keyset is not the same as from storage");
-			// exit (nbError);
-		}
-	}
-
 	splitMergeDefault (split, ks);
 
 	keySetName (parentKey, keyName (initialParent));
@@ -1203,10 +1135,6 @@ error:
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
-
-	// 	elektraGlobalError (handle, cacheCompareKS, parentKey, POSTGETSTORAGE, INIT);
-	// 	elektraGlobalError (handle, cacheCompareKS, parentKey, POSTGETSTORAGE, MAXONCE);
-	// 	elektraGlobalError (handle, cacheCompareKS, parentKey, POSTGETSTORAGE, DEINIT);
 
 	keySetName (parentKey, keyName (initialParent));
 	if (handle) splitUpdateFileName (split, handle, parentKey);

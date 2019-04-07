@@ -22,14 +22,11 @@ add_plugintest (dbus
 
 if (ADDTESTING_PHASE)
 	set (example example_dbus)
-	include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-	set (ADDITIONAL_SOURCES $<TARGET_OBJECTS:cframework>)
 
 	set (SRC_FILES
 	     ${CMAKE_CURRENT_SOURCE_DIR}/example_dbus.c
 	     ${CMAKE_CURRENT_SOURCE_DIR}/sendmessage.c
-	     ${CMAKE_CURRENT_SOURCE_DIR}/receivemessage.c
-	     ${ADDITIONAL_SOURCES})
+	     ${CMAKE_CURRENT_SOURCE_DIR}/receivemessage.c)
 	set (HDR_FILES ${CMAKE_CURRENT_SOURCE_DIR}/dbus.h)
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})

@@ -12,11 +12,8 @@ else ()
 	endif ()
 
 	add_headers (HDR_FILES)
-	
-	include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-	set (ADDITIONAL_SOURCES $<TARGET_OBJECTS:cframework>)
 
-	add_executable (race race.c ${ADDITIONAL_SOURCES})
+	add_executable (race race.c)
 	tool_link_elektra (race)
 	target_link_libraries (race ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries (race ${LIBRT_LIBRARIES})

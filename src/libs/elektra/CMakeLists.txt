@@ -224,10 +224,6 @@ if (BUILD_FULL)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
-	include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-	list (APPEND SOURCES
-		     $<TARGET_OBJECTS:cframework>)
-
 	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-static STATIC ${SOURCES})
 	add_dependencies (elektra-static kdberrors_generated elektra_error_codes_generated)
