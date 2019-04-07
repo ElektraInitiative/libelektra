@@ -232,7 +232,7 @@ static int elektraYajlParseStartArray (void * ctx)
 }
 
 /**
- * @brief Remove ___empty_map if thats the only thing which would be
+ * @brief Remove all empty keys and remove ___empty_map if thats the only thing which would be
  *        returned.
  *
  * @param returned to remove the key from
@@ -271,28 +271,26 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 	}
 
 	ksRewind (returned);
-	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	Key * cur = ksNext (returned);
+	while (cur != NULL)
 	{
-		// Not sure atm if checking for dirdata is needed or the responsibility of yajl
-		Key * dirdata = keyDup (cur);
-		keySetBaseName (dirdata, "___dirdata");
-		ELEKTRA_LOG_DEBUG ("Searching for %s", keyName (dirdata));
-		Key * foundKey = ksLookup (returned, dirdata, 0);
+		cursor_t cursor = ksGetCursor (returned);
 
-		if (foundKey == NULL)
+		if (ksNext (returned) == NULL) break;
+
+		Key * peekDup = keyDup (ksCurrent (returned));
+		keySetBaseName (peekDup, 0);
+
+		if (!strcmp (keyName (peekDup), keyName (cur)))
 		{
-			ELEKTRA_LOG_DEBUG ("Did not find dirdata");
-			// I wonder if there's a better way for this check
-			if (keyGetValueSize (cur) < 2)
-			{
-				ELEKTRA_LOG_DEBUG ("Key has no value, delete %s", keyName (cur));
-				// Is this even a good idea considering the cursor still points at this key?
-				keyDel (ksLookup (returned, cur, KDB_O_POP));
-			}
+			ELEKTRA_LOG_DEBUG ("Removing empty parent key %s", keyName (cur));
+			keyDel (ksLookup (returned, cur, KDB_O_POP));
+			// Set cursor to position of the deleted key
+			ksSetCursor (returned, cursor);
 		}
 
-		keyDel (dirdata);
+		keyDel (peekDup);
+		cur = ksCurrent (returned);
 	}
 }
 

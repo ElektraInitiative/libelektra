@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
-- infos/needs = directoryvalue
+- infos/needs = 
 - infos/recommends = rebase comment type
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
