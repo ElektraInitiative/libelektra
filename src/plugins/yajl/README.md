@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
-- infos/needs = 
+- infos/needs = directoryvalue
 - infos/recommends = rebase comment type
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
@@ -173,7 +173,6 @@ kdb set user/tests/yajl/now/#0 'Neighbors'
 kdb set user/tests/yajl/now/#1 'Threads'
 
 kdb ls user/tests/yajl
-#> user/tests/yajl
 #> user/tests/yajl/now
 #> user/tests/yajl/now/#0
 #> user/tests/yajl/now/#1

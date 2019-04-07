@@ -232,13 +232,47 @@ static int elektraYajlParseStartArray (void * ctx)
 }
 
 /**
- * @brief Remove all empty keys and remove ___empty_map if thats the only thing which would be
+ * @brief Remove all non-leaf keys
+ *
+ * @param returned to remove the keys from
+ */
+static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
+{
+	ksRewind (returned);
+	Key * cur = ksNext (returned);
+	while (cur != NULL)
+	{
+		cursor_t cursor = ksGetCursor (returned);
+
+		if (ksNext (returned) == NULL) break;
+
+		Key * peekDup = keyDup (ksCurrent (returned));
+		if(!strcmp(keyBaseName(peekDup), "___dirdata")) break;
+
+		keySetBaseName (peekDup, 0);
+
+		if (!strcmp (keyName (peekDup), keyName (cur)))
+		{
+			ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
+			keyDel (ksLookup (returned, cur, KDB_O_POP));
+			// Set cursor to position of the deleted key
+			ksSetCursor (returned, cursor);
+		}
+
+		keyDel (peekDup);
+		cur = ksCurrent (returned);
+	}
+}
+
+/**
+ * @brief Remove ___empty_map if thats the only thing which would be
  *        returned.
  *
  * @param returned to remove the key from
  */
-static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
+static void elektraYajlParseSuppressEmptyMap (KeySet * returned, Key * parentKey)
 {
+
 	if (ksGetSize (returned) == 2)
 	{
 		Key * lookupKey = keyDup (parentKey);
@@ -268,29 +302,6 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 			keyDel (toRemove);
 		}
 		keyDel (lookupKey);
-	}
-
-	ksRewind (returned);
-	Key * cur = ksNext (returned);
-	while (cur != NULL)
-	{
-		cursor_t cursor = ksGetCursor (returned);
-
-		if (ksNext (returned) == NULL) break;
-
-		Key * peekDup = keyDup (ksCurrent (returned));
-		keySetBaseName (peekDup, 0);
-
-		if (!strcmp (keyName (peekDup), keyName (cur)))
-		{
-			ELEKTRA_LOG_DEBUG ("Removing empty parent key %s", keyName (cur));
-			keyDel (ksLookup (returned, cur, KDB_O_POP));
-			// Set cursor to position of the deleted key
-			ksSetCursor (returned, cursor);
-		}
-
-		keyDel (peekDup);
-		cur = ksCurrent (returned);
 	}
 }
 
@@ -398,7 +409,8 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	yajl_free (hand);
 	fclose (fileHandle);
-	elektraYajlParseSuppressEmpty (returned, parentKey);
+	elektraYajlParseSuppressNonLeafKeys (returned);
+	elektraYajlParseSuppressEmptyMap (returned, parentKey);
 
 	return 1; /* success */
 }
