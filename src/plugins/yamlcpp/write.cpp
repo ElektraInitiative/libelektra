@@ -224,10 +224,27 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  */
 YAML::Node createMetaDataNode (Key const & key)
 {
-	return key.hasMeta ("array") ?
-		       YAML::Node (YAML::NodeType::Sequence) :
-		       key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
-						   YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ());
+	if (key.hasMeta ("array"))
+	{
+		return YAML::Node (YAML::NodeType::Sequence);
+	}
+	if (key.getBinarySize () == 0)
+	{
+		return YAML::Node (YAML::NodeType::Null);
+	}
+	if (key.isBinary ())
+	{
+		return YAML::Node ("Unsupported binary value!");
+	}
+
+	try
+	{
+		return YAML::Node (key.get<bool> ());
+	}
+	catch (KeyTypeConversion const &)
+	{
+		return YAML::Node (key.getString ());
+	}
 }
 
 /**
