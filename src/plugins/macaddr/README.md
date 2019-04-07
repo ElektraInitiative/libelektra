@@ -1,12 +1,12 @@
 - infos = Information about the macaddr plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = Thomas Bretterbauer <e01306821@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = check
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
-- infos/metadata =
+- infos/placements = presetstorage
+- infos/status = maintained unittest tested
+- infos/metadata = check/macaddr
 - infos/description = one-line description of macaddr
 
 ## Introduction
@@ -44,11 +44,17 @@ None.
 ```sh
 # Backup-and-Restore: user/tests/macaddr
 
-kdb set user/tests/macaddr/key value
-#> Create a new key user/tests/macaddr/key with string "value"
+# Mount `macaddr` plugin
+kdb mount config.dump /tests/macaddr dump macaddr
 
-kdb get /tests/macaddr/key
-#> value
+# Check the validity of the MAC address stored in `/tests/mac`
+kdb setmeta /tests/mac check/macaddr
+
+# Setting a MAC address
+kdb set /tests/mac 00:A0:C9:14:C8:29
+# RET: 0
+
+kdb umount /tests/macaddr
 ```
 
 ## Limitations
