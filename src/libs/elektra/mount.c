@@ -312,7 +312,6 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		if (!(*plugin))
 		{
 			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
-			ksDel (config);
 			return -1;
 		}
 
