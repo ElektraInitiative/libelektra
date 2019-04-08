@@ -16,16 +16,24 @@
 #include <kdbprivate.h>
 #include <stdio.h>
 
+void insertSeperator (char * mac)
+{
+	for (int i = 2; i <= 14; i += 3)
+	{
+		mac[i] = ':';
+	}
+}
+
 void transformMac (Key * key)
 {
 	char * mac = keyString (key);
 
 	int sepOcc = 0;
-	while (*mac)
+
+	for (int i = 0; i < strlen (mac); ++i)
 	{
-		toupper ((unsigned char) *mac);
-		mac++;
-		if ((unsigned char) *mac == ':' || (unsigned char) *mac == '-')
+		mac[i] = toupper (mac[i]);
+		if (mac[i] == ':' || mac[i] == '-')
 		{
 			++sepOcc;
 		}
@@ -33,10 +41,25 @@ void transformMac (Key * key)
 
 	if (sepOcc == 5)
 	{
-		for (int i = 2; i <= 14; i += 3)
+		insertSeperator (mac);
+		keySetString (key, mac);
+		keySetName (key, mac);
+	}
+	else if (sepOcc == 1)
+	{
+		char * newmac = (char *) malloc (strlen (mac) + 4);
+		int j = 0;
+		for (int i = 0; i <= 11; i += 2)
 		{
-			mac[i] = ':';
+			if (i == 6)
+			{
+				++i;
+			}
+			memcpy (newmac + j, mac + i, 2);
+			j += 3;
 		}
+		insertSeperator (newmac);
+		keySetString (key, newmac);
 	}
 }
 
