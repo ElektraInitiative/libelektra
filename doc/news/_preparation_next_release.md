@@ -342,6 +342,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - The [CFramework](https://master.libelektra.org/tests/cframework) now also compares the names of meta keys. _(René Schwaiger)_
 - The [release notes check](../../scripts/run_check_release_notes) does not report an illegal number anymore, if the release notes were not updated at all. _(René Schwaiger)_
+- We added a test for the keyhelper-class which checks if rebasePath calculates the new path for cascading target-keys correctly. _(Thomas Bretterbauer)_
 
 ### Source Code Checks
 
