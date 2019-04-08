@@ -11,15 +11,39 @@
 
 #include <kdbhelper.h>
 #include <regex.h>
+//TODO: Remove
+#include <stdio.h>
+#include <kdbprivate.h>
+#include <ctype.h>
 
-int checkRegex(const char *mac, const char *regexString) {
+void transformMac(Key *key) {
+    char* mac = keyString(key);
+
+    while(*mac)
+    {
+        toupper((unsigned char) *mac);
+        mac++;
+    }
+    
+}
+
+int checkRegex(char *mac, const char *regexString) {
+    regex_t regex;
+
+    int reg = regcomp(&regex, regexString, REG_NOSUB | REG_EXTENDED);
+    if (reg) return -1;
+
+    reg = regexec(&regex, mac, 0, NULL, 0);
+    regfree(&regex);
+
+    return reg == REG_NOMATCH ? 1 : 0;
 }
 
 int validateMac(Key *key, Key *parentKey) {
-    Key *metaKey = keyGetMeta(metaKey, "check/macaddr");
+    Key *metaKey = keyGetMeta(key, "check/macaddr");
     if (!metaKey) return 1;
 
-    const char *mac = keyString(key);
+    char *mac = keyString(key);
 
     const char *regexColon = "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
     const char *regexHyphen = "^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$";
@@ -31,9 +55,9 @@ int validateMac(Key *key, Key *parentKey) {
     int i = 0;
     do {
         ret = checkRegex(mac, regexStrings[i++]);
-    } while (ret == 0 || i < 3);
+    } while (ret == 1 && i < 3);
 
-
+    return ret;
 }
 
 int elektraMacaddrOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED) {
@@ -87,7 +111,8 @@ int elektraMacaddrSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UN
         const Key *meta = keyGetMeta(cur, "check/macaddr");
         if (!meta) continue;
         int rc = validateMac(cur, parentKey);
-        if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
+        if (rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
+        transformMac(cur);
     }
 
     return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
