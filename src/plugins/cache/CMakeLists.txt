@@ -20,3 +20,7 @@ add_plugin (cache
 	    LINK_ELEKTRA elektra-kdb
 	    ADD_TEST
 	    TEST_README)
+
+if (DEPENDENCY_PHASE AND BUILD_SHARED)
+	add_dependencies (elektra-cache elektra-resolver_fm_hpu_b elektra-mmapstorage)
+endif ()
