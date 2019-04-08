@@ -42,10 +42,10 @@ None.
 ## Examples
 
 ```sh
-# Backup-and-Restore: user/tests/macaddr
+# Backup-and-Restore: user/tests/mac
 
 # Mount `macaddr` plugin
-kdb mount config.dump /tests/macaddr dump macaddr
+kdb mount config.dump /tests/mac dump macaddr
 
 # Check the validity of the MAC address stored in `/tests/mac`
 kdb setmeta /tests/mac check/macaddr
@@ -54,7 +54,7 @@ kdb setmeta /tests/mac check/macaddr
 kdb set /tests/mac 00:A0:C9:14:C8:29
 # RET: 0
 
-kdb umount /tests/macaddr
+kdb umount /tests/mac
 ```
 
 ## Limitations
