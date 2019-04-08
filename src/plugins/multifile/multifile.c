@@ -53,6 +53,7 @@ typedef enum
 	ERROR = -1,
 	NOUPDATE = 0,
 	SUCCESS = 1,
+	CACHE_HIT = 2,
 } Codes;
 
 
@@ -506,6 +507,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 				}
 			}
 			if (r > 0) rc = SUCCESS;
+			if (r == ELEKTRA_PLUGIN_STATUS_CACHE_HIT) rc = CACHE_HIT;
 		}
 	}
 	if (ksGetSize (mc->childBackends) > 0 && rc != -1)
@@ -628,17 +630,21 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		mc->getPhase = MULTI_GETRESOLVER;
 	}
 	elektraPluginSetData (handle, mc);
-	if (rc == SUCCESS)
+	if (rc == CACHE_HIT)
 	{
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
+	}
+	else if (rc == SUCCESS)
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else if (rc == NOUPDATE)
 	{
-		return 0;
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 	else
 	{
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }
 
