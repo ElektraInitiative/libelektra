@@ -233,7 +233,9 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xsimpleini" \
 		-o "x$PLUGIN" = "xyambi" \
 		-o "x$PLUGIN" = "xtcl" \
-		-o "x$PLUGIN" = "xmini"
+		-o "x$PLUGIN" = "xmini" \
+		-o "x$PLUGIN" = "xyaypeg" \
+		-o "x$PLUGIN" = "xyamlcpp"
 }
 
 is_plugin_available() {
