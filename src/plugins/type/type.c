@@ -182,8 +182,8 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
 
 		elektraRealloc ((void **) result, (size + 1) * sizeof (struct boolean_pair));
 
-		result[size]->trueValue = keyString (trueKey);
-		result[size]->falseValue = keyString (falseKey);
+		(*result)[size].trueValue = keyString (trueKey);
+		(*result)[size].falseValue = keyString (falseKey);
 		++size;
 
 		++index;
