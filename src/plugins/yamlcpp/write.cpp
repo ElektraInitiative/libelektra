@@ -237,14 +237,12 @@ YAML::Node createMetaDataNode (Key const & key)
 		return YAML::Node ("Unsupported binary value!");
 	}
 
-	try
+	auto value = key.get<string> ();
+	if (value == "0" || value == "1")
 	{
 		return YAML::Node (key.get<bool> ());
 	}
-	catch (KeyTypeConversion const &)
-	{
-		return YAML::Node (key.getString ());
-	}
+	return YAML::Node (value);
 }
 
 /**
