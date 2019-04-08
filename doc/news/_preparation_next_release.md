@@ -138,6 +138,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### CSVStorage
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
+- Fix `ini` plugin behaviour to be compatible with cache. _(Mihael Pranjić)_
 
 ### filecheck
 
