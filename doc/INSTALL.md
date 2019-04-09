@@ -91,7 +91,7 @@ Please refer to the section OS independent below.
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-After you completed building Elektra on your own, there are multiple options  how to install it. For example, with make or cPack tools.
+After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or cPack tools.
 
 ### make
 

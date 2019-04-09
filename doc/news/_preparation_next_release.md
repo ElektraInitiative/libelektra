@@ -103,6 +103,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
   specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
 
+
+### Ini
+
+- new formatting is introduced --> instead of having whitespaces around '=' now the whitespaces are not allowed anymore
+	example of old formatting:	key1 = value1
+	example of new formatting:  key1=value1
+
+	. _(Oleksandr Shabelnyk)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.

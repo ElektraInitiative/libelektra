@@ -1,7 +1,7 @@
 - infos = Information about the ini plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs  = 
+- infos/needs =
 - infos/provides = storage/ini
 - infos/recommends = binary
 - infos/placements = getstorage setstorage
