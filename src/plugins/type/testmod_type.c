@@ -587,6 +587,51 @@ static void test_booleanUserValue (const char * type)
 	PLUGIN_CLOSE ();
 }
 
+static void test_booleanUserValueWeird (const char * type)
+{
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("user/booleans", KEY_VALUE, "#3", KEY_END),
+			       keyNew ("user/booleans/#0/true", KEY_VALUE, "strangeTrueValue", KEY_END),
+			       keyNew ("user/booleans/#0/false", KEY_VALUE, "0", KEY_END),
+			       keyNew ("user/booleans/#1/true", KEY_VALUE, "1", KEY_END),
+			       keyNew ("user/booleans/#1/false", KEY_VALUE, "strangeFalseValue", KEY_END), KS_END);
+	PLUGIN_OPEN ("type");
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "strangeTrueValue", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/type/f1", KEY_VALUE, "strangeFalseValue", KEY_META, type, "boolean", KEY_END), KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/f1", 0)), "0");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "strangeTrueValue");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/f1", 0)), "strangeFalseValue");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
+static void test_booleanUserValueError (void)
+{
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("user/booleans", KEY_VALUE, "#1", KEY_END),
+			       keyNew ("user/booleans/#0/true", KEY_VALUE, "strangeTrueValue", KEY_END),
+			       keyNew ("user/booleans/#1/true", KEY_VALUE, "1", KEY_END),
+			       keyNew ("user/booleans/#1/false", KEY_VALUE, "strangeFalseValue", KEY_END), KS_END);
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	Key * errorKey = keyNew ("", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("type", modules, conf, errorKey);
+	succeed_if (plugin == NULL, "plugin open should have failed");
+	succeed_if (keyGetMeta (errorKey, "error") != NULL, "no error found after failed open");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "error/reason")),
+				"You must set both true and false for a boolean pair (config key: '/booleans/#0')");
+	keyDel (errorKey);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 static void test_booleanChangeValue (const char * type)
 {
 	Key * parentKey = keyNew ("user/tests/type", KEY_END);
@@ -753,6 +798,7 @@ int main (int argc, char ** argv)
 	test_booleanDefaultError ("type");
 	test_booleanDefaultRestore ("type");
 	test_booleanUserValue ("type");
+	test_booleanUserValueWeird ("type");
 	test_booleanChangeValue ("type");
 	test_booleanOverride ("type");
 
@@ -760,6 +806,7 @@ int main (int argc, char ** argv)
 	test_booleanDefaultError ("check/type");
 	test_booleanDefaultRestore ("check/type");
 	test_booleanUserValue ("check/type");
+	test_booleanUserValueWeird ("check/type");
 	test_booleanChangeValue ("check/type");
 	test_booleanOverride ("check/type");
 
@@ -777,6 +824,8 @@ int main (int argc, char ** argv)
 	test_booleanRestoreAsDefault ("check/type", "#2", "on", "off");
 	test_booleanRestoreAsDefault ("check/type", "#3", "enabled", "disabled");
 	test_booleanRestoreAsDefault ("check/type", "#4", "enable", "disable");
+
+	test_booleanUserValueError ();
 
 	print_result ("testmod_type");
 
