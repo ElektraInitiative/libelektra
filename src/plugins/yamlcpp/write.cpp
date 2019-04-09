@@ -359,7 +359,7 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 #ifdef HAVE_LOGGER
 	ostringstream output;
 	output << data;
-	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 #endif
 
 	if (keyIterator == key.end ())
@@ -399,7 +399,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 #ifdef HAVE_LOGGER
 	ostringstream output;
 	output << data;
-	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 #endif
 
 	if (keyIterator == key.end ())
