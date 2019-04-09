@@ -405,9 +405,19 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
+#### Alpine Linux
+
 - We updated the [Docker image for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
+
+#### Debian
+
 - We now use the default JDK on Debian sid, since the package `openjdk-8-jdk` is not available in the official unstable repositories anymore. _(René Schwaiger)_
-- <<TODO>>
+- We added
+
+  - [Bison](https://www.gnu.org/software/bison/), and
+  - [YAEP](https://github.com/vnmakarov/yaep)
+
+  to the [image for Debian sid](../../scripts/Docker/debian/sid/Dockerfile).
 
 ## Infrastructure
 
