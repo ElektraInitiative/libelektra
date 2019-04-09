@@ -171,6 +171,41 @@ KeySet removeArrayMetaData (KeySet const & keys)
 
 	return result;
 }
+/**
+ * @brief This function determines all keys “missing” from the given keyset.
+ *
+ * The term missing keys refers to keys that are not part of the hierarchy. For example in a key set that contains the keys
+ *
+ * - user/level1
+ * - user/level2/level3
+ *
+ * the key `user/level2/level3` is missing.
+ *
+ * @param keys This parameter contains the key set for which this function determines missing keys.
+ *
+ * @return A key set that contains all keys missing from `keys`
+ */
+KeySet missingKeys (KeySet const & keys)
+{
+	KeySet missing;
+
+	keys.rewind ();
+	Key previous = keys.next ();
+	for (; keys.next (); previous = keys.current ())
+	{
+		if (keys.current ().isDirectBelow (previous) || !keys.current ().isBelow (previous)) continue;
+
+		Key current{ keys.current ().getName (), KEY_BINARY, KEY_END };
+		while (!current.isDirectBelow (previous))
+		{
+			ckdb::keySetBaseName (*current, NULL);
+			missing.append (current);
+			current = current.dup ();
+		}
+	}
+
+	return missing;
+}
 
 /**
  * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
@@ -458,6 +493,8 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	auto keys = removeArrayMetaData (mappings);
+	auto missing = missingKeys (keys);
+	keys.append (missing);
 
 	KeySet arrayParents;
 	KeySet arrays;
