@@ -7,7 +7,6 @@
 // -------------------------
 
 /*%# enums %*/
-/*%# generate_typedef? %*/
 ELEKTRA_KEY_TO_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 {
 	const char * string;
@@ -23,7 +22,8 @@ ELEKTRA_KEY_TO_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 	/*%# values %*/
 	if (strcmp (string, "/*% string_value %*/") == 0)
 	{
-		return /*%& name %*/;
+		*variable = /*%& name %*/;
+		return 1;
 	}
 	/*%/ values %*/
 	/*%/ switch_from_string? %*/
@@ -40,8 +40,10 @@ ELEKTRA_TO_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 		return "/*% string_value %*/";
 		/*%/ values %*/
 	}
+
+	// should be unreachable
+	return "";
 }
-/*%/ generate_typedef? %*/
 /*%/ enums %*/
 
 // -------------------------

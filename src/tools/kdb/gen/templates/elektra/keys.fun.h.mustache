@@ -25,7 +25,7 @@
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
 
-#define ELEKTRA_SIZE(tagName) elektraSize##tagName
+#define ELEKTRA_SIZE(tagName) ELEKTRA_CONCAT (elektraSize, tagName)
 
 /*%# keys %*/
 /*%# is_struct? %*/

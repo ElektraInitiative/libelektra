@@ -25,7 +25,7 @@ fi
 
 base_output_folder="@CMAKE_CURRENT_BINARY_DIR@/gen"
 
-"$KDB" mount "${base_output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
+"$KDB" mount "${base_output_folder}/spec-data.ini" "$SPEC_ROOT/gen" ni
 
 for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 	[ -e "$test_folder" ] || continue
@@ -48,6 +48,9 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 		"$KDB" import "$parent_key" ni < "$test_path"
 		succeed_if "couldn't import data"
+
+		"$KDB" spec-mount "$MOUNTPOINT/gen/$template/$test_name"
+		succeed_if "couldn't spec-mount data"
 
 		old_dir=$(pwd)
 		cd "$output_folder"
