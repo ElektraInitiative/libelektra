@@ -174,23 +174,33 @@ KeySet removeArrayMetaData (KeySet const & keys)
 /**
  * @brief This function determines all keys “missing” from the given keyset.
  *
- * The term missing keys refers to keys that are not part of the hierarchy. For example in a key set that contains the keys
+ * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
  *
- * - user/level1
- * - user/level2/level3
+ *  - `user/parent`
  *
- * the key `user/level2/level3` is missing.
+ * that contains the keys
+ *
+ * - `user/parent/level1/level2`, and
+ * - `user/parent/level1/level2/level3/level4`
+ *
+ * , the keys
+ *
+ * - `user/parent/level1`, and
+ * - user/parent/level1/level2/level3
+ *
+ * are missing.
  *
  * @param keys This parameter contains the key set for which this function determines missing keys.
+ * @param parent This value stores the parent key of `keys`.
  *
  * @return A key set that contains all keys missing from `keys`
  */
-KeySet missingKeys (KeySet const & keys)
+KeySet missingKeys (KeySet const & keys, Key const & parent)
 {
 	KeySet missing;
 
 	keys.rewind ();
-	Key previous = keys.next ();
+	Key previous{ parent.getName (), KEY_BINARY, KEY_END };
 	for (; keys.next (); previous = keys.current ())
 	{
 		if (keys.current ().isDirectBelow (previous) || !keys.current ().isBelow (previous)) continue;
@@ -493,7 +503,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	auto keys = removeArrayMetaData (mappings);
-	auto missing = missingKeys (keys);
+	auto missing = missingKeys (keys, parent);
 	keys.append (missing);
 
 	KeySet arrayParents;
