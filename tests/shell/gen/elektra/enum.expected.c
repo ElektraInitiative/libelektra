@@ -49,22 +49,23 @@ static Key * helpKey = NULL;
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (5,
+	KeySet * defaults = ksNew (6,
+	keyNew ("spec/tests/script/gen/elektra/enum", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0",
 	"black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0",
 	"cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan",
 	KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none",
-	KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#1/value", "1",
-	KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META, "check/enum/#3", "blue",
-	KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "blue", KEY_META, "gen/enum/type", "Colors", KEY_META,
+	KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META,
+	"default", "blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META,
+	"gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META,
 	"type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0",
-	"none", KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META,
-	"check/enum/#1/value", "1", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META,
-	"check/enum/#3", "blue", KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "red", KEY_META,
-	"gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	"none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue",
+	KEY_META, "default", "red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META,
+	"gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META,
+	"type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/myenum", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red",
 	KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META,
 	"check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum",
@@ -128,22 +129,23 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (5,
+	KeySet * spec = ksNew (6,
+	keyNew ("spec/tests/script/gen/elektra/enum", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0",
 	"black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0",
 	"cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan",
 	KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none",
-	KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#1/value", "1",
-	KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META, "check/enum/#3", "blue",
-	KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "blue", KEY_META, "gen/enum/type", "Colors", KEY_META,
+	KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META,
+	"default", "blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META,
+	"gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META,
 	"type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0",
-	"none", KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META,
-	"check/enum/#1/value", "1", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META,
-	"check/enum/#3", "blue", KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "red", KEY_META,
-	"gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	"none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue",
+	KEY_META, "default", "red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META,
+	"gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META,
+	"type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/myenum", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red",
 	KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META,
 	"check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum",
@@ -216,9 +218,11 @@ ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	switch (string[0])
 {
 case 'b':
-return ELEKTRA_ENUM_DISJOINTED_BLACK;
+*variable = ELEKTRA_ENUM_DISJOINTED_BLACK;
+return 1;
 case 'w':
-return ELEKTRA_ENUM_DISJOINTED_WHITE;
+*variable = ELEKTRA_ENUM_DISJOINTED_WHITE;
+return 1;
 }
 
 	
@@ -235,8 +239,51 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	case ELEKTRA_ENUM_DISJOINTED_WHITE:
 		return "white";
 	}
+
+	// should be unreachable
+	return "";
+}
+ELEKTRA_KEY_TO_SIGNATURE (ExistingColors, EnumExistingColors)
+{
+	const char * string;
+	if (!elektraKeyToString (key, &string) || strlen (string) == 0)
+	{
+		return 0;
+	}
+
+	switch (string[0])
+{
+case 'c':
+*variable = EXISTING_COLORS_CYAN;
+return 1;
+case 'm':
+*variable = EXISTING_COLORS_MAGENTA;
+return 1;
+case 'y':
+*variable = EXISTING_COLORS_YELLOW;
+return 1;
 }
 
+	
+
+	return 0;
+}
+
+ELEKTRA_TO_STRING_SIGNATURE (ExistingColors, EnumExistingColors)
+{
+	switch (value)
+	{
+	case EXISTING_COLORS_CYAN:
+		return "cyan";
+	case EXISTING_COLORS_MAGENTA:
+		return "magenta";
+	case EXISTING_COLORS_YELLOW:
+		return "yellow";
+	}
+
+	// should be unreachable
+	return "";
+}
 ELEKTRA_KEY_TO_SIGNATURE (Colors, EnumColors)
 {
 	const char * string;
@@ -248,13 +295,17 @@ ELEKTRA_KEY_TO_SIGNATURE (Colors, EnumColors)
 	switch (string[0])
 {
 case 'b':
-return COLORS_BLUE;
+*variable = COLORS_BLUE;
+return 1;
 case 'g':
-return COLORS_GREEN;
+*variable = COLORS_GREEN;
+return 1;
 case 'n':
-return COLORS_NONE;
+*variable = COLORS_NONE;
+return 1;
 case 'r':
-return COLORS_RED;
+*variable = COLORS_RED;
+return 1;
 }
 
 	
@@ -275,6 +326,9 @@ ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors)
 	case COLORS_BLUE:
 		return "blue";
 	}
+
+	// should be unreachable
+	return "";
 }
 ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 {
@@ -287,27 +341,33 @@ ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	
 	if (strcmp (string, "red") == 0)
 	{
-		return ELEKTRA_ENUM_MYENUM_RED;
+		*variable = ELEKTRA_ENUM_MYENUM_RED;
+		return 1;
 	}
 	if (strcmp (string, "green") == 0)
 	{
-		return ELEKTRA_ENUM_MYENUM_GREEN;
+		*variable = ELEKTRA_ENUM_MYENUM_GREEN;
+		return 1;
 	}
 	if (strcmp (string, "blue") == 0)
 	{
-		return ELEKTRA_ENUM_MYENUM_BLUE;
+		*variable = ELEKTRA_ENUM_MYENUM_BLUE;
+		return 1;
 	}
 	if (strcmp (string, "blueish") == 0)
 	{
-		return ELEKTRA_ENUM_MYENUM_BLUEISH;
+		*variable = ELEKTRA_ENUM_MYENUM_BLUEISH;
+		return 1;
 	}
 	if (strcmp (string, "brown") == 0)
 	{
-		return ELEKTRA_ENUM_MYENUM_BROWN;
+		*variable = ELEKTRA_ENUM_MYENUM_BROWN;
+		return 1;
 	}
 	if (strcmp (string, "gray") == 0)
 	{
-		return ELEKTRA_ENUM_MYENUM_GRAY;
+		*variable = ELEKTRA_ENUM_MYENUM_GRAY;
+		return 1;
 	}
 
 	return 0;
@@ -330,6 +390,9 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	case ELEKTRA_ENUM_MYENUM_GRAY:
 		return "gray";
 	}
+
+	// should be unreachable
+	return "";
 }
 
 // -------------------------

@@ -10,7 +10,7 @@
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
 succeed_if_same_string ($1)
  *
- * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ native_type }}}, {{{ type_name }}}).
+ * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ type_name }}}).
  */// {{=/*% %*/=}}
 static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
 								      /*%# args %*/

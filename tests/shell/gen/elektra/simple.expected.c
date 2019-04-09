@@ -49,7 +49,8 @@ static Key * helpKey = NULL;
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (5,
+	KeySet * defaults = ksNew (6,
+	keyNew ("spec/tests/script/gen/elektra/simple", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double",
 	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "0.0", KEY_META, "type", "float",
@@ -116,7 +117,8 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (5,
+	KeySet * spec = ksNew (6,
+	keyNew ("spec/tests/script/gen/elektra/simple", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double",
 	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "0.0", KEY_META, "type", "float",

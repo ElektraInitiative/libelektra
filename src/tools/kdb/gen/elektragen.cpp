@@ -72,7 +72,7 @@ private:
 	EnumConversion conversion;
 
 public:
-	EnumProcessor (EnumConversion conversion_) : conversion (conversion_)
+	explicit EnumProcessor (EnumConversion conversion_) : conversion (conversion_)
 	{
 	}
 
@@ -305,7 +305,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 			auto value = std::to_string (i);
 			if (key.hasMeta ("check/enum/" + cur + "/value"))
 			{
-				value = key.getMeta<std::string> ("check/enum/" + cur + "/value");
+				value = key.getMeta<std::string> ("gen/enum/" + cur + "/value");
 			}
 			values.emplace_back (object{ { "name", name }, { "value", value }, { "string_value", stringValue } });
 			stringValues.insert ({ stringValue, name });
@@ -626,7 +626,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 		       { "native_type", nativeType },
 		       { "generate_typedef?", generateTypeDef },
 		       { "fields", fields },
-		       { "max_field_len", std::to_string (maxFieldNameLen) },
+		       { "max_field_len", std::to_string (maxFieldNameLen + 1) },
 		       { "alloc?", allocate } };
 }
 
@@ -1067,7 +1067,8 @@ bool EnumTrie::createSwitch (std::stringstream & ss, size_t index)
 			return false;
 		}
 
-		ss << "return " << name << ";" << std::endl;
+		ss << "*variable = " << name << ";" << std::endl;
+		ss << "return 1;" << std::endl;
 		return false;
 	}
 
@@ -1085,7 +1086,8 @@ bool EnumTrie::createSwitch (std::stringstream & ss, size_t index)
 
 	if (!stringValue.empty ())
 	{
-		ss << "return " << name << ";" << std::endl;
+		ss << "*variable = " << name << ";" << std::endl;
+		ss << "return 1;" << std::endl;
 		return false;
 	}
 	return true;

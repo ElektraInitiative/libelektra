@@ -49,7 +49,8 @@ static Key * helpKey = NULL;
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (3,
+	KeySet * defaults = ksNew (4,
+	keyNew ("spec/tests/script/gen/elektra/context", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/context/key/%date%/child", KEY_META, "default", "0", KEY_META, "type",
 	"boolean", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/context/key/%profile%/child/_/grandchildren/#", KEY_META, "default", "0",
@@ -118,7 +119,8 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (3,
+	KeySet * spec = ksNew (4,
+	keyNew ("spec/tests/script/gen/elektra/context", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/context/key/%date%/child", KEY_META, "default", "0", KEY_META, "type",
 	"boolean", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/context/key/%profile%/child/_/grandchildren/#", KEY_META, "default", "0",

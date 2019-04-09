@@ -39,7 +39,7 @@ extern "C" {
 
 // clang-format on
 
-#define ELEKTRA_STRUCT_FREE(typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
 #define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
 
@@ -98,7 +98,7 @@ extern "C" {
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
 
-#define ELEKTRA_SIZE(tagName) elektraSize##tagName
+#define ELEKTRA_SIZE(tagName) ELEKTRA_CONCAT (elektraSize, tagName)
 
 
 
@@ -172,7 +172,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  */// 
-#define elektraSet(elektra, tag, value, error) ELEKTRA_GET (tag) (elektra, value, error)
+#define elektraSet(elektra, tag, value, error) ELEKTRA_SET (tag) (elektra, value, error)
 
 
 /**
@@ -182,7 +182,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
  */// 
-#define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+#define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_SET (tag) (elektra, value, __VA_ARGS__, error)
 
 
 /**
@@ -195,11 +195,30 @@ void specloadCheck (int argc, const char ** argv);
 
 
 /**
+ * @param elektra The elektra instance initialized with loadConfiguration().
+ * @param tag     The array tag to look up.
+ * @param ...     Variable arguments depending on the given tag.
+ *
+ * @return The size of the array below the given key.
+ */// 
+#define elektraSizeV(elektra, tag, ...) ELEKTRA_SIZE (tag) (elektra, __VA_ARGS__)
+
+
+/**
  * @param elektra    The elektra instance initialized with loadConfiguration().
  * @param contextTag The context tag for the contextual value you want to set.
  * @param value	     The actual value you want to set.
  */// 
 #define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
+
+
+/**
+ * @param elektra    The elektra instance initialized with loadConfiguration().
+ * @param contextTag The context tag for the contextual value you want to set.
+ * @param value	     The actual value you want to set.
+ * @param ...     Variable arguments depending on the given tag.
+ */// 
+#define elektraContextSetV(elektra, contextTag, value, ...) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value, __VA_ARGS__)
 
 #ifdef __cplusplus
 }

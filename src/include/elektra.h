@@ -13,13 +13,14 @@
 #include <elektra/errors.h>
 #include <elektra/types.h>
 #include <kdb.h>
+#include <kdbmacros.h>
 #include <kdbtypes.h>
 
 // region Helpers for Code Generation
-#define ELEKTRA_GET(typeName) elektraGet##typeName
-#define ELEKTRA_GET_ARRAY_ELEMENT(typeName) elektraGet##typeName##ArrayElement
-#define ELEKTRA_SET(typeName) elektraSet##typeName
-#define ELEKTRA_SET_ARRAY_ELEMENT(typeName) elektraSet##typeName##ArrayElement
+#define ELEKTRA_GET(typeName) ELEKTRA_CONCAT (elektraGet, typeName)
+#define ELEKTRA_GET_ARRAY_ELEMENT(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektraGet, typeName), ArrayElement)
+#define ELEKTRA_SET(typeName) ELEKTRA_CONCAT (elektraSet, typeName)
+#define ELEKTRA_SET_ARRAY_ELEMENT(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektraSet, typeName), ArrayElement)
 
 #define ELEKTRA_GET_SIGNATURE(cType, typeName) cType ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname)
 #define ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE(cType, typeName)                                                                               \
@@ -35,10 +36,10 @@
 	void ELEKTRA_SET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType value,            \
 						   ElektraError ** error)
 
-#define ELEKTRA_KEY_TO(typeName) elektraKeyTo##typeName
+#define ELEKTRA_KEY_TO(typeName) ELEKTRA_CONCAT (elektraKeyTo, typeName)
 #define ELEKTRA_KEY_TO_SIGNATURE(cType, typeName) int ELEKTRA_KEY_TO (typeName) (const Key * key, cType * variable)
 
-#define ELEKTRA_TO_STRING(typeName) elektra##typeName##ToString
+#define ELEKTRA_TO_STRING(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektra, typeName), ToString)
 #define ELEKTRA_TO_STRING_SIGNATURE(cType, typeName) char * ELEKTRA_TO_STRING (typeName) (cType value)
 
 // endregion Helpers for Code Generation

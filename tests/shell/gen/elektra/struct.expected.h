@@ -39,7 +39,7 @@ extern "C" {
 
 // clang-format on
 
-#define ELEKTRA_STRUCT_FREE(typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
 #define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
 typedef struct ElektraStructMystruct
@@ -225,7 +225,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 #define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
 #define elektra_len(x) elektra_len00 (x)
 
-#define ELEKTRA_SIZE(tagName) elektraSize##tagName
+#define ELEKTRA_SIZE(tagName) ELEKTRA_CONCAT (elektraSize, tagName)
 
 // clang-format off
 
@@ -344,7 +344,7 @@ static inline void ELEKTRA_SET (MystructB) (Elektra * elektra,
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 succeed_if_same_string ($1)
  *
- * @return the value of 'people/#', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
+ * @return the value of 'people/#', free with ELEKTRA_STRUCT_FREE (StructPerson).
  */// 
 static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
 								      kdb_long_long_t index1 
@@ -422,7 +422,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra )
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
- * @return the value of 'person/_', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
+ * @return the value of 'person/_', free with ELEKTRA_STRUCT_FREE (StructPerson).
  */// 
 static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
 								       const char * name1   )
@@ -525,7 +525,7 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra,
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 succeed_if_same_string ($1)
  *
- * @return the value of 'person/_/children/#', free with ELEKTRA_STRUCT_FREE (Person, StructPerson).
+ * @return the value of 'person/_/children/#', free with ELEKTRA_STRUCT_FREE (StructPerson).
  */// 
 static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
 								      const char * name1 , 
@@ -774,7 +774,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  */// 
-#define elektraSet(elektra, tag, value, error) ELEKTRA_GET (tag) (elektra, value, error)
+#define elektraSet(elektra, tag, value, error) ELEKTRA_SET (tag) (elektra, value, error)
 
 
 /**
@@ -784,7 +784,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
  */// 
-#define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
+#define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_SET (tag) (elektra, value, __VA_ARGS__, error)
 
 
 /**
@@ -797,11 +797,30 @@ void specloadCheck (int argc, const char ** argv);
 
 
 /**
+ * @param elektra The elektra instance initialized with loadConfiguration().
+ * @param tag     The array tag to look up.
+ * @param ...     Variable arguments depending on the given tag.
+ *
+ * @return The size of the array below the given key.
+ */// 
+#define elektraSizeV(elektra, tag, ...) ELEKTRA_SIZE (tag) (elektra, __VA_ARGS__)
+
+
+/**
  * @param elektra    The elektra instance initialized with loadConfiguration().
  * @param contextTag The context tag for the contextual value you want to set.
  * @param value	     The actual value you want to set.
  */// 
 #define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
+
+
+/**
+ * @param elektra    The elektra instance initialized with loadConfiguration().
+ * @param contextTag The context tag for the contextual value you want to set.
+ * @param value	     The actual value you want to set.
+ * @param ...     Variable arguments depending on the given tag.
+ */// 
+#define elektraContextSetV(elektra, contextTag, value, ...) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value, __VA_ARGS__)
 
 #ifdef __cplusplus
 }

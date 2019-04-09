@@ -11,7 +11,7 @@
 {{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
 {{/ args }}{{/ args? }}
  *
- * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ native_type }}}, {{{ type_name }}}).
+ * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ type_name }}}).
  */// {{=/*% %*/=}}
 static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
 								      /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
