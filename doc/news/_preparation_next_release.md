@@ -143,6 +143,21 @@ The following section lists news about the [modules](https://www.libelektra.org/
   .
 
 - [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
+- The plugin converts “sparse” key sets properly. For example, for the key set that contains **only** the key:
+
+  - `user/parent/#1/#2/map/#0` with the value `arr`
+
+  and uses `user/parent` as parent key, YAML CPP stores the following YAML data:
+
+  ```yaml
+  - ~
+  - - ~
+    - ~
+    - map:
+        - arr
+  ```
+
+  .
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
