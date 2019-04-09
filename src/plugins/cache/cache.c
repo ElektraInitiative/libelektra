@@ -40,12 +40,13 @@ struct _cacheHandle
 	Plugin * cacheStorage;
 };
 
-static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch)
+static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * errorKey)
 {
 	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
+		ELEKTRA_ADD_WARNING (11, errorKey, KDB_RESOLVER);
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
 		keyDel (ch->cachePath);
@@ -59,12 +60,13 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch)
 	return 0;
 }
 
-static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch)
+static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch, Key * errorKey)
 {
 	KeySet * mmapstorageConfig = ksNew (0, KS_END);
 	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cachePath);
 	if (!ch->cacheStorage)
 	{
+		ELEKTRA_ADD_WARNING (11, errorKey, KDB_CACHE_STORAGE);
 		elektraPluginClose (ch->resolver, 0);
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
@@ -206,7 +208,7 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
 	return cacheFileName;
 }
 
-int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraCacheOpen (Plugin * handle, Key * errorKey)
 {
 	// plugin initialization logic
 	// this function is optional
@@ -217,8 +219,8 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	elektraModulesInit (ch->modules, 0);
 	ch->cachePath = keyNew ("user/elektracache", KEY_END);
 
-	if (resolveCacheDirectory (handle, ch) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
-	if (loadCacheStoragePlugin (handle, ch) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
+	if (resolveCacheDirectory (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
+	if (loadCacheStoragePlugin (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
 
 	elektraPluginSetData (handle, ch);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;

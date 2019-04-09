@@ -235,6 +235,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
 
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -252,6 +253,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 ### Core
 
 - `kdbGet` now calls global postgetstorage plugins with the parent key passed to `kdbGet`, instead of a random mountpoint. _(Klemens Böswirth)_
+- Fixed a double cleanup error (segmentation fault) when mounting global plugins. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
