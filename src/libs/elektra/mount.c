@@ -484,6 +484,13 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 	while ((cur = ksNext (modules)) != 0)
 	{
 		Backend * backend = backendOpenModules (modules, kdb->global, errorKey);
+
+		if (!backend)
+		{
+			// error already set in errorKey
+			continue;
+		}
+
 		ksAppendKey (alreadyMounted, backend->mountpoint);
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{
