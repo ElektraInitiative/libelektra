@@ -404,8 +404,14 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 int elektraTypeClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	TypeData * data = elektraPluginGetData (handle);
-	elektraFree (data->booleans);
-	elektraFree (data);
+	if (data != NULL)
+	{
+		if (data->booleans != NULL)
+		{
+			elektraFree (data->booleans);
+		}
+		elektraFree (data);
+	}
 	elektraPluginSetData (handle, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
