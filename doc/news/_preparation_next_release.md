@@ -142,6 +142,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
+- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
+
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ### Yan LR
@@ -231,8 +233,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Cache
 
-- [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. _(Mihael Pranjić)_
-- Added dependencies (`resolver` and `mmapstorage`) to CMake. _(Mihael Pranjić)_
+- [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
+
 
 ## Libraries
 
