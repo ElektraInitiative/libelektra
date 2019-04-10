@@ -31,7 +31,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ### Type (New Version)
 
-The `type` plugin was completely rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
+The `type` plugin was newly rewritten in C. The old version is now called `cpptype`. _(Klemens Böswirth)_
 
 The new `type` plugin also provides the functionality of the `enum` and the `boolean` plugin. These plugins are now considered obsolete and
 you should use `type` instead.
@@ -81,6 +81,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### YAJL
 
 - The plugin no allows setting a value to the mountpoint. This is represented as a top level value in json if no other key is present. _(Philipp Gackstatter)_
+
+- The plugin no longer lists empty parent keys with `kdb ls`. _(Philipp Gackstatter)_
 
 ### YAMBi
 
@@ -139,6 +141,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
   ```
 
   .
+
+- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
@@ -201,6 +205,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Fixed missing Metadata in README and METADATA.ini. _(Michael Zronek)_
 
 ### Specload
+### units
+
+- The [units](https://www.libelektra.org/plugins/units) plugin provides the capability to enter values with additional SI units. The unit will be checked if it as a valid SI base-unit,  additional SI prefixes will be validated and the value re-calculated to it's base-unit in respect to the prefix.  _(Josef Wechselauer)_
+- Work in Progress _(Josef Wechselauer)_
 
 - The [specload](https://www.libelektra.org/plugins/specload) plugin is a special storage plugin. Instead of using a storage file
   it calls an external application to request its specification. For the transfer it relies on the
@@ -223,10 +231,19 @@ The following section lists news about the [modules](https://www.libelektra.org/
   either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
   `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
 
+### crypto / fcrypt
+
+- Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
+
+### Cache
+
+- [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
+
 ### units
 
 - The [units](https://www.libelektra.org/plugins/units) plugin provides the capability to enter values with additional SI units. The unit will be checked if it as a valid SI base-unit,  additional SI prefixes will be validated and the value re-calculated to it's base-unit in respect to the prefix.  _(Josef Wechselauer)_
 - Work in Progress _(Josef Wechselauer)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -244,6 +261,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 ### Core
 
 - `kdbGet` now calls global postgetstorage plugins with the parent key passed to `kdbGet`, instead of a random mountpoint. _(Klemens Böswirth)_
+- Fixed a double cleanup error (segmentation fault) when mounting global plugins. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -284,6 +302,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - `kdb get -v` now displays if the resulting value is a default-value defined by the metadata of the key. _(Thomas Bretterbauer)_
 - `kdb cp` now succeeds if target-keys already have the same values as the source-keys. _(Thomas Bretterbauer)_
+- `web-ui` issue #2441 is fixed in form of a workaround _(Josef Wechselauer)_
+- `kdb import` does not fail anymore if executed more than once with the same target in the spec-namespace. _(Thomas Bretterbauer)_
 - <<TODO>>
 - <<TODO>>
 
@@ -295,7 +315,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- We added a (very) basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
+- We added a basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - Write Elektra with capital letter in cascading tutorial. _(Vlad - Ioan Balan)_
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
@@ -336,6 +356,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - The [CFramework](https://master.libelektra.org/tests/cframework) now also compares the names of meta keys. _(René Schwaiger)_
 - The [release notes check](../../scripts/run_check_release_notes) does not report an illegal number anymore, if the release notes were not updated at all. _(René Schwaiger)_
+- We added a test for the keyhelper-class which checks if rebasePath calculates the new path for cascading target-keys correctly. _(Thomas Bretterbauer)_
 
 ### Source Code Checks
 
@@ -371,7 +392,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- The build system now rebuilds the [JNA binding](https://www.libelektra.org/bindings/jna) with Maven, if you change any of the Java source files of the binding. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -404,7 +425,7 @@ you up to date with the multi-language support provided by Elektra.
   , since they are [known to fail in high load scenarios](https://issues.libelektra.org/2439). _(René Schwaiger)_
 
 - We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
-- <<TODO>>
+- We now ignore any files outside of the source directory again, when calculating the coverage for [Coveralls](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
 
 ### Travis
 

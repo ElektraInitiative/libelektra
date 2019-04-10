@@ -11,6 +11,7 @@
 #include "type.h"
 #include "types.h"
 
+#include <elektra/conversion.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 
@@ -192,6 +193,36 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
 	return size;
 }
 
+static kdb_long_long_t readBooleanRestore (KeySet * config)
+{
+	Key * restore = ksLookupByName (config, "/boolean/restoreas", 0);
+	if (restore == NULL)
+	{
+		return -1;
+	}
+
+	const char * restoreString = keyString (restore);
+
+	int digitStart = elektraArrayValidateBaseNameString (restoreString);
+	if (digitStart <= 0)
+	{
+		return -2;
+	}
+
+	Key * restoreKey = keyNew ("", KEY_VALUE, &restoreString[digitStart], KEY_END);
+
+	kdb_long_long_t size;
+	if (!elektraKeyToLongLong (restoreKey, &size))
+	{
+		keyDel (restoreKey);
+		return -2;
+	}
+
+	keyDel (restoreKey);
+
+	return size;
+}
+
 int elektraTypeOpen (Plugin * handle, Key * errorKey)
 {
 	KeySet * conf = elektraPluginGetConfig (handle);
@@ -217,6 +248,14 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 	else
 	{
 		data->booleanCount = result;
+	}
+
+	data->booleanRestore = readBooleanRestore (conf);
+	if (data->booleanRestore < -1 || data->booleanRestore >= data->booleanCount)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_TYPE, errorKey, "The value of the config key /boolean/restoreas was invalid!");
+		elektraFree (data);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	elektraPluginSetData (handle, data);

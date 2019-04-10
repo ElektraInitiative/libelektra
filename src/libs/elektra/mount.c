@@ -277,16 +277,23 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
 	return refKey;
 }
 
-Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules, Key * errorKey)
+/**
+ * Loads global plugin
+ *
+ * @retval -1 on failure
+ * @retval 0 on empty plugin name (nothing configured at given position)
+ * @retval 1 on success
+ */
+int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules,
+				   Key * errorKey)
 {
-	Plugin * plugin;
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
 
 	if (refKey)
 	{
 		// plugin already loaded, just reference it
-		plugin = *(Plugin **) keyValue (refKey);
-		plugin->refcounter += 1;
+		*plugin = *(Plugin **) keyValue (refKey);
+		(*plugin)->refcounter += 1;
 	}
 	else
 	{
@@ -294,28 +301,34 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 		ELEKTRA_NOT_NULL (config);
 		// config holds a newly allocated KeySet
 		const char * pluginName = keyString (cur);
+		if (!pluginName || pluginName[0] == '\0')
+		{
+			ksDel (config);
+			return 0;
+		}
+
 		// loading the new plugin
-		plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
-		if (!plugin)
+		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
+		if (!(*plugin))
 		{
 			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
-			return NULL;
+			return -1;
 		}
 
 		// saving the plugin reference to avoid having to load the plugin multiple times
-		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &plugin, KEY_END);
+		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &(*plugin), KEY_END);
 		keyAddBaseName (refKey, keyString (cur));
 		ksAppendKey (referencePlugins, refKey);
 		keyDel (refKey);
 	}
 
-	return plugin;
+	return 1;
 }
 
 KeySet * elektraDefaultGlobalConfig (void)
 {
-	return ksNew (
-		18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
+	KeySet * config = ksNew (
+		24, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
@@ -333,13 +346,25 @@ KeySet * elektraDefaultGlobalConfig (void)
 #endif
 		keyNew ("system/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+
+	// TODO: this is a poor way of detecting whether cache is compiled, but simply
+	// matching against cache might fail because of other plugins (e.g. "cachefilter")
+	if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL)
+	{
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
+	}
+
+	return config;
 }
 
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
@@ -373,14 +398,19 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
 #endif
 				// load plugins in implicit max once placement
-				Plugin * plugin = elektraMountGlobalsLoadPlugin (referencePlugins, cur, global, modules, errorKey);
-				if (!plugin)
-					retval = -1; // error loading plugin
-				else
-					kdb->globalPlugins[i][MAXONCE] = plugin;
+				Plugin * plugin = 0;
+				int mountRet = elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, modules, errorKey);
 
-				// set handle to global keyset
-				plugin->global = kdb->global;
+				if (mountRet == -1)
+					retval = -1; // error loading plugin
+				else if (mountRet == 0)
+					continue; // no plugin configured here
+				else
+				{
+					kdb->globalPlugins[i][MAXONCE] = plugin;
+					// set handle to global keyset
+					plugin->global = kdb->global;
+				}
 
 				// load plugins in explicit placements
 				const char * placementName = keyName (cur);
@@ -398,12 +428,20 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 
 						if (!elektraStrCaseCmp (subPlacement, GlobalpluginSubPositionsStr[j]))
 						{
-							Plugin * subPlugin = elektraMountGlobalsLoadPlugin (
-								referencePlugins, curSubPosition, subPositions, modules, errorKey);
-							if (!subPlugin)
+							Plugin * subPlugin = 0;
+							int subRet =
+								elektraMountGlobalsLoadPlugin (&subPlugin, referencePlugins, curSubPosition,
+											       subPositions, modules, errorKey);
+							if (subRet == -1)
 								retval = -1; // error loading plugin
+							else if (subRet == 0)
+								continue; // no plugin configured here
 							else
+							{
 								kdb->globalPlugins[i][j] = subPlugin;
+								// set handle to global keyset
+								subPlugin->global = kdb->global;
+							}
 						}
 					}
 				}
@@ -446,6 +484,13 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 	while ((cur = ksNext (modules)) != 0)
 	{
 		Backend * backend = backendOpenModules (modules, kdb->global, errorKey);
+
+		if (!backend)
+		{
+			// error already set in errorKey
+			continue;
+		}
+
 		ksAppendKey (alreadyMounted, backend->mountpoint);
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{

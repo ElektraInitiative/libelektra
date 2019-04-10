@@ -617,7 +617,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	ksRewind (conf);
 	while ((k = ksNext (conf)) != 0)
 	{
-		if (keyIsBelow (k, root))
+		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
 		{
 			recipientCount++;
 		}
@@ -655,11 +655,12 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	ksRewind (conf);
 	while ((k = ksNext (conf)) != 0)
 	{
-		if (keyIsBelow (k, root))
+		const char * kStringVal = keyString (k);
+		if (keyIsBelow (k, root) && strlen (kStringVal) > 0)
 		{
 			argv[i] = "-r";
 			// NOTE argv[] values will not be modified, so const can be discarded safely
-			argv[i + 1] = (char *) keyString (k);
+			argv[i + 1] = (char *) kStringVal;
 			i = i + 2;
 		}
 	}

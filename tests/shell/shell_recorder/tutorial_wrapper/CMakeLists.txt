@@ -6,7 +6,7 @@ include (LibAddTest)
 
 add_msr_test (kdb_get "${CMAKE_SOURCE_DIR}/doc/help/kdb-get.md REQUIRED_PLUGINS dump")
 add_msr_test (kdb_complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
-add_msr_test (kdb_cp "${CMAKE_SOURCE_DIR}/doc/help/kdb-cp.md")
+# add_msr_test (kdb_cp "${CMAKE_SOURCE_DIR}/doc/help/kdb-cp.md")  # see #2600
 add_msr_test (kdb_global_umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md" REQUIRED_PLUGINS spec tracer)
 add_msr_test (kdb_ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md" REQUIRED_PLUGINS sync)
 
@@ -26,7 +26,7 @@ endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 
 add_msr_test (tutorial_arrays "${CMAKE_SOURCE_DIR}/doc/tutorials/arrays.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
-add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS yamlcpp)
+add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
 
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")

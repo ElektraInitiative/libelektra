@@ -438,6 +438,8 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		return -1;
 	}
 
+	ELEKTRA_LOG_DEBUG ("spec: %zd", backend->specsize);
+	ELEKTRA_LOG_DEBUG ("dir: %zd", backend->dirsize);
 	ELEKTRA_LOG_DEBUG ("user: %zd", backend->usersize);
 	ELEKTRA_LOG_DEBUG ("system: %zd", backend->systemsize);
 

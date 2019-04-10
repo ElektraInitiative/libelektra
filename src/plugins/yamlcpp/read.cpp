@@ -96,7 +96,14 @@ Key createLeafKey (YAML::Node const & node, string const & name)
 	Key key{ name, KEY_BINARY, KEY_END };
 	if (!node.IsNull ())
 	{
-		key.setString (node.as<string> ());
+		try
+		{
+			key.set<bool> (node.as<bool> ());
+		}
+		catch (YAML::BadConversion const &)
+		{
+			key.setString (node.as<string> ());
+		}
 	}
 	if (node.Tag () == "tag:yaml.org,2002:binary")
 	{

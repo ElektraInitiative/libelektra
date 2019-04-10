@@ -917,8 +917,8 @@ kill `pidof dbus-daemon`
                 sh("""\
 coveralls -b '${buildDir}' \
           -t $REPO_TOKEN \
-          -e benchmarks -e doc -e examples -e install -e system -e tests \
-          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp)'
+          -e benchmarks -e doc -e examples -e install -e system -e tests -e .idea \
+          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp|ypp)'
 """)
               }
             }

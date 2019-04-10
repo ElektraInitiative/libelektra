@@ -30,24 +30,12 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 	{
 		tmpConf.lookup (rk, KDB_O_POP);
 	}
-	else
+	else if (tmpConf.lookup (rk))
 	{
-		Key key = tmpConf.lookup (rk);
-		if (key != nullptr)
-		{
-			if (key.getString () != rk.getString ())
-			{
-				throw CommandAbortException (std::string ("Copy will not be done, because " + rk.getName () +
-									  " already exists and has a different value"
-									  ", use -f to force copy"),
-							     11);
-			}
-		}
-		else
-		{
-			newConf.append (rk);
-		}
+		throw CommandAbortException (
+			std::string ("Copy will not be done, because " + rk.getName () + " already exists, use -f to force copy"), 11);
 	}
+	newConf.append (rk);
 }
 } // namespace
 
