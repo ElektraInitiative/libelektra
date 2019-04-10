@@ -182,8 +182,8 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
 
 		elektraRealloc ((void **) result, (size + 1) * sizeof (struct boolean_pair));
 
-		result[size]->trueValue = keyString (trueKey);
-		result[size]->falseValue = keyString (falseKey);
+		(*result)[size].trueValue = keyString (trueKey);
+		(*result)[size].falseValue = keyString (falseKey);
 		++size;
 
 		++index;
@@ -404,8 +404,14 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 int elektraTypeClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	TypeData * data = elektraPluginGetData (handle);
-	elektraFree (data->booleans);
-	elektraFree (data);
+	if (data != NULL)
+	{
+		if (data->booleans != NULL)
+		{
+			elektraFree (data->booleans);
+		}
+		elektraFree (data);
+	}
 	elektraPluginSetData (handle, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
