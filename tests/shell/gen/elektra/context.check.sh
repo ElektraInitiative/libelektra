@@ -70,8 +70,9 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wpedantic -Wall -Werror")
 
 add_executable (dummy dummy.c context.actual.c)
 target_include_directories(dummy PRIVATE "@CMAKE_BINARY_DIR@/src/include" "@CMAKE_SOURCE_DIR@/src/include")
-link_directories ("@CMAKE_BINARY_DIR@/lib")
-target_link_libraries (dummy elektra-highlevel elektra-opts elektra-invoke elektra-kdb elektra-ease elektra-core)
+target_link_libraries (dummy "@CMAKE_BINARY_DIR@/lib/libelektra-highlevel.so" "@CMAKE_BINARY_DIR@/lib/libelektra-opts.so"
+							 "@CMAKE_BINARY_DIR@/lib/libelektra-invoke.so" "@CMAKE_BINARY_DIR@/lib/libelektra-kdb.so"
+							 "@CMAKE_BINARY_DIR@/lib/libelektra-ease.so" "@CMAKE_BINARY_DIR@/lib/libelektra-core.so")
 EOF
 
 mkdir build && cd build
