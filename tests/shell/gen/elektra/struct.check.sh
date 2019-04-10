@@ -65,7 +65,7 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wpedantic -Wall -Werror")
 
 add_executable (dummy dummy.c struct.actual.c)
 target_include_directories(dummy PRIVATE "@CMAKE_BINARY_DIR@/src/include" "@CMAKE_SOURCE_DIR@/src/include")
-target_link_directories (dummy PRIVATE "@CMAKE_BINARY_DIR@/lib")
+link_directories ("@CMAKE_BINARY_DIR@/lib")
 target_link_libraries (dummy elektra-highlevel elektra-opts elektra-invoke elektra-kdb elektra-ease elektra-core)
 EOF
 
