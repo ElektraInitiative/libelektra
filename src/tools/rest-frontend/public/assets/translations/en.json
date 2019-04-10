@@ -267,7 +267,7 @@
     "APP.ENTRIES.SEARCH.ADVANCED.SORTBY.SLUG": "Slug",
     "APP.ENTRIES.SEARCH.SEARCHBOX.BUTTON.ADVANCEDOPTIONS": "Advanced options",
     "APP.ENTRIES.SEARCH.SEARCHBOX.BUTTON.SUBMIT": "Go!",
-    "APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER": "Search for configuration snippet... (or keep empty to list all)",
+    "APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER": "Search for documentation or configuration snippets... (or keep empty to list all)",
     "APP.ENTRIES.SEARCH.TABLE.ACTION.BUTTON.DETAILS": "Details",
     "APP.ENTRIES.SEARCH.TABLE.ACTION.BUTTON.RAWDETAILS": "Raw",
     "APP.ENTRIES.SEARCH.TABLE.HEADER.ACTIONS": "Actions",
