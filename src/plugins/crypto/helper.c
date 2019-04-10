@@ -10,6 +10,7 @@
 #include "helper.h"
 #include "crypto.h"
 #include "gpg.h"
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinvoke.h>
 #include <stdlib.h>
@@ -292,10 +293,9 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	// append root (crypto/key) as gpg recipient
 	if (root && strlen (keyString (root)) > 0)
 	{
-		argv[i] = "-r";
+		argv[i++] = "-r";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i + 1] = (char *) keyString (root);
-		i = i + 2;
+		argv[i++] = (char *) keyString (root);
 	}
 
 	// append keys beneath root (crypto/key/#_) as gpg recipients
@@ -305,25 +305,42 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 		const char * kStringVal = keyString (k);
 		if (keyIsBelow (k, root) && strlen (kStringVal) > 0)
 		{
-			argv[i] = "-r";
+			argv[i++] = "-r";
 			// NOTE argv[] values will not be modified, so const can be discarded safely
-			argv[i + 1] = (char *) kStringVal;
-			i = i + 2;
+			argv[i++] = (char *) kStringVal;
 		}
 	}
 
 	// append option for unit tests
 	if (testMode)
 	{
-		argv[argc - 5] = "--trust-model";
-		argv[argc - 4] = "always";
+		argv[i++] = "--trust-model";
+		argv[i++] = "always";
 	}
 
-	argv[argc - 3] = "--batch";
-	argv[argc - 2] = "-e";
+	argv[i++] = "--batch";
+	argv[i++] = "-e";
+	argv[i++] = NULL;
+
+	ELEKTRA_ASSERT (i == argc, "invalid number of arguments generated in method gpgEncryptMasterPassword()");
 
 	// call gpg
-	return ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, argc);
+	int gpgResult = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, argc);
+	if (gpgResult != 1) // no success
+	{
+		return gpgResult; // error set by ELEKTRA_PLUGIN_FUNCTION (gpgCall)
+	}
+
+	// encode result as Base64 string
+	char * base64Encoded = NULL;
+	int base64Result = ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, keyValue (msgKey), keyGetValueSize (msgKey), &base64Encoded);
+	if (base64Encoded)
+	{
+		keySetString (msgKey, base64Encoded);
+		elektraFree (base64Encoded);
+	}
+
+	return base64Result;
 }
 
 /**
@@ -338,6 +355,18 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
  */
 int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
 {
+	kdb_octet_t * binaryData = NULL;
+	size_t binaryDataLength;
+
+	// decode the master password string
+	ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (msgKey), &binaryData, &binaryDataLength);
+	if (binaryData)
+	{
+		keySetBinary (msgKey, binaryData, binaryDataLength);
+		elektraFree (binaryData);
+	}
+
+	// password decryption
 	if (inTestMode (conf))
 	{
 		char * argv[] = { "", "--batch", "--trust-model", "always", "-d", NULL };
