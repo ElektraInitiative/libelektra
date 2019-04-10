@@ -99,6 +99,7 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	       elektra.h
 	       kdbendian.h
+	       kdbmacros.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 add_custom_target (elektra_config_headers
