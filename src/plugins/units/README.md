@@ -2,11 +2,11 @@
 - infos/author = Josef Wechselauer <e1326671@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = check, transformation
+- infos/provides = check/transformation
 - infos/recommends =
 - infos/placements = presetstorage 
 - infos/status = unfinished
-- infos/metadata =
+- infos/metadata = check/units
 - infos/description = validates and transforms values entered as units
 
 ## Introduction
@@ -21,7 +21,36 @@ This plugin is written in C.
 
 ## Dependencies
 
+None.
+
 ## Examples
+
+```sh
+sudo kdb mount /tests/units.ini /tests/units ini units
+#> Mount a config file with the units plugin
+
+sudo kdb setmeta /tests/units check/units any
+#> Check the /tests/units key for validity
+
+kdb set /tests/units "1m"
+#> Suceeds, since the value is a valid decimal with SI-unit representation.
+
+kdb set /tests/units "35453.327468 µH"
+#> Suceeds, since the value is a valid decimal with SI-unit representation.
+
+kdb set /tests/units "32"
+#> Throws an error: value of key is not a representation for a value with a SI-unit
+
+kdb set /tests/units "12 n"
+#> Throws an error: value of key is not a representation for a value with a SI-unit
+#> This could be changed in a further step (see issue #1398) to be valid, as for example the user wants to enter 1k to represent 1000 without an SI-Unit. 
+#> For now, this is ignored as the entered units should be checked for correctness
+
+kdb set /tests/units 432 km
+#> Throws an error: quotes are expected.
+```
+
 
 ## Limitations
 
+None.
