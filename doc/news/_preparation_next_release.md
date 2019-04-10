@@ -223,6 +223,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
   `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
 
+### units
+
+- The [units](https://www.libelektra.org/plugins/units) plugin provides the capability to enter values with additional SI units. The unit will be checked if it as a valid SI base-unit,  additional SI prefixes will be validated and the value re-calculated to it's base-unit in respect to the prefix.  _(Josef Wechselauer)_
+- Work in Progress _(Josef Wechselauer)_
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
