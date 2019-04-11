@@ -155,8 +155,8 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed file lock with message: %s",
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
+					    "assuming conflict because of failed file lock with message: %s", strerror (errno));
 		}
 		return -1;
 	}
@@ -188,7 +188,8 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNU
 
 	if (ret == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "fcntl SETLK unlocking failed with message: %s", strerror (errno));
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "fcntl SETLK unlocking failed with message: %s",
+				      strerror (errno));
 	}
 
 	return ret;
@@ -217,8 +218,8 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed mutex lock with message: %s",
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
+					    "assuming conflict because of failed mutex lock with message: %s", strerror (errno));
 		}
 		return -1;
 	}
@@ -476,8 +477,8 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 		}
 		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d",
-					    mutexError);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, errorKey,
+					    "Could not initialize recursive mutex: pthread_mutex_init returned %d", mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
@@ -720,8 +721,8 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not create configuration file \"%s\" because %s", pk->filename,
-				    strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not create configuration file \"%s\" because %s",
+				    pk->filename, strerror (errno));
 		return -1;
 	}
 	return 0;
@@ -1007,8 +1008,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	int fd = open (pk->tempfile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not open file again for changing metadata of file \"%s\", because %s",
-				    pk->tempfile, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey,
+				    "Could not open file again for changing metadata of file \"%s\", because %s", pk->tempfile,
+				    strerror (errno));
 		ret = -1;
 	}
 
@@ -1060,8 +1062,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		// change mode to what it was before
 		if (fchmod (fd, pk->filemode) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
-					      pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
+					      "Could not fchmod temporary file \"%s\" from %o to %o, because %s", pk->tempfile, buf.st_mode,
+					      pk->filemode, strerror (errno));
 		}
 	}
 

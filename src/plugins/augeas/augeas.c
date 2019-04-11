@@ -30,7 +30,8 @@
 
 #define ELEKTRA_SET_ERRNO_ERROR(id, parentKey) ELEKTRA_SET_GENERAL_ERROR (id, parentKey, strerror (errno))
 
-#define ELEKTRA_SET_AUGEAS_ERROR(handle, parrentKey) ELEKTRA_SET_GENERAL_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, getAugeasError (augeasHandle))
+#define ELEKTRA_SET_AUGEAS_ERROR(handle, parrentKey)                                                                                       \
+	ELEKTRA_SET_GENERAL_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, getAugeasError (augeasHandle))
 
 struct KeyConversion
 {
@@ -444,7 +445,8 @@ int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 
 		if (ret >= 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey, "Unable to allocate memory for a detailed augeas error message");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey,
+					   "Unable to allocate memory for a detailed augeas error message");
 			return -1;
 		}
 

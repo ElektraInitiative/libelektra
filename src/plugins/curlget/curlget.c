@@ -817,8 +817,8 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					if (res != CURLE_OK)
 					{
 
-						ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "curl upload (HTTP POST) failed: %s\n",
-								    curl_easy_strerror (res));
+						ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey,
+								    "curl upload (HTTP POST) failed: %s\n", curl_easy_strerror (res));
 						retval = -1;
 					}
 					curl_formfree (formpost);

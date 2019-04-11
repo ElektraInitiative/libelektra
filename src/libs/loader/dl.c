@@ -135,7 +135,8 @@ int elektraModulesClose (KeySet * modules, Key * errorKey)
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, errorKey, "Could not close a module, dlclose failed: %s", dlerror ());
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, errorKey, "Could not close a module, dlclose failed: %s",
+					      dlerror ());
 
 			ksAppendKey (newModules, cur);
 		}

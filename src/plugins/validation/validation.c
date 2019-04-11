@@ -145,7 +145,8 @@ static int validateKey (Key * key, Key * parentKey)
 		const Key * msg = keyGetMeta (key, "check/validation/message");
 		if (msg)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Key value failed to validate: %s", keyString (msg));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Key value failed to validate: %s",
+					    keyString (msg));
 			regfree (&regex);
 			if (freeString) elektraFree (regexString);
 			return 0;

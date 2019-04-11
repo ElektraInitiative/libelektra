@@ -36,8 +36,8 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 	const char * pluginName = keyString (pluginNameKey);
 	if (elektraStrCmp (pluginName, "(null)") == 0 || keyIsBinary (pluginNameKey))
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, errorKey, "Plugin configuration parameter plugin has an invalid value: %s",
-				      pluginName);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, errorKey,
+				      "Plugin configuration parameter plugin has an invalid value: %s", pluginName);
 		return 0;
 	}
 	else if (elektraStrCmp (pluginName, "process") == 0)

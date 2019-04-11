@@ -48,7 +48,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	struct stat sb;
 	if (stat (fileName, &sb) == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to stat file %s, aborting. Reason: %s", fileName, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to stat file %s, aborting. Reason: %s", fileName,
+				    strerror (errno));
 		return -1;
 	}
 
@@ -62,7 +63,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (!buffer)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize, fileName);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize,
+				    fileName);
 		return -1;
 	}
 
@@ -87,8 +89,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (bytesRead < fileSize)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName, bytesRead,
-				    fileSize);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName,
+				    bytesRead, fileSize);
 		elektraFree (buffer);
 		fclose (fp);
 		return -1;

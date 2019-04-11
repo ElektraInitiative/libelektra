@@ -247,7 +247,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			le_ret = validateLineEnding (line, &(checkConf->validLE), 0);
 			if (le_ret)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "invalid lineending at position %zd", bytesRead + le_ret);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "invalid lineending at position %zd",
+						    bytesRead + le_ret);
 				retVal = -1;
 				break;
 			}
@@ -257,7 +258,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			null_ret = checkNull (line, bytesRead);
 			if (null_ret)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "found null-byte at position %zd", bytesRead + null_ret);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "found null-byte at position %zd",
+						    bytesRead + null_ret);
 				retVal = -1;
 				break;
 			}
@@ -267,7 +269,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			iconv_ret = validateEncoding (line, conv, bytesRead);
 			if (iconv_ret)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "invalid encoding at position %zd", bytesRead + iconv_ret);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "invalid encoding at position %zd",
+						    bytesRead + iconv_ret);
 				retVal = -1;
 				break;
 			}

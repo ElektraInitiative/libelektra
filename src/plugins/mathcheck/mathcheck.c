@@ -369,7 +369,8 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SYNTACTIC, parentKey, "Not a valid Polish prefix notation syntax: %s\n", prefixString);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SYNTACTIC, parentKey, "Not a valid Polish prefix notation syntax: %s\n",
+				    prefixString);
 	}
 	elektraFree (stack);
 	return result;
@@ -406,7 +407,8 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (fabs (elektraEFtoF (keyString (cur)) - result.value) < EPSILON)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s == %s but requirement was !=", val1, val2);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s == %s but requirement was !=", val1,
+						    val2);
 				return -1;
 			}
 		}

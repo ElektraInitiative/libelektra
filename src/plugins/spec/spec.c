@@ -408,8 +408,9 @@ static int handleSubCountConflict (Key * parentKey, Key * key, Key * specKey, Ke
 		ret = -1;
 		break;
 	case WARNING:
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey, "%s has an invalid number of subkeys: %s. Expected: %s\n",
-				      keyName (key), keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey,
+				      "%s has an invalid number of subkeys: %s. Expected: %s\n", keyName (key), keyString (conflictMeta),
+				      keyString (keyGetMeta (specKey, "required")));
 		break;
 	case INFO:
 	{
@@ -475,8 +476,9 @@ static int handleOutOfRangeConflict (Key * parentKey, Key * key, Key * specKey, 
 		ret = -1;
 		break;
 	case WARNING:
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey, "%s has invalid number of members: %s. Expected: %s\n",
-				      keyName (key), keyString (conflictMeta), keyString (keyGetMeta (specKey, "array")));
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey,
+				      "%s has invalid number of members: %s. Expected: %s\n", keyName (key), keyString (conflictMeta),
+				      keyString (keyGetMeta (specKey, "array")));
 		break;
 	case INFO:
 	{
@@ -503,11 +505,13 @@ static int handleMissingConflict (Key * parentKey, Key * key, Key * conflictMeta
 	switch (onConflict)
 	{
 	case ERROR:
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s has missing subkeys: %s\n", keyName (key), problemKeys);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s has missing subkeys: %s\n", keyName (key),
+				    problemKeys);
 		ret = -1;
 		break;
 	case WARNING:
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey, "%s has missing subkeys: %s\n", keyName (key), problemKeys);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey, "%s has missing subkeys: %s\n", keyName (key),
+				      problemKeys);
 		break;
 	case INFO:
 	{

@@ -363,7 +363,8 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 
 	if (app[0] != '/')
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "The value of the app config key ('%s') is not an absolute path.", app);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "The value of the app config key ('%s') is not an absolute path.",
+				    app);
 		return false;
 	}
 

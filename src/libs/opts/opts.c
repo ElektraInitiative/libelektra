@@ -1122,7 +1122,8 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 
 		if (optSpec == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Unknown short option: -%c", keyBaseName (shortOpt)[0]);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Unknown short option: -%c",
+					    keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
 			keyDel (optSpec);
 			return false;
@@ -1157,8 +1158,8 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 			{
 				if (i >= argc - 1)
 				{
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Missing argument for short option: -%c",
-							    keyBaseName (shortOpt)[0]);
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
+							    "Missing argument for short option: -%c", keyBaseName (shortOpt)[0]);
 					keyDel (shortOpt);
 					keyDel (option);
 					return false;
@@ -1235,7 +1236,8 @@ bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const ch
 	}
 	else if (!repeated)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "This option cannot be repeated: --%s", keyBaseName (longOpt));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "This option cannot be repeated: --%s",
+				    keyBaseName (longOpt));
 		keyDel (longOpt);
 		keyDel (optSpec);
 		return false;

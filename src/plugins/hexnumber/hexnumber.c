@@ -138,7 +138,8 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	if (errno == ERANGE && value == ULLONG_MAX)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Decimal number %s out of range 0 to %llu", decValue, ULLONG_MAX);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Decimal number %s out of range 0 to %llu", decValue,
+				    ULLONG_MAX);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if ((errno != 0 && value == 0) || endPtr == decValue)

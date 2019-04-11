@@ -102,8 +102,8 @@ static int validateKey (Key * key, Key * parentKey)
 
 	if (!rc)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Validation of key %s with value %s failed.", keyName (key),
-				    keyString (key));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Validation of key %s with value %s failed.",
+				    keyName (key), keyString (key));
 	}
 	else if (rc == -1)
 	{

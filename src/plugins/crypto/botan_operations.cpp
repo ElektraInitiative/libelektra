@@ -89,7 +89,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create a cryptographic key for encryption because: %s", e.what ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create a cryptographic key for encryption because: %s",
+				    e.what ());
 		return -1;
 	}
 }

@@ -226,7 +226,8 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		// gpg call returned success, overwrite the original file with the gpg payload data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Renaming file %s to %s failed.", tmpFile,
+					    keyString (parentKey));
 			result = -1;
 		}
 	}
@@ -489,7 +490,8 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 		}
 		if (close (tmpFileFd))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s", strerror (errno));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s",
+					      strerror (errno));
 		}
 		elektraFree (tmpFile);
 	}
@@ -531,7 +533,8 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED
 	{
 		if (s->tmpFileFd > 0 && close (s->tmpFileFd))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s", strerror (errno));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s",
+					      strerror (errno));
 		}
 		if (s->tmpFilePath)
 		{
@@ -593,7 +596,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 			shredTemporaryFile (s->tmpFileFd, parentKey);
 			if (close (s->tmpFileFd))
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s", strerror (errno));
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s",
+						      strerror (errno));
 			}
 			s->tmpFileFd = -1;
 			if (unlink (s->tmpFilePath))
@@ -632,15 +636,18 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not open config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not open config file %s because %s", configFile,
+				    strerror (errno));
 		return -1;
 	}
 	if (fsync (fd) == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not fsync config file %s because %s", configFile,
+				    strerror (errno));
 		if (close (fd))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s", strerror (errno));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to close a file descriptor: %s",
+					      strerror (errno));
 		}
 		return -1;
 	}

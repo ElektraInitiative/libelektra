@@ -747,7 +747,8 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	outFile = fopen (keyString (parentKey), "w+");
 	if (!outFile)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Failed to check out file %s to %s\n", data->file, keyString (parentKey));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Failed to check out file %s to %s\n", data->file,
+				    keyString (parentKey));
 		git_object_free (blob);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
@@ -878,7 +879,8 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			char * newObj = hasNewObjectCommit (data, blob);
 			if (newObj)
 			{
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "The repository has been updated and is ahead of you");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey,
+						   "The repository has been updated and is ahead of you");
 				elektraFree (newObj);
 				git_object_free (blob);
 				git_repository_free (repo);

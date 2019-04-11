@@ -43,8 +43,8 @@ std::string elektraRegexstorePos (std::string const & str, int offset, std::stri
 	int pos = index - '0';
 	if (pos < 0 || pos > 9)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey, "Regex Group %d for %s not between 0 and 9 read from %s", pos,
-				      text.c_str (), &index);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey,
+				      "Regex Group %d for %s not between 0 and 9 read from %s", pos, text.c_str (), &index);
 		return std::string ("");
 	}
 	if (offsets[pos].rm_so == -1)
@@ -70,8 +70,8 @@ Key * elektraRegexstoreProcess (Key * configKey, int * offset, std::string const
 	if (configString.length () < 3 && configString[0] != '#' && (configString[1] < '0' || configString[1] > '9') &&
 	    configString[2] != ' ')
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey, "String %s of %s did not start with #<number><space>",
-				      configString.c_str (), keyName (configKey));
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey,
+				      "String %s of %s did not start with #<number><space>", configString.c_str (), keyName (configKey));
 		return nullptr;
 	}
 

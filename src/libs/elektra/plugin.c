@@ -57,7 +57,8 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 
 	if (fullname[0] != '#')
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Names of Plugins must start with a #. Pluginname: %s", fullname);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Names of Plugins must start with a #. Pluginname: %s",
+				      fullname);
 		return -1;
 	}
 	if (fullname[1] < '0' || fullname[1] > '9')
@@ -69,8 +70,8 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 	*pluginNumber = fullname[1] - '0';
 	if (*pluginNumber > NR_OF_PLUGINS)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Tried to set more plugins than defined in NR_OF_PLUGINS Pluginname: %s",
-				      fullname);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey,
+				      "Tried to set more plugins than defined in NR_OF_PLUGINS Pluginname: %s", fullname);
 		return -1;
 	}
 
@@ -188,8 +189,8 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				plugins[pluginNumber] = elektraPluginOpen (pluginName, modules, pluginConfig, errorKey);
 				if (!plugins[pluginNumber])
 				{
-					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Could not load plugin %s in process plugin",
-							      pluginName);
+					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey,
+							      "Could not load plugin %s in process plugin", pluginName);
 					/* Loading plugin did not work */
 					elektraFree (pluginName);
 					elektraFree (referenceName);
@@ -228,7 +229,8 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Unknown additional entries in plugin: %s", keyString (cur));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Unknown additional entries in plugin: %s",
+					      keyString (cur));
 		}
 	}
 
@@ -254,7 +256,8 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 
 	if (!name || name[0] == '\0')
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "Not a valid name supplied for a plugin: name is null or empty");
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
+				     "Not a valid name supplied for a plugin: name is null or empty");
 		goto err_clup;
 	}
 
@@ -269,7 +272,8 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 
 	if (*n == '\0')
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "Not a valid name supplied for a plugin: name contained slashes only");
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
+				     "Not a valid name supplied for a plugin: name contained slashes only");
 		goto err_clup;
 	}
 
@@ -283,7 +287,8 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	handle = pluginFactory ();
 	if (handle == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Could not call function exported by ELEKTRA_PLUGIN_EXPORT: %s", name);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey,
+				      "Could not call function exported by ELEKTRA_PLUGIN_EXPORT: %s", name);
 		goto err_clup;
 	}
 

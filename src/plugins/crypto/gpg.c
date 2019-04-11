@@ -256,7 +256,8 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 	}
 
 	// no GPG for us :-(
-	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "no gpg binary found. Please make sure GnuPG is installed and executable.");
+	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey,
+			   "no gpg binary found. Please make sure GnuPG is installed and executable.");
 	return -1;
 }
 

@@ -63,8 +63,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	{
 		if (portNumber < 0 || portNumber > 65535)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Port %ld on key %s was not within 0 - 65535", portNumber,
-					    keyName (toCheck));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Port %ld on key %s was not within 0 - 65535",
+					    portNumber, keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = htons (portNumber);
@@ -75,8 +75,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		service = getservbyname (keyString (toCheck), NULL); // NULL means we accept both tcp and udp
 		if (service == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
-					    keyName (toCheck));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Could not find service with name %s on key %s",
+					    keyString (toCheck), keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = service->s_port;
@@ -106,8 +106,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "There was an error trying to connect to host %s: %s", hostname,
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "There was an error trying to connect to host %s: %s",
+					    hostname, strerror (errno));
 			return -1;
 		}
 		// TODO: Maybe consider errno == TRY_AGAIN separately and try to reconnect
@@ -124,8 +124,9 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		close (sockfd);
 		if (errno == EADDRINUSE)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Port %s is already in use which was specified on key %s",
-					    keyString (toCheck), keyName (toCheck));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
+					    "Port %s is already in use which was specified on key %s", keyString (toCheck),
+					    keyName (toCheck));
 		}
 		else
 		{

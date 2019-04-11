@@ -94,8 +94,8 @@ bool elektraTypeCheckType (const Key * key)
 
 static void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
 {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "The type '%s' failed to match for '%s' with string: %s", getTypeName (key),
-			    keyName (key), keyString (key));
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "The type '%s' failed to match for '%s' with string: %s",
+			    getTypeName (key), keyName (key), keyString (key));
 }
 
 bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
@@ -115,8 +115,9 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 
 	if (type->normalize != NULL && !type->normalize (handle, key))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "The value '%s' of key %s could not be normalized (type is '%s')",
-				    keyString (key), keyName (key), typeName);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
+				    "The value '%s' of key %s could not be normalized (type is '%s')", keyString (key), keyName (key),
+				    typeName);
 		return false;
 	}
 
@@ -253,7 +254,8 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 	data->booleanRestore = readBooleanRestore (conf);
 	if (data->booleanRestore < -1 || data->booleanRestore >= data->booleanCount)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "The value of the config key /boolean/restoreas was invalid!");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
+				   "The value of the config key /boolean/restoreas was invalid!");
 		elektraFree (data);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -300,7 +302,8 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		const Type * type = findType (typeName);
 		if (type == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Unknown type '%s' for key '%s'", typeName, keyName (cur));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Unknown type '%s' for key '%s'", typeName,
+					    keyName (cur));
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -359,7 +362,8 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		const Type * type = findType (typeName);
 		if (type == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Unknown type '%s' for key '%s'", typeName, keyName (cur));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Unknown type '%s' for key '%s'", typeName,
+					    keyName (cur));
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
