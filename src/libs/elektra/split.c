@@ -897,6 +897,14 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		keyDel (key);
 
 		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "splitParentValue");
+		keySetString (key, keyString (split->parents[i]));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "specsize");
 		keySetBinary (key, &(split->handles[i]->specsize), sizeof (ssize_t));
 		ksAppendKey (global, key);
@@ -979,6 +987,13 @@ int splitCacheCheckState (Split * split, KeySet * global)
 		keyAddBaseName (key, "splitParentName");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && elektraStrCmp (keyString (found), keyName (split->parents[i])) == 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "splitParentValue");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && elektraStrCmp (keyString (found), keyString (split->parents[i])) == 0))
 		{
 			goto error;
 		}
@@ -1073,6 +1088,13 @@ int splitCacheLoadState (Split * split, KeySet * global)
 		keyAddBaseName (key, "splitParentName");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && elektraStrCmp (keyString (found), keyName (split->parents[i])) == 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "splitParentValue");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && elektraStrCmp (keyString (found), keyString (split->parents[i])) == 0))
 		{
 			goto error;
 		}

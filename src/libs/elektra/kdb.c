@@ -770,8 +770,7 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
-static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED,
-			      Key * cacheParent)
+static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED, Key * cacheParent)
 {
 	// prune old cache info
 	elektraCacheCutMeta (handle);
@@ -790,20 +789,21 @@ static void elektraCacheLoad (KDB * handle, Split * split, KeySet * cache, Key *
 		elektraCacheCutMeta (handle);
 		return;
 	}
-	if (splitCacheCheckState (split, handle->global) == -1)
-	{
-		ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-		elektraCacheCutMeta (handle);
-		return;
-	}
 }
 
 static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * parentKey,
 				  Key * initialParent)
 {
-	ELEKTRA_LOG_DEBUG ("CACHE HIT");
 	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
 
+	if (splitCacheCheckState (split, handle->global) == -1)
+	{
+		ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL, or file mismatch");
+		elektraCacheCutMeta (handle);
+		return -1;
+	}
+
+	ELEKTRA_LOG_DEBUG ("CACHE HIT");
 	if (splitCacheLoadState (split, handle->global) != 0) return -1;
 
 	keySetName (parentKey, keyName (initialParent));
@@ -972,7 +972,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
-		elektraCacheLoad (handle, split, cache, parentKey, initialParent, cacheParent);
+		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent);
 	}
 
 	// Check if a update is needed at all
@@ -981,7 +981,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	case -2: // We have a cache hit
 		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent) != 0)
 		{
-			goto error;
+			goto cachemiss;
 		}
 
 		splitUpdateFileName (split, handle, parentKey);
@@ -1017,6 +1017,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		// otherwise fall trough
 	}
 
+cachemiss:
 	ksDel (cache);
 	cache = 0;
 
