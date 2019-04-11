@@ -96,13 +96,21 @@ Key createLeafKey (YAML::Node const & node, string const & name)
 	Key key{ name, KEY_BINARY, KEY_END };
 	if (!node.IsNull ())
 	{
-		try
+		auto value = node.as<string> ();
+		if (value == "true" || value == "false")
 		{
-			key.set<bool> (node.as<bool> ());
+			try
+			{
+				key.set<bool> (node.as<bool> ());
+			}
+			catch (YAML::BadConversion const &)
+			{
+				key.set<string> (value); // Save value as string, if `node` is a quoted scalar
+			}
 		}
-		catch (YAML::BadConversion const &)
+		else
 		{
-			key.setString (node.as<string> ());
+			key.set<string> (value);
 		}
 	}
 	if (node.Tag () == "tag:yaml.org,2002:binary")

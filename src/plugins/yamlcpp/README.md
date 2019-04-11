@@ -71,7 +71,7 @@ sudo kdb umount /tests/yamlcpp
 
 ## Arrays
 
-YAML CPP provides basic support for Elektra’s array data type.
+YAML CPP provides support for Elektra’s array data type.
 
 ```sh
 # Mount yamlcpp plugin to `user/tests/yamlcpp`
@@ -130,6 +130,8 @@ kdb rm -r user/tests/yamlcpp
 sudo kdb umount user/tests/yamlcpp
 ```
 
+### Nested Arrays
+
 The plugin also supports nested arrays.
 
 ```sh
@@ -178,6 +180,34 @@ kdb file user/tests/yamlcpp | xargs cat
 #> array:
 #>   - scalar
 #>   - 🔑: 🙈
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
+```
+
+### Sparse Arrays
+
+Since Elektra allows [“holes”](../../../doc/decisions/holes.md) in a key set, YAML CPP has to support small key sets that describe relatively complex data.
+
+```sh
+# Mount yamlcpp plugin
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
+
+kdb set user/tests/yamlcpp/#0/map/#1/#0 value
+kdb file user/tests/yamlcpp | xargs cat
+#> - map:
+#>     - ~
+#>     -
+#>       - value
+
+# The plugin adds the missing array parents to the key set
+kdb ls user/tests/yamlcpp
+#> user/tests/yamlcpp
+#> user/tests/yamlcpp/#0/map
+#> user/tests/yamlcpp/#0/map/#0
+#> user/tests/yamlcpp/#0/map/#1
+#> user/tests/yamlcpp/#0/map/#1/#0
 
 # Undo modifications to the key database
 kdb rm -r user/tests/yamlcpp
