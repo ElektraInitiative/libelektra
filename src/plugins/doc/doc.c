@@ -127,7 +127,8 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 		Key * read = keyNew (keyName (parentKey), KEY_END);
 		if (keyAddName (read, key) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey, "Key name %s is not valid, discarding key", key);
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey, "Key name %s is not valid, discarding key",
+					      key);
 			keyDel (read);
 			continue;
 		}

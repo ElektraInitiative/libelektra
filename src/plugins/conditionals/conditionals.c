@@ -750,7 +750,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			ret = parseCondition (key, thenexpr, suffixList, ks, parentKey);
 			if (ret == FALSE)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Validation of Key %s: %s failed. (%s failed)",
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
+						    "Validation of Key %s: %s failed. (%s failed)",
 						    keyName (key) + strlen (keyName (parentKey)) + 1, conditionString, thenexpr);
 			}
 			else if (ret == ERROR)

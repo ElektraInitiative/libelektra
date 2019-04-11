@@ -411,7 +411,8 @@ static int validateKey (Key * key, Key * parentKey)
 		rc = formatStringValidation (date, formatString);
 		if (rc == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s doesn't match format string %s", date, formatString);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s doesn't match format string %s", date,
+					    formatString);
 			rc = 0;
 		}
 	}
@@ -421,8 +422,8 @@ static int validateKey (Key * key, Key * parentKey)
 		if (rc == -1)
 		{
 			if (formatString)
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s doesn't match iso specification %s", date,
-						    formatString);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s doesn't match iso specification %s",
+						    date, formatString);
 			else
 				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s is not a valid ISO8601 date", date);
 			rc = 0;
@@ -447,7 +448,8 @@ static int validateKey (Key * key, Key * parentKey)
 		rc = rfc822StringValidation (date);
 		if (rc == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s doesn't match format string %s", date, formatString);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s doesn't match format string %s", date,
+					    formatString);
 			rc = 0;
 		}
 	}

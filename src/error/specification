@@ -1,16 +1,10 @@
-number:0
+number:00000
 description:A test for an exception specification
 :new lines to the same entry can be started with a colon
-:the number is sequential and has no special meaning
+:the code is similar to SQLSTATES and corresponds
+:to a specific category
 :
 :there are no comments possible in this file
-ingroup:test
-:a unique identifier for a doxygen module
-module:test
-:the libloader's or plugin's module name
-class:Ok
-:a class name which can be used by bindings
-:they might add Pre- or Postfixes though
 ignore:true
 :a generator should always ignore this first entry
 :or others which have ignore:true.

@@ -153,7 +153,8 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to receive the GPG key because: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to receive the GPG key because: %s",
+					    gpgme_strerror (err));
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}
@@ -349,7 +350,8 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Failed to create the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Failed to create the gpgme context because: %s",
+				    gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -600,7 +602,8 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Failed to create the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Failed to create the gpgme context because: %s",
+				    gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 

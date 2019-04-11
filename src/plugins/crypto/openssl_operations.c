@@ -60,7 +60,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "failed to generate random salt with error code %lu", ERR_get_error ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "failed to generate random salt with error code %lu",
+				    ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -239,7 +240,8 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 
 	if (ERR_peek_error ())
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create handle! libcrypto error code was: %lu",
+				    ERR_get_error ());
 		elektraFree (*handle);
 		*handle = NULL;
 		pthread_mutex_unlock (&mutex_ssl);

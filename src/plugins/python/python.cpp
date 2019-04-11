@@ -211,7 +211,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 				return ELEKTRA_PLUGIN_STATUS_SUCCESS; // by convention: success if /module exists
 			}
 
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "No python script set, please pass a filename via /script");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey,
+					   "No python script set, please pass a filename via /script");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -264,8 +265,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		const char * mname = keyString (ksLookupByName (elektraPluginGetConfig (handle), "/python/path", 0));
 		if (!Python_AppendToSysPath (mname))
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to extend sys.path with user-defined /python/path \"%s\"",
-					    mname);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey,
+					    "Unable to extend sys.path with user-defined /python/path \"%s\"", mname);
 			goto error;
 		}
 
@@ -281,8 +282,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		/* extend sys path for standard plugins */
 		if (!Python_AppendToSysPath (ELEKTRA_PYTHON_PLUGIN_FOLDER))
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to extend sys.path with built-in plugin path \"%s\"",
-					    ELEKTRA_PYTHON_PLUGIN_FOLDER);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey,
+					    "Unable to extend sys.path with built-in plugin path \"%s\"", ELEKTRA_PYTHON_PLUGIN_FOLDER);
 			goto error;
 		}
 
@@ -291,7 +292,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		const char * dname = dirname (tmpScript);
 		if (!Python_AppendToSysPath (dname))
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to extend sys.path with script dirname \"%s\"", dname);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to extend sys.path with script dirname \"%s\"",
+					    dname);
 			elektraFree (tmpScript);
 			goto error;
 		}
@@ -306,7 +308,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		PyObject * pModule = PyImport_ImportModule (bname);
 		if (pModule == nullptr)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to import python script \"%s\"", keyString (data->script));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to import python script \"%s\"",
+					    keyString (data->script));
 			elektraFree (tmpScript);
 			goto error_print;
 		}

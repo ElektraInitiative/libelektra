@@ -10,10 +10,10 @@
 #include "elektra/conversion.h"
 #include "elektra/errorsprivate.h"
 #include "elektra/types.h"
+#include "kdberrors.h"
 #include "kdbhelper.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"
-#include "kdberrors.h"
 #include <stdlib.h>
 
 #ifdef __cplusplus

@@ -211,8 +211,8 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (canAccess != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "User %s does not have required permission (%s) on %s", name,
-				    modes, validPath);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "User %s does not have required permission (%s) on %s",
+				    name, modes, validPath);
 		return -1;
 	}
 
@@ -312,8 +312,8 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 	int result = access (validPath, modeMask);
 	if (result != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "User %s does not have required permission (%s) on %s", p->pw_name,
-				    modes, validPath);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "User %s does not have required permission (%s) on %s",
+				    p->pw_name, modes, validPath);
 		return -1;
 	}
 	return 1;

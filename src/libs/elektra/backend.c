@@ -202,7 +202,8 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 							   errorKey) == -1)
 				{
 					if (!failure)
-						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "elektraProcessPlugins for error failed");
+						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
+								     "elektraProcessPlugins for error failed");
 					failure = 1;
 				}
 			}
@@ -212,7 +213,8 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 							   errorKey) == -1)
 				{
 					if (!failure)
-						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "elektraProcessPlugins for get failed");
+						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
+								     "elektraProcessPlugins for get failed");
 					failure = 1;
 				}
 			}
@@ -227,7 +229,8 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 							   errorKey) == -1)
 				{
 					if (!failure)
-						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "elektraProcessPlugins for set failed");
+						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
+								     "elektraProcessPlugins for set failed");
 					failure = 1;
 				}
 			}

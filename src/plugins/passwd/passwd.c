@@ -308,8 +308,9 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name,
-					    pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir, pwd->pw_shell);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n",
+					    pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir,
+					    pwd->pw_shell);
 		}
 		else
 		{

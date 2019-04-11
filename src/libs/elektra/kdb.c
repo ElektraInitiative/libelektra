@@ -935,7 +935,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		clearError (parentKey);
 		keyDel (oldError);
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "metakey with name \"%s\" passed to kdbGet",
+				    keyName (parentKey));
 		return -1;
 	}
 
@@ -1075,7 +1076,8 @@ cachemiss:
 
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, parentKey, "Wrong keys in postprocessing: %s",
+					      keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 		ksClear (ks);
@@ -1110,7 +1112,8 @@ cachemiss:
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, parentKey, "Wrong keys in postprocessing: %s",
+					      keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 
@@ -1302,7 +1305,8 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 
 			if (ret == -1)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey, "Error during commit. This means backend is broken: %s",
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
+						      "Error during commit. This means backend is broken: %s",
 						      keyName (backend->mountpoint));
 			}
 		}
@@ -1334,7 +1338,8 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 
 			if (ret == -1)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey, "Error during rollback. This means backend is broken: %s",
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
+						      "Error during rollback. This means backend is broken: %s",
 						      keyName (backend->mountpoint));
 			}
 		}
@@ -1426,7 +1431,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_META)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "metakey with name \"%s\" passed to kdbSet",
+				    keyName (parentKey));
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
 		return -1;
@@ -1573,8 +1579,8 @@ error:
 		Key * found = ksLookup (ks, errorKey, 0);
 		if (!found)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey, "Error key %s not found in keyset even though it was found before",
-					      keyName (errorKey));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
+					      "Error key %s not found in keyset even though it was found before", keyName (errorKey));
 		}
 	}
 

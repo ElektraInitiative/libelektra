@@ -144,8 +144,8 @@ static char * elektraResolvePasswd (Key * warningsKey)
 		elektraFree (buf);
 		if (s != 0)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, warningsKey, "Could not retrieve from passwd using getpwuid_r: %s",
-					      strerror (s));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, warningsKey,
+					      "Could not retrieve from passwd using getpwuid_r: %s", strerror (s));
 		}
 		return NULL;
 	}
@@ -301,8 +301,8 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
-				      ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, warningsKey, "user resolver failed at step %zu, the configuration is: %s",
+				      i, ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
@@ -499,8 +499,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, warningsKey, "getcwd failed with errno %d \"%s\", defaulting to /",
-						      errno, strerror (errno));
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, warningsKey,
+						      "getcwd failed with errno %d \"%s\", defaulting to /", errno, strerror (errno));
 				return 0;
 			}
 
@@ -509,8 +509,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, warningsKey, "could not realloc for getcwd size %d, defaulting to /",
-						      size);
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, warningsKey,
+						      "could not realloc for getcwd size %d, defaulting to /", size);
 				return 0;
 			}
 		}

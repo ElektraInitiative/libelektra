@@ -395,7 +395,8 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		{
 			if (!feof (fileHandle))
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Error while reading file: %s", keyString (parentKey));
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Error while reading file: %s",
+						    keyString (parentKey));
 				fclose (fileHandle);
 				yajl_free (hand);
 				return -1;

@@ -148,7 +148,8 @@ int elektraCryptoGcryInit (Key * errorKey)
 	// initialize the rest of the gcrypt library
 	if (!gcry_check_version (GCRYPT_VERSION))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Libgcrypt version check failed, looking for version: %s",
+				    GCRYPT_VERSION);
 		return -1;
 	}
 	gcry_control (GCRYCTL_DISABLE_SECMEM, 0);

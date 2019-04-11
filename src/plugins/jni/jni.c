@@ -64,7 +64,8 @@ static void checkException (Data * data, const char * when, Key * warningKey)
 			which = (*data->env)->GetStringUTFChars (data->env, estr, &iseCopy);
 		}
 
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, warningKey, "During \"%s\", java exception was thrown: %s", when, which);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, warningKey, "During \"%s\", java exception was thrown: %s", when,
+				      which);
 
 		if (iseCopy == JNI_TRUE)
 		{
