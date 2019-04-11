@@ -97,6 +97,16 @@ kdb cp \-r user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/cpk
 kdb cp \-r user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/cpkey
 #>
 
+# To force the copy of keys:
+kdb cp \-rf user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/cpkeyerror
+#>
+
+# Now the key\-values of /cpkeyerror are overwritten:
+kdb export user/tests/cp/examples/kdb\-cp/cpkeyerror mini
+#> =key1
+#> first=key
+#> second=key
+
 # To copy keys below an existing key:
 kdb cp \-r user/tests/cp/examples/kdb\-cp/another user/tests/cp/examples/kdb\-cp/another/key
 #>
