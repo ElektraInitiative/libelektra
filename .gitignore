@@ -69,5 +69,5 @@ nbproject/
 modules.xml
 .idea/misc.xml
 *.ipr
-.idea/vcs.xml
 **/.vscode/*
+c.tmp
