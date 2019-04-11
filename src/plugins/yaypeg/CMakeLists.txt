@@ -36,6 +36,29 @@ if (DEPENDENCY_PHASE)
 	check_dependencies ()
 	if (NOT FOUND_DEPENDENCIES)
 		remove_plugin (yaypeg "${FAILURE_MESSAGE}")
+	else (NOT FOUND_DEPENDENCIES)
+		if (PEGTL_VERSION VERSION_LESS 2.8)
+			set (STORE_CONTENT "apply_store_content::to")
+			set (REMOVE_CONTENT "apply_remove_content::to")
+		else (PEGTL_VERSION VERSION_LESS 2.8)
+			set (STORE_CONTENT "store_content::on")
+			set (REMOVE_CONTENT "remove_content::on")
+		endif (PEGTL_VERSION VERSION_LESS 2.8)
+
+		configure_file (parser.in.hpp parser.hpp @ONLY)
+
+		set (SOURCE_FILES
+		     parser.hpp
+		     state.hpp
+		     state.cpp
+		     listener.hpp
+		     listener.cpp
+		     walk.hpp
+		     walk.cpp
+		     convert.hpp
+		     convert.cpp
+		     yaypeg.hpp
+		     yaypeg.cpp)
 	endif (NOT FOUND_DEPENDENCIES)
 endif (DEPENDENCY_PHASE)
 
@@ -49,13 +72,5 @@ add_plugin (yaypeg
 				  sync
 				  yamlsmith
 	    INCLUDE_SYSTEM_DIRECTORIES ${PEGTL_INCLUDE_DIRS}
-	    SOURCES state.cpp
-		    parser.hpp
-		    listener.hpp
-		    listener.cpp
-		    walk.hpp
-		    walk.cpp
-		    convert.hpp
-		    convert.cpp
-		    yaypeg.hpp
-		    yaypeg.cpp)
+	    INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}
+	    SOURCES ${SOURCE_FILES})

@@ -1200,12 +1200,13 @@ char const * const errors<closing_single_quote>::errorMessage = "Missing closing
  * @brief This selector removes all nodes for grammar rules from the parse tree
  *        except for the ones for the grammar rules specified below.
  */
+// clang-format off
 template <typename Rule>
 using selector = tao::TAO_PEGTL_NAMESPACE::parse_tree::selector<
-	Rule, tao::TAO_PEGTL_NAMESPACE::parse_tree::store_content::on<c_flow_json_node, ns_flow_yaml_node, ns_flow_node, e_node>,
-	tao::TAO_PEGTL_NAMESPACE::parse_tree::remove_content::on<ns_l_block_map_implicit_entry, ns_s_block_map_implicit_key,
-								 c_l_block_map_implicit_value, l_plus_block_sequence, c_l_block_seq_entry>>;
-
+	Rule, tao::TAO_PEGTL_NAMESPACE::parse_tree::@STORE_CONTENT@<c_flow_json_node, ns_flow_yaml_node, ns_flow_node, e_node>,
+	tao::TAO_PEGTL_NAMESPACE::parse_tree::@REMOVE_CONTENT@<ns_l_block_map_implicit_entry, ns_s_block_map_implicit_key,
+								c_l_block_map_implicit_value, l_plus_block_sequence, c_l_block_seq_entry>>;
+// clang-format on
 } // namespace yaypeg
 
 #endif // ELEKTRA_PLUGIN_YAYPEG_GRAMMAR_HPP
