@@ -797,6 +797,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	incOrder (parentKey);
 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
+	keySetMeta (parentKey, "internal/ini/order", 0);
 	return ret; /* success */
 }
 
@@ -1628,6 +1629,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
+	keySetMeta (parentKey, "internal/ini/order", 0);
 
 	if (ret == 0 && rootNeededSync) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
