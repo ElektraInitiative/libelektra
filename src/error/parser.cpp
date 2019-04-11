@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 
 using namespace std;
@@ -25,6 +26,8 @@ parse_t parse (std::string const & file)
 	string line;
 	string lastIdentifier;
 	map<string, string> currentMap;
+	std::regex codeRegex ("^[0-9A-Z]{5,5}$");
+
 
 	while (getline (fin, line))
 	{
@@ -46,10 +49,9 @@ parse_t parse (std::string const & file)
 
 		if (identifier == "number")
 		{
-			int cmpNumber;
-			std::istringstream istr (text);
-			istr >> cmpNumber;
-			// std::cout << cmpNumber << endl;
+			bool isHighlevelFile = (file.find ("highlevel") != string::npos);
+			if (!std::regex_match (text, codeRegex) && !isHighlevelFile)
+				throw parse_error ("Error code does not match regular expression [0-9A-Z]{5,5}", linenr);
 		}
 
 		if (!currentMap[identifier].empty ()) currentMap[identifier] += "\n";
