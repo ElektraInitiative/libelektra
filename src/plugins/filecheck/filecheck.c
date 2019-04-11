@@ -206,7 +206,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	FILE * fp = fopen (filename, "rb");
 	if (fp == NULL)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open file %s", filename);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Couldn't open file %s", filename);
 		return -1;
 	}
 	iconv_t conv = NULL;
@@ -222,7 +222,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 		}
 		if (conv == (iconv_t) (-1))
 		{
-			ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey, "Couldn't initialize iconv with encoding %s\n",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Couldn't initialize iconv with encoding %s\n",
 					    checkConf->encoding);
 			fclose (fp);
 			return -2;
@@ -247,7 +247,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			le_ret = validateLineEnding (line, &(checkConf->validLE), 0);
 			if (le_ret)
 			{
-				ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "invalid lineending at position %zd", bytesRead + le_ret);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "invalid lineending at position %zd", bytesRead + le_ret);
 				retVal = -1;
 				break;
 			}
@@ -257,7 +257,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			null_ret = checkNull (line, bytesRead);
 			if (null_ret)
 			{
-				ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "found null-byte at position %zd", bytesRead + null_ret);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "found null-byte at position %zd", bytesRead + null_ret);
 				retVal = -1;
 				break;
 			}
@@ -267,7 +267,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			iconv_ret = validateEncoding (line, conv, bytesRead);
 			if (iconv_ret)
 			{
-				ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "invalid encoding at position %zd", bytesRead + iconv_ret);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "invalid encoding at position %zd", bytesRead + iconv_ret);
 				retVal = -1;
 				break;
 			}
@@ -277,7 +277,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			bom_ret = checkBom (line);
 			if (bom_ret)
 			{
-				ELEKTRA_SET_ERROR (PARSING_CODE, parentKey, "found BOM");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, "found BOM");
 				retVal = -1;
 				break;
 			}
@@ -288,7 +288,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			unprintable_ret = checkUnprintable (line);
 			if (unprintable_ret)
 			{
-				ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "unprintable character at position %zd",
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "unprintable character at position %zd",
 						    bytesRead + unprintable_ret);
 				retVal = -1;
 				break;

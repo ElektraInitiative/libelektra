@@ -57,19 +57,19 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 
 	if (fullname[0] != '#')
 	{
-		ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Names of Plugins must start with a #. Pluginname: %s", fullname);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Names of Plugins must start with a #. Pluginname: %s", fullname);
 		return -1;
 	}
 	if (fullname[1] < '0' || fullname[1] > '9')
 	{
-		ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey,
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey,
 				      "Names of Plugins must start with the position number as second char. Pluginname: %s", fullname);
 		return -1;
 	}
 	*pluginNumber = fullname[1] - '0';
 	if (*pluginNumber > NR_OF_PLUGINS)
 	{
-		ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Tried to set more plugins than defined in NR_OF_PLUGINS Pluginname: %s",
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Tried to set more plugins than defined in NR_OF_PLUGINS Pluginname: %s",
 				      fullname);
 		return -1;
 	}
@@ -188,7 +188,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				plugins[pluginNumber] = elektraPluginOpen (pluginName, modules, pluginConfig, errorKey);
 				if (!plugins[pluginNumber])
 				{
-					ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Could not load plugin %s in process plugin",
+					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Could not load plugin %s in process plugin",
 							      pluginName);
 					/* Loading plugin did not work */
 					elektraFree (pluginName);
@@ -210,7 +210,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				Key * lookup = ksLookup (referencePlugins, keyNew (referenceName, KEY_END), KDB_O_DEL);
 				if (!lookup)
 				{
-					ELEKTRA_ADD_WARNINGF (LOGICAL_CODE, errorKey, "Could not reference back to plugin %s",
+					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, errorKey, "Could not reference back to plugin %s",
 							      referenceName);
 					/* Getting a reference plugin at a previous stage did not work.
 					Note that this check is necessary, because loading the plugin could
@@ -228,7 +228,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Unknown additional entries in plugin: %s", keyString (cur));
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Unknown additional entries in plugin: %s", keyString (cur));
 		}
 	}
 
@@ -254,7 +254,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 
 	if (!name || name[0] == '\0')
 	{
-		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "Not a valid name supplied for a plugin: name is null or empty");
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "Not a valid name supplied for a plugin: name is null or empty");
 		goto err_clup;
 	}
 
@@ -269,7 +269,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 
 	if (*n == '\0')
 	{
-		ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "Not a valid name supplied for a plugin: name contained slashes only");
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "Not a valid name supplied for a plugin: name contained slashes only");
 		goto err_clup;
 	}
 
@@ -283,7 +283,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	handle = pluginFactory ();
 	if (handle == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, errorKey, "Could not call function exported by ELEKTRA_PLUGIN_EXPORT: %s", name);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Could not call function exported by ELEKTRA_PLUGIN_EXPORT: %s", name);
 		goto err_clup;
 	}
 
@@ -298,7 +298,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
 			ELEKTRA_ADD_WARNINGF (
-				INSTALLATION_CODE, errorKey,
+				ELEKTRA_WARNING_INSTALLATION, errorKey,
 				"Open of plugin returned unsuccessfully: %s. Reason contains plugin, see other warnings for details", name);
 			elektraPluginClose (handle, errorKey);
 			goto err_clup;
@@ -328,7 +328,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 	if (handle->kdbClose)
 	{
 		rc = handle->kdbClose (handle, errorKey);
-		if (rc == -1) ELEKTRA_ADD_WARNING (INSTALLATION_CODE, errorKey, "kdbClose() failed");
+		if (rc == -1) ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "kdbClose() failed");
 	}
 
 	ksDel (handle->config);
@@ -390,13 +390,13 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 
 static int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * error)
 {
-	ELEKTRA_SET_ERRORF (INSTALLATION_CODE, error, "Tried to get a key from a missing backend: %s", keyName (error));
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, error, "Tried to get a key from a missing backend: %s", keyName (error));
 	return -1;
 }
 
 static int elektraMissingSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * error)
 {
-	ELEKTRA_SET_ERRORF (INSTALLATION_CODE, error, "Tried to set a key from a missing backend: %s", keyName (error));
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, error, "Tried to set a key from a missing backend: %s", keyName (error));
 	return -1;
 }
 

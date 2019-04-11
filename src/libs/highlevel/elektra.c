@@ -13,6 +13,7 @@
 #include "kdbhelper.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"
+#include "kdberrors.h"
 #include <stdlib.h>
 
 #ifdef __cplusplus
@@ -270,7 +271,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 				return;
 			}
 
-			if (elektraKDBErrorCode (kdbSetError) != 5) // CONFLICT = 5
+			if (elektraKDBErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT)
 			{
 				*error = kdbSetError;
 				return;

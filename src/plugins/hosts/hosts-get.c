@@ -307,7 +307,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "general parse error: %s", strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "general parse error: %s", strerror (errno));
 		ksDel (append);
 		ret = -1;
 	}

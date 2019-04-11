@@ -501,7 +501,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	}
 	strcat (warningMsg, "\" because ");
 	strcat (warningMsg, msg);
-	ELEKTRA_ADD_WARNINGF (INSTALLATION_CODE, warningKey, "Postcondition of backend was violated: %s", warningMsg);
+	ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, warningKey, "Postcondition of backend was violated: %s", warningMsg);
 	elektraFree (warningMsg);
 	cursor_t c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));

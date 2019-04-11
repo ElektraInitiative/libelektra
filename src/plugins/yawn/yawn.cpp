@@ -76,11 +76,11 @@ int elektraYawnGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	catch (runtime_error const & runtimeError)
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, *parent, runtimeError.what ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, *parent, runtimeError.what ());
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, *parent, "Uncaught exception: %s", error.what ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, *parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();

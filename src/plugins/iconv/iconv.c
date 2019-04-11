@@ -178,7 +178,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (cur), keyGetValueSize (cur));
 			if (kdbbUTF8Engine (handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
 						    "Could not convert string %s, got result %s, encoding settings are from %s to %s",
 						    keyString (cur), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
@@ -197,7 +197,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (meta), keyGetValueSize (meta));
 			if (kdbbUTF8Engine (handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
 						    "Could not convert string %s, got result %s, encoding settings are from %s to %s",
 						    keyString (meta), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
@@ -230,7 +230,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (cur), keyGetValueSize (cur));
 			if (kdbbUTF8Engine (handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
 						    "Could not convert string %s, got result %s,"
 						    " encoding settings are from %s to %s (but swapped for write)",
 						    keyString (cur), convertedData, getFrom (handle), getTo (handle));
@@ -250,7 +250,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (meta), keyGetValueSize (meta));
 			if (kdbbUTF8Engine (handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
 						    "Could not convert string %s, got result %s,"
 						    " encodings settings are from %s to %s (but swapped for write)",
 						    keyString (meta), convertedData, getFrom (handle), getTo (handle));

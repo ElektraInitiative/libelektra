@@ -30,7 +30,7 @@
 
 #define ELEKTRA_SET_ERRNO_ERROR(id, parentKey) ELEKTRA_SET_GENERAL_ERROR (id, parentKey, strerror (errno))
 
-#define ELEKTRA_SET_AUGEAS_ERROR(handle, parrentKey) ELEKTRA_SET_GENERAL_ERROR (INSTALLATION_CODE, parentKey, getAugeasError (augeasHandle))
+#define ELEKTRA_SET_AUGEAS_ERROR(handle, parrentKey) ELEKTRA_SET_GENERAL_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, getAugeasError (augeasHandle))
 
 struct KeyConversion
 {
@@ -117,7 +117,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (INSTALLATION_CODE, errorKey, "Could not glob %s", f);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Could not glob %s", f);
 		retval = -1;
 	}
 	return retval;
@@ -420,14 +420,14 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	if (ret < 0)
 	{
 		/* report the augeas specific error */
-		ELEKTRA_SET_ERROR (PARSING_CODE, parentKey, getAugeasError (augeasHandle));
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, getAugeasError (augeasHandle));
 	}
 
 	return ret;
 
 memoryerror:
 	elektraFree (keyArray);
-	ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Unable to allocate memory while saving the augeas tree");
+	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey, "Unable to allocate memory while saving the augeas tree");
 	return -1;
 }
 
@@ -444,11 +444,11 @@ int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 
 		if (ret >= 0)
 		{
-			ELEKTRA_SET_ERROR (RESOURCE_CODE, parentKey, "Unable to allocate memory for a detailed augeas error message");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey, "Unable to allocate memory for a detailed augeas error message");
 			return -1;
 		}
 
-		ELEKTRA_SET_ERROR (INSTALLATION_CODE, parentKey, errormessage);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, errormessage);
 		elektraFree (errormessage);
 		return -1;
 	}
@@ -489,7 +489,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	/* retrieve the lens to use */
 	const char * lensPath = getLensPath (handle);
-	if (!lensPath) ELEKTRA_SET_GENERAL_ERROR (INSTALLATION_CODE, parentKey, keyName (parentKey));
+	if (!lensPath) ELEKTRA_SET_GENERAL_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, keyName (parentKey));
 
 	FILE * fh = fopen (keyString (parentKey), "r");
 
@@ -506,7 +506,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (content == 0)
 	{
 		fclose (fh);
-		ELEKTRA_SET_ERRNO_ERROR (RESOURCE_CODE, parentKey);
+		ELEKTRA_SET_ERRNO_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey);
 	}
 
 	/* convert the string into an augeas tree */
@@ -531,7 +531,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!conversionData)
 	{
 		fclose (fh);
-		ELEKTRA_SET_GENERAL_ERROR (INSTALLATION_CODE, parentKey, strerror (errno));
+		ELEKTRA_SET_GENERAL_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, strerror (errno));
 	}
 
 	conversionData->currentOrder = 0;
@@ -566,7 +566,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (!lensPath)
 	{
-		ELEKTRA_SET_GENERAL_ERROR (INSTALLATION_CODE, parentKey, keyName (parentKey));
+		ELEKTRA_SET_GENERAL_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, keyName (parentKey));
 	}
 
 	FILE * fh = fopen (keyValue (parentKey), "w+");
@@ -588,7 +588,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (content == 0)
 		{
 			fclose (fh);
-			ELEKTRA_SET_ERRNO_ERROR (RESOURCE_CODE, parentKey);
+			ELEKTRA_SET_ERRNO_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey);
 		}
 
 		/* convert the string into an augeas tree */
@@ -615,7 +615,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ret = saveFile (augeasHandle, fh);
 	fclose (fh);
 
-	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR (RESOURCE_CODE, parentKey);
+	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey);
 
 	errno = errnosave;
 	return 1;

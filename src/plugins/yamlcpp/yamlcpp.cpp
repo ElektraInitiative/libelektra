@@ -75,7 +75,7 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (YAML::ParserException const & exception)
 	{
-		ELEKTRA_SET_ERRORF (PARSING_CODE, parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
 				    exception.what ());
 	}
 	catch (std::overflow_error const & exception)
@@ -85,7 +85,7 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (YAML::RepresentationException const & exception)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parent.getKey (), "Unable to read data from file “%s”: %s", parent.getString ().c_str (),
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parent.getKey (), "Unable to read data from file “%s”: %s", parent.getString ().c_str (),
 				    exception.what ());
 	}
 
@@ -115,12 +115,12 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (YAML::BadFile const & exception)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parent.getKey (), "Unable to write to file “%s”: %s.", parent.getString ().c_str (),
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parent.getKey (), "Unable to write to file “%s”: %s.", parent.getString ().c_str (),
 				    exception.what ());
 	}
 	catch (YAML::EmitterException const & exception)
 	{
-		ELEKTRA_SET_ERRORF (LOGICAL_CODE, parent.getKey (), "Something went wrong while emitting YAML data to file “%s”: %s.",
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, parent.getKey (), "Something went wrong while emitting YAML data to file “%s”: %s.",
 				    parent.getString ().c_str (), exception.what ());
 	}
 
