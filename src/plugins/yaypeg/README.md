@@ -15,7 +15,7 @@ The YAy PEG plugin use a parser based on [PEGTL](https://github.com/taocpp/PEGTL
 
 ## Dependencies
 
-This plugin requires [PEGTL](https://github.com/taocpp/PEGTL/blob/2.7.x/doc/Installing-and-Using.md) `2.7.1` or later.
+This plugin requires [PEGTL](https://repology.org/project/pegtl/versions) `2.7.1` or later. It does not support PEGTL `3`, which requires C++ 17.
 
 ## Examples
 
