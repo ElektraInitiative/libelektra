@@ -138,7 +138,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	if (*equals == '\0' || equals == pair)
 	{
 		ELEKTRA_LOG_WARNING ("Ignored line %zu since “%s” does not contain a valid key value pair", lineNumber, pair);
-		ELEKTRA_ADD_WARNINGF (PARSING_CODE, parentKey, "Line %zu: “%s” is not a valid key value pair", lineNumber, pair);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_PARSING, parentKey, "Line %zu: “%s” is not a valid key value pair", lineNumber, pair);
 		return;
 	}
 
@@ -192,7 +192,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	if (!feof (file))
 	{
 		ELEKTRA_LOG_WARNING ("%s:%zu: Unable to read line", keyString (parentKey), lineNumber);
-		ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Unable to read line %zu: %s", lineNumber, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Unable to read line %zu: %s", lineNumber, strerror (errno));
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}

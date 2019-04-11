@@ -322,7 +322,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		{
 			if (elektraStrCmp (keyBaseName (cur), "#") != 0)
 			{
-				ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
 						    "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
 						    keyName (cur));
 				keyDel (specParent);
@@ -494,7 +494,7 @@ bool readOptionData (struct OptionData * optionData, Key * key, const char * met
 	}
 	else if (elektraStrCmp (hasArg, "none") != 0 && elektraStrCmp (hasArg, "optional") != 0)
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				    "The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none' or "
 				    "'optional'. (key: %s)",
 				    keyName (key));
@@ -556,7 +556,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 
 	if (shortOpt == '-')
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				    "'-' cannot be used as a short option. It would collide with the "
 				    "special string '--'. Offending key: %s",
 				    keyName (key));
@@ -565,7 +565,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 
 	if (shortOpt == 'h')
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				    "'h' cannot be used as a short option. It would collide with the "
 				    "help option '-h'. Offending key: %s",
 				    keyName (key));
@@ -579,7 +579,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	Key * existing = ksLookupByName (spec->options, keyName (shortOptSpec), 0);
 	if (existing != NULL)
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				    "The option '-%c' has already been specified for the key '%s'. Additional key: %s", shortOpt,
 				    keyGetMetaString (existing, "key"), keyName (key));
 		keyDel (shortOptSpec);
@@ -649,7 +649,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 
 	if (elektraStrCmp (longOpt, "help") == 0)
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				    "'help' cannot be used as a long option. It would collide with the "
 				    "help option '--help'. Offending key: %s",
 				    keyName (key));
@@ -663,7 +663,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 	Key * existing = ksLookupByName (spec->options, keyName (longOptSpec), 0);
 	if (existing != NULL)
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				    "The option '--%s' has already been specified for the key '%s'. Additional key: %s", longOpt,
 				    keyGetMetaString (existing, "key"), keyName (key));
 		keyDel (longOptSpec);
@@ -792,7 +792,7 @@ int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * er
 		else if (res < 0)
 		{
 			ELEKTRA_SET_ERRORF (
-				VALIDATION_SEMANTIC_CODE, errorKey,
+				ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 				"The option '%s%s' cannot be used, because another option has already been used for the key '%s'.",
 				isShort ? "-" : "--", isShort ? (const char[]){ keyBaseName (optKey)[0], '\0' } : keyBaseName (optKey),
 				keyName (keyWithOpt));
@@ -848,7 +848,7 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
 		int res = addProcKey (ks, keyWithOpt, envValueKey);
 		if (res < 0)
 		{
-			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey,
 					    "The environment variable '%s' cannot be used, because another variable has "
 					    "already been used for the key '%s'.",
 					    keyBaseName (envKey), keyName (keyWithOpt));
@@ -1122,7 +1122,7 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 
 		if (optSpec == NULL)
 		{
-			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "Unknown short option: -%c", keyBaseName (shortOpt)[0]);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Unknown short option: -%c", keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
 			keyDel (optSpec);
 			return false;
@@ -1142,7 +1142,7 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 		}
 		else if (!repeated)
 		{
-			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "This option cannot be repeated: -%c",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "This option cannot be repeated: -%c",
 					    keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
 			keyDel (optSpec);
@@ -1157,7 +1157,7 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 			{
 				if (i >= argc - 1)
 				{
-					ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "Missing argument for short option: -%c",
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Missing argument for short option: -%c",
 							    keyBaseName (shortOpt)[0]);
 					keyDel (shortOpt);
 					keyDel (option);
@@ -1216,7 +1216,7 @@ bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const ch
 
 	if (optSpec == NULL)
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "Unknown long option: --%s", keyBaseName (longOpt));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Unknown long option: --%s", keyBaseName (longOpt));
 		keyDel (longOpt);
 		return false;
 	}
@@ -1235,7 +1235,7 @@ bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const ch
 	}
 	else if (!repeated)
 	{
-		ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "This option cannot be repeated: --%s", keyBaseName (longOpt));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "This option cannot be repeated: --%s", keyBaseName (longOpt));
 		keyDel (longOpt);
 		keyDel (optSpec);
 		return false;
@@ -1261,7 +1261,7 @@ bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const ch
 		{
 			if (i >= argc - 1)
 			{
-				ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "Missing argument for long option: --%s",
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Missing argument for long option: --%s",
 						    keyBaseName (longOpt));
 				keyDel (longOpt);
 				return false;
@@ -1288,7 +1288,7 @@ bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const ch
 	{
 		if (argStart > 0)
 		{
-			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, errorKey, "This option cannot have an argument: --%s",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "This option cannot have an argument: --%s",
 					    keyBaseName (longOpt));
 			keyDel (longOpt);
 			return false;

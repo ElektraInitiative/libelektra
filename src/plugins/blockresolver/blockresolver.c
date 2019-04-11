@@ -255,7 +255,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		struct stat buf;
 		if (stat (data->realFile, &buf))
 		{
-			ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, parentKey, "Failed to stat file %s\n", data->realFile);
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to stat file %s\n", data->realFile);
 			return -1;
 		}
 		if (buf.st_mtime == data->mtime) return 0;
@@ -264,7 +264,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	fin = fopen (data->realFile, "r");
 	if (!fin)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open %s for reading", data->realFile);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Couldn't open %s for reading", data->realFile);
 		goto GET_CLEANUP;
 	}
 
@@ -273,14 +273,14 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	data->endPos = getBlockEnd (fin, data->identifier, data->startPos);
 	if (data->endPos == -1)
 	{
-		ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Couldn't find end of block %s", data->identifier);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Couldn't find end of block %s", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
 	block = (char *) getBlock (fin, data->startPos, data->endPos);
 	if (!block)
 	{
-		ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Failed to extract block %s\n", data->identifier);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Failed to extract block %s\n", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -289,7 +289,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	fout = fopen (data->tmpFile, "w");
 	if (!fout)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open %s for writing", data->tmpFile);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Couldn't open %s for writing", data->tmpFile);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -312,12 +312,12 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	struct stat buf;
 	if (stat (data->realFile, &buf))
 	{
-		ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, parentKey, "Failed to stat file %s\n", data->realFile);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Failed to stat file %s\n", data->realFile);
 		return -1;
 	}
 	if (buf.st_mtime > data->mtime)
 	{
-		ELEKTRA_SET_ERRORF (CONFLICT_CODE, parentKey, "%s has been modified", data->realFile);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "%s has been modified", data->realFile);
 		return -1;
 	}
 	FILE * fout = NULL;
@@ -337,19 +337,19 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		fout = fopen (mergeFile, "w");
 		if (!fout)
 		{
-			ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open %s for writing", data->realFile);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Couldn't open %s for writing", data->realFile);
 			goto SET_CLEANUP;
 		}
 		fin = fopen (data->realFile, "r");
 		if (!fin)
 		{
-			ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open %s for reading", data->realFile);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Couldn't open %s for reading", data->realFile);
 			goto SET_CLEANUP;
 		}
 		block = (char *) getBlock (fin, 0, data->startPos);
 		if (!block)
 		{
-			ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Failed to extract block before %s\n", data->identifier);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Failed to extract block before %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
 		fwrite (block, 1, data->startPos, fout);
@@ -360,14 +360,14 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		block = (char *) getBlock (fin, data->endPos, ftell (fin));
 		if (!block)
 		{
-			ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Failed to extract block after %s\n", data->identifier);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Failed to extract block after %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
 		fclose (fin);
 		fin = fopen (data->tmpFile, "r");
 		if (!fin)
 		{
-			ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Couldn't open %s for reading", data->tmpFile);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Couldn't open %s for reading", data->tmpFile);
 			goto SET_CLEANUP;
 		}
 		char buffer[BUFSIZE_MAX];

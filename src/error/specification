@@ -19,32 +19,32 @@ ignore:true
 
 number:01100
 description:Resource
-macro:RESOURCE_CODE
+macro:RESOURCE
 
 number:01200
 description:Parsing
-macro:PARSING_CODE
+macro:PARSING
 
 number:01300
 description:Installation
-macro:INSTALLATION_CODE
+macro:INSTALLATION
 
 number:01400
 description:Logical
-macro:LOGICAL_CODE
+macro:LOGICAL
 
 number:02000
 description:Conflict
-macro:CONFLICT_CODE
+macro:CONFLICT
 
 number:03000
 description:Timeout
-macro:TIMEOUT_CODE
+macro:TIMEOUT
 
 number:04100
 description:Validation Syntactic
-macro:VALIDATION_SYNTACTIC_CODE
+macro:VALIDATION_SYNTACTIC
 
 number:04200
 description:Validation Semantic
-macro:VALIDATION_SEMANTIC_CODE
+macro:VALIDATION_SEMANTIC

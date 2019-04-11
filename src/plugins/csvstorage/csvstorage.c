@@ -136,7 +136,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 			isCol = 0;
 			if (!lastLine)
 			{
-				ELEKTRA_ADD_WARNINGF (PARSING_CODE, parentKey,
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_PARSING, parentKey,
 						      "Unexpected end of line(%lu), all records except the last must and with a newline",
 						      lineNr);
 			}
@@ -149,7 +149,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 		{
 			line[len - 2] = '\0';
 		}
-		ELEKTRA_ADD_WARNINGF (PARSING_CODE, parentKey, "Unexpected end of line(%lu). unbalanced number of double-quotes in (%s)",
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_PARSING, parentKey, "Unexpected end of line(%lu). unbalanced number of double-quotes in (%s)",
 				      lineNr, line);
 	}
 	else if (isCol)
@@ -158,7 +158,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 		{
 			line[len - 2] = '\0';
 		}
-		ELEKTRA_ADD_WARNINGF (PARSING_CODE, parentKey, "Unexpected end of line(%lu): (%s)", lineNr, line);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_PARSING, parentKey, "Unexpected end of line(%lu): (%s)", lineNr, line);
 	}
 	else
 	{
@@ -166,7 +166,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 	}
 	if (hasUnescapedDQuote)
 	{
-		ELEKTRA_ADD_WARNINGF (PARSING_CODE, parentKey, "Quoted field in line(%lu) has an unescaped double-quote: (%s)", lineNr,
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_PARSING, parentKey, "Quoted field in line(%lu) has an unescaped double-quote: (%s)", lineNr,
 				      line);
 	}
 
@@ -335,7 +335,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "couldn't open file %s", fileName);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "couldn't open file %s", fileName);
 		return -1;
 	}
 	int lastLine = 0;
@@ -352,7 +352,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	{
 		if (columns != fixColumnCount)
 		{
-			ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "illegal number of columns (%lu - %lu) in Header line: %s", columns,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "illegal number of columns (%lu - %lu) in Header line: %s", columns,
 					    fixColumnCount, lineBuffer);
 			elektraFree (lineBuffer);
 			fclose (fp);
@@ -480,7 +480,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		{
 			if (fixColumnCount)
 			{
-				ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "illegal number of columns (%lu - %lu) in line %lu: %s",
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "illegal number of columns (%lu - %lu) in line %lu: %s",
 						    colCounter, columns, lineCounter, lineBuffer);
 				elektraFree (lineBuffer);
 				fclose (fp);
@@ -488,7 +488,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				ksDel (header);
 				return -1;
 			}
-			ELEKTRA_ADD_WARNINGF (PARSING_CODE, parentKey, "illegal number of columns (%lu - %lu)  in line %lu: %s", colCounter,
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_PARSING, parentKey, "illegal number of columns (%lu - %lu)  in line %lu: %s", colCounter,
 					      columns, lineCounter, lineBuffer);
 		}
 		lineCounter += linesRead;
@@ -720,7 +720,7 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		}
 		if (colCounter != columns)
 		{
-			ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "illegal number of columns (%lu - %lu) in line %lu", colCounter,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "illegal number of columns (%lu - %lu) in line %lu", colCounter,
 					    columns, lineCounter);
 			fclose (fp);
 			return -1;

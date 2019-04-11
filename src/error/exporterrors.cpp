@@ -102,7 +102,8 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			continue;
 		}
 
-		os << "#define " << p[i]["macro"] << " " << p[i]["number"] << "" << endl;
+		os << "#define ELEKTRA_WARNING_" << p[i]["macro"] << " " << p[i]["number"] << "" << endl;
+		os << "#define ELEKTRA_ERROR_" << p[i]["macro"] << " " << p[i]["number"] << "" << endl;
 	}
 
 	os << endl << endl;

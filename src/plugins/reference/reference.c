@@ -46,7 +46,7 @@ static Key * resolveReference (KeySet * allKeys, const char * reference, const K
 
 	if (elektraIsReferenceRedundant (reference))
 	{
-		ELEKTRA_ADD_WARNINGF (RESOURCE_CODE, parentKey, "Reference '%s' uses '/./' or '/../' redundantly.", reference);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Reference '%s' uses '/./' or '/../' redundantly.", reference);
 	}
 
 	char * fullReference = elektraResolveReference (reference, baseKey, parentKey);
@@ -65,7 +65,7 @@ static char * resolveRestriction (const char * restriction, const Key * baseKey,
 
 	if (elektraIsReferenceRedundant (restriction))
 	{
-		ELEKTRA_ADD_WARNINGF (VALIDATION_SEMANTIC_CODE, parentKey, "Restriction '%s' uses '/./' or '/../' redundantly.",
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey, "Restriction '%s' uses '/./' or '/../' redundantly.",
 				      restriction);
 	}
 
@@ -136,7 +136,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 		bool error = false;
 		if (refKey == NULL)
 		{
-			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
 					    "Reference '%s', set in key '%s', does not reference an existing key.", ref, elementName);
 			error = true;
 		}
@@ -158,7 +158,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 
 			if (!anyMatch)
 			{
-				ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
 						    "Reference '%s', set in key '%s', does not any of the given restrictions.", ref,
 						    elementName);
 				error = true;
@@ -339,7 +339,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				bool error = false;
 				if (refKey == NULL)
 				{
-					ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey,
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
 							    "Reference '%s', set in key '%s', does not reference an existing key.", ref,
 							    elementName);
 					error = true;
@@ -365,7 +365,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					if (!anyMatch)
 					{
 						ELEKTRA_SET_ERRORF (
-							VALIDATION_SEMANTIC_CODE, parentKey,
+							ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
 							"Reference '%s', set in key '%s', does not any of the given restrictions.", ref,
 							elementName);
 						error = true;
@@ -408,7 +408,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 	*strrchr (rootName, '/') = '\0';
 	if (!checkReferenceGraphAcyclic (referenceGraph, rootName))
 	{
-		ELEKTRA_SET_ERROR (VALIDATION_SEMANTIC_CODE, parentKey, "The configuration contains a cyclic reference.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "The configuration contains a cyclic reference.");
 
 		elektraFree (rootName);
 		rgDel (referenceGraph);

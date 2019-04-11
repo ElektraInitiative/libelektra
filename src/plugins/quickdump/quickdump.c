@@ -61,7 +61,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 {
 	if (!varintWrite (file, size))
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
 	}
 
@@ -69,7 +69,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 	{
 		if (fwrite (data, sizeof (char), size, file) < size)
 		{
-			ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, feof (file) ? "premature end of file" : "unknown error");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, feof (file) ? "premature end of file" : "unknown error");
 			return false;
 		}
 	}
@@ -81,7 +81,7 @@ static inline bool readUInt64 (FILE * file, kdb_unsigned_long_long_t * valuePtr,
 {
 	if (fread (valuePtr, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, "Error while reading file");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, "Error while reading file");
 		return false;
 	}
 	*valuePtr = le64toh (*valuePtr);
@@ -94,14 +94,14 @@ static inline char * readString (FILE * file, Key * errorKey)
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return NULL;
 	}
 
 	char * string = elektraMalloc (size + 1);
 	if (fread (string, sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, feof (file) ? "premature end of file" : "unknown error");
 		elektraFree (string);
 		return NULL;
 	}
@@ -115,7 +115,7 @@ static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * bu
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
 	}
 
@@ -146,7 +146,7 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 
 	if (fread (&buffer->string[buffer->offset], sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_ERROR (PARSING_CODE, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
 	}
 	buffer->string[newSize - 1] = '\0';
@@ -212,7 +212,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		break;
 	default:
 		fclose (file);
-		ELEKTRA_SET_ERRORF (PARSING_CODE, parentKey, "Unknown magic number " ELEKTRA_UNSIGNED_LONG_LONG_F, magic);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Unknown magic number " ELEKTRA_UNSIGNED_LONG_LONG_F, magic);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -255,7 +255,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_ERROR (VALIDATION_SEMANTIC_CODE, parentKey, "missing key type");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "missing key type");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -290,7 +290,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					fclose (file);
-					ELEKTRA_SET_ERROR (PARSING_CODE, parentKey, "error while reading file");
+					ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, "error while reading file");
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);
@@ -317,7 +317,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_ERRORF (VALIDATION_SEMANTIC_CODE, parentKey, "Unknown key type %c", type);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Unknown key type %c", type);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -327,7 +327,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			{
 				keyDel (k);
 				fclose (file);
-				ELEKTRA_SET_ERROR (PARSING_CODE, parentKey, "Missing key end");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
@@ -386,7 +386,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				const Key * sourceKey = ksLookupByName (returned, nameBuffer.string, 0);
 				if (sourceKey == NULL)
 				{
-					ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey,
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
 							    "Could not copy meta data from key '%s': Key not found", nameBuffer.string);
 					keyDel (k);
 					elektraFree (nameBuffer.string);
@@ -398,7 +398,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 				if (keyCopyMeta (k, sourceKey, metaNameBuffer.string) != 1)
 				{
-					ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey,
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
 							    "Could not copy meta data from key '%s': Error during copy",
 							    &nameBuffer.string[nameBuffer.offset]);
 					keyDel (k);
@@ -416,7 +416,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
 				fclose (file);
-				ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey, "Unknown meta type %c", type);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Unknown meta type %c", type);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}

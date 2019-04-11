@@ -202,7 +202,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	FILE * pwfile = fopen (keyString (parentKey), "r");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
 		return -1;
 	}
 #if defined(USE_FGETPWENT)
@@ -296,7 +296,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 	FILE * pwfile = fopen (keyString (parentKey), "w");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_ERRORF (RESOURCE_CODE, parentKey, "Failed to open %s for writing\n", keyString (parentKey));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Failed to open %s for writing\n", keyString (parentKey));
 		return -1;
 	}
 	Key * cur;
@@ -308,7 +308,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)
 		{
-			ELEKTRA_SET_ERRORF (INSTALLATION_CODE, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name,
 					    pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir, pwd->pw_shell);
 		}
 		else
