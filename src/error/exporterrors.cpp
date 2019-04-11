@@ -39,12 +39,26 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << endl
 	   << "#ifdef __cplusplus" << endl
 	   << "	using namespace ckdb;" << endl
-	   << endl
-	   << "#endif" << endl
-	   << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
-	   << "	(number, key, text, __FILE__, __LINE__)" << endl
-	   << endl
-	   << "#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) ELEKTRA_SET_ERROR_HELPER_HELPER\\" << endl
+	   << endl;
+	os << endl << endl;
+	os << "#endif" << endl;
+
+	for (size_t i = 1; i < p.size (); ++i)
+	{
+		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERROR(key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl;
+		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__)" << endl;
+		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERRORF(key, text, ...) ELEKTRA_SET_ERRORF_HELPER\\" << endl;
+		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl << endl;
+
+		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING(key, text) ELEKTRA_ADD_WARNING_HELPER\\" << endl;
+		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__)" << endl;
+		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNINGF(key, text, ...) ELEKTRA_ADD_WARNINGF_HELPER\\" << endl;
+		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl << endl;
+	}
+	//    << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
+	//    << "	(number, key, text, __FILE__, __LINE__)" << endl
+	//    << endl
+	os << "#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) ELEKTRA_SET_ERROR_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line)" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Error %s: %s\", "
@@ -53,9 +67,9 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "	(key, text, file, #line); } while (0)" << endl
 	   << endl
 	   << endl
-	   << "#define ELEKTRA_ADD_WARNING(number, key, text) ELEKTRA_ADD_WARNING_HELPER\\" << endl
-	   << "	(number, key, text, __FILE__, __LINE__)" << endl
-	   << "" << endl
+	   //    << "#define ELEKTRA_ADD_WARNING(number, key, text) ELEKTRA_ADD_WARNING_HELPER\\" << endl
+	   //    << "	(number, key, text, __FILE__, __LINE__)" << endl
+	   //    << "" << endl
 	   << "#define ELEKTRA_ADD_WARNING_HELPER(number, key, text, file, line) ELEKTRA_ADD_WARNING_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line)" << endl
 	   << "" << endl
@@ -303,20 +317,20 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	for (size_t i = 1; i < p.size (); ++i)
 	{
 		os << "	if(strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
-		os << "		ELEKTRA_ADD_WARNING (" << p[i]["number"] << ", parentKey, message);" << endl
+		os << "		ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING (parentKey, message);" << endl
 		   << "		return;" << endl
 		   << "	}" << endl;
 	}
-	os << "	ELEKTRA_ADD_WARNING (01400, parentKey, \"Unkown warning code\");" << endl << "}" << endl << "" << endl;
+	os << "	ELEKTRA_ADD_LOGICAL_WARNING (parentKey, \"Unkown warning code\");" << endl << "}" << endl << "" << endl;
 	os << "static inline void elektraTriggerError (const char *nr, Key *parentKey, const char *message)" << endl << "{" << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
 		os << "	if(strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
-		os << "		ELEKTRA_SET_ERROR (" << p[i]["number"] << ", parentKey, message);" << endl
+		os << "		ELEKTRA_SET_" << p[i]["macro"] << "_ERROR (parentKey, message);" << endl
 		   << "		return;" << endl
 		   << "	}" << endl;
 	}
-	os << "	ELEKTRA_SET_ERROR (01400, parentKey, \"Unkown error code\");" << endl << "}" << endl;
+	os << "	ELEKTRA_SET_LOGICAL_ERROR (parentKey, \"Unkown error code\");" << endl << "}" << endl;
 
 	os << "#endif" << endl;
 	return os;

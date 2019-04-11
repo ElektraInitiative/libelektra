@@ -81,11 +81,11 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (range_error const & error)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, *parent, "Unable to insert array value %s", error.what ());
+		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Unable to insert array value %s", error.what ());
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, *parent, "Uncaught Exception: %s", error.what ());
+		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Uncaught Exception: %s", error.what ());
 	}
 
 #ifdef HAVE_LOGGER
@@ -114,11 +114,11 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (range_error const & error)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, *parent, "Unable to insert array value %s", error.what ());
+		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Unable to insert array value %s", error.what ());
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, *parent, "Uncaught exception: %s", error.what ());
+		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();
