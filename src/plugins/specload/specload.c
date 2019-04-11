@@ -180,7 +180,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "This plugin can only be used for the spec namespace.");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "This plugin can only be used for the spec namespace.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -191,8 +191,8 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!loadSpec (spec, specload->app, specload->argv, parentKey, specload->quickDump))
 	{
 		ksDel (spec);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey,
-				   "Couldn't load the base specification. Make sure the app is available and the arguments are correct.");
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			parentKey, "Couldn't load the base specification. Make sure the app is available and the arguments are correct.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -201,7 +201,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (spec);
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "Couldn't load the overlay specification.");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't load the overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -211,7 +211,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "set", ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (ks);
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "Couldn't create an empty overlay specification.");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't create an empty overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		ksDel (ks);
@@ -227,7 +227,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "This plugin can only be used for the spec namespace.");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "This plugin can only be used for the spec namespace.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -237,8 +237,8 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!loadSpec (spec, specload->app, specload->argv, parentKey, specload->quickDump))
 	{
 		ksDel (spec);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey,
-				   "Couldn't load the base specification. Make sure the app is available and the arguments are correct.");
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			parentKey, "Couldn't load the base specification. Make sure the app is available and the arguments are correct.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -248,7 +248,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "get", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (oldData);
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "Couldn't load the overlay specification.");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't load the overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -257,7 +257,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "set", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (oldData);
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "Couldn't create an empty overlay specification.");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't create an empty overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -281,7 +281,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (changeAllowed < 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "This kind of change is not allowed.");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "This kind of change is not allowed.");
 			ksSetCursor (returned, cursor);
 			ksDel (overrides);
 			ksDel (oldData);
@@ -341,8 +341,8 @@ int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
 
 	if (!result)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey,
-				   "Couldn't load the specification. Make sure the app is available and the arguments are correct.");
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			errorKey, "Couldn't load the specification. Make sure the app is available and the arguments are correct.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -355,7 +355,7 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 
 	if (appKey == NULL)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "You need to set an application using the app config key.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "You need to set an application using the app config key.");
 		return false;
 	}
 
@@ -363,14 +363,13 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 
 	if (app[0] != '/')
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "The value of the app config key ('%s') is not an absolute path.",
-				    app);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "The value of the app config key ('%s') is not an absolute path.", app);
 		return false;
 	}
 
 	if (access (app, X_OK) != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "'%s' doesn't exist or is not executable.", app);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "'%s' doesn't exist or is not executable.", app);
 		return false;
 	}
 
@@ -414,7 +413,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 
 	if (pipe (fd) != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Could not execute app: %s", strerror (errno));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not execute app: %s", strerror (errno));
 		return NULL;
 	}
 
@@ -422,7 +421,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 
 	if (pid == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Could not execute app: %s", strerror (errno));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not execute app: %s", strerror (errno));
 		return NULL;
 	}
 
@@ -449,7 +448,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 
 	if (dup2 (fd[0], STDIN_FILENO) == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Could not execute app: %s", strerror (errno));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not execute app: %s", strerror (errno));
 		return NULL;
 	}
 
@@ -467,7 +466,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 
 	if (dup2 (stdin_copy, STDIN_FILENO) == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "Could not execute app: %s", strerror (errno));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not execute app: %s", strerror (errno));
 		return NULL;
 	}
 	close (stdin_copy);

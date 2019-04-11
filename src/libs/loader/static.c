@@ -78,7 +78,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 
 	if (handle == NULL)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, error, "Did not find module: %s", name);
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (error, "Did not find module: %s", name);
 		keyDel (moduleKey);
 		return 0;
 	}
@@ -87,8 +87,8 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 
 	if (module == NULL)
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, error,
-				     "Could not get pointer to factory, static sym failed: no such symbol elektraPluginSymbol");
+		ELEKTRA_ADD_INSTALLATION_WARNING (
+			error, "Could not get pointer to factory, static sym failed: no such symbol elektraPluginSymbol");
 		return 0;
 	}
 

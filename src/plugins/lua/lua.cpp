@@ -77,11 +77,11 @@ static int Lua_CallFunction_Int (lua_State * L, int nargs, ckdb::Key * errorKey)
 {
 	int ret = -1;
 	if (lua_pcall (L, nargs, 1, 0) != LUA_OK)
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, lua_tostring (L, -1));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, lua_tostring (L, -1));
 	else
 	{
 		if (!lua_isnumber (L, -1))
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_VALIDATION_SEMANTIC, errorKey, "Return value is no integer");
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Return value is no integer");
 		else
 			ret = lua_tonumber (L, -1);
 	}
@@ -139,7 +139,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		{
 			return 0; // by convention: success if /module exists
 		}
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "No lua script set");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "No lua script set");
 		return -1;
 	}
 
@@ -149,7 +149,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	/* init new lua state */
 	if ((data->L = lua_newstate (Lua_alloc, NULL)) == NULL)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "Unable to create new lua state");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Unable to create new lua state");
 		goto error;
 	}
 
@@ -169,7 +169,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	return Lua_CallFunction_Helper2 (data->L, "elektraOpen", config, errorKey);
 
 error_print:
-	if (!lua_isnil (data->L, -1)) ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, lua_tostring (data->L, -1));
+	if (!lua_isnil (data->L, -1)) ELEKTRA_SET_INSTALLATION_ERROR (errorKey, lua_tostring (data->L, -1));
 error:
 	/* destroy lua */
 	Lua_Shutdown (data->L);

@@ -215,8 +215,8 @@ static int validateKey (Key * key, Key * parentKey)
 		rc = validateWithArray (key);
 	if (!rc)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Validation of key \"%s\" with string \"%s\" failed.",
-				    keyName (key), keyString (key));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (key),
+							keyString (key));
 	}
 	return rc;
 }

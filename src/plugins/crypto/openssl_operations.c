@@ -60,8 +60,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "failed to generate random salt with error code %lu",
-				    ERR_get_error ());
+		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "failed to generate random salt with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -74,7 +73,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	if (!saltHexString)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
 		return -1;
 	}
 	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
@@ -88,9 +87,9 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (masterKey), keyGetValueSize (masterKey), salt, sizeof (salt), iterations, KEY_BUFFER_SIZE,
 				     keyBuffer))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey,
-				    "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
-				    ERR_get_error ());
+		ELEKTRA_SET_LOGICAL_ERRORF (errorKey,
+					    "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
+					    ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -134,9 +133,9 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (masterKey), keyGetValueSize (masterKey), saltBuffer, saltBufferLen, iterations,
 				     KEY_BUFFER_SIZE, keyBuffer))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey,
-				    "Failed to restore the cryptographic key for decryption. Libcrypto returned the error code: %lu",
-				    ERR_get_error ());
+		ELEKTRA_SET_LOGICAL_ERRORF (
+			errorKey, "Failed to restore the cryptographic key for decryption. Libcrypto returned the error code: %lu",
+			ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -200,7 +199,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create handle! Invalid key length.");
+		ELEKTRA_SET_LOGICAL_ERROR (errorKey, "Failed to create handle! Invalid key length.");
 		return -1;
 	}
 
@@ -208,7 +207,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create handle! Invalid IV length.");
+		ELEKTRA_SET_LOGICAL_ERROR (errorKey, "Failed to create handle! Invalid IV length.");
 		return -1;
 	}
 
@@ -223,7 +222,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		memset (keyBuffer, 0, sizeof (keyBuffer));
 		memset (ivBuffer, 0, sizeof (ivBuffer));
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
 		return -1;
 	}
 
@@ -240,8 +239,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 
 	if (ERR_peek_error ())
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to create handle! libcrypto error code was: %lu",
-				    ERR_get_error ());
+		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error ());
 		elektraFree (*handle);
 		*handle = NULL;
 		pthread_mutex_unlock (&mutex_ssl);
@@ -308,7 +306,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	encrypted = BIO_new (BIO_s_mem ());
 	if (!encrypted)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
 		pthread_mutex_unlock (&mutex_ssl);
 		elektraFree (salt);
 		return -1;
@@ -389,7 +387,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, errorKey, "Encryption error! libcrypto error code was: %lu", ERR_get_error ());
+	ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption error! libcrypto error code was: %lu", ERR_get_error ());
 	BIO_free_all (encrypted);
 	pthread_mutex_unlock (&mutex_ssl);
 	elektraFree (salt);
@@ -424,7 +422,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_PARSING_ERROR (errorKey, "value length is not a multiple of the block size");
 		return -1;
 	}
 
@@ -434,7 +432,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	BIO * decrypted = BIO_new (BIO_s_mem ());
 	if (!decrypted)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -468,7 +466,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	plaintextLen = BIO_get_mem_data (decrypted, &plaintext);
 	if (plaintextLen < headerLen)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, "Decryption error! header data is incomplete.");
+		ELEKTRA_SET_PARSING_ERROR (errorKey, "Decryption error! header data is incomplete.");
 		goto error;
 	}
 
@@ -481,8 +479,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// validate restored header
 	if (contentLen > (plaintextLen - headerLen))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey,
-				   "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
+		ELEKTRA_SET_PARSING_ERROR (errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
 		goto error;
 	}
 
@@ -505,7 +502,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
+	ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
 	BIO_free_all (decrypted);
 	pthread_mutex_unlock (&mutex_ssl);
 	return -1;
@@ -524,8 +521,7 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (buffer, length))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_LOGICAL, errorKey, "Failed to generate random string. libcrypto error code was: %lu",
-				    ERR_get_error ());
+		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to generate random string. libcrypto error code was: %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return NULL;
 	}
@@ -537,7 +533,7 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 	}
 	if (!encoded)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
 	}
 	return encoded;
 }

@@ -270,7 +270,7 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "elektraModulesInit returned with -1");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "elektraModulesInit returned with -1");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -287,7 +287,7 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "could not open default backend");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "could not open default backend");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -295,8 +295,8 @@ KDB * kdbOpen (Key * errorKey)
 		errno = errnosave;
 		return 0;
 	case 0:
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
-				     "Initial kdbGet() failed, you should either fix " KDB_DB_INIT " or the fallback " KDB_DB_FILE);
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial kdbGet() failed, you should either fix " KDB_DB_INIT
+							    " or the fallback " KDB_DB_FILE);
 		break;
 	case 2:
 		ELEKTRA_LOG ("entered fallback code for bootstrapping");
@@ -309,7 +309,7 @@ KDB * kdbOpen (Key * errorKey)
 	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "Mounting global plugins failed");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -338,13 +338,13 @@ KDB * kdbOpen (Key * errorKey)
 	// Open the trie, keys will be deleted within mountOpen
 	if (mountOpen (handle, keys, handle->modules, errorKey) == -1)
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey, "Initial loading of trie did not work");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial loading of trie did not work");
 	}
 
 	keySetString (errorKey, "kdbOpen(): mountDefault");
 	if (mountDefault (handle, handle->modules, inFallback, errorKey) == -1)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, errorKey, "could not reopen and mount default backend");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "could not reopen and mount default backend");
 		keySetString (errorKey, "kdbOpen(): close");
 		kdbClose (handle, errorKey);
 
@@ -361,7 +361,7 @@ KDB * kdbOpen (Key * errorKey)
 	keySetString (errorKey, "kdbOpen(): mountModules");
 	if (mountModules (handle, handle->modules, errorKey) == -1)
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_LOGICAL, errorKey, "Mounting modules did not work");
+		ELEKTRA_ADD_LOGICAL_WARNING (errorKey, "Mounting modules did not work");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -433,7 +433,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 	}
 	else
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RESOURCE, errorKey, "Could not close modules: modules were not open");
+		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
 	}
 
 	if (handle->global) ksDel (handle->global);
@@ -935,14 +935,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		clearError (parentKey);
 		keyDel (oldError);
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "metakey with name \"%s\" passed to kdbGet",
-				    keyName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
 		return -1;
 	}
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_VALIDATION_SYNTACTIC, parentKey, "invalid key name passed to kdbGet");
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "invalid key name passed to kdbGet");
 	}
 
 	int errnosave = errno;
@@ -966,14 +965,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (!handle || !ks)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, parentKey, "handle or ks null pointer passed");
+		ELEKTRA_SET_LOGICAL_ERROR (parentKey, "handle or ks null pointer passed");
 		goto error;
 	}
 
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "error in splitBuildup");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitBuildup");
 		goto error;
 	}
 
@@ -1053,7 +1052,7 @@ cachemiss:
 	if (splitAppoint (split, handle, ks) == -1)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "error in splitAppoint");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitAppoint");
 		goto error;
 	}
 
@@ -1076,8 +1075,7 @@ cachemiss:
 
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, parentKey, "Wrong keys in postprocessing: %s",
-					      keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 		ksClear (ks);
@@ -1112,8 +1110,7 @@ cachemiss:
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, parentKey, "Wrong keys in postprocessing: %s",
-					      keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 
@@ -1305,9 +1302,8 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 
 			if (ret == -1)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
-						      "Error during commit. This means backend is broken: %s",
-						      keyName (backend->mountpoint));
+				ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
+							      keyName (backend->mountpoint));
 			}
 		}
 	}
@@ -1338,9 +1334,8 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 
 			if (ret == -1)
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
-						      "Error during rollback. This means backend is broken: %s",
-						      keyName (backend->mountpoint));
+				ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Error during rollback. This means backend is broken: %s",
+							      keyName (backend->mountpoint));
 			}
 		}
 	}
@@ -1431,8 +1426,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_META)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "metakey with name \"%s\" passed to kdbSet",
-				    keyName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
 		return -1;
@@ -1440,14 +1434,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		ELEKTRA_ADD_WARNING (VALIDATION_SYNTACTIC_CODE, parentKey, "invalid key name passed to kdbSet");
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "invalid key name passed to kdbSet");
 		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
 	}
 
 	if (!handle || !ks)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, parentKey, "handle or ks null pointer passed");
+		ELEKTRA_SET_LOGICAL_ERROR (parentKey, "handle or ks null pointer passed");
 		keyDel (oldError);
 		ELEKTRA_LOG ("!handle || !ks");
 		return -1;
@@ -1470,7 +1464,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "error in splitBuildup");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitBuildup");
 		goto error;
 	}
 	ELEKTRA_LOG ("after splitBuildup");
@@ -1480,8 +1474,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (syncstate == -1)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey, "No default backend found, but should be. Keyname: %s",
-				    keyName (ksCurrent (ks)));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No default backend found, but should be. Keyname: %s",
+						 keyName (ksCurrent (ks)));
 		goto error;
 	}
 	ELEKTRA_ASSERT (syncstate == 0 || syncstate == 1, "syncstate not 0 or 1, but %d", syncstate);
@@ -1498,14 +1492,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		if (syncstate < 0) clearError (parentKey); // clear previous error to set new one
 		if (syncstate == -1)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, parentKey, "Assert failed: invalid namespace");
+			ELEKTRA_SET_LOGICAL_ERROR (parentKey, "Assert failed: invalid namespace");
 			ELEKTRA_LOG ("syncstate == -1");
 		}
 		else if (syncstate < -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
-					    "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
-					    keyName (split->parents[-syncstate - 2]));
+			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
+							 "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
+							 keyName (split->parents[-syncstate - 2]));
 			ELEKTRA_LOG ("syncstate < -1");
 		}
 		keyDel (initialParent);
@@ -1579,8 +1573,8 @@ error:
 		Key * found = ksLookup (ks, errorKey, 0);
 		if (!found)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_LOGICAL, parentKey,
-					      "Error key %s not found in keyset even though it was found before", keyName (errorKey));
+			ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Error key %s not found in keyset even though it was found before",
+						      keyName (errorKey));
 		}
 	}
 
@@ -1951,7 +1945,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 
 		if (elektraStrCmp (pluginName, "list") == 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSTALLATION, parentKey, "Cannot specify clauses for the list plugin!!");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Cannot specify clauses for the list plugin!!");
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
 			return -1;
@@ -1972,8 +1966,8 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (
-				ELEKTRA_ERROR_INSTALLATION, parentKey,
+			ELEKTRA_SET_INSTALLATION_ERRORF (
+				parentKey,
 				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used.",
 				keyName (clause), pluginStateString);
 			keyDel (cutpoint);
@@ -2006,10 +2000,11 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		{
 			if (pluginState != PLUGIN_STATE_UNMOUNTED)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSTALLATION, parentKey,
-						    "The key '%s' contained the value '%s', but only 'unmounted' is supported for "
-						    "non-global clauses at the moment.",
-						    keyName (clause), pluginStateString);
+				ELEKTRA_SET_INSTALLATION_ERRORF (
+					parentKey,
+					"The key '%s' contained the value '%s', but only 'unmounted' is supported for "
+					"non-global clauses at the moment.",
+					keyName (clause), pluginStateString);
 				keyDel (cutpoint);
 				ksDel (pluginConfig);
 				ksDel (pluginsContract);

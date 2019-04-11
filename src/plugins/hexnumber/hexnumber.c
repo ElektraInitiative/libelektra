@@ -68,14 +68,13 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	if (errno == ERANGE && value == ULLONG_MAX)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Hexadecimal number %s out of range 0 to %llu", hexValue,
-				    ULLONG_MAX);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Hexadecimal number %s out of range 0 to %llu", hexValue, ULLONG_MAX);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if ((errno != 0 && value == 0) || endPtr == hexValue || *endPtr != '\0')
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Hexadecimal number '%s' could not be read", hexValue);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Hexadecimal number '%s' could not be read", hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	errno = errnoSaved;
@@ -84,7 +83,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	int result = snprintf (NULL, 0, "%llu", value);
 	if (result < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Unable to convert '%s' into decimal", hexValue);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -99,7 +98,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	result = snprintf (decValue, length, "%llu", value);
 	if (result < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Unable to convert '%s' into decimal", hexValue);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
 		elektraFree (decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -138,14 +137,13 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	if (errno == ERANGE && value == ULLONG_MAX)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Decimal number %s out of range 0 to %llu", decValue,
-				    ULLONG_MAX);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Decimal number %s out of range 0 to %llu", decValue, ULLONG_MAX);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if ((errno != 0 && value == 0) || endPtr == decValue)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Decimal number '%s' could not be read", decValue);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Decimal number '%s' could not be read", decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	errno = errnoSaved;
@@ -154,7 +152,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	const int result = snprintf (NULL, 0, "0x%llx", value);
 	if (result < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Unable to convert '%s' into hexadecimal", decValue);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -168,7 +166,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 
 	if (snprintf (hexValue, length, "0x%llx", value) < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "Unable to convert '%s' into hexadecimal", decValue);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		elektraFree (hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -281,7 +279,7 @@ int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
 
 	if (!types)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, errorKey, "Could not parse config! Types not set correctly.");
+		ELEKTRA_SET_PARSING_ERROR (errorKey, "Could not parse config! Types not set correctly.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -353,9 +351,9 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			}
 			else
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey,
-						    "Key '%s' has unit/base metadata set as hex but value '%s' does not start with 0x",
-						    keyName (cur), keyString (cur));
+				ELEKTRA_SET_PARSING_ERRORF (
+					parentKey, "Key '%s' has unit/base metadata set as hex but value '%s' does not start with 0x",
+					keyName (cur), keyString (cur));
 				status |= ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}

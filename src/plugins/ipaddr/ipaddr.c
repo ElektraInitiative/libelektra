@@ -102,12 +102,12 @@ static int validateKey (Key * key, Key * parentKey)
 
 	if (!rc)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Validation of key %s with value %s failed.",
-				    keyName (key), keyString (key));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of key %s with value %s failed.", keyName (key),
+							keyString (key));
 	}
 	else if (rc == -1)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey, "Out of memory");
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Out of memory");
 		rc = 0;
 	}
 

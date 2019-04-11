@@ -65,23 +65,23 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XMLException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const DOMException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XercesPluginException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, e.what ());
+		ELEKTRA_SET_PARSING_ERROR (parentKey, e.what ());
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, "Unknown exception occurred while reading xml file");
+		ELEKTRA_SET_PARSING_ERROR (parentKey, "Unknown exception occurred while reading xml file");
 	}
 
 	// Avoid destruction of the pointers at the end
@@ -103,23 +103,23 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RESOURCE, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XMLException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const DOMException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XercesPluginException & e)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, e.what ());
+		ELEKTRA_SET_PARSING_ERROR (parentKey, e.what ());
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSING, parentKey, "Unknown exception occurred while writing xml file");
+		ELEKTRA_SET_PARSING_ERROR (parentKey, "Unknown exception occurred while writing xml file");
 	}
 
 	// Avoid destruction of the pointers at the end

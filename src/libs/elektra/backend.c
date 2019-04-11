@@ -80,7 +80,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!foundMountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Could not find mountpoint within root %s", keyName (root));
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not find mountpoint within root %s", keyName (root));
 		return -1;
 	}
 
@@ -91,8 +91,8 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!backend->mountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Could not create mountpoint with name %s and value %s",
-				      keyString (foundMountpoint), keyBaseName (root));
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not create mountpoint with name %s and value %s",
+						   keyString (foundMountpoint), keyBaseName (root));
 		return -1;
 	}
 
@@ -201,9 +201,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure)
-						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
-								     "elektraProcessPlugins for error failed");
+					if (!failure) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
 				}
 			}
@@ -212,9 +210,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure)
-						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
-								     "elektraProcessPlugins for get failed");
+					if (!failure) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
 				}
 			}
@@ -228,9 +224,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure)
-						ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INSTALLATION, errorKey,
-								     "elektraProcessPlugins for set failed");
+					if (!failure) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
 				}
 			}
@@ -238,8 +232,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			{
 				// no one cares about that config
 				if (!failure)
-					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INSTALLATION, errorKey, "Unrecognised Config Tree: %s",
-							      keyBaseName (cur));
+					ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Unrecognised Config Tree: %s", keyBaseName (cur));
 				ksDel (cut);
 			}
 		}

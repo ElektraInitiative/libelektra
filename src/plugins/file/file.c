@@ -48,8 +48,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	struct stat sb;
 	if (stat (fileName, &sb) == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to stat file %s, aborting. Reason: %s", fileName,
-				    strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "failed to stat file %s, aborting. Reason: %s", fileName, strerror (errno));
 		return -1;
 	}
 
@@ -63,8 +62,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (!buffer)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize,
-				    fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize, fileName);
 		return -1;
 	}
 
@@ -72,7 +70,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	fp = fopen (fileName, "rb");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "Failed to open file %s", fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open file %s", fileName);
 		elektraFree (buffer);
 		return -1;
 	}
@@ -89,8 +87,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (bytesRead < fileSize)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSING, parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName,
-				    bytesRead, fileSize);
+		ELEKTRA_SET_PARSING_ERRORF (parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName, bytesRead,
+					    fileSize);
 		elektraFree (buffer);
 		fclose (fp);
 		return -1;
@@ -144,7 +142,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	fp = fopen (fileName, "wb");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey, "failed to open %s for writing", fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "failed to open %s for writing", fileName);
 		return -1;
 	}
 	ssize_t svalueSize = keyGetValueSize (key);

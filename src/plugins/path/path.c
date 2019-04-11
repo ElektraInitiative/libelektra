@@ -59,7 +59,7 @@ static int validateKey (Key * key, Key * parentKey)
 	}
 	else if (keyString (key)[0] != '/')
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "Given path \"%s\" is not absolute", keyString (key));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Given path \"%s\" is not absolute", keyString (key));
 		return 0;
 	}
 	int errnosave = errno;
@@ -76,7 +76,7 @@ static int validateKey (Key * key, Key * parentKey)
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
 		strcat (errmsg, keyValue (key));
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Could not stat file, message: %s", errmsg);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not stat file, message: %s", errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
 		return -1;
@@ -85,14 +85,14 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		if (!S_ISBLK (buf.st_mode))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Device not found: %s", keyString (key));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Device not found: %s", keyString (key));
 		}
 	}
 	else if (!strcmp (keyString (meta), "directory"))
 	{
 		if (!S_ISDIR (buf.st_mode))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_RESOURCE, parentKey, "Directory not found: %s", keyString (key));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Directory not found: %s", keyString (key));
 		}
 	}
 	return 1;
@@ -129,10 +129,10 @@ static int validatePermission (Key * key, Key * parentKey)
 		// Check if user exists
 		if (p == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey,
-					    "Could not find user \"%s\" for key \"%s\". "
-					    "Does the user exist?\"",
-					    name, keyName (key));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
+								"Could not find user \"%s\" for key \"%s\". "
+								"Does the user exist?\"",
+								name, keyName (key));
 			return -1;
 		}
 		name = p->pw_name;
@@ -157,10 +157,10 @@ static int validatePermission (Key * key, Key * parentKey)
 		name = p->pw_name;
 		if (uid != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey,
-					    "To check permissions for %s I need to be the root user."
-					    " Are you running kdb as root?\"",
-					    keyName (key));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
+						     "To check permissions for %s I need to be the root user."
+						     " Are you running kdb as root?\"",
+						     keyName (key));
 			return -1;
 		}
 	}
@@ -203,16 +203,16 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (euidResult != 0 || egidResult != 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, parentKey,
-				   "There was a problem in the user switching process."
-				   "Please report the issue at https://issues.libelektra.org");
+		ELEKTRA_SET_LOGICAL_ERROR (parentKey,
+					   "There was a problem in the user switching process."
+					   "Please report the issue at https://issues.libelektra.org");
 		return -1;
 	}
 
 	if (canAccess != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "User %s does not have required permission (%s) on %s",
-				    name, modes, validPath);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on %s", name, modes,
+							validPath);
 		return -1;
 	}
 
@@ -238,14 +238,14 @@ static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd 
 	// therefore ngroups now contains the actual number of groups for the user
 	if (getgrouplist (p->pw_name, (int) p->pw_gid, (*groups), &ngroups) < 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, parentKey,
-				   "There was a problem in the getting all groups for the user."
-				   "Please report the issue at https://issues.libelektra.org");
+		ELEKTRA_SET_LOGICAL_ERROR (parentKey,
+					   "There was a problem in the getting all groups for the user."
+					   "Please report the issue at https://issues.libelektra.org");
 		if (seteuid (currentUID) < 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_LOGICAL, parentKey,
-					   "There was a problem in the user switching process."
-					   "Please report the issue at https://issues.libelektra.org");
+			ELEKTRA_SET_LOGICAL_ERROR (parentKey,
+						   "There was a problem in the user switching process."
+						   "Please report the issue at https://issues.libelektra.org");
 		}
 		return -1;
 	}
@@ -265,10 +265,10 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
 	int gidErr = setegid ((int) gr->gr_gid);
 	if (gidErr < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey,
-				    "Could not set egid of user \"%s\" for key \"%s\"."
-				    " Are you running kdb as root?\"",
-				    name, keyName (key));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
+					     "Could not set egid of user \"%s\" for key \"%s\"."
+					     " Are you running kdb as root?\"",
+					     name, keyName (key));
 		return -1;
 	}
 	return 0;
@@ -288,10 +288,10 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
 	int err = seteuid ((int) p->pw_uid);
 	if (err < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RESOURCE, parentKey,
-				    "Could not set euid of user \"%s\" for key \"%s\"."
-				    " Are you running kdb as root?\"",
-				    p->pw_name, keyName (key));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
+					     "Could not set euid of user \"%s\" for key \"%s\"."
+					     " Are you running kdb as root?\"",
+					     p->pw_name, keyName (key));
 		return -1;
 	}
 	return 0;
@@ -312,8 +312,8 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 	int result = access (validPath, modeMask);
 	if (result != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "User %s does not have required permission (%s) on %s",
-				    p->pw_name, modes, validPath);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on %s", p->pw_name,
+							modes, validPath);
 		return -1;
 	}
 	return 1;
