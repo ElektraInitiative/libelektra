@@ -436,11 +436,11 @@ static int handleConflictConflict (Key * parentKey, Key * key, Key * conflictMet
 	switch (onConflict)
 	{
 	case ERROR:
-		ELEKTRA_SET_CONFLICT_ERRORF (parentKey, "%s has conflicting metakeys: %s\n", keyName (key), problemKeys);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s has conflicting metakeys: %s\n", keyName (key), problemKeys);
 		ret = -1;
 		break;
 	case WARNING:
-		ELEKTRA_ADD_CONFLICT_WARNINGF (parentKey, "%s has conflicting metakeys: %s\n", keyName (key), problemKeys);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "%s has conflicting metakeys: %s\n", keyName (key), problemKeys);
 		break;
 	case INFO:
 	{
