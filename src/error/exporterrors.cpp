@@ -113,7 +113,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 
 		if (p[i]["macro"].empty ())
 		{
-			continue;
+			throw invalid_argument ("Error with number " + p[i]["number"] + " does not have a mandatory macro.");
 		}
 
 		os << "#define ELEKTRA_WARNING_" << p[i]["macro"] << " " << p[i]["number"] << "" << endl;
