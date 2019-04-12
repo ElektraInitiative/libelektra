@@ -271,7 +271,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 				return;
 			}
 
-			if (elektraKDBErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT)
+			if (strcmp(elektraKDBErrorCode (kdbSetError), ELEKTRA_STRINGIFY(ELEKTRA_ERROR_CONFLICT)) != 0)
 			{
 				*error = kdbSetError;
 				return;
@@ -351,7 +351,7 @@ static ElektraError * elektraErrorWarningFromKey (Key * key)
 	error = elektraErrorLowLevel (ELEKTRA_ERROR_SEVERITY_WARNING, -1, "One or more warnings were found.", "", "");
 	error->lowLevelError = elektraCalloc (sizeof (struct _ElektraKDBError));
 
-	error->lowLevelError->code = -1;
+	error->lowLevelError->code = NULL;
 	error->lowLevelError->description = "One or more warnings were found.";
 	error->lowLevelError->severity = ELEKTRA_ERROR_SEVERITY_WARNING;
 	error->lowLevelError->group = "";
@@ -369,8 +369,8 @@ static ElektraError * elektraErrorWarningFromKey (Key * key)
 		warning->severity = ELEKTRA_ERROR_SEVERITY_WARNING;
 
 		char * name = elektraFormat ("warnings/#%02d/number", i);
-		kdb_long_t warningCode;
-		elektraKeyToLong (keyGetMeta (key, name), &warningCode);
+		const char * warningCode;
+		elektraKeyToString (keyGetMeta (key, name), &warningCode);
 		warning->code = warningCode;
 		elektraFree (name);
 
@@ -407,8 +407,8 @@ static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 		return NULL;
 	}
 
-	kdb_long_t code;
-	elektraKeyToLong (keyGetMeta (key, "error/number"), &code);
+	const char * code;
+	elektraKeyToString (keyGetMeta (key, "error/number"), &code);
 
 	const char * severityString = keyString (keyGetMeta (key, "error/severity"));
 	ElektraErrorSeverity severity = ELEKTRA_ERROR_SEVERITY_FATAL; // Default is FATAL.
@@ -453,8 +453,8 @@ static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 			warning->severity = ELEKTRA_ERROR_SEVERITY_WARNING;
 
 			char * name = elektraFormat ("warnings/#%02d/number", i);
-			kdb_long_t warningCode;
-			elektraKeyToLong (keyGetMeta (key, name), &warningCode);
+			const char * warningCode;
+			elektraKeyToString (keyGetMeta (key, name), &warningCode);
 			warning->code = warningCode;
 			elektraFree (name);
 
