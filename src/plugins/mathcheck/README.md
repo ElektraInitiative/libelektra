@@ -40,10 +40,10 @@ kdb setmeta user/tests/mathcheck/k check/math "== + ../a ../b"
 # should fail
 kdb set user/tests/mathcheck/k 7.7
 # RET:5
-# ERROR:123
+# ERROR:C04200
 # Set string to "7.7"
 # The command set failed while accessing the key database with the info:
-# Error (#123) occurred!
+# Error (#04200) occurred!
 # Description: invalid value
 # Module: mathcheck
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/mathcheck/mathcheck.c:399

@@ -80,7 +80,7 @@ kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? 
 # will fail
 kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
-# ERROR:135
+# ERROR:C04200
 ```
 
 Assignment example:
@@ -123,8 +123,8 @@ kdb export /tests/conditionals ini
 #> sub/key = false
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
-# ERROR:135
-# Error (#135) occurred!
+# ERROR:C04200
+# Error (#04200) occurred!
 # Description: Validation failed
 # Module: conditionals
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
