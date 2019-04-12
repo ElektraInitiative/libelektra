@@ -357,6 +357,16 @@ you up to date with the multi-language support provided by Elektra.
 - The script `scripts/reformat-all` is a new convenience script that calls all other `reformat-*` scripts. _(Klemens Böswirth)_
 - The script `scripts/pre-commit-check-formatting` can be used as a pre-commit hook, to ensure files are formatted before committing. _(Klemens Böswirth)_
 
+## Benchmarks
+
+- The benchmarking tool [`benchmark_plugingetset`](../../benchmarks/plugingetset.c) now also supports only executing the `get` method for the specified plugin. For example, to convert the data stored in the file `benchmarks/data/yaypeg.test.in` with the [YAy PEG plugin](https://www.libelektra.org/plugins/yaypeg) to a key set you can now use the following command:
+
+  ```sh
+  benchmark_plugingetset benchmarks/data user yaypeg get
+  ```
+
+  . _(René Schwaiger)_
+
 ## Documentation
 
 - We added a basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
