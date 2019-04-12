@@ -271,7 +271,9 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 - `kdbGet` now calls global postgetstorage plugins with the parent key passed to `kdbGet`, instead of a random mountpoint. _(Klemens Böswirth)_
 - Fixed a double cleanup error (segmentation fault) when mounting global plugins. _(Mihael Pranjić)_
-- <<TODO>>
+- Logging in Elektra was changed with this release. If Elektra is compiled with `ENABLE_LOGGER` enabled, we now log warnings and errors to
+  stderr and everything except debug messages to syslog. If `ENABLE_DEBUG` is also enabled, debug messages are logged to syslog as well.
+  Previously only you had to make some manual changes to the code, to see most of the logging messages. _(Klemens Böswirth)_
 - <<TODO>>
 
 ### Ease

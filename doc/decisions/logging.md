@@ -12,7 +12,7 @@ and unusable. Thus there is an urge for this decision.
 - this decision is irrelevant for plugins and bindings that are not
   written in C/C++. In any case, however, logging must be disabled
   by default.
-- should completely compile away with ELEKTRA_LOGGING=OFF
+- should completely compile away with ENABLE_LOGGER=OFF
 - should support minimalistic, compile-time filtering
   (per modules and verbosity level?) and some sinks (stderr, syslog
   or files)
@@ -22,8 +22,10 @@ and unusable. Thus there is an urge for this decision.
 - run-time problems are checked via assertions, not logged
 - opinions about if logging should be to stderr or files differ
 - filtering with grep is not enough
-- per default there should be no output, even with ELEKTRA_LOGGING=ON
-  (You need to change filtering to get output)
+- per default there should be no output
+- with ENABLE_LOGGER=ON only warnings and errors should be shown on stderr
+- other sinks like syslog and file may log more (they are not immediately
+  visible and distracting)
 - performance is not so important (because logging is usually turned off
   anyway)
 
