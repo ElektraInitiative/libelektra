@@ -16,6 +16,7 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbmacros.h>
 #include <kdbtypes.h>
 
 #include <stdarg.h>
@@ -36,7 +37,7 @@ int elektraRealloc (void ** buffer, size_t size);
 char * elektraStrDup (const char * s);
 char * elektraStrNDup (const char * s, size_t l);
 
-char * elektraFormat (const char * format, ...);
+char * elektraFormat (const char * format, ...) ELEKTRA_ATTRIBUTE_FORMAT (printf, 1, 2);
 char * elektraVFormat (const char * format, va_list arg_list);
 
 /* Compare */
