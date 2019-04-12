@@ -408,7 +408,8 @@ you up to date with the multi-language support provided by Elektra.
 
 #### Alpine Linux
 
-- We updated the [Docker image for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
+- Our [Docker image for Alpine Linux](../../scripts/docker/alpine) now uses the base image for Alpine Linux 3.9. _(René Schwaiger)_
+- We added [PEGTL](https://github.com/taocpp/PEGTL) to the [Alpine Docker image](../../scripts/docker/alpine). _(René Schwaiger)_
 
 #### Debian
 
