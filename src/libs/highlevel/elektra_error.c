@@ -17,27 +17,184 @@
 extern "C" {
 #endif
 
-// elektra/errorprivate.h
+// kdbprivate.h
 
 /**
  * Creates a new ElektraError using the provided values.
  * The returned value will be allocated with elektraCalloc().
  *
- * @param code        The error code of the error.
- * @param description The description of the error.
- * @param severity    The severity of the error. Only use ELEKTRA_ERROR_SEVERITY_FATAL,
- *                    if the error will be raised with elektraFatalError().
- * @param group       The group to which this error belongs.
- * @param module      The module from which this error originates.
+ * @param code        The error code of the error. Must be compile-time constant.
+ * @param description The description of the error. Will be copied and stored in the struct.
+ * @param module      The module that raised the error. Must be compile-time constant.
+ * @param file        The file that raised the error. Must be compile-time constant.
+ * @param line        The line in which the error was raised.
+ *
  * @return A newly allocated ElektraError (free with elektraFree()).
  */
-ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity)
+ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line)
 {
 	ElektraError * const error = elektraCalloc (sizeof (struct _ElektraError));
 	error->code = code;
+	error->codeFromKey = NULL;
 	error->description = elektraStrDup (description);
-	error->severity = severity;
+	error->module = module;
+	error->file = file;
+	error->line = line;
+	error->warningCount = 0;
+	error->warningAlloc = 0;
+	error->warnings = NULL;
+	error->errorKey = NULL;
 
+	return error;
+}
+
+/**
+ * Adds a warning to an existing ElektraError struct.
+ * If you want to report a warning without an error, create a dummy error with
+ * elektraErrorPureWarning() and then add a warning to it.
+ *
+ * @param error   The error to which @p warning shall be added.
+ * @param warning The warning to add. Once added it is owned by @p error.
+ *                Do not call elektraErrorReset() on it afterwards.
+ */
+void elektraErrorAddWarning (ElektraError * error, ElektraError * warning)
+{
+	if (error->warningAlloc == 0)
+	{
+		error->warningCount = 1;
+		error->warningAlloc = 4;
+		error->warnings = elektraCalloc (error->warningAlloc * sizeof (ElektraError *));
+	}
+	else
+	{
+		++error->warningCount;
+		if (error->warningCount > error->warningAlloc)
+		{
+			error->warningAlloc *= 2;
+			elektraRealloc ((void **) &error->warnings, error->warningAlloc * sizeof (ElektraError *));
+		}
+	}
+
+	error->warnings[error->warningCount - 1] = warning;
+}
+
+/**
+ * Extracts the error and all warnings from the given key.
+ * If no error exists, a pure warning error will be used.
+ * @see elektraErrorPureWarning
+ *
+ * @param key The to extract error and warnings from.
+ *
+ * @return A newly allocated ElektraError (free with elektraFree()).
+ */
+ElektraError * elektraErrorFromKey (Key * key)
+{
+	if (key == NULL)
+	{
+		return NULL;
+	}
+
+	ElektraError * error;
+	if (keyGetMeta (key, "error"))
+	{
+		error = elektraErrorCreate (NULL, "", NULL, NULL, -1);
+	}
+	else
+	{
+		const char * codeFromKey = keyString (keyGetMeta (key, "error/number"));
+		const char * description = keyString (keyGetMeta (key, "error/description"));
+		const char * module = keyString (keyGetMeta (key, "error/module"));
+		const char * file = keyString (keyGetMeta (key, "error/file"));
+		kdb_long_t line = 0;
+		elektraKeyToLong (key, &line);
+		error = elektraErrorCreate (NULL, description, module, file, line);
+		error->codeFromKey = elektraStrDup (codeFromKey);
+		error->errorKey = key;
+	}
+
+
+	kdb_long_t warningCount = 0;
+	const Key * warningsKey = keyGetMeta (key, "warnings"); // TODO: read warning count correctly
+	if (warningsKey != NULL)
+	{
+		elektraKeyToLong (warningsKey, &warningCount);
+	}
+
+	if (warningCount > 0)
+	{
+		error->warningAlloc = 4;
+		while (error->warningAlloc < warningCount)
+		{
+			error->warningAlloc *= 2;
+		}
+		error->warningCount = warningCount;
+
+		error->warnings = elektraCalloc (error->warningAlloc * sizeof (ElektraError *));
+
+		for (int i = 0; i < warningCount; ++i)
+		{
+			const char * codeFromKey = keyString (keyGetMeta (key, "error/number"));
+			const char * description = keyString (keyGetMeta (key, "error/description"));
+			const char * module = keyString (keyGetMeta (key, "error/module"));
+			const char * file = keyString (keyGetMeta (key, "error/file"));
+			kdb_long_t line = 0;
+			elektraKeyToLong (key, &line);
+
+			ElektraError * warning = elektraErrorCreate (NULL, description, module, file, line);
+			error->codeFromKey = elektraStrDup (codeFromKey);
+			error->errorKey = key;
+
+			error->warnings[i] = warning;
+		}
+	}
+	else
+	{
+		error->warningCount = 0;
+		error->warnings = NULL;
+	}
+
+	return error;
+}
+
+ElektraError * elektraErrorKeyNotFound (const char * keyname)
+{
+	char * description = elektraFormat ("The key '%s' could not be found.", keyname);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_LOGICAL, description, "highlevel", "unknown", 0);
+	elektraFree (description);
+	return error;
+}
+
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType)
+{
+	char * description =
+		elektraFormat ("The key '%s' has the wrong type (expected '%s' but got '%s').", keyname, expectedType, actualType);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
+	elektraFree (description);
+	return error;
+}
+
+ElektraError * elektraErrorNullError (const char * function)
+{
+	char * description = elektraFormat ("The value passed to the ElektraError ** argument of %s was NULL.", function);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_LOGICAL, description, "highlevel", "unknown", 0);
+	elektraFree (description);
+	return error;
+}
+
+ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * keyname)
+{
+	char * description = elektraFormat ("The value of key '%s' with type '%s' could not be converted to string.", keyname, sourceType);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
+	elektraFree (description);
+	return error;
+}
+
+ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * keyname, const char * sourceValue)
+{
+	char * description =
+		elektraFormat ("The value '%s' of key '%s' could not be converted to type '%s'.", sourceValue, keyname, targetType);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
+	elektraFree (description);
 	return error;
 }
 
@@ -49,11 +206,22 @@ ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * descripti
  */
 
 /**
+ * Creates a dummy ElektraError struct to store warnings in.
+ * If elektraErrorCode() is called on the resulting struct, it will return NULL.
+ *
+ * @return A newly allocated ElektraError (free with elektraFree()).
+ */
+ElektraError * elektraErrorPureWarning (void)
+{
+	return elektraErrorCreate (NULL, "", NULL, NULL, -1);
+}
+
+/**
  * @return the error code of the given error
  */
-ElektraErrorCode elektraErrorCode (const ElektraError * error)
+const char * elektraErrorCode (const ElektraError * error)
 {
-	return error->code;
+	return error->errorKey == NULL ? error->code : error->codeFromKey;
 }
 
 /**
@@ -62,150 +230,6 @@ ElektraErrorCode elektraErrorCode (const ElektraError * error)
 const char * elektraErrorDescription (const ElektraError * error)
 {
 	return error->description;
-}
-
-/**
- * @return the severity of the given error
- */
-ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error)
-{
-	return error->severity;
-}
-
-/**
- * @return the error code of the attached low-level error,
- * or NULL if no low-level error is attached
- */
-const char * elektraKDBErrorCode (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return NULL;
-	}
-
-	return error->lowLevelError->code;
-}
-
-/**
- * @return the description for the attached low-level error,
- * or -1 if no low-level error is attached
- */
-const char * elektraKDBErrorDescription (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return NULL;
-	}
-
-	return error->lowLevelError->description;
-}
-
-/**
- * @return the severity of the attached low-level error,
- * or #ELEKTRA_ERROR_SEVERITY_FATAL if no low-level error is attached
- */
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return ELEKTRA_ERROR_SEVERITY_FATAL;
-	}
-
-	return error->lowLevelError->severity;
-}
-
-/**
- * @return the group from which the attached low-level error originated,
- * or NULL if no low-level error is attached
- */
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return NULL;
-	}
-
-	return error->lowLevelError->group;
-}
-
-/**
- * @return the module from which the attached low-level error originated,
- * or NULL if no low-level error is attached
- */
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return NULL;
-	}
-
-	return error->lowLevelError->module;
-}
-
-/**
- * @return the reason for the attached low-level error,
- * or NULL if no low-level error is attached
- */
-const char * elektraKDBErrorReason (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return NULL;
-	}
-
-	return error->lowLevelError->reason;
-}
-
-/**
- * @return the number of warnings associated with the attached low-level error,
- * or -1 if no low-level error is attached
- */
-int elektraKDBErrorWarningCount (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return -1;
-	}
-
-	return error->lowLevelError->warningCount;
-}
-
-/**
- * @return a newly allocated ElektraError representing the warning at the given index,
- * or NULL if the index is out of range
- *
- * the returned error will always have the following properties:
- * - error code is #ELEKTRA_ERROR_CODE_LOW_LEVEL
- * - description is ""
- * - severity is #ELEKTRA_ERROR_SEVERITY_WARNING
- * - the attached low-level error represents the warning in question
- *
- * NOTE: you have to free the memory allocated by this function using elektraFree()
- */
-ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index)
-{
-	if (index < 0 || index > error->lowLevelError->warningCount)
-	{
-		return NULL;
-	}
-
-	ElektraError * warning = elektraErrorCreate (ELEKTRA_ERROR_CODE_LOW_LEVEL, "", ELEKTRA_ERROR_SEVERITY_WARNING);
-	warning->lowLevelError = error->lowLevelError->warnings[index];
-	return warning;
-}
-
-/**
- * @return the Key from which the given kdb error was extracted,
- * or NULL if no low-level error is attached
- */
-Key * elektraKDBErrorKey (const ElektraError * error)
-{
-	if (error->lowLevelError == NULL)
-	{
-		return NULL;
-	}
-
-	return error->lowLevelError->errorKey;
 }
 
 /**
@@ -226,18 +250,18 @@ void elektraErrorReset (ElektraError ** error)
 		elektraFree (actualError->description);
 	}
 
-	struct _ElektraKDBError * kdbError = actualError->lowLevelError;
-	if (kdbError != NULL)
+	if (actualError->codeFromKey != NULL)
 	{
-		if (kdbError->warnings != NULL)
+		elektraFree (actualError->codeFromKey);
+	}
+
+	if (actualError->warnings != NULL)
+	{
+		for (int i = 0; i < actualError->warningCount; ++i)
 		{
-			for (int i = 0; i < kdbError->warningCount; ++i)
-			{
-				elektraFree (kdbError->warnings[i]);
-			}
-			elektraFree (kdbError->warnings);
+			elektraErrorReset (&actualError->warnings[i]);
 		}
-		elektraFree (kdbError);
+		elektraFree (actualError->warnings);
 	}
 
 	elektraFree (actualError);

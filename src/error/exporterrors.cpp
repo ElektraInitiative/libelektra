@@ -38,71 +38,29 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "#include <string.h>" << endl
 	   << endl
 	   << "#ifdef __cplusplus" << endl
-	   << "	using namespace ckdb;" << endl
-	   << endl;
+	   << "using namespace ckdb;" << endl
+	   << "#endif" << endl;
 	os << endl << endl;
-	os << "#endif" << endl;
 
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERROR(key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl;
-		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__)" << endl;
-		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERRORF(key, text, ...) ELEKTRA_SET_ERRORF_HELPER\\" << endl;
-		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl << endl;
+		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERROR(key, text) \\" << endl
+		   << "\tdo { ELEKTRA_LOG (\"Add Error " << p[i]["number"] << ": %s\", text); elektraSetError" << p[i]["number"]
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__)); } while (0)" << endl;
+		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERRORF(key, text, ...) \\" << endl
+		   << "\tdo { ELEKTRA_LOG (\"Add Error " << p[i]["number"] << ": \" text, __VA_ARGS__); elektraSetErrorf" << p[i]["number"]
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), __VA_ARGS__); } while (0)" << endl;
 
-		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING(key, text) ELEKTRA_ADD_WARNING_HELPER\\" << endl;
-		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__)" << endl;
-		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNINGF(key, text, ...) ELEKTRA_ADD_WARNINGF_HELPER\\" << endl;
-		os << "	(" << p[i]["number"] << ", key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl << endl;
+		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING(key, text) \\" << endl
+		   << "\tdo { ELEKTRA_LOG (\"Add Warning " << p[i]["number"] << ": %s\", text); elektraAddWarning" << p[i]["number"]
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__)); } while (0)" << endl;
+		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNINGF(key, text, ...) \\" << endl
+		   << "\tdo { ELEKTRA_LOG (\"Add Warning " << p[i]["number"] << ": \" text, __VA_ARGS__); elektraAddWarningf"
+		   << p[i]["number"] << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), __VA_ARGS__); } while (0)" << endl;
+
+		os << endl;
 	}
-	//    << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
-	//    << "	(number, key, text, __FILE__, __LINE__)" << endl
-	//    << endl
-	os << "#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) ELEKTRA_SET_ERROR_HELPER_HELPER\\" << endl
-	   << "	(number, key, text, file, line)" << endl
-	   << endl
-	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Error %s: %s\", "
-	      "number, text); elektraSetError ## number\\"
-	   << endl
-	   << "	(key, text, file, #line); } while (0)" << endl
-	   << endl
-	   << endl
-	   //    << "#define ELEKTRA_ADD_WARNING(number, key, text) ELEKTRA_ADD_WARNING_HELPER\\" << endl
-	   //    << "	(number, key, text, __FILE__, __LINE__)" << endl
-	   //    << "" << endl
-	   << "#define ELEKTRA_ADD_WARNING_HELPER(number, key, text, file, line) ELEKTRA_ADD_WARNING_HELPER_HELPER\\" << endl
-	   << "	(number, key, text, file, line)" << endl
-	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNING_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Warning %s: %s\", "
-	      "number, text);  elektraAddWarning ## number\\"
-	   << endl
-	   << "	(key, text, file, #line);} while (0)" << endl
-	   << endl
-	   << endl
-	   << "#define ELEKTRA_SET_ERRORF(number, key, text, ...) ELEKTRA_SET_ERRORF_HELPER\\" << endl
-	   << "	(number, key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl
-	   << endl
-	   << "#define ELEKTRA_SET_ERRORF_HELPER(number, key, text, file, line, ...) ELEKTRA_SET_ERRORF_HELPER_HELPER\\" << endl
-	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
-	   << endl
-	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) do {ELEKTRA_LOG (\"Add Error \" "
-	      "ELEKTRA_STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraSetErrorf ## number\\"
-	   << endl
-	   << "	(key, text, file, #line,  __VA_ARGS__); } while (0)" << endl
-	   << endl
-	   << endl
-	   << "#define ELEKTRA_ADD_WARNINGF(number, key, text, ...) ELEKTRA_ADD_WARNINGF_HELPER\\" << endl
-	   << "	(number, key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl
-	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNINGF_HELPER(number, key, text, file, line, ...) ELEKTRA_ADD_WARNINGF_HELPER_HELPER\\" << endl
-	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
-	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...)  do {ELEKTRA_LOG (\"Add Warning \" "
-	      "ELEKTRA_STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraAddWarningf ## number\\"
-	   << endl
-	   << "	(key, text, file, #line, __VA_ARGS__); } while (0)" << endl
-	   << endl
-	   << endl;
+	os << endl;
 
 	for (size_t i = 1; i < p.size (); ++i)
 	{
@@ -336,118 +294,29 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	return os;
 }
 
-static ostream & printCreatorSignature (ostream & os, map<string, string> & data)
+static string macroCaseToPascalCase (const string & s)
 {
-	string name = data["name"];
-	bool wasUnderscore = true;
-	for (char & cur : name)
-	{
-		if (isalpha (cur))
-		{
-			if (wasUnderscore)
-			{
-				cur = static_cast<char> (toupper (cur));
-			}
-			else
-			{
-				cur = static_cast<char> (tolower (cur));
-			}
-		}
-		wasUnderscore = cur == '_';
-	}
-	name.erase (remove (name.begin (), name.end (), '_'), name.end ());
-
-	os << "ElektraError * elektraError" << name << "(";
-
-	string severity = data["severity"];
-
-	int args = data.find ("args") != data.end () ? stoi (data["args"]) : 0;
-	if (args > 0)
-	{
-		if (severity == "*")
-		{
-			os << "ElektraErrorSeverity severity, ";
-		}
-
-		os << data["type1"] << " " << data["arg1"];
-		for (int j = 2; j <= args; j++)
-		{
-			os << ", " << data["type" + to_string (j)] << " " << data["arg" + to_string (j)];
-		}
-	}
-
-	os << ")";
-	return os;
+	std::string result;
+	result.resize (s.size ());
+	auto upcase = true;
+	std::transform (s.begin (), s.end (), result.begin (), [&upcase](char c) {
+		int x = upcase ? toupper (c) : tolower (c);
+		upcase = c == '_';
+		return x;
+	});
+	result.erase (std::remove (result.begin (), result.end (), '_'), result.end ());
+	return result;
 }
 
-static ostream & printCodes (ostream & os, parse_t & p)
+static ostream & printHighlevelErrorsHeader (ostream & os, parse_t & p)
 {
-	os << "/*This is an auto-generated file generated by exporterrors_highlevel. Do not modify it.*/" << endl
-	   << endl
-	   << "#ifndef ELEKTRA_ERROR_CODES_H" << endl
-	   << "#define ELEKTRA_ERROR_CODES_H" << endl
-	   << endl
-	   << "#ifdef __cplusplus" << endl
-	   << "extern \"C\" {" << endl
-	   << "#endif" << endl
-	   << "typedef enum" << endl
-	   << "{" << endl;
-
-	for (size_t i = 1; i < p.size (); ++i)
-	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
-
-		if (p[i]["name"].empty ())
-		{
-			continue;
-		}
-
-		os << "\tELEKTRA_ERROR_CODE_" << p[i]["name"] << " = " << i << "," << endl;
-	}
-
-	os << "} ElektraErrorCode;" << endl;
-	os << endl;
-
-	os << "#ifdef __cplusplus" << endl << "}" << endl;
-
-	os << "namespace elektra {" << endl;
-	os << "enum class ElektraErrorCode {" << endl;
-	for (size_t i = 1; i < p.size (); ++i)
-	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
-
-		if (p[i]["name"].empty ())
-		{
-			continue;
-		}
-
-		os << "\t" << p[i]["name"] << " = ELEKTRA_ERROR_CODE_" << p[i]["name"] << "," << endl;
-	}
-	os << "};" << endl;
-	os << "}" << endl;
-
-	os << "#endif" << endl;
-
-	os << "#endif // ELEKTRA_ERROR_CODES_H" << endl;
-	os << endl;
-	return os;
-}
-
-static ostream & printPublic (ostream & os, parse_t & p)
-{
-	os << "/*This is an auto-generated file generated by exporterrors_highlevel. Do not modify it.*/" << endl
+	os << "/*This is an auto-generated file generated by exporterrors highlevel. Do not modify it.*/" << endl
 	   << endl
 	   << "#ifndef ELEKTRA_ERRORS_H" << endl
 	   << "#define ELEKTRA_ERRORS_H" << endl
 	   << endl
-	   << "#include <elektra/types.h>" << endl
 	   << "#include <elektra/error.h>" << endl
+	   << "#include <elektra/types.h>" << endl
 	   << endl
 	   << "#ifdef __cplusplus" << endl
 	   << "extern \"C\" {" << endl
@@ -455,67 +324,21 @@ static ostream & printPublic (ostream & os, parse_t & p)
 
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
+		const auto & macroName = p[i]["macro"];
+		os << "#define ELEKTRA_ERROR_" << macroName << "_ERROR(description, ...) elektraError" << macroName
+		   << "Error (\"TODO\", __FILE__, __LINE__)" << endl;
+		os << "#define ELEKTRA_ERROR_ADD_" << macroName << "_WARNING(error, description, ...) elektraErrorAdd" << macroName
+		   << "Warning (error, \"TODO\", __FILE__, __LINE__)" << endl;
 
-		if (p[i]["name"].empty ())
-		{
-			continue;
-		}
+		os << "ElektraError * elektraError" << macroCaseToPascalCase (macroName)
+		   << "Error (const char * module, const char * file, kdb_long_t line, const char * description, ...);" << endl;
+		os << "void elektraErrorAdd" << macroCaseToPascalCase (macroName)
+		   << "Warning (ElektraError * error, const char * module, const char * file, kdb_long_t line, const char * description, "
+		      "...);"
+		   << endl;
 
-		if (p[i]["visibility"] != "public")
-		{
-			continue;
-		}
-
-		printCreatorSignature (os, p[i]) << ";" << endl;
+		os << endl;
 	}
-	os << endl;
-
-	os << "#ifdef __cplusplus" << endl << "}" << endl << "#endif" << endl;
-
-	os << "#endif // ELEKTRA_ERRORS_H" << endl;
-	os << endl;
-	return os;
-}
-
-static ostream & printPrivate (ostream & os, parse_t & p)
-{
-	os << "/*This is an auto-generated file generated by exporterrors_highlevel. Do not modify it.*/" << endl
-	   << endl
-	   << "#ifndef ELEKTRA_ERRORS_PRIVATE_H" << endl
-	   << "#define ELEKTRA_ERRORS_PRIVATE_H" << endl
-	   << endl
-	   << "#include <elektra/types.h>" << endl
-	   << "#include <elektra/error.h>" << endl
-	   << "#include <kdbprivate.h>" << endl
-	   << endl
-	   << "#ifdef __cplusplus" << endl
-	   << "extern \"C\" {" << endl
-	   << "#endif" << endl;
-
-	for (size_t i = 1; i < p.size (); ++i)
-	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
-
-		if (p[i]["name"].empty ())
-		{
-			continue;
-		}
-
-		if (p[i]["visibility"] == "public")
-		{
-			continue;
-		}
-
-		printCreatorSignature (os, p[i]) << ";" << endl;
-	}
-	os << endl;
 
 	os << "#ifdef __cplusplus" << endl << "}" << endl << "#endif" << endl;
 
@@ -524,14 +347,14 @@ static ostream & printPrivate (ostream & os, parse_t & p)
 	return os;
 }
 
-static ostream & printSource (ostream & os, parse_t & p, const char * headerPublic, const char * headerPrivate)
+static ostream & printHighlevelErrorsSource (ostream & os, parse_t & p, const std::string & header)
 {
 	os << "/*This is an auto-generated file generated by exporterrors_highlevel. Do not modify it.*/" << endl
 	   << endl
-	   << "#include <" << headerPublic << ">" << endl
-	   << "#include <" << headerPrivate << ">" << endl
+	   << "#include <" << header << ">" << endl
 	   << "#include <kdbprivate.h>" << endl
 	   << "#include <kdbhelper.h>" << endl
+	   << "#include <kdberrors.h>" << endl
 	   << endl;
 
 	// work-around not needed after new error concept
@@ -543,55 +366,35 @@ static ostream & printSource (ostream & os, parse_t & p, const char * headerPubl
 
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		if (p[i]["unused"] == "yes")
-		{
-			continue;
-		}
+		const auto & macroName = p[i]["macro"];
 
-		if (p[i]["name"].empty ())
-		{
-			continue;
-		}
-
-		printCreatorSignature (os, p[i]) << endl << "{" << endl;
-
-		string severity = p[i]["severity"];
-
-
-		if (severity != "*")
-		{
-			std::transform (severity.begin (), severity.end (), severity.begin (), ::toupper);
-			os << "\tElektraErrorSeverity severity = "
-			   << "ELEKTRA_ERROR_SEVERITY_" << severity << ";" << endl;
-		}
-
-		int args = p[i].find ("args") != p[i].end () ? stoi (p[i]["args"]) : 0;
-
-		if (args > 0)
-		{
-			os << "\tchar * errorString = elektraFormat (\"" << p[i]["description"] << "\"";
-			for (int j = 1; j <= args; j++)
-			{
-				os << ", " << p[i]["arg" + std::to_string (j)];
-			}
-			os << ");" << endl;
-		}
-		else
-		{
-			os << "\tconst char * errorString = \"" << p[i]["description"] << "\"";
-		}
-
-		os << "\tElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_CODE_" << p[i]["name"] << ", errorString, severity);"
+		os << "ElektraError * elektraError" << macroCaseToPascalCase (macroName)
+		   << "Error (const char * module, const char * file, kdb_long_t line, const char * description, ...) {" << endl
+		   << "\tva_list arg;" << endl
+		   << "\tva_start (arg, description);" << endl
+		   << "\tchar * descriptionText = elektraVFormat (description, arg);" << endl
+		   << "\tElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_" << p[i]["macro"]
+		   << ", descriptionText, module, file, line);" << endl
+		   << "\telektraFree (descriptionText);" << endl
+		   << "\tva_end (arg);" << endl
+		   << "\treturn error;" << endl
+		   << "}" << endl
 		   << endl;
 
-		if (args > 0)
-		{
-			os << "\telektraFree (errorString);" << endl;
-		}
-
-		os << "\treturn error;" << endl;
-		os << "}" << endl;
-		os << endl;
+		os << "void elektraErrorAdd" << macroCaseToPascalCase (macroName)
+		   << "Warning (ElektraError * error, const char * module, const char * file, kdb_long_t line, const char * description, "
+		      "...) {"
+		   << endl
+		   << "\tva_list arg;" << endl
+		   << "\tva_start (arg, description);" << endl
+		   << "\tchar * descriptionText = elektraVFormat (description, arg);" << endl
+		   << "\tElektraError * warning = elektraErrorCreate (ELEKTRA_ERROR_" << p[i]["macro"]
+		   << ", descriptionText, module, file, line);" << endl
+		   << "\telektraFree (descriptionText);" << endl
+		   << "\tva_end (arg);" << endl
+		   << "\telektraErrorAddWarning (error, warning);" << endl
+		   << "}" << endl
+		   << endl;
 	}
 
 	os << "#if defined(__GNUC__)" << endl << "#pragma GCC diagnostic pop" << endl << "#endif" << endl << endl;
@@ -697,26 +500,20 @@ int main (int argc, char ** argv) try
 		{
 			string infile = argv[2];
 			parse_t data = parse (infile);
-			printCodes (cout, data);
+			printHighlevelErrorsHeader (cout, data);
 			cout << endl << endl;
-			printPublic (cout, data);
-			cout << endl << endl;
-			printPrivate (cout, data);
-			cout << endl << endl;
-			printSource (cout, data, "", "");
+			printHighlevelErrorsSource (cout, data, "");
 			break;
 		}
-		case 9:
+		case 6:
 		{
 			string infile = argv[2];
 			parse_t data = parse (infile);
-			writeFile (data, argv[3], printCodes);
-			writeFile (data, argv[4], printPublic);
-			writeFile (data, argv[5], printPrivate);
+			writeFile (data, argv[3], printHighlevelErrorsHeader);
 
-			auto func = [&](ostream & os, parse_t & d) { printSource (os, d, argv[7], argv[8]); };
+			auto func = [&](ostream & os, parse_t & p) { printHighlevelErrorsSource (os, p, argv[5]); };
 
-			writeFile (data, argv[6], func);
+			writeFile (data, argv[4], func);
 			break;
 		}
 		default:
