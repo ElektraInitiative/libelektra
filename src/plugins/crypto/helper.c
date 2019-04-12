@@ -270,7 +270,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	if (recipientCount == 0)
 	{
 		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, errorDescription);
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}

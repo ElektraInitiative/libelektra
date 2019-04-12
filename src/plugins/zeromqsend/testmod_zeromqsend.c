@@ -241,7 +241,7 @@ static void test_timeoutConnect (void)
 
 	plugin->kdbSet (plugin, ks, parentKey);
 
-	char * expectedWarningNumber = elektraFormat ("%d", TIMEOUT_CODE);
+	char * expectedWarningNumber = elektraFormat ("%s", ELEKTRA_ERROR_TIMEOUT);
 	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
 	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#00/number")));
 
