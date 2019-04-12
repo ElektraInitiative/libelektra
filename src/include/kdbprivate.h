@@ -658,7 +658,7 @@ struct _ElektraError
 
 struct _ElektraKDBError
 {
-	int code;
+	const char * code;
 	const char * description;
 	ElektraErrorSeverity severity;
 	ElektraKDBErrorGroup group;
@@ -679,7 +679,7 @@ ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * descripti
 ElektraErrorCode elektraErrorCode (const ElektraError * error);
 ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
 
-int elektraKDBErrorCode (const ElektraError * error);
+const char * elektraKDBErrorCode (const ElektraError * error);
 const char * elektraKDBErrorDescription (const ElektraError * error);
 ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
 ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);

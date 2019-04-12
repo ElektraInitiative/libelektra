@@ -74,13 +74,13 @@ ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error)
 
 /**
  * @return the error code of the attached low-level error,
- * or -1 if no low-level error is attached
+ * or NULL if no low-level error is attached
  */
-int elektraKDBErrorCode (const ElektraError * error)
+const char * elektraKDBErrorCode (const ElektraError * error)
 {
 	if (error->lowLevelError == NULL)
 	{
-		return -1;
+		return NULL;
 	}
 
 	return error->lowLevelError->code;
