@@ -125,8 +125,10 @@ RUN cd /tmp \
 
 # PEGTL
 ARG PEGTL_VERSION=2.7.1
-RUN git clone --branch ${PEGTL_VERSION} --depth 1 https://github.com/taocpp/PEGTL.git \
-    && cp -R PEGTL/include/tao /usr/local/include
+RUN cd /tmp \
+    && git clone --branch ${PEGTL_VERSION} --depth 1 https://github.com/taocpp/PEGTL.git \
+    && cp -R PEGTL/include /usr/local/include \
+    && rm -rf PEGTL
 
 # YAEP
 ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3

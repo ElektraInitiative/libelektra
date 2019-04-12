@@ -8,6 +8,7 @@ RUN apt-get update && apt-get -y install \
         antlr4 \
         automake \
         autotools-dev \
+        bison \
         build-essential \
         checkinstall \
         clang-6.0 \
@@ -58,6 +59,24 @@ RUN apt-get update && apt-get -y install \
         tclcl-dev \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
+
+# YAEP
+ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
+RUN cd /tmp \
+    && mkdir yaep \
+    && curl -o yaep.tar.gz \
+       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
+    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
+    && cd yaep \
+    && mkdir build \
+    && cd build \
+    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make install \
+    && cd ../.. \
+    && rm -r yaep yaep.tar.gz
+
+# Update cache for shared libraries
+RUN ldconfig
 
 RUN pip install cmake-format==0.4.5 pyyaml
 
