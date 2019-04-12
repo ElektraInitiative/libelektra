@@ -383,8 +383,8 @@ bool processOptions (struct Specification * spec, Key * specKey, Key ** keyWithO
 	ksNext (opts); // skip count
 	Key * metaKey;
 
-	char * shortOptLine = elektraFormat ("");
-	char * longOptLine = elektraFormat ("");
+	char * shortOptLine = elektraStrDup ("");
+	char * longOptLine = elektraStrDup ("");
 	while ((metaKey = ksNext (opts)) != NULL)
 	{
 		struct OptionData optionData;
