@@ -9,7 +9,6 @@
 #ifndef ELEKTRA_ERROR_H
 #define ELEKTRA_ERROR_H
 
-#include <elektra/errorcodes.h>
 #include <kdb.h>
 #include <stdbool.h>
 
@@ -22,6 +21,9 @@ typedef struct _ElektraError ElektraError;
 
 typedef void (*ElektraErrorHandler) (ElektraError * error);
 
+ElektraError * elektraErrorPureWarning (void);
+
+const char * elektraErrorCode (const ElektraError * error);
 const char * elektraErrorDescription (const ElektraError * error);
 
 void elektraErrorReset (ElektraError ** error);

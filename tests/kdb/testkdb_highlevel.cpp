@@ -8,7 +8,6 @@
 
 #include <elektra.h>
 #include <elektra/conversion.h>
-#include <elektra/errorcodes.h>
 
 #include <gtest/gtest-elektra.h>
 #include <kdbhelper.h>

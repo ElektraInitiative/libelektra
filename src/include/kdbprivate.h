@@ -623,19 +623,6 @@ int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position
 extern "C" {
 #endif
 
-typedef enum
-{
-	/**
-	 * Use only, if the error will be raised with elektraFatalError().
-	 */
-	ELEKTRA_ERROR_SEVERITY_FATAL = 0,
-	ELEKTRA_ERROR_SEVERITY_ERROR,
-	ELEKTRA_ERROR_SEVERITY_WARNING
-} ElektraErrorSeverity;
-
-typedef const char * ElektraKDBErrorGroup;
-typedef const char * ElektraKDBErrorModule;
-
 struct _Elektra
 {
 	KDB * kdb;
@@ -650,22 +637,15 @@ struct _Elektra
 
 struct _ElektraError
 {
-	ElektraErrorCode code;
-	char * description;
-	ElektraErrorSeverity severity;
-	struct _ElektraKDBError * lowLevelError;
-};
-
-struct _ElektraKDBError
-{
 	const char * code;
-	const char * description;
-	ElektraErrorSeverity severity;
-	ElektraKDBErrorGroup group;
-	ElektraKDBErrorModule module;
-	const char * reason;
-	int warningCount;
-	struct _ElektraKDBError ** warnings;
+	char * codeFromKey;
+	char * description;
+	const char * module;
+	const char * file;
+	kdb_long_t line;
+	kdb_long_t warningCount;
+	kdb_long_t warningAlloc;
+	struct _ElektraError ** warnings;
 	Key * errorKey;
 };
 
@@ -673,21 +653,16 @@ struct _ElektraKDBError
 void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
-ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
 
-// error handling unstable/private for now
-ElektraErrorCode elektraErrorCode (const ElektraError * error);
-ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
+ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
+void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
+ElektraError * elektraErrorFromKey (Key * key);
 
-const char * elektraKDBErrorCode (const ElektraError * error);
-const char * elektraKDBErrorDescription (const ElektraError * error);
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
-const char * elektraKDBErrorReason (const ElektraError * error);
-int elektraKDBErrorWarningCount (const ElektraError * error);
-ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
-Key * elektraKDBErrorKey (const ElektraError * error);
+ElektraError * elektraErrorKeyNotFound (const char * keyname);
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
+ElektraError * elektraErrorNullError (const char * function);
+ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * keyname);
+ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * keyname, const char * sourceValue);
 
 #ifdef __cplusplus
 }
