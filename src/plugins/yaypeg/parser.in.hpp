@@ -187,8 +187,8 @@ struct push_indent
 	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
 
 	template <tao::TAO_PEGTL_NAMESPACE::apply_mode, tao::TAO_PEGTL_NAMESPACE::rewind_mode, template <typename...> class,
-		  template <typename...> class, typename Input>
-	static bool match (Input & input, State & state)
+		  template <typename...> class, typename Input, typename... States>
+	static bool match (Input & input, State & state, States &&...)
 	{
 		long long indent = 0;
 		while (!input.empty () && input.peek_char (indent) == ' ')
@@ -243,8 +243,8 @@ struct push_context
 	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
 
 	template <tao::TAO_PEGTL_NAMESPACE::apply_mode, tao::TAO_PEGTL_NAMESPACE::rewind_mode, template <typename...> class,
-		  template <typename...> class, typename Input>
-	static bool match (Input &, State & state)
+		  template <typename...> class, typename Input, typename... States>
+	static bool match (Input &, State & state, States &&...)
 	{
 		state.context.push (Context);
 		return true;
@@ -319,8 +319,8 @@ struct indent
 	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
 
 	template <tao::TAO_PEGTL_NAMESPACE::apply_mode, tao::TAO_PEGTL_NAMESPACE::rewind_mode, template <typename...> class,
-		  template <typename...> class, typename Input>
-	static bool match (Input &, State & state)
+		  template <typename...> class, typename Input, typename... States>
+	static bool match (Input &, State & state, States &&...)
 	{
 		auto levels = state.indentation.size ();
 		return Comparator{}(state.indentation[levels - 1], state.indentation[levels - 2]);
@@ -355,14 +355,14 @@ struct if_context_else
 	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
 
 	template <tao::TAO_PEGTL_NAMESPACE::apply_mode ApplyMode, tao::TAO_PEGTL_NAMESPACE::rewind_mode RewindMode,
-		  template <typename...> class Action, template <typename...> class Control, typename Input>
-	static bool match (Input & input, State & state)
+		  template <typename...> class Action, template <typename...> class Control, typename Input, typename... States>
+	static bool match (Input & input, State & state, States &&... states)
 	{
 		if (state.context.top () == Context1 || state.context.top () == Context2)
 		{
-			return RuleTrue::template match<ApplyMode, RewindMode, Action, Control> (input, state);
+			return RuleTrue::template match<ApplyMode, RewindMode, Action, Control> (input, state, states...);
 		}
-		return RuleFalse::template match<ApplyMode, RewindMode, Action, Control> (input, state);
+		return RuleFalse::template match<ApplyMode, RewindMode, Action, Control> (input, state, states...);
 		;
 	}
 };
@@ -586,8 +586,8 @@ struct s_indent
 	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
 
 	template <tao::TAO_PEGTL_NAMESPACE::apply_mode, tao::TAO_PEGTL_NAMESPACE::rewind_mode, template <typename...> class,
-		  template <typename...> class, typename Input>
-	static bool match (Input & input, State & state)
+		  template <typename...> class, typename Input, typename... States>
+	static bool match (Input & input, State & state, States &&...)
 	{
 		auto indent = state.indentation.back ();
 		decltype (indent) spaces = 0;
@@ -853,8 +853,8 @@ struct ns_char_preceding
 	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
 
 	template <tao::TAO_PEGTL_NAMESPACE::apply_mode, tao::TAO_PEGTL_NAMESPACE::rewind_mode, template <typename...> class,
-		  template <typename...> class, typename Input>
-	static bool match (Input & input, State &)
+		  template <typename...> class, typename Input, typename... States>
+	static bool match (Input & input, State &, States &&...)
 	{
 		if (input.current () == input.begin ())
 		{
@@ -1200,13 +1200,13 @@ char const * const errors<closing_single_quote>::errorMessage = "Missing closing
  * @brief This selector removes all nodes for grammar rules from the parse tree
  *        except for the ones for the grammar rules specified below.
  */
+// clang-format off
 template <typename Rule>
 using selector = tao::TAO_PEGTL_NAMESPACE::parse_tree::selector<
-	Rule, tao::TAO_PEGTL_NAMESPACE::parse_tree::apply_store_content::to<c_flow_json_node, ns_flow_yaml_node, ns_flow_node, e_node>,
-	tao::TAO_PEGTL_NAMESPACE::parse_tree::apply_remove_content::to<ns_l_block_map_implicit_entry, ns_s_block_map_implicit_key,
-								       c_l_block_map_implicit_value, l_plus_block_sequence,
-								       c_l_block_seq_entry>>;
-
+	Rule, tao::TAO_PEGTL_NAMESPACE::parse_tree::@STORE_CONTENT@<c_flow_json_node, ns_flow_yaml_node, ns_flow_node, e_node>,
+	tao::TAO_PEGTL_NAMESPACE::parse_tree::@REMOVE_CONTENT@<ns_l_block_map_implicit_entry, ns_s_block_map_implicit_key,
+								c_l_block_map_implicit_value, l_plus_block_sequence, c_l_block_seq_entry>>;
+// clang-format on
 } // namespace yaypeg
 
 #endif // ELEKTRA_PLUGIN_YAYPEG_GRAMMAR_HPP
