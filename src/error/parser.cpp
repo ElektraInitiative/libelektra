@@ -52,7 +52,7 @@ parse_t parse (std::string const & file)
 			bool isHighlevelFile = (file.find ("highlevel") != string::npos);
 			if (!std::regex_match (text, codeRegex) && !isHighlevelFile)
 				throw parse_error ("Error code does not match regular expression [0-9A-Z]{5,5}", linenr);
-			text = "C"+text;
+			text = "C" + text;
 		}
 
 		if (!currentMap[identifier].empty ()) currentMap[identifier] += "\n";
