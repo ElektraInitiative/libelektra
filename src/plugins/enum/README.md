@@ -57,10 +57,10 @@ kdb setmeta /tests/enum/value check/enum "'low', 'middle', 'high'"
 # should succeed
 kdb set /tests/enum/value low
 
-# should fail with error 121
+# should fail with error 04200
 kdb set /tests/enum/value no
 # RET:5
-# ERROR:121
+# ERROR:C04200
 ```
 
 Or with multi-enums:
@@ -78,10 +78,10 @@ kdb setmeta /tests/enum/multivalue check/enum "#3"
 # should succeed
 kdb set /tests/enum/multivalue ___small_middle__
 
-# should fail with error 121
+# should fail with error 04200
 kdb set /tests/enum/multivalue ___all_small__
 # RET:5
-# ERROR:121
+# ERROR:C04200
 
 # cleanup
 kdb rm -r /tests/enum

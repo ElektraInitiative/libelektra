@@ -26,8 +26,8 @@ kdb setmeta /tests/ipaddr/ipv4 check/ipaddr ipv4
 
 # Try to set an incorrect IP address
 kdb set /tests/ipaddr/ipv4 127.0.0.1337
-# STDERR: .*value of key is not a valid IP Address.*
-# ERROR:  51
+# STDERR: .*Validation Semantic.*
+# ERROR:  C04200
 # RET:    5
 
 # Set a correct IPv4 address

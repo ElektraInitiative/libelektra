@@ -193,7 +193,7 @@ kdb get user/tests/type/key
 #If we try to store a string Elektra will not change the value
 kdb set user/tests/type/key 'Not a char'
 # RET:5
-# ERROR:52
+# ERROR:C04200
 kdb get user/tests/type/key
 #> b
 
@@ -223,7 +223,7 @@ kdb set user/tests/type/value low
 # should fail with error 52
 kdb set user/tests/type/value no
 # RET:5
-# ERROR:52
+# ERROR:C04200
 ```
 
 Or with multi-enums:
@@ -245,7 +245,7 @@ kdb set user/tests/type/multivalue small_middle
 # should fail with error 52
 kdb set user/tests/type/multivalue all_small
 # RET:5
-# ERROR:52
+# ERROR:C04200
 
 # cleanup
 kdb rm -r user/tests/type
