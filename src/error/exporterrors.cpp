@@ -568,6 +568,13 @@ static ostream & printSource (ostream & os, parse_t & p, const char * headerPubl
 	   << "#include <kdbhelper.h>" << endl
 	   << endl;
 
+	// work-around not needed after new error concept
+	os << "#if defined(__GNUC__)" << endl
+	   << "#pragma GCC diagnostic push" << endl
+	   << "#pragma GCC diagnostic ignored \"-Wformat\"" << endl
+	   << "#endif" << endl
+	   << endl;
+
 	for (size_t i = 1; i < p.size (); ++i)
 	{
 		if (p[i]["unused"] == "yes")
@@ -620,6 +627,8 @@ static ostream & printSource (ostream & os, parse_t & p, const char * headerPubl
 		os << "}" << endl;
 		os << endl;
 	}
+
+	os << "#if defined(__GNUC__)" << endl << "#pragma GCC diagnostic pop" << endl << "#endif" << endl << endl;
 
 	return os;
 }
