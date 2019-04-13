@@ -102,7 +102,7 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy exited with: $res"
 
-	if [ "$res" = "0" ]; then
+	if [ "$res" = "0" ] && which valgrind; then
 		valgrind --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
 		res=$?
 		echo "valgrind dummy exited with: $res"
