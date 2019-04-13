@@ -25,8 +25,6 @@ fi
 
 base_output_folder="@CMAKE_CURRENT_BINARY_DIR@/gen"
 
-"$KDB" mount "${base_output_folder}/spec-data.ini" "$SPEC_ROOT/gen" ni
-
 for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 	[ -e "$test_folder" ] || continue
 	output_folder="$base_output_folder/$(basename "$test_folder")/"
@@ -42,19 +40,29 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 		test_params=$(cat "$test_folder/$test_name.params")
 
-		parent_key="spec$MOUNTPOINT/gen/$template/$test_name"
+		cascading_parent="$MOUNTPOINT/gen/$template/$test_name"
+		spec_parent="spec$cascading_parent"
+		user_parent="user$cascading_parent"
 
-		echo "running test $test_name with parent key $parent_key"
+		echo "running test $test_name with parent key $spec_parent"
 
-		"$KDB" import "$parent_key" ni < "$test_path"
+		"$KDB" mount "$test_file.spec.ini" "$spec_parent" ni
+		succeed_if "couldn't mount data"
+		"$KDB" mount "$test_file.user.ini" "$user_parent" ni
+		succeed_if "couldn't mount data"
+
+		"$KDB" import "$spec_parent" ni < "$test_path"
 		succeed_if "couldn't import data"
 
-		"$KDB" spec-mount "$MOUNTPOINT/gen/$template/$test_name"
+		"$KDB" spec-mount "$cascading_parent"
 		succeed_if "couldn't spec-mount data"
+
+		"$KDB" get "$cascading_parent/disjointed"
+		"$KDB" ls "$cascading_parent"
 
 		old_dir=$(pwd)
 		cd "$output_folder"
-		"$KDB" gen "$template" "$parent_key" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
+		"$KDB" gen "$template" "$spec_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
 			test "1" = "0"
@@ -103,92 +111,92 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		fi
 		rm "$output_folder$test_name.stderr"
 
-		data_list=$("$KDB" ls "$parent_key")
-		if [ -n "$data_list" ]; then
-			"$KDB" rm -r "$parent_key"
-			succeed_if "couldn't remove data"
-		fi
+		if [ "$gen" == "0" ]; then
+			for expected_part in "$test_folder$test_name".expected*; do
+				[ -e "$expected_part" ] || continue
 
-		if [ "$gen" != "0" ]; then
+				part=${expected_part#"$test_folder$test_name.expected"}
+				actual_part="$output_folder$test_name.actual$part"
+				diff_part="$output_folder$test_name$part.diff"
+
+				[ -f "$actual_part" ]
+				succeed_if "missing part $test_name.actual$part"
+
+				diff -u "$actual_part" "$expected_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+
+				if [ -s "$diff_part" ]; then
+					test "1" = "0"
+					succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
+					if [ "$nodiff" = "" ]; then
+						echo "Here is the diff:"
+						cat "$diff_part"
+						echo
+					fi
+					echo "The diff is also stored at $diff_part"
+					echo
+				else
+					rm "$diff_part"
+				fi
+			done
+
+			if [ -e "$output_folder$test_name.check.sh" ]; then
+				old_dir=$(pwd)
+				cd "$output_folder"
+
+				KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
+				if [ "$?" != "0" ]; then
+					test "1" = "0"
+					succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
+
+					if [ "$nodiff" = "" ]; then
+						echo "Here is the log:"
+						cat "$output_folder$test_name.check.log"
+						echo
+					fi
+					echo "The log is also stored at $output_folder$test_name.check.log"
+					echo
+				else
+					rm "$output_folder$test_name.check.log"
+				fi
+
+				cd "$old_dir"
+			fi
+
+			for actual_part in "$output_folder$test_name".actual*; do
+				[ -e "$actual_part" ] || continue
+
+				part=${actual_part#"$output_folder$test_name.actual"}
+				expected_part="$test_folder$test_name.expected$part"
+				diff_part="$output_folder$test_name$part.diff"
+
+				if [ -e "$diff_part" ]; then
+					rm "$actual_part"
+					continue
+				fi
+
+				if [ -e "$expected_part" ]; then
+					rm "$actual_part"
+					continue
+				fi
+
+				test "1" = "0"
+				succeed_if "additional part ${actual_part}"
+			done
+		else
 			rm "$output_folder$test_name".actual*
-			continue
 		fi
 
-		for expected_part in "$test_folder$test_name".expected*; do
-			[ -e "$expected_part" ] || continue
+		"$KDB" rm -r "$cascading_parent"
 
-			part=${expected_part#"$test_folder$test_name.expected"}
-			actual_part="$output_folder$test_name.actual$part"
-			diff_part="$output_folder$test_name$part.diff"
+		rm -f "$("$KDB" file "$spec_parent")"
+		rm -f "$("$KDB" file "$user_parent")"
 
-			[ -f "$actual_part" ]
-			succeed_if "missing part $test_name.actual$part"
-
-			diff -u "$actual_part" "$expected_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
-
-			if [ -s "$diff_part" ]; then
-				test "1" = "0"
-				succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
-				if [ "$nodiff" = "" ]; then
-					echo "Here is the diff:"
-					cat "$diff_part"
-					echo
-				fi
-				echo "The diff is also stored at $diff_part"
-				echo
-			else
-				rm "$diff_part"
-			fi
-		done
-
-		if [ -e "$output_folder$test_name.check.sh" ]; then
-			old_dir=$(pwd)
-			cd "$output_folder"
-
-			sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
-			if [ "$?" != "0" ]; then
-				test "1" = "0"
-				succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
-
-				if [ "$nodiff" = "" ]; then
-					echo "Here is the log:"
-					cat "$output_folder$test_name.check.log"
-					echo
-				fi
-				echo "The log is also stored at $output_folder$test_name.check.log"
-				echo
-			else
-				rm "$output_folder$test_name.check.log"
-			fi
-
-			cd "$old_dir"
-		fi
-
-		for actual_part in "$output_folder$test_name".actual*; do
-			[ -e "$actual_part" ] || continue
-
-			part=${actual_part#"$output_folder$test_name.actual"}
-			expected_part="$test_folder$test_name.expected$part"
-			diff_part="$output_folder$test_name$part.diff"
-
-			if [ -e "$diff_part" ]; then
-				rm "$actual_part"
-				continue
-			fi
-
-			if [ -e "$expected_part" ]; then
-				rm "$actual_part"
-				continue
-			fi
-
-			test "1" = "0"
-			succeed_if "additional part ${actual_part}"
-		done
+		"$KDB" umount "$cascading_parent"
+		"$KDB" umount "$spec_parent"
+		"$KDB" umount "$user_parent"
+		echo "----------------------------------------------------------------------"
 	done
-	echo
+	echo "======================================================================"
 done
-
-"$KDB" umount "$SPEC_ROOT/gen"
-rm -f "${output_folder}spec-data.ini"
 
 end_script

@@ -2,6 +2,7 @@ cat << EOF > dummy.c
 #include "empty.actual.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define ERROR_CHECK(tag)                                                                                                               \
 	if (error != NULL)                                                                                                                 \
@@ -11,6 +12,15 @@ cat << EOF > dummy.c
 		fprintf (stderr, "couldn't set %s", #tag);                                                                                     \
 		exit(EXIT_FAILURE);                                                                                                            \
 	}
+
+#define VALUE_CHECK(expr, expected) if (expr != expected) exit(EXIT_FAILURE);
+
+static void fatalErrorHandler (ElektraError * error)
+{
+	fprintf (stderr, "FATAL ERROR: %s\n", elektraErrorDescription (error));
+	elektraFree (error);
+	exit (EXIT_FAILURE);
+}
 
 void callAll (Elektra * elektra)
 {
@@ -35,6 +45,8 @@ int main (int argc, const char ** argv)
 		printHelpMessage (NULL, NULL);
 		return EXIT_SUCCESS;
 	}
+
+	elektraFatalErrorHandler (elektra, fatalErrorHandler);
 
 	callAll (elektra);
 
@@ -62,10 +74,14 @@ res=$?
 
 if [ "$res" = "0" ]; then
 	./dummy
-	if [ "$res" = "0" ]; then
-		echo "dummy exited with: $res"
-	fi
 	res=$?
+	echo "dummy exited with: $res"
+
+	if [ "$res" = "0" ]; then
+		valgrind --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+		res=$?
+		echo "valgrind dummy exited with: $res"
+	fi
 fi
 
 cd ..

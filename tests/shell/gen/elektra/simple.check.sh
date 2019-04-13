@@ -2,6 +2,7 @@ cat << 'EOF' > dummy.c
 #include "simple.actual.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define ERROR_CHECK(tag)                                                                                                               \
 	if (error != NULL)                                                                                                                 \
@@ -12,15 +13,24 @@ cat << 'EOF' > dummy.c
 		exit(EXIT_FAILURE);                                                                                                            \
 	}
 
+#define VALUE_CHECK(expr, expected) if (expr != expected) exit(EXIT_FAILURE);
+
+static void fatalErrorHandler (ElektraError * error)
+{
+	fprintf (stderr, "FATAL ERROR: %s\n", elektraErrorDescription (error));
+	elektraFree (error);
+	exit (EXIT_FAILURE);
+}
+
 void callAll (Elektra * elektra)
 {
-	elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY);
+	VALUE_CHECK (elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY), 1);
 
-	elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0);
-	elektraGet (elektra, ELEKTRA_TAG_PRINT);
-	elektraGet (elektra, ELEKTRA_TAG_MYSTRING);
-	elektraGet (elektra, ELEKTRA_TAG_MYINT);
-	elektraGet (elektra, ELEKTRA_TAG_MYDOUBLE);
+	// VALUE_CHECK (elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 1.1f); // # FIXME: bug in spec plugin
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_PRINT), false);
+	VALUE_CHECK (strcmp (elektraGet (elektra, ELEKTRA_TAG_MYSTRING), ""), 0);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_MYINT), 0);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_MYDOUBLE), 0.0);
 
 	ElektraError * error = NULL;
 
@@ -59,6 +69,8 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
+	elektraFatalErrorHandler (elektra, fatalErrorHandler);
+
 	callAll (elektra);
 
 	elektraClose (elektra);
@@ -84,11 +96,19 @@ cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
 
 if [ "$res" = "0" ]; then
+	"$KDB" setmeta "user$MOUNTPOINT/myfloatarray" "array" "#0"
+	"$KDB" setmeta "user$MOUNTPOINT/myfloatarray/#0" "type" "float" # FIXME: bug in spec plugin
+	"$KDB" set "user$MOUNTPOINT/myfloatarray/#0" "1.1"              # FIXME: bug in spec plugin
+
 	./dummy
-	if [ "$res" = "0" ]; then
-		echo "dummy exited with: $res"
-	fi
 	res=$?
+	echo "dummy exited with: $res"
+
+	if [ "$res" = "0" ]; then
+		valgrind --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+		res=$?
+		echo "valgrind dummy exited with: $res"
+	fi
 fi
 
 cd ..

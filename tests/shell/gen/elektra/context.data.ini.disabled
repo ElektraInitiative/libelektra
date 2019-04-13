@@ -1,3 +1,5 @@
+; disabled because spec plugin doesn't support contextual values
+
 []
 mountpoint=tests_gen_elektra_context.ini
 

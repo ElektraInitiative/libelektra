@@ -235,9 +235,9 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	switch (value)
 	{
 	case ELEKTRA_ENUM_DISJOINTED_BLACK:
-		return "black";
+		return elektraStrDup ("black");
 	case ELEKTRA_ENUM_DISJOINTED_WHITE:
-		return "white";
+		return elektraStrDup ("white");
 	}
 
 	// should be unreachable
@@ -274,11 +274,11 @@ ELEKTRA_TO_STRING_SIGNATURE (ExistingColors, EnumExistingColors)
 	switch (value)
 	{
 	case EXISTING_COLORS_CYAN:
-		return "cyan";
+		return elektraStrDup ("cyan");
 	case EXISTING_COLORS_MAGENTA:
-		return "magenta";
+		return elektraStrDup ("magenta");
 	case EXISTING_COLORS_YELLOW:
-		return "yellow";
+		return elektraStrDup ("yellow");
 	}
 
 	// should be unreachable
@@ -318,13 +318,13 @@ ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors)
 	switch (value)
 	{
 	case COLORS_NONE:
-		return "none";
+		return elektraStrDup ("none");
 	case COLORS_RED:
-		return "red";
+		return elektraStrDup ("red");
 	case COLORS_GREEN:
-		return "green";
+		return elektraStrDup ("green");
 	case COLORS_BLUE:
-		return "blue";
+		return elektraStrDup ("blue");
 	}
 
 	// should be unreachable
@@ -378,17 +378,17 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	switch (value)
 	{
 	case ELEKTRA_ENUM_MYENUM_RED:
-		return "red";
+		return elektraStrDup ("red");
 	case ELEKTRA_ENUM_MYENUM_GREEN:
-		return "green";
+		return elektraStrDup ("green");
 	case ELEKTRA_ENUM_MYENUM_BLUE:
-		return "blue";
+		return elektraStrDup ("blue");
 	case ELEKTRA_ENUM_MYENUM_BLUEISH:
-		return "blueish";
+		return elektraStrDup ("blueish");
 	case ELEKTRA_ENUM_MYENUM_BROWN:
-		return "brown";
+		return elektraStrDup ("brown");
 	case ELEKTRA_ENUM_MYENUM_GRAY:
-		return "gray";
+		return elektraStrDup ("gray");
 	}
 
 	// should be unreachable
