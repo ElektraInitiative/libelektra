@@ -144,6 +144,7 @@ static char * elektraResolvePasswd (Key * warningsKey)
 		elektraFree (buf);
 		if (s != 0)
 		{
+			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r: %s",
 							   strerror (s));
 		}
@@ -186,7 +187,8 @@ static int elektraResolveUserXDGHome (ElektraResolved * handle, Key * warningsKe
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey,
+		// TODO: Correct?
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (warningsKey,
 						   "XDG_CONFIG_HOME contains a path that is "
 						   "not absolute (violates XDG specification) and thus "
 						   "it was skipped: %s",
@@ -208,7 +210,7 @@ static int elektraResolveEnvHome (ElektraResolved * handle, Key * warningsKey)
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey,
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (warningsKey,
 						   "HOME contains a path that is "
 						   "not absolute and thus "
 						   "it was skipped: %s",
@@ -301,6 +303,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	}
 	if (finished == -1)
 	{
+		// TODO: Correct?
 		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
 					       ELEKTRA_VARIANT_USER);
 		return -1;
@@ -308,6 +311,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 
 	if (!(handle->dirname))
 	{
+		// TODO: Correct?
 		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
 					       ELEKTRA_VARIANT_USER);
 		return -1;

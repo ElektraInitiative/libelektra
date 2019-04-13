@@ -103,6 +103,7 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 	const size_t versionOffset = ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2;
 	if (memcmp (&value[versionOffset], ELEKTRA_CRYPTO_PAYLOAD_VERSION, 2))
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (
 			errorKey, "The version of the cryptographic payload is not compatible with the version of the plugin. Keyname: %s",
 			keyName (k));
@@ -157,6 +158,7 @@ static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (Key * errorKey
 		}
 		else
 		{
+			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
 							  "Master password length provided at " ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN
 							  " is invalid. Using default value instead.");

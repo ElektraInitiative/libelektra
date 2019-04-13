@@ -111,6 +111,7 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char buffer[1000];
 		regerror (ret, &regex, buffer, 999);
+		// TODO: Correct?
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not compile regex: %s", buffer);
 		regfree (&regex);
 		if (freeString) elektraFree (regexString);

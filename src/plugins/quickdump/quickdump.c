@@ -362,6 +362,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				const Key * sourceKey = ksLookupByName (returned, nameBuffer.string, 0);
 				if (sourceKey == NULL)
 				{
+					// TODO: Correct?
 					ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
 									 nameBuffer.string);
 					keyDel (k);
@@ -374,6 +375,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 				if (keyCopyMeta (k, sourceKey, metaNameBuffer.string) != 1)
 				{
+					// TODO: Correct?
 					ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
 									 "Could not copy meta data from key '%s': Error during copy",
 									 &nameBuffer.string[nameBuffer.offset]);
@@ -392,6 +394,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
 				fclose (file);
+				// TODO: Correct?
 				ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Unknown meta type %c", type);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}

@@ -972,6 +972,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey);
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitBuildup");
 		goto error;
 	}
@@ -1075,6 +1076,7 @@ cachemiss:
 
 		if (splitGet (split, parentKey, handle) == -1)
 		{
+			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
@@ -1110,6 +1112,7 @@ cachemiss:
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
+			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
@@ -1426,6 +1429,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_META)
 	{
 		clearError (parentKey); // clear previous error to set new one
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
@@ -1497,6 +1501,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		else if (syncstate < -1)
 		{
+			// TODO: Correct?
 			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
 							 "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
 							 keyName (split->parents[-syncstate - 2]));
@@ -1945,6 +1950,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 
 		if (elektraStrCmp (pluginName, "list") == 0)
 		{
+			// TODO: Correct?
 			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Cannot specify clauses for the list plugin!!");
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
@@ -1966,6 +1972,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		}
 		else
 		{
+			// TODO: Correct?
 			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
 				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used.",

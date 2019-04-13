@@ -83,6 +83,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	int result = snprintf (NULL, 0, "%llu", value);
 	if (result < 0)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -98,6 +99,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	result = snprintf (decValue, length, "%llu", value);
 	if (result < 0)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
 		elektraFree (decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -152,6 +154,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	const int result = snprintf (NULL, 0, "0x%llx", value);
 	if (result < 0)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -166,6 +169,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 
 	if (snprintf (hexValue, length, "0x%llx", value) < 0)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		elektraFree (hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -351,7 +355,7 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			}
 			else
 			{
-				ELEKTRA_SET_PARSING_ERRORF (
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 					parentKey, "Key '%s' has unit/base metadata set as hex but value '%s' does not start with 0x",
 					keyName (cur), keyString (cur));
 				status |= ELEKTRA_PLUGIN_STATUS_ERROR;

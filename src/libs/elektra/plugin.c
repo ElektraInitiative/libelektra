@@ -227,6 +227,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 		}
 		else
 		{
+			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Unknown additional entries in plugin: %s", keyString (cur));
 		}
 	}

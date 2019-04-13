@@ -427,7 +427,7 @@ int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	{
 		if (!data->password)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "No password specified for SSH password authentication");
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No password specified for SSH password authentication");
 			if (data->uploadFileName) elektraFree (data->__uploadFileName);
 			elektraFree (data);
 			data = NULL;
@@ -721,6 +721,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			++(data->setPhase);
 			if (strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 			{
+				// TODO: Correct?
 				ELEKTRA_SET_CONFLICT_ERROR (parentKey, "remote file has changed");
 				retval = -1;
 			}

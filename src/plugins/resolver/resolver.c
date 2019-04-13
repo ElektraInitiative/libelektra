@@ -662,7 +662,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	{
 		if (errno == ENOENT)
 		{
-			ELEKTRA_SET_CONFLICT_ERRORF (parentKey,
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 						     "The configuration file \"%s\" was there earlier, "
 						     "now it is missing",
 						     pk->filename);
@@ -686,7 +686,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_CONFLICT_ERRORF (parentKey,
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 						     "No configuration file was there earlier, "
 						     "now configuration file \"%s\" exists",
 						     pk->filename);
@@ -970,6 +970,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 
 	if (futimens (fd, times) == -1)
 	{
+		// TODO: Correct?
 		ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
 					      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
@@ -979,6 +980,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 
 	if (futimes (fd, times) == -1)
 	{
+		// TODO: Correct?
 		ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
 					      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}

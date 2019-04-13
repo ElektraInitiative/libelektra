@@ -68,6 +68,7 @@ int elektraStructSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key 
 	}
 	catch (const char * msg)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not check the structure of the keyset: %s", msg);
 		return -1;
 	}

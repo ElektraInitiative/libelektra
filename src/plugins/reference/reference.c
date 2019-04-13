@@ -46,7 +46,7 @@ static Key * resolveReference (KeySet * allKeys, const char * reference, const K
 
 	if (elektraIsReferenceRedundant (reference))
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Reference '%s' uses '/./' or '/../' redundantly.", reference);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "Reference '%s' uses '/./' or '/../' redundantly.", reference);
 	}
 
 	char * fullReference = elektraResolveReference (reference, baseKey, parentKey);

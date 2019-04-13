@@ -64,6 +64,7 @@ static void checkException (Data * data, const char * when, Key * warningKey)
 			which = (*data->env)->GetStringUTFChars (data->env, estr, &iseCopy);
 		}
 
+		// TODO: Correct?
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningKey, "During \"%s\", java exception was thrown: %s", when, which);
 
 		if (iseCopy == JNI_TRUE)
@@ -96,6 +97,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jerrorKey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "%s failed with exception", method);
 		result = -1;
 	}
@@ -113,7 +115,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	checkException (data, method, errorKey);
 	if (jks == 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create ks");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot create ks");
 		return -1;
 	}
 
@@ -121,7 +123,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	checkException (data, method, errorKey);
 	if (jkey == 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create key");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot create key");
 		return -1;
 	}
 
@@ -137,6 +139,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jks, jkey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "%s failed with exception", method);
 		result = -1;
 	}
@@ -269,7 +272,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	data->midKeyRelease = (*data->env)->GetMethodID (data->env, data->clsKey, "release", "()V");
 	if (data->midKeyRelease == 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot find release of Key");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find release of Key");
 		return -1;
 	}
 
