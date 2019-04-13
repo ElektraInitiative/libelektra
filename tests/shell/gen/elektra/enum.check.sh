@@ -15,6 +15,7 @@ cat << 'EOF' > dummy.c
 #include "enum.actual.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define ERROR_CHECK(tag)                                                                                                               \
 	if (error != NULL)                                                                                                                 \
@@ -25,23 +26,32 @@ cat << 'EOF' > dummy.c
 		exit(EXIT_FAILURE);                                                                                                            \
 	}
 
+#define VALUE_CHECK(expr, expected) if (expr != expected) exit(EXIT_FAILURE);
+
+static void fatalErrorHandler (ElektraError * error)
+{
+	fprintf (stderr, "FATAL ERROR: %s\n", elektraErrorDescription (error));
+	elektraFree (error);
+	exit (EXIT_FAILURE);
+}
+
 void callAll (Elektra * elektra)
 {
-	elektraGet (elektra, ELEKTRA_TAG_DISJOINTED);
-	elektraGet (elektra, ELEKTRA_TAG_EXISTINGGENTYPE);
-	elektraGet (elektra, ELEKTRA_TAG_GENTYPE);
-	elektraGet (elektra, ELEKTRA_TAG_GENTYPE2);
-	elektraGet (elektra, ELEKTRA_TAG_MYENUM);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_DISJOINTED), ELEKTRA_ENUM_DISJOINTED_BLACK);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_EXISTINGGENTYPE), EXISTING_COLORS_CYAN);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_GENTYPE), COLORS_BLUE);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_GENTYPE2), COLORS_RED);
+	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_MYENUM), ELEKTRA_ENUM_MYENUM_BLUE);
 
 	ElektraError * error = NULL;
 
-	elektraSet (elektra, ELEKTRA_TAG_DISJOINTED, ELEKTRA_ENUM_DISJOINTED_BLACK, &error);
+	elektraSet (elektra, ELEKTRA_TAG_DISJOINTED, ELEKTRA_ENUM_DISJOINTED_WHITE, &error);
 	ERROR_CHECK (ELEKTRA_TAG_DISJOINTED)
 	elektraSet (elektra, ELEKTRA_TAG_EXISTINGGENTYPE, EXISTING_COLORS_YELLOW, &error);
 	ERROR_CHECK (ELEKTRA_TAG_EXISTINGGENTYPE)
 	elektraSet (elektra, ELEKTRA_TAG_GENTYPE, COLORS_GREEN, &error);
 	ERROR_CHECK (ELEKTRA_TAG_GENTYPE)
-	elektraSet (elektra, ELEKTRA_TAG_GENTYPE2, COLORS_GREEN | COLORS_RED, &error);
+	elektraSet (elektra, ELEKTRA_TAG_GENTYPE2, COLORS_GREEN, &error);
 	ERROR_CHECK (ELEKTRA_TAG_GENTYPE2)
 	elektraSet (elektra, ELEKTRA_TAG_MYENUM, ELEKTRA_ENUM_MYENUM_BLUEISH, &error);
 	ERROR_CHECK (ELEKTRA_TAG_MYENUM)
@@ -66,6 +76,8 @@ int main (int argc, const char ** argv)
 		printHelpMessage (NULL, NULL);
 		return EXIT_SUCCESS;
 	}
+
+	elektraFatalErrorHandler (elektra, fatalErrorHandler);
 
 	callAll (elektra);
 
@@ -93,10 +105,14 @@ res=$?
 
 if [ "$res" = "0" ]; then
 	./dummy
-	if [ "$res" = "0" ]; then
-		echo "dummy exited with: $res"
-	fi
 	res=$?
+	echo "dummy exited with: $res"
+
+	if [ "$res" = "0" ]; then
+		valgrind --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+		res=$?
+		echo "valgrind dummy exited with: $res"
+	fi
 fi
 
 cd ..
