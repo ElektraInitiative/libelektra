@@ -149,6 +149,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	/* init new lua state */
 	if ((data->L = lua_newstate (Lua_alloc, NULL)) == NULL)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Unable to create new lua state");
 		goto error;
 	}

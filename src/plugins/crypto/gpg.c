@@ -86,7 +86,7 @@ static int isExecutable (const char * file, Key * errorKey)
 	{
 		if (errorKey)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "gpg binary %s not found", file);
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "gpg binary %s not found", file);
 		}
 		return -1;
 	}
@@ -658,6 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 	case -1:
 		// fork() failed
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "fork failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
@@ -718,6 +719,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
 		{
+			// TODO: Correct?
 			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "The communication with the GPG process failed.");
 			closePipe (pipe_stdin);
 			closePipe (pipe_stdout);
@@ -748,6 +750,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 
 	case 1:
 		// bad signature
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "GPG reported a bad signature");
 		break;
 
@@ -774,6 +777,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		{
 			errorBuffer[0] = '\0';
 		}
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "GPG failed with return value %d. %s", status, errorBuffer);
 		break;
 	}

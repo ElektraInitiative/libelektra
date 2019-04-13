@@ -100,6 +100,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ret == -1)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (parentKey, "could not increment array from %s", keyName (ksTail (returned)));
 		ret = -1;
 	}

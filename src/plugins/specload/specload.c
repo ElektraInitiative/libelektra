@@ -201,7 +201,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (spec);
-			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't load the overlay specification.");
+			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Couldn't load the overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -363,13 +363,13 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 
 	if (app[0] != '/')
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "The value of the app config key ('%s') is not an absolute path.", app);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The value of the app config key ('%s') is not an absolute path.", app);
 		return false;
 	}
 
 	if (access (app, X_OK) != 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "'%s' doesn't exist or is not executable.", app);
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "'%s' doesn't exist or is not executable.", app);
 		return false;
 	}
 

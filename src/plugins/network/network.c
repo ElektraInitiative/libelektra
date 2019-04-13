@@ -75,7 +75,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		service = getservbyname (keyString (toCheck), NULL); // NULL means we accept both tcp and udp
 		if (service == NULL)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
 						     keyName (toCheck));
 			return -1;
 		}
@@ -101,12 +101,12 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	{
 		if (errno == HOST_NOT_FOUND)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not connect to %s: No such host", hostname);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not connect to %s: No such host", hostname);
 			return -1;
 		}
 		else
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "There was an error trying to connect to host %s: %s", hostname,
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "There was an error trying to connect to host %s: %s", hostname,
 						     strerror (errno));
 			return -1;
 		}

@@ -572,6 +572,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_LOGICAL_ERROR (parentKey, "No plugin state is available.");
 		return -1;
 	}

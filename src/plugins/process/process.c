@@ -26,7 +26,7 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 {
 	if (pluginNameKey == NULL)
 	{
-		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (errorKey,
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
 							 "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
 		return 0;
 	}
@@ -42,6 +42,7 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 	}
 	else if (elektraStrCmp (pluginName, "process") == 0)
 	{
+		// TODO: Correct?
 		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Cannot proxy the process plugin itself");
 		return 0;
 	}
@@ -107,6 +108,7 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 		process->plugin = elektraInvokeOpen (keyString (process->pluginName), process->pluginConfig, errorKey);
 		if (!process->plugin)
 		{
+			// TODO: Correct?
 			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

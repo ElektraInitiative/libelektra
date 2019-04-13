@@ -73,6 +73,7 @@ int elektraYaypegGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (exception const & error)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 

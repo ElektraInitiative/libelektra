@@ -232,6 +232,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			{
 				// no one cares about that config
 				if (!failure)
+				// TODO: Correct?
 					ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Unrecognised Config Tree: %s", keyBaseName (cur));
 				ksDel (cut);
 			}
