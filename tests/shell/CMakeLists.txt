@@ -139,7 +139,14 @@ file (GLOB SCRIPT_TESTS
 	   *.sh)
 foreach (file ${SCRIPT_TESTS})
 	get_filename_component (name ${file} NAME)
-	add_scripttest (${name})
+	if (NOT
+	    ENABLE_ASAN
+	    OR NOT
+	       name
+	       MATCHES
+	       "check_gen.sh")
+		add_scripttest (${name})
+	endif ()
 endforeach (file ${SCRIPT_TESTS})
 
 add_subdirectory (gen)
