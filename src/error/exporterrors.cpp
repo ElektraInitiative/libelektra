@@ -46,17 +46,17 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	{
 		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERROR(key, text) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Error " << p[i]["number"] << ": %s\", text); elektraSetError" << p[i]["number"]
-		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__)); } while (0)" << endl;
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME)); } while (0)" << endl;
 		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERRORF(key, text, ...) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Error " << p[i]["number"] << ": \" text, __VA_ARGS__); elektraSetErrorf" << p[i]["number"]
-		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), __VA_ARGS__); } while (0)" << endl;
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME), __VA_ARGS__); } while (0)" << endl;
 
 		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING(key, text) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Warning " << p[i]["number"] << ": %s\", text); elektraAddWarning" << p[i]["number"]
-		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__)); } while (0)" << endl;
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME)); } while (0)" << endl;
 		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNINGF(key, text, ...) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Warning " << p[i]["number"] << ": \" text, __VA_ARGS__); elektraAddWarningf"
-		   << p[i]["number"] << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), __VA_ARGS__); } while (0)" << endl;
+		   << p[i]["number"] << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME), __VA_ARGS__); } while (0)" << endl;
 
 		os << endl;
 	}
@@ -89,16 +89,16 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			{
 				os << "static inline void elektraAddWarningf" << p[i]["number"] << "(Key *warningKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line, ...)  __attribute__ ((format (printf, 2, 5)));" << endl;
+				   << "	const char *file, const char *line, const char *module, ...)  __attribute__ ((format (printf, 2, 6)));" << endl;
 				os << "static inline void elektraAddWarningf" << p[i]["number"] << "(Key *warningKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line, ...)" << endl;
+				   << "	const char *file, const char *line, const char *module, ...)" << endl;
 			}
 			else
 			{
 				os << "static inline void elektraAddWarning" << p[i]["number"] << "(Key *warningKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line)" << endl;
+				   << "	const char *file, const char *line, const char *module)" << endl;
 			}
 			os << "{" << endl
 			   << "	if (!warningKey) return;" << endl
@@ -125,7 +125,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" <<  endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
-			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["module"] << "\");" << endl
+			   << "	keySetMeta(warningKey, buffer, module);" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
 			   << "	keySetMeta(warningKey, buffer, file);" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/line\");" << endl
@@ -138,7 +138,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			if (f == 0)
 			{
 				os << "	va_list arg;" << endl
-				   << "	va_start(arg, line);" << endl
+				   << "	va_start(arg, module);" << endl
 				   << "	char * r = elektraVFormat(reason, arg);" << endl
 				   << "	keySetMeta(warningKey, buffer, r);" << endl
 				   << "	elektraFree(r);" << endl
@@ -157,16 +157,16 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			{
 				os << "static inline void elektraSetErrorf" << p[i]["number"] << "(Key *errorKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line, ...)  __attribute__ ((format (printf, 2, 5)));" << endl
+				   << "	const char *file, const char *line, const char *module, ...)  __attribute__ ((format (printf, 2, 6)));" << endl
 				   << "static inline void elektraSetErrorf" << p[i]["number"] << "(Key *errorKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line, ...)" << endl;
+				   << "	const char *file, const char *line, const char *module, ...)" << endl;
 			}
 			else
 			{
 				os << "static inline void elektraSetError" << p[i]["number"] << "(Key *errorKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line)" << endl;
+				   << "	const char *file, const char *line, const char *module)" << endl;
 			}
 			os << "{" << endl
 			   << "	if (!errorKey) return;" << endl
@@ -196,7 +196,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 			   << "		keySetMeta(errorKey, buffer, \"" << p[i]["description"] << "\");" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
-			   << "		keySetMeta(errorKey, buffer, \"" << p[i]["module"] << "\");" << endl
+			   << "		keySetMeta(errorKey, buffer, module);" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
 			   << "		keySetMeta(errorKey, buffer, file);" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/line\");" << endl
@@ -214,7 +214,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "\");" << endl
 			   << "		keySetMeta(errorKey, \"error/number\", \"" << p[i]["number"] << "\");" << endl
 			   << "		keySetMeta(errorKey, \"error/description\", \"" << p[i]["description"] << "\");" <<  endl
-			   << "		keySetMeta(errorKey, \"error/module\", \"" << p[i]["module"] << "\");" << endl
+			   << "		keySetMeta(errorKey, \"error/module\", module);" << endl
 			   << "		keySetMeta(errorKey, \"error/file\", "
 			   << "file"
 			   << ");" << endl
@@ -231,7 +231,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			if (f == 0)
 			{
 				os << "	va_list arg;" << endl
-				   << "	va_start(arg, line);" << endl
+				   << "	va_start(arg, module);" << endl
 				   << "	char * r = elektraVFormat(reason, arg);" << endl
 				   << " 	if(meta)" << endl
 				   << "			keySetMeta(errorKey, buffer, r);" << endl
@@ -263,11 +263,11 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		os << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "\"," << endl
 		   << "			KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/description\"," << endl
-		   << "			KEY_VALUE, \"" << p[i]["description"] << "\", KEY_END)," << endl
-		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/severity\"," << endl
-		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
-		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/module\"," << endl
-		   << "			KEY_VALUE, \"" << p[i]["module"] << "\", KEY_END)," << endl;
+		   << "			KEY_VALUE, \"" << p[i]["description"] << "\", KEY_END)," << endl;
+//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/severity\"," << endl
+//		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
+//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/module\"," << endl
+//		   << "			KEY_VALUE, \"" << p[i]["module"] << "\", KEY_END)," << endl;
 	}
 	os << "		KS_END);" << endl << "}" << endl;
 

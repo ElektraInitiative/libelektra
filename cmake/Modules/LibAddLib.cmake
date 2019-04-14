@@ -1,10 +1,20 @@
+
+function (set_additional_compile_definitions shortname)
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_MODULE_NAME")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
+			"ELEKTRA_MODULE_NAME=${shortname}")
+	endif ()
+
+	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
+	unset (ADDITIONAL_COMPILE_DEFINITIONS_PARTS)
+endfunction (set_additional_compile_definitions)
+
 function (add_lib name)
 	cmake_parse_arguments (ARG
 			       "CPP" # optional keywords
 			       "" # one value keywords
 			       "SOURCES;LINK_LIBRARIES;LINK_ELEKTRA" # multi value keywords
 			       ${ARGN})
-
 	add_headers (ARG_SOURCES)
 	if (ARG_CPP)
 		add_cppheaders (ARG_SOURCES)
@@ -26,6 +36,14 @@ function (add_lib name)
 		      APPEND
 		      PROPERTY "elektra-extension_LIBRARIES"
 			       elektra-${name})
+
+	set_additional_compile_definitions(${name})
+
+	set_property (TARGET elektra-${name}
+		APPEND
+		PROPERTY COMPILE_DEFINITIONS
+			${ADDITIONAL_COMPILE_DEFINITIONS}
+)
 
 	if (BUILD_SHARED)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
