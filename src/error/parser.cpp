@@ -26,7 +26,7 @@ parse_t parse (std::string const & file)
 	string line;
 	string lastIdentifier;
 	map<string, string> currentMap;
-	std::regex codeRegex ("^[0-9A-Z]{5,5}$");
+	std::regex codeRegex ("^C[0-9A-Z]{5,5}$");
 
 
 	while (getline (fin, line))
@@ -51,8 +51,7 @@ parse_t parse (std::string const & file)
 		{
 			bool isHighlevelFile = (file.find ("highlevel") != string::npos);
 			if (!std::regex_match (text, codeRegex) && !isHighlevelFile)
-				throw parse_error ("Error code does not match regular expression [0-9A-Z]{5,5}", linenr);
-			text = "C" + text;
+				throw parse_error ("Error code does not match regular expression C[0-9A-Z]{5,5}", linenr);
 		}
 
 		if (!currentMap[identifier].empty ()) currentMap[identifier] += "\n";
