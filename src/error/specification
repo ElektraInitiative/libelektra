@@ -1,4 +1,4 @@
-number:00000
+number:C00000
 description:A test for an exception specification
 :new lines to the same entry can be started with a colon
 :the code is similar to SQLSTATES and corresponds
@@ -11,34 +11,34 @@ ignore:true
 :It is for errors which are not relevant anymore
 :an empty line will start the next error specification
 
-number:01100
+number:C01100
 description:Resource
 macro:RESOURCE
 
-number:01200
+number:C01200
 description:Parsing
 macro:PARSING
 
-number:01300
+number:C01300
 description:Installation
 macro:INSTALLATION
 
-number:01400
+number:C01400
 description:Logical
 macro:LOGICAL
 
-number:02000
+number:C02000
 description:Conflict
 macro:CONFLICT
 
-number:03000
+number:C03000
 description:Timeout
 macro:TIMEOUT
 
-number:04100
+number:C04100
 description:Validation Syntactic
 macro:VALIDATION_SYNTACTIC
 
-number:04200
+number:C04200
 description:Validation Semantic
 macro:VALIDATION_SEMANTIC
