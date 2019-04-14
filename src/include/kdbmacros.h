@@ -89,5 +89,16 @@
 		ksDel (info);                                                                                                              \
 	} while (0)
 
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck) __attribute__ ((format (archetype, stringIndex, firstToCheck)))
+#else
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck)
+#endif
+
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_NO_RETURN __attribute__ ((noreturn))
+#else
+#define ELEKTRA_ATTRIBUTE_NO_RETURN
+#endif
 
 #endif
