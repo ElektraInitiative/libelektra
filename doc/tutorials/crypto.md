@@ -108,7 +108,7 @@ gpg2 -d test.ini
 The complete procedure looks like this:
 
 ```sh
-kdb mount test.ini user/tests fcrypt "encrypt/key=$(elektra-gpg-testkey)" ini
+kdb mount test.ini user/tests fcrypt "encrypt/key=$(kdb gen-gpg-testkey)" ini
 kdb set user/tests/password 1234
 kdb file user/tests/password | xargs cat
 ```
@@ -143,7 +143,7 @@ If `test.ini` is modified, all following calls of `kdb get` will fail with an er
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests fcrypt "sign/key=$(elektra-gpg-testkey)" ini
+kdb mount test.ini user/tests fcrypt "sign/key=$(kdb gen-gpg-testkey)" ini
 kdb set user/tests/password 1234
 kdb file user/tests/password | xargs cat
 ```
@@ -168,7 +168,7 @@ sudo kdb mount test.ini user/tests fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF6
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests fcrypt "sign/key=$(elektra-gpg-testkey),encrypt/key=$(elektra-gpg-testkey)" ini
+kdb mount test.ini user/tests fcrypt "sign/key=$(kdb gen-gpg-testkey),encrypt/key=$(kdb gen-gpg-testkey)" ini
 kdb set user/tests/password 1234
 kdb file user/tests/password | xargs cat
 ```
@@ -255,7 +255,7 @@ kdb setmeta user/tests/password crypto/encrypt 0
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests crypto_gcrypt "crypto/key=$(elektra-gpg-testkey)" base64 ini
+kdb mount test.ini user/tests crypto_gcrypt "crypto/key=$(kdb gen-gpg-testkey)" base64 ini
 kdb setmeta user/tests/password crypto/encrypt 1
 kdb set user/tests/password 1234
 kdb set user/tests/unencrypted "I am not encrypted"
