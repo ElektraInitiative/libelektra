@@ -66,7 +66,7 @@ enum ElektraLogLevel
 
 };
 
-#ifdef DEBUG
+#if DEBUG
 /**
  * @brief Sets the global minimum log level
  */
