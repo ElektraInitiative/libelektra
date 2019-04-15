@@ -646,22 +646,14 @@ static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long
 }
 
 static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyParts, kainjow::mustache::list & args,
-				  std::vector<kainjow::mustache::object> & context, std::string & fmtString)
+				  std::vector<kainjow::mustache::object> & context, kainjow::mustache::list & contextAndArgs,
+				  std::string & fmtString)
 {
 	using namespace kainjow::mustache;
 	auto parts = getKeyParts (key);
 	parts.erase (parts.begin (), parts.begin () + parentKeyParts);
 
 	std::stringstream fmt;
-
-	size_t ctxCount =
-		std::count_if (parts.begin (), parts.end (), [](const std::string & s) { return s.front () == '%' && s.back () == '%'; });
-
-	if (ctxCount > 0)
-	{
-		context.reserve (ctxCount); // optimization
-		--ctxCount;
-	}
 
 	size_t pos = 1;
 	size_t names = 1;
@@ -670,26 +662,34 @@ static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyPa
 	{
 		if (part == "_")
 		{
+			const std::string & argName = getArgName (key, names, "name");
 			auto arg = object{ { "native_type", "const char *" },
-					   { "name", getArgName (key, names, "name") },
+					   { "name", argName },
 					   { "index?", false },
 					   { "description", getArgDescription (key, names, "_") } };
 			args.push_back (arg);
-			fmt << "%" + std::to_string (ctxCount + pos) + "$s/";
+			fmt << "%s/";
 			++pos;
 			++names;
+			contextAndArgs.push_back (object{ { "code", argName } });
 		}
 		else if (part == "#")
 		{
+			const std::string & argName = getArgName (key, indices, "index");
 			auto arg = object{ { "native_type", "kdb_long_long_t" },
-					   { "name", getArgName (key, indices, "index") },
+					   { "name", argName },
 					   { "index?", true },
 					   { "description", getArgDescription (key, indices, "#") } };
 			args.push_back (arg);
-			fmt << "%" + std::to_string (ctxCount + pos + 2) + "$*" + std::to_string (ctxCount + pos + 1) + "$.*" +
-					std::to_string (ctxCount + pos) + "$s%" + std::to_string (ctxCount + pos + 3) + "$lld/";
+			fmt << "%*.*s%lld/";
 			pos += 4;
 			++indices;
+
+			std::string argCode = "elektra_len (" + argName + "), elektra_len (";
+			argCode += argName + "), \"#___________________\", (long long) ";
+			argCode += argName;
+
+			contextAndArgs.push_back (object{ { "code", argCode } });
 		}
 		else if (part.front () == '%' && part.back () == '%')
 		{
@@ -704,8 +704,10 @@ static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyPa
 					   { "tag_name", snakeCaseToPascalCase (cName) } };
 			context.push_back (ctx);
 
-			fmt << "%" + std::to_string (pos) + "$s/";
+			fmt << "%s/";
 			++pos;
+
+			contextAndArgs.push_back (object{ { "code", snakeCaseToCamelCase (cName) } });
 		}
 		else
 		{
@@ -724,9 +726,19 @@ static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyPa
 		context.back ()["last?"] = true;
 	}
 
+	if (!contextAndArgs.empty ())
+	{
+		contextAndArgs.back ()["last?"] = true;
+	}
+
 	if (args.size () > 1)
 	{
 		args[args.size () - 2]["last_but_one?"] = true;
+	}
+
+	if (contextAndArgs.size () > 1)
+	{
+		contextAndArgs[contextAndArgs.size () - 2]["last_but_one?"] = true;
 	}
 
 	fmtString = fmt.str ();
@@ -810,7 +822,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		std::string fmtString;
 		list args;
 		std::vector<object> context;
-		getKeyArgsAndContext (key, parentKeyParts.size (), args, context, fmtString);
+		list contextAndArgs;
+		getKeyArgsAndContext (key, parentKeyParts.size (), args, context, contextAndArgs, fmtString);
 
 		if (!key.hasMeta ("default"))
 		{
@@ -857,7 +870,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (!args.empty ())
 		{
-			keyObject["args_or_context?"] = true;
+			keyObject["args_or_context?"] = object{ { "context_and_args", contextAndArgs } };
 			keyObject["args?"] = true;
 			keyObject["args"] = args;
 			keyObject["fmt_string"] = fmtString;
@@ -865,7 +878,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (!context.empty ())
 		{
-			keyObject["args_or_context?"] = true;
+			keyObject["args_or_context?"] = object{ { "context_and_args", contextAndArgs } };
 			keyObject["context?"] = true;
 			keyObject["context"] = list (context.begin (), context.end ());
 			keyObject["fmt_string"] = fmtString;
@@ -884,8 +897,12 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				// remove last argument and last part of format string
 				auto arrayArgs = list{ args.begin (), args.end () - 1 };
 				arrayArgs.back ()["last?"] = true;
+				auto arrayContextAndArgs = list{ contextAndArgs.begin (), contextAndArgs.end () - 1 };
+				arrayContextAndArgs.back ()["last?"] = true;
+
 				keyObject["array_args_or_context?"] =
 					object ({ { "args", arrayArgs },
+						  { "context_and_args", arrayContextAndArgs },
 						  { "context", list (context.begin (), context.end ()) },
 						  { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
 			}

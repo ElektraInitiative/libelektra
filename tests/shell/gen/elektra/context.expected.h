@@ -164,8 +164,7 @@ static inline kdb_boolean_t ELEKTRA_GET (KeyDateChild) (Elektra * elektra )
 {
 	const char * date = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/date", 0));
 
-	char * name = elektraFormat ("key/%1$s/child",  date  
-				     );
+	char * name = elektraFormat ("key/%s/child",  date  );
 	kdb_boolean_t result = ELEKTRA_GET (Boolean) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -187,8 +186,7 @@ static inline void ELEKTRA_SET (KeyDateChild) (Elektra * elektra,
 {
 	const char * date = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/date", 0));
 
-	char * name = elektraFormat ("key/%1$s/child",  date  
-				     );
+	char * name = elektraFormat ("key/%s/child",  date  );
 	ELEKTRA_SET (Boolean) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -212,11 +210,9 @@ static inline kdb_long_t ELEKTRA_GET (KeyProfileChildGrandchildren) (Elektra * e
 {
 	const char * profile = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/profile", 0));
 
-	char * name = elektraFormat ("key/%1$s/child/%2$s/grandchildren/%5$*4$.*3$s%6$lld",  profile ,  
-				       name1 , 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("key/%s/child/%s/grandchildren/%*.*s%lld",  profile ,
+				       name1 ,
+				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	kdb_long_t result = ELEKTRA_GET (Long) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -241,11 +237,9 @@ static inline void ELEKTRA_SET (KeyProfileChildGrandchildren) (Elektra * elektra
 {
 	const char * profile = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/profile", 0));
 
-	char * name = elektraFormat ("key/%1$s/child/%2$s/grandchildren/%5$*4$.*3$s%6$lld",  profile ,  
-				       name1 , 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("key/%s/child/%s/grandchildren/%*.*s%lld",  profile ,
+				       name1 ,
+				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	ELEKTRA_SET (Long) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -262,9 +256,8 @@ static inline kdb_long_long_t ELEKTRA_SIZE (KeyProfileChildGrandchildren) (Elekt
 {
 	const char * profile = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/profile", 0));
 
-	char * name = elektraFormat ("key/%1$s/child/%2$s/grandchildren",  profile ,  
-				       name1 
-				     );
+	char * name = elektraFormat ("key/%s/child/%s/grandchildren",  profile ,
+				       name1  );
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
 	return size;
@@ -285,8 +278,7 @@ static inline const char * ELEKTRA_GET (KeyUserNameChild) (Elektra * elektra )
 {
 	const char * userName = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/user/name", 0));
 
-	char * name = elektraFormat ("key/%1$s/child",  userName  
-				     );
+	char * name = elektraFormat ("key/%s/child",  userName  );
 	const char * result = ELEKTRA_GET (String) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -308,8 +300,7 @@ static inline void ELEKTRA_SET (KeyUserNameChild) (Elektra * elektra,
 {
 	const char * userName = keyString (ksLookupByName (elektraContext (elektra), "system/elektra/codegen/context/user/name", 0));
 
-	char * name = elektraFormat ("key/%1$s/child",  userName  
-				     );
+	char * name = elektraFormat ("key/%s/child",  userName  );
 	ELEKTRA_SET (String) (elektra, name, value, error);
 	elektraFree (name);
 	

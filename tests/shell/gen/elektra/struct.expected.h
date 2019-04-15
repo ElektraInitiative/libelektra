@@ -352,10 +352,7 @@ static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("people/%3$*2$.*1$s%4$lld", 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("people/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	const char * actualName = elektraGetRawString (elektra, name);
 	elektraFree (name);
 	
@@ -389,10 +386,7 @@ static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,
 {
 	
 
-	char * name = elektraFormat ("people/%3$*2$.*1$s%4$lld", 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("people/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
 	
@@ -429,9 +423,7 @@ static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s",  name1  );
 	Person *result = ELEKTRA_GET (StructPerson) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -454,9 +446,7 @@ static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value
 {
 	
 
-	char * name = elektraFormat ("person/%1$s", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s",  name1  );
 	ELEKTRA_SET (StructPerson) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -480,9 +470,7 @@ static inline kdb_short_t ELEKTRA_GET (PersonAge) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/age", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/age",  name1  );
 	kdb_short_t result = ELEKTRA_GET (Short) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -505,9 +493,7 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/age", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/age",  name1  );
 	ELEKTRA_SET (Short) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -534,11 +520,8 @@ static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/children/%4$*3$.*2$s%5$lld", 
-				       name1 , 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("person/%s/children/%*.*s%lld",  name1 ,
+				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	const char * actualName = elektraGetRawString (elektra, name);
 	elektraFree (name);
 	
@@ -574,11 +557,8 @@ static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char *
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/children/%4$*3$.*2$s%5$lld", 
-				       name1 , 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("person/%s/children/%*.*s%lld",  name1 ,
+				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
 	
@@ -597,9 +577,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/children", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/children",  name1  );
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
 	return size;
@@ -621,9 +599,7 @@ static inline kdb_float_t ELEKTRA_GET (PersonHeight) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/height", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/height",  name1  );
 	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -646,9 +622,7 @@ static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/height", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/height",  name1  );
 	ELEKTRA_SET (Float) (elektra, name, value, error);
 	elektraFree (name);
 	
@@ -670,9 +644,7 @@ static inline const char * ELEKTRA_GET (PersonName) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/name", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/name",  name1  );
 	const char * result = ELEKTRA_GET (String) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -695,9 +667,7 @@ static inline void ELEKTRA_SET (PersonName) (Elektra * elektra,
 {
 	
 
-	char * name = elektraFormat ("person/%1$s/name", 
-				       name1 
-				     );
+	char * name = elektraFormat ("person/%s/name",  name1  );
 	ELEKTRA_SET (String) (elektra, name, value, error);
 	elektraFree (name);
 	
