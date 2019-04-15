@@ -159,7 +159,14 @@ int elektraVLog (int level, const char * function, const char * absFile, int lin
 #endif
 
 	char * str;
-	// XXX Change here default format for messages
+	// XXX Change here default format for messages.
+	//
+	// For example, to use a style similar to the default one used by compilers such as Clang and GCC, replace the following statement
+	// with:
+	//
+	//     str = elektraFormat ("%s:%d:%s: %s\n", file, line, function, mmsg);
+	//
+	// .
 	str = elektraFormat ("%s (in %s at %s:%d)\n", mmsg, function, file, line);
 	char * msg = elektraVFormat (str, args);
 	replaceChars (msg);
