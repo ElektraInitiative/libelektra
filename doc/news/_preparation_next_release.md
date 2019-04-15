@@ -274,6 +274,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 - Logging in Elektra was changed with this release. If Elektra is compiled with `ENABLE_LOGGER` enabled, we now log warnings and errors to
   stderr and everything except debug messages to syslog. If `ENABLE_DEBUG` is also enabled, debug messages are logged to syslog as well.
   Previously you had to make some manual changes to the code, to see most of the logging messages. _(Klemens Böswirth)_
+- The logger does not truncate the file name incorrectly anymore, if `__FILE__` contains a relative (instead of an absolute) filepath. _(René Schwaiger)_
 - <<TODO>>
 
 ### Ease
