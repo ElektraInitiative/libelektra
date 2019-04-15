@@ -24,7 +24,7 @@ static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * 
 
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
 				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
-				     "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+				     "#___________________", /*%/ index? %*/ (long long) /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
 				     /*%/ args %*/);
 	/*%& native_type %*/ *result = ELEKTRA_GET (/*%& type_name %*/) (elektra, name);
 	elektraFree (name);
@@ -56,7 +56,7 @@ static inline void ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
 				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
-				     "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+				     "#___________________", /*%/ index? %*/ (long long) /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
 				     /*%/ args %*/);
 	ELEKTRA_GET (/*%& type_name %*/) (elektra, name, result);
 	elektraFree (name);
@@ -88,7 +88,7 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, const /*%
 
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
 				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
-				     "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+				     "#___________________", /*%/ index? %*/ (long long) /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
 				     /*%/ args %*/);
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, name, value, error);
 	elektraFree (name);
