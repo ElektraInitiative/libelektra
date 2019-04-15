@@ -94,7 +94,7 @@ EOF
 
 mkdir build && cd build
 
-cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build . --verbose
+cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
 
 if [ "$res" = "0" ]; then
