@@ -71,7 +71,7 @@ If you want to only log messages below a specific directory prefix, then please 
 
    ```c
    #ifndef NO_FILTER
-   	if (strncmp (file, "src/postfix/", sizeof ("src/postfix"))) goto end;
+   	if (strncmp (file, "src/postfix/", sizeof ("src/postfix"))) return -1;
    #endif
    ```
 
@@ -79,7 +79,7 @@ If you want to only log messages below a specific directory prefix, then please 
 
    ```c
    #ifndef NO_FILTER
-   	if (strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp"))) goto end;
+   	if (strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp"))) return -1;
    #endif
    ```
 
@@ -90,7 +90,7 @@ If you want to only log messages below a specific directory prefix, then please 
    #ifndef NO_FILTER
    	if (strncmp (file, "src/plugins/directoryvalue/", sizeof ("src/plugins/directoryvalue")) &&
    	    strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp")))
-   		goto end;
+   		return -1;
    #endif
    ```
 
