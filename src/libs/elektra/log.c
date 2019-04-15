@@ -135,9 +135,17 @@ static void replaceChars (char * str)
 
 int elektraVLog (int level, const char * function, const char * absFile, int line, const char * mmsg, va_list args)
 {
-	size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
-	size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
-	const char * file = &absFile[lenOfLogPathName];
+	const char * file;
+	if (absFile[0] == '/' || absFile[0] == '.')
+	{
+		size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
+		size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
+		file = &absFile[lenOfLogPathName];
+	}
+	else
+	{
+		file = absFile;
+	}
 
 	int ret = -1;
 #ifndef NO_FILTER
