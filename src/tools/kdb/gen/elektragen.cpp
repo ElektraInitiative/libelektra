@@ -870,9 +870,10 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			keyObject["context"] = list (context.begin (), context.end ());
 			keyObject["fmt_string"] = fmtString;
 
-			for (auto ctx : context)
+			for (const auto & ctx : context)
 			{
-				contexts[ctx["name"].string_value ()] = ctx;
+				auto ctxName = ctx.find ("name")->second.string_value ();
+				contexts[ctxName] = object (ctx);
 			}
 		}
 
