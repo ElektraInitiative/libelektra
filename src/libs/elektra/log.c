@@ -45,7 +45,7 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 {
 #ifndef NO_FILTER
 	// XXX Filter here for specific sink
-	if (level <= ELEKTRA_LOG_LEVEL_STDERR) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_STDERR) return -1;
 #endif
 	int ret = fprintf (stderr, "%s", msg);
 	fflush (stderr);
@@ -61,7 +61,7 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 {
 #ifndef NO_FILTER
 	// XXX Filter here for specific sink
-	if (level <= ELEKTRA_LOG_LEVEL_SYSLOG) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_SYSLOG) return -1;
 #endif
 	int vlevel;
 	switch (level)
@@ -104,7 +104,7 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 {
 #ifndef NO_FILTER
 	// XXX Filter here for specific sink
-	if (level <= ELEKTRA_LOG_LEVEL_FILE) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_FILE) return -1;
 #endif
 	if (!elektraLoggerFileHandle)
 	{
@@ -142,7 +142,7 @@ int elektraVLog (int level, const char * function, const char * absFile, int lin
 	int ret = -1;
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
-	if (level <= ELEKTRA_LOG_LEVEL_GLOBAL) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_GLOBAL) return -1;
 
 	// or e.g. discard everything, but log statements from simpleini.c:
 	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) return -1;
