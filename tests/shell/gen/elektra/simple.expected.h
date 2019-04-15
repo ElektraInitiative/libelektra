@@ -184,10 +184,7 @@ static inline kdb_float_t ELEKTRA_GET (Myfloatarray) (Elektra * elektra ,
 {
 	
 
-	char * name = elektraFormat ("myfloatarray/%3$*2$.*1$s%4$lld", 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("myfloatarray/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
 	elektraFree (name);
 	return result;
@@ -210,10 +207,7 @@ static inline void ELEKTRA_SET (Myfloatarray) (Elektra * elektra,
 {
 	
 
-	char * name = elektraFormat ("myfloatarray/%3$*2$.*1$s%4$lld", 
-				       elektra_len (index1), elektra_len (index1),
-				     "#___________________",  index1 
-				     );
+	char * name = elektraFormat ("myfloatarray/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	ELEKTRA_SET (Float) (elektra, name, value, error);
 	elektraFree (name);
 	

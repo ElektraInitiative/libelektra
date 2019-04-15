@@ -22,10 +22,8 @@ static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * 
 	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
 	/*%/ context %*/
 
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
-				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
-				     "#___________________", /*%/ index? %*/ (long long) /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
-				     /*%/ args %*/);
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ context_and_args %*/);
 	const char * actualName = elektraGetRawString (elektra, name);
 	elektraFree (name);
 	/*%/ args_or_context? %*/
@@ -61,10 +59,8 @@ static inline void ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
 	/*%/ context %*/
 
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
-				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
-				     "#___________________", /*%/ index? %*/ (long long) /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
-				     /*%/ args %*/);
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ context_and_args %*/);
 	const char * actualName = elektraGetRawString (elektra, name);
 	elektraFree (name);
 	/*%/ args_or_context? %*/
@@ -105,10 +101,8 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, const cha
 	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
 	/*%/ context %*/
 
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context %*/ /*%& c_name %*/ /*%^ last? %*/, /*%/ last? %*/ /*%/ context %*/
-				     /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/), elektra_len (/*%& name %*/),
-				     "#___________________", /*%/ index? %*/ (long long) /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
-				     /*%/ args %*/);
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ context_and_args %*/);
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
 	/*%/ args_or_context? %*/
