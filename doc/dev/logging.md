@@ -96,7 +96,7 @@ If you want to only log messages below a specific directory prefix, then please 
 
    .
 
-### Enabling and disabling sinks
+### Enabling and Disabling Sinks
 
 The logging framework has 3 sinks: stderr, syslog and file.
 
