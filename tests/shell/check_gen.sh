@@ -57,9 +57,6 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		"$KDB" spec-mount "$cascading_parent"
 		succeed_if "couldn't spec-mount data"
 
-		"$KDB" get "$cascading_parent/disjointed"
-		"$KDB" ls "$cascading_parent"
-
 		old_dir=$(pwd)
 		cd "$output_folder"
 		"$KDB" gen "$template" "$spec_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
