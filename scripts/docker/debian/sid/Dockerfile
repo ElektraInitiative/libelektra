@@ -93,6 +93,14 @@ RUN mkdir -p ${GTEST_ROOT} \
 # Prettier
 RUN npm install --global prettier@1.16.4
 
+# hyperfine
+ARG HYPERFINE_VERSION=1.5.0
+RUN cd /tmp \
+    && curl -o hyperfine.deb \
+       -L https://github.com/sharkdp/hyperfine/releases/download/v${HYPERFINE_VERSION}/hyperfine_${HYPERFINE_VERSION}_amd64.deb \
+    && dpkg -i hyperfine.deb \
+    && rm hyperfine.deb
+
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
 # on the slaves to execute containers
