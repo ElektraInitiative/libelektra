@@ -218,6 +218,23 @@ struct action<push_indent_plus_one>
 };
 
 /**
+ * @brief This grammar rule stores adds the two top values on the stack and stores this sum at the top of the stack.
+ */
+struct push_indent_plus_last_two : success
+{
+};
+template <>
+struct action<push_indent_plus_last_two>
+{
+	template <typename Input>
+	static void apply (const Input &, State & state)
+	{
+		auto levels = state.indentation.size ();
+		state.indentation.push_back (state.indentation[levels - 1] + state.indentation[levels - 2]);
+	}
+};
+
+/**
  * @brief This rule pops the top value of the indentation stack.
  */
 struct pop_indent : success
@@ -294,6 +311,14 @@ struct with_updated_indent : with_updated_state<push_indent, pop_indent, Rules..
  */
 template <typename... Rules>
 struct with_updated_indent_plus_one : with_updated_state<push_indent_plus_one, pop_indent, Rules...>
+{
+};
+
+/**
+ * @brief This rule parses `Rules` with a new indentation that is the sum of the last two indentation values.
+ */
+template <typename... Rules>
+struct with_updated_indent_plus_last_two : with_updated_state<push_indent_plus_last_two, pop_indent, Rules...>
 {
 };
 
@@ -981,7 +1006,8 @@ struct s_l_plus_block_node;
 struct ns_l_compact_sequence;
 struct ns_l_compact_mapping;
 struct s_l_plus_block_indented
-: sor<seq<with_updated_indent<s_indent, with_updated_indent_plus_one<sor<ns_l_compact_sequence, ns_l_compact_mapping>>>>,
+: sor<seq<with_updated_indent<
+	      s_indent, with_updated_indent_plus_last_two<with_updated_indent_plus_one<sor<ns_l_compact_sequence, ns_l_compact_mapping>>>>>,
       s_l_plus_block_node, seq<e_node, s_l_comments>>
 {
 };
