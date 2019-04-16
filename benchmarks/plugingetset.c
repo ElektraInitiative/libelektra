@@ -18,7 +18,7 @@ int main (int argc, char ** argv)
 {
 	if (argc < 4 || argc > 5 || (argc == 5 && elektraStrCmp (argv[4], "get") != 0))
 	{
-		fprintf (stderr, "Usage: %s <path> <parent> <plugin> [get]", argv[0]);
+		fprintf (stderr, "Usage: %s <path> <parent> <plugin> [get]\n", argv[0]);
 		return 1;
 	}
 
