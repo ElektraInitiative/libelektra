@@ -26,7 +26,7 @@ for PLUGIN in "${PLUGINS[@]}"; do
 	cp "$DATA_DIRECTORY/test.yaml" "$DATA_DIRECTORY/test.$PLUGIN.in"
 done
 
-hyperfine \
+hyperfine --warmup 3 \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[0]} get" \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[1]} get" \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[2]} get" \
