@@ -192,7 +192,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAy PEG
 
-- [YAy PEG](https://www.libelektra.org/plugins/yaypeg) now also supports [PEGTL 2.8](https://github.com/taocpp/PEGTL/releases/tag/2.8.0). _(René Schwaiger)_
+- [YAy PEG][] now also supports [PEGTL 2.8](https://github.com/taocpp/PEGTL/releases/tag/2.8.0). _(René Schwaiger)_
 - The plugin now includes the input that could not be parsed in error messages. _(René Schwaiger)_
 - We improved the error messages for certain errors slightly. For example, the error message for the input
 
@@ -209,6 +209,24 @@ The following section lists news about the [modules](https://www.libelektra.org/
   ```
 
   . _(René Schwaiger)_
+
+- [YAy PEG][] now supports compact mappings:
+
+  ```yaml
+  - key1: value1
+    key2: value2
+  ```
+
+  and compact sequences:
+
+  ```yaml
+  - - element1
+    - element2
+  ```
+
+  correctly. _(René Schwaiger)_
+
+[yay peg]: https://www.libelektra.org/plugins/yaypeg
 
 ### Quickdump
 
