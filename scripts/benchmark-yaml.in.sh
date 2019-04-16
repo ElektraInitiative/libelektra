@@ -19,7 +19,7 @@ command -v hyperfine > /dev/null 2>&1 || {
 }
 
 PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
-DATA_DIRECTORY="$PWD/benchmarks/data"
+DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 
 for PLUGIN in "${PLUGINS[@]}"; do
@@ -31,7 +31,7 @@ hyperfine \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[1]} get" \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[2]} get" \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[3]} get" \
-	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[4]} get"
+	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[4]} get" | sed -e "s~$BUILD_DIRECTORY/bin/~~g"
 
 for PLUGIN in "${PLUGINS[@]}"; do
 	rm "$DATA_DIRECTORY/test.$PLUGIN.in"
