@@ -51,8 +51,19 @@ int main ()
 	if (err && gpg_err_code (err) == GPG_ERR_EOF)
 	{
 		// create the elektra demo key
+		// NOTE new versions of libgpgme provide GPGME_CREATE_NOEXPIRE to create keys that do not expire
+		//      and the parameter 0 means "reasonable expiration date" (for whatever that is).
+		//      However, in older verions (that do not have GPGME_CREATE_NOEXPIRE) an expiration of 0 means
+		//      that the key does not expire.
+		//
+		//      See https://lists.gnupg.org/pipermail/gnupg-commits/2017-February/013351.html
+#ifdef GPGME_CREATE_NOEXPIRE
 		err = gpgme_op_createkey (ctx, "elektra testkey", "default", 0, 0, NULL,
 					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOEXPIRE | GPGME_CREATE_NOPASSWD);
+#else
+		err = gpgme_op_createkey (ctx, "elektra testkey", "default", 0, 0, NULL,
+					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOPASSWD);
+#endif
 		res = gpgme_op_genkey_result (ctx);
 		fprintf (stdout, "%s", res->fpr);
 	}
