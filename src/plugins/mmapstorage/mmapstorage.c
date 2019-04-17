@@ -48,8 +48,9 @@ static MmapMetaData magicMmapMetaData;
 
 typedef enum
 {
-	MODE_STORAGE,
-	MODE_GLOBALCACHE
+	MODE_STORAGE = 1,
+	MODE_GLOBALCACHE = 1 << 1,
+	MODE_NONREGULAR_FILE = 1 << 2
 } PluginMode;
 
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
@@ -133,12 +134,26 @@ static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key *
 {
 	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
 
-	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
-	if (mappedRegion == MAP_FAILED)
+	char * mappedRegion = MAP_FAILED;
+	if (test_bit (mode, MODE_NONREGULAR_FILE))
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
-		return MAP_FAILED;
+		mappedRegion = elektraCalloc (mmapSize);
+		if (!mappedRegion)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("error allocating buffer for file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+			return MAP_FAILED;
+		}
 	}
+	else
+	{
+		mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
+		if (mappedRegion == MAP_FAILED)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+			return MAP_FAILED;
+		}
+	}
+
 	return mappedRegion;
 }
 
@@ -615,7 +630,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	size_t keyIndex = 0;
 
 	Key ** ksArray = 0;
-	if (mode == MODE_STORAGE)
+	if (test_bit (mode, MODE_STORAGE))
 	{
 		ksArray = (Key **) mmapAddr->ksArrayPtr;
 	}
@@ -786,7 +801,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
 
-	if (mode == MODE_GLOBALCACHE) // TODO: remove code duplication here
+	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
 		ksClose (global); // TODO: if we have a global keyset, maybe use ksAppend?
@@ -1069,7 +1084,18 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
 
-	if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+	struct stat sbuf;
+	if (statFile (&sbuf, parentKey, mode) != 1)
+	{
+		goto error;
+	}
+
+	if ((sbuf.st_mode & S_IFMT) != S_IFREG)
+	{
+		set_bit (mode, MODE_NONREGULAR_FILE);
+	}
+
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && unlink (keyString (parentKey)) != 0 && errno != ENOENT)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
 		goto error;
