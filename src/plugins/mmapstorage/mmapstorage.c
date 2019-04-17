@@ -1091,8 +1091,11 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		ELEKTRA_MMAP_LOG_WARNING ("could not get realpath");
 		if (errno != ENOENT) goto error;
 	}
-	ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
-	keySetString (parentKey, realPath);
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
+		keySetString (parentKey, realPath);
+	}
 
 	struct stat sbuf;
 	if (statFile (&sbuf, parentKey, mode) != 1)
