@@ -1085,11 +1085,13 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	DynArray * dynArray = 0;
 	char * realPath = 0;
 	Key * initialParent = keyDup (parentKey);
+	int newFile = 0;
 
 	if ((realPath = realpath (keyString (parentKey), 0)) == 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not get realpath");
 		if (errno != ENOENT) goto error;
+		else newFile = 1;
 	}
 	else
 	{
@@ -1103,7 +1105,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	if (!test_bit (sbuf.st_mode, S_IFREG))
+	if (!newFile && !test_bit (sbuf.st_mode, S_IFREG))
 	{
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
