@@ -1085,27 +1085,20 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	DynArray * dynArray = 0;
 	char * realPath = 0;
 	Key * initialParent = keyDup (parentKey);
-	int newFile = 0;
 
-	if ((realPath = realpath (keyString (parentKey), 0)) == 0)
-	{
-		ELEKTRA_MMAP_LOG_WARNING ("could not get realpath");
-		if (errno != ENOENT) goto error;
-		else newFile = 1;
-	}
-	else
+	if ((realPath = realpath (keyString (parentKey), 0)) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
 		keySetString (parentKey, realPath);
 	}
 
 	struct stat sbuf;
-	if (statFile (&sbuf, parentKey, mode) != 1)
+	if (realPath && statFile (&sbuf, parentKey, mode) != 1)
 	{
 		goto error;
 	}
 
-	if (!newFile && !test_bit (sbuf.st_mode, S_IFREG))
+	if (realPath && !test_bit (sbuf.st_mode, S_IFREG))
 	{
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
