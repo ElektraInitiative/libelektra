@@ -1089,7 +1089,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	if ((realPath = realpath (keyString (parentKey), 0)) == 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not get realpath");
-		goto error;
+		if (errno != ENOENT) goto error;
 	}
 	ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
 	keySetString (parentKey, realPath);
