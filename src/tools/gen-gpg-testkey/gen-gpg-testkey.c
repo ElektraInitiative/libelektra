@@ -10,7 +10,7 @@
 #include <gpgme.h>
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	gpgme_error_t err;
 	gpgme_ctx_t ctx;
