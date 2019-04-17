@@ -113,8 +113,8 @@ function (add_msr_test NAME FILE)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	foreach (tool ${ARG_REQUIRED_TOOLS})
 		list (FIND REMOVED_TOOLS
-				${tool}
-				tool_index)
+			   ${tool}
+			   tool_index)
 		if (tool_index GREATER -1)
 			return ()
 		endif ()
@@ -161,5 +161,11 @@ function (add_msr_test_plugin PLUGIN)
 	list (APPEND ARG_REQUIRED_TOOLS
 		     ${TOOL})
 
-	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS} REQUIRED_TOOLS ${ARG_REQUIRED_TOOLS})
+	add_msr_test (${PLUGIN}
+		      "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md"
+		      ${ARGN}
+		      REQUIRED_PLUGINS
+		      ${ARG_REQUIRED_PLUGINS}
+		      REQUIRED_TOOLS
+		      ${ARG_REQUIRED_TOOLS})
 endfunction ()
