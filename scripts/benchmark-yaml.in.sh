@@ -7,6 +7,17 @@
 
 BUILD_DIRECTORY="@CMAKE_BINARY_DIR@"
 SOURCE_DIRECTORY="@CMAKE_SOURCE_DIR@"
+PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
+DATA_DIRECTORY="benchmarks/data"
+BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
+
+trap cleanup EXIT INT QUIT TERM
+
+cleanup() {
+	for PLUGIN in "${PLUGINS[@]}"; do
+		rm -f "$DATA_DIRECTORY/test.$PLUGIN.in"
+	done
+}
 
 cd "$SOURCE_DIRECTORY" || {
 	printf >&2 'Unable to change working directory to “%s”\n' "$SOURCE_DIRECTORY"
@@ -18,10 +29,6 @@ command -v hyperfine > /dev/null 2>&1 || {
 	exit 1
 }
 
-PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
-DATA_DIRECTORY="benchmarks/data"
-BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
-
 for PLUGIN in "${PLUGINS[@]}"; do
 	cp "$DATA_DIRECTORY/test.yaml" "$DATA_DIRECTORY/test.$PLUGIN.in"
 done
@@ -32,7 +39,3 @@ hyperfine --warmup 3 \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[2]} get" \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[3]} get" \
 	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[4]} get" | sed -e "s~$BUILD_DIRECTORY/bin/~~g"
-
-for PLUGIN in "${PLUGINS[@]}"; do
-	rm "$DATA_DIRECTORY/test.$PLUGIN.in"
-done
