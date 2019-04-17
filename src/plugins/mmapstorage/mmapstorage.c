@@ -34,7 +34,7 @@
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate (), size_t
-#include <unistd.h>    // close(), ftruncate(), unlink()
+#include <unistd.h>    // close(), ftruncate(), unlink(), write()
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()
@@ -1083,6 +1083,16 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
+	char * realPath = 0;
+	Key * initialParent = keyDup (parentKey);
+
+	if ((realPath = realpath (keyString (parentKey), 0)) == 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not get realpath");
+		goto error;
+	}
+	ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
+	keySetString (parentKey, realPath);
 
 	struct stat sbuf;
 	if (statFile (&sbuf, parentKey, mode) != 1)
@@ -1090,8 +1100,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	if ((sbuf.st_mode & S_IFMT) != S_IFREG)
+	if (!test_bit (sbuf.st_mode, S_IFREG))
 	{
+		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
 	}
 
@@ -1115,7 +1126,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, global, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %" PRIu64, mmapHeader.allocSize);
 
-	if (truncateFile (fd, mmapHeader.allocSize, parentKey, mode) != 1)
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && truncateFile (fd, mmapHeader.allocSize, parentKey, mode) != 1)
 	{
 		goto error;
 	}
@@ -1131,13 +1142,25 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	MmapFooter mmapFooter;
 	initFooter (&mmapFooter);
 	copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
-	if (msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
+
+	if (test_bit (mode, MODE_NONREGULAR_FILE))
+	{
+		if (write (fd, mappedRegion, mmapHeader.allocSize) == -1)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("could not write buffer to file");
+			goto error;
+		}
+		elektraFree (mappedRegion);
+		mappedRegion = MAP_FAILED;
+	}
+
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not msync");
 		goto error;
 	}
 
-	if (munmap (mappedRegion, mmapHeader.allocSize) != 0)
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && munmap (mappedRegion, mmapHeader.allocSize) != 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 		goto error;
@@ -1150,7 +1173,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	}
 
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
-
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
+	if (realPath) elektraFree (realPath);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1160,15 +1185,24 @@ error:
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
-	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
+	if ((mappedRegion != MAP_FAILED && !test_bit (mode, MODE_NONREGULAR_FILE)) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 	}
+
+	if (mappedRegion != MAP_FAILED && test_bit (mode, MODE_NONREGULAR_FILE))
+	{
+		elektraFree (mappedRegion);
+	}
+
 	if ((fd != -1) && close (fd) != 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
+	if (realPath) elektraFree (realPath);
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 
 	errno = errnosave;
