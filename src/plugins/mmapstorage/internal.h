@@ -39,7 +39,7 @@
 
 /** Suppress warnings in cache mode to debug level */
 #define ELEKTRA_MMAP_LOG_WARNING(...)                                                                                                      \
-	if (mode == MODE_GLOBALCACHE)                                                                                                      \
+	if (test_bit (mode, MODE_GLOBALCACHE))                                                                                                      \
 	{                                                                                                                                  \
 		ELEKTRA_LOG_DEBUG (__VA_ARGS__);                                                                                           \
 	}                                                                                                                                  \
