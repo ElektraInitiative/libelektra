@@ -1081,6 +1081,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int errnosave = errno;
 	int fd = -1;
+	int newFile = 0;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
 	char * realPath = 0;
@@ -1091,6 +1092,11 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
 		keySetString (parentKey, realPath);
 	}
+	else
+	{
+		if (errno == ENOENT) newFile = 1;
+		ELEKTRA_LOG_DEBUG ("problem: %d,%s", errno, strerror (errno));
+	}
 
 	struct stat sbuf;
 	if (realPath && statFile (&sbuf, parentKey, mode) != 1)
@@ -1098,13 +1104,13 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	if (realPath && !test_bit (sbuf.st_mode, S_IFREG))
+	if (!newFile && !test_bit (sbuf.st_mode, S_IFREG))
 	{
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
 	}
 
-	if (!test_bit (mode, MODE_NONREGULAR_FILE) && unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+	if (!newFile && !test_bit (mode, MODE_NONREGULAR_FILE) && unlink (keyString (parentKey)) != 0 && errno != ENOENT)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
 		goto error;
@@ -1113,6 +1119,22 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR, mode)) == -1)
 	{
 		goto error;
+	}
+
+	struct stat fdSbuf;
+	if (fstat (fd, &fdSbuf) != 0)
+	{
+		goto error;
+	}
+	if (!test_bit (fdSbuf.st_mode, S_IFREG))
+	{
+		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
+		set_bit (mode, MODE_NONREGULAR_FILE);
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("REGULAR FILE");
+		clear_bit (mode, MODE_NONREGULAR_FILE);
 	}
 
 	dynArray = ELEKTRA_PLUGIN_FUNCTION (dynArrayNew) ();

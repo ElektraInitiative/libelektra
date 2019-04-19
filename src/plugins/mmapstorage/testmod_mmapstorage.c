@@ -805,7 +805,7 @@ static void test_mmap_open_pipe (void)
 		yield_error ("pipe() error");
 	}
 	char pipeFile[1024];
-	sprintf (pipeFile, "/dev/fd/%d", pipefd[1]);
+	snprintf (pipeFile, 1024, "/dev/fd/%d", pipefd[1]);
 	pipeFile[1023] = '\0';
 
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, pipeFile, KEY_END);
