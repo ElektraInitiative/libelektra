@@ -1009,6 +1009,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		fd = tmpFd;
 		ELEKTRA_LOG_DEBUG ("using tmp file: %s", name);
 		keySetString (parentKey, name);
+		memset (&sbuf, 0, sizeof (struct stat));
 		if (statFile (&sbuf, parentKey, mode) != 1)
 		{
 			goto error;
@@ -1024,6 +1025,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 			ELEKTRA_MMAP_LOG_WARNING ("could not close");
 			goto error;
 		}
+		keySetString (parentKey, keyString (initialParent));
+		if (initialParent) keyDel (initialParent);
+		if (realPath) elektraFree (realPath);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
