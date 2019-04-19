@@ -37,6 +37,12 @@
 /** Mmap format version */
 #define ELEKTRA_MMAP_FORMAT_VERSION (1)
 
+/** Mmap temp file template */
+#define ELEKTRA_MMAP_TMP_NAME "/tmp/elektraMmapTmpXXXXXX"
+
+/** Magic number used in mmap format */
+#define ELEKTRA_MMAP_BUFSIZE (4096)
+
 /** Suppress warnings in cache mode to debug level */
 #define ELEKTRA_MMAP_LOG_WARNING(...)                                                                                                      \
 	if (test_bit (mode, MODE_GLOBALCACHE))                                                                                             \

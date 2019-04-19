@@ -944,16 +944,76 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
+	char * realPath = 0;
+	Key * initialParent = keyDup (parentKey);
 
-	if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
+	if ((realPath = realpath (keyString (parentKey), 0)) != 0)
 	{
-		goto error;
+		ELEKTRA_LOG_DEBUG ("using realpath: %s", realPath);
+		keySetString (parentKey, realPath);
 	}
 
 	struct stat sbuf;
 	if (statFile (&sbuf, parentKey, mode) != 1)
 	{
 		goto error;
+	}
+
+	if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
+	{
+		goto error;
+	}
+
+	if (!test_bit (sbuf.st_mode, S_IFREG))
+	{
+		// non regular file not mmap compatible, copy to temp file
+		ELEKTRA_LOG_DEBUG ("copy nonregular file");
+		int tmpFd = 0;
+		char name[] = ELEKTRA_MMAP_TMP_NAME;
+		if ((tmpFd = mkstemp (name)) < 0)
+		{
+			goto error;
+		}
+
+		ssize_t readBytes = 0;
+		char buf[ELEKTRA_MMAP_BUFSIZE];
+		while ((readBytes = read (fd, buf, ELEKTRA_MMAP_BUFSIZE)) > 0)
+		{
+			if (readBytes <= 0)
+			{
+				if (errno == EINTR) continue;
+				else goto error;
+			}
+
+			char * pos = buf;
+			ssize_t writtenBytes = 0;
+			while (readBytes > 0)
+			{
+				writtenBytes = write (tmpFd, buf, readBytes);
+				if (writtenBytes <= 0)
+				{
+					if (errno == EINTR) continue;
+					else goto error;
+				}
+				readBytes -= writtenBytes;
+				pos += writtenBytes;
+			}
+		}
+
+		if (close (fd) != 0)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("could not close");
+			goto error;
+		}
+		// replace file
+		fd = tmpFd;
+		ELEKTRA_LOG_DEBUG ("using tmp file: %s", name);
+		keySetString (parentKey, name);
+		if (statFile (&sbuf, parentKey, mode) != 1)
+		{
+			goto error;
+		}
+		unlink (name); // use anonymous file
 	}
 
 	if (sbuf.st_size == 0)
@@ -1032,6 +1092,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
+	if (realPath) elektraFree (realPath);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1050,6 +1113,9 @@ error:
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
+	if (realPath) elektraFree (realPath);
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
