@@ -18,8 +18,6 @@ check_version
 
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/external"
 
-set -x
-
 do_tests() {
 	SKEY=system/test/myapp/key
 	UKEY=user/test/myapp/key
@@ -53,10 +51,10 @@ cd "$EXTERNAL_FOLDER"
 mkdir build
 cd build
 
-cmake ../cmake
+cmake ../cmake -DElektra_DIR:PATH=$(realpath $(dirname $0)/../../cmake/Elektra)
 succeed_if "could not run cmake"
 
-make
+cmake --build .
 succeed_if "could not build cmake project"
 
 do_tests

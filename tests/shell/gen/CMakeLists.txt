@@ -5,6 +5,13 @@ file (GLOB_RECURSE shellfiles
 	       *.sh)
 
 foreach (file ${shellfiles})
+	if (BUILD_SHARED)
+		set (ElektraCodegen_ALL_LIBRARIES "elektra-highlevel;elektra-opts;elektra-invoke;elektra-ease;elektra-kdb;elektra-core")
+	elseif (BUILD_FULL)
+		set (ElektraCodegen_ALL_LIBRARIES "elektra-full")
+	elseif (BUILD_STATIC)
+		set (ElektraCodegen_ALL_LIBRARIES "elektra-static")
+	endif ()
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${file}" "${CMAKE_CURRENT_BINARY_DIR}/${file}" @ONLY)
 endforeach ()
 
