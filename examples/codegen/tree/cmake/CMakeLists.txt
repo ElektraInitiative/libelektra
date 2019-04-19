@@ -31,12 +31,7 @@ if (ELEKTRA_FOUND)
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 	add_executable (application ../src/application.c ${CMAKE_CURRENT_BINARY_DIR}/genelektra.c)
-	target_link_libraries (application ${Elektra_LIBRARIES})
-
-	if (Elektra_SHARED)
-		# link additional libraries
-		target_link_libraries (application elektra-highlevel elektra-opts elektra-invoke elektra-kdb elektra-ease)
-	endif (Elektra_SHARED)
+	target_link_libraries (application ${ElektraCodegen_LIBRARIES})
 else (ELEKTRA_FOUND)
 	message (FATAL_ERROR "Elektra not found")
 endif (ELEKTRA_FOUND)
