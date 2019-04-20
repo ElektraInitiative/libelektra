@@ -3,7 +3,7 @@
 This file contains important shell tests for mmapstorage which
 do not fit well into the plugin README.
 
-# Test kdb export & import (pipe size known)
+# Test kdb export & import (stat: pipe size known)
 
 ```sh
 # Make temp file
@@ -62,9 +62,10 @@ sudo kdb umount user/tests/mmapstorage
 
 # Remove temp file
 rm $(kdb get system/tests/mmaptempfile)
+kdb rm -r system/tests/mmaptempfile
 ```
 
-# Test kdb export & import (pipe size unknown)
+# Test kdb export & import (stat: pipe size unknown)
 
 ```sh
 # Make temp file
@@ -123,4 +124,5 @@ sudo kdb umount user/tests/mmapstorage
 
 # Remove temp file
 rm $(kdb get system/tests/mmaptempfile)
+kdb rm -r system/tests/mmaptempfile
 ```
