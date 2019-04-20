@@ -981,8 +981,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		{
 			if (readBytes <= 0)
 			{
-				if (errno == EINTR) continue;
-				else goto error;
+				if (errno == EINTR)
+					continue;
+				else
+					goto error;
 			}
 
 			char * pos = buf;
@@ -992,8 +994,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 				writtenBytes = write (tmpFd, buf, readBytes);
 				if (writtenBytes <= 0)
 				{
-					if (errno == EINTR) continue;
-					else goto error;
+					if (errno == EINTR)
+						continue;
+					else
+						goto error;
 				}
 				readBytes -= writtenBytes;
 				pos += writtenBytes;
