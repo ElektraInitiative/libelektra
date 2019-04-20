@@ -24,7 +24,19 @@ sudo kdb spec-mount "/sw/example/econf/#0/current"
 
 ### Pkgconfig
 
-TODO
+```sh
+# execute in the current directory or replace $PWD accordingly
+DIR=$PWD
+
+cd "$DIR/pkgconfig/build"
+
+make
+
+cd "$DIR"
+
+sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$DIR/pkgconfig/application"
+sudo kdb spec-mount "/sw/example/econf/#0/current"
+```
 
 ## Running
 
