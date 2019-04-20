@@ -33,7 +33,8 @@ do_tests() {
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 
-	"$KDB" mount "$EXTERNAL_FOLDER/spec.ini" "$SPECKEY" ni
+	"$KDB" mount "highlevel_spec.ini" "$SPECKEY" ni
+	"$KDB" import "$SPECKEY" ni < "$EXTERNAL_FOLDER/spec.ini"
 	"$KDB" spec-mount "$KEY"
 
 	./application
@@ -84,10 +85,10 @@ do_tests() {
 	./application | grep "myfloatarray\\[4\\]: $MYFLOAT4"
 	succeed_if "application did not print myfloatarray[4]"
 
-	"$KDB" umount "$SPECKEY"
-	"$KDB" umount "$KEY"
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
+	"$KDB" umount "$SPECKEY"
+	"$KDB" umount "$KEY"
 }
 
 echo "Testing build with cmake"
@@ -96,7 +97,8 @@ cd "$EXTERNAL_FOLDER"
 mkdir build
 cd build
 
-cmake ../cmake -DElektra_DIR:PATH=$(realpath $(dirname $0)/../../cmake/Elektra)
+# manually set Elektra_DIR and KDB to support non-standard install locations
+cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname $0)/../../cmake/Elektra)"
 succeed_if "could not run cmake"
 
 cmake --build .
