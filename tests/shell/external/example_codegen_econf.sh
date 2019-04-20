@@ -120,7 +120,7 @@ cd build
 cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname $0)/../../cmake/Elektra)" -DKDB:PATH="$KDB"
 succeed_if "could not run cmake"
 
-cmake --build . --verbose
+cmake --build .
 succeed_if "could not build cmake project"
 
 do_tests
