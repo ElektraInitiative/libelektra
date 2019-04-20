@@ -99,6 +99,28 @@ static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED
 }
 
 /**
+ * @brief Wrapper for fstat().
+ *
+ * @param sbuf the stat structure
+ * @param parentKey holding the filename
+ *
+ * @retval 1 on success
+ * @retval -1 if fstat() failed
+ */
+static int fstatFile (int fd, struct stat * sbuf, Key * parentKey ELEKTRA_UNUSED, PluginMode mode)
+{
+	ELEKTRA_LOG_DEBUG ("fstat() on file %s", keyString (parentKey));
+
+	memset (sbuf, 0, sizeof (struct stat));
+	if (fstat (fd, sbuf) == -1)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("error on fstat() for file %s", keyString (parentKey));
+		return -1;
+	}
+	return 1;
+}
+
+/**
  * @brief Wrapper for stat().
  *
  * @param sbuf the stat structure
@@ -111,6 +133,7 @@ static int statFile (struct stat * sbuf, Key * parentKey, PluginMode mode)
 {
 	ELEKTRA_LOG_DEBUG ("stat() on file %s", keyString (parentKey));
 
+	memset (sbuf, 0, sizeof (struct stat));
 	if (stat (keyString (parentKey), sbuf) == -1)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
@@ -220,10 +243,8 @@ static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey,
 
 	// replace old file
 	fd = tmpFd;
-	memset (sbuf, 0, sizeof (struct stat));
-	if (fstat (fd, sbuf) != 0)
+	if (fstatFile (fd, sbuf, parentKey, mode) != 1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("could not fstat");
 		return -1;
 	}
 
@@ -1026,13 +1047,13 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		keySetString (parentKey, realPath);
 	}
 
-	struct stat sbuf;
-	if (statFile (&sbuf, parentKey, mode) != 1)
+	if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
 	{
 		goto error;
 	}
 
-	if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
+	struct stat sbuf;
+	if (fstatFile (fd, &sbuf, parentKey, mode) != 1)
 	{
 		goto error;
 	}
@@ -1221,12 +1242,11 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	struct stat fdSbuf;
-	if (fstat (fd, &fdSbuf) != 0)
+	if (fstatFile (fd, &sbuf, parentKey, mode) != 1)
 	{
 		goto error;
 	}
-	if (!test_bit (fdSbuf.st_mode, S_IFREG))
+	if (!test_bit (sbuf.st_mode, S_IFREG))
 	{
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
