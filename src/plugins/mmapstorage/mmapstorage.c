@@ -32,9 +32,9 @@
 #include <stdlib.h>    // strtol()
 #include <string.h>    // memcmp()
 #include <sys/mman.h>  // mmap()
-#include <sys/stat.h>  // stat()
+#include <sys/stat.h>  // stat(), fstat()
 #include <sys/types.h> // ftruncate (), size_t
-#include <unistd.h>    // close(), ftruncate(), unlink(), write()
+#include <unistd.h>    // close(), ftruncate(), unlink(), read(), write()
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()
@@ -60,7 +60,8 @@ typedef enum
  *
  * @param parentKey containing the filename
  * @param flags file access mode
- * @param mode file mode bits when file is created
+ * @param openMode file mode bits when file is created
+ * @param mode the current plugin mode
  *
  * @return file descriptor
  */
@@ -82,6 +83,7 @@ static int openFile (Key * parentKey, int flag, mode_t openMode, PluginMode mode
  * @param fd the file descriptor
  * @param mmapsize size of the mapped region
  * @param parentKey holding the filename, for debug purposes
+ * @param mode the current plugin mode
  *
  * @retval 1 on success
  * @retval -1 if ftruncate() failed
@@ -101,8 +103,10 @@ static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED
 /**
  * @brief Wrapper for fstat().
  *
+ * @param fd the file descriptor
  * @param sbuf the stat structure
  * @param parentKey holding the filename
+ * @param mode the current plugin mode
  *
  * @retval 1 on success
  * @retval -1 if fstat() failed
@@ -125,6 +129,7 @@ static int fstatFile (int fd, struct stat * sbuf, Key * parentKey ELEKTRA_UNUSED
  *
  * @param sbuf the stat structure
  * @param parentKey holding the filename
+ * @param mode the current plugin mode
  *
  * @retval 1 on success
  * @retval -1 if stat() failed
@@ -150,6 +155,7 @@ static int statFile (struct stat * sbuf, Key * parentKey, PluginMode mode)
  * @param mmapSize size of the mapped region
  * @param mapOpts mmap flags (MAP_PRIVATE, MAP_FIXED, ...)
  * @param parentKey holding the filename, for debug purposes
+ * @param mode the current plugin mode
  *
  * @return pointer to mapped region on success, MAP_FAILED on failure
  */
@@ -180,6 +186,16 @@ static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key *
 	return mappedRegion;
 }
 
+
+/**
+ * @brief Copy file
+ *
+ * @param sourceFd source file descriptor
+ * @param destFd destination file descriptor
+ *
+ * @retval 0 on success
+ * @retval -1 if any error occured
+ */
 static int copyFile (int sourceFd, int destFd)
 {
 	ssize_t readBytes = 0;
@@ -215,6 +231,21 @@ static int copyFile (int sourceFd, int destFd)
 	return 0;
 }
 
+/**
+ * @brief Copy file to anonymous temporary file
+ *
+ * This function is needed to make mmapstorage compatible
+ * with any file. The `mmap()` syscall only supports regular
+ * files.
+ *
+ * @param fd source file descriptor
+ * @param sbuf the stat structure
+ * @param parentKey holding the file name
+ * @param mode the current plugin mode
+ *
+ * @retval 0 on success
+ * @retval -1 if any error occured
+ */
 static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey, PluginMode mode)
 {
 	int tmpFd = 0;
