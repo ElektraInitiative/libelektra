@@ -491,8 +491,6 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 		}
 		fieldKeyName = snakeCaseToCamelCase (fieldKeyName);
 
-		maxFieldNameLen = std::max (maxFieldNameLen, fieldKeyName.size ());
-
 		const std::string & type = ::getType (key);
 
 		std::unordered_set<std::string> allowedTypes = { "struct_ref", "enum",		"string",     "boolean",
@@ -554,9 +552,12 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 
 		auto name = getFieldName (key, fieldKeyName);
 
-		auto field = object{ { "name", name },		{ "key_name", fieldKeyName }, { "native_type", nativeType },
-				     { "type_name", typeName }, { "alloc?", allocate },       { "is_array?", isArray },
-				     { "is_struct?", isStruct } };
+		auto keyName = key.getName ().substr (structKey.getName ().length () + 1);
+		maxFieldNameLen = std::max (maxFieldNameLen, keyName.size ());
+
+		auto field =
+			object{ { "name", name },       { "key_name", keyName },  { "native_type", nativeType }, { "type_name", typeName },
+				{ "alloc?", allocate }, { "is_array?", isArray }, { "is_struct?", isStruct } };
 
 		if (isArray)
 		{

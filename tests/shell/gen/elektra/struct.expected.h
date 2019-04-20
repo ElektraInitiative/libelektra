@@ -42,6 +42,16 @@ extern "C" {
 #define ELEKTRA_STRUCT_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
 #define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
+typedef struct ElektraStructMyotherstruct
+{
+	
+	 kdb_long_t  x;		
+
+	
+	 kdb_long_t  xY;		
+
+} ElektraStructMyotherstruct;
+
 typedef struct ElektraStructMystruct
 {
 	
@@ -73,6 +83,12 @@ typedef struct Person
 
 
 
+ELEKTRA_GET_OUT_PTR_SIGNATURE (ElektraStructMyotherstruct, StructMyotherstruct);
+ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (ElektraStructMyotherstruct, StructMyotherstruct);
+ELEKTRA_SET_SIGNATURE (const ElektraStructMyotherstruct *, StructMyotherstruct);
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const ElektraStructMyotherstruct *, StructMyotherstruct);
+
+
 ELEKTRA_GET_OUT_PTR_SIGNATURE (ElektraStructMystruct, StructMystruct);
 ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (ElektraStructMystruct, StructMystruct);
 ELEKTRA_SET_SIGNATURE (const ElektraStructMystruct *, StructMystruct);
@@ -93,6 +109,24 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 // clang-format on
 
 // clang-format off
+
+/**
+* Tag name for 'myotherstruct'
+* 
+*/// 
+#define ELEKTRA_TAG_MYOTHERSTRUCT Myotherstruct
+
+/**
+* Tag name for 'myotherstruct/x'
+* 
+*/// 
+#define ELEKTRA_TAG_MYOTHERSTRUCT_X MyotherstructX
+
+/**
+* Tag name for 'myotherstruct/x/y'
+* 
+*/// 
+#define ELEKTRA_TAG_MYOTHERSTRUCT_X_Y MyotherstructXY
 
 /**
 * Tag name for 'mystruct'
@@ -226,6 +260,111 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 #define elektra_len(x) elektra_len00 (x)
 
 #define ELEKTRA_SIZE(tagName) ELEKTRA_CONCAT (elektraSize, tagName)
+
+// clang-format off
+
+// clang-format on
+
+
+
+/**
+ * Get the value of 'myotherstruct'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param result  The value will be stored in the referenced variable.
+
+ */// 
+static inline void ELEKTRA_GET (Myotherstruct) (Elektra * elektra, ElektraStructMyotherstruct *result )
+{
+	
+	ELEKTRA_GET (StructMyotherstruct) (elektra, "myotherstruct", result);
+}
+
+
+/**
+ * Set the value of 'myotherstruct'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'myotherstruct'.
+
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (Myotherstruct) (Elektra * elektra, const ElektraStructMyotherstruct * value,  ElektraError ** error)
+{
+	
+	ELEKTRA_SET (StructMyotherstruct) (elektra, "myotherstruct", value, error);
+}
+
+
+
+
+
+
+/**
+ * Get the value of 'myotherstruct/x'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+
+ *
+ * @return the value of 'myotherstruct/x'.
+ */// 
+static inline kdb_long_t ELEKTRA_GET (MyotherstructX) (Elektra * elektra )
+{
+	
+	return ELEKTRA_GET (Long) (elektra, "myotherstruct/x");
+}
+
+
+/**
+ * Set the value of 'myotherstruct/x'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'myotherstruct/x'.
+
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (MyotherstructX) (Elektra * elektra,
+						    kdb_long_t value,  ElektraError ** error)
+{
+	
+	ELEKTRA_SET (Long) (elektra, "myotherstruct/x", value, error);
+}
+
+
+
+
+/**
+ * Get the value of 'myotherstruct/x/y'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+
+ *
+ * @return the value of 'myotherstruct/x/y'.
+ */// 
+static inline kdb_long_t ELEKTRA_GET (MyotherstructXY) (Elektra * elektra )
+{
+	
+	return ELEKTRA_GET (Long) (elektra, "myotherstruct/x/y");
+}
+
+
+/**
+ * Set the value of 'myotherstruct/x/y'.
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'myotherstruct/x/y'.
+
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (MyotherstructXY) (Elektra * elektra,
+						    kdb_long_t value,  ElektraError ** error)
+{
+	
+	ELEKTRA_SET (Long) (elektra, "myotherstruct/x/y", value, error);
+}
 
 // clang-format off
 
