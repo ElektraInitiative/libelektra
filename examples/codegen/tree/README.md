@@ -24,7 +24,19 @@ sudo kdb spec-mount "/sw/example/tree/#0/current"
 
 ### Pkgconfig
 
-TODO
+```sh
+# execute in the current directory or replace $PWD accordingly
+DIR=$PWD
+
+cd "$DIR/pkgconfig"
+
+make
+
+cd "$DIR"
+
+sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$DIR/pkgconfig/application"
+sudo kdb spec-mount "/sw/example/tree/#0/current"
+```
 
 ## Running
 
