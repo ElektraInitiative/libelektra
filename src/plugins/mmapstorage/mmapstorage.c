@@ -201,6 +201,15 @@ static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey,
 		return -1;
 	}
 
+	ELEKTRA_LOG_DEBUG ("using anon tmp file: %s", name);
+	keySetString (parentKey, name);
+	// use anonymous file
+	if (unlink (name) != 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
+		return -1;
+	}
+
 	copyFile (fd, tmpFd);
 
 	if (close (fd) != 0)
@@ -208,16 +217,15 @@ static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey,
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 		return -1;
 	}
-	// replace file
+
+	// replace old file
 	fd = tmpFd;
-	ELEKTRA_LOG_DEBUG ("using tmp file: %s", name);
-	keySetString (parentKey, name);
 	memset (sbuf, 0, sizeof (struct stat));
 	if (statFile (sbuf, parentKey, mode) != 1)
 	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not stat");
 		return -1;
 	}
-	unlink (name); // use anonymous file
 
 	return tmpFd;
 }
