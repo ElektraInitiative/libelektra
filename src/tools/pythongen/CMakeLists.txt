@@ -9,14 +9,14 @@ if (PYTHON2INTERP_FOUND)
 
 	install (CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE}
-			\"${CMAKE_CURRENT_SOURCE_DIR}/gen\"
+			\"${CMAKE_CURRENT_SOURCE_DIR}/pythongen\"
 			-p tests/lift.ini
 			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.c\"
 			-o \"${CMAKE_CURRENT_BINARY_DIR}/util.py\")")
 
 	install (CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE}
-			\"${CMAKE_CURRENT_SOURCE_DIR}/gen\"
+			\"${CMAKE_CURRENT_SOURCE_DIR}/pythongen\"
 			-p tests/lift.ini
 			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp\"
 			-o \"${CMAKE_CURRENT_BINARY_DIR}/cpp_util.py\")")
@@ -32,15 +32,15 @@ if (PYTHON2INTERP_FOUND)
 			${INSTALL_OPTIONS}
 			)")
 
-	function (gen_util TEMPLATE OUTPUT)
+	function (pythongen_util TEMPLATE OUTPUT)
 
 		# file(GLOB SUPPORT RELATIVE support "*.py")
 
 		# call the gen tool
-		set (OUTPUT "${CMAKE_BINARY_DIR}/src/tools/gen/${OUTPUT}")
+		set (OUTPUT "${CMAKE_BINARY_DIR}/src/tools/pythongen/${OUTPUT}")
 		message (STATUS "doing command ${TEMPLATE} ${OUTPUT}")
 
-	endfunction (gen_util)
+	endfunction (pythongen_util)
 
 	generate_manpage (kdb-gen FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 
@@ -54,5 +54,5 @@ if (PYTHON2INTERP_FOUND)
 	# ~~~
 
 else ()
-	remove_tool (gen "Did not find python2 interpreter")
+	remove_tool (pythongen "Did not find python2 interpreter")
 endif ()
