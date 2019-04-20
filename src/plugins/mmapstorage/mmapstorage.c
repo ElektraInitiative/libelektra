@@ -221,9 +221,9 @@ static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey,
 	// replace old file
 	fd = tmpFd;
 	memset (sbuf, 0, sizeof (struct stat));
-	if (statFile (sbuf, parentKey, mode) != 1)
+	if (fstat (fd, sbuf) != 0)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("could not stat");
+		ELEKTRA_MMAP_LOG_WARNING ("could not fstat");
 		return -1;
 	}
 
