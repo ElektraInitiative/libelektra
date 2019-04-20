@@ -157,6 +157,71 @@ static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key *
 	return mappedRegion;
 }
 
+static int copyFile (int sourceFd, int destFd)
+{
+	ssize_t readBytes = 0;
+	char buf[ELEKTRA_MMAP_BUFSIZE];
+
+	while ((readBytes = read (sourceFd, buf, ELEKTRA_MMAP_BUFSIZE)) > 0)
+	{
+		if (readBytes <= 0)
+		{
+			if (errno == EINTR)
+				continue;
+			else
+				return -1;
+		}
+
+		char * pos = buf;
+		ssize_t writtenBytes = 0;
+		while (readBytes > 0)
+		{
+			writtenBytes = write (destFd, buf, readBytes);
+			if (writtenBytes <= 0)
+			{
+				if (errno == EINTR)
+					continue;
+				else
+					return -1;
+			}
+			readBytes -= writtenBytes;
+			pos += writtenBytes;
+		}
+	}
+
+	return 0;
+}
+
+static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey, PluginMode mode)
+{
+	int tmpFd = 0;
+	char name[] = ELEKTRA_MMAP_TMP_NAME;
+	if ((tmpFd = mkstemp (name)) < 0)
+	{
+		return -1;
+	}
+
+	copyFile (fd, tmpFd);
+
+	if (close (fd) != 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not close");
+		return -1;
+	}
+	// replace file
+	fd = tmpFd;
+	ELEKTRA_LOG_DEBUG ("using tmp file: %s", name);
+	keySetString (parentKey, name);
+	memset (sbuf, 0, sizeof (struct stat));
+	if (statFile (sbuf, parentKey, mode) != 1)
+	{
+		return -1;
+	}
+	unlink (name); // use anonymous file
+
+	return tmpFd;
+}
+
 /* -- Internal Functions  --------------------------------------------------------------------------------------------------------------- */
 
 /**
@@ -968,57 +1033,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	{
 		// non regular file not mmap compatible, copy to temp file
 		ELEKTRA_LOG_DEBUG ("copy nonregular file");
-		int tmpFd = 0;
-		char name[] = ELEKTRA_MMAP_TMP_NAME;
-		if ((tmpFd = mkstemp (name)) < 0)
+		if ((fd = copyToAnonymousTempfile (fd, &sbuf, parentKey, mode)) < 0)
 		{
 			goto error;
 		}
-
-		ssize_t readBytes = 0;
-		char buf[ELEKTRA_MMAP_BUFSIZE];
-		while ((readBytes = read (fd, buf, ELEKTRA_MMAP_BUFSIZE)) > 0)
-		{
-			if (readBytes <= 0)
-			{
-				if (errno == EINTR)
-					continue;
-				else
-					goto error;
-			}
-
-			char * pos = buf;
-			ssize_t writtenBytes = 0;
-			while (readBytes > 0)
-			{
-				writtenBytes = write (tmpFd, buf, readBytes);
-				if (writtenBytes <= 0)
-				{
-					if (errno == EINTR)
-						continue;
-					else
-						goto error;
-				}
-				readBytes -= writtenBytes;
-				pos += writtenBytes;
-			}
-		}
-
-		if (close (fd) != 0)
-		{
-			ELEKTRA_MMAP_LOG_WARNING ("could not close");
-			goto error;
-		}
-		// replace file
-		fd = tmpFd;
-		ELEKTRA_LOG_DEBUG ("using tmp file: %s", name);
-		keySetString (parentKey, name);
-		memset (&sbuf, 0, sizeof (struct stat));
-		if (statFile (&sbuf, parentKey, mode) != 1)
-		{
-			goto error;
-		}
-		unlink (name); // use anonymous file
 	}
 
 	if (sbuf.st_size == 0)
