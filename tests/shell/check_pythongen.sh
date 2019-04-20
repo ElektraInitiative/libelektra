@@ -43,8 +43,8 @@ else
 	exit
 fi
 
-GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
-GEN="$GEN_FOLDER/gen"
+GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/pythongen"
+GEN="$GEN_FOLDER/pythongen"
 
 TESTPROGS="./lift ./cpplift ./nestedlift ./dynamiccontextlift"
 # ./staticcontextlift commented out

@@ -11,7 +11,7 @@
 #"fatal error: kdb.h" means that you do not have Elektra installed
 #properly.
 
-GEN=./gen
+GEN=./pythongen
 ELEKTRA=-lelektra -lelektra-meta -pthread
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb

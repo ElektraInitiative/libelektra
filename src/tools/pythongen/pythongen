@@ -23,7 +23,7 @@ def do_output(args, text):
 			f.write(text)
 
 def main():
-	parser = argparse.ArgumentParser(prog="kdb gen",
+	parser = argparse.ArgumentParser(prog="kdb pythongen",
 		description="Generates source files")
 	parser.add_argument("specification",
 		help="A meta configuration file that describes the configuration")
