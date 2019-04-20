@@ -256,7 +256,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### mmapstorage
 
 - [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
-- Fixed support for `kdb export`, by adding compatibility with non-regular files in the mmapstorage set function. _(Mihael Pranjić)_
+- Fixed support for `kdb import` and `kdb export`, by adding compatibility with non-regular files in the mmapstorage plugin. _(Mihael Pranjić)_
 
 ## Libraries
 

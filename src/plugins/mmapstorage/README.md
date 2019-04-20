@@ -88,3 +88,8 @@ sudo kdb umount user/tests/mmapstorage
 ## Limitations
 
 Mapped files shall not be altered, otherwise the behavior is undefined.
+
+The `mmap()` system call only supports regular files. We made mmapstorage
+compatible with non-regular files by creating copies of the data either
+in memory (for kdbSet) or on disk (for kdbGet). This makes the plugin compatible
+with `kdb import` and `kdb export`.
