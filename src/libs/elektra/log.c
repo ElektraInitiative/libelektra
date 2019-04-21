@@ -45,7 +45,7 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 {
 #ifndef NO_FILTER
 	// XXX Filter here for specific sink
-	if (level <= ELEKTRA_LOG_LEVEL_STDERR) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_STDERR) return -1;
 #endif
 	int ret = fprintf (stderr, "%s", msg);
 	fflush (stderr);
@@ -61,7 +61,7 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 {
 #ifndef NO_FILTER
 	// XXX Filter here for specific sink
-	if (level <= ELEKTRA_LOG_LEVEL_SYSLOG) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_SYSLOG) return -1;
 #endif
 	int vlevel;
 	switch (level)
@@ -104,7 +104,7 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 {
 #ifndef NO_FILTER
 	// XXX Filter here for specific sink
-	if (level <= ELEKTRA_LOG_LEVEL_FILE) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_FILE) return -1;
 #endif
 	if (!elektraLoggerFileHandle)
 	{
@@ -135,14 +135,22 @@ static void replaceChars (char * str)
 
 int elektraVLog (int level, const char * function, const char * absFile, int line, const char * mmsg, va_list args)
 {
-	size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
-	size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
-	const char * file = &absFile[lenOfLogPathName];
+	const char * file;
+	if (absFile[0] == '/' || absFile[0] == '.')
+	{
+		size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
+		size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
+		file = &absFile[lenOfLogPathName];
+	}
+	else
+	{
+		file = absFile;
+	}
 
 	int ret = -1;
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
-	if (level <= ELEKTRA_LOG_LEVEL_GLOBAL) return -1;
+	if (level < ELEKTRA_LOG_LEVEL_GLOBAL) return -1;
 
 	// or e.g. discard everything, but log statements from simpleini.c:
 	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) return -1;
@@ -151,7 +159,14 @@ int elektraVLog (int level, const char * function, const char * absFile, int lin
 #endif
 
 	char * str;
-	// XXX Change here default format for messages
+	// XXX Change here default format for messages.
+	//
+	// For example, to use a style similar to the default one used by compilers such as Clang and GCC, replace the following statement
+	// with:
+	//
+	//     str = elektraFormat ("%s:%d:%s: %s\n", file, line, function, mmsg);
+	//
+	// .
 	str = elektraFormat ("%s (in %s at %s:%d)\n", mmsg, function, file, line);
 	char * msg = elektraVFormat (str, args);
 	replaceChars (msg);
