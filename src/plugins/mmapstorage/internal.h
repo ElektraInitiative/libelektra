@@ -40,7 +40,7 @@
 /** Mmap temp file template */
 #define ELEKTRA_MMAP_TMP_NAME "/tmp/elektraMmapTmpXXXXXX"
 
-/** Magic number used in mmap format */
+/** Buffer size for file I/O */
 #define ELEKTRA_MMAP_BUFSIZE (4096)
 
 #define STDOUT_FILENAME ("/dev/stdout")
