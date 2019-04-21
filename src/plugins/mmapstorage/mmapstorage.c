@@ -125,29 +125,6 @@ static int fstatFile (int fd, struct stat * sbuf, Key * parentKey ELEKTRA_UNUSED
 }
 
 /**
- * @brief Wrapper for stat().
- *
- * @param sbuf the stat structure
- * @param parentKey holding the filename
- * @param mode the current plugin mode
- *
- * @retval 1 on success
- * @retval -1 if stat() failed
- */
-static int statFile (struct stat * sbuf, Key * parentKey, PluginMode mode)
-{
-	ELEKTRA_LOG_DEBUG ("stat() on file %s", keyString (parentKey));
-
-	memset (sbuf, 0, sizeof (struct stat));
-	if (stat (keyString (parentKey), sbuf) == -1)
-	{
-		ELEKTRA_MMAP_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
-		return -1;
-	}
-	return 1;
-}
-
-/**
  * @brief Wrapper for mmap().
  *
  * @param addr address hint, where the mapping should start
