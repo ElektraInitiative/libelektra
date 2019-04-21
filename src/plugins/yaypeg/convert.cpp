@@ -57,7 +57,7 @@ int addToKeySet (KeySet & keySet, Key & parent, string const & filename)
 	// Check grammar for problematic code
 	if (analyze<yaml> () != 0)
 	{
-		throw runtime_error ("PEGTLs analyze function found problems while checking the top level grammar rule `yaml`!");
+		throw runtime_error ("PEGTL’s analyze function found problems while checking the top level grammar rule `yaml`!");
 		return -1;
 	}
 #endif

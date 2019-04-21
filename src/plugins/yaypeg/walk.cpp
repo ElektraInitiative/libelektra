@@ -178,7 +178,18 @@ namespace yaypeg
  */
 void walk (Listener & listener, node const & node)
 {
-	ELEKTRA_LOG_DEBUG ("Parse tree: %s", toString (node).c_str ());
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Parse Tree");
+	ELEKTRA_LOG_DEBUG ("——————————");
+
+	std::istringstream stream (toString (node));
+	for (string line; std::getline (stream, line);)
+	{
+		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+	}
+
+	ELEKTRA_LOG_DEBUG ("——————————");
+#endif
 
 	// If the document contains only one a single value we call `exitValue`
 	// for that function. We need to handle that special case to not add
