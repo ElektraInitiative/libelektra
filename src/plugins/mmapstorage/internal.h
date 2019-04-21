@@ -43,6 +43,9 @@
 /** Magic number used in mmap format */
 #define ELEKTRA_MMAP_BUFSIZE (4096)
 
+#define STDOUT_FILENAME ("/dev/stdout")
+#define STDIN_FILENAME ("/dev/stdin")
+
 /** Suppress warnings in cache mode to debug level */
 #define ELEKTRA_MMAP_LOG_WARNING(...)                                                                                                      \
 	if (test_bit (mode, MODE_GLOBALCACHE))                                                                                             \
