@@ -813,7 +813,7 @@ static void test_mmap_open_pipe (void)
 	PLUGIN_OPEN ("mmapstorage");
 
 	KeySet * ks = simpleTestKeySet ();
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet could not write to pipe");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet could write to pipe, but should not");
 
 	keyDel (parentKey);
 	ksDel (ks);
