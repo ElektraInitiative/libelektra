@@ -274,13 +274,6 @@ static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey,
 
 	// replace old file
 	fd = tmpFd;
-//	keySetString (parentKey, name);
-//	fd = openFile (parentKey, O_RDONLY, 0, mode);
-//	if (fd < 0)
-//	{
-//		ELEKTRA_MMAP_LOG_WARNING ("could not reopen readonly");
-//		return -1;
-//	}
 	if (fstatFile (fd, sbuf, parentKey, mode) != 1)
 	{
 		return -1;
@@ -1076,23 +1069,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
-	char * realPath = 0;
 	Key * initialParent = keyDup (parentKey);
-
-//	if ((realPath = realpath (keyString (parentKey), 0)) != 0)
-//	{
-//		ELEKTRA_LOG_DEBUG ("using realpath: %s for %s", realPath, keyString (parentKey));
-//		keySetString (parentKey, realPath);
-//	}
-//	else
-//	{
-//		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-//		ELEKTRA_LOG_DEBUG ("problem: parent: %s, errno: %d,%s", keyString (parentKey), errno, strerror (errno));
-//	}
 
 	if (elektraStrCmp (keyString (parentKey), STDIN_FILENAME) == 0)
 	{
-		// keySetString (parentKey, keyString (initialParent));
 		fd = fileno (stdin);
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
@@ -1129,7 +1109,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		}
 		keySetString (parentKey, keyString (initialParent));
 		if (initialParent) keyDel (initialParent);
-		if (realPath) elektraFree (realPath);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -1200,7 +1179,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	keySetString (parentKey, keyString (initialParent));
 	if (initialParent) keyDel (initialParent);
-	if (realPath) elektraFree (realPath);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1221,7 +1199,6 @@ error:
 
 	keySetString (parentKey, keyString (initialParent));
 	if (initialParent) keyDel (initialParent);
-	if (realPath) elektraFree (realPath);
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
@@ -1253,51 +1230,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int errnosave = errno;
 	int fd = -1;
-	int newFile = 0;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
-	char * realPath = 0;
 	Key * initialParent = keyDup (parentKey);
-
-//	if ((realPath = realpath (keyString (parentKey), 0)) != 0)
-//	{
-//		ELEKTRA_LOG_DEBUG ("using realpath: %s for %s", realPath, keyString (parentKey));
-//		keySetString (parentKey, realPath);
-//	}
-//	else
-//	{
-//		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-//		if (errno == ENOENT) newFile = 1;
-//		ELEKTRA_LOG_DEBUG ("problem: parent: %s, errno: %d,%s", keyString (parentKey), errno, strerror (errno));
-//		errno = errnosave;
-//	}
-
-	struct stat sbuf;
-//	if (realPath && statFile (&sbuf, parentKey, mode) != 1)
-//	if (statFile (&sbuf, parentKey, mode) != 1)
-//	{
-//		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-//		if (errno == ENOENT)
-//			newFile = 1;
-//		else
-//			goto error;
-//	}
-
-//	if (!newFile && !test_bit (sbuf.st_mode, S_IFREG))
-//	{
-//		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-//		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
-//		set_bit (mode, MODE_NONREGULAR_FILE);
-//	}
-
-//	if (!newFile && !test_bit (mode, MODE_NONREGULAR_FILE) && unlink (keyString (parentKey)) != 0 && errno != ENOENT)
-	if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
-	{
-		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
-		if (errno != EBUSY && errno != EPERM)
-			goto error;
-	}
 
 	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
 	{
@@ -1306,27 +1241,25 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
 		set_bit (mode, MODE_NONREGULAR_FILE);
 	}
-	else if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR, mode)) == -1)
+	else
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-		goto error;
+		if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
+			goto error;
+		}
+
+		if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR, mode)) == -1)
+		{
+			goto error;
+		}
 	}
 
+	struct stat sbuf;
 	if (fstatFile (fd, &sbuf, parentKey, mode) != 1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
 		goto error;
 	}
-	if (!test_bit (sbuf.st_mode, S_IFREG))
-	{
-		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
-		set_bit (mode, MODE_NONREGULAR_FILE);
-	}
-//	else
-//	{
-//		ELEKTRA_LOG_DEBUG ("REGULAR FILE");
-//		clear_bit (mode, MODE_NONREGULAR_FILE);
-//	}
 
 	dynArray = ELEKTRA_PLUGIN_FUNCTION (dynArrayNew) ();
 
@@ -1339,7 +1272,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	if (!test_bit (mode, MODE_NONREGULAR_FILE) && truncateFile (fd, mmapHeader.allocSize, parentKey, mode) != 1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
 		goto error;
 	}
 
@@ -1357,10 +1289,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	if (test_bit (mode, MODE_NONREGULAR_FILE))
 	{
-		if (write (fd, mappedRegion, mmapHeader.allocSize) == -1)
+		ssize_t writtenBytes = write (fd, mappedRegion, mmapHeader.allocSize);
+		if (writtenBytes == -1)
 		{
-			ELEKTRA_MMAP_LOG_WARNING ("strerror: %s", strerror (errno));
-
 			ELEKTRA_MMAP_LOG_WARNING ("could not write buffer to file");
 			goto error;
 		}
@@ -1389,7 +1320,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 	keySetString (parentKey, keyString (initialParent));
 	if (initialParent) keyDel (initialParent);
-//	if (realPath) elektraFree (realPath);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1416,7 +1346,6 @@ error:
 
 	keySetString (parentKey, keyString (initialParent));
 	if (initialParent) keyDel (initialParent);
-//	if (realPath) elektraFree (realPath);
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 
 	errno = errnosave;
