@@ -268,7 +268,8 @@ static void test_multilineIniInvalidConfigWrite (void)
 	const Key * metaError = keyGetMeta (parentKey, "error");
 	exit_if_fail (metaError, "No error was produced on the parentKey");
 
-	succeed_if (!strcmp (keyString (keyGetMeta (parentKey, "error/number")), ELEKTRA_ERROR_INSTALLATION), "The plugin threw the wrong error");
+	succeed_if (!strcmp (keyString (keyGetMeta (parentKey, "error/number")), ELEKTRA_ERROR_INSTALLATION),
+		    "The plugin threw the wrong error");
 
 	ksDel (ks);
 	keyDel (parentKey);

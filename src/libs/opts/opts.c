@@ -1124,7 +1124,7 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 
 		if (optSpec == NULL)
 		{
-			printf("=== %s ==== \n", ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME));
+			printf ("=== %s ==== \n", ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME));
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Unknown short option: -%c", keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
 			keyDel (optSpec);

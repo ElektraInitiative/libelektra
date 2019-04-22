@@ -46,7 +46,7 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * error
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s",KDB_RESOLVER);
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_RESOLVER);
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
 		keyDel (ch->cachePath);
@@ -323,7 +323,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,"Could not rename file. Errno: %s", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not rename file. Errno: %s", strerror (errno));
 			goto error;
 		}
 

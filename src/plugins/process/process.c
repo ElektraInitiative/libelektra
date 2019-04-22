@@ -26,8 +26,7 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 {
 	if (pluginNameKey == NULL)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
-							 "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
 		return 0;
 	}
 

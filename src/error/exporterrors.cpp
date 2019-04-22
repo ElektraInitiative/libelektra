@@ -49,14 +49,17 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME)); } while (0)" << endl;
 		os << "#define ELEKTRA_SET_" << p[i]["macro"] << "_ERRORF(key, text, ...) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Error " << p[i]["number"] << ": \" text, __VA_ARGS__); elektraSetErrorf" << p[i]["number"]
-		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME), __VA_ARGS__); } while (0)" << endl;
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME), __VA_ARGS__); } while (0)"
+		   << endl;
 
 		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING(key, text) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Warning " << p[i]["number"] << ": %s\", text); elektraAddWarning" << p[i]["number"]
 		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME)); } while (0)" << endl;
 		os << "#define ELEKTRA_ADD_" << p[i]["macro"] << "_WARNINGF(key, text, ...) \\" << endl
 		   << "\tdo { ELEKTRA_LOG (\"Add Warning " << p[i]["number"] << ": \" text, __VA_ARGS__); elektraAddWarningf"
-		   << p[i]["number"] << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME), __VA_ARGS__); } while (0)" << endl;
+		   << p[i]["number"]
+		   << "(key, text, __FILE__, ELEKTRA_STRINGIFY(__LINE__), ELEKTRA_STRINGIFY(ELEKTRA_MODULE_NAME), __VA_ARGS__); } while (0)"
+		   << endl;
 
 		os << endl;
 	}
@@ -89,7 +92,9 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			{
 				os << "static inline void elektraAddWarningf" << p[i]["number"] << "(Key *warningKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line, const char *module, ...)  __attribute__ ((format (printf, 2, 6)));" << endl;
+				   << "	const char *file, const char *line, const char *module, ...)  __attribute__ ((format (printf, 2, "
+				      "6)));"
+				   << endl;
 				os << "static inline void elektraAddWarningf" << p[i]["number"] << "(Key *warningKey, const char *reason,"
 				   << endl
 				   << "	const char *file, const char *line, const char *module, ...)" << endl;
@@ -157,7 +162,9 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			{
 				os << "static inline void elektraSetErrorf" << p[i]["number"] << "(Key *errorKey, const char *reason,"
 				   << endl
-				   << "	const char *file, const char *line, const char *module, ...)  __attribute__ ((format (printf, 2, 6)));" << endl
+				   << "	const char *file, const char *line, const char *module, ...)  __attribute__ ((format (printf, 2, "
+				      "6)));"
+				   << endl
 				   << "static inline void elektraSetErrorf" << p[i]["number"] << "(Key *errorKey, const char *reason,"
 				   << endl
 				   << "	const char *file, const char *line, const char *module, ...)" << endl;
@@ -264,10 +271,12 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		   << "			KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/description\"," << endl
 		   << "			KEY_VALUE, \"" << p[i]["description"] << "\", KEY_END)," << endl;
-//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/severity\"," << endl
-//		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
-//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/module\"," << endl
-//		   << "			KEY_VALUE, \"" << p[i]["module"] << "\", KEY_END)," << endl;
+		//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/severity\"," <<
+		// endl
+		//		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
+		//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/module\"," <<
+		// endl
+		//		   << "			KEY_VALUE, \"" << p[i]["module"] << "\", KEY_END)," << endl;
 	}
 	os << "		KS_END);" << endl << "}" << endl;
 

@@ -508,7 +508,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	// TODO: Correct?	
+	// TODO: Correct?
 	ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
 	BIO_free_all (decrypted);
 	pthread_mutex_unlock (&mutex_ssl);

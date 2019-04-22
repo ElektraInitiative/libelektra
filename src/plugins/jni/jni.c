@@ -89,7 +89,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	checkException (data, method, errorKey);
 	if (mid == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find org/libelektra/Key in %s", method);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Cannot find org/libelektra/Key in %s", method);
 		return -1;
 	}
 
