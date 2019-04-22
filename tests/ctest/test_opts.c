@@ -230,7 +230,7 @@ static void test_flag (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
-	printf("%s\n", keyString (keyGetMeta (errorKey, "error/module")));
+	printf ("%s\n", keyString (keyGetMeta (errorKey, "error/module")));
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag (with arg, combined) should have failed");
 	clearValues (ks);

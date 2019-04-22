@@ -75,8 +75,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		service = getservbyname (keyString (toCheck), NULL); // NULL means we accept both tcp and udp
 		if (service == NULL)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
-						     keyName (toCheck));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not find service with name %s on key %s",
+								keyString (toCheck), keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = service->s_port;
@@ -107,7 +107,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		else
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "There was an error trying to connect to host %s: %s", hostname,
-						     strerror (errno));
+								strerror (errno));
 			return -1;
 		}
 		// TODO: Maybe consider errno == TRY_AGAIN separately and try to reconnect

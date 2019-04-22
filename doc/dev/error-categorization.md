@@ -19,6 +19,7 @@ we were facing many duplicated errors because too many existed and developers si
 and every code.
 
 So if you feel the need for a new category you should first ask yourself the following question:
+
 > Can I react differently if I would know every error X in category Y?
 
 If not it will most likely fit into an existing category. Categories are leaf based, so you cannot
@@ -29,6 +30,7 @@ put an error into a node such as `Permanent errors` (see below).
 Now we will investigate each category in more detail and when to put an error/warning in there.
 
 The current structure looks like this:
+
 - Permanent errors ("01000")
   - Resource ("01100")
   - Parsing ("01200")
@@ -39,14 +41,17 @@ The current structure looks like this:
 - Validation ("04000")
   - Syntactic ("04100")
   - Semantic ("04200")
+
 ### Permanent errors ("01000")
 
-The main category `Permanent Errors` refer to such errors which cannot be fixed by retry 
+The main category `Permanent Errors` refer to such errors which cannot be fixed by retry
 at all. `Permanent Errors` are subdivided into
+
 - Resource
 - Parsing
 - Installation
 - Logical
+
 #### Resource ("01100")
 
 `Resource Errors` are all kinds of errors which are either permission related, existence related

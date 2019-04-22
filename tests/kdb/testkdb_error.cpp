@@ -11,8 +11,8 @@
 
 #include <gtest/gtest-elektra.h>
 
-#include <stdio.h>
 #include <list>
+#include <stdio.h>
 
 class Error : public ::testing::Test
 {
@@ -114,21 +114,21 @@ TEST_F (Error, AgainRepeat)
 	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
 	EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), "C01400");
 
-	std::list<std::string> errorCodes {"C01100", "C01200", "C01300", "C01400", "C02000"};
+	std::list<std::string> errorCodes{ "C01100", "C01200", "C01300", "C01400", "C02000" };
 
-	for (auto code = errorCodes.begin(); code != errorCodes.end(); ++code)
+	for (auto code = errorCodes.begin (); code != errorCodes.end (); ++code)
 	{
 		ks.append (Key ("system" + testRoot + "key", KEY_END));
 
 		EXPECT_NO_THROW (kdb.set (ks, parentKey)) << "no error trigger?";
 
-		ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", code->c_str(), KEY_END));
+		ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", code->c_str (), KEY_END));
 
 		EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error (again)";
 
 		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
 		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
-		EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), code->c_str())
+		EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), code->c_str ())
 			<< " with reason: " << parentKey.getMeta<std::string> ("error/reason");
 
 		ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;

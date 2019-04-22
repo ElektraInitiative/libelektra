@@ -189,10 +189,10 @@ static int elektraResolveUserXDGHome (ElektraResolved * handle, Key * warningsKe
 	{
 		// TODO: Correct?
 		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (warningsKey,
-						   "XDG_CONFIG_HOME contains a path that is "
-						   "not absolute (violates XDG specification) and thus "
-						   "it was skipped: %s",
-						   home);
+							  "XDG_CONFIG_HOME contains a path that is "
+							  "not absolute (violates XDG specification) and thus "
+							  "it was skipped: %s",
+							  home);
 		return 0;
 	}
 	elektraResolveUsingHome (handle, home, 0);
@@ -211,10 +211,10 @@ static int elektraResolveEnvHome (ElektraResolved * handle, Key * warningsKey)
 	if (home[0] != '/')
 	{
 		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (warningsKey,
-						   "HOME contains a path that is "
-						   "not absolute and thus "
-						   "it was skipped: %s",
-						   home);
+							  "HOME contains a path that is "
+							  "not absolute and thus "
+							  "it was skipped: %s",
+							  home);
 		return 0;
 	}
 	elektraResolveUsingHome (handle, home, 1);

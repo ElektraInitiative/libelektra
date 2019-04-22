@@ -422,7 +422,7 @@ static int validateKey (Key * key, Key * parentKey)
 		{
 			if (formatString)
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "%s doesn't match iso specification %s", date,
-									formatString);
+									 formatString);
 			else
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "%s is not a valid ISO8601 date", date);
 			rc = 0;
