@@ -31,6 +31,7 @@ provides.
 - [High Level API](/src/libs/highlevel/README.md)
 - [Command Line Options](command-line-options.md)
 - [Benchmarking](benchmarking.md)
+- [Profiling](profiling.md)
 
 ## System Administrators
 
