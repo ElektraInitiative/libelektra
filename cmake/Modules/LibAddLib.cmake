@@ -20,9 +20,17 @@ function (add_lib name)
 		add_cppheaders (ARG_SOURCES)
 	endif (ARG_CPP)
 
+	set_additional_compile_definitions (${name})
+
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED ${ARG_SOURCES})
 		add_dependencies (elektra-${name} kdberrors_generated elektra_error_codes_generated ${ARG_LINK_ELEKTRA})
+
+		set_property (TARGET elektra-${name}
+			APPEND
+			PROPERTY COMPILE_DEFINITIONS
+			${ADDITIONAL_COMPILE_DEFINITIONS}
+			)
 
 		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
 	endif (BUILD_SHARED)
@@ -37,18 +45,17 @@ function (add_lib name)
 		      PROPERTY "elektra-extension_LIBRARIES"
 			       elektra-${name})
 
-	set_additional_compile_definitions(${name})
-
-	set_property (TARGET elektra-${name}
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS
-			${ADDITIONAL_COMPILE_DEFINITIONS}
-)
-
 	if (BUILD_SHARED)
+		set_property (TARGET elektra-${name}
+			APPEND
+			PROPERTY COMPILE_DEFINITIONS
+			${ADDITIONAL_COMPILE_DEFINITIONS}
+			)
+
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
 
 		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 
+	unset (ADDITIONAL_COMPILE_DEFINITIONS)
 endfunction ()
