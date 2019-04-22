@@ -24,7 +24,7 @@ succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
 "$KDB" set $ROOT/valueable_data important_unrecoverable_data > /dev/null
 succeed_if "cannot set valuable data"
 
-"$KDB" setmeta $ROOT/valueable_data trigger/error 10
+"$KDB" setmeta $ROOT/valueable_data trigger/error "C04100"
 succeed_if "cannot set metadata"
 
 TMPFILE="$(mktempfile_elektra)"
@@ -51,7 +51,7 @@ if is_plugin_available error; then
 
 	CONTENT=$(cat $TMPFILE)
 
-	grep "issued the error 10" $TMPFILE > /dev/null
+	grep "issued the error C04100" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
 	grep "from error plugin" $TMPFILE > /dev/null
@@ -67,7 +67,7 @@ if is_plugin_available error; then
 	[ $? -ne 0 ]
 	succeed_if "Was able to copy to error plugin"
 
-	grep "issued the error 10" $TMPFILE > /dev/null
+	grep "issued the error C04100" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
 	grep "from error plugin" $TMPFILE > /dev/null
@@ -91,7 +91,7 @@ if is_plugin_available error; then
 	#
 	#CONTENT=`cat $TMPFILE`
 	#
-	#grep "[eE]rror (#10) occurred!" $TMPFILE > /dev/null
+	#grep "[eE]rror (#C04100) occurred!" $TMPFILE > /dev/null
 	#succeed_if "Error not found in output, got $CONTENT"
 	#
 	#$KDB get $ERROR_MOUNTPOINT > /dev/null 2>&1

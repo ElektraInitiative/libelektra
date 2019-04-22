@@ -99,7 +99,7 @@ TEST_F (Ensure, Unmount)
 		kdb.get (ks, root);
 		kdb.set (ks, root);
 
-		EXPECT_EQ (root.getMeta<std::string> ("warnings/#00/number"), "3") << "error plugin didn't run";
+		EXPECT_EQ (root.getMeta<std::string> ("warnings/#00/number"), "C01400") << "error plugin didn't run";
 	}
 
 	{
