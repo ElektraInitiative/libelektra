@@ -62,4 +62,4 @@ benchmark_plugingetset <path> <parent> <plugin> [get]
 and calls the `get` method of plugin `<plugin>` on this file with parent Key `<parent>`. Lastly it calls the `set` method of `<plugin>`
 on the file `test.<plugin>.out` with parent Key `<parent>`, if you did not specify `get` as fourth argument.
 
-`benchmark_plugingetset` can be used with `time` (or similar programs) to compare the speed of two (or more) storage plugins for specific files.
+`benchmark_plugingetset` can be used with `time` (or similar programs) to compare the speed of two (or more) storage plugins for specific files. The [benchmarking tutorial](../doc/tutorials/benchmarking.md) provides one example on how to do that.
