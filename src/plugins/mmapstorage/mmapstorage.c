@@ -32,9 +32,9 @@
 #include <stdlib.h>    // strtol()
 #include <string.h>    // memcmp()
 #include <sys/mman.h>  // mmap()
-#include <sys/stat.h>  // stat()
+#include <sys/stat.h>  // stat(), fstat()
 #include <sys/types.h> // ftruncate (), size_t
-#include <unistd.h>    // close(), ftruncate(), unlink()
+#include <unistd.h>    // close(), ftruncate(), unlink(), read(), write()
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()
@@ -48,8 +48,9 @@ static MmapMetaData magicMmapMetaData;
 
 typedef enum
 {
-	MODE_STORAGE,
-	MODE_GLOBALCACHE
+	MODE_STORAGE = 1,
+	MODE_GLOBALCACHE = 1 << 1,
+	MODE_NONREGULAR_FILE = 1 << 2
 } PluginMode;
 
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
@@ -59,7 +60,8 @@ typedef enum
  *
  * @param parentKey containing the filename
  * @param flags file access mode
- * @param mode file mode bits when file is created
+ * @param openMode file mode bits when file is created
+ * @param mode the current plugin mode
  *
  * @return file descriptor
  */
@@ -81,6 +83,7 @@ static int openFile (Key * parentKey, int flag, mode_t openMode, PluginMode mode
  * @param fd the file descriptor
  * @param mmapsize size of the mapped region
  * @param parentKey holding the filename, for debug purposes
+ * @param mode the current plugin mode
  *
  * @retval 1 on success
  * @retval -1 if ftruncate() failed
@@ -98,21 +101,24 @@ static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED
 }
 
 /**
- * @brief Wrapper for stat().
+ * @brief Wrapper for fstat().
  *
+ * @param fd the file descriptor
  * @param sbuf the stat structure
  * @param parentKey holding the filename
+ * @param mode the current plugin mode
  *
  * @retval 1 on success
- * @retval -1 if stat() failed
+ * @retval -1 if fstat() failed
  */
-static int statFile (struct stat * sbuf, Key * parentKey, PluginMode mode)
+static int fstatFile (int fd, struct stat * sbuf, Key * parentKey ELEKTRA_UNUSED, PluginMode mode)
 {
-	ELEKTRA_LOG_DEBUG ("stat() on file %s", keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("fstat() on file %s", keyString (parentKey));
 
-	if (stat (keyString (parentKey), sbuf) == -1)
+	memset (sbuf, 0, sizeof (struct stat));
+	if (fstat (fd, sbuf) == -1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error on fstat() for file %s", keyString (parentKey));
 		return -1;
 	}
 	return 1;
@@ -126,6 +132,7 @@ static int statFile (struct stat * sbuf, Key * parentKey, PluginMode mode)
  * @param mmapSize size of the mapped region
  * @param mapOpts mmap flags (MAP_PRIVATE, MAP_FIXED, ...)
  * @param parentKey holding the filename, for debug purposes
+ * @param mode the current plugin mode
  *
  * @return pointer to mapped region on success, MAP_FAILED on failure
  */
@@ -133,13 +140,123 @@ static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key *
 {
 	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
 
-	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
-	if (mappedRegion == MAP_FAILED)
+	char * mappedRegion = MAP_FAILED;
+	if (test_bit (mode, MODE_NONREGULAR_FILE))
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
-		return MAP_FAILED;
+		mappedRegion = elektraCalloc (mmapSize);
+		if (!mappedRegion)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("error allocating buffer for file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+			return MAP_FAILED;
+		}
 	}
+	else
+	{
+		mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
+		if (mappedRegion == MAP_FAILED)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+			return MAP_FAILED;
+		}
+	}
+
 	return mappedRegion;
+}
+
+
+/**
+ * @brief Copy file
+ *
+ * @param sourceFd source file descriptor
+ * @param destFd destination file descriptor
+ *
+ * @retval 0 on success
+ * @retval -1 if any error occured
+ */
+static int copyFile (int sourceFd, int destFd)
+{
+	ssize_t readBytes = 0;
+	char buf[ELEKTRA_MMAP_BUFSIZE];
+
+	while ((readBytes = read (sourceFd, buf, ELEKTRA_MMAP_BUFSIZE)) > 0)
+	{
+		if (readBytes <= 0)
+		{
+			if (errno == EINTR)
+				continue;
+			else
+				return -1;
+		}
+
+		char * pos = buf;
+		ssize_t writtenBytes = 0;
+		while (readBytes > 0)
+		{
+			writtenBytes = write (destFd, buf, readBytes);
+			if (writtenBytes <= 0)
+			{
+				if (errno == EINTR)
+					continue;
+				else
+					return -1;
+			}
+			readBytes -= writtenBytes;
+			pos += writtenBytes;
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * @brief Copy file to anonymous temporary file
+ *
+ * This function is needed to make mmapstorage compatible
+ * with any file. The `mmap()` syscall only supports regular
+ * files.
+ *
+ * @param fd source file descriptor
+ * @param sbuf the stat structure
+ * @param parentKey holding the file name
+ * @param mode the current plugin mode
+ *
+ * @retval 0 on success
+ * @retval -1 if any error occured
+ */
+static int copyToAnonymousTempfile (int fd, struct stat * sbuf, Key * parentKey, PluginMode mode)
+{
+	int tmpFd = 0;
+	char name[] = ELEKTRA_MMAP_TMP_NAME;
+	if ((tmpFd = mkstemp (name)) < 0)
+	{
+		return -1;
+	}
+
+	ELEKTRA_LOG_DEBUG ("using anon tmp file: %s", name);
+	keySetString (parentKey, name);
+	// use anonymous file
+	if (unlink (name) != 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
+		return -1;
+	}
+
+	copyFile (fd, tmpFd);
+
+	if (close (fd) != 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not close");
+		return -1;
+	}
+
+	// replace old file
+	fd = tmpFd;
+	if (fstatFile (fd, sbuf, parentKey, mode) != 1)
+	{
+		return -1;
+	}
+
+	return fd;
 }
 
 /* -- Internal Functions  --------------------------------------------------------------------------------------------------------------- */
@@ -615,7 +732,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	size_t keyIndex = 0;
 
 	Key ** ksArray = 0;
-	if (mode == MODE_STORAGE)
+	if (test_bit (mode, MODE_STORAGE))
 	{
 		ksArray = (Key **) mmapAddr->ksArrayPtr;
 	}
@@ -786,7 +903,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
 
-	if (mode == MODE_GLOBALCACHE) // TODO: remove code duplication here
+	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
 		ksClose (global); // TODO: if we have a global keyset, maybe use ksAppend?
@@ -929,16 +1046,34 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
+	Key * initialParent = keyDup (parentKey);
 
-	if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
+	if (elektraStrCmp (keyString (parentKey), STDIN_FILENAME) == 0)
+	{
+		fd = fileno (stdin);
+		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
+		set_bit (mode, MODE_NONREGULAR_FILE);
+	}
+	else if ((fd = openFile (parentKey, O_RDONLY, 0, mode)) == -1)
 	{
 		goto error;
 	}
 
 	struct stat sbuf;
-	if (statFile (&sbuf, parentKey, mode) != 1)
+	if (fstatFile (fd, &sbuf, parentKey, mode) != 1)
 	{
 		goto error;
+	}
+
+	if (test_bit (mode, MODE_NONREGULAR_FILE))
+	{
+		// non regular file not mmap compatible, copy to temp file
+		ELEKTRA_LOG_DEBUG ("copy nonregular file");
+		if ((fd = copyToAnonymousTempfile (fd, &sbuf, parentKey, mode)) < 0)
+		{
+			goto error;
+		}
+		clear_bit (mode, MODE_NONREGULAR_FILE);
 	}
 
 	if (sbuf.st_size == 0)
@@ -949,6 +1084,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 			ELEKTRA_MMAP_LOG_WARNING ("could not close");
 			goto error;
 		}
+		keySetString (parentKey, keyString (initialParent));
+		if (initialParent) keyDel (initialParent);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -1017,6 +1154,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1035,6 +1174,8 @@ error:
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
@@ -1068,14 +1209,31 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
+	Key * initialParent = keyDup (parentKey);
 
-	if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
-		goto error;
+		// keySetString (parentKey, keyString (initialParent));
+		fd = fileno (stdout);
+		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
+		set_bit (mode, MODE_NONREGULAR_FILE);
+	}
+	else
+	{
+		if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
+			goto error;
+		}
+
+		if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR, mode)) == -1)
+		{
+			goto error;
+		}
 	}
 
-	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR, mode)) == -1)
+	struct stat sbuf;
+	if (fstatFile (fd, &sbuf, parentKey, mode) != 1)
 	{
 		goto error;
 	}
@@ -1089,7 +1247,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, global, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %" PRIu64, mmapHeader.allocSize);
 
-	if (truncateFile (fd, mmapHeader.allocSize, parentKey, mode) != 1)
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && truncateFile (fd, mmapHeader.allocSize, parentKey, mode) != 1)
 	{
 		goto error;
 	}
@@ -1105,13 +1263,26 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	MmapFooter mmapFooter;
 	initFooter (&mmapFooter);
 	copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
-	if (msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
+
+	if (test_bit (mode, MODE_NONREGULAR_FILE))
+	{
+		ssize_t writtenBytes = write (fd, mappedRegion, mmapHeader.allocSize);
+		if (writtenBytes == -1)
+		{
+			ELEKTRA_MMAP_LOG_WARNING ("could not write buffer to file");
+			goto error;
+		}
+		elektraFree (mappedRegion);
+		mappedRegion = MAP_FAILED;
+	}
+
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not msync");
 		goto error;
 	}
 
-	if (munmap (mappedRegion, mmapHeader.allocSize) != 0)
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && munmap (mappedRegion, mmapHeader.allocSize) != 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 		goto error;
@@ -1124,7 +1295,8 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	}
 
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
-
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1134,15 +1306,23 @@ error:
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
-	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
+	if ((mappedRegion != MAP_FAILED && !test_bit (mode, MODE_NONREGULAR_FILE)) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not munmap");
 	}
+
+	if (mappedRegion != MAP_FAILED && test_bit (mode, MODE_NONREGULAR_FILE))
+	{
+		elektraFree (mappedRegion);
+	}
+
 	if ((fd != -1) && close (fd) != 0)
 	{
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
+	keySetString (parentKey, keyString (initialParent));
+	if (initialParent) keyDel (initialParent);
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 
 	errno = errnosave;

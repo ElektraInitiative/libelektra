@@ -37,9 +37,18 @@
 /** Mmap format version */
 #define ELEKTRA_MMAP_FORMAT_VERSION (1)
 
+/** Mmap temp file template */
+#define ELEKTRA_MMAP_TMP_NAME "/tmp/elektraMmapTmpXXXXXX"
+
+/** Buffer size for file I/O */
+#define ELEKTRA_MMAP_BUFSIZE (4096)
+
+#define STDOUT_FILENAME ("/dev/stdout")
+#define STDIN_FILENAME ("/dev/stdin")
+
 /** Suppress warnings in cache mode to debug level */
 #define ELEKTRA_MMAP_LOG_WARNING(...)                                                                                                      \
-	if (mode == MODE_GLOBALCACHE)                                                                                                      \
+	if (test_bit (mode, MODE_GLOBALCACHE))                                                                                             \
 	{                                                                                                                                  \
 		ELEKTRA_LOG_DEBUG (__VA_ARGS__);                                                                                           \
 	}                                                                                                                                  \
