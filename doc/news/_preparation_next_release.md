@@ -379,6 +379,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - We added a basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
+- We added a [tutorial](../tutorials/benchmarking.md) on how to benchmark the execution time of plugins using [`benchmark_plugingetset`](../../benchmarks/README.md) and [hyperfine](https://github.com/sharkdp/hyperfine). _(René Schwaiger)_
+- The new [profiling tutorial](../tutorials/profiling.md) describes how to determine the execution time of code using [Callgrind](http://valgrind.org/docs/manual/cl-manual.html) and [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html). _(René Schwaiger)_
 
 ### Spelling Fixes
 
