@@ -369,9 +369,28 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- We added a basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
+### Style
+
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
+- We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
+- We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
+
+### Tutorials
+
+- We added a basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
+- Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
+
+### Spelling Fixes
+
 - Write Elektra with capital letter in cascading tutorial. _(Vlad - Ioan Balan)_
+- Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
+- Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
+- Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
+- Improved readability in README. _(Philipp Gackstatter)_
+- We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
+
+### Other
+
 - The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
 
   ```
@@ -391,18 +410,8 @@ you up to date with the multi-language support provided by Elektra.
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
-- Improved the documentation for the type plugin. _(Michael Zronek)_
-- Updated the hello-elektra tutorial. _(Thomas Bretterbauer)_
-- Improved readability in README. _(Philipp Gackstatter)_
-- Add typo fix to the hello-elektra tutorial. _(Dmytro Moiseiuk)_
-- Add typo fix to the Java kdb tutorial. _(Dominik Hofmann)_
-- We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
-- Fixed capitalization of the initial letter in Readme. _(Miruna Orsa)_
-- Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
 - Added a new error concept to be implemented soon. _(Michael Zronek)_
-- We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
-- We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
-- We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
+- We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 
 ## Tests
 
