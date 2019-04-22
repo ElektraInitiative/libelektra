@@ -304,7 +304,7 @@ kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
 # STDOUT-REGEX: Using name (user|system)/tests/tutorial/spec/should_not_be_here
 # RET:    5
-# STDERR: .*error.*C04200.*occurred.*
+# STDERR: .*error.*C01400.*occurred.*
 kdb get /tests/tutorial/spec/should_not_be_here
 # RET: 11
 # STDERR: Did not find key '/tests/tutorial/spec/should_not_be_here'
