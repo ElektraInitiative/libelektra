@@ -351,6 +351,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - The `reformat-source` script now also formats `tests/shell/include_common.sh.in`. Additionally it ensures that the file is 1000 lines long,
   so that line numbers of files using it are easier to read. _(Klemens Böswirth)_
+- The script [`reformat-shfmt`](https://master.libelektra.org/scripts/reformat-shfmt) now also reformats shell support files (`*.in`) in the [`scripts`](https://master.libelektra.org/scripts) folder. _(René Schwaiger)_
 - The `reformat-*` scripts now allow you to specify a list of files that should be formatted. Only files actual suitable for the reformat script,
   will reformat. So e.g. calling `reformat-cmake src/include/kdbprivate.h` doesn't change any files. _(Klemens Böswirth)_
 - The script `scripts/reformat-all` is a new convenience script that calls all other `reformat-*` scripts. _(Klemens Böswirth)_
