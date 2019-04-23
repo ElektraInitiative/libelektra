@@ -956,10 +956,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	// elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
-	// elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
-	// elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
-
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey);
@@ -993,6 +989,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	case 0: // We don't need an update so let's do nothing
 
 		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
+
+		keySetName (parentKey, keyName (initialParent));
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
@@ -1020,6 +1021,10 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 cachemiss:
 	ksDel (cache);
 	cache = 0;
+
+	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
+	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
 
 	// Appoint keys (some in the bypass)
 	if (splitAppoint (split, handle, ks) == -1)
@@ -1091,6 +1096,12 @@ cachemiss:
 		splitMergeBackends (split, ks);
 	}
 
+	keySetName (parentKey, keyName (initialParent));
+
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+
 	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
@@ -1109,13 +1120,8 @@ cachemiss:
 	keyDel (cacheParent);
 	cacheParent = 0;
 
+	// the default split is not handled by POSTGETSTORAGE
 	splitMergeDefault (split, ks);
-
-	keySetName (parentKey, keyName (initialParent));
-
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	ksRewind (ks);
 
