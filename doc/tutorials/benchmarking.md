@@ -2,7 +2,7 @@
 
 ## Execution Time
 
-One of the usual questions for a standard benchmark is, how much more or less time two or more different programs take to execute on the same hardware. This tutorial will introduce some tools and techniques that will help you to answer this question. For that purpose we compare the time it takes for certain YAML [storage plugins](storage-plugins.md) to translate YAML data into Elektra’s key set structure. Most of the techniques we describe here should be applicable too, if you want to compare the run-time of other parts of Elektra.
+One of the usual questions for a standard benchmark is, how much more or less time two or more different programs take to execute on the same hardware. This tutorial will introduce some tools and techniques that will help you to answer this question. For that purpose we compare the time it takes for certain YAML [storage plugins](storage-plugins.md) to translate YAML data into Elektra’s key set structure. Most of the techniques we describe here should be applicable too, if you want to compare the run-time of other parts of Elektra. If you want to know why a certain part of Elektra takes a long time to execute, then you might also be interested in the [profiling tutorial](profiling.md).
 
 ### Translating Elektra
 
