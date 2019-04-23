@@ -792,7 +792,7 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 }
 
 static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * parentKey,
-				  Key * initialParent)
+				  Key * initialParent, int debugGlobalPositions)
 {
 	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
 
@@ -806,10 +806,13 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	ELEKTRA_LOG_DEBUG ("CACHE HIT");
 	if (splitCacheLoadState (split, handle->global) != 0) return -1;
 
-	keySetName (parentKey, keyName (initialParent));
-	// elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
-	// elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
-	// elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
+	if (debugGlobalPositions)
+	{
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
+		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
+	}
 
 	ksRewind (*cache);
 	if (ks->size == 0)
@@ -833,10 +836,13 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	keyDel (*cacheParent);
 	*cacheParent = 0;
 
-	keySetName (parentKey, keyName (initialParent));
-	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+	if (debugGlobalPositions)
+	{
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+	}
 
 	return 0;
 }
@@ -948,6 +954,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	KeySet * cache = 0;
 	Key * cacheParent = 0;
+	int debugGlobalPositions = 0;
+
+#ifdef DEBUG
+	if (keyGetMeta (parentKey, "debugGlobalPositions") != 0)
+	{
+		debugGlobalPositions = 1;
+	}
+#endif
 
 	if (!handle || !ks)
 	{
@@ -975,11 +989,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent) != 0)
+		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
 		{
 			goto cachemiss;
 		}
 
+		keySetName (parentKey, keyName (initialParent));
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);
@@ -988,25 +1003,33 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return 1;
 	case 0: // We don't need an update so let's do nothing
 
-		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
-		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
+		if (debugGlobalPositions)
+		{
+			keySetName (parentKey, keyName (initialParent));
+			elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
+			elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+			elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
 
-		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
+			keySetName (parentKey, keyName (initialParent));
+			elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
+			elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+			elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
+		}
 
 		ksDel (cache);
 		cache = 0;
 		keyDel (cacheParent);
 		cacheParent = 0;
 
+		if (debugGlobalPositions)
+		{
+			keySetName (parentKey, keyName (initialParent));
+			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+		}
+
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);
