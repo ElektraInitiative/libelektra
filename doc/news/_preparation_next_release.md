@@ -340,9 +340,7 @@ you up to date with the multi-language support provided by Elektra.
 - `web-ui` issue #2441 is fixed in form of a workaround _(Josef Wechselauer)_
 - `kdb import` does not fail anymore if executed more than once with the same target in the spec-namespace. _(Thomas Bretterbauer)_
 - `kdb mount` avoid adding sync if sync is already provided. _(Markus Raab)_
-
-- <<TODO>>
-
+- `kdb list-tools` now supports `KDB_EXEC_PATH` environment variables that contain spaces. _(René Schwaiger)_
 - <<TODO>>
 
 - <<TODO>>
