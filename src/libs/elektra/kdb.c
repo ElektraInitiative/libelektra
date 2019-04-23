@@ -807,9 +807,9 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	if (splitCacheLoadState (split, handle->global) != 0) return -1;
 
 	keySetName (parentKey, keyName (initialParent));
-	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
-	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
-	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
+	// elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
+	// elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
+	// elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
 
 	ksRewind (*cache);
 	if (ks->size == 0)
@@ -834,9 +834,9 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	*cacheParent = 0;
 
 	keySetName (parentKey, keyName (initialParent));
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	return 0;
 }
@@ -956,9 +956,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
-	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
-	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
+	// elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
+	// elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+	// elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
 
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
