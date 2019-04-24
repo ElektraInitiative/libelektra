@@ -299,6 +299,7 @@ compiled against an older 0.8 version of Elektra will continue to work
   stderr and everything except debug messages to syslog. If `ENABLE_DEBUG` is also enabled, debug messages are logged to syslog as well.
   Previously you had to make some manual changes to the code, to see most of the logging messages. _(Klemens Böswirth)_
 - The logger does not truncate the file name incorrectly anymore, if `__FILE__` contains a relative (instead of an absolute) filepath. _(René Schwaiger)_
+- Disabled any plugin exection when we have a cache hit or no update from backends. The old behaviour can be enabled for testing using `ENABLE_DEBUG` and adding the `"debugGlobalPositions"` meta key to the parentKey of the kdbGet invocation. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Ease
