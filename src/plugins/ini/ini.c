@@ -58,7 +58,7 @@ typedef struct
 	short BOM;
 	char * continuationString;
 	char delim;
-	char * lastOrder;
+// 	char * lastOrder;
 	char commentChar;
 	KeySet * oldKS;
 	Key * lastComments;
@@ -527,7 +527,7 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	KeySet * config = elektraPluginGetConfig (handle);
 	IniPluginConfig * pluginConfig = elektraMalloc (sizeof (IniPluginConfig));
 	pluginConfig->lastComments = NULL;
-	pluginConfig->lastOrder = NULL;
+// 	pluginConfig->lastOrder = NULL;
 	pluginConfig->BOM = 0;
 	Key * multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
 	Key * sectionHandlingKey = ksLookupByName (config, "/section", KDB_O_NONE);
@@ -610,7 +610,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
 	if (pluginConfig->oldKS) ksDel (pluginConfig->oldKS);
-	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
+// 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
 	if (pluginConfig->lastComments) keyDel (pluginConfig->lastComments);
 	elektraFree (pluginConfig->continuationString);
 	elektraFree (pluginConfig);
@@ -743,10 +743,14 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	iniConfig.supportMultiline = pluginConfig->supportMultiline;
 	iniConfig.delim = pluginConfig->delim;
 	pluginConfig->BOM = 0;
-	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
-		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
-	else if (!keyGetMeta (parentKey, "internal/ini/order"))
+// 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
+// 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
+// 	else if (!keyGetMeta (parentKey, "internal/ini/order"))
+// 		keySetMeta (parentKey, "internal/ini/order", "#1");
+
+	if (!keyGetMeta (parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", "#1");
+
 	cbHandle.array = pluginConfig->array;
 	cbHandle.mergeSections = pluginConfig->mergeSections;
 	cbHandle.pluginConfig = pluginConfig;
@@ -793,11 +797,11 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ret = -1;
 	}
 	ksDel (cbHandle.result);
-	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
-	incOrder (parentKey);
-	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
+// 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
+// 	incOrder (parentKey);
+// 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
-	keySetMeta (parentKey, "internal/ini/order", 0);
+// 	keySetMeta (parentKey, "internal/ini/order", 0);
 	return ret; /* success */
 }
 
@@ -1549,19 +1553,25 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * root = keyDup (ksLookup (returned, parentKey, KDB_O_NONE));
 	Key * head = keyDup (ksHead (returned));
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
-	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
-	{
-		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
-		incOrder (parentKey);
-	}
-	else if (!keyGetMeta (parentKey, "internal/ini/order"))
-	{
+// 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
+// 	{
+// 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
+// 		incOrder (parentKey);
+// 	}
+// 	else if (!keyGetMeta (parentKey, "internal/ini/order"))
+// 	{
+// 		keySetMeta (parentKey, "internal/ini/order", "#1");
+// 	}
+// 	else
+// 	{
+// 		incOrder (parentKey);
+// 	}
+
+	if (!keyGetMeta (parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", "#1");
-	}
 	else
-	{
 		incOrder (parentKey);
-	}
+
 	Key * cur;
 	KeySet * newKS = ksNew (0, KS_END);
 	ksRewind (returned);
@@ -1626,9 +1636,10 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	fclose (fh);
 	errno = errnosave;
-	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
-	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
+// 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
+// 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
+
 	keySetMeta (parentKey, "internal/ini/order", 0);
 
 	if (ret == 0 && rootNeededSync) return ELEKTRA_PLUGIN_STATUS_SUCCESS;

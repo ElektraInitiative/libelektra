@@ -25,8 +25,8 @@
 #define KEY_ROOT "user/benchmark"
 
 #define KEY_NAME_LENGTH 1000
-#define NUM_DIR 200
-#define NUM_KEY 200
+#define NUM_DIR 2
+#define NUM_KEY 2
 
 #define NR 50
 

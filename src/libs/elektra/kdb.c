@@ -47,6 +47,69 @@
 
 #include <kdbinternal.h>
 
+// TODO: remove
+
+#include <unistd.h>
+
+void output_meta (Key * k)
+{
+	const Key * meta;
+
+	keyRewindMeta (k);
+	while ((meta = keyNextMeta (k)) != 0)
+	{
+		ELEKTRA_LOG_DEBUG (", %s: %s", keyName (meta), (const char *) keyValue (meta));
+	}
+	ELEKTRA_LOG_DEBUG ("\n");
+}
+
+void output_key (Key * k)
+{
+	// output_meta will print endline
+	ELEKTRA_LOG_DEBUG ("key: %s, string: %s", keyName (k), keyString (k));
+	output_meta (k);
+}
+
+void output_keyset (KeySet * ks)
+{
+	Key * k;
+	ksRewind (ks);
+	while ((k = ksNext (ks)) != 0)
+	{
+		output_key (k);
+	}
+}
+void logSplitDebug (KDB * handle)
+{
+	if (!handle->split)
+	{
+		ELEKTRA_LOG_DEBUG ("!!!!! NO SPLIT in KDB");
+		return;
+	}
+	ELEKTRA_LOG_DEBUG (">>>> NEW KDB SPLIT");
+	ELEKTRA_LOG_DEBUG (">>>> alloc: %zu", handle->split->alloc);
+	ELEKTRA_LOG_DEBUG (">>>> size: %zu", handle->split->size);
+
+	for (size_t i = 0; i < handle->split->size; i++)
+	{
+		ELEKTRA_LOG_DEBUG (">>>> NEW SPLIT: %zu", i);
+		Key * k = handle->split->parents[i];
+		ELEKTRA_LOG_DEBUG (">>>> backend handle specsize:\t%zi", handle->split->handles[i]->specsize);
+		ELEKTRA_LOG_DEBUG (">>>> backend handle dirsize:\t%zi", handle->split->handles[i]->dirsize);
+		ELEKTRA_LOG_DEBUG (">>>> backend handle usersize:\t%zi", handle->split->handles[i]->usersize);
+		ELEKTRA_LOG_DEBUG (">>>> backend handle systemsize:\t%zi", handle->split->handles[i]->systemsize);
+
+		ELEKTRA_LOG_DEBUG (">>>> syncbits: %u", handle->split->syncbits[i]);
+		ELEKTRA_LOG_DEBUG (">>>> parent key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (k), keyString (k),
+				   strlen (keyString (k)), keyGetValueSize (k));
+		ELEKTRA_LOG_DEBUG (">>>> keyset size: %zi", ksGetSize (handle->split->keysets[i]));
+
+		output_keyset (handle->split->keysets[i]);
+		ELEKTRA_LOG_DEBUG (">>>> END SPLIT: %zu", i);
+	}
+}
+
+// TODO: remove end
 
 /**
  * @defgroup kdb KDB
@@ -1009,6 +1072,10 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		{
 			goto cachemiss;
 		}
+		
+		ELEKTRA_LOG_DEBUG ("#################### START KEYSET: CACHE_HIT");
+		output_keyset (ks);
+		ELEKTRA_LOG_DEBUG ("#################### END   KEYSET: CACHE_HIT");
 
 		keySetName (parentKey, keyName (initialParent));
 		splitUpdateFileName (split, handle, parentKey);
