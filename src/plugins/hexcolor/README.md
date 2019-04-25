@@ -27,26 +27,40 @@ None.
 ## Examples
 
 ```sh
-sudo kdb mount /tests/color.ini /tests/ipaddr ini hexcolor
-#> Mount a config file with the hexcolor plugin
+# Mount a config file with the hexcolor plugin
+sudo kdb mount color.ecf user/tests/color/hex dump hexcolor
 
-kdb setmeta /tests/color/hex check/hexcolor any
-#> Check the /tests/color/hex key for validity
+# Suceeds, since the value is a valid hexcolor. Quotes are important!
+kdb set user/tests/color/hex "#fff"
 
-kdb set /tests/color/hex "#fff"
-#> Suceeds, since the value is a valid hexcolor. Quotes are important!
+# Check the user/tests/color/hex key for validity
+kdb setmeta user/tests/color/hex check/hexcolor any
 
-kdb set /tests/color/hex "#a1C2b3"
-#> Suceeds, since the value is a valid hexcolor. Quotes are important!
+# Suceeds, since the value is a valid hexcolor. Quotes are important!
+kdb set user/tests/color/hex "#a1C2b3"
 
-kdb set /tests/color/hex fff
-#> Throws an error: value of key is not a valid hex-formatted color
+# Suceeds, since the value is a valid RGBA hexcolor. Quotes are important!
+kdb set user/tests/color/hex "#aabbccdd"
 
-kdb set /tests/color/hex "fff"
-#> Throws an error: value of key is not a valid hex-formatted color
+# Colors are normalized to bytes
+kdb get user/tests/color/hex
+#> \xaa\xbb\xcc\xdd
 
-kdb set /tests/color/hex "#12345"
-#> Throws an error: value of key is not a valid hex-formatted color
+# Try to set incorrect value
+kdb set user/tests/color/hex fff
+# RET: 5
+
+# Try to set incorrect value
+kdb set user/tests/color/hex "fff"
+# RET: 5
+
+# Try to set incorrect value
+kdb set user/tests/color/hex "#12345"
+# RET: 5
+
+# Undo modifications to the key database
+kdb rm -r user/tests/color/hex
+sudo kdb umount user/tests/color/hex
 ```
 
 ## Limitations
