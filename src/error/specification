@@ -11,8 +11,12 @@ ignore:true
 :It is for errors which are not relevant anymore
 :an empty line will start the next error specification
 
-number:C01100
-description:Resource
+number:C01110
+description:Out of Memory
+macro:OUT_OF_MEMORY
+
+number:C01120
+description:General Resource
 macro:RESOURCE
 
 number:C01200

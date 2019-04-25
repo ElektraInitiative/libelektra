@@ -139,8 +139,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jks, jkey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "%s failed with exception", method);
+		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "%s failed with exception", method);
 		result = -1;
 	}
 	checkException (data, method, errorKey);

@@ -83,13 +83,13 @@ TEST_F (Error, Again)
 	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
 	EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), "C01400");
 
-	ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", "C01100", KEY_END));
+	ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", "C01110", KEY_END));
 
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error (again)";
 
 	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
 	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
-	EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), "C01100");
+	EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), "C01110");
 
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 }
@@ -114,7 +114,7 @@ TEST_F (Error, AgainRepeat)
 	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
 	EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), "C01400");
 
-	std::list<std::string> errorCodes{ "C01100", "C01200", "C01300", "C01400", "C02000" };
+	std::list<std::string> errorCodes{ "C01110", "C01200", "C01300", "C01400", "C02000" };
 
 	for (auto code = errorCodes.begin (); code != errorCodes.end (); ++code)
 	{
@@ -166,7 +166,7 @@ TEST_F (Error, ToWarning)
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system" + testRoot + "key1").c_str (), KEY_META, "trigger/error/nofail", "C01400", KEY_END));
-	ksAppendKey (ks, keyNew (("system" + testRoot + "key2").c_str (), KEY_META, "trigger/error", "C01100", KEY_END));
+	ksAppendKey (ks, keyNew (("system" + testRoot + "key2").c_str (), KEY_META, "trigger/error", "C01110", KEY_END));
 
 	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 0) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 2) << "did not keep key at get" << ks;
@@ -177,7 +177,7 @@ TEST_F (Error, ToWarning)
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01400");
 
 	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "warnings/#00"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "warnings/#00/number")), "C01100");
+	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "warnings/#00/number")), "C01110");
 
 
 	kdbClose (kdb, parentKey);
