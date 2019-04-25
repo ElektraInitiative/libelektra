@@ -78,9 +78,8 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				// TODO: Correct?
-				ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "return value of %s doesn't match expected exit %s\n",
-								 keyString (cmdKey), keyString (expectedReturnKey));
+				ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (parentKey, "return value of %s doesn't match expected exit %s\n",
+								  keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
 		}
