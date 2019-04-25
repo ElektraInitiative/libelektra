@@ -86,8 +86,7 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (exception const & error)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Uncaught Exception: %s", error.what ());
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (*parent, "Uncaught Exception: %s", error.what ());
 	}
 
 #ifdef HAVE_LOGGER
@@ -121,8 +120,7 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (exception const & error)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Uncaught exception: %s", error.what ());
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();

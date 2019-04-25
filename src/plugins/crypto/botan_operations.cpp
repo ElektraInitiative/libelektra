@@ -154,7 +154,7 @@ int elektraCryptoBotanInit (Key * errorKey)
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Botan initialization failed: %s", e.what ());
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (errorKey, "Botan initialization failed: %s", e.what ());
 		return -1; // failure
 	}
 	return 1; // success

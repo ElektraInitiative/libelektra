@@ -31,6 +31,10 @@ number:C01400
 description:Logical
 macro:LOGICAL
 
+number:C01410
+description:Broken plugin
+macro:BROKEN_PLUGIN
+
 number:C02000
 description:Conflict
 macro:CONFLICT

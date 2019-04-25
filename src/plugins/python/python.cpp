@@ -318,7 +318,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		Py_DECREF (pModule);
 		if (klass == nullptr)
 		{
-			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Module doesn't provide a ElektraPlugin class");
+			ELEKTRA_SET_BROKEN_PLUGIN_ERROR (errorKey, "Module doesn't provide a ElektraPlugin class");
 			goto error_print;
 		}
 
@@ -329,7 +329,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		Py_DECREF (inst_args);
 		if (inst == nullptr)
 		{
-			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Unable to create instance of ElektraPlugin");
+			ELEKTRA_SET_BROKEN_PLUGIN_ERROR (errorKey, "Unable to create instance of ElektraPlugin");
 			goto error_print;
 		}
 		data->instance = inst;
