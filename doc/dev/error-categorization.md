@@ -9,8 +9,8 @@ document will act as a guideline.
 Errors along with their unique code only primarily exist because they can be **reacted
 differently on programmatically**. One could argue that an application could always react differently
 based on the error (eg. give yourself write or read permission) but such detailed granularity
-is rarely needed and would come with a lot of maintenance effort. In the previous versions of 
-Elektra we were facing many duplicated  errors because too many existed 
+is rarely needed and would come with a lot of maintenance effort. In the previous versions of
+Elektra we were facing many duplicated errors because too many existed
 and developers simply cannot know each and every code.
 
 To get an idea of programmatic reactions take a method call which returns a `Timeout` error. Naturally

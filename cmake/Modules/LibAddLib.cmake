@@ -1,14 +1,3 @@
-
-function (set_additional_compile_definitions shortname)
-	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_MODULE_NAME")
-		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
-			"ELEKTRA_MODULE_NAME=${shortname}")
-	endif ()
-
-	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
-	unset (ADDITIONAL_COMPILE_DEFINITIONS_PARTS)
-endfunction (set_additional_compile_definitions)
-
 function (add_lib name)
 	cmake_parse_arguments (ARG
 			       "CPP" # optional keywords
@@ -20,17 +9,11 @@ function (add_lib name)
 		add_cppheaders (ARG_SOURCES)
 	endif (ARG_CPP)
 
-	set_additional_compile_definitions (${name})
-
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED ${ARG_SOURCES})
 		add_dependencies (elektra-${name} kdberrors_generated elektra_error_codes_generated ${ARG_LINK_ELEKTRA})
 
-		set_property (TARGET elektra-${name}
-			APPEND
-			PROPERTY COMPILE_DEFINITIONS
-			${ADDITIONAL_COMPILE_DEFINITIONS}
-			)
+		target_compile_definitions (elektra-${name} PRIVATE ELEKTRA_MODULE_NAME=${name})
 
 		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
 	endif (BUILD_SHARED)
@@ -46,11 +29,7 @@ function (add_lib name)
 			       elektra-${name})
 
 	if (BUILD_SHARED)
-		set_property (TARGET elektra-${name}
-			APPEND
-			PROPERTY COMPILE_DEFINITIONS
-			${ADDITIONAL_COMPILE_DEFINITIONS}
-			)
+		target_compile_definitions (elektra-${name} PRIVATE ELEKTRA_MODULE_NAME=${name})
 
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
 
