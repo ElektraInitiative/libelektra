@@ -163,7 +163,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		{
 			if (!elektraGpgmeKeylistAdd (&list, key))
 			{
-				ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 				elektraGpgmeKeylistFree (&list);
 				return NULL;
 			}
@@ -194,7 +194,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				{
 					if (!elektraGpgmeKeylistAdd (&list, key))
 					{
-						ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
+						ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 						elektraGpgmeKeylistFree (&list);
 						return NULL;
 					}
@@ -212,7 +212,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		gpgme_key_t * keyArray = elektraMalloc ((list.size + 1) * sizeof (gpgme_key_t));
 		if (!keyArray)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}
@@ -251,7 +251,7 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * err
 	buffer = (char *) elektraMalloc (ciphertextLen);
 	if (!buffer)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 		returnValue = -1; // failure
 		goto cleanup;
 	}
@@ -439,7 +439,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			}
 			else
 			{
-				ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 			}
 			gpgme_data_release (ciphertext);
 			gpgme_data_release (input);

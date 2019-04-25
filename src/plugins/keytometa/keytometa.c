@@ -253,7 +253,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (ret < 0)
 	{
 		elektraFree (keyArray);
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Memory allocation error: %s", strerror (errno));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
 		errno = errnosave;
 		return 0;
 	}

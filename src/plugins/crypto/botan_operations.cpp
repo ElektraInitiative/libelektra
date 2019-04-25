@@ -66,7 +66,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		}
 		if (!saltHexString)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 			return -1;
 		}
 		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
