@@ -7,9 +7,9 @@
  *
  */
 
+#include <kdbconfig.h>
 #include <stdlib.h>
 #include <string.h>
-#include <kdbconfig.h>
 
 #include <tests_plugin.h>
 
@@ -26,7 +26,7 @@ static void test_color (const char * color, const int expected_ret)
 
 	int ret = plugin->kdbSet (plugin, ks, parentKey);
 
-	printf("Test Color %s, returned value: %d, expected value: %d\n", color, ret, expected_ret);
+	printf ("Test Color %s, returned value: %d, expected value: %d\n", color, ret, expected_ret);
 	succeed_if (ret == expected_ret, "failed");
 
 	ksDel (ks);
@@ -35,7 +35,7 @@ static void test_color (const char * color, const int expected_ret)
 	PLUGIN_CLOSE ();
 }
 
-static void test_hexcolor(void) 
+static void test_hexcolor (void)
 {
 	test_color ("#0fb", 1);
 	test_color ("#fff", 1);
