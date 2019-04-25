@@ -917,7 +917,7 @@ kill `pidof dbus-daemon`
                 sh("""\
 coveralls -b '${buildDir}' \
           -t '${REPO_TOKEN}' \
-          -e .idea -e benchmarks -e doc -e examples -e install -e system -e tests \
+          -e .idea -e benchmarks -e doc -e examples -e install -e libelektra -e system -e tests \
           -E '.*${buildDir}/(CMakeFiles|include)/.*' \
           -E '.*${buildDir}/src/bindings/(glib|haskell|intercept)/.*' \
           -E '.*${buildDir}/src/include/elektra/.*' \
