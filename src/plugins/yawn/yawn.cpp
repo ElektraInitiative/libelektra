@@ -80,8 +80,7 @@ int elektraYawnGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	catch (exception const & error)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Uncaught exception: %s", error.what ());
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();

@@ -64,8 +64,7 @@ static void checkException (Data * data, const char * when, Key * warningKey)
 			which = (*data->env)->GetStringUTFChars (data->env, estr, &iseCopy);
 		}
 
-		// TODO: Correct?
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningKey, "During \"%s\", java exception was thrown: %s", when, which);
+		ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (warningKey, "During \"%s\", java exception was thrown: %s", when, which);
 
 		if (iseCopy == JNI_TRUE)
 		{
@@ -97,8 +96,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jerrorKey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "%s failed with exception", method);
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (errorKey, "%s failed with exception", method);
 		result = -1;
 	}
 	checkException (data, method, errorKey);
@@ -139,7 +137,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jks, jkey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "%s failed with exception", method);
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (errorKey, "%s failed with exception", method);
 		result = -1;
 	}
 	checkException (data, method, errorKey);
@@ -293,7 +291,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	checkException (data, "creating plugin", errorKey);
 	if (data->plugin == 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create plugin");
+		ELEKTRA_SET_BROKEN_PLUGIN_ERROR (errorKey, "Cannot create plugin");
 		return -1;
 	}
 

@@ -1076,8 +1076,7 @@ cachemiss:
 
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			// TODO: Correct?
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 		ksClear (ks);
@@ -1112,8 +1111,7 @@ cachemiss:
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			// TODO: Correct?
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 

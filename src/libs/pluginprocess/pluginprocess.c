@@ -199,8 +199,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		else
 		{
 			ELEKTRA_LOG_DEBUG ("Child: Unrecognized command %s", keyString (commandKey));
-			// TODO: Correct?
-			ELEKTRA_SET_LOGICAL_ERRORF (key, "Received invalid command code or no KeySet: %s", keyString (commandKey));
+			ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (key, "Received invalid command code or no KeySet: %s", keyString (commandKey));
 		}
 		errno = prevErrno;
 		char * resultStr = longToStr (result);
@@ -330,8 +329,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	long lresult = strtol (keyString (resultKey), &endPtr, 10);
 	if (*endPtr != '\0' || errno == ERANGE || lresult > INT_MAX || lresult < INT_MIN)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (key, "Received invalid return code or no KeySet: %s", keyString (resultKey));
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (key, "Received invalid return code or no KeySet: %s", keyString (resultKey));
 		lresult = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else // Copy everything back into the actual keysets
@@ -407,7 +405,7 @@ static int makePipe (ElektraPluginProcess * pp, Key * errorKey, const char * pip
 	if ((ret = pipe (pipeRef)))
 	{
 		cleanupPluginData (pp, errorKey, 1);
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to initialize %s, pipe () returned %d", pipeName, ret);
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (errorKey, "Failed to initialize %s, pipe () returned %d", pipeName, ret);
 		return 0;
 	}
 	return 1;
@@ -498,7 +496,7 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	if (pp->pid < 0)
 	{
 		cleanupPluginData (pp, errorKey, 1);
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to fork the plugin process, fork () returned %d", pp->pid);
+		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (errorKey, "Failed to fork the plugin process, fork () returned %d", pp->pid);
 		return NULL;
 	}
 
