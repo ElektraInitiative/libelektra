@@ -8,15 +8,16 @@
 BUILD_DIRECTORY="@CMAKE_BINARY_DIR@"
 SOURCE_DIRECTORY="@CMAKE_SOURCE_DIR@"
 PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
-DATA_DIRECTORY="benchmarks/data"
+DATA_DIRECTORY="benchmarks/data/temporary"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
+INPUT_FILES=(
+	benchmarks/data/test.yaml
+)
 
 trap cleanup EXIT INT QUIT TERM
 
 cleanup() {
-	for PLUGIN in "${PLUGINS[@]}"; do
-		rm -f "$DATA_DIRECTORY/test.$PLUGIN.in"
-	done
+	rm -rf "$DATA_DIRECTORY"
 }
 
 cd "$SOURCE_DIRECTORY" || {
@@ -29,13 +30,21 @@ command -v hyperfine > /dev/null 2>&1 || {
 	exit 1
 }
 
-for PLUGIN in "${PLUGINS[@]}"; do
-	cp "$DATA_DIRECTORY/test.yaml" "$DATA_DIRECTORY/test.$PLUGIN.in"
+mkdir "$DATA_DIRECTORY"
+for FILEPATH in "${INPUT_FILES[@]}"; do
+	DIRECTORY="$DATA_DIRECTORY/$(basename "$FILEPATH" | cut -f1 -d'.')"
+	mkdir "$DIRECTORY"
+	for PLUGIN in "${PLUGINS[@]}"; do
+		cp "$FILEPATH" "$DIRECTORY/test.$PLUGIN.in"
+	done
 done
 
-hyperfine --warmup 3 \
-	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[0]} get" \
-	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[1]} get" \
-	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[2]} get" \
-	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[3]} get" \
-	"\"$BENCHMARK_TOOL\" \"$DATA_DIRECTORY\" user ${PLUGINS[4]} get" | sed -e "s~$BUILD_DIRECTORY/bin/~~g"
+for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
+	hyperfine --warmup 3 \
+		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
+		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
+		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[2]} get" \
+		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[3]} get" \
+		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" |
+		sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
+done
