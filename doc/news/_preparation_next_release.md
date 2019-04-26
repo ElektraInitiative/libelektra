@@ -460,6 +460,10 @@ you up to date with the multi-language support provided by Elektra.
 
   now include the Python YAML library recommended by [cmake format](https://github.com/cheshirekow/cmake_format). _(René Schwaiger)_
 
+### Vagrant
+
+- The [Vagrant file for Ubuntu Artful Aardvark](../../scripts/vagrant/ubuntu/artful32/Vagrantfile) now installs the Python YAML library recommended by [cmake format](https://github.com/cheshirekow/cmake_format). _(René Schwaiger)_
+
 ## Infrastructure
 
 ### Cirrus
