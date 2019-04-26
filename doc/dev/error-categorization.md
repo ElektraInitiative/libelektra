@@ -85,7 +85,7 @@ mounting.
 Users will have to reconfigure, reinstall, recompile (with other settings) Elektra in order to
 get rid of this error.
 
-#### Logical ("C01400")
+#### Logical ("C01410")
 
 `Logical Errors` is another branch category in which you indicate a bug in Elektra
 such as internal errors, assertion failures or errors

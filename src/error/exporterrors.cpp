@@ -288,7 +288,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		   << "		return;" << endl
 		   << "	}" << endl;
 	}
-	os << "	ELEKTRA_ADD_LOGICAL_WARNING (parentKey, \"Unkown warning code\");" << endl << "}" << endl << "" << endl;
+	os << "	ELEKTRA_ADD_ASSERTION_WARNING (parentKey, \"Unkown warning code\");" << endl << "}" << endl << "" << endl;
 	os << "static inline void elektraTriggerError (const char *nr, Key *parentKey, const char *message)" << endl << "{" << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
@@ -297,7 +297,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		   << "		return;" << endl
 		   << "	}" << endl;
 	}
-	os << "	ELEKTRA_SET_LOGICAL_ERROR (parentKey, \"Unkown error code\");" << endl << "}" << endl;
+	os << "	ELEKTRA_SET_ASSERTION_ERROR (parentKey, \"Unkown error code\");" << endl << "}" << endl;
 
 	os << "#endif" << endl;
 	return os;

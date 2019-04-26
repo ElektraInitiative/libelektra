@@ -145,8 +145,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 				const Key * sourceKey = ksLookupByName (returned, keyName, 0);
 				if (sourceKey == NULL)
 				{
-					// TODO: Correct?
-					ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
+					ELEKTRA_SET_ASSERTION_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
 									 keyName);
 					keyDel (k);
 					elektraFree (keyName);
@@ -157,8 +156,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 
 				if (keyCopyMeta (k, sourceKey, metaName) != 1)
 				{
-					// TODO: Correct?
-					ELEKTRA_SET_INSTALLATION_ERRORF (
+					ELEKTRA_SET_ASSERTION_ERRORF (
 						parentKey, "Could not copy meta data from key '%s': Error during copy", keyName);
 					keyDel (k);
 					elektraFree (keyName);

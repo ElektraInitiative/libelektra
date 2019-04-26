@@ -72,7 +72,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 					 sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s",
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s",
 					    gcry_strerror (gcry_err));
 		return -1;
 	}
@@ -115,7 +115,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, saltBuffer,
 					 saltBufferLen, iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption because: %s",
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption because: %s",
 					    gcry_strerror (gcry_err));
 		return -1;
 	}
@@ -235,7 +235,7 @@ error:
 	memset (keyBuffer, 0, sizeof (keyBuffer));
 	memset (ivBuffer, 0, sizeof (ivBuffer));
 	// TODO: Correct?
-	ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to create handle because: %s", gcry_strerror (gcry_err));
+	ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create handle because: %s", gcry_strerror (gcry_err));
 	gcry_cipher_close (**handle);
 	elektraFree (*handle);
 	(*handle) = NULL;
@@ -390,7 +390,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	gcry_err = gcry_cipher_decrypt (*handle, output, payloadLen, NULL, 0);
 	if (gcry_err != 0)
 	{
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Decryption failed because: %s", gcry_strerror (gcry_err));
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Decryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, payloadLen);
 		elektraFree (output);
 		return -1;
