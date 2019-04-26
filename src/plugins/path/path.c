@@ -204,8 +204,8 @@ static int validatePermission (Key * key, Key * parentKey)
 	if (euidResult != 0 || egidResult != 0)
 	{
 		ELEKTRA_SET_ASSERTION_ERROR (parentKey,
-					   "There was a problem in the user switching process."
-					   "Please report the issue at https://issues.libelektra.org");
+					     "There was a problem in the user switching process."
+					     "Please report the issue at https://issues.libelektra.org");
 		return -1;
 	}
 
@@ -239,13 +239,13 @@ static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd 
 	if (getgrouplist (p->pw_name, (int) p->pw_gid, (*groups), &ngroups) < 0)
 	{
 		ELEKTRA_SET_ASSERTION_ERROR (parentKey,
-					   "There was a problem in the getting all groups for the user."
-					   "Please report the issue at https://issues.libelektra.org");
+					     "There was a problem in the getting all groups for the user."
+					     "Please report the issue at https://issues.libelektra.org");
 		if (seteuid (currentUID) < 0)
 		{
 			ELEKTRA_SET_ASSERTION_ERROR (parentKey,
-						   "There was a problem in the user switching process."
-						   "Please report the issue at https://issues.libelektra.org");
+						     "There was a problem in the user switching process."
+						     "Please report the issue at https://issues.libelektra.org");
 		}
 		return -1;
 	}

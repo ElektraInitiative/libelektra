@@ -73,7 +73,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	{
 		// TODO: Correct?
 		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s",
-					    gcry_strerror (gcry_err));
+					      gcry_strerror (gcry_err));
 		return -1;
 	}
 
@@ -116,7 +116,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 					 saltBufferLen, iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption because: %s",
-					    gcry_strerror (gcry_err));
+					      gcry_strerror (gcry_err));
 		return -1;
 	}
 

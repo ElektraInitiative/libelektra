@@ -90,8 +90,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	{
 		// TODO: Correct?
 		ELEKTRA_SET_ASSERTION_ERRORF (errorKey,
-					    "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
-					    ERR_get_error ());
+					      "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
+					      ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -529,7 +529,8 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 	if (!RAND_bytes (buffer, length))
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to generate random string. libcrypto error code was: %lu", ERR_get_error ());
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to generate random string. libcrypto error code was: %lu",
+					      ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return NULL;
 	}

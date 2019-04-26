@@ -146,7 +146,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 				if (sourceKey == NULL)
 				{
 					ELEKTRA_SET_ASSERTION_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
-									 keyName);
+								      keyName);
 					keyDel (k);
 					elektraFree (keyName);
 					elektraFree (metaName);
@@ -156,8 +156,8 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 
 				if (keyCopyMeta (k, sourceKey, metaName) != 1)
 				{
-					ELEKTRA_SET_ASSERTION_ERRORF (
-						parentKey, "Could not copy meta data from key '%s': Error during copy", keyName);
+					ELEKTRA_SET_ASSERTION_ERRORF (parentKey,
+								      "Could not copy meta data from key '%s': Error during copy", keyName);
 					keyDel (k);
 					elektraFree (keyName);
 					elektraFree (metaName);

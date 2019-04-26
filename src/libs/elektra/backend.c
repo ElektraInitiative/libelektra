@@ -232,8 +232,11 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			{
 				// no one cares about that config
 				if (!failure)
-					// TODO: Correct?
-					ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Unrecognised Config Tree: %s", keyBaseName (cur));
+					ELEKTRA_ADD_INSTALLATION_WARNINGF (
+						errorKey,
+						"Found garbage within the backend configuration. found: %s but expected config, "
+						"setplugins, getplugins, errorplugins or mountpoint",
+						keyBaseName (cur));
 				ksDel (cut);
 			}
 		}

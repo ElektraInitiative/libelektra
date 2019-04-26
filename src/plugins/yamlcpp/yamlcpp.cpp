@@ -121,7 +121,7 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	catch (YAML::EmitterException const & exception)
 	{
 		ELEKTRA_SET_ASSERTION_ERRORF (parent.getKey (), "Something went wrong while emitting YAML data to file “%s”: %s.",
-					    parent.getString ().c_str (), exception.what ());
+					      parent.getString ().c_str (), exception.what ());
 	}
 
 	parent.release ();
