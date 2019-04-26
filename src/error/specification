@@ -31,7 +31,11 @@ number:C01400
 description:Logical
 macro:LOGICAL
 
-number:C01410
+number:C01420
+description:Interface
+macro:INTERFACE
+
+number:C01430
 description:Broken plugin
 macro:BROKEN_PLUGIN
 

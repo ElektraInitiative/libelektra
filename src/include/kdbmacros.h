@@ -63,7 +63,7 @@
 #define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_RESOURCE_ERRORF (key, "Unable to allocate %zu bytes.", size);
 
 /**
- * @brief Sets error 84 if info != returned
+ * @brief Sets error if info != returned
  *
  * @param info how the info is now (freshly received)
  * @param returned how the info passed from user is
@@ -82,6 +82,7 @@
 			Key * c = ksNext (info);                                                                                           \
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
+				/* TODO: Correct? Maybe Interface? */                                                                      \
 				ELEKTRA_SET_INSTALLATION_ERRORF (                                                                          \
 					error, "Read only plugin, kdbSet not supported but the key %s (value %s) was added", keyName (k),  \
 					keyString (k));                                                                                    \
@@ -90,6 +91,7 @@
 			}                                                                                                                  \
 			if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))                                    \
 			{                                                                                                                  \
+				/* TODO: Correct? Maybe Interface? */                                                                      \
 				ELEKTRA_SET_INSTALLATION_ERRORF (                                                                          \
 					error,                                                                                             \
 					"Read only plugin, kdbSet not supported but the key %s (expected %s) was modified to "             \
