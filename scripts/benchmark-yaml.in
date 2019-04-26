@@ -11,7 +11,7 @@ PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data/temporary"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILES=(
-	benchmarks/data/test.yaml
+	benchmarks/data/keyframes.yaml
 	benchmarks/data/combined.yaml
 )
 

@@ -42,16 +42,16 @@ ninja
 
 ### Profiling the Code
 
-We use the tool [`benchmark_plugingetset`](../../benchmarks/README.md) to profile the execution time of [YAy PEG][]. The file [`test.yaml`](../../benchmarks/data/test.yaml) serves as input file for the plugin. Since `benchmark_plugingetset` requires a data file called
+We use the tool [`benchmark_plugingetset`](../../benchmarks/README.md) to profile the execution time of [YAy PEG][]. The file [`keyframes.yaml`](../../benchmarks/data/keyframes.yaml) serves as input file for the plugin. Since `benchmark_plugingetset` requires a data file called
 
 ```sh
 test.$plugin.in
 ```
 
-, we save a copy of `test.yaml` as `test.yaypeg.in`:
+, we save a copy of `keyframes.yaml` as `test.yaypeg.in`:
 
 ```sh
-cp benchmarks/data/test.yaml benchmarks/data/test.yaypeg.in
+cp benchmarks/data/keyframes.yaml benchmarks/data/test.yaypeg.in
 ```
 
 . After that we call `benchmark_plugingetset` directly to make sure that everything works as expected:
