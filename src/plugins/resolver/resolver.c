@@ -971,7 +971,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 	if (futimens (fd, times) == -1)
 	{
 		// TODO: Correct?
-		ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
+		ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
 					      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #elif defined(HAVE_FUTIMES)
@@ -981,7 +981,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 	if (futimes (fd, times) == -1)
 	{
 		// TODO: Correct?
-		ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
+		ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
 					      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #else
@@ -1060,7 +1060,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		// change mode to what it was before
 		if (fchmod (fd, pk->filemode) == -1)
 		{
-			ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
+			ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
 						      pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
 		}
 	}
@@ -1069,7 +1069,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	{
 		if (fchown (fd, pk->uid, pk->gid) == -1)
 		{
-			ELEKTRA_ADD_LOGICAL_WARNINGF (parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
+			ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
 						      pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
 		}
 	}

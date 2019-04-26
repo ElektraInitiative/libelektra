@@ -90,7 +90,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	catch (std::exception const & e)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s", e.what ());
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s", e.what ());
 		return -1;
 	}
 }
@@ -141,7 +141,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	catch (std::exception const & e)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption because: %s", e.what ());
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption because: %s", e.what ());
 		return -1;
 	}
 }
@@ -311,7 +311,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	catch (std::exception const & e)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Decryption failed because: %s", e.what ());
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Decryption failed because: %s", e.what ());
 		return -1; // failure
 	}
 
@@ -342,7 +342,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 	catch (std::exception const & e)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_LOGICAL_ERRORF (errorKey, "Failed to generate random string because: %s", e.what ());
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to generate random string because: %s", e.what ());
 		return 0;
 	}
 }

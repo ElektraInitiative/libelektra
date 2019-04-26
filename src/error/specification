@@ -27,9 +27,9 @@ number:C01300
 description:Installation
 macro:INSTALLATION
 
-number:C01400
-description:Logical
-macro:LOGICAL
+number:C01410
+description:Assertion
+macro:ASSERTION
 
 number:C01420
 description:Interface

@@ -244,7 +244,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
-			ELEKTRA_ADD_LOGICAL_WARNINGF (
+			ELEKTRA_ADD_ASSERTION_WARNINGF (
 				parentKey,
 				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
 				"the file manually. Affected file: %s, error description: %s",
@@ -483,7 +483,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
-			ELEKTRA_ADD_LOGICAL_WARNINGF (
+			ELEKTRA_ADD_ASSERTION_WARNINGF (
 				parentKey,
 				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
 				"the file manually. Affected file: %s, error description: %s",
@@ -585,7 +585,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 		}
 		else
 		{
-			ELEKTRA_SET_LOGICAL_ERROR (parentKey, "The path to the original file is lost.");
+			ELEKTRA_SET_ASSERTION_ERROR (parentKey, "The path to the original file is lost.");
 			// clean-up is performed by kdb close
 			return -1;
 		}
@@ -600,7 +600,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 			s->tmpFileFd = -1;
 			if (unlink (s->tmpFilePath))
 			{
-				ELEKTRA_ADD_LOGICAL_WARNINGF (
+				ELEKTRA_ADD_ASSERTION_WARNINGF (
 					parentKey,
 					"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try "
 					"to delete the file manually. Affected file: %s, error description: %s",
