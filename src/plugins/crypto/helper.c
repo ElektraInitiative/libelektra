@@ -120,7 +120,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	int result = ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
-		ELEKTRA_SET_SEMANTIC_VALIDATION_ERROR (errorKey, "Salt was not stored Base64 encoded.");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Salt was not stored Base64 encoded.");
 		return -1;
 	}
 	else if (result == -2)
@@ -174,7 +174,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	{
 		// TODO: Correct?
 		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
-					    payloadLen);
+					      payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}

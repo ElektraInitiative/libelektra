@@ -659,7 +659,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	case -1:
 		// fork() failed
 		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "fork failed");
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "fork failed with errno: %s", strerror (errno));
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -751,7 +751,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	case 1:
 		// bad signature
 		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "GPG reported a bad signature");
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "GPG reported a bad signature. errno: %s", strerror (errno));
 		break;
 
 	case GPG_CALL_DUP_STDIN:

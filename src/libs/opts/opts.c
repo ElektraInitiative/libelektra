@@ -14,6 +14,7 @@
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbmeta.h>
+#include <stdio.h>
 
 #include <kdberrors.h>
 

@@ -159,7 +159,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 ElektraError * elektraErrorKeyNotFound (const char * keyname)
 {
 	char * description = elektraFormat ("The key '%s' could not be found.", keyname);
-	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_LOGICAL, description, "highlevel", "unknown", 0);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_ASSERTION, description, "highlevel", "unknown", 0);
 	elektraFree (description);
 	return error;
 }
@@ -176,7 +176,7 @@ ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType
 ElektraError * elektraErrorNullError (const char * function)
 {
 	char * description = elektraFormat ("The value passed to the ElektraError ** argument of %s was NULL.", function);
-	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_LOGICAL, description, "highlevel", "unknown", 0);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_ASSERTION, description, "highlevel", "unknown", 0);
 	elektraFree (description);
 	return error;
 }

@@ -1304,7 +1304,7 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 			if (ret == -1)
 			{
 				ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
-							      keyName (backend->mountpoint));
+								keyName (backend->mountpoint));
 			}
 		}
 	}
@@ -1336,7 +1336,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 			if (ret == -1)
 			{
 				ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Error during rollback. This means backend is broken: %s",
-							      keyName (backend->mountpoint));
+								keyName (backend->mountpoint));
 			}
 		}
 	}
@@ -1576,7 +1576,7 @@ error:
 		if (!found)
 		{
 			ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Error key %s not found in keyset even though it was found before",
-						      keyName (errorKey));
+							keyName (errorKey));
 		}
 	}
 

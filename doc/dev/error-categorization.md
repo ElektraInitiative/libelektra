@@ -78,12 +78,14 @@ and retry the operation.
 
 #### Installation ("C01300")
 
-`Installation Errors` are those errors which are related to Elektra's installation such as
+`Installation Errors` are those errors which are related to a wrong installation such as
 wrong plugin names, missing backends, initialization errors, misconfiguration of Elektra etc.
+Installation errors might also be non-Elektra specific but also from dependent library/applications
+such as gpg.
 Also plugin configuration errors belong to `Installation Errors` as they this happens during
 mounting.
 Users will have to reconfigure, reinstall, recompile (with other settings) Elektra in order to
-get rid of this error.
+get rid of this error or fix the installation of the corresponding library/application.
 
 #### Logical ("C01410")
 

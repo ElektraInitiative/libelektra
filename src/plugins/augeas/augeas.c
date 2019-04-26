@@ -105,8 +105,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 	}
 	else
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Could not glob %s", f);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Could not glob %s because of augeas", f);
 		retval = -1;
 	}
 	return retval;
