@@ -41,8 +41,7 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 	}
 	else if (elektraStrCmp (pluginName, "process") == 0)
 	{
-		// TODO: Correct?
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Cannot proxy the process plugin itself");
+		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "Cannot proxy the process plugin itself");
 		return 0;
 	}
 	return 1;
@@ -206,7 +205,7 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		keyDel (pluginParentKey);
 		if (ksGetSize (pluginContract) == 0)
 		{
-			ELEKTRA_SET_LOGICAL_ERRORF (parentKey, "Failed to get the contract for %s", keyString (pluginName));
+			ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Failed to get the contract for %s", keyString (pluginName));
 			ksDel (pluginContract);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

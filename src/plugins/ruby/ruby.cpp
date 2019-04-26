@@ -405,7 +405,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 	{
 		/* no script specified
 		 * do not issue an error or 'kdb info ruby' causes problems */
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "no 'script' config value specified");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "no 'script' config value specified");
 		return -1;
 	}
 

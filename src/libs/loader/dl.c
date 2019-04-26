@@ -120,8 +120,7 @@ int elektraModulesClose (KeySet * modules, Key * errorKey)
 
 	if (!root)
 	{
-		// TODO: Correct?
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "no key system/elektra/modules");
+		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "no key system/elektra/modules");
 		return -1;
 	}
 

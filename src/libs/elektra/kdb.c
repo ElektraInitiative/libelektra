@@ -935,7 +935,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		clearError (parentKey);
 		keyDel (oldError);
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
 		return -1;
 	}
 
@@ -965,7 +965,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (!handle || !ks)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_LOGICAL_ERROR (parentKey, "handle or ks null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "handle or ks null pointer passed");
 		goto error;
 	}
 
@@ -1427,8 +1427,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_META)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
 		return -1;
@@ -1436,14 +1435,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "invalid key name passed to kdbSet");
+		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "invalid key name passed to kdbSet");
 		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
 	}
 
 	if (!handle || !ks)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_LOGICAL_ERROR (parentKey, "handle or ks null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "handle or ks null pointer passed");
 		keyDel (oldError);
 		ELEKTRA_LOG ("!handle || !ks");
 		return -1;
@@ -1948,8 +1947,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 
 		if (elektraStrCmp (pluginName, "list") == 0)
 		{
-			// TODO: Correct?
-			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Cannot specify clauses for the list plugin!!");
+			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Cannot specify clauses for the list plugin!!");
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
 			return -1;
@@ -1970,8 +1968,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		}
 		else
 		{
-			// TODO: Correct?
-			ELEKTRA_SET_INSTALLATION_ERRORF (
+			ELEKTRA_SET_INTERFACE_ERRORF (
 				parentKey,
 				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used.",
 				keyName (clause), pluginStateString);
@@ -2005,7 +2002,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		{
 			if (pluginState != PLUGIN_STATE_UNMOUNTED)
 			{
-				ELEKTRA_SET_INSTALLATION_ERRORF (
+				ELEKTRA_SET_INTERFACE_ERRORF (
 					parentKey,
 					"The key '%s' contained the value '%s', but only 'unmounted' is supported for "
 					"non-global clauses at the moment.",
