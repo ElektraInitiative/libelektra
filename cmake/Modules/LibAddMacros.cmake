@@ -307,12 +307,27 @@ macro (remove_tool name reason)
 	set (TMP ${TOOLS})
 	message (STATUS "Exclude tool ${name} because ${reason}")
 	list (REMOVE_ITEM TMP
-			  ${name})
+			${name})
 	set (TOOLS
-	     ${TMP}
-	     CACHE STRING
-		   ${TOOLS_DOC}
-	     FORCE)
+	    ${TMP}
+	    CACHE STRING
+		${TOOLS_DOC}
+		FORCE)
+
+	# save removed tools for dependency resolving later on
+	if (REMOVED_TOOLS)
+		set (REMOVED_TOOLS
+			"${REMOVED_TOOLS};${name}"
+			CACHE STRING
+			"${REMOVED_TOOLS_DOC}"
+			FORCE)
+	else ()
+		set (REMOVED_TOOLS
+			"${name}"
+			CACHE STRING
+			"${REMOVED_TOOLS_DOC}"
+			FORCE)
+	endif ()
 endmacro (remove_tool)
 
 # ~~~
