@@ -916,9 +916,25 @@ kill `pidof dbus-daemon`
               withEnv(["TRAVIS_JOB_ID=$BUILD_NUMBER"]) {
                 sh("""\
 coveralls -b '${buildDir}' \
-          -t $REPO_TOKEN \
-          -e benchmarks -e doc -e examples -e install -e system -e tests -e .idea \
-          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp|ypp)'
+          -t '${REPO_TOKEN}' \
+          -e .idea -e benchmarks -e doc -e examples -e install -e system -e tests \
+          -E '.*${buildDir}/(CMakeFiles|include)/.*' \
+          -E '.*${buildDir}/src/bindings/(glib|haskell|intercept)/.*' \
+          -E '.*${buildDir}/src/include/elektra/.*' \
+          -E '.*${buildDir}/src/include/(kdb|kdbconfig|kdbversion)\\.h' \
+          -E '.*${buildDir}/src/(libs|tools)/.*' \
+          -E '.*${buildDir}/src/plugins/\
+(?!\
+constants/constants\\.c|\
+(haskell|regexdispatcher|typechecker)/haskell\\.c|\
+(lua|ruby)/runtime\\.h|\
+yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
+yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
+yawn/yaml_grammar\\.h|\
+yaypeg/parser\\.hpp\
+).*' \
+          -E '.*/src/error/.*' \
+          -E '.*/src/plugins/yaypeg/parser.in.hpp' \
 """)
               }
             }
