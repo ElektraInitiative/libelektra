@@ -81,8 +81,7 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (range_error const & error)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Unable to insert array value %s", error.what ());
+		ELEKTRA_SET_OUT_OF_RANGE_ERRORF (*parent, "Unable to insert array value %s", error.what ());
 	}
 	catch (exception const & error)
 	{
@@ -115,8 +114,7 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (range_error const & error)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (*parent, "Unable to insert array value %s", error.what ());
+		ELEKTRA_SET_OUT_OF_RANGE_ERRORF (*parent, "Unable to insert array value %s", error.what ());
 	}
 	catch (exception const & error)
 	{

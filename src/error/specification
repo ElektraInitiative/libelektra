@@ -50,3 +50,7 @@ macro:VALIDATION_SYNTACTIC
 number:C04200
 description:Validation Semantic
 macro:VALIDATION_SEMANTIC
+
+number:C05000
+description:Out of Range
+macro:OUT_OF_RANGE
