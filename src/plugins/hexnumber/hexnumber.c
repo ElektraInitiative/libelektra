@@ -355,7 +355,7 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			}
 			else
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 					parentKey, "Key '%s' has unit/base metadata set as hex but value '%s' does not start with 0x",
 					keyName (cur), keyString (cur));
 				status |= ELEKTRA_PLUGIN_STATUS_ERROR;

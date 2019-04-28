@@ -658,8 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 	case -1:
 		// fork() failed
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "fork failed with errno: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "fork failed with errno: %s", strerror (errno));
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -719,8 +718,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
 		{
-			// TODO: Correct?
-			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "The communication with the GPG process failed.");
+			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "The communication with the GPG process failed.");
 			closePipe (pipe_stdin);
 			closePipe (pipe_stdout);
 			closePipe (pipe_stderr);
