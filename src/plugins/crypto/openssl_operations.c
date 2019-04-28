@@ -428,7 +428,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "value length is not a multiple of the block size");
 		return -1;
 	}
 
@@ -472,7 +472,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	plaintextLen = BIO_get_mem_data (decrypted, &plaintext);
 	if (plaintextLen < headerLen)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, "Decryption error! header data is incomplete.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Decryption error! header data is incomplete.");
 		goto error;
 	}
 
@@ -485,7 +485,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// validate restored header
 	if (contentLen > (plaintextLen - headerLen))
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
 		goto error;
 	}
 

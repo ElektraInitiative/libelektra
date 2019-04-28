@@ -61,7 +61,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 {
 	if (!varintWrite (file, size))
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
 	}
 
@@ -69,7 +69,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 	{
 		if (fwrite (data, sizeof (char), size, file) < size)
 		{
-			ELEKTRA_SET_PARSING_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
 			return false;
 		}
 	}
@@ -81,7 +81,7 @@ static inline bool readUInt64 (FILE * file, kdb_unsigned_long_long_t * valuePtr,
 {
 	if (fread (valuePtr, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, "Error while reading file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Error while reading file");
 		return false;
 	}
 	*valuePtr = le64toh (*valuePtr);
@@ -94,14 +94,14 @@ static inline char * readString (FILE * file, Key * errorKey)
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return NULL;
 	}
 
 	char * string = elektraMalloc (size + 1);
 	if (fread (string, sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
 		elektraFree (string);
 		return NULL;
 	}
@@ -115,7 +115,7 @@ static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * bu
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
 	}
 
@@ -146,7 +146,7 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 
 	if (fread (&buffer->string[buffer->offset], sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
 	}
 	buffer->string[newSize - 1] = '\0';
@@ -212,7 +212,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		break;
 	default:
 		fclose (file);
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unknown magic number " ELEKTRA_UNSIGNED_LONG_LONG_F, magic);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unknown magic number " ELEKTRA_UNSIGNED_LONG_LONG_F, magic);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -290,7 +290,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					fclose (file);
-					ELEKTRA_SET_PARSING_ERROR (parentKey, "error while reading file");
+					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "error while reading file");
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);
@@ -327,7 +327,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			{
 				keyDel (k);
 				fclose (file);
-				ELEKTRA_SET_PARSING_ERROR (parentKey, "Missing key end");
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 

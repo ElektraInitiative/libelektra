@@ -369,7 +369,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "value length is not a multiple of the block size");
 		return -1;
 	}
 
@@ -406,7 +406,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	// validate restored content length
 	if (contentLen > dataLen)
 	{
-		ELEKTRA_SET_PARSING_ERROR (
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (
 			errorKey,
 			"restored content length is bigger than the available amount of decrypted data. The header is possibly corrupted.");
 		memset (output, 0, payloadLen);

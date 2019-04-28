@@ -54,7 +54,7 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 		}
 		else if (status == -1)
 		{
-			ELEKTRA_SET_PARSING_ERROR (parent.getKey (), driver.getErrorMessage ().c_str ());
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parent.getKey (), driver.getErrorMessage ().c_str ());
 		}
 
 		return status;

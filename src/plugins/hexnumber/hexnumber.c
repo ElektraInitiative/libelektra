@@ -74,7 +74,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	else if ((errno != 0 && value == 0) || endPtr == hexValue || *endPtr != '\0')
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Hexadecimal number '%s' could not be read", hexValue);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Hexadecimal number '%s' could not be read", hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	errno = errnoSaved;
@@ -84,7 +84,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	if (result < 0)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -100,7 +100,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	if (result < 0)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unable to convert '%s' into decimal", hexValue);
 		elektraFree (decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -145,7 +145,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	else if ((errno != 0 && value == 0) || endPtr == decValue)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Decimal number '%s' could not be read", decValue);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Decimal number '%s' could not be read", decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	errno = errnoSaved;
@@ -155,7 +155,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	if (result < 0)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -170,7 +170,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	if (snprintf (hexValue, length, "0x%llx", value) < 0)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		elektraFree (hexValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -283,7 +283,7 @@ int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
 
 	if (!types)
 	{
-		ELEKTRA_SET_PARSING_ERROR (errorKey, "Could not parse config! Types not set correctly.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Could not parse config! Types not set correctly.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

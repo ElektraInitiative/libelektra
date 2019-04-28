@@ -106,7 +106,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	else if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, "Invalid line encountered: not at the end of file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid line encountered: not at the end of file");
 		ret = -1;
 	}
 

@@ -273,14 +273,14 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	data->endPos = getBlockEnd (fin, data->identifier, data->startPos);
 	if (data->endPos == -1)
 	{
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Couldn't find end of block %s", data->identifier);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Couldn't find end of block %s", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
 	block = (char *) getBlock (fin, data->startPos, data->endPos);
 	if (!block)
 	{
-		ELEKTRA_SET_PARSING_ERRORF (parentKey, "Failed to extract block %s\n", data->identifier);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block %s\n", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -349,7 +349,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		block = (char *) getBlock (fin, 0, data->startPos);
 		if (!block)
 		{
-			ELEKTRA_SET_PARSING_ERRORF (parentKey, "Failed to extract block before %s\n", data->identifier);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block before %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
 		fwrite (block, 1, data->startPos, fout);
@@ -360,7 +360,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		block = (char *) getBlock (fin, data->endPos, ftell (fin));
 		if (!block)
 		{
-			ELEKTRA_SET_PARSING_ERRORF (parentKey, "Failed to extract block after %s\n", data->identifier);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block after %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
 		fclose (fin);

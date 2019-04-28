@@ -69,19 +69,19 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const XMLException & e)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const DOMException & e)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XercesPluginException & e)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, e.what ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, e.what ());
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, "Unknown exception occurred while reading xml file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Unknown exception occurred while reading xml file");
 	}
 
 	// Avoid destruction of the pointers at the end
@@ -107,19 +107,19 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const XMLException & e)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const DOMException & e)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XercesPluginException & e)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, e.what ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, e.what ());
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parentKey, "Unknown exception occurred while writing xml file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Unknown exception occurred while writing xml file");
 	}
 
 	// Avoid destruction of the pointers at the end

@@ -101,7 +101,7 @@ string parseGrammar (yaep & parser, CppKey & error)
 
 	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
 	{
-		ELEKTRA_SET_PARSING_ERRORF (error.getKey (), "Unable to parse grammar: %s", parser.error_message ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (error.getKey (), "Unable to parse grammar: %s", parser.error_message ());
 		return "";
 	}
 	return grammar;
@@ -142,7 +142,7 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 {
 	if (ambiguousOutput)
 	{
-		ELEKTRA_SET_PARSING_ERRORF (
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			error.getKey (),
 			"The content of file “%s” showed that the grammar:\n%s\nproduces ambiguous output!\n"
 			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input.",
@@ -152,7 +152,7 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 
 	if (errorListener.getNumberOfErrors () > 0)
 	{
-		ELEKTRA_SET_PARSING_ERROR (error.getKey (), errorListener.getErrorMessage ().c_str ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (error.getKey (), errorListener.getErrorMessage ().c_str ());
 		return -1;
 	}
 	return 0;

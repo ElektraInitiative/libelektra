@@ -404,7 +404,7 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 		const char * value = keyString (cur);
 		if (strlen (value) > 3)
 		{
-			ELEKTRA_SET_PARSING_ERRORF ( errorKey,
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF ( errorKey,
 					    "value %s is more than 3 characters long",
 					    value);
 			return -1; // The configuration was not OK and could not be fixed
