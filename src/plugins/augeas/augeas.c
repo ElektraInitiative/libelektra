@@ -408,7 +408,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	if (ret < 0)
 	{
 		/* report the augeas specific error */
-		ELEKTRA_SET_PARSING_ERROR (parentKey, getAugeasError (augeasHandle));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, getAugeasError (augeasHandle));
 	}
 
 	return ret;

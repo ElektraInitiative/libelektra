@@ -87,7 +87,7 @@ typedef struct
 	ELEKTRA_LOG_DEBUG ("%s:%zu:%zu: " message, strrchr (keyString (data->parentKey), '/') + 1, data->line, data->column, __VA_ARGS__);
 
 #define SET_ERROR_PARSE(data, message, ...)                                                                                                \
-	ELEKTRA_SET_PARSING_ERRORF (data->parentKey, "General parse error: %s:%zu:%zu: " message, keyString (data->parentKey), data->line, \
+	ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (data->parentKey, "General parse error: %s:%zu:%zu: " message, keyString (data->parentKey), data->line, \
 				    data->column, __VA_ARGS__);
 
 #define RET_NOK(function)                                                                                                                  \

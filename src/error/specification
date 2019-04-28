@@ -19,10 +19,6 @@ number:C01120
 description:General Resource
 macro:RESOURCE
 
-number:C01200
-description:Parsing
-macro:PARSING
-
 number:C01300
 description:Installation
 macro:INSTALLATION

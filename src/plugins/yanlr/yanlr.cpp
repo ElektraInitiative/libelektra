@@ -92,7 +92,7 @@ int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
 	ParseTree * tree = parser.yaml ();
 	if (parser.getNumberOfSyntaxErrors () > 0)
 	{
-		ELEKTRA_SET_PARSING_ERROR (parent.getKey (), errorListener.message ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parent.getKey (), errorListener.message ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	walker.walk (&listener, tree);

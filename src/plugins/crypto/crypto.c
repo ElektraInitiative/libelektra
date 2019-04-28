@@ -79,7 +79,7 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 {
 	if (keyGetValueSize (k) < ((ssize_t) ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
 	{
-		ELEKTRA_SET_PARSING_ERRORF (
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			errorKey,
 			"The provided data could not be recognized as valid cryptographic payload. The data is possibly "
 			"corrupted. Keyname: %s",
@@ -91,7 +91,7 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 	const kdb_octet_t * value = (kdb_octet_t *) keyValue (k);
 	if (memcmp (value, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2))
 	{
-		ELEKTRA_SET_PARSING_ERRORF (
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			errorKey,
 			"The provided data could not be recognized as valid cryptographic payload. The data is possibly "
 			"corrupted. Keyname: %s",
@@ -103,7 +103,7 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 	const size_t versionOffset = ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2;
 	if (memcmp (&value[versionOffset], ELEKTRA_CRYPTO_PAYLOAD_VERSION, 2))
 	{
-		ELEKTRA_SET_PARSING_ERRORF (
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			errorKey, "The version of the cryptographic payload is not compatible with the version of the plugin. Keyname: %s",
 			keyName (k));
 		return 0; // failure

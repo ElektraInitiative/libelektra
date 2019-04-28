@@ -75,7 +75,7 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (YAML::ParserException const & exception)
 	{
-		ELEKTRA_SET_PARSING_ERRORF (parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
 					    exception.what ());
 	}
 	catch (std::overflow_error const & exception)

@@ -90,7 +90,7 @@ module:simpleini
 //! [plugin errors spec]
 
 //! [plugin errors usage]
-ELEKTRA_SET_PARSING_ERROR ( parentKey, "not at the end of file");
+ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "not at the end of file");
 //! [plugin errors usage]
 */
 
@@ -139,7 +139,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 	if (feof (fp) == 0)
 	{
 		fclose (fp);
-		ELEKTRA_SET_PARSING_ERROR (parentKey, "Invalid line encountered: not at the end of file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid line encountered: not at the end of file");
 		return -1;
 	}
 

@@ -70,7 +70,7 @@ int elektraYambiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 	catch (runtime_error const & runtimeError)
 	{
-		ELEKTRA_SET_PARSING_ERROR (*parent, runtimeError.what ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (*parent, runtimeError.what ());
 	}
 	catch (exception const & error)
 	{
