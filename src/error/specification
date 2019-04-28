@@ -37,7 +37,7 @@ macro:BROKEN_PLUGIN
 
 number:C02000
 description:Conflict
-macro:CONFLICT
+macro:CONFLICTING_STATE
 
 number:C03000
 description:Timeout

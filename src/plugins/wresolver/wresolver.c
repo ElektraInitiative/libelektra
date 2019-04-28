@@ -385,7 +385,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	switch (pk->state)
 	{
 	case 0:
-		ELEKTRA_SET_CONFLICT_ERROR (parentKey, "kdbSet() called before kdbGet()");
+		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "kdbSet() called before kdbGet()");
 		return -1;
 	case 1:
 		++pk->state;
@@ -418,7 +418,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	if (pk->mtime != buf.st_mtime)
 	{
 		// conflict
-		ELEKTRA_SET_CONFLICT_ERRORF (
+		ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
 			parentKey,
 			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
 			(long) buf.st_mtime, (long) pk->mtime, pk->filename);

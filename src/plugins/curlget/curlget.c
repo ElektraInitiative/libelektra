@@ -722,7 +722,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			if (strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 			{
 				// TODO: Correct?
-				ELEKTRA_SET_CONFLICT_ERROR (parentKey, "remote file has changed");
+				ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "remote file has changed");
 				retval = -1;
 			}
 			elektraFree (hash);

@@ -317,7 +317,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	}
 	if (buf.st_mtime > data->mtime)
 	{
-		ELEKTRA_SET_CONFLICT_ERRORF (parentKey, "%s has been modified", data->realFile);
+		ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "%s has been modified", data->realFile);
 		return -1;
 	}
 	FILE * fout = NULL;
