@@ -150,12 +150,12 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_CONFLICT_ERROR (parentKey,
+			ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey,
 						    "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
-			ELEKTRA_SET_CONFLICT_ERRORF (parentKey, "assuming conflict because of failed file lock with message: %s",
+			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "assuming conflict because of failed file lock with message: %s",
 						     strerror (errno));
 		}
 		return -1;
@@ -212,12 +212,12 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 		if (errno == EBUSY       // for trylock
 		    || errno == EDEADLK) // for error checking mutex, if enabled
 		{
-			ELEKTRA_SET_CONFLICT_ERROR (parentKey,
+			ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey,
 						    "conflict because other thread writes to configuration indicated by mutex lock");
 		}
 		else
 		{
-			ELEKTRA_SET_CONFLICT_ERRORF (parentKey, "assuming conflict because of failed mutex lock with message: %s",
+			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "assuming conflict because of failed mutex lock with message: %s",
 						     strerror (errno));
 		}
 		return -1;
@@ -839,13 +839,13 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_RESOURCE_WARNING (parentKey, errorText);
 		elektraFree (errorText);
 
-		ELEKTRA_SET_CONFLICT_ERROR (parentKey, "assuming conflict because of failed stat (warning 29 for details)");
+		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;
 	}
 
 	if (ELEKTRA_STAT_SECONDS (buf) != pk->mtime.tv_sec || ELEKTRA_STAT_NANO_SECONDS (buf) != pk->mtime.tv_nsec)
 	{
-		ELEKTRA_SET_CONFLICT_ERRORF (
+		ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
 			parentKey,
 			"conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
 			"name is \"%s\", "

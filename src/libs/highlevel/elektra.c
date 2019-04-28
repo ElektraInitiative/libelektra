@@ -262,7 +262,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 		if (ret == -1)
 		{
 			ElektraError * kdbSetError = elektraErrorFromKey (elektra->parentKey);
-			if (strcmp (elektraErrorCode (kdbSetError), ELEKTRA_ERROR_CONFLICT) != 0)
+			if (strcmp (elektraErrorCode (kdbSetError), ELEKTRA_ERROR_CONFLICTING_STATE) != 0)
 			{
 				*error = kdbSetError;
 				return;

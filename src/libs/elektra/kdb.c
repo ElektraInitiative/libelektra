@@ -1498,7 +1498,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		else if (syncstate < -1)
 		{
-			ELEKTRA_SET_CONFLICT_ERRORF (parentKey,
+			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey,
 						     "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
 						     keyName (split->parents[-syncstate - 2]));
 			ELEKTRA_LOG ("syncstate < -1");

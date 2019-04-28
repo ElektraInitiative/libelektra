@@ -663,7 +663,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		if (rc)
 		{
 			// TODO: Correct?
-			ELEKTRA_SET_CONFLICT_ERROR (parentKey, "Fast-forward pull failed, please pull manually\n");
+			ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "Fast-forward pull failed, please pull manually\n");
 			git_repository_free (repo);
 			git_libgit2_shutdown ();
 			return -1;
@@ -862,7 +862,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		{
 			// newer commit in repo - abort
 			// TODO: Correct?
-			ELEKTRA_SET_CONFLICT_ERROR (parentKey, "The repository has been updated and is ahead of you");
+			ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "The repository has been updated and is ahead of you");
 			elektraFree (newCommit);
 			git_reference_free (headRef);
 			git_repository_free (repo);
@@ -881,7 +881,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			if (newObj)
 			{
 				// TODO: Correct?
-				ELEKTRA_SET_CONFLICT_ERROR (parentKey, "The repository has been updated and is ahead of you");
+				ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "The repository has been updated and is ahead of you");
 				elektraFree (newObj);
 				git_object_free (blob);
 				git_repository_free (repo);
