@@ -206,7 +206,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	FILE * fp = fopen (filename, "rb");
 	if (fp == NULL)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s", filename);
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "Couldn't open file %s", filename);
 		return -1;
 	}
 	iconv_t conv = NULL;

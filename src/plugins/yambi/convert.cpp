@@ -46,11 +46,11 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	{
 		if (status == -3)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to open file “%s”", filename.c_str ());
+			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parent.getKey (), "Unable to open file “%s”", filename.c_str ());
 		}
 		else if (status == -2)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (parent.getKey (), "Parsing failed due to memory exhaustion");
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parent.getKey (), "Parsing failed due to memory exhaustion");
 		}
 		else if (status == -1)
 		{

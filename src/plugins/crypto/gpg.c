@@ -95,7 +95,7 @@ static int isExecutable (const char * file, Key * errorKey)
 	{
 		if (errorKey)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "gpg binary %s has no permission to execute", file);
+			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (errorKey, "gpg binary %s has no permission to execute", file);
 		}
 		return -2;
 	}
@@ -658,7 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 	case -1:
 		// fork() failed
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "fork failed with errno: %s", strerror (errno));
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (errorKey, "fork failed with errno: %s", strerror (errno));
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -718,7 +718,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "The communication with the GPG process failed.");
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "The communication with the GPG process failed.");
 			closePipe (pipe_stdin);
 			closePipe (pipe_stdout);
 			closePipe (pipe_stderr);

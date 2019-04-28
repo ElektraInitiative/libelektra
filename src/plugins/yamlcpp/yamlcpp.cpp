@@ -85,7 +85,7 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (YAML::RepresentationException const & exception)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to read data from file “%s”: %s", parent.getString ().c_str (),
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parent.getKey (), "Unable to read data from file “%s”: %s", parent.getString ().c_str (),
 					     exception.what ());
 	}
 
@@ -115,7 +115,7 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (YAML::BadFile const & exception)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to write to file “%s”: %s.", parent.getString ().c_str (),
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parent.getKey (), "Unable to write to file “%s”: %s.", parent.getString ().c_str (),
 					     exception.what ());
 	}
 	catch (YAML::EmitterException const & exception)
