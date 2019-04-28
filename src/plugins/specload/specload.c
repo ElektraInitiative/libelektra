@@ -201,7 +201,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (spec);
-			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Couldn't load the overlay specification.");
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "Couldn't load the overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -369,7 +369,7 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 
 	if (access (app, X_OK) != 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "'%s' doesn't exist or is not executable.", app);
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (errorKey, "'%s' doesn't exist or is not executable.", app);
 		return false;
 	}
 

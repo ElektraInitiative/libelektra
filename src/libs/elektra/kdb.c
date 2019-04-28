@@ -433,7 +433,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 	}
 	else
 	{
-		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
+		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
 	}
 
 	if (handle->global) ksDel (handle->global);

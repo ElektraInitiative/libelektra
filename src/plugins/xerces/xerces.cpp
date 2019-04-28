@@ -65,7 +65,7 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XMLException & e)
 	{
@@ -103,7 +103,7 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XMLException & e)
 	{

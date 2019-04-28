@@ -17,7 +17,7 @@ macro:OUT_OF_MEMORY
 
 number:C01120
 description:General Resource
-macro:RESOURCE
+macro:GENERAL_RESOURCE
 
 number:C01300
 description:Installation

@@ -780,7 +780,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		switch (ret)
 		{
 		case -1:
-			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Unable to open the ini file");
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "Unable to open the ini file");
 			break;
 		case -2:
 			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation error while reading the ini file");

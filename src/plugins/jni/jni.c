@@ -80,7 +80,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	checkException (data, method, errorKey);
 	if (jerrorKey == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot create errorKey in %s", method);
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (errorKey, "Cannot create errorKey in %s", method);
 		return -1;
 	}
 
@@ -113,7 +113,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	checkException (data, method, errorKey);
 	if (jks == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot create ks");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot create ks");
 		return -1;
 	}
 
@@ -121,7 +121,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	checkException (data, method, errorKey);
 	if (jkey == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot create key");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot create key");
 		return -1;
 	}
 
@@ -129,7 +129,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	checkException (data, method, errorKey);
 	if (mid == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find %s", method);
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (errorKey, "Cannot find %s", method);
 		return -1;
 	}
 
@@ -175,7 +175,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	k = ksLookupByName (config, "/classpath", 0);
 	if (!k)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find plugin config /classpath");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Could not find plugin config /classpath");
 		return -1;
 	}
 	char classpatharg[] = "-Djava.class.path=";
