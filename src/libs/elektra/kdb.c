@@ -1498,10 +1498,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		else if (syncstate < -1)
 		{
-			// TODO: Correct?
-			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
-							 "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
-							 keyName (split->parents[-syncstate - 2]));
+			ELEKTRA_SET_CONFLICT_ERRORF (parentKey,
+						     "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
+						     keyName (split->parents[-syncstate - 2]));
 			ELEKTRA_LOG ("syncstate < -1");
 		}
 		keyDel (initialParent);
@@ -1947,7 +1946,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 
 		if (elektraStrCmp (pluginName, "list") == 0)
 		{
-			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Cannot specify clauses for the list plugin!!");
+			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Cannot specify clauses for the list plugin");
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
 			return -1;

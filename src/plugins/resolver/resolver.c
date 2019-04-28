@@ -970,9 +970,8 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 
 	if (futimens (fd, times) == -1)
 	{
-		// TODO: Correct?
-		ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
-						fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
+					       fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = { { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 },   // atime
@@ -980,9 +979,8 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 
 	if (futimes (fd, times) == -1)
 	{
-		// TODO: Correct?
-		ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
-						fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
+					       fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #else
 #warning futimens/futimes not defined

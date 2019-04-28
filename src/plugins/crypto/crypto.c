@@ -103,7 +103,6 @@ static int checkPayloadVersion (Key * k, Key * errorKey)
 	const size_t versionOffset = ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2;
 	if (memcmp (&value[versionOffset], ELEKTRA_CRYPTO_PAYLOAD_VERSION, 2))
 	{
-		// TODO: Correct?
 		ELEKTRA_SET_PARSING_ERRORF (
 			errorKey, "The version of the cryptographic payload is not compatible with the version of the plugin. Keyname: %s",
 			keyName (k));

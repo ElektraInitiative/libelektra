@@ -416,7 +416,6 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
 				fclose (file);
-				// TODO: Correct?
 				ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (parentKey, "Unknown meta type %c", type);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
