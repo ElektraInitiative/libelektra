@@ -54,6 +54,8 @@ kdb rm -r user/tests/yamlsmith
 
 ## Arrays
 
+### Simple Array
+
 ```sh
 kdb set user/tests/yamlsmith/low
 kdb set user/tests/yamlsmith/low/#0 'You bought some sweet, sweet, sweet, sweet sunflowers'
@@ -68,6 +70,30 @@ kdb export user/tests/yamlsmith yamlsmith
 #>     "And gave them"
 #>   -
 #>     "To the night"
+
+# Undo modifications
+kdb rm -r user/tests/yamlsmith
+```
+
+### Multiple Arrays
+
+```sh
+kdb set user/tests/yamlsmith/arrays/Elliott/Smith/#0 XO
+kdb set user/tests/yamlsmith/arrays/Elliott/Smith/#1 'Figure 8'
+kdb set user/tests/yamlsmith/arrays/The/Smiths/#0 'The Queen Is Dead'
+
+kdb export user/tests/yamlsmith yamlsmith
+#> arrays:
+#>   Elliott:
+#>     Smith:
+#>       -
+#>         "XO"
+#>       -
+#>         "Figure 8"
+#>   The:
+#>     Smiths:
+#>       -
+#>         "The Queen Is Dead"
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
