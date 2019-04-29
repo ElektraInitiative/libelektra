@@ -345,11 +345,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### semlock
 
 removed due to:
+
 - constant pain
 - never worked properly
 - poor design
 - no time in future to maintain
-_(Kurt Micheli)_
+  _(Kurt Micheli)_
 
 ## Libraries
 
