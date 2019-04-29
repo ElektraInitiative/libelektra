@@ -1,13 +1,13 @@
 /**
  * @file
  *
- * @brief Source for hexcolor plugin
+ * @brief Source for rgbcolor plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#include "hexcolor.h"
+#include "rgbcolor.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbtypes.h>
@@ -25,7 +25,7 @@ typedef enum
 
 static HexVariant is_valid_key (Key * key, Key * parentKey)
 {
-	const Key * meta = keyGetMeta (key, "check/hexcolor");
+	const Key * meta = keyGetMeta (key, "check/rgbcolor");
 	if (!meta) return 1;
 	const char * value = keyString (key);
 	const char * regexString = "^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$";
@@ -126,17 +126,17 @@ static void elektraColorRestore (Key * key)
 	}
 }
 
-int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/hexcolor"))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/rgbcolor"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/hexcolor", KEY_VALUE, "hexcolor plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/hexcolor/exports", KEY_END),
-			       keyNew ("system/elektra/modules/hexcolor/exports/get", KEY_FUNC, elektraHexcolorGet, KEY_END),
-			       keyNew ("system/elektra/modules/hexcolor/exports/set", KEY_FUNC, elektraHexcolorSet, KEY_END),
+			ksNew (30, keyNew ("system/elektra/modules/rgbcolor", KEY_VALUE, "rgbcolor plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/rgbcolor/exports", KEY_END),
+			       keyNew ("system/elektra/modules/rgbcolor/exports/get", KEY_FUNC, elektraRgbcolorGet, KEY_END),
+			       keyNew ("system/elektra/modules/rgbcolor/exports/set", KEY_FUNC, elektraRgbcolorSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/hexcolor/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system/elektra/modules/rgbcolor/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -147,7 +147,7 @@ int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/hexcolor");
+		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 		HexVariant hexVar = is_valid_key (cur, parentKey);
 		// if (!is_valid) return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -158,7 +158,7 @@ int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	;
 }
 
-int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
@@ -166,7 +166,7 @@ int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/hexcolor");
+		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 		elektraColorRestore (cur);
 		HexVariant hexVar = is_valid_key (cur, parentKey);
@@ -178,8 +178,8 @@ int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-	return elektraPluginExport ("hexcolor",
-		ELEKTRA_PLUGIN_GET,	&elektraHexcolorGet,
-		ELEKTRA_PLUGIN_SET,	&elektraHexcolorSet,
+	return elektraPluginExport ("rgbcolor",
+		ELEKTRA_PLUGIN_GET,	&elektraRgbcolorGet,
+		ELEKTRA_PLUGIN_SET,	&elektraRgbcolorSet,
 		ELEKTRA_PLUGIN_END);
 }
