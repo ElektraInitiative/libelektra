@@ -8,10 +8,16 @@
  */
 
 #include <kdbconfig.h>
+#include <kdbtypes.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <tests_plugin.h>
+
+// static void check_key(Key * key) {
+// 	kdb_octet_t colorBytes[4];
+// 	keyGetBinary(key, colorBytes, 4);
+// }
 
 static void test_color (const char * color, const int expected_ret)
 {
@@ -44,12 +50,24 @@ static void test_hexcolor (void)
 	test_color ("#fff111", 1);
 	test_color ("#a1C2bF", 1);
 
-	test_color ("#1110", -1);
+	test_color ("#abcd", 1);
+
+	test_color ("#aabbccdd", 1);
+	test_color ("#ffffffff", 1);
+	test_color ("#00000000", 1);
+
 	test_color ("1110", -1);
 	test_color ("a1C2bF", -1);
 	test_color ("#a1C2bZ", -1);
 	test_color ("#00000", -1);
 }
+
+// static void test_expansion (void)
+// {
+// 	PLUGIN_OPEN ("hexcolor");
+
+// 	int ret = plugin->kdbSet (plugin, ks, parentKey);
+// }
 
 
 int main (int argc, char ** argv)
