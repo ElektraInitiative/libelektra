@@ -342,6 +342,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
 - Fixed support for `kdb import` and `kdb export`. _(Mihael Pranjić)_
 
+### semlock
+
+removed due to:
+- constant pain
+- never worked properly
+- poor design
+- no time in future to maintain
+_(Kurt Micheli)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
