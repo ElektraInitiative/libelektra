@@ -27,7 +27,7 @@ None.
 
 ```sh
 # Mount a config file with the rgbcolor plugin
-sudo kdb mount color.ecf user/tests/color/hex dump rgbcolor
+sudo kdb mount color.ecf user/tests/color dump rgbcolor
 
 # Suceeds, since the value is a valid rgbcolor. Quotes are important!
 kdb set user/tests/color/hex "#fff"
@@ -45,23 +45,23 @@ kdb set user/tests/color/hex "#aabbccdd"
 kdb get user/tests/color/hex
 #> \xaa\xbb\xcc\xdd
 
-kdb set user/tests/color/hex2 "#abc"
-kdb setmeta user/tests/color/hex2 check/rgbcolor any
+kdb set user/tests/color/hex/subcolor "#abc"
+kdb setmeta user/tests/color/hex/subcolor check/rgbcolor any
 
 # Expanded to rgba: #aabbccff
-kdb get user/tests/color/hex2
+kdb get user/tests/color/hex/subcolor
 #> \xaa\xbb\xcc\xff
 
-kdb set user/tests/color/hex2 "#abcd"
+kdb set user/tests/color/hex/subcolor "#abcd"
 
 # Expanded to rgba: #aabbccdd
-kdb get user/tests/color/hex2
+kdb get user/tests/color/hex/subcolor
 #> \xaa\xbb\xcc\xdd
 
-kdb set user/tests/color/hex2 "#aabbcc"
+kdb set user/tests/color/hex/subcolor "#aabbcc"
 
 # Expanded to rgba: #aabbccff
-kdb get user/tests/color/hex2
+kdb get user/tests/color/hex/subcolor
 #> \xaa\xbb\xcc\xff
 
 # Try to set incorrect value
@@ -77,8 +77,8 @@ kdb set user/tests/color/hex "#12345"
 # RET: 5
 
 # Undo modifications to the key database
-kdb rm -r user/tests/color/hex
-sudo kdb umount user/tests/color/hex
+kdb rm -r user/tests/color
+sudo kdb umount user/tests/color
 ```
 
 ## Limitations
