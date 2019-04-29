@@ -28,7 +28,7 @@ static HexVariant is_valid_key (Key * key, Key * parentKey)
 	const Key * meta = keyGetMeta (key, "check/hexcolor");
 	if (!meta) return 1;
 	const char * value = keyString (key);
-	const char * regexString = "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$";
+	const char * regexString = "^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$";
 
 	regex_t regex;
 	regmatch_t offsets;
@@ -41,6 +41,7 @@ static HexVariant is_valid_key (Key * key, Key * parentKey)
 	if (!match)
 	{
 		ELEKTRA_SET_ERRORF (214, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
+		return HEX_INVALID;
 	}
 
 	int len = strlen (value);
