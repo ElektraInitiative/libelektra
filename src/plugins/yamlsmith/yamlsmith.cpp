@@ -52,45 +52,6 @@ CppKeySet contractYamlsmith ()
 }
 
 /**
- * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
- *
- * @pre The parameter `key` must be a child of `parent`.
- *
- * @param key This is the key for which this function returns a relative iterator.
- * @param parent This key specifies the part of the name iterator that will not be part of the return value of this function.
- *
- * @returns A relative iterator that starts with the first part of the name of `key` not contained in `parent`.
- */
-NameIterator relativeKeyIterator (CppKey const & key, CppKey const & parent)
-{
-	auto parentIterator = parent.begin ();
-	auto keyIterator = key.begin ();
-	while (parentIterator != parent.end () && keyIterator != key.end ())
-	{
-		parentIterator++;
-		keyIterator++;
-	}
-	return keyIterator;
-}
-
-/**
- * @brief This function compares the structure of two key names.
- *
- * @param key1 The function returns `true` if this `Key` is below or at the same level as `key2`.
- * @param key2 The function returns `true` if this `Key` is above or at the same level as `key1`.
- *
- * @retval true If `key1` is below or on the same level as `key2`
- * @retval false Otherwise
- */
-bool sameLevelOrBelow (CppKey const & key1, CppKey const & key2)
-{
-	if (!key1 || !key2) return false;
-
-	return key2.isBelow (key1) || key1.getFullName ().substr (0, key1.getFullNameSize () - key1.getBaseNameSize ()) ==
-					      key2.getFullName ().substr (0, key2.getFullNameSize () - key2.getBaseNameSize ());
-}
-
-/**
  * @brief This function collects leaf keys (keys without any key below) for a given key set.
  *
  * @param keys This parameter stores the key set for which this function retrieves all leaf keys.
@@ -119,6 +80,19 @@ CppKeySet leaves (CppKeySet const & keys)
 	leaves.append (previous);
 
 	return leaves;
+}
+
+size_t countKeyLevels (CppKey const & key)
+{
+	auto keyIterator = key.begin ();
+	size_t levels = 0;
+
+	while (keyIterator != key.end ())
+	{
+		keyIterator++;
+		levels++;
+	}
+	return levels;
 }
 
 /**
@@ -154,33 +128,46 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
  */
 void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 {
+	auto levelsParent = countKeyLevels (parent);
+	ELEKTRA_LOG_DEBUG ("Parent key levels: %zu", levelsParent);
+
 	ELEKTRA_LOG_DEBUG ("Convert %zu key%s", keys.size (), keys.size () == 1 ? "" : "s");
 	keys.rewind ();
-	for (CppKey last = nullptr; keys.next (); last = keys.current ())
+	for (CppKey last = parent; keys.next (); last = keys.current ())
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", keys.current ().getName ().c_str (), keys.current ().getString ().c_str ());
 
+		NameIterator relative = keys.current ().begin ();
+		NameIterator relativeLast = last.begin ();
+		for (auto levels = levelsParent; levels > 0; levels--)
+		{
+			relative++;
+			relativeLast++;
+		}
+
 		string indent;
-		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
-		auto relative = relativeKeyIterator (keys.current (), parent);
-		auto baseName = --keys.current ().end ();
+		while (relativeLast != last.end () && relative != keys.current ().end () && *relative == *relativeLast)
+		{
+			relative++;
+			relativeLast++;
+			indent += "  ";
+		}
+
+		ELEKTRA_LOG_DEBUG ("Relative Iterator: %s", (*relative).c_str ());
+
+		auto endCurrent = keys.current ().end ();
 		bool isCollection = relative != keys.current ().end ();
 		CppKey current{ parent.getName (), KEY_END };
 
-		while (isCollection && relative != baseName)
+		while (isCollection && relative != endCurrent)
 		{
 			current.addBaseName (*relative);
 			ELEKTRA_LOG_DEBUG ("Current name: %s", current.getName ().c_str ());
-			if (!sameOrBelowLast) writeCollectionEntry (output, *current, indent);
+			writeCollectionEntry (output, *current, indent);
 			relative++;
 			indent += "  ";
 		}
 
-		if (isCollection)
-		{
-			writeCollectionEntry (output, *keys.current (), indent);
-			indent += "  ";
-		}
 		if (keys.current ().getStringSize () > 1) output << indent << '"' << keys.current ().getString () << '"' << endl;
 	}
 }
