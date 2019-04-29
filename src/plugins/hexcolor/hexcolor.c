@@ -14,12 +14,21 @@
 #include <kdbtypes.h>
 #include <regex.h>
 
-static int is_valid_key (Key * key, Key * parentKey)
+typedef enum
+{
+	HEX_INVALID,
+	HEX_THREE,
+	HEX_FOUR,
+	HEX_SIX,
+	HEX_EIGHT
+} HexVariant;
+
+static HexVariant is_valid_key (Key * key, Key * parentKey)
 {
 	const Key * meta = keyGetMeta (key, "check/hexcolor");
 	if (!meta) return 1;
 	const char * value = keyString (key);
-	const char * regexString = "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$";
+	const char * regexString = "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$";
 
 	regex_t regex;
 	regmatch_t offsets;
@@ -34,7 +43,19 @@ static int is_valid_key (Key * key, Key * parentKey)
 		ELEKTRA_SET_ERRORF (214, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
 	}
 
-	return match;
+	int len = strlen(value);
+	switch(len) {
+		case 4:
+			return HEX_THREE;
+		case 5:
+			return HEX_FOUR;
+		case 7:
+			return HEX_SIX;
+		case 9:
+			return HEX_EIGHT;
+		default:
+			return HEX_INVALID;
+	}
 }
 
 static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
@@ -43,11 +64,46 @@ static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 	keySetBinary (key, colorBytes, 4);
 }
 
-static void elektraColorNormalizeHexString (Key * key)
+static char * elektraColorExpandShortVariants(const char * str, HexVariant hexVar) {
+	int strLength = strlen(str);
+	int expandedLength = (hexVar == HEX_THREE) ? 8 : 10;
+	char * expandedStr = (char*) elektraMalloc(expandedLength);
+	expandedStr[0] = '#';
+
+	for(int i = 1; i < strLength; i++) {
+		expandedStr[2*i-1] = str[i];
+		expandedStr[2*i] = str[i];
+	}
+
+	expandedStr[expandedLength - 1] = '\0';
+
+	return expandedStr;
+}
+
+static void elektraColorNormalizeHexString (Key * key, HexVariant hexVar)
 {
 	const char * str = keyString (key);
-	kdb_unsigned_long_t color = ELEKTRA_UNSIGNED_LONG_LONG_S (str + 1, NULL, 16);
+	keySetMeta (key, "origvalue", str);
+	
+	kdb_unsigned_long_t color;
+	if(hexVar == HEX_THREE || hexVar == HEX_FOUR) {
+		char * expandedStr = elektraColorExpandShortVariants(str, hexVar);
+		ELEKTRA_LOG_DEBUG("Expanded %s to %s", str, expandedStr);
+		color = ELEKTRA_UNSIGNED_LONG_LONG_S (expandedStr + 1, NULL, 16);
+		elektraFree(expandedStr);
+	} else {
+		color = ELEKTRA_UNSIGNED_LONG_LONG_S (str + 1, NULL, 16);
+	}
 	elektraColorSetInteger (key, color);
+}
+
+static void elektraColorRestore (Key * key)
+{
+	const Key * orig = keyGetMeta (key, "origvalue");
+	if (orig != NULL)
+	{
+		keySetString (key, keyString (orig));
+	}
 }
 
 int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -66,7 +122,19 @@ int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		const Key * meta = keyGetMeta (cur, "check/hexcolor");
+		if (!meta) continue;
+		HexVariant hexVar = is_valid_key (cur, parentKey);
+		// if (!is_valid) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		elektraColorNormalizeHexString (cur, hexVar);
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;;
 }
 
 int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -79,9 +147,9 @@ int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	{
 		const Key * meta = keyGetMeta (cur, "check/hexcolor");
 		if (!meta) continue;
-		int is_valid = is_valid_key (cur, parentKey);
-		if (!is_valid) return ELEKTRA_PLUGIN_STATUS_ERROR;
-		elektraColorNormalizeHexString (cur);
+		elektraColorRestore (cur);
+		HexVariant hexVar = is_valid_key (cur, parentKey);
+		if (hexVar == HEX_INVALID) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
