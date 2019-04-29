@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = presetstorage
+- infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep
 - infos/metadata = check/hexcolor
 - infos/description = Validation of hexcolors
