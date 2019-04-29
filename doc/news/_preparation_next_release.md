@@ -161,6 +161,36 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
+### YAML Smith
+
+[YAML Smith](https://www.libelektra.org/plugins/yamlsmith) now converts keys that shares a common prefix correctly. For example, the last command in the script:
+
+```sh
+kdb mount config.yaml user/tests/yaml yaml
+kdb set user/tests/yaml/common/one/#0 value
+kdb set user/tests/yaml/common/two/#0 first
+kdb set user/tests/yaml/common/two/#1 second
+kdb export user/tests/yaml yamlsmith
+```
+
+now prints the following YAML data:
+
+<!-- prettier-ignore-start -->
+```yaml
+common:
+  one:
+    -
+      "value"
+  two:
+    -
+      "first"
+    -
+      "second"
+```
+<!-- prettier-ignore-end -->
+
+. _(René Schwaiger)_
+
 ### Yan LR
 
 - The build system now disables the plugin, if you installed a version of ANTLR 4 that does not support ANTLR’s C++ runtime (like ANTLR
