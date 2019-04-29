@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for hexcolor plugin
+ * @brief Tests for rgbcolor plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -21,14 +21,14 @@
 
 static void test_color (const char * color, const int expected_ret)
 {
-	Key * parentKey = keyNew ("user/tests/hexcolor", KEY_END);
-	Key * hexkey = keyNew ("user/test/hexcolor/testcolor", KEY_VALUE, color, KEY_META, "check/hexcolor", "any", KEY_END);
+	Key * parentKey = keyNew ("user/tests/rgbcolor", KEY_END);
+	Key * hexkey = keyNew ("user/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, hexkey);
 
-	PLUGIN_OPEN ("hexcolor");
+	PLUGIN_OPEN ("rgbcolor");
 
 	int ret = plugin->kdbSet (plugin, ks, parentKey);
 
@@ -41,7 +41,7 @@ static void test_color (const char * color, const int expected_ret)
 	PLUGIN_CLOSE ();
 }
 
-static void test_hexcolor (void)
+static void test_rgbcolor (void)
 {
 	test_color ("#0fb", 1);
 	test_color ("#fff", 1);
@@ -64,7 +64,7 @@ static void test_hexcolor (void)
 
 // static void test_expansion (void)
 // {
-// 	PLUGIN_OPEN ("hexcolor");
+// 	PLUGIN_OPEN ("rgbcolor");
 
 // 	int ret = plugin->kdbSet (plugin, ks, parentKey);
 // }
@@ -74,9 +74,9 @@ int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	test_hexcolor ();
+	test_rgbcolor ();
 
-	print_result ("testmod_hexcolor");
+	print_result ("testmod_rgbcolor");
 
 	return nbError;
 }

@@ -1350,5 +1350,5 @@ number:214
 description:value of key is not a valid hex-formatted color
 severity:error
 ingroup:plugin
-module:hexcolor
+module:rgbcolor
 

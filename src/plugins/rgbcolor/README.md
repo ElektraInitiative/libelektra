@@ -1,4 +1,4 @@
-- infos = Information about the hexcolor plugin is in keys below
+- infos = Information about the rgbcolor plugin is in keys below
 - infos/author = Philipp Gackstatter <philipp.gackstatter@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
@@ -6,13 +6,12 @@
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep
-- infos/metadata = check/hexcolor
-- infos/description = Validation of hexcolors
+- infos/metadata = check/rgbcolor
+- infos/description = Validation of rgbcolors
 
 ## Introduction
 
-Copy this hexcolor if you want to start a new
-plugin written in C.
+tba
 
 ## Usage
 
@@ -27,19 +26,19 @@ None.
 ## Examples
 
 ```sh
-# Mount a config file with the hexcolor plugin
-sudo kdb mount color.ecf user/tests/color/hex dump hexcolor
+# Mount a config file with the rgbcolor plugin
+sudo kdb mount color.ecf user/tests/color/hex dump rgbcolor
 
-# Suceeds, since the value is a valid hexcolor. Quotes are important!
+# Suceeds, since the value is a valid rgbcolor. Quotes are important!
 kdb set user/tests/color/hex "#fff"
 
 # Check the user/tests/color/hex key for validity
-kdb setmeta user/tests/color/hex check/hexcolor any
+kdb setmeta user/tests/color/hex check/rgbcolor any
 
-# Suceeds, since the value is a valid hexcolor. Quotes are important!
+# Suceeds, since the value is a valid rgbcolor. Quotes are important!
 kdb set user/tests/color/hex "#a1C2b3"
 
-# Suceeds, since the value is a valid RGBA hexcolor. Quotes are important!
+# Suceeds, since the value is a valid RGBA rgbcolor. Quotes are important!
 kdb set user/tests/color/hex "#aabbccdd"
 
 # Colors are normalized to bytes
@@ -47,7 +46,7 @@ kdb get user/tests/color/hex
 #> \xaa\xbb\xcc\xdd
 
 kdb set user/tests/color/hex2 "#abc"
-kdb setmeta user/tests/color/hex2 check/hexcolor any
+kdb setmeta user/tests/color/hex2 check/rgbcolor any
 
 # Expanded to rgba: #aabbccff
 kdb get user/tests/color/hex2
