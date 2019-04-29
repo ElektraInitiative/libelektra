@@ -117,6 +117,17 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
 	}
 }
 
+inline NameIterator getIteratorSkippedLevels (CppKey const & key, size_t levelsToSkip)
+{
+	auto iterator = key.begin ();
+	for (auto levels = levelsToSkip; levels > 0; levels--)
+	{
+		iterator++;
+	}
+
+	return iterator;
+}
+
 /**
  * @brief This function converts a `KeySet` into the YAML serialization format.
  *
@@ -137,13 +148,8 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", keys.current ().getName ().c_str (), keys.current ().getString ().c_str ());
 
-		NameIterator relative = keys.current ().begin ();
-		NameIterator relativeLast = last.begin ();
-		for (auto levels = levelsParent; levels > 0; levels--)
-		{
-			relative++;
-			relativeLast++;
-		}
+		auto relativeLast = getIteratorSkippedLevels (last, levelsParent);
+		auto relative = getIteratorSkippedLevels (keys.current (), levelsParent);
 
 		string indent;
 		while (relativeLast != last.end () && relative != keys.current ().end () && *relative == *relativeLast)
