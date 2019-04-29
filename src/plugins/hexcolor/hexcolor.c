@@ -7,12 +7,12 @@
  *
  */
 
-#include <stdlib.h>
 #include "hexcolor.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbtypes.h>
 #include <regex.h>
+#include <stdlib.h>
 
 typedef enum
 {
@@ -43,18 +43,19 @@ static HexVariant is_valid_key (Key * key, Key * parentKey)
 		ELEKTRA_SET_ERRORF (214, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
 	}
 
-	int len = strlen(value);
-	switch(len) {
-		case 4:
-			return HEX_THREE;
-		case 5:
-			return HEX_FOUR;
-		case 7:
-			return HEX_SIX;
-		case 9:
-			return HEX_EIGHT;
-		default:
-			return HEX_INVALID;
+	int len = strlen (value);
+	switch (len)
+	{
+	case 4:
+		return HEX_THREE;
+	case 5:
+		return HEX_FOUR;
+	case 7:
+		return HEX_SIX;
+	case 9:
+		return HEX_EIGHT;
+	default:
+		return HEX_INVALID;
 	}
 }
 
@@ -64,18 +65,33 @@ static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 	keySetBinary (key, colorBytes, 4);
 }
 
-static char * elektraColorExpandShortVariants(const char * str, HexVariant hexVar) {
-	int strLength = strlen(str);
-	int expandedLength = (hexVar == HEX_THREE) ? 8 : 10;
-	char * expandedStr = (char*) elektraMalloc(expandedLength);
-	expandedStr[0] = '#';
+static char * elektraColorExpand (const char * str, HexVariant hexVar)
+{
+	// Expand #abcd to #aabbccdd or #abc to #aabbccff
+	char * expandedStr = (char *) elektraMalloc (10);
 
-	for(int i = 1; i < strLength; i++) {
-		expandedStr[2*i-1] = str[i];
-		expandedStr[2*i] = str[i];
+	if (hexVar == HEX_THREE || hexVar == HEX_FOUR)
+	{
+		expandedStr[0] = '#';
+
+		for (size_t i = 1; i < strlen (str); i++)
+		{
+			expandedStr[2 * i - 1] = str[i];
+			expandedStr[2 * i] = str[i];
+		}
+	}
+	else
+	{
+		strcpy (expandedStr, str);
 	}
 
-	expandedStr[expandedLength - 1] = '\0';
+	if (hexVar == HEX_THREE || hexVar == HEX_SIX)
+	{
+		expandedStr[7] = 'f';
+		expandedStr[8] = 'f';
+	}
+
+	expandedStr[9] = '\0';
 
 	return expandedStr;
 }
@@ -84,14 +100,17 @@ static void elektraColorNormalizeHexString (Key * key, HexVariant hexVar)
 {
 	const char * str = keyString (key);
 	keySetMeta (key, "origvalue", str);
-	
+
 	kdb_unsigned_long_t color;
-	if(hexVar == HEX_THREE || hexVar == HEX_FOUR) {
-		char * expandedStr = elektraColorExpandShortVariants(str, hexVar);
-		ELEKTRA_LOG_DEBUG("Expanded %s to %s", str, expandedStr);
+	if (hexVar != HEX_EIGHT)
+	{
+		char * expandedStr = elektraColorExpand (str, hexVar);
+		ELEKTRA_LOG_DEBUG ("Expanded %s to %s", str, expandedStr);
 		color = ELEKTRA_UNSIGNED_LONG_LONG_S (expandedStr + 1, NULL, 16);
-		elektraFree(expandedStr);
-	} else {
+		elektraFree (expandedStr);
+	}
+	else
+	{
 		color = ELEKTRA_UNSIGNED_LONG_LONG_S (str + 1, NULL, 16);
 	}
 	elektraColorSetInteger (key, color);
@@ -134,7 +153,8 @@ int elektraHexcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		elektraColorNormalizeHexString (cur, hexVar);
 	}
 
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	;
 }
 
 int elektraHexcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
