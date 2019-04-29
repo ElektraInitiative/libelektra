@@ -160,14 +160,21 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		auto key = createLeafKey (node, parent.getFullName ());
 		mappings.append (key);
 	}
-	else if (node.IsMap () || node.IsSequence ())
+	else if (node.IsMap ())
 	{
 		for (auto element : node)
 		{
-			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
-			if (!node.IsMap ()) mappings.append (parent); // Update array metadata
-
-			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
+			Key key = newKey (element.first.as<string> (), parent);
+			convertNodeToKeySet (element.second, mappings, key);
+		}
+	}
+	else if (node.IsSequence ())
+	{
+		for (auto element : node)
+		{
+			Key key = newArrayKey (mappings, parent);
+			mappings.append (parent); // Update array metadata
+			convertNodeToKeySet (element, mappings, key);
 		}
 	}
 }
