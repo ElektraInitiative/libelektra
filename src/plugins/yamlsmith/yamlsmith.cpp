@@ -140,7 +140,6 @@ inline NameIterator getIteratorSkippedLevels (CppKey const & key, size_t levelsT
 void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 {
 	auto levelsParent = countKeyLevels (parent);
-	ELEKTRA_LOG_DEBUG ("Parent key levels: %zu", levelsParent);
 
 	ELEKTRA_LOG_DEBUG ("Convert %zu key%s", keys.size (), keys.size () == 1 ? "" : "s");
 	keys.rewind ();
@@ -160,8 +159,6 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 			relativeLast++;
 			indent += "  ";
 		}
-
-		ELEKTRA_LOG_DEBUG ("Relative Iterator: %s", (*relative).c_str ());
 
 		// Add YAML mapping key for each part of the key we did not already write into the file
 		auto endCurrent = keys.current ().end ();
