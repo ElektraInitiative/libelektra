@@ -148,9 +148,11 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", keys.current ().getName ().c_str (), keys.current ().getString ().c_str ());
 
+		// Skip common prefix (parent key name) for all keys in key set
 		auto relativeLast = getIteratorSkippedLevels (last, levelsParent);
 		auto relative = getIteratorSkippedLevels (keys.current (), levelsParent);
 
+		// Add indentation for each part of the key that was already added to the file
 		string indent;
 		while (relativeLast != last.end () && relative != keys.current ().end () && *relative == *relativeLast)
 		{
@@ -161,6 +163,7 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 
 		ELEKTRA_LOG_DEBUG ("Relative Iterator: %s", (*relative).c_str ());
 
+		// Add YAML mapping key for each part of the key we did not already write into the file
 		auto endCurrent = keys.current ().end ();
 		CppKey current{ parent.getName (), KEY_END };
 
