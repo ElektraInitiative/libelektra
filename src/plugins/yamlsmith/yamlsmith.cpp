@@ -82,6 +82,13 @@ CppKeySet leaves (CppKeySet const & keys)
 	return leaves;
 }
 
+/**
+ * @brief This function counts the levels of a certain key name.
+ *
+ * @param key This parameter stores the key for which this function retrieves the number of parts.
+ *
+ * @return The number of parts of `key`
+ */
 size_t countKeyLevels (CppKey const & key)
 {
 	auto keyIterator = key.begin ();
@@ -117,6 +124,14 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
 	}
 }
 
+/**
+ * @brief This function returns a name iterator for a key that starts after `levelsToSkip` levels.
+ *
+ * @param key This parameter stores the key for which this function returns a name iterator.
+ * @param levelsToSkip This value stores the number of parts of `key` that the returned iterator should skip.
+ *
+ * @return A name iterator for `key`, that skips the first `levelsToSkip` parts of `key`
+ */
 inline NameIterator getIteratorSkippedLevels (CppKey const & key, size_t levelsToSkip)
 {
 	auto iterator = key.begin ();
