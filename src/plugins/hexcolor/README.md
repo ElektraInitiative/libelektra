@@ -46,6 +46,25 @@ kdb set user/tests/color/hex "#aabbccdd"
 kdb get user/tests/color/hex
 #> \xaa\xbb\xcc\xdd
 
+kdb set user/tests/color/hex2 "#abc"
+kdb setmeta user/tests/color/hex2 check/hexcolor any
+
+# Expanded to rgba: #aabbccff
+kdb get user/tests/color/hex2
+#> \xaa\xbb\xcc\xff
+
+kdb set user/tests/color/hex2 "#abcd"
+
+# Expanded to rgba: #aabbccdd
+kdb get user/tests/color/hex2
+#> \xaa\xbb\xcc\xdd
+
+kdb set user/tests/color/hex2 "#aabbcc"
+
+# Expanded to rgba: #aabbccff
+kdb get user/tests/color/hex2
+#> \xaa\xbb\xcc\xff
+
 # Try to set incorrect value
 kdb set user/tests/color/hex fff
 # RET: 5
