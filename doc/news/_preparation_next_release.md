@@ -454,6 +454,19 @@ you up to date with the multi-language support provided by Elektra.
 
   to the [image for Debian sid](../../scripts/Docker/debian/sid/Dockerfile).
 
+#### Other Updates
+
+- The Docker images for
+
+  - [Debian stretch](../../scripts/docker/debian/sid/Dockerfile), and
+  - [Debian sid](../../scripts/docker/debian/sid/Dockerfile),
+
+  now include the Python YAML library recommended by [cmake format](https://github.com/cheshirekow/cmake_format). _(René Schwaiger)_
+
+### Vagrant
+
+- The [Vagrant file for Ubuntu Artful Aardvark](../../scripts/vagrant/ubuntu/artful32/Vagrantfile) now installs the Python YAML library recommended by [cmake format](https://github.com/cheshirekow/cmake_format). _(René Schwaiger)_
+
 ## Infrastructure
 
 ### Cirrus

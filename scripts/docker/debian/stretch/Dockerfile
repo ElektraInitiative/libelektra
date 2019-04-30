@@ -191,8 +191,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-ENV PATH="${PATH}:home/jenkins/.local/bin"
-RUN pip install cmake-format==0.4.5 pyyaml
+RUN pip install cmake-format[yaml]==0.4.5
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls
