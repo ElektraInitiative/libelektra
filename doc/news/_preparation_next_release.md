@@ -80,7 +80,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAJL
 
-- The plugin no allows setting a value to the mountpoint. This is represented as a top level value in json if no other key is present. _(Philipp Gackstatter)_
+- The plugin no allows setting a value to the mountpoint. This is represented as a top level value in JSON if no other key is present. _(Philipp Gackstatter)_
 
 - The plugin no longer lists empty parent keys with `kdb ls`. _(Philipp Gackstatter)_
 
@@ -490,7 +490,7 @@ you up to date with the multi-language support provided by Elektra.
   , since they are [known to fail in high load scenarios](https://issues.libelektra.org/2439). _(René Schwaiger)_
 
 - We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
-- We now ignore any files outside of the source directory again, when calculating the coverage for [Coveralls](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
+- We improved the exclusion patterns for the [Coveralls coverage analysis](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
 
 ### Travis
 
