@@ -4,6 +4,20 @@
 
 When programming in Python it is possible to access the kdb database, changing values of existing keys, adding and deleting keys and a few other things.
 
+## Installation
+
+Either [build](https://www.libelektra.org/bindings/swig_python) the package or install from a repository.
+
+### Alpine Linux
+The [python bindings package](https://pkgs.alpinelinux.org/packages?name=py3-elektra&branch=edge&repo=testing) is only available in the testing repository (as of 2019-04-29).
+
+You'll have to use `alpine:edge`
+```sh
+echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+# Install elektra and the python bindings
+apk update && apk add elektra elektra-python py3-elektra
+```
+
 ## First Steps
 
 In order to being able to use `kdb`, you at first need to `import kdb`. You need access to a Python object of `KDB`. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
