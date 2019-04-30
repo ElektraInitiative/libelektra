@@ -109,6 +109,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
+- [YAMBi](https://www.libelektra.org/plugins/yambi) now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
+
 ### YAML CPP
 
 - The plugin now handles keys that are part of a map, but use a basename ending with [array syntax](../tutorials/arrays.md) correctly. For example, in a key set that contains keys with the following names:
