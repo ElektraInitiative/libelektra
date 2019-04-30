@@ -51,6 +51,9 @@ KeySet * contractYamlCpp (void)
 
 /** @see elektraDocGet */
 int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+#endif
 {
 	if (std::string (keyName (parentKey)) == "system/elektra/modules/yamlcpp")
 	{
@@ -77,6 +80,11 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
 				    exception.what ());
+	}
+	catch (std::overflow_error const & exception)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSERT_VALUE_ARRAY, parent.getKey (), "Unable to read data from file “%s”: %s.",
+				    parent.getString ().c_str (), exception.what ());
 	}
 	catch (YAML::RepresentationException const & exception)
 	{
