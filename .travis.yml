@@ -114,7 +114,6 @@ matrix:
           -regexstore;\
           -rename;\
           -required;\
-          -semlock;\
           -shell;\
           -simplespeclang;\
           -struct;\
