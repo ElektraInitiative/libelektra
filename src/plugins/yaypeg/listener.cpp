@@ -89,7 +89,14 @@ Listener::Listener (Key const & parent)
 void Listener::exitValue (string const & text)
 {
 	Key key = parents.top ();
-	key.setString (scalarToText (text));
+	if (text == "true" || text == "false")
+	{
+		key.set<bool> (text == "true");
+	}
+	else
+	{
+		key.set<string> (scalarToText (text));
+	}
 	keys.append (key);
 }
 
