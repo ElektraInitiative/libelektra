@@ -114,6 +114,24 @@ kdb rm -r user/tests/yanlr
 sudo kdb umount user/tests/yanlr
 ```
 
+### Boolean Values
+
+```sh
+# Mount plugin to cascading namespace `/tests/yanlr`
+sudo kdb mount config.yaml user/tests/yanlr yanlr
+
+# Manually add a boolean value to the database
+printf 'boolean: true' > `kdb file user/tests/yanlr`
+
+# Elektra stores boolean values as `0` and `1`
+kdb get user/tests/yanlr/boolean
+#> 1
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
+```
+
 ### Error Messages
 
 ```sh

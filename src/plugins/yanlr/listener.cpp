@@ -104,7 +104,15 @@ KeySet KeyListener::keySet ()
 void KeyListener::exitValue (ValueContext * context)
 {
 	Key key = parents.top ();
-	key.setString (scalarToText (context->getText ()));
+	string value = context->getText ();
+	if (value == "true" || value == "false")
+	{
+		key.set<bool> (value == "true");
+	}
+	else
+	{
+		key.setString (scalarToText (value));
+	}
 	keys.append (key);
 }
 
