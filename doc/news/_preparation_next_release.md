@@ -210,7 +210,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 <!-- prettier-ignore-end -->
 
-- The plugin now converts Elektra’s boolean values (`0`, `1`) back to YAML’s boolean values (`true`, `false`). Please note, that the plugin still quotes booleans (`"true"`, `"false"`), which means that it **does not** handle binary values properly. _(René Schwaiger)_
+- The plugin now converts Elektra’s boolean values (`0`, `1`) back to YAML’s boolean values (`true`, `false`). _(René Schwaiger)_
 
 ### Yan LR
 

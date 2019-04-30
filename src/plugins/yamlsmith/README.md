@@ -17,11 +17,16 @@
 
 ```sh
 # Save a single key-value pair
-kdb set user/tests/yamlsmith 'Pattern Against User'
+kdb set user/tests/yamlsmith/text 'Pattern Against User'
 
 # Only export the value
-kdb export user/tests/yamlsmith yamlsmith
+kdb export user/tests/yamlsmith/text yamlsmith
 #> "Pattern Against User"
+
+# Check that the plugin supports boolean values correctly
+kdb set user/tests/yamlsmith/boolean 0
+kdb export user/tests/yamlsmith/boolean yamlsmith
+#> false
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
