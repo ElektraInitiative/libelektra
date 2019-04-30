@@ -183,33 +183,34 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAML Smith
 
-[YAML Smith](https://www.libelektra.org/plugins/yamlsmith) now converts keys that shares a common prefix correctly. For example, the last command in the script:
-
-```sh
-kdb mount config.yaml user/tests/yaml yaml
-kdb set user/tests/yaml/common/one/#0 value
-kdb set user/tests/yaml/common/two/#0 first
-kdb set user/tests/yaml/common/two/#1 second
-kdb export user/tests/yaml yamlsmith
-```
-
-now prints the following YAML data:
-
 <!-- prettier-ignore-start -->
-```yaml
-common:
-  one:
-    -
-      "value"
-  two:
-    -
-      "first"
-    -
-      "second"
-```
+
+- [YAML Smith](https://www.libelektra.org/plugins/yamlsmith) now converts keys that shares a common prefix correctly. For example, the last command in the script:
+
+  ```sh
+  kdb mount config.yaml user/tests/yaml yaml
+  kdb set user/tests/yaml/common/one/#0 value
+  kdb set user/tests/yaml/common/two/#0 first
+  kdb set user/tests/yaml/common/two/#1 second
+  kdb export user/tests/yaml yamlsmith
+  ```
+
+  now prints the following YAML data:
+
+  ```yaml
+  common:
+    one:
+      - "value"
+    two:
+      - "first"
+      - "second"
+  ```
+
+  . _(René Schwaiger)_
+
 <!-- prettier-ignore-end -->
 
-. _(René Schwaiger)_
+- The plugin now converts Elektra’s boolean values (`0`, `1`) back to YAML’s boolean values (`true`, `false`). Please note, that the plugin still quotes booleans (`"true"`, `"false"`), which means that it **does not** handle binary values properly. _(René Schwaiger)_
 
 ### Yan LR
 
