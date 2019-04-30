@@ -1181,8 +1181,8 @@ number:189
 description:Unable to insert array value
 severity:error
 ingroup:plugin
-module:directoryvalue
-macro:DIRECTORY_VALUE_ARRAY
+module:storage
+macro:INSERT_VALUE_ARRAY
 
 number:190
 description:Failed to initialize the pluginprocess library for a plugin
