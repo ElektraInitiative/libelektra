@@ -147,11 +147,12 @@ TEST_F (Ensure, GlobalMount)
 {
 	using namespace kdb;
 	KDB kdb;
+	Key parent (testRoot, KEY_META, "debugGlobalPositions", "", KEY_END);
 
 	{
 		testing::internal::CaptureStdout ();
 		KeySet ks;
-		kdb.get (ks, testRoot);
+		kdb.get (ks, parent);
 
 		EXPECT_TRUE (testing::internal::GetCapturedStdout ().empty ()) << "there should be no output on stdout";
 	}
@@ -164,7 +165,7 @@ TEST_F (Ensure, GlobalMount)
 
 		testing::internal::CaptureStdout ();
 		KeySet ks;
-		kdb.get (ks, testRoot);
+		kdb.get (ks, parent);
 
 		{
 			SCOPED_TRACE ("first ensure");
@@ -174,7 +175,7 @@ TEST_F (Ensure, GlobalMount)
 		kdb.ensure (contract, root);
 
 		testing::internal::CaptureStdout ();
-		kdb.get (ks, testRoot);
+		kdb.get (ks, parent);
 
 		{
 			SCOPED_TRACE ("second ensure");

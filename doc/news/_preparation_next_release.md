@@ -270,6 +270,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
 - Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
+- Skip all plugins and global plugins when we have a cache hit . _(Mihael Pranjić)_
 
 ### mmapstorage
 
@@ -298,6 +299,7 @@ compiled against an older 0.8 version of Elektra will continue to work
   stderr and everything except debug messages to syslog. If `ENABLE_DEBUG` is also enabled, debug messages are logged to syslog as well.
   Previously you had to make some manual changes to the code, to see most of the logging messages. _(Klemens Böswirth)_
 - The logger does not truncate the file name incorrectly anymore, if `__FILE__` contains a relative (instead of an absolute) filepath. _(René Schwaiger)_
+- Disabled any plugin exection when we have a cache hit or no update from backends. The old behaviour can be enabled for testing using `ENABLE_DEBUG` and adding the `"debugGlobalPositions"` meta key to the parentKey of the kdbGet invocation. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Ease
