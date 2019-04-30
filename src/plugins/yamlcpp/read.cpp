@@ -209,6 +209,8 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 {
 	YAML::Node config = YAML::LoadFile (parent.getString ());
 
+	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
+
 #ifdef HAVE_LOGGER
 	ostringstream data;
 	data << config;
