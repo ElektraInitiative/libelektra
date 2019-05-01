@@ -59,6 +59,10 @@ additional_commands:
       WORKING_DIRECTORY: +
       TIMEOUT: 1
 
+  add_msr_test:
+    kwargs:
+      REQUIRED_PLUGINS: +
+
   download_project:
     kwargs:
       PROJ: 1
