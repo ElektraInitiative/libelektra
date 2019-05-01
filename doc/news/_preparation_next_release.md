@@ -159,6 +159,24 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
+- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
+
+  ```yaml
+  root:
+    - element: one
+    - element: two
+  ```
+
+  to the key set that contains the following keys:
+
+  ```
+  user/tests/yaml/root
+  user/tests/yaml/root/#0/element
+  user/tests/yaml/root/#1/element
+  ```
+
+  .
+
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ### YAML Smith

@@ -158,6 +158,9 @@ TEST (yamlcpp, array)
 	test_write_read (
 #include "yamlcpp/mapping_with_array_key.h"
 	);
+	test_write_read (
+#include "yamlcpp/mixed.h"
+	);
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
