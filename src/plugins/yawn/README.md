@@ -69,6 +69,24 @@ kdb rm -r user/tests/yawn
 sudo kdb umount user/tests/yawn
 ```
 
+### Boolean Values
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yawn yawn
+
+# Manually add a boolean value to the database
+printf 'bool: true' > `kdb file user/tests/yawn`
+
+# Elektra stores boolean values as `0` and `1`
+kdb get user/tests/yawn/bool
+#> 1
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yawn
+sudo kdb umount user/tests/yawn
+```
+
 ### Error Messages
 
 ```sh

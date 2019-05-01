@@ -238,6 +238,8 @@ common:
 
   . _(René Schwaiger)_
 
+- The plugin now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
+
 ### YAy PEG
 
 - [YAy PEG][] now also supports [PEGTL 2.8](https://github.com/taocpp/PEGTL/releases/tag/2.8.0). _(René Schwaiger)_
