@@ -18,6 +18,19 @@
 #include <yajl/yajl_parse.h>
 
 
+static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
+{
+	// Update array length in array key
+	cursor_t cursor = ksGetCursor (ks);
+	Key * arrayKey = keyNew (keyName (current), KEY_END);
+	keySetBaseName (arrayKey, 0);
+	Key * foundKey = ksLookup (ks, arrayKey, 0);
+	keySetMeta (foundKey, "array", keyBaseName (current));
+	ELEKTRA_LOG_DEBUG ("Increment array length to %s", keyString (keyGetMeta (foundKey, "array")));
+	keyDel (arrayKey);
+	ksSetCursor (ks, cursor);
+}
+
 /**
  @retval 0 if ksCurrent does not hold an array entry
  @retval 1 if the array entry will be used because its the first
@@ -28,27 +41,28 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks)
 {
 	Key * current = ksCurrent (ks);
 	const char * baseName = keyBaseName (current);
+	const char * meta = keyString (keyGetMeta (current, "array"));
 
-	if (baseName && *baseName == '#')
+	if (*meta == '\0')
 	{
 		current = keyNew (keyName (current), KEY_END);
-		if (!strcmp (baseName, "###empty_array"))
-		{
-			// get rid of previous key
-			keyDel (ksLookup (ks, current, KDB_O_POP));
-			// we have a new array entry
-			keySetBaseName (current, 0);
-			keyAddName (current, "#0");
-			ksAppendKey (ks, current);
-			return 1;
-		}
-		else
-		{
-			// we are in an array
-			elektraArrayIncName (current);
-			ksAppendKey (ks, current);
-			return 2;
-		}
+		keyAddName (current, "#0");
+		ksAppendKey (ks, current);
+
+		elektraYajlSetArrayLength (ks, current);
+
+		return 1;
+	}
+	else if (baseName && *baseName == '#')
+	{
+		// we are in an array
+		current = keyNew (keyName (current), KEY_END);
+		elektraArrayIncName (current);
+		ksAppendKey (ks, current);
+
+		elektraYajlSetArrayLength (ks, current);
+
+		return 2;
 	}
 	else
 	{
@@ -222,8 +236,7 @@ static int elektraYajlParseStartArray (void * ctx)
 	Key * currentKey = ksCurrent (ks);
 
 	Key * newKey = keyNew (keyName (currentKey), KEY_END);
-	// add a pseudo element for empty array
-	keyAddName (newKey, "###empty_array");
+	keySetMeta (newKey, "array", "");
 	ksAppendKey (ks, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
@@ -253,7 +266,7 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 		{
 			const char * baseName = keyBaseName (ksCurrent (returned));
 			// TODO: Add test for empty array check
-			if (strcmp (baseName, "#0") && strcmp (baseName, "###empty_array"))
+			if (strcmp (baseName, "#0"))
 			{
 				ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
 				keyDel (ksLookup (returned, cur, KDB_O_POP));
