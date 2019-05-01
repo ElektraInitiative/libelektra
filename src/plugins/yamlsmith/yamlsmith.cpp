@@ -43,12 +43,15 @@ namespace
  */
 CppKeySet contractYamlsmith ()
 {
-	return CppKeySet (30, keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
+	return CppKeySet{ 30,
+			  keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system/elektra/modules/yamlcpp/config/needs/boolean/restore", KEY_VALUE, "#1", KEY_END),
+			  KS_END };
 }
 
 /**
@@ -144,6 +147,33 @@ inline NameIterator getIteratorSkippedLevels (CppKey const & key, size_t levelsT
 }
 
 /**
+ * @brief This function writes a representation of a key value to the given output stream.
+ *
+ * @param output This parameter specifies where this function should emit the serialized YAML data.
+ * @param key This parameter stores the key which stores the value this function should emit to `output`.
+ */
+void writeYAMLScalar (ofstream & output, CppKey const & key)
+{
+	if (!key.isString ()) return;
+
+	string value = key.getString ();
+
+	if (value == "0")
+	{
+		output << "false";
+		return;
+	}
+
+	if (value == "1")
+	{
+		output << "true";
+		return;
+	}
+
+	output << '"' << value << '"';
+}
+
+/**
  * @brief This function converts a `KeySet` into the YAML serialization format.
  *
  * @pre The parameter `output` must be a valid and open output stream.
@@ -188,7 +218,9 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 			indent += "  ";
 		}
 
-		if (keys.current ().getStringSize () > 1) output << indent << '"' << keys.current ().getString () << '"' << endl;
+		output << indent;
+		writeYAMLScalar (output, keys.current ());
+		output << endl;
 	}
 }
 
