@@ -93,7 +93,8 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 
 	ELEKTRA_LOG_DEBUG ("next: \"%.*s\"", (int) last.size, last.current);
 
-	if (!strcmp (last.current, "###empty_array"))
+	const char * meta = keyString (keyGetMeta (next, "array"));
+	if (*meta == '\0')
 	{
 		ELEKTRA_LOG_DEBUG ("GEN empty array in value");
 		yajl_gen_array_open (g);
@@ -202,8 +203,9 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	else if (ksGetSize (returned) == 2) // maybe just parent+specialkey
 	{
 		Key * toCheck = keyDup (parentKey);
-		keyAddBaseName (toCheck, "###empty_array");
-		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
+
+		const char * meta = keyString (keyGetMeta (ksTail (returned), "array"));
+		if (*meta == '\0')
 		{
 			ELEKTRA_LOG_DEBUG ("GEN empty array (got %s)", keyName (ksTail (returned)));
 			yajl_gen_array_open (g);

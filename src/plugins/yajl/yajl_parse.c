@@ -26,7 +26,6 @@ static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
 	keySetBaseName (arrayKey, 0);
 	Key * foundKey = ksLookup (ks, arrayKey, 0);
 	keySetMeta (foundKey, "array", keyBaseName (current));
-	ELEKTRA_LOG_DEBUG ("Increment array length to %s", keyString (keyGetMeta (foundKey, "array")));
 	keyDel (arrayKey);
 	ksSetCursor (ks, cursor);
 }
@@ -42,8 +41,7 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks)
 	Key * current = ksCurrent (ks);
 	const char * baseName = keyBaseName (current);
 	const char * meta = keyString (keyGetMeta (current, "array"));
-
-	if (*meta == '\0')
+	if (!strcmp (meta, "empty"))
 	{
 		current = keyNew (keyName (current), KEY_END);
 		keyAddName (current, "#0");
@@ -204,6 +202,14 @@ static int elektraYajlParseEnd (void * ctx)
 	KeySet * ks = (KeySet *) ctx;
 	Key * currentKey = ksCurrent (ks);
 
+	const char * meta = keyString (keyGetMeta (currentKey, "array"));
+	// If array is still empty by the time we reach the end, replace with ""
+	if (!strcmp (meta, "empty"))
+	{
+		keySetMeta (currentKey, "array", "");
+		return 1;
+	}
+
 	Key * lookupKey = keyNew (keyName (currentKey), KEY_END);
 	keySetBaseName (lookupKey, 0); // remove current baseName
 
@@ -217,7 +223,7 @@ static int elektraYajlParseEnd (void * ctx)
 	}
 	else
 	{
-		ELEKTRA_LOG_DEBUG ("did not find key!");
+		ELEKTRA_LOG_DEBUG ("did not find key %s", keyName (lookupKey));
 	}
 #else
 	(void) foundKey; // foundKey is not used, but lookup is needed
@@ -236,7 +242,7 @@ static int elektraYajlParseStartArray (void * ctx)
 	Key * currentKey = ksCurrent (ks);
 
 	Key * newKey = keyNew (keyName (currentKey), KEY_END);
-	keySetMeta (newKey, "array", "");
+	keySetMeta (newKey, "array", "empty");
 	ksAppendKey (ks, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
