@@ -1,4 +1,3 @@
-usr/lib/*/elektra4/libelektra-semlock.so
 usr/lib/*/elektra4/libelektra-iterate.so
 usr/lib/*/elektra4/libelektra-template.so
 usr/lib/*/elektra4/libelektra-cpptemplate.so
