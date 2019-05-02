@@ -786,8 +786,8 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation error while reading the ini file");
 			break;
 		default:
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not parse ini file %s. First error at line %d", keyString (parentKey),
-						    ret);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not parse ini file %s. First error at line %d",
+								 keyString (parentKey), ret);
 			break;
 		}
 		ret = -1;

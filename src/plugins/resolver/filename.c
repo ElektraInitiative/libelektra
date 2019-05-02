@@ -305,7 +305,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	{
 		// TODO: Correct?
 		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
-					       ELEKTRA_VARIANT_USER);
+						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
@@ -313,7 +313,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	{
 		// TODO: Correct?
 		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
-					       ELEKTRA_VARIANT_USER);
+						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
@@ -463,14 +463,14 @@ static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveT
 	if (finished == -1)
 	{
 		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
-					       ELEKTRA_VARIANT_USER);
+						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (!(handle->fullPath))
 	{
 		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the system dirname, the configuration is: %s",
-					       ELEKTRA_VARIANT_SYSTEM);
+						       ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 
@@ -503,8 +503,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "getcwd failed with errno %d \"%s\", defaulting to /", errno,
-							       strerror (errno));
+				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "getcwd failed with errno %d \"%s\", defaulting to /",
+								       errno, strerror (errno));
 				return 0;
 			}
 
@@ -513,7 +513,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "could not realloc for getcwd size %d, defaulting to /", size);
+				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "could not realloc for getcwd size %d, defaulting to /",
+								       size);
 				return 0;
 			}
 		}

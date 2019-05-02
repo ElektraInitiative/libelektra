@@ -87,8 +87,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (bytesRead < fileSize)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName, bytesRead,
-					    fileSize);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName,
+							 bytesRead, fileSize);
 		elektraFree (buffer);
 		fclose (fp);
 		return -1;

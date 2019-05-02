@@ -595,7 +595,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 			shredTemporaryFile (s->tmpFileFd, parentKey);
 			if (close (s->tmpFileFd))
 			{
-				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
+				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s",
+								       strerror (errno));
 			}
 			s->tmpFileFd = -1;
 			if (unlink (s->tmpFilePath))

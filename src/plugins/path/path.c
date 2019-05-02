@@ -158,9 +158,9 @@ static int validatePermission (Key * key, Key * parentKey)
 		if (uid != 0)
 		{
 			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
-						     "To check permissions for %s I need to be the root user."
-						     " Are you running kdb as root?\"",
-						     keyName (key));
+							     "To check permissions for %s I need to be the root user."
+							     " Are you running kdb as root?\"",
+							     keyName (key));
 			return -1;
 		}
 	}
@@ -266,9 +266,9 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
 	if (gidErr < 0)
 	{
 		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
-					     "Could not set egid of user \"%s\" for key \"%s\"."
-					     " Are you running kdb as root?\"",
-					     name, keyName (key));
+						     "Could not set egid of user \"%s\" for key \"%s\"."
+						     " Are you running kdb as root?\"",
+						     name, keyName (key));
 		return -1;
 	}
 	return 0;
@@ -289,9 +289,9 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
 	if (err < 0)
 	{
 		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
-					     "Could not set euid of user \"%s\" for key \"%s\"."
-					     " Are you running kdb as root?\"",
-					     p->pw_name, keyName (key));
+						     "Could not set euid of user \"%s\" for key \"%s\"."
+						     " Are you running kdb as root?\"",
+						     p->pw_name, keyName (key));
 		return -1;
 	}
 	return 0;

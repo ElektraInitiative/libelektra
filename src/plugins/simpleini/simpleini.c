@@ -280,8 +280,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			// discard line
 			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "failed discarding rest of line at position %ld with key %s",
-							    ftell (fp), key);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+					parentKey, "failed discarding rest of line at position %ld with key %s", ftell (fp), key);
 				elektraFree (key);
 				fclose (fp);
 				return -1;
@@ -319,7 +319,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "duplicated key %s at position %ld", keyName (read), ftell (fp));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "duplicated key %s at position %ld", keyName (read),
+								 ftell (fp));
 			elektraFree (format);
 			fclose (fp);
 			return -1;

@@ -485,7 +485,8 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// validate restored header
 	if (contentLen > (plaintextLen - headerLen))
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (
+			errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
 		goto error;
 	}
 
