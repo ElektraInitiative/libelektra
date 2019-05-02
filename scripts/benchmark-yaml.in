@@ -21,6 +21,18 @@ cleanup() {
 	rm -rf "$DATA_DIRECTORY"
 }
 
+write() {
+	PLUGIN="$1"
+	INPUT="$2"
+	OUTPUT="$3"
+	KDBPATH='user/tests/yaml'
+	kdb mount config.yaml "$KDBPATH" "$PLUGIN"
+	cat "$INPUT_FILE" > "$(kdb file "$KDBPATH")"
+	kdb export "$KDBPATH" yamlsmith > "$OUTPUT"
+	kdb rm -r "$KDBPATH"
+	kdb umount "$KDBPATH"
+}
+
 cd "$SOURCE_DIRECTORY" || {
 	printf >&2 'Unable to change working directory to “%s”\n' "$SOURCE_DIRECTORY"
 	exit 1
@@ -30,6 +42,21 @@ command -v hyperfine > /dev/null 2>&1 || {
 	printf >&2 'This test requires the command `hyperfine`\n'
 	exit 1
 }
+
+for INPUT_FILE in "${INPUT_FILES[@]}"; do
+	REFERENCE=reference.yaml
+	write yamlcpp "$INPUT_FILE" "$REFERENCE"
+	for PLUGIN in "${PLUGINS[@]}"; do
+		write "$PLUGIN" "$INPUT_FILE" "$PLUGIN.yaml"
+		diff -q "$REFERENCE" "$PLUGIN.yaml" || {
+			printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT_FILE"
+			diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
+			exit 1
+		}
+		rm "$PLUGIN.yaml"
+	done
+	rm "$REFERENCE"
+done
 
 mkdir "$DATA_DIRECTORY"
 for FILEPATH in "${INPUT_FILES[@]}"; do
