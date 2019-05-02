@@ -80,8 +80,8 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	}
 	catch (std::overflow_error const & exception)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSERT_VALUE_ARRAY, parent.getKey (), "Unable to read data from file “%s”: %s.",
-				    parent.getString ().c_str (), exception.what ());
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parent.getKey (), "Unable to read data from file “%s”: %s.",
+						     parent.getString ().c_str (), exception.what ());
 	}
 	catch (YAML::RepresentationException const & exception)
 	{
