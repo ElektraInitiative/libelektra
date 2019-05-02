@@ -128,6 +128,7 @@ void Listener::exitPair (bool const matchedValue)
 	if (!matchedValue)
 	{
 		// Add key with empty value
+		parents.top ().setBinary (NULL, 0);
 		keys.append (parents.top ());
 	}
 	// Returning from a mapping such as `part: …` means that we need need to
