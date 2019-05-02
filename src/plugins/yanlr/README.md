@@ -40,7 +40,7 @@ Please note that we only tested the plugin with ANTLR `4.7.1` (and later version
 ### Mappings
 
 ```sh
-# Mount plugin to namespace `user/tests/yanlr`
+# Mount plugin to `user/tests/yanlr`
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add some mappings to the configuration file
@@ -88,7 +88,7 @@ sudo kdb umount user/tests/yanlr
 ### Arrays
 
 ```sh
-# Mount plugin to cascading namespace `/tests/yanlr`
+# Mount plugin to `/tests/yanlr`
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add a sequences to the configuration file
@@ -117,7 +117,7 @@ sudo kdb umount user/tests/yanlr
 ### Boolean Values
 
 ```sh
-# Mount plugin to cascading namespace `/tests/yanlr`
+# Mount plugin to `/tests/yanlr`
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add a boolean value to the database
