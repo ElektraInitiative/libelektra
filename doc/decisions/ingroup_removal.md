@@ -3,9 +3,11 @@
 ## Problem
 
 Currently, an error or warning message in elektra causes the following line to be shown:
+
 ```
 Ingroup: <group>
 ```
+
 Its main purpose is to show the user if the error occurred in either `kdb`, `module` or `plugin`.
 
 The problem is that this message is of no value for the user and increases the verbosity of the message.
