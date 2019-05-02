@@ -565,7 +565,7 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 	if ((regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE)))
 	{
 		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey,
-					    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+						    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
@@ -620,7 +620,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	if ((ret = regcomp (&regex1, regexString1, REGEX_FLAGS_CONDITION)))
 	{
 		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey,
-					    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+						    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
@@ -629,7 +629,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	if ((ret = regcomp (&regex2, regexString2, REGEX_FLAGS_CONDITION)))
 	{
 		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey,
-					    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+						    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
@@ -639,7 +639,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	if ((ret = regcomp (&regex3, regexString3, REGEX_FLAGS_CONDITION)))
 	{
 		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey,
-					    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+						    "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
