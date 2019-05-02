@@ -57,7 +57,6 @@ will print an error message on the first usage:
 kdb ls system/hosts
 #> The command ls terminated unsuccessfully with the info: Error (#85) occurred!
 #> Description: an Augeas error occurred
-#> Ingroup: plugin
 #> Module: storage
 #> At: /path/augeas.c:166
 #> Reason: Lens not found
@@ -77,7 +76,6 @@ Unfortunately no validation plugin exists yet that would prevent such modificati
 kdb set system/hosts/1 somevalue
 #> The command set terminated unsuccessfully with the info: Error (#85) occurred!
 #> Description: an Augeas error occurred
-#> Ingroup: plugin
 #> Module: storage
 #> At: /path/augeas.c:166
 #> Reason: Malformed child node '1'
@@ -109,7 +107,6 @@ This fails with an error similar to this
 
 ```
 Description: an Augeas error occurred
-Ingroup: plugin
 Module: storage
 At: /path/augeas.c:179
 Reason: Failed to match
