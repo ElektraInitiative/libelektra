@@ -244,6 +244,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - [YAwn][] handles YAML key-value pairs that contain no value at the end of a file correctly. _(René Schwaiger)_
+- The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
 
 [yawn]: https://www.libelektra.org/plugins/yawn
 
