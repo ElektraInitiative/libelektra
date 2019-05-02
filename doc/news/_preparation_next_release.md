@@ -228,7 +228,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAwn
 
-- [YAwn](https://www.libelektra.org/plugins/yawn) is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
+- [YAwn][] is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
 - We also improved the error messages of YAwn, which now also contain the input that caused a syntax error. For example, for the input
 
   ```yaml
@@ -247,6 +247,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
   . _(René Schwaiger)_
 
 - The plugin now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
+- [YAwn][] handles YAML key-value pairs that contain no value at the end of a file correctly. _(René Schwaiger)_
+
+[yawn]: https://www.libelektra.org/plugins/yawn
 
 ### YAy PEG
 
