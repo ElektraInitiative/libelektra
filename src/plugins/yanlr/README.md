@@ -132,6 +132,24 @@ kdb rm -r user/tests/yanlr
 sudo kdb umount user/tests/yanlr
 ```
 
+### Null Values
+
+```sh
+# Mount plugin to `/tests/yanlr`
+sudo kdb mount config.yaml user/tests/yanlr yanlr
+
+# Manually add a null value to the database
+printf '"null":' > `kdb file user/tests/yanlr`
+
+# Elektra adds the metakey `binary` for empty keys
+kdb lsmeta user/tests/yanlr/null
+#> binary
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
+```
+
 ### Error Messages
 
 ```sh

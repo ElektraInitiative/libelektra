@@ -132,6 +132,7 @@ void KeyListener::enterPair (PairContext * context)
 	{
 		// Add key with empty value
 		// The parser does not visit `exitValue` in that case
+		child.setBinary (NULL, 0);
 		keys.append (child);
 	}
 }
