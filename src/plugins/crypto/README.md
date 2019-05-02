@@ -159,7 +159,6 @@ The provided plugin configuration is not valid!
 Errors/Warnings during the check were:
 Sorry, the error (#130) occurred!
 Description: the configuration is invalid or incomplete.
-Ingroup: plugin
 Module: crypto
 At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
 Reason: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F

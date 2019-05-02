@@ -126,7 +126,6 @@ kdb export /tests/conditionals ini
 # ERROR:135
 # Error (#135) occurred!
 # Description: Validation failed
-# Ingroup: plugin
 # Module: conditionals
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
 # Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)

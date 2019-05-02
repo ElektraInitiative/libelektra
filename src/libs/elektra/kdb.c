@@ -726,7 +726,6 @@ static void clearError (Key * key)
 	keySetMeta (key, "error/number", 0);
 	keySetMeta (key, "error/description", 0);
 	keySetMeta (key, "error/reason", 0);
-	keySetMeta (key, "error/ingroup", 0);
 	keySetMeta (key, "error/module", 0);
 	keySetMeta (key, "error/file", 0);
 	keySetMeta (key, "error/line", 0);

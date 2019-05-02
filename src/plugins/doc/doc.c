@@ -85,7 +85,6 @@ static void doAction (Key * k ELEKTRA_UNUSED)
 number:60
 description:Invalid Line encountered
 severity:error
-ingroup:plugin
 macro:NOEOF
 module:simpleini
 //! [plugin errors spec]
