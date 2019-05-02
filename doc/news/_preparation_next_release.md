@@ -578,7 +578,7 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - Added github build status badges to website _(hesirui)_
-- <<TODO>>
+- We updated part of a test for the [snippet converter](https://www.libelektra.org/conversion). _(René Schwaiger)_
 - <<TODO>>
 
 ## Outlook
