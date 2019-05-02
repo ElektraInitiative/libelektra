@@ -45,7 +45,7 @@ kdb get /tests/yamlcpp/🔑
 echo "some key: @some  value" >> `kdb file /tests/yamlcpp`
 kdb get "/tests/yamlcpp/some key"
 # STDERR: .*yaml-cpp: error at line 2, column 11: unknown token.*
-# ERROR: C01200
+# ERROR: C04100
 # RET: 5
 
 # Overwrite incorrect data
