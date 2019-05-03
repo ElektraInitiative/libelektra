@@ -16,7 +16,6 @@ const ERR_KEY_NOT_FOUND = 'Did not find key'
 
 const ERROR_REGEX = /Sorry, the error \(\#([0-9]+)\) occurred/
 const DESCRIPTION_REGEX = /Description: (.*)$/
-const INGROUP_REGEX = /Ingroup: (.*)$/
 const MODULE_REGEX = /Module: (.*)$/
 const AT_REGEX = /At: (.*)$/
 const REASON_REGEX = /Reason: (.*)$/
@@ -32,8 +31,6 @@ function parseError (message) {
     } else if (currentError !== false) {
       if (res = line.match(DESCRIPTION_REGEX)) {
         currentError.description = res[1]
-      } else if (res = line.match(INGROUP_REGEX)) {
-        currentError.ingroup = res[1]
       } else if (res = line.match(MODULE_REGEX)) {
         currentError.module = res[1]
       } else if (res = line.match(AT_REGEX)) {
@@ -63,8 +60,6 @@ function KDBError (message) {
       } else if (isError) {
         if (res = line.match(DESCRIPTION_REGEX)) {
           this.description = res[1]
-        } else if (res = line.match(INGROUP_REGEX)) {
-          this.ingroup = res[1]
         } else if (res = line.match(MODULE_REGEX)) {
           this.module = res[1]
         } else if (res = line.match(AT_REGEX)) {

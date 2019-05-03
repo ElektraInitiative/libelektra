@@ -45,7 +45,6 @@ kdb set user/tests/mathcheck/k 7.7
 # The command set failed while accessing the key database with the info:
 # Error (#123) occurred!
 # Description: invalid value
-# Ingroup: plugin
 # Module: mathcheck
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/mathcheck/mathcheck.c:399
 # Reason: 7.7 != 7.6

@@ -28,6 +28,7 @@ section here.
 - [API Documentation](api_documentation.md)
 - [Definition of Bool](bool.md)
 - [Plugin Variants](plugin_variants.md)
+- [Ingroup Removal](ingroup_removal.md)
 
 ## In Discussion
 

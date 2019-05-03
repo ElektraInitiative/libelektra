@@ -45,8 +45,6 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 		   << error.getMeta<std::string> ("error/description") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Reason: " << getErrorColor (ANSI_COLOR::YELLOW)
 		   << error.getMeta<std::string> ("error/reason") << getErrorColor (ANSI_COLOR::RESET) << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Ingroup: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/ingroup") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Module: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/module") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "At: " << getErrorColor (ANSI_COLOR::RESET)
@@ -90,8 +88,6 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 			   << std::endl;
 			os << getErrorColor (ANSI_COLOR::BOLD) << "\tDescription: " << getErrorColor (ANSI_COLOR::RESET)
 			   << error.getMeta<std::string> (name.str () + "/description") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tIngroup: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/ingroup") << std::endl;
 			os << getErrorColor (ANSI_COLOR::BOLD) << "\tModule: " << getErrorColor (ANSI_COLOR::RESET)
 			   << error.getMeta<std::string> (name.str () + "/module") << std::endl;
 			os << getErrorColor (ANSI_COLOR::BOLD) << "\tAt: " << getErrorColor (ANSI_COLOR::RESET)
