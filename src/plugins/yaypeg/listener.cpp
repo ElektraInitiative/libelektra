@@ -89,7 +89,11 @@ Listener::Listener (Key const & parent)
 void Listener::exitValue (string const & text)
 {
 	Key key = parents.top ();
-	if (text == "true" || text == "false")
+	if (text.length () == 0)
+	{
+		key.setBinary (NULL, 0);
+	}
+	else if (text == "true" || text == "false")
 	{
 		key.set<bool> (text == "true");
 	}
