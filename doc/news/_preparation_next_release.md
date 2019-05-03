@@ -88,6 +88,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin no longer lists empty parent keys with `kdb ls`. _(Philipp Gackstatter)_
 
+- The plugin signifies arrays with the metakey array according to the [array decision](../../doc/decisions/array.md). _(Philipp Gackstatter)_
+
 ### YAMBi
 
 - [YAMBi](https://www.libelektra.org/plugins/yambi) is now able detect multiple syntax errors in a file. _(René Schwaiger)_

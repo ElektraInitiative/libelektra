@@ -93,8 +93,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 
 	ELEKTRA_LOG_DEBUG ("next: \"%.*s\"", (int) last.size, last.current);
 
-	const char * meta = keyString (keyGetMeta (next, "array"));
-	if (*meta == '\0')
+	if (!strcmp (last.current, "###empty_array"))
 	{
 		ELEKTRA_LOG_DEBUG ("GEN empty array in value");
 		yajl_gen_array_open (g);
@@ -204,8 +203,8 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	{
 		Key * toCheck = keyDup (parentKey);
 
-		const char * meta = keyString (keyGetMeta (ksTail (returned), "array"));
-		if (*meta == '\0')
+		keyAddBaseName (toCheck, "###empty_array");
+		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
 		{
 			ELEKTRA_LOG_DEBUG ("GEN empty array (got %s)", keyName (ksTail (returned)));
 			yajl_gen_array_open (g);
@@ -251,6 +250,32 @@ int elektraGenWriteFile (yajl_gen g, Key * parentKey)
 	return 1; /* success */
 }
 
+static void elektraCheckForEmptyArray (KeySet * ks)
+{
+	Key * curr = 0;
+	ksRewind (ks);
+
+	while ((curr = ksNext (ks)) != 0)
+	{
+		ELEKTRA_LOG_DEBUG ("WALK: %s", keyName (curr));
+		const char * meta = keyString (keyGetMeta (curr, "array"));
+		if (*meta == '\0')
+		{
+			cursor_t cursor = ksGetCursor (ks);
+
+			Key * k = keyNew (keyName (curr), KEY_END);
+			keyAddBaseName (k, "###empty_array");
+
+			ELEKTRA_LOG_DEBUG ("Add empty array: %s", keyName (k));
+
+			ksAppendKey (ks, k);
+			keyDel (k);
+
+			ksSetCursor (ks, cursor);
+		}
+	}
+}
+
 int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -260,6 +285,8 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	yajl_gen g = yajl_gen_alloc (NULL);
 	yajl_gen_config (g, yajl_gen_beautify, 1);
 #endif
+
+	elektraCheckForEmptyArray (returned);
 
 	if (ksGetSize (returned) == 1 && !strcmp (keyName (parentKey), keyName (ksHead (returned))) &&
 	    keyGetValueSize (ksHead (returned)) > 1)
