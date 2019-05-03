@@ -13,6 +13,7 @@ BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILES=(
 	benchmarks/data/keyframes.yaml
 	benchmarks/data/combined.yaml
+	benchmarks/data/generated.yaml
 )
 
 trap cleanup EXIT INT QUIT TERM
