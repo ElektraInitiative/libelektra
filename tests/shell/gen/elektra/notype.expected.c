@@ -50,7 +50,7 @@ static Key * helpKey = NULL;
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (1,
-	keyNew ("spec/tests/script/gen/elektra/notype", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	KS_END);
 ;
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/notype", defaults, error);
@@ -111,7 +111,7 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (1,
-	keyNew ("spec/tests/script/gen/elektra/notype", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
 	KS_END);
 ;
 
