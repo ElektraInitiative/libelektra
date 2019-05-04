@@ -107,6 +107,10 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 		fprintf (stream, "\tkeyNew (\"%s\"", escapeString (&nam));
 		elektraFree (nam);
 	}
+	else if (n == 1)
+	{
+		fprintf (stream, "\tkeyNew(\"\"");
+	}
 
 	size_t s = keyGetValueSize (key);
 	if (s > 1)
