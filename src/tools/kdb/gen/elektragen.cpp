@@ -800,8 +800,13 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	EnumProcessor enumProcessor (enumConversion);
 	StructProcessor structProcessor (specParent, ks);
 
+	auto parentLength = specParent.getName ().length ();
+
 	kdb::KeySet spec;
-	spec.append (ks.lookup (specParent));
+
+	kdb::Key parent = ks.lookup (specParent).dup ();
+	parent.setName ("");
+	spec.append (parent);
 
 	auto parentKeyParts = getKeyParts (specParent);
 
@@ -814,7 +819,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		{
 			continue;
 		}
-		spec.append (key);
 
 		auto type = getType (key);
 		auto name = key.getName ();
@@ -830,6 +834,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		{
 			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
 		}
+
+		kdb::Key specKey = key.dup ();
+		specKey.setName (specKey.getName ().substr (parentLength));
+		specKey.setString (key.getMeta<std::string> ("default"));
+		spec.append (specKey);
 
 		std::unordered_set<std::string> allowedTypes = { "enum",
 								 "string",
@@ -990,7 +999,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	list totalContext;
 	kdb::KeySet defaultContext;
-
 	for (auto & p : contexts)
 	{
 		totalContext.push_back (p.second);

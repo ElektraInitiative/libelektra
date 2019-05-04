@@ -50,14 +50,12 @@ static Key * helpKey = NULL;
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (6,
-	keyNew ("spec/tests/script/gen/elektra/simple", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "0.0", KEY_META, "type", "float",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew ("/mydouble", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myint", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
+	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/print", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
 	KS_END);
 ;
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/simple", defaults, error);
@@ -118,14 +116,12 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (6,
-	keyNew ("spec/tests/script/gen/elektra/simple", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "0.0", KEY_META, "type", "float",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew ("/mydouble", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myint", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
+	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/print", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
 	KS_END);
 ;
 
