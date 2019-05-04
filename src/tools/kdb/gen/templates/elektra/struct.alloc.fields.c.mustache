@@ -13,20 +13,16 @@ if (result->/*%& size_field %*/ > 0)
 	for (kdb_long_long_t i = 0; i < result->/*%& size_field %*/; ++i)
 	{
 		/*%# is_struct? %*/
-		const char * refname = elektraGetRawStringArrayElement (elektra, field, i);
+		const char * refname = elektraFindReferenceArrayElement (elektra, field, i);
 		if (refname != NULL && refname[0] != '\0')
 		{
-			char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
-			strcpy (refField, field);
-			strcpy (&refField[nameLen], refname);
 			/*%# alloc? %*/
-			result->/*%& name %*/[i] = ELEKTRA_GET (/*%& type_name %*/) (elektra, refField);
+			result->/*%& name %*/[i] = ELEKTRA_GET (/*%& type_name %*/) (elektra, refname);
 			/*%/ alloc? %*/
 			/*%^ alloc? %*/
 			result->/*%& name %*/[i] = elektraCalloc (sizeof (/*%& native_type %*/));
-			ELEKTRA_GET (/*%& type_name %*/) (elektra, refField, &result->/*%& name %*/[i]);
+			ELEKTRA_GET (/*%& type_name %*/) (elektra, refname, &result->/*%& name %*/[i]);
 			/*%/ alloc? %*/
-			elektraFree (refField);
 		}
 		/*%/ is_struct? %*/
 		/*%^ is_struct? %*/
@@ -37,20 +33,16 @@ if (result->/*%& size_field %*/ > 0)
 /*%/ is_array? %*/
 /*%^ is_array? %*/
 /*%# is_struct? %*/
-const char * refname = elektraGetRawString (elektra, field);
+const char * refname = elektraFindReference (elektra, field);
 if (refname != NULL && refname[0] != '\0')
 {
-	char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
-	strcpy (refField, field);
-	strcpy (&refField[nameLen], refname);
 	/*%# alloc? %*/
-	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, refField);
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, refname);
 	/*%/ alloc? %*/
 	/*%^ alloc? %*/
 	result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-	ELEKTRA_GET (/*%& type_name %*/) (elektra, refField, result->/*%& name %*/);
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, refname, result->/*%& name %*/);
 	/*%/ alloc? %*/
-	elektraFree (refField);
 }
 /*%/ is_struct? %*/
 /*%^ is_struct? %*/

@@ -492,7 +492,7 @@ static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
 	
 
 	char * name = elektraFormat ("people/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
-	const char * actualName = elektraGetRawString (elektra, name);
+	const char * actualName = elektraFindReference (elektra, name);
 	elektraFree (name);
 	
 
@@ -661,7 +661,7 @@ static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
 
 	char * name = elektraFormat ("person/%s/children/%*.*s%lld",  name1 ,
 				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
-	const char * actualName = elektraGetRawString (elektra, name);
+	const char * actualName = elektraFindReference (elektra, name);
 	elektraFree (name);
 	
 

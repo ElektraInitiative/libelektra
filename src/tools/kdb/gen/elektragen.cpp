@@ -555,6 +555,11 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 		auto keyName = key.getName ().substr (structKey.getName ().length () + 1);
 		maxFieldNameLen = std::max (maxFieldNameLen, keyName.size ());
 
+		if (isArray)
+		{
+			keyName = keyName.substr (0, keyName.length () - 2);
+		}
+
 		auto field =
 			object{ { "name", name },       { "key_name", keyName },  { "native_type", nativeType }, { "type_name", typeName },
 				{ "alloc?", allocate }, { "is_array?", isArray }, { "is_struct?", isStruct } };

@@ -92,6 +92,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	Elektra * const elektra = elektraCalloc (sizeof (struct _Elektra));
 	elektra->kdb = kdb;
 	elektra->parentKey = parentKey;
+	elektra->parentKeyLength = keyGetNameSize (parentKey) - 1;
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
@@ -208,6 +209,11 @@ void elektraClose (Elektra * elektra)
 	ksDel (elektra->config);
 	keyDel (elektra->lookupKey);
 	ksDel (elektra->context);
+
+	if (elektra->resolvedReference != NULL)
+	{
+		elektraFree (elektra->resolvedReference);
+	}
 
 	elektraFree (elektra);
 }

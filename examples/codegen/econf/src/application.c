@@ -39,7 +39,7 @@ void printFormatConf (const FormatConf * conf)
 	}
 	printf ("charset = %s\n", ELEKTRA_TO_STRING (EnumCharset) (conf->charset));
 	printf ("trim_trailing_whitespace = %s\n", conf->trim ? "true" : "false");
-	printf ("indent_size = %s\n", conf->eofNewline ? "true" : "false");
+	printf ("insert_final_newline = %s\n", conf->eofNewline ? "true" : "false");
 	if (conf->maxLineLength == 0)
 	{
 		printf ("max_line_length = off\n");

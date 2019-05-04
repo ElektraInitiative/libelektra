@@ -468,7 +468,7 @@ result->age = ELEKTRA_GET (Short) (elektra, field);
 
 
 
-strncpy (&field[nameLen], "children/#", 11);
+strncpy (&field[nameLen], "children", 11);
 result->childrenSize = elektraArraySize (elektra, field);
 if (result->childrenSize > 0)
 {
@@ -531,7 +531,7 @@ result->age = ELEKTRA_GET (Short) (elektra, field);
 
 
 
-strncpy (&field[nameLen], "children/#", 11);
+strncpy (&field[nameLen], "children", 11);
 result->childrenSize = elektraArraySize (elektra, field);
 if (result->childrenSize > 0)
 {
@@ -588,7 +588,7 @@ ELEKTRA_SET_SIGNATURE (const Person *, StructPerson)
 
 	
 
-	strncpy (&field[nameLen], "children/#", 11);
+	strncpy (&field[nameLen], "children", 11);
 	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
 	{
 		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, i, value->children[i], error);
@@ -640,7 +640,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson)
 
 	
 
-	strncpy (&field[nameLen], "children/#", 11);
+	strncpy (&field[nameLen], "children", 11);
 	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
 	{
 		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, i, value->children[i], error);
