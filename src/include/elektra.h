@@ -92,6 +92,9 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type);
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
 
+const char * elektraFindReference (Elektra * elektra, const char * name);
+const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index);
+
 Key * elektraHelpKey (Elektra * elektra);
 KeySet * elektraContext (Elektra * elektra);
 

@@ -21,7 +21,7 @@ void printTree (Tree * tree, int level)
 {
 	if (tree == NULL)
 	{
-		printf ("(empty)\n");
+		printf ("%*s%*s(empty)\n", level, "", level, "");
 		return;
 	}
 
