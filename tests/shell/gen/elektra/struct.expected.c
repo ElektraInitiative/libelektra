@@ -475,15 +475,11 @@ if (result->childrenSize > 0)
 	result->children = elektraCalloc (sizeof (Person *) * result->childrenSize);
 	for (kdb_long_long_t i = 0; i < result->childrenSize; ++i)
 	{
-		const char * refname = elektraGetRawStringArrayElement (elektra, field, i);
+		const char * refname = elektraFindReferenceArrayElement (elektra, field, i);
 		if (refname != NULL && refname[0] != '\0')
 		{
-			char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
-			strcpy (refField, field);
-			strcpy (&refField[nameLen], refname);
-			result->children[i] = ELEKTRA_GET (StructPerson) (elektra, refField);
+			result->children[i] = ELEKTRA_GET (StructPerson) (elektra, refname);
 			
-			elektraFree (refField);
 		}
 		
 	}
@@ -538,15 +534,11 @@ if (result->childrenSize > 0)
 	result->children = elektraCalloc (sizeof (Person *) * result->childrenSize);
 	for (kdb_long_long_t i = 0; i < result->childrenSize; ++i)
 	{
-		const char * refname = elektraGetRawStringArrayElement (elektra, field, i);
+		const char * refname = elektraFindReferenceArrayElement (elektra, field, i);
 		if (refname != NULL && refname[0] != '\0')
 		{
-			char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
-			strcpy (refField, field);
-			strcpy (&refField[nameLen], refname);
-			result->children[i] = ELEKTRA_GET (StructPerson) (elektra, refField);
+			result->children[i] = ELEKTRA_GET (StructPerson) (elektra, refname);
 			
-			elektraFree (refField);
 		}
 		
 	}
