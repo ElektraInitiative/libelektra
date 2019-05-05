@@ -158,9 +158,9 @@ kdb: error while loading shared libraries:
      libelektratools.so.2: cannot open shared object file: No such file or directory
 ```
 
-you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`).
+you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`). Note that under Alpine Linux this file is called `/etc/ld-musl-x86_64.path` or similar, depending on your architecture.
 
-Add the path where the library has been installed
+Add the path where the library has been installed (on Alpine Linux this had to be `usr/lib/elektra` for it to work)
 
 ```
 /usr/lib/local/

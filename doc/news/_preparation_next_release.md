@@ -490,6 +490,7 @@ you up to date with the multi-language support provided by Elektra.
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
 - Added a new error concept to be implemented soon. _(Michael Zronek)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
+- Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
 
 ## Tests
 
