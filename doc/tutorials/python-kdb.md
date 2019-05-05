@@ -12,12 +12,18 @@ Either [build](https://www.libelektra.org/bindings/swig_python) the package or i
 
 The [python bindings package](https://pkgs.alpinelinux.org/packages?name=py3-elektra&branch=edge&repo=testing) is only available in the testing repository (as of 2019-04-29).
 
-You'll have to use `alpine:edge`
-
 ```sh
+docker run -it alpine:edge /bin/sh
 echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 # Install elektra and the python bindings
 apk update && apk add elektra elektra-python py3-elektra
+```
+
+Under regular alpine, you have to install python3 from the edge repository. If you do not want to add the edge repositories permanently like above, you can do
+
+```sh
+apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/main" python3
+apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra elektra-python py3-elektra
 ```
 
 ## First Steps
