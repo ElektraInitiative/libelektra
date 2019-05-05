@@ -13,6 +13,8 @@ fi
 NUMTHREADS=10
 
 check() {
+	# Ignore links that contain version placeholder
+	echo "$1" | grep -Eq 'doc/news/_preparation_next_release\.md.*<<VERSION>>' && return
 	link=$(echo "$1" | grep -oE "(https|http|ftp):.*")
 	if [ -z "$link" ]; then
 		echo "check the link format of $1"
