@@ -43,7 +43,7 @@ else ()
 		endif ()
 	endif ()
 	if (BUILD_SHARED)
-		target_include_directories (${IO_UV_LIBRARY} SYSTEM PUBLIC ${libuv_INCLUDE_DIRS})
+		target_include_directories (${IO_UV_LIBRARY}-objects SYSTEM PUBLIC ${libuv_INCLUDE_DIRS})
 
 		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV0")

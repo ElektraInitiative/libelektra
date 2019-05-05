@@ -30,7 +30,7 @@ else ()
 		add_includes ("elektra-full" ${GLib_INCLUDE_DIRS})
 	endif ()
 	if (BUILD_SHARED)
-		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
+		target_include_directories (${IO_VARIANT_LIBRARY}-objects SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
 	endif ()
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
