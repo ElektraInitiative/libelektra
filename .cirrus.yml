@@ -184,3 +184,32 @@ mac_task:
         printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
         false
       fi
+
+linux_task:
+  matrix:
+
+    - name: 🔗 Check
+      container:
+          dockerfile: scripts/docker/cirrus/Dockerfile
+
+  script:
+    - mkdir build && cd build
+    - >
+      cmake -GNinja ..
+      -DBUILD_FULL=OFF
+      -DBUILD_SHARED=OFF
+      -DBUILD_STATIC=OFF
+      -DBUILD_TESTING=OFF
+    - cd ..
+    - ninja -C build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+    - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s broken_links.txt; then
+        printf >&2 'Broken Links:\n'
+        printf >&2 '—————————————\n'
+        cat >&2 broken_links.txt
+        printf >&2 '—————————————\n'
+        false
+      fi
