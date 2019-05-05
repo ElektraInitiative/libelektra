@@ -8,12 +8,12 @@
 #include <hskdberrors.h>
 #include <kdberrors.h>
 
-void hsElektraTriggerError (int nr, Key * parentKey, const char * message)
+void hsElektraTriggerError (const char * nr, Key * parentKey, const char * message)
 {
 	elektraTriggerError (nr, parentKey, message);
 }
 
-void hsElektraTriggerWarnings (int nr, Key * parentKey, const char * message)
+void hsElektraTriggerWarnings (const char * nr, Key * parentKey, const char * message)
 {
 	elektraTriggerWarnings (nr, parentKey, message);
 }
