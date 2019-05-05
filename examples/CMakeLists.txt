@@ -96,7 +96,7 @@ if (FOUND_NAME GREATER -1)
 
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
-		if (BUILD_FULL OR BUILD_STATIC)
+#		if (BUILD_FULL OR BUILD_STATIC)
 			# Work around missing header errors that occurs if only `BUILD_FULL`, but not `BUILD_SHARED` is enabled.
 			find_package (GLib QUIET)
 			find_package (libuv QUIET)
@@ -104,7 +104,7 @@ if (FOUND_NAME GREATER -1)
 
 			list (APPEND SOURCES
 				     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds
-		endif ()
+#		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
 		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
