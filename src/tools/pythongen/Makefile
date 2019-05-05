@@ -18,8 +18,8 @@ FLAGS = -I. -I../../bindings/cpp/include `pkg-config --cflags --libs elektra` -W
 CC = gcc
 CXX = g++
 
-ELEKTRA_BUILD_TYPE=`pkg-config --variable=build_type elektra`
-ifeq ($(ELEKTRA_BUILD_TYPE),shared)
+ELEKTRA_BUILD_TYPE=$(shell pkg-config --variable=build_type elektra)
+ifeq (${ELEKTRA_BUILD_TYPE},shared)
 	LFLAGS=-lelektra-meta -pthread
 else
 	LFLAGS=-pthread
