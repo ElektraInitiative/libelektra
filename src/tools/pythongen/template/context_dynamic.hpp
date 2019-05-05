@@ -17,7 +17,6 @@ cheetahVarStartToken = $
 $util.header($args.output)
 #include "kdbthread.hpp"
 #include "kdbtypes.h"
-#include "kdbproposal.h"
 
 #include <string>
 

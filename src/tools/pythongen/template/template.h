@@ -16,7 +16,6 @@ cheetahVarStartToken = $
 $util.header($args.output)
 #include "kdb.h"
 #include "kdbtypes.h"
-#include "kdbproposal.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -124,7 +123,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 @for $o in $support.override(info)[1:]
 	if (!found)
 	{
-		elektraKeySetName(searchKey, "$o", KEY_CASCADING_NAME);
+		keySetName(searchKey, "$o");
 		found = ksLookup(ks, searchKey, 0);
 	}
 @end for
@@ -132,7 +131,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 	if (!found)
 	{
 
-		elektraKeySetName(searchKey, "$key", KEY_CASCADING_NAME);
+		keySetName(searchKey, "$key");
 		found = ksLookup(ks, searchKey, 0);
 	}
 @else
@@ -146,7 +145,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 @for $f in $support.fallback(info)
 	if (!found)
 	{
-		elektraKeySetName(searchKey,  "$f", KEY_CASCADING_NAME);
+		keySetName(searchKey,  "$f");
 		found = ksLookup(ks, searchKey, 0);
 	}
 @end for

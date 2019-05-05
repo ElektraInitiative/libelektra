@@ -8,7 +8,6 @@
 
 #include "lift.h"
 #include "genopt.h"
-#include <kdbproposal.h>
 
 #include <stdio.h>
 
