@@ -36,11 +36,13 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "#include <kdblogger.h>" << endl
 	   << "#include <kdbmacros.h>" << endl
 	   << "#include <string.h>" << endl
+	   << "#include <stdio.h>" << endl
 	   << endl
 	   << "#ifdef __cplusplus" << endl
 	   << "	using namespace ckdb;" << endl
 	   << endl
 	   << "#endif" << endl
+	   << "#define MAX_WARNING_NUMBER 1000" << endl
 	   << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
 	   << "	(number, key, text, __FILE__, __LINE__)" << endl
 	   << endl
@@ -114,6 +116,23 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		os << p[i]["macro"] << " " << i << endl;
 	}
 
+	os << endl << endl
+
+	<< " static kdb_long_long_t getNextArrayNumber (Key * warningKey)" << endl
+	<< "{" << endl
+	<< "	const Key * warningMeta = keyGetMeta (warningKey, \"warnings\");" << endl
+	<< "	if (!warningMeta) return 0;"
+	<< "	kdb_long_long_t current = 0;" << endl
+	<< "	const char * ptr = keyString (warningMeta);" << endl
+	<< "	sscanf (ptr, ELEKTRA_LONG_LONG_F, &current);" << endl
+	<< "	current++;" << endl
+	<< "	if (current >= MAX_WARNING_NUMBER)" << endl
+	<< "	 {" << endl
+	<< "		current = MAX_WARNING_NUMBER;" << endl
+	<< "	}" << endl
+	<< "	return current;" << endl
+	<< "}" << endl;
+
 	os << endl << endl;
 
 	for (size_t i = 1; i < p.size (); ++i)
@@ -144,50 +163,39 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				os << "{" << endl
 				   << "	if (!warningKey) return;" << endl
 				   << "" << endl
-				   << "	char buffer[25] = \"warnings/#00\";buffer[12] = '\\0';" << endl
-				   << "	const Key *meta = keyGetMeta(warningKey, \"warnings\");" << endl
-				   << "	if (meta)" << endl
-				   << "	{" << endl
-				   << "		buffer[10] = keyString(meta)[0];" << endl
-				   << "		buffer[11] = keyString(meta)[1];" << endl
-				   << "		buffer[11]++;" << endl
-				   << "		if (buffer[11] > '9')" << endl
-				   << "		{" << endl
-				   << "			buffer[11] = '0';" << endl
-				   << "			buffer[10]++;" << endl
-				   << "			if (buffer[10] > '9') buffer[10] = '0';" << endl
-				   << "		}" << endl
-				   << "		keySetMeta(warningKey, \"warnings\", &buffer[10]);" << endl
-				   << "	} else  keySetMeta(warningKey, \"warnings\", \"00\");" << endl
+				   << "	char * nextNumber = elektraFormat(\"%lu\", getNextArrayNumber(warningKey));" << endl
+				   << "	char * buffer = elektraFormat (\"warnings/#%s\", nextNumber);" << endl
 				   << "" << endl
 				   << "	keySetMeta(warningKey, buffer, \"number description module file line function reason\");" << endl
-				   << "	strcat(buffer, \"/number\" );" << endl
-				   << "	keySetMeta(warningKey, buffer, \"" << i << "\");" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
-				   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
-				   << "	keySetMeta(warningKey, buffer, \"" << p[i]["module"] << "\");" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
-				   << "	keySetMeta(warningKey, buffer, file);" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/line\");" << endl
-				   << "	keySetMeta(warningKey, buffer, line);" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/mountpoint\");" << endl
-				   << "	keySetMeta(warningKey, buffer, keyName(warningKey));" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/configfile\");" << endl
-				   << "	keySetMeta(warningKey, buffer, keyString(warningKey));" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/reason\");" << endl;
+				   << "	const char * number = elektraFormat (\"%s/%s\", buffer, \"number\");" << endl
+				   << "	const char * description = elektraFormat (\"%s/%s\", buffer, \"description\");" << endl
+				   << "	const char * module = elektraFormat (\"%s/%s\", buffer, \"module\");" << endl
+				   << "	const char * fileKey = elektraFormat (\"%s/%s\", buffer, \"file\");" << endl
+				   << "	const char * lineKey = elektraFormat (\"%s/%s\", buffer, \"line\");" << endl
+				   << "	const char * mountpoint = elektraFormat (\"%s/%s\", buffer, \"mountpoint\");" << endl
+				   << "	const char * configfile = elektraFormat (\"%s/%s\", buffer, \"configfile\");" << endl
+				   << "	const char * reasonKey = elektraFormat (\"%s/%s\", buffer, \"reason\");" << endl
+				   << endl
+				   << "	keySetMeta(warningKey, \"warnings\", nextNumber);" << endl
+				   << "	keySetMeta(warningKey, number, \"" << i << "\");" << endl
+				   << "	keySetMeta(warningKey, description, \"" << p[i]["description"] << "\");" << endl
+				   << "	keySetMeta(warningKey, module, \"" << p[i]["module"] << "\");" << endl
+				   << "	keySetMeta(warningKey, fileKey, file);" << endl
+				   << "	keySetMeta(warningKey, lineKey, line);" << endl
+				   << "	keySetMeta(warningKey, mountpoint, keyName(warningKey));" << endl
+				   << "	keySetMeta(warningKey, configfile, keyString(warningKey));" << endl;
 				if (f == 0)
 				{
 					os << "	va_list arg;" << endl
 					   << "	va_start(arg, line);" << endl
 					   << "	char * r = elektraVFormat(reason, arg);" << endl
-					   << "	keySetMeta(warningKey, buffer, r);" << endl
+					   << "	keySetMeta(warningKey, reasonKey, r);" << endl
 					   << "	elektraFree(r);" << endl
 					   << "	va_end(arg);" << endl;
 				}
 				else
 				{
-					os << "	keySetMeta(warningKey, buffer, reason);" << endl;
+					os << "	keySetMeta(warningKey, reasonKey, reason);" << endl;
 				}
 				os << "}" << endl << endl;
 			}
@@ -210,24 +218,11 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				}
 				os << "{" << endl
 				   << "	if (!errorKey) return;" << endl
-				   << "	char buffer[25] = \"warnings/#00\";" << endl
-				   << " 	const Key *meta = keyGetMeta(errorKey, \"error\");" << endl
+				   << "	char * nextNumber = elektraFormat(\"%lu\", getNextArrayNumber(errorKey));" << endl
+				   << "	char * buffer = elektraFormat (\"warnings/#%s\", nextNumber);" << endl
+				   << "	const Key *meta = keyGetMeta(errorKey, \"error\");" << endl
 				   << "	if (meta)" << endl
 				   << "	{" << endl
-				   << "		const Key *warningMeta = keyGetMeta(errorKey, \"warnings\");" << endl
-				   << "		if (warningMeta)" << endl
-				   << "		{" << endl
-				   << "			buffer[10] = keyString(warningMeta)[0];" << endl
-				   << "			buffer[11] = keyString(warningMeta)[1];" << endl
-				   << "			buffer[11]++;" << endl
-				   << "			if (buffer[11] > '9')" << endl
-				   << "			{" << endl
-				   << "				buffer[11] = '0';" << endl
-				   << "				buffer[10]++;" << endl
-				   << "				if (buffer[10] > '9') buffer[10] = '0';" << endl
-				   << "			}" << endl
-				   << "			keySetMeta(errorKey, \"warnings\", &buffer[10]);" << endl
-				   << "		} else	keySetMeta(errorKey, \"warnings\", \"00\");" << endl
 				   << "		keySetMeta(errorKey, buffer, \"number description  module file line function "
 				      "reason\");"
 				   << endl

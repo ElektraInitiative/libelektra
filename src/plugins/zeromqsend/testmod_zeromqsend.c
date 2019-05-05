@@ -243,7 +243,7 @@ static void test_timeoutConnect (void)
 
 	char * expectedWarningNumber = elektraFormat ("%d", ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT);
 	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
-	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#00/number")));
+	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#0/number")));
 
 	ksDel (ks);
 	keyDel (parentKey);
