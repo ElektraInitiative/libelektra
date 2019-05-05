@@ -32,6 +32,16 @@ if (ELEKTRA_FOUND)
 
 	add_executable (application ../src/application.c ${CMAKE_CURRENT_BINARY_DIR}/genelektra.c)
 	target_link_libraries (application ${ElektraCodegen_LIBRARIES})
+
+	if (CMAKE_VERSION VERSION_LESS "3.1")
+		set_property (TARGET application
+			      PROPERTY C_FLAGS
+				       "-std=c99 ${CMAKE_C_FLAGS}")
+	else ()
+		set_property (TARGET application
+			      PROPERTY C_STANDARD
+				       99)
+	endif ()
 else (ELEKTRA_FOUND)
 	message (FATAL_ERROR "Elektra not found")
 endif (ELEKTRA_FOUND)
