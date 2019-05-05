@@ -128,7 +128,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "	strcat(buffer, \"/number\" );" << endl
 			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["number"] << "\");" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
-			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" <<  endl
+			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
 			   << "	keySetMeta(warningKey, buffer, module);" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
@@ -220,7 +220,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "number description  module file line function reason"
 			   << "\");" << endl
 			   << "		keySetMeta(errorKey, \"error/number\", \"" << p[i]["number"] << "\");" << endl
-			   << "		keySetMeta(errorKey, \"error/description\", \"" << p[i]["description"] << "\");" <<  endl
+			   << "		keySetMeta(errorKey, \"error/description\", \"" << p[i]["description"] << "\");" << endl
 			   << "		keySetMeta(errorKey, \"error/module\", module);" << endl
 			   << "		keySetMeta(errorKey, \"error/file\", "
 			   << "file"
@@ -271,7 +271,8 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		   << "			KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/description\"," << endl
 		   << "			KEY_VALUE, \"" << p[i]["description"] << "\", KEY_END)," << endl;
-		//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/severity\"," <<
+		//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/severity\","
+		//<<
 		// endl
 		//		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
 		//		   << "		keyNew (\"system/elektra/modules/error/specification/" << p[i]["number"] << "/module\"," <<
