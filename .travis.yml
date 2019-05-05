@@ -199,7 +199,7 @@ matrix:
       env:
         - HASKELL=ON
         # Use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher;ni'
+        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher;ni;c'
         - BINDINGS=haskell
         - TOOLS=kdb
 
