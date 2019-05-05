@@ -42,6 +42,7 @@ set (ELEKTRA_VERSION_MINOR ${Elektra_VERSION_MINOR})
 set (ELEKTRA_VERSION_MICRO ${Elektra_VERSION_MICRO})
 
 # Set build type of Elektra
+set (Elektra_BUILD_TYPE @Elektra_BUILD_TYPE@)
 set (Elektra_SHARED @BUILD_SHARED@)
 set (Elektra_FULL @BUILD_FULL@)
 set (Elektra_STATIC @BUILD_STATIC@)

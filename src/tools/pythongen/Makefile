@@ -12,12 +12,18 @@
 #properly.
 
 GEN=./pythongen
-LFLAGS=-lelektra-meta -pthread
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb
 FLAGS = -I. -I../../bindings/cpp/include `pkg-config --cflags --libs elektra` -Wl,-rpath `pkg-config --variable=libdir elektra`
 CC = gcc
 CXX = g++
+
+ELEKTRA_BUILD_TYPE=`pkg-config --variable=build_type elektra`
+ifeq ($(ELEKTRA_BUILD_TYPE),shared)
+	LFLAGS=-lelektra-meta -pthread
+else
+	LFLAGS=-pthread
+endif
 
 .PHONY:all
 all:lift cpplift nestedlift dynamiccontextlift lift.html lift.3 location
