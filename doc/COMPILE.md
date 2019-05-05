@@ -650,20 +650,6 @@ applications to link against plugins.
 
 ## Troubleshooting
 
-### Missing Links/Libraries
-
-If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
-or the links do not work, you can use as workaround:
-
-```sh
-cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
-```
-
-This issue was reported for:
-
-- OpenSuse 42 (when running `make run_all`)
-- CLion IDE (does not allow to build)
-
 ### Dependencies not Available for Cent OS
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
