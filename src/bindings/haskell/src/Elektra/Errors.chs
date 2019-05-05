@@ -15,5 +15,5 @@ module Elektra.Errors (
 
 {#context lib="libelektra" #}
 
-{#fun unsafe hsElektraTriggerError as triggerError {`Int', `Key', `String'} -> `()' #}
-{#fun unsafe hsElektraTriggerWarnings as triggerWarnings {`Int', `Key', `String'} -> `()' #}
+{#fun unsafe hsElektraTriggerError as triggerError {`String', `Key', `String'} -> `()' #}
+{#fun unsafe hsElektraTriggerWarnings as triggerWarnings {`String', `Key', `String'} -> `()' #}
