@@ -146,7 +146,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
-- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
+- [YAML CPP][] now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
 - The plugin converts “sparse” key sets properly. For example, for the key set that contains **only** the key:
 
   - `user/parent/#1/#2/map/#0` with the value `arr`
@@ -163,7 +163,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
-- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
+- [YAML CPP][] now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
 
   ```yaml
   root:
@@ -182,6 +182,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   .
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[yaml cpp]: ../../src/plugins/yamlcpp/README.md
 
 ### YAML Smith
 
@@ -548,7 +549,7 @@ you up to date with the multi-language support provided by Elektra.
   - [Bison](https://www.gnu.org/software/bison/), and
   - [YAEP](https://github.com/vnmakarov/yaep)
 
-  to the [image for Debian sid](../../scripts/Docker/debian/sid/Dockerfile).
+  to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile).
 
 #### Other Updates
 
