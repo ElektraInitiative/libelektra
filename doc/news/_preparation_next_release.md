@@ -419,6 +419,7 @@ you up to date with the multi-language support provided by Elektra.
 - `kdb import` does not fail anymore if executed more than once with the same target in the spec-namespace. _(Thomas Bretterbauer)_
 - `kdb mount` avoid adding sync if sync is already provided. _(Markus Raab)_
 - `kdb list-tools` now supports `KDB_EXEC_PATH` environment variables that contain spaces. _(René Schwaiger)_
+- `gen-gpg-testkey` is added to the default tools list (see [#2668](https://github.com/ElektraInitiative/libelektra/issues/2668))._(Peter Nirschl)_
 - <<TODO>>
 
 - <<TODO>>
