@@ -1,7 +1,7 @@
 @INCLUDE_COMMON@
 
 echo
-echo ELEKTRA CHECK GEN
+echo ELEKTRA CHECK PYTHONGEN
 echo
 
 if pkg-config elektra; then

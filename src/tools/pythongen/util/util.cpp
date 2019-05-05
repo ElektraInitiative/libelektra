@@ -183,8 +183,7 @@ $cpp_util.generateForwardDeclContext(support, child)
 	}
 @set $oa = $support.override(info)[1:]
 @for $o in oa
-	elektraKeySetName(*search, "$o",
-		KEY_CASCADING_NAME);
+	keySetName(*search, "$o");
 	found = ks.lookup(search, 0);
 	if (found)
 	{
@@ -193,8 +192,7 @@ $cpp_util.generateForwardDeclContext(support, child)
 	}
 @end for
 	// now the key itself
-	elektraKeySetName(*search, "$key",
-		KEY_CASCADING_NAME);
+	keySetName(*search, "$key");
 	found = ks.lookup(search, 0);
 @else
 kdb::Key search ("$key",
@@ -211,8 +209,7 @@ kdb::Key search ("$key",
 @if len(fa) > 0
 	// fallback
 @for $f in $fa
-	elektraKeySetName(*search, "$f",
-		KEY_CASCADING_NAME);
+	keySetName(*search, "$f");
 	found = ks.lookup(search, 0);
 	if (found)
 	{

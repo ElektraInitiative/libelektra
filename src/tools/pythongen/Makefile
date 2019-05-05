@@ -12,10 +12,10 @@
 #properly.
 
 GEN=./pythongen
-ELEKTRA=-lelektra -lelektra-meta -pthread
+LFLAGS=-lelektra-meta -pthread
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb
-FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
+FLAGS = -I. -I../../bindings/cpp/include `pkg-config --cflags --libs elektra` -Wl,-rpath `pkg-config --variable=libdir elektra`
 CC = gcc
 CXX = g++
 
@@ -67,28 +67,28 @@ genopt.h:${GEN} tests/lift.ini template/genopt.h support/genopt.py util.py
 	${GEN} tests/lift.ini template/genopt.h -o genopt.h
 
 lift:tests/lift.c lift.h genopt.c genopt.h
-	${CC} ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE tests/lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift
+	${CC} ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE tests/lift.c genopt.c genopt.h lift.h ${LFLAGS} -o lift
 
 cpplift:tests/lift.cpp lift.hpp
-	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift.cpp lift.hpp ${LFLAGS}  -o cpplift
 
 dynamiccontextlift:lift_context_dynamic.hpp tests/lift_context.cpp
-	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${ELEKTRA}  -o dynamiccontextlift
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${LFLAGS}  -o dynamiccontextlift
 
 location:location.hpp tests/location.cpp
-	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/location.cpp location.hpp ${ELEKTRA}  -o location
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/location.cpp location.hpp ${LFLAGS}  -o location
 
 nestedlift:lift_nested.hpp tests/lift_nested.cpp
-	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${LFLAGS}  -o nestedlift
 
 #staticcontextlift:lift_context_static.hpp tests/lift_context.cpp
-#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_context.cpp lift_context_static.hpp ${ELEKTRA}  -o staticcontextlift
+#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_context.cpp lift_context_static.hpp ${LFLAGS}  -o staticcontextlift
 #
 #contextvisit:visit_context.hpp tests/visit_context.cpp
-#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
+#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/visit_context.cpp visit_context.hpp ${LFLAGS}  -o contextvisit
 #
 #contexteditor:editor_context.hpp tests/editor_context.cpp
-#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/editor_context.cpp editor_context.hpp ${ELEKTRA}  -o contexteditor
+#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/editor_context.cpp editor_context.hpp ${LFLAGS}  -o contexteditor
 
 .PHONY:clean
 clean:
