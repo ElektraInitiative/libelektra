@@ -23,6 +23,20 @@ else
 	exit
 fi
 
+if is_plugin_available type; then
+	echo "type plugin available"
+else
+	echo "no type plugin available"
+	exit
+fi
+
+if is_plugin_available reference; then
+	echo "reference plugin available"
+else
+	echo "no reference plugin available"
+	exit
+fi
+
 base_output_folder="@CMAKE_CURRENT_BINARY_DIR@/gen"
 
 for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
