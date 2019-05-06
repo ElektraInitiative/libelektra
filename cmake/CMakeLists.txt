@@ -4,7 +4,7 @@ include (CMakePackageConfigHelpers)
 
 # cmake settings for use by find_package
 if (BUILD_SHARED)
-	set (Elektra_LIBRARIES "elektra-core elektra-kdb")
+	set (Elektra_LIBRARIES "elektra-kdb elektra-core")
 	set (ElektraHighlevel_LIBRARIES "elektra-highlevel")
 	set (ElektraCodegen_LIBRARIES "elektra-highlevel elektra-opts elektra-invoke")
 	set (Elektra_BUILD_TYPE "shared")
@@ -31,7 +31,7 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfig.cmake"
 
 # pkg-config files
 if (BUILD_SHARED)
-	set (PACKAGE_LIBS "-lelektra-core -lelektra-kdb")
+	set (PACKAGE_LIBS "-lelektra-kdb -lelektra-core")
 	set (PACKAGE_BUILD_TYPE "shared")
 elseif (BUILD_FULL)
 	set (PACKAGE_LIBS "-lelektra-full")
