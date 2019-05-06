@@ -14,15 +14,15 @@
 GEN=./pythongen
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb
-FLAGS = -I. -I../../bindings/cpp/include `pkg-config --cflags --libs elektra` -Wl,-rpath `pkg-config --variable=libdir elektra`
+FLAGS = -I. -I../../bindings/cpp/include `pkg-config --cflags elektra`
 CC = gcc
 CXX = g++
 
 ELEKTRA_BUILD_TYPE=$(shell pkg-config --variable=build_type elektra)
 ifeq (${ELEKTRA_BUILD_TYPE},shared)
-	LFLAGS=-lelektra-meta -pthread
+	LFLAGS=-lelektra-meta `pkg-config --libs elektra` -pthread -Wl,-rpath `pkg-config --variable=libdir elektra`
 else
-	LFLAGS=-pthread
+	LFLAGS=`pkg-config --libs elektra` -pthread -Wl,-rpath `pkg-config --variable=libdir elektra`
 endif
 
 .PHONY:all
