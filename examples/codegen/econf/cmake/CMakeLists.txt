@@ -34,7 +34,7 @@ if (ELEKTRA_FOUND)
 	target_link_libraries (application ${ElektraCodegen_LIBRARIES})
 
 	if (CMAKE_VERSION VERSION_LESS "3.1")
-		target_compile_options (application "-std=c99")
+		target_compile_options (application PRIVATE "-std=c99")
 	else ()
 		set_property (TARGET application
 			      PROPERTY C_STANDARD
