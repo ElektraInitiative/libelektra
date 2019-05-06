@@ -40,7 +40,7 @@ cd "$SOURCE_DIRECTORY" || {
 }
 
 command -v hyperfine > /dev/null 2>&1 || {
-	printf >&2 'This test requires the command `hyperfine`\n'
+	printf >&2 'This script requires the command `hyperfine`\n'
 	exit 1
 }
 
