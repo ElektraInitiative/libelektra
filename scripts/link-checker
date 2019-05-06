@@ -17,6 +17,8 @@ check() {
 	echo "$1" | grep -Eq 'doc/news/_preparation_next_release\.md.*<<VERSION>>' && return
 	# TODO: Fix Doxygen build upload for latest version of documentation
 	echo "$1" | grep -Eq 'https://doc\.libelektra\.org/api/latest/html' && return
+	# TODO: The following link only works if you are logged into the build server
+	echo "$1" | grep -Eq 'https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax' && return
 	link=$(echo "$1" | grep -oE "(https|http|ftp):.*")
 	if [ -z "$link" ]; then
 		echo "check the link format of $1"
