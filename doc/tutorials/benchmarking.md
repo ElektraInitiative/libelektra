@@ -66,12 +66,19 @@ Now that you know how to execute `benchmark_plugingetset`, you can use it to com
 - to run `benchmark_plugingetset` multiple times, and
 - compare different plugins
 
-it makes sense to use a benchmarking tool such as [hyperfine](https://github.com/sharkdp/hyperfine) for that task. For our tutorial we assume that you copied the file [`keyframes.yaml`](../../benchmarks/data/keyframes.yaml) to the locations
+it makes sense to use a benchmarking tool such as [hyperfine](https://github.com/sharkdp/hyperfine) for that task. For our tutorial we assume that you copied the file [`keyframes.yaml`](https://github.com/sanssecours/rawdata/blob/master/YAML/keyframes.yaml) to the locations
 
 - `/tmp/test.yamlcpp.in`, and
 - `/tmp/test.yaypeg.in`
 
-. Afterwards you can use the following command to compare the performance of the plugins:
+. You can do that using the following commands:
+
+```sh
+curl -L https://github.com/sanssecours/rawdata/raw/master/YAML/keyframes.yaml -o /tmp/test.yamlcpp.in
+cp /tmp/test.yamlcpp.in /tmp/test.yaypeg.in
+```
+
+. Afterwards you can use:
 
 ```sh
 hyperfine --warmup 3 'bin/benchmark_plugingetset /tmp user yamlcpp get' \
@@ -79,7 +86,7 @@ hyperfine --warmup 3 'bin/benchmark_plugingetset /tmp user yamlcpp get' \
 
 ```
 
-. The output of this benchmark would look something like this:
+to compare the performance of the plugins. The output of this benchmark would look something like this:
 
 ```
 Benchmark #1: bin/benchmark_plugingetset /tmp user yamlcpp get
