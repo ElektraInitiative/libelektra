@@ -40,7 +40,7 @@ write() {
 	"$KDB_COMMAND" umount "$KDBPATH"
 }
 
-download() {
+download_input() {
 	mkdir -p "$DATA_DIRECTORY" || {
 		printf >&2 'Unable to create download directory “%s”\n' "$DATA_DIRECTORY"
 		exit 1
@@ -55,58 +55,70 @@ download() {
 	done
 }
 
-cd "$SOURCE_DIRECTORY" || {
-	printf >&2 'Unable to change working directory to “%s”\n' "$SOURCE_DIRECTORY"
-	exit 1
+check_environment() {
+	cd "$SOURCE_DIRECTORY" || {
+		printf >&2 'Unable to change working directory to “%s”\n' "$SOURCE_DIRECTORY"
+		exit 1
+	}
+
+	command -v "$KDB_COMMAND" || {
+		printf >&2 'The kdb command “%s” does not exist or is not executable\n' "$KDB_COMMAND"
+		exit 1
+	}
+
+	command -v curl > /dev/null 2>&1 || {
+		printf >&2 'This script requires the command `curl`\n'
+		exit 1
+	}
+
+	command -v hyperfine > /dev/null 2>&1 || {
+		printf >&2 'This script requires the command `hyperfine`\n'
+		exit 1
+	}
 }
 
-command -v "$KDB_COMMAND" || {
-	printf >&2 'The kdb command “%s” does not exist or is not executable\n' "$KDB_COMMAND"
-	exit 1
-}
-
-command -v curl > /dev/null 2>&1 || {
-	printf >&2 'This script requires the command `curl`\n'
-	exit 1
-}
-
-command -v hyperfine > /dev/null 2>&1 || {
-	printf >&2 'This script requires the command `hyperfine`\n'
-	exit 1
-}
-
-download
-
-for FILEPATH in "${INPUT_FILES[@]}"; do
-	REFERENCE=reference.yaml
-	INPUT_FILE="$DATA_DIRECTORY/$FILEPATH"
-	write yamlcpp "$INPUT_FILE" "$REFERENCE"
-	for PLUGIN in "${PLUGINS[@]}"; do
-		write "$PLUGIN" "$INPUT_FILE" "$PLUGIN.yaml"
-		diff -q "$REFERENCE" "$PLUGIN.yaml" || {
-			printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT_FILE"
-			diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
-			exit 1
-		}
-		rm "$PLUGIN.yaml"
+compare_plugin_output() {
+	for FILEPATH in "${INPUT_FILES[@]}"; do
+		REFERENCE=reference.yaml
+		INPUT_FILE="$DATA_DIRECTORY/$FILEPATH"
+		write yamlcpp "$INPUT_FILE" "$REFERENCE"
+		for PLUGIN in "${PLUGINS[@]}"; do
+			write "$PLUGIN" "$INPUT_FILE" "$PLUGIN.yaml"
+			diff -q "$REFERENCE" "$PLUGIN.yaml" || {
+				printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT_FILE"
+				diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
+				exit 1
+			}
+			rm "$PLUGIN.yaml"
+		done
+		rm "$REFERENCE"
 	done
-	rm "$REFERENCE"
-done
+}
 
-for FILEPATH in "${INPUT_FILES[@]}"; do
-	DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$FILEPATH" | cut -f1 -d'.')"
-	mkdir "$DIRECTORY"
-	for PLUGIN in "${PLUGINS[@]}"; do
-		cp "$DATA_DIRECTORY/$FILEPATH" "$DIRECTORY/test.$PLUGIN.in"
+generate_input_benchmark() {
+	for FILEPATH in "${INPUT_FILES[@]}"; do
+		DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$FILEPATH" | cut -f1 -d'.')"
+		mkdir "$DIRECTORY"
+		for PLUGIN in "${PLUGINS[@]}"; do
+			cp "$DATA_DIRECTORY/$FILEPATH" "$DIRECTORY/test.$PLUGIN.in"
+		done
 	done
-done
+}
 
-for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
-	hyperfine --warmup 3 \
-		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
-		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
-		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[2]} get" \
-		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[3]} get" \
-		"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" |
-		sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
-done
+benchmark() {
+	for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
+		hyperfine --warmup 3 \
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[2]} get" \
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[3]} get" \
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" |
+			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
+	done
+}
+
+check_environment
+download_input
+compare_plugin_output
+generate_input_benchmark
+benchmark
