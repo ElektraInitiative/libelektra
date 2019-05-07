@@ -70,7 +70,7 @@ build/bin/benchmark_plugingetset benchmarks/data user yaypeg get
 
 ```sh
 valgrind --tool=callgrind --callgrind-out-file=callgrind.out \
-build/bin/benchmark_plugingetset /tmp user yaypeg get
+build/bin/benchmark_plugingetset benchmarks/data user yaypeg get
 ```
 
 . The command above will create a file called `callgrind.out` in the root of the repository. You can now remove the input data and the folder `benchmarks/data`:
