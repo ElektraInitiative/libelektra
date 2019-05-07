@@ -61,7 +61,7 @@ check_environment() {
 		exit 1
 	}
 
-	command -v "$KDB_COMMAND" || {
+	command -v "$KDB_COMMAND" > /dev/null || {
 		printf >&2 'The kdb command “%s” does not exist or is not executable\n' "$KDB_COMMAND"
 		exit 1
 	}
