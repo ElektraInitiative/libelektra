@@ -44,7 +44,7 @@ write() {
 
 download_input() {
 	mkdir -p "$DATA_DIRECTORY" || {
-		printf >&2 'Unable to create download directory “%s”\n' "$DATA_DIRECTORY"
+		printf >&2 'Unable to create data directory “%s”\n' "$DATA_DIRECTORY"
 		exit 1
 	}
 	for INPUT_FILE in "${INPUT_FILES[@]}"; do
