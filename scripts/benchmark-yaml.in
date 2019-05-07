@@ -128,8 +128,17 @@ trap cleanup EXIT INT QUIT TERM
 
 (("$#" >= 1)) && INPUT_FILES=("$@")
 
+printf '→ Check Environment\n'
 check_environment
+
+printf '→ Download Input\n'
 download_input
+
+printf '→ Compare Plugin Output\n'
 compare_plugin_output
+
+printf '→ Generate Benchmark Data\n'
 generate_input_benchmark
+
+printf '→ Run Benchmark\n\n'
 benchmark
