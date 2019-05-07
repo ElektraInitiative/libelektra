@@ -34,7 +34,16 @@ Elektra already includes a tool that helps you to benchmark the `get` and `set` 
 - The Violence
 ```
 
-and save it in the folder `/tmp`. As you can see the filename has to use the pattern:
+and save it in the folder `benchmarks/data`:
+
+```sh
+mkdir -p benchmarks/data
+printf -- '- You,\n'       >  benchmarks/data/test.yamlcpp.in
+printf -- '- Me, &\n'      >> benchmarks/data/test.yamlcpp.in
+printf -- '- The Violence' >> benchmarks/data/test.yamlcpp.in
+```
+
+. As you can see the filename has to use the pattern:
 
 ```sh
 test.$plugin.in
@@ -43,17 +52,16 @@ test.$plugin.in
 , where `$plugin` specifies the name of the plugin the benchmark tool should call. We can now call the `get` method of the plugin [YAML CPP][] using the following shell command
 
 ```sh
-cd build
-bin/benchmark_plugingetset /tmp      user    yamlcpp       get
-#                            ↑        ↑        ↑           ↑
-#               parent directory  namespace  plugin   only use `get`
-#                of config file                       plugin method
+build/bin/benchmark_plugingetset benchmarks/data      user    yamlcpp       get
+#                                       ↑              ↑        ↑           ↑
+#                                parent directory  namespace  plugin   only use `get`
+#                                 of config file                       plugin method
 ```
 
 . If you can want you can also use the `time` utility to measure the execution time of the last command:
 
 ```sh
-time bin/benchmark_plugingetset /tmp user yamlcpp get
+time build/bin/benchmark_plugingetset benchmarks/data user yamlcpp get
 #>       0.00 real         0.00 user         0.00 sys
 ```
 
@@ -70,21 +78,22 @@ Now that you know how to execute `benchmark_plugingetset`, you can use it to com
 
 it makes sense to use a benchmarking tool such as [hyperfine](https://github.com/sharkdp/hyperfine) for that task. For our tutorial we assume that you copied the file [`keyframes.yaml`](https://github.com/sanssecours/rawdata/blob/master/YAML/keyframes.yaml) to the locations
 
-- `/tmp/test.yamlcpp.in`, and
-- `/tmp/test.yaypeg.in`
+- `benchmarks/data/test.yamlcpp.in`, and
+- `benchmarks/data/test.yaypeg.in`
 
 . You can do that using the following commands:
 
 ```sh
-curl -L https://github.com/sanssecours/rawdata/raw/master/YAML/keyframes.yaml -o /tmp/test.yamlcpp.in
-cp /tmp/test.yamlcpp.in /tmp/test.yaypeg.in
+mkdir -p benchmarks/data
+curl -L https://github.com/sanssecours/rawdata/raw/master/YAML/keyframes.yaml -o benchmarks/data/test.yamlcpp.in
+cp benchmarks/data/test.yamlcpp.in benchmarks/data/test.yaypeg.in
 ```
 
 . Afterwards you can use:
 
 ```sh
-hyperfine --warmup 3 'bin/benchmark_plugingetset /tmp user yamlcpp get' \
-                     'bin/benchmark_plugingetset /tmp user yaypeg get'
+hyperfine --warmup 3 'build/bin/benchmark_plugingetset benchmarks/data user yamlcpp get' \
+                     'build/bin/benchmark_plugingetset benchmarks/data user yaypeg get'
 
 ```
 
@@ -102,6 +111,14 @@ Benchmark #2: bin/benchmark_plugingetset /tmp user yaypeg get
 Summary
   'bin/benchmark_plugingetset /tmp user yaypeg get' ran
     1.01 ± 0.06 times faster than 'bin/benchmark_plugingetset /tmp user yamlcpp get'
+```
+
+. You can now remove the input files and the folder `benchmarks/data`:
+
+```sh
+rm benchmarks/data/test.yamlcpp.in
+rm benchmarks/data/test.yaypeg.in
+rmdir benchmarks/data
 ```
 
 .
