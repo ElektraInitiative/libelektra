@@ -42,16 +42,17 @@ ninja
 
 ### Profiling the Code
 
-We use the tool [`benchmark_plugingetset`](../../benchmarks/README.md) to profile the execution time of [YAy PEG][]. The file [`keyframes.yaml`](../../benchmarks/data/keyframes.yaml) serves as input file for the plugin. Since `benchmark_plugingetset` requires a data file called
+We use the tool [`benchmark_plugingetset`](../../benchmarks/README.md) to profile the execution time of [YAy PEG][]. The file [`keyframes.yaml`](https://github.com/sanssecours/rawdata/blob/master/YAML/keyframes.yaml) serves as input file for the plugin. Since `benchmark_plugingetset` requires a data file called
 
 ```sh
 test.$plugin.in
 ```
 
-, we save a copy of `keyframes.yaml` as `test.yaypeg.in`:
+, we save a copy of `keyframes.yaml` as `test.yaypeg.in` in the folder `benchmarks/data`:
 
 ```sh
-cp benchmarks/data/keyframes.yaml benchmarks/data/test.yaypeg.in
+mkdir -p benchmarks/data
+curl -L https://github.com/sanssecours/rawdata/raw/master/YAML/keyframes.yaml -o benchmarks/data/test.yaypeg.in
 ```
 
 . After that we call `benchmark_plugingetset` directly to make sure that everything works as expected:
@@ -72,7 +73,14 @@ valgrind --tool=callgrind --callgrind-out-file=callgrind.out \
 build/bin/benchmark_plugingetset /tmp user yaypeg get
 ```
 
-. The command above will create a file called `callgrind.out` in the root of the repository. If you use [Docker](../../scripts/docker/README.md) to translate Elektra, then you might want to fix the paths in the file `callgrind.out` before you continue:
+. The command above will create a file called `callgrind.out` in the root of the repository. You can now remove the input data and the folder `benchmarks/data`:
+
+```sh
+rm benchmarks/data/test.yaypeg.in
+rmdir benchmarks/data
+```
+
+. If you use [Docker](../../scripts/docker/README.md) to translate Elektra, then you might want to fix the paths in the file `callgrind.out` before you continue:
 
 ```sh
 # The tool `sponge` is part of the `moreutils` package: https://joeyh.name/code/moreutils
