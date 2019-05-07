@@ -7,9 +7,8 @@
 
 BUILD_DIRECTORY="@CMAKE_BINARY_DIR@"
 SOURCE_DIRECTORY="@CMAKE_SOURCE_DIR@"
-KDB_COMMAND="@CMAKE_BINARY_DIR@/bin/kdb"
-export LD_LIBRARY_PATH="@CMAKE_BINARY_DIR@/lib"
 
+KDB_COMMAND="$BUILD_DIRECTORY/bin/kdb"
 PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
@@ -19,8 +18,8 @@ INPUT_FILES=(
 	generated.yaml
 )
 INPUT_URL="https://raw.githubusercontent.com/sanssecours/rawdata/master/YAML"
+export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
-trap cleanup EXIT INT QUIT TERM
 
 cleanup() {
 	rm -rf "$DATA_DIRECTORY"
@@ -116,6 +115,8 @@ benchmark() {
 			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
 	done
 }
+
+trap cleanup EXIT INT QUIT TERM
 
 check_environment
 download_input
