@@ -656,11 +656,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endforeach (DIR)
 
 	set_property (TARGET ${PLUGIN_OBJS}
-		      PROPERTY POSITION_INDEPENDENT_CODE
+		      PROPERTY CMAKE_POSITION_INDEPENDENT_CODE
 			       ON)
 
 	if (BUILD_SHARED)
-		add_library (${PLUGIN_NAME} MODULE $<TARGET_OBJECTS:${PLUGIN_OBJS}> ${ARG_OBJECT_SOURCES})
+		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
+		add_dependencies (${PLUGIN_NAME} kdberrors_generated elektra_error_codes_generated)
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
 		endif ()
