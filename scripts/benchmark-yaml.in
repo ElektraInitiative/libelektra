@@ -15,8 +15,6 @@ PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILES=(
-	keyframes.yaml
-	combined.yaml
 	generated.yaml
 )
 INPUT_URL="https://raw.githubusercontent.com/sanssecours/rawdata/master/YAML"
@@ -122,6 +120,13 @@ benchmark() {
 # -- Main ----------------------------------------------------------------------------------------------------------------------------------
 
 trap cleanup EXIT INT QUIT TERM
+
+# Usage: benchmark-yaml [input ...]
+
+# The input (files) have to be available at `INPUT_URL`.
+# If you specify no input file, the benchmark uses the files specified in `INPUT_FILES`.
+
+(("$#" >= 1)) && INPUT_FILES=("$@")
 
 check_environment
 download_input
