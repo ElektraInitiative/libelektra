@@ -34,8 +34,10 @@ cd build
 cmake -GNinja ..               \
       -DCMAKE_BUILD_TYPE=Debug \
       -DENABLE_LOGGER=OFF      \
-      -DENABLE_DEBUG=OFF
+      -DENABLE_DEBUG=OFF       \
+      -DPLUGINS=ALL
 ninja
+cd .. # Change working directory back to the root of repository
 ```
 
 .
