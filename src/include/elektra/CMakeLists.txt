@@ -1,5 +1,4 @@
 install (FILES error.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/errorcodes.h"
 	       "${CMAKE_CURRENT_BINARY_DIR}/errors.h"
 	       conversion.h
 	       types.h
