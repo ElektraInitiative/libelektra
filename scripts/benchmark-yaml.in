@@ -17,7 +17,7 @@ BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILES=(
 	generated.yaml
 )
-INPUT_URL="https://raw.githubusercontent.com/sanssecours/rawdata/master/YAML"
+INPUT_URL="https://github.com/ElektraInitiative/rawdata/master/YAML"
 export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
