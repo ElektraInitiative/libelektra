@@ -5,6 +5,8 @@
 # @date 12.04.2019
 # @tags benchmark
 
+# -- Global Variables ----------------------------------------------------------------------------------------------------------------------
+
 BUILD_DIRECTORY="@CMAKE_BINARY_DIR@"
 SOURCE_DIRECTORY="@CMAKE_SOURCE_DIR@"
 
@@ -20,6 +22,7 @@ INPUT_FILES=(
 INPUT_URL="https://raw.githubusercontent.com/sanssecours/rawdata/master/YAML"
 export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
+# -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 cleanup() {
 	rm -rf "$DATA_DIRECTORY"
@@ -115,6 +118,8 @@ benchmark() {
 			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
 	done
 }
+
+# -- Main ----------------------------------------------------------------------------------------------------------------------------------
 
 trap cleanup EXIT INT QUIT TERM
 
