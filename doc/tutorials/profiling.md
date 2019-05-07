@@ -72,7 +72,7 @@ valgrind --tool=callgrind --callgrind-out-file=callgrind.out \
 build/bin/benchmark_plugingetset /tmp user yaypeg get
 ```
 
-. The command above will create a file called `callgrind.out` in the root of the repository. If you use [Docker](../scripts/Docker/README.md) to translate Elektra, then you might want to fix the paths in the file `callgrind.out` before you continue:
+. The command above will create a file called `callgrind.out` in the root of the repository. If you use [Docker](../../scripts/docker/README.md) to translate Elektra, then you might want to fix the paths in the file `callgrind.out` before you continue:
 
 ```sh
 # The tool `sponge` is part of the `moreutils` package: https://joeyh.name/code/moreutils

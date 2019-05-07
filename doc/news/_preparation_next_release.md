@@ -146,7 +146,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
-- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
+- [YAML CPP][] now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
 - The plugin converts “sparse” key sets properly. For example, for the key set that contains **only** the key:
 
   - `user/parent/#1/#2/map/#0` with the value `arr`
@@ -163,7 +163,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   .
 
-- [YAML CPP](../../src/plugins/yamlcpp/ReadMe.md) now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
+- [YAML CPP][] now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
 
   ```yaml
   root:
@@ -182,6 +182,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   .
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[yaml cpp]: ../../src/plugins/yamlcpp/README.md
 
 ### YAML Smith
 
@@ -433,6 +434,7 @@ you up to date with the multi-language support provided by Elektra.
   will reformat. So e.g. calling `reformat-cmake src/include/kdbprivate.h` doesn't change any files. _(Klemens Böswirth)_
 - The script `scripts/reformat-all` is a new convenience script that calls all other `reformat-*` scripts. _(Klemens Böswirth)_
 - The script `scripts/pre-commit-check-formatting` can be used as a pre-commit hook, to ensure files are formatted before committing. _(Klemens Böswirth)_
+- The [link checker](../../scripts/link-checker) now prints broken links to the standard error output. _(René Schwaiger)_
 
 ## Benchmarks
 
@@ -470,7 +472,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Other
 
-- The [Markdown Link Converter](https://master.libelektra.org/doc/markdownlinkconverter) now uses the style
+- The [Markdown Link Converter][] now uses the style
 
   ```
   filename:line:0
@@ -486,12 +488,15 @@ you up to date with the multi-language support provided by Elektra.
   compiler errors. This update has the advantage, that certain tools such as [TextMate](https://macromates.com) are able to convert the
   location data, providing additional features, such as clickable links to the error source. _(René Schwaiger)_
 
+- The [Markdown Link Converter][] uses the index `1` for the first line number instead of `0`. This update fixes an off-by-one-error, when the user tries to use the error location data printed by the tool in a text editor. _(René Schwaiger)_
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
 - Added a new error concept to be implemented soon. _(Michael Zronek)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
+
+[markdown link converter]: https://master.libelektra.org/doc/markdownlinkconverter
 
 ## Tests
 
@@ -548,7 +553,7 @@ you up to date with the multi-language support provided by Elektra.
   - [Bison](https://www.gnu.org/software/bison/), and
   - [YAEP](https://github.com/vnmakarov/yaep)
 
-  to the [image for Debian sid](../../scripts/Docker/debian/sid/Dockerfile).
+  to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile).
 
 #### Other Updates
 
@@ -567,7 +572,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- We added the build job `🔗 Check`, which checks the documentation for broken links. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
