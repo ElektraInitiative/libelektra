@@ -7,6 +7,9 @@
 
 BUILD_DIRECTORY="@CMAKE_BINARY_DIR@"
 SOURCE_DIRECTORY="@CMAKE_SOURCE_DIR@"
+KDB_COMMAND="@CMAKE_BINARY_DIR@/bin/kdb"
+export LD_LIBRARY_PATH="@CMAKE_BINARY_DIR@/lib"
+
 PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
@@ -28,11 +31,13 @@ write() {
 	INPUT="$2"
 	OUTPUT="$3"
 	KDBPATH='user/tests/yaml'
-	kdb mount config.yaml "$KDBPATH" "$PLUGIN"
-	cat "$INPUT_FILE" > "$(kdb file "$KDBPATH")"
-	kdb export "$KDBPATH" yamlsmith > "$OUTPUT"
-	kdb rm -r "$KDBPATH"
-	kdb umount "$KDBPATH"
+	"$KDB_COMMAND" mount config.yaml "$KDBPATH" "$PLUGIN"
+	# Create config directory, if it does not exist yet
+	"$KDB_COMMAND" set "$KDBPATH" test > /dev/null
+	cat "$INPUT_FILE" > "$("$KDB_COMMAND" file "$KDBPATH")"
+	"$KDB_COMMAND" export "$KDBPATH" yamlsmith > "$OUTPUT"
+	"$KDB_COMMAND" rm -r "$KDBPATH"
+	"$KDB_COMMAND" umount "$KDBPATH"
 }
 
 download() {
@@ -52,6 +57,11 @@ download() {
 
 cd "$SOURCE_DIRECTORY" || {
 	printf >&2 'Unable to change working directory to “%s”\n' "$SOURCE_DIRECTORY"
+	exit 1
+}
+
+command -v "$KDB_COMMAND" || {
+	printf >&2 'The kdb command “%s” does not exist or is not executable\n' "$KDB_COMMAND"
 	exit 1
 }
 
