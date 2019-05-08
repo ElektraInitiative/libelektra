@@ -60,15 +60,15 @@ static void test_get (void)
 	char text[MAX_LENGTH_TEXT];
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
 	{
-		char * name = keyValues[pair][0];
-		char * value = keyValues[pair][1];
-		snprintf (text, MAX_LENGTH_TEXT, "%s/%s", prefix, name);
-		key = ksLookupByName (keySet, text, KDB_O_NONE);
+		Key * reference = keyNew (prefix, KEY_VALUE, keyValues[pair][1], KEY_END);
+		keyAddName (reference, keyValues[pair][0]);
+		key = ksLookupByName (keySet, keyName (reference), KDB_O_NONE);
 
-		snprintf (text, MAX_LENGTH_TEXT, "Key “%s” not found", name);
+		snprintf (text, MAX_LENGTH_TEXT, "key “%.100s” not found", keyName (reference));
 		exit_if_fail (key, text);
 
-		succeed_if_same_string (keyString (key), value);
+		succeed_if_same_string (keyString (key), keyString (reference));
+		keyDel (reference);
 	}
 
 	keyDel (parentKey);
