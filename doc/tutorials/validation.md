@@ -215,11 +215,8 @@ kdb rm -r user/tests/spec || kdb rm -r system/tests/spec
 We call the files, that contain a complete schema for configuration
 below a specific path in form of metadata, _Specfiles_.
 
-Particularly a _Specfile_ contains metadata that defines
-
-- the mount points of paths,
-- the plugins to load and
-- the behavior of these plugins.
+A _Specfile_ contains metadata, among others, that defines how
+the configuration settings should be validated.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata
 (altough the specfile is stored in the dump format, we can still create it using
@@ -245,6 +242,9 @@ kdb lsmeta spec/tests/tutorial
 
 We now have all the metadata that we need to mount and validate the data below
 `/tutorial` in one file.
+
+For a description which metadata is available, have a look in
+[METADATA.ini](/doc/METADATA.ini).
 
 Now we apply this _Specfile_ to the key database to all keys below `tests/tutorial`.
 
