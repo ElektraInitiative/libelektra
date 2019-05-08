@@ -2,7 +2,6 @@ bullet_char: '-'
 command_case: lower
 line_ending: unix
 line_width: 140
-max_subargs_per_line: 1
 separate_ctrl_name_with_space: True
 separate_fn_name_with_space: True
 tab_size: 8
