@@ -160,7 +160,7 @@ And in terms of quality, we want:
 - Elektra (except for some [plugins](src/plugins/)) has no external dependency.
 - Elektra is suitable for embedded systems and early boot stage programs.
 - Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
-- Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
+- Elektra provides powerful [Code Generation Techniques](src/tools/pythongen) for high-level configuration access.
 
 ## News
 
