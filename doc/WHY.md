@@ -16,7 +16,7 @@ The three main points relevant for most people are:
    - use the value of other configuration values (symbolic links)
    - calculate the values based on other configuration values
    - [validate configuration files](/doc/tutorials/validation.md)
-   - [generate code based on specifications](/src/tools/gen)
+   - [generate code based on specifications](../src/tools/pythongen)
    - [and much more](/src/plugins/README.md)
 
 ## Why not Other Solutions?
