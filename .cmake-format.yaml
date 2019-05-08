@@ -1,3 +1,5 @@
+always_wrap:
+  - add_plugin
 bullet_char: '-'
 command_case: lower
 line_ending: unix
