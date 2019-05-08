@@ -187,6 +187,7 @@ KeySet *getArrayKeys(void)
 {
 	KeySet *ks = ksNew(30,
 			keyNew("user/tests/yajl/array",
+				KEY_META, "array", "#_12",
 			       KEY_END),
 			keyNew("user/tests/yajl/array/#0",
 			       KEY_VALUE, "true",
@@ -256,7 +257,7 @@ KeySet *getArrayKeys(void)
 KeySet *getOpenICCKeys(void)
 {
 	KeySet *ks = ksNew(60,
-keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera", KEY_END),
+keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera", KEY_META, "array", "#1", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#0/prefix",
 		KEY_VALUE, "EXIF_",
 		KEY_END),
@@ -306,7 +307,7 @@ keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/expire_date",
 // keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/automatic_assignment",
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/automatic_assigment",
 		KEY_VALUE, "1", KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor", KEY_END),
+keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor", KEY_META, "array", "#1", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0/prefix",
 		KEY_VALUE, "EDID_", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_mnft_id",
