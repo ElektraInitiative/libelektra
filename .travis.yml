@@ -190,6 +190,7 @@ matrix:
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
+        - COMMON_FLAGS=''
 
     # HASKELL: Only build Haskell binding and plugin
 
@@ -363,7 +364,7 @@ before_script:
       -DBUILD_FULL="${BUILD_FULL:-OFF}"
       -DBUILD_SHARED="${BUILD_SHARED:-ON}"
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+      -DCOMMON_FLAGS="${COMMON_FLAGS--Werror}"
       -DENABLE_DEBUG=ON
       -DINSTALL_SYSTEM_FILES=OFF
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON

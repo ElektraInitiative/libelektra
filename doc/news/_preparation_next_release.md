@@ -605,7 +605,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ### Travis
 
 - We fixed the value of the `directories` [caching](https://docs.travis-ci.com/user/caching) key in our [Travis config file](../../.travis.yml). _(René Schwaiger)_
-- <<TODO>>
+- We removed the compile flag `-Werror` in the build job `🍏 GCC`, since [GCC 9.1 reports warnings](https://issues.libelektra.org/2670) when it compiles Elektra’s codebase. _(René Schwaiger)_
 - <<TODO>>
 
 ## Website
