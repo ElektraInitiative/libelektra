@@ -11,8 +11,21 @@
 
 ## Introduction
 
-Copy this macaddr if you want to start a new
-plugin written in C.
+This plugin validates MAC-addresses. The following MAC-address-formats are allowed for now:
+
+    XX-XX-XX-XX-XX-XX
+    XX:XX:XX:XX:XX:XX
+    XXXXXX-XXXXXX
+
+If `set` is used, the value will be transformed to the format of the middle one.
+
+TODO:
+
+- Write tests
+- Update readme
+- Better error-messages
+- Maybe also support formats `XXXXXXXXXXXX` and `XXXX.XXXX.XXXX`
+
 
 ## Usage
 
