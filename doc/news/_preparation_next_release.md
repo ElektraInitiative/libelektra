@@ -78,6 +78,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
+### mINI
+
+- We fixed compiler warnings reported by GCC 9 in the [unit test code](../../src/plugins/mini/testmod_mini.c) of the plugin. _(René Schwaiger)_
+
 ### YAJL
 
 - The plugin no allows setting a value to the mountpoint. This is represented as a top level value in JSON if no other key is present. _(Philipp Gackstatter)_
