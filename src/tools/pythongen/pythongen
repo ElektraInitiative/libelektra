@@ -1,0 +1,101 @@
+#!/usr/bin/env python2
+
+import sys
+import argparse
+import ConfigParser
+
+try:
+	from Cheetah.Template import Template
+except ImportError:
+	print "You need to install Cheetah"
+	print
+	print "On Debian based systems type:"
+	print "apt-get install python-cheetah"
+	print
+	print "Or visit http://www.cheetahtemplate.org"
+	sys.exit(1)
+
+def do_output(args, text):
+	if args.output == '-':
+		print text
+	else:
+		with open(args.output, 'w') as f:
+			f.write(text)
+
+def main():
+	parser = argparse.ArgumentParser(prog="kdb pythongen",
+		description="Generates source files")
+	parser.add_argument("specification",
+		help="A meta configuration file that describes the configuration")
+	parser.add_argument("template",
+		help="The template file for cheetah")
+	parser.add_argument("-v", "--verbose",
+		help="Prints the specification",
+		action="store_true")
+	parser.add_argument("-d", "--debug",
+		help="Start debugger if compilation is not successful",
+		action="store_true")
+	parser.add_argument("-p", "--python",
+		help="Generate python code that yields code instead of directly producing code (only the argument template is used)",
+		action="store_true")
+	parser.add_argument("-c", "--classname",
+		help="Name of the class when python code is generated",
+		default="util")
+	parser.add_argument("-o", "--output",
+		help="Write the evaluated file to given file (- for stdout)",
+		default='-')
+	args = parser.parse_args()
+
+	parser = ConfigParser.ConfigParser(allow_no_value=True)
+	parser.read(args.specification)
+
+	parameterSpecification={}
+	parameterSpecification['parser'] = parser
+	parameterSpecification['args'] = args
+	parameterSpecification['parameters']={}
+	for section in parser.sections():
+		parameterSpecification['parameters'][section]={}
+		for item in parser.items(section):
+			parameterSpecification['parameters'][section][item[0]] = item[1]
+
+	if args.verbose:
+		print parameterSpecification
+
+	template = Template(file=args.template,
+		searchList=[parameterSpecification])
+
+	try:
+		text = str(template)
+	except Exception as e:
+		if args.debug:
+			import pdb
+			pdb.post_mortem(e)
+
+		print "Compilation failed!"
+		print "Exception "+e.__class__.__name__+" was thrown"
+		print "Output file "+args.output+" contains python code"
+		text = template.generatedClassCode()
+
+		do_output(args, template.generatedModuleCode()+template.generatedClassCode())
+
+		raise
+
+	if args.python:
+		#from Cheetah.CheetahWrapper import CheetahWrapper
+		#c = CheetahWrapper()
+		#a = ["kdb gen", "compile", args.template]
+		#c.main(a)
+		#return
+
+		text = Template.compile(file=args.template,
+			returnAClass=False,
+			moduleName=args.classname,
+			className=args.classname,
+			#commandlineopts=self.opts,
+			#compilerSettings=compilerSettings
+			)
+		#text = template.generatedModuleCode()+template.generatedClassCode()
+
+	do_output(args, text)
+
+main()

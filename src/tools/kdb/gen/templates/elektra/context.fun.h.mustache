@@ -1,0 +1,10 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+/*%# total_context %*/
+static inline void ELEKTRA_CONTEXT_SET (/*%& tag_name %*/) (Elektra * elektra, const char * value)
+{
+	ksAppendKey (elektraContext (elektra), keyNew ("/*% key_name %*/", KEY_VALUE, value, KEY_END));
+}
+/*%/ total_context %*/
