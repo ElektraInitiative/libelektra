@@ -129,7 +129,9 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["number"] << "\");" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 			   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" << endl
-			   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
+			   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");"
+			   << endl
+			   // TODO: Not the best implementation, fix if better way is found
 			   << "	if (strcmp(module, \"ELEKTRA_MODULE_NAME\") == 0) module = \"kdb\";" << endl
 			   << "	keySetMeta(warningKey, buffer, module);" << endl
 			   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
@@ -203,7 +205,9 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "		keySetMeta(errorKey, buffer, \"" << p[i]["number"] << "\");" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 			   << "		keySetMeta(errorKey, buffer, \"" << p[i]["description"] << "\");" << endl
-			   << "		buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
+			   << "		buffer[12] = '\\0'; strcat(buffer, \"/module\");"
+			   << endl
+			   // TODO: Not the best implementation, fix if better way is found
 			   << "		if (strcmp(module, \"ELEKTRA_MODULE_NAME\") == 0) module = \"kdb\";" << endl
 			   << "		keySetMeta(errorKey, buffer, module);" << endl
 			   << "		buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
@@ -222,7 +226,9 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			   << "number description  module file line function reason"
 			   << "\");" << endl
 			   << "		keySetMeta(errorKey, \"error/number\", \"" << p[i]["number"] << "\");" << endl
-			   << "		keySetMeta(errorKey, \"error/description\", \"" << p[i]["description"] << "\");" << endl
+			   << "		keySetMeta(errorKey, \"error/description\", \"" << p[i]["description"] << "\");"
+			   << endl
+			   // TODO: Not the best implementation, fix if better way is found
 			   << "		if (strcmp(module, \"ELEKTRA_MODULE_NAME\") == 0) module = \"kdb\";" << endl
 			   << "		keySetMeta(errorKey, \"error/module\", module);" << endl
 			   << "		keySetMeta(errorKey, \"error/file\", "
