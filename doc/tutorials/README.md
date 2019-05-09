@@ -26,7 +26,7 @@ provides.
 - [Python Bindings](python-kdb.md)
 - [Java Bindings](java-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
-- [Code Generation](/src/tools/gen/README.md)
+- [Code Generation](../../src/tools/pythongen/README.md)
 - [Notifications](notifications.md)
 - [High Level API](/src/libs/highlevel/README.md)
 - [Command Line Options](command-line-options.md)

@@ -195,7 +195,7 @@ So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe frontend.
 
 For more information about that, continue reading
-[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
+[here](https://master.libelektra.org/src/tools/pythongen).
 
 ## Specification
 
