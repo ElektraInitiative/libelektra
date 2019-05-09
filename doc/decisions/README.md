@@ -40,6 +40,7 @@ section here.
 - [Vendor Spec](vendor_spec.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
 - [Error codes](error_codes.md)
+- [Array for Warnings](warning-array.md)
 
 ## Drafts
 
