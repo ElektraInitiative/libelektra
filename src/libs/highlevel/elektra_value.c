@@ -9,7 +9,6 @@
 #include "elektra.h"
 #include "elektra/conversion.h"
 #include "elektra/errors.h"
-#include "elektra/errorsprivate.h"
 #include "kdbease.h"
 #include "kdbhelper.h"
 #include "kdbprivate.h"
