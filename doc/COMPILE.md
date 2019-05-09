@@ -135,7 +135,8 @@ https://build.libelektra.org/
 | clang    | 3.8                         | x86_64-pc-linux-gnu |
 | clang    | 5.0                         | x86_64-pc-linux-gnu |
 | clang    | 6.0                         | x86_64-pc-linux-gnu |
-| clang    | 8.1.0                       | macOS               |
+| clang    | 8.0                         | macOS               |
+| gcc      | 9.1                         | macOS               |
 | gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
 | clang    | 6.0.0                       | freebsd 11          |
 | clang    | 6.0.1                       | freebsd 12          |
