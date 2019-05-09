@@ -111,8 +111,6 @@ backwards compatibility by applications just checking for resource errors in gen
 Splitting/merging/rearranging any category should only be done by a decision (such as this file here) because elektra developers
 should not be able to generate a new category as they wish because it would lead to the same proliferation of errors as we have now.
 
-To see the classification guidelines and to get an idea of what the categories are for please read through [error-categorization.md](../dev/error-categorization.md).
-
 These categories are chosen because they can help developers to react programmatically and cover the majority of use cases to our present knowledge.
 If there is ever the need for another reaction based category, it can be extended very easily.
 
