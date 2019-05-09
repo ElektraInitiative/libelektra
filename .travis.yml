@@ -193,6 +193,7 @@ matrix:
 
     - os: osx
       name: 🍏 Haskell
+      osx_image: xcode10.1 # We use macOS 10.13 here, since the Haskell plugin does not seem to compile on macOS 10.14
       compiler: clang
       env:
         - HASKELL=ON
