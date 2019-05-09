@@ -29,6 +29,7 @@ section here.
 - [Definition of Bool](bool.md)
 - [Plugin Variants](plugin_variants.md)
 - [Ingroup Removal](ingroup_removal.md)
+- [Error Message Format](error_message_format.md)
 
 ## In Discussion
 
@@ -38,7 +39,7 @@ section here.
 - [Array](array.md)
 - [Vendor Spec](vendor_spec.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
-- [Error concept](error_message.md)
+- [Error codes](error_codes.md)
 
 ## Drafts
 

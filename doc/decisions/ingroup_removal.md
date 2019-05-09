@@ -30,6 +30,6 @@ The `ingroup` will be removed from all implementations, metakeys and tests.
 
 ## Related Decisions
 
-See [Error concept](error_message.md)
+See [Error concept](error_codes.md)
 
 ## Notes
