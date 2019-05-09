@@ -1,6 +1,6 @@
 language: cpp
 dist: xenial
-osx_image: xcode10.1
+osx_image: xcode10.2
 
 cache:
   directories:
