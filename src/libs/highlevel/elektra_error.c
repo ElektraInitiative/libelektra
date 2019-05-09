@@ -218,8 +218,7 @@ ElektraError * elektraErrorPureWarning (void)
 
 ElektraError * elektraErrorEnsureFailed (const char * reason)
 {
-	char * description =
-		elektraFormat ("The given contract could not be ensured: %s", reason);
+	char * description = elektraFormat ("The given contract could not be ensured: %s", reason);
 	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
 	elektraFree (description);
 	return error;
