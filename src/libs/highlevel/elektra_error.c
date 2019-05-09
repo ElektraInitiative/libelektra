@@ -216,6 +216,15 @@ ElektraError * elektraErrorPureWarning (void)
 	return elektraErrorCreate (NULL, "", NULL, NULL, -1);
 }
 
+ElektraError * elektraErrorEnsureFailed (const char * reason)
+{
+	char * description =
+		elektraFormat ("The given contract could not be ensured: %s", reason);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
+	elektraFree (description);
+	return error;
+}
+
 /**
  * @return the error code of the given error
  */

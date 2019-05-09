@@ -132,7 +132,7 @@ void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error)
 	}
 	else
 	{
-		*error = elektraErrorCreateFromKey (parentKey);
+		*error = elektraErrorFromKey (parentKey);
 	}
 
 	keyDel (parentKey);

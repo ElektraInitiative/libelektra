@@ -654,6 +654,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
 
+ElektraError * elektraErrorEnsureFailed (const char * reason);
 ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
 void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
 ElektraError * elektraErrorFromKey (Key * key);
