@@ -808,10 +808,14 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto parentLength = specParent.getName ().length ();
 
 	kdb::KeySet spec;
+	kdb::KeySet defaults;
 
 	kdb::Key parent = ks.lookup (specParent).dup ();
-	parent.setName ("");
 	spec.append (parent);
+
+	parent = ks.lookup (specParent).dup ();
+	parent.setName ("");
+	defaults.append (parent);
 
 	auto parentKeyParts = getKeyParts (specParent);
 
@@ -841,9 +845,12 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		}
 
 		kdb::Key specKey = key.dup ();
-		specKey.setName (specKey.getName ().substr (parentLength));
-		specKey.setString (key.getMeta<std::string> ("default"));
 		spec.append (specKey);
+
+		kdb::Key defaultsKey = key.dup ();
+		defaultsKey.setName (defaultsKey.getName ().substr (parentLength));
+		defaultsKey.setString (key.getMeta<std::string> ("default"));
+		defaults.append (defaultsKey);
 
 		std::unordered_set<std::string> allowedTypes = { "enum",
 								 "string",
@@ -1016,7 +1023,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["keys"] = keys;
 	data["enums"] = enums;
 	data["structs"] = structs;
-	data["defaults"] = keySetToCCode (spec);
+	data["defaults"] = keySetToCCode (defaults);
+	data["spec"] = keySetToCCode (spec);
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = specloadArg;
 	data["total_context"] = totalContext;
