@@ -20,13 +20,19 @@ Possible variations on what message should be displayed,
 e.g., to keep the mountpoint information or on how wordings should be (with or without
 "Sorry, ...", coloring of certain parts of a message, etc.)
 
-Examples would be to 
-	- Leave out the "Sorry"
-	- Show mountpoint info but in another way:
-		`The command kdb set failed while accessing the key database on mountpoint (...) with the info`
-	- Incorporating the description in another way:
-		`Reason: Validation of key "<key>" with string "<value>" failed. (validation failed)`
-	- etc.
+Examples would be to
+
+- Leave out the "Sorry" in the error message or leave the introduction sentence completely
+- Drop `At`, `Mountpoint`, `Configfile`, `Module`. This information though yields useful information
+  or was even added as a request
+- Show mountpoint, configfile, module, etc in beneath the general introduction message. Eg.
+  `The command kdb set failed while accessing the key database on mountpoint (...) with the info`
+- Incorporating the description in another ways:
+  `Reason: Validation of key "<key>" with string "<value>" failed. (validation failed)`
+- Use one command line option to show all additional info which gets hidden per default from now on instead of two
+- Color the main message differently compared to the general introduction message
+- Do not color messages as it might confuse users with overwhelming many colors
+- Do not print out the error code. It is useful though for googling
 
 ## Decision
 
@@ -78,8 +84,8 @@ the general sentence starting the error message.
 ## Related Decisions
 
 - [Error Codes](error_codes.md)
-	Shows how the new error codes are meant to be
+  Shows how the new error codes are meant to be
 - [Ingroup Removal](ingroup_removal.md)
-	Shows the decision of why the `ingoup` field has been removed
+  Shows the decision of why the `ingoup` field has been removed
 
 ## Notes
