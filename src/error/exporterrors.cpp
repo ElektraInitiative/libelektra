@@ -116,22 +116,23 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		os << p[i]["macro"] << " " << i << endl;
 	}
 
-	os << endl << endl
+	os << endl
+	   << endl
 
-	<< " static kdb_long_long_t getNextArrayNumber (Key * warningKey)" << endl
-	<< "{" << endl
-	<< "	const Key * warningMeta = keyGetMeta (warningKey, \"warnings\");" << endl
-	<< "	if (!warningMeta) return 0;"
-	<< "	kdb_long_long_t current = 0;" << endl
-	<< "	const char * ptr = keyString (warningMeta);" << endl
-	<< "	sscanf (ptr, ELEKTRA_LONG_LONG_F, &current);" << endl
-	<< "	current++;" << endl
-	<< "	if (current >= MAX_WARNING_NUMBER)" << endl
-	<< "	 {" << endl
-	<< "		current = MAX_WARNING_NUMBER;" << endl
-	<< "	}" << endl
-	<< "	return current;" << endl
-	<< "}" << endl;
+	   << " static kdb_long_long_t getNextArrayNumber (Key * warningKey)" << endl
+	   << "{" << endl
+	   << "	const Key * warningMeta = keyGetMeta (warningKey, \"warnings\");" << endl
+	   << "	if (!warningMeta) return 0;" << endl
+	   << "	kdb_long_long_t current = 0;" << endl
+	   << "	const char * ptr = keyString (warningMeta);" << endl
+	   << "	sscanf (ptr, ELEKTRA_LONG_LONG_F, &current);" << endl
+	   << "	current++;" << endl
+	   << "	if (current >= MAX_WARNING_NUMBER)" << endl
+	   << "	{" << endl
+	   << "		current = MAX_WARNING_NUMBER;" << endl
+	   << "	}" << endl
+	   << "	return current;" << endl
+	   << "}" << endl;
 
 	os << endl << endl;
 
