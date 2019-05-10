@@ -132,6 +132,72 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
+#### Clang Format
+
+To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `6.0` or later) to format all C and C++ code in the repository. Since our build server also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+
+##### Installation
+
+###### macOS
+
+On macOS you can install `clang-format` using [Homebrew](https://brew.sh) either directly:
+
+```sh
+brew install clang-format
+```
+
+or by installing the whole [LLVM](http://llvm.org) infrastructure:
+
+```sh
+brew install llvm
+```
+
+. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `6.0` in certain edge cases.
+
+###### Debian
+
+In Debian the package for Clang-Format `6.0` is called `clang-format-6.0`:
+
+```sh
+apt-get install clang-format-6.0
+```
+
+.
+
+##### Usage
+
+For the basic use cases you can use `clang-format` directly. To do that, just call the tool using the option `-i` and specify the name of the files you want to reformat. For example, if you want to reformat the file `src/bindings/cpp/include/kdb.hpp` you can use the following command:
+
+```sh
+# On some systems such as Debian the `cmake-format` executable also contains
+# the version number. For those systems, please replace `clang-format`,
+# with `clang-format-6.0` in the command below.
+clang-format -i src/bindings/cpp/include/kdb.hpp
+```
+
+. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-source`](../scripts/reformat-source) that reformats all C and C++ code in Elektra’s code base
+
+```sh
+scripts/reformat-source # This script will probably take some seconds to execute
+```
+
+.
+
+##### Tool Integration
+
+If you work on Elektra’s code base regularly you might want to integrate the formatting step directly in your development setup. [ClangFormat’s homepage](https://clang.llvm.org/docs/ClangFormat.html) includes a list of integrations for various tools that should help you to do that. Even if this webpage does not list any integrations for your favorite editor or IDE, you can usually add support for external tools such as `clang-format` to advanced editors or IDEs pretty easily.
+
+###### TextMate
+
+While [TextMate](https://macromates.com) supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
+
+1. open the bundle editor (“Bundles” → “Edit Bundles”),
+2. navigate to the “Reformat Code” item of the C bundle (“C” → “Menu Actions” → “Reformat Code”),
+3. insert `callback.document.will-save` into the field “Semantic Class”, and
+4. change the menu option for the field “Save” to “Nothing”
+
+. After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
+
 ### C++ Guidelines
 
 - Everything as in C if not noted otherwise.

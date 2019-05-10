@@ -466,6 +466,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
 - We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
+- We added instructions on how to reformat code with [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html) to the [coding guidelines](../CODING.md). _(René Schwaiger)_
 
 ### Tutorials
 
