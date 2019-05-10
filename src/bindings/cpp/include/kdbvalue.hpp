@@ -432,6 +432,8 @@ public:
 
 	typedef PolicySelector<PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> Policies;
 
+	Value (const Value &) = default;
+
 	// not to be constructed yourself
 	Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> (
 		KeySet & ks, typename Policies::ContextPolicy & context_, kdb::Key spec)

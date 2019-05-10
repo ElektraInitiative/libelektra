@@ -78,6 +78,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
+### mINI
+
+- We fixed compiler warnings reported by GCC 9 in the [unit test code](../../src/plugins/mini/testmod_mini.c) of the plugin. _(René Schwaiger)_
+
 ### YAJL
 
 - The plugin no allows setting a value to the mountpoint. This is represented as a top level value in JSON if no other key is present. _(Philipp Gackstatter)_
@@ -405,7 +409,7 @@ you up to date with the multi-language support provided by Elektra.
 - gsettings is not default anymore. _(Markus Raab)_
 
 - Add fix for creating the Key and KeySet objects in the HelloElektra.java file _(Dmytro Moiseiuk)_
-- <<TODO>>
+- We fixed a [warning about a deprecated default constructor](https://issues.libelektra.org/2670) in the C++ binding reported by GCC 9.0. _(René Schwaiger)_
 - <<TODO>>
 
 ### <<Binding2>>
@@ -605,7 +609,6 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ### Travis
 
 - We fixed the value of the `directories` [caching](https://docs.travis-ci.com/user/caching) key in our [Travis config file](../../.travis.yml). _(René Schwaiger)_
-- We removed the compile flag `-Werror` in the build job `🍏 GCC`, since [GCC 9.1 reports warnings](https://issues.libelektra.org/2670) when it compiles Elektra’s codebase. _(René Schwaiger)_
 - <<TODO>>
 
 ## Website
