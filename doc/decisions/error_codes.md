@@ -1,4 +1,4 @@
-# Error message & handling concept
+# Error codes
 
 ## Problem
 
@@ -21,9 +21,9 @@ The current error concept has disadvantages in following regards:
 
 ## Constraints
 
-- Error numbers must stay because they are more reliable to check against than strings
+- Error codes/numbers must stay but can be changed to another format (eg. Strings)
 - Supporting multiple programming languages
-- Plugin System
+- Supporting Elektra's Plugin System
 
 ## Assumptions
 
@@ -74,40 +74,37 @@ Various projects and standards:
 
 ## Decision
 
-All "fatal" errors will be converted to "errors" as the distinguishment is not relevant.
+All "fatal" errors will be converted to "errors" as the distinction is not relevant.
 
-Unused marked errors will be removed from the specification.
+Unused errors will be removed from the specification.
 
-Errors will be categorizes into logical groups with subgroups.
+Errors will be categorized into logical groups with subgroups.
 Each error will be made up of 5 characters, where the first 2 character indicate the highest level
 and character 3 to 5 will be used for subgrouping. Errors are prepended with the letter `C` which
 is the abbreviation for "Code".
 
-- Permanent errors
-  - Resource
+- Permanent errors C01000
+  - Resource C01100
     - Memory Allocation C01110
     - General Resource C01120
-  - Installation C01300
-  - Logical
-    - Assertion C01410
-    - Interface C01420
-    - Broken plugin C01430
+  - Installation C01200
+  - Logical C01310
+    - Assertion C01310
+    - Interface C01320
+    - Plugin is Broken C01330
 - Conflicting State C02000
 - Timeout C03000
-- Out-Of-Range C05000
-- Validation
+- Validation C04000
   - Syntactic C04100
   - Semantic C04200
+- Out-Of-Range C05000
 
 ## Rationale
 
 The grouping of errors will allow developers to filter for specific as well as more general errors to correctly
 react to them programmatically.
-The new concept will permit additional subgrouping of errors in case it might be needed in the future. Imagine the case where
-"Installation" errors is too general because developers saw a need for splitting the errors in "elektra installation"
-and "library installation" errors.
-They can simply take the current subclass 01300 and make "permission" be 01310 and "existence" be 01320. This will also allow
-backwards compatibility by applications just checking for resource errors in general.
+The new concept will permit additional subgrouping of errors in case it might be needed in the future.
+
 Splitting/merging/rearranging any category should only be done by a decision (such as this file here) because elektra developers
 should not be able to generate a new category as they wish because it would lead to the same proliferation of errors as we have now.
 
@@ -122,5 +119,8 @@ file which uses the specification will stay as it is easier to change categories
 Current errors will be migrated.
 
 ## Related Decisions
+
+- [Error Message Format](error_message_format.md)
+	Shows the new format of the error message
 
 ## Notes
