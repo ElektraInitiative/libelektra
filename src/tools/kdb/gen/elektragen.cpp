@@ -485,6 +485,11 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 	maxFieldNameLen = 0;
 	for (const kdb::Key & key : structKeys)
 	{
+		if (!hasType (key))
+		{
+			continue;
+		}
+
 		auto parts = getKeyParts (key);
 		auto isArray = parts.back () == "#";
 
