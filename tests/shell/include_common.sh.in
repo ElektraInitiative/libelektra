@@ -32,8 +32,6 @@ USER_ROOT="user/tests/script"
 SYSTEM_ROOT="system/tests/script"
 SPEC_ROOT="spec/tests/script"
 
-ROOTS="$USER_ROOT $SYSTEM_ROOT"
-
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]; then
 	DATADIR="@CMAKE_INSTALL_PREFIX@/@TARGET_TEST_DATA_FOLDER@/shell"
@@ -373,6 +371,8 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
+#
+#
 #
 #
 #
