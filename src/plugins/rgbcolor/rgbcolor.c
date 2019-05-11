@@ -243,6 +243,7 @@ static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 {
 	char colorStr[11];
 	snprintf (colorStr, 11, "%u", c);
+
 	ELEKTRA_LOG_DEBUG ("Set %s to integer %s", keyName (key), colorStr);
 	keySetString (key, colorStr);
 	keySetMeta (key, "type", "unsigned_long");
@@ -282,7 +283,7 @@ static char * elektraColorExpand (const char * str, ColorVariant colVar)
 static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
 {
 	const char * str = keyString (key);
-	keySetMeta (key, "origvalue", str);
+	char * origvalue = elektraStrDup (str);
 
 	kdb_unsigned_long_t color;
 	if (colVar == NAMED_COLOR)
@@ -302,6 +303,10 @@ static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
 		color = ELEKTRA_UNSIGNED_LONG_LONG_S (str + 1, NULL, 16);
 	}
 	elektraColorSetInteger (key, color);
+
+	ELEKTRA_LOG_DEBUG ("Setting origvalue of %s to %s", keyName (key), origvalue);
+	keySetMeta (key, "origvalue", origvalue);
+	elektraFree (origvalue);
 }
 
 static void elektraColorRestore (Key * key)
@@ -309,6 +314,7 @@ static void elektraColorRestore (Key * key)
 	const Key * orig = keyGetMeta (key, "origvalue");
 	if (orig != NULL)
 	{
+		ELEKTRA_LOG_DEBUG ("Restore %s to %s", keyName (key), keyString (orig));
 		keySetString (key, keyString (orig));
 	}
 }
@@ -337,12 +343,10 @@ int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 		ColorVariant colVar = is_valid_key (cur, parentKey);
-		// if (!is_valid) return ELEKTRA_PLUGIN_STATUS_ERROR;
 		elektraColorNormalizeHexString (cur, colVar);
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	;
 }
 
 int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -355,8 +359,11 @@ int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	{
 		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
-		elektraColorRestore (cur);
 		ColorVariant colVar = is_valid_key (cur, parentKey);
+
+		if (colVar == COLOR_INVALID) elektraColorRestore (cur);
+
+		colVar = is_valid_key (cur, parentKey);
 		if (colVar == COLOR_INVALID) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
