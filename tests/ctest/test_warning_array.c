@@ -22,8 +22,12 @@ static void test_warning_array (void)
 
 	const Key * lastArrayElement = keyGetMeta (warningKey, lastEntry);
 	const char * lastEntryString = keyString (lastArrayElement);
-	succeed_if (strcmp (lastEntryString, elektraFormat ("%d", MAX_WARNING_NUMBER + 2)) == 0,
-		    "Saved wrong entry in last warning array element");
+	char * expected = elektraFormat ("%d", MAX_WARNING_NUMBER + 2);
+	succeed_if (strcmp (lastEntryString, expected) == 0, "Saved wrong entry in last warning array element");
+	elektraFree (lastEntry);
+	elektraFree (warningKey);
+	elektraFree (expected);
+	elektraFree (nonExistentEntry);
 }
 
 int main (int argc, char ** argv)
