@@ -30,39 +30,41 @@ None.
 sudo kdb mount color.ecf user/tests/color dump rgbcolor
 
 # Suceeds, since the value is a valid rgbcolor. Quotes are important!
-kdb set user/tests/color/hex "#fff"
-
-# Check the user/tests/color/hex key for validity
-kdb setmeta user/tests/color/hex check/rgbcolor any
-
-# Suceeds, since the value is a valid rgbcolor. Quotes are important!
 kdb set user/tests/color/hex "#a1C2b3"
 
-# Suceeds, since the value is a valid RGBA rgbcolor. Quotes are important!
-kdb set user/tests/color/hex "#aabbccdd"
+# Tell the plugin to validate the key and normalize if necessary
+kdb setmeta user/tests/color/hex check/rgbcolor ""
 
-# Colors are normalized to bytes
+# Colors are normalized to 32-bit unsigned integers
+# This one is normalized to 0xa1C2b3ff
 kdb get user/tests/color/hex
-#> \xaa\xbb\xcc\xdd
+#> 2713891839
+
+# Color names are supported (https://www.w3.org/TR/css-color-3/#svg-color)
+kdb set user/tests/color/hex "orange"
+
+# orange is 0xffa500ff
+kdb get user/tests/color/hex
+#> 4289003775
 
 kdb set user/tests/color/hex/subcolor "#abc"
-kdb setmeta user/tests/color/hex/subcolor check/rgbcolor any
+kdb setmeta user/tests/color/hex/subcolor check/rgbcolor ""
 
 # Expanded to rgba: #aabbccff
 kdb get user/tests/color/hex/subcolor
-#> \xaa\xbb\xcc\xff
+#> 2864434431
 
 kdb set user/tests/color/hex/subcolor "#abcd"
 
 # Expanded to rgba: #aabbccdd
 kdb get user/tests/color/hex/subcolor
-#> \xaa\xbb\xcc\xdd
+#> 2864434397
 
 kdb set user/tests/color/hex/subcolor "#aabbcc"
 
 # Expanded to rgba: #aabbccff
 kdb get user/tests/color/hex/subcolor
-#> \xaa\xbb\xcc\xff
+#> 2864434431
 
 # Try to set incorrect value
 kdb set user/tests/color/hex fff
