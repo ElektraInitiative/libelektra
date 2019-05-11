@@ -121,6 +121,6 @@ Current errors will be migrated.
 ## Related Decisions
 
 - [Error Message Format](error_message_format.md)
-	Shows the new format of the error message
+  Shows the new format of the error message
 
 ## Notes
