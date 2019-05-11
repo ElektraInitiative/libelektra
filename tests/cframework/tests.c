@@ -414,7 +414,9 @@ int output_warnings (Key * warningKey)
 	{
 		char buffer[50];
 		buffer[0] = '\0';
-		strcat (buffer, elektraFormat ("warnings/#%d", i));
+		char * warningPoint = elektraFormat ("warnings/#%d", i);
+		strcat (buffer, warningPoint);
+		elektraFree (warningPoint);
 		printf ("buffer is: %s\n", buffer);
 		strncat (buffer, "/number", sizeof (buffer) - strlen (buffer) - 1);
 		printf ("number: %s\n", keyString (keyGetMeta (warningKey, buffer)));

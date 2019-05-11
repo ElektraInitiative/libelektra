@@ -168,14 +168,14 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				   << "	char * buffer = elektraFormat (\"warnings/#%s\", nextNumber);" << endl
 				   << "" << endl
 				   << "	keySetMeta(warningKey, buffer, \"number description module file line function reason\");" << endl
-				   << "	const char * number = elektraFormat (\"%s/%s\", buffer, \"number\");" << endl
-				   << "	const char * description = elektraFormat (\"%s/%s\", buffer, \"description\");" << endl
-				   << "	const char * module = elektraFormat (\"%s/%s\", buffer, \"module\");" << endl
-				   << "	const char * fileKey = elektraFormat (\"%s/%s\", buffer, \"file\");" << endl
-				   << "	const char * lineKey = elektraFormat (\"%s/%s\", buffer, \"line\");" << endl
-				   << "	const char * mountpoint = elektraFormat (\"%s/%s\", buffer, \"mountpoint\");" << endl
-				   << "	const char * configfile = elektraFormat (\"%s/%s\", buffer, \"configfile\");" << endl
-				   << "	const char * reasonKey = elektraFormat (\"%s/%s\", buffer, \"reason\");" << endl
+				   << "	char * number = elektraFormat (\"%s/%s\", buffer, \"number\");" << endl
+				   << "	char * description = elektraFormat (\"%s/%s\", buffer, \"description\");" << endl
+				   << "	char * module = elektraFormat (\"%s/%s\", buffer, \"module\");" << endl
+				   << "	char * fileKey = elektraFormat (\"%s/%s\", buffer, \"file\");" << endl
+				   << "	char * lineKey = elektraFormat (\"%s/%s\", buffer, \"line\");" << endl
+				   << "	char * mountpoint = elektraFormat (\"%s/%s\", buffer, \"mountpoint\");" << endl
+				   << "	char * configfile = elektraFormat (\"%s/%s\", buffer, \"configfile\");" << endl
+				   << "	char * reasonKey = elektraFormat (\"%s/%s\", buffer, \"reason\");" << endl
 				   << endl
 				   << "	keySetMeta(warningKey, \"warnings\", nextNumber);" << endl
 				   << "	keySetMeta(warningKey, number, \"" << i << "\");" << endl
@@ -198,7 +198,18 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				{
 					os << "	keySetMeta(warningKey, reasonKey, reason);" << endl;
 				}
-				os << "}" << endl << endl;
+				os << "	elektraFree(nextNumber);" << endl
+				   << "	elektraFree(buffer);" << endl
+				   << "	elektraFree(number);" << endl
+				   << "	elektraFree(description);" << endl
+				   << "	elektraFree(module);" << endl
+				   << "	elektraFree(fileKey);" << endl
+				   << "	elektraFree(lineKey);" << endl
+				   << "	elektraFree(mountpoint);" << endl
+				   << "	elektraFree(configfile);" << endl
+				   << "	elektraFree(reasonKey);" << endl
+				   << "}" << endl
+				   << endl;
 			}
 		}
 		else
@@ -285,7 +296,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 					   << " 	else" << endl
 					   << "			keySetMeta(errorKey, \"error/reason\", reason);" << endl;
 				}
-				os << "}" << endl << endl;
+				os << "	elektraFree(nextNumber);" << endl << "	elektraFree(buffer);" << endl << "}" << endl << endl;
 			}
 		}
 	}
