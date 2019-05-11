@@ -119,7 +119,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	os << endl
 	   << endl
 
-	   << " static kdb_long_long_t getNextArrayNumber (Key * warningKey)" << endl
+	   << "static kdb_long_long_t getNextArrayNumber (Key * warningKey)" << endl
 	   << "{" << endl
 	   << "	const Key * warningMeta = keyGetMeta (warningKey, \"warnings\");" << endl
 	   << "	if (!warningMeta) return 0;" << endl

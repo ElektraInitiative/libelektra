@@ -412,9 +412,9 @@ int output_warnings (Key * warningKey)
 	printf ("There are %d warnings\n", nrWarnings + 1);
 	for (int i = 0; i <= nrWarnings; ++i)
 	{
-		char buffer[] = "warnings/#00\0description";
-		buffer[10] = i / 10 % 10 + '0';
-		buffer[11] = i % 10 + '0';
+		char buffer[50];
+		buffer[0] = '\0';
+		strcat (buffer, elektraFormat ("warnings/#%d", i));
 		printf ("buffer is: %s\n", buffer);
 		strncat (buffer, "/number", sizeof (buffer) - strlen (buffer) - 1);
 		printf ("number: %s\n", keyString (keyGetMeta (warningKey, buffer)));
