@@ -13,6 +13,7 @@
 #include <kdbtypes.h>
 #include <regex.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef enum
 {
@@ -62,8 +63,11 @@ static HexVariant is_valid_key (Key * key, Key * parentKey)
 
 static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 {
-	kdb_octet_t colorBytes[] = { c >> 24, (c & 0x00ff0000) >> 16, (c & 0x0000ff00) >> 8, (c & 0x000000ff) };
-	keySetBinary (key, colorBytes, 4);
+	char colorStr[11];
+	snprintf(colorStr, 11, "%u", c);
+	ELEKTRA_LOG_DEBUG("Set %s to integer %s with", keyName(key), colorStr);
+	keySetString (key, colorStr);
+	keySetMeta (key, "type", "unsigned_long");
 }
 
 static char * elektraColorExpand (const char * str, HexVariant hexVar)
