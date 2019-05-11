@@ -362,6 +362,11 @@ removed due to:
 - no time in future to maintain
   _(Kurt Micheli)_
 
+### RGBColor
+
+- New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (#ffffffff and #aabbccdd respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
+  _(Philipp Gackstatter)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.

@@ -38,7 +38,7 @@ static void test_normalize_color (const char * color, kdb_unsigned_long_t colorV
 	printf ("Test Color Normalization %s, returned value: %s, expected value: %s\n", color, keyString (foundKey), colorStr);
 	succeed_if (!strcmp (keyString (foundKey), colorStr), "Values dont match");
 
-	Key * origValueKey = keyGetMeta (foundKey, "origvalue");
+	const Key * origValueKey = keyGetMeta (foundKey, "origvalue");
 	succeed_if (origValueKey != NULL, "origvalue is not set");
 	succeed_if (!strcmp (keyString (origValueKey), color), "origvalue does not match actual original value");
 
