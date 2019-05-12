@@ -134,7 +134,21 @@ So do not give this responsibility out of hands entirely.
 
 #### Clang Format
 
-To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `6.0` or later) to format all C and C++ code in the repository. Since our build server also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `6.0` or version `7.0`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+
+To find out which version of `clang-format` a certain build server uses please check:
+
+- the [Debian sid Docker image](../scripts/docker/debian/sid/Dockerfile),
+- the [Travis configuration file ](../.travis.yml), and
+- the [Cirrus configuration file](../.cirrus.yml)
+
+and search for the relevant packages (`clang-format`, `llvm`). Currently we use
+
+- clang-format `6.0` in the [Debian sid image](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server,
+- clang-format `7.0` in the [Travis configuration file ](../.travis.yml), and
+- clang-format `7.0` in the [Cirrus macOS](../.cirrus.yml) build jobs
+
+.
 
 ##### Installation
 
