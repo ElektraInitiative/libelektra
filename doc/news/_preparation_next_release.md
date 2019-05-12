@@ -442,6 +442,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - The `reformat-source` script now also formats `tests/shell/include_common.sh.in`. Additionally it ensures that the file is 1000 lines long,
   so that line numbers of files using it are easier to read. _(Klemens Böswirth)_
+- The [clang-format wrapper script](../../scripts/reformat-source) now also checks the supported maximum version of Clang-Format. _(René Schwaiger)_
 - The script [`reformat-shfmt`](https://master.libelektra.org/scripts/reformat-shfmt) now also reformats shell support files (`*.in`) in the [`scripts`](https://master.libelektra.org/scripts) folder. _(René Schwaiger)_
 - The `reformat-*` scripts now allow you to specify a list of files that should be formatted. Only files actual suitable for the reformat script,
   will reformat. So e.g. calling `reformat-cmake src/include/kdbprivate.h` doesn't change any files. _(Klemens Böswirth)_
@@ -466,6 +467,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
 - We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
+- We added instructions on how to reformat code with [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html) to the [coding guidelines](../CODING.md). _(René Schwaiger)_
 
 ### Tutorials
 
