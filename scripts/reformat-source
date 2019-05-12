@@ -36,11 +36,16 @@ cd "$SOURCE" || {
 }
 
 if [ $# -gt 0 ]; then
-	source_files=$(printf "%s\n" "$@" | grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' | grep -v '^src/tools/pythongen.*' | grep -v '^tests/shell/gen.*')
+	source_files=$(printf "%s\n" "$@" |
+		grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' |
+		grep -v '^src/tools/pythongen.*' |
+		grep -v '^tests/shell/gen.*')
 	if [ -z "$source_files" ]; then
 		exit 0
 	fi
 else
-	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/pythongen.*' | grep -v '^tests/shell/gen.*')
+	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' |
+		grep -v '^src/tools/pythongen.*' |
+		grep -v '^tests/shell/gen.*')
 fi
 printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i
