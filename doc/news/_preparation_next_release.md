@@ -516,7 +516,14 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ## Tests
 
 - We now test the [Directory Value Plugin](https://www.libelektra.org/plugins/directoryvalue) with additional test data. _(René Schwaiger)_
-- <<TODO>>
+- The variables:
+
+  - `SPEC_FOLDER`
+  - `SYSTEM_FOLDER`
+  - `USER_FOLDER`
+
+  in the [inclusion file for shell test](../../tests/shell/include_common.sh.in) were set incorrectly, if the repository path contained space characters. _(René Schwaiger)_
+
 - The [CFramework](https://master.libelektra.org/tests/cframework) now also compares the names of meta keys. _(René Schwaiger)_
 - The [release notes check](../../scripts/run_check_release_notes) does not report an illegal number anymore, if the release notes were not updated at all. _(René Schwaiger)_
 - We added a test for the keyhelper-class which checks if rebasePath calculates the new path for cascading target-keys correctly. _(Thomas Bretterbauer)_
