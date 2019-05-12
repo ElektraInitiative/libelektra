@@ -166,7 +166,13 @@ or by installing the whole [LLVM](http://llvm.org) infrastructure:
 brew install llvm
 ```
 
-. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `6.0` in certain edge cases.
+. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `6.0` in certain edge cases. If you want you can also install Clang-Format `7.0` using LLVM `7.0`:
+
+```
+brew install llvm@7
+```
+
+.
 
 ###### Debian
 
