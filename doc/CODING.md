@@ -243,16 +243,54 @@ We use a similar style for CMake as we do for other code:
 - Add a space character before round parenthesis ( `(` ).
 - Use lower case for command names (e.g. `set` instead of `SET`)
 
-You can use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
-`cmake-format` currently does not support tabs, please use the standard command `unexpand` to fix this issue. For example, to reformat the
-file `CMakeLists.txt` in the root folder of the repository you can use the following command:
+#### cmake format
+
+We use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
+`cmake-format` currently does not support tabs, we use the standard command `unexpand` to fix this issue. For example, to reformat the
+file `CMakeLists.txt` in the root folder of the repository we use the following command:
 
 ```sh
 # This command uses `sponge`, which is part of the [moreutils](https://joeyh.name/code/moreutils/) package.
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ```
 
-. If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
+.
+
+##### Install
+
+Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
+
+```sh
+# Install cmake format `0.4.5` with support for YAML config files
+pip install cmake-format[yaml]==0.4.5
+```
+
+. Please make sure, that you install the correct version (`0.4.5`) of cmake format:
+
+```sh
+cmake-format --version
+#> 0.4.5
+```
+
+, since otherwise the formatted code might look quite different.
+
+We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew](http://brew.sh):
+
+```sh
+brew install moreutils
+```
+
+and on Debian using `apt-get`:
+
+```
+apt-get install moreutils
+```
+
+.
+
+##### Usage
+
+If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
 
 ### Java / Groovy Guidelines
 
