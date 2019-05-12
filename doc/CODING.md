@@ -191,7 +191,7 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 ```sh
 # On some systems such as Debian the `cmake-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
-# with `clang-format-6.0` in the command below.
+# with `clang-format-6.0` or `clang-format-7` in the command below.
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
