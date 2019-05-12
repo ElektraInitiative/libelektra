@@ -164,7 +164,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				os << "{" << endl
 				   << "	if (!warningKey) return;" << endl
 				   << "" << endl
-				   << "	char * nextNumber = elektraFormat(\"%lu\", getNextArrayNumber(warningKey));" << endl
+				   << "	char * nextNumber = elektraFormat(\"%d\", (int) getNextArrayNumber(warningKey));" << endl
 				   << "	char * buffer = elektraFormat (\"warnings/#%s\", nextNumber);" << endl
 				   << "" << endl
 				   << "	keySetMeta(warningKey, buffer, \"number description module file line function reason\");" << endl
@@ -230,7 +230,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				}
 				os << "{" << endl
 				   << "	if (!errorKey) return;" << endl
-				   << "	char * nextNumber = elektraFormat(\"%lu\", getNextArrayNumber(errorKey));" << endl
+				   << "	char * nextNumber = elektraFormat(\"%d\", (int)getNextArrayNumber(errorKey));" << endl
 				   << "	char * buffer = elektraFormat (\"warnings/#%s\", nextNumber);" << endl
 				   << "	const Key *meta = keyGetMeta(errorKey, \"error\");" << endl
 				   << "	if (meta)" << endl
