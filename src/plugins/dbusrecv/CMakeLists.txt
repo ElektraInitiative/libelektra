@@ -61,7 +61,7 @@ if (ADDTESTING_PHASE)
 		if (BUILD_FULL OR BUILD_STATIC)
 
 			# add sources for elektra-io-uv for static and full builds
-			target_sources (testmod_dbusrecv PRIVATE $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
+			target_sources (testmod_dbusrecv PRIVATE $<TARGET_OBJECTS:elektra-io-uv-objects>)
 		endif ()
 
 		if (libuv_VERSION VERSION_LESS "1.0")

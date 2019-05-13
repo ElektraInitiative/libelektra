@@ -68,7 +68,7 @@ if (FOUND_NAME GREATER -1)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
 			list (APPEND SOURCES
-				     $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
+				     $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
@@ -103,7 +103,7 @@ if (FOUND_NAME GREATER -1)
 		include_directories (${GLib_INCLUDE_DIRS} ${libuv_INCLUDE_DIRS})
 
 		list (APPEND SOURCES
-			     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds endif ()
+			     $<TARGET_OBJECTS:elektra-io-glib-objects>) # add sources for elektra-io-uv for static and full builds endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
 		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)

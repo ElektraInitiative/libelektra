@@ -38,7 +38,7 @@ if (ADDTESTING_PHASE)
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-uv for static and full builds
-			target_sources (testmod_zeromqrecv PRIVATE $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
+			target_sources (testmod_zeromqrecv PRIVATE $<TARGET_OBJECTS:elektra-io-uv-objects>)
 		endif ()
 	else ()
 		message (WARNING "io_uv bindings are required for testing, test deactivated")

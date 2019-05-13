@@ -9,11 +9,13 @@ function (set_additional_compile_definitions shortname)
 endfunction (set_additional_compile_definitions)
 
 function (add_lib name)
-	cmake_parse_arguments (ARG
-			       "CPP" # optional keywords
-			       "" # one value keywords
-			       "SOURCES;LINK_LIBRARIES;LINK_ELEKTRA" # multi value keywords
-			       ${ARGN})
+	cmake_parse_arguments (
+		ARG
+		"CPP" # optional keywords
+		"" # one value keywords
+		"SOURCES;LINK_LIBRARIES;LINK_ELEKTRA;INCLUDE_DIRECTORIES;INCLUDE_SYSTEM_DIRECTORIES;COMPILE_DEFINITIONS" # multi value
+															 # keywords
+		${ARGN})
 	add_headers (ARG_SOURCES)
 	if (ARG_CPP)
 		add_cppheaders (ARG_SOURCES)
@@ -21,6 +23,8 @@ function (add_lib name)
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
 	add_dependencies (elektra-${name}-objects kdberrors_generated elektra_error_codes_generated)
+	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
+	target_include_directories (elektra-${name}-objects SYSTEM PUBLIC ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
 	set_property (TARGET elektra-${name}-objects
 		      PROPERTY POSITION_INDEPENDENT_CODE
@@ -31,7 +35,7 @@ function (add_lib name)
 	set_property (TARGET elektra-${name}-objects
 		      APPEND
 		      PROPERTY COMPILE_DEFINITIONS
-			       ${ADDITIONAL_COMPILE_DEFINITIONS})
+			       "${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
 
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED $<TARGET_OBJECTS:elektra-${name}-objects>)
@@ -42,7 +46,7 @@ function (add_lib name)
 	set_property (GLOBAL
 		      APPEND
 		      PROPERTY "elektra-full_SRCS"
-			       ${ARG_SOURCES})
+			       "$<TARGET_OBJECTS:elektra-${name}-objects>")
 
 	set_property (GLOBAL
 		      APPEND

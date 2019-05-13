@@ -10,7 +10,7 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})
 
 if (BUILD_FULL OR BUILD_STATIC)
 	list (APPEND SOURCES
-		     $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
+		     $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full builds
 endif ()
 
 # Build test
