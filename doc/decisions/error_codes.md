@@ -1,12 +1,9 @@
-#Error message & handling concept
+# Error codes
 
 ## Problem
 
 The current error concept has disadvantages in following regards:
 
-- Too verbose error message
-  Currently for every error, 9 lines are shown in which most of them are not relevant to end users/administrators. One goal
-  is to reduce the verbosity of such messages and let users/administrators see only information they need.
 - A lot of redundant errors
   At the moment, each new plugin introduces new error codes which led to about 210+ error codes. Many of those errors
   are duplicated because developers did not know or search for a similar error which is already present. This concept should
@@ -24,18 +21,15 @@ The current error concept has disadvantages in following regards:
 
 ## Constraints
 
-- Error numbers must stay because they are more reliable to check against than strings
+- Error codes/numbers must stay but can be changed to another format (eg. Strings)
 - Supporting multiple programming languages
-- Plugin System
+- Supporting Elektra's Plugin System
 
 ## Assumptions
 
 ## Considered Alternatives
 
 - Removing the specification file without requiring error numbers
-- Possible variations on what message should be displayed,
-  eg. to keep the mountpoint information or on how wordings should be (with or without
-  "Sorry, ...", coloring of certain parts of a message, etc.)
 - Adding the key of the occurred error to the API which permits reading information from
   additional metadata such as an error message provided by a specification author.
   Reason against: The description of the key should already provide such information.
@@ -80,105 +74,39 @@ Various projects and standards:
 
 ## Decision
 
-The error message has the current format:
+All "fatal" errors will be converted to "errors" as the distinction is not relevant.
 
-```
-The command kdb set failed while accessing the key database with the info:
-Sorry, the error (#121) occurred ;(
-Description: validation failed
-Reason: Validation of key "<key>" with string "<value>" failed.
-Ingroup: plugin
-Module: enum
-At: ....../src/plugins/enum/enum.c:218
-Mountpoint: <parentKey>
-Configfile: ...../<file>.25676:1549919217.284067.tmp
-```
+Unused errors will be removed from the specification.
 
-The new default message will look like this:
-
-```
-Sorry, plugin <PLUGIN> issued [error|warning] code <NR>:
-Validation of key "<key>" with string "<value>" failed.
-```
-
-The <NR> will be the color red in case of an error or yellow in case of a warning
-while <PLUGIN> will be the color blue.
-
-Optionally a third line indicating a solution can be added. Eg. for a permission related error there would be a third line:
-
-```
-Possible Solution: Retry the command as sudo (sudo !!)
-```
-
-To avoid losing information, the user can use the command line argument `-v` (verbose) to show
-`Mountpoint`, `Configfile` in addition to the current error message.
-Furthermore a developer can use the command line argument `-d` (debug)
-to show `At` for debugging purposes.
-
-All "fatal" errors will be converted to "errors" as the distinguishment is not relevant.
-
-Unused marked errors will be removed from the specification.
-
-Errors will be categorizes into logical groups with subgroups.
+Errors will be categorized into logical groups with subgroups.
 Each error will be made up of 5 characters, where the first 2 character indicate the highest level
-and character 3 to 5 will be used for subgrouping.
+and character 3 to 5 will be used for subgrouping. Errors are prepended with the letter `C` which
+is the abbreviation for "Code".
 
-- Permanent errors ("01000")
-  - Resource ("01100")
-  - Parsing ("01200")
-  - Installation ("01300")
-  - Logical ("01400")
-- Conflict ("02000")
-- Timeout ("03000")
-- Validation ("04000")
-  - Syntactic ("04100")
-  - Semantic ("04200")
+- Permanent errors C01000
+  - Resource C01100
+    - Memory Allocation C01110
+    - General Resource C01120
+  - Installation C01200
+  - Logical C01310
+    - Assertion C01310
+    - Interface C01320
+    - Plugin is Broken C01330
+- Conflicting State C02000
+- Timeout C03000
+- Validation C04000
+  - Syntactic C04100
+  - Semantic C04200
+- Out-Of-Range C05000
 
 ## Rationale
 
-The new error message is much more succinct which gives end users more relevant information.
-Furthermore the solution approach still holds all necessary information if requested by users.
-
-`Ingroup`, `Description` and `Module` will be removed from the error message as they provide no useful
-information at all.
-
 The grouping of errors will allow developers to filter for specific as well as more general errors to correctly
 react to them programmatically.
-The new concept will permit additional subgrouping of errors in case it might be needed in the future. Imagine the case where
-"Resource" errors is too general because developers saw a need for splitting the errors in "permission" and "existence" errors.
-They can simply take the current subclass 01100 and make "permission" be 01110 and "existence" be 01120. This will also allow
-backwards compatibility by applications just checking for resource errors in general.
+The new concept will permit additional subgrouping of errors in case it might be needed in the future.
+
 Splitting/merging/rearranging any category should only be done by a decision (such as this file here) because elektra developers
 should not be able to generate a new category as they wish because it would lead to the same proliferation of errors as we have now.
-
-The classification as of now is done with the following concept in mind:
-
-- Permanent errors
-  Generally errors which require changes by a user which are not getting fixed by eg. retrying.
-- Resource
-  The class of errors which require certain permissions (opening a file) or where some directory/file is missing.
-  One possible reaction to these kind of errors is to try a different directory/file or create a missing resource.
-- Parsing
-  Errors while parsing files such as ini/yaml/etc.
-  Reactions could be to trim line endings/ try different encodings or even try another input at all.
-- Installation
-  Errors in the installation process such as missing plugins or more generic errors in beneath
-  the plugins/core which cannot be fixed programmatically but needs further investigation.
-- Logical
-  These errors indicate a bug in beneath elektra and should never have happened.
-- Conflict
-  Conflicts indicate temporary problems but also could be harmful such as overwriting a file after a merge conflict.
-- Timeout
-  These errors indicate temporary failures such as connection timeouts or not enough space available. Retrying at a later point in time (or
-  immediately) will most likely fix the problem.
-- Validation
-  These errors usually indicate wrong values for certain keys such as an invalid port number or wrong types. Such errors require user action and
-  retry with a different value.
-- Syntactic
-  Syntactic failures indicate a wrong notation or missing characters for example. They require a certain form which was not given by the user.
-- Semantic
-  Semantic errors are failures which indicate a different expectation of the program than from the user concerning the meaning of a value.
-  One example would be a wrong type or out-of-range errors.
 
 These categories are chosen because they can help developers to react programmatically and cover the majority of use cases to our present knowledge.
 If there is ever the need for another reaction based category, it can be extended very easily.
@@ -191,5 +119,8 @@ file which uses the specification will stay as it is easier to change categories
 Current errors will be migrated.
 
 ## Related Decisions
+
+- [Error Message Format](error_message_format.md)
+  Shows the new format of the error message
 
 ## Notes
