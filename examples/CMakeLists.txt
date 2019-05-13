@@ -57,7 +57,7 @@ if (FOUND_NAME GREATER -1)
 
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
-	# TODO resolve issues.libelektra.org/2007
+	# TODO resolve https://issues.libelektra.org/2007
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (IS_INCLUDED)
 
@@ -85,6 +85,7 @@ if (FOUND_NAME GREATER -1)
 		else ()
 			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV1")
 		endif ()
+		target_include_directories (${EXAMPLE} PRIVATE ${libuv_INCLUDE_DIRS})
 
 	endif ()
 
