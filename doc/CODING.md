@@ -290,7 +290,20 @@ apt-get install moreutils
 
 ##### Usage
 
-If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
+If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/reformat-cmake):
+
+```sh
+scripts/reformat-cmake # Running this script for the whole code base takes some time.
+```
+
+. To reformat specific files add a list of file paths after the command:
+
+```sh
+# The command below reformats the file `cmake/CMakeLists.txt`.
+scripts/reformat-cmake cmake/CMakeLists.txt
+```
+
+.
 
 ### Java / Groovy Guidelines
 
