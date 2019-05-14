@@ -662,8 +662,6 @@ ElektraError * elektraErrorFromKey (Key * key);
 ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
-ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * keyname);
-ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * keyname, const char * sourceValue);
 
 #ifdef __cplusplus
 }

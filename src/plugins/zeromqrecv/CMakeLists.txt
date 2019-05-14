@@ -20,9 +20,9 @@ add_plugin (zeromqrecv
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
-		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (libuv 1 QUIET) # libuv is present; otherwise io_uv bindings would not be added
+		find_package (libuv QUIET) # libuv is present; otherwise io_uv bindings would not be added
 
+		if (BUILD_FULL OR BUILD_STATIC)
 			set (STATIC_LIBRARIES ${libuv_LIBRARIES})
 		endif ()
 
