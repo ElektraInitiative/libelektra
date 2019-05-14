@@ -88,7 +88,7 @@ is the abbreviation for "Code".
     - Memory Allocation C01110
     - General Resource C01120
   - Installation C01200
-  - Logical C01310
+  - Logical C01300
     - Assertion C01310
     - Interface C01320
     - Plugin is Broken C01330

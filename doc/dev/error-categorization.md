@@ -76,7 +76,7 @@ missing files/ directories or insufficient permission to execute certain command
 would require sudo permissions). Reactions are fixing the permissions or creating the file/directory
 and retry the operation.
 
-#### Installation ("C01300")
+#### Installation ("C01200")
 
 `Installation Errors` are those errors which are related to a wrong installation such as
 wrong plugin names, missing backends, initialization errors, misconfiguration of Elektra etc.
@@ -87,7 +87,7 @@ mounting.
 Users will have to reconfigure, reinstall, recompile (with other settings) Elektra in order to
 get rid of this error or fix the installation of the corresponding library/application.
 
-#### Logical ("C01410")
+#### Logical ("C01300")
 
 `Logical Errors` is another branch category in which you indicate a bug in Elektra
 such as internal errors, assertion failures or errors
@@ -95,7 +95,7 @@ which should not happen such as going into a `default` branch when you are assur
 are covered. Usually such errors come with a message to report such failures to Elektra's bugtracker.
 Applications cannot handle such errors themselves.
 
-##### Assertion ("C01410")
+##### Assertion ("C01310")
 
 `Assertion Errors` are such errors which indicate a flaw in the internal logic such as going into a `default`
 branch which you do never expect to happen.
@@ -103,13 +103,13 @@ This category might be used in the future to automatically
 issue a bug to our bugtracker. As of now if you have to use this error please add a message
 indicating that this bug should be reported.
 
-##### Interface ("C01420")
+##### Interface ("C01320")
 
 `Interface Errors` errors indicate a wrong usage of Elektra's API. An example would be to pass a NULL pointer to
 `kdbGet`. Also violations of the backend belong into this category. Compared to semantic validation errors,
 this category has its focus on detecting wrong usages of the API instead of a "retry with a different value" approach.
 
-##### Broken Plugin ("C01430")
+##### Plugin is Broken ("C01330")
 
 `Broken Plugin Errors` errors indicate that a plugin does not behave in an intended way. Unrecognized commands,
 unkown return codes, plugin creation errors, etc. belong to this category. Also uncaught exceptions belong here because
