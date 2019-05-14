@@ -1,14 +1,28 @@
+// clang-format off
+
+
+// clang-format on
 /**
  * @file
  *
- * @brief
+ * This file was automatically generated using `kdb gen elektra`.
+ * Any changes will be overwritten, when the file is regenerated.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD Zero Clause License
+ *
+ *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *
+ *     Permission to use, copy, modify, and/or distribute this software for any
+ *     purpose with or without fee is hereby granted.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ *     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ *     FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ *     INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ *     LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ *     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ *     PERFORMANCE OF THIS SOFTWARE.
  */
-
-// clang-format off
-
-// clang-format on
 
 #include "struct.actual.h"
 
@@ -51,23 +65,18 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (13,
 	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
-	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct",
-	KEY_END),
+	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct", KEY_END),
 	keyNew ("/myotherstruct/x", KEY_VALUE, "4", KEY_META, "default", "4", KEY_META, "type", "long", KEY_END),
 	keyNew ("/myotherstruct/x/y", KEY_VALUE, "6", KEY_META, "default", "6", KEY_META, "type", "long", KEY_END),
 	keyNew ("/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
 	keyNew ("/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("/mystruct/b", KEY_VALUE, "8", KEY_META, "default", "8", KEY_META, "type", "long", KEY_END),
-	keyNew ("/people/#", KEY_META, "check/reference", "single", KEY_META, "check/reference/restrict", "../../person/_",
-	KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
-	keyNew ("/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type",
-	"Person", KEY_META, "type", "struct", KEY_END),
+	keyNew ("/people/#", KEY_META, "check/reference", "single", KEY_META, "check/reference/restrict", "../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
+	keyNew ("/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
 	keyNew ("/person/_/age", KEY_VALUE, "30", KEY_META, "default", "30", KEY_META, "type", "short", KEY_END),
-	keyNew ("/person/_/children/#", KEY_META, "check/reference", "recursive", KEY_META, "check/reference/restrict",
-	"../../../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
+	keyNew ("/person/_/children/#", KEY_META, "check/reference", "recursive", KEY_META, "check/reference/restrict", "../../../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
 	keyNew ("/person/_/height", KEY_VALUE, "1.80", KEY_META, "default", "1.80", KEY_META, "type", "float", KEY_END),
-	keyNew ("/person/_/name", KEY_VALUE, "Max", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName",
-	KEY_META, "type", "string", KEY_END),
+	keyNew ("/person/_/name", KEY_VALUE, "Max", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
 	KS_END);
 ;
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/struct", defaults, error);
@@ -129,26 +138,16 @@ void specloadCheck (int argc, const char ** argv)
 
 	KeySet * spec = ksNew (13,
 	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
-	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct",
-	KEY_END),
+	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct",  KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "check/reference", "single", KEY_META,
-	"check/reference/restrict", "../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1",
-	KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/children/#", KEY_META, "check/reference", "recursive",
-	KEY_META, "check/reference/restrict", "../../../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref",
-	KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type",
-	"float", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/name", KEY_META, "default", "Max", KEY_META,
-	"gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "check/reference", "single", KEY_META, "check/reference/restrict", "../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/children/#", KEY_META, "check/reference", "recursive", KEY_META, "check/reference/restrict", "../../../../person/_", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type", "float", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/name", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
 	KS_END);
 ;
 
