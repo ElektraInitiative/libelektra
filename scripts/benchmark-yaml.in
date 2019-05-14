@@ -18,6 +18,9 @@ INPUT_FILES=(
 	generated.yaml
 )
 INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML"
+# Please set the path below to the filepath of your local copy of the [raw data repository](https://github.com/ElektraInitiative/rawdata)
+RAW_DATA_DIRECTORY="../../Documents/Elektra/Raw Data"
+EXPORT_DIRECTORY="$RAW_DATA_DIRECTORY/YAML/Results"
 export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
@@ -107,14 +110,16 @@ generate_input_benchmark() {
 
 benchmark() {
 	for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
+		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILES[0]" | cut -f1 -d'.').json"
 		hyperfine --warmup 3 \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[2]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[3]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" \
-			--export-json "$(printf '%s' "$INPUT_FILES[0]" | cut -f1 -d'.').json" |
+			--export-json "$EXPORT_FILEPATH" |
 			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
+		printf '\nExported data to file: "%s"\n' "$EXPORT_FILEPATH"
 	done
 }
 
