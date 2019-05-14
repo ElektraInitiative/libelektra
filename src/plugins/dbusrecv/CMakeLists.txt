@@ -46,9 +46,9 @@ if (ADDTESTING_PHASE)
 	# the test requires an IO binding; using io_uv for now
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
-		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (libuv QUIET)
+		find_package (libuv QUIET)
 
+		if (BUILD_FULL OR BUILD_STATIC)
 			set (STATIC_LIBRARIES ${libuv_LIBRARIES}) # libuv is present; otherwise io_uv bindings would not be added
 		endif ()
 
