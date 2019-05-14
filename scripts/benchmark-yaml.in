@@ -119,6 +119,8 @@ benchmark() {
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" \
 			--export-json "$EXPORT_FILEPATH" |
 			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
+		# Remove path prefix of benchmark command
+		printf 'H\n,s/\(\\\\"\).*\(benchmark_plugingetset\)/\\1\\2/\nw\n' | ed -s "$EXPORT_FILEPATH"
 		printf '\nExported data to file: "%s"\n' "$EXPORT_FILEPATH"
 	done
 }
