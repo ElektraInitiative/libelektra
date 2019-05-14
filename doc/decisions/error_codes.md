@@ -99,6 +99,9 @@ is the abbreviation for "Code".
   - Semantic C04200
 - Out-Of-Range C05000
 
+To see an explanation of the categories along with a guideline on how to categorize please
+see the [Error Codes Guideline](../dev/error-categorization.md)
+
 ## Rationale
 
 The grouping of errors will allow developers to filter for specific as well as more general errors to correctly
@@ -122,5 +125,7 @@ Current errors will be migrated.
 
 - [Error Message Format](error_message_format.md)
   Shows the new format of the error message
+- [Error Codes Guideline](../dev/error-categorization.md)
+  Shows how to categorize errors
 
 ## Notes
