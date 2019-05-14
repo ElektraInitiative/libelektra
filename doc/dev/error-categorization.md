@@ -160,3 +160,8 @@ an Elektra Array entry to `-1` or trying to set a port outside of a valid range.
 in semantic/syntactic/resource errors but these errors are primarily focused on Elektra arrays. It's use is for callers
 who are iterating (or continually incrementing/ decrementing) through a space and can easily detect when they are
 done by looking for this error.
+
+## Related
+
+- [Decision Document](../decisions/error_codes.md)
+  The underlying design decision document.
