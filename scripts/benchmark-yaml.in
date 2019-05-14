@@ -112,7 +112,8 @@ benchmark() {
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[2]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[3]} get" \
-			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" |
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" \
+			--export-json "$(printf '%s' "$INPUT_FILES[0]" | cut -f1 -d'.').json" |
 			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
 	done
 }
