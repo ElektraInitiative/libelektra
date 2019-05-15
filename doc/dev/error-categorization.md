@@ -1,18 +1,13 @@
 # Error Categorization
 
-In this document we start to explain how to categorize errors.
-Many errors are unique and can be difficult to categorize so this
-document will act as a guideline.
+This document explains how to categorize errors and should act as a form of guideline.
+The categorization aims to reduce
+duplicated errors and the maintenance effort for errors.
 
 ## Categorization Mindset
 
 Errors along with their unique code only primarily exist because they can be **reacted
-differently on programmatically**. One could argue that an application could always react differently
-based on the error (eg. give yourself write or read permission) but such detailed granularity
-is rarely needed and would come with a lot of maintenance effort. In the previous versions of
-Elektra we were facing many duplicated errors because too many existed
-and developers simply cannot know each and every code.
-
+differently on programmatically**.
 To get an idea of programmatic reactions take a method call which returns a `Timeout` error. Naturally
 a senseful reaction would be to retry at a later point in time. So
 the reaction here would be to retry with a time based approach. On the other hand
@@ -21,30 +16,17 @@ the application just knows that it simply cannot access the desired resource and
 the user to grant it.
 
 Categories are leaf based, so you cannot put an error
-into a node (branch) such as `Permanent errors` (see below). If you feel for a new category,
+into a node (branch) such as `Permanent errors` (see below).
+
+If you feel for a new category,
 please forge a design decision document and make a PR to Elektra's repo.
 
 ## Error categorization Guideline
 
 Now we will investigate each category in more detail and when to put an error/warning in there.
 
-The current structure looks like this:
-
-- Permanent errors
-  - Resource
-    - Memory Allocation
-    - General Resource
-  - Installation
-  - Logical
-    - Assertion
-    - Interface
-    - Broken plugin
-- Conflicting State
-- Timeout
-- Out-Of-Range
-- Validation
-  - Syntactic
-  - Semantic
+For a complete structural overview please visit the corresponding
+[Design decision Document](../decisions/error_codes.md)
 
 ### Permanent errors ("C01000")
 
@@ -61,11 +43,11 @@ at all. `Permanent Errors` are subdivided into
 or missing resources such as memory, RAM, etc.
 Examples are missing files, insufficient permissions or out of memory.
 This category forces users or applications to provide additional resources, create a missing file/ directory etc
-or provide the relevant permissions for Elektra to work.
+or to provide the relevant permissions.
 
 ##### Memory Allocation ("C01110")
 
-`Memory Allocation Errors` are errors which come from failed `malloc` calls primarily as no
+`Memory Allocation Errors` are errors which come from failed `elektraMalloc` calls primarily as no
 more memory could be allocated for the application. Such errors will gain special handling
 in future releases.
 
@@ -82,15 +64,15 @@ and retry the operation.
 wrong plugin names, missing backends, initialization errors, misconfiguration of Elektra etc.
 Installation errors might also be non-Elektra specific but also from dependent library/applications
 such as gpg.
-Also plugin configuration errors belong to `Installation Errors` as they this happens during
+Also plugin configuration errors belong to `Installation Errors` as this happens during
 mounting.
 Users will have to reconfigure, reinstall, recompile (with other settings) Elektra in order to
 get rid of this error or fix the installation of the corresponding library/application.
 
 #### Logical ("C01300")
 
-`Logical Errors` is another branch category in which you indicate a bug in Elektra
-such as internal errors, assertion failures or errors
+`Logical Errors` is a branch category in which you indicate a bug in Elektra
+such as internal errors, assertion failures, not implemented features or errors
 which should not happen such as going into a `default` branch when you are assured that all cases
 are covered. Usually such errors come with a message to report such failures to Elektra's bugtracker.
 Applications cannot handle such errors themselves.
@@ -109,7 +91,7 @@ indicating that this bug should be reported.
 `kdbGet`. Also violations of the backend belong into this category. Compared to semantic validation errors,
 this category has its focus on detecting wrong usages of the API instead of a "retry with a different value" approach.
 
-##### Plugin is Broken ("C01330")
+##### Plugin Misbehavior ("C01330")
 
 `Broken Plugin Errors` errors indicate that a plugin does not behave in an intended way. Unrecognized commands,
 unkown return codes, plugin creation errors, etc. belong to this category. Also uncaught exceptions belong here because
@@ -138,11 +120,12 @@ Validation errors can either be syntactic or semantic.
 #### Syntactic ("C04100")
 
 `Syntactic Errors` are errors which tell users or applications that the current format is not valid.
-Examples are wrong date formats or missing closing brackets `]` inside of a regular expression. Also path related errors
+Examples are wrong date formats or missing closing brackets `]` inside of a regular expression when it is checked.
+Also path related errors
 like missing slashes come into this category. Also parsing errors fall under syntactic errors such as
 unexpected encounters like missing line endings, illegal characters or wrong encodings. Also transformation
 and conversion errors are to be categorizes here because the format of the given input does not allow such
-actions. Users should try a different format and retry pushing it to Elektra.
+actions. Users should try a different value and retry setting it with Elektra.
 
 #### Semantic ("C04200")
 
@@ -161,7 +144,7 @@ in semantic/syntactic/resource errors but these errors are primarily focused on 
 who are iterating (or continually incrementing/ decrementing) through a space and can easily detect when they are
 done by looking for this error.
 
-## Related
+## Underlying design decision document
 
 - [Decision Document](../decisions/error_codes.md)
   The underlying design decision document.
