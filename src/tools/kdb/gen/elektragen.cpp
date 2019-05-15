@@ -88,7 +88,7 @@ private:
 	const kdb::KeySet & allKeys;
 
 	kainjow::mustache::list getFields (const kdb::Key & structKey, const kdb::KeySet & structKeys, bool allocating,
-					   const std::string & tagName, size_t & maxFieldNameLen, std::string & fieldsString);
+					   const std::string & specParentName, size_t & maxFieldNameLen, std::string & fieldsString);
 
 	static inline std::string getFieldName (const kdb::Key & key, const std::string & fieldKeyName);
 	static inline bool shouldGenerateTypeDef (const kdb::Key & key);
@@ -102,7 +102,8 @@ public:
 	static inline bool shouldAllocate (const kdb::Key & key);
 	static inline std::string getType (const kdb::Key & key, const std::string & tagName, bool & genType);
 
-	kainjow::mustache::object process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName);
+	kainjow::mustache::object process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName,
+					   const std::string & specParentName);
 };
 
 static void escapeNonAlphaNum (std::string & str)
@@ -409,7 +410,8 @@ static std::vector<std::string> getKeyParts (const kdb::Key & key)
 }
 
 kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, const kdb::KeySet & structKeys, bool allocating,
-						    const std::string & tagName, size_t & maxFieldNameLen, std::string & fieldsString)
+						    const std::string & specParentName, size_t & maxFieldNameLen,
+						    std::string & fieldsString)
 {
 	using namespace kainjow::mustache;
 
@@ -477,6 +479,8 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 		auto typeName = snakeCaseToPascalCase (type);
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
 
+		auto tagName = getTagName (key, specParentName);
+
 		if (type == "enum")
 		{
 			bool genType;
@@ -532,7 +536,8 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, 
 	return fields;
 }
 
-kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName)
+kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName,
+						    const std::string & specParentName)
 {
 	using namespace kainjow::mustache;
 
@@ -549,7 +554,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 	size_t maxFieldNameLen;
 
 	auto allocate = shouldAllocate (key);
-	auto fields = getFields (key, subkeys, allocate, tagName, maxFieldNameLen, fieldsString);
+	auto fields = getFields (key, subkeys, allocate, specParentName, maxFieldNameLen, fieldsString);
 
 	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
@@ -751,7 +756,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	EnumProcessor enumProcessor (enumConversion);
 	StructProcessor structProcessor (specParent, ks);
 
-	auto parentLength = specParent.getName ().length ();
+	const std::string & specParentName = specParent.getName ();
+	auto parentLength = specParentName.length ();
 
 	kdb::KeySet spec;
 	kdb::KeySet defaults;
@@ -770,7 +776,15 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	{
 		kdb::Key key = *it;
 
-		if (!key.isSpec () || !key.isBelow (specParent) || !hasType (key))
+		if (!key.isSpec () || !key.isBelow (specParent))
+		{
+			continue;
+		}
+
+		kdb::Key specKey = key.dup ();
+		spec.append (specKey);
+
+		if (!hasType (key))
 		{
 			continue;
 		}
@@ -789,9 +803,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		{
 			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
 		}
-
-		kdb::Key specKey = key.dup ();
-		spec.append (specKey);
 
 		kdb::Key defaultsKey = key.dup ();
 		defaultsKey.setName (defaultsKey.getName ().substr (parentLength));
@@ -825,7 +836,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
 		auto typeName = snakeCaseToPascalCase (type);
 
-		auto tagName = getTagName (key, specParent.getName ());
+		auto tagName = getTagName (key, specParentName);
 
 		auto isArray = key.getBaseName () == "#";
 
@@ -933,7 +944,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				}
 			}
 
-			auto structData = structProcessor.process (key, subkeys, tagName);
+			auto structData = structProcessor.process (key, subkeys, tagName, specParentName);
 
 			keyObject["type_name"] = structData["type_name"].string_value ();
 			keyObject["native_type"] = structData["native_type"].string_value ();
@@ -953,7 +964,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto specloadArg = "--elektra-spec";
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
 	list totalContext;
 	kdb::KeySet defaultContext;
