@@ -24,7 +24,8 @@ export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 cleanup() {
-	rm -rf "$DATA_DIRECTORY"
+	find "$DATA_DIRECTORY" -mindepth 2 -delete
+	find "$DATA_DIRECTORY" -mindepth 1 -type d -delete
 }
 
 usage() {
@@ -141,8 +142,10 @@ trap cleanup EXIT INT QUIT TERM
 printf '→ Check Environment\n'
 check_environment
 
-printf '→ Download Input\n'
-download_input
+if ! test -e $DATA_DIRECTORY/$INPUT_FILE; then
+	printf '→ Download Input\n'
+	download_input
+fi
 
 printf '→ Compare Plugin Output\n'
 compare_plugin_output
