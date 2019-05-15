@@ -14,9 +14,7 @@ KDB_COMMAND="$BUILD_DIRECTORY/bin/kdb"
 PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
-INPUT_FILES=(
-	generated.yaml
-)
+INPUT_FILE=generated.yaml
 INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML"
 # Please set the path below to the filepath of your local copy of the [raw data repository](https://github.com/ElektraInitiative/rawdata)
 RAW_DATA_DIRECTORY="../../Documents/Elektra/Raw Data"
@@ -29,6 +27,16 @@ cleanup() {
 	rm -rf "$DATA_DIRECTORY"
 }
 
+usage() {
+	printf >&2 -- 'Usage: %s [input]\n\n' "$0"
+	printf >&2 -- '- The `input` file has to be available at:\n\n'
+	printf >&2 -- '    %s\n\n' "$INPUT_URL"
+	printf >&2 -- '  .\n\n'
+	printf >&2 -- '- If you specify no input file, then the benchmark uses the file\n\n'
+	printf >&2 -- '    %s/%s\n\n' "$INPUT_URL" "$INPUT_FILE"
+	printf >&2 -- '  as input.\n'
+}
+
 write() {
 	PLUGIN="$1"
 	INPUT="$2"
@@ -37,7 +45,7 @@ write() {
 	"$KDB_COMMAND" mount config.yaml "$KDBPATH" "$PLUGIN"
 	# Create config directory, if it does not exist yet
 	"$KDB_COMMAND" set "$KDBPATH" test > /dev/null
-	cat "$INPUT_FILE" > "$("$KDB_COMMAND" file "$KDBPATH")"
+	cat "$INPUT" > "$("$KDB_COMMAND" file "$KDBPATH")"
 	"$KDB_COMMAND" export "$KDBPATH" yamlsmith > "$OUTPUT"
 	"$KDB_COMMAND" rm -r "$KDBPATH"
 	"$KDB_COMMAND" umount "$KDBPATH"
@@ -48,14 +56,12 @@ download_input() {
 		printf >&2 'Unable to create data directory “%s”\n' "$DATA_DIRECTORY"
 		exit 1
 	}
-	for INPUT_FILE in "${INPUT_FILES[@]}"; do
-		OUTPUT=$(curl 2>&1 -L "$INPUT_URL/$INPUT_FILE" -o "$DATA_DIRECTORY/$INPUT_FILE")
-		if [ $? != 0 ]; then
-			printf >&2 'Unable to download “%s” as “%s”\n:' "$INPUT_URL/$INPUT_FILE" "$DATA_DIRECTORY/$INPUT_FILE"
-			printf >&2 '%s\n' "$OUTPUT"
-			exit 1
-		fi
-	done
+	OUTPUT=$(curl 2>&1 -L "$INPUT_URL/$INPUT_FILE" -o "$DATA_DIRECTORY/$INPUT_FILE")
+	if [ $? != 0 ]; then
+		printf >&2 'Unable to download “%s” as “%s”\n:' "$INPUT_URL/$INPUT_FILE" "$DATA_DIRECTORY/$INPUT_FILE"
+		printf >&2 '%s\n' "$OUTPUT"
+		exit 1
+	fi
 }
 
 check_environment() {
@@ -81,36 +87,32 @@ check_environment() {
 }
 
 compare_plugin_output() {
-	for FILEPATH in "${INPUT_FILES[@]}"; do
-		REFERENCE=reference.yaml
-		INPUT_FILE="$DATA_DIRECTORY/$FILEPATH"
-		write yamlcpp "$INPUT_FILE" "$REFERENCE"
-		for PLUGIN in "${PLUGINS[@]}"; do
-			write "$PLUGIN" "$INPUT_FILE" "$PLUGIN.yaml"
-			diff -q "$REFERENCE" "$PLUGIN.yaml" || {
-				printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT_FILE"
-				diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
-				exit 1
-			}
-			rm "$PLUGIN.yaml"
-		done
-		rm "$REFERENCE"
+	REFERENCE=reference.yaml
+	INPUT="$DATA_DIRECTORY/$INPUT_FILE"
+	write yamlcpp "$INPUT" "$REFERENCE"
+	for PLUGIN in "${PLUGINS[@]}"; do
+		write "$PLUGIN" "$INPUT" "$PLUGIN.yaml"
+		diff -q "$REFERENCE" "$PLUGIN.yaml" || {
+			printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT"
+			diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
+			exit 1
+		}
+		rm "$PLUGIN.yaml"
 	done
+	rm "$REFERENCE"
 }
 
 generate_input_benchmark() {
-	for FILEPATH in "${INPUT_FILES[@]}"; do
-		DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$FILEPATH" | cut -f1 -d'.')"
-		mkdir "$DIRECTORY"
-		for PLUGIN in "${PLUGINS[@]}"; do
-			cp "$DATA_DIRECTORY/$FILEPATH" "$DIRECTORY/test.$PLUGIN.in"
-		done
+	DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.')"
+	mkdir "$DIRECTORY"
+	for PLUGIN in "${PLUGINS[@]}"; do
+		cp "$DATA_DIRECTORY/$INPUT_FILE" "$DIRECTORY/test.$PLUGIN.in"
 	done
 }
 
 benchmark() {
 	for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
-		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILES[0]" | cut -f1 -d'.').json"
+		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.').json"
 		hyperfine --warmup 3 \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
@@ -129,12 +131,12 @@ benchmark() {
 
 trap cleanup EXIT INT QUIT TERM
 
-# Usage: benchmark-yaml [input ...]
+(("$#" > 1)) && {
+	usage "$@"
+	exit 1
+}
 
-# The input (files) have to be available at `INPUT_URL`.
-# If you specify no input file, the benchmark uses the files specified in `INPUT_FILES`.
-
-(("$#" >= 1)) && INPUT_FILES=("$@")
+(("$#" >= 1)) && INPUT_FILE=("$1")
 
 printf '→ Check Environment\n'
 check_environment
