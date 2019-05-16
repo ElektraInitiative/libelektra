@@ -97,7 +97,6 @@ is the abbreviation for "Code".
 - Validation C04000
   - Syntactic C04100
   - Semantic C04200
-- Out-Of-Range C05000
 
 To see an explanation of the categories along with a guideline on how to categorize please
 see the [Error Codes Guideline](../dev/error-categorization.md)
