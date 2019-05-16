@@ -16,9 +16,7 @@ DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILE=generated.yaml
 INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML"
-# Please set the path below to the filepath of your local copy of the [raw data repository](https://github.com/ElektraInitiative/rawdata)
-RAW_DATA_DIRECTORY="../../Documents/Elektra/Raw Data"
-EXPORT_DIRECTORY="$RAW_DATA_DIRECTORY/YAML/Results"
+EXPORT_DIRECTORY="benchmarks/results"
 export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
@@ -112,6 +110,11 @@ generate_input_benchmark() {
 }
 
 benchmark() {
+	mkdir -p "$EXPORT_DIRECTORY" || {
+		printf >&2 'Unable to create export directory “%s”\n' "$EXPORT_DIRECTORY"
+		exit 1
+	}
+
 	for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
 		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.').json"
 		hyperfine --warmup 3 \
