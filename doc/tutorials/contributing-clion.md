@@ -135,7 +135,8 @@ as follows:
   Almost all functionality-code resides here.
   - bindings<br/>
     Here is all the code of available [Bindings](/src/bindings/README.md)
-    of libelektra. - plugins<br/>
+    of libelektra.
+  - plugins<br/>
     You can find all developed [Plugins](/src/plugins/README.md) here. If
     you want to fix a bug for an existing plugin or add another one, this is
     the directory you have to work in. For further information on how to
