@@ -22,6 +22,7 @@ We recommend that you read:
 
 - [The big picture what Elektra is](/doc/BIGPICTURE.md)
 - [The tutorials to get some practice](/doc/tutorials/)
+- [The step by step guide of how to contribute](/doc/tutorials/contributing-clion.md)
 
 # Code
 
