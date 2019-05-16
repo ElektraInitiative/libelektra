@@ -299,26 +299,24 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 
 	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
-	if (genType && generateTypeDef)
-	{
-		auto other = enumTypes.find (typeName);
-		if (other != enumTypes.end ())
-		{
-			auto otherValuesString = other->second.second;
-			if (otherValuesString != valuesString)
-			{
-				auto otherKey = other->second.first;
-				auto msg = "The key '" + name;
-				msg += "' uses the same 'gen/enum/type' as the key '" + otherKey +
-				       "', but their 'check/enum' values are different!";
-				throw CommandAbortException (msg);
-			}
 
-			isNew = false;
+	auto other = enumTypes.find (typeName);
+	if (other != enumTypes.end ())
+	{
+		auto otherValuesString = other->second.second;
+		if (otherValuesString != valuesString)
+		{
+			auto otherKey = other->second.first;
+			auto msg = "The key '" + name;
+			msg += "' uses the same 'gen/enum/type' as the key '" + otherKey +
+			       "', but their 'check/enum' values are different!";
+			throw CommandAbortException (msg);
 		}
 
-		enumTypes[typeName] = std::make_pair (name, valuesString);
+		isNew = false;
 	}
+
+	enumTypes[typeName] = std::make_pair (name, valuesString);
 
 	auto useTrie = conversion == EnumConversion::Trie || (conversion == EnumConversion::Default && trieDepth < 3);
 
@@ -559,25 +557,23 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 
 	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
-	if (genType && generateTypeDef)
-	{
-		auto other = structTypes.find (typeName);
-		if (other != structTypes.end ())
-		{
-			auto otherFieldsString = other->second.second;
-			if (otherFieldsString != fieldsString)
-			{
-				auto otherKey = other->second.first;
-				auto msg = "The key '" + name;
-				msg += "' uses the same 'gen/struct/type' as the key '" + otherKey + "', but their fields are different!";
-				throw CommandAbortException (msg);
-			}
 
-			isNew = false;
+	auto other = structTypes.find (typeName);
+	if (other != structTypes.end ())
+	{
+		auto otherFieldsString = other->second.second;
+		if (otherFieldsString != fieldsString)
+		{
+			auto otherKey = other->second.first;
+			auto msg = "The key '" + name;
+			msg += "' uses the same 'gen/struct/type' as the key '" + otherKey + "', but their fields are different!";
+			throw CommandAbortException (msg);
 		}
 
-		structTypes[typeName] = std::make_pair (name, fieldsString);
+		isNew = false;
 	}
+
+	structTypes[typeName] = std::make_pair (name, fieldsString);
 
 	return object{ { "new", isNew },
 		       { "type_name", typeName },
@@ -925,8 +921,13 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			kdb::KeySet subkeys;
 			for (auto cur = it + 1; cur != ks.end (); ++cur)
 			{
-				if (cur->isBelow (key) && !StructProcessor::isFieldIgnored (*cur))
+				if (cur->isBelow (key))
 				{
+					if (StructProcessor::isFieldIgnored (*cur))
+					{
+						continue;
+					}
+
 					auto parts = getKeyParts (*cur);
 					if (parts.size () <= baseDepth + maxDepth)
 					{
