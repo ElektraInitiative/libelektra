@@ -44,7 +44,7 @@ cd .. # Change working directory back to the root of repository
 
 ### Profiling the Code
 
-We use the tool [`benchmark_plugingetset`](../../benchmarks/README.md) to profile the execution time of [YAy PEG][]. The file [`keyframes.yaml`](https://github.com/sanssecours/rawdata/blob/master/YAML/keyframes.yaml) serves as input file for the plugin. Since `benchmark_plugingetset` requires a data file called
+We use the tool [`benchmark_plugingetset`](../../benchmarks/README.md) to profile the execution time of [YAy PEG][]. The file [`keyframes.yaml`](https://github.com/ElektraInitiative/rawdata/blob/master/YAML/keyframes.yaml) serves as input file for the plugin. Since `benchmark_plugingetset` requires a data file called
 
 ```sh
 test.$plugin.in
