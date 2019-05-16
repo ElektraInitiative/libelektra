@@ -246,7 +246,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 			name += camelCaseToMacroCase (stringValue);
 			escapeNonAlphaNum (name);
 			auto value = std::to_string (i);
-			if (key.hasMeta ("check/enum/" + cur + "/value"))
+			if (key.hasMeta ("gen/enum/" + cur + "/value"))
 			{
 				value = key.getMeta<std::string> ("gen/enum/" + cur + "/value");
 			}
