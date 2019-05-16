@@ -90,7 +90,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin signifies arrays with the metakey array according to the [array decision](../../doc/decisions/array.md). _(Philipp Gackstatter)_
 
-- The plugin no longer produces additional `___dirdata` entries for empty array keys. See also issue [#](https://github.com/ElektraInitiative/libelektra/issues/2477). _(Philipp Gackstatter)_
+- The plugin no longer produces additional `___dirdata` entries for empty array keys. See also issue [#2477](https://github.com/ElektraInitiative/libelektra/issues/2477). _(Philipp Gackstatter)_
 
 ### YAMBi
 
