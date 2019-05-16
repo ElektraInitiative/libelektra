@@ -104,6 +104,7 @@ public:
 
 	kainjow::mustache::object process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName,
 					   const std::string & specParentName);
+	static bool isFieldIgnored (const kdb::Key & key);
 };
 
 static void escapeNonAlphaNum (std::string & str)
@@ -587,6 +588,11 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 		       { "alloc?", allocate } };
 }
 
+bool StructProcessor::isFieldIgnored (const kdb::Key & key)
+{
+	return key.hasMeta ("gen/struct/field/ignore") && key.getMeta<std::string> ("gen/struct/field/ignore") == "1";
+}
+
 static inline std::string getArgName (const kdb::Key & key, kdb_long_long_t index, const std::string & defaultPrefix)
 {
 	auto indexStr = std::to_string (index);
@@ -919,7 +925,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			kdb::KeySet subkeys;
 			for (auto cur = it + 1; cur != ks.end (); ++cur)
 			{
-				if (cur->isBelow (key))
+				if (cur->isBelow (key) && !StructProcessor::isFieldIgnored (*cur))
 				{
 					auto parts = getKeyParts (*cur);
 					if (parts.size () <= baseDepth + maxDepth)
