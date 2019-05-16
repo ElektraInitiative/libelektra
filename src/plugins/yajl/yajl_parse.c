@@ -251,7 +251,7 @@ static int elektraYajlParseStartArray (void * ctx)
 }
 
 /**
- * @brief Remove all non-leaf keys
+ * @brief Remove all non-leaf keys except for arrays
  *
  * @param returned to remove the keys from
  */
@@ -277,6 +277,11 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 				ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
 				keyDel (ksLookup (returned, cur, KDB_O_POP));
 				ksSetCursor (returned, cursor);
+			}
+			else
+			{
+				// Set array key to NULL to avoid empty ___dirdata entries
+				keySetBinary (cur, NULL, 0);
 			}
 		}
 
