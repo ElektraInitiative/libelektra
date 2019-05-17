@@ -370,26 +370,36 @@ static void processStructRef (const kdb::Key & key, const kdb::Key & parentKey, 
 	}
 
 	auto restrict = key.getMeta<std::string> ("check/reference/restrict");
-	char * rawResolved = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
 
-	auto restrictKey = allKeys.lookup (rawResolved);
-	ckdb::elektraFree (rawResolved);
-
-	if (!restrictKey)
+	if (ckdb::elektraArrayValidateBaseNameString (restrict.c_str ()))
 	{
-		throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () + "' resolves to an unspecified key.");
+		throw CommandAbortException ("Alternative references currently not supported. Key: " + key.getName ());
 	}
-
-	if (restrictKey.getMeta<std::string> ("type") != "struct")
+	else
 	{
-		throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () + "' resolves to a non-struct key.");
-	}
+		char * rawResolved = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
 
-	bool genType;
-	auto structType = StructProcessor::getType (restrictKey, tagName, genType);
-	typeName = "Struct" + structType;
-	nativeType = genType ? structType : "Elektra" + typeName;
-	alloc = StructProcessor::shouldAllocate (restrictKey);
+		auto restrictKey = allKeys.lookup (rawResolved);
+		ckdb::elektraFree (rawResolved);
+
+		if (!restrictKey)
+		{
+			throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () +
+						     "' resolves to an unspecified key.");
+		}
+
+		if (restrictKey.getMeta<std::string> ("type") != "struct")
+		{
+			throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () +
+						     "' resolves to a non-struct key.");
+		}
+
+		bool genType;
+		auto structType = StructProcessor::getType (restrictKey, tagName, genType);
+		typeName = "Struct" + structType;
+		nativeType = genType ? structType : "Elektra" + typeName;
+		alloc = StructProcessor::shouldAllocate (restrictKey);
+	}
 }
 
 static std::vector<std::string> getKeyParts (const kdb::Key & key)
