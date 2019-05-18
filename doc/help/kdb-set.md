@@ -30,7 +30,9 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Also shows Configfile and Mountpoint in case of an error/warning
+- `-d`, `--debug`:
+  Shows the line at which an error happened in case an error or warning is issued
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-N`, `--namespace=NS`:
