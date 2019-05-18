@@ -51,10 +51,10 @@ if is_plugin_available error; then
 
 	CONTENT=$(cat $TMPFILE)
 
-	grep "[Ee]rror (#10) occurred" $TMPFILE > /dev/null
+	grep "issued the error 10" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
-	grep "Reason: from error plugin" $TMPFILE > /dev/null
+	grep "from error plugin" $TMPFILE > /dev/null
 	succeed_if "Error does not stem from error plugin"
 
 	[ "x$("$KDB" ls $ROOT 2> /dev/null)" = "x$ROOT/valueable_data" ]
@@ -67,10 +67,10 @@ if is_plugin_available error; then
 	[ $? -ne 0 ]
 	succeed_if "Was able to copy to error plugin"
 
-	grep "[Ee]rror (#10) occurred" $TMPFILE > /dev/null
+	grep "issued the error 10" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
-	grep "Reason: from error plugin" $TMPFILE > /dev/null
+	grep "from error plugin" $TMPFILE > /dev/null
 	succeed_if "Error does not stem from error plugin, got $CONTENT"
 
 	[ "x$("$KDB" ls $ROOT 2> /dev/null)" = "x$ROOT/valueable_data" ]

@@ -111,7 +111,7 @@ kdb setmeta user/tests/reference/singleref check/reference single
 # Try setting an invalid reference
 kdb set user/tests/reference/singleref user/tests/reference/referred1
 # RET: 5
-# STDERR: .*Reason: Reference 'user/tests/reference/referred1', set in key 'user/tests/reference/singleref', does not reference an existing key.*
+# STDERR: .*Reference 'user/tests/reference/referred1', set in key 'user/tests/reference/singleref', does not reference an existing key.*
 
 # Create referred key ...
 kdb set user/tests/reference/referred1 ""
