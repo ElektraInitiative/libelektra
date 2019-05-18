@@ -13,12 +13,10 @@ const KDB_COMMAND = process.env.KDB || 'kdb'
 
 // constants
 const ERR_KEY_NOT_FOUND = 'Did not find key'
-
-const ERROR_REGEX = /Sorry, the error \(\#([0-9]+)\) occurred/
-const DESCRIPTION_REGEX = /Description: (.*)$/
-const MODULE_REGEX = /Module: (.*)$/
+const MODULE_REGEX = /Sorry, module (.*) issued.*:/
+const ERROR_REGEX = /Sorry, module.*([0-9]+):/
 const AT_REGEX = /At: (.*)$/
-const REASON_REGEX = /Reason: (.*)$/
+const REASON_REGEX = /\d+:\n\t*(.*)$/
 const MOUNTPOINT_REGEX = /Mountpoint: (.*)$/
 const CONFIGFILE_REGEX = /Configfile: (.*)$/
 
@@ -29,9 +27,7 @@ function parseError (message) {
     if (res = line.match(ERROR_REGEX)) {
       error.num = Number(res[1])
     } else if (currentError !== false) {
-      if (res = line.match(DESCRIPTION_REGEX)) {
-        currentError.description = res[1]
-      } else if (res = line.match(MODULE_REGEX)) {
+      if (res = line.match(MODULE_REGEX)) {
         currentError.module = res[1]
       } else if (res = line.match(AT_REGEX)) {
         currentError.at = res[1]
@@ -58,9 +54,7 @@ function KDBError (message) {
         this.num = Number(res[1])
         isError = true
       } else if (isError) {
-        if (res = line.match(DESCRIPTION_REGEX)) {
-          this.description = res[1]
-        } else if (res = line.match(MODULE_REGEX)) {
+        if (res = line.match(MODULE_REGEX)) {
           this.module = res[1]
         } else if (res = line.match(AT_REGEX)) {
           this.at = res[1]
@@ -73,10 +67,8 @@ function KDBError (message) {
         }
       }
     }
-    if (this.description) {
-      this.message = this.description + (
-        this.reason ? ': ' + this.reason : ''
-      )
+    if (this.reason) {
+      this.message = this.reason
     } else {
       this.message = message || ''
     }
@@ -176,7 +168,7 @@ const get = (path) =>
 
 // set value at given `path`
 const set = (path, value) =>
-  safeExec(escapeValues`${KDB_COMMAND} set ${path} -- ${value}`)
+  safeExec(escapeValues`${KDB_COMMAND} set -vd ${path} -- ${value}`)
 
 // move value from given `path` to `destination`
 const mv = (path, destination) =>
