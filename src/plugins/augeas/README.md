@@ -55,11 +55,8 @@ will print an error message on the first usage:
 
 ```sh
 kdb ls system/hosts
-#> The command ls terminated unsuccessfully with the info: Error (#85) occurred!
-#> Description: an Augeas error occurred
-#> Module: storage
-#> At: /path/augeas.c:166
-#> Reason: Lens not found
+#> Sorry, module storage issued the error 85:
+#> an Augeas error occurred: Lens not found
 ```
 
 This happens because the plugin does not know which lens it should use to read and write the configuration.
@@ -78,7 +75,7 @@ kdb set system/hosts/1 somevalue
 #> Description: an Augeas error occurred
 #> Module: storage
 #> At: /path/augeas.c:166
-#> Reason: Malformed child node '1'
+#> an Augeas error occurred: Malformed child node '1'
 ```
 
 The operation simply fails with an undescriptive error.
@@ -106,10 +103,8 @@ kdbSet system/hosts
 This fails with an error similar to this
 
 ```
-Description: an Augeas error occurred
-Module: storage
-At: /path/augeas.c:179
-Reason: Failed to match
+Sorry, module storage issued the error 85:
+an Augeas error occurred: Failed to match
 some augeas match expression
 with tree
 { \"canonical\" = \"newhost\" } { \"ipaddr\" = \"14.14.14.14\" }
