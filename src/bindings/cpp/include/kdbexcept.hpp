@@ -53,8 +53,32 @@ public:
 			// used either from namespace kdb or global
 			// namespace.
 			std::stringstream ss;
-			printWarnings (ss, m_key);
-			printError (ss, m_key);
+			printWarnings (ss, m_key, true, true);
+			printError (ss, m_key, true, true);
+			m_str = ss.str ();
+		}
+		return m_str.c_str ();
+	}
+
+	virtual const char * whatWithArguments (bool printVerbose, bool printDebug) const throw ()
+	{
+		if (!m_key)
+		{
+			return "Generic KDBException";
+		}
+		else if (m_str.empty ())
+		{
+			// note that the code will be re-evaluated
+			// if it prints nothing, but an expensive
+			// function not printing anything seems
+			// to be unlikely.
+			//
+			// note that printError/printWarning will be
+			// used either from namespace kdb or global
+			// namespace.
+			std::stringstream ss;
+			printWarnings (ss, m_key, printVerbose, printDebug);
+			printError (ss, m_key, printVerbose, printDebug);
 			m_str = ss.str ();
 		}
 		return m_str.c_str ();

@@ -115,12 +115,12 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	if (plugin->set (oursToEdit, errorKey) == -1)
 	{
-		printWarnings (cerr, errorKey);
-		printError (cerr, errorKey);
+		printWarnings (cerr, errorKey, cl.verbose, cl.debug);
+		printError (cerr, errorKey, cl.verbose, cl.debug);
 		return 11;
 	}
 
-	printWarnings (cerr, errorKey);
+	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
 
 
 	// start editor
@@ -157,15 +157,15 @@ int EditorCommand::execute (Cmdline const & cl)
 	plugin->get (importedKeys, errorKey);
 	importedKeys = importedKeys.cut (root);
 
-	printWarnings (cerr, errorKey);
-	printError (cerr, errorKey);
+	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
+	printError (cerr, errorKey, cl.verbose, cl.debug);
 
 	if (cl.strategy == "validate")
 	{
 		applyMeta (importedKeys, original);
 		kdb.set (importedKeys, root);
-		printWarnings (cerr, root);
-		printError (cerr, root);
+		printWarnings (cerr, root, cl.verbose, cl.debug);
+		printError (cerr, root, cl.verbose, cl.debug);
 		return 0;
 	}
 
