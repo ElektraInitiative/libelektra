@@ -28,7 +28,7 @@ int FindCommand::execute (Cmdline const & cl)
 	KDB kdb (root);
 	KeySet ks;
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	kdb.get (ks, root);
 
@@ -64,7 +64,7 @@ int FindCommand::execute (Cmdline const & cl)
 
 	std::cout << part;
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	return 0;
 }

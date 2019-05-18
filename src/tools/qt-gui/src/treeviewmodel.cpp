@@ -188,7 +188,7 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 	Key root (name.toStdString (), KEY_END);
 	KeySet originalKeys = collectCurrentKeySet ();
 	KeySet base = originalKeys.cut (root);
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, true, true);
 
 	KeySet importedKeys;
 
@@ -208,9 +208,9 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 	QString warnings;
 	QString errors;
 
-	printWarnings (ws, errorKey);
+	printWarnings (ws, errorKey, true, true);
 	warnings = QString::fromStdString (ws.str ());
-	printError (es, errorKey);
+	printError (es, errorKey, true, true);
 	errors = QString::fromStdString (es.str ());
 
 	if (!errors.isEmpty ())
@@ -299,9 +299,9 @@ void TreeViewModel::exportConfiguration (TreeViewModel * parentModel, int idx, Q
 	QString warnings;
 	QString errors;
 
-	printWarnings (ws, errorKey);
+	printWarnings (ws, errorKey, true, true);
 	warnings = QString::fromStdString (ws.str ());
-	printError (es, errorKey);
+	printError (es, errorKey, true, true);
 	errors = QString::fromStdString (es.str ());
 
 	if (errors.isEmpty () && !warnings.isEmpty ())

@@ -29,7 +29,7 @@ int main ()
 
 		kdb.set (ks, k);
 		kdb.close (k);
-		printWarnings (std::cout, k);
+		printWarnings (std::cout, k, true, true);
 	}
 	catch (kdb::KDBException const & e)
 	{
