@@ -228,10 +228,7 @@ int main (int argc, char ** argv)
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr /*<< "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
-			  << getErrorColor (ANSI_COLOR::RESET) << getErrorColor (ANSI_COLOR::RED) << " failed"
-			  << getErrorColor (ANSI_COLOR::RESET) << " while accessing the key database with the info:\n"*/
-			<< ce.whatWithArguments (cl.verbose, cl.debug) << std::endl;
+		std::cerr << ce.whatWithArguments (cl.verbose, cl.debug) << std::endl;
 		return 5;
 	}
 	catch (std::exception const & ce)
