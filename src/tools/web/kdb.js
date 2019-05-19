@@ -13,53 +13,31 @@ const KDB_COMMAND = process.env.KDB || 'kdb'
 
 // constants
 const ERR_KEY_NOT_FOUND = 'Did not find key'
-const MODULE_REGEX = /Sorry, module (.*) issued.*:/
-const ERROR_REGEX = /Sorry, module.*([0-9]+):/
+const ERROR_REGEX = /Sorry, module.*?([0-9]+):/
 const AT_REGEX = /At: (.*)$/
-const REASON_REGEX = /\d+:\n\t*(.*)$/
 const MOUNTPOINT_REGEX = /Mountpoint: (.*)$/
 const CONFIGFILE_REGEX = /Configfile: (.*)$/
 
-function parseError (message) {
-  let error = {}
-  for (let line of message.split('\n')) {
-    let res
-    if (res = line.match(ERROR_REGEX)) {
-      error.num = Number(res[1])
-    } else if (currentError !== false) {
-      if (res = line.match(MODULE_REGEX)) {
-        currentError.module = res[1]
-      } else if (res = line.match(AT_REGEX)) {
-        currentError.at = res[1]
-      } else if (res = line.match(REASON_REGEX)) {
-        currentError.reason = res[1]
-      } else if (res = line.match(MOUNTPOINT_REGEX)) {
-        currentError.mountpoint = res[1]
-      } else if (res = line.match(CONFIGFILE_REGEX)) {
-        currentError.configfile = res[1]
-      }
-    }
-  }
-  return error
-}
-
 // KDBError
 function KDBError (message) {
-    this.name = 'KDBError'
+    this.name = 'Elektra Error'
     let isError = false
     this.details = message
+    let isNextMessageReason = false;
     for (let line of message.split('\n')) {
       let res
+      if (isNextMessageReason) {
+          this.reason = this.reason + '\n' + line;
+          isNextMessageReason = false;
+      }
       if (res = line.match(ERROR_REGEX)) {
-        this.num = Number(res[1])
-        isError = true
+        this.num = Number(res[1]);
+        this.reason = line;
+        isError = true;
+        isNextMessageReason = true;
       } else if (isError) {
-        if (res = line.match(MODULE_REGEX)) {
-          this.module = res[1]
-        } else if (res = line.match(AT_REGEX)) {
+        if (res = line.match(AT_REGEX)) {
           this.at = res[1]
-        } else if (res = line.match(REASON_REGEX)) {
-          this.reason = res[1]
         } else if (res = line.match(MOUNTPOINT_REGEX)) {
           this.mountpoint = res[1]
         } else if (res = line.match(CONFIGFILE_REGEX)) {
