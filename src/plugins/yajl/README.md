@@ -135,7 +135,6 @@ kdb file /tests/yajl | xargs cat
 #>     "key": "value",
 #>     "number": 1337,
 #>     "piggy": [
-#>         "___dirdata: ",
 #>         "straw",
 #>         "sticks",
 #>         "bricks"
