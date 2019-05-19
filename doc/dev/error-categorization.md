@@ -15,8 +15,10 @@ make sense to differentiate between `No Write Permission` and `No Read Permissio
 as the application just knows that it simply cannot access the desired resource
 and tells the user to grant it.
 
-Categories are leaf based, so you cannot put an error into a node (branch) such
-as `Permanent errors` (see below).
+Categories are hierarchically structured. In some categories you cannot put an error such
+as `Permanent errors` (see below) because they are too general and developers should choose
+a more specific category. Please choose the most specific category as possible when trying
+to assign an error to a category.
 
 If you feel for a new category, please forge a design decision document and make
 a PR to Elektra's repo.
