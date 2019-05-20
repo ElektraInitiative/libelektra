@@ -387,11 +387,10 @@ int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	{
 		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
+
+		elektraColorRestore (cur);
+
 		ColorVariant colVar = is_valid_key (cur, parentKey);
-
-		if (colVar == COLOR_INVALID) elektraColorRestore (cur);
-
-		colVar = is_valid_key (cur, parentKey);
 		if (colVar == COLOR_INVALID) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
