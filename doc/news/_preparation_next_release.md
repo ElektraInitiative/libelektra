@@ -468,7 +468,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Code generation
 
 `kdb gen` is now no longer an external tool implemented via python, but rather a first class command of the `kdb` tool. For now it only
-supports code generation for use with the highlevel API. To try it just run `kdb gen elektra <parentKey> <outputName>`, where `<parentKey>`
+supports code generation for use with the highlevel API. Try it by running `kdb gen elektra <parentKey> <outputName>`, where `<parentKey>`
 is the parent key of the specification to use and `<outputName>` is some prefix for the output files. If you don't have your specification
 mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to load it from `<file>` using plugin `<plugin>`.
 
