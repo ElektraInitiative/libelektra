@@ -234,6 +234,7 @@ copied by the `spec` plugin just before):
 - [date](date/) validates date and time data
 - [range](range/) checks if a value is within a given range
 - [reference](reference/) checks if a value is a valid reference to another key
+- [rgbcolor](rgbcolor/) validates and normalizes hexcolors
 
 **Other Validation**
 
