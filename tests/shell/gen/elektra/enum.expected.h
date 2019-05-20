@@ -54,10 +54,10 @@ typedef enum
 
 typedef enum
 {
-	COLORS_NONE = 0,
+	COLORS_NONE = NO_VALUE,
 	COLORS_RED = 1,
-	COLORS_GREEN = 2,
-	COLORS_BLUE = 3,
+	COLORS_GREEN = 1 << 1,
+	COLORS_BLUE = 1 << 2,
 } Colors;
 
 typedef enum
@@ -79,7 +79,8 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 ELEKTRA_SET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 
-
+ELEKTRA_KEY_TO_SIGNATURE (ExistingColors, EnumExistingColors);
+ELEKTRA_TO_STRING_SIGNATURE (ExistingColors, EnumExistingColors);
 
 ELEKTRA_GET_SIGNATURE (ExistingColors, EnumExistingColors);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors);
@@ -101,6 +102,28 @@ ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_SET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
+
+
+
+// clang-format off
+
+// clang-format on
+
+#define ELEKTRA_UNION_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
+#define ELEKTRA_UNION_FREE_SIGNATURE(cType, typeName, discrType) void ELEKTRA_UNION_FREE (typeName) (cType * ptr, discrType discriminator)
+
+#define ELEKTRA_UNION_GET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	cType ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname, discrType discriminator)
+#define ELEKTRA_UNION_GET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	cType ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, discrType discriminator)
+#define ELEKTRA_UNION_SET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	void ELEKTRA_SET (typeName) (Elektra * elektra, const char * keyname, cType value, discrType discriminator, ElektraError ** error)
+#define ELEKTRA_UNION_SET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	void ELEKTRA_SET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType value,            \
+						   discrType discriminator, ElektraError ** error)
+
+
+
 
 
 

@@ -39,11 +39,8 @@ std::string getType (const kdb::Key & key)
 	return key.getMeta<std::string> ("type");
 }
 
-std::string getTagName (const kdb::Key & key, const std::string & parentKey)
+std::string getTagName (std::string name)
 {
-	auto name = key.getName ();
-	name.erase (0, parentKey.length () + 1);
-
 	name = std::regex_replace (name, std::regex ("/[#_]/"), "/");
 	name = std::regex_replace (name, std::regex ("[#_]/"), "/");
 	name = std::regex_replace (name, std::regex ("/[#_]"), "/");
@@ -54,9 +51,17 @@ std::string getTagName (const kdb::Key & key, const std::string & parentKey)
 		name.erase (name.length () - 1);
 	}
 
-	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+	escapeNonAlphaNum (name);
 
 	return name;
+}
+
+std::string getTagName (const kdb::Key & key, const std::string & parentKey)
+{
+	auto name = key.getName ();
+	name.erase (0, parentKey.length () + 1);
+
+	return getTagName (name);
 }
 
 std::string snakeCaseToCamelCase (const std::string & s, bool upper)
@@ -97,4 +102,11 @@ std::string camelCaseToMacroCase (const std::string & s)
 		ss << static_cast<char> (toupper (c));
 	});
 	return ss.str ();
+}
+
+std::string upCaseFirst (const std::string & str)
+{
+	std::string result = str;
+	result[0] = toupper (result[0]);
+	return result;
 }

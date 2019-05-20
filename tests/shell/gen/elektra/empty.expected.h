@@ -54,6 +54,28 @@ extern "C" {
 
 // clang-format on
 
+#define ELEKTRA_UNION_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
+#define ELEKTRA_UNION_FREE_SIGNATURE(cType, typeName, discrType) void ELEKTRA_UNION_FREE (typeName) (cType * ptr, discrType discriminator)
+
+#define ELEKTRA_UNION_GET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	cType ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname, discrType discriminator)
+#define ELEKTRA_UNION_GET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	cType ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, discrType discriminator)
+#define ELEKTRA_UNION_SET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	void ELEKTRA_SET (typeName) (Elektra * elektra, const char * keyname, cType value, discrType discriminator, ElektraError ** error)
+#define ELEKTRA_UNION_SET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	void ELEKTRA_SET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType value,            \
+						   discrType discriminator, ElektraError ** error)
+
+
+
+
+
+
+// clang-format off
+
+// clang-format on
+
 #define ELEKTRA_STRUCT_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
 #define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 

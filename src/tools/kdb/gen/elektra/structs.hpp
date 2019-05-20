@@ -29,7 +29,7 @@ public:
 	static inline std::string getType (const kdb::Key & key, const std::string & tagName, bool & genType);
 
 	kainjow::mustache::object process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName,
-					   const std::string & specParentName);
+					   const std::string & specParentName, kainjow::mustache::list & unions);
 	static bool isFieldIgnored (const kdb::Key & key);
 };
 
@@ -48,16 +48,27 @@ private:
 	bool allocating;
 	const std::string & specParentName;
 
+	kainjow::mustache::list unions;
+
 	bool processed = false;
 
 	static inline std::string getName (const kdb::Key & key, const std::string & fieldKeyName);
 	static inline std::string arraySizeName (const kdb::Key & key, const std::string & arrayFieldName);
+	static inline std::string discriminatorField (const kdb::Key & key, const std::string & refFieldName);
+	static inline bool shouldGenerateUnion (const kdb::Key & key);
 
-	kainjow::mustache::object processArrayStructRef (const kdb::Key & key, const std::string & tagName, const std::string & keyName,
+	kainjow::mustache::object processArrayStructRef (const kdb::Key & key, const std::string & keyName,
 							 const std::string & fieldKeyName);
 
-	kainjow::mustache::object processStructRef (const kdb::Key & key, const std::string & tagName, const std::string & keyName,
-						    const std::string & fieldKeyName);
+	kainjow::mustache::object processStructRef (const kdb::Key & key, const std::string & keyName, const std::string & fieldKeyName);
+
+	kainjow::mustache::object processStructRefUnion (const kdb::Key & checkKey, const kdb::Key & genKey, const std::string & keyName,
+							 bool isArray, const std::string & end, const std::string & fieldKeyName);
+
+	static std::string discriminatorKey (const kdb::Key & key);
+	static std::string discriminatorUnionType (const kdb::Key & key);
+	static std::string discriminatorEnumType (const kdb::Key & key);
+
 
 	void processAll ();
 
@@ -79,6 +90,16 @@ public:
 		return fields;
 	}
 
+	kainjow::mustache::list getUnions ()
+	{
+		if (!processed)
+		{
+			processAll ();
+		}
+
+		return unions;
+	}
+
 	size_t getMaxFieldNameLen ()
 	{
 		if (!processed)
@@ -97,8 +118,10 @@ public:
 		return fieldsString;
 	}
 
-	static void processStructRef (const kdb::Key & key, const std::string & tagName, const kdb::Key & parentKey,
-				      const kdb::KeySet & allKeys, std::string & typeName, std::string & nativeType, bool & alloc);
+	static bool processStructRef (const kdb::Key & key, const kdb::Key & parentKey, const kdb::KeySet & allKeys, std::string & typeName,
+				      std::string & nativeType, bool & alloc, std::string & restrict);
+	static bool processArrayStructRef (const kdb::Key & arrayParent, const kdb::Key & parentKey, const kdb::KeySet & allKeys,
+					   std::string & typeName, std::string & nativeType, bool & alloc, std::string & restrict);
 };
 
 

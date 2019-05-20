@@ -75,7 +75,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	}
 
 	KeySet * contract = ksNew (1,
-	keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
 	KS_END);
 ;
 
@@ -188,6 +188,17 @@ void printHelpMessage (const char * usage, const char * prefix)
 
 // -------------------------
 // Enum accessor functions
+// -------------------------
+
+
+
+
+// clang-format off
+
+// clang-format on
+
+// -------------------------
+// Union accessor functions
 // -------------------------
 
 

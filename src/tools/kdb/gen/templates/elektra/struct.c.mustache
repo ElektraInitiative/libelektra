@@ -16,19 +16,35 @@ ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	}
 
 	/*%# fields %*/
-	/*%# is_struct? %*/
-	/*%# alloc? %*/
+	/*%^ is_discriminator? %*/
+	/*%# is_union? %*/
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < (*ptr)->/*%& size_field %*/; ++i)
+	{
+		ELEKTRA_UNION_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/[i], ((*ptr)->/*%& discr_field %*/[i]));
+	}
+	/*%/ is_array? %*/
+	elektraFree ((*ptr)->/*%& name %*/);
+	elektraFree ((*ptr)->/*%& discr_field %*/);
+	/*%^ is_array? %*/
+	ELEKTRA_UNION_FREE (/*%& type_name %*/) ((*ptr)->/*%& name %*/, (*ptr)->/*%& discr_field %*/);
+	/*%/ is_array? %*/
+	/*%/ is_union? %*/
+	/*%^ is_union? %*/
+	/*%# is_struct %*/
 	/*%# is_array? %*/
 	for (kdb_long_long_t i = 0; i < (*ptr)->/*%& size_field %*/; ++i)
 	{
 		ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/[i]);
 	}
+	elektraFree ((*ptr)->/*%& name %*/);
 	/*%/ is_array? %*/
 	/*%^ is_array? %*/
-	ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/);
+	ELEKTRA_STRUCT_FREE (/*%& type_name %*/) ((*ptr)->/*%& name %*/);
 	/*%/ is_array? %*/
-	/*%/ alloc? %*/
-	/*%/ is_struct? %*/
+	/*%/ is_struct %*/
+	/*%/ is_union? %*/
+	/*%/ is_discriminator? %*/
 	/*%/ fields %*/
 	elektraFree (*ptr);
 	*ptr = NULL;
@@ -146,7 +162,21 @@ ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
 
 	/*%# fields %*/
 	/*%^ is_array_size? %*/
+	/*%^ is_discriminator? %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_union? %*/
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		/*%& native_type %*/ v = value->/*%& name %*/[i];
+		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i, v, (value->/*%& discr_field %*/[i]), error);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, value->/*%& discr_field %*/, error);
+	/*%/ is_array? %*/
+	/*%/ is_union? %*/
+	/*%^ is_union? %*/
 	/*%# is_array? %*/
 	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
 	{
@@ -156,10 +186,12 @@ ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
 	/*%^ is_array? %*/
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
 	/*%/ is_array? %*/
+	/*%/ is_union? %*/
 	if (error != NULL)
 	{
 		return;
 	}
+	/*%/ is_discriminator? %*/
 	/*%/ is_array_size? %*/
 
 	/*%/ fields %*/
@@ -180,7 +212,21 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_nam
 
 	/*%# fields %*/
 	/*%^ is_array_size? %*/
+	/*%^ is_discriminator? %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_union? %*/
+	/*%# is_array? %*/
+	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
+	{
+		/*%& native_type %*/ v = value->/*%& name %*/[i];
+		ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i, v, (value->/*%& discr_field %*/[i]), error);
+	}
+	/*%/ is_array? %*/
+	/*%^ is_array? %*/
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, value->/*%& discr_field %*/, error);
+	/*%/ is_array? %*/
+	/*%/ is_union? %*/
+	/*%^ is_union? %*/
 	/*%# is_array? %*/
 	for (kdb_long_long_t i = 0; i < value->/*%& size_field %*/; ++i)
 	{
@@ -190,10 +236,12 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_nam
 	/*%^ is_array? %*/
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
 	/*%/ is_array? %*/
+	/*%/ is_union? %*/
 	if (error != NULL)
 	{
 		return;
 	}
+	/*%/ is_discriminator? %*/
 	/*%/ is_array_size? %*/
 
 	/*%/ fields %*/

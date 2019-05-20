@@ -13,6 +13,8 @@
 #include <kdb.hpp>
 #include <regex>
 
+std::string upCaseFirst (const std::string & str);
+
 void escapeNonAlphaNum (std::string & str);
 
 std::vector<std::string> getKeyParts (const kdb::Key & key);
@@ -21,6 +23,7 @@ bool hasType (const kdb::Key & key);
 
 std::string getType (const kdb::Key & key);
 
+std::string getTagName (std::string name);
 std::string getTagName (const kdb::Key & key, const std::string & parentKey);
 
 std::string snakeCaseToCamelCase (const std::string & s, bool upper = false);

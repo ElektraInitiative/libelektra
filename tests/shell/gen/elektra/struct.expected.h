@@ -54,45 +54,67 @@ extern "C" {
 
 // clang-format on
 
+#define ELEKTRA_UNION_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
+#define ELEKTRA_UNION_FREE_SIGNATURE(cType, typeName, discrType) void ELEKTRA_UNION_FREE (typeName) (cType * ptr, discrType discriminator)
+
+#define ELEKTRA_UNION_GET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	cType ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname, discrType discriminator)
+#define ELEKTRA_UNION_GET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	cType ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, discrType discriminator)
+#define ELEKTRA_UNION_SET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	void ELEKTRA_SET (typeName) (Elektra * elektra, const char * keyname, cType value, discrType discriminator, ElektraError ** error)
+#define ELEKTRA_UNION_SET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	void ELEKTRA_SET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType value,            \
+						   discrType discriminator, ElektraError ** error)
+
+
+
+
+
+
+// clang-format off
+
+// clang-format on
+
 #define ELEKTRA_STRUCT_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
 #define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (typeName) (cType * ptr)
 
 typedef struct ElektraStructMyotherstruct
 {
 	
-	 kdb_long_t  x;		
+	kdb_long_t  x;
 
 	
-	 kdb_long_t  xY;		
+	kdb_long_t  xY;
 
 } ElektraStructMyotherstruct;
 
 typedef struct ElektraStructMystruct
 {
 	
-	 const char *  a;		
+	const char *  a;
 
 	
-	 kdb_long_t  b;		
+	kdb_long_t  b;
 
 } ElektraStructMystruct;
 
 typedef struct Person
 {
 	
-	 kdb_short_t  age;		
+	kdb_short_t  age;
 
 	
-	 kdb_long_long_t  childrenSize;		
-
-	 struct Person *  *  children; 
-	
+	kdb_long_long_t  childrenSize;
 
 	
-	 kdb_float_t  height;		
+	struct Person *  *  children;
 
 	
-	 const char *  fullName;		
+	kdb_float_t  height;
+
+	
+	const char *  fullName;
 
 } Person;
 
