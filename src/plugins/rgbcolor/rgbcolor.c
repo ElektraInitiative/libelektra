@@ -17,8 +17,8 @@
 
 typedef struct
 {
-	char * name;
-	kdb_unsigned_long_t value;
+	const char * name;
+	const kdb_unsigned_long_t value;
 } NamedColor;
 
 static const NamedColor NamedColors[] = { { "aliceblue", 0xf0f8ffff },
@@ -200,15 +200,6 @@ static ColorVariant is_valid_key (Key * key, Key * parentKey)
 	const Key * meta = keyGetMeta (key, "check/rgbcolor");
 	if (!meta) return 1;
 	const char * value = keyString (key);
-	const char * regexString = "^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$";
-
-	regex_t regex;
-	regmatch_t offsets;
-	int compile_failure = regcomp (&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
-	if (compile_failure) return -1;
-	// regexec returns 0 on a successful match
-	int match = !(regexec (&regex, value, 0, &offsets, 0));
-	regfree (&regex);
 
 	const NamedColor * namedColor = findNamedColor (value);
 
@@ -217,27 +208,29 @@ static ColorVariant is_valid_key (Key * key, Key * parentKey)
 		return NAMED_COLOR;
 	}
 
-	if (!match && namedColor == NULL)
+	if (*value == '#')
 	{
-		ELEKTRA_SET_ERRORF (214, parentKey, "Key %s with value %s is neither a valid hex formatted color nor a named color.",
-				    keyName (key), keyString (key));
-		return COLOR_INVALID;
+		size_t len = strlen (value + 1);
+		size_t lengthValidChars = strspn (value + 1, "0123456789abcdefABCDEF");
+		if (len == lengthValidChars)
+		{
+			switch (len)
+			{
+			case 3:
+				return HEX_THREE;
+			case 4:
+				return HEX_FOUR;
+			case 6:
+				return HEX_SIX;
+			case 8:
+				return HEX_EIGHT;
+			}
+		}
 	}
 
-	int len = strlen (value);
-	switch (len)
-	{
-	case 4:
-		return HEX_THREE;
-	case 5:
-		return HEX_FOUR;
-	case 7:
-		return HEX_SIX;
-	case 9:
-		return HEX_EIGHT;
-	default:
-		return COLOR_INVALID;
-	}
+	ELEKTRA_SET_ERRORF (214, parentKey, "Key %s with value %s is neither a valid hex formatted color nor a named color.", keyName (key),
+			    keyString (key));
+	return COLOR_INVALID;
 }
 
 static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
@@ -247,14 +240,17 @@ static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 
 	ELEKTRA_LOG_DEBUG ("Set %s to integer %s", keyName (key), colorStr);
 	keySetString (key, colorStr);
-	keySetMeta (key, "type", "unsigned_long");
 }
 
-static char * elektraColorExpand (const char * str, ColorVariant colVar)
+/**
+ * Expands all color variants to the full RRGGBBAA variant.
+ *
+ * @param str The string to expand.
+ * @param colVar the ColorVariant of str
+ * @param expandedStr pre-allocated memory of length 10 to store the expanded string.
+ */
+static void elektraColorExpand (const char * str, ColorVariant colVar, char * expandedStr)
 {
-	// Expand #abcd to #aabbccdd or #abc to #aabbccff
-	char * expandedStr = (char *) elektraMalloc (10);
-
 	if (colVar == HEX_THREE || colVar == HEX_FOUR)
 	{
 		expandedStr[0] = '#';
@@ -277,8 +273,6 @@ static char * elektraColorExpand (const char * str, ColorVariant colVar)
 	}
 
 	expandedStr[9] = '\0';
-
-	return expandedStr;
 }
 
 static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
@@ -294,10 +288,10 @@ static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
 	}
 	else if (colVar != HEX_EIGHT)
 	{
-		char * expandedStr = elektraColorExpand (str, colVar);
+		char expandedStr[10];
+		elektraColorExpand (str, colVar, expandedStr);
 		ELEKTRA_LOG_DEBUG ("Expanded %s to %s", str, expandedStr);
 		color = ELEKTRA_UNSIGNED_LONG_LONG_S (expandedStr + 1, NULL, 16);
-		elektraFree (expandedStr);
 	}
 	else
 	{
