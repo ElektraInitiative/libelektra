@@ -4,6 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
+- infos/ordering = type
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep
 - infos/metadata = check/rgbcolor
