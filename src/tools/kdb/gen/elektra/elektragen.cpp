@@ -228,6 +228,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	list enums;
 	list structs;
 	list keys;
+	list unions;
 
 	auto specParent = kdb::Key (parentKey, KEY_END);
 
@@ -302,13 +303,19 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 								 "double",
 								 "long_double",
 								 "struct",
-								 "struct_ref" };
+								 "struct_ref",
+								 "discriminator" };
 
 		if (allowedTypes.find (type) == allowedTypes.end ())
 		{
 			auto msg = "The key '" + name;
 			msg += "' has an unsupported type ('" + type + "')!";
 			throw CommandAbortException (msg);
+		}
+
+		if (type == "discriminator")
+		{
+			type = "enum";
 		}
 
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
@@ -383,12 +390,30 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		{
 			bool allocate;
 			std::string dummyString;
-			StructFieldsProcessor::processStructRef (key, tagName, specParent, ks, typeName, nativeType, allocate);
 
-			keyObject["type_name"] = typeName;
-			keyObject["native_type"] = nativeType;
-			keyObject["is_struct_ref?"] = true;
-			keyObject["alloc?"] = allocate;
+			bool processed;
+			if (isArray)
+			{
+				processed = StructFieldsProcessor::processArrayStructRef (key, specParent, ks, typeName, nativeType,
+											  allocate, dummyString);
+			}
+			else
+			{
+				processed = StructFieldsProcessor::processStructRef (key, specParent, ks, typeName, nativeType, allocate,
+										     dummyString);
+			}
+
+			if (processed)
+			{
+				keyObject["type_name"] = typeName;
+				keyObject["native_type"] = nativeType;
+				keyObject["is_struct_ref?"] = true;
+				keyObject["alloc?"] = allocate;
+			}
+			else
+			{
+				continue;
+			}
 		}
 		else if (type == "struct")
 		{
@@ -428,7 +453,13 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				}
 			}
 
-			auto structData = structProcessor.process (key, subkeys, tagName, specParentName);
+			kainjow::mustache::list structUnions;
+			auto structData = structProcessor.process (key, subkeys, tagName, specParentName, structUnions);
+
+			for (const auto & u : structUnions)
+			{
+				unions.push_back (u);
+			}
 
 			keyObject["type_name"] = structData["type_name"].string_value ();
 			keyObject["native_type"] = structData["native_type"].string_value ();
@@ -463,6 +494,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
+	data["unions"] = unions;
 	data["structs"] = structs;
 	data["defaults"] = keySetToCCode (defaults);
 	data["spec"] = keySetToCCode (spec);

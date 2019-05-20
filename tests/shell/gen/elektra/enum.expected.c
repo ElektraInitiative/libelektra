@@ -80,7 +80,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	}
 
 	KeySet * contract = ksNew (1,
-	keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
 	KS_END);
 ;
 
@@ -587,6 +587,17 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	elektraSetRawStringArrayElement (elektra, keyname, index, string, KDB_TYPE_ENUM, error);
 	elektraFree (string);
 }
+
+
+// clang-format off
+
+// clang-format on
+
+// -------------------------
+// Union accessor functions
+// -------------------------
+
+
 
 
 // clang-format off
