@@ -179,6 +179,9 @@ typedef enum
 	NAMED_COLOR
 } ColorVariant;
 
+/**
+ * Internal function used for bsearch
+ */
 static int compareNamedColors (const void * c1, const void * c2)
 {
 	NamedColor * nc1 = (NamedColor *) c1;
@@ -186,6 +189,13 @@ static int compareNamedColors (const void * c1, const void * c2)
 	return strcmp (nc1->name, nc2->name);
 }
 
+/**
+ * Finds a named color with the given name
+ *
+ * @param colorName the color name to search for
+ * @retval NULL if no color with the given name exists
+ * @retval The NamedColor with the given name
+ */
 static const NamedColor * findNamedColor (const char * colorName)
 {
 	const NamedColor key = { .name = colorName };
@@ -195,6 +205,12 @@ static const NamedColor * findNamedColor (const char * colorName)
 	return (NamedColor *) found;
 }
 
+/**
+ * Checks wheter the given key contains a valid hex-formatted string or a named color
+ *
+ * @param key the key whose value should be checked
+ * @param parentKey the parent key
+ */
 static ColorVariant is_valid_key (Key * key, Key * parentKey)
 {
 	const Key * meta = keyGetMeta (key, "check/rgbcolor");
@@ -233,6 +249,12 @@ static ColorVariant is_valid_key (Key * key, Key * parentKey)
 	return COLOR_INVALID;
 }
 
+/**
+ * Sets the keys value to the given integer formatted as a string
+ *
+ * @param key the key to set the value for
+ * @param c the integer to set as the new value
+ */
 static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 {
 	char colorStr[11];
@@ -245,7 +267,7 @@ static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
 /**
  * Expands all color variants to the full RRGGBBAA variant.
  *
- * @param str The string to expand.
+ * @param str the string to expand.
  * @param colVar the ColorVariant of str
  * @param expandedStr pre-allocated memory of length 10 to store the expanded string.
  */
@@ -275,6 +297,12 @@ static void elektraColorExpand (const char * str, ColorVariant colVar, char * ex
 	expandedStr[9] = '\0';
 }
 
+/**
+ * Normalizes a rgb, rgba, rrggbb hexstring to rrggbbaa
+ *
+ * @param key the key to normalize
+ * @param colVar the ColorVariant of the string in key
+ */
 static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
 {
 	const char * str = keyString (key);
@@ -304,6 +332,11 @@ static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
 	elektraFree (origvalue);
 }
 
+/**
+ * Restores the original value
+ *
+ * @param key the key to restore the value for
+ */
 static void elektraColorRestore (Key * key)
 {
 	const Key * orig = keyGetMeta (key, "origvalue");
