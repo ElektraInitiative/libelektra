@@ -7,21 +7,16 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep
 - infos/metadata = check/rgbcolor
-- infos/description = Validation of rgbcolors
+- infos/description = Validation and normalization of rgbcolors
 
 ## Introduction
 
-tba
+This plugin validates hex-formatted rgb color strings and normalizes them to decimal rgba format. It also accepts [named colors](https://www.w3.org/TR/css-color-3/#svg-color) and normalizes them.
+
 
 ## Usage
 
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
-
-## Dependencies
-
-None.
+Add the metakey `check/rgbcolor` with an arbitrary value (e.g. `""`) to the key that you want to check and normalize.
 
 ## Examples
 
@@ -82,7 +77,3 @@ kdb set user/tests/color/hex "#12345"
 kdb rm -r user/tests/color
 sudo kdb umount user/tests/color
 ```
-
-## Limitations
-
-None.
