@@ -13,7 +13,6 @@
 
 This plugin validates hex-formatted rgb color strings and normalizes them to decimal rgba format. It also accepts [named colors](https://www.w3.org/TR/css-color-3/#svg-color) and normalizes them.
 
-
 ## Usage
 
 Add the metakey `check/rgbcolor` with an arbitrary value (e.g. `""`) to the key that you want to check and normalize.
@@ -36,11 +35,11 @@ kdb get user/tests/color/hex
 #> 2713891839
 
 # Color names are supported (https://www.w3.org/TR/css-color-3/#svg-color)
-kdb set user/tests/color/hex "orange"
+kdb set user/tests/color/hex "yellowgreen"
 
-# orange is 0xffa500ff
+# yellowgreen is 0x9acd32ff
 kdb get user/tests/color/hex
-#> 4289003775
+#> 2597139199
 
 kdb set user/tests/color/hex/subcolor "#abc"
 kdb setmeta user/tests/color/hex/subcolor check/rgbcolor ""
@@ -66,12 +65,20 @@ kdb set user/tests/color/hex fff
 # RET: 5
 
 # Try to set incorrect value
+kdb set user/tests/color/hex/subcolor "not a named color"
+# RET: 5
+
+# Try to set incorrect value
 kdb set user/tests/color/hex "fff"
 # RET: 5
 
 # Try to set incorrect value
 kdb set user/tests/color/hex "#12345"
 # RET: 5
+
+# Old values are still there
+kdb get user/tests/color/hex
+#> 2597139199
 
 # Undo modifications to the key database
 kdb rm -r user/tests/color

@@ -167,8 +167,7 @@ static const NamedColor NamedColors[] = { { "aliceblue", 0xf0f8ffff },
 					  { "white", 0xffffffff },
 					  { "whitesmoke", 0xf5f5f5ff },
 					  { "yellow", 0xffff00ff },
-					  { "yellowgreen", 0x9acd32ff },
-					  { NULL, 0 } };
+					  { "yellowgreen", 0x9acd32ff } };
 
 typedef enum
 {
@@ -180,18 +179,20 @@ typedef enum
 	NAMED_COLOR
 } ColorVariant;
 
+static int compareNamedColors (const void * c1, const void * c2)
+{
+	NamedColor * nc1 = (NamedColor *) c1;
+	NamedColor * nc2 = (NamedColor *) c2;
+	return strcmp (nc1->name, nc2->name);
+}
+
 static const NamedColor * findNamedColor (const char * colorName)
 {
-	const NamedColor * cur = &NamedColors[0];
-	while (cur->name != NULL)
-	{
-		if (strcmp (cur->name, colorName) == 0)
-		{
-			return cur;
-		}
-		++cur;
-	}
-	return NULL;
+	const NamedColor key = { .name = colorName };
+	void * found;
+	found = bsearch (&key, &NamedColors[0], 147, sizeof (NamedColor), compareNamedColors);
+	if (found == NULL) return NULL;
+	return (NamedColor *) found;
 }
 
 static ColorVariant is_valid_key (Key * key, Key * parentKey)
