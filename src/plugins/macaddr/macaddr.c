@@ -207,8 +207,10 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		const Key * origValue = keyGetMeta (cur, "origvalue");
 		if (origValue)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_STATE, parentKey,
-					    "Meta key 'origvalue' for key %s not expected to be set, another plugin has already set this meta key!", keyString (cur));
+			ELEKTRA_SET_ERRORF (
+				ELEKTRA_ERROR_STATE, parentKey,
+				"Meta key 'origvalue' for key %s not expected to be set, another plugin has already set this meta key!",
+				keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		int rc = validateMac (cur);
@@ -264,7 +266,5 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
-    return elektraPluginExport("macaddr",
-                               ELEKTRA_PLUGIN_GET, &elektraMacaddrGet,
-                               ELEKTRA_PLUGIN_SET, &elektraMacaddrSet);
+	return elektraPluginExport ("macaddr", ELEKTRA_PLUGIN_GET, &elektraMacaddrGet, ELEKTRA_PLUGIN_SET, &elektraMacaddrSet);
 }
