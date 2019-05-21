@@ -358,11 +358,11 @@ KeySet * elektraDefaultGlobalConfig (void)
 
 	// TODO: this is a poor way of detecting whether cache is compiled, but simply
 	// matching against cache might fail because of other plugins (e.g. "cachefilter")
-	// if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL)
-	// {
-	// 	ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
-	// 	ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
-	// }
+	if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL)
+	{
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
+	}
 
 	return config;
 }
