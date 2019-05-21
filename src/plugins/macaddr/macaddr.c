@@ -9,12 +9,12 @@
 
 #include "macaddr.h"
 
-#include <kdbhelper.h>
-#include <regex.h>
-// TODO: Remove
 #include <assert.h>
 #include <ctype.h>
+#include <kdberrors.h>
+#include <kdbhelper.h>
 #include <kdbprivate.h>
+#include <regex.h>
 #include <stdio.h>
 
 #define SEPARATORSTANDARD 5
@@ -22,15 +22,6 @@
 #define SEPARATORENONE 0
 
 #define MAXMACINT 281474976710655
-
-typedef enum
-{
-	MAC_INT,
-	MAC_SEPARATOR_COLON,
-	MAC_SEPARATOR_MINUS,
-	MAC_SEPARATOR_MINUSSINGLE,
-	MAC_SEPARTOR_NONE
-} MacFormat;
 
 static void insertSeperator (char * mac)
 {
@@ -94,14 +85,7 @@ void transformMac (Key * key)
 	}
 }
 
-char * intToString (int mac)
-{
-	char macString[13];
-	sprintf (macString, "%x", mac);
-	return macString;
-}
-
-int checkRegex (const char * mac, const char * regexString, MacFormat formatType)
+int checkRegex (const char * mac, const char * regexString)
 {
 	regex_t regex;
 
@@ -140,7 +124,7 @@ int checkIntMac (const char * mac)
 	return 0;
 }
 
-int validateMac (Key * key, Key * parentKey)
+int validateMac (Key * key)
 {
 	const Key * metaKey = keyGetMeta (key, "check/macaddr");
 	if (!metaKey) return 1;
@@ -160,7 +144,7 @@ int validateMac (Key * key, Key * parentKey)
 
 	while (ret == 1 && i < 3)
 	{
-		ret = checkRegex (mac, regexStrings[i], i);
+		ret = checkRegex (mac, regexStrings[i]);
 		++i;
 	}
 
@@ -214,17 +198,25 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	// get all keys
 	ksRewind (returned);
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
-		/*const Key * origValue = keyGetMeta (cur, "origvalue");
-		if (origValue) return ELEKTRA_PLUGIN_STATUS_ERROR;*/
-		int rc = validateMac (cur, parentKey);
-		if (rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		const Key * origValue = keyGetMeta (cur, "origvalue");
+		if (origValue)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_STATE, parentKey,
+					    "Meta key 'origvalue' for key %s not expected to be set, another plugin has already set this meta key!", keyString (cur));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		int rc = validateMac (cur);
+		if (rc)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "%s is not in a supported format.", keyString (cur));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 
 		if (checkIntMac (keyString (cur)))
 		{
@@ -239,18 +231,18 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// set all keys
-	// this function is optional
-	// Return unformatted code
-
 	ksRewind (returned);
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
-		int rc = validateMac (cur, parentKey);
-		if (rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		int rc = validateMac (cur);
+		if (rc)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "%s is not in a supported format.", keyString (cur));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 		const Key * origValue = keyGetMeta (cur, "origvalue");
 		if (origValue)
 		{
@@ -272,7 +264,6 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
-	// clang-format off
     return elektraPluginExport("macaddr",
                                ELEKTRA_PLUGIN_GET, &elektraMacaddrGet,
                                ELEKTRA_PLUGIN_SET, &elektraMacaddrSet);
