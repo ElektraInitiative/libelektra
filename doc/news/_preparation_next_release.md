@@ -386,7 +386,7 @@ removed due to:
 
 - New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (4294967295 (= 0xffffffff) and 2864434397 (= 0xaabbccdd) respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
   _(Philipp Gackstatter)_
-  
+
 ### macaddr
 
 - Added a plugin to handle MAC addresses. `kdbGet` returns a MAC address as integer if format is supported. _(Thomas Bretterbauer)_
