@@ -29,9 +29,7 @@ TODO:
 - Remove unused code
 - Maybe also support formats `XXXXXXXXXXXX` and `XXXX.XXXX.XXXX`
 
-
 ## Usage
-
 
 ```sh
 # Backup-and-Restore: user/tests/mac
