@@ -38,10 +38,10 @@ TODO:
 kdb mount config.dump /tests/mac dump macaddr
 
 # Check the validity of the following MAC addresses
-kdb setmeta /tests/mac/mac1 check/macaddr True
-kdb setmeta /tests/mac/mac2 check/macaddr True
-kdb setmeta /tests/mac/mac3 check/macaddr True
-kdb setmeta /tests/mac/mac4 check/macaddr True
+kdb setmeta /tests/mac/mac1 check/macaddr ""
+kdb setmeta /tests/mac/mac2 check/macaddr ""
+kdb setmeta /tests/mac/mac3 check/macaddr ""
+kdb setmeta /tests/mac/mac4 check/macaddr ""
 
 # Setting a MAC address using colons
 kdb set /tests/mac/mac1 00:A0:C9:14:C8:29
