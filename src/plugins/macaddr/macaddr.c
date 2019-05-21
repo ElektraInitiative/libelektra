@@ -34,11 +34,12 @@ static void insertSeperator (char * mac)
 
 void transformMac (Key * key)
 {
-	char * mac = keyString (key);
+	const char * macKey = keyString (key);
 
+	char * mac = strdup (macKey);
 	int separatorOccurrences = 0;
 
-	for (int i = 0; i < strlen (mac); ++i)
+	for (size_t i = 0; i < strlen (mac); ++i)
 	{
 		mac[i] = toupper (mac[i]);
 		if (mac[i] == ':' || mac[i] == '-')
@@ -154,7 +155,7 @@ int validateMac (Key * key)
 void removeStandardizedSeparator (const char * mac, char * returned)
 {
 	int j = 0;
-	for (int i = 0; i < strlen (mac); i += 3)
+	for (size_t i = 0; i < strlen (mac); i += 3)
 	{
 		returned[j++] = mac[i];
 		returned[j++] = mac[i + 1];
