@@ -103,7 +103,7 @@ compare_plugin_output() {
 
 generate_input_benchmark() {
 	DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.')"
-	mkdir "$DIRECTORY"
+	mkdir -p "$DIRECTORY"
 	for PLUGIN in "${PLUGINS[@]}"; do
 		cp "$DATA_DIRECTORY/$INPUT_FILE" "$DIRECTORY/test.$PLUGIN.in"
 	done
