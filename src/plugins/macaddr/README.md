@@ -11,7 +11,7 @@
 
 ## Introduction
 
-This plugin validates MAC-addresses. The following MAC-address-formats are allowed:
+This plugin validates MAC-addresses. The following MAC-address-formats are supported:
 
     XX-XX-XX-XX-XX-XX
     XX:XX:XX:XX:XX:XX
