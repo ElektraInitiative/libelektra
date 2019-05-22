@@ -210,6 +210,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport ("macaddr",
 				    ELEKTRA_PLUGIN_GET,	&elektraMacaddrGet,
-				    ELEKTRA_PLUGIN_SET,	&elektraMacaddrSet);
+				    ELEKTRA_PLUGIN_SET,	&elektraMacaddrSet,
+				    ELEKTRA_PLUGIN_END);
 	// clang-format on
 }
