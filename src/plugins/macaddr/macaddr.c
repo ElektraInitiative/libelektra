@@ -17,73 +17,29 @@
 #include <regex.h>
 #include <stdio.h>
 
-#define SEPARATORSTANDARD 5
-#define SEPARATOREONE 1
-#define SEPARATORENONE 0
+#define VALIDATION_SUCCESS 0
+#define VALIDATION_ERROR 1
+#define VALIDATION_ISINT 2
 
 #define MAXMACINT 281474976710655
-
-static void insertSeperator (char * mac)
-{
-	for (int i = 2; i <= 14; i += 3)
-	{
-		mac[i] = ':';
-	}
-	mac[17] = '\0';
-}
 
 void transformMac (Key * key)
 {
 	const char * macKey = keyString (key);
 
-	char * mac = strdup (macKey);
-	int separatorOccurrences = 0;
 
-	for (size_t i = 0; i < strlen (mac); ++i)
+	char * macWithoutSeparators = elektraMalloc (12);
+
+	size_t len = strlen (macKey);
+	size_t j = 0;
+	for (size_t i = 0; i < len; ++i)
 	{
-		mac[i] = toupper (mac[i]);
-		if (mac[i] == ':' || mac[i] == '-')
-		{
-			++separatorOccurrences;
-		}
+		if (macKey[i] == ':' || macKey[i] == '-') continue;
+
+		macWithoutSeparators[j++] = macKey[i];
 	}
 
-	if (separatorOccurrences == SEPARATORSTANDARD)
-	{
-		insertSeperator (mac);
-		keySetString (key, mac);
-		keySetName (key, mac);
-	}
-	else if (separatorOccurrences == SEPARATOREONE)
-	{
-		char * newmac = (char *) elektraMalloc (strlen (mac) + 5);
-		int j = 0;
-		for (int i = 0; i <= 11; i += 2)
-		{
-			if (i == 6)
-			{
-				++i;
-			}
-			memcpy (newmac + j, mac + i, 2);
-			j += 3;
-		}
-		insertSeperator (newmac);
-		keySetString (key, newmac);
-		elektraFree (newmac);
-	}
-	else if (separatorOccurrences == SEPARATORENONE)
-	{
-		char * newmac = (char *) elektraMalloc (strlen (mac) + 6);
-		int j = 0;
-		for (int i = 0; i <= 11; i += 2)
-		{
-			memcpy (newmac + j, mac + i, 2);
-			j += 3;
-		}
-		insertSeperator (newmac);
-		keySetString (key, newmac);
-		elektraFree (newmac);
-	}
+	keySetString (key, macWithoutSeparators);
 }
 
 int checkRegex (const char * mac, const char * regexString)
@@ -96,33 +52,21 @@ int checkRegex (const char * mac, const char * regexString)
 	reg = regexec (&regex, mac, 0, NULL, 0);
 	regfree (&regex);
 
-	if (reg == REG_NOMATCH)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-	// return reg == REG_NOMATCH ? 1 : 0;
+	return reg == REG_NOMATCH ? VALIDATION_ERROR : VALIDATION_SUCCESS;
 }
 
 int checkIntMac (const char * mac)
 {
 	if (strlen (mac) < 2) return 1;
+	char * endptr;
 
-	char * test = elektraMalloc (strlen (mac));
-	strcpy (test, mac);
+	unsigned long long ret = 0;
+	ret = strtoull (mac, &endptr, 10);
 
-	while (*test)
-	{
-		if (isdigit (*test++) == 0) return 1;
-	}
-	long macLong = atol (mac);
+	if (errno == EINVAL || errno == ERANGE || *endptr != '\0') return VALIDATION_ERROR;
+	if (ret > MAXMACINT || ret < 0) return VALIDATION_ERROR;
 
-	if (macLong > MAXMACINT || macLong < 0) return 1;
-
-	return 0;
+	return VALIDATION_ISINT;
 }
 
 int validateMac (Key * key)
@@ -143,7 +87,7 @@ int validateMac (Key * key)
 
 	ret = checkIntMac (mac);
 
-	while (ret == 1 && i < 3)
+	while (ret == VALIDATION_ERROR && i < 3)
 	{
 		ret = checkRegex (mac, regexStrings[i]);
 		++i;
@@ -152,32 +96,17 @@ int validateMac (Key * key)
 	return ret;
 }
 
-void removeStandardizedSeparator (const char * mac, char * returned)
-{
-	int j = 0;
-	for (size_t i = 0; i < strlen (mac); i += 3)
-	{
-		returned[j++] = mac[i];
-		returned[j++] = mac[i + 1];
-	}
-}
-
 void transformToInt (Key * key)
 {
 	const char * mac = keyString (key);
 
-	char * macReduced = elektraMalloc (12);
-
-	removeStandardizedSeparator (mac, macReduced);
-
-	long intValue = strtol (macReduced, NULL, 16);
+	long intValue = strtol (mac, NULL, 16);
 
 	const int n = snprintf (NULL, 0, "%lu", intValue);
 	char * buffer = elektraMalloc (n + 1);
 	snprintf (buffer, n + 1, "%lu", intValue);
 
 	keySetString (key, buffer);
-	elektraFree (macReduced);
 	elektraFree (buffer);
 }
 
@@ -205,7 +134,7 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	{
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
-		const Key * origValue = keyGetMeta (cur, "origvalue");
+		/*const Key * origValue = keyGetMeta (cur, "origvalue");
 		if (origValue)
 		{
 			ELEKTRA_SET_ERRORF (
@@ -213,15 +142,15 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 				"Meta key 'origvalue' for key %s not expected to be set, another plugin has already set this meta key!",
 				keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
+		}*/
 		int rc = validateMac (cur);
-		if (rc)
+		if (rc == VALIDATION_ERROR)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "%s is not in a supported format.", keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		if (checkIntMac (keyString (cur)))
+		if (rc != VALIDATION_ISINT)
 		{
 			transformMac (cur);
 			transformToInt (cur);
@@ -232,7 +161,7 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	ksRewind (returned);
 	Key * cur;
@@ -240,25 +169,25 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	{
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
-		int rc = validateMac (cur);
-		if (rc)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "%s is not in a supported format.", keyString (cur));
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
+
 		const Key * origValue = keyGetMeta (cur, "origvalue");
 		if (origValue)
 		{
 			keySetString (cur, keyString (origValue));
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
-		keySetMeta (cur, "origvalue", keyString (cur));
 
-		if (checkIntMac (keyString (cur)))
+		int rc = validateMac (cur);
+		if (rc == VALIDATION_ERROR)
 		{
-			transformMac (cur);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey,
+					    "%s is not in a supported format. Supported formats are:\nXX:XX:XX:XX:XX:XX\n"
+					    "XX-XX-XX-XX-XX-XX\nXXXXXX-XXXXXX",
+					    keyString (cur));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
+		keySetMeta (cur, "origvalue", keyString (cur));
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -267,5 +196,9 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
-	return elektraPluginExport ("macaddr", ELEKTRA_PLUGIN_GET, &elektraMacaddrGet, ELEKTRA_PLUGIN_SET, &elektraMacaddrSet);
+	// clang-format off
+	return elektraPluginExport ("macaddr",
+				    ELEKTRA_PLUGIN_GET,	&elektraMacaddrGet,
+				    ELEKTRA_PLUGIN_SET,	&elektraMacaddrSet);
+	// clang-format on
 }
