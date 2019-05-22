@@ -20,7 +20,7 @@ if (result->/*%& size_field %*/ > 0)
 		{
 			size_t refnameLen = strlen (refname);
 			char * discriminatorField = elektraCalloc ((refnameLen + sizeof ("//*% discr_suffix %*/")) * sizeof (char));
-			strcpy (field, refname);
+			strcpy (discriminatorField, refname);
 			strcpy (&discriminatorField[refnameLen], "//*% discr_suffix %*/");
 
 			result->/*% discr_field %*/[i] = ELEKTRA_GET (/*%& discr_type_name %*/) (elektra, discriminatorField);
@@ -37,7 +37,7 @@ if (refname != NULL && refname[0] != '\0')
 {
 	size_t refnameLen = strlen (refname);
 	char * discriminatorField = elektraCalloc ((refnameLen + sizeof ("//*% discr_suffix %*/")) * sizeof (char));
-	strcpy (field, refname);
+	strcpy (discriminatorField, refname);
 	strcpy (&discriminatorField[refnameLen], "//*% discr_suffix %*/");
 
 	result->/*% discr_field %*/ = ELEKTRA_GET (/*%& discr_type_name %*/) (elektra, discriminatorField);
