@@ -316,6 +316,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		if (type == "discriminator")
 		{
 			type = "enum";
+			defaultsKey.setMeta ("type", "enum");
+			specKey.setMeta ("type", "enum");
 		}
 
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
