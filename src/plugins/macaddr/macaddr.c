@@ -168,10 +168,9 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		{
 			transformMac (cur);
 		}
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -187,7 +186,7 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		if (origValue)
 		{
 			keySetString (cur, keyString (origValue));
-			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+			continue;
 		}
 
 		int rc = validateMac (cur);
@@ -201,10 +200,9 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		}
 
 		keySetMeta (cur, "origvalue", keyString (cur));
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
