@@ -35,63 +35,60 @@ TODO:
 # Backup-and-Restore: user/tests/mac
 
 # Mount `macaddr` plugin
-kdb mount macconf.ecf /tests/mac macaddr
+sudo kdb mount macconf.ecf user/tests/mac macaddr
 
 # Check the validity of the following MAC addresses
-kdb setmeta /tests/mac/mac1 check/macaddr ""
-kdb setmeta /tests/mac/mac2 check/macaddr ""
-kdb setmeta /tests/mac/mac3 check/macaddr ""
-kdb setmeta /tests/mac/mac4 check/macaddr ""
+kdb setmeta user/tests/mac/mac1 check/macaddr ""
+kdb setmeta user/tests/mac/mac2 check/macaddr ""
+kdb setmeta user/tests/mac/mac3 check/macaddr ""
+kdb setmeta user/tests/mac/mac4 check/macaddr ""
 
 # Setting a MAC address using colons
-kdb set /tests/mac/mac1 00:A0:C9:14:C8:29
+kdb set user/tests/mac/mac1 00:A0:C9:14:C8:29
 # RET: 0
 
 # Setting a MAC address using hyphens
-kdb set /tests/mac/mac2 00-A0-C9-14-C8-29
+kdb set user/tests/mac/mac2 00-A0-C9-14-C8-29
 # RET: 0
 
 # Setting a MAC address using one hyphen
-kdb set /tests/mac/mac3 00A0C9-14C829
+kdb set user/tests/mac/mac3 00A0C9-14C829
 # RET: 0
 
 # Setting a MAC address using an integer value
-kdb set /tests/mac/mac4 17661175009296
+kdb set user/tests/mac/mac4 17661175009296
 # RET: 0
 
 # Setting a MAC address using an invalid address
-kdb set /tests/mac/mac1 00:G1:C9:14:C8:29
+kdb set user/tests/mac/mac1 00:G1:C9:14:C8:29
 # RET: 5
 
 # Setting a MAC address using an invalid address
-kdb set /tests/mac/mac1 00:E1:C914:C8:29
+kdb set user/tests/mac/mac1 00:E1:C914:C8:29
 # RET: 5
 
 # Setting a MAC address using an invalid address
-kdb set /tests/mac/mac4 281474976710656
+kdb set user/tests/mac/mac4 281474976710656
 # RET: 5
 
 # Retrieving a MAC address with colons as integer
-kdb get /tests/mac/mac1
+kdb get user/tests/mac/mac1
 #> 690568349737
 
 # Retrieving a MAC address with hyphens as integer
-kdb get /tests/mac/mac2
+kdb get user/tests/mac/mac2
 #> 690568349737
 
 # Retrieving a MAC address with one hyphen as integer
-kdb get /tests/mac/mac3
+kdb get user/tests/mac/mac3
 #> 690568349737
 
 # Retrieving an integer MAC address
-kdb get /tests/mac/mac4
+kdb get user/tests/mac/mac4
 #> 17661175009296
 
-kdb umount /tests/mac
-kdb rmmeta spec/tests/mac/mac1 check/macaddr
-kdb rmmeta spec/tests/mac/mac2 check/macaddr
-kdb rmmeta spec/tests/mac/mac3 check/macaddr
-kdb rmmeta spec/tests/mac/mac4 check/macaddr
+kdb rm -r user/tests/mac
+sudo kdb umount user/tests/mac
 ```
 
 ## Dependencies
