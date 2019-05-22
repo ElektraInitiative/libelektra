@@ -120,6 +120,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [YAMBi](https://www.libelektra.org/plugins/yambi) now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - The plugin now handles YAML key-value pairs without a value at the end of a file correctly. _(René Schwaiger)_
 - The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- [YAMBi](https://www.libelektra.org/plugins/yambi) now converts empty files to a key set containing an empty version of the parent key. _(René Schwaiger)_
 
 ### YAML CPP
 
