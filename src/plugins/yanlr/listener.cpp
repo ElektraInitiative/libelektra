@@ -8,6 +8,8 @@
 
 // -- Imports ------------------------------------------------------------------
 
+#include <kdbconfig.h>
+
 #include "listener.hpp"
 
 using std::string;
@@ -70,6 +72,7 @@ using kdb::Key;
 using kdb::KeySet;
 
 using ElementContext = yanlr::YAML::ElementContext;
+using EmptyContext = yanlr::YAML::EmptyContext;
 using PairContext = YAML::PairContext;
 using ValueContext = YAML::ValueContext;
 using SequenceContext = yanlr::YAML::SequenceContext;
@@ -94,6 +97,17 @@ KeyListener::KeyListener (Key parent) : keys{}
 KeySet KeyListener::keySet ()
 {
 	return keys;
+}
+
+/**
+ * @brief This function will be called when the listener enters an empty file (that might contain comments).
+ *
+ * @param context The context specifies data matched by the rule.
+ */
+void KeyListener::enterEmpty (EmptyContext * context ELEKTRA_UNUSED)
+{
+	// We add a parent key that stores nothing representing an empty file.
+	keys.append (Key{ parents.top ().getName (), KEY_BINARY, KEY_END });
 }
 
 /**
