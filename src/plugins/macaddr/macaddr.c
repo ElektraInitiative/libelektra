@@ -51,8 +51,7 @@ void transformMac (Key * key)
 
 	keySetString (key, buffer);
 	elektraFree (buffer);
-
-	keySetString (key, macWithoutSeparators);
+	elektraFree (macWithoutSeparators);
 }
 
 /**
