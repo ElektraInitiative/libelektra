@@ -39,6 +39,15 @@ void transformMac (Key * key)
 		macWithoutSeparators[j++] = macKey[i];
 	}
 
+	long intValue = strtol (macWithoutSeparators, NULL, 16);
+
+	const int n = snprintf (NULL, 0, "%lu", intValue);
+	char * buffer = elektraMalloc (n + 1);
+	snprintf (buffer, n + 1, "%lu", intValue);
+
+	keySetString (key, buffer);
+	elektraFree (buffer);
+
 	keySetString (key, macWithoutSeparators);
 }
 
@@ -96,20 +105,6 @@ int validateMac (Key * key)
 	return ret;
 }
 
-void transformToInt (Key * key)
-{
-	const char * mac = keyString (key);
-
-	long intValue = strtol (mac, NULL, 16);
-
-	const int n = snprintf (NULL, 0, "%lu", intValue);
-	char * buffer = elektraMalloc (n + 1);
-	snprintf (buffer, n + 1, "%lu", intValue);
-
-	keySetString (key, buffer);
-	elektraFree (buffer);
-}
-
 int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/macaddr"))
@@ -153,7 +148,6 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		if (rc != VALIDATION_ISINT)
 		{
 			transformMac (cur);
-			transformToInt (cur);
 		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
