@@ -234,6 +234,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [Yan LR](https://www.libelektra.org/plugins/yanlr) now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - The plugin now handles YAML key-value pairs that contain no value at the end of a file correctly. _(René Schwaiger)_
 - The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- The plugin converts “empty” YAML files to a key set that contains an empty version of the parent key. _(René Schwaiger)_
 
 ### YAwn
 
