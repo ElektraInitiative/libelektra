@@ -64,7 +64,7 @@ int checkIntMac (const char * mac)
 	ret = strtoull (mac, &endptr, 10);
 
 	if (errno == EINVAL || errno == ERANGE || *endptr != '\0') return VALIDATION_ERROR;
-	if (ret > MAXMACINT || ret < 0) return VALIDATION_ERROR;
+	if (ret > MAXMACINT) return VALIDATION_ERROR;
 
 	return VALIDATION_ISINT;
 }
