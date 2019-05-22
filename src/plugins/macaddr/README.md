@@ -35,7 +35,7 @@ TODO:
 # Backup-and-Restore: user/tests/mac
 
 # Mount `macaddr` plugin
-kdb mount config.dump /tests/mac dump macaddr
+kdb mount macconf.ecf /tests/mac macaddr
 
 # Check the validity of the following MAC addresses
 kdb setmeta /tests/mac/mac1 check/macaddr ""
@@ -88,6 +88,10 @@ kdb get /tests/mac/mac4
 #> 17661175009296
 
 kdb umount /tests/mac
+kdb rmmeta /tests/mac/mac1 check/macaddr
+kdb rmmeta /tests/mac/mac2 check/macaddr
+kdb rmmeta /tests/mac/mac3 check/macaddr
+kdb rmmeta /tests/mac/mac4 check/macaddr
 ```
 
 ## Dependencies
