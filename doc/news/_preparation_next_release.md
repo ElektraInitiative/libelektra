@@ -389,7 +389,7 @@ removed due to:
 
 ### macaddr
 
-- Added a plugin to handle MAC addresses. `kdbGet` returns a MAC address as integer if format is supported. _(Thomas Bretterbauer)_
+- Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
 
 ## Libraries
 
