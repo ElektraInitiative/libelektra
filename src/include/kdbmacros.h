@@ -17,6 +17,11 @@
 /** Surround a **macro value** with double quotes */
 #define ELEKTRA_STRINGIFY(x) ELEKTRA_QUOTE (x)
 
+/** Concat two values */
+#define ELEKTRA_CONCAT2(X, Y) X##Y
+/** Concat two **macro values** */
+#define ELEKTRA_CONCAT(X, Y) ELEKTRA_CONCAT2 (X, Y)
+
 #if defined(__APPLE__)
 #define ELEKTRA_STAT_SECONDS(status) status.st_mtime
 #define ELEKTRA_STAT_NANO_SECONDS(status) status.st_mtimespec.tv_nsec
@@ -89,5 +94,16 @@
 		ksDel (info);                                                                                                              \
 	} while (0)
 
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck) __attribute__ ((format (archetype, stringIndex, firstToCheck)))
+#else
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck)
+#endif
+
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_NO_RETURN __attribute__ ((noreturn))
+#else
+#define ELEKTRA_ATTRIBUTE_NO_RETURN
+#endif
 
 #endif

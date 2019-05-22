@@ -49,7 +49,7 @@ Algorithm:
 - Fallback mode should be removed with 1.0
 - added scripts/upgrade-bootstrap
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

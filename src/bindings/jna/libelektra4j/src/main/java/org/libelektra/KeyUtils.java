@@ -19,7 +19,6 @@ public final class KeyUtils {
 
 			sb.append(String.format("Sorry, the error #%s occurred!%n", key.getMeta("error/number").getString()));
 			sb.append(String.format("Description: %s%n", key.getMeta("error/description").getString()));
-			sb.append(String.format("Ingroup: %s%n", key.getMeta("error/ingroup").getString()));
 			sb.append(String.format("Module: %s%n", key.getMeta("error/module").getString()));
 			sb.append(String.format("At: %s:%s%n", key.getMeta("error/file").getString(), key.getMeta("error/line").getString()));
 			sb.append(String.format("Reason: %s%n", key.getMeta("error/reason").getString()));
@@ -52,8 +51,7 @@ public final class KeyUtils {
 			for (int i = 0; i <= nr; i++) {
 				final String warningKeyName = String.format("warnings/#%02d", i);
 				sb.append(String.format(" Warning number: %s%n", key.getMeta(warningKeyName + "/number").getString()));
-				sb.append(String.format("\tDescription: %s%n", key.getMeta(warningKeyName + "/description").getString()));
-				sb.append(String.format("\tIngroup: %s%n", key.getMeta(warningKeyName + "/ingroup").getString()));
+				sb.append(String.format("\tDescription: %s%n", key.getMeta(warningKeyName + "/description").getString()));;
 				sb.append(String.format("\tModule: %s%n", key.getMeta(warningKeyName + "/module").getString()));
 				sb.append(String.format("\tAt: %s:%s%n", key.getMeta(warningKeyName + "/file").getString(),
 						key.getMeta(warningKeyName + "/line").getString()));

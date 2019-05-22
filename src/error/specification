@@ -1,5 +1,5 @@
 number:0
-description:a test for a exception specification
+description:a test for an exception specification
 :new lines to the same entry can be started with a colon
 :the number is sequential and has no special meaning
 :
@@ -310,10 +310,11 @@ ingroup:plugin
 module:network
 
 number:52
-description:could not type check value of key
+description:error in the type plugin
 severity:error
 ingroup:plugin
 module:type
+macro:TYPE
 
 number:53
 description:could not check the structure of the keyset
@@ -1180,8 +1181,8 @@ number:189
 description:Unable to insert array value
 severity:error
 ingroup:plugin
-module:directoryvalue
-macro:DIRECTORY_VALUE_ARRAY
+module:storage
+macro:INSERT_VALUE_ARRAY
 
 number:190
 description:Failed to initialize the pluginprocess library for a plugin
@@ -1338,3 +1339,16 @@ severity:error
 ingroup:plugin
 module:specload
 macro:SPECLOAD
+
+number:213
+description:the contract was malformed
+severity:error
+ingroup:kdb
+macro:MALFORMED_CONTRACT
+
+number:214
+description:value of key is not a valid hex-formatted color
+severity:error
+ingroup:plugin
+module:rgbcolor
+

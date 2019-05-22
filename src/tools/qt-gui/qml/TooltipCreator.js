@@ -1,4 +1,4 @@
-.pragma library
+.pragma library // lgtm [js/syntax-error]
 
 var tooltip = null
 

@@ -164,7 +164,7 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * Objects created with ksNew() must be destroyed with ksDel().
  *
- * You can use a arbitrary long list of parameters to preload the keyset
+ * You can use an arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
  *
@@ -358,7 +358,7 @@ KeySet * ksDeepDup (const KeySet * source)
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
  * But in some situations you need to copy a
- * keyset to a existing keyset, for that this function
+ * keyset to an existing keyset, for that this function
  * exists.
  *
  * @note You can also use it to clear a keyset when you pass
@@ -649,7 +649,7 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * If the name is equal then:
  *
  * - No owner will be found to be smaller then every other owner.
- * If both don't have a owner, 0 is returned.
+ * If both don't have an owner, 0 is returned.
  *
  * @note the owner will only be used if the names are equal.
  *
@@ -756,7 +756,7 @@ ssize_t ksGetSize (const KeySet * ks)
 /**
  * @internal
  *
- * Binary search in a keyset that informs where key should be inserted.
+ * Binary search in a KeySet that informs where a key should be inserted.
  *
  * @code
 

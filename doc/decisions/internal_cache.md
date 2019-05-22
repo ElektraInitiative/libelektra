@@ -31,7 +31,7 @@ Semantics can be provided without additional code or overhead in the core.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

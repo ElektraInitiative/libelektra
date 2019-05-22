@@ -50,7 +50,7 @@ the client on a separate web server.
 
 - There needs to be a single point of entry for the web client to connect to.
 
-## Related decisions
+## Related Decisions
 
 - [Elektra Web Structure decision](elektra_web.md)
 

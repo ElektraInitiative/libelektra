@@ -126,7 +126,7 @@ ScrollView {
 								Timer {
 									id: timer
 
-									interval: 1000
+									interval: 500
 									repeat: false
 
 									onTriggered: {

@@ -100,7 +100,7 @@ int init (int argc, char ** argv)
 
 /**Create a root key for a backend.
  *
- * @return a allocated root key */
+ * @return an allocated root key */
 Key * create_root_key (const char * backendName)
 {
 	Key * root = keyNew ("user/tests", KEY_END);
@@ -113,7 +113,7 @@ Key * create_root_key (const char * backendName)
 
 /**Create a configuration keyset for a backend.
  *
- * @return a allocated configuration keyset for a backend*/
+ * @return an allocated configuration keyset for a backend*/
 KeySet * create_conf (const char * filename)
 {
 	return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END);
@@ -422,10 +422,6 @@ int output_warnings (Key * warningKey)
 		strncat (buffer, "/description", sizeof (buffer) - strlen (buffer) - 1);
 		printf ("description: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/ingroup", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("ingroup: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
 		strncat (buffer, "/module", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("module: %s\n", keyString (keyGetMeta (warningKey, buffer)));
@@ -473,7 +469,6 @@ int output_error (Key * errorKey)
 
 	printf ("number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));
 	printf ("description: : %s\n", keyString (keyGetMeta (errorKey, "error/description")));
-	printf ("ingroup: : %s\n", keyString (keyGetMeta (errorKey, "error/ingroup")));
 	printf ("module: : %s\n", keyString (keyGetMeta (errorKey, "error/module")));
 	printf ("at: %s:%s\n", keyString (keyGetMeta (errorKey, "error/file")), keyString (keyGetMeta (errorKey, "error/line")));
 	printf ("reason: : %s\n", keyString (keyGetMeta (errorKey, "error/reason")));

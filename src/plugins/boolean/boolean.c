@@ -108,22 +108,23 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 	const char * defaultFalseValues[] = {
 		"FALSE", "0", "OFF", "DISABLE", "DISABLED", "NO", "NOT", NULL,
 	};
-	const char * value = keyString (key);
+
+	char * origvalue = elektraStrDup (keyString (key));
 	const char ** falseValues = (const char **) data->falseValues;
 	const char ** trueValues = (const char **) data->trueValues;
 	const char ** falseStrings = falseValues ? falseValues : defaultFalseValues;
 	const char ** trueStrings = trueValues ? trueValues : defaultTrueValues;
-	if (isTrue (value, trueStrings))
+	if (isTrue (origvalue, trueStrings))
 	{
-		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->trueValue);
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", origvalue, data->trueValue);
 		keySetString (key, data->trueValue);
+		keySetMeta (key, "origvalue", origvalue);
 	}
-	else if (isFalse (value, falseStrings))
+	else if (isFalse (origvalue, falseStrings))
 	{
-		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->falseValue);
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", origvalue, data->falseValue);
 		keySetString (key, data->falseValue);
+		keySetMeta (key, "origvalue", origvalue);
 	}
 	else
 	{
@@ -136,9 +137,9 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 			{
 				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
-						      keyString (key), data->trueValue);
+						      origvalue, data->trueValue);
 			}
-			keySetMeta (key, "origvalue", keyString (key));
+			keySetMeta (key, "origvalue", origvalue);
 			keySetString (key, data->trueValue);
 			break;
 		case FALSE:
@@ -146,15 +147,16 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 			{
 				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
-						      keyString (key), data->falseValue);
+						      origvalue, data->falseValue);
 			}
-			keySetMeta (key, "origvalue", keyString (key));
 			keySetString (key, data->falseValue);
+			keySetMeta (key, "origvalue", origvalue);
 			break;
 		case WARNING:
 			break;
 		}
 	}
+	elektraFree (origvalue);
 }
 
 static void strToArray (Key * key, char *** array)
@@ -308,7 +310,6 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 static void restoreValue (Key * key, const char * origValue)
 {
 	keySetString (key, origValue);
-	keySetMeta (key, "origvalue", 0);
 }
 
 int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

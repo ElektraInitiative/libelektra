@@ -132,6 +132,92 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
+#### Clang Format
+
+To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `6.0` or version `7.0`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+
+To find out which version of `clang-format` a certain build server uses please check:
+
+- the [Debian sid Docker image](../scripts/docker/debian/sid/Dockerfile),
+- the [Travis configuration file ](../.travis.yml), and
+- the [Cirrus configuration file](../.cirrus.yml)
+
+and search for the relevant packages (`clang-format`, `llvm`). Currently we use
+
+- clang-format `6.0` in the [Debian sid image](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server,
+- clang-format `7.0` in the [Travis configuration file ](../.travis.yml), and
+- clang-format `7.0` in the [Cirrus macOS](../.cirrus.yml) build jobs
+
+.
+
+##### Installation
+
+###### macOS
+
+On macOS you can install `clang-format` using [Homebrew](https://brew.sh) either directly:
+
+```sh
+brew install clang-format
+```
+
+or by installing the whole [LLVM](http://llvm.org) infrastructure:
+
+```sh
+brew install llvm
+```
+
+. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `6.0` in certain edge cases. If you want you can also install Clang-Format `7.0` using LLVM `7.0`:
+
+```
+brew install llvm@7
+```
+
+.
+
+###### Debian
+
+In Debian the package for Clang-Format `6.0` is called `clang-format-6.0`:
+
+```sh
+apt-get install clang-format-6.0
+```
+
+.
+
+##### Usage
+
+For the basic use cases you can use `clang-format` directly. To do that, just call the tool using the option `-i` and specify the name of the files you want to reformat. For example, if you want to reformat the file `src/bindings/cpp/include/kdb.hpp` you can use the following command:
+
+```sh
+# On some systems such as Debian the `cmake-format` executable also contains
+# the version number. For those systems, please replace `clang-format`,
+# with `clang-format-6.0` or `clang-format-7` in the command below.
+clang-format -i src/bindings/cpp/include/kdb.hpp
+```
+
+. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-source`](../scripts/reformat-source) that reformats all C and C++ code in Elektra’s code base
+
+```sh
+scripts/reformat-source # This script will probably take some seconds to execute
+```
+
+.
+
+##### Tool Integration
+
+If you work on Elektra’s code base regularly you might want to integrate the formatting step directly in your development setup. [ClangFormat’s homepage](https://clang.llvm.org/docs/ClangFormat.html) includes a list of integrations for various tools that should help you to do that. Even if this webpage does not list any integrations for your favorite editor or IDE, you can usually add support for external tools such as `clang-format` to advanced editors or IDEs pretty easily.
+
+###### TextMate
+
+While [TextMate](https://macromates.com) supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
+
+1. open the bundle editor (“Bundles” → “Edit Bundles”),
+2. navigate to the “Reformat Code” item of the C bundle (“C” → “Menu Actions” → “Reformat Code”),
+3. insert `callback.document.will-save` into the field “Semantic Class”, and
+4. change the menu option for the field “Save” to “Nothing”
+
+. After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
+
 ### C++ Guidelines
 
 - Everything as in C if not noted otherwise.
@@ -184,11 +270,13 @@ Most notably use:
 
 - File Ending is `.md` or integrated within Doxygen comments
 - Only use `#` characters at the left side of headers/titles
-- Use fences for code/examples
+- Use [fences](https://help.github.com/en/articles/creating-and-highlighting-code-blocks) for code/examples
 - Prefer fences which indicate the used language for better syntax highlighting
 - Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
 - `README.md` and tutorials should be written exclusively with shell recorder syntax
   so that we know that the code in the tutorial produces output as expected
+- Please use [**title-case**](https://en.wiktionary.org/wiki/title_case) for headings in the general documentation.
+- For [man pages](help/) please use **only capital letters for subheadings** and only **small letters for the main header**. We use this header style to match the look and feel of man pages for Unix tools such as `ls` or `mkdir`.
 
 Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
 format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).

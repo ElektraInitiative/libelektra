@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = recommended unittest memleak
+- infos/status = recommended maintained unittest memleak
 - infos/metadata = xerces/rootname
 - infos/description = Storage in the XML format.
 
@@ -23,7 +23,9 @@ formatted files. It uses a general format which:
 
 To mount an XML file we use:
 
-    kdb mount file.xml user/test/file xerces
+```bash
+kdb mount file.xml user/test/file xerces
+```
 
 The strength and usage of this plugin is that it supports arbitrary XML files and
 does not require a specific format. Given the following example of an XML file:
@@ -41,13 +43,20 @@ of the root element gets mapped to the mount point.
 
 We can observe the following result after mounting:
 
-    kdb get user/test/file > foo
-    kdb get user/test/file/bar > bar
-    kdb getmeta user/test/file/bar meta > da_ta
+```bash
+kdb get user/test/file
+#> foo
+kdb get user/test/file/bar
+#> bar
+kdb getmeta user/test/file/bar meta
+#> da_ta
+```
 
 To export an existing keyset to the XML format:
 
-    kdb export user/test/xerces xerces > example.xml
+```bash
+kdb export user/test/xerces xerces > example.xml
+```
 
 The root element of the resulting XML file will be "xerces" again, restored via the
 metadata. If you don't want this behavior, delete the metadata `xerces/rootname` on

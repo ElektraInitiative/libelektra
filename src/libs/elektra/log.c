@@ -44,7 +44,8 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 			     const int line ELEKTRA_UNUSED, const char * msg)
 {
 #ifndef NO_FILTER
-// XXX Filter here for specific sink
+	// XXX Filter here for specific sink
+	if (level < ELEKTRA_LOG_LEVEL_STDERR) return -1;
 #endif
 	int ret = fprintf (stderr, "%s", msg);
 	fflush (stderr);
@@ -53,13 +54,16 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 #endif
 
 #ifdef USE_SYSLOG_SINK
+static int syslogOpened = 0;
+
 static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * file ELEKTRA_UNUSED,
 			     const int line ELEKTRA_UNUSED, const char * msg)
 {
 #ifndef NO_FILTER
-// XXX Filter here for specific sink
+	// XXX Filter here for specific sink
+	if (level < ELEKTRA_LOG_LEVEL_SYSLOG) return -1;
 #endif
-	int vlevel = LOG_CRIT; // if incorrect level given
+	int vlevel;
 	switch (level)
 	{
 	case ELEKTRA_LOG_LEVEL_ERROR:
@@ -76,7 +80,17 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 		break;
 	case ELEKTRA_LOG_LEVEL_DEBUG:
 		vlevel = LOG_DEBUG;
+		break;
+	default:
+		vlevel = LOG_CRIT;
 	}
+
+	if (!syslogOpened)
+	{
+		openlog ("Elektra", LOG_PID, LOG_USER);
+		syslogOpened = 1;
+	}
+
 	syslog (vlevel, "%s", msg);
 	return 0;
 }
@@ -89,7 +103,8 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 			   const int line ELEKTRA_UNUSED, const char * msg)
 {
 #ifndef NO_FILTER
-// XXX Filter here for specific sink
+	// XXX Filter here for specific sink
+	if (level < ELEKTRA_LOG_LEVEL_FILE) return -1;
 #endif
 	if (!elektraLoggerFileHandle)
 	{
@@ -118,30 +133,43 @@ static void replaceChars (char * str)
 	str[last] = '\n';
 }
 
-int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
-		 const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, va_list args)
+int elektraVLog (int level, const char * function, const char * absFile, int line, const char * mmsg, va_list args)
 {
-	size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
-	size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
-	const char * file = &absFile[lenOfLogPathName];
-
-	char * str;
-	// XXX Change here default format for messages
-	asprintf (&str, "%s:%d:%s: %s\n", file, line, function, mmsg);
-	char * msg = elektraVFormat (str, args);
-	replaceChars (msg);
+	const char * file;
+	if (absFile[0] == '/' || absFile[0] == '.')
+	{
+		size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
+		size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
+		file = &absFile[lenOfLogPathName];
+	}
+	else
+	{
+		file = absFile;
+	}
 
 	int ret = -1;
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
-	// by default: discard everything except warnings+assertions for libs
-	if (strncmp (file, "src/tools/", sizeof ("src/tools")) && level <= ELEKTRA_LOG_LEVEL) goto end;
+	if (level < ELEKTRA_LOG_LEVEL_GLOBAL) return -1;
 
 	// or e.g. discard everything, but log statements from simpleini.c:
-	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) goto end;
+	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) return -1;
 	// and discard log statements from the log statement itself:
-	if (!strcmp (file, "src/libs/elektra/log.c")) goto end;
+	if (!strcmp (file, "src/libs/elektra/log.c")) return -1;
 #endif
+
+	char * str;
+	// XXX Change here default format for messages.
+	//
+	// For example, to use a style similar to the default one used by compilers such as Clang and GCC, replace the following statement
+	// with:
+	//
+	//     str = elektraFormat ("%s:%d:%s: %s\n", file, line, function, mmsg);
+	//
+	// .
+	str = elektraFormat ("%s (in %s at %s:%d)\n", mmsg, function, file, line);
+	char * msg = elektraVFormat (str, args);
+	replaceChars (msg);
 
 #ifdef USE_STDERR_SINK
 	ret |= elektraLogStdErr (level, function, file, line, msg);
@@ -153,16 +181,12 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	ret |= elektraLogFile (level, function, file, line, msg);
 #endif
 
-#ifndef NO_FILTER
-end:
-#endif
 	elektraFree (str);
 	elektraFree (msg);
 	return ret;
 }
 
-int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
-		const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
+int elektraLog (int level, const char * function, const char * absFile, const int line, const char * mmsg, ...)
 {
 	va_list args;
 	va_start (args, mmsg);

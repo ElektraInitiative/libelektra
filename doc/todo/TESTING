@@ -6,7 +6,7 @@ src/plugins/python/CMakeLists.txt
 src/plugins/python2/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
-src/plugins/semlock/CMakeLists.txt   disable due to /dev/shm problems, see #1122 and #1260
+doc/help/kdb-get.md   for INI
 
 ### Jenkins
 
@@ -168,11 +168,11 @@ most plugins (especially storage) do only basic or no tests
 	fstab
 	hosts
 
-= Missing Testcases =
+= Missing test cases =
 
 test cases for locking file
 
-more testcases for kdb interface
+more test cases for kdb interface
 	also mount! and check for functionality regressions
 	ls over multiple mountpoints
 
@@ -233,7 +233,7 @@ import/export:
 	with all plugins
 	with automated kdb tests
 
-kdb testcases:
+kdb test cases:
 	for mount/umount
 	for import/export/convert
 	using chroot

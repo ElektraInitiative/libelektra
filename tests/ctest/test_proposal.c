@@ -83,14 +83,21 @@ static void test_keyAsCascading (void)
 static void test_keyGetLevelsBelow (void)
 {
 	printf ("test keyGetLevelsBelow\n");
-	Key * parent = keyNew ("system/parent", KEY_END);
-	Key * user = keyNew ("user/parent", KEY_END);
-	Key * oneLvl = keyNew ("system/parent/child", KEY_END);
-	Key * threeLvl = keyNew ("system/parent/child1/child2/child3", KEY_END);
+	Key * grandparent = keyNew ("system/grandparent", KEY_END);
+	Key * parent = keyNew ("system/grandparent/parent", KEY_END);
+	Key * user = keyNew ("user/grandparent/parent", KEY_END);
+	Key * oneLvl = keyNew ("system/grandparent/parent/child", KEY_END);
+	Key * threeLvl = keyNew ("system/grandparent/parent/child1/child2/child3", KEY_END);
 	succeed_if (keyGetLevelsBelow (parent, oneLvl) == 1, "getLevelsBelow returned wrong value");
 	succeed_if (keyGetLevelsBelow (parent, threeLvl) == 3, "getLevelsBelow returned wrong value");
 	succeed_if (keyGetLevelsBelow (parent, parent) == 0, "getLevelsBelow returned wrong value");
 	succeed_if (keyGetLevelsBelow (parent, user) == 0, "getLevelsBelow returned wrong value");
+	succeed_if (keyGetLevelsBelow (parent, grandparent) == 0, "getLevelsBelow returned wrong value");
+	succeed_if (keyGetLevelsBelow (grandparent, parent) == 1, "getLevelsBelow returned wrong value");
+	succeed_if (keyGetLevelsBelow (grandparent, oneLvl) == 2, "getLevelsBelow returned wrong value");
+	succeed_if (keyGetLevelsBelow (grandparent, threeLvl) == 4, "getLevelsBelow returned wrong value");
+	succeed_if (keyGetLevelsBelow (threeLvl, grandparent) == 0, "getLevelsBelow returned wrong value");
+	keyDel (grandparent);
 	keyDel (parent);
 	keyDel (user);
 	keyDel (oneLvl);

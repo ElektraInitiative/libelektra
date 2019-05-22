@@ -58,6 +58,25 @@ static KeySet * metaTestKeySet (void)
 		      KS_END);
 }
 
+typedef struct _binaryTest
+{
+	size_t A_size;
+	ssize_t B_ssize;
+} BinaryTest;
+static BinaryTest binaryTestA = { .A_size = SIZE_MAX, .B_ssize = -1 };
+
+static KeySet * otherMetaTestKeySet (void)
+{
+	return ksNew (
+		10, keyNew ("user/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "e", "other meta root", KEY_END),
+		keyNew ("user/tests/mmapstorage/f", KEY_VALUE, "f value", KEY_META, "foo", "some other key in the other meta keyset",
+			KEY_END),
+		keyNew ("user/tests/mmapstorage/i", KEY_VALUE, "i value", KEY_META, "i is quite valuable", "happy data is happy :)",
+			KEY_END),
+		keyNew ("user/tests/mmapstorage/j/k/l", KEY_VALUE, "jkl value", KEY_META, "where is everyone?", "don't panic", KEY_END),
+		keyNew ("user/tests/mmapstorage/m", KEY_BINARY, KEY_SIZE, sizeof (BinaryTest), KEY_VALUE, &(binaryTestA), KEY_END), KS_END);
+}
+
 static KeySet * largeTestKeySet (void)
 {
 	int i, j;
@@ -115,6 +134,100 @@ static void test_mmap_get_set (const char * tmpFile)
 	compare_keyset (ks, expected);
 
 	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_set_get_global (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+
+	plugin->global = 0;
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	plugin->global = ksNew (0, KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ksDel (plugin->global);
+
+	ks = metaTestKeySet ();
+	plugin->global = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ksDel (plugin->global);
+
+	plugin->global = ksNew (0, KS_END);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = simpleTestKeySet ();
+	compare_keyset (expected, plugin->global);
+	compare_keyset (plugin->global, expected);
+
+	ksDel (plugin->global);
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_get_global_after_reopen (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+	plugin->global = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected_global = simpleTestKeySet ();
+	compare_keyset (expected_global, plugin->global);
+	compare_keyset (plugin->global, expected_global);
+
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (expected, ks);
+	compare_keyset (ks, expected);
+
+	ksDel (expected_global);
+	ksDel (plugin->global);
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_set_get_global_metadata (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	plugin->global = otherMetaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ksDel (plugin->global);
+
+	plugin->global = ksNew (0, KS_END);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected_global = otherMetaTestKeySet ();
+	compare_keyset (expected_global, plugin->global);
+	compare_keyset (plugin->global, expected_global);
+	ksDel (expected_global);
+
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (expected, ks);
+	compare_keyset (ks, expected);
+	ksDel (expected);
+
+	ksDel (plugin->global);
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -685,14 +798,14 @@ static void test_mmap_ksCopy (const char * tmpFile)
 
 static void test_mmap_open_pipe (void)
 {
-	// try writing to an invalid file, we simply use a pipe here
+	// try writing to a non-regular file, we simply use a pipe here
 	int pipefd[2];
 	if (pipe (pipefd) != 0)
 	{
 		yield_error ("pipe() error");
 	}
 	char pipeFile[1024];
-	sprintf (pipeFile, "/dev/fd/%d", pipefd[1]);
+	snprintf (pipeFile, 1024, "/dev/fd/%d", pipefd[1]);
 	pipeFile[1023] = '\0';
 
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, pipeFile, KEY_END);
@@ -700,8 +813,7 @@ static void test_mmap_open_pipe (void)
 	PLUGIN_OPEN ("mmapstorage");
 
 	KeySet * ks = simpleTestKeySet ();
-	// truncate inside mmap plugin should fail here, since the pipe cannot be truncated
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet did not detect error with the file");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet could write to pipe, but should not");
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -903,9 +1015,14 @@ int main (int argc, char ** argv)
 	testDynArray ();
 
 	const char * tmpFile = elektraFilename ();
+	printf ("%s\n", tmpFile);
 
 	// call once before clearStorage, to test non existent file
 	test_mmap_get_set (tmpFile);
+
+	test_mmap_set_get_global (tmpFile);
+	test_mmap_get_global_after_reopen (tmpFile);
+	test_mmap_set_get_global_metadata (tmpFile);
 
 	clearStorage (tmpFile);
 	test_mmap_truncated_file (tmpFile);

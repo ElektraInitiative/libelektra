@@ -25,6 +25,9 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys);
 keyswitch_t keyCompare (const Key * key1, const Key * key2);
 keyswitch_t keyCompareMeta (const Key * key1, const Key * key2);
 
+int elektraIsReferenceRedundant (const char * reference);
+char * elektraResolveReference (const char * reference, const Key * baseKey, const Key * parentKey);
+
 #ifdef __cplusplus
 }
 }

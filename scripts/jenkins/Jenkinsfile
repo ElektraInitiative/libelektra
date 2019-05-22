@@ -295,8 +295,8 @@ def dockerInit() {
      */
     DOCKER_IMAGES.alpine = createDockerImageDesc(
       "alpine", this.&idTesting,
-      "./scripts/docker/alpine/3.8",
-      "./scripts/docker/alpine/3.8/Dockerfile"
+      "./scripts/docker/alpine/3.9",
+      "./scripts/docker/alpine/3.9/Dockerfile"
     )
 
     /* Image building the libelektra.org frontend */
@@ -916,9 +916,25 @@ kill `pidof dbus-daemon`
               withEnv(["TRAVIS_JOB_ID=$BUILD_NUMBER"]) {
                 sh("""\
 coveralls -b '${buildDir}' \
-          -t $REPO_TOKEN \
-          -e benchmarks -e doc -e examples -e install -e system -e tests \
-          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp)'
+          -t '${REPO_TOKEN}' \
+          -e .idea -e benchmarks -e doc -e examples -e install -e libelektra -e system -e tests \
+          -E '.*${buildDir}/(CMakeFiles|include)/.*' \
+          -E '.*${buildDir}/src/bindings/(glib|haskell|intercept)/.*' \
+          -E '.*${buildDir}/src/include/elektra/.*' \
+          -E '.*${buildDir}/src/include/(kdb|kdbconfig|kdbversion)\\.h' \
+          -E '.*${buildDir}/src/(libs|tools)/.*' \
+          -E '.*${buildDir}/src/plugins/\
+(?!\
+constants/constants\\.c|\
+(haskell|regexdispatcher|typechecker)/haskell\\.c|\
+(lua|ruby)/runtime\\.h|\
+yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
+yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
+yawn/yaml_grammar\\.h|\
+yaypeg/parser\\.hpp\
+).*' \
+          -E '.*/src/error/.*' \
+          -E '.*/src/plugins/yaypeg/parser.in.hpp' \
 """)
               }
             }
@@ -1173,7 +1189,7 @@ def withDockerEnv(image, opts=[], cl) {
     }
     docker.withRegistry("https://${REGISTRY}",
                         'docker-hub-elektra-jenkins') {
-      timeout(activity: true, time: 5, unit: 'MINUTES') {
+      timeout(activity: true, time: 10, unit: 'MINUTES') {
         def cpu_count = cpuCount()
         withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'",

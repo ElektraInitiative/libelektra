@@ -5,6 +5,7 @@ includedir=${prefix}/include/@TARGET_INCLUDE_FOLDER@
 plugindir=${prefix}/lib@LIB_SUFFIX@/@TARGET_PLUGIN_FOLDER@
 tool_execdir=${prefix}/@TARGET_TOOL_EXEC_FOLDER@
 templatedir=${prefix}/@TARGET_TEMPLATE_FOLDER@
+build_type=@PACKAGE_BUILD_TYPE@
 
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@

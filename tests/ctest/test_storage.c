@@ -224,7 +224,7 @@ static void test_ksAppendKey (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ssize_t appendSize = 0;
-	Key * toAppend = keyNew ("user/my/new/key", KEY_END);
+	Key * toAppend = keyNew (TEST_ROOT_KEY "/my/new/key", KEY_END);
 
 	if ((appendSize = ksAppendKey (ks, toAppend)) == -1)
 	{

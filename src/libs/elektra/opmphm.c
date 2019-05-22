@@ -251,7 +251,7 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 }
 
 /**
- * @brief Checks if a OpmphmGraph is Acyclic
+ * @brief Checks if an OpmphmGraph is Acyclic
  *
  * Removes edges that have a degree 1 vertex, until the graph is empty.
  * The sequence of removed edges will be saved in `OpmphmGraph->removeSequence`.

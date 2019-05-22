@@ -1,4 +1,4 @@
-# Example: Alternative references
+# Example: Alternative References
 
 For this example the following configuration is used:
 

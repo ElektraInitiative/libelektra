@@ -41,7 +41,7 @@ All plugins implement the same interface:
 - For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-## See also
+## See Also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
 For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
@@ -225,14 +225,16 @@ copied by the `spec` plugin just before):
 - [network](network/) by using network APIs
 - [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
-- [type](type/) using run-time type checking (CORBA types/)
+- [cpptype](cpptype/) obsolete plugin for run-time type checking (CORBA types/), use `type` instead
 - [enum](enum/) compares the keyvalue against a list of valid values
+- [type](type/) type checking (CORBA types) and enum functionality
 - [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
 - [range](range/) checks if a value is within a given range
 - [reference](reference/) checks if a value is a valid reference to another key
+- [rgbcolor](rgbcolor/) validates and normalizes hexcolors
 
 **Other Validation**
 
@@ -262,7 +264,8 @@ binding during run-time.
 - [cpptemplate](cpptemplate/) a template for C++ based plugins
 - [list](list/) loads other plugins
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
-- [semlock](semlock/) a semaphore based global locking logic
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
+- [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
+- [cache](cache/) caches keysets from previous `kdbGet()` calls

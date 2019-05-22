@@ -59,7 +59,7 @@ within the KDB (key database):
 
 1. /sw/kdb/**profile**/ (for legacy configuration)
 2. /sw/elektra/kdb/#0/%/ (for empty profile, `%` in Elektra
-   is used to represent a emptiness)
+   is used to represent emptiness)
 3. /sw/elektra/kdb/#0/**profile**/ (for current profile,
    if no `-p` or `--profile` is given, `current` will be
    used)
@@ -140,13 +140,17 @@ The string until the first `/` will be considered as bookmark.
 
 For example, if you set the bookmark kdb:
 
-    kdb set user/sw/elektra/kdb/#0/current/bookmarks
-    kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+```sh
+kdb set user/sw/elektra/kdb/#0/current/bookmarks
+kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+```
 
 You are able to use:
 
-    kdb ls +kdb/bookmarks
-    kdb get +kdb/format
+```sh
+kdb ls +kdb/bookmarks
+kdb get +kdb/format
+```
 
 ## RETURN VALUES
 

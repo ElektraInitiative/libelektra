@@ -135,7 +135,8 @@ https://build.libelektra.org/
 | clang    | 3.8                         | x86_64-pc-linux-gnu |
 | clang    | 5.0                         | x86_64-pc-linux-gnu |
 | clang    | 6.0                         | x86_64-pc-linux-gnu |
-| clang    | 8.1.0                       | macOS               |
+| clang    | 8.0                         | macOS               |
+| gcc      | 9.1                         | macOS               |
 | gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
 | clang    | 6.0.0                       | freebsd 11          |
 | clang    | 6.0.1                       | freebsd 12          |
@@ -200,8 +201,8 @@ The minimal set of plugins you should add:
   (e.g. an empty value).
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-By default nearly all plugins are added. Only experimental plugins
-will be omitted:
+By default CMake adds nearly all plugins if the dependencies are present.
+Only experimental plugins will be omitted by default:
 
 ```sh
 -DPLUGINS="ALL;-EXPERIMENTAL"
@@ -213,7 +214,9 @@ To add also experimental plugins, you can use:
 -DPLUGINS=ALL
 ```
 
-> Note that plugins get dropped automatically if dependences are not satisfied.
+> Note that plugins are excluded automatically if dependences are not satisfied.
+> So make sure to install all dependencies you need before you run `cmake`.
+> For example, to include the plugin `yajl`, make sure `libyajl-dev` is installed.
 
 To add all plugins except some plugins you can use:
 
@@ -427,15 +430,16 @@ one would use:
 cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 ```
 
-#### `ELEKTRA_DEBUG_BUILD` and `ELEKTRA_VERBOSE_BUILD`
-
-Only needed by Elektra developers.
-Make the library to output logging information.
-It is not recommended to use these options.
-
 #### BUILD_DOCUMENTATION
 
 Build documentation with doxygen (API) and ronn (man pages).
+
+If ronn is not found, already compiled man pages will be
+used instead.
+
+> Note: Turning off building the documentation, also turns off
+> installing the documentation, see https://issues.libelektra.org/2522
+> Then no man pages are available.
 
 #### Developer Options
 
@@ -647,20 +651,6 @@ applications to link against plugins.
 
 ## Troubleshooting
 
-### Missing Links/Libraries
-
-If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
-or the links do not work, you can use as workaround:
-
-```sh
-cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
-```
-
-This issue was reported for:
-
-- OpenSuse 42 (when running `make run_all`)
-- CLion IDE (does not allow to build)
-
 ### Dependencies not Available for Cent OS
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
@@ -722,7 +712,7 @@ For reference, you can look into the
 and the
 [CMake in OpenWRT](https://github.com/openwrt/openwrt/blob/master/include/cmake.mk).
 
-## See also
+## See Also
 
 - [INSTALL](INSTALL.md)
 - [TESTING](TESTING.md)

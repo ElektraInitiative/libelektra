@@ -5,6 +5,7 @@
 [![Travis Build Status](https://travis-ci.org/ElektraInitiative/libelektra.svg?branch=master)](https://travis-ci.org/ElektraInitiative/libelektra)
 [![Cirrus Build Status](https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg)](https://cirrus-ci.com/github/ElektraInitiative/libelektra)
 [![Coverage Status](https://img.shields.io/coveralls/github/ElektraInitiative/libelektra.svg)](https://coveralls.io/github/ElektraInitiative/libelektra)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/ElektraInitiative/libelektra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ElektraInitiative/libelektra/alerts)
 
 _Elektra serves as a universal and secure framework to access configuration
 settings in a global, hierarchical key database._
@@ -17,10 +18,10 @@ and tools concerning their configuration tasks. Elektra abstracts from
 cross-platform-related issues and enables applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-## Often used links
+## Often Used Links
 
-- [build server](https://build.libelektra.org/)
-- [website](https://www.libelektra.org)
+- [Build server](https://build.libelektra.org/)
+- [Website](https://www.libelektra.org)
 - [API docu](https://doc.libelektra.org/api/latest/html/)
 
 ## Overview
@@ -100,7 +101,7 @@ To get an idea of Elektra, you can take a look at the
 In the GitHub repository the full documentation is available, including:
 
 - [tutorials](/doc/tutorials/),
-- [faq](/doc/help/elektra-faq.md),
+- [FAQ](/doc/help/elektra-faq.md),
 - [glossary](/doc/help/elektra-glossary.md), and
 - [concepts and man pages](/doc/help/elektra-introduction.md)
 
@@ -124,7 +125,7 @@ You can read the documentation for the kdb tool, either
   plugins instead.
 - Postpone configuration decisions (such as which configuration files to use)
   from developers to system administrators and package maintainers to
-  provide a overall more consistent and user-friendly system.
+  provide an overall more consistent and user-friendly system.
   (Default behavior of applications still is in control of developers,
   you can even roll your own plugins to provide exactly the same behavior
   as your application has now.)
@@ -159,11 +160,11 @@ And in terms of quality, we want:
 - Elektra (except for some [plugins](src/plugins/)) has no external dependency.
 - Elektra is suitable for embedded systems and early boot stage programs.
 - Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
-- Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
+- Elektra provides powerful [Code Generation Techniques](src/tools/pythongen) for high-level configuration access.
 
 ## News
 
-Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
+Go to the [website](https://www.libelektra.org), see the [news](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
 
 ## Download
 
@@ -171,7 +172,9 @@ Elektra uses a [git repository at GitHub](https://github.com/ElektraInitiative/l
 
 You can clone the latest version of Elektra by running:
 
-         git clone https://github.com/ElektraInitiative/libelektra.git
+```sh
+git clone https://github.com/ElektraInitiative/libelektra.git
+```
 
 Releases can be downloaded from [here](https://www.libelektra.org/ftp/elektra/releases/).
 

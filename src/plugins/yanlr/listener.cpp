@@ -10,6 +10,8 @@
 
 #include "listener.hpp"
 
+using std::string;
+
 // -- Functions ----------------------------------------------------------------
 
 namespace
@@ -24,6 +26,8 @@ namespace
  */
 string indexToArrayBaseName (uintmax_t const index)
 {
+	using std::to_string;
+
 	size_t digits = 1;
 
 	for (uintmax_t value = index; value > 9; digits++)
@@ -59,6 +63,17 @@ string scalarToText (string const & text)
 
 // -- Class --------------------------------------------------------------------
 
+namespace yanlr
+{
+
+using kdb::Key;
+using kdb::KeySet;
+
+using ElementContext = yanlr::YAML::ElementContext;
+using PairContext = YAML::PairContext;
+using ValueContext = YAML::ValueContext;
+using SequenceContext = yanlr::YAML::SequenceContext;
+
 /**
  * @brief This constructor creates a new empty key storage using the given
  *        parent key.
@@ -66,7 +81,7 @@ string scalarToText (string const & text)
  * @param parent This key specifies the parent of all keys stored in the
  *               object.
  */
-KeyListener::KeyListener (CppKey parent) : keys{}
+KeyListener::KeyListener (Key parent) : keys{}
 {
 	parents.push (parent.dup ());
 }
@@ -76,7 +91,7 @@ KeyListener::KeyListener (CppKey parent) : keys{}
  *
  * @return The key set representing the data from the textual input
  */
-CppKeySet KeyListener::keySet ()
+KeySet KeyListener::keySet ()
 {
 	return keys;
 }
@@ -88,8 +103,16 @@ CppKeySet KeyListener::keySet ()
  */
 void KeyListener::exitValue (ValueContext * context)
 {
-	CppKey key = parents.top ();
-	key.setString (scalarToText (context->getText ()));
+	Key key = parents.top ();
+	string value = context->getText ();
+	if (value == "true" || value == "false")
+	{
+		key.set<bool> (value == "true");
+	}
+	else
+	{
+		key.setString (scalarToText (value));
+	}
 	keys.append (key);
 }
 
@@ -102,13 +125,14 @@ void KeyListener::enterPair (PairContext * context)
 {
 	// Entering a mapping such as `part: …` means that we need to add `part` to
 	// the key name
-	CppKey child{ parents.top ().getName (), KEY_END };
+	Key child{ parents.top ().getName (), KEY_END };
 	child.addBaseName (scalarToText (context->key ()->getText ()));
 	parents.push (child);
 	if (!context->child ())
 	{
 		// Add key with empty value
 		// The parser does not visit `exitValue` in that case
+		child.setBinary (NULL, 0);
 		keys.append (child);
 	}
 }
@@ -157,7 +181,7 @@ void KeyListener::exitSequence (SequenceContext * context __attribute__ ((unused
 void KeyListener::enterElement (ElementContext * context __attribute__ ((unused)))
 {
 
-	CppKey key{ parents.top ().getName (), KEY_END };
+	Key key{ parents.top ().getName (), KEY_END };
 	key.addBaseName (indexToArrayBaseName (indices.top ()));
 
 	uintmax_t index = indices.top ();
@@ -181,4 +205,5 @@ void KeyListener::enterElement (ElementContext * context __attribute__ ((unused)
 void KeyListener::exitElement (ElementContext * context __attribute__ ((unused)))
 {
 	parents.pop (); // Remove the key for the current array entry
+}
 }

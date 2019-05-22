@@ -1,0 +1,54 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+/*%# fields %*/
+/*%^ is_array_size? %*/
+strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+/*%# is_array? %*/
+result->/*%& size_field %*/ = elektraArraySize (elektra, field);
+if (result->/*%& size_field %*/ > 0)
+{
+	result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/ *) * result->/*%& size_field %*/);
+	for (kdb_long_long_t i = 0; i < result->/*%& size_field %*/; ++i)
+	{
+		/*%# is_struct? %*/
+		const char * refname = elektraFindReferenceArrayElement (elektra, field, i);
+		if (refname != NULL && refname[0] != '\0')
+		{
+			/*%# alloc? %*/
+			result->/*%& name %*/[i] = ELEKTRA_GET (/*%& type_name %*/) (elektra, refname);
+			/*%/ alloc? %*/
+			/*%^ alloc? %*/
+			result->/*%& name %*/[i] = elektraCalloc (sizeof (/*%& native_type %*/));
+			ELEKTRA_GET (/*%& type_name %*/) (elektra, refname, &result->/*%& name %*/[i]);
+			/*%/ alloc? %*/
+		}
+		/*%/ is_struct? %*/
+		/*%^ is_struct? %*/
+		result->/*%& name %*/[i] = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, i);
+		/*%/ is_struct? %*/
+	}
+}
+/*%/ is_array? %*/
+/*%^ is_array? %*/
+/*%# is_struct? %*/
+const char * refname = elektraFindReference (elektra, field);
+if (refname != NULL && refname[0] != '\0')
+{
+	/*%# alloc? %*/
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, refname);
+	/*%/ alloc? %*/
+	/*%^ alloc? %*/
+	result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, refname, result->/*%& name %*/);
+	/*%/ alloc? %*/
+}
+/*%/ is_struct? %*/
+/*%^ is_struct? %*/
+result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+/*%/ is_struct? %*/
+/*%/ is_array? %*/
+/*%/ is_array_size? %*/
+
+/*%/ fields %*/

@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest final memleak unfinished old nodoc
+- infos/status = unittest final memleak unfinished old nodoc
 - infos/description = Storage using libelektratools xml format.
 
 ## Introduction
@@ -30,9 +30,13 @@ from 0.7 -> 0.8. It should not be used otherwise.
 
 After you have upgraded Elektra, you can import xml files from Elektra 0.7:
 
-    kdb import system xmltool < system.xml
-    kdb import user xmltool < user.xml
+```sh
+kdb import system xmltool < system.xml
+kdb import user xmltool < user.xml
+```
 
 Or you can also mount an xml file using `xmltool` (not recommended!):
 
-    kdb mount /etc/example.xml system/example xmltool
+```sh
+kdb mount /etc/example.xml system/example xmltool
+```

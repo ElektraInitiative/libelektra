@@ -15,7 +15,9 @@ using Elektra.
 The addition of the `--three-way-merge-command` option was a part of my Google
 Summer of Code Project. This option takes the form:
 
-    --three-way-merge-command command <New File> <Destination>
+```
+--three-way-merge-command command <New File> <Destination>
+```
 
 Where `command` is the command you would like to use for the merge. `New File` and
 `Destination` are the same as always.
@@ -70,7 +72,10 @@ Next, you must update the line containing `ucf` with the options `--three-way` a
 ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 
 Then, in your `postrm` script, during a purge, you must unmount the config file before deleting it:
+
+```sh
 kdb elektra-umount <name>
+```
 
 That's it! With those small changes you can use Elektra to perform automatic three-way merges on any files
 that your package uses ucf to handle!

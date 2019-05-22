@@ -1,3 +1,6 @@
+#ifndef ELEKTRA_PLUGIN_CRYPTO_GPGAGENT_TEARDOWN_H
+#define ELEKTRA_PLUGIN_CRYPTO_GPGAGENT_TEARDOWN_H
+
 /**
  * @file
  *
@@ -15,3 +18,5 @@ static inline void test_teardown (void)
 		fprintf (stderr, "Terminating gpg-agent returned with status “%d”", status);
 	}
 }
+
+#endif

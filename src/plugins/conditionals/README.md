@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep libc global preview
+- infos/status = unittest nodep libc global preview
 - infos/metadata = check/condition assign/condition condition/validsuffix check/condition/any/# check/condition/all/# check/condition/none/# assign/condition/#
 - infos/description = ensures key values through conditions
 
@@ -26,13 +26,15 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
-### Testing if Key exists
+### Testing if Key Exists
 
 `(! a/key)` evaluates to true if the key `a/key` doesn't exist, to false if it exists.
 
 ### Assign Syntax
 
-    (IF-condition) ? ('ThenValue') : ('ElseValue')
+```
+(IF-condition) ? ('ThenValue') : ('ElseValue')
+```
 
 Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
 
@@ -56,7 +58,9 @@ For multiple assign statements use `assign/condition` as a meta array. The first
 
 ## Example
 
-    (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
+```
+(this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
+```
 
 Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/other/key` ELSE `or/key` MUST BE LESS THAN `125`
 
@@ -122,7 +126,6 @@ kdb export /tests/conditionals ini
 # ERROR:135
 # Error (#135) occurred!
 # Description: Validation failed
-# Ingroup: plugin
 # Module: conditionals
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
 # Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)

@@ -120,9 +120,11 @@ every parent key must exist before the user
 can append a key to a key set.
 For example, the key set with the keys
 
-    system
-    system/elektra
-    system/elektra/mountpoints
+```
+system
+system/elektra
+system/elektra/mountpoints
+```
 
 would allow the
 key `system/elektra/mountpoints/tcl` to be added,
@@ -154,9 +156,11 @@ The worst-case of the complexity applies when the inserting works
 without a parent key.
 For example, with the keys
 
-    user/sw/apps/abc/current/bindings
-    user/sw/apps/abc/current/bindings/key1
-    user/sw/apps/abc/current/bindings/key2
+```
+user/sw/apps/abc/current/bindings
+user/sw/apps/abc/current/bindings/key1
+user/sw/apps/abc/current/bindings/key2
+```
 
 the weak consistency would allow inserting
 `user/sw/apps/abc/current/bindings/key3`
@@ -318,16 +322,18 @@ an initial key set is split into many key sets.
 These key sets are stored in the `Split` object.
 `Split` advanced to the central data structure for the algorithm:
 
-    typedef struct _Split	Split;
+```c
+typedef struct _Split	Split;
 
-    struct _Split {
-    	size_t size;
-    	size_t alloc;
-    	KeySet **keysets;
-    	Backend **handles;
-    	Key **parents;
-    	int *syncbits;
-    };
+struct _Split {
+	size_t size;
+	size_t alloc;
+	KeySet **keysets;
+	Backend **handles;
+	Key **parents;
+	int *syncbits;
+};
+```
 
 The data structure `Split` contains the following fields:
 
@@ -374,7 +380,7 @@ elements, once the OPMPHM is build, every:
 
 - change of at least one indexed element name
 - addition of a new element
-- deletion of a indexed element
+- deletion of an indexed element
 
 leads to an invalid OPMPHM and forces a rebuild. A build consists of two steps the mapping step and the assignment step.
 
@@ -390,7 +396,7 @@ The probability of being acyclic and the number of mapping step invocations depe
   and `r` is the variable from above.
   The `c` variable must have a minimal value to ensure a success probability, use the `opmphmMinC (r)` function,
   with your `r` from above.
-  The ensure a optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
+  The ensure an optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
   function, where `n` is the number of elements.
 
 - `initSeed`: The initial seed set in `OpmphmInit->initSeed`.

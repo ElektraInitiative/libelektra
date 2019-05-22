@@ -81,7 +81,7 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (range_error const & error)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_DIRECTORY_VALUE_ARRAY, *parent, error.what ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSERT_VALUE_ARRAY, *parent, error.what ());
 	}
 	catch (exception const & error)
 	{
@@ -114,7 +114,7 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (range_error const & error)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_DIRECTORY_VALUE_ARRAY, *parent, error.what ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INSERT_VALUE_ARRAY, *parent, error.what ());
 	}
 	catch (exception const & error)
 	{

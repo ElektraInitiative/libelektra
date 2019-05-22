@@ -5,7 +5,7 @@
 - infos/provides = storage/specload
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = nodep libc configurable experimental unfinished
+- infos/status = maintained nodep libc configurable experimental unfinished
 - infos/metadata =
 - infos/description = loads a specification from an external application
 
@@ -53,6 +53,26 @@ kdb mount specload.eqd spec/tests/specload/example specload 'app=/usr/bin/exampl
 ```
 
 To inhibit the default `--elektra-spec` argument and call an application without any arguments use `'app/args='`.
+
+The app must only output the expected base specification to `stdout` and then exit, when called by `specload`. We use the `quickdump` plugin
+for communication, so the application should call `elektraQuickdumpSet`. Because this dependency may change in future, it is recommended
+you use the function `elektraSpecloadSendSpec` exported as `"system/elektra/modules/specload/exports/sendspec"`:
+
+```c
+Key * errorKey = keyNew (0, KEY_END);
+
+// add 'system/sendspec' key to suppress checking the 'app' key in elektraSpecloadOpen
+KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
+
+int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);
+
+elektraInvokeClose (specload, errorKey);
+keyDel (errorKey);
+ksDel (specloadConf);
+```
+
+The code above will automatically print the KeySet `ks` to stdout in exactly the way `specload` expects it.
 
 Once the mounting is done you can inspect you specification like you would with any other mounted configuration. If you call `kdb set`
 (or `kdb setmeta` or anything else that calls `kdbSet()`), however, `specload` will verify that the modifications you made are compatible

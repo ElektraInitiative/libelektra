@@ -167,10 +167,12 @@ The headline always refers to the `type` field of the element.
 The element type `link` for example would be an object like the following
 with some extra attributes explained below:
 
-    {
-        "type": "link",
-        ... other attributes ...
-    }
+```
+{
+    "type": "link",
+    ... other attributes ...
+}
+```
 
 It is possible to add additional attributes not used by the system without breaking anything.
 For example use `dev-comment` to leave some development notes, e.g. decision information.
@@ -189,12 +191,14 @@ This field type supports following attributes:
 
 Example:
 
-    {
-        "name": "Documentation",
-        "type": "submenu",
-        "ref": "docs",
-        "children": [ ]
-    }
+```json
+{
+  "name": "Documentation",
+  "type": "submenu",
+  "ref": "docs",
+  "children": []
+}
+```
 
 #### parsereadme
 
@@ -228,24 +232,26 @@ This field type support following attributes:
 
 Example:
 
-    {
-        "name": "Plugins",
-        "type": "parsereadme",
-        "ref": "plugins",
-        "options": {
-            "path": "src/plugins/README.md",
-            "target_file": ["README.md", "README", "readme.md", "readme"],
-            "parsing": {
-                "start_regex": "# Plugins",
-                "stop_regex": "####### UNUSED",
-                "section_regex": "### ([^#]+)",
-                "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-            },
-            "name": {
-                "make_pretty": false
-            }
-        }
+```json
+{
+  "name": "Plugins",
+  "type": "parsereadme",
+  "ref": "plugins",
+  "options": {
+    "path": "src/plugins/README.md",
+    "target_file": ["README.md", "README", "readme.md", "readme"],
+    "parsing": {
+      "start_regex": "# Plugins",
+      "stop_regex": "####### UNUSED",
+      "section_regex": "### ([^#]+)",
+      "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+    },
+    "name": {
+      "make_pretty": false
     }
+  }
+}
+```
 
 #### listdirs
 
@@ -265,15 +271,17 @@ This field type supports following attributes:
 
 Example:
 
-    {
-        "name": "Tools",
-        "type": "listdirs",
-        "ref": "tools",
-        "options": {
-            "path": "src/tools",
-            "target_file": ["README.md", "README", "readme.md", "readme"]
-        }
-    }
+```json
+{
+  "name": "Tools",
+  "type": "listdirs",
+  "ref": "tools",
+  "options": {
+    "path": "src/tools",
+    "target_file": ["README.md", "README", "readme.md", "readme"]
+  }
+}
+```
 
 #### listfiles
 
@@ -293,15 +301,17 @@ This field type supports following attributes:
 
 Example:
 
-    {
-        "name": "Manpages",
-        "type": "listfiles",
-        "ref": "manpages",
-        "options": {
-            "path": "doc/help",
-            "blacklist": ["CMakeLists.txt"]
-        }
-    }
+```json
+{
+  "name": "Manpages",
+  "type": "listfiles",
+  "ref": "manpages",
+  "options": {
+    "path": "doc/help",
+    "blacklist": ["CMakeLists.txt"]
+  }
+}
+```
 
 #### staticlist
 
@@ -318,12 +328,14 @@ This field type supports following attributes:
 
 Example:
 
-    {
-        "name": "Getting started",
-        "type": "staticlist",
-        "ref": "getstarted",
-        "children": [ ]
-    }
+```json
+{
+  "name": "Getting started",
+  "type": "staticlist",
+  "ref": "getstarted",
+  "children": []
+}
+```
 
 #### staticref
 
@@ -338,13 +350,15 @@ This field type support following attributes:
 
 Example:
 
-    {
-        "name": "Tutorials",
-        "type": "staticref",
-        "options": {
-            "path": "tutorials"
-        }
-    }
+```json
+{
+  "name": "Tutorials",
+  "type": "staticref",
+  "options": {
+    "path": "tutorials"
+  }
+}
+```
 
 #### staticfile
 
@@ -359,13 +373,15 @@ This field type support following attributes:
 
 Example:
 
-    {
-        "name": "Installation",
-        "type": "staticfile",
-        "options": {
-            "path": "doc/INSTALL.md"
-        }
-    }
+```json
+{
+  "name": "Installation",
+  "type": "staticfile",
+  "options": {
+    "path": "doc/INSTALL.md"
+  }
+}
+```
 
 #### link
 
@@ -381,14 +397,16 @@ This field type support following attributes:
 
 Example:
 
-    {
-        "name": "Build Server",
-        "type": "link",
-        "ref": "buildserver",
-        "options": {
-            "path": "https://build.libelektra.org/"
-        }
-    }
+```json
+{
+  "name": "Build Server",
+  "type": "link",
+  "ref": "buildserver",
+  "options": {
+    "path": "https://build.libelektra.org/"
+  }
+}
+```
 
 ## Development
 
@@ -414,11 +432,11 @@ application (services, controllers, etc) by type-hinting the dependency name.
 
 For detailed information, the website of [Angular](https://angularjs.org/) should be visited.
 
-### Task configuration
+### Task Configuration
 
 All `grunt` tasks can be configured using the [Gruntfile.js](Gruntfile.js) in the application root directory.
 
-### Code formatting
+### Code Formatting
 
 The task `grunt jshint` can be used to check the code formatting of JS source files.
 

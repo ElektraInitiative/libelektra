@@ -241,6 +241,7 @@ int init (int argc, char ** argv);
 				strcat (errorMsg, "\"");                                                                                   \
                                                                                                                                            \
 				yield_error (errorMsg);                                                                                    \
+				printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                      \
 			}                                                                                                                  \
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
@@ -293,11 +294,18 @@ int init (int argc, char ** argv);
 						__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2), keyName (meta)); \
 					break;                                                                                             \
 				}                                                                                                          \
+				if (strcmp (keyName (meta), keyName (metaCmp)) != 0)                                                       \
+				{                                                                                                          \
+					nbError++;                                                                                         \
+					printf ("%s:%d: error in %s: Name of meta key \"%s\" ≠ \"%s\"\n", __FILE__, __LINE__, __func__,    \
+						keyName (meta), keyName (metaCmp));                                                        \
+					break;                                                                                             \
+				}                                                                                                          \
 				if (strcmp (keyString (meta), keyString (metaCmp)) != 0)                                                   \
 				{                                                                                                          \
 					nbError++;                                                                                         \
 					printf ("%s:%d: error in %s: Comparison of the keys with name \"%s\" failed. The value of the "    \
-						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"",                                            \
+						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"\n",                                          \
 						__FILE__, __LINE__, __func__, keyName (mmk1), keyName (meta), keyString (meta),            \
 						keyString (metaCmp));                                                                      \
 					break;                                                                                             \

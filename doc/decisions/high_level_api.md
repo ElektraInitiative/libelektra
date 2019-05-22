@@ -66,7 +66,7 @@ Furthermore, we will:
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

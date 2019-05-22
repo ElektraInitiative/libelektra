@@ -4,7 +4,7 @@
 
 The previous unit testing framework started as hack to have a bit more
 than simple asserts. It is not easy to use (needs explicit enumeration
-of all testcases) and lacks really important features (e.g. output of
+of all test cases) and lacks really important features (e.g. output of
 the assertion that failed).
 
 ## Constraints
@@ -53,7 +53,7 @@ the assertion that failed).
 - Wont work for ABI compatibility tests
 - Mock only by extra framework
 
-## Related decisions
+## Related Decisions
 
 - [Script Testing](script_testing.md)
 

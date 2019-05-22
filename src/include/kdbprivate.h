@@ -59,6 +59,9 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** All keys below this are used for cache metadata in the global keyset */
+#define KDB_CACHE_PREFIX "system/elektra/cache"
+
 
 #ifdef __cplusplus
 namespace ckdb
@@ -323,9 +326,6 @@ struct _KDB
 
 	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
 
-	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
-	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
@@ -494,13 +494,19 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
 int splitGet (Split * split, Key * warningKey, KDB * handle);
-int splitMerge (Split * split, KeySet * dest);
+int splitMergeBackends (Split * split, KeySet * dest);
+int splitMergeDefault (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
 int splitDivide (Split * split, KDB * handle, KeySet * ks);
 int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
+
+/* for cache: store/load state to/from global keyset */
+void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
+int splitCacheCheckState (Split * split, KeySet * global);
+int splitCacheLoadState (Split * split, KeySet * global);
 
 
 /*Backend handling*/
@@ -519,6 +525,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
+Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
@@ -636,6 +643,9 @@ struct _Elektra
 	KeySet * config;
 	Key * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
+	KeySet * context;
+	char * resolvedReference;
+	size_t parentKeyLength;
 };
 
 struct _ElektraError

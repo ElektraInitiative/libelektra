@@ -185,12 +185,12 @@ On that behalf we have to make sure that the validation plugin is loaded for
 this key with:
 
 ```
-kdb mount tutorial.dump user/tutorial dump validation
+kdb mount tutorial.dump /tests/spec dump validation
 ```
 
 This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mount point
-**user/tutorial** and activates the validation plugin for the keys below the mount point.
-The validation plugin now uses the metadata of the keys below **user/tutorial**
+**/tests/spec** and activates the validation plugin for the keys below the mount point.
+The validation plugin now uses the metadata of the keys below **/tests/spec**
 to validate values before storing them in `tutorial.dump`.
 
 Although this is better than defining metadata in the same place as the data
@@ -215,14 +215,11 @@ kdb rm -r user/tests/spec || kdb rm -r system/tests/spec
 We call the files, that contain a complete schema for configuration
 below a specific path in form of metadata, _Specfiles_.
 
-Particularly a _Specfile_ contains metadata that defines
-
-- the mount points of paths,
-- the plugins to load and
-- the behavior of these plugins.
+A _Specfile_ contains metadata, among others, that defines how
+the configuration settings should be validated.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata
-(altough the specfile is stored in the dump format, we can still create it using
+(although the specfile is stored in the dump format, we can still create it using
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 
 ```sh
@@ -245,6 +242,9 @@ kdb lsmeta spec/tests/tutorial
 
 We now have all the metadata that we need to mount and validate the data below
 `/tutorial` in one file.
+
+For a description which metadata is available, have a look in
+[METADATA.ini](/doc/METADATA.ini).
 
 Now we apply this _Specfile_ to the key database to all keys below `tests/tutorial`.
 
@@ -318,6 +318,7 @@ Before we look further let us undo the modifications to the key database.
 ```sh
 kdb rm -r spec/tests/tutorial
 kdb rm -r system/tests/tutorial
+kdb rm -rf user/tests/tutorial
 kdb umount spec/tests/tutorial
 kdb umount /tests/tutorial
 kdb rm -rf spec

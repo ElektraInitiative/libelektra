@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-GEN" "1" "December 2017" "" ""
+.TH "KDB\-GEN" "1" "May 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-gen\fR \- code generation
@@ -157,7 +157,7 @@ class ProfileLayer : public kdb::Layer
 {
 public:
     ProfileLayer(std::string const & profile) :
-        m_profile(profile) {}
+        m_profile(profile) {};
     std::string id() const { return "profile"; }
     std::string operator()() const { return m_profile; }
 private:
@@ -252,7 +252,7 @@ Not all of Elektra\'s types are supported, for example, char and octet do not wo
 .P
 Please open an issue if you plan to use the code\.
 .
-.SH "See also"
+.SH "See Also"
 If you want to know more read:
 .
 .IP "\(bu" 4

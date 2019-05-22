@@ -154,7 +154,7 @@ struct transitionTitle genTitleTransitionTable (void)
 	return out;
 }
 
-// Maps a given char to a int, used for the transition table
+// Maps a given char to an int, used for the transition table
 static int resolveChar (int c)
 {
 	if (c != '\n' && isblank (c)) return 3;
@@ -221,7 +221,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	{
 		fprintf (stderr, "WARNING http link file %s could not be opened\n", HTTPLINK_FILENAME);
 	}
-	int lineCount = 0;
+	int lineCount = 1;
 	int c;
 	fpos_t pos;
 	int state = linkStart;

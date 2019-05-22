@@ -47,9 +47,9 @@ int addToKeySet (KeySet & keySet, Key & parent, string const & filename)
 	using std::runtime_error;
 	using tao::TAO_PEGTL_NAMESPACE::analyze;
 	using tao::TAO_PEGTL_NAMESPACE::file_input;
-	using tao::TAO_PEGTL_NAMESPACE::normal;
 	using tao::TAO_PEGTL_NAMESPACE::parse_error;
 	using tao::TAO_PEGTL_NAMESPACE::parse_tree::parse;
+	using TAO_PEGTL_NAMESPACE::errors;
 
 	State state;
 
@@ -57,14 +57,13 @@ int addToKeySet (KeySet & keySet, Key & parent, string const & filename)
 	// Check grammar for problematic code
 	if (analyze<yaml> () != 0)
 	{
-		throw runtime_error ("PEGTLs analyze function found problems while checking the top level grammar rule `yaml`!");
+		throw runtime_error ("PEGTL’s analyze function found problems while checking the top level grammar rule `yaml`!");
 		return -1;
 	}
 #endif
 
 	file_input<> input{ filename };
-	/* For detailed debugging information, please use the control class `tracer` instead of `normal`. */
-	auto root = parse<yaml, selector, action, normal> (input, state);
+	auto root = parse<yaml, selector, action, errors> (input, state);
 
 	Listener listener{ parent };
 	walk (listener, *root);

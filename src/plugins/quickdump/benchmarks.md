@@ -1,5 +1,8 @@
 # Benchmarks
 
+Note: these benchmarks were done with Version 1 of the plugin. Version 2 reuses the string buffer on get and stores key names relative
+to the parent key. In theory the new version should be slightly quicker, but the benchmarks have not been repeated.
+
 ## `benchmark_storage`
 
 The following table shows a summary of the results of a `benchmark_storage` run:

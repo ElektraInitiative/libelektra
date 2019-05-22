@@ -155,7 +155,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 	}
 
 	backend.needPlugin ("storage");
-	backend.recommendPlugin ("sync");
+	backend.needPlugin ("sync");
 	backend.addPlugins (parseArguments (cl.plugins));
 
 	if (cl.interactive)

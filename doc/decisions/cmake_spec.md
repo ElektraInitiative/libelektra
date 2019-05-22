@@ -32,6 +32,6 @@ needed for bootstrapping plugins.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes

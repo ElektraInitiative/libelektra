@@ -73,6 +73,7 @@ public:
 	bool quiet;	   /*!< Be quiet: suppress non-error messages */
 	bool version;	 /*!< Return version info instead of the normal action.. */
 	bool withoutElektra;
+	std::string inputFile;
 	bool null;
 	bool first;
 	bool second;

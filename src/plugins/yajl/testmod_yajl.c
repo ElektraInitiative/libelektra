@@ -34,8 +34,6 @@ KeySet *getNullKeys(void)
 {
 	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
-			keyNew("user/tests/yajl",
-			       KEY_END),
 			k1 = keyNew("user/tests/yajl/nullkey",
 			       KEY_VALUE, "will be removed",
 			       KEY_END),
@@ -54,24 +52,8 @@ KeySet *getNullKeys(void)
 KeySet *getBelowKeys(void)
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user/tests/yajl",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy/path",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy/path/below",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy/path/below/x",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy/path/below/x/y",
-			       KEY_END),
 			keyNew("user/tests/yajl/fancy/path/below/x/y/z",
 			       KEY_VALUE, "val1",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy/path/below/v",
-			       KEY_END),
-			keyNew("user/tests/yajl/fancy/path/below/v/y",
 			       KEY_END),
 			keyNew("user/tests/yajl/fancy/path/below/v/y/z",
 			       KEY_VALUE, "val2",
@@ -114,8 +96,6 @@ KeySet *getBelowKeys(void)
 KeySet *getBooleanKeys(void)
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user/tests/yajl",
-			       KEY_END),
 			keyNew("user/tests/yajl/boolean_key",
 			       KEY_VALUE, "true",
 			       KEY_META, "type", "boolean",
@@ -134,8 +114,6 @@ KeySet *getBooleanKeys(void)
 KeySet *getNumberKeys(void)
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user/tests/yajl",
-			       KEY_END),
 			keyNew("user/tests/yajl/number_key",
 			       KEY_VALUE, "25",
 			       KEY_META, "type", "double",
@@ -157,8 +135,6 @@ KeySet *getNumberKeys(void)
 KeySet *getStringKeys(void)
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user/tests/yajl",
-			       KEY_END),
 			keyNew("user/tests/yajl/string_key",
 			       KEY_VALUE, "25",
 			       KEY_END),
@@ -177,25 +153,17 @@ KeySet *getStringKeys(void)
 KeySet *getMapKeys (void)
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user/tests/yajl",
-			       KEY_END),
-			keyNew("user/tests/yajl/map",
-			       KEY_END),
 			keyNew("user/tests/yajl/map/string_key",
 			       KEY_VALUE, "25",
 			       KEY_END),
 			keyNew("user/tests/yajl/map/second_string_key",
 			       KEY_VALUE, "some string",
 			       KEY_END),
-			keyNew("user/tests/yajl/map/nested_map",
-			       KEY_END),
 			keyNew("user/tests/yajl/map/nested_map/string_key",
 			       KEY_VALUE, "25",
 			       KEY_END),
 			keyNew("user/tests/yajl/map/nested_map/second_string_key",
 			       KEY_VALUE, "some string",
-			       KEY_END),
-			keyNew("user/tests/yajl/second_map",
 			       KEY_END),
 			keyNew("user/tests/yajl/second_map/string_key",
 			       KEY_VALUE, "25",
@@ -218,9 +186,9 @@ KeySet *getMapKeys (void)
 KeySet *getArrayKeys(void)
 {
 	KeySet *ks = ksNew(30,
-			keyNew("user/tests/yajl",
-			       KEY_END),
 			keyNew("user/tests/yajl/array",
+				KEY_META, "array", "#_12",
+				KEY_META, "binary", "",
 			       KEY_END),
 			keyNew("user/tests/yajl/array/#0",
 			       KEY_VALUE, "true",
@@ -290,21 +258,10 @@ KeySet *getArrayKeys(void)
 KeySet *getOpenICCKeys(void)
 {
 	KeySet *ks = ksNew(60,
-			keyNew("user/tests/yajl",
-			       KEY_END),
-
-keyNew("user/tests/yajl/org",
-		KEY_END),
-keyNew("user/tests/yajl/org/freedesktop",
-		KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc",
-		KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc/device",
-		KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera",
-		KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#0",
-		KEY_END),
+	KEY_META, "array", "#1",
+	KEY_META, "binary", "",
+	KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#0/prefix",
 		KEY_VALUE, "EXIF_",
 		KEY_END),
@@ -331,8 +288,6 @@ keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#0/automatic_assig
 		KEY_VALUE, "1", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#0/comment",
 		KEY_VALUE, "nonsense example", KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1",
-		KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/prefix",
 		KEY_VALUE, "EXIF_", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/EXIF_model",
@@ -357,9 +312,9 @@ keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/expire_date",
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/camera/#1/automatic_assigment",
 		KEY_VALUE, "1", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor",
-		KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0",
-		KEY_END),
+	KEY_META, "array", "#1",
+	KEY_META, "binary", "",
+	KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0/prefix",
 		KEY_VALUE, "EDID_", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_mnft_id",
@@ -394,8 +349,6 @@ keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_manufactu
 		KEY_VALUE, "Vendor1", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_date",
 		KEY_VALUE, "2007-T16", KEY_END),
-keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#1",
-		KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#1/prefix",
 		KEY_VALUE, "EDID_", KEY_END),
 keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_mnft_id",
@@ -753,6 +706,8 @@ int main (int argc, char ** argv)
 	// it easy to generate it..
 	test_readWrite ("yajl/empty_object.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/empty_array.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/top_level_string.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/top_level_integer.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/rfc_object.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/rfc_array.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/testdata_array_mixed.json", ksNew (0, KS_END));

@@ -961,7 +961,7 @@ elektraMetaArrayToKS(
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */
-KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
+KeySet * elektraMetaArrayToKS (const Key * key, const char * metaName)
 {
 	const Key * meta = keyGetMeta (key, metaName);
 	if (!meta) return NULL;
@@ -1411,7 +1411,7 @@ TopSortCleanup:
  * @returns a string containing all metakey values separated by "delim"
  */
 
-char * elektraMetaArrayToString (Key * key, const char * metaName, const char * delim)
+char * elektraMetaArrayToString (const Key * key, const char * metaName, const char * delim)
 {
 	char * result = NULL;
 	Key * lookupElem = keyDup (keyGetMeta (key, metaName));

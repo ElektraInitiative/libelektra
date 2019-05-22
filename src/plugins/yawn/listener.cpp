@@ -89,7 +89,16 @@ Listener::Listener (Key const & parent)
 void Listener::exitValue (string const & text)
 {
 	Key key = parents.top ();
-	key.setString (scalarToText (text));
+
+	if (text == "true" || text == "false")
+	{
+		key.set<bool> (text == "true");
+	}
+	else
+	{
+		key.setString (scalarToText (text));
+	}
+
 	keys.append (key);
 }
 
@@ -119,6 +128,7 @@ void Listener::exitPair (bool const matchedValue)
 	if (!matchedValue)
 	{
 		// Add key with empty value
+		parents.top ().setBinary (NULL, 0);
 		keys.append (parents.top ());
 	}
 	// Returning from a mapping such as `part: …` means that we need need to

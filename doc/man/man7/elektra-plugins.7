@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-PLUGINS" "7" "March 2019" "" ""
+.TH "ELEKTRA\-PLUGINS" "7" "May 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
@@ -56,7 +56,7 @@ For mount plugin(s) use kdb\-mount(1) \fI/doc/help/kdb\-mount\.md\fR\.
 .
 .IP "" 0
 .
-.SH "See also"
+.SH "See Also"
 For an easy introduction, see this tutorial how to write a storage plugin \fI/doc/tutorials/plugins\.md\fR\. For more background information of the plugins framework, continue here \fI/doc/dev/plugins\-framework\.md\fR\. Otherwise, you can visit the the API documentation \fIhttps://doc\.libelektra\.org/api/current/html/group__plugin\.html\fR\.
 .
 .SH "Plugins"
@@ -388,10 +388,13 @@ ipaddr \fIipaddr/\fR checks IP addresses using regular expressions
 path \fIpath/\fR by checking files on file system
 .
 .IP "\(bu" 4
-type \fItype/\fR using run\-time type checking (CORBA types/)
+cpptype \fIcpptype/\fR obsolete plugin for run\-time type checking (CORBA types/), use \fBtype\fR instead
 .
 .IP "\(bu" 4
 enum \fIenum/\fR compares the keyvalue against a list of valid values
+.
+.IP "\(bu" 4
+type \fItype/\fR type checking (CORBA types) and enum functionality
 .
 .IP "\(bu" 4
 mathcheck \fImathcheck/\fR by mathematical expressions using key values as operands
@@ -410,6 +413,9 @@ range \fIrange/\fR checks if a value is within a given range
 .
 .IP "\(bu" 4
 reference \fIreference/\fR checks if a value is a valid reference to another key
+.
+.IP "\(bu" 4
+rgbcolor \fIrgbcolor/\fR validates and normalizes hexcolors
 .
 .IP "" 0
 .
@@ -471,9 +477,6 @@ list \fIlist/\fR loads other plugins
 iterate \fIiterate/\fR iterate over all keys and run exported functions on tagged keys
 .
 .IP "\(bu" 4
-semlock \fIsemlock/\fR a semaphore based global locking logic
-.
-.IP "\(bu" 4
 process \fIprocess/\fR proxy plugin that executes other plugins in a separate process
 .
 .IP "\(bu" 4
@@ -481,6 +484,12 @@ profile \fIprofile/\fR links profile keys
 .
 .IP "\(bu" 4
 simplespeclang \fIsimplespeclang/\fR simple configuration specification language
+.
+.IP "\(bu" 4
+gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
+.
+.IP "\(bu" 4
+cache \fIcache/\fR caches keysets from previous \fBkdbGet()\fR calls
 .
 .IP "" 0
 

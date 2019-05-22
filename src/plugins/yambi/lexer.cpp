@@ -181,7 +181,7 @@ void Lexer::fetchTokens ()
  */
 bool Lexer::isValue (size_t const offset) const
 {
-	return (input.LA (offset) == ':') && (input.LA (offset + 1) == '\n' || input.LA (offset + 1) == ' ');
+	return (input.LA (offset) == ':') && (input.LA (offset + 1) == '\n' || input.LA (offset + 1) == ' ' || input.LA (offset + 1) == 0);
 }
 
 /**
@@ -393,19 +393,19 @@ void Lexer::scanValue ()
 	ELEKTRA_LOG_DEBUG ("Scan value");
 	forward (1);
 	tokens.push_back (Symbol (token::VALUE, location, input.getText (input.index () - 1)));
-	forward (1);
+	if (input.LA (1)) forward (1);
 	if (simpleKey.first == nullptr)
 	{
 		throw runtime_error ("Unable to locate key for value");
 	}
 	size_t offset = simpleKey.second - tokensEmitted;
 	tokens.insert (tokens.begin () + offset, *simpleKey.first);
-	auto start = simpleKey.first->getStart ();
+	auto mapStartLocation = simpleKey.first->getLocation ();
 	simpleKey.first = nullptr; // Remove key candidate
-	if (addIndentation (start.column, Level::Type::MAP))
+	if (addIndentation (mapStartLocation.begin.column, Level::Type::MAP))
 	{
-		location.begin = start;
-		tokens.insert (tokens.begin () + offset, Symbol (token::MAP_START, location, "MAPPING START"));
+		mapStartLocation.end = mapStartLocation.begin;
+		tokens.insert (tokens.begin () + offset, Symbol (token::MAP_START, mapStartLocation, "MAP START"));
 	}
 }
 

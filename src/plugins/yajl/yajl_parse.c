@@ -18,6 +18,18 @@
 #include <yajl/yajl_parse.h>
 
 
+static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
+{
+	// Update array length in array key
+	cursor_t cursor = ksGetCursor (ks);
+	Key * arrayKey = keyNew (keyName (current), KEY_END);
+	keySetBaseName (arrayKey, 0);
+	Key * foundKey = ksLookup (ks, arrayKey, 0);
+	keySetMeta (foundKey, "array", keyBaseName (current));
+	keyDel (arrayKey);
+	ksSetCursor (ks, cursor);
+}
+
 /**
  @retval 0 if ksCurrent does not hold an array entry
  @retval 1 if the array entry will be used because its the first
@@ -28,27 +40,27 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks)
 {
 	Key * current = ksCurrent (ks);
 	const char * baseName = keyBaseName (current);
-
-	if (baseName && *baseName == '#')
+	const char * meta = keyString (keyGetMeta (current, "array"));
+	if (!strcmp (meta, "empty"))
 	{
 		current = keyNew (keyName (current), KEY_END);
-		if (!strcmp (baseName, "###empty_array"))
-		{
-			// get rid of previous key
-			keyDel (ksLookup (ks, current, KDB_O_POP));
-			// we have a new array entry
-			keySetBaseName (current, 0);
-			keyAddName (current, "#0");
-			ksAppendKey (ks, current);
-			return 1;
-		}
-		else
-		{
-			// we are in an array
-			elektraArrayIncName (current);
-			ksAppendKey (ks, current);
-			return 2;
-		}
+		keyAddName (current, "#0");
+		ksAppendKey (ks, current);
+
+		elektraYajlSetArrayLength (ks, current);
+
+		return 1;
+	}
+	else if (baseName && *baseName == '#')
+	{
+		// we are in an array
+		current = keyNew (keyName (current), KEY_END);
+		elektraArrayIncName (current);
+		ksAppendKey (ks, current);
+
+		elektraYajlSetArrayLength (ks, current);
+
+		return 2;
 	}
 	else
 	{
@@ -190,6 +202,14 @@ static int elektraYajlParseEnd (void * ctx)
 	KeySet * ks = (KeySet *) ctx;
 	Key * currentKey = ksCurrent (ks);
 
+	const char * meta = keyString (keyGetMeta (currentKey, "array"));
+	// If array is still empty by the time we reach the end, replace with ""
+	if (!strcmp (meta, "empty"))
+	{
+		keySetMeta (currentKey, "array", "");
+		return 1;
+	}
+
 	Key * lookupKey = keyNew (keyName (currentKey), KEY_END);
 	keySetBaseName (lookupKey, 0); // remove current baseName
 
@@ -203,7 +223,7 @@ static int elektraYajlParseEnd (void * ctx)
 	}
 	else
 	{
-		ELEKTRA_LOG_DEBUG ("did not find key!");
+		ELEKTRA_LOG_DEBUG ("did not find key %s", keyName (lookupKey));
 	}
 #else
 	(void) foundKey; // foundKey is not used, but lookup is needed
@@ -222,8 +242,7 @@ static int elektraYajlParseStartArray (void * ctx)
 	Key * currentKey = ksCurrent (ks);
 
 	Key * newKey = keyNew (keyName (currentKey), KEY_END);
-	// add a pseudo element for empty array
-	keyAddName (newKey, "###empty_array");
+	keySetMeta (newKey, "array", "empty");
 	ksAppendKey (ks, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
@@ -232,13 +251,54 @@ static int elektraYajlParseStartArray (void * ctx)
 }
 
 /**
+ * @brief Remove all non-leaf keys except for arrays
+ *
+ * @param returned to remove the keys from
+ */
+static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
+{
+	ksRewind (returned);
+	Key * cur = ksNext (returned);
+	while (cur != NULL)
+	{
+		cursor_t cursor = ksGetCursor (returned);
+
+		if (ksNext (returned) == NULL) break;
+
+		Key * peekDup = keyDup (ksCurrent (returned));
+		keySetBaseName (peekDup, 0);
+
+		if (!strcmp (keyName (peekDup), keyName (cur)))
+		{
+			const char * baseName = keyBaseName (ksCurrent (returned));
+			// TODO: Add test for empty array check
+			if (strcmp (baseName, "#0"))
+			{
+				ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
+				keyDel (ksLookup (returned, cur, KDB_O_POP));
+				ksSetCursor (returned, cursor);
+			}
+			else
+			{
+				// Set array key to NULL to avoid empty ___dirdata entries
+				keySetBinary (cur, NULL, 0);
+			}
+		}
+
+		keyDel (peekDup);
+		cur = ksCurrent (returned);
+	}
+}
+
+/**
  * @brief Remove ___empty_map if thats the only thing which would be
  *        returned.
  *
  * @param returned to remove the key from
  */
-static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
+static void elektraYajlParseSuppressEmptyMap (KeySet * returned, Key * parentKey)
 {
+
 	if (ksGetSize (returned) == 2)
 	{
 		Key * lookupKey = keyDup (parentKey);
@@ -375,7 +435,8 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	yajl_free (hand);
 	fclose (fileHandle);
-	elektraYajlParseSuppressEmpty (returned, parentKey);
+	elektraYajlParseSuppressNonLeafKeys (returned);
+	elektraYajlParseSuppressEmptyMap (returned, parentKey);
 
 	return 1; /* success */
 }

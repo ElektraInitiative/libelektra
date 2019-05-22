@@ -1,4 +1,4 @@
-# Use Case: Edit configuration snippet
+# Use Case: Edit Configuration Snippet
 
 ## Summary
 
