@@ -472,7 +472,7 @@ supports code generation for use with the highlevel API. Try it by running `kdb 
 is the parent key of the specification to use and `<outputName>` is some prefix for the output files. If you don't have your specification
 mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to load it from `<file>` using plugin `<plugin>`.
 
-. _(Klemens Böswirth)_
+.. _(Klemens Böswirth)_
 
 ## Scripts
 
