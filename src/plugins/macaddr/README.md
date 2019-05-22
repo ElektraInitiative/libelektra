@@ -88,10 +88,10 @@ kdb get /tests/mac/mac4
 #> 17661175009296
 
 kdb umount /tests/mac
-kdb rmmeta /tests/mac/mac1 check/macaddr
-kdb rmmeta /tests/mac/mac2 check/macaddr
-kdb rmmeta /tests/mac/mac3 check/macaddr
-kdb rmmeta /tests/mac/mac4 check/macaddr
+kdb rmmeta spec/tests/mac/mac1 check/macaddr
+kdb rmmeta spec/tests/mac/mac2 check/macaddr
+kdb rmmeta spec/tests/mac/mac3 check/macaddr
+kdb rmmeta spec/tests/mac/mac4 check/macaddr
 ```
 
 ## Dependencies
