@@ -86,7 +86,6 @@ is the abbreviation for "Code".
 - Permanent errors C01000
   - Resource C01100
     - Memory Allocation C01110
-    - General Resource C01120
   - Installation C01200
   - Logical C01300
     - Assertion C01310
