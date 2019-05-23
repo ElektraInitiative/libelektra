@@ -1053,6 +1053,7 @@ cachemiss:
 	if (splitAppoint (split, handle, ks) == -1)
 	{
 		clearError (parentKey);
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitAppoint");
 		goto error;
 	}
@@ -1465,6 +1466,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey); // clear previous error to set new one
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitBuildup");
 		goto error;
 	}

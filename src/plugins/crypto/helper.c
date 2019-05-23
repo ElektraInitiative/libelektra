@@ -155,7 +155,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate payload length
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
-		// TODO: Correct?
+		// TODO: Correct??
 		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
@@ -172,7 +172,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate restored salt length
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
-		// TODO: Correct?
+		// TODO: Correct??
 		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
 					      payloadLen);
 		if (salt) *salt = NULL;

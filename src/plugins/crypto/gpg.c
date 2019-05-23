@@ -748,7 +748,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 
 	case 1:
 		// bad signature
-		// TODO: Correct?
+		// TODO: Correct??
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "GPG reported a bad signature. errno: %s", strerror (errno));
 		break;
 

@@ -232,6 +232,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			{
 				// no one cares about that config
 				if (!failure)
+					// TODO: Correct? (INTERNAL)
 					ELEKTRA_ADD_INSTALLATION_WARNINGF (
 						errorKey,
 						"Found garbage within the backend configuration. found: %s but expected config, "

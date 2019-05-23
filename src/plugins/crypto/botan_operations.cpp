@@ -238,6 +238,7 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	}
 	catch (std::exception const & e)
 	{
+		// TODO: Correct?
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption failed because: %s", e.what ());
 		elektraFree (salt);
 		return -1; // failure

@@ -280,7 +280,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			// discard line
 			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+				// TODO: Correct?
+				ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (
 					parentKey, "failed discarding rest of line at position %ld with key %s", ftell (fp), key);
 				elektraFree (key);
 				fclose (fp);
