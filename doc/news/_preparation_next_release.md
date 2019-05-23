@@ -299,6 +299,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - [YAy PEG][] now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- The plugin now translates an empty file to a key set that contains a single empty parent key. _(René Schwaiger)_
 
 [yay peg]: https://www.libelektra.org/plugins/yaypeg
 
