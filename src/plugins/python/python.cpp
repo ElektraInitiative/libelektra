@@ -101,8 +101,9 @@ static int Python_CallFunction_Int (moduleData * data, PyObject * object, PyObje
 	PyObject * res = Python_CallFunction (object, args);
 	if (!res)
 	{
-		ELEKTRA_SET_ERRORF (111, errorKey, "Error while calling python function of script %s%s", keyString (data->script),
-				    data->printError ? "" : ", use /print to print error messages");
+		// TODO: Correct??
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Error while calling python function of script %s%s", keyString (data->script),
+						 data->printError ? "" : ", use /print to print error messages");
 		if (data->printError) PyErr_Print ();
 	}
 	else

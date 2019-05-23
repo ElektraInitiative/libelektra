@@ -105,7 +105,8 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 		process->plugin = elektraInvokeOpen (keyString (process->pluginName), process->pluginConfig, errorKey);
 		if (!process->plugin)
 		{
-			ELEKTRA_SET_ERRORF (190, errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
+			// TODO: Correct??
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

@@ -71,8 +71,9 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt,
 					 sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "Failed to create a cryptographic key for encryption because: %s", gcry_strerror (gcry_err));
+		// TODO: Correct??
+		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s",
+					      gcry_strerror (gcry_err));
 		return -1;
 	}
 
@@ -234,7 +235,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 error:
 	memset (keyBuffer, 0, sizeof (keyBuffer));
 	memset (ivBuffer, 0, sizeof (ivBuffer));
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Failed to create handle because: %s", gcry_strerror (gcry_err));
+	// TODO: Correct??
+	ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create handle because: %s", gcry_strerror (gcry_err));
 	gcry_cipher_close (**handle);
 	elektraFree (*handle);
 	(*handle) = NULL;
@@ -317,7 +319,8 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	gcry_err = gcry_cipher_encrypt (*handle, current, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, NULL, 0);
 	if (gcry_err != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
+		// TODO: Correct??
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
 		elektraFree (salt);
@@ -332,7 +335,8 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	gcry_err = gcry_cipher_encrypt (*handle, current, dataLen, NULL, 0);
 	if (gcry_err != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
+		// TODO: Correct??
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
 		elektraFree (salt);

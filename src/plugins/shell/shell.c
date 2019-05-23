@@ -70,7 +70,8 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_ERRORF (144, parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			// TODO: Correct??
+			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
@@ -98,15 +99,17 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_ERRORF (144, parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			// TODO: Correct??
+			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_ERRORF (144, parentKey, "return value of %s doesn't match expected exit %s\n",
-						    keyString (cmdKey), keyString (expectedReturnKey));
+				// TODO: Correct?
+				ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (parentKey, "return value of %s doesn't match expected exit %s\n",
+								  keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
 		}
@@ -126,15 +129,17 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_ERRORF (144, parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			// TODO: Correct??
+			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_ERRORF (144, parentKey, "return value of %s doesn't match expected exit %s\n",
-						    keyString (cmdKey), keyString (expectedReturnKey));
+				// TODO: Correct??
+				ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (parentKey, "return value of %s doesn't match expected exit %s\n",
+								  keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
 		}

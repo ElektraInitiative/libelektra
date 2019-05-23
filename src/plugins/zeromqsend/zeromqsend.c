@@ -120,7 +120,8 @@ int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key
 		// subscription timeout - no applications are listening for notifications, can be ignored
 		break;
 	default:
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_ZEROMQSEND_ERROR, parentKey, "could not send notifications");
+		// TODO: Correct??
+		ELEKTRA_ADD_INSTALLATION_WARNING (parentKey, "could not send notifications");
 		break;
 	}
 

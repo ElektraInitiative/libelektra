@@ -300,14 +300,17 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (83, warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
-				      ELEKTRA_VARIANT_USER);
+		// TODO: Correct??
+		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
+						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (!(handle->dirname))
 	{
-		ELEKTRA_ADD_WARNINGF (83, warningsKey, "no resolver set the user dirname, the configuration is: %s", ELEKTRA_VARIANT_USER);
+		// TODO: Correct??
+		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
+						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
