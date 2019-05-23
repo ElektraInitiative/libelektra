@@ -153,7 +153,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
-			// TODO: Correct?
+			// TODO: Correct??
 			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to receive the GPG key because: %s", gpgme_strerror (err));
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
@@ -183,7 +183,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				err = gpgme_get_key (ctx, keyString (k), &key, 0);
 				if (err)
 				{
-					// TODO: Correct?
+					// TODO: Correct??
 					ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to receive the GPG key because: %s",
 								      gpgme_strerror (err));
 					elektraGpgmeKeylistFree (&list);

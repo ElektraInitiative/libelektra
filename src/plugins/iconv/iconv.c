@@ -197,8 +197,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (meta), keyGetValueSize (meta));
 			if (kdbbUTF8Engine (handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				// TODO: Correct?
-				ELEKTRA_SET_INSTALLATION_ERRORF (
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 					parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
 					keyString (meta), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
@@ -231,11 +230,10 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (cur), keyGetValueSize (cur));
 			if (kdbbUTF8Engine (handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				// TODO: Correct?
-				ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
-								 "Could not convert string %s, got result %s,"
-								 " encoding settings are from %s to %s (but swapped for write)",
-								 keyString (cur), convertedData, getFrom (handle), getTo (handle));
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Could not convert string %s, got result %s,"
+									 " encoding settings are from %s to %s (but swapped for write)",
+									 keyString (cur), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
 				return -1;
 			}
@@ -252,11 +250,10 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			memcpy (convertedData, keyString (meta), keyGetValueSize (meta));
 			if (kdbbUTF8Engine (handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				// TODO: Correct?
-				ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
-								 "Could not convert string %s, got result %s,"
-								 " encodings settings are from %s to %s (but swapped for write)",
-								 keyString (meta), convertedData, getFrom (handle), getTo (handle));
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Could not convert string %s, got result %s,"
+									 " encodings settings are from %s to %s (but swapped for write)",
+									 keyString (meta), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
 				return -1;
 			}

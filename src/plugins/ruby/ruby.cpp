@@ -652,7 +652,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	else
 	{
 		/* if not 'get' method is available, this plugin is useless, therefore set and error */
-		ELEKTRA_SET_BROKEN_PLUGIN_ERROR (parentKey, "plugin does not have a 'get' method");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "plugin does not have a 'get' method");
 		return -1;
 	}
 	return -1;

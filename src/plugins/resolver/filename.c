@@ -144,7 +144,6 @@ static char * elektraResolvePasswd (Key * warningsKey)
 		elektraFree (buf);
 		if (s != 0)
 		{
-			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r: %s",
 							   strerror (s));
 		}
@@ -187,12 +186,11 @@ static int elektraResolveUserXDGHome (ElektraResolved * handle, Key * warningsKe
 
 	if (home[0] != '/')
 	{
-		// TODO: Correct?
-		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (warningsKey,
-							  "XDG_CONFIG_HOME contains a path that is "
-							  "not absolute (violates XDG specification) and thus "
-							  "it was skipped: %s",
-							  home);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (warningsKey,
+							   "XDG_CONFIG_HOME contains a path that is "
+							   "not absolute (violates XDG specification) and thus "
+							   "it was skipped: %s",
+							   home);
 		return 0;
 	}
 	elektraResolveUsingHome (handle, home, 0);
@@ -210,11 +208,11 @@ static int elektraResolveEnvHome (ElektraResolved * handle, Key * warningsKey)
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (warningsKey,
-							  "HOME contains a path that is "
-							  "not absolute and thus "
-							  "it was skipped: %s",
-							  home);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (warningsKey,
+							   "HOME contains a path that is "
+							   "not absolute and thus "
+							   "it was skipped: %s",
+							   home);
 		return 0;
 	}
 	elektraResolveUsingHome (handle, home, 1);
@@ -385,11 +383,11 @@ static int elektraResolveSystemXDG (ElektraResolved * handle, ElektraResolveTemp
 	{
 		if (result[0] != '/')
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey,
-							   "XDG_CONFIG_DIRS contains a path that is "
-							   "not absolute (violates XDG specification) and thus "
-							   "it was skipped: %s",
-							   result);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (warningsKey,
+								   "XDG_CONFIG_DIRS contains a path that is "
+								   "not absolute (violates XDG specification) and thus "
+								   "it was skipped: %s",
+								   result);
 
 			result = strtok_r (0, ":", &saveptr);
 			continue;
@@ -488,7 +486,7 @@ static char * elektraGetCwd (Key * warningsKey)
 	char * cwd = elektraMalloc (size);
 	if (cwd == NULL)
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (warningsKey, "could not alloc for getcwd, defaulting to /");
+		ELEKTRA_ADD_OUT_OF_MEMORY_WARNING (warningsKey, "could not alloc for getcwd, defaulting to /");
 		return 0;
 	}
 
@@ -513,8 +511,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "could not realloc for getcwd size %d, defaulting to /",
-								       size);
+				ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF (warningsKey, "could not realloc for getcwd size %d, defaulting to /",
+								    size);
 				return 0;
 			}
 		}

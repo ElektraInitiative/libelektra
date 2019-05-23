@@ -59,7 +59,7 @@ static int validateKey (Key * key, Key * parentKey)
 	}
 	else if (keyString (key)[0] != '/')
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Given path \"%s\" is not absolute", keyString (key));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path \"%s\" is not absolute", keyString (key));
 		return 0;
 	}
 	int errnosave = errno;
@@ -211,6 +211,7 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (canAccess != 0)
 	{
+		// No Resource error per se because related to the specification check!
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on %s", name, modes,
 							validPath);
 		return -1;

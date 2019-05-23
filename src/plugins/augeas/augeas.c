@@ -432,7 +432,7 @@ int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 
 		if (ret >= 0)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "Unable to allocate memory for a detailed augeas error message");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Unable to allocate memory for a detailed augeas error message");
 			return -1;
 		}
 
@@ -519,7 +519,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!conversionData)
 	{
 		fclose (fh);
-		ELEKTRA_SET_INSTALLATION_ERRORF (
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			parentKey, "Unknown or unsupported type found during streaming, assume key as string, type lost. Errno: %s",
 			strerror (errno));
 	}

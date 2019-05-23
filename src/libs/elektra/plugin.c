@@ -297,7 +297,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	{
 		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+			ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (
 				errorKey,
 				"Open of plugin returned unsuccessfully: %s. Reason contains plugin, see other warnings for details", name);
 			elektraPluginClose (handle, errorKey);
@@ -328,7 +328,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 	if (handle->kdbClose)
 	{
 		rc = handle->kdbClose (handle, errorKey);
-		if (rc == -1) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "kdbClose() failed");
+		if (rc == -1) ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (errorKey, "kdbClose() failed");
 	}
 
 	ksDel (handle->config);

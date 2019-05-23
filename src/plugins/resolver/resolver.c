@@ -150,13 +150,13 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_CONFLICTING_STATE_ERROR (
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (
 				parentKey, "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
-			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "assuming conflict because of failed file lock with message: %s",
-							      strerror (errno));
+			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "assuming conflict because of failed file lock with message: %s",
+							     strerror (errno));
 		}
 		return -1;
 	}
@@ -664,10 +664,10 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	{
 		if (errno == ENOENT)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
-							     "The configuration file \"%s\" was there earlier, "
-							     "now it is missing",
-							     pk->filename);
+			ELEKTRA_SET_ASSERTION_ERRORF (parentKey,
+						      "The configuration file \"%s\" was there earlier, "
+						      "now it is missing",
+						      pk->filename);
 			return -1;
 		}
 		else if (pk->fd == -1)
@@ -689,10 +689,10 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
-							     "No configuration file was there earlier, "
-							     "now configuration file \"%s\" exists",
-							     pk->filename);
+			ELEKTRA_SET_ASSERTION_ERRORF (parentKey,
+						      "No configuration file was there earlier, "
+						      "now configuration file \"%s\" exists",
+						      pk->filename);
 			return -1;
 		}
 
@@ -842,7 +842,7 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (parentKey, errorText);
 		elektraFree (errorText);
 
-		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "assuming conflict because of failed stat (warning 29 for details)");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;
 	}
 
@@ -1062,8 +1062,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		// change mode to what it was before
 		if (fchmod (fd, pk->filemode) == -1)
 		{
-			ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
-							pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
+			ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey,
+							       "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
+							       pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
 		}
 	}
 
@@ -1071,8 +1072,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	{
 		if (fchown (fd, pk->uid, pk->gid) == -1)
 		{
-			ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
-							pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
+			ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey,
+							       "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
+							       pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
 		}
 	}
 
@@ -1083,7 +1085,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	// checking dirp not needed, fsync will have EBADF
 	if (fsync (dirfd (dirp)) == -1)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (parentKey, "Could not sync directory \"%s\", because %s", pk->dirname, strerror (errno));
+		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "Could not sync directory \"%s\", because %s", pk->dirname,
+						       strerror (errno));
 	}
 	closedir (dirp);
 

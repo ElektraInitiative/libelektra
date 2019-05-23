@@ -107,7 +107,7 @@ static int validateKey (Key * key, Key * parentKey)
 	}
 	else if (rc == -1)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "Out of memory");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
 		rc = 0;
 	}
 

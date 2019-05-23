@@ -407,7 +407,7 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found,
 	{
 		if (ret == GLOB_NOSPACE)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "glob(%s) ran out of memory", pattern);
+			ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "glob(%s) ran out of memory", pattern);
 		}
 		else if (ret == GLOB_ABORTED)
 		{

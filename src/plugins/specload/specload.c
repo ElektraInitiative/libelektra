@@ -180,7 +180,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "This plugin can only be used for the spec namespace.");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "This plugin can only be used for the spec namespace.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -211,7 +211,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (elektraInvoke2Args (specload->quickDump, "set", ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ksDel (ks);
-			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't create an empty overlay specification.");
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "Couldn't create an empty overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		ksDel (ks);
@@ -227,7 +227,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "This plugin can only be used for the spec namespace.");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "This plugin can only be used for the spec namespace.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -281,7 +281,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (changeAllowed < 0)
 		{
-			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "This kind of change is not allowed.");
+			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "This kind of change is not allowed.");
 			ksSetCursor (returned, cursor);
 			ksDel (overrides);
 			ksDel (oldData);
@@ -363,7 +363,7 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 
 	if (app[0] != '/')
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The value of the app config key ('%s') is not an absolute path.", app);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value of the app config key ('%s') is not an absolute path.", app);
 		return false;
 	}
 

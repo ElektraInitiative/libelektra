@@ -100,8 +100,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ret == -1)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_ASSERTION_ERRORF (parentKey, "could not increment array from %s", keyName (ksTail (returned)));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "could not increment array from %s", keyName (ksTail (returned)));
 		ret = -1;
 	}
 	else if (feof (fp) == 0)

@@ -722,7 +722,6 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			++(data->setPhase);
 			if (strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 			{
-				// TODO: Correct?
 				ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "remote file has changed");
 				retval = -1;
 			}
@@ -734,7 +733,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		else
 		{
 			close (fd);
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (
+			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
 				parentKey, "Failed to fetch configuration from %s. Aborting because consistency can't be ensured",
 				data->getUrl);
 			if (data->tmpFile) unlink (data->tmpFile);

@@ -202,7 +202,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_ASSERTION_ERROR (errorKey, "Failed to create handle! Invalid key length.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid key length.");
 		return -1;
 	}
 
@@ -210,8 +210,8 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		// TODO: Correct?
-		ELEKTRA_SET_ASSERTION_ERROR (errorKey, "Failed to create handle! Invalid IV length.");
+
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid IV length.");
 		return -1;
 	}
 

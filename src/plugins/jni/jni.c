@@ -234,56 +234,56 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	data->clsPlugin = (*data->env)->FindClass (data->env, classname);
 	if (data->clsPlugin == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "Cannot find class %s", classname);
+		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (errorKey, "Cannot find class %s", classname);
 		return -1;
 	}
 
 	data->clsKey = (*data->env)->FindClass (data->env, "org/libelektra/Key");
 	if (data->clsKey == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find class Key");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find class Key");
 		return -1;
 	}
 
 	data->clsKeySet = (*data->env)->FindClass (data->env, "org/libelektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find class KeySet");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find class KeySet");
 		return -1;
 	}
 
 	data->midKeyConstr = (*data->env)->GetMethodID (data->env, data->clsKey, "<init>", "(J)V");
 	if (data->midKeyConstr == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find constructor of Key");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find constructor of Key");
 		return -1;
 	}
 
 	data->midKeySetConstr = (*data->env)->GetMethodID (data->env, data->clsKeySet, "<init>", "(J)V");
 	if (data->midKeySetConstr == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find constructor of KeySet");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find constructor of KeySet");
 		return -1;
 	}
 
 	data->midKeyRelease = (*data->env)->GetMethodID (data->env, data->clsKey, "release", "()V");
 	if (data->midKeyRelease == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find release of Key");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find release of Key");
 		return -1;
 	}
 
 	data->midKeySetRelease = (*data->env)->GetMethodID (data->env, data->clsKeySet, "release", "()V");
 	if (data->midKeySetRelease == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find release of KeySet");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find release of KeySet");
 		return -1;
 	}
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID (data->env, data->clsPlugin, "<init>", "()V");
 	if (midPluginConstructor == 0)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot find constructor of plugin");
+		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Cannot find constructor of plugin");
 		return -1;
 	}
 
