@@ -156,7 +156,7 @@ void KeyListener::enterPair (PairContext * context)
  *
  * @param context The context specifies data matched by the rule.
  */
-void KeyListener::exitPair (PairContext * context __attribute__ ((unused)))
+void KeyListener::exitPair (PairContext * context ELEKTRA_UNUSED)
 {
 	// Returning from a mapping such as `part: …` means that we need need to
 	// remove the key for `part` from the stack.
@@ -168,7 +168,7 @@ void KeyListener::exitPair (PairContext * context __attribute__ ((unused)))
  *
  * @param context The context specifies data matched by the rule.
  */
-void KeyListener::enterSequence (SequenceContext * context __attribute__ ((unused)))
+void KeyListener::enterSequence (SequenceContext * context ELEKTRA_UNUSED)
 {
 	indices.push (0);
 	parents.top ().setMeta ("array", ""); // We start with an empty array
@@ -179,7 +179,7 @@ void KeyListener::enterSequence (SequenceContext * context __attribute__ ((unuse
  *
  * @param context The context specifies data matched by the rule.
  */
-void KeyListener::exitSequence (SequenceContext * context __attribute__ ((unused)))
+void KeyListener::exitSequence (SequenceContext * context ELEKTRA_UNUSED)
 {
 	// We add the parent key of all array elements after we leave the sequence
 	keys.append (parents.top ());
@@ -192,7 +192,7 @@ void KeyListener::exitSequence (SequenceContext * context __attribute__ ((unused
  *
  * @param context The context specifies data matched by the rule.
  */
-void KeyListener::enterElement (ElementContext * context __attribute__ ((unused)))
+void KeyListener::enterElement (ElementContext * context ELEKTRA_UNUSED)
 {
 
 	Key key{ parents.top ().getName (), KEY_END };
@@ -216,7 +216,7 @@ void KeyListener::enterElement (ElementContext * context __attribute__ ((unused)
  *
  * @param context The context specifies data matched by the rule.
  */
-void KeyListener::exitElement (ElementContext * context __attribute__ ((unused)))
+void KeyListener::exitElement (ElementContext * context ELEKTRA_UNUSED)
 {
 	parents.pop (); // Remove the key for the current array entry
 }
