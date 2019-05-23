@@ -15,10 +15,10 @@ make sense to differentiate between `No Write Permission` and `No Read Permissio
 as the application just knows that it simply cannot access the desired resource
 and tells the user to grant it.
 
-Categories are hierarchically structured. In some categories you cannot put an error such
-as `Permanent errors` (see below) because they are too general and developers should choose
-a more specific category. Please choose the most specific category as possible when trying
-to assign an error to a category.
+Categories are hierarchically structured. In some categories you cannot put an
+error such as `Permanent errors` (see below) because they are too general and
+developers should choose a more specific category. Please choose the most
+specific category as possible when trying to assign an error to a category.
 
 If you feel for a new category, please forge a design decision document and make
 a PR to Elektra's repo.
@@ -42,58 +42,53 @@ fixed by retry at all. `Permanent Errors` are subdivided into
 
 #### Resource ("C01100")
 
-`Resource Errors` as a branch category are all kinds of errors which are either
-permission related, existence related or missing resources such as memory, RAM,
-etc. Examples are missing files, insufficient permissions or out of memory. This
-category forces users or applications to provide additional resources, create a
-missing file/ directory etc or to provide the relevant permissions.
-
-##### Memory Allocation ("C01110")
-
-`Memory Allocation Errors` are errors which come from failed `elektraMalloc`
-calls primarily as no more memory could be allocated for the application. Errors
-with not enough hard disc space do not belong here but into `General Resource`.
-Such errors will gain special handling in future releases and users cannot deal
-with such errors as of now.
-
-##### General Resource ("C01120")
-
-`General Resource Errors` are all kind of permission, existence and resource
-errors which are essential for Elektra to operate. Compared to validation errors
-this category has its focus the underlying system resources whereas validation
-errors for usages with specifications. Examples are missing files/ directories
-or insufficient permission to execute certain commands (eg. you would require
-sudo permissions). Reactions are fixing the permissions, remount, creating the
+`Resource Errors` are all kind of permission, existence and resource errors
+which are essential for Elektra to operate. Resource errors is a branch category
+which also allows for errors to be put in. Compared to validation errors this
+category has its focus the underlying system resources whereas validation errors
+for usages with specifications. Examples are missing files/ directories or
+insufficient permission to execute certain commands (eg. you would require sudo
+permissions). Reactions are fixing the permissions, remount, creating the
 file/directory and retry the operation. Compared to validation errors,
 administrators would change the specification or retry with a different value.
 
+##### Memory Allocation ("C01110")
+
+`Memory Allocation Errors` are special resource errors which come from failed
+`elektraMalloc` calls primarily as no more memory could be allocated for the
+application. Errors with not enough hard disc space do not belong here but into
+`Resource`. Such errors will gain special handling in future releases and users
+cannot deal with such errors as of now.
+
 #### Installation ("C01200")
 
-`Installation Errors` are those errors which are related to a wrong installation
-such as wrong plugin names, missing backends, initialization errors,
-misconfiguration of Elektra etc. Installation errors might also be non-Elektra
-specific but also from dependent library/applications such as gpg. Also plugin
-configuration errors belong to `Installation Errors` as this happens during
-mounting. Users will have to reconfigure, reinstall, recompile (with other
-settings) Elektra in order to get rid of this error or fix the installation of
-the corresponding library/application.
+`Installation Errors` are errors that are related to a wrong installation such
+as wrong plugin names, missing backends, initialization errors, misconfiguration
+of Elektra etc. Installation errors might also be non-Elektra specific but also
+from dependent library/applications such as gpg. Also plugin configuration
+errors belong to `Installation Errors` as this happens during mounting. Users
+will have to reconfigure, reinstall, recompile (with other settings) Elektra in
+order to get rid of this error or fix the installation of the corresponding
+library/application.
 
 #### Logical ("C01300")
 
-`Logical Errors` is a branch category in which you indicate a bug in Elektra
-such as internal errors, assertion failures, not implemented features or errors
-which should not happen such as going into a `default` branch when you are
-assured that all cases are covered. Usually such errors come with a message to
-report such failures to Elektra's bugtracker. Applications cannot handle such
-errors themselves.
+`Logical Errors` is a branch category in which you indicate a logical flaw in
+the code such as internal errors, not implemented features, passing illegal
+parameters to functions, plugins which do not behave accordingly (wrong return
+codes, uncaught exceptions) or errors which should not happen such as going into
+a `default` branch when you are assured that all cases are covered. Usually such
+errors come with a message to report such failures to Elektra's bugtracker.
+Applications cannot handle such errors themselves.
 
 ##### Internal ("C01310")
 
 `Internal Errors` are such errors which indicate a flaw or bug in the internal
 logic of Elektra. Examples are going into a `default` branch which you do never
-expect to happen. This category might be used in the future to automatically
-issue a bug to our bugtracker. As of now if you have to use this error please
-add a message indicating that this bug should be reported.
+expect to happen. Another use case is if you use an external library and have to
+catch a generic exception. If you can however, catch the most specific
+exceptions and convert them into the appropriate category. If you have to use
+this error please add a message indicating that this bug should be reported.
 
 ##### Interface ("C01320")
 
@@ -121,11 +116,11 @@ instead of `ini`).
 
 `Conflicting State Errors` are errors where the current state is incompatible
 with the attempted operation. These kind of errors are usually in resolver
-plugins when the state of the file has changed without the system knowing.
-Examples are the need for calling `kdbGet` before `kdbSet`. Another example
-would be to try to push your changes into a git repository where the remote
-branch has already changed. Try to synchronize your internal state and retry to
-get rid of this error.
+plugins when the state of the file has changed without the system knowing. An
+example would be to try to push your changes into a git repository where the
+remote branch has already changed. Try to synchronize your internal state and
+retry to get rid of this error. Examples are the need for calling `kdbGet`
+before `kdbSet`.
 
 ### Timeout ("C03000")
 
@@ -151,8 +146,9 @@ like missing slashes come into this category. Parsing errors are also associated
 with syntactic errors such as unexpected encounters like missing line endings,
 illegal characters or wrong encodings. Also transformation and conversion errors
 are to be categorizes here because the format of the given input does not allow
-such actions. Users should try a different value and retry setting it with
-Elektra.
+such actions. Since syntactic errors demand a specific format and structure,
+also structural validation errors belong here. Users should try a different
+value/format and retry setting it with Elektra.
 
 #### Semantic ("C04200")
 
