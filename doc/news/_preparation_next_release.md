@@ -463,6 +463,15 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The script `scripts/reformat-all` is a new convenience script that calls all other `reformat-*` scripts. _(Klemens Böswirth)_
 - The script `scripts/pre-commit-check-formatting` can be used as a pre-commit hook, to ensure files are formatted before committing. _(Klemens Böswirth)_
 - The [link checker](../../scripts/link-checker) now prints broken links to the standard error output. _(René Schwaiger)_
+- We added a script, called [`benchmark-yaml`](../../scripts/benchmark-yaml.in) that compares the run-time of the YAML plugins:
+
+  - [YAML CPP](https://www.libelektra.org/plugins/yamlcpp),
+  - [Yan LR](https://www.libelektra.org/plugins/yanlr),
+  - [YAMBi](https://www.libelektra.org/plugins/yambi),
+  - [YAwn](https://www.libelektra.org/plugins/yambi), and
+  - [YAy PEG](https://www.libelektra.org/plugins/yaypeg)
+
+  for a certain input file with [hyperfine](https://github.com/sharkdp/hyperfine). _(René Schwaiger)_
 
 ## Benchmarks
 
