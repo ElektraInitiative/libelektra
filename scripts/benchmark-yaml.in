@@ -15,7 +15,7 @@ PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILE=generated.yaml
-INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML"
+INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML/Input"
 EXPORT_DIRECTORY="benchmarks/results"
 export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
