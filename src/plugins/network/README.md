@@ -56,7 +56,7 @@ kdb setmeta user/tests/network/host check/ipaddr ipv4
 # Try to set invalid IPv4 address
 kdb set user/tests/network/host 133.133.133.1337
 # RET: 5
-# STDERR: .*value of key is not a valid IP Address.*
+# STDERR:.*Validation Semantic: name:.*133.133.133.1337.*
 kdb get user/tests/network/host
 #> 127.0.0.1
 

@@ -45,8 +45,8 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tests/together dump validation
 kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tests/together/test abc
-# STDERR: Sorry, module validator issued the error.*
-# ERROR:  42
+# STDERR: Sorry, module validation issued the error.*
+# ERROR:C04100
 # RET:5
 ```
 
@@ -264,8 +264,8 @@ you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2
 ```sh
 kdb set /tests/tutorial/links/url "invalid url"
 # STDOUT-REGEX: Using name (user|system)/tests/tutorial/links/url
-# STDERR: .*Validation Semantic.*not a valid URL.*
-# ERROR:  C04200
+# STDERR: .*Validation Syntactic.*not a valid URL.*
+# ERROR:  C04100
 # RET:    5
 ```
 
@@ -298,7 +298,7 @@ There are many ways to do so directly supported by [the spec plugin](/src/plugin
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
 ```sh
-kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error 04200
+kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error C04200
 #> Using keyname spec/tests/tutorial/spec/should_not_be_here
 kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc

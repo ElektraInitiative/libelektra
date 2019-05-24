@@ -65,7 +65,7 @@ kdb get user/tests/cpptype/key
 
 # If we try to store a string Elektra will not change the value
 kdb set user/tests/cpptype/key 'Not a char'
-# STDERR: .*error in the type plugin.*
+# STDERR: .*The type char failed to match.*
 # ERROR:  C04200
 # RET:    5
 kdb get user/tests/cpptype/key
