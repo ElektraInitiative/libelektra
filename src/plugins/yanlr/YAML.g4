@@ -4,8 +4,9 @@ options {
   tokenVocab=YAML;
 }
 
-yaml : STREAM_START (comment* child | comment*) STREAM_END EOF ;
+yaml : STREAM_START (comment* child | empty) STREAM_END EOF ;
 child : (value | map | sequence) comment* ;
+empty : comment* ;
 
 value : scalar ;
 scalar : PLAIN_SCALAR
