@@ -85,6 +85,20 @@ check_environment() {
 	}
 }
 
+get_system_information() {
+	COMPILER_PATH="$(sed -En 's/^CMAKE_C_COMPILER:[^=]*=(.*)/\1/p' "$BUILD_DIRECTORY/CMakeCache.txt")"
+	VERSION_STRING="$("$COMPILER_PATH" --version)"
+	if printf '%s' "$VERSION_STRING" | grep -q 'clang version'; then
+		COMPILER_VERSION=$("$COMPILER_PATH" --version | sed -En 's/clang version (([0-9]\.){2}[0-9]).*/\1/p')
+		COMPILER="clang$COMPILER_VERSION"
+	else
+		COMPILER_VERSION=$("$COMPILER_PATH" --version | sed -En 's/gcc \([^\)]+\) (([0-9]\.){2}[0-9]).*/\1/p')
+		COMPILER="gcc$COMPILER_VERSION"
+	fi
+
+	test $(uname) = Darwin && OS=mac || OS=linux
+}
+
 compare_plugin_output() {
 	REFERENCE=reference.yaml
 	INPUT="$DATA_DIRECTORY/$INPUT_FILE"
@@ -116,7 +130,7 @@ benchmark() {
 	}
 
 	for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
-		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.').json"
+		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.')_${OS}_$COMPILER.json"
 		hyperfine --warmup 3 \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
@@ -144,6 +158,9 @@ trap cleanup EXIT INT QUIT TERM
 
 printf '→ Check Environment\n'
 check_environment
+
+printf '→ Get System Information\n'
+get_system_information
 
 if ! test -e $DATA_DIRECTORY/$INPUT_FILE; then
 	printf '→ Download Input\n'
