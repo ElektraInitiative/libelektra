@@ -81,8 +81,8 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	}
 
 	kdb.set (conf, parentKey);
-	printWarnings (cerr, parentKey);
-	printError (cerr, k);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
+	printError (cerr, k, cl.verbose, cl.debug);
 
 	return 0;
 }

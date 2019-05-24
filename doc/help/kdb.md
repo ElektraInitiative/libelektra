@@ -48,9 +48,11 @@ Every core-tool has the following options:
 Most tools have the following options:
 
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Also shows Configfile and Mountpoint in case of an error/warning
 - `-q`, `--quiet`:
   Suppress non-error messages.
+- `-d`, `--debug`:
+  Shows the line at which an error happened in case an error or warning is issued
 
 ## KDB
 

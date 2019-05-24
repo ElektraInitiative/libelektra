@@ -32,7 +32,7 @@ int MetaGetCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	kdb.get (conf, parentKey);
-	printWarnings (cerr, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	Key k = conf.lookup (parentKey);
 

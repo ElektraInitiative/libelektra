@@ -45,7 +45,7 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tests/together dump validation
 kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tests/together/test abc
-# STDERR: The command kdb.* set failed while accessing the key database .*
+# STDERR: Sorry, module validator issued the error.*
 # ERROR:  42
 # RET:5
 ```
@@ -304,7 +304,7 @@ kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
 # STDOUT-REGEX: Using name (user|system)/tests/tutorial/spec/should_not_be_here
 # RET:    5
-# STDERR: .*error.*10.*occurred.*
+# ERROR:10
 kdb get /tests/tutorial/spec/should_not_be_here
 # RET: 11
 # STDERR: Did not find key '/tests/tutorial/spec/should_not_be_here'

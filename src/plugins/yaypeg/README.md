@@ -118,7 +118,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n7 | head -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
+kdb get user/tests/error | tail -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
 #> config.yaml:2:0: Incomplete document, expected “end of file”
 #>                  I’d like to be a tree
 #>                  ^

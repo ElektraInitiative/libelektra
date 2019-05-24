@@ -97,8 +97,8 @@ TEST_F (Simple, MetaInSet)
 
 	ASSERT_EQ (ks.size (), 1) << "key not inserted:\n" << ks;
 	kdb.set (ks, parent);
-	printError (std::cout, parent);
-	printWarnings (std::cout, parent);
+	printError (std::cout, parent, true, true);
+	printWarnings (std::cout, parent, true, true);
 	ASSERT_EQ (ks.size (), 1) << "got wrong keys:\n" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
@@ -118,8 +118,8 @@ TEST_F (Simple, InvalidKeysInSet)
 
 	ASSERT_EQ (ks.size (), 2) << "keys not inserted:\n" << ks;
 	kdb.set (ks, parent);
-	printError (std::cout, parent);
-	printWarnings (std::cout, parent);
+	printError (std::cout, parent, true, true);
+	printWarnings (std::cout, parent, true, true);
 	ASSERT_EQ (ks.size (), 2) << "got wrong keys:\n" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
@@ -154,8 +154,8 @@ TEST_F (Simple, EverythingInGetSet)
 	ASSERT_EQ (ks.size (), 714) << "did not keep" << ks;
 
 	kdb.set (ks, parent);
-	printError (std::cout, parent);
-	printWarnings (std::cout, parent);
+	printError (std::cout, parent, true, true);
+	printWarnings (std::cout, parent, true, true);
 	ASSERT_EQ (ks.size (), 714) << "got wrong keys:\n" << ks;
 	// KeySet cmp = getAll();
 	// ASSERT_EQ(ks, cmp);
@@ -177,8 +177,8 @@ TEST_F (Simple, EverythingInSet)
 	ASSERT_EQ (ks.size (), 714) << "did not keep" << ks;
 
 	kdb.set (ks, parent);
-	printError (std::cout, parent);
-	printWarnings (std::cout, parent);
+	printError (std::cout, parent, true, true);
+	printWarnings (std::cout, parent, true, true);
 	ASSERT_EQ (ks.size (), 714) << "got wrong keys:\n" << ks;
 	// KeySet cmp = getAll();
 	// ASSERT_EQ(ks, cmp);

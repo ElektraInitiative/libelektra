@@ -29,7 +29,7 @@ int UmountCommand::execute (Cmdline const & cl)
 	KeySet conf;
 	Key parentKey (Backends::mountpointsPath, KEY_END);
 	kdb.get (conf, parentKey);
-	printWarnings (cerr, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	std::string name = cl.createKey (0).getName ();
 
