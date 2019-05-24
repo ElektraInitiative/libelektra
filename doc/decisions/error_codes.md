@@ -92,10 +92,9 @@ is the abbreviation for "Code".
     - Interface C01320
     - Plugin is Broken C01330
 - Conflicting State C02000
-- Timeout C03000
-- Validation C04000
-  - Syntactic C04100
-  - Semantic C04200
+- Validation C03000
+  - Syntactic C03100
+  - Semantic C03200
 
 To see an explanation of the categories along with a guideline on how to categorize please
 see the [Error Codes Guideline](../dev/error-categorization.md)

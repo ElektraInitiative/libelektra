@@ -122,14 +122,7 @@ remote branch has already changed. Try to synchronize your internal state and
 retry to get rid of this error. Examples are the need for calling `kdbGet`
 before `kdbSet`.
 
-### Timeout ("C03000")
-
-`Timeout Errors` are errors which indicate temporary failures. This category
-should only be used if retries can safely be done without being harmful.
-Examples are lost connections to a server. Reactions are waiting for a short
-period and retry again.
-
-### Validation ("C04000")
+### Validation ("C03000")
 
 `Validation Errors` are heavily used for Elektra's `configuration specification`
 feature and should tell users that their given input does not match a certain
@@ -137,7 +130,7 @@ pattern/type/expected semantic etc.
 
 Validation errors can either be syntactic or semantic.
 
-#### Syntactic ("C04100")
+#### Syntactic ("C03100")
 
 `Syntactic Errors` are errors which tell users or applications that the current
 format is not valid. Examples are wrong date formats or missing closing brackets
@@ -150,7 +143,7 @@ such actions. Since syntactic errors demand a specific format and structure,
 also structural validation errors belong here. Users should try a different
 value/format and retry setting it with Elektra.
 
-#### Semantic ("C04200")
+#### Semantic ("C03200")
 
 `Semantic Errors` are errors which indicate a misunderstanding of the intended
 meaning between a user's/developer's/administrator's way of seeing a setting and
