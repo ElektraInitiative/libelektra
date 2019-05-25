@@ -32,7 +32,7 @@ void transformMac (Key * key)
 	const char * macKey = keyString (key);
 
 
-	char * macWithoutSeparators = elektraMalloc (12);
+	char * macWithoutSeparators = elektraMalloc (13);
 
 	size_t len = strlen (macKey);
 	size_t j = 0;
