@@ -531,8 +531,9 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
-- Added a new error concept to be implemented soon. _(Michael Zronek)_
 - Added a new error message format concept to be implemented soon. _(Michael Zronek)_
+- Added a new error concept for error codes to be implemented soon. _(Michael Zronek)_
+- Added error categorization guidelines to be used with the error concept. _(Michael Zronek)_
 - Drastically improved the error message format. For more information look [here](../../doc/decisions/error_message_format.md). _(Michael Zronek)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
