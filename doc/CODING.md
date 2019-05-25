@@ -305,6 +305,51 @@ scripts/reformat-cmake cmake/CMakeLists.txt
 
 .
 
+##### Tool Integration
+
+If you work on CMake code quite often you probably want to integrate cmake format into your development workflow. The homepage of [cmake format](https://github.com/cheshirekow/cmake_format#integrations) list some integration options.
+
+###### TextMate
+
+While TextMate does not support cmake format directly, you can quickly create a command that applies `cmake-format` every time you save a CMake file yourself. The steps below show one option to do that.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.cmake` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Document” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      set -o pipefail
+      if ! "${TM_CMAKE_FORMAT:-cmake-format}" - |
+          ${TM_CMAKE_FORMAT_FILTER:-tee};
+      then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>N</kbd>
+   10. Store the value `unexpand` in the variable `TM_CMAKE_FORMAT_FILTER`. To do that save the text
+
+   ```ini
+   TM_CMAKE_FORMAT_FILTER = "unexpand"
+   ```
+
+   in a file called [`.tm_properties`](https://macromates.com/blog/2011/git-style-configuration) in the root of Elektra’s repository.
+
 ### Java / Groovy Guidelines
 
 Please follow
