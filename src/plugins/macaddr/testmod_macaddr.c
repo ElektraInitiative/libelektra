@@ -101,6 +101,7 @@ static void testAddressesStandardHyphens ()
 	testAddressSet ("aB-Cd-8f-f3-e5", -1);
 	testAddressSet ("aB-Cd-8f-f3-e5", -1);
 }
+
 static void testAddressesSingleHyphen ()
 {
 	testAddressSet ("000000-000000", 1);
@@ -130,6 +131,7 @@ static void testAddressesNumber ()
 	convertLong (intChar, MAXMACINT + 1);
 	testAddressSet (intChar, -1);
 }
+
 static void testAll ()
 {
 	testAddressesStandardColons ();
