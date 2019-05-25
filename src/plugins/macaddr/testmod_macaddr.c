@@ -42,7 +42,7 @@ static const char * getKeyString (KeySet * ks, char * keyName)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	ksRewind (ks);
-	plugin -> kdbGet(plugin, ks, parent);
+	plugin->kdbGet (plugin, ks, parent);
 	keyDel (parent);
 	PLUGIN_CLOSE ();
 	return keyString (ksLookupByName (ks, keyName, 0));
@@ -70,7 +70,6 @@ static void testAddressesReturn ()
 	testAddressesSetGet ("0d:b6:8c:44:cc:f9", 15077688528121);
 	testAddressesSetGet ("aB-Cd-8f-f3-e5-d7", 188899371771351);
 	testAddressesSetGet ("A1B2C3-4D5E6F", 177789152878191);
-
 }
 
 static void testAddressesStandardColons ()
