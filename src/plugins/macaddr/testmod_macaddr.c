@@ -63,7 +63,7 @@ static void testAddressesSetGet (const char * keyValue, long long longValue)
 	succeed_if (!strcmp (getKeyString (testKs, "user/tests/mac/addr"), intChar), "error");
 }
 
-static void testAddressesReturn ()
+static void testAddressesReturn (void)
 {
 	testAddressesSetGet ("00:00:00:00:00:00", 0);
 	testAddressesSetGet ("FF:FF:FF:FF:FF:FF", 281474976710655);
@@ -72,7 +72,7 @@ static void testAddressesReturn ()
 	testAddressesSetGet ("A1B2C3-4D5E6F", 177789152878191);
 }
 
-static void testAddressesStandardColons ()
+static void testAddressesStandardColons (void)
 {
 	testAddressSet ("00:00:00:00:00:00", 1);
 	testAddressSet ("FF:FF:FF:FF:FF:FF", 1);
@@ -86,7 +86,7 @@ static void testAddressesStandardColons ()
 	testAddressSet ("aB:Cd:8f:f3:e5", -1);
 }
 
-static void testAddressesStandardHyphens ()
+static void testAddressesStandardHyphens (void)
 {
 
 	testAddressSet ("00-00-00-00-00-00", 1);
@@ -101,7 +101,7 @@ static void testAddressesStandardHyphens ()
 	testAddressSet ("aB-Cd-8f-f3-e5", -1);
 }
 
-static void testAddressesSingleHyphen ()
+static void testAddressesSingleHyphen (void)
 {
 	testAddressSet ("000000-000000", 1);
 	testAddressSet ("FFFFFF-FFFFFF", 1);
@@ -115,7 +115,7 @@ static void testAddressesSingleHyphen ()
 	testAddressSet ("aBCd8f-f3e5", -1);
 }
 
-static void testAddressesNumber ()
+static void testAddressesNumber (void)
 {
 	char intChar[15];
 	convertLong (intChar, 0);
@@ -131,7 +131,7 @@ static void testAddressesNumber ()
 	testAddressSet (intChar, -1);
 }
 
-static void testAll ()
+static void testAll (void)
 {
 	testAddressesStandardColons ();
 	testAddressesStandardHyphens ();
