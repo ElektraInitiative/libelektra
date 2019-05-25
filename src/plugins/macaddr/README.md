@@ -37,12 +37,6 @@ TODO:
 # Mount `macaddr` plugin
 sudo kdb mount macconf.ecf user/tests/mac macaddr
 
-# Check the validity of the following MAC addresses
-kdb setmeta user/tests/mac/mac1 check/macaddr ""
-kdb setmeta user/tests/mac/mac2 check/macaddr ""
-kdb setmeta user/tests/mac/mac3 check/macaddr ""
-kdb setmeta user/tests/mac/mac4 check/macaddr ""
-
 # Setting a MAC address using colons
 kdb set user/tests/mac/mac1 00:A0:C9:14:C8:29
 # RET: 0
@@ -58,6 +52,12 @@ kdb set user/tests/mac/mac3 00A0C9-14C829
 # Setting a MAC address using an integer value
 kdb set user/tests/mac/mac4 17661175009296
 # RET: 0
+
+# Marking written keys as MAC addresses
+kdb setmeta user/tests/mac/mac1 check/macaddr ""
+kdb setmeta user/tests/mac/mac2 check/macaddr ""
+kdb setmeta user/tests/mac/mac3 check/macaddr ""
+kdb setmeta user/tests/mac/mac4 check/macaddr ""
 
 # Setting a MAC address using an invalid address
 kdb set user/tests/mac/mac1 00:G1:C9:14:C8:29

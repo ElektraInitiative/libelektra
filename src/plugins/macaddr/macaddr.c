@@ -84,6 +84,7 @@ int checkIntMac (const char * mac)
 	char * endptr;
 
 	unsigned long long ret = 0;
+	errno = 0;
 	ret = strtoull (mac, &endptr, 10);
 
 	if (errno == EINVAL || errno == ERANGE || *endptr != '\0') return VALIDATION_ERROR;
