@@ -14,16 +14,26 @@ KDB_COMMAND="$BUILD_DIRECTORY/bin/kdb"
 PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
-INPUT_FILES=(
-	generated.yaml
-)
-INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML"
+INPUT_FILE=generated.yaml
+INPUT_URL="https://raw.githubusercontent.com/ElektraInitiative/rawdata/master/YAML/Input"
+EXPORT_DIRECTORY="benchmarks/results"
 export LD_LIBRARY_PATH="$BUILD_DIRECTORY/lib"
 
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 cleanup() {
-	rm -rf "$DATA_DIRECTORY"
+	find "$DATA_DIRECTORY" -mindepth 2 -delete
+	find "$DATA_DIRECTORY" -mindepth 1 -type d -delete
+}
+
+usage() {
+	printf >&2 -- 'Usage: %s [input]\n\n' "$0"
+	printf >&2 -- '- The `input` file has to be available at:\n\n'
+	printf >&2 -- '    %s\n\n' "$INPUT_URL"
+	printf >&2 -- '  .\n\n'
+	printf >&2 -- '- If you specify no input file, then the benchmark uses the file\n\n'
+	printf >&2 -- '    %s/%s\n\n' "$INPUT_URL" "$INPUT_FILE"
+	printf >&2 -- '  as input.\n'
 }
 
 write() {
@@ -34,7 +44,7 @@ write() {
 	"$KDB_COMMAND" mount config.yaml "$KDBPATH" "$PLUGIN"
 	# Create config directory, if it does not exist yet
 	"$KDB_COMMAND" set "$KDBPATH" test > /dev/null
-	cat "$INPUT_FILE" > "$("$KDB_COMMAND" file "$KDBPATH")"
+	cat "$INPUT" > "$("$KDB_COMMAND" file "$KDBPATH")"
 	"$KDB_COMMAND" export "$KDBPATH" yamlsmith > "$OUTPUT"
 	"$KDB_COMMAND" rm -r "$KDBPATH"
 	"$KDB_COMMAND" umount "$KDBPATH"
@@ -45,14 +55,12 @@ download_input() {
 		printf >&2 'Unable to create data directory “%s”\n' "$DATA_DIRECTORY"
 		exit 1
 	}
-	for INPUT_FILE in "${INPUT_FILES[@]}"; do
-		OUTPUT=$(curl 2>&1 -L "$INPUT_URL/$INPUT_FILE" -o "$DATA_DIRECTORY/$INPUT_FILE")
-		if [ $? != 0 ]; then
-			printf >&2 'Unable to download “%s” as “%s”\n:' "$INPUT_URL/$INPUT_FILE" "$DATA_DIRECTORY/$INPUT_FILE"
-			printf >&2 '%s\n' "$OUTPUT"
-			exit 1
-		fi
-	done
+	OUTPUT=$(curl 2>&1 -L "$INPUT_URL/$INPUT_FILE" -o "$DATA_DIRECTORY/$INPUT_FILE")
+	if [ $? != 0 ]; then
+		printf >&2 'Unable to download “%s” as “%s”\n:' "$INPUT_URL/$INPUT_FILE" "$DATA_DIRECTORY/$INPUT_FILE"
+		printf >&2 '%s\n' "$OUTPUT"
+		exit 1
+	fi
 }
 
 check_environment() {
@@ -77,43 +85,63 @@ check_environment() {
 	}
 }
 
+get_system_information() {
+	COMPILER_PATH="$(sed -En 's/^CMAKE_C_COMPILER:[^=]*=(.*)/\1/p' "$BUILD_DIRECTORY/CMakeCache.txt")"
+	VERSION_STRING="$("$COMPILER_PATH" --version)"
+	if printf '%s' "$VERSION_STRING" | grep -q 'clang version'; then
+		COMPILER_VERSION=$("$COMPILER_PATH" --version | sed -En 's/clang version (([0-9]\.){2}[0-9]).*/\1/p')
+		COMPILER="clang$COMPILER_VERSION"
+	else
+		COMPILER_VERSION=$("$COMPILER_PATH" --version | sed -En 's/gcc \([^\)]+\) (([0-9]\.){2}[0-9]).*/\1/p')
+		COMPILER="gcc$COMPILER_VERSION"
+	fi
+
+	test $(uname) = Darwin && OS=mac || OS=linux
+}
+
 compare_plugin_output() {
-	for FILEPATH in "${INPUT_FILES[@]}"; do
-		REFERENCE=reference.yaml
-		INPUT_FILE="$DATA_DIRECTORY/$FILEPATH"
-		write yamlcpp "$INPUT_FILE" "$REFERENCE"
-		for PLUGIN in "${PLUGINS[@]}"; do
-			write "$PLUGIN" "$INPUT_FILE" "$PLUGIN.yaml"
-			diff -q "$REFERENCE" "$PLUGIN.yaml" || {
-				printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT_FILE"
-				diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
-				exit 1
-			}
-			rm "$PLUGIN.yaml"
-		done
-		rm "$REFERENCE"
+	REFERENCE=reference.yaml
+	INPUT="$DATA_DIRECTORY/$INPUT_FILE"
+	write ${PLUGINS[0]} "$INPUT" "$REFERENCE"
+	for PLUGIN in "${PLUGINS[@]}"; do
+		write "$PLUGIN" "$INPUT" "$PLUGIN.yaml"
+		diff -q "$REFERENCE" "$PLUGIN.yaml" || {
+			printf >&2 'Plugin %s produced unexpected output for the file %s\n' "$PLUGIN" "$INPUT"
+			diff >&2 -y "$REFERENCE" "$PLUGIN.yaml"
+			exit 1
+		}
+		rm "$PLUGIN.yaml"
 	done
+	rm "$REFERENCE"
 }
 
 generate_input_benchmark() {
-	for FILEPATH in "${INPUT_FILES[@]}"; do
-		DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$FILEPATH" | cut -f1 -d'.')"
-		mkdir "$DIRECTORY"
-		for PLUGIN in "${PLUGINS[@]}"; do
-			cp "$DATA_DIRECTORY/$FILEPATH" "$DIRECTORY/test.$PLUGIN.in"
-		done
+	DIRECTORY="$DATA_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.')"
+	mkdir -p "$DIRECTORY"
+	for PLUGIN in "${PLUGINS[@]}"; do
+		cp "$DATA_DIRECTORY/$INPUT_FILE" "$DIRECTORY/test.$PLUGIN.in"
 	done
 }
 
 benchmark() {
+	mkdir -p "$EXPORT_DIRECTORY" || {
+		printf >&2 'Unable to create export directory “%s”\n' "$EXPORT_DIRECTORY"
+		exit 1
+	}
+
 	for DIRECTORY in $(find $DATA_DIRECTORY -mindepth 1 -maxdepth 1 -type d); do
+		EXPORT_FILEPATH="$EXPORT_DIRECTORY/$(printf '%s' "$INPUT_FILE" | cut -f1 -d'.')_${OS}_$COMPILER.json"
 		hyperfine --warmup 3 \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[0]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[1]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[2]} get" \
 			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[3]} get" \
-			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" |
+			"\"$BENCHMARK_TOOL\" \"$DIRECTORY\" user ${PLUGINS[4]} get" \
+			--export-json "$EXPORT_FILEPATH" |
 			sed -e "s~$BUILD_DIRECTORY/bin/~~g" -e "s~$DATA_DIRECTORY/bin/~~g"
+		# Remove path prefix of benchmark command
+		printf 'H\n,s/\(\\\\"\).*\(benchmark_plugingetset\)/\\1\\2/\nw\n' | ed -s "$EXPORT_FILEPATH"
+		printf '\nExported data to file: "%s"\n' "$EXPORT_FILEPATH"
 	done
 }
 
@@ -121,18 +149,23 @@ benchmark() {
 
 trap cleanup EXIT INT QUIT TERM
 
-# Usage: benchmark-yaml [input ...]
+(("$#" > 1)) && {
+	usage "$@"
+	exit 1
+}
 
-# The input (files) have to be available at `INPUT_URL`.
-# If you specify no input file, the benchmark uses the files specified in `INPUT_FILES`.
-
-(("$#" >= 1)) && INPUT_FILES=("$@")
+(("$#" >= 1)) && INPUT_FILE=("$1")
 
 printf '→ Check Environment\n'
 check_environment
 
-printf '→ Download Input\n'
-download_input
+printf '→ Get System Information\n'
+get_system_information
+
+if ! test -e $DATA_DIRECTORY/$INPUT_FILE; then
+	printf '→ Download Input\n'
+	download_input
+fi
 
 printf '→ Compare Plugin Output\n'
 compare_plugin_output
