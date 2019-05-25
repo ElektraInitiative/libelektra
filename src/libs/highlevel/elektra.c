@@ -87,7 +87,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	elektra->lookupKey = keyNew (NULL, KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
 	elektra->context = ksNew (0, KS_END);
-	elektra->defaults = defaults;
+	elektra->defaults = ksDup (defaults);
 
 	return elektra;
 }
