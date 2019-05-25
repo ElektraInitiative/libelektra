@@ -241,6 +241,20 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	}
 
 	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
+{
+	switch (value)
+	{
+	case ELEKTRA_ENUM_DISJOINTED_BLACK:
+		return "black";
+	case ELEKTRA_ENUM_DISJOINTED_WHITE:
+		return "white";
+	}
+
+	// should be unreachable
 	return "";
 }
 ELEKTRA_KEY_TO_SIGNATURE (ExistingColors, EnumExistingColors)
@@ -279,6 +293,22 @@ ELEKTRA_TO_STRING_SIGNATURE (ExistingColors, EnumExistingColors)
 		return elektraStrDup ("magenta");
 	case EXISTING_COLORS_YELLOW:
 		return elektraStrDup ("yellow");
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ExistingColors, EnumExistingColors)
+{
+	switch (value)
+	{
+	case EXISTING_COLORS_CYAN:
+		return "cyan";
+	case EXISTING_COLORS_MAGENTA:
+		return "magenta";
+	case EXISTING_COLORS_YELLOW:
+		return "yellow";
 	}
 
 	// should be unreachable
@@ -325,6 +355,24 @@ ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors)
 		return elektraStrDup ("green");
 	case COLORS_BLUE:
 		return elektraStrDup ("blue");
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (Colors, EnumColors)
+{
+	switch (value)
+	{
+	case COLORS_NONE:
+		return "none";
+	case COLORS_RED:
+		return "red";
+	case COLORS_GREEN:
+		return "green";
+	case COLORS_BLUE:
+		return "blue";
 	}
 
 	// should be unreachable
@@ -389,6 +437,28 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 		return elektraStrDup ("brown");
 	case ELEKTRA_ENUM_MYENUM_GRAY:
 		return elektraStrDup ("gray");
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
+{
+	switch (value)
+	{
+	case ELEKTRA_ENUM_MYENUM_RED:
+		return "red";
+	case ELEKTRA_ENUM_MYENUM_GREEN:
+		return "green";
+	case ELEKTRA_ENUM_MYENUM_BLUE:
+		return "blue";
+	case ELEKTRA_ENUM_MYENUM_BLUEISH:
+		return "blueish";
+	case ELEKTRA_ENUM_MYENUM_BROWN:
+		return "brown";
+	case ELEKTRA_ENUM_MYENUM_GRAY:
+		return "gray";
 	}
 
 	// should be unreachable
