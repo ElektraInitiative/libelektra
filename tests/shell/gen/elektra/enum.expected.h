@@ -71,6 +71,9 @@ typedef enum
 } ElektraEnumMyenum;
 
 
+#define ELEKTRA_TO_CONST_STRING(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektra, typeName), ToConstString)
+#define ELEKTRA_TO_CONST_STRING_SIGNATURE(cType, typeName) const char * ELEKTRA_TO_CONST_STRING (typeName) (cType value)
+
 ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 

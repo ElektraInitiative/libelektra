@@ -42,6 +42,20 @@ ELEKTRA_TO_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 	}
 
 	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	switch (value)
+	{
+	/*%# values %*/
+	case /*%& name %*/:
+		return "/*% string_value %*/";
+		/*%/ values %*/
+	}
+
+	// should be unreachable
 	return "";
 }
 /*%/ enums %*/
