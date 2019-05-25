@@ -507,6 +507,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We added a [tutorial](../tutorials/benchmarking.md) on how to benchmark the execution time of plugins using [`benchmark_plugingetset`](../../benchmarks/README.md) and [hyperfine](https://github.com/sharkdp/hyperfine). _(René Schwaiger)_
 - The new [profiling tutorial](../tutorials/profiling.md) describes how to determine the execution time of code using [Callgrind](http://valgrind.org/docs/manual/cl-manual.html) and [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html). _(René Schwaiger)_
 - For beginners we added a [tutorial](../tutorials/contributing-clion.md) that guides them through the process of contributing to libelektra. _(Thomas Bretterbauer)_
+- Added a section on `elektraPluginGetGlobalKeySet` in the plugin tutorial. _(Vid Leskovar)_
 
 ### Spelling Fixes
 
