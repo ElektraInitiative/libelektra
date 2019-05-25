@@ -426,7 +426,7 @@ If `checkconf` encounters a configuration value, that is not strictly invalid bu
 
 ### `ELEKTRA_PLUGIN_EXPORT`
 
-The last function, one that is always needed in a plugin, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
+A function that is always needed in a plugin, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
 the plugin exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
 
 ```c
@@ -440,6 +440,24 @@ Plugin *ELEKTRA_PLUGIN_EXPORT
 ```
 
 For further information see [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
+
+### `elektraPluginGetGlobalKeySet`
+
+In order to enable communication between plugins which is more complex than what can be done with metadata, Elektra provides a global keyset which plugins can read from and modify.
+
+The keyset is initialized by the KDB and can be accessed by all plugins except for plugins created manually (e.g. with `elektraPluginOpen`).
+
+It can be accessed by calling the following function:
+
+```c
+KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
+```
+
+The handle of the plugin using the keyset needs to be provided as `plugin`.
+
+The function returns a handle to the global keyset.
+
+Plugins using the global keyset are responsible for cleaning up the parts of the keyset they no longer need.
 
 ## Note on Direct Method Calls via External Integrations
 
