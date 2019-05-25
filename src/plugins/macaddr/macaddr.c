@@ -80,7 +80,7 @@ int checkRegex (const char * mac, const char * regexString)
  */
 int checkIntMac (const char * mac)
 {
-	if (strlen (mac) < 2) return 1;
+	if (strlen (mac) < 1) return 1;
 	char * endptr;
 
 	unsigned long long ret = 0;
