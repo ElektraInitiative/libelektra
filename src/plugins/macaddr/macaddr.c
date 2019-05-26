@@ -42,6 +42,7 @@ void transformMac (Key * key)
 
 		macWithoutSeparators[j++] = macKey[i];
 	}
+	macWithoutSeparators[12] = '\0';
 
 	long intValue = strtol (macWithoutSeparators, NULL, 16);
 
