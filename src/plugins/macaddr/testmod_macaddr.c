@@ -52,6 +52,7 @@ static void testAddressSet (const char * keyValue, int retValue)
 {
 	KeySet * testKs = ksNew (10, keyNew ("user/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END), KS_END);
 	succeed_if (setKey (testKs) == retValue, "error");
+	ksDel (testKs);
 }
 
 static void testAddressesSetGet (const char * keyValue, long long longValue)
@@ -61,6 +62,7 @@ static void testAddressesSetGet (const char * keyValue, long long longValue)
 	setKey (testKs);
 	convertLong (intChar, longValue);
 	succeed_if (!strcmp (getKeyString (testKs, "user/tests/mac/addr"), intChar), "error");
+	ksDel (testKs);
 }
 
 static void testAddressesReturn (void)
