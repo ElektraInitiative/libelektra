@@ -243,16 +243,112 @@ We use a similar style for CMake as we do for other code:
 - Add a space character before round parenthesis ( `(` ).
 - Use lower case for command names (e.g. `set` instead of `SET`)
 
-You can use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
-`cmake-format` currently does not support tabs, please use the standard command `unexpand` to fix this issue. For example, to reformat the
-file `CMakeLists.txt` in the root folder of the repository you can use the following command:
+#### cmake format
+
+We use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
+`cmake-format` currently does not support tabs, we use the standard command `unexpand` to fix this issue. For example, to reformat the
+file `CMakeLists.txt` in the root folder of the repository we use the following command:
 
 ```sh
 # This command uses `sponge`, which is part of the [moreutils](https://joeyh.name/code/moreutils/) package.
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ```
 
-. If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
+.
+
+##### Install
+
+Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
+
+```sh
+# Install cmake format `0.4.5` with support for YAML config files
+pip install cmake-format[yaml]==0.4.5
+```
+
+. Please make sure, that you install the correct version (`0.4.5`) of cmake format:
+
+```sh
+cmake-format --version
+#> 0.4.5
+```
+
+, since otherwise the formatted code might look quite different.
+
+We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew](http://brew.sh):
+
+```sh
+brew install moreutils
+```
+
+and on Debian using `apt-get`:
+
+```
+apt-get install moreutils
+```
+
+.
+
+##### Usage
+
+If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/reformat-cmake):
+
+```sh
+scripts/reformat-cmake # Running this script for the whole code base takes some time.
+```
+
+. To reformat specific files add a list of file paths after the command:
+
+```sh
+# The command below reformats the file `cmake/CMakeLists.txt`.
+scripts/reformat-cmake cmake/CMakeLists.txt
+```
+
+.
+
+##### Tool Integration
+
+If you work on CMake code quite often you probably want to integrate cmake format into your development workflow. The homepage of [cmake format](https://github.com/cheshirekow/cmake_format#integrations) list some integration options.
+
+###### TextMate
+
+While TextMate does not support cmake format directly, you can quickly create a command that applies `cmake-format` every time you save a CMake file yourself. The steps below show one option to do that.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.cmake` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Document” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      set -o pipefail
+      if ! "${TM_CMAKE_FORMAT:-cmake-format}" - |
+          ${TM_CMAKE_FORMAT_FILTER:-tee};
+      then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>N</kbd>
+   10. Store the value `unexpand` in the variable `TM_CMAKE_FORMAT_FILTER`. To do that save the text
+
+   ```ini
+   TM_CMAKE_FORMAT_FILTER = "unexpand"
+   ```
+
+   in a file called [`.tm_properties`](https://macromates.com/blog/2011/git-style-configuration) in the root of Elektra’s repository.
 
 ### Java / Groovy Guidelines
 
