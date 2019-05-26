@@ -76,7 +76,7 @@ Now that you know how to execute `benchmark_plugingetset`, you can use it to com
 - to run `benchmark_plugingetset` multiple times, and
 - compare different plugins
 
-it makes sense to use a benchmarking tool such as [hyperfine](https://github.com/sharkdp/hyperfine) for that task. For our tutorial we assume that you copied the file [`keyframes.yaml`](https://github.com/ElektraInitiative/rawdata/blob/master/YAML/keyframes.yaml) to the locations
+it makes sense to use a benchmarking tool such as [hyperfine](https://github.com/sharkdp/hyperfine) for that task. For our tutorial we assume that you copied the file [`keyframes.yaml`](https://github.com/ElektraInitiative/rawdata/blob/master/YAML/Input/keyframes.yaml) to the locations
 
 - `benchmarks/data/test.yamlcpp.in`, and
 - `benchmarks/data/test.yaypeg.in`
@@ -85,7 +85,7 @@ it makes sense to use a benchmarking tool such as [hyperfine](https://github.com
 
 ```sh
 mkdir -p benchmarks/data
-curl -L https://github.com/sanssecours/rawdata/raw/master/YAML/keyframes.yaml -o benchmarks/data/test.yamlcpp.in
+curl -L https://github.com/ElektraInitiative/rawdata/raw/master/YAML/Input/keyframes.yaml -o benchmarks/data/test.yamlcpp.in
 cp benchmarks/data/test.yamlcpp.in benchmarks/data/test.yaypeg.in
 ```
 
