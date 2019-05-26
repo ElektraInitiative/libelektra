@@ -119,7 +119,7 @@ static void testAddressesSingleHyphen (void)
 
 static void testAddressesNumber (void)
 {
-	char intChar[15];
+	char intChar[16];
 	convertLong (intChar, 0);
 	testAddressSet (intChar, 1);
 
