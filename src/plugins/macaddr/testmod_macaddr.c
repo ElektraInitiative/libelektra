@@ -57,7 +57,7 @@ static void testAddressSet (const char * keyValue, int retValue)
 
 static void testAddressesSetGet (const char * keyValue, long long longValue)
 {
-	char intChar[15];
+	char intChar[16];
 	KeySet * testKs = ksNew (10, keyNew ("user/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END), KS_END);
 	setKey (testKs);
 	convertLong (intChar, longValue);
