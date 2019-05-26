@@ -215,91 +215,12 @@ int keyIsUser (const Key * key)
 
 int keyIsBelow (const Key * key, const Key * check)
 {
-	const char * keyname = 0;
-	const char * checkname = 0;
-	const char * ukeyname = 0;
-	const char * ucheckname = 0;
-	ssize_t keysize = 0;
-	ssize_t checksize = 0;
-	ssize_t ukeysize = 0;
-	ssize_t uchecksize = 0;
+	if(key == NULL || check == NULL)
+	{
+		return -1;
+	}
 
-	if (!key || !check) return -1;
-
-	keyname = keyName (key);
-	checkname = keyName (check);
-	ukeyname = keyUnescapedName (key);
-	ucheckname = keyUnescapedName (check);
-	keysize = keyGetNameSize (key);
-	checksize = keyGetNameSize (check);
-	ukeysize = keyGetUnescapedNameSize (key);
-	uchecksize = keyGetUnescapedNameSize (check);
-	if (!strcmp (checkname, "/")) return 0;
-	if (!strcmp (keyname, "/"))
-	{
-		if (checkname[0] == '/') return 1;
-		if (strchr (checkname, '/')) return 1;
-	}
-	else if (checkname[0] == '/')
-	{
-		if (keyname[0] == '/')
-		{
-			if (!strncmp (keyname, checkname, keysize - 1))
-			{
-				if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
-				{
-					return 1;
-				}
-			}
-		}
-		else
-		{
-			size_t size = 0;
-			char * ptr = (char *) keyname;
-			keyNameGetOneLevel (ptr, &size);
-			if (size == (size_t) keysize)
-			{
-				return 1;
-			}
-			keyname += size;
-			keysize = elektraStrLen (keyname);
-			ptr = strrchr (ukeyname, '\0');
-			ukeysize -= (ptr - ukeyname);
-			if (!strncmp (keyname, checkname, keysize - 1))
-			{
-				if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
-				{
-					return 1;
-				}
-			}
-		}
-	}
-	else if (keyname[0] == '/')
-	{
-		size_t size = 0;
-		char * ptr = (char *) checkname;
-		keyNameGetOneLevel (ptr, &size);
-		if (size == (size_t) checksize)
-		{
-			return 0;
-		}
-		checkname += size;
-		ptr = strrchr (ucheckname, '\0');
-		uchecksize -= (ptr - ucheckname);
-		ucheckname = ptr;
-		if (!strncmp (keyname, checkname, keysize - 1))
-		{
-			if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
-			{
-				return 1;
-			}
-		}
-	}
-	else if (!strncmp (keyname, checkname, keysize - 1))
-	{
-		if ((ucheckname[ukeysize - 1] == '\0') && (uchecksize > ukeysize)) return 1;
-	}
-	return 0;
+	return keyIsBelowOrSame (key, check) && keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check);
 }
 
 
@@ -311,16 +232,29 @@ int keyIsBelow (const Key * key, const Key * check)
  */
 int keyIsBelowOrSame (const Key * key, const Key * check)
 {
-	if (!key || !check) return -1;
+	if(key == NULL || check == NULL)
+	{
+		return -1;
+	}
 
-	const char * name1 = keyName (key);
-	const char * name2 = keyName (check);
+	const char * above = keyUnescapedName (key);
+	const char * below = keyUnescapedName (check);
 
-	if (keyIsBelow (key, check))
-		return 1;
-	else if (!strcmp (name1, name2))
-		return 1;
-	return 0;
+	size_t sizeAbove = keyGetUnescapedNameSize (key);
+	size_t sizeBelow = keyGetUnescapedNameSize (check);
+
+	if (sizeAbove > sizeBelow)
+	{
+		return 0;
+	}
+
+	if (above[0] == '\0')
+	{
+		// cascading
+		below = strchr (below, '\0');
+	}
+
+	return memcmp (above, below, sizeAbove) == 0;
 }
 
 
@@ -352,36 +286,30 @@ does not return true, because there is only an indirect relation
  */
 int keyIsDirectBelow (const Key * key, const Key * check)
 {
-	if (!key || !check) return -1;
-
-	if (!keyIsBelow (key, check)) return 0;
-
-
-	const char * checkname = keyUnescapedName (check);
-	ssize_t keysize = keyGetUnescapedNameSize (key);
-	ssize_t checksize = keyGetUnescapedNameSize (check);
-
-	char * startPtr = NULL;
-
-	if (keyName (key)[0] != '/')
+	if(key == NULL || check == NULL)
 	{
-		startPtr = strrchr (checkname + keysize, '\0');
+		return -1;
 	}
-	else
-	{
-		if (keyName (check)[0] != '/')
-		{
-			startPtr = strrchr (checkname, '\0');
-			startPtr = strrchr (startPtr + keysize, '\0');
-		}
-		else
-		{
-			startPtr = strrchr (checkname + keysize, '\0');
-		}
-	}
-	if (startPtr == checkname + checksize - 1) return 1;
 
-	return 0;
+	const char * above = keyUnescapedName (key);
+	const char * below = keyUnescapedName (check);
+
+	size_t sizeAbove = keyGetUnescapedNameSize (key);
+	size_t sizeBelow = keyGetUnescapedNameSize (check);
+
+	if (sizeAbove > sizeBelow)
+	{
+		return 0;
+	}
+
+	if (above[0] == '\0')
+	{
+		// cascading
+		below = strchr (below, '\0');
+	}
+
+	size_t nextPartSize = strlen (below + sizeAbove);
+	return memcmp (above, below, sizeAbove) == 0 && sizeAbove + nextPartSize == sizeBelow;
 }
 
 
