@@ -492,8 +492,9 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
 - We added instructions on how to reformat code with
 
-  - [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html), and
-  - [cmake format](https://github.com/cheshirekow/cmake_format)
+  - [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html),
+  - [cmake format](https://github.com/cheshirekow/cmake_format), and
+  - [Prettier](https://prettier.io)
 
   to the [coding guidelines](../CODING.md). _(René Schwaiger)_
 
