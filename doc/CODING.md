@@ -256,7 +256,7 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 
 .
 
-##### Install
+##### Installation
 
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
