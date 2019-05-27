@@ -412,7 +412,19 @@ npm install --global prettier@1.17.1
 
 ##### Usage
 
-If you want, you can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/reformat-markdown).
+You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/reformat-markdown):
+
+```sh
+scripts/reformat-markdown
+```
+
+. To format only some files, please specify a list of filenames after the command:
+
+```sh
+scripts/reformat-markdown doc/CODING.md # Reformat this file
+```
+
+.
 
 ### Doxygen Guidelines
 
