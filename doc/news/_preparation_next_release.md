@@ -610,7 +610,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
   - [Bison](https://www.gnu.org/software/bison/), and
   - [YAEP](https://github.com/vnmakarov/yaep)
 
-  to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile).
+  to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
 
 #### Other Updates
 
