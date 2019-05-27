@@ -16,18 +16,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef enum
-{
-	MEMORY_INVALID,
-	MEMORY_BYTE,
-	MEMORY_KILOBYTE,
-	MEMORY_MEGABYTE,
-	MEMORY_GIGABYTE,
-	MEMORY_TERABYTE,
-	MEMORY_PETABYTE,
-} MemoryFormat;
 
-static MemoryFormat is_valid_key(Key * key, Key * parentKey){
+static kdb_unsigned_long_long_t is_valid_key(Key * key, Key * parentKey){
 
 	const Key * meta = keyGetMeta (key, "check/memoryvalue");
 	const char * pattern = "\d* ?[B,KB,MB,GB,TB,PB]";
@@ -38,13 +28,13 @@ static MemoryFormat is_valid_key(Key * key, Key * parentKey){
 	int match;
 
 	if (!meta) {
-		return 1;
+		return 0;
 	}
 
 	compile_failure = regcomp (&regex, pattern, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
 
 	if (compile_failure){
-		 return 1;
+		 return 0;
 	}
 
 	match = !(regexec (&regex, value, 0, &offsets, 0));
@@ -52,80 +42,71 @@ static MemoryFormat is_valid_key(Key * key, Key * parentKey){
 
 	if (!match)
 	{
-		return MEMORY_INVALID;
+		return 0;
 	}
-	if(strstr(value, "B") != NULL) 
-	{
-		return MEMORY_BYTE;
-	}
+	printf("value %s", value);
+
+
 	if(strstr(value, "KB") != NULL)
 	{
-		return MEMORY_KILOBYTE;
+		return 1000;
 	}
 	if(strstr(value, "MB") != NULL)
 	{
-		return MEMORY_MEGABYTE;
+		return 1000000;
 	}
 	if(strstr(value, "GB") != NULL)
 	{
-		return MEMORY_GIGABYTE;
+		return 1000000000;
 	}
 	if(strstr(value, "TB") != NULL)
 	{
-		return MEMORY_TERABYTE;
+		return 1000000000000;
 	}
 	if(strstr(value, "PB") != NULL) 
 	{
-		return MEMORY_PETABYTE;
+		return 1000000000000000;
+	}
+	if(strstr(value, "B") != NULL) 
+	{
+		return 1;
 	}else{
-		return MEMORY_INVALID;
+		return 0;
 	}
 }
 
 
-static void elektraMemoryvalueConvertToByteString (Key * key, MemoryFormat format){
+static int elektraMemoryvalueConvertToByteString (Key * key, kdb_unsigned_long_long_t formatFactor){
 
 	const char * str = keyString (key);
-	keySetMeta (key, "unprocessedvalue", str);
+	keySetMeta (key, "origvalue", str);
     char *ptr;
 	long ret;
-	kdb_unsigned_long_t normalizedMemVal;
+	kdb_unsigned_long_long_t normalizedMemVal;
 
-	ret = strtol(str, &ptr, 10);
-	normalizedMemVal=ret;
+	ret = strtoll(str, &ptr, 10);
 
-	//normalize to byte string
-	switch(format){
-		case MEMORY_KILOBYTE:
-		normalizedMemVal=ret*1000;
-		break;
-		case MEMORY_MEGABYTE:
-		normalizedMemVal=ret*1000*1000;
-		break;
-		case MEMORY_GIGABYTE:
-		normalizedMemVal=ret*1000*1000;
-		break;
-		case MEMORY_TERABYTE:
-		normalizedMemVal=ret*1000*1000*1000;
-		break;
-		case MEMORY_PETABYTE:
-		normalizedMemVal=ret*1000*1000*1000*1000;
-		break;
-		default:
-		normalizedMemVal=ret;
-		break;
+	// check if return value within bounds
+	if(ret > UINT64_MAX / formatFactor) {
+		return 1;
 	}
+
+	normalizedMemVal=ret*formatFactor;
+	
 	//convert back to string
-	const int n = snprintf(NULL, 0, "%lu", normalizedMemVal);
+	const int n = snprintf(NULL, 0, "%llu", normalizedMemVal);
 	char buf[n+1];
-	int c = snprintf(buf, n+1, "%lu", normalizedMemVal);
+
+	int c = snprintf(buf, n+1, "%llu", normalizedMemVal);
+	printf("string %s", buf);
 
 	keySetString (key, buf);
+	return 0;
 }
 
 static void elektraMemoryvalueRestore (Key * key)
 {
-	const Key * oldval = keyGetMeta (key, "unprocessedvalue");
+	const Key * oldval = keyGetMeta (key, "origvalue");
 	if (oldval != NULL)
 	{
 		keySetString (key, keyString (oldval));
@@ -157,9 +138,9 @@ int elektraMemoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		const Key * meta = keyGetMeta (cur, "check/memoryvalue");
 		if (meta)
 		{
-			MemoryFormat format = is_valid_key (cur, parentKey);
+			kdb_unsigned_long_long_t format = is_valid_key (cur, parentKey);
 
-			if (format == MEMORY_INVALID){ 
+			if (format == 0){ 
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 			elektraMemoryvalueConvertToByteString(cur, format);
@@ -179,15 +160,21 @@ int elektraMemoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		if (!meta){
  			continue;
 		}
+		printf("contdd");
 
 		elektraMemoryvalueRestore (cur);
-		MemoryFormat format = is_valid_key (cur, parentKey);
+		kdb_unsigned_long_long_t format = is_valid_key (cur, parentKey);
 
-		if (format == MEMORY_INVALID){ 
+
+		if (format == 0){ 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-		elektraMemoryvalueConvertToByteString (cur, format);
-		
+		int status=elektraMemoryvalueConvertToByteString (cur, format);
+
+		if(status == 1){
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 

@@ -41,6 +41,11 @@ static void test_memoryvalue (const char * memoryvalue, const int expected_ret)
 static void test_memoryvalueplugin ()
 {
 	test_memoryvalue ("1Z", -1);
+	test_memoryvalue ("!TB", -1);
+	test_memoryvalue ("A MB", -1);
+	test_memoryvalue ("PSOB", -1);
+	test_memoryvalue ("123YMB", -1);
+	test_memoryvalue ("123YGB", -1);
 	test_memoryvalue ("10B", 10);
 	test_memoryvalue ("10MB", 1000000);
 	test_memoryvalue ("10 MB", 1000000);
