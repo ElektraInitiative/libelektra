@@ -376,13 +376,37 @@ Most notably use:
 
 #### Prettier
 
-We use [`prettier`](https://prettier.io) to format the documentation according to the guidelines given above.
+We use [`prettier`][] to format the documentation according to the guidelines given above.
 
 Under certain **exceptional** circumstances you might want to prevent `prettier` from formatting certain parts of a Markdown file. To do
 that you can
 
 - enclose the Markdown code in `<!-- prettier-ignore-start -->` and `<!-- prettier-ignore-end -->` tags, or
 - use `<!-- prettier-ignore -->` to disable formatting till the end of a file
+
+.
+
+[`prettier`]: https://prettier.io
+
+##### Installation
+
+###### macOS
+
+On macOS you can install [`prettier`][] using [Homebrew](https://brew.sh):
+
+```sh
+brew install prettier
+```
+
+.
+
+###### General
+
+To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
+
+```sh
+npm install --global prettier@1.17.1
+```
 
 .
 
