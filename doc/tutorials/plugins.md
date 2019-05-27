@@ -445,17 +445,9 @@ For further information see [the API documentation](https://doc.libelektra.org/a
 
 In order to enable communication between plugins which is more complex than what can be done with metadata, Elektra provides a global keyset which plugins can read from and modify.
 
-The keyset is initialized by the KDB and can be accessed by all plugins except for plugins created manually (e.g. with `elektraPluginOpen`).
+The keyset is initialized and closed by a KDB handle and can be accessed by all plugins of a single handle except for plugins created manually (e.g. with `elektraPluginOpen`). It is not shared between different KDB handles.
 
-It can be accessed by calling the following function:
-
-```c
-KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
-```
-
-The handle of the plugin using the keyset needs to be provided as `plugin`.
-
-The function returns a handle to the global keyset.
+It can be accessed by calling the `elektraPluginGetGlobalKeySet` function, which returns a handle to the global keyset.
 
 Plugins using the global keyset are responsible for cleaning up the parts of the keyset they no longer need.
 
