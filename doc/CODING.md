@@ -209,7 +209,7 @@ If you work on Elektra’s code base regularly you might want to integrate the f
 
 ###### TextMate
 
-While [TextMate](https://macromates.com) supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
+While [TextMate][] supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
 
 1. open the bundle editor (“Bundles” → “Edit Bundles”),
 2. navigate to the “Reformat Code” item of the C bundle (“C” → “Menu Actions” → “Reformat Code”),
@@ -217,6 +217,8 @@ While [TextMate](https://macromates.com) supports `clang-format` for the current
 4. change the menu option for the field “Save” to “Nothing”
 
 . After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
+
+[textmate]: https://macromates.com
 
 ### C++ Guidelines
 
@@ -425,6 +427,42 @@ scripts/reformat-markdown doc/CODING.md # Reformat this file
 ```
 
 .
+
+##### Tool Integration
+
+The [homepage of Prettier][`prettier`] lists various options to integrate the tool into your workflow.
+
+###### TextMate
+
+To reformat a Markdown document in [TextMate][] every time you save it, please follow the steps listed below.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `text.html.markdown` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_PRETTIER:-prettier}" --stdin --stdin-filepath "${TM_FILEPATH}"
+      then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>N</kbd>
 
 ### Doxygen Guidelines
 
