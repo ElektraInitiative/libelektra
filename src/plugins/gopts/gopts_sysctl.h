@@ -10,9 +10,10 @@
 #ifndef ELEKTRA_GOPTS_SYSCTL_H
 #define ELEKTRA_GOPTS_SYSCTL_H
 
+#include <sys/types.h> // has to be included before sys/sysctl.h
+
 #include <string.h>
 #include <sys/sysctl.h>
-#include <sys/types.h>
 
 #include <kdbhelper.h>
 
