@@ -7,29 +7,18 @@
  *
  */
 
-#include "gopts_sysctl.h"
+#include <sys/sysctl.h>
+#include <sys/types.h>
 
-#include <string.h>
+#ifndef KERN_PROC
+#error no KERN_PROC
+#endif
 
-int main (int argc, char ** argv)
+#ifndef KERN_PROC_ARGS
+#error no KERN_PROC_ARGS
+#endif
+
+int main (void)
 {
-	char ** argv2;
-	int argc2 = loadArgs (&argv2);
-
-	if (argc2 != argc)
-	{
-		cleanupArgs (argc2, argv2);
-		return 1;
-	}
-
-	for (int i = 0; i < argc; ++i)
-	{
-		if (argv2[i] == NULL || strcmp (argv[i], argv2[i]) != 0)
-		{
-			cleanupArgs (argc2, argv2);
-			return 1;
-		}
-	}
-
 	return 0;
 }
