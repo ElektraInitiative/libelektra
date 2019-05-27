@@ -235,6 +235,7 @@ copied by the `spec` plugin just before):
 - [range](range/) checks if a value is within a given range
 - [reference](reference/) checks if a value is a valid reference to another key
 - [memoryvalue](memoryvalue/) if a memory unit string is valid
+- [rgbcolor](rgbcolor/) validates and normalizes hexcolors
 
 **Other Validation**
 
