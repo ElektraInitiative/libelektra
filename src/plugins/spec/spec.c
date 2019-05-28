@@ -55,7 +55,6 @@ typedef struct
 
 typedef struct
 {
-	KeySet * ks;
 	int counter;
 } PluginData;
 
@@ -66,54 +65,6 @@ static inline void safeFree (void * ptr)
 		elektraFree (ptr);
 	}
 }
-
-/* region Key Globbing       */
-/* ========================= */
-
-// elektra wildcard syntax to fnmatch syntax
-static char * keyNameToMatchingString (const Key * key)
-{
-	uint8_t arrayCount = 0;
-	char * name = strchr (keyName (key), '/');
-	if (!name) return elektraStrDup (keyName (key));
-	for (char * ptr = name; *ptr != '\0'; ++ptr)
-		if (*ptr == '#') ++arrayCount;
-	char * pattern = elektraMalloc (elektraStrLen (name) + arrayCount);
-	char * dst = pattern;
-	for (char * src = (name + 1); *src != '\0'; ++src)
-	{
-		if (*src == '_' && *(src - 1) == '/' && (*(src + 1) == '/' || *(src + 1) == '\0'))
-		{
-			*dst++ = '*';
-		}
-		else if (*src == '#' && *(src - 1) == '/' && (*(src + 1) == '/' || *(src + 1) == '\0'))
-		{
-			*dst++ = '#';
-			*dst++ = '*';
-		}
-		else
-		{
-			*dst++ = *src;
-		}
-	}
-	*dst = '\0';
-	return pattern;
-}
-
-
-// match pattern against keyname - ignore namespace
-// @retval true if keyname matches pattern
-// @retval false if keyname doesn't match pattern
-static int matchPatternToKey (const char * pattern, const Key * key)
-{
-	const char * ptr = strchr (keyName (key), '/');
-	if (ptr)
-		return !fnmatch (pattern, ++ptr, FNM_PATHNAME);
-	else
-		return FNM_NOMATCH;
-}
-
-// endregion Globbing
 
 /*  region Config parsing    */
 /* ========================= */
@@ -212,7 +163,13 @@ static void parseLocalConfig (Key * specKey, ConflictHandling * ch, const char b
 static void addConflict (Key * key, int conflict)
 {
 	char conflicts[SIZE_CONFLICTS] = NO_CONFLICTS;
-	keyGetString (key, conflicts, SIZE_CONFLICTS);
+
+	const Key * meta = keyGetMeta (key, "conflict");
+	if (keyGetValueSize (meta) == SIZE_CONFLICTS)
+	{
+		keyGetString (meta, conflicts, SIZE_CONFLICTS);
+	}
+
 	conflicts[conflict] = '1';
 	keySetMeta (key, "conflict", conflicts);
 }
@@ -264,11 +221,24 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 	}
 
 	char conflicts[SIZE_CONFLICTS] = NO_CONFLICTS;
-	keyGetString (key, conflicts, SIZE_CONFLICTS);
+	if (keyGetValueSize (metaKey) == SIZE_CONFLICTS)
+	{
+		keyGetString (metaKey, conflicts, SIZE_CONFLICTS);
+	}
 
 	if (conflicts[CONFLICT_INVALID] == '1' && ch->invalid != IGNORE)
 	{
-		char * msg = elektraFormat ("Invalidkey %s", keyName (key));
+		const Key * moreMsg = keyGetMeta (key, "conflict/invalid");
+		char * msg;
+		if (moreMsg != NULL)
+		{
+			msg = elektraFormat ("Invalid key %s: %s", keyName (key), keyString (moreMsg));
+		}
+		else
+		{
+			msg = elektraFormat ("Invalid key %s", keyName (key));
+		}
+
 		handleConflict (parentKey, msg, ch->invalid);
 		elektraFree (msg);
 	}
@@ -305,8 +275,12 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 
 	if (conflicts[CONFLICT_OUTOFRANGE] == '1' && ch->range != IGNORE)
 	{
-		char * msg = elektraFormat ("%s has invalid number of members: %s. Expected: %s", keyName (key),
-					    keyString (keyGetMeta (key, "conflict/outofrange")), keyString (keyGetMeta (specKey, "array")));
+		const Key * min = keyGetMeta (specKey, "array/min");
+		const Key * max = keyGetMeta (specKey, "array/max");
+
+		char * msg = elektraFormat ("%s has invalid number of members: %s. Expected: %s - %s", keyName (key),
+					    keyString (keyGetMeta (key, "conflict/outofrange")), min == NULL ? "" : keyString (min),
+					    max == NULL ? "" : keyString (max));
 		handleConflict (parentKey, msg, ch->range);
 		elektraFree (msg);
 	}
@@ -363,16 +337,23 @@ static void copyMeta (Key * dest, Key * src)
 		if (strncmp (name, "internal/", 9) != 0 && strncmp (name, "conflict/", 9) != 0)
 		{
 			const Key * oldMeta = keyGetMeta (dest, name);
-			if (oldMeta != NULL && strcmp (keyString (oldMeta), keyString (meta)) != 0)
+			if (oldMeta != NULL)
 			{
-				char * conflictName = elektraFormat ("conflict/%s", name);
-				keySetMeta (dest, conflictName, keyString (oldMeta));
-				elektraFree (conflictName);
-				addConflict (dest, CONFLICT_COLLISION);
-				elektraMetaArrayAdd (dest, "conflict/collision", name);
+				// don't overwrite metadata
+				// array metadata is not a conflict
+				if (strcmp (name, "array") != 0 && strcmp (keyString (oldMeta), keyString (meta)) != 0)
+				{
+					char * conflictName = elektraFormat ("conflict/%s", name);
+					keySetMeta (dest, conflictName, keyString (oldMeta));
+					elektraFree (conflictName);
+					addConflict (dest, CONFLICT_COLLISION);
+					elektraMetaArrayAdd (dest, "conflict/collision", name);
+				}
 			}
-
-			keyCopyMeta (dest, src, name);
+			else
+			{
+				keyCopyMeta (dest, src, name);
+			}
 		}
 	}
 }
@@ -404,92 +385,126 @@ static bool isArraySpec (const Key * key)
 			return true;
 		}
 
-		cur += len;
+		cur += len + 1;
 	}
 
 	return false;
 }
 
-static bool validateArraySize (Key * arrayParent, const char * arrayMin, const char * arrayMax)
+static bool validateArraySize (Key * arrayParent, Key * spec)
 {
 	const Key * arrayActualKey = keyGetMeta (arrayParent, "array");
 	const char * arrayActual = arrayActualKey == NULL ? "" : keyString (arrayActualKey);
 
-	return strcmp (arrayMin, arrayActual) <= 0 && 0 <= strcmp (arrayActual, arrayMax);
-}
+	const Key * arrayMinKey = keyGetMeta (spec, "array/min");
+	const char * arrayMin = arrayMinKey == NULL ? NULL : keyString (arrayMinKey);
 
-static void instantiateArraySpec (KeySet * ks, Key * arraySpec);
+	const Key * arrayMaxKey = keyGetMeta (spec, "array/max");
+	const char * arrayMax = arrayMaxKey == NULL ? NULL : keyString (arrayMaxKey);
 
-// instantiates the array specified by arraySpec, e.g. abc/#
-static void instantiateArray (KeySet * ks, Key * arraySpec, const char * callWithSuffix)
-{
-	Key * arrayParent = keyNew (strchr (keyName (arraySpec), '/'), KEY_END);
-	keySetBaseName (arrayParent, 0);
-
-	Key * parent = ksLookup (ks, arrayParent, 0);
-	const Key * arrayKey = keyGetMeta (parent, "array");
-	const char * arraySize = arrayKey == NULL ? "" : keyString (arrayKey);
-
-	const Key * arrayMinKey = keyGetMeta (arrayParent, "array/min");
-	const char * arrayMin = arrayMinKey == NULL ? "" : keyString (arrayMinKey);
-
-	const Key * arrayMaxKey = keyGetMeta (arrayParent, "array/max");
-	const char * arrayMax = arrayMaxKey == NULL ? "$" : keyString (arrayMaxKey); // $ > #, so "$" is bigger than array size
-
-	if (!validateArraySize (parent, arrayMin, arrayMax))
-	{
-		// TODO: conflict range
-	}
-
-	kdb_long_long_t i = 0;
-	char buf[ELEKTRA_MAX_ARRAY_SIZE];
-	elektraWriteArrayNumber (buf, i);
-	while (strcmp (buf, arraySize) <= 0)
-	{
-		Key * newKey = keyNew (keyName (arrayParent), KEY_CASCADING_NAME, KEY_END);
-		keyAddBaseName (newKey, buf);
-		copyMeta (newKey, arraySpec);
-		ksAppendKey (ks, newKey);
-
-		if (callWithSuffix != NULL)
-		{
-			Key * newArraySpec = keyDup (arraySpec);
-			keySetBaseName (newArraySpec, buf);
-
-			instantiateArraySpec (ks, newArraySpec);
-		}
-
-		++i;
-		elektraWriteArrayNumber (buf, i);
-	}
-
-	keyDel (arrayParent);
+	return (arrayMin == NULL || strcmp (arrayMin, arrayActual) <= 0) && (arrayMax == NULL || 0 <= strcmp (arrayActual, arrayMax));
 }
 
 // instantiates all array spec parts in an array spec key (e.g. abc/#/a/d/#/e)
-static void instantiateArraySpec (KeySet * ks, Key * arraySpec)
+static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec)
 {
-	// FIXME: doesn't work with embedded slashes, needs keyEscape to rebuild key from unescaped version
+	cursor_t cursor = ksGetCursor (ks);
+	size_t usize = keyGetUnescapedNameSize (arraySpec);
+	const char * cur = keyUnescapedName (arraySpec);
+	const char * end = cur + usize;
 
-	const char * spec = keyName (arraySpec);
-	char * arrayPart = strstr (spec, "/#/");
-	if (arrayPart != NULL)
+	cur += strlen (cur) + 1; // skip "spec"
+
+	KeySet * newKeys = ksNew (1, keyNew ("spec", KEY_END), KS_END);
+	Key * specCur = keyNew ("spec", KEY_END);
+
+	while (cur < end)
 	{
-		char * newSpec = elektraStrDup (spec);
-		newSpec[arrayPart - spec] = '\0';
+		size_t len = strlen (cur);
 
-		Key * newArraySpec = keyDup (arraySpec);
-		keySetName (newArraySpec, newSpec);
-		elektraFree (newSpec);
+		KeySet * curNew = ksNew (0, KS_END);
+		if (len == 1 && cur[0] == '#')
+		{
 
-		char * suffix = arrayPart + 2;
+			Key * k;
+			ksRewind (newKeys);
+			while ((k = ksNext (newKeys)) != NULL)
+			{
+				Key * lookup = ksLookupByName (ks, strchr (keyName (k), '/'), 0);
+				const Key * arrayMeta = lookup == NULL ? NULL : keyGetMeta (lookup, "array");
+				Key * specLookup = ksLookup (ks, specCur, 0);
+				if (arrayMeta != NULL)
+				{
+					if (!validateArraySize (lookup, specLookup))
+					{
+						addConflict (lookup, CONFLICT_OUTOFRANGE);
+						keySetMeta (lookup, "conflict/outofrange", keyString (arrayMeta));
+						continue;
+					}
+				}
+				else
+				{
+					lookup = specLookup;
+					arrayMeta = lookup == NULL ? NULL : keyGetMeta (lookup, "array");
+				}
 
-		instantiateArray (ks, newArraySpec, suffix);
+				if (arrayMeta != NULL)
+				{
+					const char * arraySize = keyString (arrayMeta);
+
+					if (elektraArrayValidateBaseNameString (arraySize) <= 0)
+					{
+						addConflict (lookup, CONFLICT_INVALID);
+						keySetMeta (lookup, "conflict/invalid", "invalid array metadata");
+						continue;
+					}
+
+					char elem[ELEKTRA_MAX_ARRAY_SIZE];
+					kdb_long_long_t i = 0;
+					elektraWriteArrayNumber (elem, i);
+
+					while (strcmp (elem, arraySize) <= 0)
+					{
+						Key * new = keyDup (k);
+						keyAddBaseName (new, elem);
+						ksAppendKey (curNew, new);
+
+						++i;
+						elektraWriteArrayNumber (elem, i);
+					}
+				}
+			}
+		}
+		else
+		{
+			Key * k;
+			ksRewind (newKeys);
+			while ((k = ksNext (newKeys)) != NULL)
+			{
+				Key * new = keyDup (k);
+				keyAddBaseName (new, cur);
+				ksAppendKey (curNew, new);
+			}
+		}
+		ksDel (newKeys);
+		newKeys = curNew;
+
+		keyAddBaseName (specCur, cur);
+		cur += len + 1;
 	}
-	else if (strcmp (keyBaseName (arraySpec), "#") == 0)
+
+	keyDel (specCur);
+
+	Key * k;
+	ksRewind (newKeys);
+	while ((k = ksNext (newKeys)) != NULL)
 	{
-		instantiateArray (ks, arraySpec, NULL);
+		keySetMeta (k, "internal/spec/array", "");
+		copyMeta (k, arraySpec);
 	}
+
+	ksSetCursor (ks, cursor);
+	return newKeys;
 }
 
 static void validateArray (KeySet * ks, Key * arrayKey, Key * specKey)
@@ -556,7 +571,7 @@ static bool isWildcardSpec (const Key * key)
  */
 static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 {
-	// FIXME: only works if '_' at end
+	// FIXME: use instantiated wildcard specs!!!
 	if (keyGetMeta (specKey, "require") != NULL)
 	{
 		return;
@@ -568,7 +583,6 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		Key * parent = keyDup (key);
 		keySetBaseName (parent, NULL);
 
-		// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
 		KeySet * ksCopy = ksDup (ks);
 		KeySet * subKeys = ksCut (ksCopy, parent);
 		ksDel (ksCopy);
@@ -577,7 +591,6 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		long subCount = 0;
 		while ((cur = ksNext (subKeys)) != NULL)
 		{
-			// FIXME: works with cascading? else need lookup?
 			if (keyIsDirectBelow (parent, cur))
 			{
 				++subCount;
@@ -600,37 +613,22 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 
 // endregion Wildcard (_) handling
 
-static void removeMeta (Key * key, Key * specKey)
-{ // TODO: correct??
-	keyRewindMeta (specKey);
-	const Key * meta;
-	while ((meta = keyNextMeta (specKey)) != NULL)
-	{
-		const char * name = keyName (meta);
-		if (strcmp (name, "array") != 0 && strcmp (name, "required") != 0 && strncmp (name, "conflict/", 9) != 0 &&
-		    strcmp (name, "require") != 0)
-		{
-			keySetMeta (key, name, NULL);
-		}
-	}
+static bool specMatches (Key * specKey, Key * otherKey)
+{
+	const char * spec = keyUnescapedName (specKey);
+	size_t specNsLen = strlen (spec) + 1;
+	spec += specNsLen; // skip namespace
+	const char * other = keyUnescapedName (otherKey);
+	size_t otherNsLen = strlen (other) + 1;
+	other += otherNsLen; // skip namespace
+	size_t const specSize = keyGetUnescapedNameSize (specKey) - specNsLen;
+	size_t const otherSize = keyGetUnescapedNameSize (otherKey) - otherNsLen;
+
+	return specSize == otherSize && memcmp (spec, other, specSize) == 0;
 }
 
-
 static void cleanSpecKey (Key * specKey, KeySet * ks)
-{ // TODO: what does it do? why does it exist? is it correct??
-	char * pattern = keyNameToMatchingString (specKey);
-
-	ksRewind (ks);
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		if (keyGetNamespace (cur) != KEY_NS_SPEC && matchPatternToKey (pattern, cur) != 0)
-		{
-			removeMeta (cur, specKey);
-		}
-	}
-
-	elektraFree (pattern);
+{ // TODO: should only remove added metadata
 }
 
 /**
@@ -649,10 +647,10 @@ static void cleanSpecKey (Key * specKey, KeySet * ks)
 static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const ConflictHandling * ch, const char configBaseName[20],
 			   bool isKdbGet)
 {
-	// TODO: use libglobbing
-	char * pattern = keyNameToMatchingString (specKey);
-	bool arraySpec = isArraySpec (specKey);
-	bool wildcardSpec = isWildcardSpec (specKey);
+	bool require = keyGetMeta (specKey, "require") != NULL;
+
+	ELEKTRA_ASSERT (!isArraySpec (specKey), "uninstantiated array spec");
+	ELEKTRA_ASSERT (!isWildcardSpec (specKey), "uninstantiated wildcard spec");
 
 	int found = 0;
 	Key * cur;
@@ -664,36 +662,26 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 	cursor_t cursor = ksGetCursor (ks);
 	for (; (cur = ksAtCursor (ks, cursor)) != NULL; ++cursor)
 	{
-		if (!matchPatternToKey (pattern, cur))
+		if (!specMatches (specKey, cur))
 		{
 			continue;
 		}
 
 		found = 1;
 
-		if (arraySpec)
-		{
-			validateArray (ks, cur, specKey);
-		}
-
-		if (wildcardSpec)
-		{
-			validateWildcardSubs (ks, cur, specKey);
-		}
-
 		copyMeta (cur, specKey);
 	}
 
-	elektraFree (pattern);
 
-	if (keyGetMeta (specKey, "require") != NULL)
+	int ret = 0;
+	if (!found && require)
 	{
-		// TODO: require + array
 		char * msg = elektraFormat ("Required key %s is missing.", strchr (keyName (specKey), '/'));
 		// pass parentKey as key, so we store the info message there,
 		// because key is missing in KeySet
 		handleConflict (parentKey, msg, ch->missing);
 		elektraFree (msg);
+		ret = -1;
 	}
 
 	if (!found && isKdbGet)
@@ -701,7 +689,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 		if (keyGetMeta (specKey, "assign/condition") != NULL)
 		{
 			Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
-			keySetMeta (newKey, "assign/condition", keyString (keyGetMeta (specKey, "assign/condition")));
+			copyMeta (newKey, specKey);
 			ksAppendKey (ks, newKey);
 		}
 		else if (keyGetMeta (specKey, "default") != NULL)
@@ -711,9 +699,15 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			copyMeta (newKey, specKey);
 			ksAppendKey (ks, newKey);
 		}
+		else if (keyGetMeta (specKey, "array") != NULL)
+		{
+			Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
+			copyMeta (newKey, specKey);
+			ksAppendKey (ks, newKey);
+		}
 	}
 
-	int ret = 0;
+	ksRewind (ks);
 	while ((cur = ksNext (ks)) != NULL)
 	{
 		if (handleErrors (cur, parentKey, ks, specKey, ch, configBaseName) != 0)
@@ -721,7 +715,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			ret = -1;
 		}
 
-		keySetMeta (cur, "conflict/invalid", NULL);
+		keySetMeta (cur, "conflict/invalid", NULL); // TODO: ??? skip later on?
 	}
 
 	return ret;
@@ -762,7 +756,6 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		pluginData = elektraMalloc (sizeof (PluginData));
 		pluginData->counter = 0;
-		pluginData->ks = ksNew (0, KS_END);
 	}
 
 	int clean = 0;
@@ -772,14 +765,33 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		pluginData->counter = 0;
 	}
 
-	// extract spec namespace, and store in plugin data
-	Key * specParent = keyNew ("spec", KEY_END);
-
-	KeySet * specKS = ksCut (returned, specParent);
-	ksAppend (pluginData->ks, specKS);
-
+	// store plugin data
 	elektraPluginSetData (handle, pluginData);
 
+	// build spec
+	KeySet * specKS = ksNew (0, KS_END);
+
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		if (keyGetNamespace (cur) == KEY_NS_SPEC)
+		{
+			if (isArraySpec (cur))
+			{
+				KeySet * specs = instantiateArraySpec (returned, cur);
+				ksAppend (specKS, specs);
+			}
+			else
+			{
+				ksAppendKey (specKS, cur);
+			}
+		}
+	}
+
+	// remove spec namespace from returned
+	Key * specParent = keyNew ("spec", KEY_END);
+	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 
 	// extract other namespaces
@@ -839,13 +851,26 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	elektraPluginSetData (handle, pluginConfig);
 
-	// get spec namespace from plugin data
-	KeySet * specKS = pluginConfig->ks;
+	// build spec
+	KeySet * specKS = ksNew (0, KS_END);
 
-	// remove spec keys from KeySet
-	Key * specParent = keyNew ("spec", KEY_END);
-	KeySet * specReturned = ksCut (returned, specParent);
-	keyDel (specParent);
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		if (keyGetNamespace (cur) == KEY_NS_SPEC)
+		{
+			if (isArraySpec (cur))
+			{
+				KeySet * specs = instantiateArraySpec (returned, cur);
+				ksAppend (specKS, specs);
+			}
+			else
+			{
+				ksAppendKey (specKS, cur);
+			}
+		}
+	}
 
 	// extract other namespaces
 	KeySet * ks = ksCut (returned, parentKey);
@@ -864,11 +889,16 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+
+		if (keyGetMeta (specKey, "internal/spec/array") == NULL)
+		{
+			ksAppendKey (returned, specKey);
+		}
 	}
 
 	// reconstruct KeySet
-	ksAppend (returned, specReturned);
 	ksAppend (returned, ks);
+
 
 	// cleanup
 	ksDel (ks);
@@ -882,8 +912,6 @@ int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (pluginConfig != NULL)
 	{
-		ksDel (pluginConfig->ks);
-
 		elektraFree (pluginConfig);
 		elektraPluginSetData (handle, NULL);
 	}
