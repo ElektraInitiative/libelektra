@@ -522,6 +522,41 @@ scripts/reformat-shfmt scripts/reformat-shfmt # Reformat the source of `reformat
 
 .
 
+##### Tool Integration
+
+The GitHub project page of [`shfmt`][] offers some options to integrate the tool into your development workflow [here](https://github.com/mvdan/sh#related-projects).
+
+###### TextMate
+
+The steps below show you how to create a [TextMate][] command that formats a documents with [`shfmt`][] every time you save it.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.shell` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_SHFMT_FORMAT:-shfmt}" -s -sr; then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
+
 ### Doxygen Guidelines
 
 `doxygen` is used to document the API and to build the html and pdf output.
