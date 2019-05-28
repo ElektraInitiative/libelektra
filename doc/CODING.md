@@ -343,7 +343,7 @@ While TextMate does not support cmake format directly, you can quickly create a 
       fi
       ```
 
-   9. Save your new command: <kbd>⌘</kbd> + <kbd>N</kbd>
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
    10. Store the value `unexpand` in the variable `TM_CMAKE_FORMAT_FILTER`. To do that save the text
 
    ```ini
@@ -462,7 +462,7 @@ To reformat a Markdown document in [TextMate][] every time you save it, please f
       fi
       ```
 
-   9. Save your new command: <kbd>⌘</kbd> + <kbd>N</kbd>
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
 
 ### Doxygen Guidelines
 
