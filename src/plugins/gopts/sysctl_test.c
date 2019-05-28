@@ -7,8 +7,9 @@
  *
  */
 
+#include <sys/types.h> // has to be included before sys/sysctl.h
+
 #include <sys/sysctl.h>
-#include <sys/types.h>
 
 #ifndef KERN_PROC
 #error no KERN_PROC
