@@ -506,6 +506,22 @@ export PATH=$PATH:"$HOME/bin"
 
 .
 
+##### Usage
+
+We provide the script [`reformat-shfmt`](../scripts/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
+
+```sh
+scripts/reformat-shfmt
+```
+
+. You can also reformat specific files by listing filenames after the script:
+
+```sh
+scripts/reformat-shfmt scripts/reformat-shfmt # Reformat the source of `reformat-shfmt`
+```
+
+.
+
 ### Doxygen Guidelines
 
 `doxygen` is used to document the API and to build the html and pdf output.
