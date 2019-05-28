@@ -615,6 +615,7 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 
 static bool specMatches (Key * specKey, Key * otherKey)
 {
+	// TODO: use globbing
 	const char * spec = keyUnescapedName (specKey);
 	size_t specNsLen = strlen (spec) + 1;
 	spec += specNsLen; // skip namespace
