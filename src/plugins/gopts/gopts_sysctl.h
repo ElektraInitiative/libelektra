@@ -65,7 +65,7 @@ static char ** loadEnvp (void)
 	return environ;
 }
 
-static void cleanupArgs (int argc, char ** argv)
+static void cleanupArgs (int argc ELEKTRA_UNUSED, char ** argv)
 {
 	elektraFree (argv[0]);
 	elektraFree (argv);
