@@ -153,7 +153,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   #>   key: four
   ```
 
-  .
+  . _(René Schwaiger)_
 
 - [YAML CPP][] now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
 - The plugin converts “sparse” key sets properly. For example, for the key set that contains **only** the key:
