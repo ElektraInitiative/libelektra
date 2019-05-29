@@ -70,8 +70,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			// TODO: Correct??
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
@@ -99,15 +98,13 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			// TODO: Correct??
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				// TODO: Correct?
 				ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (parentKey, "return value of %s doesn't match expected exit %s\n",
 								  keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
@@ -129,15 +126,13 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			// TODO: Correct??
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (parentKey, "launching childprocess failed with %s\n", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				// TODO: Correct??
 				ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (parentKey, "return value of %s doesn't match expected exit %s\n",
 								  keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
