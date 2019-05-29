@@ -209,7 +209,7 @@ If you work on Elektra’s code base regularly you might want to integrate the f
 
 ###### TextMate
 
-While [TextMate](https://macromates.com) supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
+While [TextMate][] supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
 
 1. open the bundle editor (“Bundles” → “Edit Bundles”),
 2. navigate to the “Reformat Code” item of the C bundle (“C” → “Menu Actions” → “Reformat Code”),
@@ -217,6 +217,8 @@ While [TextMate](https://macromates.com) supports `clang-format` for the current
 4. change the menu option for the field “Save” to “Nothing”
 
 . After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
+
+[textmate]: https://macromates.com
 
 ### C++ Guidelines
 
@@ -256,7 +258,7 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 
 .
 
-##### Install
+##### Installation
 
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
@@ -341,7 +343,7 @@ While TextMate does not support cmake format directly, you can quickly create a 
       fi
       ```
 
-   9. Save your new command: <kbd>⌘</kbd> + <kbd>N</kbd>
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
    10. Store the value `unexpand` in the variable `TM_CMAKE_FORMAT_FILTER`. To do that save the text
 
    ```ini
@@ -374,8 +376,9 @@ Most notably use:
 - Please use [**title-case**](https://en.wiktionary.org/wiki/title_case) for headings in the general documentation.
 - For [man pages](help/) please use **only capital letters for subheadings** and only **small letters for the main header**. We use this header style to match the look and feel of man pages for Unix tools such as `ls` or `mkdir`.
 
-Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
-format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).
+#### Prettier
+
+We use [`prettier`][] to format the documentation according to the guidelines given above.
 
 Under certain **exceptional** circumstances you might want to prevent `prettier` from formatting certain parts of a Markdown file. To do
 that you can
@@ -384,6 +387,82 @@ that you can
 - use `<!-- prettier-ignore -->` to disable formatting till the end of a file
 
 .
+
+[`prettier`]: https://prettier.io
+
+##### Installation
+
+###### macOS
+
+On macOS you can install [`prettier`][] using [Homebrew](https://brew.sh):
+
+```sh
+brew install prettier
+```
+
+.
+
+###### General
+
+To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
+
+```sh
+npm install --global prettier@1.17.1
+```
+
+.
+
+##### Usage
+
+You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/reformat-markdown):
+
+```sh
+scripts/reformat-markdown
+```
+
+. To format only some files, please specify a list of filenames after the command:
+
+```sh
+scripts/reformat-markdown doc/CODING.md # Reformat this file
+```
+
+.
+
+##### Tool Integration
+
+The [homepage of Prettier][`prettier`] lists various options to integrate the tool into your workflow.
+
+###### TextMate
+
+To reformat a Markdown document in [TextMate][] every time you save it, please follow the steps listed below.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `text.html.markdown` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_PRETTIER:-prettier}" --stdin --stdin-filepath "${TM_FILEPATH}"
+      then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
 
 ### Doxygen Guidelines
 
