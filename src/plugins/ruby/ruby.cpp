@@ -143,8 +143,7 @@ static VALUE clear_ruby_exception_set_error (ckdb::Key * errorKey)
 	VALUE exception = clear_ruby_exception ();
 	VALUE msg = get_exception_string (exception);
 
-	// TODO: Correct??
-	ELEKTRA_SET_INSTALLATION_ERROR (errorKey, StringValueCStr (msg));
+	ELEKTRA_SET_PLUGIN_MISBHV_ERROR (errorKey, StringValueCStr (msg));
 
 	return exception;
 }
