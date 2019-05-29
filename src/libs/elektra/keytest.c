@@ -322,11 +322,6 @@ int keyIsDirectBelow (const Key * key, const Key * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if (sizeAbove > sizeBelow)
-	{
-		return 0;
-	}
-
 	if (above[0] != '\0' && below[0] == '\0')
 	{
 		// cascading
@@ -341,6 +336,11 @@ int keyIsDirectBelow (const Key * key, const Key * check)
 		size_t len = strlen (below);
 		below += len;
 		sizeBelow -= len;
+	}
+
+	if (sizeAbove >= sizeBelow)
+	{
+		return 0;
 	}
 
 	size_t nextPartSize = strlen (below + sizeAbove);
