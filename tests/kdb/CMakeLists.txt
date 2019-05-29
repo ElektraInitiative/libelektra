@@ -30,5 +30,12 @@ add_kdb_test (nested REQUIRED_PLUGINS error)
 add_kdb_test (simple REQUIRED_PLUGINS error)
 add_kdb_test (ensure REQUIRED_PLUGINS tracer list spec)
 
-set_source_files_properties (testkdb_highlevel PROPERTIES COMPILE_FLAGS -Wno-sign-promo)
-add_kdb_test (highlevel LINK_ELEKTRA elektra-highlevel REQUIRED_PLUGINS error)
+if (NOT
+    (APPLE
+     AND XCODE
+     AND XCODE_VERSION
+	 VERSION_EQUAL
+	 10.1))
+	set_source_files_properties (testkdb_highlevel PROPERTIES COMPILE_FLAGS -Wno-sign-promo)
+	add_kdb_test (highlevel LINK_ELEKTRA elektra-highlevel REQUIRED_PLUGINS error)
+endif ()
