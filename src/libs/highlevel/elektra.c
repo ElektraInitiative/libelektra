@@ -124,7 +124,10 @@ void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error)
 	if (rc == 0)
 	{
 		// if successful, refresh config
-		kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
+		if (kdbGet (elektra->kdb, elektra->config, parentKey) == -1)
+		{
+			*error = elektraErrorCreateFromKey (parentKey);
+		}
 	}
 	else if (rc == 1)
 	{

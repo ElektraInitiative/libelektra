@@ -209,7 +209,7 @@ void test_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a/#", KEY_META, "default", "7", KEY_END),
+		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a/#", KEY_META, "default", "7", KEY_META, "type", "long", KEY_END),
 				     keyNew ("spec" PARENT_KEY "/a", KEY_META, "array", "#5", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -218,36 +218,43 @@ void test_array (void)
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "array")), "#5");
+		succeed_if (keyGetMeta (lookup, "type") == NULL, "parent shouldn't have copied metadata");
 
 		lookup = ksLookupByName (ks, PARENT_KEY "/a/#0", 0);
 		succeed_if (lookup != NULL, ".../a/#0 not found");
 		succeed_if_same_string (keyString (lookup), "7");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "7");
+		succeed_if_same_string (keyString (keyGetMeta (lookup, "type")), "long");
 
 		lookup = ksLookupByName (ks, PARENT_KEY "/a/#1", 0);
 		succeed_if (lookup != NULL, ".../a/#1 not found");
 		succeed_if_same_string (keyString (lookup), "7");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "7");
+		succeed_if_same_string (keyString (keyGetMeta (lookup, "type")), "long");
 
 		lookup = ksLookupByName (ks, PARENT_KEY "/a/#2", 0);
 		succeed_if (lookup != NULL, ".../a/#2 not found");
 		succeed_if_same_string (keyString (lookup), "7");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "7");
+		succeed_if_same_string (keyString (keyGetMeta (lookup, "type")), "long");
 
 		lookup = ksLookupByName (ks, PARENT_KEY "/a/#3", 0);
 		succeed_if (lookup != NULL, ".../a/#3 not found");
 		succeed_if_same_string (keyString (lookup), "7");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "7");
+		succeed_if_same_string (keyString (keyGetMeta (lookup, "type")), "long");
 
 		lookup = ksLookupByName (ks, PARENT_KEY "/a/#4", 0);
 		succeed_if (lookup != NULL, ".../a/#4 not found");
 		succeed_if_same_string (keyString (lookup), "7");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "7");
+		succeed_if_same_string (keyString (keyGetMeta (lookup, "type")), "long");
 
 		lookup = ksLookupByName (ks, PARENT_KEY "/a/#5", 0);
 		succeed_if (lookup != NULL, ".../a/#5 not found");
 		succeed_if_same_string (keyString (lookup), "7");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "7");
+		succeed_if_same_string (keyString (keyGetMeta (lookup, "type")), "long");
 
 		ksDel (ks);
 	}

@@ -50,7 +50,7 @@ static Key * helpKey = NULL;
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
 	keyNew ("/disjointed", KEY_VALUE, "black", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black",
 	KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
 	keyNew ("/existinggentype", KEY_VALUE, "cyan", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan",
@@ -130,7 +130,7 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
 	keyNew ("/disjointed", KEY_VALUE, "black", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black",
 	KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
 	keyNew ("/existinggentype", KEY_VALUE, "cyan", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan",

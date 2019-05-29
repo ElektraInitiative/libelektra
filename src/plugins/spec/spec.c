@@ -484,20 +484,11 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec)
 
 static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 {
-	Key * parentLookup = keyDup (arraySpec);
+	Key * parentLookup = keyNew (strchr (keyName (arraySpec), '/'), KEY_END);
 	keySetBaseName (parentLookup, NULL);
 
+	// either existed already, or was added by processSpecKey because of KeySet order
 	Key * arrayParent = ksLookup (ks, parentLookup, 0);
-	if (arrayParent == NULL)
-	{
-		ksAppendKey (ks, parentLookup);
-		arrayParent = parentLookup;
-	}
-	else
-	{
-		keyDel (parentLookup);
-	}
-
 	if (keyGetMeta (arrayParent, "internal/spec/array/validated") != NULL)
 	{
 		return;
@@ -505,15 +496,14 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 
 	// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
 	KeySet * ksCopy = ksDup (ks);
-	Key * parentCut = keyNew (strchr (keyName (arrayParent), '/'), KEY_END);
-	KeySet * subKeys = ksCut (ksCopy, parentCut);
+	KeySet * subKeys = ksCut (ksCopy, parentLookup);
 	ksDel (ksCopy);
 
 	Key * cur;
 	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (!keyIsDirectBelow (parentCut, cur))
+		if (!keyIsDirectBelow (parentLookup, cur))
 		{
 			continue;
 		}
@@ -526,7 +516,7 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 	}
 
 	ksDel (subKeys);
-	keyDel (parentCut);
+	keyDel (parentLookup);
 
 	keySetMeta (arrayParent, "internal/spec/array/validated", "");
 }
@@ -687,7 +677,11 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 	bool require = keyGetMeta (specKey, "require") != NULL;
 	bool wildcardSpec = isWildcardSpec (specKey);
 
-	ELEKTRA_ASSERT (!isArraySpec (specKey), "uninstantiated array spec");
+	if (isArraySpec (specKey))
+	{
+		// skip uninstantiated array specs
+		return 0;
+	}
 
 	if (keyGetMeta (specKey, "internal/spec/array") != NULL)
 	{
@@ -721,35 +715,43 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 
 
 	int ret = 0;
-	if (!found && require)
+	if (!found)
 	{
-		char * msg = elektraFormat ("Required key %s is missing.", strchr (keyName (specKey), '/'));
-		// pass parentKey as key, so we store the info message there,
-		// because key is missing in KeySet
-		handleConflict (parentKey, msg, ch->missing);
-		elektraFree (msg);
-		ret = -1;
-	}
+		if (require)
+		{
+			char * msg = elektraFormat ("Required key %s is missing.", strchr (keyName (specKey), '/'));
+			// pass parentKey as key, so we store the info message there,
+			// because key is missing in KeySet
+			handleConflict (parentKey, msg, ch->missing);
+			elektraFree (msg);
+			ret = -1;
+		}
 
-	if (!found && isKdbGet)
-	{
-		if (keyGetMeta (specKey, "assign/condition") != NULL)
+		if (isKdbGet)
+		{
+			if (keyGetMeta (specKey, "assign/condition") != NULL)
+			{
+				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
+				copyMeta (newKey, specKey);
+				ksAppendKey (ks, newKey);
+			}
+			else if (keyGetMeta (specKey, "default") != NULL)
+			{
+				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
+						       keyString (keyGetMeta (specKey, "default")), KEY_END);
+				copyMeta (newKey, specKey);
+				ksAppendKey (ks, newKey);
+			}
+		}
+
+		if (keyGetMeta (specKey, "array") != NULL)
 		{
 			Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 			copyMeta (newKey, specKey);
-			ksAppendKey (ks, newKey);
-		}
-		else if (keyGetMeta (specKey, "default") != NULL)
-		{
-			Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
-					       keyString (keyGetMeta (specKey, "default")), KEY_END);
-			copyMeta (newKey, specKey);
-			ksAppendKey (ks, newKey);
-		}
-		else if (keyGetMeta (specKey, "array") != NULL)
-		{
-			Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
-			copyMeta (newKey, specKey);
+			if (!isKdbGet)
+			{
+				keySetMeta (newKey, "internal/spec/remove", "");
+			}
 			ksAppendKey (ks, newKey);
 		}
 	}
@@ -803,10 +805,8 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				KeySet * specs = instantiateArraySpec (returned, cur);
 				ksAppend (specKS, specs);
 			}
-			else
-			{
-				ksAppendKey (specKS, cur);
-			}
+
+			ksAppendKey (specKS, cur);
 		}
 	}
 
@@ -863,12 +863,15 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				KeySet * specs = instantiateArraySpec (returned, cur);
 				ksAppend (specKS, specs);
 			}
-			else
-			{
-				ksAppendKey (specKS, cur);
-			}
+
+			ksAppendKey (specKS, cur);
 		}
 	}
+
+	// remove spec namespace from returned
+	Key * specParent = keyNew ("spec", KEY_END);
+	ksDel (ksCut (returned, specParent));
+	keyDel (specParent);
 
 	// extract other namespaces
 	KeySet * ks = ksCut (returned, parentKey);
@@ -884,14 +887,30 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		if (keyGetMeta (specKey, "internal/spec/array") == NULL)
+		keySetMeta (specKey, "internal/spec/array/validated", NULL);
+
+		if (keyGetMeta (specKey, "internal/spec/array") == NULL && keyGetMeta (specKey, "internal/spec/remove") == NULL)
 		{
 			ksAppendKey (returned, specKey);
 		}
 	}
 
 	// reconstruct KeySet
-	ksAppend (returned, ks);
+	ksRewind (ks);
+	while ((cur = ksNext (ks)) != NULL)
+	{
+		if (keyGetNamespace (cur) == KEY_NS_CASCADING || keyGetNamespace (cur) == KEY_NS_SPEC)
+		{
+			continue;
+		}
+
+		keySetMeta (cur, "internal/spec/array/validated", NULL);
+
+		if (keyGetMeta (cur, "internal/spec/array") == NULL && keyGetMeta (cur, "internal/spec/remove") == NULL)
+		{
+			ksAppendKey (returned, cur);
+		}
+	}
 
 	// cleanup
 	ksDel (ks);
