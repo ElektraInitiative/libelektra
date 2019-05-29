@@ -251,7 +251,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	char * format = getReadFormat (handle);
 	if (!format)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "invalid 'format' specified");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "invalid 'format' specified");
 		return -1;
 	}
 
@@ -280,8 +280,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			// discard line
 			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
-				// TODO: Correct?
-				ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 					parentKey, "failed discarding rest of line at position %ld with key %s", ftell (fp), key);
 				elektraFree (key);
 				fclose (fp);
@@ -298,7 +297,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (keyAddName (read, strippedkey) == -1)
 		{
-			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, strippedkey);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", strippedkey);
 			keyDel (read);
 			elektraFree (key);
 			if (n == 2)
@@ -320,8 +319,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key %s at position %ld", keyName (read),
-					    ftell (fp));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "duplicated key %s at position %ld", keyName (read),
+								 ftell (fp));
 			elektraFree (format);
 			fclose (fp);
 			return -1;
@@ -331,7 +330,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file at position %ld", ftell (fp));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "not at the end of file at position %ld", ftell (fp));
 		elektraFree (format);
 		fclose (fp);
 		return -1;
