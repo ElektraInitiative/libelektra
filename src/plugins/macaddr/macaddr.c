@@ -16,6 +16,7 @@
 #include <kdbprivate.h>
 #include <regex.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define VALIDATION_SUCCESS 0
 #define VALIDATION_ERROR 1
