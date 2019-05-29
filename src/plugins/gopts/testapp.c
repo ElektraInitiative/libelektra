@@ -91,7 +91,7 @@ int main (int argc, const char ** argv)
 		strcat (buf, libFailed ? "FAIL" : "OK");
 		strcat (buf, ") differs from plugin->get (");
 		strcat (buf, pluginFailed ? "FAIL" : "OK");
-		strcat (buf, ": ");
+		strcat (buf, "): ");
 		strncat (buf, specname, 128);
 		yield_error (buf);
 
