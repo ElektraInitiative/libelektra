@@ -14,6 +14,7 @@
 
 #include <string.h>
 #include <sys/sysctl.h>
+#include <unistd.h>
 
 #include <kdbhelper.h>
 
@@ -25,7 +26,7 @@ static int loadArgs (char *** argvp)
 	mib[0] = CTL_KERN;
 	mib[1] = KERN_PROC;
 	mib[2] = KERN_PROC_ARGS;
-	mib[3] = -1;
+	mib[3] = getpid ();
 	size_t size;
 	if (sysctl (mib, 4, NULL, &size, NULL, 0) == -1)
 	{
