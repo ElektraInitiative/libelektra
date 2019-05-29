@@ -24,8 +24,8 @@ description:Installation
 macro:INSTALLATION
 
 number:C01410
-description:Assertion
-macro:ASSERTION
+description:Internal
+macro:INTERNAL
 
 number:C01420
 description:Interface

@@ -158,9 +158,9 @@ static int validatePermission (Key * key, Key * parentKey)
 		if (uid != 0)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
-							     "To check permissions for %s I need to be the root user."
-							     " Are you running kdb as root?\"",
-							     keyName (key));
+						     "To check permissions for %s I need to be the root user."
+						     " Are you running kdb as root?\"",
+						     keyName (key));
 			return -1;
 		}
 	}
@@ -203,9 +203,9 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (euidResult != 0 || egidResult != 0)
 	{
-		ELEKTRA_SET_ASSERTION_ERROR (parentKey,
-					     "There was a problem in the user switching process."
-					     "Please report the issue at https://issues.libelektra.org");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "There was a problem in the user switching process."
+					    "Please report the issue at https://issues.libelektra.org");
 		return -1;
 	}
 
@@ -239,14 +239,14 @@ static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd 
 	// therefore ngroups now contains the actual number of groups for the user
 	if (getgrouplist (p->pw_name, (int) p->pw_gid, (*groups), &ngroups) < 0)
 	{
-		ELEKTRA_SET_ASSERTION_ERROR (parentKey,
-					     "There was a problem in the getting all groups for the user."
-					     "Please report the issue at https://issues.libelektra.org");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "There was a problem in the getting all groups for the user."
+					    "Please report the issue at https://issues.libelektra.org");
 		if (seteuid (currentUID) < 0)
 		{
-			ELEKTRA_SET_ASSERTION_ERROR (parentKey,
-						     "There was a problem in the user switching process."
-						     "Please report the issue at https://issues.libelektra.org");
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+						    "There was a problem in the user switching process."
+						    "Please report the issue at https://issues.libelektra.org");
 		}
 		return -1;
 	}
@@ -267,9 +267,9 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
 	if (gidErr < 0)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
-						     "Could not set egid of user \"%s\" for key \"%s\"."
-						     " Are you running kdb as root?\"",
-						     name, keyName (key));
+					     "Could not set egid of user \"%s\" for key \"%s\"."
+					     " Are you running kdb as root?\"",
+					     name, keyName (key));
 		return -1;
 	}
 	return 0;
@@ -290,9 +290,9 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
 	if (err < 0)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
-						     "Could not set euid of user \"%s\" for key \"%s\"."
-						     " Are you running kdb as root?\"",
-						     p->pw_name, keyName (key));
+					     "Could not set euid of user \"%s\" for key \"%s\"."
+					     " Are you running kdb as root?\"",
+					     p->pw_name, keyName (key));
 		return -1;
 	}
 	return 0;

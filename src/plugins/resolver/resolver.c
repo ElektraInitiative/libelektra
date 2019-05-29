@@ -150,13 +150,13 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (
-				parentKey, "conflict because other process writes to configuration indicated by file lock");
+			ELEKTRA_SET_RESOURCE_ERROR (parentKey,
+						    "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "assuming conflict because of failed file lock with message: %s",
-							     strerror (errno));
+						     strerror (errno));
 		}
 		return -1;
 	}
@@ -366,8 +366,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 			{
 				resolverClose (p);
 				keyDel (testKey);
-				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not resolve user key with conf %s",
-								     ELEKTRA_VARIANT_USER);
+				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
 				return -1;
 			}
 			else
@@ -388,8 +387,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 			{
 				resolverClose (p);
 				keyDel (testKey);
-				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not resolve system key with conf %s",
-								     ELEKTRA_VARIANT_SYSTEM);
+				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
 				return -1;
 			}
 			else
@@ -462,8 +460,8 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 
 		if ((mutexError = pthread_mutexattr_init (&mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (
-				errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d", mutexError);
+			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d",
+						     mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
@@ -476,8 +474,8 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 		}
 		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (
-				errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d", mutexError);
+			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d",
+						     mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
@@ -664,17 +662,16 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	{
 		if (errno == ENOENT)
 		{
-			ELEKTRA_SET_ASSERTION_ERRORF (parentKey,
-						      "The configuration file \"%s\" was there earlier, "
-						      "now it is missing",
-						      pk->filename);
+			ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+						     "The configuration file \"%s\" was there earlier, "
+						     "now it is missing",
+						     pk->filename);
 			return -1;
 		}
 		else if (pk->fd == -1)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
-							     "Could not reopen configuration file \"%s\" for writing because \"%s\"",
-							     pk->filename, strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not reopen configuration file \"%s\" for writing because \"%s\"",
+						     pk->filename, strerror (errno));
 			return -1;
 		}
 		// successfully reopened
@@ -689,10 +686,10 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_ASSERTION_ERRORF (parentKey,
-						      "No configuration file was there earlier, "
-						      "now configuration file \"%s\" exists",
-						      pk->filename);
+			ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+						     "No configuration file was there earlier, "
+						     "now configuration file \"%s\" exists",
+						     pk->filename);
 			return -1;
 		}
 
@@ -721,7 +718,7 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 	if (pk->fd == -1)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not create configuration file \"%s\" because %s", pk->filename,
-						     strerror (errno));
+					     strerror (errno));
 		return -1;
 	}
 	return 0;
@@ -974,7 +971,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 	if (futimens (fd, times) == -1)
 	{
 		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
-						       fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
+					       fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = { { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 },   // atime
@@ -983,7 +980,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 	if (futimes (fd, times) == -1)
 	{
 		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not update time stamp of \"%s\", because %s",
-						       fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
+					       fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #else
 #warning futimens/futimes not defined
@@ -1008,9 +1005,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	int fd = open (pk->tempfile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
-						     "Could not open file again for changing metadata of file \"%s\", because %s",
-						     pk->tempfile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file again for changing metadata of file \"%s\", because %s",
+					     pk->tempfile, strerror (errno));
 		ret = -1;
 	}
 
@@ -1062,9 +1058,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		// change mode to what it was before
 		if (fchmod (fd, pk->filemode) == -1)
 		{
-			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey,
-							       "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
-							       pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
+						       pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
 		}
 	}
 
@@ -1072,9 +1067,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	{
 		if (fchown (fd, pk->uid, pk->gid) == -1)
 		{
-			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey,
-							       "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
-							       pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
+						       pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
 		}
 	}
 
@@ -1085,8 +1079,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	// checking dirp not needed, fsync will have EBADF
 	if (fsync (dirfd (dirp)) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not sync directory \"%s\", because %s", pk->dirname,
-						       strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not sync directory \"%s\", because %s", pk->dirname, strerror (errno));
 	}
 	closedir (dirp);
 
@@ -1178,8 +1171,7 @@ static void elektraUnlinkFile (char * filename, Key * parentKey)
 	int errnoSave = errno;
 	if (unlink (filename) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "could not unlink the file \"%s\" because of \"%s\"", filename,
-						       strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "could not unlink the file \"%s\" because of \"%s\"", filename, strerror (errno));
 		errno = errnoSave;
 	}
 }

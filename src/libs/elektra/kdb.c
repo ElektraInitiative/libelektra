@@ -361,7 +361,7 @@ KDB * kdbOpen (Key * errorKey)
 	keySetString (errorKey, "kdbOpen(): mountModules");
 	if (mountModules (handle, handle->modules, errorKey) == -1)
 	{
-		ELEKTRA_ADD_ASSERTION_WARNING (errorKey, "Mounting modules did not work");
+		ELEKTRA_ADD_INTERNAL_WARNING (errorKey, "Mounting modules did not work");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -1304,8 +1304,8 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 
 			if (ret == -1)
 			{
-				ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
-								keyName (backend->mountpoint));
+				ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
+							       keyName (backend->mountpoint));
 			}
 		}
 	}
@@ -1336,8 +1336,8 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 
 			if (ret == -1)
 			{
-				ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Error during rollback. This means backend is broken: %s",
-								keyName (backend->mountpoint));
+				ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error during rollback. This means backend is broken: %s",
+							       keyName (backend->mountpoint));
 			}
 		}
 	}
@@ -1495,7 +1495,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		if (syncstate < 0) clearError (parentKey); // clear previous error to set new one
 		if (syncstate == -1)
 		{
-			ELEKTRA_SET_ASSERTION_ERROR (parentKey, "Assert failed: invalid namespace");
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Assert failed: invalid namespace");
 			ELEKTRA_LOG ("syncstate == -1");
 		}
 		else if (syncstate < -1)
@@ -1576,8 +1576,8 @@ error:
 		Key * found = ksLookup (ks, errorKey, 0);
 		if (!found)
 		{
-			ELEKTRA_ADD_ASSERTION_WARNINGF (parentKey, "Error key %s not found in keyset even though it was found before",
-							keyName (errorKey));
+			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error key %s not found in keyset even though it was found before",
+						       keyName (errorKey));
 		}
 	}
 

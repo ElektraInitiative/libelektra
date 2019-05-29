@@ -154,7 +154,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		if (err)
 		{
 			// TODO: Correct??
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to receive the GPG key because: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to receive the GPG key because: %s", gpgme_strerror (err));
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}
@@ -184,8 +184,8 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				if (err)
 				{
 					// TODO: Correct??
-					ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to receive the GPG key because: %s",
-								      gpgme_strerror (err));
+					ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to receive the GPG key because: %s",
+								     gpgme_strerror (err));
 					elektraGpgmeKeylistFree (&list);
 					return NULL;
 				}
@@ -260,7 +260,7 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * err
 	readCount = gpgme_data_read (src, buffer, ciphertextLen);
 	if (readCount != ciphertextLen)
 	{
-		ELEKTRA_SET_ASSERTION_ERROR (errorKey, "An error during occurred during the data transfer.");
+		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "An error during occurred during the data transfer.");
 		returnValue = -1; // failure
 		goto cleanup;
 	}
@@ -402,7 +402,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		if (err)
 		{
 			returnValue = -1;
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 			goto cleanup;
 		}
 
@@ -410,7 +410,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		if (err)
 		{
 			returnValue = -1;
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 			gpgme_data_release (input);
 			goto cleanup;
 		}
@@ -419,7 +419,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		if (err)
 		{
 			returnValue = -1;
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 			gpgme_data_release (ciphertext);
 			gpgme_data_release (input);
 			goto cleanup;
@@ -505,7 +505,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		err = gpgme_data_new_from_mem (&ciphertext, keyValue (k), keyGetValueSize (k), 0);
 		if (err)
 		{
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 			returnValue = -1;
 			goto cleanup;
 		}
@@ -513,7 +513,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		err = gpgme_data_new (&plaintext);
 		if (err)
 		{
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 			returnValue = -1;
 			gpgme_data_release (ciphertext);
 			goto cleanup;
@@ -522,7 +522,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		err = gpgme_op_decrypt (ctx, ciphertext, plaintext);
 		if (err)
 		{
-			ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 			returnValue = -1;
 			gpgme_data_release (plaintext);
 			gpgme_data_release (ciphertext);
@@ -561,7 +561,7 @@ int elektraGpgmeOpen (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED Key * error
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_OpenPGP);
 	if (err)
 	{
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
 		return -1; // failure
 	}
 	return 1; // success

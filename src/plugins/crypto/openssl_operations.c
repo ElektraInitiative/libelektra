@@ -61,7 +61,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	if (!RAND_bytes (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1))
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "failed to generate random salt with error code %lu", ERR_get_error ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "failed to generate random salt with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -89,9 +89,9 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 				     keyBuffer))
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey,
-					      "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
-					      ERR_get_error ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey,
+					     "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
+					     ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -136,7 +136,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 				     KEY_BUFFER_SIZE, keyBuffer))
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (
+		ELEKTRA_SET_INTERNAL_ERRORF (
 			errorKey, "Failed to restore the cryptographic key for decryption. Libcrypto returned the error code: %lu",
 			ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
@@ -244,7 +244,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	if (ERR_peek_error ())
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error ());
 		elektraFree (*handle);
 		*handle = NULL;
 		pthread_mutex_unlock (&mutex_ssl);
@@ -510,7 +510,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 
 error:
 	// TODO: Correct??
-	ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
+	ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
 	BIO_free_all (decrypted);
 	pthread_mutex_unlock (&mutex_ssl);
 	return -1;
@@ -530,8 +530,7 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 	if (!RAND_bytes (buffer, length))
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "Failed to generate random string. libcrypto error code was: %lu",
-					      ERR_get_error ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to generate random string. libcrypto error code was: %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return NULL;
 	}

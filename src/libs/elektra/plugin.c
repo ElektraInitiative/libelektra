@@ -210,7 +210,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				Key * lookup = ksLookup (referencePlugins, keyNew (referenceName, KEY_END), KDB_O_DEL);
 				if (!lookup)
 				{
-					ELEKTRA_ADD_ASSERTION_WARNINGF (errorKey, "Could not reference back to plugin %s", referenceName);
+					ELEKTRA_ADD_INTERNAL_WARNINGF (errorKey, "Could not reference back to plugin %s", referenceName);
 					/* Getting a reference plugin at a previous stage did not work.
 					Note that this check is necessary, because loading the plugin could
 					fail for example at errorplugins and at a later point, for example

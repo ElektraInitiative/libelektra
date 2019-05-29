@@ -113,7 +113,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	if (!meta)
 	{
 		// TODO: Correct?
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
 
@@ -156,7 +156,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -173,8 +173,8 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_ASSERTION_ERRORF (errorKey, "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
-					      payloadLen);
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
+					     payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
