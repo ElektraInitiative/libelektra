@@ -783,10 +783,21 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 	ssize_t left = 0;
 	ssize_t right = ks->size;
 	--right;
-	register int cmpresult = 1;
+	register int cmpresult;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
 
+	if (ks->size == 0)
+	{
+		return -1;
+	}
+
+	cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[right]);
+	if (cmpresult > 0)
+	{
+		return -ks->size - 1;
+	}
+	cmpresult = 1;
 
 	while (1)
 	{
@@ -1174,10 +1185,8 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	}
 
 	// search the cutpoint
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 0)
-	{
-		++it;
-	}
+	ssize_t search = ksSearchInternal (ks, cutpoint);
+	it = search < 0 ? -search - 1 : search;
 
 	// we found nothing
 	if (it == ks->size) return ksNew (0, KS_END);
