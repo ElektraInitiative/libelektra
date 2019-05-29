@@ -93,7 +93,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 
 	if (sockfd < 0)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "Could not open a socket: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open a socket: %s", strerror (errno));
 	}
 
 	server = gethostbyname (hostname);

@@ -80,7 +80,7 @@ kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? 
 # will fail
 kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
-# ERROR:C04200
+# ERROR:C03200
 ```
 
 Assignment example:
@@ -123,8 +123,8 @@ kdb export /tests/conditionals ini
 #> sub/key=false
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1=val1
-# ERROR:C04200
-# Sorry, module conditionals issued the error C04200:
+# ERROR:C03200
+# Sorry, module conditionals issued the error C03200:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
 
 kdb set /tests/conditionals/sub/key true

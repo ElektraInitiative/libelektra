@@ -433,7 +433,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 	}
 	else
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
+		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
 	}
 
 	if (handle->global) ksDel (handle->global);
@@ -1077,7 +1077,7 @@ cachemiss:
 
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 		ksClear (ks);
@@ -1112,7 +1112,7 @@ cachemiss:
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
-			ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+			ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
 

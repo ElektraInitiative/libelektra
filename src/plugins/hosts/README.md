@@ -93,10 +93,10 @@ kdb get /tests/hosts/ipv6/localhost
 # Should both fail with error 04200 and return 5
 kdb set /tests/hosts/ipv4/localhost ::1
 # RET:5
-# ERROR:C04200
+# ERROR:C03200
 kdb set /tests/hosts/ipv6/localhost 127.0.0.1
 # RET:5
-# ERROR:C04200
+# ERROR:C03200
 
 # cleanup
 kdb rm -r /tests/hosts

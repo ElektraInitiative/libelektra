@@ -73,7 +73,7 @@ int elektraYaypegGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (*parent, "Uncaught exception: %s", error.what ());
+		ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();

@@ -45,7 +45,7 @@ kdb get /tests/yamlcpp/🔑
 echo "some key: @some  value" >> `kdb file /tests/yamlcpp`
 kdb get "/tests/yamlcpp/some key"
 # STDERR: .*yaml-cpp: error at line 2, column 11: unknown token.*
-# ERROR: C04100
+# ERROR: C03100
 # RET: 5
 
 # Overwrite incorrect data
@@ -246,7 +246,7 @@ kdb setmeta user/tests/yamlcpp/typetest/number check/type short
 kdb set user/tests/yamlcpp/typetest/number "One"
 # RET: 5
 # STDERR: .*Validation Semantic.*
-# ERROR: C04200
+# ERROR: C03200
 
 kdb get user/tests/yamlcpp/typetest/number
 #> 21

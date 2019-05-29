@@ -77,7 +77,7 @@ private:
 		{
 #ifdef KDBERRORS_H
 			// TODO: Correct?
-			ELEKTRA_ADD_BROKEN_PLUGIN_WARNINGF (errorKey, "Could not create C++ plugin: %s", msg);
+			ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (errorKey, "Could not create C++ plugin: %s", msg);
 #endif
 			return -1;
 		}

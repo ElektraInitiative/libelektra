@@ -133,7 +133,7 @@ static VALUE clear_ruby_exception_add_warning (ckdb::Key * warningsKey)
 	VALUE exception = clear_ruby_exception ();
 	VALUE msg = get_exception_string (exception);
 
-	ELEKTRA_ADD_BROKEN_PLUGIN_WARNING (warningsKey, StringValueCStr (msg));
+	ELEKTRA_ADD_PLUGIN_MISBHV_WARNING (warningsKey, StringValueCStr (msg));
 
 	return exception;
 }
@@ -431,7 +431,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 
 	if (global_plugin_instance == Qnil)
 	{
-		ELEKTRA_SET_BROKEN_PLUGIN_ERROR (errorKey, "invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
+		ELEKTRA_SET_PLUGIN_MISBHV_ERROR (errorKey, "invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
 
 		global_context_mutex.unlock ();
 		return -1;
@@ -512,7 +512,7 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 
 		/* error, the Ruby-plugin did not call Kdb::Plugin.define
 		 * so we do not have a Plugin instance */
-		ELEKTRA_ADD_BROKEN_PLUGIN_WARNING (warningsKey, "Error in Ruby-plugin, didn't call Kdb::Plugin.define");
+		ELEKTRA_ADD_PLUGIN_MISBHV_WARNING (warningsKey, "Error in Ruby-plugin, didn't call Kdb::Plugin.define");
 
 		return 0;
 	}
@@ -652,7 +652,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	else
 	{
 		/* if not 'get' method is available, this plugin is useless, therefore set and error */
-		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "plugin does not have a 'get' method");
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "plugin does not have a 'get' method");
 		return -1;
 	}
 	return -1;

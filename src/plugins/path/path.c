@@ -76,7 +76,7 @@ static int validateKey (Key * key, Key * parentKey)
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
 		strcat (errmsg, keyValue (key));
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "Could not stat file, message: %s", errmsg);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not stat file, message: %s", errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
 		return -1;
@@ -85,14 +85,14 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		if (!S_ISBLK (buf.st_mode))
 		{
-			ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "Device not found: %s", keyString (key));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Device not found: %s", keyString (key));
 		}
 	}
 	else if (!strcmp (keyString (meta), "directory"))
 	{
 		if (!S_ISDIR (buf.st_mode))
 		{
-			ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "Directory not found: %s", keyString (key));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Directory not found: %s", keyString (key));
 		}
 	}
 	return 1;
@@ -157,7 +157,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		name = p->pw_name;
 		if (uid != 0)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 							     "To check permissions for %s I need to be the root user."
 							     " Are you running kdb as root?\"",
 							     keyName (key));
@@ -266,7 +266,7 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
 	int gidErr = setegid ((int) gr->gr_gid);
 	if (gidErr < 0)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 						     "Could not set egid of user \"%s\" for key \"%s\"."
 						     " Are you running kdb as root?\"",
 						     name, keyName (key));
@@ -289,7 +289,7 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
 	int err = seteuid ((int) p->pw_uid);
 	if (err < 0)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey,
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 						     "Could not set euid of user \"%s\" for key \"%s\"."
 						     " Are you running kdb as root?\"",
 						     p->pw_name, keyName (key));

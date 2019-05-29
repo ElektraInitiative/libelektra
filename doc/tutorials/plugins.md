@@ -340,7 +340,7 @@ Basically the implementation of `elektraLineSet` can be described with the follo
 // open the file
 if (error)
 {
-	ELEKTRA_SET_GENERAL_RESOURCE_ERROR( parentKey, keyString(parentKey));
+	ELEKTRA_SET_RESOURCE_ERROR( parentKey, keyString(parentKey));
 }
 for (/* each key */)
 {

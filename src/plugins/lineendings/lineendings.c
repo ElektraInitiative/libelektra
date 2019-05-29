@@ -151,7 +151,7 @@ int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 	switch (ret)
 	{
 	case (-1):
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "Couldn't open file %s\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s\n", keyString (parentKey));
 		return 1;
 		break;
 	case (-2):

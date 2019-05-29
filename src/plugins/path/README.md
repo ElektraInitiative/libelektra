@@ -64,7 +64,7 @@ sudo kdb setmeta user/tests/path check/path/mode "rw"
 
 # Standard users should not be able to read/write the root folder
 kdb set user/tests/path "/root"
-# ERROR:C04200
+# ERROR:C03200
 
 # Set something which the current user can access for sure
 kdb set user/tests/path "$HOME"
@@ -88,7 +88,7 @@ sudo kdb setmeta user/tests/path check/path/mode "rwx"
 kdb set user/tests/path/tempfile $(mktemp)
 chmod +rw `kdb get user/tests/path/tempfile`
 kdb set user/tests/path `kdb get user/tests/path/tempfile`
-# ERROR:C04200
+# ERROR:C03200
 
 # Set something which the current user can access for sure
 chmod +x `kdb get user/tests/path/tempfile`

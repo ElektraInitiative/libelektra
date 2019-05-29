@@ -335,7 +335,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "couldn't open file %s", fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "couldn't open file %s", fileName);
 		return -1;
 	}
 	int lastLine = 0;

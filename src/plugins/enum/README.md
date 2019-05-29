@@ -60,7 +60,7 @@ kdb set /tests/enum/value low
 # should fail with error 04200
 kdb set /tests/enum/value no
 # RET:5
-# ERROR:C04200
+# ERROR:C03200
 ```
 
 Or with multi-enums:
@@ -81,7 +81,7 @@ kdb set /tests/enum/multivalue ___small_middle__
 # should fail with error 04200
 kdb set /tests/enum/multivalue ___all_small__
 # RET:5
-# ERROR:C04200
+# ERROR:C03200
 
 # cleanup
 kdb rm -r /tests/enum

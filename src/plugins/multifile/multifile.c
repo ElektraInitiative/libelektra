@@ -411,7 +411,7 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found,
 		}
 		else if (ret == GLOB_ABORTED)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "glob(%s) failed with a read error", pattern);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "glob(%s) failed with a read error", pattern);
 		}
 		else if (ret == GLOB_NOMATCH)
 		{

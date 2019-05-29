@@ -63,7 +63,7 @@ int elektraCppTemplateOpen (Plugin * handle, Key * key)
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_BROKEN_PLUGIN_ERRORF (key, "Uncaught Exception: %s", error.what ());
+		ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (key, "Uncaught Exception: %s", error.what ());
 	}
 
 	return status;

@@ -93,8 +93,8 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     Left err -> do
       let errStr = errorString specFile err
       case c of
-        Set -> triggerError "C04200" k errStr
-        Get -> triggerWarnings "C04200" k errStr
+        Set -> triggerError "C03200" k errStr
+        Get -> triggerWarnings "C03200" k errStr
       logDebugT errStr
       return True
     Right () -> return False

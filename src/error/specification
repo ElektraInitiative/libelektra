@@ -11,13 +11,13 @@ ignore:true
 :It is for errors which are not relevant anymore
 :an empty line will start the next error specification
 
+number:C01100
+description:Resource
+macro:RESOURCE
+
 number:C01110
 description:Out of Memory
 macro:OUT_OF_MEMORY
-
-number:C01120
-description:General Resource
-macro:GENERAL_RESOURCE
 
 number:C01300
 description:Installation
@@ -32,25 +32,17 @@ description:Interface
 macro:INTERFACE
 
 number:C01430
-description:Broken plugin
-macro:BROKEN_PLUGIN
+description:Plugin Misbehavior
+macro:PLUGIN_MISBHV
 
 number:C02000
 description:Conflict
 macro:CONFLICTING_STATE
 
-number:C03000
-description:Timeout
-macro:TIMEOUT
-
-number:C04100
+number:C03100
 description:Validation Syntactic
 macro:VALIDATION_SYNTACTIC
 
-number:C04200
+number:C03200
 description:Validation Semantic
 macro:VALIDATION_SEMANTIC
-
-number:C05000
-description:Out of Range
-macro:OUT_OF_RANGE

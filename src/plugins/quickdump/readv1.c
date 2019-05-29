@@ -145,7 +145,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 				const Key * sourceKey = ksLookupByName (returned, keyName, 0);
 				if (sourceKey == NULL)
 				{
-					ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (
+					ELEKTRA_SET_RESOURCE_ERRORF (
 						parentKey, "Could not copy meta data from key '%s': Key not found", keyName);
 					keyDel (k);
 					elektraFree (keyName);

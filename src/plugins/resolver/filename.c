@@ -302,7 +302,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	if (finished == -1)
 	{
 		// TODO: Correct??
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
 						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
@@ -310,7 +310,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	if (!(handle->dirname))
 	{
 		// TODO: Correct??
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
 						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
@@ -460,14 +460,14 @@ static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveT
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
 						       ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (!(handle->fullPath))
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "no resolver set the system dirname, the configuration is: %s",
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "no resolver set the system dirname, the configuration is: %s",
 						       ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
@@ -501,7 +501,7 @@ static char * elektraGetCwd (Key * warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "getcwd failed with errno %d \"%s\", defaulting to /",
+				ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "getcwd failed with errno %d \"%s\", defaulting to /",
 								       errno, strerror (errno));
 				return 0;
 			}
@@ -650,23 +650,23 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 		rc = elektraResolveMapperSystem (handle, tmpDir, warningsKey);
 		break;
 	case KEY_NS_PROC:
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (warningsKey, "tried to resolve proc");
+		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "tried to resolve proc");
 		rc = -1;
 		break;
 	case KEY_NS_EMPTY:
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (warningsKey, "tried to resolve empty");
+		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "tried to resolve empty");
 		rc = -1;
 		break;
 	case KEY_NS_NONE:
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (warningsKey, "tried to resolve none");
+		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "tried to resolve none");
 		rc = -1;
 		break;
 	case KEY_NS_META:
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (warningsKey, "tried to resolve meta");
+		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "tried to resolve meta");
 		rc = -1;
 		break;
 	case KEY_NS_CASCADING:
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNING (warningsKey, "tried to resolve cascading");
+		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "tried to resolve cascading");
 		rc = -1;
 		break;
 	}

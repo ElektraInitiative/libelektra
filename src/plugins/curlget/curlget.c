@@ -620,7 +620,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 	if (fd == -1)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading", data->path);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading", data->path);
 		return -1;
 	}
 	FILE * fp = fetchFile (data, fd);
@@ -632,13 +632,13 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		fp = fopen (data->path, "rb");
 		if (fp && data->useLocalCopy)
 		{
-			ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey,
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey,
 							       "Failed to fetch configuration from %s, falling back to local copy %s\n",
 							       data->getUrl, data->path);
 		}
 		else
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERROR (parentKey, "Failed to read configuration\n");
+			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Failed to read configuration\n");
 			return -1;
 		}
 	}
@@ -763,7 +763,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		fp = fopen (tmpFile, "rb");
 		if (!fp)
 		{
-			ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading", tmpFile);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading", tmpFile);
 			return -1;
 		}
 		fseek (fp, 0L, SEEK_END);
@@ -817,7 +817,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					if (res != CURLE_OK)
 					{
 
-						ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (HTTP POST) failed: %s\n",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (HTTP POST) failed: %s\n",
 										     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -833,7 +833,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
-						ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (HTTP PUT) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (HTTP PUT) failed: %s",
 										     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -846,7 +846,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
-						ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (HTTP PUT) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (HTTP PUT) failed: %s",
 										     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -883,7 +883,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
-					ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (FTP PUT) failed: %s",
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (FTP PUT) failed: %s",
 									     curl_easy_strerror (res));
 					retval = -1;
 				}
@@ -909,10 +909,10 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				if (res != CURLE_OK)
 				{
 					if (data->putProto == PROTO_SCP)
-						ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (SCP) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (SCP) failed: %s",
 										     curl_easy_strerror (res));
 					else if (data->putProto == PROTO_SFTP)
-						ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (SFTP) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (SFTP) failed: %s",
 										     curl_easy_strerror (res));
 					retval = -1;
 				}
@@ -929,7 +929,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
-					ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (parentKey, "curl upload (default) failed: %s",
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (default) failed: %s",
 									     curl_easy_strerror (res));
 					retval = -1;
 				}

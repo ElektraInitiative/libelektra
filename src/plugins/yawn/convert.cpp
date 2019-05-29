@@ -120,7 +120,7 @@ ifstream openFile (string const & filename, CppKey & error)
 	ifstream input{ filename };
 	if (!input.good ())
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERRORF (error.getKey (), "Unable to open file “%s”", filename.c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (error.getKey (), "Unable to open file “%s”", filename.c_str ());
 	}
 	return input;
 }

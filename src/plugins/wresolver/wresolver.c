@@ -163,12 +163,12 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 		char buf[256];
 		FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError (), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256,
 			       NULL);
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
 		dir[0] = 0;
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld",
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld",
 						       dwRet);
 		dir[0] = 0;
 	}
@@ -177,7 +177,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	char dir[KDB_MAX_PATH_LENGTH];
 	if (getcwd (dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
 		dir[0] = 0;
 	}
 #endif
@@ -258,7 +258,7 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 
 	if (!path)
 	{
-		ELEKTRA_SET_GENERAL_RESOURCE_ERROR (errorKey, "Could not find file configuration");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find file configuration");
 		return -1;
 	}
 
@@ -410,7 +410,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 	if (stat (pk->filename, &buf) == -1)
 	{
-		ELEKTRA_ADD_GENERAL_RESOURCE_WARNINGF (parentKey, "could not stat config file \"%s\", ", pk->filename);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "could not stat config file \"%s\", ", pk->filename);
 		// no file found, nothing to do
 		return 0;
 	}

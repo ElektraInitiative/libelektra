@@ -114,8 +114,8 @@ TEST_F (Error, AgainRepeat)
 	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
 	EXPECT_EQ (parentKey.getMeta<std::string> ("error/number"), "C01410");
 
-	std::list<std::string> errorCodes{ "C01110", "C01120", "C01300", "C01410", "C01420", "C01430",
-					   "C02000", "C03000", "C04100", "C04200", "C05000" };
+	std::list<std::string> errorCodes{ "C01110", "C01100", "C01300", "C01410", "C01420", "C01430",
+					   "C02000", "C03100", "C03200" };
 
 	for (auto code = errorCodes.begin (); code != errorCodes.end (); ++code)
 	{
