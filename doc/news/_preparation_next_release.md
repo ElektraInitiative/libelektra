@@ -395,6 +395,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 - The logger does not truncate the file name incorrectly anymore, if `__FILE__` contains a relative (instead of an absolute) filepath. _(René Schwaiger)_
 - Disabled any plugin execution when we have a cache hit or no update from backends. The old behaviour can be enabled for testing using `ENABLE_DEBUG` and adding the `"debugGlobalPositions"` meta key to the parentKey of the kdbGet invocation. _(Mihael Pranjić)_
 - Removed `ingroup` from error messages to reduce verbosity. _(Michael Zronek)_
+- Fixed minor problem when `kdb_long_double_t` is not available (e.g. mips32). _(Matthias Schoepfer)_
 - <<TODO>>
 
 ### Ease
