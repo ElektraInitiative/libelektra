@@ -1689,6 +1689,9 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 
 /**
  * @internal
+ *
+ * @param specKey must have a cascading key name
+ *
  * @brief Helper for elektraLookupBySpec
  */
 static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
