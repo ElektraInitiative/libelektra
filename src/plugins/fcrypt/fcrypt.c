@@ -244,8 +244,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
-			// TODO: Correct?
-			ELEKTRA_ADD_INTERNAL_WARNINGF (
+			ELEKTRA_ADD_RESOURCE_WARNINGF (
 				parentKey,
 				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
 				"the file manually. Affected file: %s, error description: %s",
@@ -484,8 +483,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
-			// TODO: Correct?
-			ELEKTRA_ADD_INTERNAL_WARNINGF (
+			ELEKTRA_ADD_RESOURCE_WARNINGF (
 				parentKey,
 				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
 				"the file manually. Affected file: %s, error description: %s",
