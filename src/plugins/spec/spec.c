@@ -8,19 +8,20 @@
  */
 
 #include "spec.h"
-#include <fnmatch.h>
+
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
+#include <kdbglobbing.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbmeta.h>
 #include <kdbtypes.h>
+
+#include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAX_CHARS_IN_LONG 26
 
 typedef enum
 {
@@ -32,16 +33,16 @@ typedef enum
 
 
 // clang-format off
-#define NO_CONFLICTS         "00000" // on char per conflict type below
-#define CONFLICT_ARRAYMEMBER 0
-#define CONFLICT_INVALID     1
-#define CONFLICT_SUBCOUNT    2
-#define CONFLICT_COLLISION   3
-#define CONFLICT_OUTOFRANGE  4
+#define NO_CONFLICTS         "000000" // on char per conflict type below
+#define CONFLICT_ARRAYMEMBER     0
+#define CONFLICT_INVALID         1
+#define CONFLICT_SUBCOUNT        2
+#define CONFLICT_COLLISION       3
+#define CONFLICT_OUTOFRANGE      4
+#define CONFLICT_WILDCARDMEMBER  5
 // missing keys are handled directly
 #define SIZE_CONFLICTS       sizeof(NO_CONFLICTS)
 // clang-format on
-
 
 typedef struct
 {
@@ -53,10 +54,7 @@ typedef struct
 	OnConflict missing;
 } ConflictHandling;
 
-typedef struct
-{
-	int counter;
-} PluginData;
+static void copyMeta (Key * dest, Key * src);
 
 static inline void safeFree (void * ptr)
 {
@@ -246,7 +244,18 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 	if (conflicts[CONFLICT_ARRAYMEMBER] == '1' && ch->member != IGNORE)
 	{
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/arraymember")), ", ");
-		char * msg = elektraFormat ("%s has invalid array key members: %s", keyName (key), problemKeys);
+		char * msg =
+			elektraFormat ("Array key %s has invalid children (only array elements allowed): %s", keyName (key), problemKeys);
+		handleConflict (parentKey, msg, ch->member);
+		elektraFree (msg);
+		safeFree (problemKeys);
+	}
+
+	if (conflicts[CONFLICT_WILDCARDMEMBER] == '1' && ch->member != IGNORE)
+	{
+		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/wildcardmember")), ", ");
+		char * msg =
+			elektraFormat ("Widlcard key %s has invalid children (no array elements allowed): %s", keyName (key), problemKeys);
 		handleConflict (parentKey, msg, ch->member);
 		elektraFree (msg);
 		safeFree (problemKeys);
@@ -323,40 +332,6 @@ static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey,
 }
 
 // endregion Conflict handling
-
-/**
- * Copies all metadata (except for internal/ and conflict/) from @p dest to @p src
- */
-static void copyMeta (Key * dest, Key * src)
-{
-	keyRewindMeta (src);
-	const Key * meta;
-	while ((meta = keyNextMeta (src)) != NULL)
-	{
-		const char * name = keyName (meta);
-		if (strncmp (name, "internal/", 9) != 0 && strncmp (name, "conflict/", 9) != 0)
-		{
-			const Key * oldMeta = keyGetMeta (dest, name);
-			if (oldMeta != NULL)
-			{
-				// don't overwrite metadata
-				// array metadata is not a conflict
-				if (strcmp (name, "array") != 0 && strcmp (keyString (oldMeta), keyString (meta)) != 0)
-				{
-					char * conflictName = elektraFormat ("conflict/%s", name);
-					keySetMeta (dest, conflictName, keyString (oldMeta));
-					elektraFree (conflictName);
-					addConflict (dest, CONFLICT_COLLISION);
-					elektraMetaArrayAdd (dest, "conflict/collision", name);
-				}
-			}
-			else
-			{
-				keyCopyMeta (dest, src, name);
-			}
-		}
-	}
-}
 
 /* region Array handling     */
 /* ========================= */
@@ -507,38 +482,53 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec)
 	return newKeys;
 }
 
-static void validateArray (KeySet * ks, Key * arrayKey, Key * specKey)
+static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 {
-	Key * arrayParent = keyDup (arrayKey);
+	Key * parentLookup = keyDup (arraySpec);
+	keySetBaseName (parentLookup, NULL);
+
+	Key * arrayParent = ksLookup (ks, parentLookup, 0);
+	if (arrayParent == NULL)
+	{
+		ksAppendKey (ks, parentLookup);
+		arrayParent = parentLookup;
+	}
+	else
+	{
+		keyDel (parentLookup);
+	}
+
+	if (keyGetMeta (arrayParent, "internal/spec/array/validated") != NULL)
+	{
+		return;
+	}
 
 	// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
 	KeySet * ksCopy = ksDup (ks);
-	KeySet * subKeys = ksCut (ksCopy, arrayParent);
+	Key * parentCut = keyNew (strchr (keyName (arrayParent), '/'), KEY_END);
+	KeySet * subKeys = ksCut (ksCopy, parentCut);
+	ksDel (ksCopy);
 
 	Key * cur;
+	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (!keyIsDirectBelow (arrayParent, cur)) continue;
-		if (keyBaseName (cur)[0] == '#')
+		if (!keyIsDirectBelow (parentCut, cur))
 		{
-			if (elektraArrayValidateName (cur) < 0)
-			{
-				KeySet * invalidCutKS = ksCut (subKeys, cur);
-				Key * toMark;
-				while ((toMark = ksNext (invalidCutKS)) != NULL)
-				{
-					if (strcmp (keyName (cur), keyName (toMark)) != 0)
-					{
-						keySetMeta (toMark, "conflict/invalid", ""); // TODO ????, should skip later on
-					}
-					elektraMetaArrayAdd (arrayParent, "conflict/invalid/hasmember", keyName (toMark));
-				}
-				ksDel (invalidCutKS);
-			}
+			continue;
+		}
+
+		if (elektraArrayValidateBaseNameString (keyBaseName (cur)) <= 0)
+		{
+			addConflict (arrayParent, CONFLICT_ARRAYMEMBER);
+			elektraMetaArrayAdd (arrayParent, "conflict/arraymember", keyName (cur));
 		}
 	}
+
 	ksDel (subKeys);
-	ksDel (ksCopy);
+	keyDel (parentCut);
+
+	keySetMeta (arrayParent, "internal/spec/array/validated", "");
 }
 
 // endregion Array handling
@@ -557,9 +547,23 @@ static void validateArray (KeySet * ks, Key * arrayKey, Key * specKey)
  */
 static bool isWildcardSpec (const Key * key)
 {
-	// FIXME: use code similar to isArraySpec, once validateWildcardSubs works for all wildcard specs
+	size_t usize = keyGetUnescapedNameSize (key);
+	const char * cur = keyUnescapedName (key);
+	const char * end = cur + usize;
 
-	return strcmp (keyBaseName (key), "_") == 0;
+	while (cur < end)
+	{
+		size_t len = strlen (cur);
+
+		if (len == 1 && cur[0] == '_')
+		{
+			return true;
+		}
+
+		cur += len + 1;
+	}
+
+	return false;
 }
 
 /**
@@ -571,7 +575,6 @@ static bool isWildcardSpec (const Key * key)
  */
 static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 {
-	// FIXME: use instantiated wildcard specs!!!
 	if (keyGetMeta (specKey, "require") != NULL)
 	{
 		return;
@@ -583,6 +586,7 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		Key * parent = keyDup (key);
 		keySetBaseName (parent, NULL);
 
+		// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
 		KeySet * ksCopy = ksDup (ks);
 		KeySet * subKeys = ksCut (ksCopy, parent);
 		ksDel (ksCopy);
@@ -593,18 +597,26 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		{
 			if (keyIsDirectBelow (parent, cur))
 			{
-				++subCount;
+				if (elektraArrayValidateBaseNameString (keyBaseName (cur)) > 0)
+				{
+					addConflict (parent, CONFLICT_WILDCARDMEMBER);
+					elektraMetaArrayAdd (parent, "conflict/wildcardmember", keyName (cur));
+				}
+				else
+				{
+					++subCount;
+				}
 			}
 		}
 		ksDel (subKeys);
 
 		// TODO: conversion library?
 
-		long required = ELEKTRA_LONG_LONG_S (keyString (requireCount), NULL, 10);
+		kdb_long_long_t required = ELEKTRA_LONG_LONG_S (keyString (requireCount), NULL, 10);
 		if (required != subCount)
 		{
-			char buffer[MAX_CHARS_IN_LONG + 1];
-			snprintf (buffer, sizeof (buffer), "%ld", subCount);
+			char buffer[ELEKTRA_MAX_ARRAY_SIZE]; // more than enough
+			snprintf (buffer, sizeof (buffer), ELEKTRA_LONG_LONG_F, subCount);
 			addConflict (key, CONFLICT_SUBCOUNT);
 			keySetMeta (key, "conflict/subcount", buffer);
 		}
@@ -613,23 +625,47 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 
 // endregion Wildcard (_) handling
 
-static bool specMatches (Key * specKey, Key * otherKey)
+/**
+ * Copies all metadata (except for internal/ and conflict/) from @p dest to @p src
+ */
+static void copyMeta (Key * dest, Key * src)
 {
-	// TODO: use globbing
-	const char * spec = keyUnescapedName (specKey);
-	size_t specNsLen = strlen (spec) + 1;
-	spec += specNsLen; // skip namespace
-	const char * other = keyUnescapedName (otherKey);
-	size_t otherNsLen = strlen (other) + 1;
-	other += otherNsLen; // skip namespace
-	size_t const specSize = keyGetUnescapedNameSize (specKey) - specNsLen;
-	size_t const otherSize = keyGetUnescapedNameSize (otherKey) - otherNsLen;
-
-	return specSize == otherSize && memcmp (spec, other, specSize) == 0;
+	keyRewindMeta (src);
+	const Key * meta;
+	while ((meta = keyNextMeta (src)) != NULL)
+	{
+		const char * name = keyName (meta);
+		if (strncmp (name, "internal/", 9) != 0 && strncmp (name, "conflict/", 9) != 0)
+		{
+			const Key * oldMeta = keyGetMeta (dest, name);
+			if (oldMeta != NULL)
+			{
+				// don't overwrite metadata
+				// array metadata is not a conflict
+				if (strcmp (name, "array") != 0 && strcmp (keyString (oldMeta), keyString (meta)) != 0)
+				{
+					char * conflictName = elektraFormat ("conflict/%s", name);
+					keySetMeta (dest, conflictName, keyString (oldMeta));
+					elektraFree (conflictName);
+					addConflict (dest, CONFLICT_COLLISION);
+					elektraMetaArrayAdd (dest, "conflict/collision", name);
+				}
+			}
+			else
+			{
+				keyCopyMeta (dest, src, name);
+			}
+		}
+	}
 }
 
-static void cleanSpecKey (Key * specKey, KeySet * ks)
-{ // TODO: should only remove added metadata
+static bool specMatches (Key * specKey, Key * otherKey)
+{
+	// ignore namespaces for globbing
+	Key * globKey = keyNew (strchr (keyName (otherKey), '/'), KEY_END);
+	bool matches = elektraKeyGlob (globKey, strchr (keyName (specKey), '/')) == 0;
+	keyDel (globKey);
+	return matches;
 }
 
 /**
@@ -649,9 +685,14 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			   bool isKdbGet)
 {
 	bool require = keyGetMeta (specKey, "require") != NULL;
+	bool wildcardSpec = isWildcardSpec (specKey);
 
 	ELEKTRA_ASSERT (!isArraySpec (specKey), "uninstantiated array spec");
-	ELEKTRA_ASSERT (!isWildcardSpec (specKey), "uninstantiated wildcard spec");
+
+	if (keyGetMeta (specKey, "internal/spec/array") != NULL)
+	{
+		validateArrayMembers (ks, specKey);
+	}
 
 	int found = 0;
 	Key * cur;
@@ -669,6 +710,11 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 		}
 
 		found = 1;
+
+		if (wildcardSpec)
+		{
+			validateWildcardSubs (ks, cur, specKey);
+		}
 
 		copyMeta (cur, specKey);
 	}
@@ -715,8 +761,6 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 		{
 			ret = -1;
 		}
-
-		keySetMeta (cur, "conflict/invalid", NULL); // TODO: ??? skip later on?
 	}
 
 	return ret;
@@ -729,7 +773,6 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports", KEY_END),
-			       keyNew ("system/elektra/modules/spec/exports/close", KEY_FUNC, elektraSpecClose, KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
 #include ELEKTRA_README
@@ -745,29 +788,6 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	KeySet * config = elektraPluginGetConfig (handle);
 	parseConfig (config, &ch, "/conflict/get");
-
-	// create/update plugin data
-	PluginData * pluginData = elektraPluginGetData (handle);
-
-	if (pluginData)
-	{
-		++(pluginData->counter);
-	}
-	else
-	{
-		pluginData = elektraMalloc (sizeof (PluginData));
-		pluginData->counter = 0;
-	}
-
-	int clean = 0;
-	if (pluginData->counter == 1)
-	{
-		clean = 1;
-		pluginData->counter = 0;
-	}
-
-	// store plugin data
-	elektraPluginSetData (handle, pluginData);
 
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
@@ -804,11 +824,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
-		if (clean)
-		{
-			cleanSpecKey (specKey, ks);
-		}
-		else if (processSpecKey (specKey, parentKey, ks, &ch, "/conflict/get", true) != 0)
+		if (processSpecKey (specKey, parentKey, ks, &ch, "/conflict/get", true) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -832,25 +848,6 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	KeySet * config = elektraPluginGetConfig (handle);
 	parseConfig (config, &ch, "/conflict/set");
-
-	// check for plugin data
-	PluginData * pluginConfig = elektraPluginGetData (handle);
-	if (!pluginConfig)
-	{
-		// get has to be called first
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	}
-
-	// update plugin data
-	++(pluginConfig->counter);
-
-	int clean = 0;
-	if (pluginConfig->counter == 2)
-	{
-		clean = 1;
-		pluginConfig->counter = 0;
-	}
-	elektraPluginSetData (handle, pluginConfig);
 
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
@@ -882,11 +879,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
-		if (clean)
-		{
-			cleanSpecKey (specKey, ks);
-		}
-		else if (processSpecKey (specKey, parentKey, ks, &ch, "/conflict/set", false) != 0)
+		if (processSpecKey (specKey, parentKey, ks, &ch, "/conflict/set", false) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -900,31 +893,16 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// reconstruct KeySet
 	ksAppend (returned, ks);
 
-
 	// cleanup
 	ksDel (ks);
 
 	return ret;
 }
 
-int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
-{
-	PluginData * pluginConfig = elektraPluginGetData (handle);
-
-	if (pluginConfig != NULL)
-	{
-		elektraFree (pluginConfig);
-		elektraPluginSetData (handle, NULL);
-	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("spec",
-			ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);
