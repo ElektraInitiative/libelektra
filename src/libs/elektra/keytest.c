@@ -215,12 +215,15 @@ int keyIsUser (const Key * key)
 
 int keyIsBelow (const Key * key, const Key * check)
 {
-	if(key == NULL || check == NULL)
+	if (key == NULL || check == NULL)
 	{
 		return -1;
 	}
 
-	return keyIsBelowOrSame (key, check) && keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check);
+	// same key, only if namespace and size are equal
+	// size alone could be equal with cascading keys
+	return keyIsBelowOrSame (key, check) &&
+	       (keyGetNamespace (key) != keyGetNamespace (check) || keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check));
 }
 
 
@@ -232,7 +235,7 @@ int keyIsBelow (const Key * key, const Key * check)
  */
 int keyIsBelowOrSame (const Key * key, const Key * check)
 {
-	if(key == NULL || check == NULL)
+	if (key == NULL || check == NULL)
 	{
 		return -1;
 	}
@@ -243,15 +246,37 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if (sizeAbove > sizeBelow)
+	if (sizeAbove == 1 && above[0] == '\0' && below[0] != '\0' && sizeBelow == strlen (below) + 1)
 	{
+		// cascading root compared against other root
 		return 0;
 	}
 
-	if (above[0] == '\0')
+	if (sizeBelow == 1 && below[0] == '\0' && above[0] != '\0' && sizeAbove == strlen (above) + 1)
+	{
+		// cascading root compared against other root
+		return 0;
+	}
+
+	if (above[0] != '\0' && below[0] == '\0')
 	{
 		// cascading
-		below = strchr (below, '\0');
+		size_t len = strlen (above);
+		above += len;
+		sizeAbove -= len;
+	}
+
+	if (below[0] != '\0' && above[0] == '\0')
+	{
+		// cascading
+		size_t len = strlen (below);
+		below += len;
+		sizeBelow -= len;
+	}
+
+	if (sizeAbove > sizeBelow)
+	{
+		return 0;
 	}
 
 	return memcmp (above, below, sizeAbove) == 0;
@@ -286,7 +311,7 @@ does not return true, because there is only an indirect relation
  */
 int keyIsDirectBelow (const Key * key, const Key * check)
 {
-	if(key == NULL || check == NULL)
+	if (key == NULL || check == NULL)
 	{
 		return -1;
 	}
@@ -302,14 +327,24 @@ int keyIsDirectBelow (const Key * key, const Key * check)
 		return 0;
 	}
 
-	if (above[0] == '\0')
+	if (above[0] != '\0' && below[0] == '\0')
 	{
 		// cascading
-		below = strchr (below, '\0');
+		size_t len = strlen (above);
+		above += len;
+		sizeAbove -= len;
+	}
+
+	if (below[0] != '\0' && above[0] == '\0')
+	{
+		// cascading
+		size_t len = strlen (below);
+		below += len;
+		sizeBelow -= len;
 	}
 
 	size_t nextPartSize = strlen (below + sizeAbove);
-	return memcmp (above, below, sizeAbove) == 0 && sizeAbove + nextPartSize == sizeBelow;
+	return memcmp (above, below, sizeAbove) == 0 && sizeAbove + nextPartSize + 1 == sizeBelow;
 }
 
 
