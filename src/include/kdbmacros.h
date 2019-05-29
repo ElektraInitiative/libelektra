@@ -37,27 +37,27 @@
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		if (errno == EACCES)                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (                                                                              \
+			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
 				parentKey,                                                                                                 \
 				"Insufficient permissions to open configuration file for reading. Reason: %s. You might want "             \
 				"to retry as root or change access using chmod.",                                                          \
 				strerror (errno));                                                                                         \
 		else                                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open configuration file for reading. Reason: %s",       \
-							     strerror (errno));                                                            \
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open configuration file for reading. Reason: %s",               \
+						     strerror (errno));                                                                    \
 	} while (0)
 
 #define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		if (errno == EACCES)                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (                                                                              \
+			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
 				parentKey,                                                                                                 \
 				"Insufficient permissions to open configuration file for writing. You might want to retry as "             \
 				"root. Errno: %s",                                                                                         \
 				strerror (errno));                                                                                         \
 		else                                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, ":Could not open file for writing %s", strerror (errno));          \
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, ":Could not open file for writing %s", strerror (errno));                  \
 	} while (0)
 
 #define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_RESOURCE_ERRORF (key, "Unable to allocate %zu bytes.", size);

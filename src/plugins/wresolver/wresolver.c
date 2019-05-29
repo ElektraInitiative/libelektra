@@ -168,8 +168,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld",
-						       dwRet);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
 		dir[0] = 0;
 	}
 	escapePath (dir);
