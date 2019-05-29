@@ -494,8 +494,9 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We added instructions on how to reformat code with
 
   - [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html),
-  - [cmake format](https://github.com/cheshirekow/cmake_format), and
-  - [Prettier](https://prettier.io)
+  - [cmake format](https://github.com/cheshirekow/cmake_format),
+  - [Prettier](https://prettier.io), and
+  - [shfmt](https://github.com/mvdan/sh)
 
   to the [coding guidelines](../CODING.md). _(René Schwaiger)_
 
