@@ -10,6 +10,7 @@
 - infos/description = storage plugin for ini files
 
 ## Introduction
+
 [lock/a/lock]
 This plugin allows Elektra's users to read and write INI files.
 INI files consist of simple key value pairs of the form `key=value`.
