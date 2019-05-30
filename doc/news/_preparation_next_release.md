@@ -78,6 +78,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
+### spec
+
+- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes.
+  To find out more about take a look at the [README](../../src/plugins/spec/README.md). It now better reflects the actually implemented
+  behaviour. _(Klemens Böswirth)_
+
 ### mINI
 
 - We fixed compiler warnings reported by GCC 9 in the [unit test code](../../src/plugins/mini/testmod_mini.c) of the plugin. _(René Schwaiger)_
