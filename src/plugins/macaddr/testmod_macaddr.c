@@ -57,7 +57,7 @@ static void testAddressSet (const char * keyValue, int retValue)
 
 static void testAddressesSetGet (const char * keyValue, unsigned long long longValue)
 {
-	char intChar[16];
+	char intChar[21];
 	KeySet * testKs = ksNew (10, keyNew ("user/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END), KS_END);
 	setKey (testKs);
 	convertLong (intChar, longValue);
@@ -119,7 +119,7 @@ static void testAddressesSingleHyphen (void)
 
 static void testAddressesNumber (void)
 {
-	char intChar[16];
+	char intChar[21];
 	convertLong (intChar, 0);
 	testAddressSet (intChar, 1);
 
