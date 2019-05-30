@@ -170,7 +170,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
         - arr
   ```
 
-  .
+  . _(René Schwaiger)_
 
 - [YAML CPP][] now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
 
