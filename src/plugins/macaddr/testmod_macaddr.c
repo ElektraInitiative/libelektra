@@ -20,7 +20,7 @@
 
 static void convertLong (char * returned, unsigned long long i)
 {
-	sprintf (returned, "%lld", i);
+	sprintf (returned, "%llu", i);
 }
 
 static int setKey (KeySet * testKs)
