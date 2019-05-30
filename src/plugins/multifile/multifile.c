@@ -637,7 +637,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (mc->getPhase == MULTI_GETRESOLVER)
 	{
 		rc = updateFiles (handle, mc, returned, parentKey);
-		if (rc == SUCCESS)
+		if (rc == SUCCESS || rc == CACHE_HIT)
 		{
 			mc->getPhase = MULTI_GETSTORAGE;
 		}
@@ -645,7 +645,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	else if (mc->getPhase == MULTI_GETSTORAGE)
 	{
 		rc = doGetStorage (mc, parentKey);
-		if (rc == SUCCESS || mc->hasDeleted)
+		if (rc == SUCCESS || rc == CACHE_HIT || mc->hasDeleted)
 		{
 			fillReturned (mc, returned);
 			mc->hasDeleted = 0;
