@@ -18,7 +18,7 @@
 #define META "check/macaddr"
 #define MAXMACINT 281474976710655
 
-static void convertLong (char * returned, long long i)
+static void convertLong (char * returned, unsigned long long i)
 {
 	sprintf (returned, "%lld", i);
 }
@@ -55,7 +55,7 @@ static void testAddressSet (const char * keyValue, int retValue)
 	ksDel (testKs);
 }
 
-static void testAddressesSetGet (const char * keyValue, long long longValue)
+static void testAddressesSetGet (const char * keyValue, unsigned long long longValue)
 {
 	char intChar[16];
 	KeySet * testKs = ksNew (10, keyNew ("user/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END), KS_END);
