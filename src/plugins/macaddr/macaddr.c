@@ -45,7 +45,7 @@ void transformMac (Key * key)
 	}
 	macWithoutSeparators[12] = '\0';
 
-	unsigned long long intValue = strtol (macWithoutSeparators, NULL, 16);
+	unsigned long long intValue = strtoull (macWithoutSeparators, NULL, 16);
 
 	const int n = snprintf (NULL, 0, "%llu", intValue);
 	char * buffer = elektraMalloc (n + 1);
