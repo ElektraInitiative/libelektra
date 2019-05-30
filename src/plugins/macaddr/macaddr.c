@@ -32,7 +32,6 @@ void transformMac (Key * key)
 {
 	const char * macKey = keyString (key);
 
-
 	char * macWithoutSeparators = elektraMalloc (13);
 
 	size_t len = strlen (macKey);
@@ -151,15 +150,7 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	{
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
-		/*const Key * origValue = keyGetMeta (cur, "origvalue");
-		if (origValue)
-		{
-			ELEKTRA_SET_ERRORF (
-				ELEKTRA_ERROR_STATE, parentKey,
-				"Meta key 'origvalue' for key %s not expected to be set, another plugin has already set this meta key!",
-				keyString (cur));
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}*/
+
 		int rc = validateMac (cur);
 		if (rc == VALIDATION_ERROR)
 		{
