@@ -154,7 +154,7 @@ and search for the relevant packages (`clang-format`, `llvm`). Currently we use
 
 ###### macOS
 
-On macOS you can install `clang-format` using [Homebrew](https://brew.sh) either directly:
+On macOS you can install `clang-format` using [Homebrew][] either directly:
 
 ```sh
 brew install clang-format
@@ -173,6 +173,8 @@ brew install llvm@7
 ```
 
 .
+
+[homebrew]: https://brew.sh
 
 ###### Debian
 
@@ -276,7 +278,7 @@ cmake-format --version
 
 , since otherwise the formatted code might look quite different.
 
-We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew](http://brew.sh):
+We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew][]:
 
 ```sh
 brew install moreutils
@@ -394,7 +396,7 @@ that you can
 
 ###### macOS
 
-On macOS you can install [`prettier`][] using [Homebrew](https://brew.sh):
+On macOS you can install [`prettier`][] using [Homebrew][]:
 
 ```sh
 brew install prettier
@@ -457,6 +459,97 @@ To reformat a Markdown document in [TextMate][] every time you save it, please f
 
       if ! "${TM_PRETTIER:-prettier}" --stdin --stdin-filepath "${TM_FILEPATH}"
       then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
+
+### Shell Guidelines
+
+- Please only use [POSIX](https://en.wikipedia.org/wiki/POSIX) functionality.
+
+#### shfmt
+
+We use [`shfmt`][] to format Shell files in the repository.
+
+[`shfmt`]: https://github.com/mvdan/sh
+
+##### Installation
+
+###### macOS
+
+You can install [`shfmt`] on macOS using [Homebrew][]:
+
+```sh
+brew install shfmt
+```
+
+.
+
+###### General
+
+[shfmt’s GitHub release page](https://github.com/mvdan/sh/releases) offers binaries for various operating systems. For example, to install the binary for the current user on Linux you can use the following command:
+
+```sh
+mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
+  curl -L "https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_amd64" -o shfmt && \
+  chmod u+x shfmt
+```
+
+. Please note that you have to make sure, that your `PATH` includes `$HOME/bin`, if you use the command above:
+
+```sh
+export PATH=$PATH:"$HOME/bin"
+```
+
+.
+
+##### Usage
+
+We provide the script [`reformat-shfmt`](../scripts/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
+
+```sh
+scripts/reformat-shfmt
+```
+
+. You can also reformat specific files by listing filenames after the script:
+
+```sh
+scripts/reformat-shfmt scripts/reformat-shfmt # Reformat the source of `reformat-shfmt`
+```
+
+.
+
+##### Tool Integration
+
+The GitHub project page of [`shfmt`][] offers some options to integrate the tool into your development workflow [here](https://github.com/mvdan/sh#related-projects).
+
+###### TextMate
+
+The steps below show you how to create a [TextMate][] command that formats a documents with [`shfmt`][] every time you save it.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.shell` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_SHFMT_FORMAT:-shfmt}" -s -sr; then
       	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
       	exit_show_tool_tip
       fi

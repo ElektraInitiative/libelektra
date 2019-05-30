@@ -153,7 +153,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   #>   key: four
   ```
 
-  .
+  . _(René Schwaiger)_
 
 - [YAML CPP][] now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
 - The plugin converts “sparse” key sets properly. For example, for the key set that contains **only** the key:
@@ -494,8 +494,9 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We added instructions on how to reformat code with
 
   - [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html),
-  - [cmake format](https://github.com/cheshirekow/cmake_format), and
-  - [Prettier](https://prettier.io)
+  - [cmake format](https://github.com/cheshirekow/cmake_format),
+  - [Prettier](https://prettier.io), and
+  - [shfmt](https://github.com/mvdan/sh)
 
   to the [coding guidelines](../CODING.md). _(René Schwaiger)_
 
