@@ -753,15 +753,16 @@ def buildDoc() {
                   remoteDirectory: 'api/latest'
                 ),
                 sshTransfer(
-                  sourceFiles: 'build/doc/man/*',
+                  sourceFiles: 'build/doc/html/*',
                   removePrefix: 'build/doc/',
                   remoteDirectory: 'api/latest'
                 ),
                 sshTransfer(
-                  sourceFiles: 'doc/help/*.html',
-                  removePrefix: 'doc/help/',
-                  remoteDirectory: 'help'
+                  sourceFiles: 'build/doc/man/*',
+                  removePrefix: 'build/doc/',
+                  remoteDirectory: 'api/latest'
                 ),
+                // TODO: API doc not built anymore
                 sshTransfer(
                   sourceFiles: 'build/API_DOC/*',
                   removePrefix: 'build/API_DOC/'
