@@ -585,7 +585,7 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		ksDel (ksCopy);
 
 		Key * cur;
-		long subCount = 0;
+		kdb_long_long_t subCount = 0;
 		while ((cur = ksNext (subKeys)) != NULL)
 		{
 			if (keyIsDirectBelow (parent, cur))
