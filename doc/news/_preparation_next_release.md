@@ -357,6 +357,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Fixed support for `kdb import` and `kdb export`. _(Mihael Pranjić)_
 
 ### ini
+
 - Fixed `ini` when only the root key needs to be written. _(Mihael Pranjić)_
 
 ### semlock
