@@ -71,6 +71,7 @@ void test_default (void)
 		ksDel (ks);
 	}
 	TEST_END
+	ksDel (_conf);
 }
 
 void test_assign_condition (void)
@@ -98,6 +99,7 @@ void test_assign_condition (void)
 		ksDel (ks);
 	}
 	TEST_END
+	ksDel (_conf);
 }
 
 void test_wildcard (void)
@@ -170,6 +172,7 @@ void test_wildcard (void)
 		ksDel (ks);
 	}
 	TEST_END
+	ksDel (_conf);
 }
 
 void test_require (void)
@@ -199,6 +202,7 @@ void test_require (void)
 		ksDel (ks);
 	}
 	TEST_END
+	ksDel (_conf);
 }
 
 void test_array (void)
@@ -394,6 +398,7 @@ void test_array (void)
 		ksDel (ks);
 	}
 	TEST_END
+	ksDel (_conf);
 }
 
 void test_require_array (void)
@@ -440,6 +445,7 @@ void test_require_array (void)
 		ksDel (ks);
 	}
 	TEST_END
+	ksDel (_conf);
 }
 
 int main (int argc, char ** argv)

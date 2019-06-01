@@ -494,6 +494,7 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 	Key * arrayParent = ksLookup (ks, parentLookup, 0);
 	if (keyGetMeta (arrayParent, "internal/spec/array/validated") != NULL)
 	{
+		keyDel (parentLookup);
 		return;
 	}
 
@@ -602,6 +603,7 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 			}
 		}
 		ksDel (subKeys);
+		keyDel (parent);
 
 		// TODO: conversion library?
 
@@ -815,6 +817,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				KeySet * specs = instantiateArraySpec (returned, cur);
 				ksAppend (specKS, specs);
+				ksDel (specs);
 			}
 
 			ksAppendKey (specKS, cur);
@@ -873,6 +876,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				KeySet * specs = instantiateArraySpec (returned, cur);
 				ksAppend (specKS, specs);
+				ksDel (specs);
 			}
 
 			ksAppendKey (specKS, cur);
