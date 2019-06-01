@@ -600,8 +600,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 			s->tmpFileFd = -1;
 			if (unlink (s->tmpFilePath))
 			{
-				// TODO: Correct?
-				ELEKTRA_ADD_INTERNAL_WARNINGF (
+				ELEKTRA_ADD_RESOURCE_WARNINGF (
 					parentKey,
 					"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try "
 					"to delete the file manually. Affected file: %s, error description: %s",

@@ -112,8 +112,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
-		// TODO: Correct?
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
 

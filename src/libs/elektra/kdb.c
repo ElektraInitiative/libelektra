@@ -972,8 +972,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey);
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "error in splitBuildup");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "error in splitBuildup");
 		goto error;
 	}
 

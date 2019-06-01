@@ -60,7 +60,6 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1))
 	{
-		// TODO: Correct??
 		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "failed to generate random salt with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
@@ -88,7 +87,6 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (masterKey), keyGetValueSize (masterKey), salt, sizeof (salt), iterations, KEY_BUFFER_SIZE,
 				     keyBuffer))
 	{
-		// TODO: Correct??
 		ELEKTRA_SET_INTERNAL_ERRORF (errorKey,
 					     "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
 					     ERR_get_error ());
@@ -135,7 +133,6 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (masterKey), keyGetValueSize (masterKey), saltBuffer, saltBufferLen, iterations,
 				     KEY_BUFFER_SIZE, keyBuffer))
 	{
-		// TODO: Correct??
 		ELEKTRA_SET_INTERNAL_ERRORF (
 			errorKey, "Failed to restore the cryptographic key for decryption. Libcrypto returned the error code: %lu",
 			ERR_get_error ());
@@ -392,7 +389,6 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	// TODO: Correct??
 	ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption error! libcrypto error code was: %lu", ERR_get_error ());
 	BIO_free_all (encrypted);
 	pthread_mutex_unlock (&mutex_ssl);

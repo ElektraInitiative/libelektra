@@ -157,7 +157,6 @@ static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (Key * errorKey
 		}
 		else
 		{
-			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
 							  "Master password length provided at " ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN
 							  " is invalid. Using default value instead.");

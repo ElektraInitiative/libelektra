@@ -308,9 +308,8 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 
 	if (!(handle->dirname))
 	{
-		// TODO: Correct??
-		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
-					       ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "no resolver set the user dirname, the configuration is: %s",
+						   ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 

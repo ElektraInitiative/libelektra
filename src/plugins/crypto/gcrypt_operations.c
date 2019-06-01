@@ -71,7 +71,6 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt,
 					 sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
-		// TODO: Correct??
 		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s",
 					     gcry_strerror (gcry_err));
 		return -1;

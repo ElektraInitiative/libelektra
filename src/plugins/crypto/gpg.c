@@ -774,8 +774,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		{
 			errorBuffer[0] = '\0';
 		}
-		// TODO: Correct?
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "GPG failed with return value %d. %s", status, errorBuffer);
+		ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (errorKey, "GPG failed with return value %d. %s", status, errorBuffer);
 		break;
 	}
 
