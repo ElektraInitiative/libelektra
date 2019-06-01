@@ -356,6 +356,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
 - Fixed support for `kdb import` and `kdb export`. _(Mihael Pranjić)_
 
+### ini
+- Fixed `ini` when only the root key needs to be written. _(Mihael Pranjić)_
+
 ### semlock
 
 removed due to:
