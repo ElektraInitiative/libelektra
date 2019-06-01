@@ -128,7 +128,7 @@ So do not give this responsibility out of hands entirely.
 - Use `const` as much as possible.
 - Use `static` methods if they should not be externally visible.
 - C-Files have extension `.c`, Header files `.h`.
-- Use internal functions: prefer to use elektraMalloc, elektraFree.
+- Use internal functions: prefer to use `elektraMalloc`, `elektraFree`.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
