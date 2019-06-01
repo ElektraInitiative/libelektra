@@ -1625,8 +1625,10 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 
+	if (ret == 0 && rootNeededSync)
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-	return (rootNeededSync || ret); /* success */
+	return ret; /* success */
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
