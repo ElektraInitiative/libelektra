@@ -1117,7 +1117,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 			if (access (pk->dirname, W_OK | X_OK) == -1)
 			{
 				ELEKTRA_SET_ERROR (28, parentKey, strerror (errno));
-				ELEKTRA_LOG_DEBUG ("RESOLVER: set error: %s", strerror (errno));
 				ret = -1;
 			}
 
@@ -1129,7 +1128,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 			// prepare phase
 			if (elektraSetPrepare (pk, parentKey) == -1)
 			{
-				ELEKTRA_LOG_DEBUG ("RESOLVER: set prepare failed");
 				ret = -1;
 			}
 		}
@@ -1140,7 +1138,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 		if (unlink (pk->filename) == -1)
 		{
 			ELEKTRA_SET_ERROR (28, parentKey, strerror (errno));
-			ELEKTRA_LOG_DEBUG ("RESOLVER: set error: %s", strerror (errno));
 			ret = -1;
 		}
 
@@ -1156,7 +1153,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 		/* we have an fd, so we are in second phase*/
 		if (elektraSetCommit (pk, parentKey) == -1)
 		{
-			ELEKTRA_LOG_DEBUG ("RESOLVER: set commit failed");
 			ret = -1;
 		}
 
@@ -1168,7 +1164,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 
 	errno = errnoSave; // maybe some temporary error happened
 
-	ELEKTRA_LOG_DEBUG ("RESOLVER: ret: %d", ret);
 	return ret;
 }
 
