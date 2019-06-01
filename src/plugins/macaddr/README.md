@@ -16,18 +16,9 @@ This plugin validates MAC-addresses. The following MAC-address-formats are suppo
     XX-XX-XX-XX-XX-XX
     XX:XX:XX:XX:XX:XX
     XXXXXX-XXXXXX
-
-If `set` is used, the value will be transformed to the format of the middle one.
+    Integer values (0 - 281474976710655)
 
 `kdbGet` returns an integer-representation of these values.
-
-TODO:
-
-- Update readme
-- Better error-messages
-- Fix bugs
-- Remove unused code
-- Maybe also support formats `XXXXXXXXXXXX` and `XXXX.XXXX.XXXX`
 
 ## Usage
 
