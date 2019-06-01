@@ -563,7 +563,7 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		if (s->rcResolver != SUCCESS) continue;
+		if (s->rcResolver != SUCCESS && s->rcResolver != CACHE_HIT) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
@@ -637,7 +637,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (mc->getPhase == MULTI_GETRESOLVER)
 	{
 		rc = updateFiles (handle, mc, returned, parentKey);
-		if (rc == SUCCESS || rc == CACHE_HIT)
+		if (rc == SUCCESS)
 		{
 			mc->getPhase = MULTI_GETSTORAGE;
 		}
@@ -645,7 +645,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	else if (mc->getPhase == MULTI_GETSTORAGE)
 	{
 		rc = doGetStorage (mc, parentKey);
-		if (rc == SUCCESS || rc == CACHE_HIT || mc->hasDeleted)
+		if (rc == SUCCESS || mc->hasDeleted)
 		{
 			fillReturned (mc, returned);
 			mc->hasDeleted = 0;
