@@ -795,7 +795,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 	cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[right]);
 	if (cmpresult > 0)
 	{
-		return -ks->size - 1;
+		return -((ssize_t) ks->size) - 1;
 	}
 	cmpresult = 1;
 
