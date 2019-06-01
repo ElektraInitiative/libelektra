@@ -59,7 +59,7 @@ void transformMac (Key * key)
  * Checks if the first string parameter conforms to the regex of the second string parameter
  * @param mac the string to check
  * @param regexString the regex to apply
- * @return VALIDATION_SUCCESS if a match has been found, else VALIDATION_ERROR
+ * @retval VALIDATION_SUCCESS if a match has been found, else VALIDATION_ERROR
  */
 int checkRegex (const char * mac, const char * regexString)
 {
@@ -77,7 +77,7 @@ int checkRegex (const char * mac, const char * regexString)
 /**
  * Checks if the string parameter consists solely of numbers and the overall number is valid for a MAC address
  * @param mac the string to check
- * @return VALIDATION_ISINT if mac solely consists of numbers and is valid, else VALIDATION_ERROR
+ * @retval VALIDATION_ISINT if mac solely consists of numbers and is valid, else VALIDATION_ERROR
  */
 int checkIntMac (const char * mac)
 {
@@ -97,7 +97,7 @@ int checkIntMac (const char * mac)
 /**
  * Checks if the supplied MAC key is a valid MAC address
  * @param key the key containing the MAC address
- * @return VALIDATION_SUCCESS if MAC address is valid, VALIDATION_ISINT if MAC address is a 64 bit integer and valid, else VALIDATION_ERROR
+ * @retval VALIDATION_SUCCESS if MAC address is valid, VALIDATION_ISINT if MAC address is a 64 bit integer and valid, else VALIDATION_ERROR
  */
 int validateMac (Key * key)
 {
