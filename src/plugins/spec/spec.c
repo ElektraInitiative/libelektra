@@ -736,6 +736,10 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 				copyMeta (newKey, specKey);
+				if (!isKdbGet)
+				{
+					keySetMeta (newKey, "internal/spec/remove", "");
+				}
 				ksAppendKey (ks, newKey);
 			}
 			else if (keyGetMeta (specKey, "default") != NULL)
@@ -743,6 +747,10 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
 						       keyString (keyGetMeta (specKey, "default")), KEY_END);
 				copyMeta (newKey, specKey);
+				if (!isKdbGet)
+				{
+					keySetMeta (newKey, "internal/spec/remove", "");
+				}
 				ksAppendKey (ks, newKey);
 			}
 		}
@@ -902,7 +910,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_CASCADING || keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			continue;
 		}
