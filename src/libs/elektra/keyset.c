@@ -1035,6 +1035,74 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 }
 
 /**
+ * Searches for the start and end indicies corresponding to the given cutpoint.
+ *
+ * @see ksCut() for explanation of cutpoints
+ *
+ * @param ks       the keyset to cut
+ * @param cutpoint the cutpoint
+ * @param from     we will store the start index here
+ * @param to       we will store the end index here
+ *
+ * @retval -1 if the cutpoint wasn't found
+ * @retval  1 if the cursor has to updated to match ks->current
+ * @retval  0 otherwise
+ */
+static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * from, size_t * to)
+{
+	int set_cursor = 0;
+
+	// search the cutpoint
+	ssize_t search = ksSearchInternal (ks, cutpoint);
+	size_t it = search < 0 ? -search - 1 : search;
+
+	// we found nothing
+	if (it == ks->size) return -1;
+
+	// we found the cutpoint
+	size_t found = it;
+
+	// search the end of the keyset to cut
+	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
+	{
+		++it;
+	}
+
+	// correct cursor if cursor is in cut keyset
+	if (ks->current >= found && ks->current < it)
+	{
+		if (found == 0)
+		{
+			ksRewind (ks);
+		}
+		else
+		{
+			ks->current = found - 1;
+			set_cursor = 1;
+		}
+	}
+
+	// correct the cursor for the keys after the cut keyset
+	if (ks->current >= it)
+	{
+		if (it >= ks->size)
+		{
+			ksRewind (ks);
+		}
+		else
+		{
+			ks->current = found + ks->current - it;
+			set_cursor = 1;
+		}
+	}
+
+	*from = it;
+	*to = found;
+
+	return set_cursor;
+}
+
+/**
  * Cuts out a keyset at the cutpoint.
  *
  * Searches for the cutpoint inside the KeySet ks.
@@ -1094,6 +1162,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 {
 	KeySet * returned = 0;
+	KeySet * ret = 0; // for cascading version
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
@@ -1116,7 +1185,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
 		char newname[length * 2];
 
-		KeySet * ret = ksNew (0, KS_END);
+		ret = ksNew (0, KS_END);
 
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
@@ -1181,52 +1250,12 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		key->key = name;
 		key->keySize = size;
 		key->keyUSize = usize;
-		return ret;
+
+		// now look for cascading keys
 	}
 
-	// search the cutpoint
-	ssize_t search = ksSearchInternal (ks, cutpoint);
-	it = search < 0 ? -search - 1 : search;
-
-	// we found nothing
-	if (it == ks->size) return ksNew (0, KS_END);
-
-	// we found the cutpoint
-	found = it;
-
-	// search the end of the keyset to cut
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
-	{
-		++it;
-	}
-
-	// correct cursor if cursor is in cut keyset
-	if (ks->current >= found && ks->current < it)
-	{
-		if (found == 0)
-		{
-			ksRewind (ks);
-		}
-		else
-		{
-			ks->current = found - 1;
-			set_cursor = 1;
-		}
-	}
-
-	// correct the cursor for the keys after the cut keyset
-	if (ks->current >= it)
-	{
-		if (it >= ks->size)
-		{
-			ksRewind (ks);
-		}
-		else
-		{
-			ks->current = found + ks->current - it;
-			set_cursor = 1;
-		}
-	}
+	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);
+	if (set_cursor < 0) return ret ? ret : ksNew (0, KS_END);
 
 	newsize = it - found;
 
@@ -1238,6 +1267,12 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	ksCopyInternal (ks, found, it);
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
+
+	if (ret)
+	{
+		ksAppend (returned, ret);
+		ksDel (ret);
+	}
 
 	return returned;
 }
