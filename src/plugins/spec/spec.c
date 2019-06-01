@@ -44,6 +44,9 @@ typedef enum
 #define SIZE_CONFLICTS       sizeof(NO_CONFLICTS)
 // clang-format on
 
+#define CONFIG_BASE_NAME_GET "/conflict/get"
+#define CONFIG_BASE_NAME_SET "/conflict/set"
+
 typedef struct
 {
 	OnConflict member;
@@ -88,7 +91,7 @@ static OnConflict parseOnConflictKey (const Key * key)
 	}
 }
 
-static void parseConfig (KeySet * config, ConflictHandling * ch, const char baseName[20])
+static void parseConfig (KeySet * config, ConflictHandling * ch, const char baseName[14])
 {
 	char nameBuffer[32];
 	strcpy (nameBuffer, baseName);
@@ -122,7 +125,7 @@ static void parseConfig (KeySet * config, ConflictHandling * ch, const char base
 	ch->missing = key == NULL ? base : parseOnConflictKey (key);
 }
 
-static void parseLocalConfig (Key * specKey, ConflictHandling * ch, const char baseName[20])
+static void parseLocalConfig (Key * specKey, ConflictHandling * ch, const char baseName[14])
 {
 	char nameBuffer[32];
 	strcpy (nameBuffer, baseName);
@@ -310,7 +313,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
  * @retval  0 if no conflicts where found
  * @retval -1 otherwise
  */
-static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey, const ConflictHandling * ch, const char configBaseName[20])
+static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey, const ConflictHandling * ch, const char configBaseName[14])
 {
 	ConflictHandling localCh;
 	memcpy (&localCh, ch, sizeof (ConflictHandling));
@@ -671,7 +674,7 @@ static bool specMatches (Key * specKey, Key * otherKey)
  * @retval  0 on success
  * @retval -1 otherwise
  */
-static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const ConflictHandling * ch, const char configBaseName[20],
+static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const ConflictHandling * ch, const char configBaseName[14],
 			   bool isKdbGet)
 {
 	bool require = keyGetMeta (specKey, "require") != NULL;
@@ -789,7 +792,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ConflictHandling ch;
 
 	KeySet * config = elektraPluginGetConfig (handle);
-	parseConfig (config, &ch, "/conflict/get");
+	parseConfig (config, &ch, CONFIG_BASE_NAME_GET);
 
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
@@ -824,7 +827,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
-		if (processSpecKey (specKey, parentKey, ks, &ch, "/conflict/get", true) != 0)
+		if (processSpecKey (specKey, parentKey, ks, &ch, CONFIG_BASE_NAME_GET, true) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -847,7 +850,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ConflictHandling ch;
 
 	KeySet * config = elektraPluginGetConfig (handle);
-	parseConfig (config, &ch, "/conflict/set");
+	parseConfig (config, &ch, CONFIG_BASE_NAME_SET);
 
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
@@ -882,7 +885,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
-		if (processSpecKey (specKey, parentKey, ks, &ch, "/conflict/set", false) != 0)
+		if (processSpecKey (specKey, parentKey, ks, &ch, CONFIG_BASE_NAME_SET, false) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
