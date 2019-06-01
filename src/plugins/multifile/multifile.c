@@ -563,7 +563,7 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		if (s->rcResolver != SUCCESS && s->rcResolver != CACHE_HIT) continue;
+		if (s->rcResolver != SUCCESS) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
