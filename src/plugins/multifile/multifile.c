@@ -563,7 +563,7 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		if (s->rcResolver != SUCCESS) continue;
+		if (s->rcResolver != SUCCESS && s->rcResolver != CACHE_HIT) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
@@ -704,11 +704,13 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 		Plugin * resolver = s->resolver;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
+		ELEKTRA_LOG_DEBUG ("MULTIFILE: fullPath: %s", s->fullPath);
 		int r = resolver->kdbSet (resolver, s->ks, parentKey);
 		s->rcResolver = rc = rvToRc (r);
 		if (rc == ERROR) break;
 		if (s->tmpFilename) elektraFree (s->tmpFilename);
 		s->tmpFilename = elektraStrDup (keyString (parentKey));
+		ELEKTRA_LOG_DEBUG ("MULTIFILE: tmpFilename: %s", s->tmpFilename);
 		// fprintf (stderr, "tmp filename for %s: %s\n", s->fullPath, s->tmpFilename);
 	}
 	keySetName (parentKey, keyName (initialParent));
@@ -742,10 +744,13 @@ static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 		Plugin * storage = s->storage;
 		int r = storage->kdbSet (storage, s->ks, parentKey);
 		s->rcStorage = rc = rvToRc (r);
+		ELEKTRA_LOG_DEBUG ("MULTIFILE: storage ret: %d", r);
+		ELEKTRA_LOG_DEBUG ("MULTIFILE: storage rc: %d", rc);
 
 		// fprintf (stderr, "%s ->kdbSet returned %d\n", mc->storage, r);
 
 		if (rc == ERROR) break;
+
 	}
 	keySetName (parentKey, keyName (initialParent));
 	keySetString (parentKey, keyString (initialParent));
