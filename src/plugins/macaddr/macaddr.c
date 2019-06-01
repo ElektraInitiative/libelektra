@@ -160,6 +160,7 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 		if (rc != VALIDATION_ISINT)
 		{
+			keySetMeta (cur, "origvalue", keyString (cur));
 			transformMac (cur);
 		}
 	}
@@ -188,12 +189,10 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey,
 					    "%s is not in a supported format. Supported formats are:\nXX:XX:XX:XX:XX:XX\n"
-					    "XX-XX-XX-XX-XX-XX\nXXXXXX-XXXXXX",
+					    "XX-XX-XX-XX-XX-XX\nXXXXXX-XXXXXX\nInteger values (0 - 281474976710655)",
 					    keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-
-		keySetMeta (cur, "origvalue", keyString (cur));
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
