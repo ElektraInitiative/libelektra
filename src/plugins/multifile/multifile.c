@@ -630,7 +630,6 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	}
 	if (!mc)
 	{
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: get error no MultiConfig initialized!");
 		return -1;
 	}
 	Codes rc = NOUPDATE;
@@ -667,11 +666,6 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	}
 	else
 	{
-		if (mc->getPhase == MULTI_GETRESOLVER)
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: get error MULTI_GETRESOLVER!");
-		else if (mc->getPhase == MULTI_GETSTORAGE)
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: get error MULTI_GETSTORAGE!");
-
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }
@@ -704,13 +698,11 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 		Plugin * resolver = s->resolver;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: fullPath: %s", s->fullPath);
 		int r = resolver->kdbSet (resolver, s->ks, parentKey);
 		s->rcResolver = rc = rvToRc (r);
 		if (rc == ERROR) break;
 		if (s->tmpFilename) elektraFree (s->tmpFilename);
 		s->tmpFilename = elektraStrDup (keyString (parentKey));
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: tmpFilename: %s", s->tmpFilename);
 		// fprintf (stderr, "tmp filename for %s: %s\n", s->fullPath, s->tmpFilename);
 	}
 	keySetName (parentKey, keyName (initialParent));
@@ -744,13 +736,10 @@ static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 		Plugin * storage = s->storage;
 		int r = storage->kdbSet (storage, s->ks, parentKey);
 		s->rcStorage = rc = rvToRc (r);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: storage ret: %d", r);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: storage rc: %d", rc);
 
 		// fprintf (stderr, "%s ->kdbSet returned %d\n", mc->storage, r);
 
 		if (rc == ERROR) break;
-
 	}
 	keySetName (parentKey, keyName (initialParent));
 	keySetString (parentKey, keyString (initialParent));
@@ -862,11 +851,9 @@ int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	{
 		flagUpdateBackends (mc, returned);
 		rc = resolverSet (mc, parentKey);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: set MULTI_SETRESOLVER rc: %d!", rc);
 		// fprintf (stderr, "resolverSet returned %d\n", rc);
 		if (rc == ERROR)
 		{
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: set error MULTI_SETRESOLVER!");
 			return -1;
 		}
 		mc->setPhase = MULTI_SETSTORAGE;
@@ -874,10 +861,8 @@ int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	else if (mc->setPhase == MULTI_SETSTORAGE)
 	{
 		rc = doSetStorage (mc, parentKey);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: set MULTI_SETSTORAGE rc: %d!", rc);
 		if (rc == ERROR)
 		{
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: set error MULTI_SETSTORAGE!");
 			return -1;
 		}
 		mc->setPhase = MULTI_COMMIT;
@@ -897,21 +882,12 @@ int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	}
 	else
 	{
-		if (mc->setPhase == MULTI_SETRESOLVER)
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: set error MULTI_SETRESOLVER!");
-		else if (mc->setPhase == MULTI_SETSTORAGE)
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: set error MULTI_SETSTORAGE!");
-		else if (mc->setPhase == MULTI_COMMIT)
-			ELEKTRA_LOG_DEBUG ("MULTIFILE: set error MULTI_COMMIT!");
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: set error unknown, rc: %d!", rc);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: set error unknown, phase: %d!", mc->setPhase);
 		return -1;
 	}
 }
 
 int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	ELEKTRA_LOG_DEBUG ("MULTIFILE: error!");
 	MultiConfig * mc = elektraPluginGetData (handle);
 	if (!mc) return 0;
 	ksRewind (mc->childBackends);
@@ -923,7 +899,6 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		Plugin * resolver = s->resolver;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
-		ELEKTRA_LOG_DEBUG ("MULTIFILE: error resolver parentkey: %s, %s!", keyName (parentKey), keyString (parentKey));
 		if (resolver->kdbError)
 		{
 			resolver->kdbError (handle, returned, parentKey);
