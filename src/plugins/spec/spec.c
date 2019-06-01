@@ -917,6 +917,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// cleanup
 	ksDel (ks);
+	ksDel (specKS);
 
 	return ret;
 }
