@@ -1562,6 +1562,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
+		ELEKTRA_LOG_DEBUG ("INI: set key: %s, %s", keyName (cur), keyString (cur));
 		if (keyGetMeta (cur, "internal/ini/order"))
 		{
 			ksAppendKey (newKS, cur);
@@ -1586,6 +1587,8 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		fprintf (fh, "\xEF\xBB\xBF");
 	}
+
+	int rootNeededSync = 0;
 	if (keyNeedSync (parentKey) && root)
 	{
 		if (strncmp (keyString (parentKey), keyString (root), strlen (keyString (root))))
@@ -1594,12 +1597,14 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				iniWriteMeta (fh, root);
 				fprintf (fh, "= %s\n", keyString (root));
+				rootNeededSync = 1;
 			}
 		}
 		else
 		{
 			iniWriteMeta (fh, root);
 			fprintf (fh, "[]\n");
+			rootNeededSync = 1;
 		}
 	}
 	keyDel (root);
@@ -1622,7 +1627,8 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	elektraPluginSetData (handle, pluginConfig);
 
 
-	return ret; /* success */
+	ELEKTRA_LOG_DEBUG ("INI: set ret: %d", ret);
+	return (rootNeededSync || ret); /* success */
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
