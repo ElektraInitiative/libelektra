@@ -2814,10 +2814,9 @@ static void test_cascading_cutbelow (void)
 	printf ("Testing cutting below some keys (cascading)\n");
 
 	Key * cutpoint = keyNew ("/export", KEY_END);
-	KeySet * orig =
-		ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
-		       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END),
-		       keyNew ("/export-backup/b", KEY_END), keyNew ("/export-backup-2/x", KEY_END), KS_END);
+	KeySet * orig = ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+			       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END),
+			       keyNew ("/export-backup/b", KEY_END), keyNew ("/export-backup-2/x", KEY_END), KS_END);
 	ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "/export/a");
@@ -2833,9 +2832,8 @@ static void test_cascading_cutbelow (void)
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part =
-		ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
-		       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END), KS_END);
+	KeySet * cmp_part = ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+				   keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
