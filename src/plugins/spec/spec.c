@@ -444,7 +444,10 @@ static void validateEmptyArray (KeySet * ks, Key * arraySpec, Key * parentKey, O
 	ksDel (subKeys);
 	keyDel (parentLookup);
 
-	keySetMeta (arrayParent, "internal/spec/array/validated", "");
+	if (!immediate)
+	{
+		keySetMeta (arrayParent, "internal/spec/array/validated", "");
+	}
 }
 
 static void validateArrayMembers (KeySet * ks, Key * arraySpec)
