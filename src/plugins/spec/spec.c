@@ -33,13 +33,12 @@ typedef enum
 
 
 // clang-format off
-#define NO_CONFLICTS         "000000" // on char per conflict type below
+#define NO_CONFLICTS         "00000" // on char per conflict type below
 #define CONFLICT_ARRAYMEMBER     0
 #define CONFLICT_INVALID         1
-#define CONFLICT_SUBCOUNT        2
-#define CONFLICT_COLLISION       3
-#define CONFLICT_OUTOFRANGE      4
-#define CONFLICT_WILDCARDMEMBER  5
+#define CONFLICT_COLLISION       2
+#define CONFLICT_OUTOFRANGE      3
+#define CONFLICT_WILDCARDMEMBER  4
 // missing keys are handled directly
 #define SIZE_CONFLICTS       sizeof(NO_CONFLICTS)
 // clang-format on
@@ -108,10 +107,6 @@ static void parseConfig (KeySet * config, ConflictHandling * ch, const char base
 	key = ksLookupByName (config, nameBuffer, 0);
 	ch->invalid = key == NULL ? base : parseOnConflictKey (key);
 
-	strcpy (nameBufferEnd, "/count");
-	key = ksLookupByName (config, nameBuffer, 0);
-	ch->count = key == NULL ? base : parseOnConflictKey (key);
-
 	strcpy (nameBufferEnd, "/collision");
 	key = ksLookupByName (config, nameBuffer, 0);
 	ch->conflict = key == NULL ? base : parseOnConflictKey (key);
@@ -138,10 +133,6 @@ static void parseLocalConfig (Key * specKey, ConflictHandling * ch, const char b
 	strcpy (nameBufferEnd, "/invalid");
 	key = keyGetMeta (specKey, nameBuffer);
 	ch->invalid = key == NULL ? ch->invalid : parseOnConflictKey (key);
-
-	strcpy (nameBufferEnd, "/count");
-	key = keyGetMeta (specKey, nameBuffer);
-	ch->count = key == NULL ? ch->count : parseOnConflictKey (key);
 
 	strcpy (nameBufferEnd, "/collision");
 	key = keyGetMeta (specKey, nameBuffer);
@@ -262,18 +253,6 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		handleConflict (parentKey, msg, ch->member);
 		elektraFree (msg);
 		safeFree (problemKeys);
-	}
-
-	if (conflicts[CONFLICT_SUBCOUNT] == '1' && ch->count != IGNORE)
-	{
-		Key * parent = keyNew (keyName (key), KEY_END);
-		keySetBaseName (parent, NULL);
-		char * msg = elektraFormat ("%s has invalid number of subkeys: %s. Expected: %s", keyName (parent),
-					    keyString (keyGetMeta (key, "conflict/subcount")),
-					    keyString (keyGetMeta (specKey, "require/count")));
-		handleConflict (parentKey, msg, ch->count);
-		elektraFree (msg);
-		keyDel (parent);
 	}
 
 	if (conflicts[CONFLICT_COLLISION] == '1' && ch->conflict != IGNORE)
@@ -438,7 +417,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec)
 					}
 
 					char elem[ELEKTRA_MAX_ARRAY_SIZE];
-					kdb_long_long_t i = 0;
+					kdb_long_long_t i = 0; // FIXME: use min
 					elektraWriteArrayNumber (elem, i);
 
 					while (strcmp (elem, arraySize) <= 0)
@@ -567,55 +546,30 @@ static bool isWildcardSpec (const Key * key)
  * @param key
  * @param specKey
  */
-static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
+static void validateWildcardSubs (KeySet * ks, Key * key)
 {
-	if (keyGetMeta (specKey, "require") != NULL)
+	Key * parent = keyDup (key);
+	keySetBaseName (parent, NULL);
+
+	// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
+	KeySet * ksCopy = ksDup (ks);
+	KeySet * subKeys = ksCut (ksCopy, parent);
+	ksDel (ksCopy);
+
+	Key * cur;
+	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		return;
-	}
-
-	const Key * requireCount = keyGetMeta (specKey, "require/count");
-	if (requireCount != NULL)
-	{
-		Key * parent = keyDup (key);
-		keySetBaseName (parent, NULL);
-
-		// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
-		KeySet * ksCopy = ksDup (ks);
-		KeySet * subKeys = ksCut (ksCopy, parent);
-		ksDel (ksCopy);
-
-		Key * cur;
-		kdb_long_long_t subCount = 0;
-		while ((cur = ksNext (subKeys)) != NULL)
+		if (keyIsDirectBelow (parent, cur))
 		{
-			if (keyIsDirectBelow (parent, cur))
+			if (elektraArrayValidateBaseNameString (keyBaseName (cur)) > 0)
 			{
-				if (elektraArrayValidateBaseNameString (keyBaseName (cur)) > 0)
-				{
-					addConflict (parent, CONFLICT_WILDCARDMEMBER);
-					elektraMetaArrayAdd (parent, "conflict/wildcardmember", keyName (cur));
-				}
-				else
-				{
-					++subCount;
-				}
+				addConflict (parent, CONFLICT_WILDCARDMEMBER);
+				elektraMetaArrayAdd (parent, "conflict/wildcardmember", keyName (cur));
 			}
 		}
-		ksDel (subKeys);
-		keyDel (parent);
-
-		// TODO: conversion library?
-
-		kdb_long_long_t required = ELEKTRA_LONG_LONG_S (keyString (requireCount), NULL, 10);
-		if (required != subCount)
-		{
-			char buffer[ELEKTRA_MAX_ARRAY_SIZE]; // more than enough
-			snprintf (buffer, sizeof (buffer), ELEKTRA_LONG_LONG_F, subCount);
-			addConflict (key, CONFLICT_SUBCOUNT);
-			keySetMeta (key, "conflict/subcount", buffer);
-		}
 	}
+	ksDel (subKeys);
+	keyDel (parent);
 }
 
 // endregion Wildcard (_) handling
@@ -712,7 +666,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 
 		if (wildcardSpec)
 		{
-			validateWildcardSubs (ks, cur, specKey);
+			validateWildcardSubs (ks, cur);
 		}
 
 		copyMeta (cur, specKey);

@@ -139,39 +139,6 @@ void test_wildcard (void)
 	}
 	TEST_END
 
-	TEST_BEGIN
-	{
-		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a/_", KEY_META, "require/count", "2", KEY_END),
-				     keyNew ("user" PARENT_KEY "/a/x", KEY_END), keyNew ("user" PARENT_KEY "/a/y", KEY_END),
-				     keyNew ("user" PARENT_KEY "/a/z", KEY_END), KS_END);
-
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
-
-		ksDel (ks);
-	}
-	TEST_END
-
-	TEST_BEGIN
-	{
-		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a/_", KEY_META, "require/count", "2", KEY_END),
-				     keyNew ("user" PARENT_KEY "/a/x", KEY_END), KS_END);
-
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
-
-		ksDel (ks);
-	}
-	TEST_END
-
-	TEST_BEGIN
-	{
-		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a/_", KEY_META, "require/count", "2", KEY_END),
-				     keyNew ("user" PARENT_KEY "/a/x", KEY_END), keyNew ("user" PARENT_KEY "/a/#0", KEY_END), KS_END);
-
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
-
-		ksDel (ks);
-	}
-	TEST_END
 	ksDel (_conf);
 }
 
