@@ -417,7 +417,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec)
 					}
 
 					char elem[ELEKTRA_MAX_ARRAY_SIZE];
-					kdb_long_long_t i = 0; // FIXME: use min
+					kdb_long_long_t i = 0;
 					elektraWriteArrayNumber (elem, i);
 
 					while (strcmp (elem, arraySize) <= 0)
