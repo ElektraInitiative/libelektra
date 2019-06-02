@@ -38,7 +38,7 @@
 		}                                                                                                                          \
 	} while (0)
 
-void test_default (void)
+static void test_default (void)
 {
 	printf ("test default\n");
 
@@ -74,7 +74,7 @@ void test_default (void)
 	ksDel (_conf);
 }
 
-void test_assign_condition (void)
+static void test_assign_condition (void)
 {
 	printf ("test assign/condition\n");
 
@@ -102,7 +102,7 @@ void test_assign_condition (void)
 	ksDel (_conf);
 }
 
-void test_wildcard (void)
+static void test_wildcard (void)
 {
 	printf ("test wildcard (_)\n");
 
@@ -142,7 +142,7 @@ void test_wildcard (void)
 	ksDel (_conf);
 }
 
-void test_require (void)
+static void test_require (void)
 {
 	printf ("test require\n");
 
@@ -172,7 +172,7 @@ void test_require (void)
 	ksDel (_conf);
 }
 
-void test_array (void)
+static void test_array (void)
 {
 	printf ("test array\n");
 
@@ -365,10 +365,21 @@ void test_array (void)
 		ksDel (ks);
 	}
 	TEST_END
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a/#", KEY_META, "default", "", KEY_END),
+				     keyNew ("user" PARENT_KEY "/a/x", KEY_END), KS_END);
+
+		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+
+		ksDel (ks);
+	}
+	TEST_END
 	ksDel (_conf);
 }
 
-void test_require_array (void)
+static void test_require_array (void)
 {
 	printf ("test require array\n");
 
@@ -415,6 +426,39 @@ void test_require_array (void)
 	ksDel (_conf);
 }
 
+static void test_remove_meta (void)
+{
+	printf ("test remove meta\n");
+
+	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_END),
+				     keyNew ("user" PARENT_KEY "/a", KEY_END), KS_END);
+
+		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_ON_FAIL (output_error (parentKey));
+
+		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+
+		succeed_if (lookup != NULL, ".../a not found");
+		succeed_if (keyGetMeta (lookup, "othermeta") != NULL, "metadata missing");
+
+		TEST_CHECK (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
+		TEST_ON_FAIL (output_error (parentKey));
+
+		lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+
+		succeed_if (lookup != NULL, ".../a not found");
+		succeed_if (keyGetMeta (lookup, "othermeta") == NULL, "metadata not removed");
+
+		ksDel (ks);
+	}
+	TEST_END
+	ksDel (_conf);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("SPEC     TESTS\n");
@@ -428,6 +472,7 @@ int main (int argc, char ** argv)
 	test_require ();
 	test_array ();
 	test_require_array ();
+	test_remove_meta ();
 
 	print_result ("testmod_spec");
 
