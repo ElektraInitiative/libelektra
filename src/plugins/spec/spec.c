@@ -738,10 +738,6 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 				copyMeta (newKey, specKey);
-				if (!isKdbGet)
-				{
-					keySetMeta (newKey, "internal/spec/remove", "");
-				}
 				ksAppendKey (ks, newKey);
 			}
 			else if (keyGetMeta (specKey, "default") != NULL)
@@ -749,10 +745,6 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
 						       keyString (keyGetMeta (specKey, "default")), KEY_END);
 				copyMeta (newKey, specKey);
-				if (!isKdbGet)
-				{
-					keySetMeta (newKey, "internal/spec/remove", "");
-				}
 				ksAppendKey (ks, newKey);
 			}
 		}
