@@ -65,7 +65,6 @@ usr/include/elektra/kdbopts.h
 usr/include/elektra/elektra.h
 usr/include/elektra/elektra/error.h
 usr/include/elektra/elektra/errors.h
-usr/include/elektra/elektra/errorcodes.h
 usr/include/elektra/elektra/types.h
 usr/include/elektra/elektra/conversion.h
 usr/lib/*/cmake/Elektra/ElektraConfig.cmake
