@@ -170,6 +170,6 @@ kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, i
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
 ```
 
-## Known issues
+## Known Issues
 
 Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
