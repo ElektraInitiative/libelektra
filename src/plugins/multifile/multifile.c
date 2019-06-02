@@ -151,7 +151,11 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		freeHandle (resolved);
 	}
 
+	elektraInvokeClose (handle, 0);
+	return rc;
+
 RESOLVE_FAILED:
+	ELEKTRA_LOG_DEBUG ("MULTIFILE: resolve failed!");
 	elektraInvokeClose (handle, 0);
 	return rc;
 }
@@ -559,7 +563,7 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		if (s->rcResolver != SUCCESS) continue;
+		if (s->rcResolver != SUCCESS && s->rcResolver != CACHE_HIT) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
@@ -683,7 +687,7 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 		else if (s->rcResolver == EMPTY)
 		{
 			// fprintf (stderr, "MARK FOR DELETE: %s:(%s)\n", s->parentString, s->fullPath);
-			++rc;
+			// ++rc;
 			continue;
 		}
 		else
