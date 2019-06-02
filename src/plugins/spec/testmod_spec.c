@@ -426,6 +426,7 @@ static void test_require_array (void)
 	ksDel (_conf);
 }
 
+/* TODO: find way to remove metadata safely after other plugins ran
 static void test_remove_meta (void)
 {
 	printf ("test remove meta\n");
@@ -458,6 +459,7 @@ static void test_remove_meta (void)
 	TEST_END
 	ksDel (_conf);
 }
+*/
 
 int main (int argc, char ** argv)
 {
@@ -472,7 +474,7 @@ int main (int argc, char ** argv)
 	test_require ();
 	test_array ();
 	test_require_array ();
-	test_remove_meta ();
+	// test_remove_meta ();
 
 	print_result ("testmod_spec");
 
