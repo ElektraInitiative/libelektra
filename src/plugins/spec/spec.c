@@ -922,7 +922,7 @@ static int processSpecKeySet (Key * specKey, Key * parentKey, KeySet * ks, const
 			ret = -1;
 		}
 
-		removeMeta (cur, specKey);
+		// removeMeta (cur, specKey);
 	}
 
 	return ret;
