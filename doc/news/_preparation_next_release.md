@@ -375,6 +375,11 @@ removed due to:
 - New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (4294967295 (= 0xffffffff) and 2864434397 (= 0xaabbccdd) respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
   _(Philipp Gackstatter)_
 
+### MemoryValue
+
+- New plugin to validate memory values and normalize them into bytes. E.g. 20 KB (normalized 20000 Byte).
+  _(Marcel Hauri)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
