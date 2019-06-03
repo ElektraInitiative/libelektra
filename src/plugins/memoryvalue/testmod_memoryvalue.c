@@ -23,7 +23,8 @@ int main (int argc, char ** argv)
 
 static void test_memoryvalue (const char * memoryvalue, const int expected_ret)
 {
-	Key * hexkey = keyNew ("user/test/memoryvalue/testmemoryvalue", KEY_VALUE, memoryvalue, KEY_META, "check/memoryvalue", "any", KEY_END);
+	Key * hexkey =
+		keyNew ("user/test/memoryvalue/testmemoryvalue", KEY_VALUE, memoryvalue, KEY_META, "check/memoryvalue", "any", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (20, KS_END);
 	Key * parentKey = keyNew ("user/tests/memoryvalue", KEY_END);
@@ -50,7 +51,4 @@ static void test_memoryvalueplugin ()
 	test_memoryvalue ("10MB", 1000000);
 	test_memoryvalue ("10 MB", 1000000);
 	test_memoryvalue ("10GB", 1000000000);
-
 }
-
-
