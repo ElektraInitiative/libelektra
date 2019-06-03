@@ -101,10 +101,10 @@ static int elektraMemoryvalueConvertToByteString (Key * key, kdb_unsigned_long_l
 	normalizedMemVal = ret * formatFactor;
 
 	// convert back to string
-	const int n = snprintf (NULL, 0, "%llu", normalizedMemVal);
+	const int n = snprintf (NULL, 0, "%lu", normalizedMemVal);
 	char buf[n + 1];
 
-	snprintf (buf, n + 1, "%llu", normalizedMemVal);
+	snprintf (buf, n + 1, "%lu", normalizedMemVal);
 
 	keySetString (key, buf);
 	return 0;
