@@ -11,15 +11,7 @@
 #include <string.h>
 #include <tests_plugin.h>
 
-static void test_memoryvalueplugin ();
 
-int main (int argc, char ** argv)
-{
-
-	test_memoryvalueplugin ();
-	print_result ("testmod_memoryvalue");
-	return nbError;
-}
 
 static void test_memoryvalue (const char * memoryvalue, const int expected_ret)
 {
@@ -51,4 +43,12 @@ static void test_memoryvalueplugin ()
 	test_memoryvalue ("10MB", 1000000);
 	test_memoryvalue ("10 MB", 1000000);
 	test_memoryvalue ("10GB", 1000000000);
+}
+
+int main (int argc, char ** argv)
+{
+
+	test_memoryvalueplugin ();
+	print_result ("testmod_memoryvalue");
+	return nbError;
 }
