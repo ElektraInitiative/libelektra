@@ -138,13 +138,16 @@ static void testAddressesNumber (void)
 
 static void testRestoreValue (void)
 {
-	const char * val = "00:11:55:AA:FF:CC";
+	char * val = "00:11:55:AA:FF:CC";
 	Key * key = keyNew ("user/tests/mac/addr", KEY_VALUE, val, KEY_META, META, "", KEY_END);
 	KeySet * testKs = ksNew (10, key, KS_END);
 	setKey (testKs);
 	getKeyString (testKs, "user/tests/mac/addr");
 	setKey (testKs);
 	succeed_if (!strcmp (keyString (key), val), "error");
+	keyDel (key);
+	ksDel (testKs);
+	elektraFree (val);
 }
 
 static void testAll (void)
