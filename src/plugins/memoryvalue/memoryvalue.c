@@ -87,7 +87,7 @@ static int elektraMemoryvalueConvertToByteString (Key * key, kdb_unsigned_long_l
 	const char * str = keyString (key);
 	keySetMeta (key, "origvalue", str);
 	char * ptr;
-	long ret;
+	kdb_unsigned_long_long_t ret;
 	kdb_unsigned_long_long_t normalizedMemVal;
 
 	ret = strtoll (str, &ptr, 10);
