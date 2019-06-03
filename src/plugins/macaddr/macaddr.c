@@ -160,9 +160,10 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 		if (rc != VALIDATION_ISINT)
 		{
-			const char * origvalue = elektraStrDup (keyString (cur));
+			char * origvalue = elektraStrDup (keyString (cur));
 			transformMac (cur);
 			keySetMeta (cur, "origvalue", origvalue);
+			elektraFree (origvalue);
 		}
 	}
 
