@@ -47,7 +47,8 @@ static void test_memoryvalueplugin ()
 
 int main (int argc, char ** argv)
 {
-
+	(void)argc;
+    (void)argv;
 	test_memoryvalueplugin ();
 	print_result ("testmod_memoryvalue");
 	return nbError;
