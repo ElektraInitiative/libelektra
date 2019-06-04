@@ -125,7 +125,7 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (2,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/notype", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/notype/notype", KEY_META, "default", "2", KEY_END),
 	KS_END);
 ;
