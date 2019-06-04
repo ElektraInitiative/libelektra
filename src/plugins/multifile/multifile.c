@@ -318,6 +318,7 @@ static Codes initBackend (Plugin * handle, MultiConfig * mc, SingleConfig * s, K
 	else
 	{
 		s->storage = storage;
+		storage->global = elektraPluginGetGlobalKeySet (handle);
 	}
 	return SUCCESS;
 }
