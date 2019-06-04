@@ -2,6 +2,9 @@
 
 ## Introduction
 
+> Note: If you need a REST Service that provides get and set of
+> local configuration, you actually want [/src/tools/web/elektrad]
+
 This document aims to provide information about Elektra’s `rest-backend` feature.
 `rest-backend` offers a RESTful server to search, store and convert configuration snippets.
 It also offers authentication methods to restrict access to manipulative methods.
