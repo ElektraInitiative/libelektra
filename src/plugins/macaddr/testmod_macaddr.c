@@ -147,7 +147,6 @@ static void testRestoreValue (void)
 	succeed_if (!strcmp (keyString (key), val), "error");
 	keyDel (key);
 	ksDel (testKs);
-	elektraFree (val);
 }
 
 static void testAll (void)
