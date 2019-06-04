@@ -21,13 +21,12 @@ static kdb_unsigned_long_long_t is_valid_key (Key * key)
 {
 
 	const Key * meta = keyGetMeta (key, "check/memoryvalue");
-	const char * pattern = "\\d* ?[B,KB,MB,GB,TB,PB]";
+	const char * pattern = "^[0-9]+[ ]*(KB|MB|GB|TB|PB|B)$";
 	const char * value = keyString (key);
 	regmatch_t offsets;
 	regex_t regex;
 	int compile_failure;
 	int match;
-
 	if (!meta)
 	{
 		return 0;
@@ -47,7 +46,6 @@ static kdb_unsigned_long_long_t is_valid_key (Key * key)
 	{
 		return 0;
 	}
-	printf ("value %s", value);
 
 
 	if (strstr (value, "KB") != NULL)
@@ -101,10 +99,10 @@ static int elektraMemoryvalueConvertToByteString (Key * key, kdb_unsigned_long_l
 	normalizedMemVal = ret * formatFactor;
 
 	// convert back to string
-	const int n = snprintf (NULL, 0, "%lu", normalizedMemVal);
+	const int n = snprintf (NULL, 0, ELEKTRA_UNSIGNED_LONG_LONG_F, normalizedMemVal);
 	char buf[n + 1];
 
-	snprintf (buf, n + 1, "%lu", normalizedMemVal);
+	snprintf (buf, n + 1, ELEKTRA_UNSIGNED_LONG_LONG_F, normalizedMemVal);
 
 	keySetString (key, buf);
 	return 0;
@@ -168,16 +166,15 @@ int elektraMemoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		{
 			continue;
 		}
-		printf ("contdd");
 
 		elektraMemoryvalueRestore (cur);
 		kdb_unsigned_long_long_t format = is_valid_key (cur);
-
 
 		if (format == 0)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+
 		int status = elektraMemoryvalueConvertToByteString (cur, format);
 
 		if (status == 1)
