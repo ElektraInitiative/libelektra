@@ -1,11 +1,13 @@
 - infos = Information about the memoryvalue plugin is in keys below
-- infos/author = Marcel Hauri @hesirui <firstname> [at] <lastname> .at
+- infos/author = Marcel Hauri <firstname> [at] <lastname> .at
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = 
-- infos/status = WIP
+- infos/placements = postgetstorage presetstorage
+- infos/ordering = type
+- infos/status = maintained
+- infos/metadata = check/memoryvalue
 - infos/description = checks for correct memory value settings and normalizes them to bytes
 
 ## Introduction
@@ -30,3 +32,4 @@ kdb set user/tests/memoryvalue/m1 12MB
 
 retrieve the key
 kdb get user/tests/memoryvalue/m1
+
