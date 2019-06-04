@@ -762,7 +762,7 @@ def buildDoc() {
                     removePrefix: 'build/doc/man/man3elektra/',
                     remoteDirectory: 'api/latest/man'
                   ),
-                  // TODO: API doc not built anymore
+                  // TODO: API doc of REST services are not built anymore
                   sshTransfer(
                     sourceFiles: 'build/API_DOC/*',
                     removePrefix: 'build/API_DOC/'
