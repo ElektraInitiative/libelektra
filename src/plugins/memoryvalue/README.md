@@ -14,22 +14,10 @@
 
 Memory Value Plugin checks the correct format of memory specifications.
 
-E.g. setting the max RAM consumption of JVM
-*maxMem=2048MB valid*
-
-*maxMem=2048MXB invalid*
-
-*maxMem=2048P invalid*
-
-*maxMem=2048 invalid*
+E.g. setting the max RAM consumption of JVM, 30MB would be valid while 30MBMB would be not valid.
 
 ## Usage 
-set meta to use the plugin
-kdb setmeta user/tests/memoryvalue/m1 check/memoryvalue ""
 
-set key
-kdb set user/tests/memoryvalue/m1 12MB
+Add the metakey `check/memoryvalue` and set a memory value e.g. 20MB to the key.
 
-retrieve the key
-kdb get user/tests/memoryvalue/m1
 
