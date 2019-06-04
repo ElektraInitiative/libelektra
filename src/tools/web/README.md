@@ -114,6 +114,41 @@ Elektra web consists of multiple components:
 - [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: https://elektrad.docs.apiary.io/
 - [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
 
+## Test REST API on localhost
+
+In order to test API on localhost, you have to start elektrad instance:
+
+- `cd libelektra/src/tools/web`
+- `cd elektrad`
+- `npm install`
+- `npm start` (replaces `kdb run-elektrad`)
+
+Now the server is runing on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows to send REST API requests.
+
+As an example:
+
+GET: http://localhost:33333/kdb/path
+
+will return the value of path key, which is stored in the database.
+
+```sh
+kdb set /test 5
+```
+
+GET: http://localhost:33333/kdb/user/test
+will return 
+
+{
+    "exists": true,
+    "name": "test",
+    "path": "user/test",
+    "ls": [
+        "user/test"
+    ],
+    "value": "5",
+    "meta": ""
+}
+
 ## Auth
 
 Currently, webd does not support authentication. The best way to work around
