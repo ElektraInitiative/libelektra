@@ -357,6 +357,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
 - Fix data loss bug when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
 
+### multifile
+
+- Fixed segmentation fault in `kdbError()` function. _(Mihael Pranjić)_
+- Added Global Keyset handle to storage plugin.  _(Mihael Pranjić)_
+- Disable cache when `ini` is used.  _(Mihael Pranjić)_
+
 ### mmapstorage
 
 - [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
