@@ -7,6 +7,7 @@ usr/lib/*/elektra4/libelektra-csvstorage.so*
 usr/lib/*/elektra4/libelektra-desktop.so*
 usr/lib/*/elektra4/libelektra-dpkg.so*
 usr/lib/*/elektra4/libelektra-dump.so*
+usr/lib/*/elektra4/libelektra-quickdump.so*
 usr/lib/*/elektra4/libelektra-enum.so*
 usr/lib/*/elektra4/libelektra-error.so*
 usr/lib/*/elektra4/libelektra-filecheck.so*
