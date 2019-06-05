@@ -51,7 +51,7 @@ static void test_memoryvalue (const char * memoryvaluestring, kdb_unsigned_long_
 }
 
 
-static void test_memoryvalueplugin ()
+static void test_memoryvalueplugin (void)
 {
 	test_memoryvalue ("1Z", 0, true);
 	test_memoryvalue ("!TB", 0, true);
