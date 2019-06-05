@@ -16,8 +16,6 @@ Memory Value Plugin checks the correct format of memory specifications.
 
 E.g. setting the max RAM consumption of JVM, 30MB would be valid while 30MBMB would be not valid.
 
-## Usage 
+## Usage
 
 Add the metakey `check/memoryvalue` and set a memory value e.g. 20MB to the key.
-
-
