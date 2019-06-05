@@ -1,5 +1,5 @@
 - infos = Information about the memoryvalue plugin is in keys below
-- infos/author = Marcel Hauri <firstname> [at] <lastname> .at
+- infos/author = Marcel Hauri e1355940@student.tuwien.ac.at
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
