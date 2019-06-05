@@ -318,6 +318,7 @@ static Codes initBackend (Plugin * handle, MultiConfig * mc, SingleConfig * s, K
 	else
 	{
 		s->storage = storage;
+		storage->global = elektraPluginGetGlobalKeySet (handle);
 	}
 	return SUCCESS;
 }
@@ -517,7 +518,8 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 				}
 			}
 
-			if (r == ELEKTRA_PLUGIN_STATUS_CACHE_HIT)
+			// TODO: cache is currently incompatible with ini (see #2592)
+			if (r == ELEKTRA_PLUGIN_STATUS_CACHE_HIT && !(elektraStrCmp (s->storage->name, "ini") == 0))
 			{
 				++cacheHits;
 			}
