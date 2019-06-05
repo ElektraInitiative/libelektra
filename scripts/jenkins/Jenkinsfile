@@ -741,36 +741,64 @@ def buildDoc() {
           [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
         ]
 
-        // TODO don't write to latest on PR's
-        sshPublisher(
-          publishers: [
-            sshPublisherDesc(
-              configName: 'doc.libelektra.org',
-              transfers: [
-                sshTransfer(
-                  sourceFiles: 'build/doc/latex/*',
-                  removePrefix: 'build/doc/',
-                  remoteDirectory: 'api/latest'
-                ),
-                sshTransfer(
-                  sourceFiles: 'build/doc/man/*',
-                  removePrefix: 'build/doc/',
-                  remoteDirectory: 'api/latest'
-                ),
-                sshTransfer(
-                  sourceFiles: 'doc/help/*.html',
-                  removePrefix: 'doc/help/',
-                  remoteDirectory: 'help'
-                ),
-                sshTransfer(
-                  sourceFiles: 'build/API_DOC/*',
-                  removePrefix: 'build/API_DOC/'
-                )
-              ]
-            )
-          ],
-          verbose: true
-        )
+        if (isMaster()) {
+          sshPublisher(
+            publishers: [
+              sshPublisherDesc(
+                configName: 'doc.libelektra.org',
+                transfers: [
+                  sshTransfer(
+                    sourceFiles: 'build/doc/latex/*',
+                    removePrefix: 'build/doc/',
+                    remoteDirectory: 'api/latest'
+                  ),
+                  sshTransfer(
+                    sourceFiles: 'build/doc/html/*',
+                    removePrefix: 'build/doc/',
+                    remoteDirectory: 'api/latest'
+                  ),
+                  sshTransfer(
+                    sourceFiles: 'build/doc/man/man3elektra/*',
+                    removePrefix: 'build/doc/man/man3elektra/',
+                    remoteDirectory: 'api/latest/man'
+                  ),
+                  // TODO: API doc of REST services are not built anymore
+                  sshTransfer(
+                    sourceFiles: 'build/API_DOC/*',
+                    removePrefix: 'build/API_DOC/'
+                  )
+                ]
+              )
+            ],
+            verbose: true
+          )
+        } else {
+          sshPublisher(
+            publishers: [
+              sshPublisherDesc(
+                configName: 'doc.libelektra.org',
+                transfers: [
+                  sshTransfer(
+                    sourceFiles: 'build/doc/latex/*',
+                    removePrefix: 'build/doc/',
+                    remoteDirectory: 'api/pr'
+                  ),
+                  sshTransfer(
+                    sourceFiles: 'build/doc/html/*',
+                    removePrefix: 'build/doc/',
+                    remoteDirectory: 'api/pr'
+                  ),
+                  sshTransfer(
+                    sourceFiles: 'build/doc/man/man3elektra/*',
+                    removePrefix: 'build/doc/man/man3elektra/',
+                    remoteDirectory: 'api/pr/man'
+                  )
+                ]
+              )
+            ],
+            verbose: true
+          )
+        }
         deleteDir()
       }
     }

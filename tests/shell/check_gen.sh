@@ -83,7 +83,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		cd "$old_dir"
 
 		if [ -e "$test_folder$test_name.stdout" ]; then
-			diff -u "$output_folder$test_name.stdout" "$test_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
+			diff -u "$test_folder$test_name.stdout" "$output_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
 
 			if [ -s "$output_folder$test_name.stdout.diff" ]; then
 				test "1" = "0"
@@ -104,7 +104,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		if [ -e "$test_folder$test_name.stderr" ]; then
 			sed -e "s#$KDB#kdb#" -e '1!b' -e '/^The command kdb gen terminated unsuccessfully with the info:$/d' "$output_folder$test_name.stderr" > "$output_folder$test_name.stderr2"
 			mv "$output_folder$test_name.stderr2" "$output_folder$test_name.stderr"
-			diff -u "$output_folder$test_name.stderr" "$test_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
+			diff -u "$test_folder$test_name.stderr" "$output_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
 				test "1" = "0"
@@ -133,7 +133,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				[ -f "$actual_part" ]
 				succeed_if "missing part $test_name.actual$part"
 
-				diff -u "$actual_part" "$expected_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+				diff -u "$expected_part" "$actual_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
 
 				if [ -s "$diff_part" ]; then
 					test "1" = "0"

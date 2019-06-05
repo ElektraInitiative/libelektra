@@ -195,3 +195,11 @@ development of the mmapstorage plugin
 - email: mpranj@limun.org
 - github user: [mpranj](https://github.com/mpranj)
 - devel/test on: Fedora, Debian, macOS
+
+## Klemens Böswirth
+
+development of the highlevel API and code-generation; various other things
+
+- email: k.boeswirth+git@gmail.com
+- github user: [kodebach](https://github.com/kodebach)
+- devel/test on: Fedora

@@ -50,9 +50,9 @@ static Key * helpKey = NULL;
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
 	keyNew ("/mydouble", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("/myfloatarray/#", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_VALUE, "1.1", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
 	keyNew ("/myint", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
 	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("/print", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
@@ -116,9 +116,9 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
 	keyNew ("/mydouble", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("/myfloatarray/#", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_VALUE, "1.1", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
 	keyNew ("/myint", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
 	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("/print", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),

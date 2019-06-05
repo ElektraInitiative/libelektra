@@ -78,6 +78,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
+### spec
+
+- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes concering the less
+  used (and also less functional) parts of the plugin. To find out more about these changes take a look at the
+  [README](../../src/plugins/spec/README.md). It now better reflects the actually implemented behaviour. _(Klemens Böswirth)_
+
 ### mINI
 
 - We fixed compiler warnings reported by GCC 9 in the [unit test code](../../src/plugins/mini/testmod_mini.c) of the plugin. _(René Schwaiger)_
@@ -582,7 +588,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The formatting instructions printed by [`check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also work correctly, if
 
   - the `diff` output does not start with the test number added by CTest, and
-  - you use a non-POSIX shell such as [`fish`](https://www.fishshell.com)
+  - you use a non-POSIX shell such as [`fish`](https://fishshell.com)
 
   . _(René Schwaiger)_
 
@@ -662,6 +668,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
 - We improved the exclusion patterns for the [Coveralls coverage analysis](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
+- We now again build the API docu of [master](https://doc.libelektra.org/api/master) and we now also build the API docu of [PRs](https://doc.libelektra.org/api/pr/). _(Markus Raab)_
 
 ### Travis
 

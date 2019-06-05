@@ -1379,6 +1379,10 @@ static void test_keyBelow (void)
 	succeed_if (keyIsBelow (key1, key2), "Key should be below");
 	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
 
+	keySetName (key1, "system/infos/constants");
+	keySetName (key2, "/infos/constants/syste");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "/");
 	keySetName (key2, "system/infos/constants");
@@ -1495,6 +1499,26 @@ static void test_keyBelow (void)
 	keySetName (key1, "user/tests/ini-section-write");
 	keySetName (key2, "user/tests/ini-section-write/akey\\/looking\\/like\\/sections");
 	succeed_if (keyIsDirectBelow (key1, key2), "looking like sections not recognised");
+	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "user/valid");
+	keySetName (key2, "/valid/valide");
+	succeed_if (keyIsDirectBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "user/valid");
+	keySetName (key2, "/valid/non/valid");
+	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/valid");
+	keySetName (key2, "user/valid/valide");
+	succeed_if (keyIsDirectBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/valid");
+	keySetName (key2, "user/valid/non/valid");
+	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
 	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
 
 
