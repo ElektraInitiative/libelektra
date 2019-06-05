@@ -135,9 +135,10 @@ will return the value of path key, which is stored in the database.
 kdb set /test 5
 ```
 
-GET: http://localhost:33333/kdb/user/test
+curl http://localhost:33333/kdb/user/test
 will return 
 
+```json
 {
     "exists": true,
     "name": "test",
@@ -148,6 +149,7 @@ will return
     "value": "5",
     "meta": ""
 }
+```
 
 ## Auth
 
