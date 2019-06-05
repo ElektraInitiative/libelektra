@@ -583,7 +583,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The formatting instructions printed by [`check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also work correctly, if
 
   - the `diff` output does not start with the test number added by CTest, and
-  - you use a non-POSIX shell such as [`fish`](https://www.fishshell.com)
+  - you use a non-POSIX shell such as [`fish`](https://fishshell.com)
 
   . _(René Schwaiger)_
 
