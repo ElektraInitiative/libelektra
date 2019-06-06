@@ -15,8 +15,6 @@ NUMTHREADS=10
 check() {
 	# Ignore links that contain version placeholder
 	echo "$1" | grep -Eq 'doc/news/_preparation_next_release\.md.*<<VERSION>>' && return
-	# TODO: Fix Doxygen build upload for latest version of documentation
-	echo "$1" | grep -Eq 'https://doc\.libelektra\.org/api/latest/html' && return
 	# The following link only works if you are logged into the build server
 	# See also: https://github.com/ElektraInitiative/libelektra/issues/2674
 	echo "$1" | grep -Eq 'https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax' && return
