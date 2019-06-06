@@ -636,6 +636,10 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
   to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
 
+#### Ubuntu
+
+- We added a [Dockerfile for Ubuntu Disco Dingo](../../scripts/docker/ubuntu/disco/Dockerfile). _(René Schwaiger)_
+
 #### Other Updates
 
 - The Docker images for
