@@ -56,7 +56,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	helpText += "\n";
 
 	string allOptions = command->getShortOptions ();
-	allOptions += "HVCp";
+	allOptions += "HVCpvd";
 
 	// Make sure to use the unsorted allOptions for getopt to preserve argument chars : and ::
 	std::set<string::value_type> unique_sorted_chars (allOptions.begin (), allOptions.end ());
