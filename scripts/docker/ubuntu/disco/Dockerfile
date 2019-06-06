@@ -15,6 +15,7 @@ RUN apt-get update && apt-get -y install \
         locales \
         moreutils \
         ninja-build \
+        perl \
         pkg-config \
         python3-dev \
         ruby-dev \
@@ -76,3 +77,10 @@ RUN useradd \
     jenkins
 
 USER ${JENKINS_USERID}
+
+# flamegraph.pl
+ARG FLAME_GRAPH_PATH=/home/jenkins/bin
+ENV PATH="${FLAME_GRAPH_PATH}:${PATH}"
+RUN mkdir -p "${FLAME_GRAPH_PATH}" \
+    && curl -L "https://raw.githubusercontent.com/brendangregg/FlameGraph/master/flamegraph.pl" -o "${FLAME_GRAPH_PATH}/flamegraph" \
+    && chmod a+x "${FLAME_GRAPH_PATH}/flamegraph"
