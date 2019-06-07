@@ -249,7 +249,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				os << "	va_list arg;" << endl
 				   << "	va_start(arg, module);" << endl
 				   << "	char * r = elektraVFormat(reason, arg);" << endl
-				   << " 	if(meta)" << endl
+				   << " 	if (meta)" << endl
 				   << "			keySetMeta(errorKey, buffer, r);" << endl
 				   << " 	else" << endl
 				   << "			keySetMeta(errorKey, \"error/reason\", "
@@ -260,7 +260,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 			}
 			else
 			{
-				os << " 	if(meta)" << endl
+				os << " 	if (meta)" << endl
 				   << "			keySetMeta(errorKey, buffer, reason);" << endl
 				   << " 	else" << endl
 				   << "			keySetMeta(errorKey, \"error/reason\", reason);" << endl;
@@ -293,7 +293,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	os << "static inline void elektraTriggerWarnings (const char *nr, Key *parentKey, const char *message)" << endl << "{" << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		os << "	if(strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
+		os << "	if (strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
 		os << "		ELEKTRA_ADD_" << p[i]["macro"] << "_WARNING (parentKey, message);" << endl
 		   << "		return;" << endl
 		   << "	}" << endl;
@@ -302,7 +302,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	os << "static inline void elektraTriggerError (const char *nr, Key *parentKey, const char *message)" << endl << "{" << endl;
 	for (size_t i = 1; i < p.size (); ++i)
 	{
-		os << "	if(strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
+		os << "	if (strcmp(nr, \"" << p[i]["number"] << "\") == 0)" << endl << "	{" << endl;
 		os << "		ELEKTRA_SET_" << p[i]["macro"] << "_ERROR (parentKey, message);" << endl
 		   << "		return;" << endl
 		   << "	}" << endl;

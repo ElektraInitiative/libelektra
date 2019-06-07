@@ -97,7 +97,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 	ElektraError * error;
 	if (keyGetMeta (key, "error"))
 	{
-		error = elektraErrorPureWarning();
+		error = elektraErrorPureWarning ();
 	}
 	else
 	{
