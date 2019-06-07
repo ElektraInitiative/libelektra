@@ -4,6 +4,11 @@ description:A test for an exception specification
 :the code is similar to SQLSTATES and corresponds
 :to a specific category
 :
+:For a categorization guideline please visit
+:doc/dev/error-categorization.md
+:The related decision can be found in
+:doc/decisions/error_codes.md
+:
 :there are no comments possible in this file
 ignore:true
 :a generator should always ignore this first entry

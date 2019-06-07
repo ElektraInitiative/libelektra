@@ -82,8 +82,7 @@
 			Key * c = ksNext (info);                                                                                           \
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
-				/* TODO: Correct? Maybe Interface? */                                                                      \
-				ELEKTRA_SET_INSTALLATION_ERRORF (                                                                          \
+				ELEKTRA_SET_INTERFACE_ERRORF (                                                                             \
 					error, "Read only plugin, kdbSet not supported but the key %s (value %s) was added", keyName (k),  \
 					keyString (k));                                                                                    \
 				ksDel (info);                                                                                              \
@@ -91,8 +90,7 @@
 			}                                                                                                                  \
 			if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))                                    \
 			{                                                                                                                  \
-				/* TODO: Correct? Maybe Interface? */                                                                      \
-				ELEKTRA_SET_INSTALLATION_ERRORF (                                                                          \
+				ELEKTRA_SET_INTERFACE_ERRORF (                                                                             \
 					error,                                                                                             \
 					"Read only plugin, kdbSet not supported but the key %s (expected %s) was modified to "             \
 					"%s (expected %s)",                                                                                \
@@ -103,9 +101,9 @@
 		}                                                                                                                          \
 		if ((k = ksNext (info)) != 0)                                                                                              \
 		{                                                                                                                          \
-			ELEKTRA_SET_INSTALLATION_ERRORF (error,                                                                            \
-							 "Read only plugin, kdbSet not supported but the key %s (value %s) was removed",   \
-							 keyName (k), keyString (k));                                                      \
+			ELEKTRA_SET_INTERFACE_ERRORF (error,                                                                               \
+						      "Read only plugin, kdbSet not supported but the key %s (value %s) was removed",      \
+						      keyName (k), keyString (k));                                                         \
 			ksDel (info);                                                                                                      \
 			return -1;                                                                                                         \
 		}                                                                                                                          \
