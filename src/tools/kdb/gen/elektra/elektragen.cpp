@@ -56,9 +56,7 @@ static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long
 					"Replaces occurence no. " + indexStr + " of " + kind + " in the keyname.";
 }
 
-static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyParts, kainjow::mustache::list & args,
-				  std::vector<kainjow::mustache::object> & context, kainjow::mustache::list & contextAndArgs,
-				  std::string & fmtString)
+static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainjow::mustache::list & args, std::string & fmtString)
 {
 	using namespace kainjow::mustache;
 	auto parts = getKeyParts (key);
@@ -76,49 +74,31 @@ static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyPa
 			const std::string & argName = getArgName (key, names, "name");
 			auto arg = object{ { "native_type", "const char *" },
 					   { "name", argName },
+					   { "code", argName },
 					   { "index?", false },
 					   { "description", getArgDescription (key, names, "_") } };
 			args.push_back (arg);
 			fmt << "%s/";
 			++pos;
 			++names;
-			contextAndArgs.push_back (object{ { "code", argName } });
 		}
 		else if (part == "#")
 		{
 			const std::string & argName = getArgName (key, indices, "index");
+
+			std::string argCode = "elektra_len (" + argName + "), elektra_len (";
+			argCode += argName + "), \"#___________________\", (long long) ";
+			argCode += argName;
+
 			auto arg = object{ { "native_type", "kdb_long_long_t" },
 					   { "name", argName },
+					   { "code", argCode },
 					   { "index?", true },
 					   { "description", getArgDescription (key, indices, "#") } };
 			args.push_back (arg);
 			fmt << "%*.*s%lld/";
 			pos += 4;
 			++indices;
-
-			std::string argCode = "elektra_len (" + argName + "), elektra_len (";
-			argCode += argName + "), \"#___________________\", (long long) ";
-			argCode += argName;
-
-			contextAndArgs.push_back (object{ { "code", argCode } });
-		}
-		else if (part.front () == '%' && part.back () == '%')
-		{
-			// contextual value
-			auto name = part.substr (1, part.length () - 2);
-			auto cName = name;
-			escapeNonAlphaNum (cName);
-			auto ctx = object{ { "name", name },
-					   { "c_name", snakeCaseToCamelCase (cName) },
-					   { "key_name", "system/elektra/codegen/context/" + name },
-					   { "macro_name", snakeCaseToMacroCase (cName) },
-					   { "tag_name", snakeCaseToPascalCase (cName) } };
-			context.push_back (ctx);
-
-			fmt << "%s/";
-			++pos;
-
-			contextAndArgs.push_back (object{ { "code", snakeCaseToCamelCase (cName) } });
 		}
 		else
 		{
@@ -131,25 +111,10 @@ static void getKeyArgsAndContext (const kdb::Key & key, const size_t parentKeyPa
 	{
 		args.back ()["last?"] = true;
 	}
-	else if (!context.empty ())
-	{
-		// keep comma if args present as well
-		context.back ()["last?"] = true;
-	}
-
-	if (!contextAndArgs.empty ())
-	{
-		contextAndArgs.back ()["last?"] = true;
-	}
 
 	if (args.size () > 1)
 	{
 		args[args.size () - 2]["last_but_one?"] = true;
-	}
-
-	if (contextAndArgs.size () > 1)
-	{
-		contextAndArgs[contextAndArgs.size () - 2]["last_but_one?"] = true;
 	}
 
 	fmtString = fmt.str ();
@@ -250,7 +215,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	auto parentKeyParts = getKeyParts (specParent);
 
-	std::map<std::string, object> contexts;
 	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{
 		kdb::Key key = *it;
@@ -274,9 +238,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		std::string fmtString;
 		list args;
-		std::vector<object> context;
-		list contextAndArgs;
-		getKeyArgsAndContext (key, parentKeyParts.size (), args, context, contextAndArgs, fmtString);
+		getKeyArgs (key, parentKeyParts.size (), args, fmtString);
 
 		if (!key.hasMeta ("default"))
 		{
@@ -336,24 +298,9 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (!args.empty ())
 		{
-			keyObject["args_or_context?"] = object{ { "context_and_args", contextAndArgs } };
-			keyObject["args?"] = true;
+			keyObject["args?"] = object{ { "args", args } };
 			keyObject["args"] = args;
 			keyObject["fmt_string"] = fmtString;
-		}
-
-		if (!context.empty ())
-		{
-			keyObject["args_or_context?"] = object{ { "context_and_args", contextAndArgs } };
-			keyObject["context?"] = true;
-			keyObject["context"] = list (context.begin (), context.end ());
-			keyObject["fmt_string"] = fmtString;
-
-			for (const auto & ctx : context)
-			{
-				auto ctxName = ctx.find ("name")->second.string_value ();
-				contexts[ctxName] = object (ctx);
-			}
 		}
 
 		if (isArray)
@@ -363,14 +310,9 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				// remove last argument and last part of format string
 				auto arrayArgs = list{ args.begin (), args.end () - 1 };
 				arrayArgs.back ()["last?"] = true;
-				auto arrayContextAndArgs = list{ contextAndArgs.begin (), contextAndArgs.end () - 1 };
-				arrayContextAndArgs.back ()["last?"] = true;
 
-				keyObject["array_args_or_context?"] =
-					object ({ { "args", arrayArgs },
-						  { "context_and_args", arrayContextAndArgs },
-						  { "context", list (context.begin (), context.end ()) },
-						  { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
+				keyObject["array_args?"] =
+					object ({ { "args", arrayArgs }, { "fmt_string", fmtString.substr (0, fmtString.rfind ('/')) } });
 			}
 			// remove last part ('/#') from name
 			keyObject["array_name"] = name.substr (cascadingParent.size () + 1, name.size () - cascadingParent.size () - 3);
@@ -483,16 +425,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	kdb::KeySet contract;
 	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
-	list totalContext;
-	kdb::KeySet defaultContext;
-	for (auto & p : contexts)
-	{
-		totalContext.push_back (p.second);
-		const auto & keyName = p.second["key_name"].string_value ();
-		// TODO: contextual defaults
-		defaultContext.append (kdb::Key (keyName, KEY_VALUE, "", KEY_END));
-	}
-
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
@@ -502,8 +434,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["spec"] = keySetToCCode (spec);
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = specloadArg;
-	data["total_context"] = totalContext;
-	data["default_context"] = keySetToCCode (defaultContext);
 
 	return data;
 }

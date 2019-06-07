@@ -96,7 +96,6 @@ const char * elektraFindReference (Elektra * elektra, const char * name);
 const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index);
 
 Key * elektraHelpKey (Elektra * elektra);
-KeySet * elektraContext (Elektra * elektra);
 
 // endregion Helpers for code generation
 
