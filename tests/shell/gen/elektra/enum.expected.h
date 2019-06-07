@@ -76,6 +76,7 @@ typedef enum
 
 ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 
 ELEKTRA_GET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
@@ -84,6 +85,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed);
 
 ELEKTRA_KEY_TO_SIGNATURE (ExistingColors, EnumExistingColors);
 ELEKTRA_TO_STRING_SIGNATURE (ExistingColors, EnumExistingColors);
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ExistingColors, EnumExistingColors);
 
 ELEKTRA_GET_SIGNATURE (ExistingColors, EnumExistingColors);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors);
@@ -92,6 +94,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors);
 
 ELEKTRA_KEY_TO_SIGNATURE (Colors, EnumColors);
 ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors);
+ELEKTRA_TO_CONST_STRING_SIGNATURE (Colors, EnumColors);
 
 ELEKTRA_GET_SIGNATURE (Colors, EnumColors);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors);
@@ -100,6 +103,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors);
 
 ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
