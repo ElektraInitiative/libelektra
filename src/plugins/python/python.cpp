@@ -101,8 +101,9 @@ static int Python_CallFunction_Int (moduleData * data, PyObject * object, PyObje
 	PyObject * res = Python_CallFunction (object, args);
 	if (!res)
 	{
-		ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (errorKey, "Error while calling python function of script %s%s", keyString (data->script),
-						  data->printError ? "" : ", use /print to print error messages");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Error while calling python function of script %s%s",
+						       keyString (data->script),
+						       data->printError ? "" : ", use /print to print error messages");
 		if (data->printError) PyErr_Print ();
 	}
 	else
@@ -317,7 +318,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		Py_DECREF (pModule);
 		if (klass == nullptr)
 		{
-			ELEKTRA_SET_PLUGIN_MISBHV_ERROR (errorKey, "Module doesn't provide a ElektraPlugin class");
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Module doesn't provide a ElektraPlugin class");
 			goto error_print;
 		}
 
@@ -328,7 +329,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		Py_DECREF (inst_args);
 		if (inst == nullptr)
 		{
-			ELEKTRA_SET_PLUGIN_MISBHV_ERROR (errorKey, "Unable to create instance of ElektraPlugin");
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Unable to create instance of ElektraPlugin");
 			goto error_print;
 		}
 		data->instance = inst;

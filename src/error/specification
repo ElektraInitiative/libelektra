@@ -33,7 +33,7 @@ macro:INTERFACE
 
 number:C01430
 description:Plugin Misbehavior
-macro:PLUGIN_MISBHV
+macro:PLUGIN_MISBEHAVIOR
 
 number:C02000
 description:Conflict

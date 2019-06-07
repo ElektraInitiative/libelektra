@@ -297,7 +297,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	{
 		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
-			ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (
+			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (
 				errorKey,
 				"Open of plugin returned unsuccessfully: %s. Reason contains plugin, see other warnings for details", name);
 			elektraPluginClose (handle, errorKey);

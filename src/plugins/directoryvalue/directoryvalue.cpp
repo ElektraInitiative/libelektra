@@ -85,7 +85,7 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (*parent, "Uncaught Exception: %s", error.what ());
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (*parent, "Uncaught Exception: %s", error.what ());
 	}
 
 #ifdef HAVE_LOGGER
@@ -118,7 +118,7 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_SET_PLUGIN_MISBHV_ERRORF (*parent, "Uncaught exception: %s", error.what ());
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 
 	parent.release ();

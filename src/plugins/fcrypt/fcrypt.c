@@ -572,7 +572,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
-		ELEKTRA_SET_PLUGIN_MISBHV_ERROR (parentKey, "No plugin state is available.");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, "No plugin state is available.");
 		return -1;
 	}
 

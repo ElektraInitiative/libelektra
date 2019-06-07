@@ -119,7 +119,7 @@ int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key
 		// subscription timeout - no applications are listening for notifications, can be ignored
 		break;
 	default:
-		ELEKTRA_ADD_PLUGIN_MISBHV_WARNING (parentKey, "could not send notifications");
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "could not send notifications");
 		break;
 	}
 

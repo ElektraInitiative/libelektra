@@ -301,8 +301,8 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
-						    ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
+							 ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 

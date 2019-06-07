@@ -46,7 +46,7 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * error
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_RESOLVER);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_RESOLVER);
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
 		keyDel (ch->cachePath);
@@ -66,7 +66,7 @@ static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch, Key * erro
 	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cachePath);
 	if (!ch->cacheStorage)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBHV_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_CACHE_STORAGE);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_CACHE_STORAGE);
 		elektraPluginClose (ch->resolver, 0);
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
