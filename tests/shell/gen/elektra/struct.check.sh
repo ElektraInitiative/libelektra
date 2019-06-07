@@ -31,7 +31,7 @@ static void fatalErrorHandler (ElektraError * error)
 void callAll (Elektra * elektra)
 {
 	ElektraStructMystruct mystruct;
-	elektraGet2 (elektra, &mystruct, ELEKTRA_TAG_MYSTRUCT);
+	elektraFillStruct (elektra, &mystruct, ELEKTRA_TAG_MYSTRUCT);
 
 	// FIXME: bugs in spec plugin
 	// Person * adam = elektraGetV (elektra, ELEKTRA_TAG_PERSON, "adam");
