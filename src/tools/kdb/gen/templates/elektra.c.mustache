@@ -94,10 +94,6 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 		return 2;
 	}
 
-	KeySet * defaultContext = /*%& default_context %*/;
-	ksAppend (elektraContext (e), defaultContext);
-	ksDel (defaultContext);
-
 	*elektra = e;
 	return 0;
 }

@@ -644,7 +644,6 @@ struct _Elektra
 	KeySet * defaults;
 	Key * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
-	KeySet * context;
 	char * resolvedReference;
 	size_t parentKeyLength;
 };
