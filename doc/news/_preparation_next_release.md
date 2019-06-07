@@ -349,6 +349,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
 - Apply Base64 encoding to the master password, which is stored within the plugin configuration. This fixes a problem that occurs if ini is used as default storage (see [2591](https://github.com/ElektraInitiative/libelektra/issues/2591))._(Peter Nirschl)_
+- Fix compilation without deprecated OpenSSL APIs. Initialization and deinitialization is not needed anymore. _(Rosen Penev)_
 
 ### Cache
 
