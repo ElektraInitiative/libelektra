@@ -905,7 +905,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
  */// 
-#define elektraGet2(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
+#define elektraFillStruct(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
 
 /**
@@ -914,7 +914,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  */// 
-#define elektraGet2V(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
+#define elektraFillStructV(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
 
 /**
