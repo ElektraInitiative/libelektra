@@ -188,10 +188,10 @@ static void handleConflict (Key * parentKey, const char * msg, OnConflict onConf
 	switch (onConflict)
 	{
 	case ERROR:
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALIDATION_SEMANTIC, parentKey, "%s", msg);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
 		break;
 	case WARNING:
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_VALIDATION_SEMANTIC, parentKey, "%s", msg);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
 		break;
 	case INFO:
 		elektraMetaArrayAdd (parentKey, "logs/spec/info", msg);
