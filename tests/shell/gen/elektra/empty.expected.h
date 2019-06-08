@@ -1,14 +1,29 @@
+// clang-format off
+
+
+// clang-format on
 /**
  * @file
  *
- * @brief
+ * This file was automatically generated using `kdb gen elektra`.
+ * Any changes will be overwritten, when the file is regenerated.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD Zero Clause License
+ *
+ *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *
+ *     Permission to use, copy, modify, and/or distribute this software for any
+ *     purpose with or without fee is hereby granted.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ *     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ *     FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ *     INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ *     LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ *     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-// clang-format off
-
-// clang-format on
 
 #ifndef EMPTY_ACTUAL_H
 #define EMPTY_ACTUAL_H
@@ -24,11 +39,34 @@ extern "C" {
 
 
 
-#define ELEKTRA_CONTEXT_SET(contextTag) elektraSetContextualValue##contextTag
+// clang-format off
+
+// clang-format on
+
+
+
+#define ELEKTRA_TO_CONST_STRING(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektra, typeName), ToConstString)
+#define ELEKTRA_TO_CONST_STRING_SIGNATURE(cType, typeName) const char * ELEKTRA_TO_CONST_STRING (typeName) (cType value)
+
+
+
 
 // clang-format off
 
 // clang-format on
+
+#define ELEKTRA_UNION_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
+#define ELEKTRA_UNION_FREE_SIGNATURE(cType, typeName, discrType) void ELEKTRA_UNION_FREE (typeName) (cType * ptr, discrType discriminator)
+
+#define ELEKTRA_UNION_GET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	cType ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname, discrType discriminator)
+#define ELEKTRA_UNION_GET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	cType ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, discrType discriminator)
+#define ELEKTRA_UNION_SET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	void ELEKTRA_SET (typeName) (Elektra * elektra, const char * keyname, cType value, discrType discriminator, ElektraError ** error)
+#define ELEKTRA_UNION_SET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	void ELEKTRA_SET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType value,            \
+						   discrType discriminator, ElektraError ** error)
 
 
 
@@ -53,22 +91,6 @@ extern "C" {
 // clang-format off
 
 // clang-format on
-
-
-// clang-format off
-
-// clang-format on
-
-// clang-format off
-
-// clang-format on
-
-
-// clang-format off
-
-// clang-format on
-
-
 
 
 // clang-format off
@@ -154,7 +176,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
  */// 
-#define elektraGet2(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
+#define elektraFillStruct(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
 
 /**
@@ -163,7 +185,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  */// 
-#define elektraGet2V(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
+#define elektraFillStructV(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
 
 /**
@@ -202,23 +224,6 @@ void specloadCheck (int argc, const char ** argv);
  * @return The size of the array below the given key.
  */// 
 #define elektraSizeV(elektra, tag, ...) ELEKTRA_SIZE (tag) (elektra, __VA_ARGS__)
-
-
-/**
- * @param elektra    The elektra instance initialized with loadConfiguration().
- * @param contextTag The context tag for the contextual value you want to set.
- * @param value	     The actual value you want to set.
- */// 
-#define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
-
-
-/**
- * @param elektra    The elektra instance initialized with loadConfiguration().
- * @param contextTag The context tag for the contextual value you want to set.
- * @param value	     The actual value you want to set.
- * @param ...     Variable arguments depending on the given tag.
- */// 
-#define elektraContextSetV(elektra, contextTag, value, ...) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value, __VA_ARGS__)
 
 #ifdef __cplusplus
 }

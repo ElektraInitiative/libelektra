@@ -83,7 +83,7 @@ int main (int argc, const char ** argv)
 	for (kdb_long_long_t i = 0; i < formatCount; ++i)
 	{
 		FormatConf conf;
-		elektraGet2V (elektra, &conf, ELEKTRA_TAG_FORMAT, i);
+		elektraFillStructV (elektra, &conf, ELEKTRA_TAG_FORMAT, i);
 		printFormatConf (&conf);
 	}
 

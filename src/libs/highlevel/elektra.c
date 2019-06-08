@@ -30,6 +30,7 @@ static void defaultFatalErrorHandler (ElektraError * error)
 static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key);
 static ElektraError * elektraErrorCreateFromKey (Key * key);
 static ElektraError * elektraErrorWarningFromKey (Key * key);
+static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
 
 /**
  * \defgroup highlevel High-level API
@@ -68,18 +69,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	}
 
 	KeySet * const config = ksNew (0, KS_END);
-	if (defaults != NULL)
-	{
-		ksRewind (defaults);
-		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
-		{
-			Key * const dup = keyDup (key);
-			const char * name = keyName (key);
-			keySetName (dup, keyName (parentKey));
-			keyAddName (dup, name);
-			ksAppendKey (config, dup);
-		}
-	}
+	insertDefaults (config, parentKey, defaults);
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
@@ -96,7 +86,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
-	elektra->context = ksNew (0, KS_END);
+	elektra->defaults = ksDup (defaults);
 
 	return elektra;
 }
@@ -119,14 +109,31 @@ void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error)
 		return;
 	}
 
+
 	Key * parentKey = keyDup (elektra->parentKey);
-	int rc = kdbEnsure (elektra->kdb, contract, parentKey);
+
+	kdbClose (elektra->kdb, parentKey);
+	ksClear (elektra->config);
+	KDB * const kdb = kdbOpen (parentKey);
+
+	if (kdb == NULL)
+	{
+		*error = elektraErrorCreateFromKey (parentKey);
+		return;
+	}
+
+	int rc = kdbEnsure (kdb, contract, parentKey);
 	if (rc == 0)
 	{
 		// if successful, refresh config
-		if (kdbGet (elektra->kdb, elektra->config, parentKey) == -1)
+		elektra->kdb = kdb;
+		insertDefaults (elektra->config, elektra->parentKey, elektra->defaults);
+		const int kdbGetResult = kdbGet (elektra->kdb, elektra->config, parentKey);
+
+		if (kdbGetResult == -1)
 		{
 			*error = elektraErrorCreateFromKey (parentKey);
+			return;
 		}
 	}
 	else if (rc == 1)
@@ -170,20 +177,6 @@ Key * elektraHelpKey (Elektra * elektra)
 }
 
 /**
- * The contextual KeySet of an Elektra instance can in principle be used to store
- * any meta information about this Elektra instance. The most important use-case are
- * the code-generation features.
- *
- * @param elektra Elektra instance to access
- *
- * @return The contextual KeySet of this Elektra instance, you MUST NOT call ksDel() on it.
- */
-KeySet * elektraContext (Elektra * elektra)
-{
-	return elektra->context;
-}
-
-/**
  * Sets the fatal error handler that will be called, whenever a fatal error occurs.
  *
  * Errors occurring in a function, which does not take a pointer to ElektraError,
@@ -211,11 +204,15 @@ void elektraClose (Elektra * elektra)
 	keyDel (elektra->parentKey);
 	ksDel (elektra->config);
 	keyDel (elektra->lookupKey);
-	ksDel (elektra->context);
 
 	if (elektra->resolvedReference != NULL)
 	{
 		elektraFree (elektra->resolvedReference);
+	}
+
+	if (elektra->defaults != NULL)
+	{
+		ksDel (elektra->defaults);
 	}
 
 	elektraFree (elektra);
@@ -487,6 +484,22 @@ static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 	}
 
 	return error;
+}
+
+void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
+{
+	if (defaults != NULL)
+	{
+		ksRewind (defaults);
+		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+		{
+			Key * const dup = keyDup (key);
+			const char * name = keyName (key);
+			keySetName (dup, keyName (parentKey));
+			keyAddName (dup, name);
+			ksAppendKey (config, dup);
+		}
+	}
 }
 
 #ifdef __cplusplus

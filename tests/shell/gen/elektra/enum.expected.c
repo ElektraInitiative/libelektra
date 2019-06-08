@@ -1,14 +1,28 @@
+// clang-format off
+
+
+// clang-format on
 /**
  * @file
  *
- * @brief
+ * This file was automatically generated using `kdb gen elektra`.
+ * Any changes will be overwritten, when the file is regenerated.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD Zero Clause License
+ *
+ *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *
+ *     Permission to use, copy, modify, and/or distribute this software for any
+ *     purpose with or without fee is hereby granted.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ *     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ *     FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ *     INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ *     LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ *     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ *     PERFORMANCE OF THIS SOFTWARE.
  */
-
-// clang-format off
-
-// clang-format on
 
 #include "enum.actual.h"
 
@@ -51,25 +65,11 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (6,
 	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
-	keyNew ("/disjointed", KEY_VALUE, "black", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black",
-	KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/existinggentype", KEY_VALUE, "cyan", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan",
-	KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META,
-	"gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/gentype", KEY_VALUE, "blue", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META,
-	"check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default",
-	"blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value",
-	"1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum",
-	KEY_END),
-	keyNew ("/gentype2", KEY_VALUE, "red", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META,
-	"check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default",
-	"red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value",
-	"1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum",
-	KEY_END),
-	keyNew ("/myenum", KEY_VALUE, "blue", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red", KEY_META,
-	"check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META,
-	"check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum",
-	KEY_END),
+	keyNew ("/disjointed", KEY_VALUE, "black", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
+	keyNew ("/existinggentype", KEY_VALUE, "cyan", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("/gentype", KEY_VALUE, "blue", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("/gentype2", KEY_VALUE, "red", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("/myenum", KEY_VALUE, "blue", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red", KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META, "check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum", KEY_END),
 	KS_END);
 ;
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/enum", defaults, error);
@@ -80,7 +80,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	}
 
 	KeySet * contract = ksNew (1,
-	keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
 	KS_END);
 ;
 
@@ -99,12 +99,6 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		elektraClose (e);
 		return 2;
 	}
-
-	KeySet * defaultContext = ksNew (0,
-	KS_END);
-;
-	ksAppend (elektraContext (e), defaultContext);
-	ksDel (defaultContext);
 
 	*elektra = e;
 	return 0;
@@ -130,26 +124,12 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
-	keyNew ("/disjointed", KEY_VALUE, "black", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black",
-	KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/existinggentype", KEY_VALUE, "cyan", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan",
-	KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META,
-	"gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/gentype", KEY_VALUE, "blue", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META,
-	"check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default",
-	"blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value",
-	"1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum",
-	KEY_END),
-	keyNew ("/gentype2", KEY_VALUE, "red", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META,
-	"check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default",
-	"red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value",
-	"1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum",
-	KEY_END),
-	keyNew ("/myenum", KEY_VALUE, "blue", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red", KEY_META,
-	"check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META,
-	"check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum",
-	KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/myenum", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red", KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META, "check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum", KEY_END),
 	KS_END);
 ;
 
@@ -241,6 +221,20 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	}
 
 	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
+{
+	switch (value)
+	{
+	case ELEKTRA_ENUM_DISJOINTED_BLACK:
+		return "black";
+	case ELEKTRA_ENUM_DISJOINTED_WHITE:
+		return "white";
+	}
+
+	// should be unreachable
 	return "";
 }
 ELEKTRA_KEY_TO_SIGNATURE (ExistingColors, EnumExistingColors)
@@ -279,6 +273,22 @@ ELEKTRA_TO_STRING_SIGNATURE (ExistingColors, EnumExistingColors)
 		return elektraStrDup ("magenta");
 	case EXISTING_COLORS_YELLOW:
 		return elektraStrDup ("yellow");
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ExistingColors, EnumExistingColors)
+{
+	switch (value)
+	{
+	case EXISTING_COLORS_CYAN:
+		return "cyan";
+	case EXISTING_COLORS_MAGENTA:
+		return "magenta";
+	case EXISTING_COLORS_YELLOW:
+		return "yellow";
 	}
 
 	// should be unreachable
@@ -325,6 +335,24 @@ ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors)
 		return elektraStrDup ("green");
 	case COLORS_BLUE:
 		return elektraStrDup ("blue");
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (Colors, EnumColors)
+{
+	switch (value)
+	{
+	case COLORS_NONE:
+		return "none";
+	case COLORS_RED:
+		return "red";
+	case COLORS_GREEN:
+		return "green";
+	case COLORS_BLUE:
+		return "blue";
 	}
 
 	// should be unreachable
@@ -389,6 +417,28 @@ ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 		return elektraStrDup ("brown");
 	case ELEKTRA_ENUM_MYENUM_GRAY:
 		return elektraStrDup ("gray");
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
+{
+	switch (value)
+	{
+	case ELEKTRA_ENUM_MYENUM_RED:
+		return "red";
+	case ELEKTRA_ENUM_MYENUM_GREEN:
+		return "green";
+	case ELEKTRA_ENUM_MYENUM_BLUE:
+		return "blue";
+	case ELEKTRA_ENUM_MYENUM_BLUEISH:
+		return "blueish";
+	case ELEKTRA_ENUM_MYENUM_BROWN:
+		return "brown";
+	case ELEKTRA_ENUM_MYENUM_GRAY:
+		return "gray";
 	}
 
 	// should be unreachable
@@ -587,6 +637,17 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	elektraSetRawStringArrayElement (elektra, keyname, index, string, KDB_TYPE_ENUM, error);
 	elektraFree (string);
 }
+
+
+// clang-format off
+
+// clang-format on
+
+// -------------------------
+// Union accessor functions
+// -------------------------
+
+
 
 
 // clang-format off

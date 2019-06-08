@@ -50,20 +50,16 @@ static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * el
 								    /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
 								    /*%/ last? %*/ /*%/ args %*/ /*%/ args? %*/)
 {
-	/*%# args_or_context? %*/
-	/*%# context %*/
-	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
-	/*%/ context %*/
-
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ context_and_args %*/);
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
 	/*%& native_type %*/ result = ELEKTRA_GET (/*%& type_name %*/) (elektra, name);
 	elektraFree (name);
 	return result;
-	/*%/ args_or_context? %*/
-	/*%^ args_or_context? %*/
+	/*%/ args? %*/
+	/*%^ args? %*/
 	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
-	/*%/ args_or_context? %*/
+	/*%/ args? %*/
 }
 
 /*%={{ }}=%*/
@@ -81,19 +77,15 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra,
 						    /*%& native_type %*/ value, /*%# args? %*/ /*%# args %*/
 						    /*%& native_type %*/ /*%& name %*/, /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
 {
-	/*%# args_or_context? %*/
-	/*%# context %*/
-	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
-	/*%/ context %*/
-
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ context_and_args %*/);
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, name, value, error);
 	elektraFree (name);
-	/*%/ args_or_context? %*/
-	/*%^ args_or_context? %*/
+	/*%/ args? %*/
+	/*%^ args? %*/
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
-	/*%/ args_or_context? %*/
+	/*%/ args? %*/
 }
 /*%/ is_struct_ref? %*/
 /*%/ is_struct? %*/
@@ -103,27 +95,23 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra,
  * Get the size of the array '{{{ name }}}'.
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
-{{# array_args_or_context? }}{{# args }} * @param {{{ name }}} {{{ description }}}
-{{/ args }}{{/ array_args_or_context? }}
+{{# array_args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ array_args? }}
  */// {{=/*% %*/=}}
-static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra /*%# array_args_or_context? %*/,
+static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra /*%# array_args? %*/,
 								/*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
-								/*%/ last? %*/ /*%/ args %*/ /*%/ array_args_or_context? %*/)
+								/*%/ last? %*/ /*%/ args %*/ /*%/ array_args? %*/)
 {
-	/*%# array_args_or_context? %*/
-	/*%# context %*/
-	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
-	/*%/ context %*/
-
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ context_and_args %*/);
+	/*%# array_args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
 	return size;
-	/*%/ array_args_or_context? %*/
-	/*%^ array_args_or_context? %*/
+	/*%/ array_args? %*/
+	/*%^ array_args? %*/
 	return elektraArraySize (elektra, "/*% array_name %*/");
-	/*%/ array_args_or_context? %*/
+	/*%/ array_args? %*/
 }
 /*%/ is_array? %*/
 /*%/ keys %*/
