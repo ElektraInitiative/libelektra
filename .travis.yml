@@ -221,9 +221,6 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install ninja
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
       rvm install 2.5.1
       rvm use 2.5.1
       gem install test-unit --no-document
@@ -247,6 +244,7 @@ before_install:
         # OCLint complains about unknown compiler warning options, if we use GCC as compiler.
         brew cask install oclint
       fi
+      brew install augeas
       brew install bison
       brew install dbus
       brew install discount
@@ -267,44 +265,6 @@ before_install:
       pip2 install cheetah # Required by kdb-gen
       # start D-Bus session bus
       brew services start dbus
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
-      brew install augeas
-      # 8.4 is currently not supported by hint which we use
-      brew install ghc@8.2
-      brew link ghc@8.2 --force
-      brew install cabal-install
-      cabal update
-      # avoid reinstalls if we already have them cached
-      PATH=$PATH:"$HOME/.cabal/bin"
-      which happy || cabal install happy
-      which alex || cabal install alex
-      which c2hs || cabal install c2hs
-      export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
-      mkdir -p $HASKELL_SHARED_SANDBOX
-      cd $HASKELL_SHARED_SANDBOX
-      cabal sandbox init
-      # there is some strange cache bug where it complains that one of our own library's
-      # directory doesn't exist though it gets properly unregistered. Apparently ignoring
-      # that works anyway.
-      cabal install --avoid-reinstalls \
-        'base >=4.9 && <4.12' \
-        'binary >=0.8 && <0.9' \
-        'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' \
-        'exceptions -any' \
-        'haskell-src-exts-any' \
-        'hint >=0.7.0 && <0.8.0' \
-        'hspec -any' \
-        'megaparsec -any' \
-        'pretty -any' \
-        'process >=1.4 && <1.7' \
-        'QuickCheck-any' \
-        'simple-logger -any' \
-        'temporary -any' \
-        'text -any' \
-        || true
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
