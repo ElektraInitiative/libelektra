@@ -2,28 +2,6 @@ language: cpp
 dist: xenial
 osx_image: xcode10.2
 
-cache:
-  directories:
-    - $HOME/.m2
-    - $HOME/.cabal
-    - $HOME/elektra-cabal-sandbox
-    - $HOME/Library/Caches/Homebrew
-
-# don't cache our own libraries generated in the build
-# so they always get rebuilt properly and to avoid init issues
-# we ignore the result as some or all might not exist on build
-# errors, in that case unregister would fail
-before_cache:
-  - rm -rf $HOME/.cabal/logs
-  - cd $HOME/elektra-cabal-sandbox
-  - cabal sandbox hc-pkg unregister spectranslator > /dev/null; true
-  - cabal sandbox hc-pkg unregister specelektra > /dev/null; true
-  - cabal sandbox hc-pkg unregister libfa > /dev/null; true
-  - cabal sandbox hc-pkg unregister libelektra-haskell > /dev/null; true
-  - rm -rf .cabal-sandbox/logs
-  - rm -f .cabal-sandbox/world
-  - rm -f .cabal-sandbox/add-source-timestamps
-
 #
 # Define the build matrix
 #
