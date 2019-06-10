@@ -38,8 +38,8 @@ static int iniCmpOrder (const void * a, const void * b);
 #define DEFAULT_DELIMITER '='
 #define DEFAULT_COMMENT_CHAR '#'
 
-char * const ININAME_DELIM_SPECIAL_MASK = "\"%s\"%c";
-char * const ININAME_DELIM_MASK = "%s%c";
+char const * const ININAME_DELIM_SPECIAL_MASK = "\"%s\"%c";
+char const * const ININAME_DELIM_MASK = "%s%c";
 
 typedef enum
 {
