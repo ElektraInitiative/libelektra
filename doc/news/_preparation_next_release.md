@@ -181,6 +181,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 We are currently working on following topics:
 
+- Merge tool in C _(Dominic Jäger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

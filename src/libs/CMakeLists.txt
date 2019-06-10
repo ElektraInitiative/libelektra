@@ -28,6 +28,8 @@ add_subdirectory (highlevel)
 
 add_subdirectory (opts)
 
+add_subdirectory (merge)
+
 # The subdirectory for LibElektra must be the last entry!
 add_subdirectory (elektra)
 
