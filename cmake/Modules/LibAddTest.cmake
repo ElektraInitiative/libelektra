@@ -119,7 +119,9 @@ function (add_msr_test NAME FILE)
 			return ()
 		endif ()
 
-		list (FIND TOOLS ${tool} tool_index)
+		list (FIND TOOLS
+			   ${tool}
+			   tool_index)
 		if (tool_index LESS 0)
 			return ()
 		endif ()
