@@ -1,19 +1,17 @@
 # Introduction
 
-Running all the tests like the build server does it requires to have multiple dependencies preinstalled. To overcome this problem, instead of trying to install all the necessary dependencies on your own, an appropriate Docker image should be used. This way you can easily and quickly run all the tests.
+Running all the tests like the build server requires to have multiple dependencies installed. To overcome this problem, instead of trying to install all the necessary dependencies on your own, an appropriate Docker image can be used. This way you can easily and quickly run all the tests.
 
 ## Who is this guide for?
 
-For anyone who wants to run all the tests, like it is done by the build server, once changes are pushed to the repository.
+For anyone who wants to run all the tests, like it is done by the build server.
 
 This is a step-by-step guide. Just follow the steps and you are good to go!
-
 
 ## Prerequisites
 
 - Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux or Windows of course.
 - Basic knowledge of Docker (not mandatory)
-
 
 ## What to begin with?
 
@@ -22,9 +20,11 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 Pick one of the available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch". Unfortunately, it will take some time to download it, since it is pretty big, but you can be sure you'll have all the needed dependencies.
 
 If you want to view all the available images, execute this command:
+
 ```sh
 docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org
 ```
+
 You will see something like this:
 
 ```sh
@@ -42,12 +42,15 @@ Image: build-elektra-debian-stretch
   tag: 201902-6b08855f13ba26e3ad1fa80e399b87df860cc24889f2d1854fa0050834567b26
 ..............................................................................
 ```
+
 Afterwards pull your desired image as you would do from any public registry:
+
 ```sh
 docker pull <image_name>:<tag_name>
 ```
 
-EXAMPLE:
+Example:
+
 ```sh
 docker pull build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
 ```
@@ -65,7 +68,8 @@ docker run -it --rm \
 <image_name>:<tag_name>
 ```
 
-EXAMPLE:
+Example:
+
 ```sh
 docker run -it --rm \
 -v "$PWD:/home/jenkins/workspace" \
@@ -75,10 +79,9 @@ docker run -it --rm \
 
 ### 3. Build
 
+After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
-After starting the contrainer, you should be automatically inside it in the working directory we set --> /home/jenkins/workspace
-
-Create folder for building project
+Create folder for building project and cd to it like this:
 
 ```sh
 mkdir build-docker && cd build-docker
@@ -96,14 +99,19 @@ Build it with
 -DKDB_DB_SYSTEM="$PWD/.config/kdb/system" \
 -DKDB_DB_SPEC="$PWD/.config/kdb/system"
 ```
+
 and then with
+
 ```sh
 make -j 10
 ```
+
 The number 10 can be changed as follows: number of supported simultaneous threads by your CPU + 2. But don't worry, this can only affect the speed of the building, it cannot really break it.
+
 ### 4. Run tests
 
 Finally run the tests
+
 ```sh
 make run_all
 ```
