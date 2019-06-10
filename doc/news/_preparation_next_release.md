@@ -321,6 +321,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Reference
 
 - Fixed missing Metadata in README and METADATA.ini. _(Michael Zronek)_
+- Update README.md web tool to show, how to test REST API on localhost _(Dmytro Moiseiuk)_
 
 ### Specload
 
