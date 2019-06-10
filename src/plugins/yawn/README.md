@@ -113,7 +113,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n10 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length)"-
+kdb get user/tests/error | tail -n6 | cut -c"$(kdb get user/tests/error/prefix/length)"-
 #> config.yaml:2:1: Syntax error on input “-”
 #>                  - Burst
 #>                  ^

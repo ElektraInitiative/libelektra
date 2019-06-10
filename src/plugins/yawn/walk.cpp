@@ -96,6 +96,10 @@ void executeEnter (Listener & listener, yaep_anode const & anode)
 	{
 		listener.enterElement ();
 	}
+	else if (string (anode.name) == "empty")
+	{
+		listener.enterEmpty ();
+	}
 }
 
 /**

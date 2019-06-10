@@ -32,8 +32,8 @@ in the next section.
 Elektra manages memory itself. This means, a programmer is not allowed
 to use free on data, which was not allocated by himself. This avoids
 situation where the programmer forgets to free data, and makes the API
-more beginner-friendly. In addition to that, `elektraMalloc` and free
-must use the same libc version. `elektraMalloc` in a library linked
+more beginner-friendly. In addition to that, `elektraMalloc` and `free`
+must use the same libc version: `elektraMalloc` in a library linked
 against another libc, but freed by the application could lead to hard
 to find bugs.
 

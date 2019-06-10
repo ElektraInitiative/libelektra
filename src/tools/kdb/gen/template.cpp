@@ -14,7 +14,7 @@
 
 #include "gen/templates.hpp"
 
-#include "elektragen.hpp"
+#include "elektra/elektragen.hpp"
 
 GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> parts, std::vector<std::string> partials,
 			  const std::unordered_map<std::string, bool> & parameters)

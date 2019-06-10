@@ -20,17 +20,21 @@ need to be checked.
 - [ ] I added unit tests
 - [ ] I ran all tests locally and everything went fine
 - [ ] affected documentation is fixed
-- [ ] I added code comments, logging, and assertions (see doc/CODING.md)
-- [ ] meta data is updated (e.g. README.md of plugins and doc/METADATA.md)
+- [ ] I added code comments, logging, and assertions (see [Coding Guidelines](/doc/CODING.md))
+- [ ] meta data is updated (e.g. README.md of plugins and [METADATA.ini](/doc/METADATA.md))
 
 ## Review
 
-Remove the line below and add the "work in progress" label if you do
-not want the PR to be reviewed:
+Reviewers will usually check the following:
 
-@markus2330 please review my pull request
+- [ ] Code is conforming to [our Coding Guidelines](/doc/CODING.md)
+- [ ] APIs are conforming to [our Design Guidelines](/doc/DESGIN.md)
+- [ ] Code is consistent to [our Design Decisions](/doc/decisions)
+- [ ] Documentation is concise and good to read
+- [ ] Examples are well chosen and understandable
 
-## Merging
+## Labels
 
-Please add the "ready to merge" label when the build server and you say
-that everything is ready to be merged.
+- Add the "work in progress" label if you do not want the PR to be reviewed yet.
+- Add the "ready to merge" label **if the build server is happy** and also you
+  say that everything is ready to be merged.

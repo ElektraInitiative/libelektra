@@ -13,7 +13,13 @@ cat << 'EOF' > dummy.c
 		exit(EXIT_FAILURE);                                                                                                            \
 	}
 
-#define VALUE_CHECK(expr, expected) if (expr != expected) exit(EXIT_FAILURE);
+#define VALUE_CHECK(expr, expected)                                                                                                    \
+	if ((expr) != (expected))                                                                                                          \
+	{                                                                                                                                  \
+		elektraClose (elektra);                                                                                                        \
+		fprintf (stderr, "value wrong %s\n", #expr);                                                                                   \
+		exit(EXIT_FAILURE);                                                                                                            \
+	}
 
 static void fatalErrorHandler (ElektraError * error)
 {
@@ -25,7 +31,7 @@ static void fatalErrorHandler (ElektraError * error)
 void callAll (Elektra * elektra)
 {
 	ElektraStructMystruct mystruct;
-	elektraGet2 (elektra, &mystruct, ELEKTRA_TAG_MYSTRUCT);
+	elektraFillStruct (elektra, &mystruct, ELEKTRA_TAG_MYSTRUCT);
 
 	// FIXME: bugs in spec plugin
 	// Person * adam = elektraGetV (elektra, ELEKTRA_TAG_PERSON, "adam");
@@ -56,10 +62,10 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	if (rc == 1)
+	if (rc == 2)
 	{
-		printHelpMessage (NULL, NULL);
-		return EXIT_SUCCESS;
+		fprintf (stderr, "unexpected help mode");
+		return EXIT_FAILURE;
 	}
 
 	elektraFatalErrorHandler (elektra, fatalErrorHandler);

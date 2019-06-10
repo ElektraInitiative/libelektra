@@ -53,12 +53,12 @@ Configfile: ...../<file>.25676:1549919217.284067.tmp
 The new default message will look like this:
 
 ```
-Sorry, plugin <MODULE> issued [error|warning] code <NR>:
-<ERROR_CODE_DESCRIPTION>: Validation of key "<key>" with string "<value>" failed.
+Sorry, module `MODULE` issued [error|warning] `NR`:
+`ERROR_CODE_DESCRIPTION`: Validation of key "<key>" with string "<value>" failed.
 ```
 
-The <NR> will be the color red in case of an error or yellow in case of a warning
-while <PLUGIN> will be the color blue.
+The `NR` will be the color red in case of an error or yellow in case of a warning
+while `MODULE` will be the color blue.
 
 Optionally a third line indicating a solution can be added. Eg. for a permission related error there would be a third line:
 

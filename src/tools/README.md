@@ -11,6 +11,14 @@ These external commands can be listed via `kdb list-tools`
 
 The graphical user interface (GUI) is called `kdb qt-gui`.
 
+## Web-UI
+
+For information about the Web-UI, please read [here](web).
+
+Note that the Web-UI also provides a REST service
+[elektrad](web/elektrad) that allows you to get
+and set configuration settings.
+
 ## Programmatic
 
 Finally, programming languages supported via bindings can

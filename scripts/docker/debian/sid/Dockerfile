@@ -17,6 +17,7 @@ RUN apt-get update && apt-get -y install \
         curl \
         default-jdk \
         dh-lua \
+        ed \
         gawk \
         git \
         gobject-introspection \

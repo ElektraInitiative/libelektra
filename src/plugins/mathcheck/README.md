@@ -42,14 +42,8 @@ kdb set user/tests/mathcheck/k 7.7
 # RET:5
 # ERROR:123
 # Set string to "7.7"
-# The command set failed while accessing the key database with the info:
-# Error (#123) occurred!
-# Description: invalid value
-# Module: mathcheck
-# At: /home/thomas/Dev/Elektra/libelektra/src/plugins/mathcheck/mathcheck.c:399
-# Reason: 7.7 != 7.6
-# Mountpoint: user/tests/mathcheck
-# Configfile: /home/thomas/.config/mathcheck.dump.25680:1478749409.938013.tmp
+# Sorry, module mathcheck issued the error 123:
+# invalid value: 7.7 != 7.6
 ```
 
 To calculate values on-demand you can use:

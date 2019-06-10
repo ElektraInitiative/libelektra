@@ -306,6 +306,13 @@ private:
 	 */
 	void connectDBus ();
 
+	/**
+	 * @brief Extract the contents of an KDBException::what() function for usage in a TreeViewModel::showMessage() function.
+	 * @param e The KDBException.
+	 * @return A QMap with the contents of the KDBException.
+	 */
+	QMap<QString, QString> getErrorMessage (kdb::KDBException const & e);
+
 protected:
 	QHash<int, QByteArray> roleNames () const override;
 

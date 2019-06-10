@@ -202,6 +202,15 @@ string Driver::getErrorMessage ()
 // ===========
 
 /**
+ * @brief This function will be called before the parser enters an empty file (that might contain comments).
+ */
+void Driver::enterEmpty ()
+{
+	// We add a parent key that stores nothing representing an empty file.
+	keys.append (Key{ parents.top ().getName (), KEY_BINARY, KEY_END });
+}
+
+/**
  * @brief This function will be called after the parser exits a value.
  *
  * @param text This variable contains the text stored in the value.

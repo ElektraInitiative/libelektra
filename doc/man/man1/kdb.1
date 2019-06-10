@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB" "1" "March 2019" "" ""
+.TH "KDB" "1" "May 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\fR \- key database access tools
@@ -55,11 +55,15 @@ Most tools have the following options:
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Also shows Configfile and Mountpoint in case of an error/warning
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 Suppress non\-error messages\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Shows the line at which an error happened in case an error or warning is issued
 .
 .SH "KDB"
 The \fBkdb\fR utility reads its own configuration from three sources within the KDB (key database):

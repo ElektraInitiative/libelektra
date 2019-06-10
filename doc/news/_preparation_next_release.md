@@ -78,6 +78,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
+### spec
+
+- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes concering the less
+  used (and also less functional) parts of the plugin. To find out more about these changes take a look at the
+  [README](../../src/plugins/spec/README.md). It now better reflects the actually implemented behaviour. _(Klemens Böswirth)_
+
 ### mINI
 
 - We fixed compiler warnings reported by GCC 9 in the [unit test code](../../src/plugins/mini/testmod_mini.c) of the plugin. _(René Schwaiger)_
@@ -120,6 +126,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [YAMBi](https://www.libelektra.org/plugins/yambi) now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - The plugin now handles YAML key-value pairs without a value at the end of a file correctly. _(René Schwaiger)_
 - The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- [YAMBi](https://www.libelektra.org/plugins/yambi) now converts empty files to a key set containing an empty version of the parent key. _(René Schwaiger)_
 
 ### YAML CPP
 
@@ -152,7 +159,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   #>   key: four
   ```
 
-  .
+  . _(René Schwaiger)_
 
 - [YAML CPP][] now handles the conversion from and to [Elektra’s boolean type](../../doc/decisions/bool.md) properly. _(René Schwaiger)_
 - The plugin converts “sparse” key sets properly. For example, for the key set that contains **only** the key:
@@ -169,7 +176,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
         - arr
   ```
 
-  .
+  . _(René Schwaiger)_
 
 - [YAML CPP][] now supports mixed data (nested lists & sequences) better. For example, the plugin now correctly converts the YAML data
 
@@ -234,6 +241,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [Yan LR](https://www.libelektra.org/plugins/yanlr) now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - The plugin now handles YAML key-value pairs that contain no value at the end of a file correctly. _(René Schwaiger)_
 - The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- The plugin converts “empty” YAML files to a key set that contains an empty version of the parent key. _(René Schwaiger)_
 
 ### YAwn
 
@@ -258,6 +266,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The plugin now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - [YAwn][] handles YAML key-value pairs that contain no value at the end of a file correctly. _(René Schwaiger)_
 - The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- [YAwn][] now stores empty files as a key set containing an empty parent key. _(René Schwaiger)_
 
 [yawn]: https://www.libelektra.org/plugins/yawn
 
@@ -299,6 +308,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - [YAy PEG][] now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
+- The plugin now translates an empty file to a key set that contains a single empty parent key. _(René Schwaiger)_
 
 [yay peg]: https://www.libelektra.org/plugins/yaypeg
 
@@ -339,18 +349,29 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
 - Apply Base64 encoding to the master password, which is stored within the plugin configuration. This fixes a problem that occurs if ini is used as default storage (see [2591](https://github.com/ElektraInitiative/libelektra/issues/2591))._(Peter Nirschl)_
+- Fix compilation without deprecated OpenSSL APIs. Initialization and deinitialization is not needed anymore. _(Rosen Penev)_
 
 ### Cache
 
 - [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
 - Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
 - Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
-- Temporarily remove cache from default global config, because of a bug (#2702 and #2694). _(Mihael Pranjić)_
+- Fix data loss bug when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
+
+### multifile
+
+- Fixed segmentation fault in `kdbError()` function. _(Mihael Pranjić)_
+- Added Global Keyset handle to storage plugin. _(Mihael Pranjić)_
+- Disable cache when `ini` is used. _(Mihael Pranjić)_
 
 ### mmapstorage
 
 - [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
 - Fixed support for `kdb import` and `kdb export`. _(Mihael Pranjić)_
+
+### ini
+
+- Fixed `ini` when only the root key needs to be written. _(Mihael Pranjić)_
 
 ### semlock
 
@@ -367,10 +388,16 @@ removed due to:
 - New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (4294967295 (= 0xffffffff) and 2864434397 (= 0xaabbccdd) respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
   _(Philipp Gackstatter)_
 
+<<<<<<< HEAD
 ### Ini
 
 - Plugin writes to ini files without spaces around '=' anymore. Reading is still possible with and without spaces.
   _(Oleksandr Shabelnyk)_
+=======
+### macaddr
+
+- Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
+>>>>>>> 3624c12fb04d6d370aaee311da2f913fa140e2f1
 
 ## Libraries
 
@@ -396,6 +423,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 - The logger does not truncate the file name incorrectly anymore, if `__FILE__` contains a relative (instead of an absolute) filepath. _(René Schwaiger)_
 - Disabled any plugin execution when we have a cache hit or no update from backends. The old behaviour can be enabled for testing using `ENABLE_DEBUG` and adding the `"debugGlobalPositions"` meta key to the parentKey of the kdbGet invocation. _(Mihael Pranjić)_
 - Removed `ingroup` from error messages to reduce verbosity. _(Michael Zronek)_
+- Fixed minor problem when `kdb_long_double_t` is not available (e.g. mips32). _(Matthias Schoepfer)_
+- Only add benchmarks if `BUILD_TEST` is set in cmake. _(Matthias Schoepfer)_
 - <<TODO>>
 
 ### Ease
@@ -447,11 +476,11 @@ you up to date with the multi-language support provided by Elektra.
 ### Code generation
 
 `kdb gen` is now no longer an external tool implemented via python, but rather a first class command of the `kdb` tool. For now it only
-supports code generation for use with the highlevel API. To try it just run `kdb gen elektra <parentKey> <outputName>`, where `<parentKey>`
+supports code generation for use with the highlevel API. Try it by running `kdb gen elektra <parentKey> <outputName>`, where `<parentKey>`
 is the parent key of the specification to use and `<outputName>` is some prefix for the output files. If you don't have your specification
 mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to load it from `<file>` using plugin `<plugin>`.
 
-. _(Klemens Böswirth)_
+.. _(Klemens Böswirth)_
 
 ## Scripts
 
@@ -464,6 +493,15 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The script `scripts/reformat-all` is a new convenience script that calls all other `reformat-*` scripts. _(Klemens Böswirth)_
 - The script `scripts/pre-commit-check-formatting` can be used as a pre-commit hook, to ensure files are formatted before committing. _(Klemens Böswirth)_
 - The [link checker](../../scripts/link-checker) now prints broken links to the standard error output. _(René Schwaiger)_
+- We added a script, called [`benchmark-yaml`](../../scripts/benchmark-yaml.in) that compares the run-time of the YAML plugins:
+
+  - [YAML CPP](https://www.libelektra.org/plugins/yamlcpp),
+  - [Yan LR](https://www.libelektra.org/plugins/yanlr),
+  - [YAMBi](https://www.libelektra.org/plugins/yambi),
+  - [YAwn](https://www.libelektra.org/plugins/yambi), and
+  - [YAy PEG](https://www.libelektra.org/plugins/yaypeg)
+
+  for a certain input file with [hyperfine](https://github.com/sharkdp/hyperfine). _(René Schwaiger)_
 
 ## Benchmarks
 
@@ -482,15 +520,29 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The documentation now uses [fenced code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks#syntax-highlighting) to improved the syntax highlighting of code snippets. _(René Schwaiger)_
 - We added recommendations about the style of Markdown headers to our [coding guidelines](../CODING.md). _(René Schwaiger)_
 - We now use [title case](https://en.wiktionary.org/wiki/title_case) for most headings in the documentation. _(René Schwaiger)_
-- We added instructions on how to reformat code with [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html) to the [coding guidelines](../CODING.md). _(René Schwaiger)_
+- We added instructions on how to reformat code with
+
+  - [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html),
+  - [cmake format](https://github.com/cheshirekow/cmake_format),
+  - [Prettier](https://prettier.io), and
+  - [shfmt](https://github.com/mvdan/sh)
+
+  to the [coding guidelines](../CODING.md). _(René Schwaiger)_
 
 ### Tutorials
 
 - We added a basic tutorial that tells you [how to write a (well behaved) storage plugin](../tutorials/storage-plugins.md). _(René Schwaiger)_
 - Improved the `checkconf` section in the plugin tutorial. _(Peter Nirschl)_
 - We added a [tutorial](../tutorials/benchmarking.md) on how to benchmark the execution time of plugins using [`benchmark_plugingetset`](../../benchmarks/README.md) and [hyperfine](https://github.com/sharkdp/hyperfine). _(René Schwaiger)_
-- The new [profiling tutorial](../tutorials/profiling.md) describes how to determine the execution time of code using [Callgrind](http://valgrind.org/docs/manual/cl-manual.html) and [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html). _(René Schwaiger)_
+- The new [profiling tutorial](../tutorials/profiling.md) describes how to determine the execution time of code using
+
+  - [Callgrind](http://valgrind.org/docs/manual/cl-manual.html), and
+  - [XRay](https://llvm.org/docs/XRay.html)
+
+  . _(René Schwaiger)_
+
 - For beginners we added a [tutorial](../tutorials/contributing-clion.md) that guides them through the process of contributing to libelektra. _(Thomas Bretterbauer)_
+- Added a section on `elektraPluginGetGlobalKeySet` in the plugin tutorial. _(Vid Leskovar)_
 
 ### Spelling Fixes
 
@@ -523,8 +575,11 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples
   provide a good guideline for writing specifications for configurations. _(Michael Zronek)_
-- Added a new error concept to be implemented soon. _(Michael Zronek)_
 - Added a new error message format concept to be implemented soon. _(Michael Zronek)_
+- Added a new error concept for error codes to be implemented soon. _(Michael Zronek)_
+- Added error categorization guidelines to be used with the error concept. _(Michael Zronek)_
+- Drastically improved the error message format. For more information look [here](../../doc/decisions/error_message_format.md). _(Michael Zronek)_
+- Improved qt-gui error popup to conform with the new error message format. _(Raffael Pancheri)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
 - We wrote a tutorial which is intended to [help newcomers contributing to libelektra](../tutorials/contributing-clion.md). _(Thomas Bretterbauer)_
@@ -553,7 +608,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The formatting instructions printed by [`check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also work correctly, if
 
   - the `diff` output does not start with the test number added by CTest, and
-  - you use a non-POSIX shell such as [`fish`](https://www.fishshell.com)
+  - you use a non-POSIX shell such as [`fish`](https://fishshell.com)
 
   . _(René Schwaiger)_
 
@@ -594,7 +649,11 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
   - [Bison](https://www.gnu.org/software/bison/), and
   - [YAEP](https://github.com/vnmakarov/yaep)
 
-  to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile).
+  to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
+
+#### Ubuntu
+
+- We added a [Dockerfile for Ubuntu Disco Dingo](../../scripts/docker/ubuntu/disco/Dockerfile). _(René Schwaiger)_
 
 #### Other Updates
 
@@ -633,6 +692,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
 - We improved the exclusion patterns for the [Coveralls coverage analysis](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
+- We now again build the API docu of [master](https://doc.libelektra.org/api/master) and we now also build the API docu of [PRs](https://doc.libelektra.org/api/pr/). _(Markus Raab)_
 
 ### Travis
 

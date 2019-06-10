@@ -59,8 +59,8 @@ int GenCommand::execute (Cmdline const & cl)
 		KDB kdb;
 		kdb.get (ks, getKey);
 
-		printWarnings (cerr, getKey);
-		printError (cerr, getKey);
+		printWarnings (cerr, getKey, cl.verbose, cl.debug);
+		printError (cerr, getKey, cl.verbose, cl.debug);
 
 		if (getKey.hasMeta ("error"))
 		{
@@ -89,8 +89,8 @@ int GenCommand::execute (Cmdline const & cl)
 		Key getKey (parentKey, KEY_VALUE, file.c_str (), KEY_END);
 		if (plugin->get (ks, getKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
-			printWarnings (cerr, getKey);
-			printError (cerr, getKey);
+			printWarnings (cerr, getKey, cl.verbose, cl.debug);
+			printError (cerr, getKey, cl.verbose, cl.debug);
 			throw invalid_argument ("file '" + file + "' given to -F/--input-file could not be loaded with plugin '" +
 						pluginName + "'");
 		}

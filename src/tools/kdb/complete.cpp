@@ -236,7 +236,7 @@ void CompleteCommand::printResults (
 
 	if (cl.debug || cl.verbose)
 	{ // Only print this in debug mode to avoid destroying autocompletions because of warnings
-		printWarnings (cerr, root);
+		printWarnings (cerr, root, cl.verbose, cl.debug);
 	}
 }
 
@@ -297,7 +297,7 @@ void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline con
 
 	if (cl.debug || cl.verbose)
 	{ // Only print this in debug mode to avoid destroying autocompletions because of warnings
-		printWarnings (cerr, mountpointPath);
+		printWarnings (cerr, mountpointPath, cl.verbose, cl.debug);
 	}
 }
 

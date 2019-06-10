@@ -17,19 +17,15 @@ static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * 
 								      /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
 								      /*%/ args %*/ /*%/ args? %*/)
 {
-	/*%# args_or_context? %*/
-	/*%# context %*/
-	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
-	/*%/ context %*/
-
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ context_and_args %*/);
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
 	const char * actualName = elektraFindReference (elektra, name);
 	elektraFree (name);
-	/*%/ args_or_context? %*/
-	/*%^ args_or_context? %*/
+	/*%/ args? %*/
+	/*%^ args? %*/
 	const char * actualName = elektraFindReference (elektra, "/*% name %*/");
-	/*%/ args_or_context? %*/
+	/*%/ args? %*/
 
 	if (actualName == NULL || strlen (actualName) == 0)
 	{
@@ -54,19 +50,15 @@ static inline void ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 						    /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
 						    /*%/ args %*/ /*%/ args? %*/)
 {
-	/*%# args_or_context? %*/
-	/*%# context %*/
-	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
-	/*%/ context %*/
-
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ context_and_args %*/);
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+		/*%/ last? %*/ /*%/ args %*/);
 	const char * actualName = elektraFindReference (elektra, name);
 	elektraFree (name);
-	/*%/ args_or_context? %*/
-	/*%^ args_or_context? %*/
+	/*%/ args? %*/
+	/*%^ args? %*/
 	const char * actualName = elektraFindReference (elektra, "/*% name %*/");
-	/*%/ args_or_context? %*/
+	/*%/ args? %*/
 
 	if (actualName == NULL || strlen (actualName) == 0)
 	{
@@ -96,17 +88,13 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, const cha
 						    /*%# args? %*/ /*%# args %*/ /*%& native_type %*/ /*%& name %*/,
 						    /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
 {
-	/*%# args_or_context? %*/
-	/*%# context %*/
-	const char * /*%& c_name %*/ = keyString (ksLookupByName (elektraContext (elektra), "/*% key_name %*/", 0));
-	/*%/ context %*/
-
-	char * name = elektraFormat ("/*% fmt_string %*/", /*%# context_and_args %*/ /*%& code %*/ /*%^ last? %*/,
-				     /*%/ last? %*/ /*%/ context_and_args %*/);
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
-	/*%/ args_or_context? %*/
-	/*%^ args_or_context? %*/
+	/*%/ args? %*/
+	/*%^ args? %*/
 	elektraSetRawString (elektra, "/*% name %*/", value, "struct_ref", error);
-	/*%/ args_or_context? %*/
+	/*%/ args? %*/
 }

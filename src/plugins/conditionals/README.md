@@ -124,13 +124,8 @@ kdb export /tests/conditionals ini
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1=val1
 # ERROR:135
-# Error (#135) occurred!
-# Description: Validation failed
-# Module: conditionals
-# At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
-# Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
-# Mountpoint: system/test
-# Configfile: /home/thomas/.config/main.ini
+# Sorry, module conditionals issued the error 135:
+# Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
 
 kdb set /tests/conditionals/sub/key true
 

@@ -38,6 +38,7 @@ protected:
 		kdb.get (ks, testRoot);
 
 		ks.append (Key (specRoot + "/speckey/#", KEY_META, "mymeta", "1", KEY_END));
+		ks.append (Key (userRoot + "/speckey", KEY_META, "array", "#0", KEY_END));
 		ks.append (Key (userRoot + "/speckey/#0", KEY_VALUE, "", KEY_END));
 		ks.append (Key (userRoot + "/errorkey", KEY_META, "trigger/warnings", "3", KEY_END));
 		// ks.append (Key (specRoot + "/goptskey", KEY_META, "opt", "1", KEY_END));
