@@ -103,9 +103,9 @@ brew install elektra
 
 ## Windows
 
-Please refer to the section OS independent below.
+Please refer to the section OS Independent below.
 
-## OS independent
+## OS Independent
 
 First follow the steps in [COMPILE](COMPILE.md).
 
