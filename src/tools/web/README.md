@@ -132,17 +132,21 @@ Now the server is runing on [http://localhost:33333](http://localhost:33333). Af
 
 As an example:
 
-GET: http://localhost:33333/kdb/path
-
-will return the value of path key, which is stored in the database.
+Let's create the new key-value pair `user/test`:
 
 ```sh
-kdb set /test 5
+kdb set user/test 5
 ```
 
-curl http://localhost:33333/kdb/user/test
-will return 
+Now, the command 
 
+```sh
+curl http://localhost:33333/kdb/user/test
+```
+
+will return us the value of the specified key `user/test`, which is stored in the database right now
+
+<!-- prettier-ignore-start -->
 ```json
 {
     "exists": true,
@@ -155,7 +159,7 @@ will return
     "meta": ""
 }
 ```
-
+<!-- prettier-ignore-end --> 
 ## Auth
 
 Currently, webd does not support authentication. The best way to work around
