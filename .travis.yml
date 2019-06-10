@@ -206,19 +206,6 @@ before_install:
         brew install gcc@9
         export CC=gcc-9
         export CXX=g++-9
-      else
-        # Use latest version of LLVM to translate the code
-        brew install llvm
-        export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-        # Linking Botan, ANTLR’s C++ runtime, and yaml-cpp using `gcc` fails on macOS
-        brew install antlr
-        brew install antlr4-cpp-runtime
-        brew install botan
-        brew install yaml-cpp
-        # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
-        brew install xerces-c
-        # OCLint complains about unknown compiler warning options, if we use GCC as compiler.
-        brew cask install oclint
       fi
       brew install augeas
       brew install bison
