@@ -60,7 +60,7 @@ _Step 2:_ Set the password at `user/tests/password` and display the contents of 
 ```sh
 kdb set user/tests/password 1234
 kdb file user/tests/password | xargs cat
-#> password = 1234
+#> password=1234
 ```
 
 _Step 3:_ (Optional) Cleanup
@@ -231,7 +231,7 @@ The resulting INI-file contains the following data:
 
 ```ini
 #@META crypto/encrypt = 1
-password = @BASE64IyFjcnlwdG8wMBEAAADwPI+lqp+X2b6BIfLdRYgwxmAhVUPurqkQVAI78Pn4OYONbei4NfykMPvx9C9w91KT
+password=@BASE64IyFjcnlwdG8wMBEAAADwPI+lqp+X2b6BIfLdRYgwxmAhVUPurqkQVAI78Pn4OYONbei4NfykMPvx9C9w91KT
 ```
 
 You can access the password as usual with `kdb get`:
