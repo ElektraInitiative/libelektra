@@ -86,18 +86,18 @@ is the abbreviation for "Code".
 - Permanent errors C01000
   - Resource C01100
     - Memory Allocation C01110
-    - General Resource C01120
   - Installation C01200
-  - Logical C01310
+  - Logical C01300
     - Assertion C01310
     - Interface C01320
     - Plugin is Broken C01330
 - Conflicting State C02000
-- Timeout C03000
-- Validation C04000
-  - Syntactic C04100
-  - Semantic C04200
-- Out-Of-Range C05000
+- Validation C03000
+  - Syntactic C03100
+  - Semantic C03200
+
+To see an explanation of the categories along with a guideline on how to categorize please
+see the [Error Codes Guideline](../dev/error-categorization.md)
 
 ## Rationale
 
@@ -122,5 +122,7 @@ Current errors will be migrated.
 
 - [Error Message Format](error_message_format.md)
   Shows the new format of the error message
+- [Error Codes Guideline](../dev/error-categorization.md)
+  Shows how to categorize errors
 
 ## Notes

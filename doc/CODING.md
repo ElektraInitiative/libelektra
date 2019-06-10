@@ -128,7 +128,7 @@ So do not give this responsibility out of hands entirely.
 - Use `const` as much as possible.
 - Use `static` methods if they should not be externally visible.
 - C-Files have extension `.c`, Header files `.h`.
-- Use internal functions: prefer to use elektraMalloc, elektraFree.
+- Use internal functions: prefer to use `elektraMalloc`, `elektraFree`.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
@@ -154,7 +154,7 @@ and search for the relevant packages (`clang-format`, `llvm`). Currently we use
 
 ###### macOS
 
-On macOS you can install `clang-format` using [Homebrew](https://brew.sh) either directly:
+On macOS you can install `clang-format` using [Homebrew][] either directly:
 
 ```sh
 brew install clang-format
@@ -173,6 +173,8 @@ brew install llvm@7
 ```
 
 .
+
+[homebrew]: https://brew.sh
 
 ###### Debian
 
@@ -209,7 +211,7 @@ If you work on Elektra’s code base regularly you might want to integrate the f
 
 ###### TextMate
 
-While [TextMate](https://macromates.com) supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
+While [TextMate][] supports `clang-format` for the current file directly via the keyboard shortcut <kbd>ctrl</kbd>+<kbd>⇧</kbd>+<kbd>H</kbd>, the editor does not automatically reformat the file on save. To do that
 
 1. open the bundle editor (“Bundles” → “Edit Bundles”),
 2. navigate to the “Reformat Code” item of the C bundle (“C” → “Menu Actions” → “Reformat Code”),
@@ -217,6 +219,8 @@ While [TextMate](https://macromates.com) supports `clang-format` for the current
 4. change the menu option for the field “Save” to “Nothing”
 
 . After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
+
+[textmate]: https://macromates.com
 
 ### C++ Guidelines
 
@@ -243,16 +247,112 @@ We use a similar style for CMake as we do for other code:
 - Add a space character before round parenthesis ( `(` ).
 - Use lower case for command names (e.g. `set` instead of `SET`)
 
-You can use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
-`cmake-format` currently does not support tabs, please use the standard command `unexpand` to fix this issue. For example, to reformat the
-file `CMakeLists.txt` in the root folder of the repository you can use the following command:
+#### cmake format
+
+We use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
+`cmake-format` currently does not support tabs, we use the standard command `unexpand` to fix this issue. For example, to reformat the
+file `CMakeLists.txt` in the root folder of the repository we use the following command:
 
 ```sh
 # This command uses `sponge`, which is part of the [moreutils](https://joeyh.name/code/moreutils/) package.
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ```
 
-. If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
+.
+
+##### Installation
+
+Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
+
+```sh
+# Install cmake format `0.4.5` with support for YAML config files
+pip install cmake-format[yaml]==0.4.5
+```
+
+. Please make sure, that you install the correct version (`0.4.5`) of cmake format:
+
+```sh
+cmake-format --version
+#> 0.4.5
+```
+
+, since otherwise the formatted code might look quite different.
+
+We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew][]:
+
+```sh
+brew install moreutils
+```
+
+and on Debian using `apt-get`:
+
+```
+apt-get install moreutils
+```
+
+.
+
+##### Usage
+
+If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/reformat-cmake):
+
+```sh
+scripts/reformat-cmake # Running this script for the whole code base takes some time.
+```
+
+. To reformat specific files add a list of file paths after the command:
+
+```sh
+# The command below reformats the file `cmake/CMakeLists.txt`.
+scripts/reformat-cmake cmake/CMakeLists.txt
+```
+
+.
+
+##### Tool Integration
+
+If you work on CMake code quite often you probably want to integrate cmake format into your development workflow. The homepage of [cmake format](https://github.com/cheshirekow/cmake_format#integrations) list some integration options.
+
+###### TextMate
+
+While TextMate does not support cmake format directly, you can quickly create a command that applies `cmake-format` every time you save a CMake file yourself. The steps below show one option to do that.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.cmake` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Document” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      set -o pipefail
+      if ! "${TM_CMAKE_FORMAT:-cmake-format}" - |
+          ${TM_CMAKE_FORMAT_FILTER:-tee};
+      then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
+   10. Store the value `unexpand` in the variable `TM_CMAKE_FORMAT_FILTER`. To do that save the text
+
+   ```ini
+   TM_CMAKE_FORMAT_FILTER = "unexpand"
+   ```
+
+   in a file called [`.tm_properties`](https://macromates.com/blog/2011/git-style-configuration) in the root of Elektra’s repository.
 
 ### Java / Groovy Guidelines
 
@@ -278,8 +378,9 @@ Most notably use:
 - Please use [**title-case**](https://en.wiktionary.org/wiki/title_case) for headings in the general documentation.
 - For [man pages](help/) please use **only capital letters for subheadings** and only **small letters for the main header**. We use this header style to match the look and feel of man pages for Unix tools such as `ls` or `mkdir`.
 
-Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
-format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).
+#### Prettier
+
+We use [`prettier`][] to format the documentation according to the guidelines given above.
 
 Under certain **exceptional** circumstances you might want to prevent `prettier` from formatting certain parts of a Markdown file. To do
 that you can
@@ -288,6 +389,173 @@ that you can
 - use `<!-- prettier-ignore -->` to disable formatting till the end of a file
 
 .
+
+[`prettier`]: https://prettier.io
+
+##### Installation
+
+###### macOS
+
+On macOS you can install [`prettier`][] using [Homebrew][]:
+
+```sh
+brew install prettier
+```
+
+.
+
+###### General
+
+To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
+
+```sh
+npm install --global prettier@1.17.1
+```
+
+.
+
+##### Usage
+
+You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/reformat-markdown):
+
+```sh
+scripts/reformat-markdown
+```
+
+. To format only some files, please specify a list of filenames after the command:
+
+```sh
+scripts/reformat-markdown doc/CODING.md # Reformat this file
+```
+
+.
+
+##### Tool Integration
+
+The [homepage of Prettier][`prettier`] lists various options to integrate the tool into your workflow.
+
+###### TextMate
+
+To reformat a Markdown document in [TextMate][] every time you save it, please follow the steps listed below.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `text.html.markdown` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_PRETTIER:-prettier}" --stdin --stdin-filepath "${TM_FILEPATH}"
+      then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
+
+### Shell Guidelines
+
+- Please only use [POSIX](https://en.wikipedia.org/wiki/POSIX) functionality.
+
+#### shfmt
+
+We use [`shfmt`][] to format Shell files in the repository.
+
+[`shfmt`]: https://github.com/mvdan/sh
+
+##### Installation
+
+###### macOS
+
+You can install [`shfmt`] on macOS using [Homebrew][]:
+
+```sh
+brew install shfmt
+```
+
+.
+
+###### General
+
+[shfmt’s GitHub release page](https://github.com/mvdan/sh/releases) offers binaries for various operating systems. For example, to install the binary for the current user on Linux you can use the following command:
+
+```sh
+mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
+  curl -L "https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_amd64" -o shfmt && \
+  chmod u+x shfmt
+```
+
+. Please note that you have to make sure, that your `PATH` includes `$HOME/bin`, if you use the command above:
+
+```sh
+export PATH=$PATH:"$HOME/bin"
+```
+
+.
+
+##### Usage
+
+We provide the script [`reformat-shfmt`](../scripts/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
+
+```sh
+scripts/reformat-shfmt
+```
+
+. You can also reformat specific files by listing filenames after the script:
+
+```sh
+scripts/reformat-shfmt scripts/reformat-shfmt # Reformat the source of `reformat-shfmt`
+```
+
+.
+
+##### Tool Integration
+
+The GitHub project page of [`shfmt`][] offers some options to integrate the tool into your development workflow [here](https://github.com/mvdan/sh#related-projects).
+
+###### TextMate
+
+The steps below show you how to create a [TextMate][] command that formats a documents with [`shfmt`][] every time you save it.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.shell` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_SHFMT_FORMAT:-shfmt}" -s -sr; then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
 
 ### Doxygen Guidelines
 

@@ -191,7 +191,14 @@ void walk (Listener & listener, node const & node)
 	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
-	// If the document contains only one a single value we call `exitValue`
+	// Empty document
+	if (node.is_root () && node.children.empty ())
+	{
+		listener.enterEmpty ();
+		return;
+	}
+
+	// If the document contains only a single value we call `exitValue`
 	// for that function. We need to handle that special case to not add
 	// value multiple times for maps (once for `c_l_block_map_implicit_value`
 	// and `c_l_block_seq_entry`) and once for the child of

@@ -13,7 +13,13 @@ SEQUENCE_START = 11
 SEQUENCE_END = 12
 ELEMENT = 13;
 
-yaml : STREAM_START child_comments_empty STREAM_END # 1 ;
+yaml : STREAM_START empty_child STREAM_END # 1 ;
+empty_child : empty # 0
+            | child # 0
+            ;
+
+empty : comments_empty # empty ();
+
 child_comments_empty : child # 0
                      | comments
                      |

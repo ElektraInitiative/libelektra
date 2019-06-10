@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_ELEKTRAGEN_HPP
 #define ELEKTRA_ELEKTRAGEN_HPP
 
-#include "template.hpp"
+#include "../template.hpp"
 
 class ElektraGenTemplate : public GenTemplate
 {
@@ -25,8 +25,8 @@ class ElektraGenTemplate : public GenTemplate
 public:
 	ElektraGenTemplate ()
 	: GenTemplate ("elektra", { ".c", ".h" },
-		       { "enum.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "keys.fun.h", "keys.fun.struct.h",
-			 "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
+		       { "enum.c", "union.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "union.decl.h",
+			 "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
 		       { { Params::InitFunctionName, false },
 			 { Params::HelpFunctionName, false },
 			 { Params::SpecloadFunctionName, false },

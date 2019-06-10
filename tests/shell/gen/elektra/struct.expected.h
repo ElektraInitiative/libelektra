@@ -1,14 +1,29 @@
+// clang-format off
+
+
+// clang-format on
 /**
  * @file
  *
- * @brief
+ * This file was automatically generated using `kdb gen elektra`.
+ * Any changes will be overwritten, when the file is regenerated.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD Zero Clause License
+ *
+ *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *
+ *     Permission to use, copy, modify, and/or distribute this software for any
+ *     purpose with or without fee is hereby granted.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ *     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ *     FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ *     INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ *     LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ *     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-// clang-format off
-
-// clang-format on
 
 #ifndef STRUCT_ACTUAL_H
 #define STRUCT_ACTUAL_H
@@ -24,11 +39,34 @@ extern "C" {
 
 
 
-#define ELEKTRA_CONTEXT_SET(contextTag) elektraSetContextualValue##contextTag
+// clang-format off
+
+// clang-format on
+
+
+
+#define ELEKTRA_TO_CONST_STRING(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektra, typeName), ToConstString)
+#define ELEKTRA_TO_CONST_STRING_SIGNATURE(cType, typeName) const char * ELEKTRA_TO_CONST_STRING (typeName) (cType value)
+
+
+
 
 // clang-format off
 
 // clang-format on
+
+#define ELEKTRA_UNION_FREE(typeName) ELEKTRA_CONCAT (elektraFree, typeName)
+#define ELEKTRA_UNION_FREE_SIGNATURE(cType, typeName, discrType) void ELEKTRA_UNION_FREE (typeName) (cType * ptr, discrType discriminator)
+
+#define ELEKTRA_UNION_GET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	cType ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname, discrType discriminator)
+#define ELEKTRA_UNION_GET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	cType ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, discrType discriminator)
+#define ELEKTRA_UNION_SET_SIGNATURE(cType, typeName, discrType)                                                                            \
+	void ELEKTRA_SET (typeName) (Elektra * elektra, const char * keyname, cType value, discrType discriminator, ElektraError ** error)
+#define ELEKTRA_UNION_SET_ARRAY_ELEMENT_SIGNATURE(cType, typeName, discrType)                                                              \
+	void ELEKTRA_SET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType value,            \
+						   discrType discriminator, ElektraError ** error)
 
 
 
@@ -45,39 +83,39 @@ extern "C" {
 typedef struct ElektraStructMyotherstruct
 {
 	
-	 kdb_long_t  x;		
+	kdb_long_t  x;
 
 	
-	 kdb_long_t  xY;		
+	kdb_long_t  xY;
 
 } ElektraStructMyotherstruct;
 
 typedef struct ElektraStructMystruct
 {
 	
-	 const char *  a;		
+	const char *  a;
 
 	
-	 kdb_long_t  b;		
+	kdb_long_t  b;
 
 } ElektraStructMystruct;
 
 typedef struct Person
 {
 	
-	 kdb_short_t  age;		
+	kdb_short_t  age;
 
 	
-	 kdb_long_long_t  childrenSize;		
-
-	 struct Person *  *  children; 
-	
+	kdb_long_long_t  childrenSize;
 
 	
-	 kdb_float_t  height;		
+	struct Person *  *  children;
 
 	
-	 const char *  fullName;		
+	kdb_float_t  height;
+
+	
+	const char *  fullName;
 
 } Person;
 
@@ -214,22 +252,6 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
 */// 
 #define ELEKTRA_TAG_PERSON_NAME PersonName
 // clang-format on
-
-
-// clang-format off
-
-// clang-format on
-
-// clang-format off
-
-// clang-format on
-
-
-// clang-format off
-
-// clang-format on
-
-
 
 
 // clang-format off
@@ -489,8 +511,6 @@ static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
 								      kdb_long_long_t index1 
 								       )
 {
-	
-
 	char * name = elektraFormat ("people/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	const char * actualName = elektraFindReference (elektra, name);
 	elektraFree (name);
@@ -523,8 +543,6 @@ static inline void ELEKTRA_SET (People) (Elektra * elektra, const char * value,
 						      kdb_long_long_t index1,
 						      ElektraError ** error)
 {
-	
-
 	char * name = elektraFormat ("people/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
 	elektraFree (name);
@@ -560,8 +578,6 @@ static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra )
 static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
 								       const char * name1   )
 {
-	
-
 	char * name = elektraFormat ("person/%s",  name1  );
 	Person *result = ELEKTRA_GET (StructPerson) (elektra, name);
 	elektraFree (name);
@@ -583,8 +599,6 @@ static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
 static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value,  
 						    const char * name1,   ElektraError ** error)
 {
-	
-
 	char * name = elektraFormat ("person/%s",  name1  );
 	ELEKTRA_SET (StructPerson) (elektra, name, value, error);
 	elektraFree (name);
@@ -607,8 +621,6 @@ static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value
 static inline kdb_short_t ELEKTRA_GET (PersonAge) (Elektra * elektra ,
 								     const char * name1   )
 {
-	
-
 	char * name = elektraFormat ("person/%s/age",  name1  );
 	kdb_short_t result = ELEKTRA_GET (Short) (elektra, name);
 	elektraFree (name);
@@ -630,8 +642,6 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra,
 						    kdb_short_t value,  
 						    const char * name1,   ElektraError ** error)
 {
-	
-
 	char * name = elektraFormat ("person/%s/age",  name1  );
 	ELEKTRA_SET (Short) (elektra, name, value, error);
 	elektraFree (name);
@@ -657,8 +667,6 @@ static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
 								      kdb_long_long_t index1 
 								       )
 {
-	
-
 	char * name = elektraFormat ("person/%s/children/%*.*s%lld",  name1 ,
 				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	const char * actualName = elektraFindReference (elektra, name);
@@ -694,8 +702,6 @@ static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char *
 						     kdb_long_long_t index1,
 						      ElektraError ** error)
 {
-	
-
 	char * name = elektraFormat ("person/%s/children/%*.*s%lld",  name1 ,
 				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
 	elektraSetRawString (elektra, name, value, "struct_ref", error);
@@ -714,8 +720,6 @@ static inline void ELEKTRA_SET (PersonChildren) (Elektra * elektra, const char *
 static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
 								 const char * name1   )
 {
-	
-
 	char * name = elektraFormat ("person/%s/children",  name1  );
 	kdb_long_long_t size = elektraArraySize (elektra, name);
 	elektraFree (name);
@@ -736,8 +740,6 @@ static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
 static inline kdb_float_t ELEKTRA_GET (PersonHeight) (Elektra * elektra ,
 								     const char * name1   )
 {
-	
-
 	char * name = elektraFormat ("person/%s/height",  name1  );
 	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
 	elektraFree (name);
@@ -759,8 +761,6 @@ static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra,
 						    kdb_float_t value,  
 						    const char * name1,   ElektraError ** error)
 {
-	
-
 	char * name = elektraFormat ("person/%s/height",  name1  );
 	ELEKTRA_SET (Float) (elektra, name, value, error);
 	elektraFree (name);
@@ -781,8 +781,6 @@ static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra,
 static inline const char * ELEKTRA_GET (PersonName) (Elektra * elektra ,
 								     const char * name1   )
 {
-	
-
 	char * name = elektraFormat ("person/%s/name",  name1  );
 	const char * result = ELEKTRA_GET (String) (elektra, name);
 	elektraFree (name);
@@ -804,8 +802,6 @@ static inline void ELEKTRA_SET (PersonName) (Elektra * elektra,
 						    const char * value,  
 						    const char * name1,   ElektraError ** error)
 {
-	
-
 	char * name = elektraFormat ("person/%s/name",  name1  );
 	ELEKTRA_SET (String) (elektra, name, value, error);
 	elektraFree (name);
@@ -865,7 +861,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
  */// 
-#define elektraGet2(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
+#define elektraFillStruct(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
 
 /**
@@ -874,7 +870,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  */// 
-#define elektraGet2V(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
+#define elektraFillStructV(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
 
 /**
@@ -913,23 +909,6 @@ void specloadCheck (int argc, const char ** argv);
  * @return The size of the array below the given key.
  */// 
 #define elektraSizeV(elektra, tag, ...) ELEKTRA_SIZE (tag) (elektra, __VA_ARGS__)
-
-
-/**
- * @param elektra    The elektra instance initialized with loadConfiguration().
- * @param contextTag The context tag for the contextual value you want to set.
- * @param value	     The actual value you want to set.
- */// 
-#define elektraContextSet(elektra, contextTag, value) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value)
-
-
-/**
- * @param elektra    The elektra instance initialized with loadConfiguration().
- * @param contextTag The context tag for the contextual value you want to set.
- * @param value	     The actual value you want to set.
- * @param ...     Variable arguments depending on the given tag.
- */// 
-#define elektraContextSetV(elektra, contextTag, value, ...) ELEKTRA_CONTEXT_SET (contextTag) (elektra, value, __VA_ARGS__)
 
 #ifdef __cplusplus
 }

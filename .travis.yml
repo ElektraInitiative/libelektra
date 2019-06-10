@@ -189,19 +189,6 @@ matrix:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
 
-    # HASKELL: Only build Haskell binding and plugin
-
-    - os: osx
-      name: 🍏 Haskell
-      osx_image: xcode10.1 # We use macOS 10.13 here, since the Haskell plugin does not seem to compile on macOS 10.14
-      compiler: clang
-      env:
-        - HASKELL=ON
-        # Use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher;ni;c'
-        - BINDINGS=haskell
-        - TOOLS=kdb
-
     - os: linux
       name: 🐧 GCC
       compiler: gcc

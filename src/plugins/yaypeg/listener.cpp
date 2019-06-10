@@ -130,6 +130,15 @@ void Listener::exitPair ()
 }
 
 /**
+ * @brief This function will be called before the walker enters an empty document (that might contain comments).
+ */
+void Listener::enterEmpty ()
+{
+	// We represent an empty file (`null`) as empty parent key.
+	keys.append (Key{ parents.top ().getName (), KEY_BINARY, KEY_END });
+}
+
+/**
  * @brief This function will be called before the walker enters a sequence
  *        node.
  */

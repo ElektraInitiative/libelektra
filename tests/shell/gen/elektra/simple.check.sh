@@ -13,7 +13,13 @@ cat << 'EOF' > dummy.c
 		exit(EXIT_FAILURE);                                                                                                            \
 	}
 
-#define VALUE_CHECK(expr, expected) if (expr != expected) exit(EXIT_FAILURE);
+#define VALUE_CHECK(expr, expected)                                                                                                    \
+	if ((expr) != (expected))                                                                                                          \
+	{                                                                                                                                  \
+		elektraClose (elektra);                                                                                                        \
+		fprintf (stderr, "value wrong %s\n", #expr);                                                                                   \
+		exit(EXIT_FAILURE);                                                                                                            \
+	}
 
 static void fatalErrorHandler (ElektraError * error)
 {
@@ -26,7 +32,7 @@ void callAll (Elektra * elektra)
 {
 	VALUE_CHECK (elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY), 1);
 
-	// VALUE_CHECK (elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 1.1f); // # FIXME: bug in spec plugin
+	VALUE_CHECK (elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 1.1f);
 	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_PRINT), false);
 	VALUE_CHECK (strcmp (elektraGet (elektra, ELEKTRA_TAG_MYSTRING), ""), 0);
 	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_MYINT), 0);
@@ -63,7 +69,7 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	if (rc == 1)
+	if (rc == 2)
 	{
 		fprintf (stderr, "unexpected help mode");
 		return EXIT_FAILURE;
@@ -99,12 +105,14 @@ res=$?
 
 if [ "$res" = "0" ]; then
 	"$KDB" setmeta "user$MOUNTPOINT/myfloatarray" "array" "#0"
-	"$KDB" setmeta "user$MOUNTPOINT/myfloatarray/#0" "type" "float" # FIXME: bug in spec plugin
-	"$KDB" set "user$MOUNTPOINT/myfloatarray/#0" "1.1"              # FIXME: bug in spec plugin
 
 	./dummy
 	res=$?
 	echo "dummy exited with: $res"
+
+	"$KDB" export "$MOUNTPOINT" ni > ~/export.casc.ini
+	"$KDB" export "spec$MOUNTPOINT" ni > ~/export.spec.ini
+	"$KDB" export "user$MOUNTPOINT" ni > ~/export.user.ini
 
 	if [ "$res" = "0" ] && which valgrind; then
 		valgrind --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy

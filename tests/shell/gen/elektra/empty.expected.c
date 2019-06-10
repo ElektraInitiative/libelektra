@@ -1,14 +1,28 @@
+// clang-format off
+
+
+// clang-format on
 /**
  * @file
  *
- * @brief
+ * This file was automatically generated using `kdb gen elektra`.
+ * Any changes will be overwritten, when the file is regenerated.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD Zero Clause License
+ *
+ *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *
+ *     Permission to use, copy, modify, and/or distribute this software for any
+ *     purpose with or without fee is hereby granted.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ *     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ *     FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ *     INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ *     LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ *     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ *     PERFORMANCE OF THIS SOFTWARE.
  */
-
-// clang-format off
-
-// clang-format on
 
 #include "empty.actual.h"
 
@@ -50,7 +64,7 @@ static Key * helpKey = NULL;
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = ksNew (1,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
 	KS_END);
 ;
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, error);
@@ -61,7 +75,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	}
 
 	KeySet * contract = ksNew (1,
-	keyNew ("system/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
 	KS_END);
 ;
 
@@ -80,12 +94,6 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		elektraClose (e);
 		return 2;
 	}
-
-	KeySet * defaultContext = ksNew (0,
-	KS_END);
-;
-	ksAppend (elektraContext (e), defaultContext);
-	ksDel (defaultContext);
 
 	*elektra = e;
 	return 0;
@@ -111,7 +119,7 @@ void specloadCheck (int argc, const char ** argv)
 	}
 
 	KeySet * spec = ksNew (1,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_context.ini", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/empty", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
 	KS_END);
 ;
 
@@ -173,6 +181,17 @@ void printHelpMessage (const char * usage, const char * prefix)
 
 // -------------------------
 // Enum accessor functions
+// -------------------------
+
+
+
+
+// clang-format off
+
+// clang-format on
+
+// -------------------------
+// Union accessor functions
 // -------------------------
 
 
