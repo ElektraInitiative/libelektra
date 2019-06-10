@@ -369,11 +369,8 @@ removed due to:
 
 ### Ini
 
-- new formatting is introduced --> instead of having whitespaces around '=' now the whitespaces are not allowed anymore
-  example of old formatting: key1 = value1
-  example of new formatting: key1=value1
-
-      	. _(Oleksandr Shabelnyk)_
+- Plugin writes to ini files without spaces around '=' anymore. Reading is still possible with and without spaces.
+  _(Oleksandr Shabelnyk)_
 
 ## Libraries
 
