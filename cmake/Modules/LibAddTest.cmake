@@ -118,6 +118,11 @@ function (add_msr_test NAME FILE)
 		if (tool_index GREATER -1)
 			return ()
 		endif ()
+
+		list (FIND TOOLS ${tool} tool_index)
+		if (tool_index LESS 0)
+			return ()
+		endif ()
 	endforeach ()
 
 	add_test (NAME testshell_markdown_${NAME}
