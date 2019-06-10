@@ -15,6 +15,8 @@ set (SUBDIRS
      highlevel
      opts)
 
+add_subdirectory (merge)
+
 # The subdirectory for LibElektra must be the last entry!
 list (APPEND SUBDIRS elektra)
 
