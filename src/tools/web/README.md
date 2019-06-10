@@ -116,13 +116,18 @@ Elektra web consists of multiple components:
 
 ## Test REST API on localhost
 
-In order to test API on localhost, you have to start elektrad instance:
+In order to test API on localhost, your have to start elektrad instance. You can do it in two ways:
 
-- `cd libelektra/src/tools/web`
-- `cd elektrad`
-- `npm install`
-- `npm start` (replaces `kdb run-elektrad`)
+- run manually
 
+  - `cd libelektra/src/tools/web`
+  - `cd elektrad`
+  - `npm install`
+  - `npm start` (replaces `kdb run-elektrad`)
+
+- by installing elektrad tool together with Elektra and run it
+  - please see the documentation [here](https://www.libelektra.org/tools/web) on how to install and run the elektra-web tool
+  
 Now the server is runing on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows to send REST API requests.
 
 As an example:
