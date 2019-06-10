@@ -17,7 +17,9 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ### 1. Pick a Docker image and pull it
 
-Pick one of the available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch". Unfortunately, it will take some time to download it, since it is pretty big, but you can be sure you'll have all the needed dependencies.
+Pick one of the available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch".
+Unfortunately, it will take some time to download it, since it is pretty big, but you can be sure you'll have all the needed dependencies.
+You can choose a light-weight alpine image which won't take long to download, however it is not recommended. This image does not contain all necessary dependencies.
 
 If you want to view all the available images, execute this command:
 
@@ -106,12 +108,26 @@ and then with
 make -j 10
 ```
 
+Additionally, you may want to install Elektra inside the container, because the installed tests rely on it.
+The build server also does this and it is possible that the installed tests have different results (e.g. if test data is missing)
+Just run this command:
+
+```sh
+make install
+```
+
 The number 10 can be changed as follows: number of supported simultaneous threads by your CPU + 2. But don't worry, this can only affect the speed of the building, it cannot really break it.
 
 ### 4. Run tests
 
-Finally run the tests
+Finally run the tests. There are two sets of tests. Run the first one with this command:
 
 ```sh
 make run_all
+```
+
+For the second set to run remember to execute `make install` from the previous step. Run the second set with this command:
+
+```sh
+kdb run_all
 ```
