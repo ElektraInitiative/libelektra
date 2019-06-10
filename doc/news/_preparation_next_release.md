@@ -537,6 +537,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - For beginners we added a [tutorial](../tutorials/contributing-clion.md) that guides them through the process of contributing to libelektra. _(Thomas Bretterbauer)_
 - Added a section on `elektraPluginGetGlobalKeySet` in the plugin tutorial. _(Vid Leskovar)_
 - Added a step-by-step [tutorial](../tutorials/run_all_tests_with_docker.md) for running all tests with Docker. _(Oleksandr Shabelnyk)_
+- Added a step-by-step [tutorial](../tutorials/run_reformatting_script_with_docker.md) for running reformatting scripts with Docker. _(Oleksandr Shabelnyk)_
 
 ### Spelling Fixes
 
