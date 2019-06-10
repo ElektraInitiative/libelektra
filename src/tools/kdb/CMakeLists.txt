@@ -26,7 +26,7 @@ if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
 	add_dependencies (kdb kdberrors_generated elektra_error_codes_generated kdb_gen_templates_generated)
 
-	target_link_libraries (kdb elektra-core elektra-kdb elektratools)
+	target_link_libraries (kdb elektra-core elektra-kdb elektratools elektra-merge)
 
 	install (TARGETS kdb DESTINATION bin)
 endif (BUILD_SHARED)
