@@ -118,7 +118,7 @@ Elektra web consists of multiple components:
 
 In order to test API on localhost, your have to start elektrad instance. You can do it in two ways:
 
-- run manually
+- run manually (if you would like to start it manually or you don't have eletrad-web tool installed)
 
   - `cd libelektra/src/tools/web`
   - `cd elektrad`
@@ -126,17 +126,29 @@ In order to test API on localhost, your have to start elektrad instance. You can
   - `npm start` (replaces `kdb run-elektrad`)
 
 - by installing elektrad tool together with Elektra and run it
-  - please see the documentation [here](https://www.libelektra.org/tools/web) on how to install and run the elektra-web tool
+  - please see the section `Building with elektra-web Tool`
   
 Now the server is runing on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows to send REST API requests.
 
-As an example:
+Additional note. It is recommended to install the elektrad tool than starting the server manually. 
+When Elektra is installed, the `kdb` command together with its tools is installed globally. 
+For instance, whenever you would like to write any shell script, which has to start a REST API server, you can just add the following line `kdb run-elektrad` inside your file and save it. 
+After that, the created shell script can be executed from any directory.
+  
+Examples:
 
-Let's create the new key-value pair `user/test`:
+let's create the new key-value pair `user/test` and set its value to 5. You can do it next way:
 
+- through the command terminal
 ```sh
 kdb set user/test 5
 ```
+- through the rest api using curl
+```sh
+curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
+```
+
+The output of any of two commands will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user/test with string "5"`.
 
 Now, the command 
 
