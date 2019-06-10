@@ -493,7 +493,7 @@ int TestCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	root = cl.createKey (0);
 
@@ -510,7 +510,7 @@ int TestCommand::execute (Cmdline const & cl)
 	cout << "Now restoring the original keyset." << endl;
 	kdb.set (original, root);
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	return nrError;
 }

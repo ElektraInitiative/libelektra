@@ -38,7 +38,9 @@ function (check_dependencies)
 		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
 	endif (ENABLE_ASAN AND ${LIBSTDCPP})
 
-	file (READ yaml.bnf
+	# Make sure the build system recreates the header for the grammar, if we modify `yaml.bnf`.
+	configure_file (yaml.bnf yaml.bnf @ONLY)
+	file (READ ${CMAKE_CURRENT_BINARY_DIR}/yaml.bnf
 		   GRAMMAR_INPUT)
 	string (REGEX
 		REPLACE ";"
@@ -56,9 +58,6 @@ function (check_dependencies)
 
 	file (WRITE ${SOURCE_FILE_GRAMMAR}
 		    ${GRAMMAR})
-
-	# Make sure the build system recreates the header for the grammar, if we modify `yaml.bnf`
-	set_source_files_properties (${SOURCE_FILE_GRAMMAR} PROPERTIES GENERATED TRUE)
 
 	set (SOURCE_FILES
 	     ${SOURCE_FILES_INPUT}

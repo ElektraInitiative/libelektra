@@ -343,7 +343,8 @@ void YAMLLexer::scanToNextToken ()
  */
 bool YAMLLexer::isValue (size_t const offset) const
 {
-	return (input->LA (offset) == ':') && (input->LA (offset + 1) == '\n' || input->LA (offset + 1) == ' ');
+	return (input->LA (offset) == ':') &&
+	       (input->LA (offset + 1) == '\n' || input->LA (offset + 1) == ' ' || input->LA (offset + 1) == Token::EOF);
 }
 
 /**
@@ -561,7 +562,7 @@ void YAMLLexer::scanValue ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan value");
 	tokens.push_back (commonToken (VALUE, getPosition (), input->index () + 1));
-	forward (2);
+	forward (input->LA (1) == Token::EOF ? 1 : 2);
 	if (simpleKey.first == nullptr)
 	{
 		throw ParseCancellationException ("Unable to locate key for value");

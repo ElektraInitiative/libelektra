@@ -33,7 +33,7 @@ int FstabCommand::execute (Cmdline const & cl)
 	KeySet conf;
 	Key parentKey = cl.createKey (0);
 	kdb.get (conf, parentKey);
-	printWarnings (cerr, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 	Key k = conf.lookup (parentKey);
 
 	if (!k)
@@ -72,7 +72,7 @@ int FstabCommand::execute (Cmdline const & cl)
 	}
 
 	kdb.set (conf, parentKey);
-	printWarnings (cerr, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	return 0;
 }

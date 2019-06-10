@@ -135,7 +135,8 @@ https://build.libelektra.org/
 | clang    | 3.8                         | x86_64-pc-linux-gnu |
 | clang    | 5.0                         | x86_64-pc-linux-gnu |
 | clang    | 6.0                         | x86_64-pc-linux-gnu |
-| clang    | 8.1.0                       | macOS               |
+| clang    | 8.0                         | macOS               |
+| gcc      | 9.1                         | macOS               |
 | gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
 | clang    | 6.0.0                       | freebsd 11          |
 | clang    | 6.0.1                       | freebsd 12          |
@@ -649,20 +650,6 @@ is to add the plugin folder in `/etc/ld.so.conf.d/elektra`. Note that it still a
 applications to link against plugins.
 
 ## Troubleshooting
-
-### Missing Links/Libraries
-
-If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
-or the links do not work, you can use as workaround:
-
-```sh
-cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
-```
-
-This issue was reported for:
-
-- OpenSuse 42 (when running `make run_all`)
-- CLion IDE (does not allow to build)
 
 ### Dependencies not Available for Cent OS
 

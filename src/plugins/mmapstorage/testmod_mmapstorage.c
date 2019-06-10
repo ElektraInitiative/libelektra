@@ -798,14 +798,14 @@ static void test_mmap_ksCopy (const char * tmpFile)
 
 static void test_mmap_open_pipe (void)
 {
-	// try writing to an invalid file, we simply use a pipe here
+	// try writing to a non-regular file, we simply use a pipe here
 	int pipefd[2];
 	if (pipe (pipefd) != 0)
 	{
 		yield_error ("pipe() error");
 	}
 	char pipeFile[1024];
-	sprintf (pipeFile, "/dev/fd/%d", pipefd[1]);
+	snprintf (pipeFile, 1024, "/dev/fd/%d", pipefd[1]);
 	pipeFile[1023] = '\0';
 
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, pipeFile, KEY_END);
@@ -813,8 +813,7 @@ static void test_mmap_open_pipe (void)
 	PLUGIN_OPEN ("mmapstorage");
 
 	KeySet * ks = simpleTestKeySet ();
-	// truncate inside mmap plugin should fail here, since the pipe cannot be truncated
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet did not detect error with the file");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet could write to pipe, but should not");
 
 	keyDel (parentKey);
 	ksDel (ks);

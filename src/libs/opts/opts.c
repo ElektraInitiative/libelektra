@@ -107,7 +107,7 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  *                  before checking against spec keys.
  *
  * @retval 0	on success, this is the only case in which @p ks will be modified
- * @retval -1	on error, the error will be added to @p errorKey
+ * @retval -1	on error, the error will be set as metadata in @p errorKey
  * @retval 1	if a help option (-h, --help) was found, use elektraGetOptsHelpMessage() access the
  * 		generated help message
  */
@@ -383,8 +383,8 @@ bool processOptions (struct Specification * spec, Key * specKey, Key ** keyWithO
 	ksNext (opts); // skip count
 	Key * metaKey;
 
-	char * shortOptLine = elektraFormat ("");
-	char * longOptLine = elektraFormat ("");
+	char * shortOptLine = elektraStrDup ("");
+	char * longOptLine = elektraStrDup ("");
 	while ((metaKey = ksNext (opts)) != NULL)
 	{
 		struct OptionData optionData;

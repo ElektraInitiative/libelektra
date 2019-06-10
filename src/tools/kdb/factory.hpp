@@ -31,6 +31,7 @@
 #include <file.hpp>
 #include <find.hpp>
 #include <fstab.hpp>
+#include <gen.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
 #include <globalumount.hpp>
@@ -119,6 +120,7 @@ public:
 		m_factory.insert (std::make_pair ("gmount", std::make_shared<Cnstancer<GlobalMountCommand>> ()));
 		m_factory.insert (std::make_pair ("gumount", std::make_shared<Cnstancer<GlobalUmountCommand>> ()));
 		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
+		m_factory.insert (std::make_pair ("gen", std::make_shared<Cnstancer<GenCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const

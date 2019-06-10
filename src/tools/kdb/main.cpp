@@ -160,12 +160,12 @@ int main (int argc, char ** argv)
 		return 0;
 	}
 
+	CommandPtr cmd = f.get (command);
+	Cmdline cl (argc, argv, cmd.get ());
 	try
 	{
 		std::vector<char *> origArguments (argv + 1, argv + argc);
 		origArguments.push_back (0);
-		CommandPtr cmd = f.get (command);
-		Cmdline cl (argc, argv, cmd.get ());
 
 		if (cl.help)
 		{
@@ -228,10 +228,7 @@ int main (int argc, char ** argv)
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
-			  << getErrorColor (ANSI_COLOR::RESET) << getErrorColor (ANSI_COLOR::RED) << " failed"
-			  << getErrorColor (ANSI_COLOR::RESET) << " while accessing the key database with the info:\n"
-			  << ce.what () << std::endl;
+		std::cerr << ce.whatWithArguments (cl.verbose, cl.debug) << std::endl;
 		return 5;
 	}
 	catch (std::exception const & ce)

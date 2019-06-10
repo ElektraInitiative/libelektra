@@ -38,6 +38,7 @@ protected:
 		kdb.get (ks, testRoot);
 
 		ks.append (Key (specRoot + "/speckey/#", KEY_META, "mymeta", "1", KEY_END));
+		ks.append (Key (userRoot + "/speckey", KEY_META, "array", "#0", KEY_END));
 		ks.append (Key (userRoot + "/speckey/#0", KEY_VALUE, "", KEY_END));
 		ks.append (Key (userRoot + "/errorkey", KEY_META, "trigger/warnings", "3", KEY_END));
 		// ks.append (Key (specRoot + "/goptskey", KEY_META, "opt", "1", KEY_END));
@@ -147,11 +148,12 @@ TEST_F (Ensure, GlobalMount)
 {
 	using namespace kdb;
 	KDB kdb;
+	Key parent (testRoot, KEY_META, "debugGlobalPositions", "", KEY_END);
 
 	{
 		testing::internal::CaptureStdout ();
 		KeySet ks;
-		kdb.get (ks, testRoot);
+		kdb.get (ks, parent);
 
 		EXPECT_TRUE (testing::internal::GetCapturedStdout ().empty ()) << "there should be no output on stdout";
 	}
@@ -164,7 +166,7 @@ TEST_F (Ensure, GlobalMount)
 
 		testing::internal::CaptureStdout ();
 		KeySet ks;
-		kdb.get (ks, testRoot);
+		kdb.get (ks, parent);
 
 		{
 			SCOPED_TRACE ("first ensure");
@@ -174,7 +176,7 @@ TEST_F (Ensure, GlobalMount)
 		kdb.ensure (contract, root);
 
 		testing::internal::CaptureStdout ();
-		kdb.get (ks, testRoot);
+		kdb.get (ks, parent);
 
 		{
 			SCOPED_TRACE ("second ensure");

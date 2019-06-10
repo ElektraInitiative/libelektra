@@ -57,6 +57,13 @@ public:
 	kdb::KeySet keySet ();
 
 	/**
+	 * @brief This function will be called when the listener enters an empty file (that might contain comments).
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
+	void enterEmpty (YAML::EmptyContext * context) override;
+
+	/**
 	 * @brief This function will be called after the parser exits a value.
 	 *
 	 * @param context The context specifies data matched by the rule.

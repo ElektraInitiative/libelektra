@@ -29,7 +29,7 @@
 namespace kdb
 {
 
-inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
+inline std::ostream & printError (std::ostream & os, kdb::Key const & error, bool printVerbose, bool printDebug)
 {
 	try
 	{
@@ -38,23 +38,25 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 			// no error available
 			return os;
 		}
+		os << "Sorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
+		   << error.getMeta<std::string> ("error/module") << getErrorColor (ANSI_COLOR::RESET) << " issued the error "
+		   << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED) << error.getMeta<std::string> ("error/number")
+		   << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
+		os << error.getMeta<std::string> ("error/description") << ": " << error.getMeta<std::string> ("error/reason") << std::endl;
 
-		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED) << "Sorry, the error (#"
-		   << error.getMeta<std::string> ("error/number") << ") occurred ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Description: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/description") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Reason: " << getErrorColor (ANSI_COLOR::YELLOW)
-		   << error.getMeta<std::string> ("error/reason") << getErrorColor (ANSI_COLOR::RESET) << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Ingroup: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/ingroup") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Module: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/module") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "At: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/file") << ":" << error.getMeta<std::string> ("error/line") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Mountpoint: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/mountpoint") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Configfile: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/configfile") << std::endl;
+		if (printVerbose)
+		{
+			os << getErrorColor (ANSI_COLOR::BOLD) << "Mountpoint: " << getErrorColor (ANSI_COLOR::RESET)
+			   << error.getMeta<std::string> ("error/mountpoint") << std::endl;
+			os << getErrorColor (ANSI_COLOR::BOLD) << "Configfile: " << getErrorColor (ANSI_COLOR::RESET)
+			   << error.getMeta<std::string> ("error/configfile") << std::endl;
+		}
+
+		if (printDebug)
+		{
+			os << getErrorColor (ANSI_COLOR::BOLD) << "At: " << getErrorColor (ANSI_COLOR::RESET)
+			   << error.getMeta<std::string> ("error/file") << ":" << error.getMeta<std::string> ("error/line") << std::endl;
+		}
 	}
 	catch (kdb::KeyTypeConversion const & e)
 	{
@@ -66,7 +68,7 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 	return os;
 }
 
-inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
+inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, bool printVerbose, bool printDebug)
 {
 	try
 	{
@@ -85,24 +87,25 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 			std::ostringstream name;
 			name << "warnings/#" << std::setfill ('0') << std::setw (2) << i;
 			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Warning "
-			   << "(#" << error.getMeta<std::string> (name.str () + "/number") << "):" << getErrorColor (ANSI_COLOR::RESET)
-			   << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tDescription: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/description") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tIngroup: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/ingroup") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tModule: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/module") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tAt: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/file") << ":"
-			   << error.getMeta<std::string> (name.str () + "/line") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tReason: " << getErrorColor (ANSI_COLOR::RESET)
+			os << "\tSorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
+			   << error.getMeta<std::string> (name.str () + "/module") << getErrorColor (ANSI_COLOR::RESET)
+			   << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
+			   << error.getMeta<std::string> (name.str () + "/number") << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
+			os << "\t" << error.getMeta<std::string> (name.str () + "/description") << ": "
 			   << error.getMeta<std::string> (name.str () + "/reason") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tMountpoint: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/mountpoint") << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << "\tConfigfile: " << getErrorColor (ANSI_COLOR::RESET)
-			   << error.getMeta<std::string> (name.str () + "/configfile") << std::endl;
+			if (printVerbose)
+			{
+				os << getErrorColor (ANSI_COLOR::BOLD) << "\tMountpoint: " << getErrorColor (ANSI_COLOR::RESET)
+				   << error.getMeta<std::string> (name.str () + "/mountpoint") << std::endl;
+				os << getErrorColor (ANSI_COLOR::BOLD) << "\tConfigfile: " << getErrorColor (ANSI_COLOR::RESET)
+				   << error.getMeta<std::string> (name.str () + "/configfile") << std::endl;
+			}
+			if (printDebug)
+			{
+				os << getErrorColor (ANSI_COLOR::BOLD) << "\tAt: " << getErrorColor (ANSI_COLOR::RESET)
+				   << error.getMeta<std::string> (name.str () + "/file") << ":"
+				   << error.getMeta<std::string> (name.str () + "/line") << std::endl;
+			}
 		}
 	}
 	catch (kdb::KeyTypeConversion const & e)

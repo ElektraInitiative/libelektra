@@ -73,6 +73,11 @@ public:
 	void exitPair ();
 
 	/**
+	 * @brief This function will be called before the walker enters an empty document (that might contain comments).
+	 */
+	void enterEmpty ();
+
+	/**
 	 * @brief This function will be called before the walker enters a sequence
 	 *        node.
 	 */

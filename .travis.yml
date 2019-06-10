@@ -1,13 +1,13 @@
 language: cpp
 dist: xenial
-osx_image: xcode10.1
+osx_image: xcode10.2
 
 cache:
   directories:
-    $HOME/.m2
-    $HOME/.cabal
-    $HOME/elektra-cabal-sandbox
-    $HOME/Library/Caches/Homebrew
+    - $HOME/.m2
+    - $HOME/.cabal
+    - $HOME/elektra-cabal-sandbox
+    - $HOME/Library/Caches/Homebrew
 
 # don't cache our own libraries generated in the build
 # so they always get rebuilt properly and to avoid init issues
@@ -114,7 +114,6 @@ matrix:
           -regexstore;\
           -rename;\
           -required;\
-          -semlock;\
           -shell;\
           -simplespeclang;\
           -struct;\
@@ -185,24 +184,10 @@ matrix:
 
     - os: osx
       name: 🍏 GCC
-      # Translating the `syslog` plugin with GCC on macOS 10.13 does not work, since GCC is unable to compile `sys/syslog.h`.
-      osx_image: xcode9.2
       compiler: gcc
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
-
-    # HASKELL: Only build Haskell binding and plugin
-
-    - os: osx
-      name: 🍏 Haskell
-      compiler: clang
-      env:
-        - HASKELL=ON
-        # Use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher'
-        - BINDINGS=haskell
-        - TOOLS=kdb
 
     - os: linux
       name: 🐧 GCC
@@ -336,7 +321,7 @@ before_install:
       sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install cmake-format==0.4.5 pyyaml
+      sudo pip install cmake-format[yaml]==0.4.5
       git clone --branch 2.7.1 --depth 1 https://github.com/taocpp/PEGTL.git && sudo cp -R PEGTL/include/tao /usr/local/include
       mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
         curl -L "https://github.com/mvdan/sh/releases/download/v2.6.3/shfmt_v2.6.3_linux_amd64" -o shfmt && \
@@ -364,7 +349,7 @@ before_script:
       -DBUILD_FULL="${BUILD_FULL:-OFF}"
       -DBUILD_SHARED="${BUILD_SHARED:-ON}"
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+      -DCOMMON_FLAGS="${COMMON_FLAGS--Werror}"
       -DENABLE_DEBUG=ON
       -DINSTALL_SYSTEM_FILES=OFF
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON

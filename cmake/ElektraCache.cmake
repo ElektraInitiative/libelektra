@@ -66,7 +66,7 @@ set (ADDED_BINDINGS
 
 remember_for_removal (TOOLS TO_REMOVE_TOOLS)
 
-set (TOOLS_LIST_DEFAULT kdb)
+set (TOOLS_LIST_DEFAULT kdb gen-gpg-testkey)
 
 if (TOOLS MATCHES "DEFAULT")
 	set (TOOLS_FORCE FORCE)
@@ -78,7 +78,7 @@ if (TOOLS MATCHES "NODEP")
 endif ()
 
 if (TOOLS MATCHES "ALL")
-	set (TOOLS_LIST gen race qt-gui)
+	set (TOOLS_LIST pythongen race qt-gui gen-gpg-testkey)
 	set (TOOLS_FORCE FORCE)
 	list (REMOVE_ITEM TOOLS
 			  ALL)

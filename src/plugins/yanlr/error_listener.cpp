@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <kdbconfig.h>
+
 #include "error_listener.hpp"
 
 using std::to_string;
@@ -104,7 +106,7 @@ ErrorListener::ErrorListener (string const & errorSource)
  *              failure.
  */
 void ErrorListener::syntaxError (Recognizer * recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
-				 const std::string & message, std::exception_ptr error __attribute__ ((unused)))
+				 const std::string & message, std::exception_ptr error ELEKTRA_UNUSED)
 {
 	auto location = source + ":" + to_string (line) + ":" + to_string (charPositionInLine) + ": ";
 	auto indent = string (location.length (), ' ');

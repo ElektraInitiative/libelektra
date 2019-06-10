@@ -641,8 +641,11 @@ struct _Elektra
 	KDB * kdb;
 	Key * parentKey;
 	KeySet * config;
+	KeySet * defaults;
 	Key * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
+	char * resolvedReference;
+	size_t parentKeyLength;
 };
 
 struct _ElektraError

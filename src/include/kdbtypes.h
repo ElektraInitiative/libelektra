@@ -187,10 +187,12 @@ static_assert (std::numeric_limits<double>::radix == 2 && std::numeric_limits<do
 		       sizeof (double) == 8,
 	       "double has to be IEEE-754 double precision");
 static_assert (std::numeric_limits<long double>::is_iec559, "long double has to be IEEE-754 compliant");
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limits<long double>::digits >= 64 &&
 		       std::numeric_limits<long double>::max_exponent >= 1 << 14 &&
 		       std::numeric_limits<long double>::min_exponent <= -(1 << 14) + 3 && sizeof (long double) >= 10,
 	       "long double has to be at least 80 bits (1 bit sign, 15 bits exponent, 64 bits mantissa)");
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 #else
 #include <float.h>
 #include <math.h>

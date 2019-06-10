@@ -2,11 +2,11 @@
 
 ## SYNOPSIS
 
-`kdb spec-mount [/<mount point>] [<plugin> [<config>] [..]]`
+`kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
   It must be a cascading mount point, i.e., `mountpoint` must start with `/`.
-- `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/`).
+- `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/<mountpoint>`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
 `kdb smount` is an alias and can be used in the same way as `kdb spec-mount`.
@@ -17,7 +17,7 @@ This command allows a user to mount a new _backend_ described by a previously mo
 To mount a specification file to `spec`-[namespace](elektra-namespaces.md) first use [kdb-mount(7)](kdb-mount.md):
 
 ```sh
-kdb mount some-spec-file.ini spec/example/mountpoint ni
+sudo kdb mount /path/to/some-spec-file.ini spec/example/mountpoint ni
 ```
 
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
@@ -27,15 +27,17 @@ The metadata used for the specification is described in [METADATA.ini](/doc/META
 During `spec-mount` the `spec` keys are searched for relevant metadata:
 
 - For every metadata `mountpoint` an additional cascading mount point will be mounted.
+  The metadata `mountpoint` is usually at the parent key (the top-level key of the specification).
 - The `infos/*` and `config/needs` from [CONTRACT.ini](/doc/CONTRACT.ini), that are tagged by `usedby = spec`, will work as described there.
 - For other metadata suitable plugins are searched and mounted additionally.
 
 For example:
 
 ```sh
-kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mount point here
-kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to specification
-                                    # found at spec/example/mountpoint
+kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+sudo kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to
+                                         # the specification as found at
+                                         # spec/example/mountpoint
 ```
 
 ## IMPORTANT
@@ -93,13 +95,15 @@ kdb global-mount
 ## EXAMPLES
 
 To mount /example as described in `spec/example`:<br>
-`kdb spec-mount /example`
+`sudo kdb spec-mount /example`
 
-Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:<br>
-`kdb spec-mount /example ini some=value`
+Additionally, add `ini` plugin (instead of some default resolver) with a config for INI:<br>
+`sudo kdb spec-mount /example ini section=NULL`
 
 ## SEE ALSO
 
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
+- [see application integration tutorial](/doc/tutorials/application-integration.md)
+- [see validation tutorial](/doc/tutorials/validation.md)

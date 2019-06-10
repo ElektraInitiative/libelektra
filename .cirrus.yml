@@ -130,7 +130,7 @@ mac_task:
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
     - | # Install Python packages
-      pip install cmake-format pyyaml
+      pip install cmake-format[yaml]==0.4.5
     - | # Install Ruby
       brew install ruby@2.5
     - | # Install Ruby gems
@@ -182,5 +182,34 @@ mac_task:
         printf 'The command `ninja uninstall` did not uninstall all files:\n'
         tree .
         printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
+        false
+      fi
+
+linux_task:
+  matrix:
+
+    - name: 🔗 Check
+      container:
+          dockerfile: scripts/docker/cirrus/Dockerfile
+
+  script:
+    - mkdir build && cd build
+    - >
+      cmake -GNinja ..
+      -DBUILD_FULL=OFF
+      -DBUILD_SHARED=OFF
+      -DBUILD_STATIC=OFF
+      -DBUILD_TESTING=OFF
+    - cd ..
+    - ninja -C build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+    - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s broken_links.txt; then
+        printf >&2 'Broken Links:\n'
+        printf >&2 '—————————————\n'
+        cat >&2 broken_links.txt
+        printf >&2 '—————————————\n'
         false
       fi

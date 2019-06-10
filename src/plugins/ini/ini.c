@@ -1586,6 +1586,8 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		fprintf (fh, "\xEF\xBB\xBF");
 	}
+
+	int rootNeededSync = 0;
 	if (keyNeedSync (parentKey) && root)
 	{
 		if (strncmp (keyString (parentKey), keyString (root), strlen (keyString (root))))
@@ -1594,12 +1596,14 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				iniWriteMeta (fh, root);
 				fprintf (fh, "= %s\n", keyString (root));
+				rootNeededSync = 1;
 			}
 		}
 		else
 		{
 			iniWriteMeta (fh, root);
 			fprintf (fh, "[]\n");
+			rootNeededSync = 1;
 		}
 	}
 	keyDel (root);
@@ -1621,6 +1625,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 
+	if (ret == 0 && rootNeededSync) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 	return ret; /* success */
 }

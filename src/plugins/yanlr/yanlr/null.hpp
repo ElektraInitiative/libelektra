@@ -1,3 +1,4 @@
 // clang-format off
 
-CppKeySet { 10, KS_END }
+CppKeySet { 10, keyNew (PREFIX, KEY_BINARY, KEY_END),
+            KS_END }

@@ -45,7 +45,7 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	KeySet originalKeys;
 	kdb.get (originalKeys, root);
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
@@ -62,8 +62,8 @@ int ImportCommand::execute (Cmdline const & cl)
 	KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
 
-	printWarnings (cerr, errorKey);
-	printError (cerr, errorKey);
+	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
+	printError (cerr, errorKey, cl.verbose, cl.debug);
 
 	if (cl.strategy == "validate")
 	{
@@ -74,8 +74,8 @@ int ImportCommand::execute (Cmdline const & cl)
 		PluginPtr specPlugin = modules.load ("spec", cl.getPluginsConfig ());
 		if (specPlugin->get (originalKeys, root) == -1)
 		{
-			printWarnings (cerr, root);
-			printError (cerr, errorKey);
+			printWarnings (cerr, root, cl.verbose, cl.debug);
+			printError (cerr, errorKey, cl.verbose, cl.debug);
 			return -1;
 		}
 
@@ -86,7 +86,7 @@ int ImportCommand::execute (Cmdline const & cl)
 		}
 
 		kdb.set (originalKeys, root);
-		printWarnings (cerr, root);
+		printWarnings (cerr, root, cl.verbose, cl.debug);
 		return 0;
 	}
 
@@ -123,8 +123,8 @@ int ImportCommand::execute (Cmdline const & cl)
 		kdb.set (originalKeys, root);
 		ret = 0;
 
-		printWarnings (cerr, root);
-		printError (cerr, root);
+		printWarnings (cerr, root, cl.verbose, cl.debug);
+		printError (cerr, root, cl.verbose, cl.debug);
 	}
 
 	return ret;

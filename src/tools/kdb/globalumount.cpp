@@ -29,7 +29,7 @@ int GlobalUmountCommand::execute (Cmdline const & cl)
 	// they are all mounted in that array
 	Key parentKey ("system/elektra/globalplugins/postcommit/user/plugins/", KEY_END);
 	kdb.get (conf, parentKey);
-	printWarnings (cerr, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	const string name = cl.arguments[0];
 	auto it =

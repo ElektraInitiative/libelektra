@@ -10,20 +10,23 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
 MIN_VERSION=6
-CLANG_FORMAT=$(command -v clang-format-$MIN_VERSION.0 || command -v clang-format)
+MAX_VERSION=7
+CLANG_FORMAT=$(command -v clang-format-$MIN_VERSION.0 || command -v clang-format-$MAX_VERSION || command -v clang-format)
 
 if [ -n "$CLANG_FORMAT" ]; then
 	LOCATION="$CLANG_FORMAT"
 	VERSION=$("$CLANG_FORMAT" --version 2> /dev/null)
 	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -].*/\1/')
-	[ "$MAJOR_VERSION" -ge $MIN_VERSION ] 2> /dev/null || unset CLANG_FORMAT
+	if [ "${MAJOR_VERSION:-0}" -lt $MIN_VERSION ] || [ "${MAJOR_VERSION:-0}" -gt $MAX_VERSION ]; then
+		unset CLANG_FORMAT
+	fi
 fi
 
 if [ -z "${CLANG_FORMAT}" ]; then
 	printf >&2 'ClangFormat:   %s\n' "$LOCATION"
 	printf >&2 'Version Info:  %s\n' "$VERSION"
 	printf >&2 'Major Version: %s\n' "$MAJOR_VERSION"
-	printf >&2 'Please install clang-format %s, or 7' "$MIN_VERSION"
+	printf >&2 'Please install clang-format %s or clang-format %s' "$MIN_VERSION" "$MAX_VERSION"
 	exit 1
 fi
 
@@ -33,11 +36,16 @@ cd "$SOURCE" || {
 }
 
 if [ $# -gt 0 ]; then
-	source_files=$(printf "%s\n" "$@" | grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' | grep -v '^src/tools/gen.*')
+	source_files=$(printf "%s\n" "$@" |
+		grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' |
+		grep -v '^src/tools/pythongen.*' |
+		grep -v '^tests/shell/gen.*')
 	if [ -z "$source_files" ]; then
 		exit 0
 	fi
 else
-	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*')
+	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' |
+		grep -v '^src/tools/pythongen.*' |
+		grep -v '^tests/shell/gen.*')
 fi
 printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i

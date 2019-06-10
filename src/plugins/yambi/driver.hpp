@@ -112,6 +112,11 @@ public:
 	// ===========
 
 	/**
+	 * @brief This function will be called before the parser enters an empty file (that might contain comments).
+	 */
+	void enterEmpty ();
+
+	/**
 	 * @brief This function will be called after the parser exits a value.
 	 *
 	 * @param text This variable contains the text stored in the value.

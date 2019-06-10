@@ -43,7 +43,7 @@ docker build -t buildelektra-stretch-full \
     scripts/docker/debian/stretch/
 ```
 
-, if you use [`fish`](https://www.fishshell.com).
+, if you use [`fish`](https://fishshell.com).
 
 You can adapt the targeted Dockerfile via `-f`.
 You should also adjust the tag used via `-t` if you are building a different
