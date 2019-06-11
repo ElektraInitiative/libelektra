@@ -48,13 +48,13 @@ Image: build-elektra-debian-stretch
 Afterwards pull your desired image as you would do from any public registry:
 
 ```sh
-docker pull <image_name>:<tag_name>
+docker pull hub-public.libelektra.org/<image_name>:<tag_name>
 ```
 
 Example:
 
 ```sh
-docker pull build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
+docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
 ```
 
 ### 2. Run Docker contrainer
@@ -67,7 +67,7 @@ So from your root project folder run the following:
 docker run -it --rm \
 -v "$PWD:/home/jenkins/workspace" \
 -w /home/jenkins/workspace \
-<image_name>:<tag_name>
+hub-public.libelektra.org/<image_name>:<tag_name>
 ```
 
 Example:
@@ -76,7 +76,7 @@ Example:
 docker run -it --rm \
 -v "$PWD:/home/jenkins/workspace" \
 -w /home/jenkins/workspace \
- build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
+ hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
 ```
 
 ### 3. Build
