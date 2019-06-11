@@ -27,8 +27,6 @@ static void defaultFatalErrorHandler (ElektraError * error)
 	exit (EXIT_FAILURE);
 }
 
-static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
-
 /**
  * \defgroup highlevel High-level API
  * @{

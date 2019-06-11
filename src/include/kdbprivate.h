@@ -658,6 +658,7 @@ ElektraError * elektraErrorEnsureFailed (const char * reason);
 ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
 void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
 ElektraError * elektraErrorFromKey (Key * key);
+void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
 
 ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
