@@ -1,8 +1,8 @@
 # Introduction
 
-Running all the tests like the build server requires to have multiple dependencies installed. To overcome this problem, instead of trying to install all the necessary dependencies on your own, an appropriate Docker image can be used. This way you can easily and quickly run all the tests.
+Running all the tests like the build server requires multiple dependencies. To overcome this problem, instead of trying to install all the necessary dependencies on your own, an appropriate Docker image can be used. This way you can easily and quickly run all the tests.
 
-## Who is this guide for?
+## Who Is This Guide For?
 
 For anyone who wants to run all the tests, like it is done by the build server.
 
@@ -10,16 +10,16 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ## Prerequisites
 
-- Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux or Windows of course.
+- Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows of course.
 - Basic knowledge of Docker (not mandatory)
 
-## What to begin with?
+## What to Begin With?
 
-### 1. Pick a Docker image and pull it
+### 1. Pick a Docker Image and Pull It
 
 Pick one of the available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch".
 Unfortunately, it will take some time to download it, since it is pretty big, but you can be sure you'll have all the needed dependencies.
-You can choose a light-weight alpine image which won't take long to download, however it is not recommended. This image does not contain all necessary dependencies.
+You can choose a light-weight Alpine image which won't take long to download, however it is not recommended. This image does not contain all necessary dependencies.
 
 If you want to view all the available images, execute this command:
 
@@ -29,7 +29,7 @@ docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org
 
 You will see something like this:
 
-```sh
+```
 ---------------------------------
 Image: build-elektra-debian-stretch
   tag: 201906-ecf9161f41a8b472b3b0282a85a9f91d1f0f45357756e5451ae043fce8d0100e
@@ -42,7 +42,6 @@ Image: build-elektra-debian-stretch
   tag: 201903-1a6be7b9c3740a2338b14d08c757332cae5254ce58219b6cc2908c7bd6e4f460
   tag: 201903-6b08855f13ba26e3ad1fa80e399b87df860cc24889f2d1854fa0050834567b26
   tag: 201902-6b08855f13ba26e3ad1fa80e399b87df860cc24889f2d1854fa0050834567b26
-..............................................................................
 ```
 
 Afterwards pull your desired image as you would do from any public registry:
@@ -57,7 +56,7 @@ Example:
 docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
 ```
 
-### 2. Run Docker contrainer
+### 2. Run the Docker Container
 
 You have to be in the root of the Elektra project, so that the container can properly map all the source files.
 
@@ -83,7 +82,7 @@ docker run -it --rm \
 
 After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
-Create folder for building project and cd to it like this:
+Create folder for building the project and `cd` to it like this:
 
 ```sh
 mkdir build-docker && cd build-docker
@@ -118,7 +117,7 @@ make install
 
 The number 10 can be changed as follows: number of supported simultaneous threads by your CPU + 2. But don't worry, this can only affect the speed of the building, it cannot really break it.
 
-### 4. Run tests
+### 4. Run Tests
 
 Finally run the tests. There are two sets of tests. Run the first one with this command:
 
@@ -126,7 +125,7 @@ Finally run the tests. There are two sets of tests. Run the first one with this 
 make run_all
 ```
 
-For the second set to run remember to execute `make install` from the previous step. Run the second set with this command:
+For the second set to run, remember to execute `make install` from the previous step. Run the second set with this command:
 
 ```sh
 kdb run_all
