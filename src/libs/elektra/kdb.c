@@ -270,7 +270,8 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "elektraModulesInit returned with -1");
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			errorKey, "elektraModulesInit returned with -1. See other warning or error messages for concrete details");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -287,7 +288,8 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "could not open default backend");
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			errorKey, "could not open default backend.  See other warning or error messages for concrete details");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -935,13 +937,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		clearError (parentKey);
 		keyDel (oldError);
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
 		return -1;
 	}
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "invalid key name passed to kdbGet");
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "Empty namespace passed to kdbGet");
 	}
 
 	int errnosave = errno;
@@ -965,14 +967,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (!handle || !ks)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "handle or ks null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or KeySet null pointer passed");
 		goto error;
 	}
 
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "error in splitBuildup");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in splitBuildup");
 		goto error;
 	}
 
