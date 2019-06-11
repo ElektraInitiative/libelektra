@@ -625,7 +625,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - The build system now rebuilds the [JNA binding](https://www.libelektra.org/bindings/jna) with Maven, if you change any of the Java source files of the binding. _(René Schwaiger)_
 - `testshell_markdown_tutorial_crypto` is not compiled and executed if `gen-gpg-testkey` is not part of TOOLS. _(Peter Nirschl)_
-- <<TODO>>
+- Plugin tests are now only added, if `BUILD_TESTING=ON`. _(Klemens Böswirth)_
 - <<TODO>>
 
 ### Docker
