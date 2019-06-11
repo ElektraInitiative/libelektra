@@ -1,9 +1,9 @@
 # Introduction
 
-Running the reformat-all script requires to have multiple dependencies installed. To overcome this problem, instead of trying to install all the necessary dependencies on your own,
+Running the reformat-all script requires multiple dependencies. To overcome this problem, instead of trying to install all the necessary dependencies on your own,
 you can easily build a Docker image and run the script inside a Docker container based on this image.
 
-## Who is this guide for?
+## Who Is This Guide For?
 
 Do you want to run the reformat-all script easily and without any hassle? You've come to the right place.
 
@@ -12,12 +12,12 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 ## Prerequisites
 
 - Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet.
-  Your host OS should be better Linux, because we are going to use your current Linux user ID for building the image.
+  Your host OS should better be Linux, because we are going to use your current Linux user ID for building the image.
 - Basic knowledge of Docker (not mandatory)
 
-## What to begin with?
+## What to Begin With?
 
-### 1. Build your own Docker image
+### 1. Build Your Own Docker Image
 
 Now you are going to build your own Docker image based on Debian.
 
@@ -31,14 +31,14 @@ docker build -t buildelektra-sid \
 	scripts/docker/debian/sid/
 ```
 
-The building process depends on your Internet speed connection and the overall performance of your hardware. Most likely, it will take at least
-5 minutes. Please be patient. Once you have it built, you will reuse it.
+The build process depends on your Internet connection speed and the overall performance of your hardware. Most likely, it will take at least
+5 minutes. Please be patient. Once you have built the image, you can reuse it multiple times.
 
-The image tag `buildelektra-sid` we suggested can be of course replaced to your own preference.
+The image tag `buildelektra-sid` we suggested can be replaced by a name of your own choosing.
 
-### 2. Run Docker container
+### 2. Run the Docker Container
 
-Now when you built the image, spin-up a container like this:
+After you built the image, you can execute a container like this:
 
 ```sh
 docker run -it --rm \
@@ -49,7 +49,7 @@ docker run -it --rm \
 
 Again, if you changed the image tag `buildelektra-sid`, please change it above as well.
 
-### 3. Running the script
+### 3. Running the Script
 
 After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
