@@ -20,16 +20,16 @@ need to be checked.
 - [ ] I added unit tests
 - [ ] I ran all tests locally and everything went fine
 - [ ] affected documentation is fixed
-- [ ] I added code comments, logging, and assertions (see [Coding Guidelines](/doc/CODING.md))
-- [ ] meta data is updated (e.g. README.md of plugins and [METADATA.ini](/doc/METADATA.md))
+- [ ] I added code comments, logging, and assertions (see [Coding Guidelines](https://master.libelektra.org/doc/CODING.md))
+- [ ] meta data is updated (e.g. README.md of plugins and [METADATA.ini](https://master.libelektra.org/doc/METADATA.ini))
 
 ## Review
 
 Reviewers will usually check the following:
 
-- [ ] Code is conforming to [our Coding Guidelines](/doc/CODING.md)
-- [ ] APIs are conforming to [our Design Guidelines](/doc/DESGIN.md)
-- [ ] Code is consistent to [our Design Decisions](/doc/decisions)
+- [ ] Code is conforming to [our Coding Guidelines](https://master.libelektra.org/doc/CODING.md)
+- [ ] APIs are conforming to [our Design Guidelines](https://master.libelektra.org/doc/DESIGN.md)
+- [ ] Code is consistent to [our Design Decisions](https://master.libelektra.org/doc/decisions)
 - [ ] Documentation is concise and good to read
 - [ ] Examples are well chosen and understandable
 
