@@ -690,7 +690,10 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ### Travis
 
 - We fixed the value of the `directories` [caching](https://docs.travis-ci.com/user/caching) key in our [Travis config file](../../.travis.yml). _(René Schwaiger)_
-- <<TODO>>
+- We removed the build job for the [Haskell binding](../../src/bindings/haskell/README.md) and [Haskell plugin](../../src/plugins/haskell/README.md). For more information, please take a look [here](https://issues.libelektra.org/2751). _(Klemens Böswirth)_
+- We always use GCC 9 for the build job `🍏 GCC`. This update makes sure that the build job succeeds, even if Homebrew
+  adds a new major version of the compiler. _(René Schwaiger)_
+- We simplified our [Travis configuration file](../../.travis.yml), removing various unnecessary and unused code. In this process we also got rid of the caching directives, we previously used to speed up the Haskell build job `🍏 Haskell`. _(René Schwaiger)_
 
 ## Website
 
