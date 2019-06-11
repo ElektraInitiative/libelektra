@@ -158,7 +158,7 @@ curl http://localhost:33333/kdb/user/test
 
 will return us the value of the specified key `user/test`, which is stored in the database right now
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```json
 {
     "exists": true,
@@ -171,7 +171,6 @@ will return us the value of the specified key `user/test`, which is stored in th
     "meta": ""
 }
 ```
-<!-- prettier-ignore-end --> 
 
 ## Auth
 
