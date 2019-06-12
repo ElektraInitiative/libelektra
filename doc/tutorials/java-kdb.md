@@ -89,3 +89,66 @@ try (KDB kdb = KDB.open(key)) {
 First we create a new `KDB` object and fetch all keys for the desired namespace, in this example the `user` namespace. Since it saves all
 keys in our passed `set` variable we can then iterate through it by a simple for loop.
 The `at(int)` method gives us the key on the corresponding position which we will print out in this example.
+
+### Read Multiple Keys From KDB
+
+This example shows how to read multiple keys. Please read the comments for further clarification.
+
+```java
+import org.libelektra.KDB;
+import org.libelektra.Key;
+import org.libelektra.KeySet;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Properties;
+
+private String MOUNT_SPACE = "user";
+private String KEY_PREFIX = MOUNT_SPACE + "/sw/clock/central/";
+
+public static void main(String[] args) {
+    loadConfigurationSettings();
+}
+
+private void loadConfigurationSettings() {
+	//generic Java properties
+	Properties properties = new Properties();
+	//all keys we want to retrieve
+	String[] keys = new String[]{
+		"server/port",
+		"spring/profiles/active",
+		"spring/datasource/type",
+		"spring/datasource/url",
+		"spring/datasource/username",
+		"spring/datasource/password",
+		"spring/jpa/database-platform",
+		"spring/jpa/database",
+		"spring/mail/host",
+		"spring/mail/port",
+		"jhipster/mail/from",
+		"jhipster/mail/base-url",
+	};
+	//read the keys one by one
+	for (String key : keys) {
+		properties.put(key, readValue(key));
+	}
+}
+
+private String readValue(String keyName) {
+		//create a key without specifying a name, which is allowed
+		Key key = Key.create("");
+		//open KDB with autoclose functionality
+		try (KDB kdb = KDB.open(key)) {
+			//create keyset
+			KeySet keySet = KeySet.create();
+			//set mount space
+			kdb.get(keySet, Key.create(MOUNT_SPACE));
+			//fetch value
+			return keySet.lookup(KEY_PREFIX + keyName).getString();
+		} catch (KDB.KDBException e) {
+			e.printStackTrace();
+		}
+		//null if not found
+		return null;
+}
+```
