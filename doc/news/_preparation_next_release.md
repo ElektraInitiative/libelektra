@@ -388,6 +388,11 @@ removed due to:
 - New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (4294967295 (= 0xffffffff) and 2864434397 (= 0xaabbccdd) respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
   _(Philipp Gackstatter)_
 
+### Ini
+
+- Plugin writes to ini files without spaces around '=' anymore. Reading is still possible with and without spaces.
+  _(Oleksandr Shabelnyk)_
+
 ### macaddr
 
 - Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
@@ -536,6 +541,8 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - For beginners we added a [tutorial](../tutorials/contributing-clion.md) that guides them through the process of contributing to libelektra. _(Thomas Bretterbauer)_
 - Added a section on `elektraPluginGetGlobalKeySet` in the plugin tutorial. _(Vid Leskovar)_
+- Added a step-by-step [tutorial](../tutorials/run_all_tests_with_docker.md) for running all tests with Docker. _(Oleksandr Shabelnyk)_
+- Added a step-by-step [tutorial](../tutorials/run_reformatting_script_with_docker.md) for running reformatting scripts with Docker. _(Oleksandr Shabelnyk)_
 
 ### Spelling Fixes
 
@@ -572,6 +579,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Added a new error concept for error codes to be implemented soon. _(Michael Zronek)_
 - Added error categorization guidelines to be used with the error concept. _(Michael Zronek)_
 - Drastically improved the error message format. For more information look [here](../../doc/decisions/error_message_format.md). _(Michael Zronek)_
+- Improved qt-gui error popup to conform with the new error message format. _(Raffael Pancheri)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
 - We wrote a tutorial which is intended to [help newcomers contributing to libelektra](../tutorials/contributing-clion.md). _(Thomas Bretterbauer)_
@@ -623,6 +631,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ### CMake
 
 - The build system now rebuilds the [JNA binding](https://www.libelektra.org/bindings/jna) with Maven, if you change any of the Java source files of the binding. _(René Schwaiger)_
+- `testshell_markdown_tutorial_crypto` is not compiled and executed if `gen-gpg-testkey` is not part of TOOLS. _(Peter Nirschl)_
 - <<TODO>>
 - <<TODO>>
 
@@ -689,7 +698,10 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ### Travis
 
 - We fixed the value of the `directories` [caching](https://docs.travis-ci.com/user/caching) key in our [Travis config file](../../.travis.yml). _(René Schwaiger)_
-- <<TODO>>
+- We removed the build job for the [Haskell binding](../../src/bindings/haskell/README.md) and [Haskell plugin](../../src/plugins/haskell/README.md). For more information, please take a look [here](https://issues.libelektra.org/2751). _(Klemens Böswirth)_
+- We always use GCC 9 for the build job `🍏 GCC`. This update makes sure that the build job succeeds, even if Homebrew
+  adds a new major version of the compiler. _(René Schwaiger)_
+- We simplified our [Travis configuration file](../../.travis.yml), removing various unnecessary and unused code. In this process we also got rid of the caching directives, we previously used to speed up the Haskell build job `🍏 Haskell`. _(René Schwaiger)_
 
 ## Website
 
