@@ -283,7 +283,7 @@ link for further information.
 
 ### Resolving Missing \*.so Library Error In Debug Mode
 
-The document [COMPILE](COMPILE.md) describes generally how to solve this problem. Here we'll present a solution for CLion in particular.
+The document [COMPILE](../COMPILE.md) describes generally how to solve this problem. Here we'll present a solution for CLion in particular.
 Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'. Then find 'Environmental Variables' field and add the following:
 LD_LIBRARY_PATH=PATH_TO_YOUR_LIB_DIRECTORY
 
