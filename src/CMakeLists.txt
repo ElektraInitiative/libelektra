@@ -11,5 +11,7 @@ add_subdirectory (tools)
 
 add_subdirectory (include)
 
-set (ADDTESTING_PHASE ON)
-add_subdirectory (plugins plugins_tests)
+if (BUILD_TESTING)
+	set (ADDTESTING_PHASE ON)
+	add_subdirectory (plugins plugins_tests)
+endif (BUILD_TESTING)
