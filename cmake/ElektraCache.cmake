@@ -66,7 +66,7 @@ set (ADDED_BINDINGS
 
 remember_for_removal (TOOLS TO_REMOVE_TOOLS)
 
-set (TOOLS_LIST_DEFAULT kdb gen-gpg-testkey)
+set (TOOLS_LIST_DEFAULT kdb)
 
 if (TOOLS MATCHES "DEFAULT")
 	set (TOOLS_FORCE FORCE)
