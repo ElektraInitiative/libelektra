@@ -27,6 +27,8 @@ static void defaultFatalErrorHandler (ElektraError * error)
 	exit (EXIT_FAILURE);
 }
 
+static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
+
 /**
  * \defgroup highlevel High-level API
  * @{
@@ -275,6 +277,22 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 			kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
 		}
 	} while (ret == -1);
+}
+
+void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
+{
+	if (defaults != NULL)
+	{
+		ksRewind (defaults);
+		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+		{
+			Key * const dup = keyDup (key);
+			const char * name = keyName (key);
+			keySetName (dup, keyName (parentKey));
+			keyAddName (dup, name);
+			ksAppendKey (config, dup);
+		}
+	}
 }
 
 #ifdef __cplusplus
