@@ -115,7 +115,7 @@ Elektra web consists of multiple components:
 - [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
 
 ## Test REST API on localhost
-<!-- prettier-ignore-start -->
+
 In order to test API on localhost, you have to start elektrad instance. You can do it in two ways:
 
 - run manually (if you would like to start it manually or you don't have eletrad-web tool installed)
@@ -140,13 +140,13 @@ Examples:
 let's create the new key-value pair `user/test` and set its value to 5. You can do it next way:
 
 - through the command terminal
-```sh
-kdb set user/test 5
-```
+  ```sh
+  kdb set user/test 5
+  ```
 - through the rest api using curl
-```sh
-curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
-```
+  ```sh
+  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
+  ```
 
 The output of any of two commands will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user/test with string "5"`.
 
@@ -158,7 +158,7 @@ curl http://localhost:33333/kdb/user/test
 
 will return us the value of the specified key `user/test`, which is stored in the database right now
 
-```json
+```sh
 {
     "exists": true,
     "name": "test",
@@ -170,7 +170,7 @@ will return us the value of the specified key `user/test`, which is stored in th
     "meta": ""
 }
 ```
-<!-- prettier-ignore-end -->
+
 ## Auth
 
 Currently, webd does not support authentication. The best way to work around
