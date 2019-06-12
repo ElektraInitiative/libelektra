@@ -115,7 +115,7 @@ Elektra web consists of multiple components:
 - [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
 
 ## Test REST API on localhost
-
+<!-- prettier-ignore-start -->
 In order to test API on localhost, you have to start elektrad instance. You can do it in two ways:
 
 - run manually (if you would like to start it manually or you don't have eletrad-web tool installed)
@@ -123,18 +123,18 @@ In order to test API on localhost, you have to start elektrad instance. You can 
   - `cd libelektra/src/tools/web`
   - `cd elektrad`
   - `npm install`
-  - `npm start` 
-  
+  - `npm start`
+
 - by installing elektrad tool together with Elektra and run it
   - please see the section `Building with elektra-web Tool`
-  
+
 Now the server is runing on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows to send REST API requests.
 
-Additional note. It is recommended to install the elektrad tool than starting the server manually. 
-When Elektra is installed, the `kdb` command together with its tools is installed globally. 
-For instance, whenever you would like to write any shell script, which has to start a REST API server, you can just add the following line `kdb run-elektrad` inside your file and save it. 
+Additional note. It is recommended to install the elektrad tool than starting the server manually.
+When Elektra is installed, the `kdb` command together with its tools is installed globally.
+For instance, whenever you would like to write any shell script, which has to start a REST API server, you can just add the following line `kdb run-elektrad` inside your file and save it.
 After that, the created shell script can be executed from any directory.
-  
+
 Examples:
 
 let's create the new key-value pair `user/test` and set its value to 5. You can do it next way:
@@ -150,7 +150,7 @@ curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/
 
 The output of any of two commands will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user/test with string "5"`.
 
-Now, the command 
+Now, the command
 
 ```sh
 curl http://localhost:33333/kdb/user/test
@@ -158,7 +158,6 @@ curl http://localhost:33333/kdb/user/test
 
 will return us the value of the specified key `user/test`, which is stored in the database right now
 
-<!-- prettier-ignore -->
 ```json
 {
     "exists": true,
@@ -171,7 +170,7 @@ will return us the value of the specified key `user/test`, which is stored in th
     "meta": ""
 }
 ```
-
+<!-- prettier-ignore-end -->
 ## Auth
 
 Currently, webd does not support authentication. The best way to work around
