@@ -99,7 +99,7 @@ Build it with
 -DKDB_DB_HOME="$PWD" \
 -DKDB_DB_SYSTEM="$PWD/.config/kdb/system" \
 -DKDB_DB_SPEC="$PWD/.config/kdb/system" \
--DINSTALL_SYSTEM_FILES=OFF
+-DINSTALL_SYSTEM_FILES="OFF"
 ```
 
 and then with
