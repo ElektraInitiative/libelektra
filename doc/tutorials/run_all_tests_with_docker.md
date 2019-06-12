@@ -82,10 +82,10 @@ docker run -it --rm \
 
 After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
-Create folder for building the project and `cd` to it like this:
+Create folder for building the project, `cd` to it and create another folder where Elektra will be installed like this:
 
 ```sh
-mkdir build-docker && cd build-docker
+mkdir build-docker && cd build-docker && mkdir install
 ```
 
 Build it with
@@ -99,7 +99,8 @@ Build it with
 -DKDB_DB_HOME="$PWD" \
 -DKDB_DB_SYSTEM="$PWD/.config/kdb/system" \
 -DKDB_DB_SPEC="$PWD/.config/kdb/system" \
--DINSTALL_SYSTEM_FILES="OFF"
+-DINSTALL_SYSTEM_FILES="OFF" \
+-DCMAKE_INSTALL_PREFIX="$PWD/install"
 ```
 
 and then with
@@ -116,6 +117,12 @@ Just run this command:
 
 ```sh
 make install
+```
+
+After Elektra has been installed we need to add it to the PATH variable, meaning you and the tests can interact with Elektra by typing/executing `kdb` in the command line.
+
+```sh
+export PATH="$PWD/install/bin:$PATH"
 ```
 
 ### 4. Run Tests
