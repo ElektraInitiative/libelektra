@@ -583,6 +583,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
 - We wrote a tutorial which is intended to [help newcomers contributing to libelektra](../tutorials/contributing-clion.md). _(Thomas Bretterbauer)_
+- We fixed various broken links in the documentation. _(René Schwaiger)_
 
 [markdown link converter]: https://master.libelektra.org/doc/markdownlinkconverter
 
@@ -697,7 +698,6 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 ### Travis
 
-- We fixed the value of the `directories` [caching](https://docs.travis-ci.com/user/caching) key in our [Travis config file](../../.travis.yml). _(René Schwaiger)_
 - We removed the build job for the [Haskell binding](../../src/bindings/haskell/README.md) and [Haskell plugin](../../src/plugins/haskell/README.md). For more information, please take a look [here](https://issues.libelektra.org/2751). _(Klemens Böswirth)_
 - We always use GCC 9 for the build job `🍏 GCC`. This update makes sure that the build job succeeds, even if Homebrew
   adds a new major version of the compiler. _(René Schwaiger)_
