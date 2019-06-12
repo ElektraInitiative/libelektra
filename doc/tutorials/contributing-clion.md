@@ -283,13 +283,23 @@ link for further information.
 
 ### Resolving Missing \*.so Library Error In Debug Mode
 
-The document [COMPILE](../COMPILE.md) describes generally how to solve this problem. Here we'll present a solution for CLion in particular.
-Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'. Then find 'Environmental Variables' field and add the following:
+In case you fail to run Elektra with the message like this one
+`Reason: of module: libelektra-resolver.so, because: libelektra-resolver.so: cannot open shared object file: No such file or directory`
+you can solve it by defining the LD_LIBRARY_PATH variable directly in CLion. Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'.
+Then find 'Environmental Variables' field and add the following:
 LD_LIBRARY_PATH=PATH_TO_YOUR_LIB_DIRECTORY
 
 Example:
 
 LD_LIBRARY_PATH=/home/username/TU/libelektra/cmake-build-debug/lib
+
+If you want to run built `kdb` outside of CLion, you can set the LD_LIBRARY_PATH variable like this in command line:
+
+```sh
+LD_LIBRARY_PATH="/path/you/want1:/path/you/want/2"
+```
+
+Please keep in mind it sets the variable only in the currently opened shell window/session. To make it persistent please search online how to do it for you Linux distribution.
 
 ## Hints
 
