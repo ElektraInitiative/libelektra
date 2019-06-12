@@ -48,6 +48,8 @@ This command will return the following values as an exit status:
   Explain what is happening.
   Gives a complete trace of all tried keys.
   Very useful to debug fallback and overrides.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 

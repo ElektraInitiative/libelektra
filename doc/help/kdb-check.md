@@ -26,9 +26,11 @@ Special values are returned upon exit to represent the outcome of a check.
 - `-f`, `--force`:
   The user can also use this tool to perform write tests. Please note that this can result in configuration files being changed!
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
 - `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration in addition to `/module`.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## RETURN VALUES
 

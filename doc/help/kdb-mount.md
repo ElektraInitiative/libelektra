@@ -51,8 +51,10 @@ Use `kdb file <path>` to determine where the file(s) are.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
-  Give debug information or ask debug questions (in interactive mode).
+  Give debug information or ask debug questions (in interactive mode). Prints additional information in case of errors/warnings.
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-i`, `--interactive`:
