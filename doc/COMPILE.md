@@ -712,6 +712,32 @@ For reference, you can look into the
 and the
 [CMake in OpenWRT](https://github.com/openwrt/openwrt/blob/master/include/cmake.mk).
 
+### Resolving Missing \*.so Library Error
+
+In case you fail to run Elektra with the message like this one
+`Reason: of module: libelektra-resolver.so, because: libelektra-resolver.so: cannot open shared object file: No such file or directory`
+you have 2 options to solve this problem.
+
+Option 1:
+Run this script to set environmental variables for development purpose:
+
+```sh
+. /home/osboxes/TU/libelektra/scripts/run_dev_env
+```
+
+To set the variables every time the OS starts, include the script, for example, in /etc/environment. It may depend on your Linux distribution where to define it.
+
+Option 2:
+Set the LD_LIBRARY_PATH variable which would point to the location of your \*.so libraries. There are multiple ways to do it.
+This is the simplest one:
+
+```sh
+LD_LIBRARY_PATH="/path/you/want1:/path/you/want/2"
+```
+
+If you get this error message while trying to run Elektra with CLion, please refer to this document:
+[contributing-clion](tutorials/contributing-clion.md)
+
 ## See Also
 
 - [INSTALL](INSTALL.md)
