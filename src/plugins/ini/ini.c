@@ -38,6 +38,9 @@ static int iniCmpOrder (const void * a, const void * b);
 #define DEFAULT_DELIMITER '='
 #define DEFAULT_COMMENT_CHAR '#'
 
+char const * const ININAME_DELIM_SPECIAL_MASK = "\"%s\"%c";
+char const * const ININAME_DELIM_MASK = "%s%c";
+
 typedef enum
 {
 	NONE,
@@ -846,11 +849,11 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
 	result = strtok_r (value, "\n", &saveptr);
 	if (keyContainsSpecialCharacter (iniName))
 	{
-		fprintf (fh, "\"%s\" %c ", iniName, config->delim);
+		fprintf (fh, ININAME_DELIM_SPECIAL_MASK, iniName, config->delim);
 	}
 	else
 	{
-		fprintf (fh, "%s %c ", iniName, config->delim);
+		fprintf (fh, ININAME_DELIM_MASK, iniName, config->delim);
 	}
 	if (result == NULL)
 		fprintf (fh, "\"\n%s\"", config->continuationString);
@@ -1246,9 +1249,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			{
 				const char * string = keyString (cur);
 				if (keyContainsSpecialCharacter (name))
-					fprintf (fh, "\"%s\" %c ", name, delim);
+					fprintf (fh, ININAME_DELIM_SPECIAL_MASK, name, delim);
 				else
-					fprintf (fh, "%s %c ", name, delim);
+					fprintf (fh, ININAME_DELIM_MASK, name, delim);
 				if (strlen (string) && (valueContainsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else
@@ -1345,9 +1348,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						cur = keyArray[j];
 						const char * string = keyString (cur);
 						if (keyContainsSpecialCharacter (name))
-							fprintf (fh, "\"%s\" %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_SPECIAL_MASK, name, delim);
 						else
-							fprintf (fh, "%s %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_MASK, name, delim);
 						if (strlen (string) && (valueContainsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else
@@ -1395,9 +1398,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					{
 						const char * string = keyString (cur);
 						if (keyContainsSpecialCharacter (name))
-							fprintf (fh, "\"%s\" %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_SPECIAL_MASK, name, delim);
 						else
-							fprintf (fh, "%s %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_MASK, name, delim);
 						if (strlen (string) && (valueContainsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else if (strlen (string))

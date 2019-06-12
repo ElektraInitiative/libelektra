@@ -112,17 +112,17 @@ sudo kdb mount sub.ini /tests/conditionals/sub ini
 sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
-echo 'key1 = val1'                                               >  `kdb file /tests/conditionals`
+echo 'key1=val1'                                               >  `kdb file /tests/conditionals`
 echo '[key1]'                                                    >> `kdb file /tests/conditionals`
-echo "check/condition = (./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tests/conditionals`
+echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tests/conditionals`
 
-echo "key = false" > `kdb file /tests/conditionals/sub`
+echo "key=false" > `kdb file /tests/conditionals/sub`
 
 # should fail and yield an error
 kdb export /tests/conditionals ini
-#> sub/key = false
+#> sub/key=false
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
-#> key1 = val1
+#> key1=val1
 # ERROR:135
 # Sorry, module conditionals issued the error 135:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
@@ -131,9 +131,9 @@ kdb set /tests/conditionals/sub/key true
 
 # should succeed
 kdb export /tests/conditionals ini
-#> sub/key = true
+#> sub/key=true
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
-#> key1 = val1
+#> key1=val1
 
 # cleanup
 kdb rm -r /tests/conditionals
