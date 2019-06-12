@@ -98,7 +98,8 @@ Build it with
 -DENABLE_DEBUG=ON \
 -DKDB_DB_HOME="$PWD" \
 -DKDB_DB_SYSTEM="$PWD/.config/kdb/system" \
--DKDB_DB_SPEC="$PWD/.config/kdb/system"
+-DKDB_DB_SPEC="$PWD/.config/kdb/system" \
+-DINSTALL_SYSTEM_FILES=OFF
 ```
 
 and then with
@@ -107,6 +108,8 @@ and then with
 make -j 10
 ```
 
+The number 10 can be changed as follows: number of supported simultaneous threads by your CPU + 2. But don't worry, this can only affect the speed of the building, it cannot really break it.
+
 Additionally, you may want to install Elektra inside the container, because the installed tests rely on it.
 The build server also does this and it is possible that the installed tests have different results (e.g. if test data is missing)
 Just run this command:
@@ -114,8 +117,6 @@ Just run this command:
 ```sh
 make install
 ```
-
-The number 10 can be changed as follows: number of supported simultaneous threads by your CPU + 2. But don't worry, this can only affect the speed of the building, it cannot really break it.
 
 ### 4. Run Tests
 
