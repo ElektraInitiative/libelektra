@@ -24,7 +24,7 @@ If no metakeys are associated with the given key, nothing will be printed.<br>
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-v`, `--verbose`:
-  Explain what is happening. Prints additional information in case of errors/warnings. Show which key will be used. 
+  Explain what is happening. Prints additional information in case of errors/warnings. Show which key will be used.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
