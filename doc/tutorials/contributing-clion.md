@@ -293,13 +293,21 @@ Example:
 
 LD_LIBRARY_PATH=/home/username/TU/libelektra/cmake-build-debug/lib
 
-If you want to run built `kdb` outside of CLion, you can set the LD_LIBRARY_PATH variable like this in command line:
+If you want to run built `kdb` outside of CLion, the recommended way is to run this script:
+
+```sh
+./scripts/run_dev_env
+```
+
+If it does not work, there is another way around, which you should use only as the last resort. Set the LD_LIBRARY_PATH variable like this in command line:
 
 ```sh
 LD_LIBRARY_PATH="/path/you/want1:/path/you/want/2"
 ```
 
-Please keep in mind it sets the variable only in the currently opened shell window/session. To make it persistent please search online how to do it for you Linux distribution.
+Please keep in mind it sets the variable only in the currently opened shell window/session.
+
+Please refer to [this](/doc/COMPILE.md) tutorial to fix the problem permanently.
 
 ## Hints
 
