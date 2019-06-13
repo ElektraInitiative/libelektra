@@ -565,7 +565,9 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		if (s->rcResolver != SUCCESS && s->rcResolver != CACHE_HIT) continue;
+		// When we reach this stage, we will need to load
+		// any successfully resolved files (as it is done in the kdb core)
+		if (s->rcResolver < 0) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
@@ -638,7 +640,9 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (mc->getPhase == MULTI_GETRESOLVER)
 	{
 		rc = updateFiles (handle, mc, returned, parentKey);
-		if (rc == SUCCESS)
+		// if it is a only a partial cache hit, we still need to load everything
+		// in the next phase
+		if (rc >= SUCCESS)
 		{
 			mc->getPhase = MULTI_GETSTORAGE;
 		}
