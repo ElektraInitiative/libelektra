@@ -26,7 +26,7 @@ macro (safe_check_symbol_exists SYMBOL FILES VARIABLE)
 		     ${DEFS})
 
 	check_symbol_exists ("${SYMBOL}" "${FILES}" "${VARIABLE}")
-		
+
 	set (CMAKE_C_FLAGS ${CMAKE_C_FLAGS_OLD})
 endmacro ()
 
