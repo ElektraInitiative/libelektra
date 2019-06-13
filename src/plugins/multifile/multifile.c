@@ -907,7 +907,7 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		keySetString (parentKey, s->fullPath);
 		if (resolver->kdbError)
 		{
-			resolver->kdbError (handle, returned, parentKey);
+			resolver->kdbError (resolver, returned, parentKey);
 		}
 	}
 	keySetName (parentKey, keyName (initialParent));
