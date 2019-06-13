@@ -12,63 +12,63 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbtypes.h>
-#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+static char * deblank (char * input)
+{
+	kdb_unsigned_long_long_t i, j;
+	char * output = input;
+	for (i = 0, j = 0; i < strlen (input); i++, j++)
+	{
+		if (input[i] != ' ')
+			output[j] = input[i];
+		else
+			j--;
+	}
+	output[j] = 0;
+	return output;
+}
 
-static kdb_unsigned_long_long_t is_valid_key (Key * key)
+static kdb_unsigned_long_long_t isValidKey (Key * key)
 {
 
-	const Key * meta = keyGetMeta (key, "check/memoryvalue");
-	const char * pattern = "^[0-9]+[ ]*(KB|MB|GB|TB|PB|B)$";
 	const char * value = keyString (key);
-	regmatch_t offsets;
-	regex_t regex;
-	int compile_failure;
-	int match;
-	if (!meta)
-	{
-		return 0;
-	}
+	// else we manipulate the original
+	char * tempval = elektraStrDup (value);
 
-	compile_failure = regcomp (&regex, pattern, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
+	kdb_unsigned_long_long_t ret;
 
-	if (compile_failure)
-	{
-		return 0;
-	}
+	char * endPtr;
+	// convert to long, if valid key, pointer should point to spaces or memory suffix like MB, GB
+	ret = ELEKTRA_UNSIGNED_LONG_LONG_S (tempval, &endPtr, 10);
 
-	match = !(regexec (&regex, value, 0, &offsets, 0));
-	regfree (&regex);
+	// remove possibly occurring blanks
+	deblank (endPtr);
 
-	if (!match)
-	{
-		return 0;
-	}
-
-
-	if (strstr (value, "KB") != NULL)
+	// calculate the factor based on the suffix of the mameory value, return 0 if there is no matching to indicate an error of the
+	// function
+	if (strcmp (endPtr, "KB") == 0)
 	{
 		return 1000;
 	}
-	if (strstr (value, "MB") != NULL)
+	if (strcmp (endPtr, "MB") == 0)
 	{
 		return 1000000;
 	}
-	if (strstr (value, "GB") != NULL)
+	if (strcmp (endPtr, "GB") == 0)
 	{
 		return 1000000000;
 	}
-	if (strstr (value, "TB") != NULL)
+	if (strcmp (endPtr, "TB") == 0)
 	{
 		return 1000000000000;
 	}
-	if (strstr (value, "PB") != NULL)
+	if (strcmp (endPtr, "PB") == 0)
 	{
 		return 1000000000000000;
 	}
-	if (strstr (value, "B") != NULL)
+	if (strcmp (endPtr, "B") == 0)
 	{
 		return 1;
 	}
@@ -78,7 +78,7 @@ static kdb_unsigned_long_long_t is_valid_key (Key * key)
 	}
 }
 
-
+// formatFactor is used to determine by which factor the value has to multiplied to normalize to bytes
 static int elektraMemoryvalueConvertToByteString (Key * key, kdb_unsigned_long_long_t formatFactor)
 {
 
@@ -88,7 +88,7 @@ static int elektraMemoryvalueConvertToByteString (Key * key, kdb_unsigned_long_l
 	kdb_unsigned_long_long_t ret;
 	kdb_unsigned_long_long_t normalizedMemVal;
 
-	ret = strtoll (str, &ptr, 10);
+	ret = ELEKTRA_UNSIGNED_LONG_LONG_S (str, &ptr, 10);
 
 	// check if return value within bounds
 	if (ret > UINT64_MAX / formatFactor)
@@ -142,10 +142,11 @@ int elektraMemoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		const Key * meta = keyGetMeta (cur, "check/memoryvalue");
 		if (meta)
 		{
-			kdb_unsigned_long_long_t format = is_valid_key (cur);
+			kdb_unsigned_long_long_t format = isValidKey (cur);
 
 			if (format == 0)
 			{
+				ELEKTRA_SET_ERRORF (171, parentKey, "%s is not formatted properly!", keyString (cur));
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 			elektraMemoryvalueConvertToByteString (cur, format);
@@ -168,17 +169,11 @@ int elektraMemoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		}
 
 		elektraMemoryvalueRestore (cur);
-		kdb_unsigned_long_long_t format = is_valid_key (cur);
+		kdb_unsigned_long_long_t format = isValidKey (cur);
 
 		if (format == 0)
 		{
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-
-		int status = elektraMemoryvalueConvertToByteString (cur, format);
-
-		if (status == 1)
-		{
+			ELEKTRA_SET_ERRORF (171, parentKey, "%s is not formatted properly!", keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
