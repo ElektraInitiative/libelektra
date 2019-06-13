@@ -10,8 +10,15 @@
 typedef struct /*%& native_type %*/
 {
 	/*%# fields %*/
-	/*%# is_struct? %*/ struct /*%& native_type %*/ * /*%# is_array? %*/ * /*%/ is_array? %*/ /*%& name%*/; /*%/ is_struct? %*/
-	/*%^ is_struct? %*/ /*%& native_type %*/ /*%# is_array? %*/ */*%/ is_array? %*/ /*%& name%*/;		/*%/ is_struct? %*/
+	/*%# is_union? %*/
+	/*%& native_type %*/ /*%# is_array? %*/ * /*%/ is_array? %*/ /*%& name%*/;
+	/*%/ is_union? %*/
+	/*%^ is_union? %*/ /*%# is_struct? %*/
+	struct /*%& native_type %*/ * /*%# is_array? %*/ * /*%/ is_array? %*/ /*%& name%*/;
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	/*%& native_type %*/ /*%# is_array? %*/ */*%/ is_array? %*/ /*%& name%*/;
+	/*%/ is_struct? %*/ /*%/ is_union? %*/
 
 	/*%/ fields %*/
 } /*%& native_type %*/;

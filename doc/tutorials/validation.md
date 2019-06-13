@@ -226,14 +226,14 @@ the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`)
 sudo kdb mount tutorial.dump spec/tests/tutorial dump
 cat << HERE | kdb import spec/tests/tutorial ni  \
 []                                         \
- mountpoint = tutorial.dump                \
- infos/plugins = dump validation           \
+ mountpoint=tutorial.dump                \
+ infos/plugins=dump validation           \
                                            \
 [/links/_]                                 \
-check/validation = https?://.*\..*         \
-check/validation/match = LINE              \
-check/validation/message = not a valid URL \
-description = A link to some website       \
+check/validation=https?://.*\..*         \
+check/validation/match=LINE              \
+check/validation/message=not a valid URL \
+description=A link to some website       \
 HERE
 kdb lsmeta spec/tests/tutorial
 #> infos/plugins

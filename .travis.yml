@@ -2,28 +2,6 @@ language: cpp
 dist: xenial
 osx_image: xcode10.2
 
-cache:
-  directories:
-    - $HOME/.m2
-    - $HOME/.cabal
-    - $HOME/elektra-cabal-sandbox
-    - $HOME/Library/Caches/Homebrew
-
-# don't cache our own libraries generated in the build
-# so they always get rebuilt properly and to avoid init issues
-# we ignore the result as some or all might not exist on build
-# errors, in that case unregister would fail
-before_cache:
-  - rm -rf $HOME/.cabal/logs
-  - cd $HOME/elektra-cabal-sandbox
-  - cabal sandbox hc-pkg unregister spectranslator > /dev/null; true
-  - cabal sandbox hc-pkg unregister specelektra > /dev/null; true
-  - cabal sandbox hc-pkg unregister libfa > /dev/null; true
-  - cabal sandbox hc-pkg unregister libelektra-haskell > /dev/null; true
-  - rm -rf .cabal-sandbox/logs
-  - rm -f .cabal-sandbox/world
-  - rm -f .cabal-sandbox/add-source-timestamps
-
 #
 # Define the build matrix
 #
@@ -189,19 +167,6 @@ matrix:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
 
-    # HASKELL: Only build Haskell binding and plugin
-
-    - os: osx
-      name: 🍏 Haskell
-      osx_image: xcode10.1 # We use macOS 10.13 here, since the Haskell plugin does not seem to compile on macOS 10.14
-      compiler: clang
-      env:
-        - HASKELL=ON
-        # Use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher;ni;c'
-        - BINDINGS=haskell
-        - TOOLS=kdb
-
     - os: linux
       name: 🐧 GCC
       compiler: gcc
@@ -234,32 +199,15 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install ninja
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
       rvm install 2.5.1
       rvm use 2.5.1
       gem install test-unit --no-document
       if [[ "$CC" == "gcc" ]]; then
-        brew install gcc
-        brew link --overwrite gcc
-        gcc_version_major=$(brew info gcc | head -n1 | sed -E 's/[^0-9]*([0-9]+)\..*/\1/')
-        export CC="gcc-$gcc_version_major"
-        export CXX="g++-$gcc_version_major"
-      else
-        # Use latest version of LLVM to translate the code
-        brew install llvm
-        export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-        # Linking Botan, ANTLR’s C++ runtime, and yaml-cpp using `gcc` fails on macOS
-        brew install antlr
-        brew install antlr4-cpp-runtime
-        brew install botan
-        brew install yaml-cpp
-        # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
-        brew install xerces-c
-        # OCLint complains about unknown compiler warning options, if we use GCC as compiler.
-        brew cask install oclint
+        brew install gcc@9
+        export CC=gcc-9
+        export CXX=g++-9
       fi
+      brew install augeas
       brew install bison
       brew install dbus
       brew install discount
@@ -280,44 +228,6 @@ before_install:
       pip2 install cheetah # Required by kdb-gen
       # start D-Bus session bus
       brew services start dbus
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
-      brew install augeas
-      # 8.4 is currently not supported by hint which we use
-      brew install ghc@8.2
-      brew link ghc@8.2 --force
-      brew install cabal-install
-      cabal update
-      # avoid reinstalls if we already have them cached
-      PATH=$PATH:"$HOME/.cabal/bin"
-      which happy || cabal install happy
-      which alex || cabal install alex
-      which c2hs || cabal install c2hs
-      export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
-      mkdir -p $HASKELL_SHARED_SANDBOX
-      cd $HASKELL_SHARED_SANDBOX
-      cabal sandbox init
-      # there is some strange cache bug where it complains that one of our own library's
-      # directory doesn't exist though it gets properly unregistered. Apparently ignoring
-      # that works anyway.
-      cabal install --avoid-reinstalls \
-        'base >=4.9 && <4.12' \
-        'binary >=0.8 && <0.9' \
-        'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' \
-        'exceptions -any' \
-        'haskell-src-exts-any' \
-        'hint >=0.7.0 && <0.8.0' \
-        'hspec -any' \
-        'megaparsec -any' \
-        'pretty -any' \
-        'process >=1.4 && <1.7' \
-        'QuickCheck-any' \
-        'simple-logger -any' \
-        'temporary -any' \
-        'text -any' \
-        || true
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then

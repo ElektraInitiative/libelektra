@@ -1,7 +1,7 @@
-nosectionkey = nosectionvalue
+nosectionkey=nosectionvalue
 [section1]
-key2 = value2
-key1 = value1
+key2=value2
+key1=value1
 [section2]
-zemptykey = 
-key3 = value3
+zemptykey=
+key3=value3

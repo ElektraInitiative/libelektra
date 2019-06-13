@@ -662,8 +662,41 @@ void TreeViewModel::synchronize ()
 	}
 	catch (KDBException const & e)
 	{
-		emit showMessage (tr ("Error"), tr ("Synchronizing failed, could not write merged configuration."), e.what ());
+		QMap<QString, QString> message = getErrorMessage (e);
+
+		emit showMessage (
+			tr ("Error"), message.value ("error"),
+			QString ("%1%2%3").arg (message.value ("at"), message.value ("mountpoint"), message.value ("configfile")));
 	}
+}
+
+QMap<QString, QString> TreeViewModel::getErrorMessage (KDBException const & e)
+{
+	QRegExp error_regex ("Sorry, ((.*\\n){2})");
+	QRegExp at_regex ("At: (.*)\\n");
+	QRegExp mountpoint_regex ("Mountpoint: (.*)\\n");
+	QRegExp configfile_regex ("Configfile: (.*)\\n");
+
+	QMap<QString, QString> message;
+	QString error = QString (e.what ());
+
+	error_regex.setMinimal (true);
+	at_regex.setMinimal (true);
+	mountpoint_regex.setMinimal (true);
+	configfile_regex.setMinimal (true);
+
+	error_regex.indexIn (error);
+	at_regex.indexIn (error);
+	mountpoint_regex.indexIn (error);
+	configfile_regex.indexIn (error);
+
+	message.insert ("error", error_regex.cap ());
+	message.insert ("at", at_regex.cap ());
+	message.insert ("mountpoint", mountpoint_regex.cap ());
+	message.insert ("configfile", configfile_regex.cap ());
+
+
+	return message;
 }
 
 void TreeViewModel::clearMetaModel ()
