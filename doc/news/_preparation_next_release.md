@@ -398,7 +398,6 @@ removed due to:
 
 - Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
 
-
 ### MemoryValue
 
 - New plugin to validate memory values and normalize them into bytes. E.g. 20 KB (normalized to 20000 Byte).
