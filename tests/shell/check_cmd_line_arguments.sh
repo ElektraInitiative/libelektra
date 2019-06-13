@@ -22,7 +22,7 @@ exit_if_fail "invalid options"
 [ $? = 0 ]
 exit_if_fail "Must accept v and d options"
 
-sed -i 's/ksNew/invalidCommand/g' `"$KDB" file $ROOT`
+sed -i 's/ksNew/invalidCommand/g' $("$KDB" file $ROOT)
 succeed_if "Cannot corrupt dump file"
 
 TMPFILE="$(mktempfile_elektra)"
@@ -30,7 +30,7 @@ cleanup() {
 	rm -f "$TMPFILE"
 }
 
-"$KDB" export -vd $ROOT  > $TMPFILE 2>&1
+"$KDB" export -vd $ROOT > $TMPFILE 2>&1
 
 sed -i 1,7d $TMPFILE
 CONTENT=$(cat $TMPFILE)
@@ -42,5 +42,4 @@ grep "At:" $TMPFILE > /dev/null
 succeed_if "Debug output does not work, got $CONTENT"
 
 rm -f "$TMPFILE"
-rm -f `"$KDB" file $ROOT`
-
+rm -f $("$KDB" file $ROOT)
