@@ -11,7 +11,7 @@
 #include <benchmarks.h>
 #include <kdb.h>
 
-#define NUM_RUNS 14
+#define NUM_RUNS 7
 
 #define CSV_STR_FMT "%s;%s;%d\n"
 
