@@ -236,7 +236,7 @@ copied by the `spec` plugin just before):
 - [reference](reference/) checks if a value is a valid reference to another key
 - [rgbcolor](rgbcolor/) validates and normalizes hexcolors
 - [macaddr](macaddr/) checks if MAC addresses are valid and normalizes them
-- [memoryvalue](memoryvalue/) validates and normalizes memory values (e.g. 20KB to 20000 Bytes)
+- [unit](unit/) validates and normalizes units of memory (e.g. 20KB to 20000 Bytes)
 
 **Other Validation**
 
