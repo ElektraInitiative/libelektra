@@ -42,7 +42,9 @@ This command will return the following values as an exit status:
 - `-r`, `--recursive`:
   Work in a recursive mode.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 

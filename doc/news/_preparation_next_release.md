@@ -581,6 +581,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Added a new error concept for error codes to be implemented soon. _(Michael Zronek)_
 - Added error categorization guidelines to be used with the error concept. _(Michael Zronek)_
 - Drastically improved the error message format. For more information look [here](../../doc/decisions/error_message_format.md). _(Michael Zronek)_
+- Every `kdb` command now accepts `v` and `d` as option to show more information in case of warnings or errors. _(Michael Zronek)_
 - Improved qt-gui error popup to conform with the new error message format. _(Raffael Pancheri)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
