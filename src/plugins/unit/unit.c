@@ -43,7 +43,7 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 
 
 	// convert to long, if valid key, pointer should point to spaces or unit suffix like MB, GB
-	ret = ELEKTRA_UNSIGNED_LONG_LONG_S (tempval, &endPtr, 10);
+	ELEKTRA_UNSIGNED_LONG_LONG_S (tempval, &endPtr, 10);
 
 	// before deblanking check if pointer is invalid
 	if (endPtr == tempval)
