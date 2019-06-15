@@ -17,7 +17,7 @@
 // @param input string, of which possibly occurring spaces are removed
 static void deblank (char * input)
 {
-	kdb_unsigned_long_long_t i, j;
+	int i, j;
 	char * output = input;
 
 	for (i = 0, j = 0; i < strlen (input); i++, j++)
@@ -36,6 +36,7 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 	const char * value = keyString (key);
 	// else we manipulate the original
 	char * tempval = elektraStrDup (value);
+
 	char * endPtr;
 
 
