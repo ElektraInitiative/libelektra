@@ -36,9 +36,6 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 	const char * value = keyString (key);
 	// else we manipulate the original
 	char * tempval = elektraStrDup (value);
-
-	kdb_unsigned_long_long_t ret;
-
 	char * endPtr;
 
 
