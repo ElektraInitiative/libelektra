@@ -39,6 +39,8 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 	kdb_unsigned_long_long_t ret;
 
 	char * endPtr;
+
+
 	// convert to long, if valid key, pointer should point to spaces or unit suffix like MB, GB
 	ret = ELEKTRA_UNSIGNED_LONG_LONG_S (tempval, &endPtr, 10);
 
@@ -50,7 +52,6 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 
 	// remove possibly occurring blanks
 	deblank (endPtr);
-
 	kdb_unsigned_long_long_t factor = 0;
 
 	// calculate the factor based on the suffix of the mameory value, return 0 if there is no matching to indicate an error of the
@@ -89,7 +90,7 @@ static int elektraUnitConvertToByteString (Key * key, kdb_unsigned_long_long_t f
 {
 
 	const char * str = keyString (key);
-	keySetMeta (key, "origvalue", str);
+	char * origvalue = elektraStrDup (str);
 	char * ptr;
 	kdb_unsigned_long_long_t ret;
 	kdb_unsigned_long_long_t normalizedMemVal;
@@ -111,6 +112,8 @@ static int elektraUnitConvertToByteString (Key * key, kdb_unsigned_long_long_t f
 	snprintf (buf, n + 1, ELEKTRA_UNSIGNED_LONG_LONG_F, normalizedMemVal);
 
 	keySetString (key, buf);
+	keySetMeta (key, "origvalue", origvalue);
+	elektraFree (origvalue);
 	return 0;
 }
 

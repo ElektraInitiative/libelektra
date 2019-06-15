@@ -23,12 +23,12 @@ static void test_unit_normalization (const char * unitstring, const char * unite
 	succeed_if ((plugin->kdbGet (plugin, ks, parentKey) >= 1), "kdbGet did not succeed");
 	Key * foundKey = ksLookupByName (ks, "user/test/unit/unittestval", 0);
 	succeed_if (!strcmp (keyString (foundKey), unitexpected), "Values dont match");
-	printf ("test unit plugin normalization test - returned value: %s, expected value: %s\n", unitexpected, keyString (foundKey));
+	printf ("test unit plugin normalization test - returned value: %s, expected value: %s\n", keyString (foundKey), unitexpected);
 
 	succeed_if ((plugin->kdbSet (plugin, ks, parentKey) >= 1), "kdbSet did not succeed");
 	foundKey = ksLookupByName (ks, "user/test/unit/unittestval", 0);
 	succeed_if (!strcmp (keyString (foundKey), unitstring), "Values dont match");
-	printf ("test unit plugin restoration test - returned value: %s, expected value: %s\n", unitstring, keyString (foundKey));
+	printf ("test unit plugin restoration test - returned value: %s, expected value: %s\n", keyString (foundKey), unitstring);
 
 	ksDel (ks);
 	keyDel (parentKey);
