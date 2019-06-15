@@ -293,10 +293,12 @@ Example:
 
 LD_LIBRARY_PATH=/home/username/TU/libelektra/cmake-build-debug/lib
 
-If you want to run built `kdb` outside of CLion, the recommended way is to run this script from your build directory:
+If you want to run built `kdb` outside of CLion, the recommended way is to run this script from your build directory. The script resides in you original directory with project sources.
+
+Example:
 
 ```sh
-. /scripts/run_dev_env
+. /PATH/TO/YOUR/PROJECT/scripts/run_dev_env
 ```
 
 Please keep in mind it sets the variables only in the currently opened shell window/session.
