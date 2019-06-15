@@ -95,7 +95,6 @@ static void test_unitplugin (void)
 	test_unit_normalization_error_expected ("MB10GB", "-1");
 	test_unit_normalization_error_expected ("X10B", "-1");
 
-
 	test_unit_normalization_error_expected ("1B1B", "-1");
 	test_unit_normalization_error_expected ("1BB", "-1");
 	test_unit_normalization_error_expected ("10GB20MB", "-1");

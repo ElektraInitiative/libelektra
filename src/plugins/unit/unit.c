@@ -19,6 +19,7 @@ static void deblank (char * input)
 {
 	kdb_unsigned_long_long_t i, j;
 	char * output = input;
+
 	for (i = 0, j = 0; i < strlen (input); i++, j++)
 	{
 		if (input[i] != ' ')
