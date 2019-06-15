@@ -111,7 +111,7 @@ Most likely, you have to include this dependency as well:
  </dependency>
 ```
 
-[here](../../examples/external/java/example-pom.xml) you can find a fully working example of the pom file.
+[here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file.
 
 ## Testing
 

@@ -92,4 +92,5 @@ The `at(int)` method gives us the key on the corresponding position which we wil
 
 ### Read Multiple Keys From KDB
 
-[This](../../examples/external/java/read-keys-example/Main.java) example shows how to read multiple keys. It provides comments for further clarification.
+[This](../../examples/external/java/read-keys-example) example shows how to read multiple keys. It provides comments for further clarification.
+If you want to build this project with Maven, please add your jar file like described [here](../../examples/external/java/read-keys-example/lib/README.md).
