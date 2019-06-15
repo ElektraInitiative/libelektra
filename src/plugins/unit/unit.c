@@ -17,17 +17,17 @@
 // @param input string, of which possibly occurring spaces are removed
 static void deblank (char * input)
 {
-	int i, j;
-	char * output = input;
+	int count = 0;
 
-	for (i = 0, j = 0; i < strlen (input); i++, j++)
+	for (int i = 0; input[i]; i++)
 	{
 		if (input[i] != ' ')
-			output[j] = input[i];
-		else
-			j--;
+		{
+			input[count++] = input[i];
+		}
 	}
-	output[j] = 0;
+
+	input[count] = '\0';
 }
 
 static kdb_unsigned_long_long_t isValidKey (Key * key)
