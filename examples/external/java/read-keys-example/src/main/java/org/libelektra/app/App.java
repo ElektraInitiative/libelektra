@@ -15,7 +15,11 @@ class App{
     private final static String KEY_PREFIX = MOUNT_SPACE + "/sw/clock/central/";
 
     public static void main(String[] args) {
+        System.out.println("Example started");
         Map<String, String> stringStringMap = loadConfigurationSettings();
+        System.out.println("Result:");
+        System.out.println(stringStringMap);
+        System.out.println("Example terminated");
         //do whatever you need with the value starting from here
     }
 
@@ -40,6 +44,10 @@ class App{
     }
 
     private static Map<String, String> readKeys(String[] keys) {
+        System.out.println("Reading following keys:");
+        for (String key : keys) {
+            System.out.println(key);
+        }
         //create a key without specifying a name, which is allowed
         Key key = Key.create("");
         //open KDB with autoclose functionality
