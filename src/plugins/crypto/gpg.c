@@ -86,7 +86,7 @@ static int isExecutable (const char * file, Key * errorKey)
 	{
 		if (errorKey)
 		{
-			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "gpg binary %s not found", file);
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Gpg binary %s not found", file);
 		}
 		return -1;
 	}
@@ -95,7 +95,7 @@ static int isExecutable (const char * file, Key * errorKey)
 	{
 		if (errorKey)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "gpg binary %s has no permission to execute", file);
+			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Gpg binary %s has no permission to execute", file);
 		}
 		return -2;
 	}
@@ -256,7 +256,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 	}
 
 	// no GPG for us :-(
-	ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "no gpg binary found. Please make sure GnuPG is installed and executable.");
+	ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "No gpg binary found. Please make sure GnuPG is installed and executable.");
 	return -1;
 }
 
@@ -658,7 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 	case -1:
 		// fork() failed
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "fork failed with errno: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Fork failed with errno: %s", strerror (errno));
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -752,19 +752,19 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		break;
 
 	case GPG_CALL_DUP_STDIN:
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "failed to redirect stdin.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stdin.");
 		break;
 
 	case GPG_CALL_DUP_STDOUT:
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "failed to redirect stdout.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stdout.");
 		break;
 
 	case GPG_CALL_DUP_STDERR:
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "failed to redirect stderr.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stderr.");
 		break;
 
 	case GPG_CALL_EXECV:
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "failed to start the gpg binary: %s", argv[0]);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary: %s", argv[0]);
 		break;
 
 	default:

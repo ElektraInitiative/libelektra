@@ -429,7 +429,7 @@ static int validateKey (Key * key, Key * parentKey)
 		}
 		else if (rc == 0)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "syntax error in ISO8601 format string '%s'", formatString);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Syntax error in ISO8601 format string '%s'", formatString);
 		}
 	}
 	else if (!strcasecmp (stdString, "RFC2822"))

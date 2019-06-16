@@ -101,7 +101,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 		else if (lineEnding != found && found != NA)
 		{
 			fclose (fp);
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "inconsistent line endings at line %lu", line);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Inconsistent line endings at line %lu", line);
 			return -3;
 		}
 		fc = sc;

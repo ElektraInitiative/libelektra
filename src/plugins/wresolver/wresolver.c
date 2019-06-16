@@ -125,7 +125,7 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "could not get ALLUSERSPROFILE for spec, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not get ALLUSERSPROFILE for spec, using /");
 	}
 	else
 	{
@@ -176,7 +176,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	char dir[KDB_MAX_PATH_LENGTH];
 	if (getcwd (dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Getcwd failed: %s, defaulting to /", strerror (errno));
 		dir[0] = 0;
 	}
 #endif
@@ -202,14 +202,14 @@ static void elektraResolveUser (resolverHandle * p, Key * warningsKey)
 	else
 	{
 		strcpy (home, "");
-		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "could not get home (CSIDL_PROFILE), using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not get home (CSIDL_PROFILE), using /");
 	}
 #else
 	char * home = (char *) getenv ("HOME");
 	if (!home)
 	{
 		home = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "could not get home, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not get home, using /");
 	}
 #endif
 
@@ -225,7 +225,7 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "could not get ALLUSERSPROFILE, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not get ALLUSERSPROFILE, using /");
 	}
 	else
 	{
@@ -385,7 +385,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	switch (pk->state)
 	{
 	case 0:
-		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "kdbSet() called before kdbGet()");
+		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "KdbSet() called before kdbGet()");
 		return -1;
 	case 1:
 		++pk->state;
@@ -409,7 +409,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 	if (stat (pk->filename, &buf) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "could not stat config file \"%s\", ", pk->filename);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not stat config file \"%s\", ", pk->filename);
 		// no file found, nothing to do
 		return 0;
 	}

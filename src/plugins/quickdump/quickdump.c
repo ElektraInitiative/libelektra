@@ -255,7 +255,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, "missing key type");
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, "Missing key type");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -290,7 +290,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					fclose (file);
-					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "error while reading file");
+					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Error while reading file");
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);

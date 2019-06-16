@@ -60,7 +60,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1))
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "failed to generate random salt with error code %lu", ERR_get_error ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to generate random salt with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -424,7 +424,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Value length is not a multiple of the block size");
 		return -1;
 	}
 

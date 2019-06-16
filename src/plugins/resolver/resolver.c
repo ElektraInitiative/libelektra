@@ -155,7 +155,7 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 		}
 		else
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "assuming conflict because of failed file lock with message: %s",
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Assuming conflict because of failed file lock with message: %s",
 						     strerror (errno));
 		}
 		return -1;
@@ -188,7 +188,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNU
 
 	if (ret == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "fcntl SETLK unlocking failed with message: %s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Fcntl SETLK unlocking failed with message: %s", strerror (errno));
 	}
 
 	return ret;
@@ -217,7 +217,7 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 		}
 		else
 		{
-			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "assuming conflict because of failed mutex lock with message: %s",
+			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "Assuming conflict because of failed mutex lock with message: %s",
 							      strerror (errno));
 		}
 		return -1;
@@ -240,7 +240,7 @@ static int elektraUnlockMutex (Key * parentKey ELEKTRA_UNUSED)
 	int ret = pthread_mutex_unlock (&elektraResolverMutex);
 	if (ret != 0)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "mutex unlock failed with message: %s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Mutex unlock failed with message: %s", strerror (errno));
 		return -1;
 	}
 	return 0;
@@ -260,7 +260,7 @@ static void elektraCloseFile (int fd, Key * parentKey)
 {
 	if (close (fd) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "close file failed with message: %s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Close file failed with message: %s", strerror (errno));
 	}
 }
 
@@ -839,7 +839,7 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_RESOURCE_WARNING (parentKey, errorText);
 		elektraFree (errorText);
 
-		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "assuming conflict because of failed stat (warning 29 for details)");
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Assuming conflict because of failed stat (warning 29 for details)");
 		return -1;
 	}
 
@@ -1171,7 +1171,7 @@ static void elektraUnlinkFile (char * filename, Key * parentKey)
 	int errnoSave = errno;
 	if (unlink (filename) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "could not unlink the file \"%s\" because of \"%s\"", filename, strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not unlink the file \"%s\" because of \"%s\"", filename, strerror (errno));
 		errno = errnoSave;
 	}
 }

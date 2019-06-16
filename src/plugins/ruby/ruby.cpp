@@ -311,7 +311,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 	ELEKTRA_LOG ("init and start Ruby-VM");
 	if (ruby_setup ())
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "could not initialize Ruby-VM");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not initialize Ruby-VM");
 		return -1;
 	}
 
@@ -338,7 +338,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 	rb_protect (require_kdb, Qnil, &state);
 	if (state)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "could not load Ruby module 'kdb'");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not load Ruby module 'kdb'");
 		return -1;
 	}
 
@@ -404,7 +404,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 	{
 		/* no script specified
 		 * do not issue an error or 'kdb info ruby' causes problems */
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "no 'script' config value specified");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "No 'script' config value specified");
 		return -1;
 	}
 
@@ -430,7 +430,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 
 	if (global_plugin_instance == Qnil)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
 
 		global_context_mutex.unlock ();
 		return -1;
@@ -651,7 +651,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	else
 	{
 		/* if not 'get' method is available, this plugin is useless, therefore set and error */
-		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "plugin does not have a 'get' method");
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Plugin does not have a 'get' method");
 		return -1;
 	}
 	return -1;

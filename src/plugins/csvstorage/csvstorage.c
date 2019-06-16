@@ -335,7 +335,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "couldn't open file %s", fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s", fileName);
 		return -1;
 	}
 	int lastLine = 0;
@@ -352,7 +352,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	{
 		if (columns != fixColumnCount)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "illegal number of columns (%lu - %lu) in Header line: %s",
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Illegal number of columns (%lu - %lu) in Header line: %s",
 								 columns, fixColumnCount, lineBuffer);
 			elektraFree (lineBuffer);
 			fclose (fp);
@@ -480,7 +480,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		{
 			if (fixColumnCount)
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "illegal number of columns (%lu - %lu) in line %lu: %s",
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Illegal number of columns (%lu - %lu) in line %lu: %s",
 									 colCounter, columns, lineCounter, lineBuffer);
 				elektraFree (lineBuffer);
 				fclose (fp);
@@ -488,7 +488,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				ksDel (header);
 				return -1;
 			}
-			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "illegal number of columns (%lu - %lu)  in line %lu: %s",
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Illegal number of columns (%lu - %lu)  in line %lu: %s",
 								   colCounter, columns, lineCounter, lineBuffer);
 		}
 		lineCounter += linesRead;
@@ -720,7 +720,7 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		}
 		if (colCounter != columns)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "illegal number of columns (%lu - %lu) in line %lu", colCounter,
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Illegal number of columns (%lu - %lu) in line %lu", colCounter,
 								 columns, lineCounter);
 			fclose (fp);
 			return -1;

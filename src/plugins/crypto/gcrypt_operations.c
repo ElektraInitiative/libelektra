@@ -368,7 +368,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Value length is not a multiple of the block size");
 		return -1;
 	}
 

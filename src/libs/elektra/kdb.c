@@ -346,7 +346,7 @@ KDB * kdbOpen (Key * errorKey)
 	keySetString (errorKey, "kdbOpen(): mountDefault");
 	if (mountDefault (handle, handle->modules, inFallback, errorKey) == -1)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "could not reopen and mount default backend");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not reopen and mount default backend");
 		keySetString (errorKey, "kdbOpen(): close");
 		kdbClose (handle, errorKey);
 
@@ -1437,14 +1437,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "invalid key name passed to kdbSet");
+		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Invalid key name passed to kdbSet");
 		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
 	}
 
 	if (!handle || !ks)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "handle or ks null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or ks null pointer passed");
 		keyDel (oldError);
 		ELEKTRA_LOG ("!handle || !ks");
 		return -1;
@@ -1467,7 +1467,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "error in splitBuildup");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in splitBuildup");
 		goto error;
 	}
 	ELEKTRA_LOG ("after splitBuildup");

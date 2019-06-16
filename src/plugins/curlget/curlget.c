@@ -721,7 +721,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			++(data->setPhase);
 			if (strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 			{
-				ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "remote file has changed");
+				ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "Remote file has changed");
 				retval = -1;
 			}
 			elektraFree (hash);
@@ -816,7 +816,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					if (res != CURLE_OK)
 					{
 
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (HTTP POST) failed: %s\n",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP POST) failed: %s\n",
 									     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -832,7 +832,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (HTTP PUT) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP PUT) failed: %s",
 									     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -845,7 +845,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (HTTP PUT) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP PUT) failed: %s",
 									     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -882,7 +882,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
-					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (FTP PUT) failed: %s",
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (FTP PUT) failed: %s",
 								     curl_easy_strerror (res));
 					retval = -1;
 				}
@@ -908,10 +908,10 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				if (res != CURLE_OK)
 				{
 					if (data->putProto == PROTO_SCP)
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (SCP) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (SCP) failed: %s",
 									     curl_easy_strerror (res));
 					else if (data->putProto == PROTO_SFTP)
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (SFTP) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (SFTP) failed: %s",
 									     curl_easy_strerror (res));
 					retval = -1;
 				}
@@ -928,7 +928,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
-					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "curl upload (default) failed: %s",
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (default) failed: %s",
 								     curl_easy_strerror (res));
 					retval = -1;
 				}

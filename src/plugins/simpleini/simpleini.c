@@ -251,7 +251,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	char * format = getReadFormat (handle);
 	if (!format)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "invalid 'format' specified");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid 'format' specified");
 		return -1;
 	}
 
@@ -319,7 +319,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "duplicated key %s at position %ld", keyName (read),
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Duplicated key %s at position %ld", keyName (read),
 								 ftell (fp));
 			elektraFree (format);
 			fclose (fp);
@@ -330,7 +330,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "not at the end of file at position %ld", ftell (fp));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not at the end of file at position %ld", ftell (fp));
 		elektraFree (format);
 		fclose (fp);
 		return -1;

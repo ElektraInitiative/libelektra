@@ -112,7 +112,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
 
@@ -155,7 +155,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Payload is too small to contain a salt (payload length is: %zu)", payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -172,7 +172,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
 		// TODO: Correct??
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
 					     payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
@@ -195,7 +195,7 @@ Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * conf
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "missing %s in plugin configuration", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Missing %s in plugin configuration", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return NULL;
 	}
 	Key * msg = keyDup (master);
@@ -226,7 +226,7 @@ kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey,
 		else
 		{
 			// TODO: Correct?
-			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
+			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
 								    " is invalid. Using default value instead.");
 		}
 	}

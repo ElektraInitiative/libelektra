@@ -336,7 +336,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	else if (rc == -1)
 	{
 		elektraFree (localCopy);
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "invalid syntax: %s", token);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", token);
 		return -1;
 	}
 	while ((token = strtok_r (NULL, ",", &savePtr)) != NULL)
@@ -350,7 +350,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 		else if (rc == -1)
 		{
 			elektraFree (localCopy);
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "invalid syntax: %s", token);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", token);
 			return -1;
 		}
 	}
@@ -439,12 +439,12 @@ static int validateKey (Key * key, Key * parentKey)
 		int rc = validateSingleRange (keyString (key), rangeString, type);
 		if (rc == -1)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "invalid syntax: %s", keyString (rangeMeta));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", keyString (rangeMeta));
 			return -1;
 		}
 		else if (rc == 0)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "value %s not within range %s", keyString (key), rangeString);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Value %s not within range %s", keyString (key), rangeString);
 			return 0;
 		}
 		else
@@ -457,7 +457,7 @@ static int validateKey (Key * key, Key * parentKey)
 		int rc = validateMultipleRanges (keyString (key), rangeString, parentKey, type);
 		if (rc == 0)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "value %s not within range %s", keyString (key), rangeString);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Value %s not within range %s", keyString (key), rangeString);
 		}
 		return rc;
 	}
