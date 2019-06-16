@@ -19,6 +19,7 @@
 
 #define MAGIC_NUMBER_V1 ((kdb_unsigned_long_long_t) (MAGIC_NUMBER_BASE + 1))
 #define MAGIC_NUMBER_V2 ((kdb_unsigned_long_long_t) (MAGIC_NUMBER_BASE + 2))
+#define MAGIC_NUMBER_V3 ((kdb_unsigned_long_long_t) (MAGIC_NUMBER_BASE + 3))
 
 struct metaLink
 {
@@ -54,20 +55,11 @@ static void ensureBufferSize (struct stringbuffer * buffer, size_t minSize);
 #define STDOUT_FILENAME ("/dev/stdout")
 #endif
 
-static inline bool writeUInt64 (FILE * file, kdb_unsigned_long_long_t value, Key * errorKey)
-{
-	kdb_unsigned_long_long_t littleEndian = htole64 (value);
-	if (fwrite (&littleEndian, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
-	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_WRITE_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
-		return false;
-	}
-	return true;
-}
+#include "varint.c"
 
 static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_long_t size, Key * errorKey)
 {
-	if (!writeUInt64 (file, size, errorKey))
+	if (!varintWrite (file, size))
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_WRITE_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
 		return false;
@@ -84,7 +76,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 	return true;
 }
 
-
+// for v1 and v2 reading
 static inline bool readUInt64 (FILE * file, kdb_unsigned_long_long_t * valuePtr, Key * errorKey)
 {
 	if (fread (valuePtr, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
@@ -96,6 +88,7 @@ static inline bool readUInt64 (FILE * file, kdb_unsigned_long_long_t * valuePtr,
 	return true;
 }
 
+// for v1 reading
 static inline char * readString (FILE * file, Key * errorKey)
 {
 	kdb_unsigned_long_long_t size;
@@ -116,7 +109,8 @@ static inline char * readString (FILE * file, Key * errorKey)
 	return string;
 }
 
-static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buffer, Key * errorKey)
+// for v2 reading
+static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * buffer, Key * errorKey)
 {
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
@@ -137,7 +131,33 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 	return true;
 }
 
+// for v3 reading
+static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buffer, Key * errorKey)
+{
+	kdb_unsigned_long_long_t size;
+	if (!varintRead (file, &size))
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		return false;
+	}
+
+	size_t newSize = buffer->offset + size + 1;
+	ensureBufferSize (buffer, newSize);
+
+	if (fread (&buffer->string[buffer->offset], sizeof (char), size, file) < size)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		return false;
+	}
+	buffer->string[newSize - 1] = '\0';
+	return true;
+}
+
 #include "readv1.c"
+
+#define readStringIntoBuffer readStringIntoBufferV2
+#include "readv2.c"
+#undef readStringIntoBuffer
 
 int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -186,6 +206,8 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	case MAGIC_NUMBER_V1:
 		return readVersion1 (file, returned, parentKey);
 	case MAGIC_NUMBER_V2:
+		return readVersion2 (file, returned, parentKey);
+	case MAGIC_NUMBER_V3:
 		// break, current version implemented below
 		break;
 	default:
@@ -245,8 +267,10 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			// binary key value
 			kdb_unsigned_long_long_t valueSize;
-			if (!readUInt64 (file, &valueSize, parentKey))
+			if (!varintRead (file, &valueSize))
 			{
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey,
+						   feof (file) ? "premature end of file" : "unknown error");
 				elektraFree (nameBuffer.string);
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
@@ -433,7 +457,7 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	}
 
 	// magic number is written big endian so EKDB magic string is readable
-	kdb_unsigned_long_long_t magic = htobe64 (MAGIC_NUMBER_V2);
+	kdb_unsigned_long_long_t magic = htobe64 (MAGIC_NUMBER_V3);
 	if (fwrite (&magic, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
 	{
 		fclose (file);

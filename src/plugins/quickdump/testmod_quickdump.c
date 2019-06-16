@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include <kdbconfig.h>
+#include <kdbtypes.h>
 
 #include <tests_plugin.h>
 
@@ -121,12 +122,63 @@ static void test_basics (void)
 	ksDel (ks);
 }
 
-static void test_updateV1ToV2 (void)
+static void test_readV1 (void)
 {
-	printf ("test update v1 to v2\n");
+	printf ("test update v1 to current\n");
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("quickdump/test.v1.quickdump"));
+	char * infileV2 = elektraStrDup (srcdir_file ("quickdump/test.quickdump"));
+	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
+
+	{
+		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("quickdump");
+
+		KeySet * expected = test_quickdump_expected ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		Key * k1 = ksLookupByName (ks, "dir/tests/bench/__112", 0);
+		Key * k8 = ksLookupByName (ks, "dir/tests/bench/__911", 0);
+		succeed_if (keyGetMeta (k1, "meta/_35") == keyGetMeta (k8, "meta/_35"), "copy meta failed");
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("quickdump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_binary_files (infileV2, outfile) == 0, "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (infileV2);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_readV2 (void)
+{
+	printf ("test update v2 to current\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("quickdump/test.v2.quickdump"));
 	char * infileV2 = elektraStrDup (srcdir_file ("quickdump/test.quickdump"));
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
 
@@ -218,6 +270,56 @@ static void test_parentKeyValue (void)
 	ksDel (expected);
 }
 
+#include "varint.c"
+
+static void test_varint (void)
+{
+	printf ("test varint\n");
+
+	kdb_unsigned_long_long_t testNumbers[] = {
+		0x0000000000000000, 0x0000000000000001, 0x0000000000000002, 0x0000000000000003, 0x0000000000000004, 0x0000000000000005,
+		0x0000000000000008, 0x0000000000000009, 0x0000000000000010, 0x0000000000000011, 0x0000000000000020, 0x0000000000000021,
+		0x000000000000007F, 0x0000000000000080, 0x0000000000000081, 0x0000000000000100, 0x0000000000000101, 0x0000000000000200,
+		0x0000000000000201, 0x0000000000000400, 0x0000000000000401, 0x0000000000000800, 0x0000000000000801, 0x0000000000001000,
+		0x0000000000001001, 0x0000000000002000, 0x0000000000002001, 0x0000000000003FFF, 0x0000000000004000, 0x0000000000004001,
+		0x0000000000008000, 0x0000000000008001, 0x0000000000010000, 0x0000000000010001, 0x0000000000020000, 0x0000000000020001,
+		0x0000000000040000, 0x0000000000040001, 0x0000000000080000, 0x0000000000080001, 0x0000000000100000, 0x0000000000100001,
+		0x00000000001FFFFF, 0x0000000000200000, 0x0000000000200001, 0x0000000000400000, 0x0000000000400001, 0x0000000000800000,
+		0x0000000000800001, 0x0000000001000000, 0x0000000001000001, 0x0000000002000000, 0x0000000002000001, 0x0000000004000000,
+		0x0000000004000001, 0x0000000008000000, 0x0000000008000001, 0x000000000FFFFFFF, 0x0000000010000000, 0x0000000010000001,
+		0x0000000020000000, 0x0000000020000001, 0x0000000040000000, 0x0000000040000001, 0x0000000080000000, 0x0000000080000001,
+		0x0000000100000000, 0x0000000100000001, 0x0000000200000000, 0x0000000200000001, 0x0000000400000000, 0x0000000400000001,
+		0x00000007FFFFFFFF, 0x0000000800000000, 0x0000000800000001, 0x0000001000000000, 0x0000001000000001, 0x0000002000000000,
+		0x0000002000000001, 0x0000004000000000, 0x0000004000000001, 0x0000008000000000, 0x0000008000000001, 0x0000010000000000,
+		0x0000010000000001, 0x0000020000000000, 0x0000020000000001, 0x000003FFFFFFFFFF, 0x0000040000000000, 0x0000040000000001,
+		0x0000080000000000, 0x0000080000000001, 0x0000100000000000, 0x0000100000000001, 0x0000200000000000, 0x0000200000000001,
+		0x0000400000000000, 0x0000400000000001, 0x0000800000000000, 0x0000800000000001, 0x0001000000000000, 0x0001000000000001,
+		0x0001FFFFFFFFFFFF, 0x0002000000000000, 0x0002000000000001, 0x0004000000000000, 0x0004000000000001, 0x0008000000000000,
+		0x0010000000000000, 0x0010000000000001, 0x0020000000000000, 0x0020000000000001, 0x0040000000000000, 0x0080000000000000,
+		0x0080000000000001, 0x00FFFFFFFFFFFFFF, 0x0100000000000000, 0x0100000000000001, 0x0200000000000000, 0x0200000000000001,
+		0x0400000000000000, 0x0400000000000001, 0x0800000000000000, 0x0800000000000001, 0x1000000000000000, 0x1000000000000001,
+		0x2000000000000000, 0x2000000000000001, 0x4000000000000000, 0x4000000000000001, 0x8000000000000000, 0x8000000000000001,
+		0xFFFFFFFFFFFFFFFF
+	};
+	size_t testNumbersCount = sizeof (testNumbers) / sizeof (kdb_unsigned_long_long_t);
+
+	char errorBuf[128];
+	for (size_t i = 0; i < testNumbersCount; ++i)
+	{
+		FILE * f = fopen (elektraFilename (), "wb");
+		succeed_if (varintWrite (f, testNumbers[i]), "write error");
+		fclose (f);
+
+		f = fopen (elektraFilename (), "rb");
+		kdb_unsigned_long_long_t result;
+		succeed_if (varintRead (f, &result), "read error");
+		fclose (f);
+
+		snprintf (errorBuf, sizeof (errorBuf), "conversion for %" PRIX64 " wrong, got %" PRIX64, testNumbers[i], result);
+		succeed_if (testNumbers[i] == result, errorBuf);
+	}
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("QUICKDUMP     TESTS\n");
@@ -225,8 +327,11 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_varint ();
+
 	test_basics ();
-	test_updateV1ToV2 ();
+	test_readV1 ();
+	test_readV2 ();
 	test_parentKeyValue ();
 
 	print_result ("testmod_quickdump");

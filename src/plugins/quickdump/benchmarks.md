@@ -1,12 +1,9 @@
 # Benchmarks
 
-Note: these benchmarks were done with Version 1 of the plugin. Version 2 reuses the string buffer on get and stores key names relative
-to the parent key. In theory the new version should be slightly quicker, but the benchmarks have not been repeated.
-
 ## `benchmark_storage`
 
 The following table shows a summary of the results of a `benchmark_storage` run:
-NOTE: `factor` is always `dump / quickdump`
+NOTE: `factor` is always `dump / quickdump`, this test was only run with version 1, see below for a comparison of with version 2
 
 | operation        | dump (µs) | quickdump (µs) | factor |
 | ---------------- | --------: | -------------: | -----: |
@@ -40,7 +37,11 @@ all the runs for `quickdump` together.)
 
 The complete results can be viewed in the [benchmarks folder](benchmarks)
 
-### get and set
+The files used for these benchmarks are quite big and can be found in a [separate repository](https://github.com/kodebach/eqd-bench)
+
+### Version 1
+
+#### get and set
 
 The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
 
@@ -51,7 +52,7 @@ The values are mean ± standard deviation. `factor` is `dump / quickdump` like a
 | 2000        |  0.0770 ± 0.0030 | 0.0127 ± 0.0008 |   6.06 |
 | 200000      | 10.7876 ± 4.2564 | 1.2640 ± 0.0061 |   8.53 |
 
-### get only
+#### get only
 
 The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
 
@@ -62,3 +63,57 @@ The values are mean ± standard deviation. `factor` is `dump / quickdump` like a
 | 2000        |  0.0179 ± 0.0002 | 0.0086 ± 0.0008 |   2.08 |
 | 200000      |  1.6830 ± 0.0222 | 0.8515 ± 0.0048 |   1.98 |
 | 2000000     | 17.1814 ± 0.2201 | 8.8808 ± 0.0344 |   1.93 |
+
+### Version 2
+
+Running the same `benchmark_plugingetset` tests with version 2 of the plugin yields:
+
+#### get and set
+
+The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
+
+| no. of keys | dump (s) | quickdump (s) | factor |
+| ----------- | -------: | ------------: | -----: |
+| 2           |          |               |   2.67 |
+| 200         |          |               |   5.06 |
+| 2000        |          |               |   6.06 |
+| 200000      |          |               |   8.53 |
+
+#### get only
+
+The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
+
+| no. of keys | dump (s) | quickdump (s) | factor |
+| ----------- | -------: | ------------: | -----: |
+| 2           |          |               |        |
+| 200         |          |               |        |
+| 2000        |          |               |        |
+| 200000      |          |               |        |
+| 2000000     |          |               |        |
+
+### Version 3
+
+Running the same `benchmark_plugingetset` tests with version 3 of the plugin yields:
+
+#### get and set
+
+The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
+
+| no. of keys | quickdump v2 (s) | quickdump v3 (s) | factor |
+| ----------- | ---------------: | ---------------: | -----: |
+| 2           |                  |                  |        |
+| 200         |                  |                  |        |
+| 2000        |                  |                  |        |
+| 200000      |                  |                  |        |
+
+#### get only
+
+The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
+
+| no. of keys | quickdump v2 (s) | quickdump v3 (s) | factor |
+| ----------- | ---------------: | ---------------: | -----: |
+| 2           |                  |                  |        |
+| 200         |                  |                  |        |
+| 2000        |                  |                  |        |
+| 200000      |                  |                  |        |
+| 2000000     |                  |                  |        |
