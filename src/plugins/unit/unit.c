@@ -46,6 +46,7 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 	// before deblanking check if pointer is invalid
 	if (endPtr == tempval)
 	{
+		elektraFree (tempval);
 		return 0;
 	}
 
@@ -99,6 +100,7 @@ static int elektraUnitConvertToByteString (Key * key, kdb_unsigned_long_long_t f
 	// check if return value within bounds
 	if (ret > UINT64_MAX / formatFactor)
 	{
+		elektraFree (origvalue);
 		return 1;
 	}
 
