@@ -288,8 +288,8 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (
-			errorKey, "could not open default backend.  See other warning or error messages for concrete details");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
+						"could not open default backend. See other warning or error messages for concrete details");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -311,7 +311,7 @@ KDB * kdbOpen (Key * errorKey)
 	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin.");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -937,12 +937,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		clearError (parentKey);
 		keyDel (oldError);
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name \"%s\" passed to kdbGet", keyName (parentKey));
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name \"%s\" passed to kdbGet as parentkey", keyName (parentKey));
 		return -1;
 	}
 
 	if (ns == KEY_NS_EMPTY)
 	{
+		/*TODO: Solution ("Please use the cascading key / instead")*/
 		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "Empty namespace passed to kdbGet");
 	}
 
@@ -1054,7 +1055,7 @@ cachemiss:
 	if (splitAppoint (split, handle, ks) == -1)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "error in splitAppoint");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in splitAppoint");
 		goto error;
 	}
 
@@ -1428,7 +1429,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_META)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name \"%s\" passed to kdbSet as parentkey", keyName (parentKey));
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
 		return -1;
@@ -1499,6 +1500,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		else if (syncstate < -1)
 		{
+			/*TODO: Solution (Execute kdbGet before kdbSet)*/
 			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
 				parentKey, "Sync state is wrong, maybe kdbSet() is executed without prior kdbGet() on %s",
 				keyName (split->parents[-syncstate - 2]));

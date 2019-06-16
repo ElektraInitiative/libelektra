@@ -36,30 +36,30 @@
 #define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES)                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
-				parentKey,                                                                                                 \
-				"Insufficient permissions to open configuration file %s for reading. Reason: %s. You might want "          \
-				"to retry as root or change access using chmod.",                                                          \
-				keyString (parentKey), strerror (errno));                                                                  \
-		else                                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open configuration file %s for reading. Reason: %s",            \
-						     keyString (parentKey), strerror (errno));                                             \
-	} while (0)
+		if (errno == EACCES)
+/*TODO: Solution*/
+ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
+			     "Insufficient permissions to open configuration file %s for reading. Reason: %s. You might want "
+			     "to retry as root or change access using chmod.",
+			     keyString (parentKey), strerror (errno));
+else ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open configuration file %s for reading. Reason: %s", keyString (parentKey),
+				  strerror (errno));
+}
+while (0)
 
 #define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		if (errno == EACCES)                                                                                                       \
 			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
-				parentKey,                                                                                                 \
+				parentKey,
+				/*TODO: Solution*/                                                                                                \
 				"Insufficient permissions to open configuration file %s for writing. You might want to retry as "          \
 				"root. Errno: %s",                                                                                         \
-				keyString (parentKey), strerror (errno));                                                                  \
-		else                                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing %s", keyString (parentKey),            \
-						     strerror (errno));                                                                    \
-	} while (0)
+				keyString (parentKey), strerror (errno));
+else ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing %s", keyString (parentKey), strerror (errno));
+}
+while (0)
 
 #define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_RESOURCE_ERRORF (key, "Unable to allocate %zu bytes.", size);
 
@@ -84,8 +84,8 @@
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
 				ELEKTRA_SET_INTERFACE_ERRORF (                                                                             \
-					error, "Read only plugin, kdbSet not supported but the key %s (value %s) was added", keyName (k),  \
-					keyString (k));                                                                                    \
+					error, "Read only plugin, kdbSet not supported but the key %s (value %s) tried to be added",       \
+					keyName (k), keyString (k));                                                                       \
 				ksDel (info);                                                                                              \
 				return -1;                                                                                                 \
 			}                                                                                                                  \
@@ -93,7 +93,7 @@
 			{                                                                                                                  \
 				ELEKTRA_SET_INTERFACE_ERRORF (                                                                             \
 					error,                                                                                             \
-					"Read only plugin, kdbSet not supported but the key %s (expected %s) was modified to "             \
+					"Read only plugin, kdbSet not supported but the key %s (expected %s) was tried to be modified to " \
 					"%s (expected %s)",                                                                                \
 					keyName (k), keyName (c), keyString (k), keyString (c));                                           \
 				ksDel (info);                                                                                              \
@@ -102,9 +102,9 @@
 		}                                                                                                                          \
 		if ((k = ksNext (info)) != 0)                                                                                              \
 		{                                                                                                                          \
-			ELEKTRA_SET_INTERFACE_ERRORF (error,                                                                               \
-						      "Read only plugin, kdbSet not supported but the key %s (value %s) was removed",      \
-						      keyName (k), keyString (k));                                                         \
+			ELEKTRA_SET_INTERFACE_ERRORF (                                                                                     \
+				error, "Read only plugin, kdbSet not supported but the key %s (value %s) tried to be removed",             \
+				keyName (k), keyString (k));                                                                               \
 			ksDel (info);                                                                                                      \
 			return -1;                                                                                                         \
 		}                                                                                                                          \
