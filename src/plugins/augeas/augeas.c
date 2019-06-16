@@ -415,7 +415,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 
 memoryerror:
 	elektraFree (keyArray);
-	ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Unable to allocate memory while saving the augeas tree");
+	ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Unable to allocate memory while saving the augeas tree");
 	return -1;
 }
 
@@ -519,8 +519,8 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!conversionData)
 	{
 		fclose (fh);
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-			parentKey, "Unknown or unsupported type found during streaming, assume key as string, type lost. Errno: %s",
+		ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (
+			parentKey, "Out of memory. Errno: %s",
 			strerror (errno));
 	}
 

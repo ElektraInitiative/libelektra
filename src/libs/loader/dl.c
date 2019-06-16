@@ -86,7 +86,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 
 	if (module.handle == NULL)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Of module: %s, because: %s", moduleName, dlerror ());
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Dlopen failed. Could not load module %s. Reason: %s", moduleName, dlerror ());
 		keyDel (moduleKey);
 		elektraFree (moduleName);
 		return 0;
@@ -95,7 +95,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	module.symbol.v = dlsym (module.handle, "elektraPluginSymbol");
 	if (module.symbol.v == NULL)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "Could not get pointer to factory, dlsym failed. Module: %s, because: %s",
+		ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "Dlsym failed. Could not get pointer to factory for module: %s. Reason: %s",
 					       moduleName, dlerror ());
 		dlclose (module.handle);
 		keyDel (moduleKey);
@@ -119,7 +119,7 @@ int elektraModulesClose (KeySet * modules, Key * errorKey)
 
 	if (!root)
 	{
-		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "No key system/elektra/modules");
+		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "Could not find root key system/elektra/modules");
 		return -1;
 	}
 
@@ -135,7 +135,7 @@ int elektraModulesClose (KeySet * modules, Key * errorKey)
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;
-			ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "Could not close a module, dlclose failed: %s", dlerror ());
+			ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "Could not close a module. Dlclose failed: %s", dlerror ());
 
 			ksAppendKey (newModules, cur);
 		}

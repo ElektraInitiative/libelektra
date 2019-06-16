@@ -199,7 +199,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		else
 		{
 			ELEKTRA_LOG_DEBUG ("Child: Unrecognized command %s", keyString (commandKey));
-			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (key, "Received invalid command code or no KeySet: %s",
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (key, "Received invalid command code or no KeySet from child process: %s",
 							       keyString (commandKey));
 		}
 		errno = prevErrno;
@@ -330,7 +330,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	long lresult = strtol (keyString (resultKey), &endPtr, 10);
 	if (*endPtr != '\0' || errno == ERANGE || lresult > INT_MAX || lresult < INT_MIN)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (key, "Received invalid return code or no KeySet: %s", keyString (resultKey));
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (key, "Received invalid return code or no KeySet from child process: %s", keyString (resultKey));
 		lresult = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else // Copy everything back into the actual keysets
