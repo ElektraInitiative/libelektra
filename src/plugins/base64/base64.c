@@ -107,7 +107,7 @@ static int decode (Key * key, Key * parent, bool metaMode)
 	else if (result == -1)
 	{
 		// Decoding error
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parent, "Not Base64 encoded: %s", strVal);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parent, "Key %s was not Base64 encoded: %s", keyName (key), strVal);
 	}
 	else if (result == -2)
 	{

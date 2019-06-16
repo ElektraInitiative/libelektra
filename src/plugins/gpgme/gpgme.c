@@ -260,7 +260,7 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * err
 	readCount = gpgme_data_read (src, buffer, ciphertextLen);
 	if (readCount != ciphertextLen)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "An error during occurred during the data transfer.");
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "An error during occurred during the data transfer. Reason: %s", strerror (errno));
 		returnValue = -1; // failure
 		goto cleanup;
 	}

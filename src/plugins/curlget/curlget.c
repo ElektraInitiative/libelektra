@@ -427,7 +427,8 @@ int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	{
 		if (!data->password)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No password specified for SSH password authentication");
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (
+				errorKey, "No password specified for SSH password authentication in plugin configuration");
 			if (data->uploadFileName) elektraFree (data->__uploadFileName);
 			elektraFree (data);
 			data = NULL;
@@ -620,7 +621,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 	if (fd == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading", data->path);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading. Reason: %s", data->path, strerror (errno));
 		return -1;
 	}
 	FILE * fp = fetchFile (data, fd);
@@ -637,7 +638,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		}
 		else
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Failed to read configuration\n");
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to read configuration. Reason: %s\n", strerror (errno));
 			return -1;
 		}
 	}
@@ -762,7 +763,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		fp = fopen (tmpFile, "rb");
 		if (!fp)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading", tmpFile);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for reading. Reason: %s", tmpFile, strerror (errno));
 			return -1;
 		}
 		fseek (fp, 0L, SEEK_END);

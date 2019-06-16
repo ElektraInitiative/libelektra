@@ -206,7 +206,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	FILE * fp = fopen (filename, "rb");
 	if (fp == NULL)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s", filename);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s. Reason: %s", filename, strerror (errno));
 		return -1;
 	}
 	iconv_t conv = NULL;
@@ -246,8 +246,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			le_ret = validateLineEnding (line, &(checkConf->validLE), 0);
 			if (le_ret)
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid lineending at position %zd",
-									 bytesRead + le_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid lineending at position %zd in file %s",
+									 bytesRead + le_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -257,8 +257,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			null_ret = checkNull (line, bytesRead);
 			if (null_ret)
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Found null-byte at position %zd",
-									 bytesRead + null_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Found null-byte at position %zd in file %s",
+									 bytesRead + null_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -268,8 +268,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			iconv_ret = validateEncoding (line, conv, bytesRead);
 			if (iconv_ret)
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid encoding at position %zd",
-									 bytesRead + iconv_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid encoding at position %zd in file %s",
+									 bytesRead + iconv_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -279,7 +279,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			bom_ret = checkBom (line);
 			if (bom_ret)
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Found BOM");
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Found no Byte Order Mark (BOM) in file %s", filename);
 				retVal = -1;
 				break;
 			}
@@ -290,8 +290,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			unprintable_ret = checkUnprintable (line);
 			if (unprintable_ret)
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unprintable character at position %zd",
-									 bytesRead + unprintable_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unprintable character at position %zd in file %s",
+									 bytesRead + unprintable_ret, filename);
 				retVal = -1;
 				break;
 			}

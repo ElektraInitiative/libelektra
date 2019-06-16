@@ -519,9 +519,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!conversionData)
 	{
 		fclose (fh);
-		ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (
-			parentKey, "Out of memory. Errno: %s",
-			strerror (errno));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "Out of memory. Errno: %s", strerror (errno));
 	}
 
 	conversionData->currentOrder = 0;

@@ -202,7 +202,8 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	FILE * pwfile = fopen (keyString (parentKey), "r");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open configuration file %s. Reason: %s\n", keyString (parentKey),
+					     strerror (errno));
 		return -1;
 	}
 #if defined(USE_FGETPWENT)
@@ -296,7 +297,8 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 	FILE * pwfile = fopen (keyString (parentKey), "w");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing\n. Reason: %s", keyString (parentKey),
+					     strerror (errno));
 		return -1;
 	}
 	Key * cur;

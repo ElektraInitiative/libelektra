@@ -127,7 +127,10 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 	if (fstat (fd, &tmpStat))
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Failed to retrieve the file status of the temporary file.");
+		ELEKTRA_SET_RESOURCE_ERRORF (
+			errorKey,
+			"Failed to overwrite the temporary data. Cannot retrieve file status Unencrypted data may leak. Errno: %s",
+			strerror (errno));
 		return -1;
 	}
 
@@ -146,7 +149,8 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 	return 1;
 
 error:
-	ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Failed to overwrite the temporary file.");
+	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. Unencrypted data may leak. Errno: %s",
+				    strerror (errno));
 	return -1;
 }
 
@@ -226,7 +230,8 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		// gpg call returned success, overwrite the original file with the gpg payload data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Renaming file %s to %s failed. Reason: %s", tmpFile, keyString (parentKey),
+						     strerror (errno));
 			result = -1;
 		}
 	}
@@ -572,7 +577,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, "No plugin state is available.");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "No plugin state is available.");
 		return -1;
 	}
 

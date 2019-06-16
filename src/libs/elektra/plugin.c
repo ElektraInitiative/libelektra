@@ -69,7 +69,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 	*pluginNumber = fullname[1] - '0';
 	if (*pluginNumber > NR_OF_PLUGINS)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Tried to set more plugins than %s (NR_OF_PLUGINS). Pluginname: %s",
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Tried to set more plugins than %d (NR_OF_PLUGINS). Pluginname: %s",
 						   NR_OF_PLUGINS, fullname);
 		return -1;
 	}

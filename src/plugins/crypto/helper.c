@@ -112,14 +112,15 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (errorKey, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT,
+							keyName (k));
 		return -1;
 	}
 
 	int result = ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Salt was not stored Base64 encoded.");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Salt was not stored Base64 encoded in key %s", keyName (k));
 		return -1;
 	}
 	else if (result == -2)
