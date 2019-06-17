@@ -399,6 +399,11 @@ removed due to:
 
 - Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
 
+### unit
+
+- New plugin to validate units of memory and normalize them into bytes. E.g. 20 KB (normalized to 20000 Byte).
+  _(Marcel Hauri)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
