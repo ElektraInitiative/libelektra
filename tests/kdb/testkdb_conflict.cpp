@@ -73,7 +73,7 @@ TEST_P (Conflict, ConflictWithFile)
 
 	second.set (secondReturned, parent);
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
-	printWarnings (std::cout, parent);
+	printWarnings (std::cout, parent, true, true);
 }
 
 TEST_P (Conflict, DISABLED_ConflictWithFileLoop)
@@ -104,7 +104,7 @@ TEST_P (Conflict, DISABLED_ConflictWithFileLoop)
 			EXPECT_THROW (first.set (firstReturned, parent), KDBException);
 		}
 	}
-	printWarnings (std::cout, parent);
+	printWarnings (std::cout, parent, true, true);
 }
 
 TEST_P (Conflict, ConflictWithFileSameKey)
@@ -126,7 +126,7 @@ TEST_P (Conflict, ConflictWithFileSameKey)
 
 	second.set (secondReturned, parent);
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
-	printWarnings (std::cout, parent);
+	printWarnings (std::cout, parent, true, true);
 }
 
 TEST_P (Conflict, ConflictWithFileSameKeyValue)
@@ -148,7 +148,7 @@ TEST_P (Conflict, ConflictWithFileSameKeyValue)
 
 	second.set (secondReturned, parent);
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
-	printWarnings (std::cout, parent);
+	printWarnings (std::cout, parent, true, true);
 }
 
 TEST_P (Conflict, ConflictWithRemoval)
@@ -177,7 +177,7 @@ TEST_P (Conflict, ConflictWithRemoval)
 	{
 		EXPECT_NO_THROW (first.set (firstReturned, parent)) << "file should be still removed, should be ok to write to a new file";
 	}
-	printWarnings (std::cout, parent);
+	printWarnings (std::cout, parent, true, true);
 }
 
 TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
@@ -224,7 +224,7 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 		secondReturned.clear ();
 		EXPECT_THROW (second.set (secondReturned, parent), KDBException) << "should be conflict with existing file";
 	}
-	printWarnings (std::cout, parent);
+	printWarnings (std::cout, parent, true, true);
 }
 
 

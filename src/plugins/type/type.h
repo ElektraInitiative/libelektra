@@ -32,8 +32,9 @@ struct boolean_pair
 
 typedef struct
 {
-	kdb_long_long_t booleanCount;
+	kdb_long_long_t booleanRestore;
 	struct boolean_pair * booleans;
+	kdb_long_long_t booleanCount;
 } TypeData;
 
 int elektraTypeOpen (Plugin * handle, Key * errorKey);

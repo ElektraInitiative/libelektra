@@ -69,8 +69,14 @@ if [ -n "$UNFORMATTED_FILES" ]; then
 	echo "A diff of the formatting changes is stored at:"
 	echo "$PATCH_FILE"
 
+	PATCH_SCRIPT="/tmp/elektra-$DATE-reformat.patch.sh"
+	echo 'OLD_DIR=$(pwd)' > "$PATCH_SCRIPT"
+	echo "cd $SRC_ROOT" >> "$PATCH_SCRIPT"
+	echo "git apply $PATCH_FILE" >> "$PATCH_SCRIPT"
+	echo 'cd $OLD_DIR' >> "$PATCH_SCRIPT"
+
 	echo "You can try to apply it with, but unstaged changes may cause conflicts:"
-	echo "git apply $PATCH_FILE"
+	echo "sh $PATCH_SCRIPT"
 
 	exit 1
 fi

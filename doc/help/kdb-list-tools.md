@@ -6,7 +6,7 @@
 
 ## DESCRIPTION
 
-This command lists all the externel tools that are available to Elektra.
+This command lists all the external tools that are available to Elektra.
 In the first line it prints where external tools are located.
 
 The tool itself is extern.

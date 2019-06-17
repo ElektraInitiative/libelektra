@@ -26,7 +26,7 @@ int LsCommand::execute (Cmdline const & cl)
 {
 	checkArguments (cl);
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	root = cl.createKey (0);
 
@@ -45,7 +45,7 @@ int LsCommand::execute (Cmdline const & cl)
 
 	printResults (part, getDepth (root), cl);
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	return 0;
 }

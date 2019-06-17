@@ -171,6 +171,51 @@ KeySet removeArrayMetaData (KeySet const & keys)
 
 	return result;
 }
+/**
+ * @brief This function determines all keys “missing” from the given keyset.
+ *
+ * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
+ *
+ *  - `user/parent`
+ *
+ * that contains the keys
+ *
+ * - `user/parent/level1/level2`, and
+ * - `user/parent/level1/level2/level3/level4`
+ *
+ * , the keys
+ *
+ * - `user/parent/level1`, and
+ * - user/parent/level1/level2/level3
+ *
+ * are missing.
+ *
+ * @param keys This parameter contains the key set for which this function determines missing keys.
+ * @param parent This value stores the parent key of `keys`.
+ *
+ * @return A key set that contains all keys missing from `keys`
+ */
+KeySet missingKeys (KeySet const & keys, Key const & parent)
+{
+	KeySet missing;
+
+	keys.rewind ();
+	Key previous{ parent.getName (), KEY_BINARY, KEY_END };
+	for (; keys.next (); previous = keys.current ())
+	{
+		if (keys.current ().isDirectBelow (previous) || !keys.current ().isBelow (previous)) continue;
+
+		Key current{ keys.current ().getName (), KEY_BINARY, KEY_END };
+		while (!current.isDirectBelow (previous))
+		{
+			ckdb::keySetBaseName (*current, NULL);
+			missing.append (current);
+			current = current.dup ();
+		}
+	}
+
+	return missing;
+}
 
 /**
  * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
@@ -218,16 +263,31 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  * @param key This key specifies the data that should be saved in the YAML node returned by this function.
  *
  * @note Since YAML does not support non-empty binary data directly this function replaces data stored in binary keys with the string
- *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 before you use YAML CPP.
+ *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 plugin before you use YAML CPP.
  *
  * @returns A new YAML node containing the data specified in `key`
  */
 YAML::Node createMetaDataNode (Key const & key)
 {
-	return key.hasMeta ("array") ?
-		       YAML::Node (YAML::NodeType::Sequence) :
-		       key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
-						   YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ());
+	if (key.hasMeta ("array"))
+	{
+		return YAML::Node (YAML::NodeType::Sequence);
+	}
+	if (key.getBinarySize () == 0)
+	{
+		return YAML::Node (YAML::NodeType::Null);
+	}
+	if (key.isBinary ())
+	{
+		return YAML::Node ("Unsupported binary value!");
+	}
+
+	auto value = key.get<string> ();
+	if (value == "0" || value == "1")
+	{
+		return YAML::Node (key.get<bool> ());
+	}
+	return YAML::Node (value);
 }
 
 /**
@@ -309,7 +369,7 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 #ifdef HAVE_LOGGER
 	ostringstream output;
 	output << data;
-	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 #endif
 
 	if (keyIterator == key.end ())
@@ -349,7 +409,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 #ifdef HAVE_LOGGER
 	ostringstream output;
 	output << data;
-	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 #endif
 
 	if (keyIterator == key.end ())
@@ -443,6 +503,8 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	auto keys = removeArrayMetaData (mappings);
+	auto missing = missingKeys (keys, parent);
+	keys.append (missing);
 
 	KeySet arrayParents;
 	KeySet arrays;

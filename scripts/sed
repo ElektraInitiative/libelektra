@@ -31,7 +31,7 @@ s/([^.`/])git[hH]ub([^.][^\w])/\1GitHub\2/g
 
 s/\<[Ll]ibreoffice/LibreOffice/g
 
-s/([^/-])\<mark[Dd]own\>/\1Markdown/g
+s/([^./[-])\<mark[Dd]own\>/\1Markdown/g
 s/\<([Mm]ac )?OS X\>/macOS/g
 
 s/\<unix|UNIX/Unix/g

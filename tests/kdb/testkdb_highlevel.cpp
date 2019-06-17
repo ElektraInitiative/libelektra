@@ -896,64 +896,6 @@ TEST_F (Highlevel, DefaultValues)
 	ckdb::ksDel (defaults);
 }
 
-TEST_F (Highlevel, Generic)
-{
-	ELEKTRA_TAG_VALUE (TEST_STRING, "stringkey", String)
-	ELEKTRA_TAG_VALUE (TEST_BOOLEAN, "booleankey", Boolean)
-	ELEKTRA_TAG_VALUE (TEST_CHAR, "charkey", Char)
-	ELEKTRA_TAG_VALUE (TEST_OCTET, "octetkey", Octet)
-	ELEKTRA_TAG_VALUE (TEST_SHORT, "shortkey", Short)
-	ELEKTRA_TAG_VALUE (TEST_UNSIGNED_SHORT, "unsignedshortkey", UnsignedShort)
-	ELEKTRA_TAG_VALUE (TEST_LONG, "longkey", Long)
-	ELEKTRA_TAG_VALUE (TEST_UNSIGNED_LONG, "unsignedlongkey", UnsignedLong)
-	ELEKTRA_TAG_VALUE (TEST_LONG_LONG, "longlongkey", LongLong)
-	ELEKTRA_TAG_VALUE (TEST_UNSIGNED_LONG_LONG, "unsignedlonglongkey", UnsignedLongLong)
-	ELEKTRA_TAG_VALUE (TEST_FLOAT, "floatkey", Float)
-	ELEKTRA_TAG_VALUE (TEST_DOUBLE, "doublekey", Double)
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-	ELEKTRA_TAG_VALUE (TEST_LONG_DOUBLE, "longdoublekey", LongDouble)
-
-#endif
-
-	createElektra ();
-
-	ElektraError * error = nullptr;
-
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_STRING), "A string", &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_CHAR), 'c', &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_OCTET), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_SHORT), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_SHORT), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_LONG), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG_LONG), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_FLOAT), 1.1f, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_DOUBLE), 1.1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE), 1.1L, &error);
-
-	ASSERT_EQ (error, nullptr) << "elektraSet* failed" << &error << std::endl;
-
-	// Check values.
-	EXPECT_STREQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_STRING)), "A string") << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN)), true) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_CHAR)), 'c') << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_OCTET)), 1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_SHORT)), 1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_SHORT)), 1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_LONG)), 1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG)), 1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_LONG)), 1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG_LONG)), 1) << "Wrong key value.";
-
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_FLOAT)), 1.1f) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_DOUBLE)), 1.1) << "Wrong key value.";
-	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE)), 1.1L) << "Wrong key value.";
-}
-
 TEST_F (Highlevel, Raw)
 {
 	createElektra ();

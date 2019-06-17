@@ -45,7 +45,7 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tests/together dump validation
 kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tests/together/test abc
-# STDERR: The command kdb.* set failed while accessing the key database .*
+# STDERR: Sorry, module validator issued the error.*
 # ERROR:  42
 # RET:5
 ```
@@ -215,28 +215,25 @@ kdb rm -r user/tests/spec || kdb rm -r system/tests/spec
 We call the files, that contain a complete schema for configuration
 below a specific path in form of metadata, _Specfiles_.
 
-Particularly a _Specfile_ contains metadata that defines
-
-- the mount points of paths,
-- the plugins to load and
-- the behavior of these plugins.
+A _Specfile_ contains metadata, among others, that defines how
+the configuration settings should be validated.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata
-(altough the specfile is stored in the dump format, we can still create it using
+(although the specfile is stored in the dump format, we can still create it using
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 
 ```sh
 sudo kdb mount tutorial.dump spec/tests/tutorial dump
 cat << HERE | kdb import spec/tests/tutorial ni  \
 []                                         \
- mountpoint = tutorial.dump                \
- infos/plugins = dump validation           \
+ mountpoint=tutorial.dump                \
+ infos/plugins=dump validation           \
                                            \
 [/links/_]                                 \
-check/validation = https?://.*\..*         \
-check/validation/match = LINE              \
-check/validation/message = not a valid URL \
-description = A link to some website       \
+check/validation=https?://.*\..*         \
+check/validation/match=LINE              \
+check/validation/message=not a valid URL \
+description=A link to some website       \
 HERE
 kdb lsmeta spec/tests/tutorial
 #> infos/plugins
@@ -245,6 +242,9 @@ kdb lsmeta spec/tests/tutorial
 
 We now have all the metadata that we need to mount and validate the data below
 `/tutorial` in one file.
+
+For a description which metadata is available, have a look in
+[METADATA.ini](/doc/METADATA.ini).
 
 Now we apply this _Specfile_ to the key database to all keys below `tests/tutorial`.
 
@@ -304,7 +304,7 @@ kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
 # STDOUT-REGEX: Using name (user|system)/tests/tutorial/spec/should_not_be_here
 # RET:    5
-# STDERR: .*error.*10.*occurred.*
+# ERROR:10
 kdb get /tests/tutorial/spec/should_not_be_here
 # RET: 11
 # STDERR: Did not find key '/tests/tutorial/spec/should_not_be_here'

@@ -113,9 +113,9 @@ if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
 
 	add_subdirectory (src)
 	add_subdirectory (examples)
-	add_subdirectory (benchmarks)
 
 	if (BUILD_TESTING)
+		add_subdirectory (benchmarks)
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
 endif ()

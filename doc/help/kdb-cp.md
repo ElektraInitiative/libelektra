@@ -43,7 +43,9 @@ This command will return the following values as an exit status:
 - `-r`, `--recursive`:
   Recursively copy keys.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-f`, `--force`:
   Force overwriting the keys.
 
@@ -79,6 +81,16 @@ kdb cp -r user/tests/cp/examples/kdb-cp/key user/tests/cp/examples/kdb-cp/cpkeye
 # If the target-key already exists and has the same value as the source, everything is fine:
 kdb cp -r user/tests/cp/examples/kdb-cp/key user/tests/cp/examples/kdb-cp/cpkey
 #>
+
+# To force the copy of keys:
+kdb cp -rf user/tests/cp/examples/kdb-cp/key user/tests/cp/examples/kdb-cp/cpkeyerror
+#>
+
+# Now the key-values of /cpkeyerror are overwritten:
+kdb export user/tests/cp/examples/kdb-cp/cpkeyerror mini
+#> =key1
+#> first=key
+#> second=key
 
 # To copy keys below an existing key:
 kdb cp -r user/tests/cp/examples/kdb-cp/another user/tests/cp/examples/kdb-cp/another/key

@@ -44,10 +44,6 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		# output on open/close
 		continue
 		;;
-	"semlock")
-		# exclude due to issue 1781
-		continue
-		;;
 	"specload")
 		ARGS="-c app=$(dirname "$KDB")/elektra-specload-testapp"
 		# exclude; cannot open on travis?

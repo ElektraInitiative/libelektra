@@ -15,12 +15,7 @@ if (ELEKTRA_FOUND)
 	include_directories (${Elektra_INCLUDE_DIRS})
 
 	add_executable (application application.c)
-	target_link_libraries (application ${Elektra_LIBRARIES})
-
-	if (Elektra_SHARED)
-		# link additional libraries
-		target_link_libraries (application elektra-highlevel elektra-kdb elektra-ease)
-	endif (Elektra_SHARED)
+	target_link_libraries (application ${ElektraHighlevel_LIBRARIES})
 else (ELEKTRA_FOUND)
 	message (FATAL_ERROR "Elektra not found")
 endif (ELEKTRA_FOUND)

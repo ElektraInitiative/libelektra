@@ -101,14 +101,14 @@ To get an idea of Elektra, you can take a look at the
 In the GitHub repository the full documentation is available, including:
 
 - [tutorials](/doc/tutorials/),
-- [faq](/doc/help/elektra-faq.md),
+- [FAQ](/doc/help/elektra-faq.md),
 - [glossary](/doc/help/elektra-glossary.md), and
 - [concepts and man pages](/doc/help/elektra-introduction.md)
 
 You can read the documentation for the kdb tool, either
 
 - [on the Website](https://www.libelektra.org)
-- [in the API docu](https://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
+- [in the API docu](https://doc.libelektra.org/api/latest/html/doc_help_kdb_md.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
 - [on GitHub](https://master.libelektra.org/doc/help/kdb.md)
@@ -160,7 +160,7 @@ And in terms of quality, we want:
 - Elektra (except for some [plugins](src/plugins/)) has no external dependency.
 - Elektra is suitable for embedded systems and early boot stage programs.
 - Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
-- Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
+- Elektra provides powerful [Code Generation Techniques](src/tools/pythongen) for high-level configuration access.
 
 ## News
 

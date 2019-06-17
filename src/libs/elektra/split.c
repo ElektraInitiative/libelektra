@@ -386,7 +386,12 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
 		/* If key could be appended to any of the existing split keysets */
 		ssize_t curFound = splitSearchBackend (split, curHandle, curKey);
 
-		if (curFound == -1) continue; // key not relevant in this kdbSet
+		if (curFound == -1)
+		{
+			ELEKTRA_LOG_DEBUG ("SKIPPING NOT RELEVANT KEY: %p key: %s, string: %s", (void *) curKey, keyName (curKey),
+					   keyString (curKey));
+			continue; // key not relevant in this kdbSet
+		}
 
 		ksAppendKey (split->keysets[curFound], curKey);
 		if (keyNeedSync (curKey) == 1)
@@ -615,6 +620,7 @@ int splitGet (Split * split, Key * warningKey, KDB * handle)
 		// reduce sizes
 		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
+		ELEKTRA_LOG_DEBUG ("splitGet : backendUpdateSize thingy");
 		if (backendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
 	}
 
@@ -658,20 +664,43 @@ int splitUpdateSize (Split * split)
 }
 
 /**
- * Merges together all parts of split into dest.
+ * Merges together the backend based parts of split into dest,
+ * but bypasses the default split.
  *
  * @param split the split object to work with
  * @param dest the destination keyset where all keysets are appended.
  * @retval 1 on success
  * @ingroup split
  */
-int splitMerge (Split * split, KeySet * dest)
+int splitMergeBackends (Split * split, KeySet * dest)
 {
-	/* Iterate everything */
-	for (size_t i = 0; i < split->size; ++i)
+	/* Bypass default split */
+	const int bypassedSplits = 1;
+	for (size_t i = 0; i < split->size - bypassedSplits; ++i)
 	{
+		if (test_bit (split->syncbits[i], 0))
+		{
+			/* Dont process keysets which come from the user
+			   and not from the backends */
+			continue;
+		}
 		ksAppend (dest, split->keysets[i]);
 	}
+	return 1;
+}
+
+/**
+ * Merges the default split into dest.
+ *
+ * @param split the split object to work with
+ * @param dest the destination keyset where all keysets are appended.
+ * @retval 1 on success
+ * @ingroup split
+ */
+int splitMergeDefault (Split * split, KeySet * dest)
+{
+	/* Merge default split */
+	ksAppend (dest, split->keysets[split->size - 1]);
 	return 1;
 }
 
@@ -798,4 +827,345 @@ void splitPrepare (Split * split)
 		}
 		i += inc;
 	}
+}
+
+static char * elektraStrConcat (const char * a, const char * b)
+{
+	size_t len = strlen (a) + strlen (b) + 1;
+	char * ret = elektraMalloc (len);
+	ret = strcpy (ret, a);
+	ret = strcat (ret, b);
+	return ret;
+}
+
+void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
+{
+	Key * mountPoint = mountGetMountpoint (handle, parentKey);
+	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
+	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
+	Key * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
+	Key * lastSplitSize =
+		keyNew (KDB_CACHE_PREFIX "/lastSplitSize", KEY_BINARY, KEY_SIZE, sizeof (size_t), KEY_VALUE, &(split->size), KEY_END);
+	ksAppendKey (global, lastParentName);
+	ksAppendKey (global, lastParentValue);
+	ksAppendKey (global, lastInitalParentName);
+	ksAppendKey (global, lastSplitSize);
+
+	ELEKTRA_LOG_DEBUG ("SIZE STORAGE STORE STUFF");
+	for (size_t i = 0; i < split->size; ++i)
+	{
+		// TODO: simplify this code below, seems like this affacts only the last split anyway
+		if (!split->handles[i] || !split->handles[i]->mountpoint)
+		{
+			ELEKTRA_LOG_DEBUG (">>>> Skipping split->handle[%ld]: pseudo-backend or no mountpoint", i);
+			ELEKTRA_ASSERT (i == (split->size - 1), "ERROR: NOT THE LAST SPLIT");
+			continue;
+		}
+		if (test_bit (split->syncbits[i], 0))
+		{
+			/* Dont process keysets which come from the user
+			   and not from the backends */
+			ELEKTRA_LOG_DEBUG (">>>> Skipping split->handle[%ld]: syncbits is 0, keyset from user", i);
+			ELEKTRA_ASSERT (i == (split->size - 1), "ERROR: NOT THE LAST SPLIT");
+			continue;
+		}
+		// TODO: simplify this code above, seems like this affacts only the last split anyway
+
+		char * name = 0;
+		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		{
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+		}
+		else
+		{
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/", "default/");
+		}
+		// Append parent name for uniqueness (spec, dir, user, system, ...)
+		char * tmp = name;
+		name = elektraStrConcat (name, keyName (split->parents[i]));
+		elektraFree (tmp);
+
+		ELEKTRA_LOG_DEBUG (">>>> STORING split->handle[%ld] with name: %s :::: parentName: %s, parentValue: %s", i, name,
+				   keyName (split->parents[i]), keyString (split->parents[i]));
+
+		Key * key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "splitParentName");
+		keySetString (key, keyName (split->parents[i]));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "splitParentValue");
+		keySetString (key, keyString (split->parents[i]));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "specsize");
+		keySetBinary (key, &(split->handles[i]->specsize), sizeof (ssize_t));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "dirsize");
+		keySetBinary (key, &(split->handles[i]->dirsize), sizeof (ssize_t));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "usersize");
+		keySetBinary (key, &(split->handles[i]->usersize), sizeof (ssize_t));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "systemsize");
+		keySetBinary (key, &(split->handles[i]->systemsize), sizeof (ssize_t));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		key = keyNew (name, KEY_END);
+		keyAddBaseName (key, "syncbits");
+		keySetBinary (key, &(split->syncbits[i]), sizeof (splitflag_t));
+		ksAppendKey (global, key);
+		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+				   strlen (keyString (key)), keyGetValueSize (key));
+		keyDel (key);
+
+		elektraFree (name);
+	}
+}
+
+int splitCacheCheckState (Split * split, KeySet * global)
+{
+	ELEKTRA_LOG_DEBUG ("SIZE STORAGE CHCK");
+	Key * key = 0;
+	char * name = 0;
+
+	Key * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", KDB_O_NONE);
+	if (lastSplitSize && keyGetValueSize (lastSplitSize) == sizeof (size_t))
+	{
+		size_t lastSize = 0;
+		keyGetBinary (lastSplitSize, &lastSize, sizeof (size_t));
+		ELEKTRA_LOG_DEBUG ("Split size check: lastSize %ld, cur size: %ld", lastSize, split->size);
+		int bypassedSplits = 1;
+		if (lastSize != split->size + bypassedSplits) return -1;
+	}
+	else
+	{
+		return -1;
+	}
+
+	for (size_t i = 0; i < split->size; ++i)
+	{
+		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		{
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+		}
+		else
+		{
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/", "default/");
+		}
+		// Append parent name for uniqueness (spec, dir, user, system, ...)
+		char * tmp = name;
+		name = elektraStrConcat (name, keyName (split->parents[i]));
+		elektraFree (tmp);
+		key = keyNew (name, KEY_END);
+
+		keyAddBaseName (key, "splitParentName");
+		Key * found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && elektraStrCmp (keyString (found), keyName (split->parents[i])) == 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "splitParentValue");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && elektraStrCmp (keyString (found), keyString (split->parents[i])) == 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "specsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->specsize > 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "dirsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->dirsize > 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "usersize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->usersize > 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "systemsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->systemsize > 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "syncbits");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && keyGetValueSize (found) == sizeof (splitflag_t)) || test_bit (split->syncbits[i], 0))
+		{
+			goto error;
+		}
+
+		elektraFree (name);
+		name = 0;
+		keyDel (key);
+	}
+
+	return 0;
+
+error:
+	ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+	ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+			   strlen (keyString (key)), keyGetValueSize (key));
+	keyDel (key);
+	if (name) elektraFree (name);
+	return -1;
+}
+
+int splitCacheLoadState (Split * split, KeySet * global)
+{
+	ELEKTRA_LOG_DEBUG ("SIZE STORAGE LOAD");
+	Key * key = 0;
+	char * name = 0;
+
+	Key * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", KDB_O_NONE);
+	if (lastSplitSize && keyGetValueSize (lastSplitSize) == sizeof (size_t))
+	{
+		size_t lastSize = 0;
+		keyGetBinary (lastSplitSize, &lastSize, sizeof (size_t));
+		ELEKTRA_LOG_DEBUG ("Split size check: lastSize %ld, cur size: %ld", lastSize, split->size);
+		int bypassedSplits = 1;
+		if (lastSize != split->size + bypassedSplits) return -1;
+	}
+	else
+	{
+		return -1;
+	}
+
+	for (size_t i = 0; i < split->size; ++i)
+	{
+		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		{
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+		}
+		else
+		{
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/", "default/");
+		}
+		// Append parent name for uniqueness (spec, dir, user, system, ...)
+		char * tmp = name;
+		name = elektraStrConcat (name, keyName (split->parents[i]));
+		elektraFree (tmp);
+		key = keyNew (name, KEY_END);
+
+		keyAddBaseName (key, "splitParentName");
+		Key * found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && elektraStrCmp (keyString (found), keyName (split->parents[i])) == 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "splitParentValue");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (!(found && elektraStrCmp (keyString (found), keyString (split->parents[i])) == 0))
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "specsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
+		{
+			keyGetBinary (found, &(split->handles[i]->specsize), sizeof (ssize_t));
+		}
+		else
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "dirsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
+		{
+			keyGetBinary (found, &(split->handles[i]->dirsize), sizeof (ssize_t));
+		}
+		else
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "usersize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
+		{
+			keyGetBinary (found, &(split->handles[i]->usersize), sizeof (ssize_t));
+		}
+		else
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "systemsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
+		{
+			keyGetBinary (found, &(split->handles[i]->systemsize), sizeof (ssize_t));
+		}
+		else
+		{
+			goto error;
+		}
+
+		keySetBaseName (key, "syncbits");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (splitflag_t))
+		{
+			keyGetBinary (found, &(split->syncbits[i]), sizeof (splitflag_t));
+		}
+		else
+		{
+			goto error;
+		}
+
+		elektraFree (name);
+		name = 0;
+		keyDel (key);
+	}
+
+	return 0;
+
+error:
+	ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+	ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+			   strlen (keyString (key)), keyGetValueSize (key));
+	keyDel (key);
+	if (name) elektraFree (name);
+	return -1;
 }

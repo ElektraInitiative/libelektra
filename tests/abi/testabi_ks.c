@@ -2809,6 +2809,37 @@ static void test_cutbelow (void)
 	keyDel (cutpoint);
 }
 
+static void test_cascading_cutbelow (void)
+{
+	printf ("Testing cutting below some keys (cascading)\n");
+
+	Key * cutpoint = keyNew ("/export", KEY_END);
+	KeySet * orig = ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+			       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END),
+			       keyNew ("/export-backup/b", KEY_END), keyNew ("/export-backup-2/x", KEY_END), KS_END);
+	ksRewind (orig);
+	ksNext (orig);
+	succeed_if_same_string (keyName (ksCurrent (orig)), "/export/a");
+	ksLookupByName (orig, "/export-backup/b", 0);
+	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
+
+	KeySet * part = ksCut (orig, cutpoint);
+
+	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
+
+	KeySet * cmp_orig = ksNew (15, keyNew ("/export-backup-2/x", KEY_END), keyNew ("/export-backup/b", KEY_END), KS_END);
+	compare_keyset (orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet * cmp_part = ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+				   keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END), KS_END);
+	compare_keyset (part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
 KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
@@ -3222,6 +3253,7 @@ int main (int argc, char ** argv)
 	test_cutpointRoot ();
 	test_unique_cutpoint ();
 	test_cutbelow ();
+	test_cascading_cutbelow ();
 	test_simple ();
 	test_cursor ();
 	test_morecut ();

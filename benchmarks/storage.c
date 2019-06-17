@@ -22,9 +22,6 @@ Plugin * plugins[NUM_PLUGINS];
 char * pluginNames[NUM_PLUGINS] = { "dump", "mmapstorage_crc", "mmapstorage", "quickdump" };
 
 char * tmpfilename;
-char * tempHome;
-int tempHomeLen;
-char * tempHomeConf;
 
 static void benchmarkDel (void)
 {

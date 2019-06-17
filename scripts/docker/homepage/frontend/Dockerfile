@@ -31,7 +31,7 @@ RUN mkdir build \
     && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
              -DINSTALL_SYSTEM_FILES=OFF \
-             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-semlock;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;camel;yajl" \
+             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;camel;yajl" \
              -DTOOLS="kdb;rest-frontend" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \
              -DCMAKE_CXX_FLAGS="$C_FLAGS" \

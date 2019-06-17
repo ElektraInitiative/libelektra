@@ -2,39 +2,34 @@
 
 WORKINGDIR="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/@TARGET_PLUGIN_FOLDER@/"
 
-if [ -z "$KDB" ];
-then
-    KDB=kdb
+if [ -z "$KDB" ]; then
+	KDB=kdb
 fi
 
-if [ "$#" -ne 1 ];
-then
+if [ "$#" -ne 1 ]; then
 	echo "Usage: $KDB change-storage-symlink storage"
 	exit 1
 fi
 
 STORAGE="$1"
 
-if [ "$STORAGE" = "storage" ];
-then
+if [ "$STORAGE" = "storage" ]; then
 	echo "new default storage plugin must be a specific storage plugin"
 	exit 1
 fi
 
-INFO="$($KDB info "$STORAGE" 2>/dev/null)"
+INFO="$($KDB info "$STORAGE" 2> /dev/null)"
 
-if [ "$?" -ne 0 ];
-then
+if [ "$?" -ne 0 ]; then
 	echo "$STORAGE is not a valid plugin"
 	exit 1
 fi
 
-INFO="$(echo "$INFO" | tail -n 6 2>/dev/null)"
+INFO="$(echo "$INFO" | tail -n 6 2> /dev/null)"
 
 echo "$INFO" | grep -q "provides: storage" 2> /dev/null
 
-if [ "$?" -ne 0 ];
-then
+if [ "$?" -ne 0 ]; then
 	echo "$STORAGE is not a valid storage plugin"
 	exit 1
 else

@@ -32,8 +32,6 @@ USER_ROOT="user/tests/script"
 SYSTEM_ROOT="system/tests/script"
 SPEC_ROOT="spec/tests/script"
 
-ROOTS="$USER_ROOT $SYSTEM_ROOT"
-
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]; then
 	DATADIR="@CMAKE_INSTALL_PREFIX@/@TARGET_TEST_DATA_FOLDER@/shell"
@@ -44,12 +42,12 @@ fi
 USER="$(id -un)"
 GROUP="$(id -gn)"
 
-SYSTEM_FOLDER=@KDB_DB_SYSTEM@
-SPEC_FOLDER=@KDB_DB_SPEC@
+SYSTEM_FOLDER="@KDB_DB_SYSTEM@"
+SPEC_FOLDER="@KDB_DB_SPEC@"
 if [ -n "$HOME" ]; then
-	USER_FOLDER=$HOME/@KDB_DB_USER@
+	USER_FOLDER="$HOME/@KDB_DB_USER@"
 else
-	USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+	USER_FOLDER="@KDB_DB_HOME@/$USER/@KDB_DB_USER@"
 fi
 PLUGINS=$(echo "@ADDED_PLUGINS@" | tr ';' ' ')
 ADDED_PLUGINS_WITHOUT_ONLY_SHARED=$(echo "@ADDED_PLUGINS_WITHOUT_ONLY_SHARED@" | tr ';' ' ')
@@ -65,6 +63,8 @@ KDB_GETENV=$(kdb elektrify-getenv getenv KDB 2> /dev/null)
 if [ "${KDB_GETENV}" ]; then
 	KDB=${KDB_GETENV}
 fi
+
+export KDB_EXEC_PATH="@CMAKE_BINARY_DIR@/bin"
 
 # ensure ruby plugin finds Ruby bindings without installation
 # (require both the src and the build dir)

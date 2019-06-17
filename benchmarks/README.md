@@ -52,8 +52,14 @@ cat mySeedFile | benchmark_opmphm opmphmbuildtime
 ## plugingetset
 
 The `benchmark_plugingetset` is different than the other benchmarks. It doesn't do any benchmarking by itself.
-Instead it simple takes 3 arguments `<path> <parent> <plugin>`. It then looks for the file `test.<plugin>.in` under the path `<path>`
-and calls the `get` method of plugin `<plugin>` on this file with parent Key `<parent>`. Lastly it calls the `set` method of `<plugin>`
-on the file `test.<plugin>.out` with parent Key `<parent>`.
+Instead it simple takes 3 or 4 arguments:
 
-`benchmark_plugingetset` can used with `time` (or similar programs) compare the speed of two (or more) storage plugins for specific files.
+```sh
+benchmark_plugingetset <path> <parent> <plugin> [get]
+```
+
+. It then looks for the file `test.<plugin>.in` under the path `<path>`
+and calls the `get` method of plugin `<plugin>` on this file with parent Key `<parent>`. Lastly it calls the `set` method of `<plugin>`
+on the file `test.<plugin>.out` with parent Key `<parent>`, if you did not specify `get` as fourth argument.
+
+`benchmark_plugingetset` can be used with `time` (or similar programs) to compare the speed of two (or more) storage plugins for specific files. The [benchmarking tutorial](../doc/tutorials/benchmarking.md) provides one example on how to do that.

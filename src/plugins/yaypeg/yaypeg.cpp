@@ -39,7 +39,6 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yaypeg", KEY_VALUE, "yaypeg plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yaypeg/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yaypeg/exports/get", KEY_FUNC, elektraYaypegGet, KEY_END),
-			  keyNew ("system/elektra/modules/yaypeg/exports/set", KEY_FUNC, elektraYaypegSet, KEY_END),
 #include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yaypeg/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
@@ -82,16 +81,9 @@ int elektraYaypegGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	return status < 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : status;
 }
 
-/** @see elektraDocSet */
-int elektraYaypegSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
-	return elektraPluginExport ("yaypeg", ELEKTRA_PLUGIN_GET, &elektraYaypegGet, ELEKTRA_PLUGIN_SET, &elektraYaypegSet,
-				    ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("yaypeg", ELEKTRA_PLUGIN_GET, &elektraYaypegGet, ELEKTRA_PLUGIN_END);
 }
 
 } // end extern "C"

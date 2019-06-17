@@ -29,8 +29,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
-- `-v`, `--verbose`:
-  Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-N`, `--namespace=NS`:
@@ -38,6 +36,10 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   See [below in KDB](#KDB).
 - `--`:
   Do not process any following arguments starting with `-` as options.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## KDB
 

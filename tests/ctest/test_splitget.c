@@ -703,7 +703,8 @@ static void test_merge (void)
 	succeed_if (split->handles[4] == backend, "should be backend");
 
 	KeySet * nks = ksNew (0, KS_END);
-	succeed_if (splitMerge (split, nks) == 1, "could not merge together keysets");
+	succeed_if (splitMergeBackends (split, nks) == 1, "could not merge together keysets from backend");
+	succeed_if (splitMergeDefault (split, nks) == 1, "could not merge together keysets from default split");
 	compare_keyset (ks, nks);
 	// output_keyset (nks);
 	ksDel (nks);
@@ -819,7 +820,8 @@ static void test_realworld (void)
 
 	KeySet * dest = ksNew (5, keyNew ("user/test", KEY_VALUE, "should be gone", KEY_END), KS_END);
 	ksClear (dest);
-	succeed_if (splitMerge (split, dest) == 1, "split merge");
+	succeed_if (splitMergeBackends (split, dest) == 1, "split merge backends");
+	succeed_if (splitMergeDefault (split, dest) == 1, "split merge default");
 	compare_keyset (dest, ks);
 	ksDel (dest);
 

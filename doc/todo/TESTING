@@ -6,7 +6,6 @@ src/plugins/python/CMakeLists.txt
 src/plugins/python2/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
-src/plugins/semlock/CMakeLists.txt   disable due to /dev/shm problems, see #1122 and #1260
 doc/help/kdb-get.md   for INI
 
 ### Jenkins

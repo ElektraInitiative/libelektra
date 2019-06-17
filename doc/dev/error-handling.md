@@ -144,11 +144,6 @@ Additional metakeys yield all the details.
   readable message is in the metavalue of `error/reason`. It states why
   the error occurred. One example for it is ''no disc space available''.
 
-- [error/ingroup] contains `kdb` if the error occurred inside
-  the core. It contains `module` if the error happened while loading
-  a module. The metavalue is `plugin` if the error information comes
-  from a plugin.
-
 - [error/module] indicates the name of the specific module or plugin.
 
 - [error/file] yields the source file from where the error information

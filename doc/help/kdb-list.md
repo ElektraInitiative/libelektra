@@ -24,7 +24,9 @@ The best plugins will be the last in the list.
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
   Also output the number calculated by their
-  `infos/status` clause in the contract.
+  `infos/status` clause in the contract. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-0`, `--null`:
   Use binary 0 termination
 

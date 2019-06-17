@@ -221,7 +221,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	{
 		fprintf (stderr, "WARNING http link file %s could not be opened\n", HTTPLINK_FILENAME);
 	}
-	int lineCount = 0;
+	int lineCount = 1;
 	int c;
 	fpos_t pos;
 	int state = linkStart;

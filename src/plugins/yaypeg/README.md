@@ -15,7 +15,7 @@ The YAy PEG plugin use a parser based on [PEGTL](https://github.com/taocpp/PEGTL
 
 ## Dependencies
 
-This plugin requires [PEGTL](https://github.com/taocpp/PEGTL/blob/2.7.x/doc/Installing-and-Using.md) `2.7.1` or later.
+This plugin requires [PEGTL](https://repology.org/project/pegtl/versions) `2.7.1` or later. It does not support PEGTL `3`, which requires C++ 17.
 
 ## Examples
 
@@ -75,6 +75,24 @@ kdb rm -r user/tests/yaypeg
 sudo kdb umount user/tests/yaypeg
 ```
 
+### Boolean Values
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yaypeg yaypeg
+
+# Manually add a boolean value to the database
+printf 'one: true' > `kdb file user/tests/yaypeg`
+
+# Elektra stores boolean values as `0` and `1`
+kdb get user/tests/yaypeg/one
+#> 1
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yaypeg
+sudo kdb umount user/tests/yaypeg
+```
+
 ### Error Messages
 
 ```sh
@@ -100,7 +118,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n8 | head -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
+kdb get user/tests/error | tail -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
 #> config.yaml:2:0: Incomplete document, expected “end of file”
 #>                  I’d like to be a tree
 #>                  ^

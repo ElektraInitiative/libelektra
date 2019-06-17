@@ -19,7 +19,7 @@ then your plugin should only store those two keys. **Do not** add the keys
 - `user/tests/storage/root/level1`, or
 - `user/tests/storage/root/level1/level2`
 
-to the key set. One plugin that handles this situation properly is [YAML CPP](/src/plugins/yamlcpp/), as the following [Markdown Shell Recorder test](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) shows:
+to the key set. One plugin that handles this situation properly is [YAML CPP](/src/plugins/yamlcpp/), as the following [Markdown Shell Recorder][] test shows:
 
 ```sh
 # Mount plugin
@@ -40,6 +40,68 @@ sudo kdb umount user/tests/storage
 ```
 
 . For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/holes.md).
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
+## Differentiate Between Empty Keys and Keys Containing an Empty String
+
+Elektra supports both binary and textual values. The main difference between binary and textual data is that textual data always ends with a null byte. Therefore you are not allowed to store the code point `0` inside textual data. Binary data does not have this limitation.
+
+The simplest textual data is the empty string (`""` = `0`) and has length 1, while the simplest binary data stores nothing at all and therefore has length 0. In the `kdb` utility you can disambiguate between these value by checking for the [metakey `binary`](../help/elektra-metadata.md). The following [Markdown Shell Recorder][] test shows how a storage plugin should handle these values.
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/storage yamlcpp
+
+kdb set user/tests/storage/null
+#> Create a new key user/tests/storage/null with null value
+kdb get user/tests/storage/null
+#>
+kdb lsmeta user/tests/storage/null
+#> binary
+
+kdb set user/tests/storage/empty ''
+#> Create a new key user/tests/storage/empty with string ""
+kdb get user/tests/storage/empty
+#>
+kdb lsmeta user/tests/storage/empty
+#>
+
+# Undo modifications to the key database
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
+
+## Convert Boolean Data
+
+Elektra uses [`0` and `1` to represent binary data](../decisions/bool.md). A storage plugin that uses other values (e.g. `false` and `true`) needs to convert these values to `0` and `1`. The [Markdown Shell Recorder][] test below shows that [YAML CPP](../../src/plugins/yamlcpp/README.md) handles the conversion from and to [YAML’s boolean type](https://yaml.org/spec/1.2/spec.html#id2803629) properly. In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to makes sure that YAML CPP interacts correctly with this essential plugin.
+
+```sh
+# Mount plugin
+kdb mount config.yaml user/tests/storage yamlcpp type
+kdb set user/tests/storage/bool/value true
+kdb get user/tests/storage/bool/value
+#> 1
+
+kdb setmeta user/tests/storage/bool/value type boolean
+kdb set user/tests/storage/bool/value 1
+kdb get user/tests/storage/bool/value
+#> 1
+
+kdb set user/tests/storage/bool/value false
+kdb get user/tests/storage/bool/value
+#> 0
+
+kdb set user/tests/storage/bool/value 'non boolean'
+# RET: 5
+
+kdb get user/tests/storage/bool/value
+#> 0
+
+# Undo modifications to the key database
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
 
 ## Support Values Inside Non-Leaf Keys
 
@@ -171,7 +233,6 @@ sudo kdb umount user/tests/storage
 .
 
 <!--
-TODO: Describe difference between keys that store null values (binary data) and empty values (string data)
 TODO: Add information on how plugins should store comment (meta)data
 TODO: Document that a plugin should keep the ordering of key-value pairs of a document intact, when writing data back to the configuration file
 TODO: Add section about relative keys (See also: https://issues.libelektra.org/51)

@@ -234,6 +234,9 @@ copied by the `spec` plugin just before):
 - [date](date/) validates date and time data
 - [range](range/) checks if a value is within a given range
 - [reference](reference/) checks if a value is a valid reference to another key
+- [rgbcolor](rgbcolor/) validates and normalizes hexcolors
+- [macaddr](macaddr/) checks if MAC addresses are valid and normalizes them
+- [unit](unit/) validates and normalizes units of memory (e.g. 20KB to 20000 Bytes)
 
 **Other Validation**
 
@@ -263,8 +266,8 @@ binding during run-time.
 - [cpptemplate](cpptemplate/) a template for C++ based plugins
 - [list](list/) loads other plugins
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
-- [semlock](semlock/) a semaphore based global locking logic
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
+- [cache](cache/) caches keysets from previous `kdbGet()` calls

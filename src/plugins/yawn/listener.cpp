@@ -89,7 +89,16 @@ Listener::Listener (Key const & parent)
 void Listener::exitValue (string const & text)
 {
 	Key key = parents.top ();
-	key.setString (scalarToText (text));
+
+	if (text == "true" || text == "false")
+	{
+		key.set<bool> (text == "true");
+	}
+	else
+	{
+		key.setString (scalarToText (text));
+	}
+
 	keys.append (key);
 }
 
@@ -119,11 +128,21 @@ void Listener::exitPair (bool const matchedValue)
 	if (!matchedValue)
 	{
 		// Add key with empty value
+		parents.top ().setBinary (NULL, 0);
 		keys.append (parents.top ());
 	}
 	// Returning from a mapping such as `part: …` means that we need need to
 	// remove the key for `part` from the stack.
 	parents.pop ();
+}
+
+/**
+ * @brief This function will be called before the walker enters an empty document (that might also contain comments).
+ */
+void Listener::enterEmpty ()
+{
+	// We add a parent key that stores nothing, representing an empty file (aka. `null`).
+	keys.append (Key{ parents.top ().getName (), KEY_BINARY, KEY_END });
 }
 
 /**

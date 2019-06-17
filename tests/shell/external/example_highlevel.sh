@@ -23,8 +23,6 @@ check_version
 
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/highlevel"
 
-set -x
-
 do_tests() {
 	KEY=/sw/example/highlevel/#0/current
 	UKEY="user$KEY"
@@ -35,7 +33,8 @@ do_tests() {
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 
-	"$KDB" mount "$EXTERNAL_FOLDER/spec.ini" "$SPECKEY" ni
+	"$KDB" mount "highlevel_spec.ini" "$SPECKEY" ni
+	"$KDB" import "$SPECKEY" ni < "$EXTERNAL_FOLDER/spec.ini"
 	"$KDB" spec-mount "$KEY"
 
 	./application
@@ -86,10 +85,10 @@ do_tests() {
 	./application | grep "myfloatarray\\[4\\]: $MYFLOAT4"
 	succeed_if "application did not print myfloatarray[4]"
 
-	"$KDB" umount "$SPECKEY"
-	"$KDB" umount "$KEY"
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
+	"$KDB" umount "$SPECKEY"
+	"$KDB" umount "$KEY"
 }
 
 echo "Testing build with cmake"
@@ -98,10 +97,11 @@ cd "$EXTERNAL_FOLDER"
 mkdir build
 cd build
 
-cmake ../cmake
+# manually set Elektra_DIR and KDB to support non-standard install locations
+cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname $0)/../../cmake/Elektra)"
 succeed_if "could not run cmake"
 
-make
+cmake --build .
 succeed_if "could not build cmake project"
 
 do_tests

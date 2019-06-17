@@ -78,7 +78,7 @@ if (TOOLS MATCHES "NODEP")
 endif ()
 
 if (TOOLS MATCHES "ALL")
-	set (TOOLS_LIST gen race qt-gui)
+	set (TOOLS_LIST pythongen race qt-gui gen-gpg-testkey)
 	set (TOOLS_FORCE FORCE)
 	list (REMOVE_ITEM TOOLS
 			  ALL)
