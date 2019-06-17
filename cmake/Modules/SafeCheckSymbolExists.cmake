@@ -20,11 +20,13 @@ macro (safe_check_symbol_exists SYMBOL FILES VARIABLE)
 			CMAKE_C_FLAGS
 			${CMAKE_C_FLAGS})
 
+	cmake_push_check_state ()
 	get_directory_property (DEFS COMPILE_DEFINITIONS)
 	prepend (DEFS "-D" ${DEFS})
 	list (APPEND CMAKE_REQUIRED_DEFINITIONS
 		     ${DEFS})
 
+	cmake_pop_check_state ()
 	check_symbol_exists ("${SYMBOL}" "${FILES}" "${VARIABLE}")
 
 	set (CMAKE_C_FLAGS ${CMAKE_C_FLAGS_OLD})
