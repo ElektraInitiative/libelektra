@@ -101,11 +101,11 @@ kdb set user/tests/quickdump/otherkey "other value"
 #> Create a new key user/tests/quickdump/otherkey with string "other value"
 
 # Show resulting file (not part of test, because xxd is not available everywhere)
-xxd $(kdb file user/tests/quickdump/key)
-#> 00000000: 454b 4442 0000 0003 076b 6579 730b 7661  EKDB.....keys.va
-#> 00000010: 6c75 656d 096d 6574 6113 6d65 7461 7661  luem.meta.metava
-#> 00000020: 6c75 6500 116f 7468 6572 6b65 7973 176f  lue..otherkeys.o
-#> 00000030: 7468 6572 2076 616c 7565 00              ther value.
+# xxd $(kdb file user/tests/quickdump/key)
+# 00000000: 454b 4442 0000 0003 076b 6579 730b 7661  EKDB.....keys.va
+# 00000010: 6c75 656d 096d 6574 6113 6d65 7461 7661  luem.meta.metava
+# 00000020: 6c75 6500 116f 7468 6572 6b65 7973 176f  lue..otherkeys.o
+# 00000030: 7468 6572 2076 616c 7565 00              ther value.
 
 
 # Change mounted file (in a very stupid way to enable shell-recorder testing):
