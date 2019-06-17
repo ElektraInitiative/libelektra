@@ -178,9 +178,27 @@ namespace yaypeg
  */
 void walk (Listener & listener, node const & node)
 {
-	ELEKTRA_LOG_DEBUG ("Parse tree: %s", toString (node).c_str ());
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Parse Tree");
+	ELEKTRA_LOG_DEBUG ("——————————");
 
-	// If the document contains only one a single value we call `exitValue`
+	std::istringstream stream (toString (node));
+	for (string line; std::getline (stream, line);)
+	{
+		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+	}
+
+	ELEKTRA_LOG_DEBUG ("——————————");
+#endif
+
+	// Empty document
+	if (node.is_root () && node.children.empty ())
+	{
+		listener.enterEmpty ();
+		return;
+	}
+
+	// If the document contains only a single value we call `exitValue`
 	// for that function. We need to handle that special case to not add
 	// value multiple times for maps (once for `c_l_block_map_implicit_value`
 	// and `c_l_block_seq_entry`) and once for the child of

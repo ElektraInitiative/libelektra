@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-PLUGINS" "7" "April 2019" "" ""
+.TH "ELEKTRA\-PLUGINS" "7" "June 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
@@ -414,6 +414,12 @@ range \fIrange/\fR checks if a value is within a given range
 .IP "\(bu" 4
 reference \fIreference/\fR checks if a value is a valid reference to another key
 .
+.IP "\(bu" 4
+rgbcolor \fIrgbcolor/\fR validates and normalizes hexcolors
+.
+.IP "\(bu" 4
+macaddr \fImacaddr/\fR checks if MAC addresses are valid and normalizes them
+.
 .IP "" 0
 .
 .P
@@ -474,9 +480,6 @@ list \fIlist/\fR loads other plugins
 iterate \fIiterate/\fR iterate over all keys and run exported functions on tagged keys
 .
 .IP "\(bu" 4
-semlock \fIsemlock/\fR a semaphore based global locking logic
-.
-.IP "\(bu" 4
 process \fIprocess/\fR proxy plugin that executes other plugins in a separate process
 .
 .IP "\(bu" 4
@@ -487,6 +490,9 @@ simplespeclang \fIsimplespeclang/\fR simple configuration specification language
 .
 .IP "\(bu" 4
 gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
+.
+.IP "\(bu" 4
+cache \fIcache/\fR caches keysets from previous \fBkdbGet()\fR calls
 .
 .IP "" 0
 

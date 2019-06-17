@@ -26,8 +26,15 @@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "kdbos.h"
 
+#ifdef __cplusplus
+}
+#endif
 
 enum {
 	KEY_NAME=1,

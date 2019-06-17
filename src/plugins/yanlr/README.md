@@ -40,7 +40,7 @@ Please note that we only tested the plugin with ANTLR `4.7.1` (and later version
 ### Mappings
 
 ```sh
-# Mount plugin to namespace `user/tests/yanlr`
+# Mount plugin to `user/tests/yanlr`
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add some mappings to the configuration file
@@ -88,7 +88,7 @@ sudo kdb umount user/tests/yanlr
 ### Arrays
 
 ```sh
-# Mount plugin to cascading namespace `/tests/yanlr`
+# Mount plugin to `/tests/yanlr`
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add a sequences to the configuration file
@@ -108,6 +108,42 @@ kdb set user/tests/yanlr/primes/#3 seven
 # Retrieve index of last array element
 kdb getmeta user/tests/yanlr/primes array
 #> #3
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
+```
+
+### Boolean Values
+
+```sh
+# Mount plugin to `/tests/yanlr`
+sudo kdb mount config.yaml user/tests/yanlr yanlr
+
+# Manually add a boolean value to the database
+printf 'boolean: true' > `kdb file user/tests/yanlr`
+
+# Elektra stores boolean values as `0` and `1`
+kdb get user/tests/yanlr/boolean
+#> 1
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
+```
+
+### Null Values
+
+```sh
+# Mount plugin to `/tests/yanlr`
+sudo kdb mount config.yaml user/tests/yanlr yanlr
+
+# Manually add a null value to the database
+printf '"null":' > `kdb file user/tests/yanlr`
+
+# Elektra adds the metakey `binary` for empty keys
+kdb lsmeta user/tests/yanlr/null
+#> binary
 
 # Undo modifications to the key database
 kdb rm -r user/tests/yanlr
@@ -140,7 +176,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
+kdb get user/tests/error | tail -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
 #> config.yaml:2:1: mismatched input '- ' expecting end of map
 #>                  - element 2 # Incorrect Indentation!
 #>                  ^^

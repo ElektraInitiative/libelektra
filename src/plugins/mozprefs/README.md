@@ -58,13 +58,13 @@ kdb set user/tests/mozprefs/user/a/user/key 123
 kdb export user/tests/mozprefs ini
 #> [lock/a/lock]
 #> #@META type = boolean
-#> key = true
+#> key=true
 #> [pref/a/default]
 #> #@META type = string
-#> key = i'm a default key
+#> key=i'm a default key
 #> [user/a/user]
 #> #@META type = integer
-#> key = 123
+#> key=123
 
 cat `kdb file user/tests/mozprefs`
 #> lockPref("a.lock.key", true);

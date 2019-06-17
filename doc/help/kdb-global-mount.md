@@ -30,6 +30,10 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
   Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## KDB
 

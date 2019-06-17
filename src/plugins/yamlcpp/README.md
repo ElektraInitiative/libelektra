@@ -71,7 +71,7 @@ sudo kdb umount /tests/yamlcpp
 
 ## Arrays
 
-YAML CPP provides basic support for Elektra’s array data type.
+YAML CPP provides support for Elektra’s array data type.
 
 ```sh
 # Mount yamlcpp plugin to `user/tests/yamlcpp`
@@ -130,6 +130,8 @@ kdb rm -r user/tests/yamlcpp
 sudo kdb umount user/tests/yamlcpp
 ```
 
+### Nested Arrays
+
 The plugin also supports nested arrays.
 
 ```sh
@@ -178,6 +180,34 @@ kdb file user/tests/yamlcpp | xargs cat
 #> array:
 #>   - scalar
 #>   - 🔑: 🙈
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
+```
+
+### Sparse Arrays
+
+Since Elektra allows [“holes”](../../../doc/decisions/holes.md) in a key set, YAML CPP has to support small key sets that describe relatively complex data.
+
+```sh
+# Mount yamlcpp plugin
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
+
+kdb set user/tests/yamlcpp/#0/map/#1/#0 value
+kdb file user/tests/yamlcpp | xargs cat
+#> - map:
+#>     - ~
+#>     -
+#>       - value
+
+# The plugin adds the missing array parents to the key set
+kdb ls user/tests/yamlcpp
+#> user/tests/yamlcpp
+#> user/tests/yamlcpp/#0/map
+#> user/tests/yamlcpp/#0/map/#0
+#> user/tests/yamlcpp/#0/map/#1
+#> user/tests/yamlcpp/#0/map/#1/#0
 
 # Undo modifications to the key database
 kdb rm -r user/tests/yamlcpp
@@ -314,6 +344,29 @@ kdb ls user/tests/yamlcpp/empty
 #> user/tests/yamlcpp/empty
 #> user/tests/yamlcpp/empty/level1/level2
 kdb get -v user/tests/yamlcpp/empty | grep -vq 'The key is null.'
+
+# Undo modifications to the database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
+```
+
+## Binary Values
+
+Elektra [saves binary data as either `0` or `1`](../../../doc/decisions/bool.md). The YAML CPP plugin supports this design decision by converting between YAML’s and Elektra’s boolean type.
+
+```sh
+# Mount YAML CPP plugin at `user/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
+# Manually add boolean key
+echo 'truth: true' > `kdb file user/tests/yamlcpp`
+
+kdb get user/tests/yamlcpp/truth
+#> 1
+
+# Add another boolean value
+kdb set user/tests/yamlcpp/success 0
+kdb get user/tests/yamlcpp/success
+#> 0
 
 # Undo modifications to the database
 kdb rm -r user/tests/yamlcpp

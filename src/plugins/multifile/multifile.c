@@ -53,6 +53,7 @@ typedef enum
 	ERROR = -1,
 	NOUPDATE = 0,
 	SUCCESS = 1,
+	CACHE_HIT = 2,
 } Codes;
 
 
@@ -102,6 +103,9 @@ static inline Codes rvToRc (int rc)
 	case 1:
 		return SUCCESS;
 		break;
+	case 2:
+		return CACHE_HIT;
+		break;
 	}
 	return ERROR;
 }
@@ -147,7 +151,11 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		freeHandle (resolved);
 	}
 
+	elektraInvokeClose (handle, 0);
+	return rc;
+
 RESOLVE_FAILED:
+	ELEKTRA_LOG_DEBUG ("MULTIFILE: resolve failed!");
 	elektraInvokeClose (handle, 0);
 	return rc;
 }
@@ -272,7 +280,7 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 }
 
 
-static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
+static Codes initBackend (Plugin * handle, MultiConfig * mc, SingleConfig * s, Key * parentKey)
 {
 	unsigned long fullPathLen = strlen (mc->originalPath) + strlen (s->filename) + 2;
 	char * fullPath = elektraCalloc (fullPathLen);
@@ -296,6 +304,7 @@ static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 	else
 	{
 		s->resolver = resolver;
+		resolver->global = elektraPluginGetGlobalKeySet (handle);
 	}
 	Plugin * storage = NULL;
 	KeySet * storageChildConfig = ksDup (mc->childConfig);
@@ -309,6 +318,7 @@ static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 	else
 	{
 		s->storage = storage;
+		storage->global = elektraPluginGetGlobalKeySet (handle);
 	}
 	return SUCCESS;
 }
@@ -324,7 +334,7 @@ static Codes resolverGet (SingleConfig * s, KeySet * returned, Key * parentKey)
 	return s->rcResolver;
 }
 
-static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * parentKey)
+static Codes updateFilesRecursive (Plugin * handle, MultiConfig * mc, KeySet * found, Key * parentKey)
 {
 	Codes rc = NOUPDATE;
 	char * dirs[2];
@@ -351,7 +361,7 @@ static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * paren
 					{
 						SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
 						s->filename = elektraStrDup ((ent->fts_path) + strlen (mc->directory) + 1);
-						Codes r = initBackend (mc, s, parentKey);
+						Codes r = initBackend (handle, mc, s, parentKey);
 						if (r == ERROR)
 						{
 							if (!mc->stayAlive)
@@ -383,7 +393,7 @@ static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * paren
 	return rc;
 }
 
-static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
+static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found, Key * parentKey)
 {
 	Codes rc = NOUPDATE;
 	glob_t results;
@@ -426,7 +436,7 @@ static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
 			{
 				SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
 				s->filename = elektraStrDup ((results.gl_pathv[i]) + strlen (mc->directory) + 1);
-				Codes r = initBackend (mc, s, parentKey);
+				Codes r = initBackend (handle, mc, s, parentKey);
 				if (r == ERROR)
 				{
 					if (!mc->stayAlive)
@@ -456,7 +466,7 @@ static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
 	return rc;
 }
 
-static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
+static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, Key * parentKey)
 {
 	Codes rc = NOUPDATE;
 	KeySet * found = ksNew (0, KS_END);
@@ -464,11 +474,11 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 
 	if (!mc->recursive)
 	{
-		rc = updateFilesGlob (mc, found, parentKey);
+		rc = updateFilesGlob (handle, mc, found, parentKey);
 	}
 	else
 	{
-		rc = updateFilesRecursive (mc, found, parentKey);
+		rc = updateFilesRecursive (handle, mc, found, parentKey);
 	}
 	if (rc == ERROR)
 	{
@@ -480,6 +490,8 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 	ksRewind (mc->childBackends);
 	ksRewind (found);
 	Key * c;
+	ssize_t cacheHits = 0;
+	ssize_t numBackends = ksGetSize (found);
 	while ((c = ksNext (found)) != NULL)
 	{
 		if (ksLookup (mc->childBackends, c, KDB_O_POP))
@@ -505,7 +517,17 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 					break;
 				}
 			}
-			if (r > 0) rc = SUCCESS;
+
+			// TODO: cache is currently incompatible with ini (see #2592)
+			if (r == ELEKTRA_PLUGIN_STATUS_CACHE_HIT && !(elektraStrCmp (s->storage->name, "ini") == 0))
+			{
+				++cacheHits;
+			}
+
+			if (r > 0)
+			{
+				rc = SUCCESS;
+			}
 		}
 	}
 	if (ksGetSize (mc->childBackends) > 0 && rc != -1)
@@ -524,6 +546,10 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 	{
 		mc->childBackends = found;
 	}
+	if (cacheHits == numBackends)
+	{
+		rc = CACHE_HIT;
+	}
 	keySetName (parentKey, keyName (initialParent));
 	keySetString (parentKey, keyString (initialParent));
 	keyDel (initialParent);
@@ -539,7 +565,9 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		if (s->rcResolver != SUCCESS) continue;
+		// When we reach this stage, we will need to load
+		// any successfully resolved files (as it is done in the kdb core)
+		if (s->rcResolver < 0) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
@@ -576,7 +604,7 @@ static void fillReturned (MultiConfig * mc, KeySet * returned)
 	ksRewind (returned);
 }
 
-int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/multifile"))
 	{
@@ -611,8 +639,10 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	Codes rc = NOUPDATE;
 	if (mc->getPhase == MULTI_GETRESOLVER)
 	{
-		rc = updateFiles (mc, returned, parentKey);
-		if (rc == SUCCESS)
+		rc = updateFiles (handle, mc, returned, parentKey);
+		// if it is a only a partial cache hit, we still need to load everything
+		// in the next phase
+		if (rc >= SUCCESS)
 		{
 			mc->getPhase = MULTI_GETSTORAGE;
 		}
@@ -628,17 +658,21 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		mc->getPhase = MULTI_GETRESOLVER;
 	}
 	elektraPluginSetData (handle, mc);
-	if (rc == SUCCESS)
+	if (rc == CACHE_HIT)
 	{
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
+	}
+	else if (rc == SUCCESS)
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else if (rc == NOUPDATE)
 	{
-		return 0;
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 	else
 	{
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }
 
@@ -659,7 +693,7 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 		else if (s->rcResolver == EMPTY)
 		{
 			// fprintf (stderr, "MARK FOR DELETE: %s:(%s)\n", s->parentString, s->fullPath);
-			++rc;
+			// ++rc;
 			continue;
 		}
 		else
@@ -873,7 +907,7 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		keySetString (parentKey, s->fullPath);
 		if (resolver->kdbError)
 		{
-			resolver->kdbError (handle, returned, parentKey);
+			resolver->kdbError (resolver, returned, parentKey);
 		}
 	}
 	keySetName (parentKey, keyName (initialParent));

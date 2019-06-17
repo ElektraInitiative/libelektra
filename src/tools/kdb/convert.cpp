@@ -64,8 +64,8 @@ int ConvertCommand::execute (Cmdline const & cl)
 	errorKey.setString (export_file);
 	export_plugin->set (keys, errorKey);
 
-	printWarnings (cerr, errorKey);
-	printError (cerr, errorKey);
+	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
+	printError (cerr, errorKey, cl.verbose, cl.debug);
 
 	return 0;
 }

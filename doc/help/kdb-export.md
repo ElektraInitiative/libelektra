@@ -31,6 +31,10 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
   Omit the `system/elektra` directory.
 - `-c`, `--plugins-config <plugins-config>`:
   Add a configuration to the format plugin.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## KDB
 

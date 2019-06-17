@@ -29,11 +29,12 @@ do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
 
-# exclude storage benchmark from mingw
+# exclude storage and KDB benchmark from mingw
 if (NOT WIN32)
 	include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
 	set (ADDITIONAL_SOURCES $<TARGET_OBJECTS:cframework>)
 	do_benchmark (storage)
+	do_benchmark (kdb)
 endif (NOT WIN32)
 
 # exclude the OPMPHM benchmarks from mingw

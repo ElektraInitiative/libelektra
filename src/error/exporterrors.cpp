@@ -160,14 +160,11 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				   << "		keySetMeta(warningKey, \"warnings\", &buffer[10]);" << endl
 				   << "	} else  keySetMeta(warningKey, \"warnings\", \"00\");" << endl
 				   << "" << endl
-				   << "	keySetMeta(warningKey, buffer, \"number description ingroup module file line function reason\");"
-				   << endl
+				   << "	keySetMeta(warningKey, buffer, \"number description module file line function reason\");" << endl
 				   << "	strcat(buffer, \"/number\" );" << endl
 				   << "	keySetMeta(warningKey, buffer, \"" << i << "\");" << endl
 				   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 				   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" << endl
-				   << "	buffer[12] = '\\0'; strcat(buffer, \"/ingroup\");" << endl
-				   << "	keySetMeta(warningKey, buffer, \"" << p[i]["ingroup"] << "\");" << endl
 				   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
 				   << "	keySetMeta(warningKey, buffer, \"" << p[i]["module"] << "\");" << endl
 				   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
@@ -231,15 +228,13 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				   << "			}" << endl
 				   << "			keySetMeta(errorKey, \"warnings\", &buffer[10]);" << endl
 				   << "		} else	keySetMeta(errorKey, \"warnings\", \"00\");" << endl
-				   << "		keySetMeta(errorKey, buffer, \"number description ingroup module file line function "
+				   << "		keySetMeta(errorKey, buffer, \"number description  module file line function "
 				      "reason\");"
 				   << endl
 				   << "		strcat(buffer, \"/number\" );" << endl
 				   << "		keySetMeta(errorKey, buffer, \"" << i << "\");" << endl
 				   << "		buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 				   << "		keySetMeta(errorKey, buffer, \"" << p[i]["description"] << "\");" << endl
-				   << "		buffer[12] = '\\0'; strcat(buffer, \"/ingroup\");" << endl
-				   << "		keySetMeta(errorKey, buffer, \"" << p[i]["ingroup"] << "\");" << endl
 				   << "		buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
 				   << "		keySetMeta(errorKey, buffer, \"" << p[i]["module"] << "\");" << endl
 				   << "		buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
@@ -255,11 +250,10 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 				   << " 	else" << endl
 				   << " 	{" << endl
 				   << "		keySetMeta(errorKey, \"error\", \""
-				   << "number description ingroup module file line function reason"
+				   << "number description module file line function reason"
 				   << "\");" << endl
 				   << "		keySetMeta(errorKey, \"error/number\", \"" << i << "\");" << endl
 				   << "		keySetMeta(errorKey, \"error/description\", \"" << p[i]["description"] << "\");" << endl
-				   << "		keySetMeta(errorKey, \"error/ingroup\", \"" << p[i]["ingroup"] << "\");" << endl
 				   << "		keySetMeta(errorKey, \"error/module\", \"" << p[i]["module"] << "\");" << endl
 				   << "		keySetMeta(errorKey, \"error/file\", "
 				   << "file"
@@ -316,8 +310,6 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 		   << "			KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/description\"," << endl
 		   << "			KEY_VALUE, \"" << p[i]["description"] << "\", KEY_END)," << endl
-		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/ingroup\"," << endl
-		   << "			KEY_VALUE, \"" << p[i]["ingroup"] << "\", KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/severity\"," << endl
 		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/module\"," << endl
@@ -568,6 +560,13 @@ static ostream & printSource (ostream & os, parse_t & p, const char * headerPubl
 	   << "#include <kdbhelper.h>" << endl
 	   << endl;
 
+	// work-around not needed after new error concept
+	os << "#if defined(__GNUC__)" << endl
+	   << "#pragma GCC diagnostic push" << endl
+	   << "#pragma GCC diagnostic ignored \"-Wformat\"" << endl
+	   << "#endif" << endl
+	   << endl;
+
 	for (size_t i = 1; i < p.size (); ++i)
 	{
 		if (p[i]["unused"] == "yes")
@@ -620,6 +619,8 @@ static ostream & printSource (ostream & os, parse_t & p, const char * headerPubl
 		os << "}" << endl;
 		os << endl;
 	}
+
+	os << "#if defined(__GNUC__)" << endl << "#pragma GCC diagnostic pop" << endl << "#endif" << endl << endl;
 
 	return os;
 }

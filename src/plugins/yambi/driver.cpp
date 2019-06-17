@@ -202,6 +202,15 @@ string Driver::getErrorMessage ()
 // ===========
 
 /**
+ * @brief This function will be called before the parser enters an empty file (that might contain comments).
+ */
+void Driver::enterEmpty ()
+{
+	// We add a parent key that stores nothing representing an empty file.
+	keys.append (Key{ parents.top ().getName (), KEY_BINARY, KEY_END });
+}
+
+/**
  * @brief This function will be called after the parser exits a value.
  *
  * @param text This variable contains the text stored in the value.
@@ -209,7 +218,14 @@ string Driver::getErrorMessage ()
 void Driver::exitValue (string const & text)
 {
 	Key key = parents.top ();
-	key.setString (scalarToText (text));
+	if (text == "true" || text == "false")
+	{
+		key.set<bool> (text == "true");
+	}
+	else
+	{
+		key.set<string> (scalarToText (text));
+	}
 	keys.append (key);
 }
 
@@ -239,6 +255,7 @@ void Driver::exitPair (bool const matchedValue)
 	if (!matchedValue)
 	{
 		// Add key with empty value
+		parents.top ().setBinary (NULL, 0);
 		keys.append (parents.top ());
 	}
 	// Returning from a mapping such as `part: …` means that we need need to

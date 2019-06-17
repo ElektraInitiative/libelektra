@@ -43,11 +43,8 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 							     11);
 			}
 		}
-		else
-		{
-			newConf.append (rk);
-		}
 	}
+	newConf.append (rk);
 }
 } // namespace
 

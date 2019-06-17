@@ -99,8 +99,8 @@ int SetCommand::execute (Cmdline const & cl)
 		}
 	}
 	kdb.set (conf, k);
-	printWarnings (cerr, k);
-	printError (cerr, k);
+	printWarnings (cerr, k, cl.verbose, cl.debug);
+	printError (cerr, k, cl.verbose, cl.debug);
 
 	if (!cl.quiet) cout << toprint.str ();
 

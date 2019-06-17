@@ -63,6 +63,8 @@
 
 - [Mounting](elektra-mounting.md):
   To persistently and permanently include a **backend** in the **global key database**.
+  The **mountpoint** is the key where the backend is mounted to.
+  All keys of the backend are below that key.
 
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.

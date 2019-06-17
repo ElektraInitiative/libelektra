@@ -30,32 +30,12 @@ static void defaultFatalErrorHandler (ElektraError * error)
 static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key);
 static ElektraError * elektraErrorCreateFromKey (Key * key);
 static ElektraError * elektraErrorWarningFromKey (Key * key);
+static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
 
 /**
  * \defgroup highlevel High-level API
  * @{
  */
-
-ELEKTRA_TAG_DEFINITIONS (const char *, String, KDB_TYPE_STRING, elektraStrDup, elektraKeyToString)
-ELEKTRA_TAG_DEFINITIONS (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, elektraBooleanToString, elektraKeyToBoolean)
-ELEKTRA_TAG_DEFINITIONS (kdb_char_t, Char, KDB_TYPE_CHAR, elektraCharToString, elektraKeyToChar)
-ELEKTRA_TAG_DEFINITIONS (kdb_octet_t, Octet, KDB_TYPE_OCTET, elektraOctetToString, elektraKeyToOctet)
-ELEKTRA_TAG_DEFINITIONS (kdb_short_t, Short, KDB_TYPE_SHORT, elektraShortToString, elektraKeyToShort)
-ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, elektraUnsignedShortToString,
-			 elektraKeyToUnsignedShort)
-ELEKTRA_TAG_DEFINITIONS (kdb_long_t, Long, KDB_TYPE_LONG, elektraLongToString, elektraKeyToLong)
-ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, elektraUnsignedLongToString, elektraKeyToUnsignedLong)
-ELEKTRA_TAG_DEFINITIONS (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, elektraLongLongToString, elektraKeyToLongLong)
-ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, elektraLongLongToString,
-			 elektraKeyToUnsignedLongLong)
-ELEKTRA_TAG_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, elektraFloatToString, elektraKeyToFloat)
-ELEKTRA_TAG_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, elektraDoubleToString, elektraKeyToDouble)
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, elektraLongDoubleToString, elektraKeyToLongDouble)
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Initializes a new Elektra instance.
@@ -89,18 +69,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	}
 
 	KeySet * const config = ksNew (0, KS_END);
-	if (defaults != NULL)
-	{
-		ksRewind (defaults);
-		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
-		{
-			Key * const dup = keyDup (key);
-			const char * name = keyName (key);
-			keySetName (dup, keyName (parentKey));
-			keyAddName (dup, name);
-			ksAppendKey (config, dup);
-		}
-	}
+	insertDefaults (config, parentKey, defaults);
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
@@ -113,11 +82,71 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	Elektra * const elektra = elektraCalloc (sizeof (struct _Elektra));
 	elektra->kdb = kdb;
 	elektra->parentKey = parentKey;
+	elektra->parentKeyLength = keyGetNameSize (parentKey) - 1;
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
+	elektra->defaults = ksDup (defaults);
 
 	return elektra;
+}
+
+/**
+ * Calls kdbEnsure() on the internal KDB handle of this Elektra instance.
+ *
+ * @param elektra  Elektra instance to use.
+ * @param contract The contract to ensure.
+ * @param error    Pass a reference to an ElektraError pointer.
+ *                 Will only be set in case of an error.
+ *
+ * @see kdbEnsure()
+ */
+void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error)
+{
+	if (error == NULL)
+	{
+		elektraFatalError (elektra, elektraErrorNullError (__func__));
+		return;
+	}
+
+
+	Key * parentKey = keyDup (elektra->parentKey);
+
+	kdbClose (elektra->kdb, parentKey);
+	ksClear (elektra->config);
+	KDB * const kdb = kdbOpen (parentKey);
+
+	if (kdb == NULL)
+	{
+		*error = elektraErrorCreateFromKey (parentKey);
+		return;
+	}
+
+	int rc = kdbEnsure (kdb, contract, parentKey);
+	if (rc == 0)
+	{
+		// if successful, refresh config
+		elektra->kdb = kdb;
+		insertDefaults (elektra->config, elektra->parentKey, elektra->defaults);
+		const int kdbGetResult = kdbGet (elektra->kdb, elektra->config, parentKey);
+
+		if (kdbGetResult == -1)
+		{
+			*error = elektraErrorCreateFromKey (parentKey);
+			return;
+		}
+	}
+	else if (rc == 1)
+	{
+		const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
+		*error = elektraErrorEnsureFailed (reason);
+	}
+	else
+	{
+		*error = elektraErrorCreateFromKey (parentKey);
+	}
+
+	keyDel (parentKey);
 }
 
 /**
@@ -130,6 +159,21 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 {
 	fatalError->severity = ELEKTRA_ERROR_SEVERITY_FATAL;
 	elektra->fatalErrorHandler (fatalError);
+}
+
+/**
+ * This function is only intended for use with code-generation.
+ *
+ * It looks for the key proc/elektra/gopts/help (absolute name) created by gopts,
+ * and returns it if found.
+ *
+ * @param elektra The Elektra instance to check
+ *
+ * @return the help key if found, NULL otherwise
+ */
+Key * elektraHelpKey (Elektra * elektra)
+{
+	return ksLookupByName (elektra->config, "proc/elektra/gopts/help", 0);
 }
 
 /**
@@ -160,6 +204,16 @@ void elektraClose (Elektra * elektra)
 	keyDel (elektra->parentKey);
 	ksDel (elektra->config);
 	keyDel (elektra->lookupKey);
+
+	if (elektra->resolvedReference != NULL)
+	{
+		elektraFree (elektra->resolvedReference);
+	}
+
+	if (elektra->defaults != NULL)
+	{
+		ksDel (elektra->defaults);
+	}
 
 	elektraFree (elektra);
 }
@@ -430,6 +484,22 @@ static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 	}
 
 	return error;
+}
+
+void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
+{
+	if (defaults != NULL)
+	{
+		ksRewind (defaults);
+		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+		{
+			Key * const dup = keyDup (key);
+			const char * name = keyName (key);
+			keySetName (dup, keyName (parentKey));
+			keyAddName (dup, name);
+			ksAppendKey (config, dup);
+		}
+	}
 }
 
 #ifdef __cplusplus

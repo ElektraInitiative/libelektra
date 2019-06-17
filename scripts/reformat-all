@@ -10,8 +10,12 @@ SCRIPTS_DIR=$(dirname "$0")
 
 cd "$SOURCE"
 
+OLD_IFS="$IFS"
+IFS='
+'
 for reformat in $(ls "$SCRIPTS_DIR"/reformat-*); do
 	[ "$(basename "$reformat")" = "reformat-all" ] && continue
 	echo "running $reformat..."
-	$reformat "$@"
+	"$reformat" "$@"
 done
+IFS="$OLD_IFS"

@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = postgetstorage presetstorage
 - infos/status = recommended maintained unittest tested nodep libc
-- infos/metadata = check/type type check/enum check/enum/# check/enum/delimiter
+- infos/metadata = check/type type check/enum check/enum/# check/enum/delimiter check/boolean/true check/boolean/false
 - infos/description = type checker using COBRA data types
 
 ## Introduction
@@ -63,19 +63,35 @@ Elektra and your application. During `kdbSet` changed values are also normalized
 everything was successful, the values are restored to the ones originally provided by the user (no matter if they were changed before
 `kdbSet` or already present in `kdbGet`).
 
-Note: If normalization is used often times, you will get a normalization error instead of a type checking error.
+The full normalization/restore procedure can be described by the following cases:
+
+- **Case 1:** The Key existed in kdbGet and is unchanged between `kdbGet` and `kdbSet`
+
+  This is the easiest and most obvious case. The value is normalized in `kdbGet` and the original value is restored in `kdbSet`,
+  so that the underlying storage file remains unchanged (w.r.t. the key in question).
+
+- **Case 2:** The Key didn't exist in `kdbGet`, i.e. it was added
+
+  Here the value is normalized to verify the type and then restored immediately (all inside of `kdbSet`).
+
+- **Case 3:** The Key existed in `kdbGet`, but its value was changed between kdbGet and kdbSet
+
+  This is essential the same as Case 2. `keySetString` removes the `origvalue` metadata used to store the original value, so as far as this
+  plugin is concerned, the key didn't exist in `kdbGet`.
+
+Note: If normalization is used, often times you will get a normalization error instead of a type checking error.
 
 ### Booleans
 
 The values that are accepted as `boolean`s are configured during mounting:
 
 ```
-sudo kdb mount typetest.dump user/tests/type dump type booleans=#1 booleans/#0/true=a booleans/#0/false=b booleans/#0/true=t booleans/#1/false=f
+sudo kdb mount typetest.dump user/tests/type dump type booleans=#1 booleans/#0/true=a booleans/#0/false=b booleans/#1/true=t booleans/#1/false=f
 ```
 
 The above line defines that the array of allowed boolean pairs. `booleans=#1` defines the last element of the array as `#1`. For each
-element `#` the keys `boolean/#/true` and `boolean/#/false` define the true and false value respectively. True values are normalized to `1`,
-false values to `0`.
+element `#` the keys `booleans/#/true` and `booleans/#/false` define the true and false value respectively. True values are normalized to
+`1`, false values to `0`.
 
 Even though we didn't specify them the values `1` and `0` are still accepted. The normalized values are always okay to use. If no
 configuration is given, the allowed values default to `1`, `yes`, `on`, `true`, `enabled` and `enable` as true values and `0`, `no`, `off`,
@@ -90,8 +106,26 @@ and `check/boolean/false` are used. In this case we will always restore to the c
 Note: The values `1` and `0` are accepted, even if overrides are used. This means you can set a key with overrides to `0` (or `1`) and during
 `kdbSet` it will be restored to the false (or true) override value. (This is useful for the high-level API.)
 
-It is an error to specify only one of `boolean/#/true` and `boolean/#/false` or `check/boolean/true` and `check/boolean/false`.
+It is an error to specify only one of `booleans/#/true` and `booleans/#/false` or `check/boolean/true` and `check/boolean/false`.
 _Boolean always come in pairs!_
+
+You can also change how values shall be restored in `kdbSet`:
+
+```
+sudo kdb mount typetest.dump user/tests/type dump type booleans=#0 booleans/#0/true=true booleans/#0/false=false boolean/restoreas=#0
+```
+
+The config key `boolean/restoreas` must be a valid index of the `booleans` array. If `boolean/restoreas` was set the chosen boolean pair
+will be used when values are restored in `kdbSet`. So in the above example the plugin accepts `1`, `true`, `0` and `false` as boolean values,
+on `kdbGet` it turns `true` into `1` and `false` into `0` and on `kdbSet` it turns `1` into `true` and `0` into `false`.
+
+If no `booleans` array was given the allowed values for `boolean/restore` are:
+
+- `#0` for `yes`/`no`
+- `#1` for `true`/`false`
+- `#2` for `on`/`off`
+- `#3` for `enabled`/`disabled`
+- `#4` for `enable`/`disable`
 
 ### Enums
 

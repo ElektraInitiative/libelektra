@@ -25,6 +25,10 @@ This command removes key(s) from the Key database.
   Work in a recursive mode.
 - `-f`, `--force`:
   Do not fail on missing key.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 

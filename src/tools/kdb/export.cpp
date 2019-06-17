@@ -34,7 +34,7 @@ int ExportCommand::execute (Cmdline const & cl)
 	Key root = cl.createKey (0);
 
 	kdb.get (ks, root);
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	KeySet part (ks.cut (root));
 
@@ -62,8 +62,8 @@ int ExportCommand::execute (Cmdline const & cl)
 
 	plugin->set (part, errorKey);
 
-	printWarnings (cerr, errorKey);
-	printError (cerr, errorKey);
+	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
+	printError (cerr, errorKey, cl.verbose, cl.debug);
 
 	return 0;
 }

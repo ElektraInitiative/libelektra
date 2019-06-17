@@ -16,6 +16,24 @@ if ! which shfmt > /dev/null; then
 fi
 
 shell_files=$(shfmt -f 'scripts' 'src' 'tests/shell')
+additional_files=$(
+	for filepath in 'scripts/change-resolver-symlink.in' \
+		'scripts/change-storage-symlink.in' \
+		'scripts/configure-firefox.in' \
+		'scripts/elektrify-getenv.in' \
+		'scripts/elektrify-open.in' \
+		'scripts/install-sh-completion.in' \
+		'scripts/list-tools.in' \
+		'scripts/make-source-package.in' \
+		'scripts/run_all.in' \
+		'scripts/run_memcheck.in' \
+		'scripts/run_nocheckshell.in' \
+		'scripts/run_nokdbtests.in'; do
+		printf '%s\n' "$filepath"
+	done
+)
+shell_files=$(printf '%s\n' "$shell_files" "$additional_files")
+
 if [ $# -gt 0 ]; then
 	tmpfile=$(mktemp /tmp/elektra-reformat-shfmt.XXXXXX)
 	printf "%s\n" "$@" > "$tmpfile"

@@ -85,6 +85,24 @@ kdb rm -r user/tests/yambi
 sudo kdb umount user/tests/yambi
 ```
 
+### Boolean Values
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yambi yambi
+
+# Manually add a boolean value to the database
+printf 'boolean: false' > `kdb file user/tests/yambi`
+
+# Elektra stores boolean values as `0` and `1`
+kdb get user/tests/yambi/boolean
+#> 0
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yambi
+sudo kdb umount user/tests/yambi
+```
+
 ### Error Messages
 
 ```sh
@@ -117,7 +135,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
+kdb get user/tests/error | tail -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
 #> config.yaml:3:1: syntax error, unexpected element, expecting end of map or key
 #>                  - But it sure is awful stuff to eat.
 #>                  ^

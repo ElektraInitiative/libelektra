@@ -10,9 +10,11 @@
 #ifndef ELEKTRA_GOPTS_SYSCTL_H
 #define ELEKTRA_GOPTS_SYSCTL_H
 
+#include <sys/types.h> // has to be included before sys/sysctl.h
+
 #include <string.h>
 #include <sys/sysctl.h>
-#include <sys/types.h>
+#include <unistd.h>
 
 #include <kdbhelper.h>
 
@@ -24,7 +26,7 @@ static int loadArgs (char *** argvp)
 	mib[0] = CTL_KERN;
 	mib[1] = KERN_PROC;
 	mib[2] = KERN_PROC_ARGS;
-	mib[3] = -1;
+	mib[3] = getpid ();
 	size_t size;
 	if (sysctl (mib, 4, NULL, &size, NULL, 0) == -1)
 	{
@@ -64,7 +66,7 @@ static char ** loadEnvp (void)
 	return environ;
 }
 
-static void cleanupArgs (int argc, char ** argv)
+static void cleanupArgs (int argc ELEKTRA_UNUSED, char ** argv)
 {
 	elektraFree (argv[0]);
 	elektraFree (argv);

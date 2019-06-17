@@ -87,8 +87,12 @@ int main (int argc, const char ** argv)
 		ksDel (ks2);
 		keyDel (parentKey2);
 		char buf[256];
-		strcpy (buf, "elektraGetOpts have different results plugin->get: ");
-		strncat (buf, argv[0], 128);
+		strcpy (buf, "elektraGetOpts (");
+		strcat (buf, libFailed ? "FAIL" : "OK");
+		strcat (buf, ") differs from plugin->get (");
+		strcat (buf, pluginFailed ? "FAIL" : "OK");
+		strcat (buf, "): ");
+		strncat (buf, specname, 128);
 		yield_error (buf);
 
 		return nbError;

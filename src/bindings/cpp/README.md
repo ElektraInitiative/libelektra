@@ -54,7 +54,7 @@ warnings.
   // …
   // Continuation of code above ↑
 	kdb.close(k);
-	printWarnings(std::cout, k);
+	printWarnings(std::cout, k, true, true);
 }
 catch (kdb::KDBException const & e)
 {

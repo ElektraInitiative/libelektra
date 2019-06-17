@@ -108,8 +108,8 @@ stat /tmp/curltest.ini
 # RET:0
 cat /tmp/curltest.ini
 #> [section1]
-#> key1 = val1
-#> key2 = val2
+#> key1=val1
+#> key2=val2
 rm /tmp/curltest.ini || $(exit 0)
 sudo kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini
 kdb ls system/curl
@@ -126,7 +126,7 @@ kdb rm system/curl/section1/key2
 sudo kdb umount system/curl
 cat /tmp/httproot/curltest.ini
 #> [section1]
-#> key1 = val1
+#> key1=val1
 ```
 
 ### Mount with HTTP GET + POST and keep local copy

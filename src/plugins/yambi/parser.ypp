@@ -79,17 +79,21 @@ class Lexer;
 
 /* -- Grammar --------------------------------------------------------------------------------------------------------------------------- */
 
-yaml : STREAM_START child_comments_empty STREAM_END ;
-child_comments_empty : child    { $$ = true; }
-                     | comments { $$ = false; }
-                     | %empty   { $$ = false; }
-                     ;
+yaml : STREAM_START empty_child STREAM_END ;
+empty_child : empty | child ;
+
+empty : comments_empty { driver.enterEmpty(); }
 
 child : comments_empty node comments_empty;
 node : value
      | map
      | sequence
      ;
+
+child_comments_empty : child    { $$ = true; }
+                     | comments { $$ = false; }
+                     | %empty   { $$ = false; }
+                     ;
 
 comments_empty : comments | %empty ;
 comments: COMMENT

@@ -151,7 +151,7 @@ TEST (kdbrestServicesConvertengineTest, ExportToFormatCheck2)
 
 		ASSERT_EQ (cf.getPluginformat ().getFileformat (), "json");
 		ASSERT_EQ (cf.getPluginformat ().getPluginname (), "yajl");
-		ASSERT_FALSE (cf.isValidated ());
+		ASSERT_TRUE (cf.isValidated ());
 
 		std::string expected_output = "{\"obj\":{\"var1\":\"value1\",\"var2\":\"value2\"},\"var\":\"value\"}";
 		std::string retrieved_output = cf.getConfig ();

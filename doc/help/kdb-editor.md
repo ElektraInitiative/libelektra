@@ -45,7 +45,9 @@ The user should specify the format that the current configuration or keys are in
 - `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-e`, `--editor <editor>`:
   Which editor to use.
 - `-N`, `--namespace`=<ns>:

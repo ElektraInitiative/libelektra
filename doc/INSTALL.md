@@ -101,11 +101,17 @@ brew install elektra
 
 . We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
 
-## Generic
+## Windows
+
+Please refer to the section OS Independent below.
+
+## OS Independent
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-To install Elektra use:
+After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or cPack tools.
+
+### make
 
 ```sh
 sudo make install
@@ -126,7 +132,7 @@ or in the build directory (will not honor `DESTDIR`!):
 xargs rm < install_manifest.txt
 ```
 
-## CPack
+### CPack
 
 First follow the steps in [COMPILE](COMPILE.md).
 
@@ -158,9 +164,9 @@ kdb: error while loading shared libraries:
      libelektratools.so.2: cannot open shared object file: No such file or directory
 ```
 
-you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`).
+you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`). Note that under Alpine Linux this file is called `/etc/ld-musl-x86_64.path` or similar, depending on your architecture.
 
-Add the path where the library has been installed
+Add the path where the library has been installed (on Alpine Linux this had to be `usr/lib/elektra` for it to work)
 
 ```
 /usr/lib/local/

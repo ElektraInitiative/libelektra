@@ -86,6 +86,9 @@ typedef enum
 /** Everything went fine and the function **did not** update the given keyset/configuration */
 #define ELEKTRA_PLUGIN_STATUS_NO_UPDATE 0
 
+/** Everything went fine and we have a cache hit */
+#define ELEKTRA_PLUGIN_STATUS_CACHE_HIT 2
+
 #ifdef __cplusplus
 namespace ckdb
 {

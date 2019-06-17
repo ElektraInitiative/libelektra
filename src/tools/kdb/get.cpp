@@ -206,8 +206,8 @@ int GetCommand::execute (Cmdline const & cl)
 		cout << endl;
 	}
 
-	printWarnings (cerr, root);
-	printError (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
+	printError (cerr, root, cl.verbose, cl.debug);
 
 	return ret;
 }

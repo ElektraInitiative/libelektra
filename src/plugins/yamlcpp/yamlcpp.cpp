@@ -32,15 +32,18 @@ namespace
  *
  * @return A contract describing the functionality of this plugin.
  */
-KeySet * contractYamlCpp (void)
+kdb::KeySet contractYamlCpp (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/yamlcpp", KEY_VALUE, "yamlcpp plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/yamlcpp/exports", KEY_END),
-		      keyNew ("system/elektra/modules/yamlcpp/exports/get", KEY_FUNC, elektraYamlcppGet, KEY_END),
-		      keyNew ("system/elektra/modules/yamlcpp/exports/set", KEY_FUNC, elektraYamlcppSet, KEY_END),
+	return kdb::KeySet{ 30,
+			    keyNew ("system/elektra/modules/yamlcpp", KEY_VALUE, "yamlcpp plugin waits for your orders", KEY_END),
+			    keyNew ("system/elektra/modules/yamlcpp/exports", KEY_END),
+			    keyNew ("system/elektra/modules/yamlcpp/exports/get", KEY_FUNC, elektraYamlcppGet, KEY_END),
+			    keyNew ("system/elektra/modules/yamlcpp/exports/set", KEY_FUNC, elektraYamlcppSet, KEY_END),
 #include ELEKTRA_README
-		      keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END), KS_END);
+			    keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			    keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END),
+			    keyNew ("system/elektra/modules/yamlcpp/config/needs/boolean/restore", KEY_VALUE, "#1", KEY_END),
+			    KS_END };
 }
 }
 
@@ -51,19 +54,17 @@ KeySet * contractYamlCpp (void)
 /** @see elektraDocGet */
 int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (std::string (keyName (parentKey)) == "system/elektra/modules/yamlcpp")
-	{
-		KeySet * contract = contractYamlCpp ();
-		ksAppend (returned, contract);
-		ksDel (contract);
-
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	}
-
 	kdb::Key parent = kdb::Key (parentKey);
 	kdb::KeySet keys = kdb::KeySet (returned);
 
-	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
+	if (parent.getName () == "system/elektra/modules/yamlcpp")
+	{
+		keys.append (contractYamlCpp ());
+		parent.release ();
+		keys.release ();
+
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
 
 	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
 
@@ -77,12 +78,16 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
 				    exception.what ());
 	}
+	catch (std::overflow_error const & exception)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INSERT_VALUE_ARRAY, parent.getKey (), "Unable to read data from file “%s”: %s.",
+				    parent.getString ().c_str (), exception.what ());
+	}
 	catch (YAML::RepresentationException const & exception)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_REPRESENTATION, parent.getKey (), "Unable to read data from file “%s”: %s",
 				    parent.getString ().c_str (), exception.what ());
 	}
-
 
 	parent.release ();
 	keys.release ();

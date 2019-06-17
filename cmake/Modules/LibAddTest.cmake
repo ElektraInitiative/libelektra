@@ -89,6 +89,9 @@ endmacro (add_gtest)
 # REQUIRED_PLUGINS:
 # 	This optional variable specifies a list of plugins required to run the test.
 #
+# REQUIRED_TOOLS:
+# 	This optional variable specifies a list of tools required to run the test.
+#
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 # ~~~
@@ -105,6 +108,24 @@ function (add_msr_test NAME FILE)
 			return ()
 		endif (plugin_index GREATER -1)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
+
+	set (multiValueArgs REQUIRED_TOOLS ENVIRONMENT)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	foreach (tool ${ARG_REQUIRED_TOOLS})
+		list (FIND REMOVED_TOOLS
+			   ${tool}
+			   tool_index)
+		if (tool_index GREATER -1)
+			return ()
+		endif ()
+
+		list (FIND TOOLS
+			   ${tool}
+			   tool_index)
+		if (tool_index LESS 0)
+			return ()
+		endif ()
+	endforeach ()
 
 	add_test (NAME testshell_markdown_${NAME}
 		  COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
@@ -130,6 +151,9 @@ endfunction ()
 # REQUIRED_PLUGINS:
 # 	This optional variable specifies a list of plugins required to run the MSR test.
 #
+# REQUIRED_TOOLS:
+# 	This optional variable specifies a list of tools required to run the test.
+#
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 # ~~~
@@ -138,5 +162,17 @@ function (add_msr_test_plugin PLUGIN)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_PLUGINS
 		     ${PLUGIN})
-	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
+
+	set (multiValueArgs REQUIRED_TOOLS)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	list (APPEND ARG_REQUIRED_TOOLS
+		     ${TOOL})
+
+	add_msr_test (${PLUGIN}
+		      "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md"
+		      ${ARGN}
+		      REQUIRED_PLUGINS
+		      ${ARG_REQUIRED_PLUGINS}
+		      REQUIRED_TOOLS
+		      ${ARG_REQUIRED_TOOLS})
 endfunction ()

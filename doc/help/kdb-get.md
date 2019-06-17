@@ -48,6 +48,8 @@ This command will return the following values as an exit status:
   Explain what is happening.
   Gives a complete trace of all tried keys.
   Very useful to debug fallback and overrides.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 
@@ -57,6 +59,7 @@ This command will return the following values as an exit status:
 # We use the `dump` plugin, since some storage plugins, e.g. INI,
 # create intermediate keys.
 sudo kdb mount get.ecf user/tests/get/examples/kdb-get dump
+sudo kdb mount get.ecf spec/tests/get/examples/kdb-get dump
 
 # Create the keys we use for the examples
 kdb set user/tests/get/examples/kdb-get/key myKey
@@ -97,6 +100,7 @@ kdb get -v /tests/get/examples/kdb-get/anotherKey
 kdb rm user/tests/get/examples/kdb-get/key
 kdb rm spec/tests/get/examples/kdb-get/anotherKey
 sudo kdb umount user/tests/get/examples/kdb-get
+sudo kdb umount spec/tests/get/examples/kdb-get
 ```
 
 To use bookmarks:<br>

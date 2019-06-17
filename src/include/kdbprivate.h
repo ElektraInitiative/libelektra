@@ -59,6 +59,9 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** All keys below this are used for cache metadata in the global keyset */
+#define KDB_CACHE_PREFIX "system/elektra/cache"
+
 
 #ifdef __cplusplus
 namespace ckdb
@@ -491,13 +494,19 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
 int splitGet (Split * split, Key * warningKey, KDB * handle);
-int splitMerge (Split * split, KeySet * dest);
+int splitMergeBackends (Split * split, KeySet * dest);
+int splitMergeDefault (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
 int splitDivide (Split * split, KDB * handle, KeySet * ks);
 int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
+
+/* for cache: store/load state to/from global keyset */
+void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
+int splitCacheCheckState (Split * split, KeySet * global);
+int splitCacheLoadState (Split * split, KeySet * global);
 
 
 /*Backend handling*/
@@ -632,8 +641,11 @@ struct _Elektra
 	KDB * kdb;
 	Key * parentKey;
 	KeySet * config;
+	KeySet * defaults;
 	Key * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
+	char * resolvedReference;
+	size_t parentKeyLength;
 };
 
 struct _ElektraError

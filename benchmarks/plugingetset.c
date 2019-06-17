@@ -16,11 +16,21 @@
 
 int main (int argc, char ** argv)
 {
-	if (argc != 4)
+	if (argc < 4 || argc > 5 || (argc == 5 && elektraStrCmp (argv[4], "get") != 0))
 	{
-		fprintf (stderr, "Usage: %s <path> <parent> <plugin>", argv[0]);
+		fprintf (stderr, "Usage: %s <path> <parent> <plugin> [get]\n", argv[0]);
 		return 1;
 	}
+
+	typedef enum
+	{
+		BOTH,
+		GET,
+		Default = BOTH
+	} Direction;
+
+	Direction direction;
+	if (argc == 5) direction = GET;
 
 	const char * path = argv[1];
 	const char * parent = argv[2];
@@ -53,6 +63,7 @@ int main (int argc, char ** argv)
 		return 1;
 	}
 
+	if (direction == BOTH)
 	{
 		Key * setKey = keyNew (parent, KEY_VALUE, outfile, KEY_END);
 
