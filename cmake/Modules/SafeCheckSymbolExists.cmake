@@ -26,9 +26,8 @@ macro (safe_check_symbol_exists SYMBOL FILES VARIABLE)
 	list (APPEND CMAKE_REQUIRED_DEFINITIONS
 		     ${DEFS})
 
-	cmake_pop_check_state ()
 	check_symbol_exists ("${SYMBOL}" "${FILES}" "${VARIABLE}")
-
+	cmake_pop_check_state ()
 	set (CMAKE_C_FLAGS ${CMAKE_C_FLAGS_OLD})
 endmacro ()
 
