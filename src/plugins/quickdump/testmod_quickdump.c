@@ -311,7 +311,7 @@ static void test_varint (void)
 		fclose (f);
 
 		f = fopen (elektraFilename (), "rb");
-		kdb_unsigned_long_long_t result;
+		kdb_unsigned_long_long_t result = 0;
 		succeed_if (varintRead (f, &result), "read error");
 		fclose (f);
 
