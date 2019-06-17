@@ -134,7 +134,7 @@ static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * bu
 // for v3 reading
 static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buffer, Key * errorKey)
 {
-	kdb_unsigned_long_long_t size;
+	kdb_unsigned_long_long_t size = 0;
 	if (!varintRead (file, &size))
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
@@ -266,7 +266,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		case 'b':
 		{
 			// binary key value
-			kdb_unsigned_long_long_t valueSize;
+			kdb_unsigned_long_long_t valueSize = 0;
 			if (!varintRead (file, &valueSize))
 			{
 				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey,
