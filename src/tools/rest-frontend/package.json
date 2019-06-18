@@ -59,7 +59,8 @@
         "slugify": "^1.0.2",
         "sync-request": "^3.0.1",
         "underscore": "^1.8.3",
-        "xmlbuilder": "^8.2.2"
+        "xmlbuilder": "^8.2.2",
+        "docsearch.js": "latest"
     },
     "scripts": {
         "postinstall": "./node_modules/grunt-cli/bin/grunt install"
