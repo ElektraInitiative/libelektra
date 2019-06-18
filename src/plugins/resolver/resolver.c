@@ -670,7 +670,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (pk->fd == -1)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not reopen configuration file \"%s\" for writing because \"%s\"",
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not reopen configuration file '%s' for writing because '%s',
 						     pk->filename, strerror (errno));
 			return -1;
 		}
@@ -717,7 +717,7 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->fd == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not create configuration file \"%s\" because %s", pk->filename,
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not create configuration file '%s' because %s", pk->filename,
 					     strerror (errno));
 		return -1;
 	}
@@ -1005,7 +1005,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	int fd = open (pk->tempfile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file again for changing metadata of file \"%s\", because %s",
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file again for changing metadata of file '%s', because %s",
 					     pk->tempfile, strerror (errno));
 		ret = -1;
 	}

@@ -59,7 +59,7 @@ static int validateKey (Key * key, Key * parentKey)
 	}
 	else if (keyString (key)[0] != '/')
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path \"%s\" is not absolute", keyString (key));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path '%s' is not absolute", keyString (key));
 		return 0;
 	}
 	int errnosave = errno;

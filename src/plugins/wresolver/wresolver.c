@@ -385,7 +385,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	switch (pk->state)
 	{
 	case 0:
-		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "KdbSet() called before kdbGet()");
+		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "'kdbSet()' called before 'kdbGet()'");
 		return -1;
 	case 1:
 		++pk->state;
