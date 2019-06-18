@@ -11,7 +11,7 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         global: {
             repository: {
-                root: '@REST_FRONTEND_SOURCE_INSTALL_REPOSITORY@'
+                root: '/Users/Coding/nearea/libelektra'
             }
         },
         'create-website-structure': {
@@ -147,9 +147,18 @@ module.exports = function (grunt) {
                     'node_modules/angular-ui-notification/dist/angular-ui-notification.min.css',
                     'node_modules/ng-tags-input/build/ng-tags-input.min.css',
                     'node_modules/ng-tags-input/build/ng-tags-input.bootstrap.min.css',
-                    'node_modules/angular-typewriter/npm-dist/angular-typewrite.css'
+                    'node_modules/angular-typewriter/npm-dist/angular-typewrite.css',
+                    'node_modules/docsearch.js/dist/cdn/docsearch.min.css',
                 ],
                 dest: 'public/assets/skin/vendor.css',
+            },
+            docsearchcss: {
+                src: ['node_modules/docsearch.js/dist/cdn/docsearch.min.css'],
+                dest: 'public/vendor/docsearch.min.css'
+            },
+            docsearchjs: {
+                src: ['node_modules/docsearch.js/dist/cdn/docsearch.min.js'],
+                dest: 'public/vendor/docsearch.min.js'
             },
             pacejs: {
                 src: ['node_modules/pace-progress/pace.min.js'],

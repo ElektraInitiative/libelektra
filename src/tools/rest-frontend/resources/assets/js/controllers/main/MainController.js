@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure, config) {
+module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure, config, $translate) {
 
     $scope.$rootScope = $rootScope;
     $scope.$state = $state;
@@ -34,19 +34,21 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 //
 //        }
 
-
     this.scrollToTop = function () {
         $anchorScroll();
     };
 
     Logger.info("Main template ready");
 
-    docsearch({
-        apiKey: '7d1e7bc1f97b53de246aaefa29484be9',
-        indexName: 'elektra',
-        inputSelector: '#searchboxdocsearch',
-        debug: false // Set debug to true if you want to inspect the dropdown
-        });
-
+    // init after view has been loaded (template parsed, translation happend)
+    angular.element(document).ready(function () {
+        docsearch({
+            apiKey: '7d1e7bc1f97b53de246aaefa29484be9',
+            indexName: 'elektra',
+            inputSelector: '#searchboxdocsearch',
+            debug: false, // Set debug to true if you want to inspect the dropdown
+            });
+    });
+        
 
 };
