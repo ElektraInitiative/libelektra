@@ -11,20 +11,13 @@
                   ui-sref="main.home"/>
                 </a>
             </div>
-            <div class="navbar-left col-md-6" style="text-align:center;margin-top:10px;">
-                <div class="input-group" ng-hide="$state.includes('main.entries.search')">
-                    <input id="searchboxdocsearch" type="text" class="form-control focus-logo-blue"
-                           placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}"
-                           >
-                    <span class="input-group-btn">
-                        <button class="btn btn-logo-blue" type="button"
-                                ng-click="ctrl.goSearch()"
-                                title="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.BUTTON.SUBMIT' | translate }}">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </span>
+            <div class="navbar-left col-md-6"  style="text-align:center;margin-top:10px;">
+                <div style="clear: both;width: 100%;">
+                    <input style="width: 100%" id="searchboxdocsearch" type="text" class="form-control focus-logo-blue"
+                    placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}" >
                 </div>
             </div>
+
             <ul class="nav navbar-nav navbar-right col-md-3" style="margin-right:0px">
                 <li ng-if="authenticated" class="dropdown pull-right" uib-dropdown>
                     <a href="#" uib-dropdown-toggle>
