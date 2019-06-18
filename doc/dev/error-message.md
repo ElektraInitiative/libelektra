@@ -3,7 +3,7 @@
 Elektra has a lot of developers and hence the error messages vary in how they are written.
 This guideline should unify the message format so that users will get consistent error messages.
 
-- All error messages start with a capital letter. The only exception are quoted messages at the start such as "'xxxx-xxxx' is an invalid syntax".
+- All error messages start with a capital letter. The only exception are quoted messages at the start such as "'xxxx-xxxx' is syntactically incorrect".
   If you reference a method name such as `kdbSet()` in the first word, surround it with single quotes.
   Try to avoid variable strings at the start of the sentence ("%s"-strings) if possible because you cannot guarantee capital casing.
 - **Always** provide the errno if possible. If possible use `strerror_r` for writing out the message because it is thread safe.
