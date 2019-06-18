@@ -37,8 +37,9 @@ performance by itself. Because `set` doesn't scale linearly because of the check
 KeySet was only used for the `get` only version. (The test was aborted after the initial run of `dump` took longer than
 all the runs for `quickdump` together.)
 
-The complete results and the files used for these benchmarks are quite big and can be found in a
-[separate repository](https://github.com/ElektraInitiative/rawdata/tree/master/quickdump).
+The complete results can be found in [this repository](https://github.com/ElektraInitiative/rawdata)
+and the files used for these benchmarks are quite big and can be found in another
+[separate repository](https://github.com/kodebach/eqd-bench).
 
 ### Raw data sizes
 
