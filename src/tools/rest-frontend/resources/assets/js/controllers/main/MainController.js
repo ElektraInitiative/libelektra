@@ -2,7 +2,6 @@
 
 module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure, config) {
 
-    var vm = this;
     $scope.$rootScope = $rootScope;
     $scope.$state = $state;
 
@@ -18,6 +17,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
     $scope.builddate.pretty = $scope.builddate.date.toLocaleString() + ' (' +
             (($scope.builddate.timezoneOffset >= 0) ? '+' : '') + $scope.builddate.timezoneOffset + 'h UTC)';
 
+//        var vm = this;
 //        vm.currentLanguage = 'de';
 
 //        vm.changeLanguage = changeLanguage;
