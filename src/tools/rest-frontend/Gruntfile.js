@@ -11,7 +11,7 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         global: {
             repository: {
-                root: '@REST_FRONTEND_SOURCE_INSTALL_REPOSITORY@'
+                root: '/Users/Coding/nearea/libelektra'
             }
         },
         'create-website-structure': {
