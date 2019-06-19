@@ -48,7 +48,7 @@ The `Plugin.java` interface contains methods for the five basic functions of plu
 - [`elektraPluginError`](https://doc.libelektra.org/api/current/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
 - [`elektraPluginClose`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
 
-It is expected that each method returns -1 if an error occured or 0 if everything worked as expected.
+It is expected that each method returns -1 if an error occurred or 0 if everything worked as expected.
 
 ### Usage of Plugin
 
