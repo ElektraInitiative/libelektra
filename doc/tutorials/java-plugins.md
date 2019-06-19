@@ -41,6 +41,7 @@ Under the path: `/path/to/libelektra/src/bindings/jna/libelektra4j/src/main/java
 In order to write a new Java Plugin, the new class has to be created under the `plugin` folder. It has also to extend the `Plugin.java` interface, which contains all required methods to communicate with Elektra database. You can leave some of the methods not implemented, if there is no need in them.
 
 The Plugin.java interface contains methods for the five basic functions of plugins:
+
 - [`elektraPluginOpen`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
 - [`elektraPluginGet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
 - [`elektraPluginSet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
