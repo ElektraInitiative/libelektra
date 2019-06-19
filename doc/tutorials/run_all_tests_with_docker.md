@@ -88,10 +88,10 @@ buildelektra-sid
 
 After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
-Create folder for building the project, `cd` to it and create another folder where Elektra will be installed like this:
+Create folder folder where Elektra will be installed, create another folder for building the project and `cd` to it and like this:
 
 ```sh
-mkdir /home/jenkins/elektra-build-docker && mkdir /home/jenkins/elektra-install && cd /home/jenkins/elektra-build-docker
+mkdir elektra-install && mkdir elektra-build-docker && cd elektra-build-docker
 ```
 
 Build it with
@@ -101,12 +101,15 @@ Build it with
 -DBINDINGS="ALL;-DEPRECATED;-haskell" \
 -DPLUGINS="ALL;-DEPRECATED" \
 -DTOOLS="ALL" \
--DENABLE_DEBUG=ON \
--DKDB_DB_HOME="/home/jenkins/workspace" \
--DKDB_DB_SYSTEM="/home/jenkins/workspace/.config/kdb/system" \
--DKDB_DB_SPEC="/home/jenkins/workspace/.config/kdb/system" \
+-DENABLE_DEBUG="ON" \
+-DKDB_DB_HOME="/home/jenkins/workspace/elektra-build-docker/.config/kdb/home" \
+-DKDB_DB_SYSTEM="/home/jenkins/workspace/elektra-build-docker/.config/kdb/system" \
+-DKDB_DB_SPEC="/home/jenkins/workspace/elektra-build-docker/.config/kdb/spec" \
 -DINSTALL_SYSTEM_FILES="OFF" \
--DCMAKE_INSTALL_PREFIX="/home/jenkins/elektra-install"
+-DBUILD_DOCUMENTATION="OFF" \
+-DCMAKE_RULE_MESSAGES="OFF" \
+-DCMAKE_INSTALL_PREFIX="/home/jenkins/workspace/elektra-install" \
+-DCOMMON_FLAGS="-Werror"
 ```
 
 and then with
@@ -128,8 +131,8 @@ make install
 After Elektra has been installed we need to add it to the PATH variable, meaning you and the tests can interact with Elektra by typing/executing `kdb` in the command line.
 
 ```sh
-export PATH="/home/jenkins/elektra-install/bin:$PATH"
-export LD_LIBRARY_PATH="/home/jenkins/elektra-install/lib:$PATH"
+export PATH="/home/jenkins/workspace/elektra-install/bin:$PATH"
+export LD_LIBRARY_PATH="/home/jenkins/workspace/elektra-install/lib:$PATH"
 ```
 
 ### 4. Run Tests
