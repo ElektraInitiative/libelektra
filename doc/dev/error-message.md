@@ -13,7 +13,7 @@ This guideline should unify the message format so that users will get consistent
   if other messages appear.
 - If your message has multiple sentences, separate them with dots and start with a capital letter like you would do in the normal English language.
 - Short but many sentences are preferable over long ones.
-- Avoid abbreviations because not everybody will know them. You can write the abbreviation though in brackets.
+- Use abbreviations and acronyms with care. Not everybody will know them. You can write them in brackets though.
   (eg. "No Byte Order Mark (BOM) found" instead of "No BOM found").
 - Never use exclamation marks at the end of sentences.
 - If it is unclear where embedded strings in error messages start and end ("%s"-strings), surround them by single quotes '.
