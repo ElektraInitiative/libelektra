@@ -89,3 +89,7 @@ try (KDB kdb = KDB.open(key)) {
 First we create a new `KDB` object and fetch all keys for the desired namespace, in this example the `user` namespace. Since it saves all
 keys in our passed `set` variable we can then iterate through it by a simple for loop.
 The `at(int)` method gives us the key on the corresponding position which we will print out in this example.
+
+## Java Plugin Tutorial
+
+For the tutorial on how to write java plugins, please check out [this](java-plugins.md) page.
