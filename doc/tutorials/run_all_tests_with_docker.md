@@ -15,9 +15,24 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ## What to Begin With?
 
-### 1. Pick a Docker Image and Pull It
+### 1. Docker Image
 
-Pick one of the available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch".
+To build your own Docker image, run the following command from the project root directory:
+
+```sh
+docker build -t buildelektra-sid \
+	--build-arg JENKINS_USERID=$(id -u) \
+	--build-arg JENKINS_GROUPID=$(id -g) \
+	-f scripts/docker/debian/sid/Dockerfile \
+	scripts/docker/debian/sid/
+```
+
+The build process depends on your Internet connection speed and the overall performance of your hardware. Most likely, it will take at least
+5 minutes. Please be patient. Once you have built the image, you can reuse it multiple times.
+
+The image tag `buildelektra-sid` we suggested can be replaced by a name of your own choosing.
+
+Another alternative but not recommended(!) option would be to pick one of the publicly available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch".
 Unfortunately, it will take some time to download it, since it is pretty big, but you can be sure you'll have all the needed dependencies.
 You can choose a light-weight Alpine image which won't take long to download, however it is not recommended. This image does not contain all necessary dependencies.
 
@@ -66,16 +81,7 @@ So from your root project folder run the following:
 docker run -it --rm \
 -v "$PWD:/home/jenkins/workspace" \
 -w /home/jenkins/workspace \
-hub-public.libelektra.org/<image_name>:<tag_name>
-```
-
-Example:
-
-```sh
-docker run -it --rm \
--v "$PWD:/home/jenkins/workspace" \
--w /home/jenkins/workspace \
- hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
+buildelektra-sid
 ```
 
 ### 3. Build
