@@ -132,7 +132,8 @@ After Elektra has been installed we need to add it to the PATH variable, meaning
 
 ```sh
 export PATH="/home/jenkins/workspace/elektra-install/bin:$PATH"
-export LD_LIBRARY_PATH="/home/jenkins/workspace/elektra-install/lib:$PATH"
+export LD_LIBRARY_PATH="/home/jenkins/workspace/elektra-install/lib:$LD_LIBRARY_PATH"
+export LUA_CPATH="/home/jenkins/workspace/elektra-install/lib/lua/5.2/?.so;"
 ```
 
 ### 4. Run Tests
