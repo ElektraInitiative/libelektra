@@ -8,7 +8,8 @@ This guideline should unify the message format so that users will get consistent
   Example: `kdbSet() not supported` should be changed to `Method 'kdbSet()' is not supported`
 - Always report all information which could be useful for the user. For some error types, templates are provided to not forget something. (eg. keys, files, errno,
   etc.)
-- If the error reason is in beneath a variable string (such as `errno` or a caught exception), write `"Reason: %s", variable_as_string` at the end of the error       message. Also end the preceding sentence with a dot. Example: `"XY failed. Reason: %s", exception.what()`.
+- If the error reason is in beneath a variable string (such as `errno` or a caught exception), write `"Reason: %s", variable_as_string` at the end of the error 
+  message. Also end the preceding sentence with a dot. Example: `"XY failed. Reason: %s", exception.what()`.
 - The last sentence (or single sentence of your message if you just provide one) must not end with a dot. This should encourage users to continue reading
   if other messages appear.
 - If your message has multiple sentences, separate them with dots and start with a capital letter like you would do in the normal English language.
@@ -20,6 +21,7 @@ This guideline should unify the message format so that users will get consistent
   Sentences containing a variable string and end with `Reason: %s` do not need extra quotes because it is clear where they start and end.
 
 # Examples
+
 Actual reason might be in errno or an exception
 
 - `"The configuration file %s contains invalid syntax at line %s. Reason: %s", file.path(), line, e.what()`
