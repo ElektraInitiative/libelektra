@@ -51,3 +51,4 @@ section here.
 - [Default Values](default_values.md)
 - [High Level API](high_level_api.md)
 - [Global KeySet](global_keyset.md)
+- [Commit Function](commit_function.md)
