@@ -28,7 +28,7 @@ or you can reinstall Java 1.8 SDK.
 
 ### JNA Binding
 
-Java Native Access is Java technology (library), which like JNI allows a developer to run native code using only Java by providing access to native shared libraries. In order to use JNA binding, it should be firstly installed.
+Java Native Access is Java technology (library), which like JNI allows a developer to run native code using only Java by providing access to native shared libraries. In order to use JNA binding, it should be firstly installed. More information you can find on the the GitHub [page](https://github.com/java-native-access/jna).
 
 Generally speaking, `JNI` and `JNA` are both different java technologies that could be used to bind Java code and code written in C and C++. Even though, `JNI` gives the ability for developers to integrate Java code into C, what is not possible with `JNA`.
 
