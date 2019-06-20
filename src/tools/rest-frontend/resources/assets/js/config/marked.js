@@ -29,6 +29,11 @@ module.exports = function (markedProvider, config, webStructure) {
                 return '<a href="' + href + '"' + (title ? ' title="' + title + '"' : '') +
                         ' target="_blank">' + text + ' <i class="fa fa-external-link"></i></a>';
             }
+            //anchor link
+            if (href.indexOf('#') > -1) {
+                return '<a href="' + href + '"' + (title ? ' title="' + title + '"' : '') +
+                        ' >' + text + ' <i class="fa fa-external-link"></i></a>';
+            }
             // internal link
             var file = findFileInWebstructure(webStructure, href);
             // we don't have the file on the website, make external link

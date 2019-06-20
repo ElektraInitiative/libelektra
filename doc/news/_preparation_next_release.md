@@ -721,7 +721,13 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - Added github build status badges to website _(hesirui)_
 - We updated part of a test for the [snippet converter](https://www.libelektra.org/conversion). _(René Schwaiger)_
+- Fixed anchor links on the website _(hesirui)_
 - Added Docsearch to Website _(hesirui)_
+
+- <<TODO>>
+  
+- <<TODO>>
+
 - <<TODO>>
 
 ## Outlook
