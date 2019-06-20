@@ -4,6 +4,10 @@ Multiple plugins can be mounted into the [key database](/doc/help/elektra-glossa
 On every access to the key data base they are executed and thus can change
 the functionality and behavior.
 
+Unlike Elektra's core the plugins have all kinds of dependencies. It is the
+responsibility of the plugin to find and check its dependencies using CMake.
+If a dependency cannot be found, the plugin will automatically disable itself.
+
 ## Description
 
 Elektra has a wide range of different plugins.

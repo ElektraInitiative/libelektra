@@ -3,6 +3,8 @@ Elektra provides many ways to interact with its global key database.
 ## CLI
 
 The command-line interface (CLI) is called `kdb`.
+It is the commandline-tool to access and initialize the Elektra database.
+
 It has build-in commands that can be listed via `kdb`.
 Additionally, new commands can be easily extended in any language.
 These external commands can be listed via `kdb list-tools`

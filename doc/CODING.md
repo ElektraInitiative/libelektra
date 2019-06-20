@@ -3,8 +3,6 @@
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
-Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
-
 ## Folder structure
 
 After you downloaded and unpacked Elektra you should see some folders.
@@ -15,20 +13,19 @@ The most important are:
 - **examples:** Examples on how to use the core library.
 - **tests:** Contains the testing framework for the source (**src**).
 
+More about the structure you find in the folder's `README.md`.
+
+## General Information
+
+- Keep to the style that is already present, except if this document
+  says otherwise: then please open an issue for offending code.
+- We use UNIX line endings
+- Large files should be in http://blobs.libelektra.org/ or https://rawdata.libelektra.org
+- `find . -not -regex '[/.a-zA-Z0-9_-]*'` should not find your file names
+
 ## Source Code
 
-libelektra is the ANSI/ISO C99-Core which coordinates the interactions
-between the user and the plugins.
-
-The plugins have all kinds of dependencies. It is the responsibility of
-the plugins to find and check them using CMake. The same guidelines
-apply to all code in the repository including the plugins.
-
-`libloader` is responsible for loading the backend modules. It works on
-various operating systems by using `libltdl`. This code is optimized
-for static linking and win32.
-
-kdb is the commandline-tool to access and initialize the Elektra database.
+The same guidelines apply to all code in the repository including the plugins.
 
 ### General Guidelines
 
@@ -41,13 +38,11 @@ names and keep the software both testable and reusable.
 The purpose of the guidelines is to have a consistent
 style, not to teach programming.
 
-If you see code that breaks guidelines do not hesitate to fix them. At least put a
-TODO marker to make the places visible.
+If you see code that breaks guidelines do not hesitate to fix them or at
+least open issues.
 
-If you see inconsistency within the rules do not hesitate to talk about it with the
-intent to add a new rule here.
-
-See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
+If you see inconsistency within the rules do not hesitate to open an
+issue about it.
 
 ### Code Comments
 
@@ -594,3 +589,7 @@ Note:
 
 The duplication of the filename, author and date is not needed, because
 this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.
+
+## Further Readings
+
+- Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.

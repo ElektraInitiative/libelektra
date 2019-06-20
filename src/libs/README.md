@@ -40,6 +40,8 @@ libelektra-kdb.so
 Accesses the configuration files by orchestrating the plugins.
 The implementation lives in [elektra](elektra).
 
+It coordinates the interactions between the applications and the plugins.
+
 **[loader](loader/)** contains source files that implement the plugin
 loader functionality as used by `libelektra-kdb`.
 
