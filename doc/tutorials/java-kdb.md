@@ -90,6 +90,21 @@ First we create a new `KDB` object and fetch all keys for the desired namespace,
 keys in our passed `set` variable we can then iterate through it by a simple for loop.
 The `at(int)` method gives us the key on the corresponding position which we will print out in this example.
 
+### Read Multiple Keys From KDB
+
+[This](../../examples/external/java/read-keys-example) example shows how to read multiple keys. It provides comments for further clarification.
+Before building and running this example, add first your jar file like described [here](../../examples/external/java/read-keys-example/README.md).
+Then build the project with this command from the root directory:
+
+```sh
+mvn clean package
+```
+
+Afterwards run it with (change VERSION in the command below!):
+
+```sh
+java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra4j-VERSION.jar org.libelektra.app.App
+```
 ## Java Plugin Tutorial
 
 For the tutorial on how to write java plugins, please check out [this](/doc/tutorials/java-plugins.md) page.
