@@ -80,7 +80,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### spec
 
-- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes concering the less
+- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes concerning the less
   used (and also less functional) parts of the plugin. To find out more about these changes take a look at the
   [README](../../src/plugins/spec/README.md). It now better reflects the actually implemented behaviour. _(Klemens Böswirth)_
 
