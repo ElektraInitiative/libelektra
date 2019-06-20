@@ -118,7 +118,7 @@ You can read the documentation for the kdb tool, either
 
 ## Goals
 
-- Make developers live easier by proving a well-tested mature library
+- Make developer's life easier by proving a well-tested mature library
   instead of rolling your own configuration system for every application.
   This reduces rank growth of configuration systems (including but not limited
   to configuration file parsers) in our ecosystem and fosters well-maintained
