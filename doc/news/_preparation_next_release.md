@@ -551,6 +551,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Added a step-by-step [tutorial](../tutorials/run_all_tests_with_docker.md) for running all tests with Docker. _(Oleksandr Shabelnyk)_
 - Added a step-by-step [tutorial](../tutorials/run_reformatting_script_with_docker.md) for running reformatting scripts with Docker. _(Oleksandr Shabelnyk)_
 - Covered Resolving Missing \*.so Library Error in [tutorial](../tutorials/contributing-clion.md). _(Oleksandr Shabelnyk)_
+- Added a basic tutorial on [How-To: Write a Java Plugin](../tutorials/java-plugins.md) _(Dmytro Moiseiuk)_
 
 ### Spelling Fixes
 
@@ -593,6 +594,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
 - We wrote a tutorial which is intended to [help newcomers contributing to libelektra](../tutorials/contributing-clion.md). _(Thomas Bretterbauer)_
 - We fixed various broken links in the documentation. _(René Schwaiger)_
+- Fix finding of jni.h library. _(Dmytro Moiseiuk)_
 
 [markdown link converter]: https://master.libelektra.org/doc/markdownlinkconverter
 
@@ -720,6 +722,12 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Added github build status badges to website _(hesirui)_
 - We updated part of a test for the [snippet converter](https://www.libelektra.org/conversion). _(René Schwaiger)_
 - Fixed anchor links on the website _(hesirui)_
+- Added Docsearch to Website _(hesirui)_
+
+- <<TODO>>
+  
+- <<TODO>>
+
 - <<TODO>>
 
 ## Outlook

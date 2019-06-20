@@ -62,7 +62,7 @@ kdb.set(set, key);
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
 The _user_ namespace is accessible without special rights, but if you try to write to _system_ you will need to have root
-privileges. Check [this](../TESTING.md) to see how to run as non-root user. This should only be done in testing
+privileges. Check [this](/doc/TESTING.md) to see how to run as non-root user. This should only be done in testing
 environments though as it is not intended for productive systems.
 
 ## Examples
@@ -89,3 +89,7 @@ try (KDB kdb = KDB.open(key)) {
 First we create a new `KDB` object and fetch all keys for the desired namespace, in this example the `user` namespace. Since it saves all
 keys in our passed `set` variable we can then iterate through it by a simple for loop.
 The `at(int)` method gives us the key on the corresponding position which we will print out in this example.
+
+## Java Plugin Tutorial
+
+For the tutorial on how to write java plugins, please check out [this](/doc/tutorials/java-plugins.md) page.

@@ -1,8 +1,7 @@
 'use strict';
 
-module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure, config) {
+module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure, config, $translate) {
 
-    var vm = this;
     $scope.$rootScope = $rootScope;
     $scope.$state = $state;
 
@@ -18,6 +17,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
     $scope.builddate.pretty = $scope.builddate.date.toLocaleString() + ' (' +
             (($scope.builddate.timezoneOffset >= 0) ? '+' : '') + $scope.builddate.timezoneOffset + 'h UTC)';
 
+//        var vm = this;
 //        vm.currentLanguage = 'de';
 
 //        vm.changeLanguage = changeLanguage;
@@ -34,22 +34,21 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 //
 //        }
 
-    this.goSearch = function () {
-
-        Logger.log('Go to search');
-        $state.go('main.entries.search');
-
-    };
-
-    this.goMySnippets = function () {
-        $rootScope.entriesSearchString = $rootScope.currentUser.username;
-        vm.goSearch();
-    };
-
     this.scrollToTop = function () {
         $anchorScroll();
     };
 
     Logger.info("Main template ready");
+
+    // init after view has been loaded (template parsed, translation happend)
+    angular.element(document).ready(function () {
+        docsearch({
+            apiKey: '7d1e7bc1f97b53de246aaefa29484be9',
+            indexName: 'elektra',
+            inputSelector: '#searchboxdocsearch',
+            debug: false, // Set debug to true if you want to inspect the dropdown
+            });
+    });
+        
 
 };
