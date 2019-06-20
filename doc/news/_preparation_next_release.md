@@ -76,6 +76,8 @@ dependencies. _(Klemens Böswirth)_
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### CSVStorage
+
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
 ### spec
