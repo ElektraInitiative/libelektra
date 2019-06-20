@@ -7,7 +7,7 @@ This file serves as a tutorial on how to get started with writing a java plugin.
 If you want to know more about plugins in general, please check out the [How-To: Write a Plugin](/doc/tutorials/plugins.md) page.
 If you need a tutorial for java, please check out the [How-To: Java kdb](/doc/tutorials/java-kdb.md) page.
 
-## Two types of Java Plugins
+## Two Types of Java Plugins
 
 Before we will take a look into how to write a plugin in Java, it is important to note, that there are two ways of doing that:
 
@@ -18,19 +18,19 @@ If you would like to write a plugin in Java and look into the documentation, the
 
 ### JNI Plugin
 
-Java Native Interface is framework, which allows the Java code to execute or to be executed by the programms, written in other languages like C, C++ and Assembly. Since most of Elektra plugins are written in C and C++, the developer can use JNI plugin, which was created specifically for Elektra. This plugin allows developers to integrate Java into C code. More on JNI Plugins, you can read [here](/src/plugins/jni/README.md).
+Java Native Interface is a framework, which allows Java code to execute or to be executed by programms, written in other languages like C, C++ and Assembly. Most of Elektra’s plugins are written in C and C++. Developer can use the JNI plugin, which was created specifically for Elektra to write plugins using Java code. For more information on JNI plugins, please take a look [here](/src/plugins/jni/README.md).
 
-In order to use `JNI` in Elektra, the library `jni.h` must be provided for it. It is important to note, that Elektra uses SDK version 1.8, so you have to install this version of SDK and use while writing a Java plugin. This file is used later in `JNI Plugin`, which has to be enabled, while installing Elektra. More information on how to install `JNI Plugin` can be found [here](/src/plugins/jni/README.md). Please read carefully and follow instructions in `Installation` and `Enabling the Plugin` sections. If you don't have `jni.h` file, it can be easily downloaded and placed under this path:
+In order to use `jni` in Elektra, the library `jni.h` must be provided for it. This file is used by the JNI Plugin, which has to be enabled, while installing Elektra. More information on how to install the JNI plugin can be found [here](/src/plugins/jni/README.md). Please read carefully and follow instructions in the “Installation” and “Enabling the Plugin” sections. If you don't have the `jni.h` file, it can be easily downloaded and placed under this path:
 
 - `/path/to/SDK/include`
 
-or you can reinstall Java 1.8 SDK.
+or you can reinstall the Java SDK.
 
 ### JNA Binding
 
-Java Native Access is Java technology (library), which like JNI allows a developer to run native code using only Java by providing access to native shared libraries. In order to use JNA binding, it should be firstly installed. More information you can find on the the GitHub [page](https://github.com/java-native-access/jna).
+Java Native Access is Java technology (library), which like JNI allows a developer to run native code using only Java by providing access to native shared libraries. In order to use the JNA binding, it should be installed first. You can find more information on [JNA’s GitHub page](https://github.com/java-native-access/jna).
 
-Generally speaking, `JNI` and `JNA` are both different java technologies that could be used to bind Java code and code written in C and C++. Even though, `JNI` gives the ability for developers to integrate Java code into C, what is not possible with `JNA`.
+Generally speaking, `JNI` and `JNA` are both different Java technologies that could be used to bind Java code and code written in C and C++. `JNI` gives developers the ability to integrate Java code into C too. That is not possible with `JNA`.
 
 Here we will look into, how can we write Java Plugins using - `JNA Binding`.
 
@@ -38,7 +38,7 @@ Here we will look into, how can we write Java Plugins using - `JNA Binding`.
 
 Under the the following [path](/src/bindings/jna/libelektra4j/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
 
-In order to write a new Java Plugin, the new class has to be created under the `plugin` folder. It has also to extend the `Plugin.java` interface, which contains all required methods to communicate with Elektra database. You can leave some of the methods not implemented, if there is no need in them.
+In order to write a new Java Plugin, the new class has to be created under the `plugin` folder. It has also to extend the `Plugin.java` interface, which contains all required methods to communicate with Elektra’s database. You can leave some of the methods unimplemented, if there is no need for them.
 
 The `Plugin.java` interface contains methods for the five basic functions of plugins:
 
@@ -52,4 +52,4 @@ It is expected that each method returns -1 if an error occurred or 0 if everythi
 
 ### Usage of Plugin
 
-To use the bindings in a java project, we have to include the jar file `libelektra-version.jar` in the project. The version number is the same one as used for Elektra. This jar is created upon build, if you enable the jna bindings. You can also use maven to take care about the dependencies. After that you can take your implemented class out of `libelektra` folder and integrate it into your project.
+To use the bindings in a Java project, we have to include the jar file `libelektra-version.jar` in the project. The version number is the same one as used for Elektra. This jar is created upon build, if you enable the JNA binding. You can also use Maven to take care of the dependencies. After that you can take your implemented class out of the `libelektra` folder and integrate it into your project.
