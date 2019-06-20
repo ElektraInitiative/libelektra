@@ -553,7 +553,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - Added a step-by-step [tutorial](../tutorials/run_reformatting_script_with_docker.md) for running reformatting scripts with Docker. _(Oleksandr Shabelnyk)_
 - Covered Resolving Missing \*.so Library Error in [tutorial](../tutorials/contributing-clion.md). _(Oleksandr Shabelnyk)_
-- Added a basic tutorial on [How-To: Write a Java Plugin](../tutorials/java-plugins.md) _(Dmytro Moiseiuk)_
+- Added a basic tutorial on [How-To: Write a Java Plugin](../tutorials/java-plugins.md) _(Dmytro Moiseiuk)_ and _(Miruna Orsa)_
 
 ### Spelling Fixes
 
@@ -597,9 +597,10 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We wrote a tutorial which is intended to [help newcomers contributing to libelektra](../tutorials/contributing-clion.md). _(Thomas Bretterbauer)_
 - We fixed various broken links in the documentation. _(René Schwaiger)_
 - Fix finding of jni.h library. _(Dmytro Moiseiuk)_
+- Added license for asciinema. _(Anastasia @nastiaulian)_
 
 - <<TODO>>
-  
+
 - <<TODO>>
 
 - <<TODO>>
@@ -733,7 +734,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Added Docsearch to Website _(hesirui)_
 
 - <<TODO>>
-  
+
 - <<TODO>>
 
 - <<TODO>>

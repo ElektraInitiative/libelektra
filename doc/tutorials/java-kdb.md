@@ -105,6 +105,7 @@ Afterwards run it with (change VERSION in the command below!):
 ```sh
 java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra4j-VERSION.jar org.libelektra.app.App
 ```
+
 ## Java Plugin Tutorial
 
 For the tutorial on how to write java plugins, please check out [this](/doc/tutorials/java-plugins.md) page.
