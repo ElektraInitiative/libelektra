@@ -19,7 +19,7 @@ More about the structure you find in the folder's `README.md`.
 
 - Keep to the style that is already present, except if this document
   says otherwise: then please open an issue for offending code.
-- We use UNIX line endings
+- We use Unix line endings
 - Large files should be in http://blobs.libelektra.org/ or https://rawdata.libelektra.org
 - `find . -not -regex '[/.a-zA-Z0-9_-]*'` should not find your file names
 
