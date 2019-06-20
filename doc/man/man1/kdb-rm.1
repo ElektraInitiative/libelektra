@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-RM" "1" "December 2017" "" ""
+.TH "KDB\-RM" "1" "June 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-rm\fR \- Remove key(s) from the key database
@@ -40,6 +40,14 @@ Work in a recursive mode\.
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Do not fail on missing key\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .SH "EXAMPLES"
 To remove multiple keys:

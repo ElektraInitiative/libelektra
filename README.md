@@ -22,7 +22,7 @@ applications' configurations, leveraging easy application integration.
 
 - [Build server](https://build.libelektra.org/)
 - [Website](https://www.libelektra.org)
-- [API docu](https://doc.libelektra.org/api/latest/html/)
+- [API documentation](https://doc.libelektra.org/api/latest/html/)
 
 ## Overview
 

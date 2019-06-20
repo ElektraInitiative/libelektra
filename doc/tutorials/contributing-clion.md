@@ -279,6 +279,32 @@ If you want to use CLion for creating Pull Request, please check out
 [this](https://www.jetbrains.com/help/clion/contribute-to-projects.html#create-pull-request)
 link for further information.
 
+## Troubleshooting
+
+### Resolving Missing \*.so Library Error In Debug Mode
+
+In case you fail to run Elektra with the message like this one
+`Reason: of module: libelektra-resolver.so, because: libelektra-resolver.so: cannot open shared object file: No such file or directory`
+you can solve it by defining the LD_LIBRARY_PATH variable directly in CLion. Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'.
+Then find 'Environmental Variables' field and add the following:
+LD_LIBRARY_PATH=PATH_TO_YOUR_LIB_DIRECTORY
+
+Example:
+
+LD_LIBRARY_PATH=/home/username/TU/libelektra/cmake-build-debug/lib
+
+If you want to run built `kdb` outside of CLion, the recommended way is to run this script from your build directory. The script resides in you original directory with project sources.
+
+Example:
+
+```sh
+. /PATH/TO/YOUR/PROJECT/scripts/run_dev_env
+```
+
+Please keep in mind it sets the variables only in the currently opened shell window/session.
+
+Please refer to [this](/doc/COMPILE.md) tutorial to fix the problem permanently.
+
 ## Hints
 
 - Especially for not that well-versed programmers don't forget that when

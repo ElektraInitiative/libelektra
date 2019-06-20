@@ -27,6 +27,10 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
   Suppress the newline at the end of the output.
 - `-N`, `--namespace <namespace>`:
   Specify the namespace to use when writing cascading keys.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## KDB
 

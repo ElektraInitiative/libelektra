@@ -62,7 +62,7 @@ kdb.set(set, key);
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
 The _user_ namespace is accessible without special rights, but if you try to write to _system_ you will need to have root
-privileges. Check [this](../TESTING.md) to see how to run as non-root user. This should only be done in testing
+privileges. Check [this](/doc/TESTING.md) to see how to run as non-root user. This should only be done in testing
 environments though as it is not intended for productive systems.
 
 ## Examples
@@ -105,3 +105,6 @@ Afterwards run it with (change VERSION in the command below!):
 ```sh
 java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra4j-VERSION.jar org.libelektra.app.App
 ```
+## Java Plugin Tutorial
+
+For the tutorial on how to write java plugins, please check out [this](/doc/tutorials/java-plugins.md) page.

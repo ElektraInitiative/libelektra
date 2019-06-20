@@ -321,6 +321,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Reference
 
 - Fixed missing Metadata in README and METADATA.ini. _(Michael Zronek)_
+- Update README.md web tool to show, how to test REST API on localhost. _(Dmytro Moiseiuk)_
 
 ### Specload
 
@@ -356,13 +357,14 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
 - Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
 - Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
-- Fix data loss bug when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
+- Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
 
 ### multifile
 
 - Fixed segmentation fault in `kdbError()` function. _(Mihael Pranjić)_
 - Added Global Keyset handle to storage plugin. _(Mihael Pranjić)_
 - Disable cache when `ini` is used. _(Mihael Pranjić)_
+- Fixed use of wrong resolver handle in the `kdbError()` function. _(Mihael Pranjić)_
 
 ### mmapstorage
 
@@ -396,6 +398,11 @@ removed due to:
 ### macaddr
 
 - Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
+
+### unit
+
+- New plugin to validate units of memory and normalize them into bytes. E.g. 20 KB (normalized to 20000 Byte).
+  _(Marcel Hauri)_
 
 ## Libraries
 
@@ -450,7 +457,7 @@ you up to date with the multi-language support provided by Elektra.
 - JNA is now not experimental anymore. _(Markus Raab)_
 - gsettings is not default anymore. _(Markus Raab)_
 
-- Add fix for creating the Key and KeySet objects in the HelloElektra.java file _(Dmytro Moiseiuk)_
+- Add fix for creating the Key and KeySet objects in the HelloElektra.java file. _(Dmytro Moiseiuk)_
 - We fixed a [warning about a deprecated default constructor](https://issues.libelektra.org/2670) in the C++ binding reported by GCC 9.0. _(René Schwaiger)_
 - <<TODO>>
 
@@ -541,9 +548,12 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - For beginners we added a [tutorial](../tutorials/contributing-clion.md) that guides them through the process of contributing to libelektra. _(Thomas Bretterbauer)_
 - Added a section on `elektraPluginGetGlobalKeySet` in the plugin tutorial. _(Vid Leskovar)_
-- Added a step-by-step [tutorial](../tutorials/run_all_tests_with_docker.md) for running all tests with Docker. _(Oleksandr Shabelnyk)_
+- Added a step-by-step [tutorial](../tutorials/run_all_tests_with_docker.md) for beginners to run all tests with Docker. _(Oleksandr Shabelnyk)_
 - Extend/improve java bindings related documentation in [tutorial](../tutorials/java-kdb.md) and [readme](../../src/bindings/jna/README.md). _(Oleksandr Shabelnyk)_
+
 - Added a step-by-step [tutorial](../tutorials/run_reformatting_script_with_docker.md) for running reformatting scripts with Docker. _(Oleksandr Shabelnyk)_
+- Covered Resolving Missing \*.so Library Error in [tutorial](../tutorials/contributing-clion.md). _(Oleksandr Shabelnyk)_
+- Added a basic tutorial on [How-To: Write a Java Plugin](../tutorials/java-plugins.md) _(Dmytro Moiseiuk)_
 
 ### Spelling Fixes
 
@@ -580,10 +590,19 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Added a new error concept for error codes to be implemented soon. _(Michael Zronek)_
 - Added error categorization guidelines to be used with the error concept. _(Michael Zronek)_
 - Drastically improved the error message format. For more information look [here](../../doc/decisions/error_message_format.md). _(Michael Zronek)_
+- Every `kdb` command now accepts `v` and `d` as option to show more information in case of warnings or errors. _(Michael Zronek)_
 - Improved qt-gui error popup to conform with the new error message format. _(Raffael Pancheri)_
 - We fixed the format specifiers in the [“Hello, Elektra” example](https://master.libelektra.org/examples/helloElektra.c). _(René Schwaiger)_
 - Expanded the Python Tutorial to cover installation under Alpine Linux. _(Philipp Gackstatter)_
 - We wrote a tutorial which is intended to [help newcomers contributing to libelektra](../tutorials/contributing-clion.md). _(Thomas Bretterbauer)_
+- We fixed various broken links in the documentation. _(René Schwaiger)_
+- Fix finding of jni.h library. _(Dmytro Moiseiuk)_
+
+- <<TODO>>
+  
+- <<TODO>>
+
+- <<TODO>>
 
 [markdown link converter]: https://master.libelektra.org/doc/markdownlinkconverter
 
@@ -633,7 +652,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - The build system now rebuilds the [JNA binding](https://www.libelektra.org/bindings/jna) with Maven, if you change any of the Java source files of the binding. _(René Schwaiger)_
 - `testshell_markdown_tutorial_crypto` is not compiled and executed if `gen-gpg-testkey` is not part of TOOLS. _(Peter Nirschl)_
-- <<TODO>>
+- Plugin tests are now only added, if `BUILD_TESTING=ON`. _(Klemens Böswirth)_
 - <<TODO>>
 
 ### Docker
@@ -698,7 +717,6 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 ### Travis
 
-- We fixed the value of the `directories` [caching](https://docs.travis-ci.com/user/caching) key in our [Travis config file](../../.travis.yml). _(René Schwaiger)_
 - We removed the build job for the [Haskell binding](../../src/bindings/haskell/README.md) and [Haskell plugin](../../src/plugins/haskell/README.md). For more information, please take a look [here](https://issues.libelektra.org/2751). _(Klemens Böswirth)_
 - We always use GCC 9 for the build job `🍏 GCC`. This update makes sure that the build job succeeds, even if Homebrew
   adds a new major version of the compiler. _(René Schwaiger)_
@@ -711,6 +729,13 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - Added github build status badges to website _(hesirui)_
 - We updated part of a test for the [snippet converter](https://www.libelektra.org/conversion). _(René Schwaiger)_
+- Fixed anchor links on the website _(hesirui)_
+- Added Docsearch to Website _(hesirui)_
+
+- <<TODO>>
+  
+- <<TODO>>
+
 - <<TODO>>
 
 ## Outlook
