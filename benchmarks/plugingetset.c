@@ -25,11 +25,10 @@ int main (int argc, char ** argv)
 	typedef enum
 	{
 		BOTH,
-		GET,
-		Default = BOTH
+		GET
 	} Direction;
 
-	Direction direction;
+	Direction direction = BOTH;
 	if (argc == 5) direction = GET;
 
 	const char * path = argv[1];
