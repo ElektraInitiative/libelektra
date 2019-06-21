@@ -76,17 +76,109 @@ dependencies. _(Klemens Böswirth)_
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### Cache
+
+- [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
+- Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
+- Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
+- Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
+
+### crypto / fcrypt
+
+- Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
+- Apply Base64 encoding to the master password, which is stored within the plugin configuration. This fixes a problem that occurs if ini is used as default storage (see [2591](https://github.com/ElektraInitiative/libelektra/issues/2591))._(Peter Nirschl)_
+- Fix compilation without deprecated OpenSSL APIs. Initialization and deinitialization is not needed anymore. _(Rosen Penev)_
+
+### CSVStorage
+
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
-### spec
+### gOpts
 
-- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes concering the less
-  used (and also less functional) parts of the plugin. To find out more about these changes take a look at the
-  [README](../../src/plugins/spec/README.md). It now better reflects the actually implemented behaviour. _(Klemens Böswirth)_
+- The [gopts](https://www.libelektra.org/plugins/gopts) plugin simply retrieves the values of `argc`, `argv` and `envp` needed for
+  [`elektraGetOpts`](https://www.libelektra.org/tutorials/command-line-options) and then makes the call. It is intended to be used as a
+  global plugin, so that command-line options are automatically parsed when `kdbGet` is called. _(Klemens Böswirth)_
+- The plugin works under WIN32 (via `GetCommandLineW` and `GetEnvironmentString`), MAC_OSX (`_NSGetArgc`, `_NSGetArgv`) and any system that
+  either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
+  `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
+
+### INI
+
+- Fixed `ini` when only the root key needs to be written. _(Mihael Pranjić)_
+- Plugin writes to ini files without spaces around '=' anymore. Reading is still possible with and without spaces.
+  _(Oleksandr Shabelnyk)_
+
+### macaddr
+
+- Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
 
 ### mINI
 
 - We fixed compiler warnings reported by GCC 9 in the [unit test code](../../src/plugins/mini/testmod_mini.c) of the plugin. _(René Schwaiger)_
+
+### mmapstorage
+
+- [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
+- Fixed support for `kdb import` and `kdb export`. _(Mihael Pranjić)_
+
+### multifile
+
+- Fixed segmentation fault in `kdbError()` function. _(Mihael Pranjić)_
+- Added Global Keyset handle to storage plugin. _(Mihael Pranjić)_
+- Disable cache when `ini` is used. _(Mihael Pranjić)_
+- Fixed use of wrong resolver handle in the `kdbError()` function. _(Mihael Pranjić)_
+
+### Quickdump
+
+- [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
+  [dump](https://www.libelektra.org/plugins/dump) format, which is also quicker too read. Contrary to dump, quickdump only stores
+  keynames relative to the parent key. This allows easy relocation of configurations. _(Klemens Böswirth)_
+- quickdump now also uses an variable length integer encoding to further reduce file size. _(Klemens Böswirth)_
+
+### Reference
+
+- Fixed missing Metadata in README and METADATA.ini. _(Michael Zronek)_
+- Update README.md web tool to show, how to test REST API on localhost. _(Dmytro Moiseiuk)_
+
+### RGBColor
+
+- New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (4294967295 (= 0xffffffff) and 2864434397 (= 0xaabbccdd) respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
+  _(Philipp Gackstatter)_
+
+### semlock
+
+removed due to:
+
+- constant pain
+- never worked properly
+- poor design
+- no time in future to maintain
+  _(Kurt Micheli)_
+
+### spec
+
+- The spec plugin was partly rewritten to better support specifications for arrays. This includes some breaking changes concerning the less
+  used (and also less functional) parts of the plugin. To find out more about these changes take a look at the
+  [README](../../src/plugins/spec/README.md). It now better reflects the actually implemented behaviour. _(Klemens Böswirth)_
+
+### Specload
+
+- The [specload](https://www.libelektra.org/plugins/specload) plugin is a special storage plugin. Instead of using a storage file
+  it calls an external application to request its specification. For the transfer it relies on the
+  [quickdump](https://www.libelektra.org/plugins/quickdump) plugin. _(Klemens Böswirth)_
+- Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
+  specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
+  problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
+- We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
+
+### Syslog
+
+- We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
+
+### unit
+
+- New plugin to validate units of memory and normalize them into bytes. E.g. 20 KB (normalized to 20000 Byte).
+  _(Marcel Hauri)_
 
 ### YAJL
 
@@ -311,99 +403,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The plugin now translates an empty file to a key set that contains a single empty parent key. _(René Schwaiger)_
 
 [yay peg]: https://www.libelektra.org/plugins/yaypeg
-
-### Quickdump
-
-- [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
-  [dump](https://www.libelektra.org/plugins/dump) format, which is also quicker too read. Contrary to dump, quickdump only stores
-  keynames relative to the parent key. This allows easy relocation of configurations. _(Klemens Böswirth)_
-- quickdump now also uses an variable length integer encoding to further reduce file size. _(Klemens Böswirth)_
-
-### Reference
-
-- Fixed missing Metadata in README and METADATA.ini. _(Michael Zronek)_
-- Update README.md web tool to show, how to test REST API on localhost. _(Dmytro Moiseiuk)_
-
-### Specload
-
-- The [specload](https://www.libelektra.org/plugins/specload) plugin is a special storage plugin. Instead of using a storage file
-  it calls an external application to request its specification. For the transfer it relies on the
-  [quickdump](https://www.libelektra.org/plugins/quickdump) plugin. _(Klemens Böswirth)_
-- Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
-  specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
-  problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
-- We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
-
-### Syslog
-
-- We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
-
-### gOpts
-
-- The [gopts](https://www.libelektra.org/plugins/gopts) plugin simply retrieves the values of `argc`, `argv` and `envp` needed for
-  [`elektraGetOpts`](https://www.libelektra.org/tutorials/command-line-options) and then makes the call. It is intended to be used as a
-  global plugin, so that command-line options are automatically parsed when `kdbGet` is called. _(Klemens Böswirth)_
-- The plugin works under WIN32 (via `GetCommandLineW` and `GetEnvironmentString`), MAC_OSX (`_NSGetArgc`, `_NSGetArgv`) and any system that
-  either has a `sysctl(3)` function that accepts `KERN_PROC_ARGS` (e.g. FreeBSD) or when `procfs` is mounted and either `/proc/self` or
-  `/proc/curproc` refers to the current process. If you need support for any other systems, feel free to add an implementation.
-
-### crypto / fcrypt
-
-- Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
-- Apply Base64 encoding to the master password, which is stored within the plugin configuration. This fixes a problem that occurs if ini is used as default storage (see [2591](https://github.com/ElektraInitiative/libelektra/issues/2591))._(Peter Nirschl)_
-- Fix compilation without deprecated OpenSSL APIs. Initialization and deinitialization is not needed anymore. _(Rosen Penev)_
-
-### Cache
-
-- [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
-- Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
-- Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
-- Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
-
-### multifile
-
-- Fixed segmentation fault in `kdbError()` function. _(Mihael Pranjić)_
-- Added Global Keyset handle to storage plugin. _(Mihael Pranjić)_
-- Disable cache when `ini` is used. _(Mihael Pranjić)_
-- Fixed use of wrong resolver handle in the `kdbError()` function. _(Mihael Pranjić)_
-
-### mmapstorage
-
-- [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) is now able to persist the Global KeySet, which is used by the `cache` plugin. _(Mihael Pranjić)_
-- Fixed support for `kdb import` and `kdb export`. _(Mihael Pranjić)_
-
-### ini
-
-- Fixed `ini` when only the root key needs to be written. _(Mihael Pranjić)_
-
-### semlock
-
-removed due to:
-
-- constant pain
-- never worked properly
-- poor design
-- no time in future to maintain
-  _(Kurt Micheli)_
-
-### RGBColor
-
-- New plugin to validate hex formatted colors (e.g. #fff or #abcd) and normalize them to rgba (4294967295 (= 0xffffffff) and 2864434397 (= 0xaabbccdd) respectively). It also has support for named colors according to the [extended color keywords](https://www.w3.org/TR/css-color-3/#svg-color) from CSS3.
-  _(Philipp Gackstatter)_
-
-### Ini
-
-- Plugin writes to ini files without spaces around '=' anymore. Reading is still possible with and without spaces.
-  _(Oleksandr Shabelnyk)_
-
-### macaddr
-
-- Added a plugin to handle MAC addresses. `kdbGet` converts a MAC address into a decimal 64-bit integer (with the most significant 16 bits always set to 0), if the format is supported. `kdbSet` restores the converted values back to there original form. _(Thomas Bretterbauer)_
-
-### unit
-
-- New plugin to validate units of memory and normalize them into bytes. E.g. 20 KB (normalized to 20000 Byte).
-  _(Marcel Hauri)_
 
 ## Libraries
 
