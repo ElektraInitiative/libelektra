@@ -176,7 +176,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Fixed segmentation fault in `kdbError()` function. _(Mihael Pranjić)_
 - Added Global Keyset handle to storage plugin. _(Mihael Pranjić)_
-- Disable cache when `ini` is used. _(Mihael Pranjić)_
 - Fixed use of wrong resolver handle in the `kdbError()` function. _(Mihael Pranjić)_
 
 ### Quickdump
