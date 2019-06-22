@@ -48,7 +48,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey, "missing key type");
+			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Missing key type");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -81,7 +81,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					fclose (file);
-					ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey, "");
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Error while reading file: Reason: %s", strerror (errno));
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);
@@ -108,7 +108,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_READ_FAILED, parentKey, "Unknown key type %c", type);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Unknown key type %c", type);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -121,7 +121,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
 				fclose (file);
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, parentKey, "Missing key end");
+				ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
@@ -180,8 +180,8 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 				const Key * sourceKey = ksLookupByName (returned, nameBuffer.string, 0);
 				if (sourceKey == NULL)
 				{
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_WRITE_FAILED, parentKey,
-							    "Could not copy meta data from key '%s': Key not found", nameBuffer.string);
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
+								     nameBuffer.string);
 					keyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
@@ -192,9 +192,8 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 
 				if (keyCopyMeta (k, sourceKey, metaNameBuffer.string) != 1)
 				{
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_WRITE_FAILED, parentKey,
-							    "Could not copy meta data from key '%s': Error during copy",
-							    &nameBuffer.string[nameBuffer.offset]);
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not copy meta data from key '%s': Error during copy",
+								     &nameBuffer.string[nameBuffer.offset]);
 					keyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
@@ -210,7 +209,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
 				fclose (file);
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_READ_FAILED, parentKey, "Unknown meta type %c", type);
+				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Unknown meta type %c", type);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}

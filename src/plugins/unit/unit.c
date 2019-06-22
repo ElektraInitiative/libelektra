@@ -156,10 +156,11 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 			if (format == 0)
 			{
-				ELEKTRA_SET_ERRORF (171, parentKey,
-						    "%s is not following the format guidelines of (<numerical value><optional "
-						    "space><memory unit>, e.g. 128 MB) !",
-						    keyString (cur));
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+					parentKey,
+					"The string '%s' is not following the format guidelines of (<numerical value><optional "
+					"space><memory unit>, e.g. 128 MB) !",
+					keyString (cur));
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 			elektraUnitConvertToByteString (cur, format);
@@ -186,10 +187,11 @@ int elektraUnitSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 		if (format == 0)
 		{
-			ELEKTRA_SET_ERRORF (171, parentKey,
-					    "%s is not following the format guidelines of (<numerical value><optional space><memory unit>, "
-					    "e.g. 128 MB) !",
-					    keyString (cur));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+								 "The string '%s' is not following the format guidelines of (<numerical "
+								 "value><optional space><memory unit>, "
+								 "e.g. 128 MB) !",
+								 keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}

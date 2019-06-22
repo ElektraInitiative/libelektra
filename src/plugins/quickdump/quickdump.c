@@ -124,7 +124,7 @@ static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * bu
 
 	if (fread (&buffer->string[buffer->offset], sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		return false;
 	}
 	buffer->string[newSize - 1] = '\0';
@@ -137,7 +137,7 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 	kdb_unsigned_long_long_t size = 0;
 	if (!varintRead (file, &size))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_READ_FAILED, errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		return false;
 	}
 
@@ -269,8 +269,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			kdb_unsigned_long_long_t valueSize = 0;
 			if (!varintRead (file, &valueSize))
 			{
-				ELEKTRA_SET_RESOURCE_ERROR (parentKey,
-						   feof (file) ? "Premature end of file" : "Unknown error");
+				ELEKTRA_SET_RESOURCE_ERROR (parentKey, feof (file) ? "Premature end of file" : "Unknown error");
 				elektraFree (nameBuffer.string);
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
