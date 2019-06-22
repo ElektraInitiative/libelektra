@@ -150,7 +150,7 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 error:
 	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. Unencrypted data may leak. Errno: %s",
-				    strerror (errno));
+				     strerror (errno));
 	return -1;
 }
 

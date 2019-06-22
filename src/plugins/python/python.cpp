@@ -212,7 +212,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 				return ELEKTRA_PLUGIN_STATUS_SUCCESS; // by convention: success if /module exists
 			}
 
-			//TODO: Solution
+			// TODO: Solution
 			ELEKTRA_SET_INTERFACE_ERROR (errorKey, "No python script set, please pass a filename via /script");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -266,8 +266,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		const char * mname = keyString (ksLookupByName (elektraPluginGetConfig (handle), "/python/path", 0));
 		if (!Python_AppendToSysPath (mname))
 		{
-			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Unable to extend sys.path with user-defined /python/path '%s'",
-							 mname);
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Unable to extend sys.path with user-defined /python/path '%s'", mname);
 			goto error;
 		}
 

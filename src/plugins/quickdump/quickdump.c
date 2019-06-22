@@ -61,7 +61,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 {
 	if (!varintWrite (file, size))
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		return false;
 	}
 
@@ -69,7 +69,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 	{
 		if (fwrite (data, sizeof (char), size, file) < size)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 			return false;
 		}
 	}
@@ -94,14 +94,14 @@ static inline char * readString (FILE * file, Key * errorKey)
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		return NULL;
 	}
 
 	char * string = elektraMalloc (size + 1);
 	if (fread (string, sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		elektraFree (string);
 		return NULL;
 	}
@@ -115,7 +115,7 @@ static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * bu
 	kdb_unsigned_long_long_t size;
 	if (!readUInt64 (file, &size, errorKey))
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		return false;
 	}
 
@@ -146,7 +146,7 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 
 	if (fread (&buffer->string[buffer->offset], sizeof (char), size, file) < size)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "premature end of file" : "unknown error");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
 		return false;
 	}
 	buffer->string[newSize - 1] = '\0';

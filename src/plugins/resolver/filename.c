@@ -144,7 +144,7 @@ static char * elektraResolvePasswd (Key * warningsKey)
 		elektraFree (buf);
 		if (s != 0)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r: %s",
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r. Reason: %s",
 							   strerror (s));
 		}
 		return NULL;
@@ -499,7 +499,7 @@ static char * elektraGetCwd (Key * warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Getcwd failed with errno %d \"%s\", defaulting to /", errno,
+				ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Method 'getcwd()' failed. Defaulting to /. Reason: %s",
 							       strerror (errno));
 				return 0;
 			}
@@ -509,8 +509,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF (warningsKey, "Could not realloc for getcwd size %d, defaulting to /",
-								    size);
+				ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF (warningsKey,
+								    "Could not realloc for `getcwd()` size %d, defaulting to /", size);
 				return 0;
 			}
 		}
@@ -648,23 +648,23 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 		rc = elektraResolveMapperSystem (handle, tmpDir, warningsKey);
 		break;
 	case KEY_NS_PROC:
-		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "Tried to resolve proc");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve proc");
 		rc = -1;
 		break;
 	case KEY_NS_EMPTY:
-		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "Tried to resolve empty");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve empty");
 		rc = -1;
 		break;
 	case KEY_NS_NONE:
-		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "Tried to resolve none");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve none");
 		rc = -1;
 		break;
 	case KEY_NS_META:
-		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "Tried to resolve meta");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve meta");
 		rc = -1;
 		break;
 	case KEY_NS_CASCADING:
-		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "Tried to resolve cascading");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve cascading");
 		rc = -1;
 		break;
 	}
