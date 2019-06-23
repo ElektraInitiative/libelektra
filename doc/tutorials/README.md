@@ -21,6 +21,7 @@ provides.
 
 - [Integration of your Application](application-integration.md)
 - [Hello, Elektra](hello-elektra.md)
+- [Contributing with CLion](contributing-clion.md)
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)
