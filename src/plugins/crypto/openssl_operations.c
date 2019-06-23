@@ -199,7 +199,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid key length.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid key length");
 		return -1;
 	}
 
@@ -208,7 +208,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		keyDel (key);
 		keyDel (iv);
 
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid IV length.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid IV length");
 		return -1;
 	}
 
@@ -468,7 +468,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	plaintextLen = BIO_get_mem_data (decrypted, &plaintext);
 	if (plaintextLen < headerLen)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Decryption error! header data is incomplete.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Decryption error! header data is incomplete");
 		goto error;
 	}
 
@@ -482,7 +482,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	if (contentLen > (plaintextLen - headerLen))
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (
-			errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
+			errorKey, "Content length is bigger than amount of decrypted data. Data is possibly corrupted");
 		goto error;
 	}
 

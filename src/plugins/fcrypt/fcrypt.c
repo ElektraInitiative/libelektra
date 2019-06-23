@@ -149,7 +149,7 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 	return 1;
 
 error:
-	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. Unencrypted data may leak. Errno: %s",
+	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. Unencrypted data may leak. Reason: %s",
 				     strerror (errno));
 	return -1;
 }
@@ -577,7 +577,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "No plugin state is available.");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "No plugin state is available");
 		return -1;
 	}
 
@@ -590,7 +590,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 		}
 		else
 		{
-			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "The path to the original file is lost.");
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "The path to the original file is lost");
 			// clean-up is performed by kdb close
 			return -1;
 		}
@@ -640,12 +640,12 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open config file %s. Reason: %s", configFile, strerror (errno));
 		return -1;
 	}
 	if (fsync (fd) == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync config file %s. Reason: %s", configFile, strerror (errno));
 		if (close (fd))
 		{
 			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));

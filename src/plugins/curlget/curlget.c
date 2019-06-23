@@ -833,7 +833,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP PUT) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP PUT) failed. Reason: %s",
 									     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -846,7 +846,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP PUT) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (HTTP PUT) failed. Reason: %s",
 									     curl_easy_strerror (res));
 						retval = -1;
 					}
@@ -883,7 +883,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
-					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (FTP PUT) failed: %s",
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (FTP PUT) failed. Reason: %s",
 								     curl_easy_strerror (res));
 					retval = -1;
 				}
@@ -909,10 +909,10 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				if (res != CURLE_OK)
 				{
 					if (data->putProto == PROTO_SCP)
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (SCP) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (SCP) failed. Reason: %s",
 									     curl_easy_strerror (res));
 					else if (data->putProto == PROTO_SFTP)
-						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (SFTP) failed: %s",
+						ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (SFTP) failed. Reason: %s",
 									     curl_easy_strerror (res));
 					retval = -1;
 				}
@@ -929,7 +929,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
-					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (default) failed: %s",
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Curl upload (default) . Reason: %s",
 								     curl_easy_strerror (res));
 					retval = -1;
 				}

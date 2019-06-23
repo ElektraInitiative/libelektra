@@ -323,7 +323,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not rename file. Errno: %s", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not rename file. Reason: %s", strerror (errno));
 			goto error;
 		}
 

@@ -307,7 +307,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 	else
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "General parse error: %s", strerror (errno));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "General parse error. Reason: %s", strerror (errno));
 		ksDel (append);
 		ret = -1;
 	}

@@ -57,11 +57,11 @@
 				"root. Errno: %s",                                                                                         \
 				keyString (parentKey), strerror (errno));                                                                  \
 		else                                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing %s", keyString (parentKey),            \
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing. Reason: %s", keyString (parentKey),            \
 						     strerror (errno));                                                                    \
 	} while (0)
 
-#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (key, "Unable to allocate %zu bytes.", size);
+#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (key, "Unable to allocate %zu bytes", size);
 
 /**
  * @brief Sets error if info != returned

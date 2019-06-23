@@ -256,7 +256,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 	}
 
 	// no GPG for us :-(
-	ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "No gpg binary found. Please make sure GnuPG is installed and executable.");
+	ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "No gpg binary found. Please make sure GnuPG is installed and executable");
 	return -1;
 }
 
@@ -658,7 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 	case -1:
 		// fork() failed
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Fork failed with errno: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Fork failed. Reason: %s", strerror (errno));
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -718,7 +718,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	{
 		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
 		{
-			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "The communication with the GPG process failed.");
+			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "The communication with the GPG process failed");
 			closePipe (pipe_stdin);
 			closePipe (pipe_stdout);
 			closePipe (pipe_stderr);
@@ -748,19 +748,19 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 
 	case 1:
 		// bad signature
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "GPG reported a bad signature. errno: %s", strerror (errno));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "GPG reported a bad signature. Reason: %s", strerror (errno));
 		break;
 
 	case GPG_CALL_DUP_STDIN:
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stdin.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stdin");
 		break;
 
 	case GPG_CALL_DUP_STDOUT:
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stdout.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stdout");
 		break;
 
 	case GPG_CALL_DUP_STDERR:
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stderr.");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to redirect stderr");
 		break;
 
 	case GPG_CALL_EXECV:

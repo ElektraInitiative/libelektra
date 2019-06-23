@@ -316,7 +316,7 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 	int result = access (validPath, modeMask);
 	if (result != 0)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on %s", p->pw_name,
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User '%s' does not have required permission (%s) on %s", p->pw_name,
 							modes, validPath);
 		return -1;
 	}

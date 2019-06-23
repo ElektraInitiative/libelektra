@@ -96,7 +96,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jerrorKey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "%s failed with exception", method);
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Method '%s' failed with exception", method);
 		result = -1;
 	}
 	checkException (data, method, errorKey);
@@ -137,7 +137,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	result = (*data->env)->CallIntMethod (data->env, data->plugin, mid, jks, jkey);
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "%s failed with exception", method);
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Method '%s' failed with exception", method);
 		result = -1;
 	}
 	checkException (data, method, errorKey);

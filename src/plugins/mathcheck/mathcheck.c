@@ -397,7 +397,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (fabs (elektraEFtoF (keyString (cur)) - result.value) > EPSILON)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s != %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s != %s", val1, val2);
 				return -1;
 			}
 		}
@@ -405,7 +405,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (fabs (elektraEFtoF (keyString (cur)) - result.value) < EPSILON)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s == %s but requirement was !=", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s == %s but requirement was !=", val1, val2);
 				return -1;
 			}
 		}
@@ -413,7 +413,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) >= result.value)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s not < %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not < %s", val1, val2);
 				return -1;
 			}
 		}
@@ -421,7 +421,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) <= result.value)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s not > %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not > %s", val1, val2);
 				return -1;
 			}
 		}
@@ -429,7 +429,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) > result.value)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s not <=	%s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not <=	%s", val1, val2);
 				return -1;
 			}
 		}
@@ -437,7 +437,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) < result.value)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s not >= %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not >= %s", val1, val2);
 				return -1;
 			}
 		}

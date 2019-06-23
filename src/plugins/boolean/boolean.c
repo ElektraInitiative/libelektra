@@ -343,7 +343,7 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			    (keyGetMeta (key, "boolean/invalid")))
 			{
 				keySetMeta (key, "boolean/invalid", 0);
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s is not a valid boolean value",
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "String '%s' is not a valid boolean value",
 									keyString (originalValue));
 				retVal = -1;
 			}

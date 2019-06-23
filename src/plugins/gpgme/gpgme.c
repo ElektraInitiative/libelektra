@@ -154,7 +154,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		if (err)
 		{
 			// TODO: Correct??
-			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to receive the GPG key because: %s", gpgme_strerror (err));
+			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to receive the GPG key. Reason: %s", gpgme_strerror (err));
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}
@@ -184,7 +184,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				if (err)
 				{
 					// TODO: Correct??
-					ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to receive the GPG key because: %s",
+					ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to receive the GPG key. Reason: %s",
 								     gpgme_strerror (err));
 					elektraGpgmeKeylistFree (&list);
 					return NULL;
@@ -351,7 +351,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to create the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to create the gpgme context. Reason: %s", gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -366,7 +366,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	recipients = extractRecipientFromPluginConfig (pluginConfig, errorKey, ctx);
 	if (!recipients)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No valid recipients were specified.");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No valid recipients were specified");
 		returnValue = -1;
 		goto cleanup;
 	}
@@ -486,7 +486,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to the gpgme context. Reason: %s", gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -602,7 +602,7 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to create the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to create the gpgme context. Reason: %s", gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -615,7 +615,7 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	}
 	else
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No valid recipients were specified.");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No valid recipients were specified");
 		return -1; // failure
 	}
 	return 1; // success

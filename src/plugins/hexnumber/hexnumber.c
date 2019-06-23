@@ -279,7 +279,7 @@ int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
 
 	if (!types)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Could not parse config! Types not set correctly.");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Could not parse config. Types not set correctly");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

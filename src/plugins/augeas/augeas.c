@@ -494,7 +494,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (content == 0)
 	{
 		fclose (fh);
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Error while reading file: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Error while reading file. Reason: %s", strerror (errno));
 	}
 
 	/* convert the string into an augeas tree */
@@ -576,7 +576,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (content == 0)
 		{
 			fclose (fh);
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Error while reading file: %s", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Error while reading file. Reason: %s", strerror (errno));
 		}
 
 		/* convert the string into an augeas tree */
@@ -603,7 +603,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ret = saveFile (augeasHandle, fh);
 	fclose (fh);
 
-	if (ret < 0) ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file for writing: %s", strerror (errno));
+	if (ret < 0) ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file for writing. Reason: %s", strerror (errno));
 
 	errno = errnosave;
 	return 1;

@@ -89,7 +89,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create a cryptographic key for encryption because: %s", e.what ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create a cryptographic key for encryption. Reason: %s", e.what ());
 		return -1;
 	}
 }
@@ -139,7 +139,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption because: %s", e.what ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption. Reason: %s", e.what ());
 		return -1;
 	}
 }
@@ -152,7 +152,7 @@ int elektraCryptoBotanInit (Key * errorKey)
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Botan initialization failed: %s", e.what ());
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Botan initialization failed. Reason: %s", e.what ());
 		return -1; // failure
 	}
 	return 1; // success
@@ -236,7 +236,7 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Encryption failed because: %s", e.what ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Encryption failed. Reason: %s", e.what ());
 		elektraFree (salt);
 		return -1; // failure
 	}
@@ -308,7 +308,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Decryption failed because: %s", e.what ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Decryption failed. Reason: %s", e.what ());
 		return -1; // failure
 	}
 
@@ -338,7 +338,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to generate random string because: %s", e.what ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to generate random string. Reason: %s", e.what ());
 		return 0;
 	}
 }

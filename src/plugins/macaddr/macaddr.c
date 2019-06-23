@@ -154,7 +154,7 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		int rc = validateMac (cur);
 		if (rc == VALIDATION_ERROR)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "%s is not in a supported format.", keyString (cur));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "String '%s' is not in a supported format", keyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
