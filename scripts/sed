@@ -3,6 +3,7 @@
 # =================
 
 s/\<occured\>/occurred/g
+s/build-in/built-in/g
 
 # ==============================
 # = British → American English =
