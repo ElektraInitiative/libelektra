@@ -101,7 +101,7 @@ string parseGrammar (yaep & parser, CppKey & error)
 
 	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (error.getKey (), "Unable to parse grammar: %s", parser.error_message ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (error.getKey (), "Unable to parse grammar. Reason: %s", parser.error_message ());
 		return "";
 	}
 	return grammar;
@@ -120,7 +120,7 @@ ifstream openFile (string const & filename, CppKey & error)
 	ifstream input{ filename };
 	if (!input.good ())
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (error.getKey (), "Unable to open file “%s”", filename.c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (error.getKey (), "Unable to open file '%s'", filename.c_str ());
 	}
 	return input;
 }
@@ -144,8 +144,8 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			error.getKey (),
-			"The content of file “%s” showed that the grammar:\n%s\nproduces ambiguous output!\n"
-			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input.",
+			"The content of file '%s' showed that the grammar:\n%s\nproduces ambiguous output\n"
+			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input",
 			filename.c_str (), grammar.c_str ());
 		return -1;
 	}

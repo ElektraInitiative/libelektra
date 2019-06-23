@@ -81,7 +81,7 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Unknown exception occurred while reading xml file");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, "Unknown exception occurred while reading xml file");
 	}
 
 	// Avoid destruction of the pointers at the end
@@ -119,7 +119,7 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Unknown exception occurred while writing xml file");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, "Unknown exception occurred while writing xml file");
 	}
 
 	// Avoid destruction of the pointers at the end

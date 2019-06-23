@@ -138,7 +138,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	if (*equals == '\0' || equals == pair)
 	{
 		ELEKTRA_LOG_WARNING ("Ignored line %zu since “%s” does not contain a valid key value pair", lineNumber, pair);
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Line %zu: “%s” is not a valid key value pair", lineNumber, pair);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Line %zu: '%s' is not a valid key value pair", lineNumber, pair);
 		return;
 	}
 

@@ -127,7 +127,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ifstream file (parent.getString ());
 	if (!file.is_open ())
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to open file “%s”", parent.getString ().c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to open file '%s'", parent.getString ().c_str ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

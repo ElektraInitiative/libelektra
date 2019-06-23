@@ -438,7 +438,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 
 	if (!path)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not find file configuration %s", path);
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find file configuration");
 		return -1;
 	}
 
@@ -673,7 +673,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 						     "No configuration file was there earlier. "
 						     "Now configuration file '%s' exists",
 						     pk->filename);
@@ -990,7 +990,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 
 	if (rename (pk->tempfile, pk->filename) == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not rename file %s. Reason: %s", pk->tempfile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not rename file '%s'. Reason: %s", pk->tempfile, strerror (errno));
 		ret = -1;
 	}
 
@@ -999,7 +999,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	struct stat buf;
 	if (fstat (fd, &buf) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to stat file. Reason: %s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to stat file '%s'. Reason: %s", pk->tempfile, strerror (errno));
 	}
 	else
 	{
@@ -1093,7 +1093,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 			ELEKTRA_LOG ("check if removal of the configuration file \"%s\" would work later", pk->filename);
 			if (access (pk->dirname, W_OK | X_OK) == -1)
 			{
-				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file %s. Reason: %s", pk->filename,
+				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename,
 							     strerror (errno));
 				ret = -1;
 			}
@@ -1115,7 +1115,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 		ELEKTRA_LOG ("unlink configuration file \"%s\"", pk->filename);
 		if (unlink (pk->filename) == -1)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file %s. Reason: %s", pk->filename, strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
 			ret = -1;
 		}
 

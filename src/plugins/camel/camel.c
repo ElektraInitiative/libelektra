@@ -314,12 +314,12 @@ static parserType * expect (parserType * const parser, char const * const charac
 	{
 		if (parser->bufferCharsAvailable > 0)
 		{
-			SET_ERROR_PARSE (parser, "Expected “%s” but found “%c”", characters, *parser->buffer);
+			SET_ERROR_PARSE (parser, "Expected '%s' but found '%c'", characters, *parser->buffer);
 		}
 		else
 		{
 
-			SET_ERROR_PARSE (parser, "Expected “%s” but found end of file instead", characters);
+			SET_ERROR_PARSE (parser, "Expected '%s' but found end of file instead", characters);
 		}
 		parser->status = ERROR_PARSE;
 	}

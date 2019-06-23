@@ -132,7 +132,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 		ss >> read;
 		if (read != getConfigAssign (handle))
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "Expected assignment (%s), but got (%s)",
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "Expected assignment '%s', but got '%s'",
 								 getConfigAssign (handle).c_str (), read.c_str ());
 			continue;
 		}

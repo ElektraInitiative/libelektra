@@ -94,7 +94,7 @@ bool elektraTypeCheckType (const Key * key)
 
 static void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
 {
-	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The type '%s' failed to match for '%s' with string: %s", getTypeName (key),
+	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The type '%s' failed to match for '%s' with string '%s'", getTypeName (key),
 						keyName (key), keyString (key));
 }
 
@@ -115,7 +115,7 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 
 	if (type->normalize != NULL && !type->normalize (handle, key))
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The value '%s' of key %s could not be normalized (type is '%s')",
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The value '%s' of key '%s' could not be normalized (type is '%s')",
 							keyString (key), keyName (key), typeName);
 		return false;
 	}
@@ -129,7 +129,7 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 	if (type->restore != NULL && !type->restore (handle, key))
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
-							"The normalized value '%s' of key %s could not be restored (type is '%s')",
+							"The normalized value '%s' of key '%s' could not be restored (type is '%s')",
 							keyString (key), keyName (key), typeName);
 		return false;
 	}
@@ -253,7 +253,7 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 	data->booleanRestore = readBooleanRestore (conf);
 	if (data->booleanRestore < -1 || data->booleanRestore >= data->booleanCount)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "The value of the config key /boolean/restoreas was invalid!");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "The value of the config key /boolean/restoreas was invalid");
 		elektraFree (data);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -312,8 +312,8 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			{
 				ELEKTRA_SET_INSTALLATION_ERRORF (
 					parentKey,
-					"The key %s was already normalized by a different plugin! Please ensure that there is "
-					"only one plugin active that will normalize this key.",
+					"The key '%s' was already normalized by a different plugin. Please ensure that there is "
+					"only one plugin active that will normalize this key",
 					keyName (cur));
 				ksSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -322,7 +322,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			if (!type->normalize (handle, cur))
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-									"The value '%s' of key %s could not be normalized (type is '%s')",
+									"The value '%s' of key '%s' could not be normalized (type is '%s')",
 									keyString (cur), keyName (cur), typeName);
 				ksSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -372,7 +372,7 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			if (orig == NULL && !type->normalize (handle, cur))
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-									"The value '%s' of key %s could not be normalized (type is '%s')",
+									"The value '%s' of key '%s' could not be normalized (type is '%s')",
 									keyString (cur), keyName (cur), typeName);
 				ksSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -389,7 +389,7 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		if (type->restore != NULL && !type->restore (handle, cur))
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-								"The normalized value '%s' of key %s could not be restored (type is '%s')",
+								"The normalized value '%s' of key '%s' could not be restored (type is '%s')",
 								keyString (cur), keyName (cur), typeName);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;

@@ -125,7 +125,7 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not get ALLUSERSPROFILE for spec, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not retrieve from passwd using getpwuid_r. Could not get ALLUSERSPROFILE for spec, using /");
 	}
 	else
 	{
@@ -168,7 +168,8 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
+		//TODO: Solution? Compile with higher MAX_PATH?
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
 		dir[0] = 0;
 	}
 	escapePath (dir);
@@ -176,7 +177,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	char dir[KDB_MAX_PATH_LENGTH];
 	if (getcwd (dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Getcwd failed: %s, defaulting to /", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Command 'getcwd' failed. Defaulting to /. Reason: %s", strerror (errno));
 		dir[0] = 0;
 	}
 #endif
@@ -209,7 +210,7 @@ static void elektraResolveUser (resolverHandle * p, Key * warningsKey)
 	if (!home)
 	{
 		home = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not get home, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not get HOME environment variable, using /");
 	}
 #endif
 
@@ -225,7 +226,7 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not get ALLUSERSPROFILE, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not get ALLUSERSPROFILE environment variable, using /");
 	}
 	else
 	{
@@ -385,7 +386,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	switch (pk->state)
 	{
 	case 0:
-		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "'kdbSet()' called before 'kdbGet()'");
+		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, "Command 'kdbSet()' called before 'kdbGet()'");
 		return -1;
 	case 1:
 		++pk->state;
@@ -409,7 +410,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 	if (stat (pk->filename, &buf) == -1)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not stat config file \"%s\", ", pk->filename);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not stat config file '%s'", pk->filename);
 		// no file found, nothing to do
 		return 0;
 	}
@@ -420,7 +421,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 		// conflict
 		ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
 			parentKey,
-			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
+			"Conflict, file modification time stamp %ld is different than our time stamp %ld config file name is '%s'",
 			(long) buf.st_mtime, (long) pk->mtime, pk->filename);
 		pk->state = 0; // invalid state, need to kdbGet again
 		return -1;

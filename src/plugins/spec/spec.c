@@ -188,10 +188,10 @@ static void handleConflict (Key * parentKey, const char * msg, OnConflict onConf
 	switch (onConflict)
 	{
 	case ERROR:
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Globbing error: %s", msg);
 		break;
 	case WARNING:
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "Globbing warning: %s", msg);
 		break;
 	case INFO:
 		elektraMetaArrayAdd (parentKey, "logs/spec/info", msg);

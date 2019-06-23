@@ -68,7 +68,7 @@ int elektraStructSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key 
 	}
 	catch (const char * msg)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not check the structure of the keyset: %s", msg);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not check the structure of the keyset. Reason: %s", msg);
 		return -1;
 	}
 

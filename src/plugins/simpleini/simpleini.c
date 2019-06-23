@@ -257,7 +257,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	ELEKTRA_LOG ("Read from '%s' with format '%s'", keyString (parentKey), format);
 
-	FILE * fp = fopen (keyString (parentKey), "r");
+	const char * filename = keyString (parentKey);
+	FILE * fp = fopen (filename, "r");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
@@ -281,7 +282,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-					parentKey, "failed discarding rest of line at position %ld with key %s", ftell (fp), key);
+					parentKey, "Failed discarding rest of line of file %s at position %ld with key %s", filename, ftell (fp), key);
 				elektraFree (key);
 				fclose (fp);
 				return -1;
@@ -297,7 +298,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (keyAddName (read, strippedkey) == -1)
 		{
-			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", strippedkey);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name '%s' is not valid, discarding key", strippedkey);
 			keyDel (read);
 			elektraFree (key);
 			if (n == 2)
@@ -319,8 +320,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Duplicated key %s at position %ld", keyName (read),
-								 ftell (fp));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Duplicated key '%s' at position %ld in file %s", keyName (read),
+								 ftell (fp), filename);
 			elektraFree (format);
 			fclose (fp);
 			return -1;
@@ -330,7 +331,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not at the end of file at position %ld", ftell (fp));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not at the end of file at position %ld in file %s", ftell (fp), filename);
 		elektraFree (format);
 		fclose (fp);
 		return -1;
