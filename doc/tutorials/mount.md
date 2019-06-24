@@ -160,7 +160,7 @@ sudo kdb mount /.git/config dir/git ini multiline=0
 
 As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
-we did with `multiline=0`. Git intents the entries in its configuration
+we did with `multiline=0`. Git indents the entries in its configuration
 files and the default behavior of the `ini` plugin is to interpret these indented
 entries as values that span multiple lines. The passed parameter disables
 this behavior and makes the ini-plugin compatible with git configuration.

@@ -31,7 +31,7 @@ system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SPEC
 system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_DIR
 ```
 
-The build-in resolving considers following cases:
+The built-in resolving considers following cases:
 
 - for spec with absolute path: path
 - for spec with relative path: `KDB_DB_SPEC` + path

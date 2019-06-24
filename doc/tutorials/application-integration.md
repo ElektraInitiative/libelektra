@@ -137,7 +137,7 @@ KeySet *conf = ksNew(200, KS_END);
 
 - 200 is an approximation for how many `Key`s we think we will have in
   the `KeySet` `conf`, intended for optimization purposes.
-- After the first argument we can list build-in keys that should be
+- After the first argument we can list built-in keys that should be
   available in any case.
 - The last argument needs to be `KS_END`.
 
