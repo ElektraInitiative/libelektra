@@ -57,7 +57,7 @@
 				"root. Errno: %s",                                                                                         \
 				keyString (parentKey), strerror (errno));                                                                  \
 		else                                                                                                                       \
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing. Reason: %s", keyString (parentKey),            \
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing. Reason: %s", keyString (parentKey),   \
 						     strerror (errno));                                                                    \
 	} while (0)
 

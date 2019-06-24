@@ -77,7 +77,8 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Return value of '%s' doesn't match expected exit. Reason: %s",
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+								       "Return value of '%s' doesn't match expected exit. Reason: %s",
 								       keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
@@ -105,7 +106,8 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Return value of '%s' doesn't match expected exit. Reason: %s",
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+								       "Return value of '%s' doesn't match expected exit. Reason: %s",
 								       keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
@@ -133,7 +135,8 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Return value of '%s' doesn't match expected exit. Reason: %s",
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+								       "Return value of '%s' doesn't match expected exit. Reason: %s",
 								       keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}

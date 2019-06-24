@@ -388,9 +388,9 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 		if (type->restore != NULL && !type->restore (handle, cur))
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-								"The normalized value '%s' of key '%s' could not be restored (type is '%s')",
-								keyString (cur), keyName (cur), typeName);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				parentKey, "The normalized value '%s' of key '%s' could not be restored (type is '%s')", keyString (cur),
+				keyName (cur), typeName);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

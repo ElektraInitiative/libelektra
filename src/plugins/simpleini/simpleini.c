@@ -282,7 +282,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-					parentKey, "Failed discarding rest of line of file %s at position %ld with key %s", filename, ftell (fp), key);
+					parentKey, "Failed discarding rest of line of file %s at position %ld with key %s", filename,
+					ftell (fp), key);
 				elektraFree (key);
 				fclose (fp);
 				return -1;
@@ -320,8 +321,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Duplicated key '%s' at position %ld in file %s", keyName (read),
-								 ftell (fp), filename);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Duplicated key '%s' at position %ld in file %s",
+								 keyName (read), ftell (fp), filename);
 			elektraFree (format);
 			fclose (fp);
 			return -1;
@@ -331,7 +332,8 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not at the end of file at position %ld in file %s", ftell (fp), filename);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not at the end of file at position %ld in file %s", ftell (fp),
+							 filename);
 		elektraFree (format);
 		fclose (fp);
 		return -1;

@@ -100,7 +100,7 @@ Key * elektraRegexstoreProcess (Key * configKey, int * offset, std::string const
 		char buffer[1000];
 		regerror (ret, &regex, buffer, 999);
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Regex exec returned error (not in manual for linux). Reason: %s",
-							   buffer);
+							 buffer);
 		regfree (&regex);
 		return nullptr;
 	}

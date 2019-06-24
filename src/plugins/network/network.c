@@ -106,8 +106,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		}
 		else
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "There was an error trying to connect to host '%s'. Reason: %s", hostname,
-								strerror (errno));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "There was an error trying to connect to host '%s'. Reason: %s",
+								hostname, strerror (errno));
 			return -1;
 		}
 		// TODO: Maybe consider errno == TRY_AGAIN separately and try to reconnect

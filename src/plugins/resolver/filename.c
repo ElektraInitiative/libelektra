@@ -459,14 +459,14 @@ static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveT
 	if (finished == -1)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "No resolver set the user dirname, the configuration is: %s",
-					       ELEKTRA_VARIANT_USER);
+						   ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (!(handle->fullPath))
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "No resolver set the system dirname, the configuration is: %s",
-					       ELEKTRA_VARIANT_SYSTEM);
+						   ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 

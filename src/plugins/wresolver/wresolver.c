@@ -125,7 +125,8 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 	if (!system)
 	{
 		system = "";
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not retrieve from passwd using getpwuid_r. Could not get ALLUSERSPROFILE for spec, using /");
+		ELEKTRA_ADD_INSTALLATION_WARNING (
+			errorKey, "Could not retrieve from passwd using getpwuid_r. Could not get ALLUSERSPROFILE for spec, using /");
 	}
 	else
 	{
@@ -168,7 +169,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		//TODO: Solution? Compile with higher MAX_PATH?
+		// TODO: Solution? Compile with higher MAX_PATH?
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
 		dir[0] = 0;
 	}

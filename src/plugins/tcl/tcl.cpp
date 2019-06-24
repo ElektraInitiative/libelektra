@@ -74,8 +74,8 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (
-			*parent,
-			std::string (std::string ("File '") + parent.getString () + "' could not be parsed. Reason: " + e.what ()).c_str ());
+			*parent, std::string (std::string ("File '") + parent.getString () + "' could not be parsed. Reason: " + e.what ())
+					 .c_str ());
 		ret = -1;
 	}
 	input.release ();

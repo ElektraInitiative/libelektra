@@ -405,7 +405,8 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (fabs (elektraEFtoF (keyString (cur)) - result.value) < EPSILON)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s == %s but requirement was !=", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
+									"Mathcheck failed: %s == %s but requirement was !=", val1, val2);
 				return -1;
 			}
 		}
