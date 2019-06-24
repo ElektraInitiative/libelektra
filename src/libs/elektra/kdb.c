@@ -271,7 +271,7 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_INSTALLATION_ERROR (
-			errorKey, "elektraModulesInit returned with -1. See other warning or error messages for concrete details");
+			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -289,7 +289,7 @@ KDB * kdbOpen (Key * errorKey)
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
-						"could not open default backend. See other warning or error messages for concrete details");
+						"Could not open default backend. See other warning or error messages for concrete details");
 
 		keySetName (errorKey, keyName (initialParent));
 		keySetString (errorKey, keyString (initialParent));
@@ -297,7 +297,7 @@ KDB * kdbOpen (Key * errorKey)
 		errno = errnosave;
 		return 0;
 	case 0:
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial kdbGet() failed, you should either fix " KDB_DB_INIT
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial 'kdbGet()' failed, you should either fix " KDB_DB_INIT
 							    " or the fallback " KDB_DB_FILE);
 		break;
 	case 2:
@@ -311,7 +311,7 @@ KDB * kdbOpen (Key * errorKey)
 	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin.");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -1444,7 +1444,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (!handle || !ks)
 	{
 		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or ks null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or KeySet null pointer passed");
 		keyDel (oldError);
 		ELEKTRA_LOG ("!handle || !ks");
 		return -1;
@@ -1972,7 +1972,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		{
 			ELEKTRA_SET_INTERFACE_ERRORF (
 				parentKey,
-				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used.",
+				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used",
 				keyName (clause), pluginStateString);
 			keyDel (cutpoint);
 			ksDel (pluginsContract);
@@ -2007,7 +2007,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 				ELEKTRA_SET_INTERFACE_ERRORF (
 					parentKey,
 					"The key '%s' contained the value '%s', but only 'unmounted' is supported for "
-					"non-global clauses at the moment.",
+					"non-global clauses at the moment",
 					keyName (clause), pluginStateString);
 				keyDel (cutpoint);
 				ksDel (pluginConfig);

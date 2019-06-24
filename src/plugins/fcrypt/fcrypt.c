@@ -286,7 +286,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	{
 		ELEKTRA_SET_INSTALLATION_ERRORF (
 			parentKey,
-			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration.",
+			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration",
 			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
 		return -1;
 	}

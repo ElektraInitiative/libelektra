@@ -91,7 +91,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!backend->mountpoint)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not create mountpoint with name %s and value %s",
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not create mountpoint with name '%s' and value %s",
 						   keyString (foundMountpoint), keyBaseName (root));
 		return -1;
 	}
@@ -201,7 +201,9 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "ElektraProcessPlugins for error failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for error failed");
 					failure = 1;
 				}
 			}
@@ -210,7 +212,9 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "ElektraProcessPlugins for get failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for get failed");
 					failure = 1;
 				}
 			}
@@ -224,7 +228,9 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "ElektraProcessPlugins for set failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for set failed");
 					failure = 1;
 				}
 			}

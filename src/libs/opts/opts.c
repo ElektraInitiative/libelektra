@@ -793,8 +793,7 @@ int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * er
 		else if (res < 0)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				errorKey,
-				"The option '%s%s' cannot be used, because another option has already been used for the key '%s'.",
+				errorKey, "The option '%s%s' cannot be used, because another option has already been used for the key '%s'",
 				isShort ? "-" : "--", isShort ? (const char[]){ keyBaseName (optKey)[0], '\0' } : keyBaseName (optKey),
 				keyName (keyWithOpt));
 			ksDel (optMetas);
