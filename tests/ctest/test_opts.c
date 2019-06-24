@@ -557,7 +557,7 @@ static void test_illegal_spec (void)
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
-				"'-' cannot be used as a short option. It would collide with the "
+				"Character '-' cannot be used as a short option. It would collide with the "
 				"special string '--'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'-' option should be illegal");
 	clearValues (ks);
@@ -574,7 +574,7 @@ static void test_illegal_spec (void)
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
-				"'h' cannot be used as a short option. It would collide with the "
+				"Character 'h' cannot be used as a short option. It would collide with the "
 				"help option '-h'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'h' option should be illegal");
 	clearValues (ks);
@@ -591,7 +591,7 @@ static void test_illegal_spec (void)
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
-				"'help' cannot be used as a long option. It would collide with the "
+				"Option 'help' cannot be used as a long option. It would collide with the "
 				"help option '--help'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'help' option should be illegal");
 	clearValues (ks);
@@ -673,7 +673,7 @@ static void test_illegal_use (void)
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a", "short0", "-ashort1", "-a", "short2", "-b", "short3", "-bshort4"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The option '-b' cannot be used, because another option has already been used for the key "
-				"'" SPEC_BASE_KEY "/apple/#'."),
+				"'" SPEC_BASE_KEY "/apple/#'"),
 		    "multiple repeated short options should have failed");
 	clearValues (ks);
 
@@ -681,7 +681,7 @@ static void test_illegal_use (void)
 			NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The option '--banana' cannot be used, because another option has already been used for the key "
-				"'" SPEC_BASE_KEY "/apple/#'."),
+				"'" SPEC_BASE_KEY "/apple/#'"),
 		    "multiple repeated long options should have failed");
 	clearValues (ks);
 

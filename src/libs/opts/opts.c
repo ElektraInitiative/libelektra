@@ -558,7 +558,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	if (shortOpt == '-')
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
-							"'-' cannot be used as a short option. It would collide with the "
+							"Character '-' cannot be used as a short option. It would collide with the "
 							"special string '--'. Offending key: %s",
 							keyName (key));
 		return false;
@@ -567,7 +567,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	if (shortOpt == 'h')
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
-							"'h' cannot be used as a short option. It would collide with the "
+							"Character 'h' cannot be used as a short option. It would collide with the "
 							"help option '-h'. Offending key: %s",
 							keyName (key));
 		return false;
@@ -651,7 +651,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 	if (elektraStrCmp (longOpt, "help") == 0)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
-							"'help' cannot be used as a long option. It would collide with the "
+							"Option 'help' cannot be used as a long option. It would collide with the "
 							"help option '--help'. Offending key: %s",
 							keyName (key));
 		return false;
