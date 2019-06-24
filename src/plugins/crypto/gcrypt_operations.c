@@ -407,7 +407,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (
 			errorKey,
-			"restored content length is bigger than the available amount of decrypted data. The header is possibly corrupted");
+			"Restored content length is bigger than the available amount of decrypted data. The header is possibly corrupted");
 		memset (output, 0, payloadLen);
 		elektraFree (output);
 		return -1;

@@ -265,8 +265,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	if ((command == ELEKTRA_PLUGINPROCESS_GET || command == ELEKTRA_PLUGINPROCESS_SET || command == ELEKTRA_PLUGINPROCESS_ERROR) &&
 	    originalKeySet == NULL)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (
-			key, "originalKeySet has to exist when calling GET SET and ERROR via pluginprocess; but it is NULL");
+		ELEKTRA_SET_INTERFACE_ERROR (
+			key, "Variable originalKeySet has to exist when calling GET SET and ERROR via pluginprocess but it is NULL");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

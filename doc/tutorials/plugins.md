@@ -405,7 +405,7 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 		if (strlen (value) > 3)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF ( errorKey,
-					    "value %s is more than 3 characters long",
+					    "Value '%s' is more than 3 characters long",
 					    value);
 			return -1; // The configuration was not OK and could not be fixed
 		}

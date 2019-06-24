@@ -136,7 +136,7 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 			if (data->invalid & WARNING)
 			{
 				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey,
-									  "Key %s with value %s is not a valid boolean. Defaulting to %s.",
+									  "Key %s with value '%s' is not a valid boolean. Defaulting to %s",
 									  keyName (key), origvalue, data->trueValue);
 			}
 			keySetMeta (key, "origvalue", origvalue);
@@ -146,7 +146,7 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 			if (data->invalid & WARNING)
 			{
 				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey,
-									  "Key %s with value %s is not a valid boolean. Defaulting to %s.",
+									  "Key %s with value '%s' is not a valid boolean. Defaulting to %s",
 									  keyName (key), origvalue, data->falseValue);
 			}
 			keySetString (key, data->falseValue);

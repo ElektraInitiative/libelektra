@@ -90,7 +90,7 @@ module:simpleini
 //! [plugin errors spec]
 
 //! [plugin errors usage]
-ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "not at the end of file");
+ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "Not at the end of file");
 //! [plugin errors usage]
 */
 

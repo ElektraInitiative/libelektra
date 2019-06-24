@@ -328,7 +328,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 	if (handle->kdbClose)
 	{
 		rc = handle->kdbClose (handle, errorKey);
-		if (rc == -1) ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "KdbClose() failed");
+		if (rc == -1) ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Method 'kdbClose()' failed");
 	}
 
 	ksDel (handle->config);
