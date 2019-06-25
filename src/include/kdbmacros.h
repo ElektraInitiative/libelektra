@@ -123,4 +123,8 @@
 #define ELEKTRA_ATTRIBUTE_NO_RETURN
 #endif
 
+#define ELEKTRA_SYMVER(sym, impl) sym##_##impl
+
+#define ELEKTRA_SYMVER_DECLARE(ver, sym, impl) __asm__(".symver " ELEKTRA_STRINGIFY (ELEKTRA_SYMVER (sym, impl)) ", " #sym "@" ver)
+
 #endif

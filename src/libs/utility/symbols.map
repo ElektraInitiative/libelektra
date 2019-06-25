@@ -1,0 +1,6 @@
+libelektra_0.8 {
+	# kdbutility.h
+	elektraLskip;
+	elektraRstrip;
+	elektraStrip;
+};

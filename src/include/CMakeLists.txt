@@ -96,6 +96,7 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       kdbutility.h
 	       kdbio.h
 	       kdbnotification.h
+	       kdbglobbing.h
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	       elektra.h
 	       kdbendian.h

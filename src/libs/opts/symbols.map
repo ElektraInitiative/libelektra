@@ -1,0 +1,5 @@
+libelektra_0.8 {
+	# kdbopts.h
+	elektraGetOpts;
+	elektraGetOptsHelpMessage;
+};
