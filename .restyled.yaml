@@ -1,0 +1,4 @@
+- shfmt:
+    arguments:
+      - -s
+      - -sr
