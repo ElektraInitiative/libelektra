@@ -1,0 +1,5 @@
+restylers:
+  - shfmt:
+      arguments:
+        - -s
+        - -sr
