@@ -132,6 +132,7 @@ libelektra_0.8 {
 };
 
 libelektra_0.9 {
+	elektraEnsure; # TODO replace with new elektraOpen
 	elektraFindReference;
 	elektraFindReferenceArrayElement;
 	elektraHelpKey;
