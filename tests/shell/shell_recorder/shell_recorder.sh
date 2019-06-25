@@ -18,7 +18,7 @@ execute() {
 	fi
 
 	if [ "$BACKUP" -eq '1' ]; then
-		if ! "$KDB" export "$MountpointRoot" dump > "$TMPFILE" 2> /dev/null; then
+		if ! "$KDB" export "$MountpointRoot" dump >   "$TMPFILE" 2> /dev/null; then
 			printf 'ERROR: Failed to backup %s\nStopping test case.\n' "$MountpointRoot"
 			exit 1
 		fi
