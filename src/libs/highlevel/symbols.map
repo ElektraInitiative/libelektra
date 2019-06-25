@@ -1,6 +1,6 @@
 libelektra_0.8 {
 	# elektra.h;
-	#- elektraOpen: moved to libelektra_0.9;
+	elektraOpen;
 
 	## Getter;
 	elektraGetRawString;
@@ -132,8 +132,6 @@ libelektra_0.8 {
 };
 
 libelektra_0.9 {
-	elektraOpen;
-
 	elektraFindReference;
 	elektraFindReferenceArrayElement;
 	elektraHelpKey;
