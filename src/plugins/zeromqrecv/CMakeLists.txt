@@ -20,9 +20,9 @@ add_plugin (zeromqrecv
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
-		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (libuv 1 QUIET) # libuv is present; otherwise io_uv bindings would not be added
+		find_package (libuv QUIET) # libuv is present; otherwise io_uv bindings would not be added
 
+		if (BUILD_FULL OR BUILD_STATIC)
 			set (STATIC_LIBRARIES ${libuv_LIBRARIES})
 		endif ()
 
@@ -38,7 +38,7 @@ if (ADDTESTING_PHASE)
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-uv for static and full builds
-			target_sources (testmod_zeromqrecv PRIVATE $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
+			target_sources (testmod_zeromqrecv PRIVATE $<TARGET_OBJECTS:elektra-io-uv-objects>)
 		endif ()
 	else ()
 		message (WARNING "io_uv bindings are required for testing, test deactivated")

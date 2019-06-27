@@ -57,7 +57,7 @@ if (FOUND_NAME GREATER -1)
 
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
-	# TODO resolve issues.libelektra.org/2007
+	# TODO resolve https://issues.libelektra.org/2007
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (IS_INCLUDED)
 
@@ -68,7 +68,7 @@ if (FOUND_NAME GREATER -1)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
 			list (APPEND SOURCES
-				     $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
+				     $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
@@ -85,6 +85,7 @@ if (FOUND_NAME GREATER -1)
 		else ()
 			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV1")
 		endif ()
+		target_include_directories (${EXAMPLE} PRIVATE ${libuv_INCLUDE_DIRS})
 
 	endif ()
 
@@ -96,15 +97,14 @@ if (FOUND_NAME GREATER -1)
 
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
-		if (BUILD_FULL OR BUILD_STATIC)
-			# Work around missing header errors that occurs if only `BUILD_FULL`, but not `BUILD_SHARED` is enabled.
-			find_package (GLib QUIET)
-			find_package (libuv QUIET)
-			include_directories (${GLib_INCLUDE_DIRS} ${libuv_INCLUDE_DIRS})
+		# if (BUILD_FULL OR BUILD_STATIC) Work around missing header errors that occurs if only `BUILD_FULL`, but not `BUILD_SHARED`
+		# is enabled.
+		find_package (GLib QUIET)
+		find_package (libuv QUIET)
+		include_directories (${GLib_INCLUDE_DIRS} ${libuv_INCLUDE_DIRS})
 
-			list (APPEND SOURCES
-				     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds
-		endif ()
+		list (APPEND SOURCES
+			     $<TARGET_OBJECTS:elektra-io-glib-objects>) # add sources for elektra-io-uv for static and full builds endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
 		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)

@@ -407,15 +407,15 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found,
 	{
 		if (ret == GLOB_NOSPACE)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) ran out of memory", pattern);
+			ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "Glob(%s) ran out of memory", pattern);
 		}
 		else if (ret == GLOB_ABORTED)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with a read error", pattern);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Glob(%s) failed with a read error", pattern);
 		}
 		else if (ret == GLOB_NOMATCH)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with no matches", pattern);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Glob(%s) failed with no matches", pattern);
 		}
 		return ERROR;
 	}

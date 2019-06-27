@@ -26,7 +26,7 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 {
 	if (pluginNameKey == NULL)
 	{
-		ELEKTRA_ADD_WARNING (197, errorKey, "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
 		return 0;
 	}
 
@@ -35,12 +35,13 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 	const char * pluginName = keyString (pluginNameKey);
 	if (elektraStrCmp (pluginName, "(null)") == 0 || keyIsBinary (pluginNameKey))
 	{
-		ELEKTRA_ADD_WARNINGF (197, errorKey, "Plugin configuration parameter plugin has an invalid value: %s", pluginName);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey, "Plugin configuration parameter plugin has an invalid value: %s",
+							  pluginName);
 		return 0;
 	}
 	else if (elektraStrCmp (pluginName, "process") == 0)
 	{
-		ELEKTRA_ADD_WARNING (197, errorKey, "Cannot proxy the process plugin itself");
+		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "Cannot proxy the process plugin itself");
 		return 0;
 	}
 	return 1;
@@ -105,7 +106,7 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 		process->plugin = elektraInvokeOpen (keyString (process->pluginName), process->pluginConfig, errorKey);
 		if (!process->plugin)
 		{
-			ELEKTRA_SET_ERRORF (190, errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
+			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -203,7 +204,7 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		keyDel (pluginParentKey);
 		if (ksGetSize (pluginContract) == 0)
 		{
-			ELEKTRA_SET_ERRORF (190, parentKey, "Failed to get the contract for %s", keyString (pluginName));
+			ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Failed to get the contract for %s", keyString (pluginName));
 			ksDel (pluginContract);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

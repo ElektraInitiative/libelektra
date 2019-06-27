@@ -28,6 +28,11 @@ function (set_additional_compile_definitions shortname)
 			     "ELEKTRA_PLUGIN_NAME_C=${shortname}")
 	endif ()
 
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_MODULE_NAME")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
+			     "ELEKTRA_MODULE_NAME=${shortname}")
+	endif ()
+
 	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
 	unset (ADDITIONAL_COMPILE_DEFINITIONS_PARTS)
 endfunction (set_additional_compile_definitions)

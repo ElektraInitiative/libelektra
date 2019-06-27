@@ -100,12 +100,12 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ret == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NO_INC, parentKey, "could not increment array from %s", keyName (ksTail (returned)));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not increment array from %s", keyName (ksTail (returned)));
 		ret = -1;
 	}
 	else if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid line encountered: not at the end of file");
 		ret = -1;
 	}
 

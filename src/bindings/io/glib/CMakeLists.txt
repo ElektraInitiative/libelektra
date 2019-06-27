@@ -20,18 +20,15 @@ else ()
 
 	set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 
-	# create object library so that executables can use $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
-	add_library (OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
-	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
-
-	add_lib (io-${BINDING_VARIANT} SOURCES ${SOURCES} LINK_ELEKTRA elektra-io LINK_LIBRARIES ${GLib_LIBRARY})
-
-	if (BUILD_FULL OR BUILD_STATIC)
-		add_includes ("elektra-full" ${GLib_INCLUDE_DIRS})
-	endif ()
-	if (BUILD_SHARED)
-		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
-	endif ()
+	add_lib (io-${BINDING_VARIANT}
+		 SOURCES
+		 ${SOURCES}
+		 LINK_ELEKTRA
+		 elektra-io
+		 LINK_LIBRARIES
+		 ${GLib_LIBRARY}
+		 INCLUDE_SYSTEM_DIRECTORIES
+		 ${GLib_INCLUDE_DIRS})
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
 			"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
@@ -53,7 +50,7 @@ else ()
 
 	if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-glib for static and full builds
 		list (APPEND TEST_SOURCES
-			     $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
+			     $<TARGET_OBJECTS:${IO_VARIANT_LIBRARY}-objects>)
 	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})

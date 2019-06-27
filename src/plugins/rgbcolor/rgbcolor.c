@@ -244,8 +244,9 @@ static ColorVariant is_valid_key (Key * key, Key * parentKey)
 		}
 	}
 
-	ELEKTRA_SET_ERRORF (214, parentKey, "Key %s with value %s is neither a valid hex formatted color nor a named color.", keyName (key),
-			    keyString (key));
+	ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+						 "Key '%s' with value '%s' is neither a valid hex formatted color nor a named color",
+						 keyName (key), keyString (key));
 	return COLOR_INVALID;
 }
 

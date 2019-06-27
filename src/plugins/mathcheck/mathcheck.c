@@ -290,7 +290,7 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 				resultOp = NOT;
 				break;
 			default:
-				ELEKTRA_SET_ERRORF (122, parentKey, "%c isn't a valid operation", prefixString[start]);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "%c isn't a valid operation", prefixString[start]);
 				regfree (&regex);
 				if (searchKey)
 				{
@@ -368,7 +368,7 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (122, parentKey, "%s\n", prefixString);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not a valid Polish prefix notation syntax: %s\n", prefixString);
 	}
 	elektraFree (stack);
 	return result;
@@ -397,7 +397,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (fabs (elektraEFtoF (keyString (cur)) - result.value) > EPSILON)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s != %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s != %s", val1, val2);
 				return -1;
 			}
 		}
@@ -405,7 +405,8 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (fabs (elektraEFtoF (keyString (cur)) - result.value) < EPSILON)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s == %s but requirement was !=", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
+									"Mathcheck failed: %s == %s but requirement was !=", val1, val2);
 				return -1;
 			}
 		}
@@ -413,7 +414,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) >= result.value)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s not < %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not < %s", val1, val2);
 				return -1;
 			}
 		}
@@ -421,7 +422,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) <= result.value)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s not > %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not > %s", val1, val2);
 				return -1;
 			}
 		}
@@ -429,7 +430,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) > result.value)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s not <=	%s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not <=	%s", val1, val2);
 				return -1;
 			}
 		}
@@ -437,7 +438,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) < result.value)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s not >= %s", val1, val2);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not >= %s", val1, val2);
 				return -1;
 			}
 		}

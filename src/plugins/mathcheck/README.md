@@ -40,9 +40,9 @@ kdb setmeta user/tests/mathcheck/k check/math "== + ../a ../b"
 # should fail
 kdb set user/tests/mathcheck/k 7.7
 # RET:5
-# ERROR:123
+# ERROR:C03200
 # Set string to "7.7"
-# Sorry, module mathcheck issued the error 123:
+# Sorry, module mathcheck issued the error C03200:
 # invalid value: 7.7 != 7.6
 ```
 

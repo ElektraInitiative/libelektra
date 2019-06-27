@@ -264,8 +264,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
-				    parent.getString ().c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to open file '%s'", parent.getString ().c_str ());
 	}
 
 	parent.release ();

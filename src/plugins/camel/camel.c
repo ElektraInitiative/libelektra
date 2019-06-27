@@ -87,8 +87,8 @@ typedef struct
 	ELEKTRA_LOG_DEBUG ("%s:%zu:%zu: " message, strrchr (keyString (data->parentKey), '/') + 1, data->line, data->column, __VA_ARGS__);
 
 #define SET_ERROR_PARSE(data, message, ...)                                                                                                \
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%zu:%zu: " message, keyString (data->parentKey), data->line,         \
-			    data->column, __VA_ARGS__);
+	ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (data->parentKey, "General parse error: %s:%zu:%zu: " message,                             \
+						 keyString (data->parentKey), data->line, data->column, __VA_ARGS__);
 
 #define RET_NOK(function)                                                                                                                  \
 	if (function->status != OK)                                                                                                        \
@@ -314,12 +314,12 @@ static parserType * expect (parserType * const parser, char const * const charac
 	{
 		if (parser->bufferCharsAvailable > 0)
 		{
-			SET_ERROR_PARSE (parser, "Expected “%s” but found “%c”", characters, *parser->buffer);
+			SET_ERROR_PARSE (parser, "Expected '%s' but found '%c'", characters, *parser->buffer);
 		}
 		else
 		{
 
-			SET_ERROR_PARSE (parser, "Expected “%s” but found end of file instead", characters);
+			SET_ERROR_PARSE (parser, "Expected '%s' but found end of file instead", characters);
 		}
 		parser->status = ERROR_PARSE;
 	}

@@ -70,7 +70,11 @@ IMPORTANT: `kdbEnsure` only works, if the `list` plugin is mounted in all approp
 Note: `kdbEnsure` right now ignores the `infos/recommends` and `infos/needs` metadata of plugins, so you have to explicitly take care of
 dependencies. _(Klemens Böswirth)_
 
-### <<HIGHLIGHT2>>
+### Error Code Concept
+
+With this release, we changed our messy error code system into a more structured and clean way. Similar to [SQLStates](https://www.ibm.com/support/knowledgecenter/en/SSGU8G_12.1.0/com.ibm.sqls.doc/ids_sqs_0809.htm) we changed to structure of our error codes and migrated them. Have a look into
+the new [codes](../../src/error/specification). This allows us to easily extend the specification without breaking existing
+codes and to avoid risking duplicated errors as we had before. _(Michael Zronek)_
 
 ## Plugins
 

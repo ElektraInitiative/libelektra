@@ -50,7 +50,7 @@
 
 #define EXPECT_ERROR(NAME, ERROR_CODE)                                                                                                     \
 	dummy (NAME);                                                                                                                      \
-	succeed_if (check_error0 (parentKey, xstr (ERROR_CODE)), "** " #NAME ": got wrong error");
+	succeed_if (check_error0 (parentKey, ERROR_CODE), "** " #NAME ": got wrong error: " xstr (ERROR_CODE));
 
 struct __test;
 
@@ -117,7 +117,7 @@ static void test_single_positive (void)
 			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/target", KEY_END))
 	TEST_SET (full_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (full_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
+	EXPECT_ERROR (full_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (full_negative)
 
 	WITH_KEYS (relative1_negative, 2,
@@ -125,7 +125,7 @@ static void test_single_positive (void)
 			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/target", KEY_END))
 	TEST_SET (relative1_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (relative1_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
+	EXPECT_ERROR (relative1_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (relative1_negative)
 
 	WITH_KEYS (relative2_negative, 2,
@@ -133,7 +133,7 @@ static void test_single_positive (void)
 			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/ref/relative2/target", KEY_END))
 	TEST_SET (relative2_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (relative2_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
+	EXPECT_ERROR (relative2_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (relative2_negative)
 
 	WITH_KEYS (relative3_negative, 2,
@@ -141,7 +141,7 @@ static void test_single_positive (void)
 			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/ref/target", KEY_END))
 	TEST_SET (relative3_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (relative3_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
+	EXPECT_ERROR (relative3_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (relative3_negative)
 
 	WITH_KEYS (array_negative, 5,
@@ -150,7 +150,7 @@ static void test_single_positive (void)
 		   keyNew (BASE_KEY "/ref/array/#1", KEY_VALUE, BASE_KEY "/target1", KEY_END), keyNew (BASE_KEY "/hidden/target0", KEY_END),
 		   keyNew (BASE_KEY "/hidden/target1", KEY_END))
 	TEST_SET (array_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (array_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
+	EXPECT_ERROR (array_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (array_negative)
 
 	TEARDOWN ();
@@ -242,7 +242,7 @@ static void test_recursive_negative (void)
 		   keyNew (BASE_KEY "/element2/ref", KEY_VALUE, BASE_KEY "/element3", KEY_END),
 		   keyNew (BASE_KEY "/element3", KEY_VALUE, "element3", KEY_END))
 	TEST_SET (linked_list_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (linked_list_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND);
+	EXPECT_ERROR (linked_list_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC);
 	RESET (linked_list_negative)
 
 	WITH_KEYS (linked_list_negative2, 9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
@@ -256,7 +256,7 @@ static void test_recursive_negative (void)
 		   keyNew (BASE_KEY "/element2/ref", KEY_VALUE, BASE_KEY "/head", KEY_END),
 		   keyNew (BASE_KEY "/element3", KEY_VALUE, "element3", KEY_END))
 	TEST_SET (linked_list_negative2, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (linked_list_negative2, ELEKTRA_ERROR_REFERENCE_CYCLIC_GRAPH);
+	EXPECT_ERROR (linked_list_negative2, ELEKTRA_ERROR_VALIDATION_SEMANTIC);
 	RESET (linked_list_negative2)
 
 	TEARDOWN ()
@@ -285,7 +285,7 @@ static void test_restriction (void)
 			   CHECK_REFERNCE_VALUE_SINGLE, KEY_META, CHECK_REFERENCE_RESTRICT_KEYNAME, "../yes/**", KEY_END),
 		   keyNew (BASE_KEY "/no/target", KEY_END), KS_END)
 	TEST_SET (negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (negative, ELEKTRA_ERROR_REFERENCE_RESTRICTION)
+	EXPECT_ERROR (negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (negative)
 
 	WITH_KEYS (empty_negative, 2,
@@ -293,7 +293,7 @@ static void test_restriction (void)
 			   KEY_META, CHECK_REFERENCE_RESTRICT_KEYNAME, "", KEY_END),
 		   keyNew (BASE_KEY "/target", KEY_END), KS_END)
 	TEST_SET (empty_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
-	EXPECT_ERROR (empty_negative, ELEKTRA_ERROR_REFERENCE_RESTRICTION)
+	EXPECT_ERROR (empty_negative, ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 	RESET (empty_negative)
 
 	TEARDOWN ()
