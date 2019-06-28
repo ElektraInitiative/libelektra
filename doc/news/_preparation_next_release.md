@@ -722,6 +722,12 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We improved the exclusion patterns for the [Coveralls coverage analysis](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
 - We now again build the API docu of [master](https://doc.libelektra.org/api/master) and we now also build the API docu of [PRs](https://doc.libelektra.org/api/pr/). _(Markus Raab)_
 
+### Restyled
+
+- We added a [configuration file](../../.restyled.yaml) for [Restyled][]. Currently [Restyled][] monitors changes to Shell code in pull requests and fixes code that does not fit the [coding guideline](../CODING.md), by adding additional formatting commit to PRs. _(René Schwaiger)_
+
+[restyled]: https://restyled.io
+
 ### Travis
 
 - We removed the build job for the [Haskell binding](../../src/bindings/haskell/README.md) and [Haskell plugin](../../src/plugins/haskell/README.md). For more information, please take a look [here](https://issues.libelektra.org/2751). _(Klemens Böswirth)_
