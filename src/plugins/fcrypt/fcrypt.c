@@ -129,7 +129,7 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (
 			errorKey,
-			"Failed to overwrite the temporary data. Cannot retrieve file status Unencrypted data may leak. Errno: %s",
+			"Failed to overwrite the temporary data. Cannot retrieve file status. Unencrypted data may leak. Errno: %s",
 			strerror (errno));
 		return -1;
 	}
@@ -252,7 +252,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 			ELEKTRA_ADD_RESOURCE_WARNINGF (
 				parentKey,
 				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
-				"the file manually. Affected file: %s, error description: %s",
+				"the file manually. Affected file: %s. Reason: %s",
 				tmpFile, strerror (errno));
 		}
 	}

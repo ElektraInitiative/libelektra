@@ -169,7 +169,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		// TODO: Solution? Compile with higher MAX_PATH?
+		// TODO: Solution? Compile with higher MAX_PATH or submit a bug to the bug tracker and let us do it for you
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
 		dir[0] = 0;
 	}
