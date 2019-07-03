@@ -594,6 +594,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Added a new error message format concept to be implemented soon. _(Michael Zronek)_
 - Added a new error concept for error codes to be implemented soon. _(Michael Zronek)_
 - Added error categorization guidelines to be used with the error concept. _(Michael Zronek)_
+- Further small improvements to error messages like wording, cleanups and error splitup. _(Michael Zronek)_
 - Drastically improved the error message format. For more information look [here](../../doc/decisions/error_message_format.md). _(Michael Zronek)_
 - Added a guideline for writing consistent and good error messages. For more information look [here](../../doc//dev/error-message.md). _(Michael Zronek)_
 - Every `kdb` command now accepts `v` and `d` as option to show more information in case of warnings or errors. _(Michael Zronek)_
