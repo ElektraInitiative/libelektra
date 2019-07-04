@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <kdb.h>
 #include <kdbconfig.h>
 
 #include <tests_plugin.h>
@@ -35,6 +36,32 @@ static void test_basics (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_cacheNonBackendKeys (void)
+{
+	KeySet * conf = ksNew (0, KS_END);
+
+	Key * key = keyNew ("user/tests/cache",  KEY_END);
+	KDB * handle = kdbOpen (key);
+
+	// the key should be in the keyset, but should not be cached
+	Key * doNotCache = keyNew ("user/tests/cache/somekey",  KEY_END);
+	kdbGet (handle, conf, key);
+	Key * result = ksLookupByName (conf, "user/tests/cache/somekey", 0);
+	succeed_if (result != 0, "key is missing from keyset");
+
+	// the cached key should not have been persisted, so it is not in the fresh keyset
+	KeySet * freshConf = ksNew (0, KS_END);
+	kdbGet (handle, freshConf, key);
+	Key * freshResult = ksLookupByName (freshConf, "user/tests/cache/somekey", 0);
+	succeed_if (freshResult == 0, "key was persisted/cached, even though it was not committed");
+	ksDel (freshConf);
+
+	keyDel (doNotCache);
+	keyDel (key);
+	ksDel (conf);
+	kdbClose (handle, 0);
+}
+
 
 int main (int argc, char ** argv)
 {
@@ -44,6 +71,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
+	test_cacheNonBackendKeys ();
 
 	print_result ("testmod_cache");
 
