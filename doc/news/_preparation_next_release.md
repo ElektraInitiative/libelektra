@@ -568,6 +568,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Improved readability in README. _(Philipp Gackstatter)_
 - We fixed some spelling mistakes in the documentation. _(René Schwaiger)_
 - Fix typo in root README.md and 'build-in' => 'built-in' in several places _(Raphael Gruber)_
+- Fixed typos in `cassandra.ini` _(arampaa)_
 
 ### Other
 
