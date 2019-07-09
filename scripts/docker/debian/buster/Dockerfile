@@ -16,6 +16,7 @@ RUN apt-get update \
         checkinstall \
         cmake \
         curl \
+        default-jdk \
         devscripts \
         dh-exec \
         dh-lua \
@@ -60,7 +61,6 @@ RUN apt-get update \
         maven \
         mingw-w64 \
         ninja-build \
-        openjdk-8-jdk \
         patch \
         patchutils \
         pkg-config \
@@ -92,12 +92,6 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
-
-# Handle Java
-RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
-RUN echo '\
-/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
-/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
 
 # ANTLR
 ARG ANTLR_VERSION=4.7.2
