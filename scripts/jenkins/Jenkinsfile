@@ -236,51 +236,51 @@ def dockerInit() {
     )
 
     /* Our main target for compatibility is Debian stable (currently
-     * stretch).
+     * buster).
      * Hence we try to build all parts of Elektra via this image.
      * Most of the tests defined below use this image.
      * Especially noteworthy is that this image is also used for Debian
      * package building
      */
-    DOCKER_IMAGES.stretch = createDockerImageDesc(
-      "debian-stretch", this.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile"
+    DOCKER_IMAGES.buster = createDockerImageDesc(
+      "debian-buster", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile"
     )
 
     /* A minimal Debian stable image used to test Elektra without any
      * additional requirements introduced by optional plugins, bindings,
      * ...
      */
-    DOCKER_IMAGES.stretch_minimal = createDockerImageDesc(
-      "debian-stretch-minimal", this.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile.minimal"
+    DOCKER_IMAGES.buster_minimal = createDockerImageDesc(
+      "debian-buster-minimal", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile.minimal"
     )
 
     /* A Docker image for crossbuilding i386
      */
-    DOCKER_IMAGES.stretch_i386 = createDockerImageDesc(
-      "debian-stretch-i386", this.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile.i386"
+    DOCKER_IMAGES.buster_i386 = createDockerImageDesc(
+      "debian-buster-i386", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile.i386"
     )
 
     /* Build Elektra's documentation with this image.
      * Also contains latex for pdf creation.
      */
-    DOCKER_IMAGES.stretch_doc = createDockerImageDesc(
-      "debian-stretch-doc", this.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile.doc"
+    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
+      "debian-buster-doc", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile.doc"
     )
 
     /* A Debian oldstable image used for testing backwards compatibility.
      */
-    DOCKER_IMAGES.jessie = createDockerImageDesc(
-      "debian-jessie", this.&idTesting,
-      "./scripts/docker/debian/jessie",
-      "./scripts/docker/debian/jessie/Dockerfile"
+    DOCKER_IMAGES.stretch = createDockerImageDesc(
+      "debian-stretch", this.&idTesting,
+      "./scripts/docker/debian/stretch",
+      "./scripts/docker/debian/stretch/Dockerfile"
     )
 
     /* Ubuntu xenial image used to test compatibility with Ubuntu.
@@ -436,7 +436,7 @@ def generateMainBuildStages() {
   // in a standard environment
   tasks << buildAndTest(
     "debian-stable-full",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -473,7 +473,7 @@ def generateFullBuildStages() {
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
     "debian-stable-asan",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL
   )
 
@@ -489,7 +489,7 @@ def generateFullBuildStages() {
   // Build Elektra on oldstable to see if we are backwards compatible
   tasks << buildAndTest(
     "debian-oldstable-full",
-    DOCKER_IMAGES.jessie,
+    DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
@@ -508,7 +508,7 @@ def generateFullBuildStages() {
 
   tasks << buildAndTest(
     "debian-stable-full-i386",
-    DOCKER_IMAGES.stretch_i386,
+    DOCKER_IMAGES.buster_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
     ] + CMAKE_FLAGS_BUILD_ALL,
@@ -554,7 +554,7 @@ def generateFullBuildStages() {
   // Build Elektra on a minimal Debian stable Docker image
   tasks << buildAndTest(
     "debian-stable-minimal",
-    DOCKER_IMAGES.stretch_minimal,
+    DOCKER_IMAGES.buster_minimal,
     [:],
     [TEST.ALL]
   )
@@ -563,7 +563,7 @@ def generateFullBuildStages() {
   // specify NODEP and see if plugins are properly included/excluded
   tasks << buildAndTest(
     "debian-stable-minimal",
-    DOCKER_IMAGES.stretch_minimal,
+    DOCKER_IMAGES.buster_minimal,
     ['PLUGINS': 'NODEP'],
     [TEST.ALL]
   )
@@ -571,7 +571,7 @@ def generateFullBuildStages() {
   // Build Elektra with the ini backend instead of the default
   tasks << buildAndTest(
     "debian-stable-full-ini",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_INI +
@@ -583,7 +583,7 @@ def generateFullBuildStages() {
   // Build Elektra with the mmap backend instead of the default
   tasks << buildAndTest(
     "debian-stable-full-mmap",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP +
@@ -594,7 +594,7 @@ def generateFullBuildStages() {
 
   tasks << buildAndTestAsan(
     "debian-stable-full-mmap-asan",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP
@@ -604,7 +604,7 @@ def generateFullBuildStages() {
   def xdgResolver = 'resolver_mf_xp_x'
   tasks << buildAndTest(
     "debian-stable-full-xdg",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     [
       'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
@@ -615,7 +615,7 @@ def generateFullBuildStages() {
   // Build Elektra without optimizations
   tasks << buildAndTest(
     "debian-stable-full-optimizations-off",
-    DOCKER_IMAGES.stretch,
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_DEBUG +
@@ -631,7 +631,7 @@ def generateFullBuildStages() {
     def testName = "debian-stable-multiconf[buildType=${buildType}]"
     tasks << buildAndTest(
       testName,
-      DOCKER_IMAGES.stretch,
+      DOCKER_IMAGES.buster,
       CMAKE_FLAGS_BUILD_ALL + [
         'CMAKE_BUILD_TYPE': buildType
       ],
@@ -654,7 +654,7 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.buster_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         openTasks pattern: openTaskPatterns,
@@ -673,7 +673,7 @@ def buildCheckReleaseNotes() {
   def stageName = "check-release-notes"
   return [(stageName): {
     maybeStage(stageName, !isMaster()) {
-      withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
         sh "scripts/run_check_release_notes"
         deleteDir()
       }
@@ -686,7 +686,7 @@ def buildIcheck() {
   def stageName = "icheck"
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
         sh "scripts/run_icheck"
         deleteDir()
       }
@@ -721,7 +721,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.buster_doc) {
         dir('build') {
           deleteDir()
           cmake(env.WORKSPACE, cmakeFlags)
@@ -835,7 +835,7 @@ def buildAndTestMingwW64() {
   def testName = "debian-stable-mingw-w64"
   return [(testName): {
     stage(testName) {
-      withDockerEnv(DOCKER_IMAGES.stretch) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
         dir('build') {
           deleteDir()
           sh '../scripts/configure-mingw-w64 ..'
@@ -990,10 +990,10 @@ def generateArtifactStages() {
 }
 
 def buildPackageDebianStretch() {
-  def stageName = "buildPackage/debian/stretch"
+  def stageName = "buildPackage/debian/buster"
   return [(stageName): {
     stage(stageName) {
-      return withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      return withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"

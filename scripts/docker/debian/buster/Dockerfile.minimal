@@ -1,50 +1,11 @@
-FROM debian:jessie
+FROM debian:buster
 
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-    curl \
-    build-essential \
-    autotools-dev \
-    automake \
-    cmake \
-    pkg-config \
-    ruby \
-    ruby-dev \
-    python-dev \
-    python3-dev \
-    libpython3-dev \
-    dh-lua \
-    liblua5.2-dev \
-    tclcl-dev \
-    libaugeas-dev \
-    libbotan1.10-dev \
-    libgpgme11-dev \
-    libyajl-dev \
-    git \
-    libgit2-dev \
-    libboost-all-dev \
-    libssl-dev \
-    libdbus-1-dev \
-    libpcre3-dev \
-    libpcre++-dev \
-    libglib2.0-dev \
-    libxerces-c-dev \
-    swig3.0 \
-    libuv0.10-dev \
-    libev-dev \
-    libzmq3-dev \
-    checkinstall \
-    gobject-introspection \
-    libgirepository1.0-dev \
-    systemd \
-    libsystemd-dev \
-    gawk \
-    lcov \
-    valgrind && \
-    rm -rf /var/lib/apt/lists/*
+    cmake git build-essential curl file
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
@@ -61,8 +22,8 @@ RUN mkdir -p ${GTEST_ROOT} \
 # on the slaves to execute containers
 ARG JENKINS_GROUPID
 RUN groupadd \
-    -g ${JENKINS_GROUPID} \
     -f \
+    -g ${JENKINS_GROUPID} \
     jenkins
 
 ARG JENKINS_USERID

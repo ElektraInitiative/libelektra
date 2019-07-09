@@ -698,6 +698,8 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
   to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
 
+- We now offer images for the latest stable version of Debian codenamed [“buster”](../../scripts/docker/debian/buster). _(René Schwaiger)_
+
 #### Ubuntu
 
 - We added a [Dockerfile for Ubuntu Disco Dingo](../../scripts/docker/ubuntu/disco/Dockerfile). _(René Schwaiger)_
@@ -740,6 +742,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
 - We improved the exclusion patterns for the [Coveralls coverage analysis](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
 - We now again build the API docu of [master](https://doc.libelektra.org/api/master) and we now also build the API docu of [PRs](https://doc.libelektra.org/api/pr/). _(Markus Raab)_
+- The build server tests Elektra using Docker images for the latest stable (“buster”) and oldstable (“stretch”) version of Debian again. _(René Schwaiger) _
 
 ### Restyled
 
