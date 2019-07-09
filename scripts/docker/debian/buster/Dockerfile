@@ -7,6 +7,7 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update \
     && apt-get -y install \
         alex \
+        antlr4 \
         automake \
         autotools-dev \
         bison \
@@ -34,6 +35,7 @@ RUN apt-get update \
         happy \
         icheck \
         lcov \
+        libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-all-dev \
         libbotan-2-dev \
@@ -91,30 +93,6 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
-
-# ANTLR
-ARG ANTLR_VERSION=4.7.2
-RUN cd /usr/local/lib \
-    && curl -o antlr.jar -L https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar \
-    && cd /usr/local/bin \
-    && printf '\
-#!/usr/bin/env sh\n\
-CLASSPATH=.:/usr/local/lib/antlr.jar exec java -jar /usr/local/lib/antlr.jar "$@"' > antlr4 \
-    && printf '\
-#!/usr/bin/env sh\n\
-java -classpath .:/usr/local/lib/antlr.jar org.antlr.v4.gui.TestRig "$@"' > grun \
-    && chmod a+x antlr4 grun
-# ANTLR C++ runtime
-RUN cd /tmp \
-    && git clone --branch ${ANTLR_VERSION} --depth 1 https://github.com/antlr/antlr4.git \
-    && cd antlr4/runtime/Cpp \
-    && mkdir build \
-    && cd build \
-    && cmake -GNinja -DANTLR_JAR_LOCATION=/usr/local/lib/antlr.jar -DCMAKE_BUILD_TYPE=Release .. \
-    && ninja \
-    && ninja install \
-    && cd /tmp \
-    && rm -r antlr4
 
 # PEGTL
 ARG PEGTL_VERSION=2.7.1
