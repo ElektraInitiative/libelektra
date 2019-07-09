@@ -13,7 +13,6 @@ RUN apt-get update \
         build-essential \
         c2hs \
         cabal-install \
-        checkinstall \
         cmake \
         curl \
         default-jdk \
