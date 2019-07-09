@@ -708,7 +708,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - The Docker images for
 
-  - [Debian stretch](../../scripts/docker/debian/sid/Dockerfile), and
+  - [Debian stretch](../../scripts/docker/debian/stretch/Dockerfile), and
   - [Debian sid](../../scripts/docker/debian/sid/Dockerfile),
 
   now include the Python YAML library recommended by [cmake format](https://github.com/cheshirekow/cmake_format). _(René Schwaiger)_
