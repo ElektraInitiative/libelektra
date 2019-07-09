@@ -56,6 +56,7 @@ RUN apt-get update \
         libuv1-dev \
         libxerces-c-dev \
         libyajl-dev \
+        libyaml-cpp-dev \
         libzmq3-dev \
         lintian \
         llvm \
@@ -109,18 +110,6 @@ RUN cd /tmp \
     && make install \
     && cd ../.. \
     && rm -r yaep yaep.tar.gz
-
-# yaml-cpp
-RUN cd /tmp \
-    && git clone --branch yaml-cpp-0.6.2 --depth 1 https://github.com/jbeder/yaml-cpp.git \
-    && cd yaml-cpp \
-    && mkdir build \
-    && cd build \
-    && cmake -GNinja -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON .. \
-    && ninja \
-    && ninja install \
-    && cd ../.. \
-    && rm -r yaml-cpp
 
 # Update cache for shared libraries
 RUN ldconfig
