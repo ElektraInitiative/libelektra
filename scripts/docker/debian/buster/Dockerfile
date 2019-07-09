@@ -37,7 +37,7 @@ RUN apt-get update \
         lcov \
         libaugeas-dev \
         libboost-all-dev \
-        libbotan1.10-dev \
+        libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
