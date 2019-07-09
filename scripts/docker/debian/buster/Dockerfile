@@ -6,79 +6,79 @@ ENV LC_ALL C.UTF-8
 
 RUN apt-get update \
     && apt-get -y install \
-        curl \
-        build-essential \
-        autotools-dev \
+        alex \
         automake \
+        autotools-dev \
+        bison \
+        build-essential \
+        c2hs \
+        cabal-install \
+        checkinstall \
         cmake \
+        curl \
+        devscripts \
+        dh-exec \
+        dh-lua \
+        diffutils \
+        discount \
+        dnsutils \
+        doxygen \
+        ed \
+        gawk \
+        ghc \
+        ghc-dynamic \
+        git \
+        git-buildpackage \
+        gobject-introspection \
+        graphviz \
+        happy \
+        icheck \
+        lcov \
+        libaugeas-dev \
+        libboost-all-dev \
+        libbotan1.10-dev \
+        libdbus-1-dev \
+        libev-dev \
+        libgirepository1.0-dev \
+        libgit2-dev \
+        libglib2.0-dev \
+        libgpgme-dev \
+        libgtest-dev \
+        liblua5.3-dev \
+        libmarkdown2-dev \
+        libpcre++-dev \
+        libpcre3-dev \
+        libpython3-dev \
+        libssl-dev \
+        libsystemd-dev \
+        libuv1-dev \
+        libxerces-c-dev \
+        libyajl-dev \
+        libzmq3-dev \
+        lintian \
+        llvm \
+        maven \
+        mingw-w64 \
+        ninja-build \
+        openjdk-8-jdk \
+        patch \
+        patchutils \
         pkg-config \
-        ruby \
-        ruby-dev \
         python-all \
         python-pip \
         python3-all \
-        libpython3-dev \
-        dh-exec \
-        dh-lua \
-        liblua5.3-dev \
-        tclcl-dev \
-        libaugeas-dev \
-        libbotan1.10-dev \
-        libgpgme-dev \
-        libyajl-dev \
-        git \
-        libgit2-dev \
-        libgtest-dev \
-        libboost-all-dev \
-        libssl-dev \
-        libdbus-1-dev \
-        libpcre3-dev \
-        libpcre++-dev \
-        libglib2.0-dev \
-        libxerces-c-dev \
         qtbase5-dev \
         qtdeclarative5-dev \
-        libmarkdown2-dev \
-        discount \
-        swig3.0 \
-        libuv1-dev \
-        libev-dev \
-        libzmq3-dev \
-        ghc \
-        ghc-dynamic \
-        cabal-install \
-        alex \
-        happy \
-        c2hs \
-        checkinstall \
-        openjdk-8-jdk \
-        maven \
-        gobject-introspection \
-        libgirepository1.0-dev \
-        systemd \
-        libsystemd-dev \
-        mingw-w64 \
-        wine \
-        llvm \
-        icheck \
-        devscripts \
-        lintian \
-        diffutils \
-        patch \
-        patchutils \
-        git-buildpackage \
         reprepro \
-        doxygen \
-        graphviz \
-        gawk \
-        lcov \
-        valgrind \
-        ed \
-        dnsutils \
-        virtualenv \
-        bison \
+        ruby \
+        ruby-dev \
+        swig3.0 \
+        systemd \
+        tclcl-dev \
         uuid-dev \
-        ninja-build \
+        valgrind \
+        virtualenv \
+        wine \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
