@@ -45,6 +45,7 @@ RUN apt-get update \
         libpcre++-dev \
         libpcre3-dev \
         libpython3-dev \
+        libqt5svg5-dev \
         libssl-dev \
         libsystemd-dev \
         libuv1-dev \
@@ -77,6 +78,7 @@ RUN apt-get update \
         virtualenv \
         wine \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
