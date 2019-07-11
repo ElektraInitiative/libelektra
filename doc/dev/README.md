@@ -15,6 +15,7 @@ It complements the man pages found [here](/doc/help).
 - [Error Message](error-message.md)
 - [Error Categorization](error-categorization.md)
 - [Metadata](metadata.md)
+- [Symbol Versioning](symbol-versioning.md)
 
 ## Internals
 
