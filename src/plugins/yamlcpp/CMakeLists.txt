@@ -16,7 +16,7 @@ if (DEPENDENCY_PHASE)
 	     AND
 	     ${CMAKE_CXX_COMPILER_VERSION}
 	     VERSION_LESS
-	     7)
+	     9)
 	if (${DISABLE_PLUGIN_ASAN})
 		remove_plugin (yamlcpp
 			       "ASan enabled GCC builds of the plugin report member calls on addresses, "
