@@ -53,7 +53,7 @@ BEGIN {
 		sub("^[ \t]+", "", $0);
 		sub("[ \t]+$", "", $0);
 
-		if (/^[a-zA-Z0-9._]+[ \t]*{$/) {
+		if (/^[a-zA-Z0-9._]+[ \t]*\{$/) {
 			# Strip brace.
 			sub("{", "", $1);
 			brackets++;
@@ -63,7 +63,7 @@ BEGIN {
 			generated[symver] = 0;
 			version_count++;
 		}
-		else if (/^}[ \t]*[a-zA-Z0-9._]+[ \t]*;$/) {
+		else if (/^\}[ \t]*[a-zA-Z0-9._]+[ \t]*;$/) {
 			v = $1 != "}" ? $1 : $2;
 			# Strip brace.
 			sub("}", "", v);
@@ -84,7 +84,7 @@ BEGIN {
 				successors[symver] = v;
 			brackets--;
 		}
-		else if (/^}[ \t]*;$/) {
+		else if (/^\}[ \t]*;$/) {
 			if (symver == "") {
 				printf("File %s: Unmatched bracket.\n",
 				    vfile) > stderr;
@@ -93,7 +93,7 @@ BEGIN {
 			# No successor
 			brackets--;
 		}
-		else if (/^}$/) {
+		else if (/^\}$/) {
 			printf("File %s: Missing final semicolon.\n",
 			    vfile) > stderr;
 			errors++;
@@ -122,7 +122,7 @@ BEGIN {
 		next;
 }
 
-/^[a-zA-Z0-9._]+[ \t]*{$/ {
+/^[a-zA-Z0-9._]+[ \t]*\{$/ {
 	# Strip bracket from version name.
 	sub("{", "", $1);
 	if (current_version != "") {
@@ -183,7 +183,7 @@ BEGIN {
 	next;
 }
 
-/^}[ \t]*;$/ {
+/^\}[ \t]*;$/ {
 	brackets--;
 	if (brackets < 0) {
 		printf("File %s, line %d: Unmatched bracket.\n",
