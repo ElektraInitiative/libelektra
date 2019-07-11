@@ -59,7 +59,7 @@ function (check_dependencies)
 	     AND
 	     ${CMAKE_CXX_COMPILER_VERSION}
 	     VERSION_LESS
-	     7)
+	     9)
 	if (${DISABLE_PLUGIN_ASAN})
 		set (FAILURE_MESSAGE
 		     "ASan enabled GCC builds of the plugin report member calls on addresses, "
