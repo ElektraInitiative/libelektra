@@ -1310,11 +1310,15 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 					keyString (parentKey));
 #endif
 				ksRewind (split->keysets[i]);
-				ret = backend->setplugins[p]->kdbSet (backend->setplugins[p], split->keysets[i], parentKey);
 				if (p == COMMIT_PLUGIN)
 				{
+					ret = backend->setplugins[p]->kdbCommit (backend->setplugins[p], split->keysets[i], parentKey);
 					// name of non-temp file
 					keySetString (split->parents[i], keyString (parentKey));
+				}
+				else
+				{
+					ret = backend->setplugins[p]->kdbSet (backend->setplugins[p], split->keysets[i], parentKey);
 				}
 			}
 
