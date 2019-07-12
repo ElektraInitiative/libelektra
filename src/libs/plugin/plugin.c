@@ -86,7 +86,7 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 			returned->kdbError = va_arg (va, kdbErrorPtr);
 			break;
 		case ELEKTRA_PLUGIN_COMMIT:
-			returned->kdbCommit = va_arg (va,kdbCommitPtr);
+			returned->kdbCommit = va_arg (va, kdbCommitPtr);
 			break;
 		default:
 			ELEKTRA_ASSERT (0, "plugin passed something unexpected");

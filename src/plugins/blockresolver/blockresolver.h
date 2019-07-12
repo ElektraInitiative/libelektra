@@ -17,6 +17,7 @@ int elektraBlockresolverClose (Plugin * handle, Key * errorKey);
 int elektraBlockresolverGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraBlockresolverSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraBlockresolverError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraBlockresolverCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

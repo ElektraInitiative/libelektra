@@ -69,6 +69,11 @@ int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+int elektraTemplateCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraTemplateSet (handle, returned, parentKey);
+}
+
 int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration

@@ -197,6 +197,11 @@ int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 0;
 }
 
+int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+{
+	return elektraDocSet (handle, returned, parentKey);
+}
+
 static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
 {
 	return 0;
@@ -272,6 +277,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
 		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
+		ELEKTA_PLUGIN_COMMIT,	&elektraDocCommit,
 		ELEKTRA_PLUGIN_END);
 }
 //![export]

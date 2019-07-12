@@ -18,6 +18,7 @@ int elektraGitresolverClose (Plugin * handle, Key * errorKey);
 int elektraGitresolverGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraGitresolverSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraGitresolverError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraGitresolverCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -405,6 +405,11 @@ int elektraBlockresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned
 	return 1; // success
 }
 
+int elektraBlockresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraBlockresolverSet (handle, returned, parentKey);
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -413,6 +418,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	    ELEKTRA_PLUGIN_ERROR, &elektraBlockresolverError,
 	    ELEKTRA_PLUGIN_GET,	&elektraBlockresolverGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraBlockresolverSet,
+	    ELEKTRA_PLUGIN_COMMIT, &elektraBlockresolverCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

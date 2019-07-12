@@ -533,6 +533,7 @@ int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
  */
 int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
+int elektraDocCommit (Plugin * handle, KeySet * returned, Key * parentKey);
 
 /**
  * @brief Rollback in case of errors.

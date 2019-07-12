@@ -965,6 +965,11 @@ int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	return 1; // success
 }
 
+int elektraGitresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraGitresolverSet (handle, returned, parentKey);
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -974,6 +979,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
             ELEKTRA_PLUGIN_GET,	&elektraGitresolverGet,
             ELEKTRA_PLUGIN_SET,	&elektraGitresolverSet,
             ELEKTRA_PLUGIN_ERROR,	&elektraGitresolverError,
+            ELEKTRA_PLUGIN_COMMIT,	&elektraGitresolverCommit,
             ELEKTRA_PLUGIN_END);
 }
 
