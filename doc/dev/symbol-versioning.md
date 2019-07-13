@@ -54,6 +54,63 @@ version may be modified at any point in time.
 
 For additional clarity, you may leave a comment in the old version noting where the symbols was moved to.
 
+To actually implement symbol versioning, a few code changes are necessary. Explaining this is much easier, when using a concrete example.
+
+We will use the function `int foo (Key * k)` and assume the new version will have the signature `int foo (Key * k, int x)`. The old version
+shall be called `oldversion` and the new version shall be `newversion`.
+
+The old function declaration
+
+```c
+int foo (Key * k);
+```
+
+has to be replaced with the new declaration
+
+```c
+int foo (Key * k, int x);
+```
+
+To enable backwards compatibility, we need to add some assembler `.symver` pseudo instructions. To make this easier, we have the helper macro
+`ELEKTRA_SYMVER_DECLARE`. We add these lines to add compatibility symbols:
+
+```c
+ELEKTRA_SYMVER_DECLARE ("oldversion", foo, v1);
+int ELEKTRA_SYMVER (foo, v1) (Key * k);
+```
+
+Note: `v1` may be replaced by any string that is a valid identifier. It is simply their to make the symbol name unique.
+
+In the source files containing the definition of our function, we change the old definition
+
+```c
+int foo (Key * k)
+{
+    // old code ...
+}
+```
+
+to use the compatibility symbol
+
+```c
+int ELEKTRA_SYMVER (foo, v1) (Key * k)
+{
+    // old code ...
+}
+```
+
+Then we simply write the definition for the new version, as if it was an entirely new function:
+
+```c
+int foo (Key * k, int x)
+{
+    // new code ...
+}
+```
+
+The current version of a symbol always uses the unversioned name of the symbol. That way we default to this version. Only older versions use
+a versioned name via `ELEKTRA_SYMVER`.
+
 ## Removing a symbol
 
 If a symbol becomes deprecated, it should NOT be removed from the `symbols.map` file. This would break backwards compatibility.
