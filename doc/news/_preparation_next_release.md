@@ -742,7 +742,6 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We increased the automatic timeout for jobs that show no activity from 5 to 10 minutes. _(René Schwaiger)_
 - We improved the exclusion patterns for the [Coveralls coverage analysis](https://coveralls.io/github/ElektraInitiative/libelektra). _(René Schwaiger)_
 - We now again build the API docu of [master](https://doc.libelektra.org/api/master) and we now also build the API docu of [PRs](https://doc.libelektra.org/api/pr/). _(Markus Raab)_
-- We now use Docker images for the latest stable (“buster”) and oldstable (“stretch”) version of Debian for some of our build jobs. _(René Schwaiger) _
 
 ### Restyled
 
