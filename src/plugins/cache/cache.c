@@ -151,7 +151,7 @@ static char * elektraGenTempFilename (char * cacheFileName)
 
 	tmpFilenameSize = strlen (cacheFileName) + POSTFIX_SIZE;
 	tmpFile = elektraCalloc (tmpFilenameSize);
-	len = sprintf (tmpFile, "%s", cacheFileName);
+	len = snprintf (tmpFile, strlen (cacheFileName), "%s", cacheFileName);
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
