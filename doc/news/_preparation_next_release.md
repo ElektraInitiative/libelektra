@@ -86,6 +86,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
 - Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
 - Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
+- Fix GCC ASAN build warnings #2820. _(Mihael Pranjić)_
 
 ### crypto / fcrypt
 
