@@ -45,6 +45,7 @@ static void test_cacheNonBackendKeys (void)
 
 	// the key should be in the keyset, but should not be cached
 	Key * doNotCache = keyNew ("user/tests/cache/somekey",  KEY_END);
+	ksAppendKey (conf, doNotCache);
 	kdbGet (handle, conf, key);
 	Key * result = ksLookupByName (conf, "user/tests/cache/somekey", 0);
 	succeed_if (result != 0, "key is missing from keyset");
