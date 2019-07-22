@@ -771,6 +771,13 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
+static void elektraCutProc (KeySet * ks)
+{
+	Key * parentKey = keyNew ("proc", KEY_END);
+	ksDel (ksCut (ks, parentKey));
+	keyDel (parentKey);
+}
+
 static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED, Key * cacheParent)
 {
 	// prune old cache info
@@ -1135,6 +1142,7 @@ cachemiss:
 	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
+		elektraCutProc (ks); // remove proc keys before caching
 		if (elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 		{
 			ELEKTRA_LOG_DEBUG ("CACHE ERROR: could not store cache");
