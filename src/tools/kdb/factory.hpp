@@ -22,6 +22,7 @@
 #include <external.hpp>
 
 // TODO: to add a new command, 1.) include your header here
+#include <cache.hpp>
 #include <check.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
@@ -88,6 +89,7 @@ public:
 		m_factory.insert (std::make_pair ("set", std::make_shared<Cnstancer<SetCommand>> ()));
 		m_factory.insert (std::make_pair ("rm", std::make_shared<Cnstancer<RemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("ls", std::make_shared<Cnstancer<LsCommand>> ()));
+		m_factory.insert (std::make_pair ("cache", std::make_shared<Cnstancer<CacheCommand>> ()));
 		m_factory.insert (std::make_pair ("complete", std::make_shared<Cnstancer<CompleteCommand>> ()));
 		m_factory.insert (std::make_pair ("cp", std::make_shared<Cnstancer<CpCommand>> ()));
 		m_factory.insert (std::make_pair ("mv", std::make_shared<Cnstancer<MvCommand>> ()));
