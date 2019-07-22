@@ -8,29 +8,32 @@
 #include <stdio.h>
 #include <string.h>
 
+static bool metaEqual (Key * a, Key * b, bool semanticallySuffices);
+static bool keysAreSyntacticallyEqual (Key * a, Key * b);
+
 void printKs (KeySet * ks)
 {
 	Key * cur = 0;
-	printf ("Iterate over all keys:\n");
+	fprintf (stdout, "DEBUG: Iterate over all keys:\n");
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != 0)
 	{ /* Iterates over all keys and prints their name */
-		printf ("--%s\n", keyName (cur));
+		fprintf (stdout, "DEBUG: --%s\n", keyName (cur));
 	}
 }
 
-char * strremove (char * str, const char * sub)
+char * strremove (char * string, const char * sub)
 {
-	size_t len = strlen (sub);
-	if (len > 0)
+	size_t length = strlen (sub);
+	if (length > 0)
 	{
-		char * p = str;
+		char * p = string;
 		while ((p = strstr (p, sub)) != NULL)
 		{
-			memmove (p, p + len, strlen (p + len) + 1);
+			memmove (p, p + length, strlen (p + length) + 1);
 		}
 	}
-	return str;
+	return string;
 }
 
 static KeySet * removeRoots (KeySet * original, Key * root)
@@ -97,64 +100,96 @@ static int prependAndAppend (KeySet * ks, Key * toAppend, const char * extension
  * 1. Removes all whitespaces
  * 2. Removes trailing zeros from numbers
  *
- * Normalizes up to size in memory
+ * This modifies the contents of the parameter to_normalize and does not create a copy itself.
+ * Normalizes up to size in memory.
+ * Returns the number of elements in the normalized version.
  */
-static void normalize (void * to_normalize, size_t * size)
+static size_t normalize (void * to_normalize, size_t * size)
 {
-	printf ("In normalize\n");
-	printf("Normalizing >%s< with size %ld\n", (char *) to_normalize, *size);
 	// Each character is checked alone
 	char * as_int = to_normalize;
 	int removed_count = 0;
 	size_t i = 0;
 	while (i < *size)
 	{
-		printf ("%ld: Character in normalize is as number %d which represents >%c<\n", i, as_int[i], as_int[i]);
 		/**
 		 * 0123456789ab         012345
 		 * ___abc_abc__ becomes abcabc
 		 */
 		if (isblank (as_int[i]))
 		{
-			if (i < *size - 1) {
-				memmove (&as_int[i], &as_int[i+1], *size - i);
+			if (i < *size - 1)
+			{
+				memmove (&as_int[i], &as_int[i + 1], *size - i);
 			}
 			removed_count += 1;
-		} else {
-			// memmove => don't increase!
+		}
+		else
+		{
+			// Only here! memmove => no increase of i
 			i++;
 		}
 	}
 	size_t reducedSize = *size - removed_count;
 	*size = reducedSize;
-	printf("Normalized to >%s< with %ld\n", (char *) to_normalize, reducedSize);
+	return reducedSize;
 }
 
-static bool valueIsEqual (Key * a, Key * b)
+static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
+{
+	keyRewindMeta (a);
+	keyRewindMeta (b);
+	const Key * currentMeta;
+	while ((currentMeta = keyNextMeta (a)) != 0)
+	{
+		const char * currentName = keyName (currentMeta);
+		if (currentName == 0 || strncmp (currentName, "", 2) == 0)
+		{
+			return false;
+		}
+		const Key * metaInB = keyGetMeta (b, currentName);
+		if (metaInB == 0)
+		{
+			return false;
+		}
+		if (!keysAreSyntacticallyEqual (a, b))
+		{
+			// comments may be different
+			if (!semanticallySuffices && strcmp (currentName, "comment") != 0)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+/**
+ * Set semantically true if semantic differences like comments are irrelevant
+ */
+static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
+{
+	return metaEqualHelper (a, b, semanticallySuffices) && metaEqualHelper (b, a, semanticallySuffices);
+}
+
+static bool keysAreSyntacticallyEqual (Key * a, Key * b)
 {
 	if (keyGetValueSize (a) != keyGetValueSize (b))
 	{
 		return false;
 	}
-	return 0 == memcmp (keyValue (a), keyValue (b), keyGetValueSize (a));
-}
-
-static bool metadataIsEqual (Key * a, Key * b)
-{
-	keyValue (a); // Only here to omit compiler warnings
-	keyValue (b); // Only here to omit compiler warnings
+	if (0 != memcmp (keyValue (a), keyValue (b), keyGetValueSize (a)))
+	{
+		return false;
+	}
+	if (!metaEqual (a, b, false))
+	{
+		return false;
+	}
 	return true;
-}
-
-static bool keysAreSyntacticallyEqual (Key * a, Key * b)
-{
-	bool test = valueIsEqual (a, b) && metadataIsEqual (a, b);
-	return test;
 }
 
 static bool keysAreSemanticallyEqual (Key * a, Key * b)
 {
-	printf ("In semantic check\n");
 	/**
 	 * Opposed to string values binary values can have '\0' inside the value
 	 * This is an important property for the semantic equivalence of values
@@ -178,12 +213,21 @@ static bool keysAreSemanticallyEqual (Key * a, Key * b)
 	}
 	memcpy (a_value, keyValue (a), a_size);
 	memcpy (b_value, keyValue (b), b_size);
-	printf ("value a is %s and b is %s\n", (char *) a_value, (char *) b_value);
-	normalize (a_value, &a_size);
-	normalize (b_value, &b_size);
-	printf ("After normalization value a is %s and b is %s\n", (char *) a_value, (char *) b_value);
-
-	return false;
+	size_t new_a_size = normalize (a_value, &a_size);
+	size_t new_b_size = normalize (b_value, &b_size);
+	if (new_a_size != new_b_size) return false;
+	bool result = false; // Don't return immediately because of free
+	if (memcmp (a_value, b_value, new_a_size) == 0)
+	{
+		result = true;
+	}
+	else
+	{
+		result = false;
+	}
+	elektraFree (a_value);
+	elektraFree (b_value);
+	return result;
 }
 
 static bool keysAreEqual (Key * a, Key * b)
@@ -249,7 +293,10 @@ static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet
 				}
 				else
 				{
-					fprintf (stderr, "ERROR in %s: Conflict due to two different values\n", __func__);
+					/**
+					 * This is not an error but only a conflict.
+					 * This happens e.g. when base is empty and our and their are different.
+					 */
 					return false;
 				}
 			}
@@ -273,7 +320,7 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	{
 		/**
 		 * Check if a key with the same name exists
-		 * Nothing about values or metadata is said yet
+		 * Nothing about values is said yet
 		 */
 		Key * baseInOur = ksLookup (ourCropped, base_key, 0);
 		Key * baseInTheir = ksLookup (theirCropped, base_key, 0);
