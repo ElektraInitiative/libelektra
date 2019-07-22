@@ -810,10 +810,15 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	if (debugGlobalPositions)
 	{
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
-		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
-		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
+		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
 	}
+
+	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
 
 	ksRewind (*cache);
 	if (ks->size == 0)
