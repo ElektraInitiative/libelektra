@@ -90,7 +90,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
 - Add check of resolved filenames, fixes false cache hits. _(Mihael Pranjić)_
-- Skip all plugins and global plugins when we have a cache hit. _(Mihael Pranjić)_
+- Execute only `PROCGETSTORAGE` global plugins when we have a cache hit. _(Mihael Pranjić)_
 - Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
 - Fix GCC ASAN build warnings #2820. _(Mihael Pranjić)_
 
