@@ -277,7 +277,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
 		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
-		ELEKTA_PLUGIN_COMMIT,	&elektraDocCommit,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraDocCommit,
 		ELEKTRA_PLUGIN_END);
 }
 //![export]
