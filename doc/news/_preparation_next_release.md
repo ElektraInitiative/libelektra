@@ -631,7 +631,12 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We added a test for the keyhelper-class which checks if rebasePath calculates the new path for cascading target-keys correctly. _(Thomas Bretterbauer)_
 - Enable MSR for the crypto and fcrypt tutorial ([#1981](https://github.com/ElektraInitiative/libelektra/issues/1981))._(Peter Nirschl)_
 - We fixed the [Markdown Shell Recorder][] test for the command [`kdb get`](../help/kdb-get.md). _(René Schwaiger)_
-- The test [`testscr_check_real_world`](../../tests/shell/check_real_world.sh) now also works correctly, if the `user` and `system` directory file paths contain space characters. _(René Schwaiger)_
+- The tests
+
+  - [`testscr_check_real_world`](../../tests/shell/check_real_world.sh), and
+  - [`testscr_check_resolver`](../../tests/shell/check_resolver.sh)
+
+  now also works correctly, if the `user` and `system` directory file paths contain space characters. _(René Schwaiger)_
 
 ### Source Code Checks
 

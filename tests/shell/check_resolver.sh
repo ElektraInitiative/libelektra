@@ -55,7 +55,7 @@ check_resolver() {
 
 	MOUNTPOINT=$1$ROOT_MOUNTPOINT
 
-	"$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1> /dev/null
+	"$KDB" mount --resolver $PLUGIN "$3" $MOUNTPOINT dump 1> /dev/null
 	succeed_if "could not mount root using: "$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
 
 	FILE=$("$KDB" file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null)
@@ -139,17 +139,17 @@ else
 	cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
 	check_resolver dir x /a $TMPPATH/a
 	check_resolver dir x /a/b $TMPPATH/a/b
-	check_resolver dir x a $TMPPATH/@KDB_DB_DIR@/a
-	check_resolver dir x a/b $TMPPATH/@KDB_DB_DIR@/a/b
+	check_resolver dir x a "$TMPPATH/@KDB_DB_DIR@/a"
+	check_resolver dir x a/b "$TMPPATH/@KDB_DB_DIR@/a/b"
 	cd "$OD"
 
 fi # end of XDG tests
 
 export ALLUSERSPROFILE="/C"
 check_resolver spec w /app/config_file /C/app/config_file
-check_resolver spec w app/config_file /C@KDB_DB_SPEC@/app/config_file
+check_resolver spec w app/config_file "/C@KDB_DB_SPEC@/app/config_file"
 check_resolver system w /app/config_file /C/app/config_file
-check_resolver system w app/config_file /C@KDB_DB_SYSTEM@/app/config_file
+check_resolver system w app/config_file "/C@KDB_DB_SYSTEM@/app/config_file"
 unset ALLUSERSPROFILE
 
 export HOME="/D"
@@ -157,7 +157,7 @@ check_resolver user w /app/config_file /D//app/config_file
 check_resolver user w app/config_file /D/app/config_file #@KDB_DB_USER@ not impl
 unset HOME
 
-OD=$(pwd)
+OD="$(pwd)"
 cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
 check_resolver dir w /a $TMPPATH//a
 check_resolver dir w /a/b $TMPPATH//a/b
@@ -166,8 +166,8 @@ check_resolver dir w a/b $TMPPATH/a/b #@KDB_DB_DIR@ not impl
 cd "$OD"
 
 # resolve ~ in paths
-SYSTEM_DIR=$(echo @KDB_DB_SYSTEM@)
-SPEC_DIR=$(echo @KDB_DB_SPEC@)
+SYSTEM_DIR="$(echo @KDB_DB_SYSTEM@)"
+SPEC_DIR="$(echo @KDB_DB_SPEC@)"
 
 check_resolver system b x "$SYSTEM_DIR/x"
 check_resolver system b x/a "$SYSTEM_DIR/x/a"
@@ -179,9 +179,9 @@ check_resolver spec b x/a "$SPEC_DIR/x/a"
 check_resolver spec b /x /x
 check_resolver spec b /x/a /x/a
 
-check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
-check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
-check_resolver user b /a @KDB_DB_HOME@/a
+check_resolver user b x "@KDB_DB_HOME@/@KDB_DB_USER@/x"
+check_resolver user b x/a "@KDB_DB_HOME@/@KDB_DB_USER@/x/a"
+check_resolver user b /a "@KDB_DB_HOME@/a"
 
 # empty env must have no influence
 export HOME=""
@@ -197,16 +197,16 @@ check_resolver spec b x/a "$SPEC_DIR/x/a"
 check_resolver spec b /x /x
 check_resolver spec b /x/a /x/a
 
-check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
-check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
-check_resolver user b /a @KDB_DB_HOME@/a
+check_resolver user b x "@KDB_DB_HOME@/@KDB_DB_USER@/x"
+check_resolver user b x/a "@KDB_DB_HOME@/@KDB_DB_USER@/x/a"
+check_resolver user b /a "@KDB_DB_HOME@/a"
 
 OD=$(pwd)
 cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
-check_resolver dir b /a $TMPPATH/a
-check_resolver dir b /a/b $TMPPATH/a/b
-check_resolver dir b a $TMPPATH/@KDB_DB_DIR@/a
-check_resolver dir b a/b $TMPPATH/@KDB_DB_DIR@/a/b
+check_resolver dir b /a "$TMPPATH/a"
+check_resolver dir b /a/b "$TMPPATH/a/b"
+check_resolver dir b a "$TMPPATH/@KDB_DB_DIR@/a"
+check_resolver dir b a/b "$TMPPATH/@KDB_DB_DIR@/a/b"
 
 T="$(
 	cd $(mktempdir_elektra)
@@ -220,8 +220,8 @@ cleanup() {
 cd $T
 check_resolver dir b /a $T/a
 check_resolver dir b /a/b $T/a/b
-check_resolver dir b a $T/@KDB_DB_DIR@/a
-check_resolver dir b a/b $T/@KDB_DB_DIR@/a/b
+check_resolver dir b a "$T/@KDB_DB_DIR@/a"
+check_resolver dir b a/b "$T/@KDB_DB_DIR@/a/b"
 
 mkdir $T/sub
 cd $T/sub
@@ -230,24 +230,24 @@ check_resolver dir b /a $T/a
 check_resolver dir b /a/b $T/sub/a/b
 rm $T/a
 
-mkdir $T/@KDB_DB_DIR@
-touch $T/@KDB_DB_DIR@/a
-check_resolver dir b a $T/@KDB_DB_DIR@/a
-check_resolver dir b a/b $T/sub/@KDB_DB_DIR@/a/b
-rm $T/@KDB_DB_DIR@/a
+mkdir "$T/@KDB_DB_DIR@"
+touch "$T/@KDB_DB_DIR@/a"
+check_resolver dir b a "$T/@KDB_DB_DIR@/a"
+check_resolver dir b a/b "$T/sub/@KDB_DB_DIR@/a/b"
+rm "$T/@KDB_DB_DIR@/a"
 
-cd $OD
+cd "$OD"
 
 unset HOME
 unset USER
 
 export HOME=/nowhere/below
 
-check_resolver user h x $HOME/@KDB_DB_USER@/x
+check_resolver user h x "$HOME/@KDB_DB_USER@/x"
 
 unset HOME
 export USER=markus/somewhere/test
 
-check_resolver user u abc @KDB_DB_HOME@/$USER/@KDB_DB_USER@/abc
+check_resolver user u abc "@KDB_DB_HOME@/$USER/@KDB_DB_USER@/abc"
 
 end_script resolver
