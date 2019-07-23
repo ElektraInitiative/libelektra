@@ -633,8 +633,9 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - We fixed the [Markdown Shell Recorder][] test for the command [`kdb get`](../help/kdb-get.md). _(René Schwaiger)_
 - The tests
 
-  - [`testscr_check_real_world`](../../tests/shell/check_real_world.sh), and
-  - [`testscr_check_resolver`](../../tests/shell/check_resolver.sh)
+  - [`testscr_check_real_world`](../../tests/shell/check_real_world.sh),
+  - [`testscr_check_resolver`](../../tests/shell/check_resolver.sh), and
+  - [`testscr_check_spec`](../../tests/shell/check_spec.sh)
 
   now also works correctly, if the `user` and `system` directory file paths contain space characters. _(René Schwaiger)_
 
