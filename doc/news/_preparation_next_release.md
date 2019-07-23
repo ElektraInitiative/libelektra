@@ -80,6 +80,12 @@ codes and to avoid risking duplicated errors as we had before. _(Michael Zronek)
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### Base64
+
+- We fixed some warnings about implicit type conversions reported by [UBSan][]. _(René Schwaiger)_
+
+[ubsan]: https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+
 ### Cache
 
 - [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. We added initial support for the default resolver and multifile resolver. _(Mihael Pranjić)_
@@ -439,7 +445,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 - Removed `ingroup` from error messages to reduce verbosity. _(Michael Zronek)_
 - Fixed minor problem when `kdb_long_double_t` is not available (e.g. mips32). _(Matthias Schoepfer)_
 - Only add benchmarks if `BUILD_TEST` is set in cmake. _(Matthias Schoepfer)_
-- We fixed some warnings about implicit conversion to `unsigned int` reported by [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html). _(René Schwaiger)_
+- We fixed some warnings about implicit conversion to `unsigned int` reported by [UBSan][]. _(René Schwaiger)_
 
 ### Ease
 
