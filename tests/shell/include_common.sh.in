@@ -150,11 +150,11 @@ check_version() {
 }
 
 check_remaining_files() {
-	USER_REMAINING="$(find $USER_FOLDER -maxdepth 1 -name $1'*' -print -quit)"
+	USER_REMAINING="$(find "$USER_FOLDER" -maxdepth 1 -name $1'*' -print -quit)"
 	test -z "$USER_REMAINING"
 	exit_if_fail "files $USER_REMAINING in $USER_FOLDER would be removed during tests, so test is aborted"
 
-	SYSTEM_REMAINING="$(find $SYSTEM_FOLDER -maxdepth 1 -name $1'*' -print -quit)"
+	SYSTEM_REMAINING="$(find "$SYSTEM_FOLDER" -maxdepth 1 -name $1'*' -print -quit)"
 	test -z "$SYSTEM_REMAINING"
 	exit_if_fail "files $SYSTEM_REMAINING in $SYSTEM_FOLDER would be removed during tests, so test is aborted"
 }
