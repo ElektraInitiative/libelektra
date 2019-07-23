@@ -44,7 +44,27 @@ int CacheCommand::execute (Cmdline const & cl)
 	}
 	else if (cmd == "clear")
 	{
-		throw "not implemented";
+		Key wasEnabled = conf.lookup (enabled, KDB_O_POP);
+
+		// enable cache so it can clear cache files
+		if (wasEnabled == nullptr)
+		{
+			conf.append (enabled);
+			kdb.set (conf, parentKey);
+		}
+
+		KeySet tmp;
+		KDB tmpKDB;
+		Key errorKey ("system/elektra/cache/clear", KEY_END);
+		errorKey.setMeta ("cacheClear", "YES");
+		tmpKDB.get (tmp, errorKey); // global plugin will be called and will clear the cache
+
+		// disable cache again if it was previously disabled
+		if (wasEnabled == nullptr)
+		{
+			conf.lookup (enabled, KDB_O_POP);
+			kdb.set (conf, parentKey);
+		}
 	}
 	else
 	{

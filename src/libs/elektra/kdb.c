@@ -789,6 +789,7 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 {
 	// prune old cache info
 	elektraCacheCutMeta (handle);
+	keyCopyMeta (cacheParent, parentKey, "cacheClear");
 
 	if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
