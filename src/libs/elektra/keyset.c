@@ -2204,7 +2204,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 					set_bit (options, KDB_O_BINSEARCH);
 				}
 				// resolve flag
-				clear_bit (ks->flags, KS_FLAG_NAME_CHANGE);
+				clear_bit (ks->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
@@ -2667,7 +2667,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2687,7 +2687,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		}
 		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
 		ks->array = new;
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
@@ -2775,7 +2775,7 @@ int ksClose (KeySet * ks)
 	{
 		elektraFree (ks->array);
 	}
-	clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 
 	ks->array = 0;
 	ks->alloc = 0;

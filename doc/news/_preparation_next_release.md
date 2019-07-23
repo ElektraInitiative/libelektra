@@ -435,7 +435,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 - Removed `ingroup` from error messages to reduce verbosity. _(Michael Zronek)_
 - Fixed minor problem when `kdb_long_double_t` is not available (e.g. mips32). _(Matthias Schoepfer)_
 - Only add benchmarks if `BUILD_TEST` is set in cmake. _(Matthias Schoepfer)_
-- <<TODO>>
+- We fixed some warnings about implicit conversion to `unsigned int` reported by [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html). _(René Schwaiger)_
 
 ### Ease
 
