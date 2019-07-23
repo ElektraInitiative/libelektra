@@ -345,6 +345,7 @@ removed due to:
 - The build system now regenerates the modified parsing code, every time we update the grammar file. _(René Schwaiger)_
 - The plugin now reports the location of syntax errors correctly. _(René Schwaiger)_
 - The lexer for the plugin now emits start tokens for maps at the correct location inside the token stream. This update fixes a problem, where the plugin sometimes reported incorrect error messages for the _first_ syntax error in a YAML file. _(René Schwaiger)_
+- The plugin now stores the end position of map start tokens correctly. Before this update the plugin would sometimes not show the markers (`^`) that point to the error positions inside the input. _(René Schwaiger)_
 - [Yan LR](https://www.libelektra.org/plugins/yanlr) now supports Elektra’s [boolean data type](../decisions/bool.md). _(René Schwaiger)_
 - The plugin now handles YAML key-value pairs that contain no value at the end of a file correctly. _(René Schwaiger)_
 - The plugin now converts YAML key-value pairs with empty value to null/empty keys. _(René Schwaiger)_
