@@ -98,6 +98,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support DOS newlines for the csvstorage plugin. _(Vlad - Ioan Balan)_
 
+### filecheck
+
+- We fixed some warnings about implicit type conversions reported by [UBSan][]. _(René Schwaiger)_
+
 ### gOpts
 
 - The [gopts](https://www.libelektra.org/plugins/gopts) plugin simply retrieves the values of `argc`, `argv` and `envp` needed for

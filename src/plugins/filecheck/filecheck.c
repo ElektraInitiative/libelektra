@@ -185,8 +185,8 @@ static int validateEncoding (const uint8_t * line, iconv_t conv, size_t bytesRea
 	char * outPtr = outBuffer;
 	size_t inBytes = bytesRead;
 	size_t outSize = sizeof (outBuffer);
-	int ret = iconv (conv, &ptr, &inBytes, &outPtr, &outSize);
-	if (ret == -1 && errno == EILSEQ)
+	size_t ret = iconv (conv, &ptr, &inBytes, &outPtr, &outSize);
+	if (ret == (size_t) -1 && errno == EILSEQ)
 	{
 		return ((uint8_t *) ptr - line);
 	}
