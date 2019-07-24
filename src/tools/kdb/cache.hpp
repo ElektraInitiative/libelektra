@@ -11,12 +11,9 @@
 
 #include "coloredkdbio.hpp"
 #include <command.hpp>
-#include <kdb.hpp>
 
 class CacheCommand : public Command
 {
-	kdb::KDB kdb;
-
 public:
 	CacheCommand ();
 	~CacheCommand ();

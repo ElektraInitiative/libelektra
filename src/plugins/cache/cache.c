@@ -227,7 +227,7 @@ static int unlinkCacheFiles (const char *fpath, const struct stat * sb ELEKTRA_U
 			     struct FTW * ftwbuf ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("UNLINKING cache file: %s", fpath);
-	unlink (fpath);
+	remove (fpath);
 	return 0;
 }
 
