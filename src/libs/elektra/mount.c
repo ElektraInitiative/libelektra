@@ -325,7 +325,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 	return 1;
 }
 
-KeySet * elektraDefaultGlobalConfig (void)
+KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 {
 	KeySet * config = ksNew (
 		24, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
@@ -358,7 +358,7 @@ KeySet * elektraDefaultGlobalConfig (void)
 
 	// TODO: this is a poor way of detecting whether cache is compiled, but simply
 	// matching against cache might fail because of other plugins (e.g. "cachefilter")
-	if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL)
+	if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL && ksLookupByName (keys, "system/elektra/cache/enabled", 0))
 	{
 		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
 		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
@@ -374,8 +374,9 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
-		ksDel (keys);
-		keys = elektraDefaultGlobalConfig ();
+		KeySet * tmp = keys;
+		keys = elektraDefaultGlobalConfig (keys);
+		ksDel (tmp);
 		root = ksHead (keys);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
