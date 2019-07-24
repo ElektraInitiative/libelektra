@@ -127,6 +127,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Execute only `PROCGETSTORAGE` global plugins when we have a cache hit. _(Mihael Pranjić)_
 - Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
 - Fix GCC ASAN build warnings #2820. _(Mihael Pranjić)_
+- Add tools for enabling, disabling and clearing the cache (`kdb cache {enable,disable,clear}`). _(Mihael Pranjić)_
 
 ### crypto / fcrypt
 
