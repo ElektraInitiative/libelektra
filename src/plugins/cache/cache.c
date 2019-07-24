@@ -21,12 +21,12 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
-#include <ftw.h>       // nftw()
 #include <fcntl.h>     // access()
+#include <ftw.h>       // nftw()
+#include <stdint.h>    // nftw()
 #include <stdio.h>     // rename(), sprintf()
 #include <stdlib.h>    // nftw()
 #include <string.h>    // nftw()
-#include <stdint.h>    // nftw()
 #include <sys/stat.h>  // elektraMkdirParents
 #include <sys/time.h>  // gettimeofday()
 #include <sys/types.h> // elektraMkdirParents
@@ -223,7 +223,7 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 	return cacheFileName;
 }
 
-static int unlinkCacheFiles (const char *fpath, const struct stat * sb ELEKTRA_UNUSED, int tflag ELEKTRA_UNUSED,
+static int unlinkCacheFiles (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, int tflag ELEKTRA_UNUSED,
 			     struct FTW * ftwbuf ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("UNLINKING cache file: %s", fpath);
