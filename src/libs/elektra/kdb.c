@@ -1148,7 +1148,8 @@ cachemiss:
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE] &&
+		elektraStrCmp (keyString (keyGetMeta (cacheParent, "cacheClear")), "YES"))
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
 		KeySet * proc = elektraCutProc (ks); // remove proc keys before caching

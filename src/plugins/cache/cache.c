@@ -177,6 +177,9 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 {
 	char * cacheFileName = 0;
 	const char * directory = keyString (ch->cachePath);
+	ELEKTRA_LOG_DEBUG ("cache dir: %s", directory);
+	if (mode == modeDirectory) return elektraStrDup (directory);
+
 	const char * name = keyName (parentKey);
 	const char * value = keyString (parentKey);
 	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
@@ -196,8 +199,6 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
 		ELEKTRA_ASSERT (0 != 0, "mountpoint empty, invalid cache file name");
 	}
-	ELEKTRA_LOG_DEBUG ("cache dir: %s", cacheFileName);
-	if (mode == modeDirectory) return cacheFileName;
 
 	if (cacheFileName)
 	{
@@ -315,7 +316,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		nftw (cacheFileName, unlinkCacheFiles, MAX_FD_USED, FTW_DEPTH);
 		elektraFree (cacheFileName);
 		keyDel (cacheFile);
-		return 0;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)

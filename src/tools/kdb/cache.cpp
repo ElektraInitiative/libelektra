@@ -37,10 +37,12 @@ int CacheCommand::execute (Cmdline const & cl)
 	if (cmd == "enable")
 	{
 		conf.append (enabled);
+		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "disable")
 	{
 		conf.lookup (enabled, KDB_O_POP);
+		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "clear")
 	{
@@ -71,7 +73,6 @@ int CacheCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("1 argument required");
 	}
 
-	kdb.set (conf, parentKey);
 	//cerr << "Mountpoint " << name << " does not exist" << endl;
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 	return 0;
