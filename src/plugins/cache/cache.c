@@ -289,16 +289,6 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	// get all keys
-
-// 	Key * enabled = keyNew ("system/elektra/cache/enabled", KEY_END);
-// 	if (!ksLookup (returned, enabled, KDB_O_NONE))
-// 	{
-// 		// cache was disabled
-// 		keyDel (enabled);
-// 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-// 	}
-// 	keyDel (enabled);
-
 	CacheHandle * ch = elektraPluginGetData (handle);
 	if (ch->cacheStorage->global == 0)
 	{
@@ -341,15 +331,6 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	// set all keys
-// 	Key * enabled = keyNew ("system/elektra/cache/enabled", KEY_END);
-// 	if (!ksLookup (returned, enabled, KDB_O_NONE))
-// 	{
-// 		cache was disabled
-// 		keyDel (enabled);
-// 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-// 	}
-// 	keyDel (enabled);
-
 	// this function is optional
 	CacheHandle * ch = elektraPluginGetData (handle);
 	if (ch->cacheStorage->global == 0)

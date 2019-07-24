@@ -789,7 +789,6 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 {
 	// prune old cache info
 	elektraCacheCutMeta (handle);
-	keyCopyMeta (cacheParent, parentKey, "cacheClear");
 
 	if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
@@ -1148,8 +1147,7 @@ cachemiss:
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE] &&
-		elektraStrCmp (keyString (keyGetMeta (cacheParent, "cacheClear")), "YES"))
+	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
 		KeySet * proc = elektraCutProc (ks); // remove proc keys before caching
