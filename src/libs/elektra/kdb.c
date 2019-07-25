@@ -467,7 +467,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 	{
 		int ret = -1;
 		Backend * backend = split->handles[i];
-		clear_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
+		clear_bit (split->syncbits[i], (splitflag_t) SPLIT_FLAG_SYNC);
 
 		Plugin * resolver = backend->getplugins[RESOLVER_PLUGIN];
 		if (resolver && resolver->kdbGet)
@@ -1551,7 +1551,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	for (size_t i = 0; i < ks->size; ++i)
 	{
 		// remove all flags from all keys
-		clear_bit (ks->array[i]->flags, KEY_FLAG_SYNC);
+		clear_bit (ks->array[i]->flags, (keyflag_t) KEY_FLAG_SYNC);
 	}
 
 	keySetName (parentKey, keyName (initialParent));
