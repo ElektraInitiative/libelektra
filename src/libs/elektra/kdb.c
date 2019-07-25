@@ -782,6 +782,7 @@ KeySet * elektraCutProc (KeySet * ks)
 static void elektraRestoreProc (KeySet * ks, KeySet * proc)
 {
 	ksAppend (ks, proc);
+	ksDel (proc);
 }
 
 static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED, Key * cacheParent)
