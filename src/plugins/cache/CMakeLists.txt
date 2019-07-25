@@ -21,13 +21,17 @@ if (DEPENDENCY_PHASE)
 		return ()
 	endif (NOT HAVE_NFTW)
 
-	if (BUILD_SHARED)
-		add_dependencies (elektra-cache elektra-resolver_fm_hpu_b elektra-mmapstorage)
-	endif ()
+	set (CACHE_DEPENDENCIES_OK PARENT_SCOPE)
 endif ()
 
 add_plugin (cache
 	    SOURCES cache.h cache.c
 	    LINK_ELEKTRA elektra-kdb
 	    ADD_TEST TEST_README)
+
+if (CACHE_DEPENDENCIES_OK AND BUILD_SHARED)
+	add_dependencies (elektra-cache elektra-resolver_fm_hpu_b elektra-mmapstorage)
+endif ()
+
+unset(CACHE_DEPENDENCIES_OK)
 
