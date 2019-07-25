@@ -47,6 +47,9 @@ function (check_dependencies)
 	set (ANTLR4CPP_LIBRARIES ${ANTLR4CPP_LIBRARIES} PARENT_SCOPE)
 	set (ANTLR4CPP_INCLUDE_DIRS ${ANTLR4CPP_INCLUDE_DIRS} PARENT_SCOPE)
 
+	# AdressSanitizer enabled builds of the plugin report runtime errors about member calls, which do not point to an object of type
+	# `_Sp_counted_base` inside the system header file `shared_ptr_base.h`. In Clang builds of the plugin we ignore this error in our
+	# [blacklist](tests/sanitizer.blacklist). Unfortunately GCC does not support a blacklist, so we remove the plugin in this case.
 	set (DISABLE_PLUGIN_ASAN
 	     ${ENABLE_ASAN}
 	     AND
@@ -58,7 +61,10 @@ function (check_dependencies)
 	     VERSION_LESS
 	     7)
 	if (${DISABLE_PLUGIN_ASAN})
-		set (FAILURE_MESSAGE "ASAN enabled GCC builds of the plugin report memory leaks" PARENT_SCOPE)
+		set (FAILURE_MESSAGE
+		     "ASan enabled GCC builds of the plugin report member calls on addresses, "
+		     "which do not point to an object of type `_Sp_counted_base`"
+		     PARENT_SCOPE)
 		return ()
 	endif (${DISABLE_PLUGIN_ASAN})
 
