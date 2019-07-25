@@ -1,4 +1,5 @@
 include (LibAddPlugin)
+include (SafeCheckSymbolExists)
 
 plugin_check_if_included ("resolver")
 
@@ -13,6 +14,13 @@ if (NOT_INCLUDED)
 	message ("mmapstorage plugin not found (${NOT_INCLUDED}), excluding the cache plugin")
 	return ()
 endif (NOT_INCLUDED)
+
+safe_check_symbol_exists (nftw "ftw.h" HAVE_NFTW)
+
+if (NOT HAVE_NFTW)
+	message ("nftw (ftw.h) not found, excluding the cache plugin")
+	return ()
+endif (NOT HAVE_NFTW)
 
 add_plugin (cache
 	    SOURCES cache.h cache.c
