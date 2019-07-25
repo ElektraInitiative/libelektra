@@ -512,7 +512,8 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed a [warning about a deprecated default constructor](https://issues.libelektra.org/2670) in the C++ binding reported by GCC 9.0. _(René Schwaiger)_
 - <<TODO>>
 
-### <<Binding2>>
+### Rust
+- Add the `elektra-sys` crate which contains raw bindings to libelektra for Rust. _(Philipp Gackstatter)_
 
 ### <<Binding3>>
 
