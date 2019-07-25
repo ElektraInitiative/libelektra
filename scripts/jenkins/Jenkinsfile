@@ -255,7 +255,7 @@ def dockerInit() {
     DOCKER_IMAGES.stretch_minimal = createDockerImageDesc(
       "debian-stretch-minimal", this.&idTesting,
       "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile.minimal"
+      "./scripts/docker/debian/stretch/minimal.Dockerfile"
     )
 
     /* A Docker image for crossbuilding i386
@@ -263,7 +263,7 @@ def dockerInit() {
     DOCKER_IMAGES.stretch_i386 = createDockerImageDesc(
       "debian-stretch-i386", this.&idTesting,
       "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile.i386"
+      "./scripts/docker/debian/stretch/i386.Dockerfile"
     )
 
     /* Build Elektra's documentation with this image.
@@ -272,7 +272,7 @@ def dockerInit() {
     DOCKER_IMAGES.stretch_doc = createDockerImageDesc(
       "debian-stretch-doc", this.&idTesting,
       "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile.doc"
+      "./scripts/docker/debian/stretch/doc.Dockerfile"
     )
 
     /* A Debian oldstable image used for testing backwards compatibility.
