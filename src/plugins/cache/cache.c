@@ -295,7 +295,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
 	}
 
-	if (!elektraStrCmp (keyString (keyGetMeta (parentKey, "cacheClear")), "YES"))
+	if (!elektraStrCmp (keyString (keyGetMeta (parentKey, "cache/clear")), "1"))
 	{
 		// clear all caches
 		Key * cacheFile = keyDup (parentKey);
