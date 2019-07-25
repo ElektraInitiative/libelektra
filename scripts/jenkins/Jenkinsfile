@@ -582,13 +582,13 @@ def generateFullBuildStages() {
 
   // Build Elektra with the mmap backend instead of the default
   tasks << buildAndTest(
-    "debian-stable-full-mmap",
+    "debian-stable-full-nocache",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_MMAP +
-      CMAKE_FLAGS_COVERAGE
-    ,
+      CMAKE_FLAGS_COVERAGE + [
+      'PLUGINS': 'ALL;-DEPRECATED;-cache;-mmapstorage',
+      ],
     [TEST.ALL, TEST.MEM]
   )
 
