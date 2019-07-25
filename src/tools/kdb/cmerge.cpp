@@ -14,6 +14,7 @@
 #include <keysetio.hpp>
 #include <string>
 
+
 CMergeCommand::CMergeCommand ()
 {
 }
@@ -79,7 +80,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	ckdb::KeySet * c_theirs = theirs.getKeySet ();
 	ckdb::KeySet * c_base = base.getKeySet ();
 	ckdb::KeySet * c_merge_result = kdbMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base, baseRoot.getKey (),
-						  keyDup (resultRoot.getKey ()));
+						  keyDup (resultRoot.getKey ()), MERGE_STRATEGY_OUR);
 	kdb::KeySet merge_result = c_merge_result;
 	if (merge_result != NULL)
 	{

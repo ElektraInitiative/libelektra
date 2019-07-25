@@ -17,7 +17,12 @@
 extern "C" {
 #endif
 
-KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey);
+#define MERGE_STRATEGY_ABORT 1
+#define MERGE_STRATEGY_INTERACTIVE 2
+#define MERGE_STRATEGY_OUR 3 
+#define MERGE_STRATEGY_THEIR 4
+
+KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey, int strategy);
 
 #ifdef __cplusplus
 }

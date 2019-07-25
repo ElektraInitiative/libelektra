@@ -1,4 +1,5 @@
 
+#include "kdbmerge.h"
 #include "kdb.h"
 #include "kdbassert.h"
 #include "kdblogger.h"
@@ -9,7 +10,8 @@
 #include <string.h>
 
 static bool metaEqual (Key * a, Key * b, bool semanticallySuffices);
-static bool keysAreSyntacticallyEqual (Key * a, Key * b);
+static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool);
+int conflictCounter = 0;
 
 void printKs (KeySet * ks)
 {
@@ -78,6 +80,14 @@ static KeySet * removeRoots (KeySet * original, Key * root)
  */
 static int prependAndAppend (KeySet * ks, Key * toAppend, const char * extension)
 {
+	if (toAppend == NULL)
+	{
+		fprintf (stderr, "Key that should be appended must not be null!\n");
+	}
+	if (ks == NULL)
+	{
+		fprintf (stderr, "Key set where key should be appended must not be null!\n");
+	}
 	char * newName = elektraMalloc (strlen (keyName (toAppend)) + strlen (extension) + 1);
 	strcpy (newName, extension);
 	strcat (newName, keyName (toAppend));
@@ -152,7 +162,7 @@ static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
 		{
 			return false;
 		}
-		if (!keysAreSyntacticallyEqual (a, b))
+		if (!keysAreSyntacticallyEqual (a, b, true))
 		{
 			// comments may be different
 			if (!semanticallySuffices && strcmp (currentName, "comment") != 0)
@@ -171,7 +181,7 @@ static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
 	return metaEqualHelper (a, b, semanticallySuffices) && metaEqualHelper (b, a, semanticallySuffices);
 }
 
-static bool keysAreSyntacticallyEqual (Key * a, Key * b)
+static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool callFromMeta)
 {
 	if (keyGetValueSize (a) != keyGetValueSize (b))
 	{
@@ -181,7 +191,7 @@ static bool keysAreSyntacticallyEqual (Key * a, Key * b)
 	{
 		return false;
 	}
-	if (!metaEqual (a, b, false))
+	if ((!callFromMeta) && !metaEqual (a, b, false))
 	{
 		return false;
 	}
@@ -240,10 +250,43 @@ static bool keysAreEqual (Key * a, Key * b)
 	 *
 	 * As a result, a costly semantic analysis can be omitted.
 	 */
-	return (keysAreSyntacticallyEqual (a, b) || keysAreSemanticallyEqual (a, b));
-	//	return keysAreSyntacticallyEqual (a, b);
+	return (keysAreSyntacticallyEqual (a, b, false) || keysAreSemanticallyEqual (a, b));
 }
 
+static void conflictHandler (KeySet * result, Key * resultRoot, int strategy, Key * our, Key * their)
+{
+	/**
+	 * our or their is null when a key was changed in one set and deleted in the other
+	 * our    their   base     result
+	 * key1=2         key1=1
+	 *
+	 */
+	if (result == NULL || resultRoot == NULL)
+	{
+		fprintf (stderr, "Arguments in conflict handler must not be null!\n");
+	}
+	conflictCounter++;
+	switch (strategy)
+	{
+	case MERGE_STRATEGY_OUR:
+		keyDup (our);
+		keyName (resultRoot);
+		// See top comment for null check
+		if (our != NULL && prependAndAppend (result, keyDup (our), keyName (resultRoot)) < 0)
+		{
+			fprintf (stderr, "Could not add key to key set\n");
+			return;
+		}
+		break;
+	case MERGE_STRATEGY_THEIR:
+		if (their != NULL && prependAndAppend (result, keyDup (their), keyName (resultRoot)) < 0)
+		{
+			fprintf (stderr, "Could not add key to key set\n");
+			return;
+		}
+		break;
+	}
+}
 /**
  * New keys can be added in the our and their keyset.
  * Those keys should also be in the result keyset.
@@ -253,9 +296,12 @@ static bool keysAreEqual (Key * a, Key * b)
  * This covers the "e" cases in the diagram.
  * It adds every key from checkKeySet to result if it's not in compareKeySet with a different value.
  *
- * Returns false on conflict
+ * Returns false on error
  */
-static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet * base, KeySet * result, Key * resultRoot)
+#define CURRENTLY_OUR 1
+#define CURRENTLY_THEIR 2
+static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet * base, KeySet * result, Key * resultRoot, int strategy,
+			    int whichIsChecked)
 {
 	ksRewind (checkKeySet);
 	Key * checkKey;
@@ -264,13 +310,15 @@ static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet
 		/** all the cases are only relevant when the base is null and something is happening in ours or theirs
 		 * that is the "e" cases
 		 */
-		if (ksLookup (base, checkKey, 0) == NULL)
+		Key * keyInBase = ksLookup (base, checkKey, 0);
+		Key * keyInCompare = ksLookup (compareKeySet, checkKey, 0);
+		if (keyInBase == NULL)
 		{
-			Key * foundKey = ksLookup (compareKeySet, checkKey, 0);
-			if (foundKey == NULL)
+			if (keyInCompare == NULL)
 			{
 				if (prependAndAppend (result, keyDup (checkKey), keyName (resultRoot)) < 0)
 				{
+					fprintf (stderr, "ERROR in %s: Could not add key to keyset\n", __func__);
 					return false;
 				}
 			}
@@ -279,7 +327,7 @@ static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet
 				/**
 				 * Add keys that are in our and their keyset with same value only once
 				 */
-				if (keysAreEqual (checkKey, foundKey))
+				if (keysAreEqual (checkKey, keyInCompare))
 				{
 					Key * ourInResult = ksLookup (result, checkKey, 0);
 					if (ourInResult == NULL)
@@ -297,7 +345,33 @@ static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet
 					 * This is not an error but only a conflict.
 					 * This happens e.g. when base is empty and our and their are different.
 					 */
-					return false;
+					if (whichIsChecked == CURRENTLY_OUR)
+					{
+						conflictHandler (result, resultRoot, strategy, checkKey, keyInCompare);
+					}
+					else if (whichIsChecked == CURRENTLY_THEIR)
+					{
+						conflictHandler (result, resultRoot, strategy, keyInCompare, checkKey);
+					}
+				}
+			}
+		}
+		else
+		{
+			/**
+			 * This happens when a key was changed in one set and deleted in the other
+			 * our    their   base     result
+			 * key1=2         key1=1
+			 */
+			if (!keysAreEqual (checkKey, keyInBase) && keyInCompare == NULL)
+			{
+				if (whichIsChecked == CURRENTLY_OUR)
+				{
+					conflictHandler (result, resultRoot, strategy, checkKey, keyInCompare);
+				}
+				else if (whichIsChecked == CURRENTLY_THEIR)
+				{
+					conflictHandler (result, resultRoot, strategy, keyInCompare, checkKey);
 				}
 			}
 		}
@@ -305,9 +379,14 @@ static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet
 	return true;
 }
 
-KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot)
+/**
+ * If there is a conflict returns the number of conflicts as negative number, else return the size of the resulting key set
+ */
+KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
+		   int strategy)
 {
 	ELEKTRA_LOG ("cmerge starts");
+	conflictCounter = 0;
 	KeySet * result = ksNew (0, KS_END);
 	KeySet * ourCropped = removeRoots (our, ourRoot);
 	KeySet * theirCropped = removeRoots (their, theirRoot);
@@ -351,15 +430,27 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 			}
 			else
 			{
-				return NULL;
+				conflictHandler (result, resultRoot, strategy, baseInOur, baseInTheir);
 			}
 		}
 	}
-	if (!(addMissingKeys (ourCropped, theirCropped, baseCropped, result, resultRoot) &&
-	      addMissingKeys (theirCropped, ourCropped, baseCropped, result, resultRoot)))
+	if (!(addMissingKeys (ourCropped, theirCropped, baseCropped, result, resultRoot, strategy, CURRENTLY_OUR) &&
+	      addMissingKeys (theirCropped, ourCropped, baseCropped, result, resultRoot, strategy, CURRENTLY_THEIR)))
 	{
+		fprintf (stderr, "An error happened adding missing keys\n");
 		return NULL;
 	}
-	ELEKTRA_LOG ("Resulting keyset of cmerge has size %ld", ksGetSize (result));
+	ELEKTRA_LOG ("Resulting keyset of cmerge has size %ld. There were %d conflicts.\n", ksGetSize (result), conflictCounter);
+	ksDel (ourCropped);
+	ksDel (theirCropped);
+	ksDel (baseCropped);
+	if (conflictCounter > 0)
+	{
+		fprintf (stdout, "There are %d conflicts\n", conflictCounter);
+		if (strategy == MERGE_STRATEGY_ABORT)
+		{
+			return NULL;
+		}
+	}
 	return result;
 }
