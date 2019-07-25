@@ -29,24 +29,20 @@ int CacheCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	Key parentKey ("system/elektra/cache", KEY_END);
-	string cmd = cl.arguments[0];
 
+	KDB kdb;
+	kdb.get (conf, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
+
+	string cmd = cl.arguments[0];
 	Key disabled ("system/elektra/cache/disabled", KEY_END);
 	if (cmd == "enable")
 	{
-		KDB kdb;
-		kdb.get (conf, parentKey);
-		printWarnings (cerr, parentKey, cl.verbose, cl.debug);
-
 		conf.lookup (disabled, KDB_O_POP);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "disable")
 	{
-		KDB kdb;
-		kdb.get (conf, parentKey);
-		printWarnings (cerr, parentKey, cl.verbose, cl.debug);
-
 		conf.append (disabled);
 		kdb.set (conf, parentKey);
 	}
@@ -56,13 +52,8 @@ int CacheCommand::execute (Cmdline const & cl)
 		PluginPtr plugin = modules.load ("cache", cl.getPluginsConfig ());
 
 		KeySet ks;
-		Key errorKey ("system/elektra/cache/clear", KEY_END);
-		errorKey.setMeta ("cache/clear", "1");
-
-		plugin->get (ks, errorKey);
-
-		printWarnings (cerr, errorKey, cl.verbose, cl.debug);
-		printError (cerr, errorKey, cl.verbose, cl.debug);
+		parentKey.setMeta ("cache/clear", "1");
+		plugin->get (ks, parentKey);
 	}
 	else
 	{
