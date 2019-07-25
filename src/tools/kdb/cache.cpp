@@ -57,7 +57,7 @@ int CacheCommand::execute (Cmdline const & cl)
 	}
 	else
 	{
-		throw invalid_argument ("1 argument required");
+		throw invalid_argument ("not a valid subcommand");
 	}
 
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
