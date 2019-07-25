@@ -21,13 +21,17 @@ if (CARGO_EXECUTABLE)
 				    build
 				    --release
 				    --quiet
-			    WORKING_DIRECTORY elektra-sys
-			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs"
+				WORKING_DIRECTORY elektra-sys
+				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs"
 				    "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
 
 	add_custom_target (rust
-			   ALL
-			   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/target/release/libelektra_sys.rlib")
+				ALL
+			   	DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/target/release/libelektra_sys.rlib")
+
+	add_test (NAME test_cargo_elektra_sys
+				COMMAND ${CARGO_EXECUTABLE} test
+				WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys")
 
 else ()
 	exclude_binding (rust,
