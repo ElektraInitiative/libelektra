@@ -283,10 +283,6 @@ YAML::Node createMetaDataNode (Key const & key)
 	}
 
 	auto value = key.get<string> ();
-	if (value == "0" || value == "1")
-	{
-		return YAML::Node (key.get<bool> ());
-	}
 	return YAML::Node (value);
 }
 
