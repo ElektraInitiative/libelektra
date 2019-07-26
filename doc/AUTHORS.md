@@ -190,7 +190,7 @@ notification system, I/O bindings
 
 ## Mihael Pranjić
 
-development of the mmapstorage plugin
+development of the cache and mmapstorage plugins
 
 - email: mpranj@limun.org
 - github user: [mpranj](https://github.com/mpranj)
