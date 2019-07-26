@@ -771,6 +771,20 @@ static void elektraCacheCutMeta (KDB * handle)
 	keyDel (parentKey);
 }
 
+KeySet * elektraCutProc (KeySet * ks)
+{
+	Key * parentKey = keyNew ("proc", KEY_END);
+	KeySet * ret = ksCut (ks, parentKey);
+	keyDel (parentKey);
+	return ret;
+}
+
+static void elektraRestoreProc (KeySet * ks, KeySet * proc)
+{
+	ksAppend (ks, proc);
+	ksDel (proc);
+}
+
 static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED, Key * cacheParent)
 {
 	// prune old cache info
@@ -810,11 +824,17 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	if (debugGlobalPositions)
 	{
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
-		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
-		elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
+		elektraGlobalGet (handle, *cache, parentKey, PREGETSTORAGE, INIT);
+		elektraGlobalGet (handle, *cache, parentKey, PREGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, *cache, parentKey, PREGETSTORAGE, DEINIT);
 	}
 
+	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
+
+	// replace ks with cached keyset
 	ksRewind (*cache);
 	if (ks->size == 0)
 	{
@@ -1130,6 +1150,7 @@ cachemiss:
 	if (cacheData && handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
+		KeySet * proc = elektraCutProc (ks); // remove proc keys before caching
 		if (elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 		{
 			ELEKTRA_LOG_DEBUG ("CACHE ERROR: could not store cache");
@@ -1137,6 +1158,7 @@ cachemiss:
 			// if there was an error, otherwise we get erroneous cache hits
 			elektraCacheCutMeta (handle);
 		}
+		elektraRestoreProc (ks, proc);
 	}
 	else
 	{
