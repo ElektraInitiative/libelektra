@@ -699,6 +699,8 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
   to the [image for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
 
+- We now offer images for the latest stable version of Debian codenamed [“buster”](../../scripts/docker/debian/buster). _(René Schwaiger)_
+
 #### Ubuntu
 
 - We added a [Dockerfile for Ubuntu Disco Dingo](../../scripts/docker/ubuntu/disco/Dockerfile). _(René Schwaiger)_
@@ -707,7 +709,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 - The Docker images for
 
-  - [Debian stretch](../../scripts/docker/debian/sid/Dockerfile), and
+  - [Debian stretch](../../scripts/docker/debian/stretch/Dockerfile), and
   - [Debian sid](../../scripts/docker/debian/sid/Dockerfile),
 
   now include the Python YAML library recommended by [cmake format](https://github.com/cheshirekow/cmake_format). _(René Schwaiger)_

@@ -1,24 +1,21 @@
-FROM debian:stretch
+FROM debian:buster
 
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt-get update && apt-get -y install \
-    cmake git build-essential curl
-
-RUN apt-get -y install \
-        doxygen \
-        graphviz \
-        ruby \
-        ruby-dev \
-        ruby-ronn \
-        sloccount \
-        texlive-latex-base \
-        texlive-latex-recommended \
-        texlive-latex-extra \
-        texlive-fonts-recommended \
-    && gem install apiaryio \
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get -y install \
+        curl \
+        build-essential \
+        autotools-dev \
+        automake \
+        cmake \
+        pkg-config \
+        gcc-multilib \
+        g++-multilib \
+        file \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
@@ -30,6 +27,13 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
+
+# Handle Java
+RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
+RUN echo '\
+/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
+/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
+RUN ldconfig
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
@@ -46,5 +50,4 @@ RUN useradd \
     --gid ${JENKINS_GROUPID} \
     --shell "/bin/bash" \
     jenkins
-
 USER ${JENKINS_USERID}
