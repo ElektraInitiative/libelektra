@@ -2,28 +2,8 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-use std::ops::Drop;
-
-#[repr(C)]
-#[derive(Debug, Clone)]
-pub struct Key {
-    _unused: [u8; 0],
-}
-
-#[repr(C)]
-#[derive(Debug, Clone)]
-pub struct KeySet {
-    _unused: [u8; 0],
-}
-
 // Include the created bindings
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
-
-impl Drop for Key {
-    fn drop(&mut self) {
-        unsafe { keyDel(self) };
-    }
-}
 
 #[cfg(test)]
 mod tests {
