@@ -311,7 +311,6 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
 		if (!(*plugin) && !elektraStrCmp (pluginName, "cache"))
 		{
-			ELEKTRA_LOG_WARNING ("Could not load plugin %s in process plugin", pluginName);
 			return 0;
 		}
 		else if (!(*plugin))
