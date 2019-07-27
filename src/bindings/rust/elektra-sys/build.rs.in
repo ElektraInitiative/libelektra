@@ -18,8 +18,8 @@ fn main() {
         // bindings for.
         .header("wrapper.h")
         // Blacklist types that will be written by hand
-        .blacklist_type("Key")
-        .blacklist_type("KeySet")
+        //.blacklist_type("Key")
+        //.blacklist_type("KeySet")
         // bindgen uses clang for anything C-related.
         // Here we set the necessary include directories
         // such that any includes in the wrapper can be found.
