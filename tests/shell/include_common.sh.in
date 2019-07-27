@@ -58,7 +58,11 @@ DATE=$(date "+%b %d %H:%M")
 KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
 KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
-KDB_GETENV=$(kdb elektrify-getenv getenv KDB 2> /dev/null)
+if [ -z "${KDB}" ]; then
+	KDB=$({ command -v kdb || command -v kdb-full || command -v kdb-static; } | sed -nE 's/.*(kdb-?[a-z]*)$/\1/p')
+fi
+
+KDB_GETENV=$("$KDB" elektrify-getenv getenv KDB 2> /dev/null)
 
 if [ "${KDB_GETENV}" ]; then
 	KDB=${KDB_GETENV}
@@ -131,7 +135,7 @@ SO_VERSION="@SO_VERSION@"
 check_version() {
 	echo "Check if script tests the correct version"
 
-	if [ "x$(kdb elektrify-getenv getenv CHECK_VERSION 2> /dev/null)" = "xNO" ]; then
+	if [ "x$("$KDB" elektrify-getenv getenv CHECK_VERSION 2> /dev/null)" = "xNO" ]; then
 		return 0
 	fi
 
@@ -371,10 +375,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
-#
-#
-#
 #
 #
 #
