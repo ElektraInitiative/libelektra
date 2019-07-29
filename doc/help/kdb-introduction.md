@@ -10,7 +10,7 @@ The included commands can be listed via:<br>
 `kdb`
 
 External commands can be listed via:<br>
-`kdb list-tools`.
+`kdb list-tools`
 
 Only a few commands are enough for daily use.
 We can retrieve a key by:<br>
