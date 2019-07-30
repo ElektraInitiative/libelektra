@@ -74,7 +74,14 @@ impl PartialOrd for Key {
     }
 }
 
+impl Clone for Key {
+    fn clone(&self) -> Self {
+        self.duplicate()
+    }
+}
+
 impl Key {
+    // key methods
     /// Construct a new key with a name
     pub fn new(name: &str) -> Result<Key, KeyError> {
         let mut key = Key::new_empty();
@@ -88,12 +95,47 @@ impl Key {
         Key::from(key_ptr)
     }
 
+    /// Return a duplicate of the key.
+    pub fn duplicate(&self) -> Key {
+        let dup_ptr = unsafe { keyDup(self.ptr.as_ptr()) };
+        Key::from(dup_ptr)
+    }
+
     /// Construct a new key from a raw key pointer
     pub fn from(ptr: *mut elektra_sys::Key) -> Key {
         Key {
             ptr: NonNull::new(ptr).unwrap(),
         }
     }
+
+    /// Clears the key.
+    /// After this call you will receive a fresh key.
+    pub fn clear(&mut self) {
+        unsafe {
+            elektra_sys::keyClear(self.ptr.as_ptr());
+        }
+    }
+
+    /// Decrement the viability of a key object.
+    /// Returns the value of the new reference counter.
+    pub fn dec_ref(&mut self) -> usize {
+        unsafe { elektra_sys::keyDecRef(self.ptr.as_ptr()) as usize }
+    }
+
+    /// Increment the viability of a key object.
+    /// Returns the value of the new reference counter.
+    pub fn inc_ref(&mut self) -> usize {
+        unsafe { elektra_sys::keyIncRef(self.ptr.as_ptr()) as usize }
+    }
+
+    /// Return how many references the key has.
+    pub fn get_ref(&self) -> usize {
+        unsafe { elektra_sys::keyGetRef(self.ptr.as_ptr() as *const elektra_sys::Key) as usize }
+    }
+
+    // TODO keyCopy?
+
+    // keyname methods
 
     /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.
     /// Returns the size in bytes of this new key name including the ending NUL.
@@ -246,11 +288,10 @@ impl Key {
     pub fn is_inactive(&self) -> bool {
         unsafe { elektra_sys::keyIsInactive(self.ptr.as_ptr() as *const elektra_sys::Key) == 1 }
     }
-
     // TODO: CPP Bindings do not implement this.
     // Since is_below flips the order, this should be the case here too.
     // But does this break any usage?
-    /// Information about the relation in the hierarchy between two keys.
+    // Information about the relation in the hierarchy between two keys.
     // pub fn rel(&self, other: &Self) -> i32 {
     //     unsafe {
     //         elektra_sys::keyRel(
@@ -259,12 +300,6 @@ impl Key {
     //         )
     //     }
     // }
-
-    /// Return a duplicate of the key.
-    pub fn duplicate(&self) -> Key {
-        let dup_ptr = unsafe { keyDup(self.ptr.as_ptr()) };
-        Key::from(dup_ptr)
-    }
 }
 
 #[cfg(test)]
@@ -384,4 +419,15 @@ mod tests {
         // keyCmp(k2,k1) > 0
         assert!(5 + 2 == 7);
     }
+
+    #[test]
+    fn can_reference_count() {
+        let mut key = Key::new("user/test/a").unwrap();
+        assert_eq!(key.get_ref(), 0);
+        key.inc_ref();
+        assert_eq!(key.get_ref(), 1);
+        key.dec_ref();
+        assert_eq!(key.get_ref(), 0);
+    }
+
 }
