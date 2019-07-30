@@ -145,6 +145,9 @@ static size_t normalize (void * to_normalize, size_t * size)
 	return reducedSize;
 }
 
+/**
+ * Checks for each meta information of meta key a if it is in meta key b as well and has the same value
+ */
 static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
 {
 	keyRewindMeta (a);
@@ -162,7 +165,9 @@ static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
 		{
 			return false;
 		}
-		if (!keysAreSyntacticallyEqual (a, b, true))
+//		if (!keysAreSyntacticallyEqual (a, b, true))
+//		// key dup is only to discard const qualifier
+		if (!keysAreSyntacticallyEqual (keyDup(currentMeta), keyDup(metaInB), true))
 		{
 			// comments may be different
 			if (!semanticallySuffices && strcmp (currentName, "comment") != 0)
@@ -178,9 +183,16 @@ static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
  */
 static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
 {
+	// If a set A (meta keys of key a) is a subset of B and B is a subset of A then A == B
 	return metaEqualHelper (a, b, semanticallySuffices) && metaEqualHelper (b, a, semanticallySuffices);
 }
 
+/**
+ * When checking the equality of a regular key, the meta information is relevant as well.
+ * As then this function is not called from a successor of the function metaEqual, set callFromMeta false.
+ * If checking the equality of a meta key, there is no additional meta information stored.
+ * set callFromMeta true in this case (i.e. calling from metaEqual)
+ */
 static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool callFromMeta)
 {
 	if (keyGetValueSize (a) != keyGetValueSize (b))
