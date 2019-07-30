@@ -1,4 +1,4 @@
-use elektra_sys::{keyDel, keyDup, keyName, keyNew, keySetName, keySetString};
+use elektra_sys; //::{keyDel, keyDup, keyName, keyNew, keySetName, keySetString};
 use std::error::Error;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -32,7 +32,7 @@ pub struct Key {
 impl Drop for Key {
     fn drop(&mut self) {
         println!("Drop {:?}", self);
-        unsafe { keyDel(self.ptr.as_ptr()) };
+        unsafe { elektra_sys::keyDel(self.ptr.as_ptr()) };
     }
 }
 
@@ -91,13 +91,13 @@ impl Key {
 
     /// Construct a new empty key
     pub fn new_empty() -> Key {
-        let key_ptr = unsafe { keyNew(0 as *const i8) };
+        let key_ptr = unsafe { elektra_sys::keyNew(0 as *const i8) };
         Key::from(key_ptr)
     }
 
     /// Return a duplicate of the key.
     pub fn duplicate(&self) -> Key {
-        let dup_ptr = unsafe { keyDup(self.ptr.as_ptr()) };
+        let dup_ptr = unsafe { elektra_sys::keyDup(self.ptr.as_ptr()) };
         Key::from(dup_ptr)
     }
 
@@ -150,7 +150,7 @@ impl Key {
     /// Panics if the provided string contains internal nul bytes.
     pub fn set_name(&mut self, name: &str) -> Result<u32, KeyError> {
         let cptr = CString::new(name).unwrap();
-        let ret_val = unsafe { keySetName(self.ptr.as_ptr(), cptr.as_ptr()) };
+        let ret_val = unsafe { elektra_sys::keySetName(self.ptr.as_ptr(), cptr.as_ptr()) };
 
         if ret_val > 0 {
             Ok(ret_val as u32)
@@ -161,7 +161,7 @@ impl Key {
 
     /// Return the name of the key as a borrowed slice.
     pub fn get_name(&self) -> &str {
-        let c_str = unsafe { CStr::from_ptr(keyName(self.ptr.as_ref())) };
+        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyName(self.ptr.as_ref())) };
         c_str.to_str().unwrap()
     }
 
@@ -183,7 +183,7 @@ impl Key {
     /// Panics if the provided string contains internal nul bytes.
     pub fn set_string(&mut self, value: &str) {
         let cptr = CString::new(value).unwrap();
-        unsafe { keySetString(self.ptr.as_ptr(), cptr.as_ptr()) };
+        unsafe { elektra_sys::keySetString(self.ptr.as_ptr(), cptr.as_ptr()) };
     }
 
     /// Returns the string value of the key if the type of the key is string, an error if it's binary.
@@ -429,5 +429,4 @@ mod tests {
         key.dec_ref();
         assert_eq!(key.get_ref(), 0);
     }
-
 }
