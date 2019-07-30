@@ -28,15 +28,15 @@ number:C01300
 description:Installation
 macro:INSTALLATION
 
-number:C01410
+number:C01310
 description:Internal
 macro:INTERNAL
 
-number:C01420
+number:C01320
 description:Interface
 macro:INTERFACE
 
-number:C01430
+number:C01330
 description:Plugin Misbehavior
 macro:PLUGIN_MISBEHAVIOR
 
