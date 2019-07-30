@@ -1,4 +1,5 @@
-use elektra_sys; //::{keyDel, keyDup, keyName, keyNew, keySetName, keySetString};
+use elektra_sys;
+use std::convert::TryInto;
 use std::error::Error;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -8,8 +9,8 @@ use std::ptr::NonNull;
 pub enum KeyError {
     InvalidName,
     TypeMismatch,
-    // TypeConversion,
-    // NotFoundException
+    ReadOnly, // TypeConversion,
+              // NotFoundException
 }
 
 impl fmt::Display for KeyError {
@@ -17,6 +18,7 @@ impl fmt::Display for KeyError {
         match self {
             KeyError::InvalidName => write!(f, "Key has an invalid name"),
             KeyError::TypeMismatch => write!(f, "Binary/String key mismatch, use the appropriate method for your key type, get_string or get_binary"),
+            KeyError::ReadOnly => write!(f, "Key is read only"),
             // _ => unimplemented!(),
         }
     }
@@ -118,19 +120,19 @@ impl Key {
 
     /// Decrement the viability of a key object.
     /// Returns the value of the new reference counter.
-    pub fn dec_ref(&mut self) -> usize {
-        unsafe { elektra_sys::keyDecRef(self.ptr.as_ptr()) as usize }
+    pub fn dec_ref(&mut self) -> isize {
+        unsafe { elektra_sys::keyDecRef(self.ptr.as_ptr()) }
     }
 
     /// Increment the viability of a key object.
     /// Returns the value of the new reference counter.
-    pub fn inc_ref(&mut self) -> usize {
-        unsafe { elektra_sys::keyIncRef(self.ptr.as_ptr()) as usize }
+    pub fn inc_ref(&mut self) -> isize {
+        unsafe { elektra_sys::keyIncRef(self.ptr.as_ptr()) }
     }
 
     /// Return how many references the key has.
-    pub fn get_ref(&self) -> usize {
-        unsafe { elektra_sys::keyGetRef(self.ptr.as_ptr() as *const elektra_sys::Key) as usize }
+    pub fn get_ref(&self) -> isize {
+        unsafe { elektra_sys::keyGetRef(self.ptr.as_ptr() as *const elektra_sys::Key) }
     }
 
     // TODO keyCopy?
@@ -155,14 +157,152 @@ impl Key {
         if ret_val > 0 {
             Ok(ret_val as u32)
         } else {
+            // TODO: May also be a ReadOnly Error...
             Err(KeyError::InvalidName)
         }
     }
 
     /// Return the name of the key as a borrowed slice.
+    /// # Panics
+    /// Panics if the underlying string cannot be converted to UTF-8.
     pub fn get_name(&self) -> &str {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyName(self.ptr.as_ref())) };
         c_str.to_str().unwrap()
+    }
+
+    /// Set the basename of the key
+    /// # Examples
+    /// ```
+    /// use elektra::Key;
+    /// let mut key = Key::new("user/test/key").unwrap();
+    /// key.set_basename("rust").unwrap();
+    /// assert_eq!(key.get_name(), "user/test/rust");
+    /// ```
+    pub fn set_basename(&mut self, basename: &str) -> Result<(), KeyError> {
+        let cstr = CString::new(basename).unwrap();
+        let ret_val = unsafe { elektra_sys::keySetBaseName(self.ptr.as_ptr(), cstr.as_ptr()) };
+        // TODO: Is read only a correct description of the error?
+        if ret_val == -1 {
+            Err(KeyError::ReadOnly)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Add a basename to the key
+    /// # Examples
+    /// ```
+    /// use elektra::Key;
+    /// let mut key = Key::new("user/test/key").unwrap();
+    /// key.add_basename("rust").unwrap();
+    /// assert_eq!(key.get_name(), "user/test/key/rust");
+    /// ```
+    pub fn add_basename(&mut self, basename: &str) -> Result<(), KeyError> {
+        let cstr = CString::new(basename).unwrap();
+        let ret_val = unsafe { elektra_sys::keyAddBaseName(self.ptr.as_ptr(), cstr.as_ptr()) };
+        // TODO: Is read only a correct description of the error?
+        if ret_val == -1 {
+            Err(KeyError::ReadOnly)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Add an already escaped name to the keyname.
+    /// # Examples
+    /// ```
+    /// use elektra::Key;
+    /// let mut key = Key::new("user/x/r").unwrap();
+    /// key.add_name("../y/a//././z").unwrap();
+    /// assert_eq!(key.get_name(), "user/x/y/a/z");
+    /// ```
+    pub fn add_name(&mut self, name: &str) -> Result<(), KeyError> {
+        let cstr = CString::new(name).unwrap();
+        let ret_val = unsafe { elektra_sys::keyAddName(self.ptr.as_ptr(), cstr.as_ptr()) };
+        // TODO: Is read only a correct description of the error?
+        if ret_val <= 0 {
+            Err(KeyError::InvalidName)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Return the basename of the key as a borrowed slice.
+    /// # Panics
+    /// Panics if the underlying string cannot be converted to UTF-8.
+    pub fn get_basename(&self) -> &str {
+        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyBaseName(self.ptr.as_ref())) };
+        c_str.to_str().unwrap()
+    }
+
+    /// Calculates number of bytes needed to store basename of key.
+    pub fn get_basename_size(&self) -> isize {
+        unsafe { elektra_sys::keyGetBaseNameSize(self.ptr.as_ptr() as *const elektra_sys::Key) }
+    }
+
+    /// Bytes needed to store the key name including user domain and ending NULL.
+    pub fn get_fullname_size(&self) -> usize {
+        unsafe {
+            elektra_sys::keyGetFullNameSize(self.ptr.as_ptr() as *const elektra_sys::Key)
+                .try_into()
+                .unwrap()
+        }
+    }
+
+    /// Get key full name, including the user domain name.
+    /// # Panics
+    /// Panics if the underlying c_string contains interior nul bytes
+    /// or cannot be converted to UTF-8
+    pub fn get_fullname(&self) -> String {
+        let mut vec: Vec<u8> = Vec::with_capacity(self.get_fullname_size());
+
+        let ret_val = unsafe {
+            elektra_sys::keyGetFullName(
+                self.ptr.as_ptr(),
+                vec.as_mut_ptr() as *mut std::os::raw::c_char,
+                vec.capacity(),
+            )
+        };
+        unsafe { vec.set_len(ret_val.try_into().unwrap()) };
+        CStr::from_bytes_with_nul(&vec)
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_owned()
+    }
+
+    fn get_namespace(&self) -> u32 {
+        unsafe { elektra_sys::keyGetNamespace(self.ptr.as_ptr() as *const elektra_sys::Key) as u32 }
+    }
+
+    /// Determines if the key is in the spec namespace
+    pub fn is_spec(&self) -> bool {
+        self.get_namespace() == elektra_sys::KEY_NS_SPEC
+    }
+
+    /// Determines if the key is in the dir namespace
+    pub fn is_dir(&self) -> bool {
+        self.get_namespace() == elektra_sys::KEY_NS_DIR
+    }
+
+    /// Determines if the key is in the proc namespace
+    pub fn is_proc(&self) -> bool {
+        self.get_namespace() == elektra_sys::KEY_NS_PROC
+    }
+
+    /// Determines if the key is in the user namespace
+    pub fn is_user(&self) -> bool {
+        self.get_namespace() == elektra_sys::KEY_NS_USER
+    }
+
+    /// Determines if the key is in the system namespace
+    pub fn is_system(&self) -> bool {
+        self.get_namespace() == elektra_sys::KEY_NS_SYSTEM
+    }
+
+    /// Determines if the key is in the dir namespace
+    pub fn is_cascading(&self) -> bool {
+        self.get_namespace() == elektra_sys::KEY_NS_CASCADING
     }
 
     // keyvalue methds
@@ -175,7 +315,7 @@ impl Key {
         let ret_val = unsafe { elektra_sys::keyGetValueSize(self.ptr.as_ptr()) };
         // keyGetValueSize returns -1 on null pointers, but we can be sure self.ptr is valid
         // so this conversion is safe
-        ret_val as usize
+        ret_val.try_into().unwrap()
     }
 
     /// Sets the value of the key to the supplied string.
