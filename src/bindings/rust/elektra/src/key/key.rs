@@ -4,7 +4,7 @@ use std::ffi::{CStr, CString};
 use std::fmt;
 use std::ptr::NonNull;
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum KeyError {
     InvalidName,
     TypeMismatch,
@@ -35,6 +35,19 @@ impl Drop for Key {
         unsafe { keyDel(self.ptr.as_ptr()) };
     }
 }
+
+impl PartialEq for Key {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            elektra_sys::keyCmp(
+                self.ptr.as_ptr() as *const elektra_sys::Key,
+                other.ptr.as_ptr() as *const elektra_sys::Key,
+            ) == 0
+        }
+    }
+}
+
+impl Eq for Key {}
 
 impl Key {
     /// Construct a new empty key
@@ -211,7 +224,6 @@ mod tests {
         let read_content = key.get_binary().unwrap();
         assert_eq!(read_content, binary_content);
     }
-    
     #[test]
     fn can_write_read_empty_binary() {
         let mut key = Key::new();
@@ -222,5 +234,52 @@ mod tests {
         // so get_binary returns error
         let err = key.get_binary().unwrap_err();
         assert_eq!(err, KeyError::TypeMismatch);
+    }
+
+    #[test]
+    fn equality_is_exclusive() {
+        let mut key = Key::new();
+        key.set_name("user/test/exclusive").unwrap();
+        let mut key2 = Key::new();
+        key2.set_name("dir/test/exclusive").unwrap();
+
+        assert!(!(key != key));
+        assert!(key == key);
+
+        assert!(!(key == key2));
+        assert!(key != key2);
+    }
+
+    #[test]
+    fn equality_is_reflexive() {
+        let mut key = Key::new();
+        key.set_name("user/test/reflexive").unwrap();
+        assert!(key == key);
+    }
+
+    #[test]
+    fn equality_is_symmetric() {
+        let mut key = Key::new();
+        key.set_name("user/test/symmetric").unwrap();
+        let mut key_dup = Key::new();
+        key_dup.set_name("user/test/symmetric").unwrap();
+
+        assert!(key_dup == key);
+        assert!(key == key_dup);
+    }
+
+    #[test]
+    fn equality_is_transitive() {
+        let mut key = Key::new();
+        key.set_name("user/test/transitive").unwrap();
+
+        let mut key2 = Key::new();
+        key2.set_name("user/test/transitive").unwrap();
+
+        let mut key3 = Key::new();
+        key3.set_name("user/test/transitive").unwrap();
+        assert!(key == key2);
+        assert!(key2 == key3);
+        assert!(key == key3);
     }
 }
