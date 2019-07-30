@@ -49,6 +49,31 @@ impl PartialEq for Key {
 
 impl Eq for Key {}
 
+impl Ord for Key {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let cmp = unsafe {
+            elektra_sys::keyCmp(
+                self.ptr.as_ptr() as *const elektra_sys::Key,
+                other.ptr.as_ptr() as *const elektra_sys::Key,
+            )
+        };
+
+        if cmp < 0 {
+            std::cmp::Ordering::Less
+        } else if cmp == 0 {
+            std::cmp::Ordering::Equal
+        } else {
+            std::cmp::Ordering::Greater
+        }
+    }
+}
+
+impl PartialOrd for Key {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 impl Key {
     /// Construct a new empty key
     pub fn new() -> Key {
@@ -281,5 +306,39 @@ mod tests {
         assert!(key == key2);
         assert!(key2 == key3);
         assert!(key == key3);
+    }
+
+    #[test]
+    fn keys_are_ordered() {
+        let mut key = Key::new();
+        key.set_name("user/test/a").unwrap();
+
+        let mut key2 = Key::new();
+        key2.set_name("user/test/b").unwrap();
+
+        let mut key3 = Key::new();
+        key3.set_name("user/test/c").unwrap();
+
+        assert!(key != key2);
+        assert!(key < key2);
+        assert!(key2 > key);
+        
+        // Check for antisymmetry
+        assert!(!(key > key2));
+        assert!(!(key2 < key));
+
+        // Check for transitivity
+        assert!(key2 < key3);
+        assert!(key < key3);
+    }
+
+    #[test]
+    fn keys_are_ordered_with_metadata() {
+        // TODO Add once it's possible to add metadata
+        //Key * k1 = keyNew("user/a", KEY_OWNER, "markus", KEY_END);
+        //Key * k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
+        // keyCmp(k1,k2) < 0
+        // keyCmp(k2,k1) > 0
+        assert!(5 + 2 == 7);
     }
 }
