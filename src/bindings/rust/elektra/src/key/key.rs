@@ -31,7 +31,7 @@ pub struct Key {
 
 impl Drop for Key {
     fn drop(&mut self) {
-        println!("Drop Key {:?}", self);
+        println!("Drop {:?}", self);
         unsafe { keyDel(self.ptr.as_ptr()) };
     }
 }
@@ -75,8 +75,16 @@ impl PartialOrd for Key {
 }
 
 impl Key {
+    
+    /// Construct a new key with a name
+    pub fn new(name: &str) -> Result<Key, KeyError> {
+        let mut key = Key::new_empty();
+        key.set_name(name)?;
+        Ok(key)
+    }
+
     /// Construct a new empty key
-    pub fn new() -> Key {
+    pub fn new_empty() -> Key {
         let key_ptr = unsafe { keyNew(0 as *const i8) };
         Key::from(key_ptr)
     }
@@ -93,7 +101,7 @@ impl Key {
     /// # Examples
     /// ```
     /// use elektra::Key;
-    /// let mut key = Key::new();
+    /// let mut key = Key::new_empty();
     /// key.set_name("user/test/rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/rust");
     /// ```
@@ -197,6 +205,23 @@ impl Key {
         unsafe { elektra_sys::keyIsString(self.ptr.as_ptr()) == 1 }
     }
 
+    /// Returns true if other is below self
+    /// # Examples
+    /// ```
+    /// use elektra::Key;
+    /// let key = Key::new("user/sw/app").unwrap();
+    /// let key2 = Key::new("user/sw/app/key").unwrap();
+    /// assert!(key2.is_below(&key));
+    /// ```
+    pub fn is_below(&self, other: &Self) -> bool {
+        unsafe {
+            elektra_sys::keyIsBelow(
+                other.ptr.as_ptr() as *const elektra_sys::Key,
+                self.ptr.as_ptr() as *const elektra_sys::Key,
+            ) == 1
+        }
+    }
+
     /// Return a duplicate of the key.
     pub fn duplicate(&self) -> Key {
         let dup_ptr = unsafe { keyDup(self.ptr.as_ptr()) };
@@ -211,8 +236,7 @@ mod tests {
     #[test]
     fn can_write_read_key() {
         let key_name = "user/test/key";
-        let mut key = Key::new();
-        key.set_name(key_name).unwrap();
+        let key = Key::new(key_name).unwrap();
         assert_eq!(key.get_name(), key_name);
     }
 
@@ -220,8 +244,7 @@ mod tests {
     fn can_write_read_key_value() {
         let key_name = "user/test/key";
         let utf8_value = "😃";
-        let mut key = Key::new();
-        key.set_name(key_name).unwrap();
+        let mut key = Key::new(key_name).unwrap();
         key.set_string(utf8_value);
         assert_eq!(key.get_name(), key_name);
         assert_eq!(key.get_string().unwrap(), utf8_value);
@@ -232,8 +255,7 @@ mod tests {
         let key_name = "user/test/key";
         let mut key_dup;
         {
-            let mut key = Key::new();
-            key.set_name(key_name).unwrap();
+            let key = Key::new(key_name).unwrap();
             key_dup = Some(key.duplicate());
             // key is dropped here
         }
@@ -242,18 +264,16 @@ mod tests {
 
     #[test]
     fn can_write_read_binary() {
-        let mut key = Key::new();
+        let mut key = Key::new("user/test/rust").unwrap();
         let binary_content: [u8; 7] = [25, 34, 0, 254, 1, 0, 7];
-        key.set_name("user/test/rust").unwrap();
         key.set_binary(&binary_content);
         let read_content = key.get_binary().unwrap();
         assert_eq!(read_content, binary_content);
     }
     #[test]
     fn can_write_read_empty_binary() {
-        let mut key = Key::new();
+        let mut key = Key::new("user/test/binary").unwrap();
         let binary_content: [u8; 0] = [];
-        key.set_name("user/test/binary").unwrap();
         key.set_binary(&binary_content);
         // set_binary does not set binary flag, size is 0
         // so get_binary returns error
@@ -263,10 +283,8 @@ mod tests {
 
     #[test]
     fn equality_is_exclusive() {
-        let mut key = Key::new();
-        key.set_name("user/test/exclusive").unwrap();
-        let mut key2 = Key::new();
-        key2.set_name("dir/test/exclusive").unwrap();
+        let key = Key::new("user/test/exclusive").unwrap();
+        let key2 = Key::new("dir/test/exclusive").unwrap();
 
         assert!(!(key != key));
         assert!(key == key);
@@ -277,17 +295,14 @@ mod tests {
 
     #[test]
     fn equality_is_reflexive() {
-        let mut key = Key::new();
-        key.set_name("user/test/reflexive").unwrap();
+        let key = Key::new("user/test/reflexive").unwrap();
         assert!(key == key);
     }
 
     #[test]
     fn equality_is_symmetric() {
-        let mut key = Key::new();
-        key.set_name("user/test/symmetric").unwrap();
-        let mut key_dup = Key::new();
-        key_dup.set_name("user/test/symmetric").unwrap();
+        let key = Key::new("user/test/symmetric").unwrap();
+        let key_dup = Key::new("user/test/symmetric").unwrap();
 
         assert!(key_dup == key);
         assert!(key == key_dup);
@@ -295,14 +310,10 @@ mod tests {
 
     #[test]
     fn equality_is_transitive() {
-        let mut key = Key::new();
-        key.set_name("user/test/transitive").unwrap();
+        let key = Key::new("user/test/transitive").unwrap();
+        let key2 = Key::new("user/test/transitive").unwrap();
+        let key3 = Key::new("user/test/transitive").unwrap();
 
-        let mut key2 = Key::new();
-        key2.set_name("user/test/transitive").unwrap();
-
-        let mut key3 = Key::new();
-        key3.set_name("user/test/transitive").unwrap();
         assert!(key == key2);
         assert!(key2 == key3);
         assert!(key == key3);
@@ -310,19 +321,13 @@ mod tests {
 
     #[test]
     fn keys_are_ordered() {
-        let mut key = Key::new();
-        key.set_name("user/test/a").unwrap();
-
-        let mut key2 = Key::new();
-        key2.set_name("user/test/b").unwrap();
-
-        let mut key3 = Key::new();
-        key3.set_name("user/test/c").unwrap();
+        let key = Key::new("user/test/a").unwrap();
+        let key2 = Key::new("user/test/b").unwrap();
+        let key3 = Key::new("user/test/c").unwrap();
 
         assert!(key != key2);
         assert!(key < key2);
         assert!(key2 > key);
-        
         // Check for antisymmetry
         assert!(!(key > key2));
         assert!(!(key2 < key));

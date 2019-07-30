@@ -6,8 +6,7 @@ pub struct KeyBuilder {
 
 impl KeyBuilder {
     pub fn new(name: &str) -> Self {
-        let mut key = Key::new();
-        key.set_name(name).unwrap();
+        let key = Key::new(name).unwrap();
         KeyBuilder {
             key
         }
