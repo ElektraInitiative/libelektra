@@ -75,7 +75,6 @@ impl PartialOrd for Key {
 }
 
 impl Key {
-    
     /// Construct a new key with a name
     pub fn new(name: &str) -> Result<Key, KeyError> {
         let mut key = Key::new_empty();
@@ -210,7 +209,7 @@ impl Key {
     /// ```
     /// use elektra::Key;
     /// let key = Key::new("user/sw/app").unwrap();
-    /// let key2 = Key::new("user/sw/app/key").unwrap();
+    /// let key2 = Key::new("user/sw/app/folder/key").unwrap();
     /// assert!(key2.is_below(&key));
     /// ```
     pub fn is_below(&self, other: &Self) -> bool {
@@ -221,6 +220,45 @@ impl Key {
             ) == 1
         }
     }
+
+    /// Returns true if other is *directly* below self
+    /// # Examples
+    /// ```
+    /// use elektra::Key;
+    /// let key = Key::new("user/sw/app").unwrap();
+    /// let key2 = Key::new("user/sw/app/key").unwrap();
+    /// assert!(key2.is_direct_below(&key));
+    /// ```
+    pub fn is_direct_below(&self, other: &Self) -> bool {
+        unsafe {
+            elektra_sys::keyIsDirectBelow(
+                other.ptr.as_ptr() as *const elektra_sys::Key,
+                self.ptr.as_ptr() as *const elektra_sys::Key,
+            ) == 1
+        }
+    }
+
+    /// Returns true if the key is inactive.
+    /// In Elektra terminology a hierarchy of keys is inactive if the
+    /// rootkey's basename starts with '.'. So a key is also inactive
+    /// if it is below an inactive key. For example, `user/key/.hidden`
+    /// is inactive and so is `user/.hidden/below`.
+    pub fn is_inactive(&self) -> bool {
+        unsafe { elektra_sys::keyIsInactive(self.ptr.as_ptr() as *const elektra_sys::Key) == 1 }
+    }
+
+    // TODO: CPP Bindings do not implement this.
+    // Since is_below flips the order, this should be the case here too.
+    // But does this break any usage?
+    /// Information about the relation in the hierarchy between two keys.
+    // pub fn rel(&self, other: &Self) -> i32 {
+    //     unsafe {
+    //         elektra_sys::keyRel(
+    //             self.ptr.as_ptr() as *const elektra_sys::Key,
+    //             other.ptr.as_ptr() as *const elektra_sys::Key,
+    //         )
+    //     }
+    // }
 
     /// Return a duplicate of the key.
     pub fn duplicate(&self) -> Key {
