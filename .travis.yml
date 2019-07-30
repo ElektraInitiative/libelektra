@@ -197,7 +197,6 @@ matrix:
 before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update
       brew install ninja
       rvm install 2.5.1
       rvm use 2.5.1
