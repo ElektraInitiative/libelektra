@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-2-Clause-FreeBSD
 #
+# Copyright (C) 2019 Elektra Initiative.
 # Copyright (C) 2006 Daniel M. Eischen.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,8 +33,10 @@
 #
 #   versions[] - array indexed by version name, contains number
 #                of symbols (+ 1) found for each version.
-#   successors[] - array index by version name, contains successor
+#   predecessors[] - array index by version name, contains predecessor
 #                  version name.
+#   private_versions[] - array indexed by version name, contains 1 if version is
+#                      private, 1 otherwise
 #   symbols[][] - array index by [version name, symbol index], contains
 #                 names of symbols defined for each version.
 #   names[] - array index is symbol name and value is its first version seen,
@@ -59,8 +62,20 @@ BEGIN {
 			brackets++;
 			symver = $1;
 			versions[symver] = 1;
-			successors[symver] = "";
+			predecessors[symver] = "";
 			generated[symver] = 0;
+			private_versions[symver] = 0;
+			version_count++;
+		}
+		else if (/^[a-zA-Z0-9._]+[ \t]+private[ \t]*\{$/) {
+			# Strip 'private' and brace.
+			sub("private[ \t]*{", "", $1);
+			brackets++;
+			symver = $1;
+			versions[symver] = 1;
+			predecessors[symver] = "";
+			generated[symver] = 0;
+			private_versions[symver] = 1;
 			version_count++;
 		}
 		else if (/^\}[ \t]*[a-zA-Z0-9._]+[ \t]*;$/) {
@@ -76,12 +91,12 @@ BEGIN {
 			}
 			else if (versions[v] != 1) {
 				printf("File %s: `%s' has unknown " \
-				    "successor `%s'.\n",
+				    "predecessor `%s'.\n",
 				    vfile, symver, v) > stderr;
 				errors++;
 			}
 			else
-				successors[symver] = v;
+				predecessors[symver] = v;
 			brackets--;
 		}
 		else if (/^\}[ \t]*;$/) {
@@ -90,7 +105,7 @@ BEGIN {
 				    vfile) > stderr;
 				errors++;
 			}
-			# No successor
+			# No predecessor
 			brackets--;
 		}
 		else if (/^\}$/) {
@@ -147,9 +162,12 @@ BEGIN {
 	# Strip semicolon.
 	sub(";", "", $1);
 	if (current_version != "") {
+		split("", added);
+
 		count = versions[current_version];
 		versions[current_version]++;
 		symbols[current_version, count] = $1;
+
 		if ($1 in names && names[$1] != current_version) {
 			#
 			# A graver case when a dup symbol appears under
@@ -158,7 +176,7 @@ BEGIN {
 			#
 			printf("File %s, line %d: Duplicated symbol `%s' " \
 			    "in version `%s', first seen in `%s'. " \
-			    "Did you forget to move it to ObsoleteVersions?\n",
+			    "Only add the symbol to the version in which it was last modified.\n",
 			    filename, FNR, $1,
 			    current_version, names[$1]) > stderr;
 			errors++;
@@ -211,8 +229,8 @@ function print_version(v)
 	#
 	if (generated[v] == 1)
 		return;
-	if (successors[v] != "")
-		print_version(successors[v]);
+	if (predecessors[v] != "")
+		print_version(predecessors[v]);
 
 	printf("%s {\n", v);
 
@@ -225,15 +243,14 @@ function print_version(v)
 		printf("\t%s;\n", symbols[v, i]);
 	}
 
-	version_count--;
-	if (version_count == 0) {
+	if (private_versions[v] == 1) {
 		printf("local:\n");
 		printf("\t*;\n");
 	}
-	if (successors[v] == "")
+	if (predecessors[v] == "")
 		printf("};\n");
 	else
-		printf("} %s;\n", successors[v]);
+		printf("} %s;\n", predecessors[v]);
 	printf("\n");
 
 	generated[v] = 1;

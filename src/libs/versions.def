@@ -21,5 +21,9 @@ libelektra_0.9 {
 #
 # The version should never be changed, but the based version (second line)
 # should always refer to the newest version.
-libelektraprivate_1.0 {
+#
+# The 'private' suffix marks this version as private. This has the effect that a
+# 'local: *' part is generated.
+#
+libelektraprivate_1.0 private {
 } libelektra_0.9;

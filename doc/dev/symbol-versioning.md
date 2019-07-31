@@ -65,20 +65,15 @@ The old function declaration
 int foo (Key * k);
 ```
 
-has to be replaced with the new declaration
+has to be replaced with the new declarations
 
 ```c
 int foo (Key * k, int x);
-```
 
-To enable backwards compatibility, we need to add some assembler `.symver` pseudo instructions. To make this easier, we have the helper macro
-`ELEKTRA_SYMVER_DECLARE`. We add these lines to add compatibility symbols:
-
-```c
-ELEKTRA_SYMVER_DECLARE ("oldversion", foo, v1);
 int ELEKTRA_SYMVER (foo, v1) (Key * k);
 ```
 
+The second line declares an old version of `foo`.
 Note: `v1` may be replaced by any string that is a valid identifier. It is simply their to make the symbol name unique.
 
 In the source files containing the definition of our function, we change the old definition
@@ -97,7 +92,14 @@ int ELEKTRA_SYMVER (foo, v1) (Key * k)
 {
     // old code ...
 }
+
+ELEKTRA_SYMVER_DECLARE ("oldversion", foo, v1)
 ```
+
+To actually enable backwards compatibility, we need to add some assembler `.symver` pseudo instructions. To make this easier, we have the
+helper macro `ELEKTRA_SYMVER_DECLARE`. We add these lines after the function declaration.
+Note: there MUST NOT be a `;` after the `ELEKTRA_SYMVER_DECLARE` otherwise there will be errors on systems that don't support symbol
+versioning
 
 Then we simply write the definition for the new version, as if it was an entirely new function:
 
@@ -113,4 +115,6 @@ a versioned name via `ELEKTRA_SYMVER`.
 
 ## Removing a symbol
 
-If a symbol becomes deprecated, it should NOT be removed from the `symbols.map` file. This would break backwards compatibility.
+If a symbol becomes deprecated, it should NOT be removed from the `symbols.map` file. This would break backwards compatibility. Instead
+we remove the default implementation and only leave versions implemented via `ELEKTRA_SYMVER` and `ELEKTRA_SYMVER_DECLARE`. The existing
+default version must be converted into a versioned symbol for the last supported version.

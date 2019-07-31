@@ -116,7 +116,9 @@ if (BUILD_SHARED)
 					  "${__symbols_file}")
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (${elektra-all_LIBRARIES}
+				       PROPERTIES LINK_FLAGS
+						  "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	# ~~~
@@ -178,7 +180,9 @@ if (BUILD_FULL)
 					  LINK_DEPENDS
 					  "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektra-full
+				       PROPERTIES LINK_FLAGS
+						  "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
@@ -210,7 +214,9 @@ if (BUILD_STATIC)
 					  LINK_DEPENDS
 					  "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektra-static
+				       PROPERTIES LINK_FLAGS
+						  "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
