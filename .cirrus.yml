@@ -152,7 +152,6 @@ mac_task:
         -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
         -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
         -DENABLE_DEBUG=ON
-        -DINSTALL_SYSTEM_FILES=OFF
         -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
         -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
         -DKDB_DB_SYSTEM="$SYSTEM_DIR"

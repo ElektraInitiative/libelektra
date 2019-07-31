@@ -163,11 +163,7 @@ else (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install test cases" FORCE)
 endif (BUILD_TESTING)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	option (INSTALL_SYSTEM_FILES "Install files to system directories" OFF)
-else ()
-	option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
-endif ()
+option (INSTALL_SYSTEM_FILES "Install files to system directories" OFF)
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 

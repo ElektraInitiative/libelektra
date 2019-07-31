@@ -84,7 +84,6 @@ add the following CMake options to our "Debug" profile:
 -DKDB_DB_SPEC="~/.config/kdb/[xyz]/spec"
 -DKDB_DB_USER=".config/kdb/[xyz]/user"
 -DCMAKE_INSTALL_PREFIX=install
--DINSTALL_SYSTEM_FILES=OFF
 ```
 
 where "[xyz]" can be replaced by any unique identifier so that different profiles

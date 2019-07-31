@@ -721,6 +721,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - Plugin tests are now only added, if `BUILD_TESTING=ON`. _(Klemens Böswirth)_
 - The symbol list for the static version is now exported directly from a CMake function. _(Klemens Böswirth)_
 - Building Elektra with enabled [`io_glib`](../../src/bindings/io/glib) binding does not require libuv anymore. _(René Schwaiger)_
+- We now disable the option `INSTALL_SYSTEM_FILES` by default. This change makes it possible to install Elektra using [Homebrew](https://brew.sh) on Linux without any changes to [Elektra’s Linuxbrew formula](https://github.com/Homebrew/linuxbrew-core/blob/master/Formula/elektra.rb). _(René Schwaiger)_
 
 ### Docker
 
