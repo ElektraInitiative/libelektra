@@ -252,8 +252,8 @@ pub trait Key {
     /// Returns the size in bytes of this new key name including the ending NUL.
     /// # Examples
     /// ```
-    /// use elektra::Key;
-    /// let mut key = Key::new_empty();
+    /// use elektra::{StringKey,Key};
+    /// let mut key = StringKey::new_empty();
     /// key.set_name("user/test/rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/rust");
     /// ```
@@ -281,8 +281,8 @@ pub trait Key {
     /// Set the basename of the key
     /// # Examples
     /// ```
-    /// use elektra::Key;
-    /// let mut key = Key::new("user/test/key").unwrap();
+    /// use elektra::{StringKey,Key};
+    /// let mut key = StringKey::new("user/test/key").unwrap();
     /// key.set_basename("rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/rust");
     /// ```
@@ -300,8 +300,8 @@ pub trait Key {
     /// Add a basename to the key
     /// # Examples
     /// ```
-    /// use elektra::Key;
-    /// let mut key = Key::new("user/test/key").unwrap();
+    /// use elektra::{StringKey,Key};
+    /// let mut key = StringKey::new("user/test/key").unwrap();
     /// key.add_basename("rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/key/rust");
     /// ```
@@ -319,8 +319,8 @@ pub trait Key {
     /// Add an already escaped name to the keyname.
     /// # Examples
     /// ```
-    /// use elektra::Key;
-    /// let mut key = Key::new("user/x/r").unwrap();
+    /// use elektra::{StringKey,Key};
+    /// let mut key = StringKey::new("user/x/r").unwrap();
     /// key.add_name("../y/a//././z").unwrap();
     /// assert_eq!(key.get_name(), "user/x/y/a/z");
     /// ```
@@ -460,9 +460,9 @@ pub trait Key {
     /// Returns true if other is below self
     /// # Examples
     /// ```
-    /// use elektra::Key;
-    /// let key = Key::new("user/sw/app").unwrap();
-    /// let key2 = Key::new("user/sw/app/folder/key").unwrap();
+    /// use elektra::{StringKey,Key};
+    /// let key = StringKey::new("user/sw/app").unwrap();
+    /// let key2 = StringKey::new("user/sw/app/folder/key").unwrap();
     /// assert!(key2.is_below(&key));
     /// ```
     fn is_below(&self, other: &Self) -> bool {
@@ -472,9 +472,9 @@ pub trait Key {
     /// Returns true if other is *directly* below self
     /// # Examples
     /// ```
-    /// use elektra::Key;
-    /// let key = Key::new("user/sw/app").unwrap();
-    /// let key2 = Key::new("user/sw/app/key").unwrap();
+    /// use elektra::{StringKey,Key};
+    /// let key = StringKey::new("user/sw/app").unwrap();
+    /// let key2 = StringKey::new("user/sw/app/key").unwrap();
     /// assert!(key2.is_direct_below(&key));
     /// ```
     fn is_direct_below(&self, other: &Self) -> bool {
