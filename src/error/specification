@@ -24,7 +24,7 @@ number:C01110
 description:Out of Memory
 macro:OUT_OF_MEMORY
 
-number:C01300
+number:C01200
 description:Installation
 macro:INSTALLATION
 
