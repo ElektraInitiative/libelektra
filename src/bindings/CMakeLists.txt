@@ -20,7 +20,6 @@ if (IS_INCLUDED)
 	add_subdirectory (rust)
 endif ()
 
-
 add_subdirectory (swig)
 
 check_binding_included ("glib" IS_INCLUDED)
