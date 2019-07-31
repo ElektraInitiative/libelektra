@@ -23,7 +23,7 @@ _kdb() {
 	# only kdb was entered yet, print a list of available commands
 	if [[ $COMP_CWORD -eq 1 ]]; then
 		local IFS=$'\n'
-		local commands=($(${kdbpath} 2> /dev/null | sed -e '0,/^Known commands are/d' | awk '{print $1}' | sed -r "s/\x1B\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]//g" ))
+		local commands=($(${kdbpath} list-commands))
 		COMPREPLY=($(compgen -W '${commands[@]}' -- "${cur}"))
 		return
 	fi
