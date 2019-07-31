@@ -26,3 +26,21 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Files
+
+_: BSD 3-Clause License
+cmake/Modules/DownloadProject.cmake: mit
+cmake/Modules/DownloadProject.CMakeLists.cmake.in: mit
+cmake/Modules/DownloadProjectLicense.txt: mit
+cmake/Modules/FindGLib.cmake: mit
+scripts/realpath: mit
+src/plugins/ni/nickel-1.1.0/_: zlib
+src/plugins/ni/nickel-1.1.0/src/hash.c: public-domain
+src/tools/rest-frontend/public/assets/fonts/font-awesome/_: ofl-1.1
+src/tools/rest-frontend/public/assets/fonts/lato/_: ofl-1.1
+src/tools/rest-frontend/public/assets/fonts/libre-franklin/\*: ofl-1.1
+src/tools/rest-frontend/resources/assets/skin/base/fonts/font-awesome/font-awesome.less: mit, ofl-1.1
+src/tools/rest-frontend/resources/assets/skin/base/util/space.less: mit
+src/tools/web/client/public/Roboto-Light.ttf: apache-2.0
+src/tools/web/client/public/Roboto-Regular.ttf: apache-2.0
