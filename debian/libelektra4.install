@@ -1,4 +1,5 @@
 usr/lib/*/elektra4/libelektra-boolean.so*
+usr/lib/*/elektra4/libelektra-cache.so
 usr/lib/*/elektra4/libelektra-ccode.so*
 usr/lib/*/elektra4/libelektra-conditionals.so*
 usr/lib/*/elektra4/libelektra-constants.so*
@@ -25,6 +26,8 @@ usr/lib/*/elektra4/libelektra-line.so*
 usr/lib/*/elektra4/libelektra-list.so*
 usr/lib/*/elektra4/libelektra-logchange.so*
 usr/lib/*/elektra4/libelektra-mathcheck.so*
+usr/lib/*/elektra4/libelektra-mmapstorage.so
+usr/lib/*/elektra4/libelektra-mmapstorage_crc.so
 usr/lib/*/elektra4/libelektra-mozprefs.so*
 usr/lib/*/elektra4/libelektra-network.so*
 usr/lib/*/elektra4/libelektra-ni.so*
