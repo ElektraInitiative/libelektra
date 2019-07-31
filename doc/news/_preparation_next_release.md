@@ -15,6 +15,40 @@ Please add your name at the end of every contribution.
 
 We are proud to release Elektra 0.8.<<VERSION>>.
 
+## Possible Introduction Text
+
+We are proud to present our largest release so far.
+It is the first release of the 0.9.\* version series,
+which goal is it:
+
+- to prepare Elektra for 1.0.0
+- to remove compatibility layers
+- to prototypes that did not reach maturity
+
+The 0.8.\* version series will still be maintained
+but with a low priority -- the highest priority
+will be to get Elektra 1.0.0 done. If you have
+maintenance requests and want 0.8.26 to be released,
+please contact us via business@libelektra.org
+
+## Business Plans
+
+To get away from a purely research-oriented approach
+to a mature foundation, we also need paid employees
+to fix problems.
+
+We plan to introduce following ways of income:
+
+1. donations
+2. paid support/feature requests
+3. consultancy
+
+If you are interested in any of these, please
+contact us via business@libelektra.org
+
+Please note, that Elektra will definitely stay
+100% free software (BSD licensed).
+
 ## What is Elektra?
 
 Elektra serves as a universal and secure framework to access
