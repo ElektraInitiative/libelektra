@@ -1,15 +1,13 @@
-use crate::Key;
+use crate::{Key, StringKey};
 
 pub struct KeyBuilder {
-    key: Key,
+    key: StringKey,
 }
 
 impl KeyBuilder {
     pub fn new(name: &str) -> Self {
-        let key = Key::new(name).unwrap();
-        KeyBuilder {
-            key
-        }
+        let key = StringKey::new(name).unwrap();
+        KeyBuilder { key }
     }
 
     pub fn string(mut self, key_value: &str) -> Self {
@@ -17,7 +15,7 @@ impl KeyBuilder {
         self
     }
 
-    pub fn build(self) -> Key {
+    pub fn build(self) -> StringKey {
         self.key
     }
 }
@@ -33,7 +31,7 @@ mod test {
         let val = "key_value";
         let key = KeyBuilder::new(name).string(val).build();
         assert_eq!(key.get_name(), name);
-        assert_eq!(key.get_string().unwrap(), val);
+        assert_eq!(key.get_string(), val);
     }
 
 }
