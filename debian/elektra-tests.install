@@ -23,3 +23,8 @@ usr/share/libelektra-test/test-data/blockresolver/*
 usr/share/libelektra-test/test-data/xerces/*
 usr/share/libelektra-test/test-data/python/*
 usr/share/libelektra-test/test-data/python2/*
+usr/share/libelektra-test/test-data/quickdump/*
+usr/share/libelektra-test/test-data/specload/*
+usr/share/libelektra-test/test-data/yambi/*
+usr/share/libelektra-test/test-data/yaypeg/*
+usr/share/libelektra-test/test-data/gen/*
