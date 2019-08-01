@@ -74,7 +74,6 @@ usr/share/man/man1/kdb-umount.1
 usr/share/man/man1/kdb-global-umount.1
 usr/share/man/man1/kdb-vset.1
 usr/share/man/man1/kdb-elektrify-getenv.1
-usr/share/man/man1/kdb-introduction.1
 usr/share/man/man1/kdb-backup.1
 usr/share/man/man1/kdb-stash.1
 usr/share/man/man1/kdb-restore.1
