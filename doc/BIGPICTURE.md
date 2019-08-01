@@ -38,7 +38,7 @@ to use.
 
 Furthermore, command-line tools like `cat` and `ls` provide an additional
 interface to the content of file systems for users and administrators.
-In Elektra also [command-line tools](/doc/help/kdb-introduction.md)
+In Elektra also [command-line tools](/doc/help/kdb.md)
 for the analog purpose exist: With `kdb cp`, `kdb mv`, and `kdb ls`
 some command-line tools operating on file systems are mimicked.
 
@@ -111,5 +111,5 @@ one of them would be useless. Main differences are:
 - Read about [bindings](/src/bindings/)
 - Read about [tools](/src/tools/README.md)
 - Look into [the glossary](/doc/help/elektra-glossary.md).
-- Start reading about [command-line tools](/doc/help/kdb-introduction.md)
+- Start reading about [command-line tools](/doc/help/kdb.md)
 - [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra

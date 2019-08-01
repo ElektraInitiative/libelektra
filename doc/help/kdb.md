@@ -201,5 +201,5 @@ kdb get +kdb/format
 ## SEE ALSO
 
 - [elektra-introduction(7)](elektra-introduction.md)
-- [kdb-introduction(1)](kdb-introduction.md)
+- [kdb(1)](kdb.md)
 - Get a [big picture about Elektra](/doc/BIGPICTURE.md)

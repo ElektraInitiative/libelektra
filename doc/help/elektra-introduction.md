@@ -71,4 +71,4 @@ presented next.
 ## SEE ALSO
 
 - Get a [big picture](/doc/BIGPICTURE.md)
-- Start reading about [command-line tools](/doc/help/kdb-introduction.md)
+- Start reading about [command-line tools](/doc/help/kdb.md)
