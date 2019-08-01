@@ -10,7 +10,7 @@ pub enum KeyError {
     InvalidName,
     TypeMismatch,
     ReadOnly, // TypeConversion,
-              // NotFoundException
+    NotFound,
 }
 
 impl fmt::Display for KeyError {
@@ -19,6 +19,7 @@ impl fmt::Display for KeyError {
             KeyError::InvalidName => write!(f, "Key has an invalid name"),
             KeyError::TypeMismatch => write!(f, "Binary/String key mismatch, use the appropriate method for your key type, get_string or get_binary"),
             KeyError::ReadOnly => write!(f, "Key is read only"),
+            KeyError::NotFound => write!(f, "Key/Metakey was not found"),
             // _ => unimplemented!(),
         }
     }
@@ -33,6 +34,11 @@ pub struct StringKey {
 
 #[derive(Debug)]
 pub struct BinaryKey {
+    ptr: NonNull<elektra_sys::Key>,
+}
+
+#[derive(Debug)]
+pub struct ReadOnlyStringKey {
     ptr: NonNull<elektra_sys::Key>,
 }
 
@@ -52,12 +58,6 @@ macro_rules! add_trait_impls {
         }
         impl Eq for $t {}
 
-        impl Drop for $t {
-            fn drop(&mut self) {
-                println!("Drop {:?}", self);
-                unsafe { elektra_sys::keyDel(self.as_ptr()) };
-            }
-        }
         impl Ord for $t {
             fn cmp(&self, other: &Self) -> std::cmp::Ordering {
                 let cmp = unsafe {
@@ -93,6 +93,21 @@ macro_rules! add_trait_impls {
 
 add_trait_impls!(StringKey);
 add_trait_impls!(BinaryKey);
+add_trait_impls!(ReadOnlyStringKey);
+
+macro_rules! add_drop_impl {
+    ($($t:ty)*) => ($(
+        impl Drop for $t {
+            fn drop(&mut self) {
+                println!("Drop {:?}", self);
+                unsafe { elektra_sys::keyDel(self.as_ptr()) };
+            }
+        }
+    )*)
+}
+
+add_drop_impl!(StringKey);
+add_drop_impl!(BinaryKey);
 
 impl StringKey {
     /// Sets the value of the key to the supplied string.
@@ -103,6 +118,16 @@ impl StringKey {
         unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
     }
 
+    /// Returns the string value of the key if the type of the key is string, an error if it's binary.
+    /// # Panics
+    /// Panics if the underlying string cannot be converted to UTF-8.
+    pub fn get_string(&self) -> &str {
+        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyString(self.as_ref())) };
+        c_str.to_str().unwrap()
+    }
+}
+
+impl ReadOnlyStringKey {
     /// Returns the string value of the key if the type of the key is string, an error if it's binary.
     /// # Panics
     /// Panics if the underlying string cannot be converted to UTF-8.
@@ -126,10 +151,7 @@ impl BinaryKey {
 
     /// Returns the keys binary content
     /// Returns a TypeMismatch if the key is of type string
-    pub fn get_binary(&self) -> Result<Vec<u8>, KeyError> {
-        if self.is_string() {
-            return Err(KeyError::TypeMismatch);
-        }
+    pub fn get_binary(&self) -> Vec<u8> {
         let mut vec: Vec<u8> = Vec::with_capacity(self.get_value_size());
 
         let ret_val = unsafe {
@@ -140,22 +162,17 @@ impl BinaryKey {
             )
         };
 
-        if ret_val >= 0 {
+        if ret_val > 0 {
             unsafe { vec.set_len(ret_val as usize) };
-            Ok(vec)
+            vec
         } else {
-            // Since the function checks for is_string, a type mismatch is caught earlier
-            // So this error can only occur as a result of a logic error in the program
-            panic!("maxSize is 0, too small or too large.");
+            unsafe { vec.set_len(0) }
+            vec
         }
     }
 }
 
-impl Key for StringKey {
-    fn as_ptr(&mut self) -> *mut elektra_sys::Key {
-        self.ptr.as_ptr()
-    }
-
+impl ReadableKey for StringKey {
     fn as_ref(&self) -> &elektra_sys::Key {
         unsafe { self.ptr.as_ref() }
     }
@@ -167,11 +184,7 @@ impl Key for StringKey {
     }
 }
 
-impl Key for BinaryKey {
-    fn as_ptr(&mut self) -> *mut elektra_sys::Key {
-        self.ptr.as_ptr()
-    }
-
+impl ReadableKey for BinaryKey {
     fn as_ref(&self) -> &elektra_sys::Key {
         unsafe { self.ptr.as_ref() }
     }
@@ -183,10 +196,33 @@ impl Key for BinaryKey {
     }
 }
 
-pub trait Key {
+impl ReadableKey for ReadOnlyStringKey {
+    fn as_ref(&self) -> &elektra_sys::Key {
+        unsafe { self.ptr.as_ref() }
+    }
+
+    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
+        ReadOnlyStringKey {
+            ptr: NonNull::new(ptr).unwrap(),
+        }
+    }
+}
+
+impl WriteableKey for BinaryKey {
+    fn as_ptr(&mut self) -> *mut elektra_sys::Key {
+        self.ptr.as_ptr()
+    }
+}
+impl WriteableKey for StringKey {
+    fn as_ptr(&mut self) -> *mut elektra_sys::Key {
+        self.ptr.as_ptr()
+    }
+}
+
+pub trait StringableKey {}
+
+pub trait WriteableKey: ReadableKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key;
-    fn as_ref(&self) -> &elektra_sys::Key;
-    // key methods
     /// Construct a new key with a name
     fn new(name: &str) -> Result<Self, KeyError>
     where
@@ -205,19 +241,11 @@ pub trait Key {
         Self::from_ptr(key_ptr)
     }
 
-    /// Return a duplicate of the key.
-    fn duplicate(&self) -> Self
-    where
-        Self: Sized,
-    {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        Self::from_ptr(dup_ptr)
+    /// Decrement the viability of a key object.
+    /// Returns the value of the new reference counter.
+    fn dec_ref(&mut self) -> isize {
+        unsafe { elektra_sys::keyDecRef(self.as_ptr()) }
     }
-
-    /// Construct a new key from a raw key pointer
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
-    where
-        Self: Sized;
 
     /// Clears the key.
     /// After this call you will receive a fresh key.
@@ -225,12 +253,6 @@ pub trait Key {
         unsafe {
             elektra_sys::keyClear(self.as_ptr());
         }
-    }
-
-    /// Decrement the viability of a key object.
-    /// Returns the value of the new reference counter.
-    fn dec_ref(&mut self) -> isize {
-        unsafe { elektra_sys::keyDecRef(self.as_ptr()) }
     }
 
     /// Increment the viability of a key object.
@@ -244,15 +266,11 @@ pub trait Key {
         unsafe { elektra_sys::keyGetRef(self.as_ref()) }
     }
 
-    // TODO keyCopy?
-
-    // keyname methods
-
     /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.
     /// Returns the size in bytes of this new key name including the ending NUL.
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,Key};
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new_empty();
     /// key.set_name("user/test/rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/rust");
@@ -270,18 +288,10 @@ pub trait Key {
             Err(KeyError::InvalidName)
         }
     }
-
-    /// Return the name of the key as a borrowed slice.
-    /// # Panics
-    /// Panics if the underlying string cannot be converted to UTF-8.
-    fn get_name(&self) -> &str {
-        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyName(self.as_ref())) };
-        c_str.to_str().unwrap()
-    }
     /// Set the basename of the key
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,Key};
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new("user/test/key").unwrap();
     /// key.set_basename("rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/rust");
@@ -300,7 +310,7 @@ pub trait Key {
     /// Add a basename to the key
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,Key};
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new("user/test/key").unwrap();
     /// key.add_basename("rust").unwrap();
     /// assert_eq!(key.get_name(), "user/test/key/rust");
@@ -319,7 +329,7 @@ pub trait Key {
     /// Add an already escaped name to the keyname.
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,Key};
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new("user/x/r").unwrap();
     /// key.add_name("../y/a//././z").unwrap();
     /// assert_eq!(key.get_name(), "user/x/y/a/z");
@@ -333,6 +343,70 @@ pub trait Key {
         } else {
             Ok(())
         }
+    }
+    /// Sets the value of the key to the supplied string.
+    /// # Panics
+    /// Panics if the provided string contains internal nul bytes.
+    fn set_string(&mut self, value: &str) {
+        let cptr = CString::new(value).unwrap();
+        unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
+    }
+    /// Copies all metadata from source to the self
+    fn copy_all_meta(&mut self, source: &Self) {
+        unsafe {
+            elektra_sys::keyCopyAllMeta(self.as_ptr(), source.as_ref());
+        }
+    }
+
+    /// Copy metakey with name metaname from source to self
+    /// # Examples
+    /// ```
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// let mut key = StringKey::new_empty();
+    /// key.set_meta("meta", "value");
+    /// let mut key2 = StringKey::new_empty();
+    /// key2.copy_meta(&key, "meta");
+    /// assert_eq!(key2.get_meta("meta").unwrap().get_string(), "value");
+    /// ```
+    fn copy_meta(&mut self, source: &Self, metaname: &str) -> i32 {
+        let cstr = CString::new(metaname).unwrap();
+        unsafe { elektra_sys::keyCopyMeta(self.as_ptr(), source.as_ref(), cstr.as_ptr()) }
+    }
+
+    fn set_meta(&mut self, metaname: &str, metavalue: &str) -> isize {
+        let name = CString::new(metaname).unwrap();
+        let value = CString::new(metavalue).unwrap();
+        unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) }
+    }
+}
+
+pub trait ReadableKey {
+    fn as_ref(&self) -> &elektra_sys::Key;
+    // key methods
+    /// Return a duplicate of the key.
+    fn duplicate(&self) -> Self
+    where
+        Self: Sized,
+    {
+        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
+        Self::from_ptr(dup_ptr)
+    }
+
+    /// Construct a new key from a raw key pointer
+    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
+    where
+        Self: Sized;
+
+    // TODO keyCopy?
+
+    // keyname methods
+
+    /// Return the name of the key as a borrowed slice.
+    /// # Panics
+    /// Panics if the underlying string cannot be converted to UTF-8.
+    fn get_name(&self) -> &str {
+        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyName(self.as_ref())) };
+        c_str.to_str().unwrap()
     }
 
     /// Return the basename of the key as a borrowed slice.
@@ -426,14 +500,6 @@ pub trait Key {
         ret_val.try_into().unwrap()
     }
 
-    /// Sets the value of the key to the supplied string.
-    /// # Panics
-    /// Panics if the provided string contains internal nul bytes.
-    fn set_string(&mut self, value: &str) {
-        let cptr = CString::new(value).unwrap();
-        unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
-    }
-
     /// Returns the string value of the key if the type of the key is string, an error if it's binary.
     /// # Panics
     /// Panics if the underlying string cannot be converted to UTF-8.
@@ -460,7 +526,7 @@ pub trait Key {
     /// Returns true if other is below self
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,Key};
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let key = StringKey::new("user/sw/app").unwrap();
     /// let key2 = StringKey::new("user/sw/app/folder/key").unwrap();
     /// assert!(key2.is_below(&key));
@@ -472,7 +538,7 @@ pub trait Key {
     /// Returns true if other is *directly* below self
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,Key};
+    /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let key = StringKey::new("user/sw/app").unwrap();
     /// let key2 = StringKey::new("user/sw/app/key").unwrap();
     /// assert!(key2.is_direct_below(&key));
@@ -488,6 +554,22 @@ pub trait Key {
     /// is inactive and so is `user/.hidden/below`.
     fn is_inactive(&self) -> bool {
         unsafe { elektra_sys::keyIsInactive(self.as_ref()) == 1 }
+    }
+
+    // keymeta methods
+    /// Returns the metadata with the given metaname
+    fn get_meta(&self, metaname: &str) -> Result<ReadOnlyStringKey, KeyError>
+    where
+        Self: Sized,
+    {
+        let cstr = CString::new(metaname).unwrap();
+        let key_ptr = unsafe { elektra_sys::keyGetMeta(self.as_ref(), cstr.as_ptr()) };
+        if key_ptr == std::ptr::null() {
+            Err(KeyError::NotFound)
+        } else {
+            let key = ReadOnlyStringKey::from_ptr(key_ptr as *mut elektra_sys::Key);
+            Ok(key)
+        }
     }
 }
 
@@ -529,7 +611,7 @@ mod tests {
         let mut key = BinaryKey::new("user/test/rust").unwrap();
         let binary_content: [u8; 7] = [25, 34, 0, 254, 1, 0, 7];
         key.set_binary(&binary_content);
-        let read_content = key.get_binary().unwrap();
+        let read_content = key.get_binary();
         assert_eq!(read_content, binary_content);
     }
     #[test]
@@ -538,9 +620,9 @@ mod tests {
         let binary_content: [u8; 0] = [];
         key.set_binary(&binary_content);
         // set_binary does not set binary flag, size is 0
-        // so get_binary returns error
-        let err = key.get_binary().unwrap_err();
-        assert_eq!(err, KeyError::TypeMismatch);
+        // so get_binary should return empty vec
+        let err = key.get_binary();
+        assert_eq!(err, binary_content);
     }
 
     #[test]
@@ -617,5 +699,17 @@ mod tests {
         assert_eq!(key.get_ref(), 1);
         key.dec_ref();
         assert_eq!(key.get_ref(), 0);
+    }
+
+    #[test]
+    fn error_on_missing_metaname() {
+        let key = StringKey::new("user/test/metatest").unwrap();
+        assert!(key.get_meta("nonexistent metaname").is_err());
+    }
+    #[test]
+    fn can_set_get_metavalue() {
+        let mut key = StringKey::new_empty();
+        key.set_meta("metakey", "metaval");
+        assert_eq!(key.get_meta("metakey").unwrap().get_string(), "metaval");
     }
 }
