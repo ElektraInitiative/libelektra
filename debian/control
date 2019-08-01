@@ -44,7 +44,7 @@ Depends: libelektra4, libelektra4-experimental, libelektra4-gen,
   libelektra4-augeas, libelektra4-dbus, libelektra4-zeromq, libelektra4-lua,
   libelektra4-python, libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl,
   lua-elektra, libelektra4-python2, elektra-bin, elektra-qt-gui,
-  libelektra4-crypto, libelektra4-curl, libelektra4-journald
+  libelektra4-crypto, libelektra4-curl, libelektra4-journald, libelektra4-extra
 Recommends: elektra-tests, elektra-doc, elektra-dbg, libelektra-dev
 Description: Elektra configuration store
  Elektra provides a universal and secure framework to store configuration
@@ -125,6 +125,28 @@ Description: Elektra configuration store, experimental plugins
  implementations.
  .
  This package contains experimental plugins.
+
+Package: libelektra4-extra
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1)
+Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1)
+Suggests: elektra-doc, ${elektra:allPlugins}
+Description: Elektra configuration store, experimental plugins
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains extra plugins.
 
 Package: libelektra4-gen
 Section: libs
