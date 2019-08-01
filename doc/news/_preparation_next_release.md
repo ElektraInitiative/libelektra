@@ -718,6 +718,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - `testshell_markdown_tutorial_crypto` is not compiled and executed if `gen-gpg-testkey` is not part of TOOLS. _(Peter Nirschl)_
 - Plugin tests are now only added, if `BUILD_TESTING=ON`. _(Klemens Böswirth)_
 - The symbol list for the static version is now exported directly from a CMake function. _(Klemens Böswirth)_
+- Building Elektra with enabled [`io_glib`](../../src/bindings/io/glib) binding does not require libuv anymore. _(René Schwaiger)_
 
 ### Docker
 
