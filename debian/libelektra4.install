@@ -28,6 +28,7 @@ usr/lib/*/elektra4/libelektra-resolver_fm_hpu_b.so*
 usr/lib/*/elektra4/libelektra-resolver.so*
 usr/lib/*/elektra4/libelektra-shell.so*
 usr/lib/*/elektra4/libelektra-simpleini.so*
+usr/lib/*/elektra4/libelektra-specload.so
 usr/lib/*/elektra4/libelektra-spec.so*
 usr/lib/*/elektra4/libelektra-storage.so*
 usr/lib/*/elektra4/libelektra-sync.so*
