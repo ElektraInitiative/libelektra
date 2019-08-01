@@ -1,4 +1,4 @@
-use crate::{Key, StringKey};
+use crate::{StringKey, WriteableKey};
 
 pub struct KeyBuilder {
     key: StringKey,
@@ -24,6 +24,7 @@ impl KeyBuilder {
 mod test {
 
     use super::*;
+    use crate::ReadableKey;
 
     #[test]
     fn can_build_key() {
