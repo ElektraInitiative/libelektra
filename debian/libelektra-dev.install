@@ -76,3 +76,4 @@ usr/lib/*/pkgconfig/elektra.pc
 usr/lib/*/pkgconfig/elektra-notification.pc
 usr/lib/*/pkgconfig/elektra-io.pc
 usr/lib/*/pkgconfig/elektra-highlevel.pc
+usr/lib/*/pkgconfig/elektra-codegen.pc
