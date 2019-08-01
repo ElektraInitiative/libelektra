@@ -153,11 +153,11 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	}
 	else if (!strcmp (keyString (type), "boolean"))
 	{
-		if (!strcmp (keyString (cur), "true"))
+		if (!strcmp (keyString (cur), "1"))
 		{
 			yajl_gen_bool (g, 1);
 		}
-		else if (!strcmp (keyString (cur), "false"))
+		else if (!strcmp (keyString (cur), "0"))
 		{
 			yajl_gen_bool (g, 0);
 		}
