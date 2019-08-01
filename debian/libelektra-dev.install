@@ -12,6 +12,7 @@ usr/include/elektra/helper/keyhelper.hpp
 usr/include/elektra/kdbconfig.h
 usr/include/elektra/kdbcontext.hpp
 usr/include/elektra/kdbease.h
+usr/include/elektra/kdbendian.h
 usr/include/elektra/kdbexcept.hpp
 usr/include/elektra/kdbextension.h
 usr/include/elektra/kdbgetenv.h
@@ -21,6 +22,7 @@ usr/include/elektra/kdb.hpp
 usr/include/elektra/kdbinvoke.h
 usr/include/elektra/kdbio.h
 usr/include/elektra/kdbio.hpp
+usr/include/elektra/kdbmacros.h
 usr/include/elektra/kdbmeta.h
 usr/include/elektra/kdbmodule.h
 usr/include/elektra/kdbnotification.h
