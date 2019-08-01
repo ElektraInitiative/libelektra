@@ -42,7 +42,7 @@ pub struct ReadOnlyStringKey {
     ptr: NonNull<elektra_sys::Key>,
 }
 
-macro_rules! add_trait_impls {
+macro_rules! add_readonly_traits {
     ($($t:ty)*) => ($(
         impl PartialEq for $t {
 
@@ -88,14 +88,15 @@ macro_rules! add_trait_impls {
                 self.duplicate()
             }
         }
+
     )*)
 }
 
-add_trait_impls!(StringKey);
-add_trait_impls!(BinaryKey);
-add_trait_impls!(ReadOnlyStringKey);
+add_readonly_traits!(StringKey);
+add_readonly_traits!(BinaryKey);
+add_readonly_traits!(ReadOnlyStringKey);
 
-macro_rules! add_drop_impl {
+macro_rules! add_writeable_traits {
     ($($t:ty)*) => ($(
         impl Drop for $t {
             fn drop(&mut self) {
@@ -103,11 +104,23 @@ macro_rules! add_drop_impl {
                 unsafe { elektra_sys::keyDel(self.as_ptr()) };
             }
         }
+
+        impl Iterator for $t {
+            type Item = ReadOnlyStringKey;
+            fn next(&mut self) -> Option<Self::Item> {
+                let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
+                if key_ptr == std::ptr::null() {
+                    None
+                } else {
+                    Some(ReadOnlyStringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
+                }
+            }
+        }
     )*)
 }
 
-add_drop_impl!(StringKey);
-add_drop_impl!(BinaryKey);
+add_writeable_traits!(StringKey);
+add_writeable_traits!(BinaryKey);
 
 impl StringKey {
     /// Sets the value of the key to the supplied string.
@@ -372,11 +385,30 @@ pub trait WriteableKey: ReadableKey {
         let cstr = CString::new(metaname).unwrap();
         unsafe { elektra_sys::keyCopyMeta(self.as_ptr(), source.as_ref(), cstr.as_ptr()) }
     }
-
+    /// Set a new meta-information.
     fn set_meta(&mut self, metaname: &str, metavalue: &str) -> isize {
         let name = CString::new(metaname).unwrap();
         let value = CString::new(metavalue).unwrap();
         unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) }
+    }
+
+    /// Delete the metadata at metaname
+    fn delete_meta(&mut self, metaname: &str) -> isize {
+        let name = CString::new(metaname).unwrap();
+        unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), std::ptr::null()) }
+    }
+
+    /// Rewind the internal iterator to first metadata.
+    fn rewind_meta(&mut self) {
+        unsafe {
+            elektra_sys::keyRewindMeta(self.as_ptr());
+        }
+    }
+
+    /// Returns the value of a meta-information which is current.
+    fn current_meta(&self) -> ReadOnlyStringKey {
+        let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
+        ReadOnlyStringKey::from_ptr(key_ptr as *mut elektra_sys::Key)
     }
 }
 
@@ -711,5 +743,30 @@ mod tests {
         let mut key = StringKey::new_empty();
         key.set_meta("metakey", "metaval");
         assert_eq!(key.get_meta("metakey").unwrap().get_string(), "metaval");
+    }
+
+    #[test]
+    fn can_iterate_key() {
+        let mut key = StringKey::new_empty();
+        let meta = [("meta1", "val1"), ("meta2", "val2")];
+        key.set_meta(meta[0].0, meta[0].1);
+        key.set_meta(meta[1].0, meta[1].1);
+        key.rewind_meta();
+
+        let mut did_iterate = false;
+        for (i, metakey) in key.enumerate() {
+            did_iterate = true;
+            assert_eq!(metakey.get_name(), meta[i].0);
+            assert_eq!(metakey.get_string(), meta[i].1);
+        }
+        assert!(did_iterate);
+    }
+
+    #[test]
+    fn can_delete_metadata() {
+        let mut key = StringKey::new_empty();
+        key.set_meta("metakey", "metaval");
+        assert_eq!(key.delete_meta("metakey"), 0);
+        assert_eq!(key.get_meta("metakey").unwrap_err(), KeyError::NotFound);
     }
 }
