@@ -59,7 +59,7 @@ int RemoveCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	conf.append(savedKeys);
+	conf.append (savedKeys);
 
 	kdb.set (conf, x);
 
