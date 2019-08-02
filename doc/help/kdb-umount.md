@@ -23,5 +23,5 @@ Unmount backend from key database.
 
 ## SEE ALSO
 
-- [kdb-mount(7)](kdb-mount.md).
+- [kdb-mount(1)](kdb-mount.md).
 - [elektra-mounting(7)](elektra-mounting.md).

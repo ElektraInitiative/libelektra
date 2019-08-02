@@ -29,6 +29,14 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 	kdb.get (conf, x);
 
+	KeySet savedKeys;
+
+	if (cl.withoutElektra)
+	{
+		Key systemElektra ("system/elektra", KEY_END);
+		savedKeys = conf.cut (systemElektra);
+	}
+
 	if (!cl.recursive)
 	{
 		Key f = conf.lookup (x, KDB_O_POP);
@@ -50,6 +58,8 @@ int RemoveCommand::execute (Cmdline const & cl)
 			return cl.force ? 0 : 1;
 		}
 	}
+
+	conf.append(savedKeys);
 
 	kdb.set (conf, x);
 

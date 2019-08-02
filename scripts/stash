@@ -9,9 +9,12 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-$KDB backup
+fail()
+{
+	echo "$*" 2> /dev/null
+	exit 1
+}
 
-$KDB umount-all 2> /dev/null
-$KDB rm -r system 2> /dev/null
-$KDB rm -r user 2> /dev/null
-$KDB rm -r spec 2> /dev/null
+$KDB backup || fail "Could not backup successfully, will abort"
+
+$KDB reset -f

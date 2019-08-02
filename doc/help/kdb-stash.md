@@ -51,5 +51,5 @@ kdb mount
 
 ## SEE ALSO
 
-- [kdb-restore(7)](kdb-restore.md)
-- [kdb-backup(7)](kdb-backup.md)
+- [kdb-restore(1)](kdb-restore.md)
+- [kdb-backup(1)](kdb-backup.md)
