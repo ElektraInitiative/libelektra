@@ -63,6 +63,7 @@ macro_rules! add_traits {
 
         impl Drop for $t {
             fn drop(&mut self) {
+                println!("Drop {:?}", self);
                 unsafe { elektra_sys::keyDel(self.as_ptr()) };
             }
         }
@@ -127,7 +128,7 @@ impl BinaryKey {
             )
         };
 
-        if ret_val > 0 {
+        if ret_val > 0 { // TODO try_into?
             unsafe { vec.set_len(ret_val as usize) };
             vec
         } else {
@@ -328,7 +329,8 @@ mod tests {
     fn can_set_get_metavalue() {
         let mut key = StringKey::new_empty();
         key.set_meta("metakey", "metaval");
-        assert_eq!(key.get_meta("metakey").unwrap().get_value(), "metaval");
+        let meta_key = key.get_meta("metakey").unwrap();
+        assert_eq!(meta_key.get_value(), "metaval");
     }
 
     #[test]
