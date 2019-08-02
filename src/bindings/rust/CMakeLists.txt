@@ -34,8 +34,7 @@ if (CARGO_EXECUTABLE)
 	set_property (TEST test_cargo_elektra
 		      PROPERTY LABELS
 			       kdbtests
-			       bindings
-			       memleak)
+			       bindings)
 
 else ()
 	exclude_binding (rust, "cargo not found")
