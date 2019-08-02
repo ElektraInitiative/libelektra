@@ -17,5 +17,5 @@ kdb restore 1500000000
 
 ## SEE ALSO
 
-- [kdb-backup(7)](kdb-backup.md)
-- [kdb-stash(7)](kdb-stash.md)
+- [kdb-backup(1)](kdb-backup.md)
+- [kdb-stash(1)](kdb-stash.md)
