@@ -304,6 +304,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		const char * pluginName = keyString (cur);
 		if (!pluginName || pluginName[0] == '\0')
 		{
+			keyDel (openKey);
 			ksDel (config);
 			return 0;
 		}
@@ -312,12 +313,14 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		*plugin = elektraPluginOpen (pluginName, modules, config, openKey);
 		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !ksLookupByName (system, "system/elektra/cache/enabled", 0))
 		{
+			keyDel (openKey);
 			return 0;
 		}
 		else if (!(*plugin))
 		{
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin '%s'", pluginName);
 			keyCopyAllMeta (errorKey, openKey);
+			keyDel (openKey);
 			return -1;
 		}
 
@@ -328,6 +331,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		keyDel (refKey);
 	}
 
+	keyDel (openKey);
 	keyCopyAllMeta (errorKey, openKey);
 	return 1;
 }
