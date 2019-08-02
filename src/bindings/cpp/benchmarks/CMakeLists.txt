@@ -11,13 +11,10 @@ macro (do_benchmark source)
 
 	target_link_elektra (${source} elektra-kdb elektra-meta)
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_benchmark)
 
-file (GLOB TESTS
-	   *.cpp)
+file (GLOB TESTS *.cpp)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_benchmark (${name})

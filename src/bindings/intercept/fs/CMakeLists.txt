@@ -10,7 +10,10 @@ else ()
 
 	include (LibAddMacros)
 	add_headers (HDR_FILES)
-	set_source_files_properties (intercept.c PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
+	set_source_files_properties (intercept.c
+				     PROPERTIES
+				     COMPILE_FLAGS
+				     "-Wno-unused-result")
 	add_library (elektraintercept-fs SHARED "intercept.c")
 	target_link_libraries (elektraintercept-fs elektra-kdb elektra-meta)
 	install (TARGETS elektraintercept-fs DESTINATION lib${LIB_SUFFIX})

@@ -9,21 +9,15 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (dbusrecv
-	    SOURCES dbusrecv.h
-		    dbusrecv.c
-		    receivemessage.c
+	    SOURCES dbusrecv.h dbusrecv.c receivemessage.c
 	    OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-dbus>
-	    INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR}
-				${DBUS_ARCH_INCLUDE_DIR}
-	    LINK_ELEKTRA elektra-io
-			 elektra-invoke
+	    INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
+	    LINK_ELEKTRA elektra-io elektra-invoke
 	    LINK_LIBRARIES ${DBUS_LIBRARIES})
 
 set (NOT_INCLUDED "")
 plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
-if (DEPENDENCY_PHASE
-    AND NOT
-	NOT_INCLUDED)
+if (DEPENDENCY_PHASE AND NOT NOT_INCLUDED)
 	if (BUILD_SHARED)
 
 		# ~~~

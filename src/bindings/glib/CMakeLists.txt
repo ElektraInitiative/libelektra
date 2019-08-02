@@ -22,15 +22,10 @@ endif (NOT BUILD_SHARED)
 # Add binding
 add_binding (glib)
 
-set (GELEKTRA_LIBRARY
-     gelektra-${SO_VERSION}.0
-     CACHE INTERNAL
-	   "GELEKTRA_LIBRARY")
+set (GELEKTRA_LIBRARY gelektra-${SO_VERSION}.0 CACHE INTERNAL "GELEKTRA_LIBRARY")
 
-file (GLOB GELEKTRA_HDR_FILES
-	   *.h)
-file (GLOB GELEKTRA_SRC_FILES
-	   *.c)
+file (GLOB GELEKTRA_HDR_FILES *.h)
+file (GLOB GELEKTRA_SRC_FILES *.c)
 add_headers (ELEKTRA_HEADERS)
 set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
@@ -42,9 +37,7 @@ target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_
 
 target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
 
-target_link_libraries (${GELEKTRA_LIBRARY}
-		       PUBLIC elektra-core
-			      elektra-kdb)
+target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
 target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
 install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})

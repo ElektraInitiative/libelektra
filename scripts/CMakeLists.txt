@@ -42,10 +42,8 @@ install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-file (READ "kdb_zsh_completion"
-	   CONTENT_OF_ZSH_COMP)
-file (READ "kdb-bash-completion"
-	   CONTENT_OF_BASH_COMP)
+file (READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
+file (READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/install-sh-completion.in" "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_all.in" "${CMAKE_CURRENT_BINARY_DIR}/run_all" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_memcheck.in" "${CMAKE_CURRENT_BINARY_DIR}/run_memcheck" @ONLY)
@@ -58,15 +56,9 @@ install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATIO
 
 if (INSTALL_SYSTEM_FILES)
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set (BASH_COMPLETION_COMPLETIONSDIR
-		     "/usr/local/share/bash-completion/completions"
-		     CACHE INTERNAL
-			   "bash completions dir")
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/local/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
 	else ()
-		set (BASH_COMPLETION_COMPLETIONSDIR
-		     "/usr/share/bash-completion/completions"
-		     CACHE INTERNAL
-			   "bash completions dir")
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
 	endif ()
 	find_package (bash-completion QUIET)
 	unset (bash-completion_DIR CACHE)

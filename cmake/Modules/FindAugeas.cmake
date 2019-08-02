@@ -22,7 +22,11 @@ else (LIBAUGEAS_INCLUDE_DIR)
 		pkg_check_modules (_LIBAUGEAS_PC QUIET "libaugeas")
 	endif (PKG_CONFIG_FOUND)
 
-	find_path (LIBAUGEAS_INCLUDE_DIR augeas.h ${_LIBAUGEAS_PC_INCLUDE_DIRS} /usr/include /usr/local/include)
+	find_path (LIBAUGEAS_INCLUDE_DIR
+		   augeas.h
+		   ${_LIBAUGEAS_PC_INCLUDE_DIRS}
+		   /usr/include
+		   /usr/local/include)
 
 	if (_LIBAUGEAS_PC_FOUND)
 		pkg_get_variable (_LIBAUGEAS_PREFIX augeas prefix)
@@ -35,11 +39,7 @@ else (LIBAUGEAS_INCLUDE_DIR)
 			set (_LIBAUGEAS_PREFIX "/usr")
 		endif (APPLE)
 	endif ()
-	set (LIBAUGEAS_PREFIX
-	     "${_LIBAUGEAS_PREFIX}"
-	     CACHE INTERNAL
-		   "prefix path of libaugeas"
-	     FORCE)
+	set (LIBAUGEAS_PREFIX "${_LIBAUGEAS_PREFIX}" CACHE INTERNAL "prefix path of libaugeas" FORCE)
 
 	find_library (LIBAUGEAS_LIBRARIES NAMES augeas PATHS ${_LIBAUGEAS_PC_LIBDIR})
 

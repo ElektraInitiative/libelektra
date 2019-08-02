@@ -1,11 +1,8 @@
 include (LibAddMacros)
 
 add_plugin (specload
-	    SOURCES specload.h
-		    specload.c
-	    LINK_ELEKTRA elektra-ease
-			 elektra-invoke
-			 elektra-proposal
+	    SOURCES specload.h specload.c
+	    LINK_ELEKTRA elektra-ease elektra-invoke elektra-proposal
 	    TEST_README)
 
 if (DEPENDENCY_PHASE AND BUILD_SHARED)
@@ -20,8 +17,7 @@ if (ADDTESTING_PHASE)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
-	list (APPEND TEST_SOURCES
-		     "${CMAKE_CURRENT_SOURCE_DIR}/test_testapp.c")
+	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test_testapp.c")
 	add_headers (TEST_SOURCES)
 	add_testheaders (TEST_SOURCES)
 

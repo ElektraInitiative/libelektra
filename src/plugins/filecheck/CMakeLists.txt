@@ -8,9 +8,7 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (filecheck
-	    SOURCES filecheck.h
-		    filecheck.c
+	    SOURCES filecheck.h filecheck.c
 	    INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${Iconv_LIBRARIES}
-	    ADD_TEST
-	    INSTALL_TEST_DATA)
+	    ADD_TEST INSTALL_TEST_DATA)

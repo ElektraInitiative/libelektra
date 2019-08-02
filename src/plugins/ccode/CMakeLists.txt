@@ -7,5 +7,4 @@ add_plugin (ccode
 		    coder.hpp
 		    coder.cpp
 	    TEST_README
-	    TEST_REQUIRED_PLUGINS tcl
-				  base64)
+	    TEST_REQUIRED_PLUGINS tcl base64)

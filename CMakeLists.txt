@@ -15,17 +15,9 @@ set (ELEKTRA_HOMEPAGE_URL "https://www.libelektra.org")
 if (CMAKE_VERSION VERSION_LESS 3.9)
 	project (Elektra VERSION "${KDB_VERSION}")
 elseif (CMAKE_VERSION VERSION_LESS 3.12)
-	project (Elektra
-		 VERSION ${KDB_VERSION}
-			 DESCRIPTION
-			 ${ELEKTRA_DESCRIPTION})
+	project (Elektra VERSION ${KDB_VERSION} DESCRIPTION ${ELEKTRA_DESCRIPTION})
 else (CMAKE_VERSION VERSION_LESS 3.12)
-	project (Elektra
-		 VERSION ${KDB_VERSION}
-			 DESCRIPTION
-			 ${ELEKTRA_DESCRIPTION}
-			 HOMEPAGE_URL
-			 ${ELEKTRA_HOMEPAGE_URL})
+	project (Elektra VERSION ${KDB_VERSION} DESCRIPTION ${ELEKTRA_DESCRIPTION} HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
 endif (CMAKE_VERSION VERSION_LESS 3.9)
 
 # fix macOS RPATH issues
@@ -63,9 +55,7 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE
 	     RelWithDebInfo
-	     CACHE STRING
-		   "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-	     FORCE)
+	     CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

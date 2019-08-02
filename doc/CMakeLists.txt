@@ -10,7 +10,11 @@ find_package (Doxygen QUIET)
 # file    is the file name to set a dependency to
 # install is where it should be installed
 # ~~~
-macro (do_doc target folder file install)
+macro (do_doc
+       target
+       folder
+       file
+       install)
 
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
 	file (MAKE_DIRECTORY ${folder})
@@ -40,9 +44,7 @@ if (DOXYGEN_FOUND)
 	endif (BUILD_PDF)
 
 	if (BUILD_DOCSET)
-		execute_process (COMMAND make ARGS -v
-				 RESULT_VARIABLE MAKE_NOT_AVAILABLE
-				 OUTPUT_QUIET)
+		execute_process (COMMAND make ARGS -v RESULT_VARIABLE MAKE_NOT_AVAILABLE OUTPUT_QUIET)
 		if (MAKE_NOT_AVAILABLE)
 			set (WITH_DOCSET NO)
 			message (WARNING "Sorry, since Make is not available I can not build the DocSet.")
@@ -70,34 +72,42 @@ if (DOXYGEN_FOUND)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
 	file (GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile INPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER})
-	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
+	do_doc (html
+		${OUTPUT_DIRECTORY}/html/
+		index.html
+		${TARGET_DOCUMENTATION_HTML_FOLDER})
+	do_doc (man3
+		${OUTPUT_DIRECTORY}/man/man3elektra/
+		kdb.3elektra
+		"${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
 	add_dependencies (man3 html)
 	set (outputs ${OUTPUT_DIRECTORY}/html/index.html ${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 
 	if (WITH_LATEX)
-		do_doc (latex ${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER})
+		do_doc (latex
+			${OUTPUT_DIRECTORY}/latex/
+			refman.tex
+			${TARGET_DOCUMENTATION_LATEX_FOLDER})
 		add_dependencies (latex man3 html)
-		list (APPEND outputs
-			     ${OUTPUT_DIRECTORY}/latex/refman.tex)
+		list (APPEND outputs ${OUTPUT_DIRECTORY}/latex/refman.tex)
 
-		file (COPY
-		      "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
-		      DESTINATION
-		      "${OUTPUT_DIRECTORY}/latex/")
+		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
+		      DESTINATION "${OUTPUT_DIRECTORY}/latex/")
 
 		add_custom_command (OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
 				    COMMAND ${PDFLATEX_COMPILER}
-					    ARGS ${PDFLATEX_COMPILER_OPTIONS}
-						 ${OUTPUT_DIRECTORY}/latex/refman.tex
+					    ARGS
+					    ${PDFLATEX_COMPILER_OPTIONS}
+					    ${OUTPUT_DIRECTORY}/latex/refman.tex
 				    COMMAND ${PDFLATEX_COMPILER}
-					    ARGS ${PDFLATEX_COMPILER_OPTIONS}
-						 ${OUTPUT_DIRECTORY}/latex/refman.tex
+					    ARGS
+					    ${PDFLATEX_COMPILER_OPTIONS}
+					    ${OUTPUT_DIRECTORY}/latex/refman.tex
 				    COMMAND ${PDFLATEX_COMPILER}
-					    ARGS ${PDFLATEX_COMPILER_OPTIONS}
-						 ${OUTPUT_DIRECTORY}/latex/refman.tex
-				    DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex
-					    markdownlinkconverter
+					    ARGS
+					    ${PDFLATEX_COMPILER_OPTIONS}
+					    ${OUTPUT_DIRECTORY}/latex/refman.tex
+				    DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter
 				    WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/)
 
 		add_custom_target (pdf ALL DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf)
@@ -110,23 +120,21 @@ if (DOXYGEN_FOUND)
 		add_custom_command (OUTPUT ${DOCSET_PATH}
 				    COMMAND make
 				    COMMAND ${CMAKE_COMMAND}
-					    ARGS -D
-						 DOCSET_PATH=${DOCSET_PATH}
-						 -D
-						 ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png
-						 -P
-						 ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
-				    DEPENDS ${OUTPUT_DIRECTORY}/html/index.html
-					    markdownlinkconverter
+					    ARGS
+					    -D
+					    DOCSET_PATH=${DOCSET_PATH}
+					    -D
+					    ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png
+					    -P
+					    ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
+				    DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
 				    WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html)
 		add_custom_target (docset ALL DEPENDS ${DOCSET_PATH})
 	endif (WITH_DOCSET)
 
 	add_custom_command (OUTPUT ${outputs}
-			    COMMAND ${DOXYGEN_EXECUTABLE}
-				    ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-			    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-				    markdownlinkconverter
+			    COMMAND ${DOXYGEN_EXECUTABLE} ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+			    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
 			    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 else (DOXYGEN_FOUND)
 	message (WARNING "Sorry, I cannot create the reference manual: I could not find Doxygen")
@@ -140,14 +148,11 @@ if (INSTALL_DOCUMENTATION)
 	install (FILES AUTHORS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	set (news ${CMAKE_CURRENT_BINARY_DIR}/NEWS.md)
-	file (GLOB files
-		   "news/*.md")
+	file (GLOB files "news/*.md")
 	file (REMOVE ${news})
 	foreach (file ${files})
-		file (READ ${file}
-			   content)
-		file (APPEND ${news}
-			     "\n\n\n\n\n${content}")
+		file (READ ${file} content)
+		file (APPEND ${news} "\n\n\n\n\n${content}")
 	endforeach ()
 	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})

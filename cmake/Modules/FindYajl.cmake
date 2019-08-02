@@ -15,7 +15,10 @@ set (YAJL_NAMES ${YAJL_NAMES} yajl libyajl)
 find_library (YAJL_LIBRARY NAMES ${YAJL_NAMES})
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Yajl DEFAULT_MSG YAJL_LIBRARY YAJL_INCLUDE_DIR)
+find_package_handle_standard_args (Yajl
+				   DEFAULT_MSG
+				   YAJL_LIBRARY
+				   YAJL_INCLUDE_DIR)
 
 if (YAJL_FOUND)
 	set (YAJL_INCLUDE_DIRS ${YAJL_INCLUDE_DIR})

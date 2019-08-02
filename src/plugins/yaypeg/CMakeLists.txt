@@ -68,9 +68,7 @@ add_plugin (yaypeg
 	    CPP_TEST
 	    INSTALL_TEST_DATA
 	    TEST_README
-	    TEST_REQUIRED_PLUGINS directoryvalue
-				  sync
-				  yamlsmith
+	    TEST_REQUIRED_PLUGINS directoryvalue sync yamlsmith
 	    INCLUDE_SYSTEM_DIRECTORIES ${PEGTL_INCLUDE_DIRS}
 	    INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}
 	    SOURCES ${SOURCE_FILES})

@@ -1,6 +1,5 @@
 include (LibAddMacros)
 
 add_plugin (iterate
-	    SOURCES iterate.h
-		    iterate.c
+	    SOURCES iterate.h iterate.c
 	    ADD_TEST)

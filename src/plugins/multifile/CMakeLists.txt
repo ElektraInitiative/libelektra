@@ -11,8 +11,6 @@ if (DEPENDENCY_PHASE)
 endif (DEPENDENCY_PHASE)
 
 add_plugin (multifile
-	    SOURCES multifile.h
-		    multifile.c
-	    LINK_ELEKTRA elektra-kdb
-			 elektra-invoke
+	    SOURCES multifile.h multifile.c
+	    LINK_ELEKTRA elektra-kdb elektra-invoke
 	    TEST_README)

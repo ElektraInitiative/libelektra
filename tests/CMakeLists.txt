@@ -28,22 +28,15 @@ if (ENABLE_TESTING)
 		download_project (PROJ googletest
 				  GIT_REPOSITORY https://github.com/google/googletest.git
 				  GIT_TAG release-1.8.1
-				  QUIET
-				  ${UPDATE_DISCONNECTED_IF_AVAILABLE})
+				  QUIET ${UPDATE_DISCONNECTED_IF_AVAILABLE})
 	endif (DEFINED GOOGLETEST_ROOT)
 
 	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
-	set (gtest_force_shared_crt
-	     ON
-	     CACHE BOOL
-		   ""
-	     FORCE)
+	set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
-	set_property (TARGET gtest
-		      PROPERTY COMPILE_FLAGS
-			       "-Wno-undef")
+	set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-Wno-undef")
 endif (ENABLE_TESTING)
 
 # don't call add_headers in a loop
@@ -63,16 +56,10 @@ macro (do_test source)
 
 	target_link_elektra (${source})
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
-	set_target_properties (${source}
-			       PROPERTIES LINKER_LANGUAGE
-					  CXX)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES LINKER_LANGUAGE CXX)
 	add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}")
-	set_property (TEST ${source}
-		      PROPERTY ENVIRONMENT
-			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 endmacro (do_test)
 
 if (NOT CMAKE_VERSION VERSION_LESS 3.2)

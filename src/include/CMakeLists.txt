@@ -102,10 +102,8 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       kdbmacros.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
-add_custom_target (elektra_config_headers
-		   ALL
-		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h
-			   ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
+add_custom_target (elektra_config_headers ALL
+		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
 			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
 
 add_subdirectory (kdbio)

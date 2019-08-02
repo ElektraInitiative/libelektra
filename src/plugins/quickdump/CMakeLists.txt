@@ -1,8 +1,7 @@
 include (LibAddMacros)
 
 add_plugin (quickdump
-	    SOURCES quickdump.h
-		    quickdump.c
+	    SOURCES quickdump.h quickdump.c
 	    TEST_README)
 
 if (ADDTESTING_PHASE)

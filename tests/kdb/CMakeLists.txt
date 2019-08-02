@@ -52,12 +52,14 @@ endfunction (check_xcode)
 
 function (add_kdb_test suffix)
 	set (multiValueArgs "REQUIRED_PLUGINS;LINK_ELEKTRA")
-	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	cmake_parse_arguments (ARG
+			       "${options}"
+			       "${oneValueArgs}"
+			       "${multiValueArgs}"
+			       ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
-		list (FIND REMOVED_PLUGINS
-			   ${plugin}
-			   plugin_index)
+		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
 		if (plugin_index GREATER -1)
 			return ()
 		endif (plugin_index GREATER -1)
@@ -69,16 +71,31 @@ endfunction (add_kdb_test suffix)
 
 add_kdb_test (allplugins)
 add_kdb_test (conflict REQUIRED_PLUGINS error)
-add_kdb_test (error REQUIRED_PLUGINS error list spec)
+add_kdb_test (error
+	      REQUIRED_PLUGINS
+	      error
+	      list
+	      spec)
 add_kdb_test (nested REQUIRED_PLUGINS error)
 add_kdb_test (simple REQUIRED_PLUGINS error)
-add_kdb_test (ensure REQUIRED_PLUGINS tracer list spec)
+add_kdb_test (ensure
+	      REQUIRED_PLUGINS
+	      tracer
+	      list
+	      spec)
 
 check_xcode ()
 if ("${XCODE_VERSION}" VERSION_EQUAL 10.1)
 	# See: https://issues.libelektra.org/2686
 	message (STATUS "Exclude KDB high-level test because it fails with a segmentation fault (Xcode ${XCODE_VERSION})")
 else ("${XCODE_VERSION}" VERSION_EQUAL 10.1)
-	set_source_files_properties (testkdb_highlevel PROPERTIES COMPILE_FLAGS -Wno-sign-promo)
-	add_kdb_test (highlevel LINK_ELEKTRA elektra-highlevel REQUIRED_PLUGINS error)
+	set_source_files_properties (testkdb_highlevel
+				     PROPERTIES
+				     COMPILE_FLAGS
+				     -Wno-sign-promo)
+	add_kdb_test (highlevel
+		      LINK_ELEKTRA
+		      elektra-highlevel
+		      REQUIRED_PLUGINS
+		      error)
 endif ("${XCODE_VERSION}" VERSION_EQUAL 10.1)

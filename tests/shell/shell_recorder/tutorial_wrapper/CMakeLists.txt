@@ -10,10 +10,7 @@ add_msr_test (kdb_cp "${CMAKE_SOURCE_DIR}/doc/help/kdb-cp.md" REQUIRED_PLUGINS m
 add_msr_test (kdb_global_umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md" REQUIRED_PLUGINS spec tracer)
 add_msr_test (kdb_ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md" REQUIRED_PLUGINS sync)
 
-if (CMAKE_COMPILER_IS_GNUCXX
-    AND CMAKE_CXX_COMPILER_VERSION
-	VERSION_LESS
-	4.9)
+if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 	message (STATUS "Excluding Markdown Shell Recorder test for `kdb find`, since GCC ${CMAKE_CXX_COMPILER_VERSION} "
 			"does not support regular expressions properly")
 else (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
@@ -32,13 +29,11 @@ if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
 else (ENABLE_ASAN)
 	add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation)
-	add_msr_test (tutorial_crypto
-		      "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
-		      REQUIRED_PLUGINS
-		      crypto_gcrypt
-		      fcrypt
-		      REQUIRED_TOOLS
-		      gen-gpg-testkey)
+	add_msr_test (tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
+		      REQUIRED_PLUGINS crypto_gcrypt
+				       fcrypt
+				       REQUIRED_TOOLS
+				       gen-gpg-testkey)
 endif (ENABLE_ASAN)
 
 # ========
@@ -50,14 +45,12 @@ add_msr_test (readme_msr "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutoria
 add_msr_test (issue_template "${CMAKE_SOURCE_DIR}/.github/ISSUE_TEMPLATE.md")
 add_msr_test (ini_crash_test "${CMAKE_SOURCE_DIR}/src/plugins/ini/crash_test/crash_test.md" REQUIRED_PLUGINS ini)
 add_msr_test (mmapstorage_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/mmapstorage/shelltests.md" REQUIRED_PLUGINS mmapstorage)
-add_msr_test (cache_shelltests
-	      "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests.md"
-	      REQUIRED_PLUGINS
-	      cache
-	      mmapstorage
-	      dump
-	      resolver
-	      multifile)
+add_msr_test (cache_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests.md"
+	      REQUIRED_PLUGINS cache
+			       mmapstorage
+			       dump
+			       resolver
+			       multifile)
 
 # ~~~
 # Only works with super user privileges, since it writes to `/etc/hosts`:

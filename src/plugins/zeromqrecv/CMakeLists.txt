@@ -9,9 +9,7 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (zeromqrecv
-	    SOURCES zeromqrecv.h
-		    zeromqrecv.c
-		    subscribe.c
+	    SOURCES zeromqrecv.h zeromqrecv.c subscribe.c
 	    OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-zeromq>
 	    INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
 	    LINK_ELEKTRA elektra-io

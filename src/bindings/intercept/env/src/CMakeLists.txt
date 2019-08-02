@@ -3,8 +3,7 @@ include (LibAddMacros)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-file (GLOB_RECURSE SRC_FILES
-		   *.cpp)
+file (GLOB_RECURSE SRC_FILES *.cpp)
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 

@@ -3,12 +3,16 @@ set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (DISCOUNT_FIND_QUIETLY ON)
 
 if (APPLE)
-	list (APPEND CMAKE_PREFIX_PATH
-		     "/usr/local/opt/qt5"
-		     "/usr/local/opt/qt@5.5") # Provide list of default paths for Homebrew’s Qt
+	list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5" "/usr/local/opt/qt@5.5") # Provide list of default paths for Homebrew’s Qt
 endif (APPLE)
 
-set (QCOMPONENTS Core Quick Gui Qml Widgets Test)
+set (QCOMPONENTS
+     Core
+     Quick
+     Gui
+     Qml
+     Widgets
+     Test)
 find_package (Qt5 COMPONENTS ${QCOMPONENTS})
 find_package (Qt5 OPTIONAL_COMPONENTS Svg QUIET)
 find_package (Qt5 OPTIONAL_COMPONENTS DBus QUIET)
@@ -43,30 +47,40 @@ else ()
 			     ${Qt5Svg_INCLUDE_DIRS}
 			     src/markdownconverter)
 
-	file (GLOB qt-gui_HDRS
-		   "src/markdownconverter/*.h"
-		   "src/markdownconverter/template/*.h")
+	file (GLOB
+	      qt-gui_HDRS
+	      "src/markdownconverter/*.h"
+	      "src/markdownconverter/template/*.h")
 
 	add_headers (qt-gui_HDRS)
 	add_cppheaders (qt-gui_HDRS)
 	add_toolheaders (qt-gui_HDRS)
 
-	file (GLOB qt-gui_SRCS
-		   "src/*.cpp"
-		   "src/markdownconverter/*.cpp"
-		   "src/markdownconverter/template/*.cpp")
+	file (GLOB
+	      qt-gui_SRCS
+	      "src/*.cpp"
+	      "src/markdownconverter/*.cpp"
+	      "src/markdownconverter/template/*.cpp")
 
 	set (qt-gui_RSCS resources.qrc)
-	set_property (SOURCE qrc_resources.cpp
-		      PROPERTY SKIP_AUTOMOC
-			       ON)
+	set_property (SOURCE qrc_resources.cpp PROPERTY SKIP_AUTOMOC ON)
 
 	qt5_add_resources (RSCS ${qt-gui_RSCS})
 
-	add_executable (qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
+	add_executable (qt-gui
+			${qt-gui_SRCS}
+			${qt-gui_HDRS}
+			${UIS}
+			${RSCS}
+			${TRS})
 	add_dependencies (qt-gui kdberrors_generated elektra_error_codes_generated)
 
-	target_link_libraries (qt-gui Qt5::Quick Qt5::Gui Qt5::Core Qt5::Qml Qt5::Widgets)
+	target_link_libraries (qt-gui
+			       Qt5::Quick
+			       Qt5::Gui
+			       Qt5::Core
+			       Qt5::Qml
+			       Qt5::Widgets)
 
 	include_directories (${DISCOUNT_INCLUDES})
 	target_link_libraries (qt-gui ${DISCOUNT_LIBRARIES})

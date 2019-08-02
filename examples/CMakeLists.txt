@@ -12,13 +12,10 @@ macro (do_example source)
 
 	target_link_elektra (${source} elektra-kdb)
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)
 
-file (GLOB TESTS
-	   *.c)
+file (GLOB TESTS *.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	if (NOT "${name}" MATCHES "^notification")
@@ -36,14 +33,15 @@ target_link_elektra (kdbset elektra-kdb)
 target_link_elektra (set_key elektra-kdb)
 target_link_elektra (opts elektra-ease elektra-opts)
 target_link_elektra (optsSnippets elektra-opts)
-target_link_elektra (gopts elektra-ease elektra-opts elektra-kdb)
+target_link_elektra (gopts
+		     elektra-ease
+		     elektra-opts
+		     elektra-kdb)
 
 # Notification examples
 
 # Cannot build examples without notification library which requires the internalnotification plugin
-list (FIND ADDED_PLUGINS
-	   "internalnotification"
-	   FOUND_NAME)
+list (FIND ADDED_PLUGINS "internalnotification" FOUND_NAME)
 if (FOUND_NAME GREATER -1)
 
 	# Build notification polling example
@@ -67,14 +65,18 @@ if (FOUND_NAME GREATER -1)
 		set (SRC_FILES notificationAsync.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
-			list (APPEND SOURCES
-				     $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full builds
+			list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full
+										      # builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
 		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
-		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-uv)
+		target_link_elektra (${EXAMPLE}
+				     elektra-kdb
+				     elektra-notification
+				     elektra-io
+				     elektra-io-uv)
 		if (BUILD_FULL OR BUILD_STATIC)
 			target_link_libraries (${EXAMPLE} ${PC_libuv_LDFLAGS})
 		endif ()
@@ -101,13 +103,16 @@ if (FOUND_NAME GREATER -1)
 		find_package (GLib QUIET)
 		include_directories (${GLib_INCLUDE_DIRS})
 
-		list (APPEND SOURCES
-			     $<TARGET_OBJECTS:elektra-io-glib-objects>)
+		list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-glib-objects>)
 
 		add_executable (${EXAMPLE} ${SOURCES})
 		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
-		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
+		target_link_elektra (${EXAMPLE}
+				     elektra-kdb
+				     elektra-notification
+				     elektra-io
+				     elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)
 			target_link_libraries (${EXAMPLE} ${GLib_LIBRARY})
 		endif ()

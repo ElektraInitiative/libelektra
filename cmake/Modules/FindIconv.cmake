@@ -53,13 +53,7 @@ The following cache variables may also be set:
 
 # iconv can only be provided in libc on a POSIX system. If any cache variable is already set, we'll skip this test.
 if (NOT DEFINED Iconv_IS_BUILT_IN)
-	if (UNIX
-	    AND NOT
-		DEFINED
-		Iconv_INCLUDE_DIR
-	    AND NOT
-		DEFINED
-		Iconv_LIBRARY)
+	if (UNIX AND NOT DEFINED Iconv_INCLUDE_DIR AND NOT DEFINED Iconv_LIBRARY)
 		cmake_push_check_state (RESET)
 		# We always suppress the message here: Otherwise on supported systems not having iconv in their C library (e.g. those using
 		# libiconv) would always display a confusing "Looking for iconv - not found" message
@@ -93,10 +87,7 @@ if (NOT Iconv_IS_BUILT_IN)
 	find_path (Iconv_INCLUDE_DIR NAMES "iconv.h" DOC "iconv include directory")
 	set (Iconv_LIBRARY_NAMES "iconv" "libiconv")
 else ()
-	set (Iconv_INCLUDE_DIR
-	     ""
-	     CACHE FILEPATH
-		   "iconv include directory")
+	set (Iconv_INCLUDE_DIR "" CACHE FILEPATH "iconv include directory")
 	set (Iconv_LIBRARY_NAMES "c")
 endif ()
 
@@ -106,7 +97,10 @@ mark_as_advanced (Iconv_INCLUDE_DIR)
 mark_as_advanced (Iconv_LIBRARY)
 
 if (NOT Iconv_IS_BUILT_IN)
-	find_package_handle_standard_args (Iconv REQUIRED_VARS Iconv_LIBRARY Iconv_INCLUDE_DIR)
+	find_package_handle_standard_args (Iconv
+					   REQUIRED_VARS
+					   Iconv_LIBRARY
+					   Iconv_INCLUDE_DIR)
 else ()
 	find_package_handle_standard_args (Iconv REQUIRED_VARS Iconv_LIBRARY)
 endif ()
@@ -117,10 +111,6 @@ if (Iconv_FOUND)
 	if (NOT TARGET Iconv::Iconv)
 		add_library (Iconv::Iconv INTERFACE IMPORTED)
 	endif ()
-	set_property (TARGET Iconv::Iconv
-		      PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-			       "${Iconv_INCLUDE_DIRS}")
-	set_property (TARGET Iconv::Iconv
-		      PROPERTY INTERFACE_LINK_LIBRARIES
-			       "${Iconv_LIBRARIES}")
+	set_property (TARGET Iconv::Iconv PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${Iconv_INCLUDE_DIRS}")
+	set_property (TARGET Iconv::Iconv PROPERTY INTERFACE_LINK_LIBRARIES "${Iconv_LIBRARIES}")
 endif ()

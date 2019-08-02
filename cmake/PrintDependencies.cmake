@@ -15,8 +15,7 @@
 # brew install `cmake -DPLUGINS="ALL" -P cmake/PrintDependencies.cmake`
 # ~~~
 
-execute_process (COMMAND lsb_release -is
-		 OUTPUT_VARIABLE LSB_DISTRIB)
+execute_process (COMMAND lsb_release -is OUTPUT_VARIABLE LSB_DISTRIB)
 
 if ("${LSB_DISTRIB}" MATCHES "Ubuntu|Debian")
 	set (DEPS "build-essential")

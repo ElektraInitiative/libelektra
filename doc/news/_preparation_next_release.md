@@ -697,6 +697,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
   . _(René Schwaiger)_
 
+- We reformatted the CMake source code with cmake format `0.5.4` and also [check the style of CMake code](../../tests/shell/check_formatting.sh) with this new version of the tool. _(René Schwaiger)_
 - We now check the source code of the repository with [LGTM][]. _(René Schwaiger)_
 - We fixed various warnings about
 

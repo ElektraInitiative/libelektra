@@ -79,7 +79,7 @@ RUN cd /tmp \
 # Update cache for shared libraries
 RUN ldconfig
 
-RUN pip install cmake-format[yaml]==0.4.5
+RUN pip install cmake-format[yaml]==0.5.4
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

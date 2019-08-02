@@ -18,8 +18,7 @@ if (DEPENDENCY_PHASE)
 	     VERSION_LESS
 	     9)
 	if (${DISABLE_PLUGIN_ASAN})
-		remove_plugin (yamlcpp
-			       "ASan enabled GCC builds of the plugin report member calls on addresses, "
+		remove_plugin (yamlcpp "ASan enabled GCC builds of the plugin report member calls on addresses, "
 			       "which do not point to an object of type `_Sp_counted_base`")
 	endif (${DISABLE_PLUGIN_ASAN})
 endif (DEPENDENCY_PHASE)
@@ -30,8 +29,7 @@ add_plugin (yamlcpp
 	    CPP_TEST
 	    TEST_README
 	    INSTALL_TEST_DATA
-	    TEST_REQUIRED_PLUGINS base64
-				  directoryvalue
+	    TEST_REQUIRED_PLUGINS base64 directoryvalue
 	    SOURCES yamlcpp.hpp
 		    yamlcpp.cpp
 		    read.hpp

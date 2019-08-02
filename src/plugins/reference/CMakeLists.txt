@@ -5,9 +5,6 @@ add_plugin (reference
 		    reference.c
 		    referencegraph.c
 		    referencegraph.h
-	    LINK_ELEKTRA elektra-ease
-			 elektra-globbing
-	    ADD_TEST
-	    TEST_README
-	    TEST_REQUIRED_PLUGINS dump
-				  sync)
+	    LINK_ELEKTRA elektra-ease elektra-globbing
+	    ADD_TEST TEST_README
+	    TEST_REQUIRED_PLUGINS dump sync)
