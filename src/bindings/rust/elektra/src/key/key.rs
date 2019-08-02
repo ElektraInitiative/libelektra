@@ -37,11 +37,6 @@ pub struct BinaryKey {
     ptr: NonNull<elektra_sys::Key>,
 }
 
-#[derive(Debug)]
-pub struct ReadOnlyStringKey {
-    ptr: NonNull<elektra_sys::Key>,
-}
-
 macro_rules! add_readonly_traits {
     ($($t:ty)*) => ($(
         impl PartialEq for $t {
@@ -94,7 +89,6 @@ macro_rules! add_readonly_traits {
 
 add_readonly_traits!(StringKey);
 add_readonly_traits!(BinaryKey);
-add_readonly_traits!(ReadOnlyStringKey);
 
 macro_rules! add_writeable_traits {
     ($($t:ty)*) => ($(
@@ -106,13 +100,13 @@ macro_rules! add_writeable_traits {
         }
 
         impl Iterator for $t {
-            type Item = ReadOnlyStringKey;
+            type Item = ReadOnly<StringKey>;
             fn next(&mut self) -> Option<Self::Item> {
                 let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
                 if key_ptr == std::ptr::null() {
                     None
                 } else {
-                    Some(ReadOnlyStringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
+                    Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
                 }
             }
         }
@@ -122,25 +116,49 @@ macro_rules! add_writeable_traits {
 add_writeable_traits!(StringKey);
 add_writeable_traits!(BinaryKey);
 
+#[derive(Debug)]
+pub struct ReadOnly<T: WriteableKey> {
+    key: T,
+}
+
+impl<T: WriteableKey> ReadableKey for ReadOnly<T> {
+    fn as_ref(&self) -> &elektra_sys::Key {
+        self.key.as_ref()
+    }
+
+    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
+        ReadOnly {
+            key: T::from_ptr(ptr),
+        }
+    }
+
+    type Value = T::Value;
+    fn get_value(&self) -> Self::Value {
+        self.key.get_value()
+    }
+}
+
+impl<T: WriteableKey> Drop for ReadOnly<T> {
+    fn drop(&mut self) {
+        // ReadOnly holds a pointer to a key that we should not modify (const Key*)
+        // But since we created a full T object with that pointer, 
+        // it's drop impl would call keyDel on that pointer
+        // So we replace the memory with a new empty key, that can be safely deleted
+        let old_val = std::mem::replace(&mut self.key, T::new_empty());
+        // Then forget about the const Key*, s.t. it isnt dropped
+        std::mem::forget(old_val);
+    }
+}
+
 impl StringKey {
     /// Sets the value of the key to the supplied string.
     /// # Panics
     /// Panics if the provided string contains internal nul bytes.
-    pub fn set_string(&mut self, value: &str) {
+    pub fn set_string<T: Into<Vec<u8>>>(&mut self, value: T) {
         let cptr = CString::new(value).unwrap();
         unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
     }
 
-    /// Returns the string value of the key if the type of the key is string, an error if it's binary.
-    /// # Panics
-    /// Panics if the underlying string cannot be converted to UTF-8.
-    pub fn get_string(&self) -> &str {
-        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyString(self.as_ref())) };
-        c_str.to_str().unwrap()
-    }
-}
-
-impl ReadOnlyStringKey {
     /// Returns the string value of the key if the type of the key is string, an error if it's binary.
     /// # Panics
     /// Panics if the underlying string cannot be converted to UTF-8.
@@ -195,6 +213,10 @@ impl ReadableKey for StringKey {
             ptr: NonNull::new(ptr).unwrap(),
         }
     }
+    type Value = String;
+    fn get_value(&self) -> Self::Value {
+        self.get_string().to_owned()
+    }
 }
 
 impl ReadableKey for BinaryKey {
@@ -207,17 +229,9 @@ impl ReadableKey for BinaryKey {
             ptr: NonNull::new(ptr).unwrap(),
         }
     }
-}
-
-impl ReadableKey for ReadOnlyStringKey {
-    fn as_ref(&self) -> &elektra_sys::Key {
-        unsafe { self.ptr.as_ref() }
-    }
-
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
-        ReadOnlyStringKey {
-            ptr: NonNull::new(ptr).unwrap(),
-        }
+    type Value = Vec<u8>;
+    fn get_value(&self) -> Self::Value {
+        self.get_binary()
     }
 }
 
@@ -225,10 +239,17 @@ impl WriteableKey for BinaryKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key {
         self.ptr.as_ptr()
     }
+
+    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T) {
+        self.set_binary(&t.into());
+    }
 }
 impl WriteableKey for StringKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key {
         self.ptr.as_ptr()
+    }
+    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T) {
+        self.set_string(t);
     }
 }
 
@@ -236,6 +257,8 @@ pub trait StringableKey {}
 
 pub trait WriteableKey: ReadableKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key;
+    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T);
+
     /// Construct a new key with a name
     fn new(name: &str) -> Result<Self, KeyError>
     where
@@ -379,7 +402,7 @@ pub trait WriteableKey: ReadableKey {
     /// key.set_meta("meta", "value");
     /// let mut key2 = StringKey::new_empty();
     /// key2.copy_meta(&key, "meta");
-    /// assert_eq!(key2.get_meta("meta").unwrap().get_string(), "value");
+    /// assert_eq!(key2.get_meta("meta").unwrap().get_value(), "value");
     /// ```
     fn copy_meta(&mut self, source: &Self, metaname: &str) -> i32 {
         let cstr = CString::new(metaname).unwrap();
@@ -406,14 +429,16 @@ pub trait WriteableKey: ReadableKey {
     }
 
     /// Returns the value of a meta-information which is current.
-    fn current_meta(&self) -> ReadOnlyStringKey {
+    fn current_meta(&self) -> ReadOnly<StringKey> {
         let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
-        ReadOnlyStringKey::from_ptr(key_ptr as *mut elektra_sys::Key)
+        ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key)
     }
 }
 
 pub trait ReadableKey {
     fn as_ref(&self) -> &elektra_sys::Key;
+    type Value;
+    fn get_value(&self) -> Self::Value;
     // key methods
     /// Return a duplicate of the key.
     fn duplicate(&self) -> Self
@@ -590,7 +615,7 @@ pub trait ReadableKey {
 
     // keymeta methods
     /// Returns the metadata with the given metaname
-    fn get_meta(&self, metaname: &str) -> Result<ReadOnlyStringKey, KeyError>
+    fn get_meta(&self, metaname: &str) -> Result<ReadOnly<StringKey>, KeyError>
     where
         Self: Sized,
     {
@@ -599,7 +624,7 @@ pub trait ReadableKey {
         if key_ptr == std::ptr::null() {
             Err(KeyError::NotFound)
         } else {
-            let key = ReadOnlyStringKey::from_ptr(key_ptr as *mut elektra_sys::Key);
+            let key: ReadOnly<StringKey> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
             Ok(key)
         }
     }
@@ -742,7 +767,7 @@ mod tests {
     fn can_set_get_metavalue() {
         let mut key = StringKey::new_empty();
         key.set_meta("metakey", "metaval");
-        assert_eq!(key.get_meta("metakey").unwrap().get_string(), "metaval");
+        assert_eq!(key.get_meta("metakey").unwrap().get_value(), "metaval");
     }
 
     #[test]
@@ -757,7 +782,7 @@ mod tests {
         for (i, metakey) in key.enumerate() {
             did_iterate = true;
             assert_eq!(metakey.get_name(), meta[i].0);
-            assert_eq!(metakey.get_string(), meta[i].1);
+            assert_eq!(metakey.get_value(), meta[i].1);
         }
         assert!(did_iterate);
     }
