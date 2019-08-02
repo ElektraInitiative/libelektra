@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static bool metaEqual (Key * a, Key * b, bool semanticallySuffices);
+// static bool metaEqual (Key * a, Key * b, bool semanticallySuffices);
 static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool);
 int conflictCounter = 0;
 
@@ -36,6 +36,52 @@ char * strremove (char * string, const char * sub)
 		}
 	}
 	return string;
+}
+
+/**
+ * This is in contrast to the removeRoots function
+ *  Returns -1 on error, 0 on success
+ */
+int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string)
+{
+	if (input == NULL)
+	{
+		fprintf (stderr, "input must not be null\n");
+		return -1;
+	}
+	if (result == NULL)
+	{
+		fprintf (stderr, "result must not be null!\n");
+		return -1;
+	}
+	if (string == NULL)
+	{
+		fprintf (stderr, "string must not be null!\n");
+		return -1;
+	}
+	Key * key;
+	ksRewind (input);
+	while ((key = ksNext (input)) != NULL)
+	{
+		char * newName = elektraMalloc (strlen (keyName (key)) + strlen (string) + 1);
+		strcpy (newName, string);
+		strcat (newName, keyName (key));
+		Key * duplicateKey = keyDup (key); // keySetName returns -1 if key was inserted to a keyset before
+		int status = keySetName (duplicateKey, newName);
+		elektraFree (newName);
+		if (status < 0)
+		{
+			fprintf (stderr, "Could not set new key name!\n");
+			return -1;
+		}
+		status = ksAppendKey (result, duplicateKey);
+		if (status < 0)
+		{
+			fprintf (stderr, "Could not append key!\n");
+			return -1;
+		}
+	}
+	return 0;
 }
 
 static KeySet * removeRoots (KeySet * original, Key * root)
@@ -73,36 +119,6 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 		ksAppendKey (result, keyCopy);
 	}
 	return result;
-}
-
-/**
- * Places extension before the name of toAppend and puts the result into ks
- */
-static int prependAndAppend (KeySet * ks, Key * toAppend, const char * extension)
-{
-	if (toAppend == NULL)
-	{
-		fprintf (stderr, "Key that should be appended must not be null!\n");
-	}
-	if (ks == NULL)
-	{
-		fprintf (stderr, "Key set where key should be appended must not be null!\n");
-	}
-	char * newName = elektraMalloc (strlen (keyName (toAppend)) + strlen (extension) + 1);
-	strcpy (newName, extension);
-	strcat (newName, keyName (toAppend));
-	int status = keySetName (toAppend, newName);
-	elektraFree (newName);
-	if (status < 0)
-	{
-		return -1;
-	}
-	status = ksAppendKey (ks, toAppend);
-	if (status < 0)
-	{
-		return -1;
-	}
-	return 1;
 }
 
 /**
@@ -145,47 +161,47 @@ static size_t normalize (void * to_normalize, size_t * size)
 	return reducedSize;
 }
 
-/**
- * Checks for each meta information of meta key a if it is in meta key b as well and has the same value
- */
-static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
-{
-	keyRewindMeta (a);
-	keyRewindMeta (b);
-	const Key * currentMeta;
-	while ((currentMeta = keyNextMeta (a)) != 0)
-	{
-		const char * currentName = keyName (currentMeta);
-		if (currentName == 0 || strncmp (currentName, "", 2) == 0)
-		{
-			return false;
-		}
-		const Key * metaInB = keyGetMeta (b, currentName);
-		if (metaInB == 0)
-		{
-			return false;
-		}
-//		if (!keysAreSyntacticallyEqual (a, b, true))
-//		// key dup is only to discard const qualifier
-		if (!keysAreSyntacticallyEqual (keyDup(currentMeta), keyDup(metaInB), true))
-		{
-			// comments may be different
-			if (!semanticallySuffices && strcmp (currentName, "comment") != 0)
-			{
-				return false;
-			}
-		}
-	}
-	return true;
-}
-/**
- * Set semantically true if semantic differences like comments are irrelevant
- */
-static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
-{
-	// If a set A (meta keys of key a) is a subset of B and B is a subset of A then A == B
-	return metaEqualHelper (a, b, semanticallySuffices) && metaEqualHelper (b, a, semanticallySuffices);
-}
+///**
+// * Checks for each meta information of meta key a if it is in meta key b as well and has the same value
+// */
+// static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
+//{
+//	keyRewindMeta (a);
+//	keyRewindMeta (b);
+//	const Key * currentMeta;
+//	while ((currentMeta = keyNextMeta (a)) != 0)
+//	{
+//		const char * currentName = keyName (currentMeta);
+//		if (currentName == 0 || strncmp (currentName, "", 2) == 0)
+//		{
+//			return false;
+//		}
+//		const Key * metaInB = keyGetMeta (b, currentName);
+//		if (metaInB == 0)
+//		{
+//			return false;
+//		}
+//		//		if (!keysAreSyntacticallyEqual (a, b, true))
+//		//		// key dup is only to discard const qualifier
+//		if (!keysAreSyntacticallyEqual (keyDup (currentMeta), keyDup (metaInB), true))
+//		{
+//			// comments may be different
+//			if (!semanticallySuffices && strcmp (currentName, "comment") != 0)
+//			{
+//				return false;
+//			}
+//		}
+//	}
+//	return true;
+//}
+///**
+// * Set semantically true if semantic differences like comments are irrelevant
+// */
+// static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
+//{
+//	// If a set A (meta keys of key a) is a subset of B and B is a subset of A then A == B
+//	return metaEqualHelper (a, b, semanticallySuffices) && metaEqualHelper (b, a, semanticallySuffices);
+//}
 
 /**
  * When checking the equality of a regular key, the meta information is relevant as well.
@@ -195,6 +211,10 @@ static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
  */
 static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool callFromMeta)
 {
+	if (callFromMeta)
+	{
+		// only here for a compiler warning;
+	}
 	if (keyGetValueSize (a) != keyGetValueSize (b))
 	{
 		return false;
@@ -203,10 +223,11 @@ static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool callFromMeta)
 	{
 		return false;
 	}
-	if ((!callFromMeta) && !metaEqual (a, b, false))
-	{
-		return false;
-	}
+	// Forget about metadata for the moment
+	//	if ((!callFromMeta) && !metaEqual (a, b, false))
+	//	{
+	//		return false;
+	//	}
 	return true;
 }
 
@@ -217,7 +238,7 @@ static bool keysAreSemanticallyEqual (Key * a, Key * b)
 	 * This is an important property for the semantic equivalence of values
 	 * containing whitespace such as 'aa'=='a  a'
 	 */
-	ssize_t a_size_original = keyGetValueSize (a); // ssize_t is not ANSI C99?!
+	ssize_t a_size_original = keyGetValueSize (a); // ssize_t is not ANSI C99?
 	ssize_t b_size_original = keyGetValueSize (b);
 	if (a_size_original < 0 || b_size_original < 0)
 	{
@@ -265,134 +286,99 @@ static bool keysAreEqual (Key * a, Key * b)
 	return (keysAreSyntacticallyEqual (a, b, false) || keysAreSemanticallyEqual (a, b));
 }
 
-static void conflictHandler (KeySet * result, Key * resultRoot, int strategy, Key * our, Key * their)
-{
-	/**
-	 * our or their is null when a key was changed in one set and deleted in the other
-	 * our    their   base     result
-	 * key1=2         key1=1
-	 *
-	 */
-	if (result == NULL || resultRoot == NULL)
-	{
-		fprintf (stderr, "Arguments in conflict handler must not be null!\n");
-	}
-	conflictCounter++;
-	switch (strategy)
-	{
-	case MERGE_STRATEGY_OUR:
-		keyDup (our);
-		keyName (resultRoot);
-		// See top comment for null check
-		if (our != NULL && prependAndAppend (result, keyDup (our), keyName (resultRoot)) < 0)
-		{
-			fprintf (stderr, "Could not add key to key set\n");
-			return;
-		}
-		break;
-	case MERGE_STRATEGY_THEIR:
-		if (their != NULL && prependAndAppend (result, keyDup (their), keyName (resultRoot)) < 0)
-		{
-			fprintf (stderr, "Could not add key to key set\n");
-			return;
-		}
-		break;
-	}
-}
+
 /**
- * New keys can be added in the our and their keyset.
- * Those keys should also be in the result keyset.
- * An exception is if a key with the same name but different value is added to the our and their keysets.
- * This exception is a conflict case.
+ * checkSingleSet iterates over the elements of the checkedSet key set and puts them into result if the 3-way merge rules are fulfilled
+ * and the element is not already in the result key set.
+ * It should be called 3 times, each time with a different of our key set, their key set and base key set as checkedSet parameter.
+ * Which of the remaining two key sets is firstCompared or secondCompared is irrelevant.
+ * The checkedIsDominant parameter is for the merge strategy. If a conflict occurs and checkedIsDominant is true then the current element
+ * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
  *
- * This covers the "e" cases in the diagram.
- * It adds every key from checkKeySet to result if it's not in compareKeySet with a different value.
+ * This returns -1 on error and 0 if successful.
  *
- * Returns false on error
  */
-#define CURRENTLY_OUR 1
-#define CURRENTLY_THEIR 2
-static bool addMissingKeys (KeySet * checkKeySet, KeySet * compareKeySet, KeySet * base, KeySet * result, Key * resultRoot, int strategy,
-			    int whichIsChecked)
+int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant)
 {
-	ksRewind (checkKeySet);
-	Key * checkKey;
-	while ((checkKey = ksNext (checkKeySet)) != NULL)
+	Key * checkedKey;
+	while ((checkedKey = ksNext (checkedSet)) != NULL)
 	{
-		/** all the cases are only relevant when the base is null and something is happening in ours or theirs
-		 * that is the "e" cases
+		/**
+		 * Check if a key with the same name exists
+		 * Nothing about values is said yet
 		 */
-		Key * keyInBase = ksLookup (base, checkKey, 0);
-		Key * keyInCompare = ksLookup (compareKeySet, checkKey, 0);
-		if (keyInBase == NULL)
+		Key * keyInFirst = ksLookup (firstCompared, checkedKey, 0);
+		Key * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
+		if (keyInFirst != NULL && keyInSecond != NULL)
 		{
-			if (keyInCompare == NULL)
+			if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
 			{
-				if (prependAndAppend (result, keyDup (checkKey), keyName (resultRoot)) < 0)
+				// append any of the three keys
+				if (ksAppendKey (result, checkedKey) < 0)
 				{
-					fprintf (stderr, "ERROR in %s: Could not add key to keyset\n", __func__);
-					return false;
+					return -1;
+				}
+			}
+			else if (keysAreEqual (checkedKey, keyInFirst))
+			{
+				if (ksAppendKey (result, keyInSecond) < 0)
+				{
+					return -1;
+				}
+			}
+			else if (keysAreEqual (checkedKey, keyInSecond))
+			{
+				if (ksAppendKey (result, keyInFirst) < 0)
+				{
+					return -1;
 				}
 			}
 			else
 			{
-				/**
-				 * Add keys that are in our and their keyset with same value only once
-				 */
-				if (keysAreEqual (checkKey, keyInCompare))
+				// Conflict case
+				if (checkedIsDominant)
 				{
-					Key * ourInResult = ksLookup (result, checkKey, 0);
-					if (ourInResult == NULL)
+					if (ksAppendKey (result, checkedKey) < 0)
 					{
-						if (prependAndAppend (result, keyDup (checkKey), keyName (resultRoot)) < 0)
-						{
-							fprintf (stderr, "ERROR in %s: Could not add key to keyset\n", __func__);
-							return false;
-						}
+						return -1;
 					}
 				}
-				else
-				{
-					/**
-					 * This is not an error but only a conflict.
-					 * This happens e.g. when base is empty and our and their are different.
-					 */
-					if (whichIsChecked == CURRENTLY_OUR)
-					{
-						conflictHandler (result, resultRoot, strategy, checkKey, keyInCompare);
-					}
-					else if (whichIsChecked == CURRENTLY_THEIR)
-					{
-						conflictHandler (result, resultRoot, strategy, keyInCompare, checkKey);
-					}
-				}
+			}
+		}
+		else if (keyInFirst == NULL && keyInSecond == NULL)
+		{
+			if (ksAppendKey (result, checkedKey) < 0)
+			{
+				return -1;
 			}
 		}
 		else
 		{
-			/**
-			 * This happens when a key was changed in one set and deleted in the other
-			 * our    their   base     result
-			 * key1=2         key1=1
-			 */
-			if (!keysAreEqual (checkKey, keyInBase) && keyInCompare == NULL)
+			Key * existingKey;
+			if (keyInFirst != NULL)
 			{
-				if (whichIsChecked == CURRENTLY_OUR)
-				{
-					conflictHandler (result, resultRoot, strategy, checkKey, keyInCompare);
-				}
-				else if (whichIsChecked == CURRENTLY_THEIR)
-				{
-					conflictHandler (result, resultRoot, strategy, keyInCompare, checkKey);
-				}
+				existingKey = keyInFirst;
+			}
+			else if (keyInSecond != NULL)
+			{
+				existingKey = keyInSecond;
+			}
+			else
+			{
+				return -1;
+			}
+			if (ksAppendKey (result, existingKey) < 0)
+			{
+				return -1;
 			}
 		}
 	}
-	return true;
+	return 0;
 }
 
+
 /**
- * If there is a conflict returns the number of conflicts as negative number, else return the size of the resulting key set
+ * Returns merged key set
  */
 KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
 		   int strategy)
@@ -406,52 +392,25 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
-	Key * base_key;
-	while ((base_key = ksNext (baseCropped)) != NULL)
+	bool baseDominant = false;
+	bool ourDominant = false;
+	bool theirDominant = false;
+	switch (strategy)
 	{
-		/**
-		 * Check if a key with the same name exists
-		 * Nothing about values is said yet
-		 */
-		Key * baseInOur = ksLookup (ourCropped, base_key, 0);
-		Key * baseInTheir = ksLookup (theirCropped, base_key, 0);
-		if (baseInOur != NULL && baseInTheir != NULL)
-		{
-			// Value of Base is irrelevant for this
-			if (keysAreEqual (baseInOur, baseInTheir))
-			{
-				// Any of the two is ok to append
-				if (prependAndAppend (result, keyDup (baseInOur), keyName (resultRoot)) < 0)
-				{
-					return NULL;
-				}
-			}
-			else if (keysAreEqual (base_key, baseInOur))
-			{
-				if (prependAndAppend (result, keyDup (baseInTheir), keyName (resultRoot)) < 0)
-				{
-					return NULL;
-				}
-			}
-			else if (keysAreEqual (base_key, baseInTheir))
-			{
-				if (prependAndAppend (result, keyDup (baseInOur), keyName (resultRoot)) < 0)
-				{
-					return NULL;
-				}
-			}
-			else
-			{
-				conflictHandler (result, resultRoot, strategy, baseInOur, baseInTheir);
-			}
-		}
+	case 3:
+		ourDominant = true;
+		break;
+	case 4:
+		theirDominant = true;
+		break;
+	case 5:
+		baseDominant = true;
+		break;
 	}
-	if (!(addMissingKeys (ourCropped, theirCropped, baseCropped, result, resultRoot, strategy, CURRENTLY_OUR) &&
-	      addMissingKeys (theirCropped, ourCropped, baseCropped, result, resultRoot, strategy, CURRENTLY_THEIR)))
-	{
-		fprintf (stderr, "An error happened adding missing keys\n");
-		return NULL;
-	}
+
+	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant);
+	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant);
+	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant);
 	ELEKTRA_LOG ("Resulting keyset of cmerge has size %ld. There were %d conflicts.\n", ksGetSize (result), conflictCounter);
 	ksDel (ourCropped);
 	ksDel (theirCropped);
@@ -464,5 +423,11 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 			return NULL;
 		}
 	}
-	return result;
+	KeySet * resultWithRoot = ksNew (0, KS_END);
+	size_t rootNameSize = keyGetNameSize (resultRoot);
+	char * string = elektraMalloc (rootNameSize);
+	keyGetName (resultRoot, string, rootNameSize);
+	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot));
+	ksDel (result);
+	return resultWithRoot;
 }
