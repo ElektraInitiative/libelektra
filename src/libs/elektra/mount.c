@@ -376,11 +376,13 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 {
 	int retval = 0;
 	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
-	KeySet * system = keys;
+	KeySet * system = ksDup (keys);
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
+		KeySet * tmp = keys;
 		keys = elektraDefaultGlobalConfig (keys);
+		ksDel (tmp);
 		root = ksHead (keys);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
