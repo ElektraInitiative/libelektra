@@ -218,8 +218,27 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	elektraFree (classpath);
 	if (res < 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create Java VM");
-		return -1;
+		switch (res)
+		{
+		case JNI_EDETACHED:
+			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create Java VM: Thread detached from the VM");
+			return -1;
+		case JNI_EVERSION:
+			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create Java VM: JNI version error");
+			return -1;
+		case JNI_ENOMEM:
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Cannot create Java VM: Not enough memory");
+			return -1;
+		case JNI_EEXIST:
+			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot create Java VM: VM already created");
+			return -1;
+		case JNI_EINVAL:
+			ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Cannot create Java VM: Invalid arguments");
+			return -1;
+		default:
+			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create Java VM: Unknown error");
+			return -1;
+		}
 	}
 
 	k = ksLookupByName (config, "/classname", 0);

@@ -311,7 +311,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
 		if (!(*plugin))
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin %s in process plugin", pluginName);
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin '%s'", pluginName);
 			return -1;
 		}
 

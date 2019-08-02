@@ -115,8 +115,8 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 
 	if (type->normalize != NULL && !type->normalize (handle, key))
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The value '%s' of key '%s' could not be normalized (type is '%s')",
-							keyString (key), keyName (key), typeName);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value '%s' of key '%s' could not be normalized (type is '%s')",
+							 keyString (key), keyName (key), typeName);
 		return false;
 	}
 

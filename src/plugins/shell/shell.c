@@ -70,7 +70,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
@@ -99,7 +99,7 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
@@ -128,7 +128,7 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
