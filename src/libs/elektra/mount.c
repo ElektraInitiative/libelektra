@@ -285,7 +285,7 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
  * @retval 1 on success
  */
 int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * system,
-				    KeySet * modules, Key * errorKey)
+				   KeySet * modules, Key * errorKey)
 {
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
 	Key * openKey = keyDup (errorKey);
@@ -391,7 +391,6 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
 
-	ELEKTRA_LOG_DEBUG ("KSHEAD: %s, %s", keyName (root), keyString(root));
 	KeySet * global = ksCut (keys, root);
 	Key * cur;
 	KeySet * referencePlugins = ksNew (0, KS_END);
@@ -411,8 +410,8 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 #endif
 				// load plugins in implicit max once placement
 				Plugin * plugin = 0;
-				int mountRet = elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, system,
-									      modules, errorKey);
+				int mountRet =
+					elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, system, modules, errorKey);
 
 				if (mountRet == -1)
 					retval = -1; // error loading plugin
