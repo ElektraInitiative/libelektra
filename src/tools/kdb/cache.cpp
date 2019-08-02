@@ -49,6 +49,12 @@ int CacheCommand::execute (Cmdline const & cl)
 		conf.append (disabled);
 		kdb.set (conf, parentKey);
 	}
+	else if (cmd == "default")
+	{
+		conf.lookup (enabled, KDB_O_POP);
+		conf.lookup (disabled, KDB_O_POP);
+		kdb.set (conf, parentKey);
+	}
 	else if (cmd == "clear")
 	{
 		Modules modules;

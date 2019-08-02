@@ -2,16 +2,18 @@
 
 ## SYNOPSIS
 
-`kdb cache {enable,disable,clear}`
+`kdb cache {enable,disable,default,clear}`
 
 ## DESCRIPTION
 
-This command is used to enable or disable the cache and to
-clear the generated cache files in a safe way.
+This command is used to enable or disable the cache and to revert
+to the default settings. The default settings will let the system
+decide whether to use the cache or not. The clear command will
+remove the generated cache files in a safe way.
 
 ## LIMITATIONS
 
-Caches are stored on a per-user basis, therefor the `clear`
+Caches are stored on a per-user basis, therefore the `clear`
 subcommand can only remove a user's cache files (i.e. not system wide).
 
 ## OPTIONS
@@ -39,6 +41,9 @@ kdb cache enable
 
 # Disable the cache
 kdb cache disable
+
+# Revert to defaults
+kdb cache default
 
 # Clear all generated cache files
 kdb cache clear
