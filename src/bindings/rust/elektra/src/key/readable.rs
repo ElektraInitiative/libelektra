@@ -1,6 +1,6 @@
-use std::ffi::{CStr,CString};
+use crate::{KeyError, ReadOnly, StringKey};
 use std::convert::TryInto;
-use crate::{StringKey,KeyError,ReadOnly};
+use std::ffi::{CStr, CString};
 
 pub trait ReadableKey {
     fn as_ref(&self) -> &elektra_sys::Key;
