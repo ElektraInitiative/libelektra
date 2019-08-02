@@ -235,11 +235,46 @@ def dockerInit() {
     )
 
     /* Our main target for compatibility is Debian stable (currently
-     * stretch).
+     * buster).
      * Hence we try to build all parts of Elektra via this image.
      * Most of the tests defined below use this image.
      * Especially noteworthy is that this image is also used for Debian
      * package building
+     */
+    DOCKER_IMAGES.buster = createDockerImageDesc(
+      "debian-buster", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile"
+    )
+
+    /* A minimal Debian stable image used to test Elektra without any
+     * additional requirements introduced by optional plugins, bindings,
+     * ...
+     */
+    DOCKER_IMAGES.buster_minimal = createDockerImageDesc(
+      "debian-buster-minimal", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/minimal.Dockerfile"
+    )
+
+    /* A Docker image for crossbuilding i386
+     */
+    DOCKER_IMAGES.buster_i386 = createDockerImageDesc(
+      "debian-buster-i386", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/i386.Dockerfile"
+    )
+
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
+      "debian-buster-doc", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/doc.Dockerfile"
+    )
+
+    /* A Debian oldstable image used for testing backwards compatibility.
      */
     DOCKER_IMAGES.stretch = createDockerImageDesc(
       "debian-stretch", this.&idTesting,
@@ -274,7 +309,8 @@ def dockerInit() {
       "./scripts/docker/debian/stretch/doc.Dockerfile"
     )
 
-    /* A Debian oldstable image used for testing backwards compatibility.
+    /* A Debian oldoldstable image used for testing backwards compatibility.
+       (will be removed on problems)
      */
     DOCKER_IMAGES.jessie = createDockerImageDesc(
       "debian-jessie", this.&idTesting,
@@ -471,7 +507,15 @@ def generateFullBuildStages() {
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "debian-stable-asan",
+    "debian-buster-asan",
+    DOCKER_IMAGES.buster,
+    CMAKE_FLAGS_BUILD_ALL
+  )
+
+  // Build Elektra with ASAN enabled
+  // Detects memory leaks via ASAN
+  tasks << buildAndTestAsan(
+    "debian-stretch-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL
   )
@@ -487,7 +531,7 @@ def generateFullBuildStages() {
 
   // Build Elektra on oldstable to see if we are backwards compatible
   tasks << buildAndTest(
-    "debian-oldstable-full",
+    "debian-jessie-full",
     DOCKER_IMAGES.jessie,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
@@ -506,7 +550,16 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTest(
-    "debian-stable-full-i386",
+    "debian-buster-full-i386",
+    DOCKER_IMAGES.buster_i386,
+    CMAKE_FLAGS_I386 + [
+      'PLUGINS': 'NODEP'
+    ] + CMAKE_FLAGS_BUILD_ALL,
+    [TEST.ALL]
+  )
+
+  tasks << buildAndTest(
+    "debian-stretch-full-i386",
     DOCKER_IMAGES.stretch_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
