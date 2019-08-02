@@ -15,26 +15,17 @@ if (CARGO_EXECUTABLE)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/Cargo.toml" @ONLY)
 
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
-			    COMMAND ${CARGO_EXECUTABLE} build
-				    --release
+                COMMAND ${CARGO_EXECUTABLE} build --release
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs"
-				    "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
+				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs" "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
-	add_test (NAME test_cargo_elektra
-		  COMMAND ${CARGO_EXECUTABLE} test
-		  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	add_test (NAME test_cargo_elektra COMMAND ${CARGO_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
-	set_property (TEST test_cargo_elektra
-		      PROPERTY ENVIRONMENT
-			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	set_property (TEST test_cargo_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-	set_property (TEST test_cargo_elektra
-		      PROPERTY LABELS
-			       kdbtests
-			       bindings)
+	set_property (TEST test_cargo_elektra PROPERTY LABELS kdbtests bindings)
 
 else ()
 	exclude_binding (rust, "cargo not found")
