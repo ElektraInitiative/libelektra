@@ -36,7 +36,7 @@ mod test {
         let val = "key_value";
         let key: StringKey = KeyBuilder::new(name).value(val).build();
         assert_eq!(key.get_name(), name);
-        assert_eq!(key.get_string(), val);
+        assert_eq!(key.get_value(), val);
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod test {
             .value(val)
             .build();
         assert_eq!(key.get_name(), name);
-        assert_eq!(key.get_binary(), val.to_owned().into_bytes());
+        assert_eq!(key.get_value(), val.to_owned().into_bytes());
     }
 
     #[test]
