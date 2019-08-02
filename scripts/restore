@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # @author Thomas Waser <thomas.waser@libelektra.org>
-# @brief Restores a backup (or stash)
+# @brief Restores a backup
 # @date 14.08.2017
 # @tags backup, stash, helper
 
@@ -30,8 +30,7 @@ fi
 
 PATHS="$(cat "${TMPDIR}/info")"
 
-$KDB umount-all 2> /dev/null
-$KDB rm -r / 2> /dev/null
+"$KDB" reset -f
 
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"

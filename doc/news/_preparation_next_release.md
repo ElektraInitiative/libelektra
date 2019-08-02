@@ -527,6 +527,7 @@ you up to date with the multi-language support provided by Elektra.
 - `gen-gpg-testkey` is added to the default tools list (see [#2668](https://github.com/ElektraInitiative/libelektra/issues/2668))._(Peter Nirschl)_
 - `kdb getenv` now executed correctly from within tests _(Markus Raab)_
 - `kdb-bash-completion` was fixed (see [#2836](https://github.com/ElektraInitiative/libelektra/pull/2836)). _(Eduardo Santana)_
+- `kdb rm` supports `--without-elektra`. _(Markus Raab)_
 - <<TODO>>
 
 - <<TODO>>
@@ -552,6 +553,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 - The script `scripts/pre-commit-check-formatting` can be used as a pre-commit hook, to ensure files are formatted before committing. _(Klemens Böswirth)_
 - The [link checker](../../scripts/link-checker) now prints broken links to the standard error output. _(René Schwaiger)_
 - We added a script, called [`benchmark-yaml`](../../scripts/benchmark-yaml.in) that compares the run-time of the YAML plugins:
+- Added `kdb reset` and `kdb reset-elektra`, fixed `kdb stash`. _(Markus Raab)_
 
   - [YAML CPP](https://www.libelektra.org/plugins/yamlcpp),
   - [Yan LR](https://www.libelektra.org/plugins/yanlr),

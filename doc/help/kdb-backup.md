@@ -20,5 +20,5 @@ kdb backup
 
 ## SEE ALSO
 
-- [kdb-stash(7)](kdb-stash.md)
-- [kdb-restore(7)](kdb-restore.md)
+- [kdb-stash(1)](kdb-stash.md)
+- [kdb-restore(1)](kdb-restore.md)
