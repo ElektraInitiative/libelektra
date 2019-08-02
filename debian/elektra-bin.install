@@ -4,6 +4,9 @@ usr/lib/*/libelektratools.so*
 usr/lib/*/elektra/tool_exec/backup
 usr/lib/*/elektra/tool_exec/stash
 usr/lib/*/elektra/tool_exec/restore
+usr/lib/*/elektra/tool_exec/reset
+usr/lib/*/elektra/tool_exec/reset-elektra
+usr/lib/*/elektra/tool_exec/umount-all
 usr/lib/*/elektra/tool_exec/change-resolver-symlink
 usr/lib/*/elektra/tool_exec/change-storage-symlink
 usr/lib/*/elektra/tool_exec/mount-list-all-files
@@ -83,3 +86,6 @@ usr/share/man/man1/kdb-check-env-dep.1
 usr/share/man/man1/kdb-mount-list-all-files.1
 usr/share/man/man1/kdb-mountpoint-info.1
 usr/share/man/man1/kdb-find.1
+usr/share/man/man1/kdb-reset.1
+usr/share/man/man1/kdb-reset-elektra.1
+usr/share/man/man1/kdb-umount-all.1
