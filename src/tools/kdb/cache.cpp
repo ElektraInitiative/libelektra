@@ -36,13 +36,16 @@ int CacheCommand::execute (Cmdline const & cl)
 
 	string cmd = cl.arguments[0];
 	Key disabled ("system/elektra/cache/disabled", KEY_END);
+	Key enabled ("system/elektra/cache/enabled", KEY_END);
 	if (cmd == "enable")
 	{
 		conf.lookup (disabled, KDB_O_POP);
+		conf.append (enabled);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "disable")
 	{
+		conf.lookup (enabled, KDB_O_POP);
 		conf.append (disabled);
 		kdb.set (conf, parentKey);
 	}
