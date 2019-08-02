@@ -9,8 +9,7 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-fail()
-{
+fail() {
 	echo "$*" 2> /dev/null
 	exit 1
 }
