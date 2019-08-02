@@ -16,4 +16,4 @@ fail() {
 
 $KDB backup || fail "Could not backup successfully, will abort"
 
-$KDB reset -f
+"$KDB" reset -f
