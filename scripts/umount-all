@@ -19,4 +19,4 @@ if [ "$1" != "-f" ]; then
 fi
 
 "$KDB" rm -r system/elektra/mountpoints
-$KDB rm -r system/elektra/globalplugins
+"$KDB" rm -r system/elektra/globalplugins
