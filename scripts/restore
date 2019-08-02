@@ -30,7 +30,7 @@ fi
 
 PATHS="$(cat "${TMPDIR}/info")"
 
-$KDB reset -f
+"$KDB" reset -f
 
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"
