@@ -3,7 +3,10 @@ include (LibAddMacros)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-set_source_files_properties (benchmark_getenv.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
+set_source_files_properties (benchmark_getenv.cpp
+			     PROPERTIES
+			     COMPILE_FLAGS
+			     "-Wno-unused-result")
 
 macro (do_benchmark source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
@@ -13,13 +16,10 @@ macro (do_benchmark source)
 
 	target_link_elektra (${source})
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_benchmark)
 
-file (GLOB TESTS
-	   benchmark_*.cpp)
+file (GLOB TESTS benchmark_*.cpp)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_benchmark (${name})

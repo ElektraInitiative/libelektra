@@ -7,9 +7,7 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (zeromqsend
-	    SOURCES zeromqsend.h
-		    zeromqsend.c
-		    publish.c
+	    SOURCES zeromqsend.h zeromqsend.c publish.c
 	    INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
 	    LINK_LIBRARIES ${ZeroMQ_LIBRARIES})
 

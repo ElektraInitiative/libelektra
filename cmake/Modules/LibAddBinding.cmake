@@ -97,17 +97,9 @@ function (add_binding BINDING_NAME)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
 		list (SORT TMP)
 		list (REMOVE_DUPLICATES TMP)
-		set (ADDED_BINDINGS
-		     "${TMP}"
-		     CACHE STRING
-			   "${ADDED_BINDINGS_DOC}"
-		     FORCE)
+		set (ADDED_BINDINGS "${TMP}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	else ()
-		set (ADDED_BINDINGS
-		     "${BINDING_NAME}"
-		     CACHE STRING
-			   "${ADDED_BINDINGS_DOC}"
-		     FORCE)
+		set (ADDED_BINDINGS "${BINDING_NAME}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	endif ()
 
 	set (STATUS_MESSAGE "Include Binding ${BINDING_NAME}")
@@ -149,18 +141,11 @@ function (exclude_binding name reason)
 	if (ARG_REMOVE)
 		if (ADDED_BINDINGS)
 			set (TMP ${ADDED_BINDINGS})
-			list (REMOVE_ITEM TMP
-					  ${name})
-			set (ADDED_BINDINGS
-			     ${TMP}
-			     CACHE STRING
-				   ${ADDED_BINDINGS_DOC}
-			     FORCE)
+			list (REMOVE_ITEM TMP ${name})
+			set (ADDED_BINDINGS ${TMP} CACHE STRING ${ADDED_BINDINGS_DOC} FORCE)
 		endif ()
 	else ()
-		list (FIND ADDED_BINDINGS
-			   "${name}"
-			   FOUND_NAME)
+		list (FIND ADDED_BINDINGS "${name}" FOUND_NAME)
 		if (FOUND_NAME GREATER -1)
 			message (WARNING "Internal inconsistency: REMOVE_NOT_NECESSARY given but ${name} is present in bindings!")
 		endif ()
@@ -188,9 +173,7 @@ endfunction (exclude_binding)
 #   endif ()
 # ~~~
 function (check_binding_was_added BINDING_NAME OUTVARIABLE)
-	list (FIND ADDED_BINDINGS
-		   ${BINDING_NAME}
-		   FINDEX)
+	list (FIND ADDED_BINDINGS ${BINDING_NAME} FINDEX)
 	if (FINDEX GREATER -1)
 		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
 	else ()
@@ -231,7 +214,10 @@ endfunction (check_binding_was_added)
 # 		remove_something ("io_uv" ${IS_EXCLUDED})
 # 	endif ()
 # ~~~
-function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
+function (check_item_is_excluded
+	  OUTVARIABLE
+	  LIST
+	  ITEM_NAME)
 	cmake_parse_arguments (ARG
 			       "ENABLE_PROVIDES;NO_CATEGORIES" # optional keywords
 			       "SUBDIRECTORY;BASEDIRECTORY" # one value keywords
@@ -239,18 +225,14 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 			       ${ARGN})
 	set (${OUTVARIABLE} "NO" PARENT_SCOPE)
 
-	list (FIND ${LIST}
-		   "-${ITEM_NAME}"
-		   FOUND_EXCLUDE_NAME)
+	list (FIND ${LIST} "-${ITEM_NAME}" FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
 		set (${OUTVARIABLE} "explicitly excluded" PARENT_SCOPE) # let explicit exclusion win
 
 		return ()
 	endif ()
 
-	list (FIND ${LIST}
-		   "${ITEM_NAME}"
-		   FOUND_NAME)
+	list (FIND ${LIST} "${ITEM_NAME}" FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
 		set (${OUTVARIABLE} "silent" PARENT_SCOPE) # maybe it is included by category
 
@@ -277,8 +259,7 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 		# we need README.md for extracting categories
 		message (WARNING "readme file does not exist at ${README_FILE}")
 	else ()
-		file (READ ${README_FILE}
-			   contents)
+		file (READ ${README_FILE} contents)
 		string (REGEX MATCH
 			      "- +infos/status *= *([-a-zA-Z0-9 ]*)"
 			      CATEGORIES
@@ -310,20 +291,15 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 					PROVIDES
 					"${PROVIDES}")
 			split_plugin_providers (PROVIDES)
-			list (APPEND CATEGORIES
-				     "${PROVIDES}")
+			list (APPEND CATEGORIES "${PROVIDES}")
 		endif ()
 	endif ()
-	list (APPEND CATEGORIES
-		     "ALL")
+	list (APPEND CATEGORIES "ALL")
 
-	string (TOUPPER "${CATEGORIES}"
-			CATEGORIES) # message (STATUS "CATEGORIES FOUND FOR ${ITEM_NAME}: ${CATEGORIES}")
+	string (TOUPPER "${CATEGORIES}" CATEGORIES) # message (STATUS "CATEGORIES FOUND FOR ${ITEM_NAME}: ${CATEGORIES}")
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND ${LIST}
-			   "-${CAT}"
-			   FOUND_EXCLUDE_CATEGORY)
+		list (FIND ${LIST} "-${CAT}" FOUND_EXCLUDE_CATEGORY)
 		if (FOUND_EXCLUDE_CATEGORY GREATER -1)
 			set (${OUTVARIABLE} "excluded by category ${CAT}" PARENT_SCOPE)
 			return ()
@@ -331,9 +307,7 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 	endforeach ()
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND ${LIST}
-			   "${CAT}"
-			   FOUND_CATEGORY)
+		list (FIND ${LIST} "${CAT}" FOUND_CATEGORY)
 		if (FOUND_CATEGORY GREATER -1)
 			set (${OUTVARIABLE} "" PARENT_SCOPE)
 			return ()

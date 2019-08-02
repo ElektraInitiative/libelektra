@@ -17,7 +17,11 @@ find_library (YAEP_LIBRARY_CPP NAMES yaep++)
 
 include (FindPackageHandleStandardArgs)
 # Handle the QUIETLY and REQUIRED arguments and set YAEP_FOUND to TRUE, if all listed variables are TRUE
-find_package_handle_standard_args (YAEP REQUIRED_VARS YAEP_LIBRARY YAEP_LIBRARY_CPP YAEP_INCLUDE_DIR)
+find_package_handle_standard_args (YAEP
+				   REQUIRED_VARS
+				   YAEP_LIBRARY
+				   YAEP_LIBRARY_CPP
+				   YAEP_INCLUDE_DIR)
 
 mark_as_advanced (YAEP_INCLUDE_DIR YAEP_LIBRARY)
 

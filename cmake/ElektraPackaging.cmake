@@ -13,7 +13,15 @@ set (
 	)
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_DESCRIPTION}")
 set (CPACK_PACKAGE_CONTACT "${PACKAGE_URL}")
-set (CPACK_SOURCE_IGNORE_FILES "/.cvsignore" "/.gitignore" "/songs/" "/build/" "/.svn/" "/.git/" "/osx-utils/" "/portage-overlay/")
+set (CPACK_SOURCE_IGNORE_FILES
+     "/.cvsignore"
+     "/.gitignore"
+     "/songs/"
+     "/build/"
+     "/.svn/"
+     "/.git/"
+     "/osx-utils/"
+     "/portage-overlay/")
 set (CPACK_PACKAGE_EXECUTABLES kdb)
 set (CPACK_SOURCE_GENERATOR "TBZ2")
 set (CPACK_GENERATOR "TBZ2")
@@ -35,20 +43,14 @@ endif (APPLE)
 if (UNIX)
 
 	# Try to find architecture
-	execute_process (COMMAND uname -m
-			 OUTPUT_VARIABLE CPACK_PACKAGE_ARCHITECTURE)
-	string (STRIP "${CPACK_PACKAGE_ARCHITECTURE}"
-		      CPACK_PACKAGE_ARCHITECTURE)
+	execute_process (COMMAND uname -m OUTPUT_VARIABLE CPACK_PACKAGE_ARCHITECTURE)
+	string (STRIP "${CPACK_PACKAGE_ARCHITECTURE}" CPACK_PACKAGE_ARCHITECTURE)
 
 	# Try to find distro name and distro-specific arch
-	execute_process (COMMAND lsb_release -is
-			 OUTPUT_VARIABLE LSB_ID)
-	execute_process (COMMAND lsb_release -rs
-			 OUTPUT_VARIABLE LSB_RELEASE)
-	string (STRIP "${LSB_ID}"
-		      LSB_ID)
-	string (STRIP "${LSB_RELEASE}"
-		      LSB_RELEASE)
+	execute_process (COMMAND lsb_release -is OUTPUT_VARIABLE LSB_ID)
+	execute_process (COMMAND lsb_release -rs OUTPUT_VARIABLE LSB_RELEASE)
+	string (STRIP "${LSB_ID}" LSB_ID)
+	string (STRIP "${LSB_RELEASE}" LSB_RELEASE)
 	set (LSB_DISTRIB "${LSB_ID}${LSB_RELEASE}")
 	if (NOT LSB_DISTRIB)
 		set (LSB_DISTRIB "unix")

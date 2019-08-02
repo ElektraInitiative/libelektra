@@ -15,8 +15,7 @@ if (DEPENDENCY_PHASE)
 
 endif ()
 add_plugin (gitresolver
-	    SOURCES gitresolver.h
-		    gitresolver.c
+	    SOURCES gitresolver.h gitresolver.c
 	    LINK_ELEKTRA elektra-invoke
 	    INCLUDE_SYSTEM_DIRECTORIES ${GITRESOLVER_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${GITRESOLVER_LIBRARY_DIRS})

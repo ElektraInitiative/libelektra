@@ -1,12 +1,7 @@
-file (GLOB TESTS
-	   test_*.c)
+file (GLOB TESTS test_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
-	if (ENABLE_OPTIMIZATIONS
-	    OR NOT
-	       ${name}
-	       MATCHES
-	       "opmphm")
+	if (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
 		do_test (${name})
 		target_link_elektra (${name} elektra-kdb)
 	endif (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")

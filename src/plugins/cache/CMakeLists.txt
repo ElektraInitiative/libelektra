@@ -15,11 +15,9 @@ if (NOT_INCLUDED)
 endif (NOT_INCLUDED)
 
 add_plugin (cache
-	    SOURCES cache.h
-		    cache.c
+	    SOURCES cache.h cache.c
 	    LINK_ELEKTRA elektra-kdb
-	    ADD_TEST
-	    TEST_README)
+	    ADD_TEST TEST_README)
 
 if (DEPENDENCY_PHASE AND BUILD_SHARED)
 	add_dependencies (elektra-cache elektra-resolver_fm_hpu_b elektra-mmapstorage)

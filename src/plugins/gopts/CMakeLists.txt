@@ -7,9 +7,7 @@ elseif (APPLE)
 	set (ELEKTRA_GOPTS_OSX ON)
 	set (gopts_source gopts_osx.h)
 else ()
-	try_compile (SYSCTL_TEST
-		     ${CMAKE_CURRENT_BINARY_DIR}
-		     "${CMAKE_SOURCE_DIR}/src/plugins/gopts/sysctl_test.c"
+	try_compile (SYSCTL_TEST ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_SOURCE_DIR}/src/plugins/gopts/sysctl_test.c"
 		     OUTPUT_VARIABLE SYSCTL_TEST_OUTPUT)
 
 	if (SYSCTL_TEST)
@@ -31,9 +29,7 @@ if (gopts_source)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gopts_impl.c.in" "${CMAKE_CURRENT_BINARY_DIR}/gopts_impl.c" @ONLY)
 
 	add_plugin (gopts
-		    SOURCES gopts.h
-			    gopts.c
-			    ${gopts_source}
+		    SOURCES gopts.h gopts.c ${gopts_source}
 		    LINK_ELEKTRA elektra-opts
 		    TEST_README)
 
@@ -41,7 +37,10 @@ if (gopts_source)
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
 		add_executable (elektra-gopts-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c" ${TEST_SOURCES})
-		target_link_elektra (elektra-gopts-testapp elektra-core elektra-invoke elektra-opts)
+		target_link_elektra (elektra-gopts-testapp
+				     elektra-core
+				     elektra-invoke
+				     elektra-opts)
 
 		set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-gopts-testapp")
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)

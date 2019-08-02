@@ -1,8 +1,6 @@
 find_program (NPM_EXECUTABLE "npm")
 
-list (FIND REMOVED_PLUGINS
-	   "yajl"
-	   yajl_index)
+list (FIND REMOVED_PLUGINS "yajl" yajl_index)
 if (NOT yajl_index EQUAL -1)
 	remove_tool (${tool} "yajl plugin not available")
 else ()
@@ -25,19 +23,12 @@ else ()
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}")
 
 		# install files to destination
-		install (DIRECTORY elektrad
-				   webd
-				   client
+		install (DIRECTORY elektrad webd client
 			 DESTINATION ${install_directory}
-			 PATTERN "node_modules"
-			 EXCLUDE
-			 PATTERN "build"
-			 EXCLUDE)
-		install (FILES README.md
-			       kdb.js
-			 DESTINATION ${install_directory})
-		install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool}
-				  ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
+			 PATTERN "node_modules" EXCLUDE
+			 PATTERN "build" EXCLUDE)
+		install (FILES README.md kdb.js DESTINATION ${install_directory})
+		install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
 				  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
@@ -45,41 +36,41 @@ else ()
 		install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
 		install (
 			CODE
-			"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
+				"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
 			)
 		install (
 			CODE
-			"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
+				"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
 			)
 		install (
 			CODE
-			"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
+				"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
 			)
 		install (CODE "message (\"-- Installing: elektra-web > webd\")")
 		install (
 			CODE
-			"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/webd OUTPUT_QUIET)"
+				"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/webd OUTPUT_QUIET)"
 			)
 		install (
 			CODE
-			"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/webd OUTPUT_QUIET)"
+				"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/webd OUTPUT_QUIET)"
 			)
 		install (
 			CODE
-			"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/webd OUTPUT_QUIET)"
+				"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/webd OUTPUT_QUIET)"
 			)
 		install (CODE "message (\"-- Installing: elektra-web > client\")")
 		install (
 			CODE
-			"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
+				"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
 			)
 		install (
 			CODE
-			"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
+				"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
 			)
 		install (
 			CODE
-			"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
+				"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
 			)
 
 		# generate manpages
@@ -92,9 +83,7 @@ else ()
 
 			# testing is possible
 			add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-			set_property (TEST elektra-web
-				      PROPERTY ENVIRONMENT
-					       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property (TEST elektra-web PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif ()
 
 	endif ()

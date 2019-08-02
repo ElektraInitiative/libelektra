@@ -6,16 +6,13 @@ add_toolheaders (HDR_FILES)
 
 include (LibAddTest)
 
-list (FIND REMOVED_PLUGINS
-	   error
-	   error_index)
+list (FIND REMOVED_PLUGINS error error_index)
 set (ERROR_PLUGIN_AVAILABLE ON)
 if (error_index GREATER -1)
 	set (ERROR_PLUGIN_AVAILABLE OFF)
 endif (error_index GREATER -1)
 
-file (GLOB TESTS
-	   testtool_*.cpp)
+file (GLOB TESTS testtool_*.cpp)
 
 # ~~~
 # TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
@@ -40,7 +37,5 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 if (BUILD_TESTING AND ENABLE_TESTING AND ERROR_PLUGIN_AVAILABLE)
-	set_property (TEST testtool_mergingkdb
-		      PROPERTY LABELS
-			       kdbtests)
+	set_property (TEST testtool_mergingkdb PROPERTY LABELS kdbtests)
 endif ()

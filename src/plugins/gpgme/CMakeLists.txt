@@ -9,6 +9,14 @@ if (DEPENDENCY_PHASE)
 
 endif ()
 
-set (GPGME_SOURCE_FILES keylist.h keylist.c gpgme.h gpgme.c)
+set (GPGME_SOURCE_FILES
+     keylist.h
+     keylist.c
+     gpgme.h
+     gpgme.c)
 
-add_plugin (gpgme SOURCES ${GPGME_SOURCE_FILES} INCLUDE_DIRECTORIES ${LIBGPGME_INCLUDE_DIRS} LINK_LIBRARIES ${LIBGPGME_LIBRARIES} ADD_TEST)
+add_plugin (gpgme
+	    SOURCES ${GPGME_SOURCE_FILES}
+	    INCLUDE_DIRECTORIES ${LIBGPGME_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${LIBGPGME_LIBRARIES}
+	    ADD_TEST)

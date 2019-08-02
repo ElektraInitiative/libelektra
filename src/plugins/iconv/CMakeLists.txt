@@ -7,9 +7,7 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (iconv
-	    SOURCES conv.h
-		    iconv.c
+	    SOURCES conv.h iconv.c
 	    INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${Iconv_LIBRARIES}
-	    ADD_TEST
-	    TEST_README)
+	    ADD_TEST TEST_README)

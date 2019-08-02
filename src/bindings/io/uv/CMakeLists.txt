@@ -48,26 +48,26 @@ else ()
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
 	add_headers (TEST_SOURCES)
-	file (GLOB IO_TEST_SRC_FILES
-		   "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
-	list (APPEND TEST_SOURCES
-		     ${IO_TEST_SRC_FILES})
-	list (APPEND TEST_SOURCES
-		     "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
+	file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
+	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
+	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC)
-		list (APPEND TEST_SOURCES
-			     $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>) # add sources for elektra-io-uv for static and full builds
+		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>) # add sources for elektra-io-uv for static and full
+										      # builds
 	endif ()
 
 	add_executable (${TESTEXENAME} ${TEST_SOURCES})
 	add_dependencies (${TESTEXENAME} kdberrors_generated elektra_error_codes_generated)
 
-	target_include_directories (${TESTEXENAME}
-				    PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework"
-					   "${libuv_INCLUDE_DIRS}")
+	target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
 
-	target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
+	target_link_elektra (${TESTEXENAME}
+			     elektra-kdb
+			     elektra-plugin
+			     elektra-io
+			     ${IO_UV_LIBRARY}
+			     m)
 	if (BUILD_FULL OR BUILD_STATIC)
 		target_link_libraries (${TESTEXENAME} "${libuv_LIBRARIES}" m)
 	endif ()
@@ -81,9 +81,7 @@ else ()
 	add_test (NAME ${TESTEXENAME}
 		  COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
 		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-	set_property (TEST ${TESTEXENAME}
-		      PROPERTY ENVIRONMENT
-			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	set_property (TEST ${TESTEXENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	add_subdirectory (example)
 endif ()

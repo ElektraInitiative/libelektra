@@ -1,5 +1,4 @@
-file (GLOB TESTS
-	   testabi_*.c)
+file (GLOB TESTS testabi_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_test (${name})

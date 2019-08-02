@@ -18,10 +18,13 @@ function (check_dependencies)
 	endif (NOT HAVE_CODECVT)
 
 	# Add path to Homebrew version of Bison, if it exists.
-	set (USE_HOMEBREW_BISON ${APPLE} AND EXISTS /usr/local/opt/bison)
+	set (USE_HOMEBREW_BISON
+	     ${APPLE}
+	     AND
+	     EXISTS
+	     /usr/local/opt/bison)
 	if (USE_HOMEBREW_BISON)
-		list (APPEND CMAKE_PREFIX_PATH
-			     "/usr/local/opt/bison")
+		list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/bison")
 	endif (USE_HOMEBREW_BISON)
 	find_package (BISON 3 QUIET)
 
@@ -87,11 +90,19 @@ if (DEPENDENCY_PHASE)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 
-	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	set (LIBSTDCPP
+	     CMAKE_COMPILER_IS_GNUCXX
+	     OR
+	     ${CMAKE_SYSTEM_NAME}
+	     STREQUAL
+	     "Linux")
 	if (ENABLE_ASAN AND ${LIBSTDCPP})
 		# Ignore runtime error about member call on address, which does not point to object of type `__codecvt_abstract_base` in
 		# `libstdc++`. See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81068
-		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
+		set_source_files_properties (${SOURCE_FILES_INPUT}
+					     PROPERTIES
+					     COMPILE_FLAGS
+					     "-fno-sanitize=undefined")
 	endif (ENABLE_ASAN AND ${LIBSTDCPP})
 
 	set (SOURCE_FILES
@@ -114,7 +125,6 @@ add_plugin (yambi
 	    CPP_TEST
 	    INSTALL_TEST_DATA
 	    TEST_README
-	    TEST_REQUIRED_PLUGINS directoryvalue
-				  yamlsmith
+	    TEST_REQUIRED_PLUGINS directoryvalue yamlsmith
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})

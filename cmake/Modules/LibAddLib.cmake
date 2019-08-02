@@ -1,7 +1,6 @@
 function (set_additional_compile_definitions shortname)
 	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_MODULE_NAME")
-		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
-			     "ELEKTRA_MODULE_NAME=${shortname}")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_MODULE_NAME=${shortname}")
 	endif ()
 
 	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
@@ -26,16 +25,13 @@ function (add_lib name)
 	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
 	target_include_directories (elektra-${name}-objects SYSTEM PUBLIC ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
-	set_property (TARGET elektra-${name}-objects
-		      PROPERTY POSITION_INDEPENDENT_CODE
-			       ON)
+	set_property (TARGET elektra-${name}-objects PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 	set_additional_compile_definitions (${name})
 
 	set_property (TARGET elektra-${name}-objects
 		      APPEND
-		      PROPERTY COMPILE_DEFINITIONS
-			       "${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
+		      PROPERTY COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
 
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED $<TARGET_OBJECTS:elektra-${name}-objects>)
@@ -43,15 +39,9 @@ function (add_lib name)
 		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
 	endif (BUILD_SHARED)
 
-	set_property (GLOBAL
-		      APPEND
-		      PROPERTY "elektra-full_SRCS"
-			       "$<TARGET_OBJECTS:elektra-${name}-objects>")
+	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" "$<TARGET_OBJECTS:elektra-${name}-objects>")
 
-	set_property (GLOBAL
-		      APPEND
-		      PROPERTY "elektra-extension_LIBRARIES"
-			       elektra-${name})
+	set_property (GLOBAL APPEND PROPERTY "elektra-extension_LIBRARIES" elektra-${name})
 
 	if (BUILD_SHARED)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})

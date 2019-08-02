@@ -25,8 +25,7 @@ else () # Build library
 		 INCLUDE_SYSTEM_DIRECTORIES
 		 ${LIBEV_INCLUDE_DIRS})
 
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
-			"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)
 
 	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
@@ -36,27 +35,26 @@ else () # Build library
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
 	add_headers (TEST_SOURCES)
-	file (GLOB IO_TEST_SRC_FILES
-		   "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
-	list (APPEND TEST_SOURCES
-		     ${IO_TEST_SRC_FILES})
-	list (APPEND TEST_SOURCES
-		     "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
+	file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
+	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
+	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-ev for static and full builds
-		list (APPEND TEST_SOURCES
-			     $<TARGET_OBJECTS:${IO_VARIANT_LIBRARY}-objects>)
+		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_VARIANT_LIBRARY}-objects>)
 	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
 	add_dependencies (${testexename} kdberrors_generated elektra_error_codes_generated)
 
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
-	target_include_directories (${testexename}
-				    PUBLIC SYSTEM
-					   ${LIBEV_INCLUDE_DIRS})
+	target_include_directories (${testexename} PUBLIC SYSTEM ${LIBEV_INCLUDE_DIRS})
 
-	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} m)
+	target_link_elektra (${testexename}
+			     elektra-kdb
+			     elektra-plugin
+			     elektra-io
+			     ${IO_VARIANT_LIBRARY}
+			     m)
 	if (BUILD_FULL OR BUILD_STATIC)
 		target_link_libraries (${testexename} ${LIBEV_LIBRARIES})
 	endif ()

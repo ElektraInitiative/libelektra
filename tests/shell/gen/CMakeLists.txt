@@ -1,8 +1,4 @@
-file (GLOB_RECURSE shellfiles
-      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-	       LIST_DIRECTORIES
-	       false
-	       *.sh)
+file (GLOB_RECURSE shellfiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" LIST_DIRECTORIES false *.sh)
 
 foreach (file ${shellfiles})
 	if (BUILD_SHARED)

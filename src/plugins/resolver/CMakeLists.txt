@@ -10,15 +10,7 @@ foreach (plugin ${PLUGINS})
 	if (${plugin} MATCHES "^resolver_.*")
 		set (RESOLVERS "${RESOLVERS}" "${plugin}")
 	endif ()
-	if (${plugin}
-	    MATCHES
-	    "ALL"
-	    OR ${plugin}
-	       MATCHES
-	       "DEFAULT"
-	    OR ${plugin}
-	       MATCHES
-	       "NODEP")
+	if (${plugin} MATCHES "ALL" OR ${plugin} MATCHES "DEFAULT" OR ${plugin} MATCHES "NODEP")
 		set (RESOLVERS
 		     "${RESOLVERS}"
 		     resolver_fm_b_b
@@ -52,30 +44,20 @@ foreach (plugin ${RESOLVERS})
 				variantlist
 				${variant})
 
-		list (GET variantlist
-			  0
-			  variant_base)
-		list (GET variantlist
-			  1
-			  variant_user)
-		list (GET variantlist
-			  2
-			  variant_system)
+		list (GET variantlist 0 variant_base)
+		list (GET variantlist 1 variant_user)
+		list (GET variantlist 2 variant_system)
 
 		# don't forget near-global scope for CMake variables
 		set (FURTHER_DEFINITIONS "")
 		set (FURTHER_LIBRARIES "")
 
-		string (FIND "${variant_base}"
-			     "f"
-			     out_var_n)
+		string (FIND "${variant_base}" "f" out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_FILE")
 		endif ()
 
-		string (FIND "${variant_base}"
-			     "m"
-			     out_var_n)
+		string (FIND "${variant_base}" "m" out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
 			set (FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_REALTIME_LIBS_INIT})

@@ -1,3 +1,2 @@
-file (GLOB SOURCES
-	   *.c)
+file (GLOB SOURCES *.c)
 add_lib (proposal SOURCES ${SOURCES})
