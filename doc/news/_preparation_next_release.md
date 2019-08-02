@@ -763,7 +763,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 ### Cirrus
 
 - We added the build job `🔗 Check`, which checks the documentation for broken links. _(René Schwaiger)_
-- <<TODO>>
+- We now use Bourne shell compatible syntax for the FreeBSD build jobs, since the default FreeBSD shell does not support Bash specific extensions, such as `[[`. _(René Schwaiger)_
 - <<TODO>>
 
 ### Jenkins

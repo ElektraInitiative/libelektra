@@ -39,9 +39,9 @@ bsd_task:
     - sudo mount -t fdescfs fdesc /dev/fd
     - &run_tests | # Run tests
       cd build
-      if [[ "$ENABLE_ASAN" == 'ON' ]]; then
+      if [ "$ENABLE_ASAN" = ON ]; then
         ninja run_nocheckshell
-      elif [[ "$BUILD_FULL" == 'ON' ]]; then
+      elif [ "$BUILD_FULL" = ON ]; then
         # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
         # if we do not add the alternative `false`.
         ninja run_all && kdb-full run_all || false
