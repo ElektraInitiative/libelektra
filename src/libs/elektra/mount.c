@@ -331,8 +331,8 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		keyDel (refKey);
 	}
 
-	keyDel (openKey);
 	keyCopyAllMeta (errorKey, openKey);
+	keyDel (openKey);
 	return 1;
 }
 
