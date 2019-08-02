@@ -22,7 +22,7 @@ C_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-
 LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
 
 cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
-	-DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}" -DINSTALL_SYSTEM_FILES=OFF \
+	-DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}" \
 	-DPLUGINS='ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;camel;-dbus' \
 	-DTOOLS='kdb;rest-backend;rest-frontend' \
 	-DCMAKE_C_FLAGS="$C_FLAGS" \

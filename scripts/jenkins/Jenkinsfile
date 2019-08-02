@@ -54,7 +54,6 @@ CMAKE_FLAGS_BASE = [
   'KDB_DB_SPEC': '${WORKSPACE}/config/kdb/spec',
   'KDB_DB_HOME': '${WORKSPACE}/config/kdb/home',
   'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
-  'INSTALL_SYSTEM_FILES': 'OFF',
   'BUILD_DOCUMENTATION': 'OFF',
   'CMAKE_RULE_MESSAGES': 'OFF',
   'COMMON_FLAGS': '-Werror'

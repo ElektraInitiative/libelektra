@@ -24,6 +24,7 @@ bsd_task:
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       cmake
       -DBINDINGS='ALL;-io_glib'
+      -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
@@ -152,7 +153,6 @@ mac_task:
         -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
         -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
         -DENABLE_DEBUG=ON
-        -DINSTALL_SYSTEM_FILES=OFF
         -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
         -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
         -DKDB_DB_SYSTEM="$SYSTEM_DIR"

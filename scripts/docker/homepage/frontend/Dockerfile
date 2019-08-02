@@ -30,7 +30,6 @@ RUN mkdir build \
     && cd build \
     && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
-             -DINSTALL_SYSTEM_FILES=OFF \
              -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;camel;yajl" \
              -DTOOLS="kdb;rest-frontend" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \

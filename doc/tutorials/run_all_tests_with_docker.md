@@ -105,7 +105,6 @@ Build it with
 -DKDB_DB_HOME="/home/jenkins/workspace/elektra-build-docker/.config/kdb/home" \
 -DKDB_DB_SYSTEM="/home/jenkins/workspace/elektra-build-docker/.config/kdb/system" \
 -DKDB_DB_SPEC="/home/jenkins/workspace/elektra-build-docker/.config/kdb/spec" \
--DINSTALL_SYSTEM_FILES="OFF" \
 -DBUILD_DOCUMENTATION="OFF" \
 -DCMAKE_RULE_MESSAGES="OFF" \
 -DCMAKE_INSTALL_PREFIX="/home/jenkins/workspace/elektra-install" \
