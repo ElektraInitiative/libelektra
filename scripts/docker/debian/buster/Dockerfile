@@ -45,7 +45,6 @@ RUN apt-get update \
         libpcre++-dev \
         libpcre3-dev \
         libpython3-dev \
-        libqt5svg5-dev \
         libssl-dev \
         libsystemd-dev \
         libuv1-dev \
