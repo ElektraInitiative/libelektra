@@ -1,24 +1,36 @@
 include (LibAddPlugin)
+include (SafeCheckSymbolExists)
 
-plugin_check_if_included ("resolver")
+if (DEPENDENCY_PHASE)
+	plugin_check_if_included ("resolver")
+	if (NOT_INCLUDED)
+		remove_plugin (cache "resolver plugin not found (${NOT_INCLUDED})")
+		return ()
+	endif (NOT_INCLUDED)
 
-if (NOT_INCLUDED)
-	message ("resolver plugin not found (${NOT_INCLUDED}), excluding the cache plugin")
-	return ()
-endif (NOT_INCLUDED)
+	plugin_check_if_included ("mmapstorage")
+	if (NOT_INCLUDED)
+		remove_plugin (cache "mmapstorage plugin not found (${NOT_INCLUDED})")
+		return ()
+	endif (NOT_INCLUDED)
 
-plugin_check_if_included ("mmapstorage")
+	add_definitions (-D_GNU_SOURCE -D_DARWIN_C_SOURCE)
+	safe_check_symbol_exists (nftw "ftw.h" HAVE_NFTW)
+	if (NOT HAVE_NFTW)
+		remove_plugin (cache "nftw (ftw.h) not found")
+		return ()
+	endif (NOT HAVE_NFTW)
 
-if (NOT_INCLUDED)
-	message ("mmapstorage plugin not found (${NOT_INCLUDED}), excluding the cache plugin")
-	return ()
-endif (NOT_INCLUDED)
+	set (CACHE_DEPENDENCIES_OK PARENT_SCOPE)
+endif ()
 
 add_plugin (cache
 	    SOURCES cache.h cache.c
 	    LINK_ELEKTRA elektra-kdb
 	    ADD_TEST TEST_README)
 
-if (DEPENDENCY_PHASE AND BUILD_SHARED)
+if (CACHE_DEPENDENCIES_OK AND BUILD_SHARED)
 	add_dependencies (elektra-cache elektra-resolver_fm_hpu_b elektra-mmapstorage)
 endif ()
+
+unset (CACHE_DEPENDENCIES_OK)

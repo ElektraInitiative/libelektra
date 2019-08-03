@@ -127,6 +127,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Execute only `PROCGETSTORAGE` global plugins when we have a cache hit. _(Mihael Pranjić)_
 - Fix two data loss bugs when using `cache` with `multifile` resolver. _(Mihael Pranjić)_
 - Fix GCC ASAN build warnings #2820. _(Mihael Pranjić)_
+- Add tools for enabling, disabling and clearing the cache (`kdb cache {enable,disable,clear}`). _(Mihael Pranjić)_
 
 ### crypto / fcrypt
 
@@ -805,6 +806,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
+- Our entry for Elektra has been approved in the Free Software Directory: https://directory.fsf.org/wiki/Elektra
 - Added github build status badges to website _(hesirui)_
 - We updated part of a test for the [snippet converter](https://www.libelektra.org/conversion). _(René Schwaiger)_
 - Fixed anchor links on the website _(hesirui)_

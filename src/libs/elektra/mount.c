@@ -284,10 +284,11 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
  * @retval 0 on empty plugin name (nothing configured at given position)
  * @retval 1 on success
  */
-int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules,
-				   Key * errorKey)
+int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * system,
+				   KeySet * modules, Key * errorKey)
 {
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
+	Key * openKey = keyDup (errorKey);
 
 	if (refKey)
 	{
@@ -303,15 +304,23 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		const char * pluginName = keyString (cur);
 		if (!pluginName || pluginName[0] == '\0')
 		{
+			keyDel (openKey);
 			ksDel (config);
 			return 0;
 		}
 
 		// loading the new plugin
-		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
-		if (!(*plugin))
+		*plugin = elektraPluginOpen (pluginName, modules, config, openKey);
+		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !ksLookupByName (system, "system/elektra/cache/enabled", 0))
+		{
+			keyDel (openKey);
+			return 0;
+		}
+		else if (!(*plugin))
 		{
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin '%s'", pluginName);
+			keyCopyAllMeta (errorKey, openKey);
+			keyDel (openKey);
 			return -1;
 		}
 
@@ -322,10 +331,12 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		keyDel (refKey);
 	}
 
+	keyCopyAllMeta (errorKey, openKey);
+	keyDel (openKey);
 	return 1;
 }
 
-KeySet * elektraDefaultGlobalConfig (void)
+KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 {
 	KeySet * config = ksNew (
 		24, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
@@ -356,9 +367,8 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
 
-	// TODO: this is a poor way of detecting whether cache is compiled, but simply
-	// matching against cache might fail because of other plugins (e.g. "cachefilter")
-	if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL)
+	Key * cacheEnabled = ksLookupByName (keys, "system/elektra/cache/enabled", 0);
+	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
 	{
 		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
 		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
@@ -371,11 +381,13 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 {
 	int retval = 0;
 	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
+	KeySet * system = ksDup (keys);
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
-		ksDel (keys);
-		keys = elektraDefaultGlobalConfig ();
+		KeySet * tmp = keys;
+		keys = elektraDefaultGlobalConfig (keys);
+		ksDel (tmp);
 		root = ksHead (keys);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
@@ -399,7 +411,8 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 #endif
 				// load plugins in implicit max once placement
 				Plugin * plugin = 0;
-				int mountRet = elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, modules, errorKey);
+				int mountRet =
+					elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, system, modules, errorKey);
 
 				if (mountRet == -1)
 					retval = -1; // error loading plugin
@@ -431,7 +444,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 							Plugin * subPlugin = 0;
 							int subRet =
 								elektraMountGlobalsLoadPlugin (&subPlugin, referencePlugins, curSubPosition,
-											       subPositions, modules, errorKey);
+											       subPositions, system, modules, errorKey);
 							if (subRet == -1)
 								retval = -1; // error loading plugin
 							else if (subRet == 0)
@@ -453,6 +466,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	ksDel (global);
 	ksDel (keys);
 	ksDel (referencePlugins);
+	ksDel (system);
 	return retval;
 }
 

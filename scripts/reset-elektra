@@ -20,3 +20,4 @@ if [ "$1" != "-f" ]; then
 fi
 
 "$KDB" umount-all
+"$KDB" cache default
