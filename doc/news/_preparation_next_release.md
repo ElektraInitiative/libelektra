@@ -1,4 +1,4 @@
-# 0.9.0 Release
+# 0.8.<<VERSION>> Release
 
 This release did not happen yet.
 
@@ -13,7 +13,7 @@ Please add your name at the end of every contribution.
 
 <<`scripts/generate-news-entry`>>
 
-We are proud to release Elektra 0.9.0.
+We are proud to release Elektra 0.8.<<VERSION>>.
 
 ## Possible Introduction Text
 
@@ -55,7 +55,7 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-You can also read the news [on our website](https://www.libelektra.org/news/0.9.0-release)
+You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
 ## Highlights
 
@@ -830,7 +830,7 @@ We are currently working on following topics:
 
 Following authors made this release possible:
 
-<<`scripts/git-release-stats 0.9.0`>>
+<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
 
 ## Join the Initiative!
 
@@ -842,19 +842,19 @@ Contact us via our [issue tracker](https://issues.libelektra.org).
 
 ## Get the Release!
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.0.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.0.tar.gz?raw=true)
+You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
+or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz?raw=true)
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.0.tar.gz.hashsum?raw=true)
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz.hashsum?raw=true)
 
 <<`scripts/generate-hashsums`>>
 
 The release tarball is also available signed by Markus Raab using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.0.tar.gz.gpg) or on
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.9.0.tar.gz.gpg?raw=true)
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or on
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
 
-Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.0/html/)
-or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.0).
+Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
+or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
 
 ## Stay tuned!
 
@@ -865,7 +865,7 @@ to always get the release notifications.
 If you also want to participate, or for any questions and comments
 please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.0-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 
