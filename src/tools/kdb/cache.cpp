@@ -39,14 +39,14 @@ int CacheCommand::execute (Cmdline const & cl)
 	if (cmd == "enable")
 	{
 		// always use the cache
-		isEnabled.setString("1");
+		isEnabled.setString ("1");
 		conf.append (isEnabled);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "disable")
 	{
 		// never use the cache
-		isEnabled.setString("0");
+		isEnabled.setString ("0");
 		conf.append (isEnabled);
 		kdb.set (conf, parentKey);
 	}
