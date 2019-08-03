@@ -172,4 +172,5 @@ public interface Elektra extends Library {
 
 	Pointer ksLookupByName(Pointer ks, String name, int options);
 
+	Plugin.NativePlugin elektraPluginOpen(String pluginName, Pointer modules, Pointer config, Pointer errorKey);
 }

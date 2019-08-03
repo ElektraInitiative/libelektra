@@ -1,32 +1,15 @@
 package org.libelektra;
 
 import com.sun.jna.Pointer;
+import org.libelektra.exception.mapper.ExceptionMapperService;
+import org.libelektra.exception.KDBException;
 
 /**
  * Represents session with the Key database. Close after usage, or simply use a try-with-resources statement.
  */
 public class KDB implements AutoCloseable {
 
-	/**
-	 * Custom KDB exception class being used for I/O errors
-	 */
-	public static class KDBException extends java.io.IOException {
-
-		private static final long serialVersionUID = 1L;
-
-		final transient Key errorKey;
-
-		public KDBException(final Key k) {
-			super(new Throwable(String.format("failure in I/O to KDB: %s%n%s", KeyUtils.getErrors(k), KeyUtils.getWarnings(k))));
-			errorKey = k;
-		}
-
-		public Key getErrorKey() {
-			return errorKey;
-		}
-	}
-
-	private final Pointer kdb;
+    private final Pointer kdb;
 
 	/**
 	 * Helper constructor for duplication by pointer
@@ -76,7 +59,7 @@ public class KDB implements AutoCloseable {
 	public void get(final KeySet ks, final Key parentKey) throws KDBException {
 		final int ret = Elektra.INSTANCE.kdbGet(kdb, ks.get(), parentKey.get());
 		if (ret == -1) {
-			throw new KDBException(parentKey);
+			throw ExceptionMapperService.getMappedException(parentKey);
 		}
 	}
 
@@ -93,7 +76,7 @@ public class KDB implements AutoCloseable {
 	public void set(final KeySet ks, final Key parentKey) throws KDBException {
 		final int ret = Elektra.INSTANCE.kdbSet(kdb, ks.get(), parentKey.get());
 		if (ret == -1) {
-			throw new KDBException(parentKey);
+			throw ExceptionMapperService.getMappedException(parentKey);
 		}
 	}
 

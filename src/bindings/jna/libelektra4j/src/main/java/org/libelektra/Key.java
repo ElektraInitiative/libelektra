@@ -32,7 +32,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Indicates a generic key exception occurred.
 	 */
-	public static class KeyException extends java.lang.RuntimeException {
+	public static class KeyException extends RuntimeException {
 
 		private static final long serialVersionUID = 637936674538102511L;
 

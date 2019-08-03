@@ -6,6 +6,8 @@ import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.libelektra.Key;
+import org.libelektra.KeySet;
 
 public class KeySetTest {
 

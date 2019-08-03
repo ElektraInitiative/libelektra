@@ -8,7 +8,7 @@ import com.sun.jna.Pointer;
 /**
  * An {@link Iterator} over a {@link Key}'s name parts, separated by /.
  */
-public class KeyNameIterator implements java.util.Iterator<String> {
+public class KeyNameIterator implements Iterator<String> {
 
 	private int pos = 0;
 	private int size = 0;

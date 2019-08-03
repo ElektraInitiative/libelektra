@@ -157,6 +157,9 @@ you up to date with the multi-language support provided by Elektra.
 ### Java
 
 - Upgraded maven dependencies for java binding _(Michael Zronek)_
+- Completely overhauled the java binding to be able to use Elektra plugins directly. For an example see the [test case](src/bindings/jna/libelektra4j/src/test/java/org/libelektra/ErrorCodeTest.java). _(Michael Zronek)_
+- The java binding now supports the [error codes](doc/decisions/error_codes.md) in a native way. All exceptions contain the necessary information. For
+  an example please take a look at the [test case](src/bindings/jna/libelektra4j/src/test/java/org/libelektra/ErrorCodeTest.java). _(Michael Zronek)_
 - <<TODO>>
 
 ### Rust

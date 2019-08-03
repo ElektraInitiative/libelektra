@@ -8,7 +8,7 @@ import com.sun.jna.Pointer;
 /**
  * A keyset holds together a set of keys.
  */
-public class KeySet implements java.lang.Iterable<Key> {
+public class KeySet implements Iterable<Key> {
 
 	// constants
 	public static final int KDB_O_NONE = 0;
@@ -124,7 +124,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 * @return Custom KeySetIterator
 	 */
 	@Override
-	public java.util.Iterator<Key> iterator() {
+	public Iterator<Key> iterator() {
 		return new KeySetIterator(this);
 	}
 
