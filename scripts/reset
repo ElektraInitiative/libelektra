@@ -22,9 +22,9 @@ KDBSYSTEM="$($KDB file system)"
 KDBUSER="$($KDB file user)"
 KDBSPEC="$($KDB file spec)"
 
-$KDB reset-elektra
+"$KDB" reset-elektra -f
 
-$KDB rm -r --without-elektra system || rm -f $KDBSYSTEM
+"$KDB" rm -r --without-elektra system || rm -f "$KDBSYSTEM"
 
-$KDB rm -r user || rm -f $KDBUSER
-$KDB rm -r spec || rm -f $KDBSPEC
+"$KDB" rm -r user || rm -f "$KDBUSER"
+"$KDB" rm -r spec || rm -f "$KDBSPEC"
