@@ -481,20 +481,6 @@ def generateMainBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
-  // Add a task that should build the whole project to catch all test errors
-  // in a standard environment
-  tasks << buildAndTest(
-    "debian-buster-full",
-    DOCKER_IMAGES.buster,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
   // Check the ABI and API compatibility of Elektra
   tasks << buildIcheck()
 
