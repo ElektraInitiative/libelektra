@@ -18,9 +18,13 @@ if [ "$1" != "-f" ]; then
 	fail "This is a very dangerous operation, read the man page first"
 fi
 
+KDBSYSTEM="$($KDB file system)"
+KDBUSER="$($KDB file user)"
+KDBSPEC="$($KDB file spec)"
+
 $KDB reset-elektra
 
-$KDB rm -r --without-elektra system
+$KDB rm -r --without-elektra system || rm -f $KDBSYSTEM
 
-$KDB rm -r user
-$KDB rm -r spec
+$KDB rm -r user || rm -f $KDBUSER
+$KDB rm -r spec || rm -f $KDBSPEC
