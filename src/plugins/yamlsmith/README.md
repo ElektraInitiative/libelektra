@@ -2,7 +2,7 @@
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
 - infos/needs = directoryvalue
-- infos/provides = conv
+- infos/provides =
 - infos/recommends =
 - infos/placements = setstorage
 - infos/status = maintained specific unittest nodep preview experimental unfinished nodoc concept discouraged
