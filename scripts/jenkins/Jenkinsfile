@@ -586,7 +586,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_COVERAGE + [
-      'PLUGINS': 'ALL;-DEPRECATED;-cache;-mmapstorage',
+      'PLUGINS': 'ALL;-DEPRECATED;-cache',
       ],
     [TEST.ALL, TEST.MEM]
   )
