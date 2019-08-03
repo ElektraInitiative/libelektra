@@ -234,12 +234,47 @@ def dockerInit() {
       "./scripts/docker/debian/sid/Dockerfile"
     )
 
-    /* Our main target for compatibility is Debian stable (currently
-     * stretch).
+    /* Our main target for compatibility is Debian stable
+     * (currently buster).
      * Hence we try to build all parts of Elektra via this image.
      * Most of the tests defined below use this image.
      * Especially noteworthy is that this image is also used for Debian
      * package building
+     */
+    DOCKER_IMAGES.buster = createDockerImageDesc(
+      "debian-buster", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile"
+    )
+
+    /* A minimal Debian buster image used to test Elektra without any
+     * additional requirements introduced by optional plugins, bindings,
+     * ...
+     */
+    DOCKER_IMAGES.buster_minimal = createDockerImageDesc(
+      "debian-buster-minimal", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/minimal.Dockerfile"
+    )
+
+    /* A Docker image for crossbuilding i386
+     */
+    DOCKER_IMAGES.buster_i386 = createDockerImageDesc(
+      "debian-buster-i386", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/i386.Dockerfile"
+    )
+
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
+      "debian-buster-doc", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/doc.Dockerfile"
+    )
+
+    /* A Debian oldstable image used for testing backwards compatibility.
      */
     DOCKER_IMAGES.stretch = createDockerImageDesc(
       "debian-stretch", this.&idTesting,
@@ -247,7 +282,7 @@ def dockerInit() {
       "./scripts/docker/debian/stretch/Dockerfile"
     )
 
-    /* A minimal Debian stable image used to test Elektra without any
+    /* A minimal Debian stretch image used to test Elektra without any
      * additional requirements introduced by optional plugins, bindings,
      * ...
      */
@@ -274,7 +309,8 @@ def dockerInit() {
       "./scripts/docker/debian/stretch/doc.Dockerfile"
     )
 
-    /* A Debian oldstable image used for testing backwards compatibility.
+    /* A Debian oldoldstable image used for testing backwards compatibility.
+       (will be removed on problems)
      */
     DOCKER_IMAGES.jessie = createDockerImageDesc(
       "debian-jessie", this.&idTesting,
@@ -434,7 +470,7 @@ def generateMainBuildStages() {
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(
-    "debian-stable-full",
+    "debian-stretch-full",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
@@ -471,7 +507,7 @@ def generateFullBuildStages() {
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "debian-stable-asan",
+    "debian-stretch-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL
   )
@@ -485,9 +521,10 @@ def generateFullBuildStages() {
       CMAKE_FLAGS_CLANG
   )
 
-  // Build Elektra on oldstable to see if we are backwards compatible
+  // Build Elektra on jessie to see if we are backwards compatible
+  // Can be removed if it fails
   tasks << buildAndTest(
-    "debian-oldstable-full",
+    "debian-jessie-full",
     DOCKER_IMAGES.jessie,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
@@ -506,7 +543,16 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTest(
-    "debian-stable-full-i386",
+    "debian-buster-full-i386",
+    DOCKER_IMAGES.buster_i386,
+    CMAKE_FLAGS_I386 + [
+      'PLUGINS': 'NODEP'
+    ] + CMAKE_FLAGS_BUILD_ALL,
+    [TEST.ALL]
+  )
+
+  tasks << buildAndTest(
+    "debian-stretch-full-i386",
     DOCKER_IMAGES.stretch_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
@@ -550,26 +596,34 @@ def generateFullBuildStages() {
     [TEST.ALL]
   )
 
-  // Build Elektra on a minimal Debian stable Docker image
+  // Build Elektra on a minimal Debian stretch Docker image
   tasks << buildAndTest(
-    "debian-stable-minimal",
+    "debian-stretch-minimal",
     DOCKER_IMAGES.stretch_minimal,
     [:],
     [TEST.ALL]
   )
 
-  // Build Elektra on a minimal Debian stable Docker image
+  // Build Elektra on a minimal Debian buster Docker image
+  tasks << buildAndTest(
+    "debian-buster-minimal",
+    DOCKER_IMAGES.buster_minimal,
+    [:],
+    [TEST.ALL]
+  )
+
+  // Build Elektra on a minimal Debian buster Docker image
   // specify NODEP and see if plugins are properly included/excluded
   tasks << buildAndTest(
-    "debian-stable-minimal",
-    DOCKER_IMAGES.stretch_minimal,
+    "debian-buster-minimal-nodep",
+    DOCKER_IMAGES.buster_minimal,
     ['PLUGINS': 'NODEP'],
     [TEST.ALL]
   )
 
   // Build Elektra with the ini backend instead of the default
   tasks << buildAndTest(
-    "debian-stable-full-ini",
+    "debian-stretch-full-ini",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
@@ -581,7 +635,7 @@ def generateFullBuildStages() {
 
   // Build Elektra with the mmap backend instead of the default
   tasks << buildAndTest(
-    "debian-stable-full-nocache",
+    "debian-stretch-full-mmap",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
@@ -592,7 +646,7 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTestAsan(
-    "debian-stable-full-mmap-asan",
+    "debian-stretch-full-mmap-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
@@ -602,8 +656,8 @@ def generateFullBuildStages() {
   // Build Elektra with xdg resolver to see if we are compliant
   def xdgResolver = 'resolver_mf_xp_x'
   tasks << buildAndTest(
-    "debian-stable-full-xdg",
-    DOCKER_IMAGES.stretch,
+    "debian-buster-full-xdg",
+    DOCKER_IMAGES.buster,
     [
       'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
@@ -613,7 +667,7 @@ def generateFullBuildStages() {
 
   // Build Elektra without optimizations
   tasks << buildAndTest(
-    "debian-stable-full-optimizations-off",
+    "debian-stretch-full-optimizations-off",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
@@ -622,21 +676,6 @@ def generateFullBuildStages() {
     ,
     [TEST.ALL, TEST.MEM]
   )
-
-  // Generate tests for different release types
-  // Detects problems with debug modules enabled or disabled
-  // 'RelWithDebInfo' is build in the debian-stable-full build
-  for(buildType in ['Debug', 'Release']) {
-    def testName = "debian-stable-multiconf[buildType=${buildType}]"
-    tasks << buildAndTest(
-      testName,
-      DOCKER_IMAGES.stretch,
-      CMAKE_FLAGS_BUILD_ALL + [
-        'CMAKE_BUILD_TYPE': buildType
-      ],
-      [TEST.ALL] // TODO: add memcheck when #2320 is fixed
-    )
-  }
 
   // We need the webui_base image to build webui images later
   tasks << buildImageStage(DOCKER_IMAGES.webui_base)
@@ -831,10 +870,10 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
 
 /* Helper to generate mingw test */
 def buildAndTestMingwW64() {
-  def testName = "debian-stable-mingw-w64"
+  def testName = "debian-buster-mingw-w64"
   return [(testName): {
     stage(testName) {
-      withDockerEnv(DOCKER_IMAGES.stretch) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
         dir('build') {
           deleteDir()
           sh '../scripts/configure-mingw-w64 ..'
@@ -867,7 +906,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
-  def updateCoveralls = testName == 'debian-stable-full'
+  def updateCoveralls = testName == 'debian-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
