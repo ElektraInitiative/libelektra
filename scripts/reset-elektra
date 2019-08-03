@@ -10,7 +10,8 @@ if [ -z "$KDB" ]; then
 fi
 
 fail() {
-	echo "$*" 2> /dev/null
+	echo "$*" 1>&2
+
 	exit 1
 }
 
