@@ -160,12 +160,16 @@ int main (int argc, char ** argv)
 		return 0;
 	}
 
+	bool printVerbose = false;
+	bool printDebug = false;
 	try
 	{
 		std::vector<char *> origArguments (argv + 1, argv + argc);
 		origArguments.push_back (0);
 		CommandPtr cmd = f.get (command);
 		Cmdline cl (argc, argv, cmd.get ());
+		printVerbose = cl.verbose;
+		printDebug = cl.debug;
 
 		if (cl.help)
 		{
@@ -228,7 +232,7 @@ int main (int argc, char ** argv)
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << ce.what () << std::endl;
+		std::cerr << ce.whatWithArguments (printVerbose, printDebug) << std::endl;
 		return 5;
 	}
 	catch (std::exception const & ce)
