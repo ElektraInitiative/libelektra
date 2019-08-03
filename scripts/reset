@@ -18,9 +18,9 @@ if [ "$1" != "-f" ]; then
 	fail "This is a very dangerous operation, read the man page first"
 fi
 
-$KDB rm -r --without-elektra system
-
 $KDB reset-elektra
+
+$KDB rm -r --without-elektra system
 
 $KDB rm -r user
 $KDB rm -r spec
