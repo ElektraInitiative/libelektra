@@ -47,7 +47,7 @@ if (Java_JAVAC_EXECUTABLE)
 			set (JNA_BINDING_NAMESPACE java/org/libelektra)
 
 			set (JNA_BINDING_SOURCE_DIRECTORY ${JNA_BINDING_PREFIX}/main/${JNA_BINDING_NAMESPACE})
-			set (JNA_BINDING_SOURCE_DIRECTORY_PLUGIN ${JNA_BINDING_SOURCE_DIRECTORY}/plugin)
+			set (JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION ${JNA_BINDING_SOURCE_DIRECTORY}/exception)
 			set (JNA_BINDING_SOURCE_DIRECTORY_TEST ${JNA_BINDING_PREFIX}/test/${JNA_BINDING_NAMESPACE})
 
 			# The build system calls Maven to recompile the binding, if we change any of the following source files.
@@ -58,14 +58,24 @@ if (Java_JAVAC_EXECUTABLE)
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeyNameIterator.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeySet.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeySetIterator.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeyUtils.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/ExceptionTest.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/PropertiesStorage.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Return.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Template.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ConflictingStateException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InstallationException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InterfaceException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InternalException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KDBException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/LogicalException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/OutOfMemoryException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/PermanentException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/PluginMisbehaviorException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ResourceException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/SemanticValidationException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/SyntacticValidationException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ValidationException.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/model/WarningEntry.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/mapper/ExceptionMapperService.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/AllTests.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ErrorCodeTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeySetTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeyTest.java)
