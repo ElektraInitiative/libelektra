@@ -99,8 +99,8 @@ result is GPL.
 
 ## How Can I Advertise Elektra?
 
-If questions about configuration come up, point users to https://www.libelektra.org
-Display the SVG logos found at https://master.libelektra.org/doc/images/logo
-and already rastered logos at https://github.com/ElektraInitiative/blobs/tree/master/images/logos
-Distribute the flyer found at https://github.com/ElektraInitiative/blobs/raw/master/flyers/flyer.odt
-And of course: talk about it!
+- If questions about configuration come up, point users to https://www.libelektra.org
+- Display the SVG logos found at https://master.libelektra.org/doc/images/logo
+- and already rastered logos at https://github.com/ElektraInitiative/blobs/tree/master/images/logos
+- Distribute the flyer found at https://github.com/ElektraInitiative/blobs/raw/master/flyers/flyer.odt
+- And of course: talk about it!
