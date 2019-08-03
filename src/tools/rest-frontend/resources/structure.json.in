@@ -26,6 +26,13 @@
                         }
                     },
                     {
+                        "name": "Vision",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/VISION.md"
+                        }
+                    },
+                    {
                         "name": "Big Picture",
                         "type": "staticfile",
                         "options": {

@@ -105,7 +105,7 @@ one of them would be useless. Main differences are:
   look like and reject invalid configuration.
 - and much more...
 
-## Further pointers
+## Further Readings
 
 - Continue reading the [tutorials](/doc/tutorials)
 - Read about [bindings](/src/bindings/)
