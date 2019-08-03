@@ -39,10 +39,10 @@ Key/value access in Ansible:
   connection: local
   hosts: localhost
   tasks:
-  - name: set workgroup
-    elektra:
-      key: 'system/sw/samba/global/workgroup'
-      value: 'MY_WORKGROUP'
+    - name: set workgroup
+      elektra:
+        key: "system/sw/samba/global/workgroup"
+        value: "MY_WORKGROUP"
 ```
 
     elektra:
@@ -101,7 +101,8 @@ kdbkey {'system/sw/samba/global/log level':
 }
 ```
 
-	Ideally, applications already specify their settings.
+    Ideally, applications already specify their settings.
+
 \end{frame}
 
 ## Unique Key Names
