@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check apply
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained nodep configurable global recommended productive unfinished
+- infos/status = recommended productive maintained nodep configurable global unfinished
 - infos/description = allows to give specifications for keys
 
 ## Introduction
