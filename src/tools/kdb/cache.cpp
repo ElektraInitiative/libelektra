@@ -35,24 +35,25 @@ int CacheCommand::execute (Cmdline const & cl)
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	string cmd = cl.arguments[0];
-	Key disabled ("system/elektra/cache/disabled", KEY_END);
-	Key enabled ("system/elektra/cache/enabled", KEY_END);
+	Key isEnabled ("system/elektra/cache/enabled", KEY_END);
 	if (cmd == "enable")
 	{
-		conf.lookup (disabled, KDB_O_POP);
-		conf.append (enabled);
+		// always use the cache
+		isEnabled.setString("1");
+		conf.append (isEnabled);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "disable")
 	{
-		conf.lookup (enabled, KDB_O_POP);
-		conf.append (disabled);
+		// never use the cache
+		isEnabled.setString("0");
+		conf.append (isEnabled);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "default")
 	{
-		conf.lookup (enabled, KDB_O_POP);
-		conf.lookup (disabled, KDB_O_POP);
+		// reset to default settings, use cache if available
+		conf.lookup (isEnabled, KDB_O_POP);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "clear")
