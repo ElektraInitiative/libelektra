@@ -519,11 +519,11 @@ are installed (by default off). Is needed for cross-compilation.
 Some of Elektra’s targets require to be installed into specific folders in the
 file system hierarchy to work properly.
 
-This variable is enabled by default but requires the install target to have the
-rights to write into the corresponding folders. Set `-DINSTALL_SYSTEM_FILES=OFF`
-if you do not need any of them.
+This variable is disabled by default, since it requires the install target to have the
+rights to write into the corresponding folders. Set `-DINSTALL_SYSTEM_FILES=ON`,
+if you also want to install the files listed below.
 
-If you do not have root rights you can copy them manually to your user folder.
+If you do not have root rights you can also copy the files manually to your user folder.
 
 Currently the installed system files are as following:
 
@@ -692,7 +692,6 @@ and install the build tools:
 
 ```sh
 cmake -DINSTALL_BUILD_TOOLS=ON \
-      -DINSTALL_SYSTEM_FILES=OFF \
       -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
       ..
 make -j 5

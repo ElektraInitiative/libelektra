@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb reset-elektra -f`
+`kdb reset -f`
 
 ## DESCRIPTION
 

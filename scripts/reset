@@ -10,7 +10,7 @@ if [ -z "$KDB" ]; then
 fi
 
 fail() {
-	echo "$*" 2> /dev/null
+	echo "$*" 1>&2
 	exit 1
 }
 
@@ -18,9 +18,13 @@ if [ "$1" != "-f" ]; then
 	fail "This is a very dangerous operation, read the man page first"
 fi
 
-$KDB reset-elektra
+KDBSYSTEM=$("$KDB" file system)
+KDBUSER=$("$KDB" file user)
+KDBSPEC=$("$KDB" file spec)
 
-$KDB rm -r --without-elektra system
+"$KDB" reset-elektra -f
 
-$KDB rm -r user
-$KDB rm -r spec
+"$KDB" rm -r --without-elektra system || rm -f "$KDBSYSTEM"
+
+"$KDB" rm -r user || rm -f "$KDBUSER"
+"$KDB" rm -r spec || rm -f "$KDBSPEC"
