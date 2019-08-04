@@ -9,6 +9,11 @@
 This command will restore everything backed up by `kdb backup` (or stashed by `kdb stash`)
 where `timestamp` is the timestamp returned by `kdb backup` (or `kdb stash`).
 
+## WARNING
+
+These changes cannot be undone, please use with care!
+This command writes into the `/etc` directory and as such it requires root permissions.
+
 ## EXAMPLES
 
 ```

@@ -26,4 +26,4 @@ cp -a "$KDBUSER" "${TMPDIR}/user_`basename $KDBUSER`" 2>/dev/null && echo "${KDB
 cp -a "$KDBSPEC" "${TMPDIR}/spec_`basename $KDBSPEC`" 2>/dev/null && echo "${KDBSPEC}=spec_`basename $KDBSPEC`" >> "${TMPDIR}/info"
 cp -a "$KDBINIT" "${TMPDIR}/@KDB_DB_INIT@" 2>/dev/null && echo "${KDBINIT}=@KDB_DB_INIT@" >> "${TMPDIR}/info"
 
-echo "restore with: kdb restore $TS"
+echo "kdb restore $TS"
