@@ -22,11 +22,6 @@ The values are decoded back to their original value after `kdb get` has read fro
 
 ## Usage
 
-```sh
-# Disable cache because of [ini bug](https://github.com/ElektraInitiative/libelektra/issues/2592)
-kdb cache disable
-```
-
 To mount a simple backend that uses the Base64 encoding, you can use:
 
 ```sh
@@ -134,8 +129,3 @@ kdb umount user/tests/base64
 ```
 
 For another usage example, please take a look at the ReadMe of the [YAML CPP plugin](../yamlcpp).
-
-```sh
-# Reset cache to default because of [ini bug](https://github.com/ElektraInitiative/libelektra/issues/2592)
-kdb cache default
-```
