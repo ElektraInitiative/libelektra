@@ -40,6 +40,7 @@ std::vector<std::string> getAllPlugins ()
 #ifdef ENABLE_ASAN
 	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "augeas"), plugins.end ());
+#endif
 
 	std::vector<std::string> pluginsWithMemoryLeaks;
 
@@ -47,9 +48,13 @@ std::vector<std::string> getAllPlugins ()
 	{
 		try
 		{
+#ifdef ENABLE_ASAN
 			__lsan_disable ();
+#endif
 			auto status = mpd.lookupInfo (PluginSpec (plugin), "status");
+#ifdef ENABLE_ASAN
 			__lsan_enable ();
+#endif
 			if (status.find ("memleak")) pluginsWithMemoryLeaks.push_back (plugin);
 		}
 		catch (std::exception const & error)
@@ -62,7 +67,6 @@ std::vector<std::string> getAllPlugins ()
 	{
 		plugins.erase (std::remove (plugins.begin (), plugins.end (), plugin), plugins.end ());
 	}
-#endif
 
 	return plugins;
 }
