@@ -108,4 +108,4 @@ Only pay for what you need.
 
 ## Further Readings
 
-- Continue reading: [Why should I use Elektra?](doc/WHY.md)
+- Continue reading: [Why should I use Elektra?](WHY.md)
