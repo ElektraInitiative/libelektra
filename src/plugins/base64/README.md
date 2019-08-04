@@ -23,9 +23,8 @@ The values are decoded back to their original value after `kdb get` has read fro
 ## Usage
 
 ```sh
-# Disable and clear cache because of [ini bug](https://github.com/ElektraInitiative/libelektra/issues/2592)
+# Disable cache because of [ini bug](https://github.com/ElektraInitiative/libelektra/issues/2592)
 kdb cache disable
-kdb cache clear
 ```
 
 To mount a simple backend that uses the Base64 encoding, you can use:
