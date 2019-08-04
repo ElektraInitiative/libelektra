@@ -622,14 +622,16 @@ def generateFullBuildStages() {
   )
 
   // Build Elektra with the ini backend instead of the default
+  // Cache disabled because of bug with ini https://github.com/ElektraInitiative/libelektra/issues/2592
   tasks << buildAndTest(
     "debian-stretch-full-ini",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_INI +
-      CMAKE_FLAGS_COVERAGE
-    ,
+      CMAKE_FLAGS_COVERAGE + [
+      'PLUGINS': 'ALL;-DEPRECATED;-cache',
+      ],
     [TEST.ALL, TEST.MEM]
   )
 
