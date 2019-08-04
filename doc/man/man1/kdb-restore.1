@@ -12,6 +12,9 @@
 .SH "DESCRIPTION"
 This command will restore everything backed up by \fBkdb backup\fR (or stashed by \fBkdb stash\fR) where \fBtimestamp\fR is the timestamp returned by \fBkdb backup\fR (or \fBkdb stash\fR)\.
 .
+.SH "WARNING"
+These changes cannot be undone, please use with care! This command writes into the \fB/etc\fR directory and as such it requires root permissions\.
+.
 .SH "EXAMPLES"
 .
 .nf
