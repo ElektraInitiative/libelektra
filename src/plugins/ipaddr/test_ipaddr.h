@@ -694,7 +694,6 @@ static void testIPAll (void)
 		testIPAny ("42.42.42.42", 1);
 
 		testIPAny ("::ffff:192.0.128", -1);
-		testIPAny ("1.2.3.", -1);
 		testIPAny ("x", -1);
 	}
 }
