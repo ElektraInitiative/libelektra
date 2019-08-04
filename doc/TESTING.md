@@ -110,7 +110,7 @@ _all_ tests (also those that are mostly designed for internal development)
 you need to fulfil:
 
 - Elektra must be installed (for gen + external test cases).
-- Mounted /dev (to have stdin and stdout for import & export test cases).
+- Mounted /dev and /proc (to have stdin and stdout for import & export test cases).
 - A running dbus daemon (Either "system" or "session" daemon).
 - `gpg2` or `gpg` binary must be available.
 
