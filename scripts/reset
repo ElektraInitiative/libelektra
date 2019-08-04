@@ -18,7 +18,7 @@ if [ "$1" != "-f" ]; then
 	fail "This is a very dangerous operation, read the man page first"
 fi
 
-"$KDB" reset-elektra -f
+"$KDB" reset-elektra -f || fail "Could not reset Elektra, will abort"
 
 KDBSYSTEM=$("$KDB" file system)
 KDBUSER=$("$KDB" file user)
