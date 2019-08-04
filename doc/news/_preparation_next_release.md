@@ -669,6 +669,7 @@ mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to lo
 
 ## Tests
 
+- `make run_memcheck` works again also without ASAN. _(Markus Raab)_
 - We now test the [Directory Value Plugin](https://www.libelektra.org/plugins/directoryvalue) with additional test data. _(René Schwaiger)_
 - The variables:
 
