@@ -527,7 +527,7 @@ you up to date with the multi-language support provided by Elektra.
 - `gen-gpg-testkey` is added to the default tools list (see [#2668](https://github.com/ElektraInitiative/libelektra/issues/2668))._(Peter Nirschl)_
 - `kdb getenv` now executed correctly from within tests _(Markus Raab)_
 - `kdb-bash-completion` was fixed (see [#2836](https://github.com/ElektraInitiative/libelektra/pull/2836)). _(Eduardo Santana)_
-- `kdb rm` supports `--without-elektra`. _(Markus Raab)_
+- `kdb rm` supports `--without-elektra` and returns 11 on key not found. _(Markus Raab)_
 - <<TODO>>
 
 - <<TODO>>

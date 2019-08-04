@@ -20,6 +20,15 @@ RemoveCommand::RemoveCommand ()
 {
 }
 
+static int noKeyFound (bool verbose, bool force, std::string article)
+{
+	if (verbose || !force)
+	{
+		cerr << "Did not find " << article << " key" << endl;
+	}
+	return force ? 0 : 11;
+}
+
 int RemoveCommand::execute (Cmdline const & cl)
 {
 	if (cl.arguments.size () != 1) throw invalid_argument ("1 argument required");
@@ -43,8 +52,7 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 		if (!f)
 		{
-			cerr << "Did not find the key" << endl;
-			return cl.force ? 0 : 1;
+			return noKeyFound (cl.verbose, cl.force, "the");
 		}
 	}
 	else
@@ -54,8 +62,7 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 		if (ks.size () == 0)
 		{
-			cerr << "Did not find any key" << endl;
-			return cl.force ? 0 : 1;
+			return noKeyFound (cl.verbose, cl.force, "any");
 		}
 	}
 
