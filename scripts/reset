@@ -24,7 +24,7 @@ KDBSPEC=$("$KDB" file spec)
 
 "$KDB" reset-elektra -f
 
-"$KDB" rm -r --without-elektra system || rm -f "$KDBSYSTEM"
+"$KDB" rm -rf --without-elektra system || rm -f "$KDBSYSTEM"
 
-"$KDB" rm -r user || rm -f "$KDBUSER"
-"$KDB" rm -r spec || rm -f "$KDBSPEC"
+"$KDB" rm -rf user || rm -f "$KDBUSER"
+"$KDB" rm -rf spec || rm -f "$KDBSPEC"

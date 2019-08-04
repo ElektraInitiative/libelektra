@@ -18,5 +18,5 @@ if [ "$1" != "-f" ]; then
 	fail "This is a very dangerous operation, read the man page first"
 fi
 
-"$KDB" rm -r system/elektra/mountpoints
-"$KDB" rm -r system/elektra/globalplugins
+"$KDB" rm -rf system/elektra/mountpoints
+"$KDB" rm -rf system/elektra/globalplugins
