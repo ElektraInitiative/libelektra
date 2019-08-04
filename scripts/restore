@@ -38,5 +38,5 @@ IFS="$(printf '\n+')"
 for line in $PATHS; do
 	SOURCE="$(echo "$line" | cut -d '=' -f2)"
 	TARGET="$(echo "$line" | cut -d '=' -f1)"
-	cp -a "${TMPDIR}/${SOURCE}" "${TARGET}" 2> /dev/null
+	cp -a "${TMPDIR}/${SOURCE}" "${TARGET}"
 done
