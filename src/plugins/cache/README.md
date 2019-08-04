@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = pregetcache postgetcache
-- infos/status = maintained unittest global preview concept
+- infos/status = maintained unittest shelltest specific global
 - infos/metadata =
 - infos/description = caches keysets from previous `kdbGet()` calls
 

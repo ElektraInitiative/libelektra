@@ -301,6 +301,9 @@ kdb rm -r /tests/ini
 sudo kdb umount /tests/ini
 ```
 
+The current implementation of the ordering sometimes breaks compatibility
+with the cache plugin [(see ini bug)](https://github.com/ElektraInitiative/libelektra/issues/2592).
+
 ## Special Characters
 
 The INI plugin also supports values and keys containing delimiter characters (`=`) properly.

@@ -518,8 +518,7 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 				}
 			}
 
-			// TODO: cache is currently incompatible with ini (see #2592)
-			if (r == ELEKTRA_PLUGIN_STATUS_CACHE_HIT && !(elektraStrCmp (s->storage->name, "ini") == 0))
+			if (r == ELEKTRA_PLUGIN_STATUS_CACHE_HIT)
 			{
 				++cacheHits;
 			}
