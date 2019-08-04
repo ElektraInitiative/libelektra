@@ -10,14 +10,19 @@ We will use samba and its configuration value
 ## Problem
 
 Currently, the administrator would first need to
-locate the configuration file (it could be
-`/etc/samba/smb.conf`
+locate the configuration file, it could be
+`/etc/samba/smb.conf`, learn the
+[syntax](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html)
+and then implement some script to automatically
+replace the value.
 
 ## Configuration Management
 
 By a single invocation of a command-line tool
 it should be possible to change a configuration
 value:
+
+`kdb set system/sw/samba/#0/current/global/workgroup MYGROUP`
 
 If you already use configuration management tools,
 the vision is that a single statement suffices to
@@ -26,8 +31,8 @@ change a configuration value:
 Key/value access in Chef:
 
 ```
-kdbset 'system/sw/samba/global/workgroup' do
-	value 'MY_WORKGROUP'
+kdbset 'system/sw/samba/#0/current/global/workgroup' do
+	value 'MYGROUP'
 	action :create
 end
 ```
@@ -41,8 +46,8 @@ Key/value access in Ansible:
   tasks:
     - name: set workgroup
       elektra:
-        key: "system/sw/samba/global/workgroup"
-        value: "MY_WORKGROUP"
+        key: "system/sw/samba/#0/current/global/workgroup"
+        value: "MYGROUP"
 ```
 
     elektra:
@@ -53,9 +58,9 @@ Key/value access in Ansible:
 Key/value access in puppet-libelektra:
 
 ```
-kdbkey {'system/sw/samba/global/workgroup':
+kdbkey {'system/sw/samba/#0/current/global/workgroup':
 	ensure => 'present',
-	value => 'MY_WORKGROUP'
+	value => 'MYGROUP'
 }
 ```
 
@@ -72,7 +77,7 @@ tools.
 Mounting in puppet-libelektra:
 
 ```
-kdbmount {'system/sw/samba':
+kdbmount {'system/sw/samba/#0/current':
 	ensure => 'present',
 	file => '/etc/samba/smb.conf',
 	plugins => 'ini'
@@ -87,9 +92,9 @@ kdbkey {'system/sw/samba/global/log level':
 Key/value specifications in puppet-libelektra:
 
 ```
-kdbkey {'system/sw/samba/global/log level':
+kdbkey {'system/sw/samba/#0/current/global/log level':
 	ensure => 'present',
-	value => 'MY_WORKGROUP',
+	value => 'MYGROUP',
 	check => {
 		'type' => 'short',
 		'range' => '0-10',
@@ -101,9 +106,7 @@ kdbkey {'system/sw/samba/global/log level':
 }
 ```
 
-    Ideally, applications already specify their settings.
-
-\end{frame}
+Ideally, applications already specify their settings.
 
 ## Unique Key Names
 
