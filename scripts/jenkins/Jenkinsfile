@@ -548,7 +548,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
     ] + CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
+    [TEST.ALL, TEST.MEM]
   )
 
   tasks << buildAndTest(
