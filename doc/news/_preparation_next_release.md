@@ -833,6 +833,9 @@ Following authors made this release possible:
 
 <<`scripts/git-release-stats 0.8.<<VERSION>>`>>
 
+We closed [114 issues](https://github.com/ElektraInitiative/libelektra/milestone/20?closed=1)
+for this release.
+
 ## Join the Initiative!
 
 We welcome new contributors!
