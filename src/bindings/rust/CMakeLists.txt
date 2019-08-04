@@ -21,7 +21,7 @@ if (CARGO_EXECUTABLE)
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
-	add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test --lib WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
 	set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
