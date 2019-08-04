@@ -107,9 +107,9 @@ one of them would be useless. Main differences are:
 
 ## Further Readings
 
-- Continue reading the [tutorials](/doc/tutorials)
+- [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra
+- Then continue reading the [tutorials](/doc/tutorials)
 - Read about [bindings](/src/bindings/)
 - Read about [tools](/src/tools/README.md)
 - Look into [the glossary](/doc/help/elektra-glossary.md).
 - Start reading about [command-line tools](/doc/help/kdb.md)
-- [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra
