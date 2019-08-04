@@ -15,9 +15,9 @@ if (CARGO_EXECUTABLE)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/Cargo.toml" @ONLY)
 
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
-                COMMAND ${CARGO_EXECUTABLE} build --release
+			    COMMAND ${CARGO_EXECUTABLE} build --release
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs" "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
+			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs" "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
