@@ -252,13 +252,20 @@ static bool keysAreSemanticallyEqual (Key * a, Key * b)
 	if (a_value == 0 || b_value == 0)
 	{
 		fprintf (stderr, "ERROR in %s", __func__);
+		elektraFree (a_value);
+		elektraFree (b_value);
 		return false;
 	}
 	memcpy (a_value, keyValue (a), a_size);
 	memcpy (b_value, keyValue (b), b_size);
 	size_t new_a_size = normalize (a_value, &a_size);
 	size_t new_b_size = normalize (b_value, &b_size);
-	if (new_a_size != new_b_size) return false;
+	if (new_a_size != new_b_size)
+	{
+		elektraFree (a_value);
+		elektraFree (b_value);
+		return false;
+	}
 	bool result = false; // Don't return immediately because of free
 	if (memcmp (a_value, b_value, new_a_size) == 0)
 	{
@@ -424,9 +431,6 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 		}
 	}
 	KeySet * resultWithRoot = ksNew (0, KS_END);
-	size_t rootNameSize = keyGetNameSize (resultRoot);
-	char * string = elektraMalloc (rootNameSize);
-	keyGetName (resultRoot, string, rootNameSize);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot));
 	ksDel (result);
 	return resultWithRoot;
