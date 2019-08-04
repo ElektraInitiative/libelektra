@@ -65,9 +65,6 @@ In case you are worried about linking to such a powerful library. The core is a 
 implemented in C, works cross-platform, and does not need any external dependencies. There are
 [bindings](src/bindings) for other languages in case C is too low-level for you.
 
-- [Why should I use Elektra?](doc/WHY.md)
-- [Big Picture of Elektra](doc/BIGPICTURE.md)
-
 ## Contact
 
 Do not hesitate to ask any question on
@@ -75,8 +72,6 @@ Do not hesitate to ask any question on
 or directly to one of the [authors](doc/AUTHORS.md).
 
 ## Quickstart
-
-If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
 
 ### Installation
 
@@ -115,30 +110,6 @@ You can read the documentation for the kdb tool, either
 
 > Note: All these ways to read the documentation provide the same content,
 > all generated from the GitHub repository.
-
-## Goals
-
-- Make developer's life easier by proving a well-tested mature library
-  instead of rolling your own configuration system for every application.
-  This reduces rank growth of configuration systems (including but not limited
-  to configuration file parsers) in our ecosystem and fosters well-maintained
-  plugins instead.
-- Postpone configuration decisions (such as which configuration files to use)
-  from developers to system administrators and package maintainers to
-  provide an overall more consistent and user-friendly system.
-  (Default behavior of applications still is in control of developers,
-  you can even roll your own plugins to provide exactly the same behavior
-  as your application has now.)
-- Make configuration storage more safe: avoid that applications
-  receive wrong or unexpected values that could lead to undefined behavior.
-
-And in terms of quality, we want:
-
-1. Simplicity (make configuration tasks, like access of configuration settings, simple),
-2. Robustness (no undefined behavior of applications), and
-3. Extensibility (gain control over configuration access)
-
-[Read more about the goals of Elektra](doc/GOALS.md)
 
 ## Facts and Features
 
@@ -186,4 +157,28 @@ coverage report](https://doc.libelektra.org/coverage/master/debian-stable-full/)
 
 ## Contributing
 
-Take a look at [how to start](doc/IDEAS.md).
+Take a look at [how to start contributing](doc/IDEAS.md).
+
+## Goals
+
+- Make developer's life easier by proving a well-tested mature library
+  instead of rolling your own configuration system for every application.
+  This reduces rank growth of configuration systems (including but not limited
+  to configuration file parsers) in our ecosystem and fosters well-maintained
+  plugins instead.
+- Postpone configuration decisions (such as which configuration files to use)
+  from developers to system administrators and package maintainers to
+  provide an overall more consistent and user-friendly system.
+  (Default behavior of applications still is in control of developers,
+  you can even roll your own plugins to provide exactly the same behavior
+  as your application has now.)
+- Make configuration storage more safe: avoid that applications
+  receive wrong or unexpected values that could lead to undefined behavior.
+
+And in terms of quality, we want:
+
+1. Simplicity (make configuration tasks, like access of configuration settings, simple),
+2. Robustness (no undefined behavior of applications), and
+3. Extensibility (gain control over configuration access)
+
+[Continue reading about the goals of Elektra](doc/GOALS.md)
