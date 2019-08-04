@@ -50,6 +50,15 @@ The alternative to `make run_nokdbtests`:
 ctest -T Test --output-on-failure -LE kdbtests -j 6
 ```
 
+## Required Environment
+
+To run the tests successfully, the environment
+must fulfill:
+
+- Mounted /dev and /proc (to have stdin and stdout for import & export test cases).
+- POSIX tools need to be available (including the `file` tool)
+- User must be able to write to system and spec (see below)
+
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
 
@@ -110,7 +119,6 @@ _all_ tests (also those that are mostly designed for internal development)
 you need to fulfil:
 
 - Elektra must be installed (for gen + external test cases).
-- Mounted /dev and /proc (to have stdin and stdout for import & export test cases).
 - A running dbus daemon (Either "system" or "session" daemon).
 - `gpg2` or `gpg` binary must be available.
 
