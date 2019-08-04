@@ -15,7 +15,7 @@ kdb set user/tests/markdown/napalm death
 kdb rm user/tests/markdown/napalm
 
 kdb rm /tests/markdown/babymetal
-# RET: 1
+# RET: 11
 # STDERR: Did not find the key
 ```
 
