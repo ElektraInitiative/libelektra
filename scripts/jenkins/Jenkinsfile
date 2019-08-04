@@ -59,10 +59,9 @@ CMAKE_FLAGS_BASE = [
   'COMMON_FLAGS': '-Werror'
 ]
 
-// TODO Remove -DEPRECATED after #1954 is resolved
 CMAKE_FLAGS_BUILD_ALL = [
-  'BINDINGS': 'ALL;-DEPRECATED',
-  'PLUGINS': 'ALL;-DEPRECATED',
+  'BINDINGS': 'ALL',
+  'PLUGINS': 'ALL',
   'TOOLS': 'ALL'
 ]
 
@@ -576,8 +575,6 @@ def generateFullBuildStages() {
   tasks << buildAndTestMingwW64()
 
   // Build Elektra on alpine
-  // TODO: Add more deps to test them with musl
-  // TODO: add date when their issues are resolved
   tasks << buildAndTest(
     "alpine",
     DOCKER_IMAGES.alpine,
@@ -801,11 +798,6 @@ def buildDoc() {
                     sourceFiles: 'build/doc/man/man3elektra/*',
                     removePrefix: 'build/doc/man/man3elektra/',
                     remoteDirectory: 'api/latest/man'
-                  ),
-                  // TODO: API doc of REST services are not built anymore
-                  sshTransfer(
-                    sourceFiles: 'build/API_DOC/*',
-                    removePrefix: 'build/API_DOC/'
                   )
                 ]
               )
