@@ -15,6 +15,21 @@ Where \fBpath\fR is the path of the key(s) you want to remove\. Note that when u
 .SH "DESCRIPTION"
 This command removes key(s) from the Key database\.
 .
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.
+.TP
+0
+No errors\.
+.
+.TP
+1\-10
+standard exit codes, see kdb(1) \fIkdb\.md\fR
+.
+.TP
+11
+No key to remove found\.
+.
 .SH "OPTIONS"
 .
 .TP
@@ -43,7 +58,7 @@ Omit the \fBsystem/elektra\fR directory\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
-Do not fail on missing key\.
+Do not fail on missing key, nor print if there was a key (\-v to still print)\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR

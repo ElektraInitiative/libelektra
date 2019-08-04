@@ -8,6 +8,11 @@
 
 Unmount all backend and all global plugins from key database.
 
+## WARNING
+
+These changes cannot be undone, please use with care!
+This command writes into the `/etc` directory and as such it requires root permissions.
+
 ## OPTIONS
 
 - `-H`, `--help`:

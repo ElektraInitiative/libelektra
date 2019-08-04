@@ -7,6 +7,7 @@
 ## DESCRIPTION
 
 Unmount backend from key database.
+This command writes into the `/etc` directory and as such it requires root permissions.
 
 ## OPTIONS
 
