@@ -49,11 +49,14 @@ void printKs (KeySet * ks)
 static void test_1 (void)
 {
 	printf ("In test function %s\n", __func__);
+	Key * a = keyNew (OUR_ROOT, KEY_END);
+	Key * b = keyNew (THEIR_ROOT, KEY_END);
+	Key * c = keyNew (BASE_ROOT, KEY_END);
+	Key * d = keyNew (RESULT_ROOT, KEY_END);
 	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
 	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
+	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
 
 	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
 	if (resultKey == NULL)
@@ -72,6 +75,10 @@ static void test_1 (void)
 	ksDel (their);
 	ksDel (base);
 	ksDel (result);
+	keyDel (a);
+	keyDel (b);
+	keyDel (c);
+	keyDel (d);
 }
 
 /**
@@ -81,11 +88,14 @@ static void test_1 (void)
 static void test_2 (void)
 {
 	printf ("In test function %s\n", __func__);
+	Key * a = keyNew (OUR_ROOT, KEY_END);
+	Key * b = keyNew (THEIR_ROOT, KEY_END);
+	Key * c = keyNew (BASE_ROOT, KEY_END);
+	Key * d = keyNew (RESULT_ROOT, KEY_END);
 	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
 	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
+	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
 
 	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
 	if (resultKey == NULL)
@@ -104,6 +114,10 @@ static void test_2 (void)
 	ksDel (their);
 	ksDel (base);
 	ksDel (result);
+	keyDel (a);
+	keyDel (b);
+	keyDel (c);
+	keyDel (d);
 }
 
 /**
@@ -113,11 +127,14 @@ static void test_2 (void)
 static void test_3 (void)
 {
 	printf ("In test function %s\n", __func__);
+	Key * a = keyNew (OUR_ROOT, KEY_END);
+	Key * b = keyNew (THEIR_ROOT, KEY_END);
+	Key * c = keyNew (BASE_ROOT, KEY_END);
+	Key * d = keyNew (RESULT_ROOT, KEY_END);
 	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
 	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
+	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
 
 	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
 	if (resultKey == NULL)
@@ -136,6 +153,10 @@ static void test_3 (void)
 	ksDel (their);
 	ksDel (base);
 	ksDel (result);
+	keyDel (a);
+	keyDel (b);
+	keyDel (c);
+	keyDel (d);
 }
 
 /**
@@ -145,11 +166,14 @@ static void test_3 (void)
 static void test_4 (void)
 {
 	printf ("In test function %s\n", __func__);
+	Key * a = keyNew (OUR_ROOT, KEY_END);
+	Key * b = keyNew (THEIR_ROOT, KEY_END);
+	Key * c = keyNew (BASE_ROOT, KEY_END);
+	Key * d = keyNew (RESULT_ROOT, KEY_END);
 	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
 	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
+	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
 
 	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
 	if (resultKey == NULL)
@@ -168,6 +192,10 @@ static void test_4 (void)
 	ksDel (their);
 	ksDel (base);
 	ksDel (result);
+	keyDel (a);
+	keyDel (b);
+	keyDel (c);
+	keyDel (d);
 }
 
 ///**
