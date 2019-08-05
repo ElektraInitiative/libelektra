@@ -17,7 +17,7 @@ the value.
 
 ## Configuration Management
 
-We envision, that instead a key/value interface
+We envision, that instead a key-value interface
 allows us to change any configuration value
 as desired.
 
