@@ -12,7 +12,7 @@ public class ErrorCodeTest {
     private Key parentKey = Key.create("user/tests/javabinding");
     private final String errorMeta = "trigger/error";
     private final String warningMeta = "trigger/warnings";
-    private final Plugin errorPlugin;
+    private Plugin errorPlugin;
 
     @Before
     public void setup(){
