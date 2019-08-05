@@ -20,8 +20,7 @@ if (CARGO_EXECUTABLE)
 				    --release
 				    --quiet
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs"
-				    "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
+			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs" "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
