@@ -3,7 +3,7 @@
 The vision of Elektra is to have systems in which every configuration
 setting is easily accessible and specifiable.
 
-We will use samba and its configuration value `global/workgroup` as
+We will use Samba and its configuration value `global/workgroup` as
 running example.
 
 ## Problem
