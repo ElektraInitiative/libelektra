@@ -143,9 +143,9 @@ not directly use Elektra. Then distributions can mount
 configuration files, so that the configuration is
 visible within Elektra.
 
-Elektra uses KDB to configure itself, so every way shown above
-can be used. To make mounting more simple, we introduced
-an extra tool:
+Elektra uses the same configuration to configure itself, so every way
+shown above can be used. To make mounting more simple, we introduced an
+extra tool:
 
 ```sh
 kdb mount /etc/samba/smb.conf system/sw/samba/#0/current ini
@@ -188,28 +188,46 @@ This way, we know which keys exist on a system and
 which values are expected for these keys.
 Then administrators do not need to guess.
 
-Next to the documentation, specifications
+Next to the documentation for humans, specifications
 also provide information for software.
 For example, the [Web UI](/src/tools/web) automatically
 gives input fields according to the type of
-the configuration settings, like a boolean
-gets a checkbox.
+the configuration setting. For example, a boolean
+configuration setting gets a checkbox.
 
-Key-value specifications in puppet-libelektra:
+Also the specifications are integrated within
+Elektra in the same way. Again, we can use any
+of the above ways to specify configuration.
+
+Either by either invoking [command-line tools](/doc/help/kdb.md):
+
+```sh
+kdb set-meta /sw/samba/#0/current/global/workgroup type string
+kdb set-meta /sw/samba/#0/current/global/workgroup description "This controls what workgroup your server will appear to be in when queried by clients. Note that this parameter also controls the Domain name used with the security = domain setting."
+```
+
+Key-value specifications in [puppet-libelektra](https://puppet.libelektra.org):
 
 ```
-kdbkey {'system/sw/samba/#0/current/global/log level':
+kdbkey {'system/sw/samba/#0/current/global/workgroup':
 	ensure => 'present',
 	check => {
-		'type' => 'short',
-		'range' => '0-10',
-		'default' => '1',
-		'description' => 'Sets the amount of log/
-			debug messages that are sent to the
-			log file. 0 is none, 3 is consider-
-			able.'
+		'type' => 'string',
+		'default' => 'WORKGROUP',
+		'description' => 'This controls what workgroup
+			your server will appear to be in when
+			queried by clients. Note that this
+			parameter also controls the Domain
+			name used with the security = domain
+			setting.'
 }
 ```
+
+> Note, that the specification (in both examples above) actually lands up in
+> `spec/sw/samba/#0/current/global/workgroup`. The unique path to the
+> configuration setting is `/sw/samba/#0/current/global/workgroup`, but
+> the specification gets written to the [namespace](/doc/tutorial/namespaces.md)
+> `spec`, while the system-configuration gets written to the namespace `system`.
 
 ## Conclusion
 
