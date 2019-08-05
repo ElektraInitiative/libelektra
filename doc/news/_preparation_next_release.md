@@ -39,11 +39,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### GOpts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The error message, if non of the gopts variants can be compiled, was improved. _(Klemens Böswirth)_
+- A better error, if the plugin fails to load `argv` from the system, was added. _(Klemens Böswirth)_
 
 ### <<Plugin2>>
 
