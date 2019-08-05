@@ -191,6 +191,22 @@ impl WriteableKey for StringKey {
     }
 }
 
+impl From<StringKey> for BinaryKey {
+    fn from(mut sk: StringKey) -> Self {
+        let binary_key = BinaryKey::from_ptr(sk.as_ptr());
+        std::mem::forget(sk);
+        binary_key
+    }
+}
+
+impl From<BinaryKey> for StringKey {
+    fn from(mut bk: BinaryKey) -> Self {
+        let str_key = StringKey::from_ptr(bk.as_ptr());
+        std::mem::forget(bk);
+        str_key
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -356,5 +372,14 @@ mod tests {
         key.set_meta("metakey", "metaval");
         assert_eq!(key.delete_meta("metakey"), 0);
         assert_eq!(key.get_meta("metakey").unwrap_err(), KeyError::NotFound);
+    }
+
+    #[test]
+    fn can_cast_key_types() {
+        let mut key = StringKey::new("user/test/cast").unwrap();
+        let mut bin_key = BinaryKey::from(key);
+        let val = "data".as_bytes();
+        bin_key.set_value(val);
+        assert_eq!(bin_key.get_value(), val);
     }
 }
