@@ -155,7 +155,7 @@ pub trait ReadableKey {
     /// let key2 = StringKey::new("user/sw/app/folder/key").unwrap();
     /// assert!(key2.is_below(&key));
     /// ```
-    fn is_below(&self, other: &Self) -> bool {
+    fn is_below(&self, other: &Self) -> bool where Self: Sized {
         unsafe { elektra_sys::keyIsBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
@@ -167,7 +167,7 @@ pub trait ReadableKey {
     /// let key2 = StringKey::new("user/sw/app/key").unwrap();
     /// assert!(key2.is_direct_below(&key));
     /// ```
-    fn is_direct_below(&self, other: &Self) -> bool {
+    fn is_direct_below(&self, other: &Self) -> bool where Self: Sized {
         unsafe { elektra_sys::keyIsDirectBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
