@@ -16,6 +16,7 @@ RUN dpkg --add-architecture i386 \
         gcc-multilib \
         g++-multilib \
         file \
+        valgrind \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
