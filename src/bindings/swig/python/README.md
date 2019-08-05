@@ -8,9 +8,20 @@
 
 Python bindings for Elektra.
 
-## Dependencies
+Get started by reading the [tutorial](/doc/tutorials/python-kdb.md).
 
-For Python3 on debian jessie you need:
+## CMake Variables
+
+To build the python binding
+on Debian Stretch or Buster you need:
+
+```sh
+-DPython_ADDITIONAL_VERSIONS=`py3versions -d -v`
+-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+-DPYTHON_EXECUTABLE:PATH=/usr/bin/python3 \
+```
+
+For Python3 on Debian Jessie you need:
 
 ```sh
 -DPYTHON_EXECUTABLE:PATH=/usr/bin/python3.4
@@ -18,7 +29,7 @@ For Python3 on debian jessie you need:
 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4
 ```
 
-debian wheezy needs:
+Debian Wheezy needs:
 
 ```sh
 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3
@@ -26,8 +37,8 @@ debian wheezy needs:
 -DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so
 ```
 
-## Building
+## Development
 
-Note that cmake does _not_ automatically rebuild SWIG bindings
+Note that `cmake` does _not_ automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
