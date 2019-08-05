@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
 			<artifactId>jna</artifactId>
-			<version>4.5.0</version>
+			<version>4.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -30,7 +30,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>

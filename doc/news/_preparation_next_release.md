@@ -97,6 +97,13 @@ Bindings allow you to utilize Elektra using [various programming languages](http
 you up to date with the multi-language support provided by Elektra.
 
 ### <<Binding1>>
+- JNA is now not experimental anymore. _(Markus Raab)_
+- gsettings is not default anymore. _(Markus Raab)_
+
+- Add fix for creating the Key and KeySet objects in the HelloElektra.java file. _(Dmytro Moiseiuk)_
+- We fixed a [warning about a deprecated default constructor](https://issues.libelektra.org/2670) in the C++ binding reported by GCC 9.0. _(René Schwaiger)_
+- Upgraded maven dependencies for java binding _(Michael Zronek)_
+- <<TODO>>
 
 ### <<Binding2>>
 
