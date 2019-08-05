@@ -60,7 +60,7 @@ Or if you already use configuration management tools, the vision is that
 a single statement within the configuration management tool suffices to
 change a configuration value.
 
-Key/value access in [puppet-libelektra](https://puppet.libelektra.org):
+Key-value access in [puppet-libelektra](https://puppet.libelektra.org):
 
 ```
 kdbkey {'system/sw/samba/#0/current/global/workgroup':
@@ -69,7 +69,7 @@ kdbkey {'system/sw/samba/#0/current/global/workgroup':
 }
 ```
 
-Key/value access in Chef:
+Key-value access in Chef:
 
 ```
 kdbset 'system/sw/samba/#0/current/global/workgroup' do
@@ -78,7 +78,7 @@ kdbset 'system/sw/samba/#0/current/global/workgroup' do
 end
 ```
 
-Key/value access in Ansible:
+Key-value access in Ansible:
 
 ```yaml
 - name: setup samba workgroup
@@ -173,7 +173,7 @@ This way, we know which keys exist on a system and
 which values are expected for these keys.
 Then administrators do not need to guess.
 
-Key/value specifications in puppet-libelektra:
+Key-value specifications in puppet-libelektra:
 
 ```
 kdbkey {'system/sw/samba/#0/current/global/log level':

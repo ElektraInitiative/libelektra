@@ -54,6 +54,7 @@ s/\<plug-in(s)?\>/plugin\1/g
 
 # key-value pair
 s:\<key/value:key-value:g
+s:\<Key/value:Key-value:g
 
 s/[^#"]\<data-?type/data type/g
 
