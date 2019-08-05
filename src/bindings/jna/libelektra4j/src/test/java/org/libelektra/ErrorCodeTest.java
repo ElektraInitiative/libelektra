@@ -12,7 +12,12 @@ public class ErrorCodeTest {
     private Key parentKey = Key.create("user/tests/javabinding");
     private final String errorMeta = "trigger/error";
     private final String warningMeta = "trigger/warnings";
-    private final Plugin errorPlugin = new Plugin("error", parentKey);
+    private final Plugin errorPlugin;
+
+    @Before
+    public void setup(){
+        errorPlugin = new Plugin("error", parentKey);
+    }
 
     @Test(expected = OutOfMemoryException.class)
     public void kdbSetWithError_shouldMapOutOfMemoryError() throws Exception {
