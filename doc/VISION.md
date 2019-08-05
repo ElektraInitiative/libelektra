@@ -13,7 +13,10 @@ locate the configuration file, it
 could be `/etc/samba/smb.conf`, learn the
 [syntax](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html)
 and then implement some configuration management code to add or replace
-the value.
+the value. Furthermore, application developers need to implement
+the parser, design tools like [SWAT](https://www.samba.org/samba/docs/old/Samba3-HOWTO/SWAT.html),
+and document in detail how to configure their specific software.
+This is a huge effort on both sides.
 
 ## Configuration Management
 
@@ -25,6 +28,15 @@ Either by either invoking [command-line tools](/doc/help/kdb.md):
 
 ```sh
 kdb set system/sw/samba/#0/current/global/workgroup MYGROUP
+```
+
+Also by importing an INI file with the information:
+
+```ini
+kdb import system/sw/samba/#0/current ini << HERE
+[global]
+workgroup=MYGROUP
+HERE
 ```
 
 Or using some compiled language like C
@@ -90,6 +102,9 @@ Key-value access in Ansible:
         key: "system/sw/samba/#0/current/global/workgroup"
         value: "MYGROUP"
 ```
+
+In all these examples, we have set
+`system/sw/samba/#0/current/global/workgroup` to `MYGROUP`.
 
 ## Application Integration
 
@@ -173,6 +188,13 @@ This way, we know which keys exist on a system and
 which values are expected for these keys.
 Then administrators do not need to guess.
 
+Next to the documentation, specifications
+also provide information for software.
+For example, the [Web UI](src/tools/web) automatically
+gives input fields according to the type of
+the configuration settings, like a boolean
+gets a checkbox.
+
 Key-value specifications in puppet-libelektra:
 
 ```
@@ -193,6 +215,8 @@ kdbkey {'system/sw/samba/#0/current/global/log level':
 
 Here we have shown how Elektra can be used
 to configure systems more easily.
+Both application developers and administrators
+can save time.
 
 The main technique to achieve the vision is
 unique key names: Every configuration setting
