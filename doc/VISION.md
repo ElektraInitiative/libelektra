@@ -223,10 +223,11 @@ kdbkey {'system/sw/samba/#0/current/global/workgroup':
 }
 ```
 
-> Note, that the specification (in both examples above) actually lands up in
-> `spec/sw/samba/#0/current/global/workgroup`. The unique path to the
-> configuration setting is `/sw/samba/#0/current/global/workgroup`, but
-> the specification gets written to the [namespace](/doc/tutorials/namespaces.md) > `spec`, while the system-configuration gets written to the namespace `system`.
+Note, that the specification (in both examples above) actually lands up in
+`spec/sw/samba/#0/current/global/workgroup`. The unique path to the
+configuration setting is `/sw/samba/#0/current/global/workgroup`, but
+the specification gets written to the [namespace](/doc/tutorials/namespaces.md)
+`spec`, while the system-configuration gets written to the namespace `system`.
 
 ## Conclusion
 
