@@ -266,8 +266,8 @@ and cleanup tests/icheck.suppression
 
 == Announce ==
 
-Finish NEWS.md for new release (hashsum, add links where to download release, check them):
- scripts/generate-hashsums ~elektra-ftp/releases/elektra-$VERSION.tar.gz
+Finish NEWS.md for new release (hashsum, add links where to download release, check them via linkchecker):
+ cd ~build && rm -f external-links.txt && make -j 5 && ~e/scripts/link-checker external-links.txt
  editor doc/news/*$VERSION*.md
 
 Finally send out mail to list
