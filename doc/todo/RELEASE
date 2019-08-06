@@ -260,14 +260,15 @@ Push elektra-doc to github:
 cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 increment CMPVERSION in scripts/run_icheck
-increment VERSION in scripts/build-debian-package
 and cleanup tests/icheck.suppression
+increment version in output of doc/tutorials/hello-elektra.md
+increment VERSION in scripts/build-debian-package
 
 
 == Announce ==
 
 Finish NEWS.md for new release (hashsum, add links where to download release, check them via linkchecker):
- cd ~build && rm -f external-links.txt && make -j 5 && ~e/scripts/link-checker external-links.txt
+ cd ~build && rm -f external-links.txt && make html && ~e/scripts/link-checker external-links.txt
  editor doc/news/*$VERSION*.md
 
 Finally send out mail to list
