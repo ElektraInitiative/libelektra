@@ -45,7 +45,7 @@ already somehow integrated with Elektra.
 - [Intercept File System](/src/bindings/intercept/fs/README.md)
 - [Merge Configuration](merge.md)
 - [Validate Configuration](validation.md)
-- [Encrypt Configurations](crypto.md)
+- [Encrypt Configuration](crypto.md)
 
 ## Package Maintainers
 
