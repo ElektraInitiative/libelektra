@@ -179,9 +179,7 @@ We are currently working on following topics:
 
 ## Statistics
 
-Following authors made this release possible:
-
-<<`scripts/git-release-stats 0.9.<<VERSION>>`>>
+<<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
 ## Join the Initiative!
 
@@ -198,7 +196,7 @@ or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektr
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
 
-<<`scripts/generate-hashsums`>>
+<<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
 The release tarball is also available signed by Markus Raab using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
