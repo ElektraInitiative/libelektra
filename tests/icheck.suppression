@@ -2,7 +2,3 @@
 // To ignore a function just add the function definition as regex here.
 // For example, to ignore the function `int elektraArrayDecName(Key * key)` you can use
 // the following entry: elektraArrayDecName
-elektraIsReferenceRedundant
-elektraResolveReference
-elektraPluginFindGlobal
-kdbEnsure
