@@ -21,7 +21,7 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 Now you are going to build your own Docker image based on Debian.
 
-From the project root directory run the following command:
+From the source root directory run the following command:
 
 ```sh
 docker build -t buildelektra-sid \

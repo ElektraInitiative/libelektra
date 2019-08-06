@@ -535,7 +535,7 @@ For details on see the [example "doc" binding](/src/bindings/io/doc/) or the
 Existing I/O bindings provide a good inspiration on how to implement a custom
 binding.
 Since a binding is generic and not application specific it is much appreciated
-if you contribute your I/O binding back to the Elektra project.
+if you contribute your I/O binding back to the Elektra Initiative.
 
 ## Logging
 

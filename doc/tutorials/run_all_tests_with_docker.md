@@ -17,7 +17,7 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ### 1. Docker Image
 
-To build your own Docker image, run the following command from the project root directory:
+To build your own Docker image, run the following command from the source root directory:
 
 ```sh
 docker build -t buildelektra-sid \
@@ -73,9 +73,9 @@ docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe32
 
 ### 2. Run the Docker Container
 
-You have to be in the root of the Elektra project, so that the container can properly map all the source files.
+You have to be in the root of the source directory of the Elektra Initiative, so that the container can properly map all the source files.
 
-So from your root project folder run the following:
+So from your root source folder run the following:
 
 ```sh
 docker run -it --rm \
@@ -88,7 +88,7 @@ buildelektra-sid
 
 After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
-Create folder folder where Elektra will be installed, create another folder for building the project and `cd` to it and like this:
+Create folder folder where Elektra will be installed, create another folder for building the source and `cd` to it and like this:
 
 ```sh
 mkdir elektra-install && mkdir elektra-build-docker && cd elektra-build-docker
