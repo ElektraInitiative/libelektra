@@ -24,7 +24,7 @@ Further important concepts are explained in:
 
 ## API
 
-The aim of the Elektra Project is to design and implement a powerful
+The aim of the Elektra Initiative is to design and implement a powerful
 API for configuration. When the project started, we assumed that this
 goal was easy to achieve, but dealing with the semantics turned out to
 be a difficult problem. For the implementation, an ambitious solution

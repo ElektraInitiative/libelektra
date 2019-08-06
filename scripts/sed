@@ -24,7 +24,9 @@ s/synchronised/synchronized/g
 # = Brands =
 # ==========
 
-s/Electra/Elektra/g
+s/[eE]lectra/Elektra/g
+s/[eE]lektra [iI]nitiative/Elektra Initiative/g
+s/[eE]lektra [pP]roject/Elektra Initiative/g
 s/\<[CcFf]engine/CFEngine/g
 
 # Only fix spelling of GitHub outside of URLs:
