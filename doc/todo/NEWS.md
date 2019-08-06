@@ -63,10 +63,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-As always, the ABI and API of kdb.h is fully compatible, i.e. programs
-compiled against an older 0.8 version of Elektra will continue to work
-(ABI) and you will be able to recompile programs without errors (API).
-
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
