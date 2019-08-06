@@ -200,7 +200,7 @@ The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/release
 
 The release tarball is also available signed by Markus Raab using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
 Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/)
 or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
