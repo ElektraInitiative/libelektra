@@ -2,6 +2,8 @@ package org.libelektra;
 
 import com.sun.jna.Pointer;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Key is an essential class that encapsulates key name , value and metainfo.
  */
