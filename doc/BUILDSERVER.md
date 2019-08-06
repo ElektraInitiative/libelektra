@@ -47,7 +47,7 @@ Currently Elektra uses two different files.
 
 #### Jenkinsfile.daily
 
-- Jenkinsfile.daily is for daily maintanence tasks, like cleaning up build servers.
+- Jenkinsfile.daily is for daily maintenance tasks, like cleaning up build servers.
 - [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
 - [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
 
@@ -81,7 +81,7 @@ documented at the function head.
 Most common use cases, for example adding a new build with certain cmake flags,
 are easy to add because of them.
 For example, the configuration that is responsible for the `debian-stable-full`
-stage is generated completly by a single helper function called `buildAndTest`:
+stage is generated completely by a single helper function called `buildAndTest`:
 
 ```groovy
 tasks << buildAndTest(
@@ -146,7 +146,7 @@ uploaded to https://doc.libelektra.org/coverage/.
 
 Artifacts from `ctest` are also preserved automatically when using
 buildAndTest.
-The function also takes care of providing a stagename based path so multiple tests
+The function also takes care of providing a stage name based path so multiple tests
 can not overwrite files that share the same name.
 
 Tests are executed in order dictated by the Jenkinsfile.
@@ -170,7 +170,7 @@ Additionally we recompile the homepage and deploy it on the a7 node.
 
 This section describes how to replicate the current Jenkins configuration.
 
-### Jenkins libelektra configuration
+### Jenkins libelektra Configuration
 
 The `libelektra` build job is a multibranch pipeline job.
 It is easiest to add via the BlueOcean interface.
@@ -178,7 +178,7 @@ It is easiest to add via the BlueOcean interface.
 Most of the default settings should be ok, however some settings need to be
 verified or added to build Elektra correctly:
 
-- In Branch Sources under Behaviours `Filter by name` should be
+- In Branch Sources under Behaviors `Filter by name` should be
   added to exclude the `debian` branch from being build.
   The reason for this is that the `debian` branch is not providing a
   Jenkinsfile.
@@ -193,7 +193,7 @@ verified or added to build Elektra correctly:
 - For Build Configuration you want to specify `by Jenkinsfile` and add the
   script path: `scripts/jenkins/Jenkinsfile`.
 
-### Adding a Jenkins node
+### Adding a Jenkins Node
 
 A node needs to have a JRE (Java Runtime Environment) installed.
 Further it should run an SSH (Secure SHell) server.
@@ -201,7 +201,7 @@ If you want to provide environments via Docker you need to install that as well.
 
 A `jenkins` user with 47000:47000 ids should be created as this is what is
 expected in Docker images.
-Additionally a public key authentification should be set up so the jenkins
+Additionally a public key authentication should be set up so the jenkins
 master can establish an ssh connection with the node.
 If the node should be able to interact with Docker the jenkins user should be
 added to the `docker` group.
@@ -212,7 +212,7 @@ As for labels `gitmirror` should be if you want to cache repositories on this
 node.
 If Docker is available the `docker` label should be set.
 
-## Understanding Jenkins output
+## Understanding Jenkins Output
 
 Our jenkins build uses parallel steps inside a single build job to do most of
 the work.
@@ -231,17 +231,17 @@ used to run the stage.
 You also want to look for whatever failed (which should be in a step also marked
 red to indicate failure).
 
-## Reproducing buildserver errors locally
+## Reproducing Build Server Errors Locally
 
 First you have to determine which image is used.
 This is described above in _Understanding Jenkins output_.
 
 Afterwards you can download it from our registry via `docker pull`.
 Pay attention that you have to use **hub-public.libelektra.org** as this subdomain
-does not require authentification for GET operations used by the Docker client.
+does not require authentication for GET operations used by the Docker client.
 As an example:
 
-```
+```sh
 docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e
 ```
 
@@ -258,7 +258,7 @@ Now you can build the image as described in
 You can find more information on how to use our images in
 [scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#testing-elektra-via-docker-images).
 
-## Modify test environments
+## Modify Test Environments
 
 You can also modify the test environments (update a dependency, install a new
 dependency, ...) by editing the Dockerfiles checked into SCM.
@@ -322,9 +322,9 @@ or if just the pull request should be checked:
 
     .*build\W+allow.*
 
-## Issues with the build environment
+## Issues with the Build Environment
 
 If you have issues that are related to the build system you can open a normal
 issue and tag it with `build` and `question`.
-If you feel like your inquiry does not warrant a issue on its own, please use
+If you feel like your inquiry does not warrant an issue on its own, please use
 [our buildserver issue](https://issues.libelektra.org/160).

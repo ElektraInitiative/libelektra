@@ -14,18 +14,30 @@ function (check_dependencies)
 	unset (ANTLR_EXECUTABLE)
 	unset (FAILURE_MESSAGE)
 
-	execute_process (COMMAND antlr4 RESULT_VARIABLE ANTLR4_NOT_AVAILABLE OUTPUT_QUIET)
-	execute_process (COMMAND antlr RESULT_VARIABLE ANTLR_NOT_AVAILABLE OUTPUT_QUIET)
+	execute_process (COMMAND antlr4 RESULT_VARIABLE ANTLR4_NOT_AVAILABLE OUTPUT_VARIABLE ANTLR4_OUTPUT)
+	execute_process (COMMAND antlr RESULT_VARIABLE ANTLR_NOT_AVAILABLE OUTPUT_VARIABLE ANTLR_OUTPUT)
 	if (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 		set (FAILURE_MESSAGE "ANTLR 4 executable (antlr4, antlr) not found" PARENT_SCOPE)
 		return ()
 	else (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 		if (ANTLR4_NOT_AVAILABLE)
 			set (ANTLR_EXECUTABLE antlr PARENT_SCOPE)
+			set (ANTLR_VERSION ${ANTLR_OUTPUT})
 		else (ANTLR4_NOT_AVAILABLE)
 			set (ANTLR_EXECUTABLE antlr4 PARENT_SCOPE)
+			set (ANTLR_VERSION ${ANTLR4_OUTPUT})
 		endif (ANTLR4_NOT_AVAILABLE)
 	endif (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
+
+	string (REGEX
+		REPLACE ".*Version ([0-9]+\\.[0-9]+\\.[0-9]+).*"
+			"\\1"
+			ANTLR_VERSION
+			${ANTLR_VERSION})
+	if ("${ANTLR_VERSION}" VERSION_LESS 4.6)
+		set (FAILURE_MESSAGE "ANTLR version 4.6 or later required (found version “${ANTLR_VERSION}”)" PARENT_SCOPE)
+		return ()
+	endif ("${ANTLR_VERSION}" VERSION_LESS 4.6)
 
 	find_package (ANTLR4CPP QUIET)
 	if (NOT ANTLR4CPP_FOUND)
@@ -35,6 +47,9 @@ function (check_dependencies)
 	set (ANTLR4CPP_LIBRARIES ${ANTLR4CPP_LIBRARIES} PARENT_SCOPE)
 	set (ANTLR4CPP_INCLUDE_DIRS ${ANTLR4CPP_INCLUDE_DIRS} PARENT_SCOPE)
 
+	# AdressSanitizer enabled builds of the plugin report runtime errors about member calls, which do not point to an object of type
+	# `_Sp_counted_base` inside the system header file `shared_ptr_base.h`. In Clang builds of the plugin we ignore this error in our
+	# [blacklist](tests/sanitizer.blacklist). Unfortunately GCC does not support a blacklist, so we remove the plugin in this case.
 	set (DISABLE_PLUGIN_ASAN
 	     ${ENABLE_ASAN}
 	     AND
@@ -44,9 +59,10 @@ function (check_dependencies)
 	     AND
 	     ${CMAKE_CXX_COMPILER_VERSION}
 	     VERSION_LESS
-	     7)
+	     9)
 	if (${DISABLE_PLUGIN_ASAN})
-		set (FAILURE_MESSAGE "ASAN enabled GCC builds of the plugin report memory leaks" PARENT_SCOPE)
+		set (FAILURE_MESSAGE "ASan enabled GCC builds of the plugin report member calls on addresses, "
+				     "which do not point to an object of type `_Sp_counted_base`" PARENT_SCOPE)
 		return ()
 	endif (${DISABLE_PLUGIN_ASAN})
 
@@ -72,39 +88,55 @@ function (generate_code ANTLR_EXECUTABLE)
 	foreach (file ${GENERATED_SOURCE_FILES_NAMES} "")
 		foreach (extension "cpp" "h")
 			set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.${extension})
-			set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
+			set_source_files_properties (${filepath}
+						     PROPERTIES
+						     GENERATED
+						     TRUE)
 			if (CMAKE_COMPILER_IS_GNUCXX)
-				set_source_files_properties (${filepath} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
+				set_source_files_properties (${filepath}
+							     PROPERTIES
+							     COMPILE_FLAGS
+							     "-Wno-shadow")
 			endif (CMAKE_COMPILER_IS_GNUCXX)
 			if (NOT ${filepath} STREQUAL ${PARSER_SOURCE_FILE})
 				list (APPEND GENERATED_SOURCE_FILES_EXPORT)
 			endif (NOT ${filepath} STREQUAL ${PARSER_SOURCE_FILE})
-			list (APPEND GENERATED_SOURCE_FILES
-				     ${filepath})
+			list (APPEND GENERATED_SOURCE_FILES ${filepath})
 		endforeach (extension "cpp" "h")
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
-			    COMMAND ${ANTLR_EXECUTABLE} -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
-			    DEPENDS ${GRAMMAR_FILE}
-				    ${TOKEN_FILE}
+			    COMMAND ${ANTLR_EXECUTABLE}
+				    -Werror
+				    -Dlanguage=Cpp
+				    -o
+				    ${CMAKE_CURRENT_BINARY_DIR}
+				    -package
+				    yanlr
+				    ${GRAMMAR_FILE}
+			    DEPENDS ${GRAMMAR_FILE} ${TOKEN_FILE}
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	add_custom_target (parser_generated DEPENDS ${PARSER_SOURCE_FILE})
 
-	set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE} PROPERTIES GENERATED TRUE)
+	set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE}
+				     PROPERTIES
+				     GENERATED
+				     TRUE)
 	if (CMAKE_COMPILER_IS_GNUCXX)
-		set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
+		set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE}
+					     PROPERTIES
+					     COMPILE_FLAGS
+					     "-Wno-shadow")
 	endif (CMAKE_COMPILER_IS_GNUCXX)
 	add_custom_command (OUTPUT ${PARSER_MODIFIED_SOURCE_FILE}
 			    COMMAND ${CMAKE_COMMAND}
-				    ARGS -D
-					 PARSER_SOURCE_FILE=${PARSER_SOURCE_FILE}
-					 -D
-					 PARSER_MODIFIED_SOURCE_FILE=${PARSER_MODIFIED_SOURCE_FILE}
-					 -P
-					 ${CMAKE_CURRENT_SOURCE_DIR}/RenameSymbols.cmake
-			    DEPENDS parser_generated
-				    RenameSymbols.cmake
+				    ARGS
+				    -D
+				    PARSER_SOURCE_FILE=${PARSER_SOURCE_FILE}
+				    -D
+				    PARSER_MODIFIED_SOURCE_FILE=${PARSER_MODIFIED_SOURCE_FILE}
+				    -P
+				    ${CMAKE_CURRENT_SOURCE_DIR}/RenameSymbols.cmake
+			    DEPENDS ${PARSER_SOURCE_FILE} RenameSymbols.cmake
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 	set (GENERATED_SOURCE_FILES ${GENERATED_SOURCE_FILES_EXPORT} ${PARSER_MODIFIED_SOURCE_FILE} PARENT_SCOPE)
@@ -133,32 +165,22 @@ endif (DEPENDENCY_PHASE)
 # The generated parser code seems to contain a double free that causes the unit test to crash with a segfault on **some** systems that use
 # `glibc`. If AddressSanitizer is enabled everything seems to work fine.
 set (TEST_ARGUMENTS ADD_TEST CPP_TEST)
-if ("${CMAKE_SYSTEM_NAME}"
-    STREQUAL
-    Linux
-    AND NOT
-	${ENABLE_ASAN})
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL Linux AND NOT ${ENABLE_ASAN})
 
 	# We only disable the test, if we detect a GNU C Library based system.
-	execute_process (COMMAND ldd --version
-			 RESULT_VARIABLE ANTLR4_NOT_AVAILABLE
-			 OUTPUT_VARIABLE LDD_OUTPUT)
+	execute_process (COMMAND ldd --version RESULT_VARIABLE ANTLR4_NOT_AVAILABLE OUTPUT_VARIABLE LDD_OUTPUT)
 	if ("${LDD_OUTPUT}" MATCHES "GLIBC|GNU libc")
 		set (TEST_ARGUMENTS "")
 	endif ("${LDD_OUTPUT}" MATCHES "GLIBC|GNU libc")
 
 endif ("${CMAKE_SYSTEM_NAME}" STREQUAL Linux AND NOT ${ENABLE_ASAN})
 
-add_plugin (yanlr
-	    CPP
-	    ${TEST_ARGUMENTS}
+add_plugin (yanlr CPP ${TEST_ARGUMENTS}
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_SYSTEM_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${ANTLR4CPP_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease
-	    INSTALL_TEST_DATA
-	    TEST_README
+	    INSTALL_TEST_DATA TEST_README
 	    # Unfortunately it looks like ANTLR’s code [causes a container-overflow](https://github.com/antlr/antlr4/issues/2332).
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0"
-	    TEST_REQUIRED_PLUGINS directoryvalue
-				  yamlsmith)
+	    TEST_REQUIRED_PLUGINS directoryvalue yamlsmith)

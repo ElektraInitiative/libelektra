@@ -116,9 +116,9 @@ kdb ls user/tests/mini 2> stderr.txt
 
 # As we can see in the first two line of the standard error output below,
 # mINI will inform us about lines it was unable to parse.
-cat stderr.txt | grep 'Reason:' | sed 's/^[[:space:]]*//'
-#> Reason: Line 1: “[section]” is not a valid key value pair
-#> Reason: Line 3: “line"” is not a valid key value pair
+cat stderr.txt | grep -oE 'Line [[:digit:]]+.*' | sed 's/^[[:space:]]*//'
+#> Line 1: '[section]' is not a valid key value pair
+#> Line 3: 'line"' is not a valid key value pair
 
 # Unlike the `ini` and `ni` plugin, mINI does not support metadata.
 kdb lsmeta user/tests/mini

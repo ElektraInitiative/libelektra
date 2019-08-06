@@ -5,6 +5,7 @@
 [![Travis Build Status](https://travis-ci.org/ElektraInitiative/libelektra.svg?branch=master)](https://travis-ci.org/ElektraInitiative/libelektra)
 [![Cirrus Build Status](https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg)](https://cirrus-ci.com/github/ElektraInitiative/libelektra)
 [![Coverage Status](https://img.shields.io/coveralls/github/ElektraInitiative/libelektra.svg)](https://coveralls.io/github/ElektraInitiative/libelektra)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/ElektraInitiative/libelektra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ElektraInitiative/libelektra/alerts)
 
 _Elektra serves as a universal and secure framework to access configuration
 settings in a global, hierarchical key database._
@@ -17,11 +18,11 @@ and tools concerning their configuration tasks. Elektra abstracts from
 cross-platform-related issues and enables applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-## Often used links
+## Often Used Links
 
-- [build server](https://build.libelektra.org/)
-- [website](https://www.libelektra.org)
-- [API docu](https://doc.libelektra.org/api/latest/html/)
+- [Build server](https://build.libelektra.org/)
+- [Website](https://www.libelektra.org)
+- [API documentation](https://doc.libelektra.org/api/latest/html/)
 
 ## Overview
 
@@ -64,9 +65,6 @@ In case you are worried about linking to such a powerful library. The core is a 
 implemented in C, works cross-platform, and does not need any external dependencies. There are
 [bindings](src/bindings) for other languages in case C is too low-level for you.
 
-- [Why should I use Elektra?](doc/WHY.md)
-- [Big Picture of Elektra](doc/BIGPICTURE.md)
-
 ## Contact
 
 Do not hesitate to ask any question on
@@ -74,8 +72,6 @@ Do not hesitate to ask any question on
 or directly to one of the [authors](doc/AUTHORS.md).
 
 ## Quickstart
-
-If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
 
 ### Installation
 
@@ -100,44 +96,20 @@ To get an idea of Elektra, you can take a look at the
 In the GitHub repository the full documentation is available, including:
 
 - [tutorials](/doc/tutorials/),
-- [faq](/doc/help/elektra-faq.md),
+- [FAQ](/doc/help/elektra-faq.md),
 - [glossary](/doc/help/elektra-glossary.md), and
 - [concepts and man pages](/doc/help/elektra-introduction.md)
 
 You can read the documentation for the kdb tool, either
 
 - [on the Website](https://www.libelektra.org)
-- [in the API docu](https://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
+- [in the API docu](https://doc.libelektra.org/api/latest/html/doc_help_kdb_md.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
 - [on GitHub](https://master.libelektra.org/doc/help/kdb.md)
 
 > Note: All these ways to read the documentation provide the same content,
 > all generated from the GitHub repository.
-
-## Goals
-
-- Make developers live easier by proving a well-tested mature library
-  instead of rolling your own configuration system for every application.
-  This reduces rank growth of configuration systems (including but not limited
-  to configuration file parsers) in our ecosystem and fosters well-maintained
-  plugins instead.
-- Postpone configuration decisions (such as which configuration files to use)
-  from developers to system administrators and package maintainers to
-  provide a overall more consistent and user-friendly system.
-  (Default behavior of applications still is in control of developers,
-  you can even roll your own plugins to provide exactly the same behavior
-  as your application has now.)
-- Make configuration storage more safe: avoid that applications
-  receive wrong or unexpected values that could lead to undefined behavior.
-
-And in terms of quality, we want:
-
-1. Simplicity (make configuration tasks, like access of configuration settings, simple),
-2. Robustness (no undefined behavior of applications), and
-3. Extensibility (gain control over configuration access)
-
-[Read more about the goals of Elektra](doc/GOALS.md)
 
 ## Facts and Features
 
@@ -159,11 +131,11 @@ And in terms of quality, we want:
 - Elektra (except for some [plugins](src/plugins/)) has no external dependency.
 - Elektra is suitable for embedded systems and early boot stage programs.
 - Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
-- Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
+- Elektra provides powerful [Code Generation Techniques](src/tools/pythongen) for high-level configuration access.
 
 ## News
 
-Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
+Go to the [website](https://www.libelektra.org), see the [news](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
 
 ## Download
 
@@ -171,7 +143,9 @@ Elektra uses a [git repository at GitHub](https://github.com/ElektraInitiative/l
 
 You can clone the latest version of Elektra by running:
 
-         git clone https://github.com/ElektraInitiative/libelektra.git
+```sh
+git clone https://github.com/ElektraInitiative/libelektra.git
+```
 
 Releases can be downloaded from [here](https://www.libelektra.org/ftp/elektra/releases/).
 
@@ -183,4 +157,28 @@ coverage report](https://doc.libelektra.org/coverage/master/debian-stable-full/)
 
 ## Contributing
 
-Take a look at [how to start](doc/IDEAS.md).
+Take a look at [how to start contributing](doc/IDEAS.md).
+
+## Goals
+
+- Make developer's life easier by proving a well-tested mature library
+  instead of rolling your own configuration system for every application.
+  This reduces rank growth of configuration systems (including but not limited
+  to configuration file parsers) in our ecosystem and fosters well-maintained
+  plugins instead.
+- Postpone configuration decisions (such as which configuration files to use)
+  from developers to system administrators and package maintainers to
+  provide an overall more consistent and user-friendly system.
+  (Default behavior of applications still is in control of developers,
+  you can even roll your own plugins to provide exactly the same behavior
+  as your application has now.)
+- Make configuration storage more safe: avoid that applications
+  receive wrong or unexpected values that could lead to undefined behavior.
+
+And in terms of quality, we want:
+
+1. Simplicity (make configuration tasks, like access of configuration settings, simple),
+2. Robustness (no undefined behavior of applications), and
+3. Extensibility (gain control over configuration access)
+
+[Continue reading about the goals of Elektra](doc/GOALS.md)

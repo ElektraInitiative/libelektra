@@ -5,6 +5,5 @@ add_plugin (base64
 		    base64_functions.c
 		    base64.h
 		    base64.c
-	    ADD_TEST
-	    TEST_README
+	    ADD_TEST TEST_README
 	    TEST_REQUIRED_PLUGINS ini)

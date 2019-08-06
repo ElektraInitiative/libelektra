@@ -9,9 +9,12 @@
 #include "parser.hpp"
 
 #include <fstream>
+#include <iostream>
+#include <regex>
 #include <sstream>
 
 using namespace std;
+extern ostream cout;
 
 parse_t parse (std::string const & file)
 {
@@ -19,11 +22,12 @@ parse_t parse (std::string const & file)
 
 	parse_t result;
 
-	int number = 0;
 	int linenr = 0;
 	string line;
 	string lastIdentifier;
 	map<string, string> currentMap;
+	std::regex codeRegex ("^C[0-9A-Z]{5,5}$");
+
 
 	while (getline (fin, line))
 	{
@@ -33,7 +37,6 @@ parse_t parse (std::string const & file)
 		{
 			result.push_back (currentMap);
 			currentMap.clear ();
-			++number;
 			continue;
 		}
 
@@ -46,11 +49,9 @@ parse_t parse (std::string const & file)
 
 		if (identifier == "number")
 		{
-			int cmpNumber;
-			std::istringstream istr (text);
-			istr >> cmpNumber;
-
-			if (number != cmpNumber) throw parse_error ("Given number for that entry wrong", linenr);
+			bool isHighlevelFile = (file.find ("highlevel") != string::npos);
+			if (!std::regex_match (text, codeRegex) && !isHighlevelFile)
+				throw parse_error ("Error code does not match regular expression C[0-9A-Z]{5,5}", linenr);
 		}
 
 		if (!currentMap[identifier].empty ()) currentMap[identifier] += "\n";

@@ -6,66 +6,83 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-%skeleton "lalr1.cc"
-%defines
-%define @PARSER_NAME_DIRECTIVE@ { Parser }
-%define api.token.constructor
-%define api.value.type variant
-%define parse.assert
-%code requires
-{
+/* -- Declarations ---------------------------------------------------------------------------------------------------------------------- */
+
+%require "3.0"                              /* Require Bison 3 or later */
+
+%skeleton "lalr1.cc"                        /* Generate an LALR(1) parser */
+
+%expect 0                                   /* We expect no shift/reduce and no reduce/reduce conflicts */
+
+%define @PARSER_NAME_DIRECTIVE@ { Parser }  /* Call the generator parser class `Parser` */
+%define api.prefix {yambi}                  /* Use namespace `yambi` for parser code */
+%define api.token.constructor               /* Store type, value and location data in symbol objects */
+%define api.value.type variant              /* Allow grammar actions to return different types of return values */
+%define parse.assert                        /* Add runtime assertions to make sure symbols are constructed and destructed properly */
+%define parse.error verbose                 /* Use verbose error messages that report error location and expected symbol */
+%define parse.trace                         /* Add code for debugging facilities */
+
+%parse-param { Lexer& lexer }               /* Store reference to lexer in parser object */
+%parse-param { Driver& driver }             /* Store reference to driver in parser object */
+
+%locations                                  /* Generate code for location processings */
+
+/* ======== */
+/* = Code = */
+/* ======== */
+
+%initial-action {
+  // Set filename used by location class
+  @$.begin.filename = @$.end.filename = &driver.filename;
+};
+
+%code requires {
 #include <string>
 class Driver;
 class Lexer;
 }
-// The parsing context.
-%parse-param { Lexer& lexer }
-%parse-param { Driver& driver }
-%locations
-%initial-action
-{
-  // Initialize the initial location.
-  @$.begin.filename = @$.end.filename = &driver.filename;
-};
-%define parse.trace
-%define parse.error verbose
-%code
-{
+
+%code {
 # include "driver.hpp"
 
 #undef yylex
 #define yylex lexer.nextToken
 }
-%define api.token.prefix {TOKEN_}
-%token
-  END  0  "end of file"
-;
-%token <std::string> STREAM_START
-%token <std::string> STREAM_END
-%token <std::string> COMMENT
-%token <std::string> PLAIN_SCALAR
-%token <std::string> SINGLE_QUOTED_SCALAR
-%token <std::string> DOUBLE_QUOTED_SCALAR
-%token <std::string> MAP_START
-%token <std::string> MAP_END
-%token <std::string> KEY
-%token <std::string> VALUE
-%token <std::string> SEQUENCE_START
-%token <std::string> SEQUENCE_END
-%token <std::string> ELEMENT
 
-%type <std::string> scalar
+/* ========== */
+/* = Tokens = */
+/* ========== */
 
-// This boolean specifies if the rule matched a child or not
-%type <bool> child_comments_empty
+%token END           0                    "end of file"
+%token <std::string> STREAM_START         "start of document"
+%token <std::string> STREAM_END           "end of document"
+%token <std::string> COMMENT              "comment"
+%token <std::string> PLAIN_SCALAR         "plain scalar"
+%token <std::string> SINGLE_QUOTED_SCALAR "single quoted scalar"
+%token <std::string> DOUBLE_QUOTED_SCALAR "double quoted scalar"
+%token <std::string> MAP_START            "start of map"
+%token <std::string> MAP_END              "end of map"
+%token <std::string> KEY                  "key"
+%token <std::string> VALUE                "value"
+%token <std::string> SEQUENCE_START       "start of sequence"
+%token <std::string> SEQUENCE_END         "end of sequence"
+%token <std::string> ELEMENT              "element"
+
+/* ================= */
+/* = Non-Terminals = */
+/* ================= */
+
+%type <std::string> scalar        /* The parser stores scalar values as a string */
+%type <bool> child_comments_empty /* This boolean specifies if the rule matched a child or not */
 
 %%
 
-yaml : STREAM_START child_comments_empty STREAM_END ;
-child_comments_empty : child    { $$ = true; }
-                     | comments { $$ = false; }
-                     | %empty   { $$ = false; }
-                     ;
+/* -- Grammar --------------------------------------------------------------------------------------------------------------------------- */
+
+yaml : STREAM_START empty_child STREAM_END ;
+empty_child : empty | child ;
+
+empty : comments_empty { driver.enterEmpty(); }
 
 child : comments_empty node comments_empty;
 node : value
@@ -73,36 +90,52 @@ node : value
      | sequence
      ;
 
+child_comments_empty : child    { $$ = true; }
+                     | comments { $$ = false; }
+                     | %empty   { $$ = false; }
+                     ;
+
 comments_empty : comments | %empty ;
 comments: COMMENT
         | comments COMMENT
         ;
 
-value : scalar { driver.exitValue($1); } ;
-scalar : PLAIN_SCALAR { $$ = $1; }
-       | SINGLE_QUOTED_SCALAR { $$ = $1; }
-       | DOUBLE_QUOTED_SCALAR { $$ = $1; }
+value : scalar { driver.exitValue($scalar); } ;
+scalar : PLAIN_SCALAR { $$ = $PLAIN_SCALAR; }
+       | SINGLE_QUOTED_SCALAR { $$ = $SINGLE_QUOTED_SCALAR; }
+       | DOUBLE_QUOTED_SCALAR { $$ = $DOUBLE_QUOTED_SCALAR; }
        ;
 
 map : MAP_START pairs MAP_END ;
 pairs : pair
       | pairs pair
+      | pairs error /* Allow errors after key-value pairs */
       ;
-pair : KEY key VALUE child_comments_empty { driver.exitPair($4); };
-key : scalar { driver.exitKey($1); } ;
+pair : KEY key VALUE child_comments_empty { driver.exitPair($child_comments_empty); };
+key : scalar { driver.exitKey($scalar); } ;
 
 sequence : { driver.enterSequence(); }
            SEQUENCE_START elements SEQUENCE_END
            { driver.exitSequence(); }
            ;
 elements : element
-         | elements element ;
+         | elements element
+         | elements error /* Allow errors after elements of a sequence */
+         ;
 element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
 
 %%
 
-void yy::Parser::error (const location_type& location,
-                        const std::string& message)
+/* -- Epilogue -------------------------------------------------------------------------------------------------------------------------- */
+
+/**
+ * @brief Bison calls this method in case of an error.
+ *
+ * @param location This value specifies the location of the erroneous input.
+ * @param message This value stores the error message emitted by the Bison parser.
+ */
+void yambi::Parser::error (const location_type& location,
+                           const std::string& message)
 {
-  driver.error (location, message);
+  driver.error (location, message, lexer.getText());
 }

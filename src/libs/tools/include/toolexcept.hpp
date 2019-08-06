@@ -185,8 +185,8 @@ struct PluginConfigInvalid : public PluginCheckException
 			std::stringstream ss;
 			ss << "The provided plugin configuration is not valid!\n";
 			ss << "Errors/Warnings during the check were:\n";
-			printError (ss, m_key);
-			printWarnings (ss, m_key);
+			printError (ss, m_key, true, true);
+			printWarnings (ss, m_key, true, true);
 			m_str = ss.str ();
 		}
 		return m_str.c_str ();
@@ -298,8 +298,8 @@ struct NoPlugin : public PluginCheckException
 			ss << "Maybe you misspelled it, there is no such plugin or the loader has problems.\n";
 			ss << "You might want to try to set LD_LIBRARY_PATH, use kdb-full or kdb-static.\n";
 			ss << "Errors/Warnings during loading were:\n";
-			printError (ss, m_key);
-			printWarnings (ss, m_key);
+			printError (ss, m_key, true, true);
+			printWarnings (ss, m_key, true, true);
 			m_str = ss.str ();
 		}
 		return m_str.c_str ();

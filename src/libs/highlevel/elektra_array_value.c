@@ -9,7 +9,7 @@
 #include "elektra.h"
 #include "elektra/conversion.h"
 #include "elektra/errors.h"
-#include "elektra/errorsprivate.h"
+#include "kdbease.h"
 #include "kdbhelper.h"
 #include "kdbprivate.h"
 
@@ -119,6 +119,56 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long
 	}
 
 	return resultKey;
+}
+
+/**
+ * Resolves the reference stored in a key.
+ * 1. Get the raw string value.
+ * 2. Resolve that reference.
+ * 3. Return resulting keyname relative to the parent key of the given Elektra instance.
+ *
+ * IMPORTANT: this method DOES NOT check the type metadata of the key, it is only intended
+ * to be used by the code-generation API.
+ *
+ * @param elektra The Elektra instance to use.
+ * @param name    The (relative) name of the array.
+ * @param index   The index of the array element.
+ * @return the resolved version of the reference stored in the specified key (relative to the parent key of @p elektra)
+ * or NULL, if the key was not found, or the reference resolves two a key not below the parent key. The empty string is
+ * returned, if the value was the empty string (no resolution is attempted).
+ */
+const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index)
+{
+	elektraSetArrayLookupKey (elektra, name, index);
+	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	if (resultKey == NULL)
+	{
+		return NULL;
+	}
+
+	const char * reference = keyString (resultKey);
+
+	if (strlen (reference) == 0)
+	{
+		return "";
+	}
+
+	if (elektra->resolvedReference != NULL)
+	{
+		elektraFree (elektra->resolvedReference);
+		elektra->resolvedReference = NULL;
+	}
+
+	elektra->resolvedReference = elektraResolveReference (reference, elektra->lookupKey, elektra->parentKey);
+
+	size_t len = strlen (elektra->resolvedReference);
+	if (len < elektra->parentKeyLength ||
+	    strncmp (keyName (elektra->parentKey), elektra->resolvedReference, elektra->parentKeyLength) != 0)
+	{
+		return NULL;
+	}
+
+	return &elektra->resolvedReference[elektra->parentKeyLength];
 }
 
 /**
@@ -242,7 +292,7 @@ kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, 
 }
 
 /**
- * Gets a octet value array element.
+ * Gets an octet value array element.
  *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the array to look up.
@@ -455,7 +505,7 @@ void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, kdb_lo
 }
 
 /**
- * Sets a octet value array element.
+ * Sets an octet value array element.
  *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the array to write to.

@@ -5,8 +5,8 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = maintained unittest libc writeonly
-- infos/metadata = check/reference check/reference/restrict
+- infos/status = maintained unittest libc nodep writeonly
+- infos/metadata = check/reference check/reference/restrict check/reference/restrict/#
 - infos/description = Plugin for validating singular or recursive references
 
 ## Introduction
@@ -27,7 +27,7 @@ In this reference graph each node corresponds to a key in the KDB, while each ed
 represents a reference between to keys. The plugin will produce an error, if this graph
 is not a directed acyclic graph or contains any invalid references.
 
-### Resolution of references
+### Resolution of References
 
 The plugin will try to resolve all keys marked with the metakey `check/reference` as references.
 The only exception to this rule is, if the value of such a key is a valid array name (i.e. `#0`,
@@ -52,7 +52,7 @@ The resolution of the references into key names goes as follows:
   - `../../../key` no warning
   - `../key/../otherkey`warning, redundant use of `.`
 
-### Construction of the reference graph
+### Construction of the Reference Graph
 
 The process starts with a key `X`, which has the metakey `check/reference` set to the value
 `recursive`. This key `X` must be an array key. The basename of `X` will be called the `refname`.
@@ -73,7 +73,7 @@ For each element in the array run the following process:
 Once the whole process is finished, we will have a graph of the whole reference structure
 stemming from `X`. This graph can then be check for acyclicity.
 
-### Restriction of references
+### Restriction of References
 
 Without any additional intervention, the plugin accepts the name of any existing key as valid
 reference value. Existing in this context means, the key either has a value or metadata
@@ -111,7 +111,7 @@ kdb setmeta user/tests/reference/singleref check/reference single
 # Try setting an invalid reference
 kdb set user/tests/reference/singleref user/tests/reference/referred1
 # RET: 5
-# STDERR: .*Reason: Reference 'user/tests/reference/referred1', set in key 'user/tests/reference/singleref', does not reference an existing key.*
+# STDERR: .*Reference 'user/tests/reference/referred1', set in key 'user/tests/reference/singleref', does not reference an existing key.*
 
 # Create referred key ...
 kdb set user/tests/reference/referred1 ""

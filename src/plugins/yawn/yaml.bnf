@@ -13,7 +13,13 @@ SEQUENCE_START = 11
 SEQUENCE_END = 12
 ELEMENT = 13;
 
-yaml : STREAM_START child_comments_empty STREAM_END # 1 ;
+yaml : STREAM_START empty_child STREAM_END # 1 ;
+empty_child : empty # 0
+            | child # 0
+            ;
+
+empty : comments_empty # empty ();
+
 child_comments_empty : child # 0
                      | comments
                      |
@@ -39,11 +45,14 @@ scalar : PLAIN_SCALAR         # 0
 map : MAP_START pairs MAP_END # 1 ;
 pairs : pair       # 0
       | pairs pair # pairs (0 1)
+      | pairs error
       ;
 pair : KEY key VALUE child_comments_empty # pair (1 3) ;
 key : scalar # key (0) ;
 
 sequence : SEQUENCE_START elements SEQUENCE_END # sequence(1) ;
 elements : element # 0
-         | elements element # elements(0 1) ;
+         | elements element # elements(0 1)
+         | elements error
+         ;
 element : ELEMENT child # element(1) ;

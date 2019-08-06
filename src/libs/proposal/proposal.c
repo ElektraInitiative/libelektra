@@ -7,8 +7,11 @@
  *
  */
 
+#include <ctype.h>
 #include <string.h>
 
+#include <kdbassert.h>
+#include <kdblogger.h>
 #include <kdbprivate.h>
 
 /**
@@ -269,18 +272,38 @@ Key * keyAsCascading (const Key * key)
 // keyRel2 helper, returns how many levels check is below key, or 0 if check isn't below
 int keyGetLevelsBelow (const Key * key, const Key * check)
 {
-	if (!keyIsBelow (key, check)) return 0;
-	if (keyGetNamespace (key) != keyGetNamespace (check)) return 0;
-	Key * toCheck = keyDup (check);
-	int levels = 0;
-	while (strcmp (keyName (key), keyName (toCheck)))
+	const char * keyUName = keyUnescapedName (key);
+	size_t keyUSize = keyGetUnescapedNameSize (key);
+	const char * keyUNameEnd = keyUName + keyUSize;
+
+	const char * checkUName = keyUnescapedName (check);
+	size_t checkUSize = keyGetUnescapedNameSize (check);
+	const char * checkUNameEnd = checkUName + checkUSize;
+
+	while (strcmp (keyUName, checkUName) == 0)
 	{
-		keySetBaseName (toCheck, 0);
-		if (keyName (toCheck)[0] == '\0') keySetName (toCheck, "/");
-		++levels;
+		keyUName = strchr (keyUName, '\0') + 1;
+		checkUName = strchr (checkUName, '\0') + 1;
+
+		if (keyUName >= keyUNameEnd)
+		{
+			int levels = 0;
+			while (checkUName < checkUNameEnd)
+			{
+				checkUName = strchr (checkUName, '\0') + 1;
+				++levels;
+			}
+
+			return levels;
+		}
+
+		if (checkUName >= checkUNameEnd)
+		{
+			break;
+		}
 	}
-	keyDel (toCheck);
-	return levels;
+
+	return 0;
 }
 
 /**
@@ -367,7 +390,6 @@ int keyRel2 (const Key * key, const Key * check, KeyRelType which)
 	keyDel (cKeyParent);
 	return retVal;
 }
-
 
 /**
  * @}

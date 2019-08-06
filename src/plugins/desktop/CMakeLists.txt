@@ -1,5 +1,4 @@
 include (LibAddMacros)
 
 add_plugin (desktop
-	    SOURCES desktop.h
-		    desktop.c)
+	    SOURCES desktop.h desktop.c)

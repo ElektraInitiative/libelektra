@@ -12,6 +12,7 @@ strict digraph G {
 	c -> storage;
 	c [shape=Mdiamond];
 	c -> c;
+	cache [shape=Mdiamond];
 	filter [shape=Mdiamond];
 	cachefilter -> filter;
 	storage [shape=Mdiamond];
@@ -31,6 +32,8 @@ strict digraph G {
 	cpptemplate -> storage;
 	info [shape=Mdiamond];
 	cpptemplate -> info;
+	check [shape=Mdiamond];
+	cpptype -> check;
 	crypto [shape=Mdiamond];
 	crypto -> crypto;
 	storage [shape=Mdiamond];
@@ -84,6 +87,7 @@ strict digraph G {
 	gitresolver -> resolver;
 	apply [shape=Mdiamond];
 	glob -> apply;
+	gopts [shape=Mdiamond];
 	crypto [shape=Mdiamond];
 	gpgme -> crypto;
 	haskell [shape=Mdiamond];
@@ -123,6 +127,8 @@ strict digraph G {
 	logchange -> tracing;
 	lua [shape=Mdiamond];
 	check [shape=Mdiamond];
+	macaddr -> check;
+	check [shape=Mdiamond];
 	mathcheck -> check;
 	storage [shape=Mdiamond];
 	mini -> storage;
@@ -158,6 +164,10 @@ strict digraph G {
 	profile [shape=Mdiamond];
 	python [shape=Mdiamond];
 	python2 [shape=Mdiamond];
+	storage [shape=Mdiamond];
+	quickdump -> storage;
+	quickdump [shape=Mdiamond];
+	quickdump -> quickdump;
 	range [shape=Mdiamond];
 	reference [shape=Mdiamond];
 	regexdispatcher [shape=Mdiamond];
@@ -168,9 +178,9 @@ strict digraph G {
 	required [shape=Mdiamond];
 	resolver [shape=Mdiamond];
 	resolver -> resolver;
+	rgbcolor [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	ruby -> storage;
-	semlock [shape=Mdiamond];
 	shell [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	simpleini -> storage;
@@ -182,6 +192,10 @@ strict digraph G {
 	spec -> check;
 	apply [shape=Mdiamond];
 	spec -> apply;
+	storage [shape=Mdiamond];
+	specload -> storage;
+	specload [shape=Mdiamond];
+	specload -> specload;
 	apply [shape=Mdiamond];
 	struct -> apply;
 	check [shape=Mdiamond];
@@ -207,6 +221,7 @@ strict digraph G {
 	uname -> storage;
 	info [shape=Mdiamond];
 	uname -> info;
+	unit [shape=Mdiamond];
 	check [shape=Mdiamond];
 	validation -> check;
 	resolver [shape=Mdiamond];
@@ -231,8 +246,7 @@ strict digraph G {
 	yamlcpp -> storage;
 	yaml [shape=Mdiamond];
 	yamlcpp -> yaml;
-	conv [shape=Mdiamond];
-	yamlsmith -> conv;
+	yamlsmith [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	yanlr -> storage;
 	yaml [shape=Mdiamond];

@@ -4,14 +4,18 @@
 
 ### Highlevel
 
-    libelektra-highlevel.so
+```
+libelektra-highlevel.so
+```
 
 Contains the **[highlevel API](highlevel)**.
 See [also examples](/examples/highlevel).
 
 ### Notification
 
-    libelektra-notification.so
+```
+libelektra-notification.so
+```
 
 **[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html).
 Usage examples:
@@ -29,19 +33,25 @@ is split into following libraries:
 
 ### Libkdb
 
-    libelektra-kdb.so
+```
+libelektra-kdb.so
+```
 
 Accesses the configuration files by orchestrating the plugins.
 The implementation lives in [elektra](elektra).
+
+It coordinates the interactions between the applications and the plugins.
 
 **[loader](loader/)** contains source files that implement the plugin
 loader functionality as used by `libelektra-kdb`.
 
 ### Libcore
 
-    libelektra-core.so
-    <kdbhelper.h>
-    <kdb.h> (key* and ks*)
+```
+libelektra-core.so
+<kdbhelper.h>
+<kdb.h> (key* and ks*)
+```
 
 Contains the fundamental data-structures every participant of Elektra needs
 to link against. It should be the only part that access the internal
@@ -50,7 +60,9 @@ The implementation lives in [elektra](elektra).
 
 ### Libease
 
-    libelektra-ease.so
+```
+libelektra-ease.so
+```
 
 **[libease](ease/)** contains data-structure operations on top of libcore which do not depend on internals.
 Applications and plugins can choose to not link against it if they want to stay minimal.
@@ -58,20 +70,26 @@ Its main goal is to make programming with Elektra easier if some extra kB are no
 
 ### Libplugin
 
-    libelektra-plugin.so
+```
+libelektra-plugin.so
+```
 
 **[libplugin](plugin/)** contains `elektraPlugin*` symbols to be used by plugins.
 
 ### Libproposal
 
-    libelektra-proposal.so
+```
+libelektra-proposal.so
+```
 
-**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internas of libcore and as
+**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internals of libcore and as
 such must always fit to the exact same version.
 
 ### Libmeta
 
-    libelektra-meta.so
+```
+libelektra-meta.so
+```
 
 **[libmeta](meta/meta.c)** contains metadata operations as described in **[METADATA.ini](/doc/METADATA.ini)**.
 Currently mainly contains legacy code and some generic metadata operations.
@@ -85,7 +103,9 @@ The sources can be found in **[libelektra](elektra/)**.
 
 ### Libpluginprocess
 
-    libelektra-pluginprocess.so
+```
+libelektra-pluginprocess.so
+```
 
 **[libpluginprocess](pluginprocess/)** contains functions aiding in executing plugins in a separate
 process and communicating with those child processes. This child process is forked from Elektra's
@@ -111,13 +131,17 @@ have been used.
 
 ### Libinvoke
 
-    libelektra-invoke.so
+```
+libelektra-invoke.so
+```
 
 **[libinvoke](invoke/)** provides a simple API allowing us to call functions exported by plugins.
 
 ### IO
 
-    libelektra-io.so
+```
+libelektra-io.so
+```
 
 **[io](io/)** provides the
 [common API](https://doc.libelektra.org/api/current/html/group__kdbio.html) for
@@ -125,7 +149,9 @@ using asynchronous I/O bindings.
 
 ### Globbing
 
-    libelektra-globbing.so
+```
+libelektra-globbing.so
+```
 
 **[globbing](globbing/)** provides globbing functionality for Elektra.
 

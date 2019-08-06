@@ -8,13 +8,16 @@ RUN apt-get update && apt-get -y install \
         antlr4 \
         automake \
         autotools-dev \
+        bison \
         build-essential \
         checkinstall \
         clang-6.0 \
         clang-format-6.0 \
         cmake \
         curl \
+        default-jdk \
         dh-lua \
+        ed \
         gawk \
         git \
         gobject-introspection \
@@ -38,13 +41,13 @@ RUN apt-get update && apt-get -y install \
         libuv1-dev \
         libxerces-c-dev \
         libyajl-dev \
+        libyaml-cpp-dev \
         libzmq3-dev \
         llvm \
         maven \
         moreutils \
         ninja-build \
         npm \
-        openjdk-8-jdk \
         pkg-config \
         python-dev \
         python-pip \
@@ -53,11 +56,30 @@ RUN apt-get update && apt-get -y install \
         sloccount \
         swig3.0 \
         systemd \
+        tao-pegtl-dev \
         tclcl-dev \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install cmake-format==0.4.5 pyyaml
+# YAEP
+ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
+RUN cd /tmp \
+    && mkdir yaep \
+    && curl -o yaep.tar.gz \
+       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
+    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
+    && cd yaep \
+    && mkdir build \
+    && cd build \
+    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make install \
+    && cd ../.. \
+    && rm -r yaep yaep.tar.gz
+
+# Update cache for shared libraries
+RUN ldconfig
+
+RUN pip install cmake-format[yaml]==0.5.4
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
@@ -69,15 +91,16 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
-# Handle Java
-RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
-RUN echo '\
-/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
-/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
-RUN ldconfig
-
 # Prettier
 RUN npm install --global prettier@1.16.4
+
+# hyperfine
+ARG HYPERFINE_VERSION=1.5.0
+RUN cd /tmp \
+    && curl -o hyperfine.deb \
+       -L https://github.com/sharkdp/hyperfine/releases/download/v${HYPERFINE_VERSION}/hyperfine_${HYPERFINE_VERSION}_amd64.deb \
+    && dpkg -i hyperfine.deb \
+    && rm hyperfine.deb
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

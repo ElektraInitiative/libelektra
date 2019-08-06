@@ -93,3 +93,13 @@ string Input::getText (size_t const start) const
 	string text = wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes (input.substr (start, position - start));
 	return text;
 }
+
+/**
+ * @brief This method retrieves the whole text represented by this input object.
+ *
+ * @return A UTF-8 encoded string that stores the data of the input
+ */
+string Input::toString () const
+{
+	return wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes (input);
+}

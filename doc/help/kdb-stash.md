@@ -28,7 +28,7 @@ kdb mount
 #> none on system/info/elektra/uname with name system/info/elektra/uname
 
 kdb backup
-#> restore with "kdb restore 1500000000"
+#> kdb restore 1500000000
 
 kdb get user/x
 #> Did not find key
@@ -51,5 +51,5 @@ kdb mount
 
 ## SEE ALSO
 
-- [kdb-restore(7)](kdb-restore.md)
-- [kdb-backup(7)](kdb-backup.md)
+- [kdb-restore(1)](kdb-restore.md)
+- [kdb-backup(1)](kdb-backup.md)

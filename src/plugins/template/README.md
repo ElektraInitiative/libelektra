@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
+- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
 - infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
 - infos/metadata =
 - infos/description = one-line description of template
@@ -20,8 +20,10 @@ You can use `scripts/copy-template`
 to automatically rename everything to your
 plugin name:
 
-    cd src/plugins
-    ../../scripts/copy-template yourplugin
+```bash
+cd src/plugins
+../../scripts/copy-template yourplugin
+```
 
 Then update the README.md of your newly created plugin:
 

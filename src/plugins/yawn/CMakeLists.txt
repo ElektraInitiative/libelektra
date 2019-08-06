@@ -31,15 +31,24 @@ function (check_dependencies)
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 	set (SOURCE_FILE_GRAMMAR ${CMAKE_CURRENT_BINARY_DIR}/yaml_grammar.h)
 
-	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	set (LIBSTDCPP
+	     CMAKE_COMPILER_IS_GNUCXX
+	     OR
+	     ${CMAKE_SYSTEM_NAME}
+	     STREQUAL
+	     "Linux")
 	if (ENABLE_ASAN AND ${LIBSTDCPP})
 		# Ignore runtime error about member call on address, which does not point to object of type `__codecvt_abstract_base` in
 		# `libstdc++`. See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81068
-		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
+		set_source_files_properties (${SOURCE_FILES_INPUT}
+					     PROPERTIES
+					     COMPILE_FLAGS
+					     "-fno-sanitize=undefined")
 	endif (ENABLE_ASAN AND ${LIBSTDCPP})
 
-	file (READ yaml.bnf
-		   GRAMMAR_INPUT)
+	# Make sure the build system recreates the header for the grammar, if we modify `yaml.bnf`.
+	configure_file (yaml.bnf yaml.bnf @ONLY)
+	file (READ ${CMAKE_CURRENT_BINARY_DIR}/yaml.bnf GRAMMAR_INPUT)
 	string (REGEX
 		REPLACE ";"
 			"\\\\\\\\;"
@@ -54,11 +63,7 @@ function (check_dependencies)
 		set (GRAMMAR "${GRAMMAR}\"${line}\\n\"\n")
 	endforeach (line ${GRAMMAR_INPUT})
 
-	file (WRITE ${SOURCE_FILE_GRAMMAR}
-		    ${GRAMMAR})
-
-	# Make sure the build system recreates the header for the grammar, if we modify `yaml.bnf`
-	set_source_files_properties (${SOURCE_FILE_GRAMMAR} PROPERTIES GENERATED TRUE)
+	file (WRITE ${SOURCE_FILE_GRAMMAR} ${GRAMMAR})
 
 	set (SOURCE_FILES
 	     ${SOURCE_FILES_INPUT}
@@ -97,8 +102,7 @@ add_plugin (yawn
 	    CPP_TEST
 	    INSTALL_TEST_DATA
 	    TEST_README
-	    TEST_REQUIRED_PLUGINS directoryvalue
-				  yamlsmith
+	    TEST_REQUIRED_PLUGINS directoryvalue yamlsmith
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_SYSTEM_DIRECTORIES ${YAWN_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${YAWN_LIBRARIES_CPP})

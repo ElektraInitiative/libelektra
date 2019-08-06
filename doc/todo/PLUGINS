@@ -71,7 +71,7 @@ logging API:
 
 ## Others
 
-fix semlock plugin
+implement semlock plugin, see commit bc8b5d66bd4babba6bc8c34804b966daf6878a1d
 
 inherit/copy metadata/bind mounts:
 	kdb setmeta spec/something inherit/override/# '"/elsewhere/key/" + basename'

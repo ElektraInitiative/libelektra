@@ -10,4 +10,4 @@ This command checks which mount point is influenced by changes to environment va
 
 ## SEE ALSO
 
-- [kdb-mount-list-all-files(7)](kdb-mount-list-all-files.md)
+- [kdb-mount-list-all-files(1)](kdb-mount-list-all-files.md)

@@ -5,9 +5,11 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested nodep configurable
+- infos/status = reviewed conformant compatible coverage specific unittest tested nodep configurable obsolete
 - infos/metadata =
 - infos/description = canonicalizes boolean values
+
+**This plugin is obsolete:** Please use the `type` plugin instead.
 
 ## Introduction
 
@@ -40,6 +42,6 @@ sudo kdb umount user/tests/boolean
 - `on/true` specifies the normalized value for `TRUE`. Default: `1`
 - `on/false` specifies the normalized value for `FALSE`. Default: `0`
 - `on/invalid` specifies the normalized value for keys that don't contain a valid boolean value. Values: `TRUE`, `FALSE`. Default: `TRUE`.
-- `on/invalid/warning` specifies if the plugin will yield a warning when a invalid value is found during kdbGet. Values: `TRUE`, `FALSE`. Default: `TRUE`
+- `on/invalid/warning` specifies if the plugin will yield a warning when an invalid value is found during kdbGet. Values: `TRUE`, `FALSE`. Default: `TRUE`
 - `true` specifies a (case insensitive) list of valid `TRUE`-values. The values have to be separated by a `;`. Default: `TRUE; 1; ON; ENABLE; ENABLED; YES`
 - `false` specifies a (case insensitive) list of valid `FALSE`-values. The values have to be separated by a `;`. Default: `FALSE; 0; OFF; DISABLE; DISABLED; NO; NOT`

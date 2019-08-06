@@ -20,7 +20,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 
-typedef yy::Parser::location_type location_type;
+typedef yambi::Parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 
@@ -47,9 +47,14 @@ class Driver
 	std::stack<uintmax_t> indices;
 
 	/**
-	 * This variable stores the most recent error message produced by the parser.
+	 * This variable stores all error message produced by the parser.
 	 */
 	std::string errorMessage;
+
+	/**
+	 * This variable stores the number of errors caught by the parser.
+	 */
+	size_t numberOfErrors;
 
 public:
 	/** This variable stores the path of the YAML file the driver is parsing. */
@@ -91,8 +96,9 @@ public:
 	 * @param location This value specifies the location of the erroneous input.
 	 * @param message This value stores the error message emitted by the Bison
 	 *                parser.
+	 * @param input This value stores the current input of the lexer/parser as text
 	 */
-	void error (const location_type & location, const std::string & message);
+	void error (const location_type & location, const std::string & message, std::string const & input);
 
 	/**
 	 * @brief This function returns the last error message produced by the parser.
@@ -104,6 +110,11 @@ public:
 	// ===========
 	// = Actions =
 	// ===========
+
+	/**
+	 * @brief This function will be called before the parser enters an empty file (that might contain comments).
+	 */
+	void enterEmpty ();
 
 	/**
 	 * @brief This function will be called after the parser exits a value.

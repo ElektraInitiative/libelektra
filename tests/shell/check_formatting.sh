@@ -57,7 +57,10 @@ to fix the formatting problems. For that please
 
 . After that use the following command to apply the changes:
 
-    cut -c"$(head -n1 format.patch | sed -E 's/(^[0-9]+:).*/\1_/' | wc -c | sed -E 's/[ ]*//g')"- format.patch | patch -p1
+    sh -c '
+    line_prefix="$(head -n1 format.patch | sed -nE '"'"'s/(^[0-9]+:).*/\1_/p'"'"' | wc -c | sed -E '"'"'s/[ ]*//g'"'"')"
+    { test "$line_prefix" -gt 1 && cut -c"$line_prefix"- format.patch || cat format.patch ; } | patch -p1
+    '
 
 .
 EOF

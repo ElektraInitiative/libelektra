@@ -69,6 +69,6 @@ validation plugins have to export their validation routine
 
 returning 1 if validation succeeded, 0 on failure
 
-## Related decisions
+## Related Decisions
 
 ## Notes

@@ -38,6 +38,9 @@ static int iniCmpOrder (const void * a, const void * b);
 #define DEFAULT_DELIMITER '='
 #define DEFAULT_COMMENT_CHAR '#'
 
+char const * const ININAME_DELIM_SPECIAL_MASK = "\"%s\"%c";
+char const * const ININAME_DELIM_MASK = "%s%c";
+
 typedef enum
 {
 	NONE,
@@ -403,8 +406,9 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		else if (!lineContinuation)
 		{
 			keyDel (appendKey);
-			ELEKTRA_SET_ERRORF (141, handle->parentKey, "We found the key %s a second time in the INI file in section %s\n",
-					    keyName (existingKey), section);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (handle->parentKey,
+								 "We found the key %s a second time in the INI file in section %s\n",
+								 keyName (existingKey), section);
 			return -1;
 		}
 	}
@@ -776,14 +780,14 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		switch (ret)
 		{
 		case -1:
-			ELEKTRA_SET_ERROR (9, parentKey, "Unable to open the ini file");
+			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Unable to open the ini file");
 			break;
 		case -2:
-			ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation error while reading the ini file");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation error while reading the ini file");
 			break;
 		default:
-			ELEKTRA_SET_ERRORF (98, parentKey, "Could not parse ini file %s. First error at line %d", keyString (parentKey),
-					    ret);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not parse ini file %s. First error at line %d",
+								 keyString (parentKey), ret);
 			break;
 		}
 		ret = -1;
@@ -846,11 +850,11 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
 	result = strtok_r (value, "\n", &saveptr);
 	if (keyContainsSpecialCharacter (iniName))
 	{
-		fprintf (fh, "\"%s\" %c ", iniName, config->delim);
+		fprintf (fh, ININAME_DELIM_SPECIAL_MASK, iniName, config->delim);
 	}
 	else
 	{
-		fprintf (fh, "%s %c ", iniName, config->delim);
+		fprintf (fh, ININAME_DELIM_MASK, iniName, config->delim);
 	}
 	if (result == NULL)
 		fprintf (fh, "\"\n%s\"", config->continuationString);
@@ -1246,9 +1250,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			{
 				const char * string = keyString (cur);
 				if (keyContainsSpecialCharacter (name))
-					fprintf (fh, "\"%s\" %c ", name, delim);
+					fprintf (fh, ININAME_DELIM_SPECIAL_MASK, name, delim);
 				else
-					fprintf (fh, "%s %c ", name, delim);
+					fprintf (fh, ININAME_DELIM_MASK, name, delim);
 				if (strlen (string) && (valueContainsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else
@@ -1345,9 +1349,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						cur = keyArray[j];
 						const char * string = keyString (cur);
 						if (keyContainsSpecialCharacter (name))
-							fprintf (fh, "\"%s\" %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_SPECIAL_MASK, name, delim);
 						else
-							fprintf (fh, "%s %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_MASK, name, delim);
 						if (strlen (string) && (valueContainsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else
@@ -1395,9 +1399,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					{
 						const char * string = keyString (cur);
 						if (keyContainsSpecialCharacter (name))
-							fprintf (fh, "\"%s\" %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_SPECIAL_MASK, name, delim);
 						else
-							fprintf (fh, "%s %c ", name, delim);
+							fprintf (fh, ININAME_DELIM_MASK, name, delim);
 						if (strlen (string) && (valueContainsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else if (strlen (string))
@@ -1413,8 +1417,8 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						}
 						else
 						{
-							ELEKTRA_SET_ERROR (
-								97, parentKey,
+							ELEKTRA_SET_INSTALLATION_ERROR (
+								parentKey,
 								"Encountered a multiline value but multiline support is not enabled. "
 								"Have a look at kdb info ini for more details");
 							ret = -1;
@@ -1586,6 +1590,8 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		fprintf (fh, "\xEF\xBB\xBF");
 	}
+
+	int rootNeededSync = 0;
 	if (keyNeedSync (parentKey) && root)
 	{
 		if (strncmp (keyString (parentKey), keyString (root), strlen (keyString (root))))
@@ -1594,12 +1600,14 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				iniWriteMeta (fh, root);
 				fprintf (fh, "= %s\n", keyString (root));
+				rootNeededSync = 1;
 			}
 		}
 		else
 		{
 			iniWriteMeta (fh, root);
 			fprintf (fh, "[]\n");
+			rootNeededSync = 1;
 		}
 	}
 	keyDel (root);
@@ -1621,6 +1629,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 
+	if (ret == 0 && rootNeededSync) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 	return ret; /* success */
 }

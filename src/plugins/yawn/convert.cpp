@@ -82,8 +82,7 @@ int nextToken (void ** attribute)
 void syntaxError (int errorToken, void * errorTokenData, int ignoredToken, void * ignoredTokenData, int recoveredToken,
 		  void * recoveredTokenData)
 {
-	return errorListenerAdress->syntaxError (errorToken, errorTokenData, ignoredToken, ignoredTokenData, recoveredToken,
-						 recoveredTokenData);
+	errorListenerAdress->syntaxError (errorToken, errorTokenData, ignoredToken, ignoredTokenData, recoveredToken, recoveredTokenData);
 }
 
 /**
@@ -102,7 +101,7 @@ string parseGrammar (yaep & parser, CppKey & error)
 
 	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, error.getKey (), "Unable to parse grammar: %s", parser.error_message ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (error.getKey (), "Unable to parse grammar. Reason: %s", parser.error_message ());
 		return "";
 	}
 	return grammar;
@@ -114,14 +113,14 @@ string parseGrammar (yaep & parser, CppKey & error)
  * @param filename This variable stores location of the file for which this function creates an input stream
  * @param error This function stores an error message in this key, if it was unable to access `filename`.
  *
- * @return A input stream that contains the content of `filename`, if creating the stream was successful
+ * @return an input stream that contains the content of `filename`, if creating the stream was successful
  */
 ifstream openFile (string const & filename, CppKey & error)
 {
 	ifstream input{ filename };
 	if (!input.good ())
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, error.getKey (), "Unable to open file “%s”", filename.c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (error.getKey (), "Unable to open file '%s'", filename.c_str ());
 	}
 	return input;
 }
@@ -143,17 +142,17 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 {
 	if (ambiguousOutput)
 	{
-		ELEKTRA_SET_ERRORF (
-			ELEKTRA_ERROR_PARSE, error.getKey (),
-			"The content of file “%s” showed that the grammar:\n%s\nproduces ambiguous output!\n"
-			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input.",
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+			error.getKey (),
+			"The content of file '%s' showed that the grammar:\n%s\nproduces ambiguous output\n"
+			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input",
 			filename.c_str (), grammar.c_str ());
 		return -1;
 	}
 
 	if (errorListener.getNumberOfErrors () > 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), (filename + ":" + errorListener.getErrorMessage ()).c_str ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (error.getKey (), errorListener.getErrorMessage ().c_str ());
 		return -1;
 	}
 	return 0;
@@ -175,7 +174,7 @@ namespace yawn
  *                 function converts.
  *
  * @retval -2 if the file could not be opened for reading
- * @retval -1 if there was a error converting the YAML file
+ * @retval -1 if there was an error converting the YAML file
  * @retval  0 if parsing was successful and the function did not change the
  *            given key set
  * @retval  1 if parsing was successful and the function did change `keySet`
@@ -190,11 +189,11 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	auto input = openFile (filename, parent);
 	if (!input.good ()) return -1;
 
-	ErrorListener errorListener;
-	errorListenerAdress = &errorListener;
-
 	Lexer lexer{ input };
 	lexerAddress = &lexer;
+
+	ErrorListener errorListener{ filename, lexer.getText () };
+	errorListenerAdress = &errorListener;
 
 	int ambiguousOutput;
 	struct yaep_tree_node * root = nullptr;

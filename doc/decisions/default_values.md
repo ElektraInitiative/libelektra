@@ -22,7 +22,7 @@
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

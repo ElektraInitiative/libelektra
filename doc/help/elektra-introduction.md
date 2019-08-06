@@ -34,7 +34,7 @@ is written for: to access configuration.
 
 For further views see [why Elektra](/doc/WHY.md)
 
-## Why is it important?
+## Why Is It Important?
 
 The configuration files that represent key databases can have binary
 or humanly-readable formats. From the latter, an unmanageable number
@@ -71,4 +71,4 @@ presented next.
 ## SEE ALSO
 
 - Get a [big picture](/doc/BIGPICTURE.md)
-- Start reading about [command-line tools](/doc/help/kdb-introduction.md)
+- Start reading about [command-line tools](/doc/help/kdb.md)

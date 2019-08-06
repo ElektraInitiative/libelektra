@@ -10,7 +10,7 @@
 
 Implementation of Elektra as GSettingsBackend
 
-## What is working:
+## What is Working:
 
 - passing gsettings unit tests
 - all interface functionality but one
@@ -21,7 +21,7 @@ Implementation of Elektra as GSettingsBackend
   - subscribing and unsubscribing for changes (needs Elektra’s [dbus plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/dbus) mounted on subscribed path)
   - get writability of key (As far as definable as writable from Elektra)
 
-## What is not
+## What is Not
 
 - synchronization conflict handling
 - code cleanup
@@ -51,7 +51,7 @@ Implementation of Elektra as GSettingsBackend
 
 ## Build
 
-### As part of Elektra Build
+### As Part of Elektra Build
 
 ```sh
 mkdir build && cd build
@@ -81,7 +81,7 @@ If you do a system installation consider doing a migration, so you can immediate
 
 # Migration
 
-## Import dconf user settings
+## Import dconf User Settings
 
 For now you can export your existing dconf database trough:
 
@@ -95,7 +95,7 @@ and import it in elektra
 cat dconf.ini | kdb import /sw ini
 ```
 
-## Mount dbus plugin
+## Mount dbus Plugin
 
 export current settings and delete them so they will not be hidden
 
@@ -140,7 +140,7 @@ gsettings get org.gnome.gedit.preferences.editor auto-indent
 gsettings list-recursively org.gnome.gedit.preferences.editor auto-indent
 ```
 
-### Force elektra as default backend when starting an application:
+### Force Elektra as Default Backend When Starting an Application:
 
 ```sh
 G_MESSAGES_DEBUG=ElektraSettings GSETTINGS_BACKEND=elektra gedit

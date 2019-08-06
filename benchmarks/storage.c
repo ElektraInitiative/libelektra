@@ -14,17 +14,14 @@
 
 #define CSV_STR_FMT "%s;%s;%d\n"
 
-#define NUM_PLUGINS 3
+#define NUM_PLUGINS 4
 #define NUM_RUNS 7
 
 KeySet * modules[NUM_PLUGINS];
 Plugin * plugins[NUM_PLUGINS];
-char * pluginNames[NUM_PLUGINS] = { "dump", "mmapstorage_crc", "mmapstorage" };
+char * pluginNames[NUM_PLUGINS] = { "dump", "mmapstorage_crc", "mmapstorage", "quickdump" };
 
 char * tmpfilename;
-char * tempHome;
-int tempHomeLen;
-char * tempHomeConf;
 
 static void benchmarkDel (void)
 {

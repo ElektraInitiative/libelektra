@@ -36,7 +36,7 @@ void MountBaseCommand::readMountConf (Cmdline const & cl)
 
 	if (!cl.null && cl.first && cl.second && cl.third)
 	{
-		printWarnings (cerr, parentKey);
+		printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 	}
 }
 
@@ -159,5 +159,5 @@ void MountBaseCommand::doIt ()
 					 getErrorColor (ANSI_COLOR::RESET));
 	}
 
-	printWarnings (cerr, parentKey);
+	printWarnings (cerr, parentKey, true, true);
 }

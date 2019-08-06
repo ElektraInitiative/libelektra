@@ -7,34 +7,35 @@ SCRIPTS_DIR=$(dirname "$0")
 SBUILD=$(pwd)
 BUILD=$(readlink -f "$SBUILD")
 
-if [ -d "$1" ]; then
-	SOURCE=$(readlink -f "$1")
-fi
+for last; do true; done
 
-# set JAVA_HOME if you want to use a non-default Java.
-#cd /opt
-#JAVA_IN_OPT=$(readlink -f $(find . -maxdepth 1 -name 'jdk*' -print -quit))
-#
-#if [ "x$JAVA_HOME" = "x" -a "x$JAVA_IN_OPT" != "x" ]
-#then
-#	export JAVA_HOME="$JAVA_IN_OPT"
-#fi
-#echo "Using java home: $JAVA_HOME"
+if [ -d "$last" ]; then
+	SOURCE=$(readlink -f "$last")
+else
+	echo "Usage: $SELF [Further CMake Arguments] Elektra-source-dir"
+	echo
+	echo "Error: You did not provide the source directory to Elektra as argument"
+	exit 1
+fi
 
 if [ "$SOURCE" = "$BUILD" ]; then
 	if echo $* | grep FORCE_IN_SOURCE_BUILD=ON; then
-		echo "Warning: in source build!"
+		echo "Warning: in-source build!"
 		echo "It is recommended to create a new directory and run $SELF there"
 		echo "Proceeding as requested"
 	else
-		echo "Error: in source build!"
-		echo "It is recommended to create a new directory and run $SELF there"
-		echo "You can force an in-tree build with -DFORCE_IN_SOURCE_BUILD=ON"
+		echo "Error: in-source build!"
+		echo "It is recommended to create a new directory and run $SELF there:"
+		echo 'For example by executing "mkdir build && cd build".'
+		echo "Alternatively, you can force an in-source build with -DFORCE_IN_SOURCE_BUILD=ON"
 		exit 1
 	fi
 fi
 
 if [ "$SCRIPTS" = "$BUILD" ]; then
-	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
+	echo "You seem to be in the scripts directory!"
+	echo "Create a new directory,"
+	echo 'for example by executing "mkdir ../build && cd ../build",'
+	echo "and run $SELF there"
 	exit 1
 fi

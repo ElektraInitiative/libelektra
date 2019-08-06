@@ -30,46 +30,64 @@ To use the debian repository of the latest builds from master put following line
 
 For Stretch:
 
-        deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
-        deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+```
+deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+```
 
 Which can also be done using:
 
-        sudo apt-get install apt-transport-https
-        echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
+```sh
+sudo apt-get install apt-transport-https
+echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
+```
 
 Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
-        sudo apt-get install software-properties-common apt-transport-https
-        sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
+```sh
+sudo apt-get install software-properties-common apt-transport-https
+sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
+```
 
 For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
 
-        deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-        deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+```
+deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+```
 
 For Wheezy (not updated anymore, contains 0.8.19-8121 packages):
 
-        deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
-        deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
+deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
 
 To get all packaged plugins, bindings and tools install:
 
-    apt-get install libelektra4-all
+```sh
+apt-get install libelektra4-all
+```
 
 For a small installation with command-line tools available use:
 
-    apt-get install elektra-bin
+```sh
+apt-get install elektra-bin
+```
 
 If you want to rebuild Elektra from Debian unstable or
 our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
 and then run:
 
-    apt-get source -b elektra
+```sh
+apt-get source -b elektra
+```
 
 To build Debian Packages from the source you might want to use:
 
-    dpkg-buildpackage -us -uc -sa
+```sh
+dpkg-buildpackage -us -uc -sa
+```
 
 (You need to be in the Debian branch, see [GIT](GIT.md))
 
@@ -83,32 +101,46 @@ brew install elektra
 
 . We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
 
-## Generic
+## Windows
+
+Please refer to the section OS Independent below.
+
+## OS Independent
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-To install Elektra use:
+After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or cPack tools.
 
-    sudo make install
-    sudo ldconfig  # See troubleshooting below
+### make
+
+```sh
+sudo make install
+sudo ldconfig  # See troubleshooting below
+```
 
 To uninstall Elektra use (will not be very clean,
 e.g. it will not remove directories and `*.pyc` files):
 
-    sudo make uninstall
-    sudo ldconfig
+```sh
+sudo make uninstall
+sudo ldconfig
+```
 
-or in the build directory (will not honor DESTDIR!):
+or in the build directory (will not honor `DESTDIR`!):
 
-    xargs rm < install_manifest.txt
+```sh
+xargs rm < install_manifest.txt
+```
 
-## CPack
+### CPack
 
 First follow the steps in [COMPILE](COMPILE.md).
 
 Then use:
 
-    cpack
+```sh
+cpack
+```
 
 which should create a package for distributions where a Generator is
 implemented. See [this cmake file](/cmake/ElektraPackaging.cmake) for available Generators
@@ -120,19 +152,25 @@ and send a merge request for your system.
 
 If you encounter the problem that the library can not be found (output like this)
 
-    kdb: error while loading shared libraries:
-         libelektra-core.so.4: cannot open shared object file: No such file or directory
+```
+kdb: error while loading shared libraries:
+     libelektra-core.so.4: cannot open shared object file: No such file or directory
+```
 
 or:
 
-    kdb: error while loading shared libraries:
-         libelektratools.so.2: cannot open shared object file: No such file or directory
+```
+kdb: error while loading shared libraries:
+     libelektratools.so.2: cannot open shared object file: No such file or directory
+```
 
-you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`).
+you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`). Note that under Alpine Linux this file is called `/etc/ld-musl-x86_64.path` or similar, depending on your architecture.
 
-Add the path where the library has been installed
+Add the path where the library has been installed (on Alpine Linux this had to be `usr/lib/elektra` for it to work)
 
-    /usr/lib/local/
+```
+/usr/lib/local/
+```
 
 and run `ldconfig` as root.
 
@@ -142,7 +180,7 @@ For some of the plugins and tools that ship with Elektra,
 additional installation manuals have been written.
 You can find them in the [tutorial overview](tutorials/README.md).
 
-## See also
+## See Also
 
 - [COMPILE](COMPILE.md).
 - [TESTING](TESTING.md).

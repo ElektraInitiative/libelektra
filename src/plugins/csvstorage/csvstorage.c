@@ -54,7 +54,7 @@ static char * parseRecord (char ** ptr, char delim, int * isQuoted, int * isCol,
 				++(*counter);
 				if (mode == PARSE) return NULL;
 			}
-			else if (*(*ptr + 1) == '\n')
+			else if (*(*ptr + 1) == '\n' || *(*ptr + 1) == '\r')
 			{
 				*isQuoted = 0;
 				*isCol = 0;
@@ -75,14 +75,14 @@ static char * parseRecord (char ** ptr, char delim, int * isQuoted, int * isCol,
 			if (mode == PARSE) return NULL;
 		}
 	}
-	else if (**ptr != '\n')
+	else if (**ptr != '\n' && **ptr != '\r')
 	{
 		if (!(*isCol))
 		{
 			*isCol = 1;
 		}
 	}
-	else // it's \n
+	else // it's \n or \r
 	{
 		if (mode == READLINE)
 		{
@@ -136,29 +136,29 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 			isCol = 0;
 			if (!lastLine)
 			{
-				ELEKTRA_ADD_WARNINGF (136, parentKey,
-						      "Unexpected end of line(%lu), all records except the last must and with a newline",
-						      lineNr);
+				ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (
+					parentKey, "Unexpected end of line(%lu), all records except the last must and with a newline",
+					lineNr);
 			}
 		}
 	}
 	unsigned long len = elektraStrLen (line);
 	if (isQuoted)
 	{
-		if (line[len - 2] == '\n')
+		if (line[len - 2] == '\n' || line[len - 2] == '\r')
 		{
 			line[len - 2] = '\0';
 		}
-		ELEKTRA_ADD_WARNINGF (136, parentKey, "Unexpected end of line(%lu). unbalanced number of double-quotes in (%s)", lineNr,
-				      line);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (
+			parentKey, "Unexpected end of line(%lu). unbalanced number of double-quotes in (%s)", lineNr, line);
 	}
 	else if (isCol)
 	{
-		if (line[len - 2] == '\n')
+		if (line[len - 2] == '\n' || line[len - 2] == '\r')
 		{
 			line[len - 2] = '\0';
 		}
-		ELEKTRA_ADD_WARNINGF (136, parentKey, "Unexpected end of line(%lu): (%s)", lineNr, line);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Unexpected end of line(%lu): (%s)", lineNr, line);
 	}
 	else
 	{
@@ -166,7 +166,8 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 	}
 	if (hasUnescapedDQuote)
 	{
-		ELEKTRA_ADD_WARNINGF (136, parentKey, "Quoted field in line(%lu) has an unescaped double-quote: (%s)", lineNr, line);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Quoted field in line(%lu) has an unescaped double-quote: (%s)",
+							   lineNr, line);
 	}
 
 	return line;
@@ -334,7 +335,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERRORF (116, parentKey, "couldn't open file %s\n", fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s", fileName);
 		return -1;
 	}
 	int lastLine = 0;
@@ -351,8 +352,8 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	{
 		if (columns != fixColumnCount)
 		{
-			ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns (%lu - %lu) in Header line: %s", columns,
-					    fixColumnCount, lineBuffer);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Illegal number of columns (%lu - %lu) in Header line: %s",
+								 columns, fixColumnCount, lineBuffer);
 			elektraFree (lineBuffer);
 			fclose (fp);
 			return -1;
@@ -479,16 +480,16 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		{
 			if (fixColumnCount)
 			{
-				ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns (%lu - %lu) in line %lu: %s", colCounter,
-						    columns, lineCounter, lineBuffer);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Illegal number of columns (%lu - %lu) in line %lu: %s",
+									 colCounter, columns, lineCounter, lineBuffer);
 				elektraFree (lineBuffer);
 				fclose (fp);
 				keyDel (dirKey);
 				ksDel (header);
 				return -1;
 			}
-			ELEKTRA_ADD_WARNINGF (118, parentKey, "illegal number of columns (%lu - %lu)  in line %lu: %s", colCounter, columns,
-					      lineCounter, lineBuffer);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Illegal number of columns (%lu - %lu)  in line %lu: %s",
+								   colCounter, columns, lineCounter, lineBuffer);
 		}
 		lineCounter += linesRead;
 		elektraFree (lineBuffer);
@@ -719,8 +720,8 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		}
 		if (colCounter != columns)
 		{
-			ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns (%lu - %lu) in line %lu", colCounter, columns,
-					    lineCounter);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Illegal number of columns (%lu - %lu) in line %lu", colCounter,
+								 columns, lineCounter);
 			fclose (fp);
 			return -1;
 		}

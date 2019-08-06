@@ -60,7 +60,7 @@ that are set in the cluster cannot be modified.
 
 - There needs to be a single point of entry for the web client to connect to.
 
-## Related decisions
+## Related Decisions
 
 - [Elektra Web Recursive Structure decision](elektra_web_recursive.md)
 

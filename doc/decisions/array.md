@@ -52,7 +52,7 @@ myarray/#5 = value5
 - metadata library needs to be adapted
 - spec plugin needs to be fixed
 
-## Related decisions
+## Related Decisions
 
 - [Global Validation](global_validation.md)
 

@@ -2,9 +2,11 @@
 
 ## SYNOPSIS
 
-    kdb help <tool>
-    kdb --help <tool>
-    kdb -H <tool>
+```sh
+kdb help <tool>
+kdb --help <tool>
+kdb -H <tool>
+```
 
 ## DESCRIPTION
 

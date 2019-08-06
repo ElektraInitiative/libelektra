@@ -1,4 +1,7 @@
-macro (compile_haskell_binding CABAL_EXECUTABLE GHC_VERSION HASKELL_SHARED_SANDBOX)
+macro (compile_haskell_binding
+       CABAL_EXECUTABLE
+       GHC_VERSION
+       HASKELL_SHARED_SANDBOX)
 	add_binding (haskell ONLY_SHARED)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
@@ -20,8 +23,7 @@ macro (compile_haskell_binding CABAL_EXECUTABLE GHC_VERSION HASKELL_SHARED_SANDB
 			"${ELEKTRA_DEPENDENCY}")
 
 	# configure include paths
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
-			"${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in" "${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
 			@ONLY)
 
 	# Use the post-build logic to glue the bindings together with cmake  as its done for plugins
@@ -42,18 +44,29 @@ macro (compile_haskell_binding CABAL_EXECUTABLE GHC_VERSION HASKELL_SHARED_SANDB
 	     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in")
 
 	# as we require the sandbox to exist we can do this during the configuration phase it doesn't compile or install anything
-	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0
+	execute_process (COMMAND ${CABAL_EXECUTABLE}
+				 sandbox
+				 init
+				 --sandbox
+				 "${HASKELL_SHARED_SANDBOX}"
+				 -v0
 			 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source ${CMAKE_CURRENT_BINARY_DIR} -v0
+	execute_process (COMMAND ${CABAL_EXECUTABLE}
+				 sandbox
+				 add-source
+				 ${CMAKE_CURRENT_BINARY_DIR}
+				 -v0
 			 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 	# Sometimes building fails reporting an outdated package file. In this case we need to configure the package again.
 	add_custom_command (OUTPUT ${BINDING_HASKELL_NAME}
-			    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
+			    COMMAND ${CABAL_EXECUTABLE}
+				    configure
+				    ${CABAL_OPTS}
+				    -v0
 			    COMMAND ${CABAL_EXECUTABLE} build -v0
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
-				    ${ELEKTRA_DEPENDENCY})
+			    DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY})
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 
 	if (BUILD_TESTING)
@@ -69,13 +82,14 @@ macro (compile_haskell_binding CABAL_EXECUTABLE GHC_VERSION HASKELL_SHARED_SANDB
 
 		# Sometimes building fails reporting an outdated package file. In this case we need to configure the package again.
 		add_custom_command (OUTPUT ${HASKELL_TESTS}
-				    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS}
-					    --enable-tests -v0
+				    COMMAND ${CABAL_EXECUTABLE}
+					    configure
+					    ${CABAL_OPTS}
+					    --enable-tests
+					    -v0
 				    COMMAND ${CABAL_EXECUTABLE} build -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
-					    ${ELEKTRA_DEPENDENCY}
-					    c2hs_haskell)
+				    DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY} c2hs_haskell)
 		add_custom_target (c2hs_haskell_tests ALL DEPENDS ${HASKELL_TESTS})
 		if (INSTALL_TESTING)
 
@@ -84,86 +98,47 @@ macro (compile_haskell_binding CABAL_EXECUTABLE GHC_VERSION HASKELL_SHARED_SANDB
 			foreach (HASKELL_TEST ${HASKELL_TESTS})
 				install (
 					CODE
-					"execute_process (COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath \"${CMAKE_INSTALL_RPATH}\" \"${HASKELL_TEST}\" OUTPUT_QUIET ERROR_QUIET)"
+						"execute_process (COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath \"${CMAKE_INSTALL_RPATH}\" \"${HASKELL_TEST}\" OUTPUT_QUIET ERROR_QUIET)"
 					)
 			endforeach (HASKELL_TEST ${HASKELL_TESTS})
 			install (FILES ${HASKELL_TESTS}
 				 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
-				 PERMISSIONS
-				 OWNER_READ
-				 OWNER_WRITE
-				 OWNER_EXECUTE
-				 GROUP_READ
-				 GROUP_EXECUTE
-				 WORLD_READ
-				 WORLD_EXECUTE)
+				 PERMISSIONS OWNER_READ
+					     OWNER_WRITE
+					     OWNER_EXECUTE
+					     GROUP_READ
+					     GROUP_EXECUTE
+					     WORLD_READ
+					     WORLD_EXECUTE)
 		endif (INSTALL_TESTING)
 
 		add_test (testhaskell_basic "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic")
-		set_property (TEST testhaskell_basic
-			      PROPERTY LABELS
-				       bindings)
-		set_property (TEST testhaskell_basic
-			      APPEND
-			      PROPERTY LABELS
-				       memleak)
-		set_property (TEST testhaskell_basic
-			      PROPERTY ENVIRONMENT
-				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		set_property (TEST testhaskell_basic PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic APPEND PROPERTY LABELS memleak)
+		set_property (TEST testhaskell_basic PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		add_test (testhaskell_basic_optimized
 			  "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized")
-		set_property (TEST testhaskell_basic_optimized
-			      PROPERTY LABELS
-				       bindings)
-		set_property (TEST testhaskell_basic_optimized
-			      APPEND
-			      PROPERTY LABELS
-				       memleak)
-		set_property (TEST testhaskell_basic_optimized
-			      PROPERTY ENVIRONMENT
-				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		set_property (TEST testhaskell_basic_optimized PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic_optimized APPEND PROPERTY LABELS memleak)
+		set_property (TEST testhaskell_basic_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		if (ENABLE_KDB_TESTING)
 			add_test (testhaskell_realworld
 				  "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld")
-			set_property (TEST testhaskell_realworld
-				      PROPERTY LABELS
-					       bindings)
-			set_property (TEST testhaskell_realworld
-				      APPEND
-				      PROPERTY LABELS
-					       kdbtests)
-			set_property (TEST testhaskell_realworld
-				      PROPERTY RUN_SERIAL
-					       TRUE)
-			set_property (TEST testhaskell_realworld
-				      APPEND
-				      PROPERTY LABELS
-					       memleak)
-			set_property (TEST testhaskell_realworld
-				      PROPERTY ENVIRONMENT
-					       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property (TEST testhaskell_realworld PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld PROPERTY RUN_SERIAL TRUE)
+			set_property (TEST testhaskell_realworld APPEND PROPERTY LABELS memleak)
+			set_property (TEST testhaskell_realworld PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 			add_test (testhaskell_realworld_optimized
 				  "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized")
-			set_property (TEST testhaskell_realworld_optimized
-				      PROPERTY LABELS
-					       bindings)
-			set_property (TEST testhaskell_realworld_optimized
-				      APPEND
-				      PROPERTY LABELS
-					       kdbtests)
-			set_property (TEST testhaskell_realworld_optimized
-				      PROPERTY RUN_SERIAL
-					       TRUE)
-			set_property (TEST testhaskell_realworld_optimized
-				      APPEND
-				      PROPERTY LABELS
-					       memleak)
-			set_property (TEST testhaskell_realworld_optimized
-				      PROPERTY ENVIRONMENT
-					       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property (TEST testhaskell_realworld_optimized PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld_optimized APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld_optimized PROPERTY RUN_SERIAL TRUE)
+			set_property (TEST testhaskell_realworld_optimized APPEND PROPERTY LABELS memleak)
+			set_property (TEST testhaskell_realworld_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
 endmacro (compile_haskell_binding)

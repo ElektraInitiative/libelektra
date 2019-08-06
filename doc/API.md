@@ -41,18 +41,24 @@ reading in one of these links above.
 
 A C or C++ source file that wants to use Elektra should include:
 
-    #include <kdb.h>
+```c
+#include <kdb.h>
+```
 
 To link an executable with the Elektra library, one way is to
 use the `pkg-config` tool:
 
-    $ gcc -o application `pkg-config --cflags --libs elektra` application.c
+```sh
+gcc -o application `pkg-config --cflags --libs elektra` application.c
+```
 
 Another way is to use CMake:
 
-    find_package(Elektra REQUIRED)
-    include_directories (${ELEKTRA_INCLUDE_DIR})
-    target_link_libraries (application ${ELEKTRA_LIBRARIES})
+```cmake
+find_package(Elektra REQUIRED)
+include_directories (${ELEKTRA_INCLUDE_DIR})
+target_link_libraries (application ${ELEKTRA_LIBRARIES})
+```
 
 Read about [compiling elektra](/doc/COMPILE.md).
 
@@ -66,6 +72,7 @@ Read about [compiling elektra](/doc/COMPILE.md).
 - [Merge](/doc/tutorials/merge.md)
 - [Namespaces](/doc/tutorials/namespaces.md)
 - [Plugins](/doc/tutorials/plugins.md)
+- [Java Plugins](/doc/tutorials/java-plugins.md)
 
 [List of all available Plugins](/src/plugins/) and get started by developing
 your own plugins @ref plugin.
@@ -195,7 +202,7 @@ and then lookup details in the API description in @ref plugin.
 
 Read more about [mounting](/doc/help/elektra-mounting.md)
 
-## SEE ALSO
+## See Also
 
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)

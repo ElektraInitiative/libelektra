@@ -211,7 +211,7 @@ static int ioGlibBindingTimerCallback (void * data)
 
 /**
  * Calls the associated callback.
- * Called by glib whenever a idle operation can perform its operations.
+ * Called by glib whenever an idle operation can perform its operations.
  *
  * @param data  source callback data
  */

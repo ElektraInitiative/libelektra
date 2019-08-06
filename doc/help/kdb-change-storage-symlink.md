@@ -17,4 +17,4 @@ Set default storage plugin to ini:<br>
 
 ## SEE ALSO
 
-- [kdb-change-resolver-symlink(7)](kdb-change-resolver-symlink.md)
+- [kdb-change-resolver-symlink(1)](kdb-change-resolver-symlink.md)

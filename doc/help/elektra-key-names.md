@@ -17,10 +17,12 @@ Only the administrator can change system configuration.
 
 Examples of valid system key names:
 
-    system
-    system/hosts/hostname
-    system/sw/apache/httpd/#0/current/num_processes
-    system/sw/apps/abc/#0/current/default-setting
+```
+system
+system/hosts/hostname
+system/sw/apache/httpd/#0/current/num_processes
+system/sw/apps/abc/#0/current/default-setting
+```
 
 user configuration is empty until the user changes some preferences.
 User configuration affects only a single user. The user's settings can
@@ -29,10 +31,12 @@ and anything not useful for the rest of the system.
 
 Examples of valid user key names:
 
-    user
-    user/env/#1/LD_LIBRARY_PATH
-    user/sw/apps/abc/#0/current/default-setting
-    user/sw/kde/kicker/#0/current/preferred_applications/#0
+```
+user
+user/env/#1/LD_LIBRARY_PATH
+user/sw/apps/abc/#0/current/default-setting
+user/sw/kde/kicker/#0/current/preferred_applications/#0
+```
 
 The slash (`/`) separates key names and structures them hierarchically.
 If two keys start with the same key names, but one key name continues
@@ -60,7 +64,9 @@ results and the names are still very compact.
 As decided [here](https://github.com/ElektraInitiative/libelektra/issues/302),
 the key names of software-applications should always start with:
 
-    /sw/org/myapp/#0/current/name/full
+```
+/sw/org/myapp/#0/current/name/full
+```
 
 - `sw` is for software, `hw` for hardware, `elektra` for internals
 - `org` is a URL/organization name to avoid name clashes with other

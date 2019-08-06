@@ -35,35 +35,35 @@ string typeToString (int const type)
 	switch (type)
 	{
 	case Token::STREAM_START:
-		return "STREAM_START";
+		return "start of stream";
 	case Token::STREAM_END:
-		return "STREAM_END";
+		return "end of stream";
 	case Token::COMMENT:
-		return "COMMENT";
+		return "comment";
 	case Token::PLAIN_SCALAR:
-		return "PLAIN_SCALAR";
+		return "plain scalar";
 	case Token::SINGLE_QUOTED_SCALAR:
-		return "SINGLE_QUOTED_SCALAR";
+		return "single quoted scalar";
 	case Token::DOUBLE_QUOTED_SCALAR:
-		return "DOUBLE_QUOTED_SCALAR";
+		return "double quoted scalar";
 	case Token::MAP_START:
-		return "MAP_START";
+		return "start of map";
 	case Token::MAP_END:
-		return "MAP_END";
+		return "end of map";
 	case Token::KEY:
-		return "KEY";
+		return "key";
 	case Token::VALUE:
-		return "VALUE";
+		return "value";
 	case Token::SEQUENCE_START:
-		return "SEQUENCE_START";
+		return "start of sequence";
 	case Token::SEQUENCE_END:
-		return "SEQUENCE_END";
+		return "end of sequence";
 	case Token::ELEMENT:
-		return "ELEMENT";
+		return "element";
 	default:
 		break;
 	}
-	return "EOF";
+	return "end of file";
 }
 
 } // namespace
@@ -97,13 +97,13 @@ int Token::getType () const
 }
 
 /**
- * @brief This method returns the current start position of the token.
+ * @brief This method returns the location of the token.
  *
- * @return The start position of this token
+ * @return The location data of this token
  */
-Position Token::getStart () const
+Location Token::getLocation () const
 {
-	return _location.begin;
+	return _location;
 }
 
 /**
@@ -126,11 +126,8 @@ string Token::getText () const
  **/
 string to_string (Token const token)
 {
-	using std::to_string;
-
-	return "<Token, " + typeToString (token.getType ()) + ", " + token.getText () + ", " + to_string (token._location.begin.line) +
-	       ":" + to_string (token._location.begin.column) + "–" + to_string (token._location.end.line) + ":" +
-	       to_string (token._location.end.column) + ">";
+	auto const & text = token.getText ();
+	return text.length () > 0 ? text : typeToString (token.getType ());
 }
 
 } // namespace yawn

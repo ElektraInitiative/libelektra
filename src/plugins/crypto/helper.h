@@ -19,6 +19,9 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config);
 kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config);
 
+int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey);
+int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey);
+
 int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output);
 int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength);
 

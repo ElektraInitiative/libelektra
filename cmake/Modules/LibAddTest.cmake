@@ -51,31 +51,18 @@ macro (add_gtest source)
 			install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 		endif (INSTALL_TESTING)
 
-		set_target_properties (${source}
-				       PROPERTIES COMPILE_DEFINITIONS
-						  HAVE_KDBCONFIG_H)
-		set_property (TARGET ${source}
-			      APPEND
-			      PROPERTY INCLUDE_DIRECTORIES
-				       ${ARG_INCLUDE_DIRECTORIES})
+		set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+		set_property (TARGET ${source} APPEND PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 
 		add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}/")
-		set_property (TEST ${source}
-			      PROPERTY ENVIRONMENT
-				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		if (ARG_MEMLEAK)
-			set_property (TEST ${source}
-				      PROPERTY LABELS
-					       memleak)
+			set_property (TEST ${source} PROPERTY LABELS memleak)
 		endif (ARG_MEMLEAK)
 		if (ARG_KDBTESTS)
-			set_property (TEST ${name}
-				      PROPERTY LABELS
-					       kdbtests)
-			set_property (TEST ${name}
-				      PROPERTY RUN_SERIAL
-					       TRUE)
+			set_property (TEST ${name} PROPERTY LABELS kdbtests)
+			set_property (TEST ${name} PROPERTY RUN_SERIAL TRUE)
 		endif (ARG_KDBTESTS)
 	endif (BUILD_TESTING)
 endmacro (add_gtest)
@@ -89,37 +76,52 @@ endmacro (add_gtest)
 # REQUIRED_PLUGINS:
 # 	This optional variable specifies a list of plugins required to run the test.
 #
+# REQUIRED_TOOLS:
+# 	This optional variable specifies a list of tools required to run the test.
+#
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 # ~~~
 function (add_msr_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
 	set (multiValueArgs REQUIRED_PLUGINS ENVIRONMENT)
-	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	cmake_parse_arguments (ARG
+			       "${options}"
+			       "${oneValueArgs}"
+			       "${multiValueArgs}"
+			       ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
-		list (FIND REMOVED_PLUGINS
-			   ${plugin}
-			   plugin_index)
+		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
 		if (plugin_index GREATER -1)
 			return ()
 		endif (plugin_index GREATER -1)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
+	set (multiValueArgs REQUIRED_TOOLS ENVIRONMENT)
+	cmake_parse_arguments (ARG
+			       "${options}"
+			       "${oneValueArgs}"
+			       "${multiValueArgs}"
+			       ${ARGN})
+	foreach (tool ${ARG_REQUIRED_TOOLS})
+		list (FIND REMOVED_TOOLS ${tool} tool_index)
+		if (tool_index GREATER -1)
+			return ()
+		endif ()
+
+		list (FIND TOOLS ${tool} tool_index)
+		if (tool_index LESS 0)
+			return ()
+		endif ()
+	endforeach ()
+
 	add_test (NAME testshell_markdown_${NAME}
 		  COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
 		  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-	set_property (TEST ${TEST_NAME}
-		      PROPERTY ENVIRONMENT
-			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-			       "${ARG_ENVIRONMENT}")
-	set_property (TEST ${TEST_NAME}
-		      PROPERTY LABELS
-			       memleak
-			       kdbtests)
-	set_property (TEST ${TEST_NAME}
-		      PROPERTY RUN_SERIAL
-			       TRUE)
+	set_property (TEST ${TEST_NAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
+	set_property (TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
+	set_property (TEST ${TEST_NAME} PROPERTY RUN_SERIAL TRUE)
 endfunction ()
 
 # ~~~
@@ -130,13 +132,29 @@ endfunction ()
 # REQUIRED_PLUGINS:
 # 	This optional variable specifies a list of plugins required to run the MSR test.
 #
+# REQUIRED_TOOLS:
+# 	This optional variable specifies a list of tools required to run the test.
+#
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 # ~~~
 function (add_msr_test_plugin PLUGIN)
 	set (multiValueArgs REQUIRED_PLUGINS)
-	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-	list (APPEND ARG_REQUIRED_PLUGINS
-		     ${PLUGIN})
-	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
+	cmake_parse_arguments (ARG
+			       "${options}"
+			       "${oneValueArgs}"
+			       "${multiValueArgs}"
+			       ${ARGN})
+	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
+
+	set (multiValueArgs REQUIRED_TOOLS)
+	cmake_parse_arguments (ARG
+			       "${options}"
+			       "${oneValueArgs}"
+			       "${multiValueArgs}"
+			       ${ARGN})
+	list (APPEND ARG_REQUIRED_TOOLS ${TOOL})
+
+	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN}
+		      REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS} REQUIRED_TOOLS ${ARG_REQUIRED_TOOLS})
 endfunction ()

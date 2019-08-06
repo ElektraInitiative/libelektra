@@ -38,7 +38,7 @@ fi
 UNAME_FILE=${FILE_SUFFIX}_uname
 UNAME_MOUNTPOINT=system/test/script/sys/uname
 if is_plugin_available uname; then
-	touch $SYSTEM_FOLDER/$UNAME_FILE
+	touch "$SYSTEM_FOLDER/$UNAME_FILE"
 	"$KDB" mount $UNAME_FILE $UNAME_MOUNTPOINT uname
 	succeed_if "could not mount uname: $UNAME_FILE at $UNAME_MOUNTPOINT"
 

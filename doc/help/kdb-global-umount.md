@@ -43,6 +43,6 @@ sudo kdb global-mount
 
 ## SEE ALSO
 
-- [kdb-global-mount(7)](kdb-global-mount.md).
+- [kdb-global-mount(1)](kdb-global-mount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
 - [elektra-plugins-framework(7)](/doc/dev/plugins-framework.md).

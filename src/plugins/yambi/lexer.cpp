@@ -22,7 +22,7 @@ using std::runtime_error;
 using std::string;
 using std::unique_ptr;
 
-using yy::Parser;
+using yambi::Parser;
 using location_type = Parser::location_type;
 using token = Parser::token;
 
@@ -181,7 +181,7 @@ void Lexer::fetchTokens ()
  */
 bool Lexer::isValue (size_t const offset) const
 {
-	return (input.LA (offset) == ':') && (input.LA (offset + 1) == '\n' || input.LA (offset + 1) == ' ');
+	return (input.LA (offset) == ':') && (input.LA (offset + 1) == '\n' || input.LA (offset + 1) == ' ' || input.LA (offset + 1) == 0);
 }
 
 /**
@@ -217,7 +217,7 @@ bool Lexer::isComment (size_t const offset) const
 void Lexer::addSimpleKeyCandidate ()
 {
 	size_t position = tokens.size () + tokensEmitted;
-	simpleKey = make_pair (unique_ptr<Symbol> (new Symbol{ token::TOKEN_KEY, location, "KEY" }), position);
+	simpleKey = make_pair (unique_ptr<Symbol> (new Symbol{ token::KEY, location, "KEY" }), position);
 }
 
 /**
@@ -233,8 +233,8 @@ void Lexer::addBlockEnd (size_t const lineIndex)
 	while (lineIndex < levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
-		tokens.push_back (levels.top ().type == Level::Type::MAP ? Symbol (token::TOKEN_MAP_END, location, "MAP END") :
-									   Symbol (token::TOKEN_SEQUENCE_END, location, "SEQUENCE END"));
+		tokens.push_back (levels.top ().type == Level::Type::MAP ? Symbol (token::MAP_END, location, "MAP END") :
+									   Symbol (token::SEQUENCE_END, location, "SEQUENCE END"));
 		levels.pop ();
 	}
 }
@@ -246,7 +246,7 @@ void Lexer::addBlockEnd (size_t const lineIndex)
 void Lexer::scanStart ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan start token");
-	tokens.push_back (Symbol (token::TOKEN_STREAM_START, location, "STREAM START"));
+	tokens.push_back (Symbol (token::STREAM_START, location, "STREAM START"));
 }
 
 /**
@@ -257,8 +257,8 @@ void Lexer::scanEnd ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan end token");
 	addBlockEnd (0);
-	tokens.push_back (Symbol (token::TOKEN_STREAM_END, location, "STREAM END"));
-	tokens.push_back (Symbol (token::TOKEN_END, location));
+	tokens.push_back (Symbol (token::STREAM_END, location, "STREAM END"));
+	tokens.push_back (Symbol (token::END, location));
 	done = true;
 }
 
@@ -280,7 +280,7 @@ void Lexer::scanSingleQuotedScalar ()
 		forward ();
 	}
 	forward (); // Include closing single quote
-	tokens.push_back (Symbol (token::TOKEN_SINGLE_QUOTED_SCALAR, location, input.getText (start)));
+	tokens.push_back (Symbol (token::SINGLE_QUOTED_SCALAR, location, input.getText (start)));
 }
 
 /**
@@ -301,7 +301,7 @@ void Lexer::scanDoubleQuotedScalar ()
 		forward ();
 	}
 	forward (); // Include closing double quote
-	tokens.push_back (Symbol (token::TOKEN_DOUBLE_QUOTED_SCALAR, location, input.getText (start)));
+	tokens.push_back (Symbol (token::DOUBLE_QUOTED_SCALAR, location, input.getText (start)));
 }
 
 /**
@@ -323,7 +323,7 @@ void Lexer::scanPlainScalar ()
 		lengthSpace = countPlainSpace ();
 	}
 
-	tokens.push_back (Symbol (token::TOKEN_PLAIN_SCALAR, location, input.getText (start)));
+	tokens.push_back (Symbol (token::PLAIN_SCALAR, location, input.getText (start)));
 }
 
 /**
@@ -381,7 +381,7 @@ void Lexer::scanComment ()
 	{
 		forward ();
 	}
-	tokens.push_back (Symbol (token::TOKEN_COMMENT, location, input.getText (start)));
+	tokens.push_back (Symbol (token::COMMENT, location, input.getText (start)));
 }
 
 /**
@@ -392,20 +392,20 @@ void Lexer::scanValue ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan value");
 	forward (1);
-	tokens.push_back (Symbol (token::TOKEN_VALUE, location, input.getText (input.index () - 1)));
-	forward (1);
+	tokens.push_back (Symbol (token::VALUE, location, input.getText (input.index () - 1)));
+	if (input.LA (1)) forward (1);
 	if (simpleKey.first == nullptr)
 	{
 		throw runtime_error ("Unable to locate key for value");
 	}
 	size_t offset = simpleKey.second - tokensEmitted;
 	tokens.insert (tokens.begin () + offset, *simpleKey.first);
-	auto start = simpleKey.first->getStart ();
+	auto mapStartLocation = simpleKey.first->getLocation ();
 	simpleKey.first = nullptr; // Remove key candidate
-	if (addIndentation (start.column, Level::Type::MAP))
+	if (addIndentation (mapStartLocation.begin.column, Level::Type::MAP))
 	{
-		location.begin = start;
-		tokens.insert (tokens.begin () + offset, Symbol (token::TOKEN_MAP_START, location, "MAPPING START"));
+		mapStartLocation.end = mapStartLocation.begin;
+		tokens.insert (tokens.begin () + offset, Symbol (token::MAP_START, mapStartLocation, "MAP START"));
 	}
 }
 
@@ -418,10 +418,10 @@ void Lexer::scanElement ()
 	ELEKTRA_LOG_DEBUG ("Scan element");
 	if (addIndentation (location.end.column, Level::Type::SEQUENCE))
 	{
-		tokens.push_back (Symbol (token::TOKEN_SEQUENCE_START, location, "SEQUENCE START"));
+		tokens.push_back (Symbol (token::SEQUENCE_START, location, "SEQUENCE START"));
 	}
 	forward (1);
-	tokens.push_back (Symbol (token::TOKEN_ELEMENT, location, input.getText (input.index () - 1)));
+	tokens.push_back (Symbol (token::ELEMENT, location, input.getText (input.index () - 1)));
 	forward (1);
 }
 
@@ -451,10 +451,10 @@ Parser::symbol_type Lexer::nextToken ()
 	}
 #ifdef HAVE_LOGGER
 	string output;
-	output += "\n\nTokens:\n";
+	ELEKTRA_LOG_DEBUG ("Tokens:");
 	for (auto symbol : tokens)
 	{
-		output += "\t" + symbol.toString () + "\n";
+		ELEKTRA_LOG_DEBUG ("\t%s", symbol.toString ().c_str ());
 	}
 	ELEKTRA_LOG_DEBUG ("%s", output.c_str ());
 #endif
@@ -463,10 +463,20 @@ Parser::symbol_type Lexer::nextToken ()
 	// an end token.
 	if (tokens.size () <= 0)
 	{
-		tokens.push_back (Symbol (token::TOKEN_END, location));
+		tokens.push_back (Symbol (token::END, location));
 	}
 	Symbol symbol = tokens.front ();
 	tokens.pop_front ();
 	tokensEmitted++;
 	return symbol.get ();
+}
+
+/**
+ * @brief This method returns the current input of the lexer
+ *
+ * @return A UTF-8 encoded string version of the parser input
+ */
+string Lexer::getText ()
+{
+	return input.toString ();
 }

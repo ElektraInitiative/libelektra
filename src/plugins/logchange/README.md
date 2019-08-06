@@ -17,7 +17,9 @@ be notified of every removed, added or changed key easily.
 Prints every added, changed or deleted key on the console.
 To use it, add it during mounting:
 
-    kdb mount logchange.dump user/logchange dump logchange
+```sh
+kdb mount logchange.dump user/logchange dump logchange
+```
 
 Configure the plugin with `log/get=1` to enable printing when configuration is
 loaded. For example, `kdb gmount logchange log/get=1`.

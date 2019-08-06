@@ -59,6 +59,9 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** All keys below this are used for cache metadata in the global keyset */
+#define KDB_CACHE_PREFIX "system/elektra/cache"
+
 
 #ifdef __cplusplus
 namespace ckdb
@@ -323,9 +326,6 @@ struct _KDB
 
 	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
 
-	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
-	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
@@ -494,13 +494,19 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
 int splitGet (Split * split, Key * warningKey, KDB * handle);
-int splitMerge (Split * split, KeySet * dest);
+int splitMergeBackends (Split * split, KeySet * dest);
+int splitMergeDefault (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
 int splitDivide (Split * split, KDB * handle, KeySet * ks);
 int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
+
+/* for cache: store/load state to/from global keyset */
+void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
+int splitCacheCheckState (Split * split, KeySet * global);
+int splitCacheLoadState (Split * split, KeySet * global);
 
 
 /*Backend handling*/
@@ -519,6 +525,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
+Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
@@ -616,46 +623,29 @@ int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position
 extern "C" {
 #endif
 
-typedef enum
-{
-	/**
-	 * Use only, if the error will be raised with elektraFatalError().
-	 */
-	ELEKTRA_ERROR_SEVERITY_FATAL = 0,
-	ELEKTRA_ERROR_SEVERITY_ERROR,
-	ELEKTRA_ERROR_SEVERITY_WARNING
-} ElektraErrorSeverity;
-
-typedef const char * ElektraKDBErrorGroup;
-typedef const char * ElektraKDBErrorModule;
-
 struct _Elektra
 {
 	KDB * kdb;
 	Key * parentKey;
 	KeySet * config;
+	KeySet * defaults;
 	Key * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
+	char * resolvedReference;
+	size_t parentKeyLength;
 };
 
 struct _ElektraError
 {
-	ElektraErrorCode code;
+	const char * code;
+	char * codeFromKey;
 	char * description;
-	ElektraErrorSeverity severity;
-	struct _ElektraKDBError * lowLevelError;
-};
-
-struct _ElektraKDBError
-{
-	int code;
-	const char * description;
-	ElektraErrorSeverity severity;
-	ElektraKDBErrorGroup group;
-	ElektraKDBErrorModule module;
-	const char * reason;
-	int warningCount;
-	struct _ElektraKDBError ** warnings;
+	const char * module;
+	const char * file;
+	kdb_long_t line;
+	kdb_long_t warningCount;
+	kdb_long_t warningAlloc;
+	struct _ElektraError ** warnings;
 	Key * errorKey;
 };
 
@@ -663,21 +653,15 @@ struct _ElektraKDBError
 void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
-ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
 
-// error handling unstable/private for now
-ElektraErrorCode elektraErrorCode (const ElektraError * error);
-ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
+ElektraError * elektraErrorEnsureFailed (const char * reason);
+ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
+void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
+ElektraError * elektraErrorFromKey (Key * key);
 
-int elektraKDBErrorCode (const ElektraError * error);
-const char * elektraKDBErrorDescription (const ElektraError * error);
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
-const char * elektraKDBErrorReason (const ElektraError * error);
-int elektraKDBErrorWarningCount (const ElektraError * error);
-ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
-Key * elektraKDBErrorKey (const ElektraError * error);
+ElektraError * elektraErrorKeyNotFound (const char * keyname);
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
+ElektraError * elektraErrorNullError (const char * function);
 
 #ifdef __cplusplus
 }

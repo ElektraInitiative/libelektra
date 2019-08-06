@@ -1,9 +1,9 @@
 ;nosection comment1
 ;nosection comment2
-nosectionkey = nosectionvalue
+nosectionkey=nosectionvalue
 ;section comment1
 ;section comment2
 [section1]
 ;key comment1
 ;key comment2
-key1 = value1
+key1=value1

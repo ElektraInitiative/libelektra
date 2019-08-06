@@ -70,11 +70,15 @@ In order to add all compile variants you can add "CRYPTO" to the `PLUGINS` varia
 
 An example `CMakeCache.txt` may contain the following variable:
 
-    PLUGINS=crypto;crypto_gcrypt;crypto_openssl;crypto_botan
+```cmake
+PLUGINS=crypto;crypto_gcrypt;crypto_openssl;crypto_botan
+```
 
 or it may look like:
 
-    PLUGINS=CRYPTO
+```cmake
+PLUGINS=CRYPTO
+```
 
 ### macOS
 
@@ -83,9 +87,11 @@ All variants of the plugin work under macOS Sierra (Version 10.12.3 (16D32)).
 To set up the build environment on macOS Sierra we recommend using [Homebrew](http://brew.sh/).
 Follow these steps to get everything up and running:
 
-    brew install openssl botan libgcrypt pkg-config cmake
-    # The next step is required for pkg-config to find the include files of OpenSSL
-    ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
+```sh
+brew install openssl botan libgcrypt pkg-config cmake
+# The next step is required for pkg-config to find the include files of OpenSSL
+ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
+```
 
 Also a GPG installation is required. The [GPG Tools](https://gpgtools.org) work fine for us.
 
@@ -97,18 +103,24 @@ At the moment the plugin will only run on Unix/Linux-like systems, that provide 
 
 To mount a backend with the gcrypt plugin variant that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
 
-    kdb mount test.ecf user/t crypto_gcrypt "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
+```sh
+kdb mount test.ecf user/t crypto_gcrypt "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
+```
 
 Now you can specify a key `user/t/a` and protect its content by using:
 
-    kdb set user/t/a
-    kdb setmeta user/t/a crypto/encrypt 1
-    kdb set user/t/a "secret"
+```sh
+kdb set user/t/a
+kdb setmeta user/t/a crypto/encrypt 1
+kdb set user/t/a "secret"
+```
 
 The value of `user/t/a` will be stored encrypted.
 But you can still access the original value using `kdb get`:
 
-    kdb get user/t/a
+```sh
+kdb get user/t/a
+```
 
 ## Configuration
 
@@ -116,13 +128,17 @@ But you can still access the original value using `kdb get`:
 
 The path to the gpg binary can be specified in
 
-    /gpg/bin
+```
+/gpg/bin
+```
 
 The GPG recipient keys can be specified as `encrypt/key` directly.
 If you want to use more than one key, just enumerate like:
 
-    encrypt/key/#0
-    encrypt/key/#1
+```
+encrypt/key/#0
+encrypt/key/#1
+```
 
 If more than one key is defined, every owner of the corresponding private key can decrypt the values of the backend.
 This might be useful if applications run with their own user but the administrator has to update the configuration.
@@ -131,22 +147,20 @@ The administrator then only needs the public key of the application user in her 
 If you are not sure which keys are available to you, the `kdb` program will give you suggestions in the error description.
 For example you can type:
 
-    kdb mount test.ecf user/t crypto_gcrypt
+```sh
+kdb mount test.ecf user/t crypto_gcrypt
+```
 
 In the error description you should see something like:
 
-    The command ./bin/kdb mount terminated unsuccessfully with the info:
-    The provided plugin configuration is not valid!
-    Errors/Warnings during the check were:
-    Sorry, the error (#130) occurred!
-    Description: the configuration is invalid or incomplete.
-    Ingroup: plugin
-    Module: crypto
-    At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
-    Reason: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
-    Mountpoint:
-    Configfile:
-    Please report the issue at https://issues.libelektra.org/
+```
+The command ./bin/kdb mount terminated unsuccessfully with the info:
+The provided plugin configuration is not valid!
+Errors/Warnings during the check were:
+Sorry, module crypto issued the error 130:
+the configuration is invalid or incomplete: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
+Please report the issue at https://issues.libelektra.org/
+```
 
 This means that the following keys are available:
 
@@ -155,7 +169,9 @@ This means that the following keys are available:
 
 So the full mount command could look like this:
 
-    kdb mount test.ecf user/t crypto_gcrypt "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+```sh
+kdb mount test.ecf user/t crypto_gcrypt "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+```
 
 ### Cryptographic Operations
 
@@ -164,25 +180,31 @@ If you do not provide these configuration options, secure defaults are being use
 
 The length of the master password that protects all the other keys can be set in:
 
-    /crypto/masterpasswordlength
+```
+/crypto/masterpasswordlength
+```
 
 The number of iterations that are to be performed in the PBKDF2 call can be set in:
 
-    /crypto/iterations
+```
+/crypto/iterations
+```
 
 ### Library Shutdown
 
 The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:
 
-    /shutdown
+```
+/shutdown
+```
 
 Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
 Shutdown is enabled in the unit tests to prevent memory leaks.
 
 ## Technical Details
 
-### Ciphers and Mode Of Operation
+### Ciphers and Mode of Operation
 
 All of the plugin variants use the Advanced Encryption Standard (AES) in Cipher Block Chaining Mode (CBC) with a key size of 256 bit.
 

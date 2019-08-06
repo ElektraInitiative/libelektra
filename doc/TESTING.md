@@ -10,15 +10,21 @@ so that it is assured that no new regressions will be added.
 
 Running all tests in the build directory:
 
-    make run_all
+```sh
+make run_all
+```
 
 And on the target (installed) system:
 
-    kdb run_all
+```sh
+kdb run_all
+```
 
 To run `memcheck` tests run in the build directory:
 
-    make run_memcheck
+```sh
+make run_memcheck
+```
 
 They are supplementary, ideally you run all three.
 
@@ -27,16 +33,31 @@ This implies that the UID running the tests must have a home directory.
 To avoid running tests that write to the disk you
 can use:
 
-    make run_nokdbtests
+```sh
+make run_nokdbtests
+```
 
 You can also directly run ctest to make use of parallel testing:
 
-    ctest -T Test --output-on-failure -j 6
-    ctest -T MemCheck -LE memleak --output-on-failure -j 6
+```sh
+ctest -T Test --output-on-failure -j 6
+ctest -T MemCheck -LE memleak --output-on-failure -j 6
+```
 
 The alternative to `make run_nokdbtests`:
 
-    ctest -T Test --output-on-failure -LE kdbtests -j 6
+```sh
+ctest -T Test --output-on-failure -LE kdbtests -j 6
+```
+
+## Required Environment
+
+To run the tests successfully, the environment
+must fulfill:
+
+- Mounted /dev and /proc (to have stdin and stdout for import & export test cases).
+- POSIX tools need to be available (including the `file` tool)
+- User must be able to write to system and spec (see below)
 
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
@@ -54,7 +75,7 @@ You have some options to avoid running them as root:
 
    First load the required information and verify the paths:
 
-   ```
+   ```sh
    kdb mount-info
    echo `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
    echo `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
@@ -62,7 +83,7 @@ You have some options to avoid running them as root:
 
    Then change the permissions:
 
-   ```
+   ```sh
    chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
    chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
@@ -72,9 +93,23 @@ You have some options to avoid running them as root:
 3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
    the home directory (`~`) use cmake options:
    `-DKDB_DB_SYSTEM="~/.config/kdb/system" -DKDB_DB_SPEC="~/.config/kdb/spec"`
-   (for another example with ini see `scripts/configure-home`)
+   (for an example of a full CMake invocation see `scripts/configure-home`)
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
+
+## Manual Testing
+
+Running executables in the build directory needs some preparation.
+Here we assume that `build` is the build directory and it is the
+top-level of Elektra's source code:
+
+```
+cd build
+. ../scripts/run_dev_env
+```
+
+After sourcing `run_dev_env`, you can directly execute `kdb` and other
+binaries built with Elektra (such as the examples).
 
 ## Recommended Environment
 
@@ -84,7 +119,6 @@ _all_ tests (also those that are mostly designed for internal development)
 you need to fulfil:
 
 - Elektra must be installed (for gen + external test cases).
-- Mounted /dev (to have stdin and stdout for import & export test cases).
 - A running dbus daemon (Either "system" or "session" daemon).
 - `gpg2` or `gpg` binary must be available.
 
@@ -92,12 +126,12 @@ Above environment is needed for both `kdb run_all` (installed test cases)
 and `make run_all` (test cases executed from the build directory).
 For `make run_all` following development tools enable even more tests:
 
-- The script `checkbashisms` is needed to check for bashism (tests/shell/check_bashisms.sh),
-  it is part of `devscripts`.
+- The script `checkbashisms` is needed to check for bashism (`tests/shell/check_bashisms.sh`),
+  it is part of [`devscripts`](https://packages.debian.org/jessie/devscripts).
 - The [POSIX compatibility test for shell scripts](../tests/shell/check_posix.sh) requires the tool [`shfmt`](https://github.com/mvdan/sh).
-- `git`, `clang-format` (version 5 up to version 7), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
+- `git`, `clang-format` (version 6 up to version 7), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
 - `pkg-config` must be available (`check_external.sh` and `check_gen.sh`).
-- A build environment including gcc (check_gen.sh).
+- A build environment including gcc (`check_gen.sh`).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
   requires POSIX utilities (`awk`, `grep`, …).
 
@@ -125,7 +159,9 @@ are expected to be in the README.md of the plugin.
 - All tests that access system/spec namespaces (e.g. mount something):
 - should be tagged with `kdbtests`:
 
-       set_property(TEST testname PROPERTY LABELS kdbtests)
+  ```cmake
+  set_property(TEST testname PROPERTY LABELS kdbtests)
+  ```
 
 - should not run, if `ENABLE_KDB_TESTING` is OFF.
 - should only write below
@@ -138,12 +174,16 @@ are expected to be in the README.md of the plugin.
   they cannot be fixed, give them the label `memleak` with the following
   command:
 
-        set_property(TEST testname PROPERTY LABELS memleak)
+  ```cmake
+  set_property(TEST testname PROPERTY LABELS memleak)
+  ```
 
 - If your test modifies resources needed by other tests you also need to set
   `RUN_SERIAL`:
 
-        set_property(TEST testname PROPERTY RUN_SERIAL TRUE)
+  ```cmake
+  set_property(TEST testname PROPERTY RUN_SERIAL TRUE)
+  ```
 
 ## Strategy
 
@@ -189,11 +229,11 @@ They are located [here](/tests/ctest).
 
 According to `src/libs/elektra/libelektra-symbols.map`, all functions starting with:
 
-- libelektra
-- elektra
-- kdb
-- key
-- ks
+- `libelektra`
+- `elektra`
+- `kdb`
+- `key`
+- `ks`
 
 get exported. Functions not starting with this prefix are internal only and therefore
 not visible in the test cases. Test internal functionality by including the corresponding C file.
@@ -229,7 +269,7 @@ See [here](/tests/shell).
 
 ### Shell Recorder
 
-The more elegant way to specify script tests are via the so called shell recorder
+The more elegant way to specify script tests are via the so called Shell Recorder
 using Markdown Syntax.
 
 See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
@@ -240,20 +280,28 @@ We assume that your current working directory is a newly created
 build directory. First compile Elektra with afl
 (~e is source-dir of Elektra):
 
-    ~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
+```sh
+~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
+```
 
 Copy some import files to `testcase_dir`, for example:
 
-    mkdir -p testcase_dir
-    cp ~e/src/plugins/ini/ini/* testcase_dir
+```sh
+mkdir -p testcase_dir
+cp ~e/src/plugins/ini/ini/* testcase_dir
+```
 
 Fewer files is better. Then run, for example:
 
-    LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+```sh
+LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+```
 
 Check if something is happening with:
 
-    watch kdb export user/tests
+```sh
+watch kdb export user/tests
+```
 
 ### ASAN
 
@@ -261,15 +309,21 @@ To enable sanitize checks use `ENABLE_ASAN` via cmake.
 
 Then, to use ASAN, run `run_asan` in the build directory, which simply does:
 
-    ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
+```sh
+ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
+```
 
 It could also happen that you need to preload ASAN library, e.g.:
 
-    LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so run_asan
+```sh
+LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so run_asan
+```
 
 or on Debian:
 
-    LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
+```sh
+LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
+```
 
 #### macOS
 
@@ -313,12 +367,16 @@ To analyze the whole project, use it in conjunction with `cmake` by calling `cma
 `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way `cmake` creates a file called `compile_commands.json` in
 the build directory. Afterwards, call `cppcheck` with the cmake settings and store the output as xml:
 
-    cppcheck --project=compile_commands.json --enable=all -j 8 --xml-version=2 2> cppcheck_result.xml
+```sh
+cppcheck --project=compile_commands.json --enable=all -j 8 --xml-version=2 2> cppcheck_result.xml
+```
 
 Since the XML file is difficult to read directly, the best way is to convert it to an HTML report.
 Cppcheck already includes a tool for that, call it with the XML report:
 
-    cppcheck-htmlreport --file=cppcheck_result.xml --report-dir=cppcheck_report --source-dir=.
+```sh
+cppcheck-htmlreport --file=cppcheck_result.xml --report-dir=cppcheck_report --source-dir=.
+```
 
 Now you can view the html report by opening `index.html` in the specified folder to get an overview
 of the issues found in the whole project.
@@ -367,13 +425,17 @@ Then you can build the project with `make` like usual, prefixing the command wit
 The `-o` option specifies where the html results get stored. Ensure you build the project from scratch,
 otherwise the analyzation might be incomplete.
 
-    scan-build -o ./scanbuild_result make -j 4
+```sh
+scan-build -o ./scanbuild_result make -j 4
+```
 
 Afterwards, the report can be viewed by using the tool `scan-view`, also found in the llvm folder.
 The report is created in the folder specified above, along with the current date of the analyzation,
 for instance:
 
-    scan-view <path specified above>/2017-06-18-171027-27108-1
+```sh
+scan-view <path specified above>/2017-06-18-171027-27108-1
+```
 
 Alternatively, you can also open the `index.html` file in the aforementioned folder, but using the tool
 the report is enriched with further information.
@@ -392,15 +454,17 @@ For using the unit test generator randoop with the jna bindings, see `scripts/ra
 
 Run:
 
-    make coverage-start
-    # now run all tests! E.g.:
-    make run_all
-    make coverage-stop
-    make coverage-genhtml
+```sh
+make coverage-start
+# now run all tests! E.g.:
+make run_all
+make coverage-stop
+make coverage-genhtml
+```
 
 The HTML files can be found in the build directory in the folder `coverage`.
 
-## See also
+## See Also
 
 - [COMPILE](COMPILE.md).
 - [INSTALL](INSTALL.md).

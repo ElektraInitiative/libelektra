@@ -179,6 +179,11 @@ TEST (directoryvalue, get)
 		,
 #include "directoryvalue/arrays_get.hpp"
 	);
+	test_get (
+#include "directoryvalue/mixed_set.hpp"
+		,
+#include "directoryvalue/mixed_get.hpp"
+	);
 }
 
 TEST (directoryvalue, set)
@@ -206,6 +211,12 @@ TEST (directoryvalue, set)
 		,
 #include "directoryvalue/arrays_set.hpp"
 	);
+
+	test_set (
+#include "directoryvalue/mixed_get.hpp"
+		,
+#include "directoryvalue/mixed_set.hpp"
+	);
 }
 
 TEST (directoryvalue, roundtrip)
@@ -218,5 +229,8 @@ TEST (directoryvalue, roundtrip)
 	);
 	test_roundtrip (
 #include "directoryvalue/arrays_get.hpp"
+	);
+	test_roundtrip (
+#include "directoryvalue/mixed_get.hpp"
 	);
 }

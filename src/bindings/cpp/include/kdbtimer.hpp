@@ -6,6 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#ifndef ELEKTRA_KDBTIMER_HPP
+#define ELEKTRA_KDBTIMER_HPP
+
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -156,3 +159,5 @@ inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 	// clang-format on
 	return os;
 }
+
+#endif

@@ -2,6 +2,9 @@
 
 ## Introduction
 
+> Note: If you need a REST Service that provides get and set of
+> local configuration, you actually want [/src/tools/web/elektrad]
+
 This document aims to provide information about Elektra’s `rest-backend` feature.
 `rest-backend` offers a RESTful server to search, store and convert configuration snippets.
 It also offers authentication methods to restrict access to manipulative methods.
@@ -54,22 +57,22 @@ For the values `true` and `false`, the strings `"true"` and `"false"` can be use
 
 The following example configuration in CppCMS style
 
-```
+```json
 {
-    "service": {
-        "api": "http"
-        "port": 8080,
-        "ip": "0.0.0.0"
-    },
-    "security": {
-        "display_error_messages": true
-    }
+  "service": {
+    "api": "http",
+    "port": 8080,
+    "ip": "0.0.0.0"
+  },
+  "security": {
+    "display_error_messages": true
+  }
 }
 ```
 
 can be realized within Elektra like
 
-```
+```sh
 kdb set @config_root@@config_default_profile@/cppcms/service/api "http"
 kdb set @config_root@@config_default_profile@/cppcms/service/port 8080
 kdb set @config_root@@config_default_profile@/cppcms/service/ip "0.0.0.0"
@@ -87,14 +90,14 @@ In detail, the options (without the base key `@config_root@`) are:
 @configuration-specification@
 ```
 
-### Configure as service
+### Configure as Service
 
 To configure the rest-backend as service, it is possible to use `systemd` on most systems.
 
 1. Create a new service file with the following command
    (and make sure the paths of `ExecStart` match your installation of Elektra):
 
-   ```
+   ```sh
    cat > /etc/systemd/system/@tool@.service << EOF
    [Unit]
    Description=Start the REST backend for sharing of configuration snippets
@@ -135,7 +138,7 @@ An extensive tutorial describing the installation and configuration can be found
 
 ### Compiling
 
-Compile Elektra as normal as per the [COMPILE document](https://libelektra.org/tree/master/doc/COMPILE.md),
+Compile Elektra as normal as per the [COMPILE document](https://master.libelektra.org/doc/COMPILE.md),
 but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
 
 For instance:
@@ -144,9 +147,9 @@ For instance:
 ### Installing
 
 You can now install Elektra as you normally would or as described
-in the [install documentation](https://libelektra.org/tree/master/doc/INSTALL.md).
+in the [install documentation](https://master.libelektra.org/doc/INSTALL.md).
 
-## Implementation notes and hints for Front-Ends
+## Implementation Notes and Hints for Front-Ends
 
 The here described tool offers an API which can be consumed by either a command line tool
 like cURL or a custom frontend. In the following some hints for frontend implementations will be given.
@@ -163,7 +166,7 @@ This limitation comes from the usage of regex patterns instead of atomic compari
 In terms of usability this is sufficient, but not the best possible.
 Therefore it would be advisable to implement live-validation for frontends with more granularity.
 Information about allowed input formats can be found in the
-[API description](https://libelektra.org/tree/master/doc/rest_api/snippet_sharing/api-description.apib).
+[API description](https://master.libelektra.org/doc/api_blueprints/snippet-sharing.apib).
 
 ## Benchmarks
 

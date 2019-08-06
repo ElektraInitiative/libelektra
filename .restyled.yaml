@@ -1,0 +1,7 @@
+auto: true
+restylers:
+  - prettier
+  - shfmt:
+      arguments:
+        - -s
+        - -sr

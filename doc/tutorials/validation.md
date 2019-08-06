@@ -45,8 +45,8 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tests/together dump validation
 kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tests/together/test abc
-# STDERR: The command kdb.* set failed while accessing the key database .*
-# ERROR:  42
+# STDERR: Sorry, module validation issued the error.*
+# ERROR:C03100
 # RET:5
 ```
 
@@ -185,12 +185,12 @@ On that behalf we have to make sure that the validation plugin is loaded for
 this key with:
 
 ```
-kdb mount tutorial.dump user/tutorial dump validation
+kdb mount tutorial.dump /tests/spec dump validation
 ```
 
 This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mount point
-**user/tutorial** and activates the validation plugin for the keys below the mount point.
-The validation plugin now uses the metadata of the keys below **user/tutorial**
+**/tests/spec** and activates the validation plugin for the keys below the mount point.
+The validation plugin now uses the metadata of the keys below **/tests/spec**
 to validate values before storing them in `tutorial.dump`.
 
 Although this is better than defining metadata in the same place as the data
@@ -215,28 +215,25 @@ kdb rm -r user/tests/spec || kdb rm -r system/tests/spec
 We call the files, that contain a complete schema for configuration
 below a specific path in form of metadata, _Specfiles_.
 
-Particularly a _Specfile_ contains metadata that defines
-
-- the mount points of paths,
-- the plugins to load and
-- the behavior of these plugins.
+A _Specfile_ contains metadata, among others, that defines how
+the configuration settings should be validated.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata
-(altough the specfile is stored in the dump format, we can still create it using
+(although the specfile is stored in the dump format, we can still create it using
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 
 ```sh
 sudo kdb mount tutorial.dump spec/tests/tutorial dump
 cat << HERE | kdb import spec/tests/tutorial ni  \
 []                                         \
- mountpoint = tutorial.dump                \
- infos/plugins = dump validation           \
+ mountpoint=tutorial.dump                \
+ infos/plugins=dump validation           \
                                            \
 [/links/_]                                 \
-check/validation = https?://.*\..*         \
-check/validation/match = LINE              \
-check/validation/message = not a valid URL \
-description = A link to some website       \
+check/validation=https?://.*\..*         \
+check/validation/match=LINE              \
+check/validation/message=not a valid URL \
+description=A link to some website       \
 HERE
 kdb lsmeta spec/tests/tutorial
 #> infos/plugins
@@ -245,6 +242,9 @@ kdb lsmeta spec/tests/tutorial
 
 We now have all the metadata that we need to mount and validate the data below
 `/tutorial` in one file.
+
+For a description which metadata is available, have a look in
+[METADATA.ini](/doc/METADATA.ini).
 
 Now we apply this _Specfile_ to the key database to all keys below `tests/tutorial`.
 
@@ -264,8 +264,8 @@ you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2
 ```sh
 kdb set /tests/tutorial/links/url "invalid url"
 # STDOUT-REGEX: Using name (user|system)/tests/tutorial/links/url
-# STDERR: .*key value failed to validate.*not a valid URL.*
-# ERROR:  42
+# STDERR: .*Validation Syntactic.*not a valid URL.*
+# ERROR:  C03100
 # RET:    5
 ```
 
@@ -298,13 +298,13 @@ There are many ways to do so directly supported by [the spec plugin](/src/plugin
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
 ```sh
-kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error 10
+kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error C03200
 #> Using keyname spec/tests/tutorial/spec/should_not_be_here
 kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
 # STDOUT-REGEX: Using name (user|system)/tests/tutorial/spec/should_not_be_here
 # RET:    5
-# STDERR: .*error.*10.*occurred.*
+# ERROR:C03200
 kdb get /tests/tutorial/spec/should_not_be_here
 # RET: 11
 # STDERR: Did not find key '/tests/tutorial/spec/should_not_be_here'
@@ -318,6 +318,7 @@ Before we look further let us undo the modifications to the key database.
 ```sh
 kdb rm -r spec/tests/tutorial
 kdb rm -r system/tests/tutorial
+kdb rm -rf user/tests/tutorial
 kdb umount spec/tests/tutorial
 kdb umount /tests/tutorial
 kdb rm -rf spec

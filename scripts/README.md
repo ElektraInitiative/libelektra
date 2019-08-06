@@ -2,8 +2,10 @@
 
 ## SYNOPSIS
 
-    kdb find-tools [-h] [--warnings] [--good] [--alltags] [-n NAME] [-a AUTHOR] [-d DATE]
-                   [-t TAGS [TAGS ...]] [-b BRIEF] [-e EXECUTE]
+```sh
+kdb find-tools [-h] [--warnings] [--good] [--alltags] [-n NAME] [-a AUTHOR] [-d DATE]
+               [-t TAGS [TAGS ...]] [-b BRIEF] [-e EXECUTE]
+```
 
 ## DESCRIPTION
 
@@ -21,14 +23,14 @@ If you are looking for something special, then there are two ways:
 2. Full Text Search:
    - `kdb find-tools -n NAME` to search for a script name.
    - `kdb find-tools -b BRIEF` to search for a short text.
-   - `kdb find-tools -a AUTHOR` to search for a author.
+   - `kdb find-tools -a AUTHOR` to search for an author.
    - `kdb find-tools -d DATE` to search for a creation date.
    - `kdb find-tools -e EXECUTE` to search for a type.
 
 All methods can be combined. For example if you search all bash scripts which do some configuration work.
 You can type `kdb find-tools -t configuration -e bash`.
 
-## The right Way to add your script to the find tools
+## The Right Way to Add Your Script to the Find Tools
 
 Meta Tags as comments in the beginning of a script are parsed.
 Mate Tags start with an `@`, here is a list of all Meta Tags:
@@ -46,17 +48,14 @@ Beware, that these metatags should be applied at the beginning of the file (in t
 
 ## Example
 
-\verbatim
-
-        <Start of File>
-        #!/bin/sh
-        #
-        # @author Kurt Micheli <kurt.micheli@libelektra.org>
-        # @brief This is a example of a build script
-        # @date 31.10.2018
-        # @tags configure, build
-
-\endverbatim
+```sh
+#!/bin/sh
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief This is an example of a build script
+# @date 31.10.2018
+# @tags configure, build
+```
 
 ## Notes
 

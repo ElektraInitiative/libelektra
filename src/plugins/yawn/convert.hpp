@@ -30,7 +30,7 @@ namespace yawn
  *                 function converts.
  *
  * @retval -2 if the file could not be opened for reading
- * @retval -1 if there was a error converting the YAML file
+ * @retval -1 if there was an error converting the YAML file
  * @retval  0 if parsing was successful and the function did not change the
  *            given key set
  * @retval  1 if parsing was successful and the function did change `keySet`

@@ -43,22 +43,22 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 ## Examples
 
 ```sh
-rm -rf ~/.config/multitest || $(exit 0)
-mkdir -p ~/.config/multitest || $(exit 0)
+rm -rf $(dirname $(kdb file user))/multitest || $(exit 0)
+mkdir -p $(dirname $(kdb file user))/multitest || $(exit 0)
 
-cat > ~/.config/multitest/lo.ini << EOF \
+cat > $(dirname $(kdb file user))/multitest/lo.ini << EOF \
 [lo]\
 addr = 127.0.0.1\
 Link encap = Loopback\
 EOF
 
-cat > ~/.config/multitest/lan.ini << EOF \
+cat > $(dirname $(kdb file user))/multitest/lan.ini << EOF \
 [eth0]\
 addr = 192.168.1.216\
 Link encap = Ethernet\
 EOF
 
-cat > ~/.config/multitest/wlan.ini << EOF \
+cat > $(dirname $(kdb file user))/multitest/wlan.ini << EOF \
 [wlan0]\
 addr = 192.168.1.125\
 Link encap = Ethernet\
@@ -82,7 +82,7 @@ kdb set user/tests/multifile/lan.ini/eth0/addr 10.0.0.2
 kdb get user/tests/multifile/lan.ini/eth0/addr
 #> 10.0.0.2
 
-cat > ~/.config/multitest/test.ini << EOF \
+cat > $(dirname $(kdb file user))/multitest/test.ini << EOF \
 [testsection]\
 key = val\
 EOF
@@ -102,7 +102,7 @@ kdb ls user/tests/multifile
 
 kdb rm -r user/tests/multifile/test.ini
 
-stat ~/.config/multifile/test.ini
+stat $(dirname $(kdb file user))/multifile/test.ini
 # RET:1
 
 sudo kdb umount user/tests/multifile
@@ -111,12 +111,12 @@ sudo kdb umount user/tests/multifile
 Recursive:
 
 ```sh
-rm -rf ~/.config/multitest || $(exit 0)
-mkdir -p ~/.config/multitest ~/.config/multitest/a/a1/a12 ~/.config/multitest/a/a2/a22 ~/.config/multitest/b/b1|| $(exit 0)
+rm -rf $(dirname $(kdb file user))/multitest || $(exit 0)
+mkdir -p $(dirname $(kdb file user))/multitest $(dirname $(kdb file user))/multitest/a/a1/a12 $(dirname $(kdb file user))/multitest/a/a2/a22 $(dirname $(kdb file user))/multitest/b/b1|| $(exit 0)
 
-echo "a1key = a1val" > ~/.config/multitest/a/a1/a12/testa1.file
-echo "a2key = a2val" > ~/.config/multitest/a/a2/a22/testa2.file
-echo "b1key = b1val" > ~/.config/multitest/b/b1/testb1.file
+echo "a1key = a1val" > $(dirname $(kdb file user))/multitest/a/a1/a12/testa1.file
+echo "a2key = a2val" > $(dirname $(kdb file user))/multitest/a/a2/a22/testa2.file
+echo "b1key = b1val" > $(dirname $(kdb file user))/multitest/b/b1/testb1.file
 
 sudo kdb mount -R multifile -c storage="ini",pattern="*.file",recursive=,resolver="resolver" multitest user/tests/multifile
 
@@ -125,7 +125,7 @@ kdb ls user/tests/multifile
 #> user/tests/multifile/a/a2/a22/testa2.file/a2key
 #> user/tests/multifile/b/b1/testb1.file/b1key
 
-rm -rf ~/.config/multitest
+rm -rf $(dirname $(kdb file user))/multitest
 
 sudo kdb umount user/tests/multifile
 ```

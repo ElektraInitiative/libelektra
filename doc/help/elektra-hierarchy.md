@@ -16,7 +16,7 @@ The mount points present in the system.
 
 Version information.
 
-# Info mount points
+# Info Mountpoints
 
 Use `kdb mount-info` to mount these mount points.
 

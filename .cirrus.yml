@@ -12,6 +12,7 @@ bsd_task:
   install_script:
     - >
       pkg install -y
+      bison
       cmake
       git
       ninja
@@ -22,7 +23,8 @@ bsd_task:
     - &create_and_chage_to_build_dir mkdir build && cd build
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       cmake
-      -DBINDINGS=ALL
+      -DBINDINGS='ALL;-io_glib'
+      -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
@@ -38,9 +40,9 @@ bsd_task:
     - sudo mount -t fdescfs fdesc /dev/fd
     - &run_tests | # Run tests
       cd build
-      if [[ "$ENABLE_ASAN" == 'ON' ]]; then
+      if [ "$ENABLE_ASAN" == 'ON' ]; then
         ninja run_nocheckshell
-      elif [[ "$BUILD_FULL" == 'ON' ]]; then
+      elif [ "$BUILD_FULL" == 'ON' ]; then
         # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
         # if we do not add the alternative `false`.
         ninja run_all && kdb-full run_all || false
@@ -129,7 +131,7 @@ mac_task:
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
     - | # Install Python packages
-      pip install cmake-format pyyaml
+      pip install cmake-format[yaml]==0.5.4
     - | # Install Ruby
       brew install ruby@2.5
     - | # Install Ruby gems
@@ -151,7 +153,6 @@ mac_task:
         -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
         -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
         -DENABLE_DEBUG=ON
-        -DINSTALL_SYSTEM_FILES=OFF
         -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
         -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
         -DKDB_DB_SYSTEM="$SYSTEM_DIR"
@@ -181,5 +182,34 @@ mac_task:
         printf 'The command `ninja uninstall` did not uninstall all files:\n'
         tree .
         printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
+        false
+      fi
+
+linux_task:
+  matrix:
+
+    - name: 🔗 Check
+      container:
+          dockerfile: scripts/docker/cirrus/Dockerfile
+
+  script:
+    - mkdir build && cd build
+    - >
+      cmake -GNinja ..
+      -DBUILD_FULL=OFF
+      -DBUILD_SHARED=OFF
+      -DBUILD_STATIC=OFF
+      -DBUILD_TESTING=OFF
+    - cd ..
+    - ninja -C build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+    - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s broken_links.txt; then
+        printf >&2 'Broken Links:\n'
+        printf >&2 '—————————————\n'
+        cat >&2 broken_links.txt
+        printf >&2 '—————————————\n'
         false
       fi

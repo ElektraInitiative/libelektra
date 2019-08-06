@@ -347,7 +347,7 @@ char * elektraStrDup (const char * s)
  * it must be correct.
  *
  * @return 0 if out of memory, a pointer otherwise
- * @param s must be a allocated buffer
+ * @param s must be an allocated buffer
  * @param l the length of s
  * @ingroup internal
  */
@@ -714,6 +714,21 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 	size_t size = 0;
 
 	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *) sp, (void *) dp);
+
+	// if there is nothing to unescape, just make a copy and replace / with \0
+	if (strpbrk (sp, "\\%") == NULL)
+	{
+		strcpy (dest, sp);
+		char * last = dp;
+		while ((dp = strchr (dp, '/')) != NULL)
+		{
+			*dp = '\0';
+			++dp;
+			last = dp;
+		}
+		// add 1, if we didn't end with \0 already
+		return last - dest + strlen (last) + (*last != '\0');
+	}
 
 	if (*sp == '/')
 	{

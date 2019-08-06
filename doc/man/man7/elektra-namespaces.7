@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-NAMESPACES" "7" "February 2019" "" ""
+.TH "ELEKTRA\-NAMESPACES" "7" "August 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-namespaces\fR \- namespaces
@@ -73,7 +73,7 @@ When a cascading key is looked up, keys from the spec\-namespace are the first t
 Usually, the spec\-keys do not directly contribute to the value, with one notable exception: the default value (metadata \fBdefault\fR, see in cascading below) might be used if every other way as specified in the spec\-key failed\.
 .
 .P
-Spec\-keys typically include a explanation and description for the key itself (but not comments which are specific for individual keys)\.
+Spec\-keys typically include an explanation and description for the key itself (but not comments which are specific for individual keys)\.
 .
 .P
 The spec configuration files are below \fBCMAKE_INSTALL_PREFIX/KDB_DB_SPEC\fR\.
@@ -124,11 +124,11 @@ The system configuration is the same for every chroot\.
 .P
 The configuration is typically located below \fBKDB_DB_SYSTEM\fR\. Other absolute paths, e\.g\. below \fB/opt\fR or \fB/usr/local/etc\fR are possible too\.
 .
-.SH "cascading"
+.SH "Cascading"
 Keys that are not in a namespace (i\.e\. start with an \fB/\fR) are called cascading keys\. Cascading keys do not stem from a configuration source, but are used by applications to lookup a key in different namespaces\. So, multiple keys can contribute to each cascading key name\.
 .
 .P
-Cascading is the same as a name resolution and provides a namespace unification as described in Versatility and Unix semantics in namespace unification \fIhttp://dl\.acm\.org/citation\.cfm?id=1138045\fR\.
+Cascading is the same as a name resolution and provides a namespace unification as described in Versatility and Unix semantics in namespace unification \fIhttp://citeseerx\.ist\.psu\.edu/viewdoc/summary?doi=10\.1\.1\.81\.7888\fR\.
 .
 .P
 Keys without a namespace can not be stored by their nature\. So they are transient: after a restart they are forgotten\.

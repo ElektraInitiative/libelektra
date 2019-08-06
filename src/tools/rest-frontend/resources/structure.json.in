@@ -19,10 +19,24 @@
                         }
                     },
                     {
+                        "name": "Goals",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/GOALS.md"
+                        }
+                    },
+                    {
                         "name": "Why Elektra?",
                         "type": "staticfile",
                         "options": {
                             "path": "doc/WHY.md"
+                        }
+                    },
+                    {
+                        "name": "Vision",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/VISION.md"
                         }
                     },
                     {

@@ -144,7 +144,7 @@ execute() {
 	# = ERROR =
 	# ==========
 
-	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
+	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error (C[A-Z0-9]+):/\1/p')
 
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ]; then

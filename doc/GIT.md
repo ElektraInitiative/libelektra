@@ -2,17 +2,21 @@
 
 ## Basic GIT Commands
 
-    git add readme.md   // adds the changes of the file `readme.md` to the staging area
-    git add .           // adds all changes of files in the current directory (recursively) to the staging area
-    git add --all       // adds all changes of files in the repository to the staging area
-    git commit -a       // executes a commit that automatically stages all changed and deleted files before
+```sh
+git add readme.md   # adds the changes of the file `readme.md` to the staging area
+git add .           # adds all changes of files in the current directory (recursively) to the staging area
+git add --all       # adds all changes of files in the repository to the staging area
+git commit -a       # executes a commit that automatically stages all changed and deleted files before
+```
 
 ## Basic Configuration
 
 make sure to do:
 
-    git config --global merge.ff false
-    git config merge.ff false
+```sh
+git config --global merge.ff false
+git config merge.ff false
+```
 
 ## The Commit Message
 
@@ -35,11 +39,15 @@ Most commits should have a longer description in the body.
 
 To list all remote branches use:
 
-    git branch -a
+```sh
+git branch -a
+```
 
 To checkout a remote branch initially use:
 
-    git checkout -b <branchname> origin/<branchname>
+```sh
+git checkout -b <branchname> origin/<branchname>
+```
 
 Once you have done this, it will be a local branch, too.
 Following remote branches should exist:
@@ -68,20 +76,26 @@ master. (see config option above)
 
 You should always make your own feature branch with:
 
-    git checkout -b <feature-branch-name>
+```sh
+git checkout -b <feature-branch-name>
+```
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
 To merge a branch use (no-fastforward):
 
-    git merge --no-ff <branchname>
+```sh
+git merge --no-ff <branchname>
+```
 
 If you already did some commits, but want them in a branch,
 you can do:
 
-    git branch foo
-    git reset HEAD^^  (for 2 commits back)
-    git reset origin/master
+```sh
+git branch foo
+git reset HEAD^^  # for 2 commits back
+git reset origin/master
 
-    git-ref-log # recover
+git-ref-log # recover
+```

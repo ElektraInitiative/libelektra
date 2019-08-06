@@ -68,3 +68,11 @@ description:The value passed to the ElektraError ** argument of %1$s was NULL.
 args:1
 type1:const char *
 arg1:function
+
+number:7
+severity:error
+name:ENSURE_FAILED
+description:The given contract could not be ensured: %1$s
+args:1
+type1:const char *
+arg1:reason

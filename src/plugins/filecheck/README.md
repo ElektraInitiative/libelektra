@@ -17,17 +17,17 @@ The filecheck plugin validates files. It tests: encoding, lineendings, BOM, prin
 
 `check/lineending`
 `valid/lineending`
-When the `checkLE` key is present, the plugin checks the file for consistent line endings. If you want to validate for a specific line ending you can supply it with the `validLE` key. Valid values are: `CR`, `LF`, `CRLF`, `LFCR`.
+When the `check/lineending` key is present, the plugin checks the file for consistent line endings. If you want to validate for a specific line ending you can supply it with the `valid/lineending` key. Valid values are: `CR`, `LF`, `CRLF`, `LFCR`.
 
 `check/encoding`
 `valid/encoding`
 When the `checkEncoding` key is present, the plugin validates the file encoding supplied by the key `encoding`, or, if not present, defaults to `UTF-8`
 
 `reject/null`
-When the `rejectNull` key is present, the plugin rejects the file if a NULL-Byte is found.
+When the `reject/null` key is present, the plugin rejects the file if a NULL-Byte is found.
 
-`/reject/bom`
-When the `rejectBom` key is present, the plugin rejects the file if any BOM markers are found.
+`reject/bom`
+When the `reject/bom` key is present, the plugin rejects the file if any BOM markers are found.
 
-`/reject/unprintable`
-When the `rejectUnprintable` key is preset, the plugin rejects the file if an unprintable character is present (except `\r` and `\n`).
+`reject/unprintable`
+When the `reject/unprintable` key is preset, the plugin rejects the file if an unprintable character is present (except `\r` and `\n`).

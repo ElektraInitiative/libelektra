@@ -11,8 +11,9 @@
 
 ## Introduction
 
+[lock/a/lock]
 This plugin allows Elektra's users to read and write INI files.
-INI files consist of simple key value pairs of the form `key = value`.
+INI files consist of simple key value pairs of the form `key=value`.
 Additionally keys can be categorized into different sections.
 Sections must be enclosed in "[]", for example "[section]".
 Each section is converted into a directory key
@@ -71,8 +72,8 @@ have to start with whitespace characters.
 For example consider the following ini file:
 
 ```ini
-key1 = value1
-key2 = value2
+key1=value1
+key2=value2
 	with continuation
 	lines
 ```
@@ -87,14 +88,14 @@ If you want to use another character, then please specify the configuration opti
 
 The ini plugin handles repeating keys by turning them into an elektra array when the `array` config is set.
 
-For example a ini file looking like:
+For example an ini file looking like:
 
 ```ini
 [sec]
-a = 1
-a = 2
-a = 3
-a = 4
+a=1
+a=2
+a=3
+a=4
 ```
 
 will be interpreted as
@@ -132,9 +133,9 @@ kdb get user/tests/ini/songs/#2
 
 # Check the file written by the INI plugin
 kdb file user/tests/ini | xargs cat
-#> songs = Non-Zero Possibility
-#> songs = Black Art Number One
-#> songs = A Story Of Two Convicts
+#> songs=Non-Zero Possibility
+#> songs=Black Art Number One
+#> songs=A Story Of Two Convicts
 
 # Undo modifications
 kdb rm -r user/tests/ini
@@ -152,7 +153,7 @@ By default the INI plugin does not support binary data. You can use the [Base64 
 sudo kdb mount --with-recommends config.ini user/tests/ini ini base64
 
 # Add empty binary value
-printf 'nothing = "@BASE64"\n' > `kdb file user/tests/ini`
+printf 'nothing="@BASE64"\n' > `kdb file user/tests/ini`
 # Copy binary data
 kdb cp system/elektra/modules/ini/exports/get user/tests/ini/binary
 # Add textual data
@@ -190,7 +191,7 @@ kdb setmeta user/tests/ini/brand rationale "Because I Love It"
 kdb file user/tests/ini | xargs cat
 #> #@META description = The Devil And God Are Raging Inside Me
 #> #@META rationale = Because I Love It
-#> brand = new
+#> brand=new
 
 # Retrieve metadata
 kdb lsmeta user/tests/ini/brand | grep -v 'internal'
@@ -226,7 +227,7 @@ kdb set dir/tests/a/b ab
 kdb get dir/tests/a       # <-- key is suddenly here
 cat empty.ini
 #> [a]
-#> b = ab
+#> b=ab
 
 # Undo modifications
 kdb rm -r dir/tests
@@ -242,13 +243,13 @@ kdb set dir/tests/a/b ab
 kdb get dir/tests/a       # no key here
 # RET: 11
 cat empty.ini
-#> a/b = ab
+#> a/b=ab
 kdb rm dir/tests/a/b
 kdb set dir/tests/a    # create section first
 kdb set dir/tests/a/b ab
 cat empty.ini
 #> [a]
-#> b = ab
+#> b=ab
 
 # Undo modifications
 kdb rm -r dir/tests
@@ -272,33 +273,36 @@ sudo kdb mount test.ini /tests/ini ini
 
 cat > `kdb file /tests/ini` <<EOF \
 [Section1]\
-key1 = val1\
+key1=val1\
 [Section3]\
-key3 = val3\
+key3=val3\
 EOF
 
 kdb file /tests/ini | xargs cat
 #> [Section1]
-#> key1 = val1
+#> key1=val1
 #> [Section3]
-#> key3 = val3
+#> key3=val3
 
 kdb set /tests/ini/Section1/Subsection1/subkey1 subval1
 kdb set /tests/ini/Section2/key2 val2
 kdb file /tests/ini | xargs cat
 #> [Section1]
-#> key1 = val1
+#> key1=val1
 #> [Section1/Subsection1]
-#> subkey1 = subval1
+#> subkey1=subval1
 #> [Section2]
-#> key2 = val2
+#> key2=val2
 #> [Section3]
-#> key3 = val3
+#> key3=val3
 
 # Undo modifications
 kdb rm -r /tests/ini
 sudo kdb umount /tests/ini
 ```
+
+The current implementation of the ordering sometimes breaks compatibility
+with the cache plugin [(see ini bug)](https://github.com/ElektraInitiative/libelektra/issues/2592).
 
 ## Special Characters
 
@@ -308,14 +312,14 @@ The INI plugin also supports values and keys containing delimiter characters (`=
 sudo kdb mount test.ini user/tests/ini ini
 
 printf '[section1]\n'    >  `kdb file user/tests/ini`
-printf 'hello = world\n' >> `kdb file user/tests/ini`
+printf 'hello=world\n' >> `kdb file user/tests/ini`
 
 kdb get user/tests/ini/section1/hello
 #> world
 
-kdb set user/tests/ini/section1/x=x 'a + b = b + a'
+kdb set user/tests/ini/section1/x=x 'a + b=b + a'
 kdb get user/tests/ini/section1/x=x
-#> a + b = b + a
+#> a + b=b + a
 
 # Undo modifications
 kdb rm -r user/tests/ini

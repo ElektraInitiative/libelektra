@@ -78,6 +78,12 @@ public:
 	 */
 	void exitPair (bool const matchedValue);
 
+
+	/**
+	 * @brief This function will be called before the walker enters an empty document (that might also contain comments).
+	 */
+	void enterEmpty ();
+
 	/**
 	 * @brief This function will be called before the walker enters a sequence
 	 *        node.

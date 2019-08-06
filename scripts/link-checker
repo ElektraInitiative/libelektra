@@ -13,6 +13,11 @@ fi
 NUMTHREADS=10
 
 check() {
+	# Ignore links that contain version placeholder
+	echo "$1" | grep -Eq 'doc/news/_preparation_next_release\.md.*<<VERSION>>' && return
+	# The following link only works if you are logged into the build server
+	# See also: https://github.com/ElektraInitiative/libelektra/issues/2674
+	echo "$1" | grep -Eq 'https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax' && return
 	link=$(echo "$1" | grep -oE "(https|http|ftp):.*")
 	if [ -z "$link" ]; then
 		echo "check the link format of $1"
@@ -22,7 +27,7 @@ check() {
 	if [ "$?" -ne "0" ]; then
 		wget -O - --quiet "$link" > /dev/null
 		if [ "$?" -ne "0" ]; then
-			echo "$1"
+			echo >&2 "$1"
 		fi
 	fi
 }

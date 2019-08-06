@@ -201,7 +201,7 @@ keyDel(key);
  *
  * @param key the key object to work with
  * @return a pointer to the keyname which must not be changed.
- * @retval "" when there is no (a empty) keyname
+ * @retval "" when there is no (an empty) keyname
  * @retval 0 on NULL pointer
  * @see keyGetNameSize() for the string length
  * @see keyGetFullName(), keyGetFullNameSize() to get the full name
@@ -421,7 +421,7 @@ static void elektraHandleUserName (Key * key, const char * newName)
 static void elektraRemoveKeyName (Key * key)
 {
 	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	key->key = 0;
 	key->keySize = 0;
 	key->keyUSize = 0;
@@ -861,7 +861,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
 		key->key = elektraMalloc (newSize);
-		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
@@ -980,7 +980,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
 		key->key = elektraMalloc (newSize);
-		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
@@ -1128,7 +1128,7 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
 		key->key = elektraMalloc (newSize);
-		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{

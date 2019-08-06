@@ -127,7 +127,10 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 	if (fstat (fd, &tmpStat))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to retrieve the file status of the temporary file.");
+		ELEKTRA_SET_RESOURCE_ERRORF (
+			errorKey,
+			"Failed to overwrite the temporary data. Cannot retrieve file status. Unencrypted data may leak. Errno: %s",
+			strerror (errno));
 		return -1;
 	}
 
@@ -146,7 +149,8 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 	return 1;
 
 error:
-	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to overwrite the temporary file.");
+	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. Unencrypted data may leak. Reason: %s",
+				     strerror (errno));
 	return -1;
 }
 
@@ -206,7 +210,7 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 	ksRewind (config);
 	while ((k = ksNext (config)) != 0)
 	{
-		if (keyIsBelow (k, root))
+		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
 		{
 			recipientCount++;
 		}
@@ -226,7 +230,8 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		// gpg call returned success, overwrite the original file with the gpg payload data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Renaming file %s to %s failed. Reason: %s", tmpFile, keyString (parentKey),
+						     strerror (errno));
 			result = -1;
 		}
 	}
@@ -244,18 +249,21 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s", tmpFile,
-					      strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (
+				parentKey,
+				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
+				"the file manually. Affected file: %s. Reason: %s",
+				tmpFile, strerror (errno));
 		}
 	}
 
 	if (parentKeyFd >= 0 && close (parentKeyFd))
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 	}
 	if (close (tmpFileFd))
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 	}
 	elektraFree (tmpFile);
 	return result;
@@ -276,9 +284,9 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
-		ELEKTRA_SET_ERRORF (
-			ELEKTRA_ERROR_NO_GPG_RECIPIENTS, parentKey,
-			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration.",
+		ELEKTRA_SET_INSTALLATION_ERRORF (
+			parentKey,
+			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration",
 			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
 		return -1;
 	}
@@ -287,7 +295,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
 		return -1;
 	}
 
@@ -330,11 +338,12 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		ksRewind (pluginConfig);
 		while ((k = ksNext (pluginConfig)) != 0)
 		{
-			if (keyIsBelow (k, gpgRecipientRoot))
+			const char * kStringVal = keyString (k);
+			if (keyIsBelow (k, gpgRecipientRoot) && strlen (kStringVal) > 0)
 			{
 				argv[i++] = "-r";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
-				argv[i++] = (char *) keyString (k);
+				argv[i++] = (char *) kStringVal;
 			}
 		}
 	}
@@ -357,11 +366,12 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		ksRewind (pluginConfig);
 		while ((k = ksNext (pluginConfig)) != 0)
 		{
-			if (keyIsBelow (k, gpgSignatureRoot))
+			const char * kStringVal = keyString (k);
+			if (keyIsBelow (k, gpgSignatureRoot) && strlen (kStringVal) > 0)
 			{
 				argv[i++] = "-u";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
-				argv[i++] = (char *) keyString (k);
+				argv[i++] = (char *) kStringVal;
 			}
 		}
 	}
@@ -424,7 +434,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
 		return -1;
 	}
 
@@ -478,12 +488,15 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s", tmpFile,
-					      strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (
+				parentKey,
+				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
+				"the file manually. Affected file: %s, error description: %s",
+				tmpFile, strerror (errno));
 		}
 		if (close (tmpFileFd))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 		}
 		elektraFree (tmpFile);
 	}
@@ -500,7 +513,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED,
 	fcryptState * s = elektraMalloc (sizeof (fcryptState));
 	if (!s)
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
 		return -1;
 	}
 
@@ -525,7 +538,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED
 	{
 		if (s->tmpFileFd > 0 && close (s->tmpFileFd))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 		}
 		if (s->tmpFilePath)
 		{
@@ -564,7 +577,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_STATE, parentKey, "No plugin state is available.");
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "No plugin state is available");
 		return -1;
 	}
 
@@ -577,7 +590,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 		}
 		else
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_STATE, parentKey, "The path to the original file is lost.");
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "The path to the original file is lost");
 			// clean-up is performed by kdb close
 			return -1;
 		}
@@ -587,13 +600,16 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 			shredTemporaryFile (s->tmpFileFd, parentKey);
 			if (close (s->tmpFileFd))
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+				ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 			}
 			s->tmpFileFd = -1;
 			if (unlink (s->tmpFilePath))
 			{
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s",
-						      s->tmpFilePath, strerror (errno));
+				ELEKTRA_ADD_RESOURCE_WARNINGF (
+					parentKey,
+					"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try "
+					"to delete the file manually. Affected file: %s, error description: %s",
+					s->tmpFilePath, strerror (errno));
 			}
 			elektraFree (s->tmpFilePath);
 			s->tmpFilePath = NULL;
@@ -624,21 +640,21 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (89, parentKey, "Could not open config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open config file %s. Reason: %s", configFile, strerror (errno));
 		return -1;
 	}
 	if (fsync (fd) == -1)
 	{
-		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync config file %s. Reason: %s", configFile, strerror (errno));
 		if (close (fd))
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 		}
 		return -1;
 	}
 	if (close (fd))
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to close a file descriptor: %s", strerror (errno));
 	}
 	return 1;
 }
@@ -658,7 +674,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NO_GPG_RECIPIENTS, errorKey, errorDescription);
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}

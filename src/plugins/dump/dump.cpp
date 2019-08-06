@@ -115,7 +115,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			ss >> version;
 			if (version != "1")
 			{
-				ELEKTRA_SET_ERROR (50, errorKey, version.c_str ());
+				ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Wrong version detected in dumpfile: %s", version.c_str ());
 				return -1;
 			}
 		}
@@ -188,7 +188,12 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else
 		{
-			ELEKTRA_SET_ERROR (49, errorKey, command.c_str ());
+			// TODO: Solution
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+				errorKey,
+				"Unknown command detected in dumpfile: %s.\nMaybe you use a different file format? "
+				"Try to remount with another plugin (eg. ini, ni, etc.)",
+				command.c_str ());
 			return -1;
 		}
 	}

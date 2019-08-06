@@ -1,19 +1,19 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-SPEC\-MOUNT" "1" "August 2018" "" ""
+.TH "KDB\-SPEC\-MOUNT" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-spec\-mount\fR \- Mount a spec file to the key database
 .
 .SH "SYNOPSIS"
-\fBkdb spec\-mount [/<mount point>] [<plugin> [<config>] [\.\.]]\fR
+\fBkdb spec\-mount [/<mountpoint>] [<plugin> [<config>] [\.\.]]\fR
 .
 .IP "\(bu" 4
 \fBmountpoint\fR is where in the key database the new backend should be mounted to\. It must be a cascading mount point, i\.e\., \fBmountpoint\fR must start with \fB/\fR\.
 .
 .IP "\(bu" 4
-\fBplugin\fR are extra Elektra plugins to be used (next to the one specified in \fBspec/\fR)\.
+\fBplugin\fR are extra Elektra plugins to be used (next to the one specified in \fBspec/<mountpoint>\fR)\.
 .
 .IP "\(bu" 4
 Plugins may be followed by a \fB,\fR separated list of \fBkeys=values\fR pairs which will be used as plugin configuration\.
@@ -30,7 +30,7 @@ This command allows a user to mount a new \fIbackend\fR described by a previousl
 .
 .nf
 
-kdb mount some\-spec\-file\.ini spec/example/mountpoint ni
+sudo kdb mount /path/to/some\-spec\-file\.ini spec/example/mountpoint ni
 .
 .fi
 .
@@ -43,7 +43,7 @@ The idea of mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.
 During \fBspec\-mount\fR the \fBspec\fR keys are searched for relevant metadata:
 .
 .IP "\(bu" 4
-For every metadata \fBmountpoint\fR an additional cascading mount point will be mounted\.
+For every metadata \fBmountpoint\fR an additional cascading mount point will be mounted\. The metadata \fBmountpoint\fR is usually at the parent key (the top\-level key of the specification)\.
 .
 .IP "\(bu" 4
 The \fBinfos/*\fR and \fBconfig/needs\fR from CONTRACT\.ini \fI/doc/CONTRACT\.ini\fR, that are tagged by \fBusedby = spec\fR, will work as described there\.
@@ -60,9 +60,10 @@ For example:
 .
 .nf
 
-kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mount point here
-kdb spec\-mount /example/mountpoint  # mounts /example/mountpoint according to specification
-    # found at spec/example/mountpoint
+kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+sudo kdb spec\-mount /example/mountpoint  # mounts /example/mountpoint according to
+                                         # the specification as found at
+                                         # spec/example/mountpoint
 .
 .fi
 .
@@ -144,13 +145,13 @@ It contains a space\-separated list of plugins and their configs which are added
 To mount /example as described in \fBspec/example\fR:
 .
 .br
-\fBkdb spec\-mount /example\fR
+\fBsudo kdb spec\-mount /example\fR
 .
 .P
-Additionally, add \fBini\fR plugin (instead of some default resolver) with \fBsome\fR as config:
+Additionally, add \fBini\fR plugin (instead of some default resolver) with a config for INI:
 .
 .br
-\fBkdb spec\-mount /example ini some=value\fR
+\fBsudo kdb spec\-mount /example ini section=NULL\fR
 .
 .SH "SEE ALSO"
 .
@@ -162,6 +163,12 @@ kdb\-umount(7) \fIkdb\-umount\.md\fR\.
 .
 .IP "\(bu" 4
 elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
+.
+.IP "\(bu" 4
+see application integration tutorial \fI/doc/tutorials/application\-integration\.md\fR
+.
+.IP "\(bu" 4
+see validation tutorial \fI/doc/tutorials/validation\.md\fR
 .
 .IP "" 0
 

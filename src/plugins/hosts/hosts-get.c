@@ -28,7 +28,7 @@ typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
 /*
  * Determines the address family of the supplied network address
  *
- * @param address the network address to be analysed
+ * @param address the network address to be analyzed
  * @return a number identifying the network address (e.g. AF_INET) or -1 if an error occurred
  */
 static int getAddressFamily (const char * address)
@@ -307,7 +307,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 	else
 	{
-		ELEKTRA_SET_ERROR (10, parentKey, strerror (errno));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "General parse error. Reason: %s", strerror (errno));
 		ksDel (append);
 		ret = -1;
 	}

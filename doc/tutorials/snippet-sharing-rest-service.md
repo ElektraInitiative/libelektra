@@ -253,7 +253,7 @@ the here described service:
 The server redirects requests on port 80 (non-SSL) to 443 using a very simple
 configuration like
 
-```
+```apache
 # file: /etc/apache2/sites-available/www.libelektra.org.conf
 <VirtualHost *:80>
     ServerName www.libelektra.org
@@ -265,7 +265,7 @@ for the `www.libelektra.org` domain (similar for `restapi.libelektra.org`).
 
 The secured variant of the configuration looks like
 
-```
+```apache
 # file: /etc/apache2/sites-available/www.libelektra.org-le-ssl.conf
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
@@ -296,7 +296,7 @@ Important is the `Directory` configuration because the `rest-frontend` requires 
 
 For the `restapi.libelektra.org` domain we use an SCGI setup:
 
-```
+```apache
 # file: /etc/apache2/sites-available/restapi.libelektra.org-le-ssl.conf
 <IfModule mod_ssl.c>
 <VirtualHost *:443>

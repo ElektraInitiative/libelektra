@@ -78,7 +78,8 @@ int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	void * cache = elektraPluginGetData (handle);
 	if (cache == NULL)
 	{
-		ELEKTRA_SET_ERROR (107, parentKey, "Cache was not initialized.");
+		// TODO: Solution (Call kdbGet() to initialize Cache)
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Cache was not initialized");
 		return -1; // did not call kdbGet() before and therefore
 			   // also no elektraCachefilterGet()
 	}

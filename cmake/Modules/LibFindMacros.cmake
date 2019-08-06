@@ -1,5 +1,8 @@
 if (CMAKE_VERSION VERSION_LESS 3.4)
-	macro (pkg_get_variable OUT_VARIABLE MODULE PKG_VARIABLE)
+	macro (pkg_get_variable
+	       OUT_VARIABLE
+	       MODULE
+	       PKG_VARIABLE)
 		if (NOT EXISTS ${PKG_CONFIG_EXECUTABLE})
 			set (${OUT_VARIABLE} "")
 		else ()

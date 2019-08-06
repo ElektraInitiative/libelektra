@@ -22,6 +22,7 @@
 #include <external.hpp>
 
 // TODO: to add a new command, 1.) include your header here
+#include <cache.hpp>
 #include <check.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
@@ -31,6 +32,7 @@
 #include <file.hpp>
 #include <find.hpp>
 #include <fstab.hpp>
+#include <gen.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
 #include <globalumount.hpp>
@@ -87,6 +89,7 @@ public:
 		m_factory.insert (std::make_pair ("set", std::make_shared<Cnstancer<SetCommand>> ()));
 		m_factory.insert (std::make_pair ("rm", std::make_shared<Cnstancer<RemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("ls", std::make_shared<Cnstancer<LsCommand>> ()));
+		m_factory.insert (std::make_pair ("cache", std::make_shared<Cnstancer<CacheCommand>> ()));
 		m_factory.insert (std::make_pair ("complete", std::make_shared<Cnstancer<CompleteCommand>> ()));
 		m_factory.insert (std::make_pair ("cp", std::make_shared<Cnstancer<CpCommand>> ()));
 		m_factory.insert (std::make_pair ("mv", std::make_shared<Cnstancer<MvCommand>> ()));
@@ -119,6 +122,7 @@ public:
 		m_factory.insert (std::make_pair ("gmount", std::make_shared<Cnstancer<GlobalMountCommand>> ()));
 		m_factory.insert (std::make_pair ("gumount", std::make_shared<Cnstancer<GlobalUmountCommand>> ()));
 		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
+		m_factory.insert (std::make_pair ("gen", std::make_shared<Cnstancer<GenCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const

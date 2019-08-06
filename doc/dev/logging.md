@@ -1,5 +1,14 @@
 # How-To: Logging
 
+## Quickstart
+
+Enable logging by compiling with the CMake option `ENABLE_LOGGER=ON` (e.g. `cmake -DENABLE_LOGGER=ON`).
+
+By default errors and warnings are logged to stderr and syslog, while notice and info message are only logged to syslog.
+Debug level message are not logged by default, but will be logged to syslog, if `ENABLE_DEBUG=ON` is set in CMake.
+
+The file sink behaves like syslog, if it has been enabled (see below).
+
 ## Step by Step Guide
 
 ### Preparation
@@ -27,17 +36,19 @@ If Elektra should display all log messages, then please follow the steps below.
    ```
 
    in the file `src/libs/elektra/log.c`.
+   (Alternatively you may define this macro via CMake.)
 
-2. Optional: Change the debug level in `src/include/kdblogger.h`. For example, if you want to see debug messages too, then change the line
+2. Optional: The logging levels are set in `src/include/kdblogger.h`. For example, if you want to see everything (including debug messages)
+   on stderr, then change the line
 
    ```c
-   ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_INFO,
+   static const int ELEKTRA_LOG_LEVEL_STDERR = ELEKTRA_LOG_LEVEL_WARNING;
    ```
 
    to
 
    ```c
-   ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_DEBUG,
+   static const int ELEKTRA_LOG_LEVEL_STDERR = ELEKTRA_LOG_LEVEL_DEBUG;
    ```
 
    .
@@ -60,7 +71,7 @@ If you want to only log messages below a specific directory prefix, then please 
 
    ```c
    #ifndef NO_FILTER
-   	if (strncmp (file, "src/postfix/", sizeof ("src/postfix"))) goto end;
+   	if (strncmp (file, "src/postfix/", sizeof ("src/postfix"))) return -1;
    #endif
    ```
 
@@ -68,7 +79,7 @@ If you want to only log messages below a specific directory prefix, then please 
 
    ```c
    #ifndef NO_FILTER
-   	if (strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp"))) goto end;
+   	if (strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp"))) return -1;
    #endif
    ```
 
@@ -79,11 +90,29 @@ If you want to only log messages below a specific directory prefix, then please 
    #ifndef NO_FILTER
    	if (strncmp (file, "src/plugins/directoryvalue/", sizeof ("src/plugins/directoryvalue")) &&
    	    strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp")))
-   		goto end;
+   		return -1;
    #endif
    ```
 
    .
+
+### Enabling and Disabling Sinks
+
+The logging framework has 3 sinks: stderr, syslog and file.
+
+The first to are enabled by default, while file is disabled. To enable it uncomment the line
+
+```c
+// #define USE_FILE_SINK
+```
+
+in `src/libs/elektra/log.c`. The file that log messages are written to is defined in this line
+
+```c
+elektraLoggerFileHandle = fopen ("elektra.log", "a");
+```
+
+.
 
 ### Compilation
 

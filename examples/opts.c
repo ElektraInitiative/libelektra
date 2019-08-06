@@ -21,7 +21,7 @@ extern char ** environ;
 static KeySet * createSpec (void)
 {
 	return ksNew (
-		9,
+		10,
 		keyNew (SPEC_BASE_KEY "/emptydirs", KEY_META, "description", "remove empty directories", KEY_META, "opt", "d", KEY_META,
 			"opt/arg", "none", KEY_META, "opt/long", "dir", KEY_END),
 		keyNew (SPEC_BASE_KEY "/force", KEY_META, "description", "ignore nonexistent files and arguments, never prompt", KEY_META,

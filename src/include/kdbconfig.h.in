@@ -47,11 +47,11 @@
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
 
 /** To be used if you want the currently
-  * build-in default storage, whatever it is. */
+  * built-in default storage, whatever it is. */
 #define KDB_STORAGE              "storage"
 
 /** To be used if you want the currently
-  * build-in default resolver, whatever it is. */
+  * built-in default resolver, whatever it is. */
 #define KDB_RESOLVER             "resolver"
 
 #define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
@@ -69,6 +69,7 @@
 
 /** Declares non sanitize for asan. */
 #define ELEKTRA_NO_SANITIZE_INTEGER	@ELEKTRA_NO_SANITIZE_INTEGER@
+#define ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW	@ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW@
 #define ELEKTRA_NO_SANITIZE_UNDEFINED	@ELEKTRA_NO_SANITIZE_UNDEFINED@
 
 /** Where plugins are installed */
@@ -199,9 +200,6 @@
 #ifndef HAVE_HSEARCHR
 #cmakedefine HAVE_HSEARCHR
 #endif
-
-
-
 
 
 

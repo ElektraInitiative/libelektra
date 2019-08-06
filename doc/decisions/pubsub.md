@@ -36,6 +36,6 @@ used for the Web UI).
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes

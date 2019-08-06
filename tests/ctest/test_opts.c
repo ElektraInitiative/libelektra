@@ -230,7 +230,7 @@ static void test_flag (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_UNKNOWN_OPTION), "Unknown short option: -s"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag (with arg, combined) should have failed");
 	clearValues (ks);
 
@@ -243,7 +243,7 @@ static void test_flag (void)
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple=long"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --apple"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot have an argument: --apple"),
 		    "long flag (with arg, combined) should have failed");
 	clearValues (ks);
 
@@ -267,7 +267,7 @@ static void test_flag_value (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_UNKNOWN_OPTION), "Unknown short option: -s"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag with value (with arg, combined) should have failed");
 	clearValues (ks);
 
@@ -280,7 +280,7 @@ static void test_flag_value (void)
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple=long"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --apple"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot have an argument: --apple"),
 		    "long flag with value (with arg, combined) should have failed");
 	clearValues (ks);
 
@@ -303,7 +303,7 @@ static void test_optional (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_UNKNOWN_OPTION), "Unknown short option: -s"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag (with arg, combined) should have failed");
 	clearValues (ks);
 
@@ -339,7 +339,7 @@ static void test_optional_value (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_UNKNOWN_OPTION), "Unknown short option: -s"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag with value (with arg, combined) should have failed");
 	clearValues (ks);
 
@@ -492,7 +492,7 @@ static void test_illegal_spec (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none' or 'optional'. "
 				"(key: " SPEC_BASE_KEY "/apple)"),
 		    "flagvalue should be illegal");
@@ -507,7 +507,7 @@ static void test_illegal_spec (void)
 	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), keyWithOpt (SPEC_BASE_KEY "/banana", 'a', NULL, NULL), KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The option '-a' has already been specified for the key '" SPEC_BASE_KEY
 				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
 		    "duplicate short option should be illegal");
@@ -523,7 +523,7 @@ static void test_illegal_spec (void)
 		    KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The option '--apple' has already been specified for the key '" SPEC_BASE_KEY
 				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
 		    "duplicate long option should be illegal");
@@ -540,7 +540,7 @@ static void test_illegal_spec (void)
 	ks = ksNew (1, k, KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"'args=remaining' can only be set on array keys (basename = '#'). Offending key: " SPEC_BASE_KEY "/apple"),
 		    "non-array remaining args should be illegal");
 	clearValues (ks);
@@ -556,8 +556,8 @@ static void test_illegal_spec (void)
 	ks = ksNew (1, k, KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
-				"'-' cannot be used as a short option. It would collide with the "
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"Character '-' cannot be used as a short option. It would collide with the "
 				"special string '--'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'-' option should be illegal");
 	clearValues (ks);
@@ -573,8 +573,8 @@ static void test_illegal_spec (void)
 	ks = ksNew (1, k, KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
-				"'h' cannot be used as a short option. It would collide with the "
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"Character 'h' cannot be used as a short option. It would collide with the "
 				"help option '-h'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'h' option should be illegal");
 	clearValues (ks);
@@ -590,8 +590,8 @@ static void test_illegal_spec (void)
 	ks = ksNew (1, k, KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
-				"'help' cannot be used as a long option. It would collide with the "
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"Option 'help' cannot be used as a long option. It would collide with the "
 				"help option '--help'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'help' option should be illegal");
 	clearValues (ks);
@@ -609,12 +609,12 @@ static void test_illegal_use (void)
 
 	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort0", "-ashort1"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot be repeated: -a"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot be repeated: -a"),
 		    "repeat should be illegal (short)");
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple", "long0", "--apple", "long1"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot be repeated: --apple"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot be repeated: --apple"),
 		    "repeat should be illegal (long)");
 	clearValues (ks);
 
@@ -627,12 +627,12 @@ static void test_illegal_use (void)
 	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "Missing argument for short option: -a"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Missing argument for short option: -a"),
 		    "missing argument (short) failed");
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "Missing argument for long option: --apple"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Missing argument for long option: --apple"),
 		    "missing argument (long) failed");
 	clearValues (ks);
 
@@ -649,7 +649,7 @@ static void test_illegal_use (void)
 	ks = ksNew (1, k, KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple=short"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --apple"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot have an argument: --apple"),
 		    "argument should not be allowed");
 	clearValues (ks);
 
@@ -671,23 +671,23 @@ static void test_illegal_use (void)
 	ks = ksNew (1, k, KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a", "short0", "-ashort1", "-a", "short2", "-b", "short3", "-bshort4"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The option '-b' cannot be used, because another option has already been used for the key "
-				"'" SPEC_BASE_KEY "/apple/#'."),
+				"'" SPEC_BASE_KEY "/apple/#'"),
 		    "multiple repeated short options should have failed");
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple", "long0", "--apple=long1", "--apple", "long2", "--banana=long3", "--banana", "long4"),
 			NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The option '--banana' cannot be used, because another option has already been used for the key "
-				"'" SPEC_BASE_KEY "/apple/#'."),
+				"'" SPEC_BASE_KEY "/apple/#'"),
 		    "multiple repeated long options should have failed");
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2", "BANANA=env3" ENV_SEP "env4"));
 	succeed_if (
-		checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
+		checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 			    "The environment variable 'BANANA' cannot be used, because another variable has already been used for the key "
 			    "'" SPEC_BASE_KEY "/apple/#'."),
 		"multiple repeated env-vars should have failed");
@@ -718,12 +718,12 @@ static void test_help (void)
 	keyDel (errorKey);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-hshort"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_UNKNOWN_OPTION), "Unknown short option: -s"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short help with value (with arg, combined) should have failed");
 	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--help=long"), NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --help"),
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot have an argument: --help"),
 		    "long help with value (with arg, combined) should have failed");
 	clearValues (ks);
 

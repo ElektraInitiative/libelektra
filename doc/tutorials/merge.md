@@ -78,25 +78,31 @@ the Key, the right side is its string value.
 
 We start with the base KeySet, `system/base`:
 
-    key1=1
-    key2=2
-    key3=3
-    key4=4
-    key5=5
+```ini
+key1=1
+key2=2
+key3=3
+key4=4
+key5=5
+```
 
 Here is our KeySet, `system/ours`:
 
-    key1=apple
-    key2=2
-    key3=3
-    key5=fish
+```ini
+key1=apple
+key2=2
+key3=3
+key5=fish
+```
 
 Here is their KeySet, `system/theirs`:
 
-    key1=1
-    key2=pie
-    key4=banana
-    key5=5
+```ini
+key1=1
+key2=pie
+key4=banana
+key5=5
+```
 
 Now we will examine the result KeySet with the different strategies.
 
@@ -117,9 +123,11 @@ kdb merge -s ours system/ours system/theirs system/base system/result
 
 The result KeySet, system/result will be:
 
-    key1=apple
-    key2=pie
-    key5=fish
+```ini
+key1=apple
+key2=pie
+key5=fish
+```
 
 Because the conflict of `key4` (it was deleted in `ours` but changed in `theirs`) is solved by using our copy
 thus deleting the key.
@@ -132,10 +140,12 @@ kdb merge -s theirs system/ours system/theirs system/base system/result
 
 The result KeySet, `system/result` will be:
 
-    key1=apple
-    key2=pie
-    key4=banana
-    key5=fish
+```ini
+key1=apple
+key2=pie
+key4=banana
+key5=fish
+```
 
 Here, the conflict of `key4` is solved by using their copy, thus `key4=banana`.
 
@@ -147,9 +157,11 @@ kdb merge -s base system/ours system/theirs system/base system/result
 
 The result KeySet, `system/result` will be:
 
-    key1=apple
-    key2=pie
-    key4=4
-    key5=5
+```ini
+key1=apple
+key2=pie
+key4=4
+key5=5
+```
 
 The same conflict is found in `key4`, but here we use the `base` version to solve it so `key4=4`.

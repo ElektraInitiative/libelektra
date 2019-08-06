@@ -11,18 +11,28 @@ if (ENABLE_ASAN)
 	return ()
 endif (ENABLE_ASAN)
 
-check_binding_included ("swig_python2" IS_INCLUDED SUBDIRECTORY "swig/python2")
+check_binding_included ("swig_python2"
+			IS_INCLUDED
+			SUBDIRECTORY
+			"swig/python2")
 if (IS_INCLUDED)
 	add_subdirectory (python2)
 endif ()
 
-check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
+check_binding_included ("swig_python"
+			IS_INCLUDED
+			SUBDIRECTORY
+			"swig/python")
 if (IS_INCLUDED)
 	add_subdirectory (python)
 else ()
 
 	# TODO rename swig_python3 to swig_python
-	check_binding_included ("swig_python3" IS_INCLUDED SUBDIRECTORY "swig/python" SILENT)
+	check_binding_included ("swig_python3"
+				IS_INCLUDED
+				SUBDIRECTORY
+				"swig/python"
+				SILENT)
 
 	# remove sometime in the future
 	if (IS_INCLUDED)
@@ -31,12 +41,18 @@ else ()
 	endif ()
 endif ()
 
-check_binding_included ("swig_lua" IS_INCLUDED SUBDIRECTORY "swig/lua")
+check_binding_included ("swig_lua"
+			IS_INCLUDED
+			SUBDIRECTORY
+			"swig/lua")
 if (IS_INCLUDED)
 	add_subdirectory (lua)
 endif ()
 
-check_binding_included ("swig_ruby" IS_INCLUDED SUBDIRECTORY "swig/ruby")
+check_binding_included ("swig_ruby"
+			IS_INCLUDED
+			SUBDIRECTORY
+			"swig/ruby")
 if (IS_INCLUDED)
 	add_subdirectory (ruby)
 endif ()

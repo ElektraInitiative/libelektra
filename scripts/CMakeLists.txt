@@ -36,36 +36,27 @@ generate_manpage (kdb-find-tools FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 install (PROGRAMS update-snippet-repository DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
 install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-file (READ "kdb_zsh_completion"
-	   CONTENT_OF_ZSH_COMP)
-file (READ "kdb-bash-completion"
-	   CONTENT_OF_BASH_COMP)
+file (READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
+file (READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/install-sh-completion.in" "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_all.in" "${CMAKE_CURRENT_BINARY_DIR}/run_all" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_memcheck.in" "${CMAKE_CURRENT_BINARY_DIR}/run_memcheck" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nokdbtests.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nokdbtests" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_checkshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_checkshell" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nocheckshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nocheckshell" @ONLY)
+configure_file ("benchmark-yaml.in" "benchmark-yaml" @ONLY)
 
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 if (INSTALL_SYSTEM_FILES)
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set (BASH_COMPLETION_COMPLETIONSDIR
-		     "/usr/local/share/bash-completion/completions"
-		     CACHE INTERNAL
-			   "bash completions dir")
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/local/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
 	else ()
-		set (BASH_COMPLETION_COMPLETIONSDIR
-		     "/usr/share/bash-completion/completions"
-		     CACHE INTERNAL
-			   "bash completions dir")
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
 	endif ()
 	find_package (bash-completion QUIET)
 	unset (bash-completion_DIR CACHE)
@@ -132,6 +123,10 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/backup.in" "${CMAKE_CURRENT_BINARY_
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/backup" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS stash DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS restore DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+install (PROGRAMS reset DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS reset-elektra DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 add_custom_target (source-package
 		   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"

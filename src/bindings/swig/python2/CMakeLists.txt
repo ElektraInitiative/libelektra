@@ -13,12 +13,10 @@ if (APPLE AND PYTHON2INTERP_FOUND)
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set (PYTHON2_LIBRARY
 	     ${PYTHON2_LIBRARY_PREFIX}/lib/libpython${PYTHON2_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
-	     CACHE FILEPATH
-		   "Filepath of the Python 2 library")
+	     CACHE FILEPATH "Filepath of the Python 2 library")
 	set (PYTHON2_INCLUDE_DIR
 	     ${PYTHON2_LIBRARY_PREFIX}/include/python${PYTHON2_VERSION_MAJOR}.${PYTHON2_VERSION_MINOR}
-	     CACHE PATH
-		   "Path to the Python 2 include directory")
+	     CACHE PATH "Path to the Python 2 include directory")
 endif (APPLE AND PYTHON2INTERP_FOUND)
 
 find_package (Python2Libs ${PYTHON2_VERSION} QUIET)
@@ -38,8 +36,7 @@ else ()
 	add_binding (swig_python2)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
-		message (WARNING "Python bindings might crash if generated with SWIG 2."
-				 " Please upgrade to SWIG 3 or later.")
+		message (WARNING "Python bindings might crash if generated with SWIG 2." " Please upgrade to SWIG 3 or later.")
 	endif ()
 
 	add_headers (HDR_FILES)
@@ -52,17 +49,30 @@ else ()
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
 	set (CMAKE_SWIG_FLAGS "-O")
 
-	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
-	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-extranative")
+	set_source_files_properties (kdb.i
+				     PROPERTIES
+				     CPLUSPLUS
+				     ON)
+	set_source_files_properties (kdb.i
+				     PROPERTIES
+				     SWIG_FLAGS
+				     "-extranative")
 	if (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_module (swig-python2 python kdb.i)
 	else (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_library (swig-python2 LANGUAGE python SOURCES kdb.i TYPE MODULE)
+		swig_add_library (swig-python2
+				  LANGUAGE
+				  python
+				  SOURCES
+				  kdb.i
+				  TYPE
+				  MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
-	swig_link_libraries (swig-python2 elektra-core elektra-kdb ${PYTHON2_LIBRARIES})
-	set_target_properties (_swig-python2
-			       PROPERTIES OUTPUT_NAME
-					  _kdb)
+	swig_link_libraries (swig-python2
+			     elektra-core
+			     elektra-kdb
+			     ${PYTHON2_LIBRARIES})
+	set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
 
 	# Unfortunately compiling the generated code produces warnings.
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -72,7 +82,10 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
 	endif ()
 
-	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
+	set_source_files_properties (${swig_generated_file_fullname}
+				     PROPERTIES
+				     COMPILE_FLAGS
+				     "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	set (PYTHON_GET_MODULES_DIR_COMMAND
 	     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")

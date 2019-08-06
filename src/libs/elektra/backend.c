@@ -80,7 +80,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!foundMountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF (14, errorKey, "Could not find mountpoint within root %s", keyName (root));
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not find mountpoint within root %s", keyName (root));
 		return -1;
 	}
 
@@ -91,8 +91,8 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!backend->mountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF (14, errorKey, "Could not create mountpoint with name %s and value %s", keyString (foundMountpoint),
-				      keyBaseName (root));
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not create mountpoint with name '%s' and value %s",
+						   keyString (foundMountpoint), keyBaseName (root));
 		return -1;
 	}
 
@@ -201,7 +201,9 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for error failed");
 					failure = 1;
 				}
 			}
@@ -210,7 +212,9 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for get failed");
 					failure = 1;
 				}
 			}
@@ -224,14 +228,21 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global,
 							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for set failed");
 					failure = 1;
 				}
 			}
 			else
 			{
 				// no one cares about that config
-				if (!failure) ELEKTRA_ADD_WARNING (16, errorKey, keyBaseName (cur));
+				if (!failure)
+					ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (
+						errorKey,
+						"Found garbage within the backend configuration. found: %s but expected config, "
+						"setplugins, getplugins, errorplugins or mountpoint",
+						keyBaseName (cur));
 				ksDel (cut);
 			}
 		}
@@ -438,6 +449,8 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		return -1;
 	}
 
+	ELEKTRA_LOG_DEBUG ("spec: %zd", backend->specsize);
+	ELEKTRA_LOG_DEBUG ("dir: %zd", backend->dirsize);
 	ELEKTRA_LOG_DEBUG ("user: %zd", backend->usersize);
 	ELEKTRA_LOG_DEBUG ("system: %zd", backend->systemsize);
 

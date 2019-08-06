@@ -35,11 +35,13 @@ If you used [simplespeclang](/src/plugins/simplespeclang) and want to
 only allow keys that are present in the specification, you can add `required`
 to the `spec-mount` command:
 
-    % kdb mount test.spec spec/test simplespeclang
-    % cat << HERE > `kdb file spec/test`
-    plugins required
-    enum allowed = something
-    HERE
-    % kdb spec-mount /test
-    % kdb set /test/allowed something    # is specified, works!
-    % kdb set /test/rejected  something  # fails because rejected not required
+```sh
+kdb mount test.spec spec/test simplespeclang
+cat << HERE > `kdb file spec/test`
+plugins required
+enum allowed = something
+HERE
+kdb spec-mount /test
+kdb set /test/allowed something    # is specified, works!
+kdb set /test/rejected  something  # fails because rejected not required
+```

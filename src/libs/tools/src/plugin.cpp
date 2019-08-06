@@ -207,12 +207,17 @@ void Plugin::check (vector<string> & warnings)
 		pp.push_back ("rollback");
 		pp.push_back ("postrollback");
 		pp.push_back ("getresolver");
+		pp.push_back ("pregetcache");
 		pp.push_back ("pregetstorage");
 		pp.push_back ("getstorage");
+		pp.push_back ("procgetstorage");
 		pp.push_back ("postgetstorage");
+		pp.push_back ("postgetcache");
 		pp.push_back ("setresolver");
+		pp.push_back ("postgetcleanup");
 		pp.push_back ("presetstorage");
 		pp.push_back ("setstorage");
+		pp.push_back ("presetcleanup");
 		pp.push_back ("precommit");
 		pp.push_back ("commit");
 		pp.push_back ("postcommit");

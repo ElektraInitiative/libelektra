@@ -70,6 +70,13 @@ public:
 	 *         one character before the current position in the input
 	 */
 	std::string getText (size_t const start) const;
+
+	/**
+	 * @brief This method retrieves the whole text represented by this input object.
+	 *
+	 * @return A UTF-8 encoded string that stores the data of the input
+	 */
+	std::string toString () const;
 };
 
 #endif // ELEKTRA_PLUGIN_YAMBI_INPUT_HPP

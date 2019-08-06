@@ -14,20 +14,24 @@ One task is the resolving of the filenames for user and system (hence its name).
 
 Use following command to see to which file is resolved to:
 
-    kdb file <Elektra path you are interested in>
+```sh
+kdb file <Elektra path you are interested in>
+```
 
 See the constants of this plugin for further information, they are:
 
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_SYSTEM
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_USER
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_HOME
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SYSTEM
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_USER
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SPEC
-    system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_DIR
+```
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_SYSTEM
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_USER
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_HOME
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SYSTEM
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_USER
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SPEC
+system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_DIR
+```
 
-The build-in resolving considers following cases:
+The built-in resolving considers following cases:
 
 - for spec with absolute path: path
 - for spec with relative path: `KDB_DB_SPEC` + path

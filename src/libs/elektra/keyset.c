@@ -164,7 +164,7 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * Objects created with ksNew() must be destroyed with ksDel().
  *
- * You can use a arbitrary long list of parameters to preload the keyset
+ * You can use an arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
  *
@@ -358,7 +358,7 @@ KeySet * ksDeepDup (const KeySet * source)
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
  * But in some situations you need to copy a
- * keyset to a existing keyset, for that this function
+ * keyset to an existing keyset, for that this function
  * exists.
  *
  * @note You can also use it to clear a keyset when you pass
@@ -649,7 +649,7 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * If the name is equal then:
  *
  * - No owner will be found to be smaller then every other owner.
- * If both don't have a owner, 0 is returned.
+ * If both don't have an owner, 0 is returned.
  *
  * @note the owner will only be used if the names are equal.
  *
@@ -756,7 +756,7 @@ ssize_t ksGetSize (const KeySet * ks)
 /**
  * @internal
  *
- * Binary search in a keyset that informs where key should be inserted.
+ * Binary search in a KeySet that informs where a key should be inserted.
  *
  * @code
 
@@ -783,10 +783,21 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 	ssize_t left = 0;
 	ssize_t right = ks->size;
 	--right;
-	register int cmpresult = 1;
+	register int cmpresult;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
 
+	if (ks->size == 0)
+	{
+		return -1;
+	}
+
+	cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[right]);
+	if (cmpresult > 0)
+	{
+		return -((ssize_t) ks->size) - 1;
+	}
+	cmpresult = 1;
 
 	while (1)
 	{
@@ -1024,6 +1035,74 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 }
 
 /**
+ * Searches for the start and end indicies corresponding to the given cutpoint.
+ *
+ * @see ksCut() for explanation of cutpoints
+ *
+ * @param ks       the keyset to cut
+ * @param cutpoint the cutpoint
+ * @param from     we will store the start index here
+ * @param to       we will store the end index here
+ *
+ * @retval -1 if the cutpoint wasn't found
+ * @retval  1 if the cursor has to updated to match ks->current
+ * @retval  0 otherwise
+ */
+static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * from, size_t * to)
+{
+	int set_cursor = 0;
+
+	// search the cutpoint
+	ssize_t search = ksSearchInternal (ks, cutpoint);
+	size_t it = search < 0 ? -search - 1 : search;
+
+	// we found nothing
+	if (it == ks->size) return -1;
+
+	// we found the cutpoint
+	size_t found = it;
+
+	// search the end of the keyset to cut
+	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
+	{
+		++it;
+	}
+
+	// correct cursor if cursor is in cut keyset
+	if (ks->current >= found && ks->current < it)
+	{
+		if (found == 0)
+		{
+			ksRewind (ks);
+		}
+		else
+		{
+			ks->current = found - 1;
+			set_cursor = 1;
+		}
+	}
+
+	// correct the cursor for the keys after the cut keyset
+	if (ks->current >= it)
+	{
+		if (it >= ks->size)
+		{
+			ksRewind (ks);
+		}
+		else
+		{
+			ks->current = found + ks->current - it;
+			set_cursor = 1;
+		}
+	}
+
+	*from = it;
+	*to = found;
+
+	return set_cursor;
+}
+
+/**
  * Cuts out a keyset at the cutpoint.
  *
  * Searches for the cutpoint inside the KeySet ks.
@@ -1083,6 +1162,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 {
 	KeySet * returned = 0;
+	KeySet * ret = 0; // for cascading version
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
@@ -1105,7 +1185,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
 		char newname[length * 2];
 
-		KeySet * ret = ksNew (0, KS_END);
+		ret = ksNew (0, KS_END);
 
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
@@ -1170,54 +1250,12 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		key->key = name;
 		key->keySize = size;
 		key->keyUSize = usize;
-		return ret;
+
+		// now look for cascading keys
 	}
 
-	// search the cutpoint
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 0)
-	{
-		++it;
-	}
-
-	// we found nothing
-	if (it == ks->size) return ksNew (0, KS_END);
-
-	// we found the cutpoint
-	found = it;
-
-	// search the end of the keyset to cut
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
-	{
-		++it;
-	}
-
-	// correct cursor if cursor is in cut keyset
-	if (ks->current >= found && ks->current < it)
-	{
-		if (found == 0)
-		{
-			ksRewind (ks);
-		}
-		else
-		{
-			ks->current = found - 1;
-			set_cursor = 1;
-		}
-	}
-
-	// correct the cursor for the keys after the cut keyset
-	if (ks->current >= it)
-	{
-		if (it >= ks->size)
-		{
-			ksRewind (ks);
-		}
-		else
-		{
-			ks->current = found + ks->current - it;
-			set_cursor = 1;
-		}
-	}
+	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);
+	if (set_cursor < 0) return ret ? ret : ksNew (0, KS_END);
 
 	newsize = it - found;
 
@@ -1229,6 +1267,12 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	ksCopyInternal (ks, found, it);
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
+
+	if (ret)
+	{
+		ksAppend (returned, ret);
+		ksDel (ret);
+	}
 
 	return returned;
 }
@@ -1689,6 +1733,9 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 
 /**
  * @internal
+ *
+ * @param specKey must have a cascading key name
+ *
  * @brief Helper for elektraLookupBySpec
  */
 static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
@@ -2157,7 +2204,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 					set_bit (options, KDB_O_BINSEARCH);
 				}
 				// resolve flag
-				clear_bit (ks->flags, KS_FLAG_NAME_CHANGE);
+				clear_bit (ks->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
@@ -2620,7 +2667,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2640,7 +2687,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		}
 		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
 		ks->array = new;
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
@@ -2728,7 +2775,7 @@ int ksClose (KeySet * ks)
 	{
 		elektraFree (ks->array);
 	}
-	clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 
 	ks->array = 0;
 	ks->alloc = 0;

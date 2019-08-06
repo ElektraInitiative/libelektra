@@ -12,13 +12,10 @@ macro (do_example source)
 
 	target_link_elektratools (${source})
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)
 
-file (GLOB TESTS
-	   *.cpp)
+file (GLOB TESTS *.cpp)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_example (${name})

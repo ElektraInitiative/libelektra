@@ -33,7 +33,7 @@ The decision is to use [API blueprints](https://apiblueprint.org/) together with
 
 ## Rationale
 
-**API Blueprints** together with some (free) tools for it support all given constraints and also all soft-constraints. It also fits the current documentation style of the Elektra project the most.
+**API Blueprints** together with some (free) tools for it support all given constraints and also all soft-constraints. It also fits the current documentation style of the Elektra Initiative the most.
 
 Additionally to modeling data apart from the API, **API Blueprints** also supports schemata modeling, which is more precise than giving examples for requests and responses.
 

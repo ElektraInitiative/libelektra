@@ -4,10 +4,9 @@ set +ex
 
 git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip --no-name > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz
 
-hashsum ()
-{
+hashsum() {
 	printf "name: "
-	basename `ls $1`
+	basename $(ls $1)
 
 	printf "size: "
 	ls -l $1 | awk '{print $5;}'

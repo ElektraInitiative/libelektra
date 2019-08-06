@@ -1,4 +1,4 @@
-# Use Case: Register user account
+# Use Case: Register User Account
 
 ## Summary
 

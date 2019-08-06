@@ -18,17 +18,19 @@ The format does not have significant spaces. The advantage of TCL style
 lists is that also arbitrary metadata can be embedded in a natural and
 distinguish-able style. It looks like:
 
+```
+{
     {
+        key=val
         {
-            key=val
-            {
-                metakey = b
-            }
-            {
-                comment = huhu
-            }
+            metakey = b
+        }
+        {
+            comment = huhu
         }
     }
+}
+```
 
 ## Basic Usage
 

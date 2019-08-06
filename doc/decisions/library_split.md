@@ -40,7 +40,7 @@ are all linked together to libelektra.org.
 - maybe to bindings?
 - plugins and applications need changes in order to profit from less dependencies
 
-## Related decisions
+## Related Decisions
 
 - none
 

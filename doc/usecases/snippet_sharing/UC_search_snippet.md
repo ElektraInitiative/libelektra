@@ -1,4 +1,4 @@
-# Use Case: Search for configuration snippets
+# Use Case: Search for Configuration Snippets
 
 ## Summary
 

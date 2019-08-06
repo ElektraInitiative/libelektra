@@ -29,6 +29,14 @@ using antlr4::ParseCancellationException;
 
 // -- Class --------------------------------------------------------------------
 
+namespace yanlr
+{
+
+using antlr4::CharStream;
+using antlr4::CommonToken;
+using antlr4::Token;
+using antlr4::TokenFactory;
+
 /**
  * @brief This constructor creates a new YAML lexer for the given input.
  *
@@ -79,7 +87,7 @@ unique_ptr<Token> YAMLLexer::nextToken ()
 	// If `fetchTokens` was unable to retrieve a token (error condition), we emit `EOF`.
 	if (tokens.size () <= 0)
 	{
-		tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "end of file"));
+		tokens.push_back (commonToken (Token::EOF, getPosition (), input->index (), "end of file"));
 	}
 	unique_ptr<CommonToken> token = move (tokens.front ());
 	tokens.pop_front ();
@@ -156,11 +164,33 @@ Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
 // ===========
 
 /**
+ * @brief This constructor creates a position from the given arguments.
+ *
+ * @param byteIndex This number specifies the byte offset of the position relative to the start of the input.
+ * @param lineNumber This number specifies the line number of the position.
+ * @param columnOffset This number specifies the offset to the beginning of the line.
+ */
+YAMLLexer::Position::Position (size_t byteIndex, size_t lineNumber, size_t columnOffset)
+: index{ byteIndex }, line{ lineNumber }, column{ columnOffset }
+{
+}
+
+/**
+ * @brief This function returns the current position of the lexer inside the input.
+ *
+ * @return A position containing the current byte index, line number and column offset.
+ */
+YAMLLexer::Position YAMLLexer::getPosition ()
+{
+	return Position (input->index (), line, column);
+}
+
+/**
  * @brief This function creates a new token with the specified parameters.
  *
  * @param type This parameter specifies the type of the token this function
  *             should create.
- * @param start This number specifies the start index of the returned token
+ * @param start This variable specifies the start position of the returned token
  *              inside the character stream `input`.
  * @param stop This number specifies the stop index of the returned token
  *             inside the character stream `input`.
@@ -168,14 +198,14 @@ Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
  *
  * @return A token with the specified parameters
  */
-unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_t stop, string text = "")
+unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, Position const & start, size_t stop, string text = "")
 #if defined(__clang__)
 	// Ignore warning about call on pointer of wrong object type (`CommonTokenFactory` instead of `TokenFactory<CommonToken>`)
 	// This should not be a problem, since `CommonTokenFactory` inherits from `TokenFactory<CommonToken>`.
 	__attribute__ ((no_sanitize ("undefined")))
 #endif
 {
-	return factory->create (source, type, text, Token::DEFAULT_CHANNEL, start, stop, line, column);
+	return factory->create (source, type, text, Token::DEFAULT_CHANNEL, start.index, stop, start.line, start.column);
 }
 
 /**
@@ -313,7 +343,8 @@ void YAMLLexer::scanToNextToken ()
  */
 bool YAMLLexer::isValue (size_t const offset) const
 {
-	return (input->LA (offset) == ':') && (input->LA (offset + 1) == '\n' || input->LA (offset + 1) == ' ');
+	return (input->LA (offset) == ':') &&
+	       (input->LA (offset + 1) == '\n' || input->LA (offset + 1) == ' ' || input->LA (offset + 1) == Token::EOF);
 }
 
 /**
@@ -349,8 +380,7 @@ bool YAMLLexer::isComment (size_t const offset) const
 void YAMLLexer::addSimpleKeyCandidate ()
 {
 	size_t position = tokens.size () + tokensEmitted;
-	size_t index = input->index ();
-	simpleKey = make_pair (commonToken (KEY, index, index, "KEY"), position);
+	simpleKey = make_pair (commonToken (KEY, getPosition (), input->index (), "KEY"), position);
 }
 
 /**
@@ -367,8 +397,9 @@ void YAMLLexer::addBlockEnd (size_t const lineIndex)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
 		size_t index = input->index ();
-		tokens.push_back (levels.top ().type == Level::Type::MAP ? commonToken (MAP_END, index, index, "end of map") :
-									   commonToken (SEQUENCE_END, index, index, "end of sequence"));
+		tokens.push_back (levels.top ().type == Level::Type::MAP ?
+					  commonToken (MAP_END, getPosition (), index, "end of map") :
+					  commonToken (SEQUENCE_END, getPosition (), index, "end of sequence"));
 		levels.pop ();
 	}
 }
@@ -380,7 +411,7 @@ void YAMLLexer::addBlockEnd (size_t const lineIndex)
 void YAMLLexer::scanStart ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan start");
-	auto start = commonToken (STREAM_START, input->index (), input->index (), "start of document");
+	auto start = commonToken (STREAM_START, getPosition (), input->index (), "start of document");
 	tokens.push_back (move (start));
 }
 
@@ -390,8 +421,9 @@ void YAMLLexer::scanStart ()
 void YAMLLexer::scanEnd ()
 {
 	addBlockEnd (0);
-	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "end of document"));
-	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "end of file"));
+	auto start = getPosition ();
+	tokens.push_back (commonToken (STREAM_END, start, input->index (), "end of document"));
+	tokens.push_back (commonToken (Token::EOF, start, input->index (), "end of file"));
 	done = true;
 }
 
@@ -403,7 +435,7 @@ void YAMLLexer::scanSingleQuotedScalar ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan single quoted scalar");
 
-	size_t start = input->index ();
+	auto start = getPosition ();
 	// A single quoted scalar can start a simple key
 	addSimpleKeyCandidate ();
 
@@ -423,7 +455,7 @@ void YAMLLexer::scanSingleQuotedScalar ()
 void YAMLLexer::scanDoubleQuotedScalar ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan double quoted scalar");
-	size_t start = input->index ();
+	auto start = getPosition ();
 
 	// A double quoted scalar can start a simple key
 	addSimpleKeyCandidate ();
@@ -443,7 +475,7 @@ void YAMLLexer::scanDoubleQuotedScalar ()
 void YAMLLexer::scanPlainScalar ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan plain scalar");
-	size_t start = input->index ();
+	auto start = getPosition ();
 	// A plain scalar can start a simple key
 	addSimpleKeyCandidate ();
 
@@ -464,18 +496,18 @@ void YAMLLexer::scanPlainScalar ()
 }
 
 /**
- * @brief This method counts the number of non space characters that can be part
+ * @brief This method counts the number of non-space characters that can be part
  *        of a plain scalar at position `offset`.
  *
  * @param offset This parameter specifies an offset to the current input
- *               position, where this function searches for non space
+ *               position, where this function searches for non-space
  *               characters.
  *
  * @return The number of non-space characters at the input position `offset`
  */
 size_t YAMLLexer::countPlainNonSpace (size_t const offset) const
 {
-	ELEKTRA_LOG_DEBUG ("Scan non space characters");
+	ELEKTRA_LOG_DEBUG ("Scan non-space characters");
 	string const stop = " \n";
 
 	size_t lookahead = offset + 1;
@@ -513,7 +545,7 @@ size_t YAMLLexer::countPlainSpace () const
 void YAMLLexer::scanComment ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan comment");
-	size_t start = input->index ();
+	auto start = getPosition ();
 
 	while (input->LA (1) != '\n' && input->LA (1) != Token::EOF)
 	{
@@ -529,17 +561,19 @@ void YAMLLexer::scanComment ()
 void YAMLLexer::scanValue ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan value");
-	tokens.push_back (commonToken (VALUE, input->index (), input->index () + 1));
-	forward (2);
+	tokens.push_back (commonToken (VALUE, getPosition (), input->index () + 1));
+	forward (input->LA (1) == Token::EOF ? 1 : 2);
 	if (simpleKey.first == nullptr)
 	{
 		throw ParseCancellationException ("Unable to locate key for value");
 	}
-	size_t start = simpleKey.first->getCharPositionInLine ();
-	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
-	if (addIndentation (start, Level::Type::MAP))
+	auto const start =
+		Position{ simpleKey.first->getStartIndex (), simpleKey.first->getLine (), simpleKey.first->getCharPositionInLine () };
+	size_t offset = simpleKey.second - tokensEmitted;
+	tokens.insert (tokens.begin () + offset, move (simpleKey.first));
+	if (addIndentation (start.column, Level::Type::MAP))
 	{
-		tokens.push_front (commonToken (MAP_START, start, column, "start of map"));
+		tokens.insert (tokens.begin () + offset, commonToken (MAP_START, start, start.index, "start of map"));
 	}
 }
 
@@ -552,8 +586,9 @@ void YAMLLexer::scanElement ()
 	ELEKTRA_LOG_DEBUG ("Scan element");
 	if (addIndentation (column, Level::Type::SEQUENCE))
 	{
-		tokens.push_back (commonToken (SEQUENCE_START, input->index (), column, "start of sequence"));
+		tokens.push_back (commonToken (SEQUENCE_START, getPosition (), column, "start of sequence"));
 	}
-	tokens.push_back (commonToken (ELEMENT, input->index (), input->index () + 1));
+	tokens.push_back (commonToken (ELEMENT, getPosition (), input->index () + 1));
 	forward (2);
+}
 }

@@ -1,16 +1,14 @@
 # kdb(1) -- key database access tools
 
-Elektra provides a universal and secure framework to store configuration
-parameters in a global, hierarchical key database.
+## INTRODUCTION
 
-The core is a small library implemented in C. The plugin-based framework fulfills many
-configuration-related tasks to avoid any unnecessary code duplication
-across applications while it still allows the core to stay minimal without any
-external dependency. Elektra abstracts from cross-platform-related issues
-with a consistent API, and allows applications to be aware of other
-applications' configurations, leveraging easy application integration.
+**kdb** provides access to the global key database of Elektra via
+command-line.
 
-## OVERVIEW
+Concepts are in man page section 7 and are prefixed with `elektra-`.
+If you do not yet know about Elektra,
+you should start reading [elektra-introduction(7)](elektra-introduction.md).
+CLI Tools of Elektra are in man page section 1 and are prefixed with `kdb-`.
 
 The man pages can also be viewed online at:
 https://doc.libelektra.org/api/current/html/pages.html
@@ -18,15 +16,38 @@ https://doc.libelektra.org/api/current/html/pages.html
 And the page you are currently reading at:
 https://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
 
-Concepts are in man page section 7 and are prefixed with `elektra-`.
-You should start reading [elektra-introduction(7)](elektra-introduction.md).
+## OVERVIEW
 
-Tools are in man page section 1 and are prefixed with `kdb-`.
-You should start reading [kdb-introduction(1)](kdb-introduction.md).
+In this manual we give an overview of the tool suite
+`kdb`. It is part of Elektra’s tools. The tool suite `kdb` consists
+of individual commands. Most commands are independent and some commands
+are sharing an executable. Some commands are written as external scripts.
+
+The included commands can be listed via:<br>
+`kdb`
+
+External commands can be listed via:<br>
+`kdb list-tools`
+
+Only a few commands are enough for daily use.
+We can retrieve a key by:<br>
+`kdb get user/key`
+
+We store a key permanently with a value given by:<br>
+`kdb set user/key value`
+
+We list all available keys arranged below a key by:<br>
+`kdb ls user/key`
 
 Documentation of plugins is available using the
-[kdb-info(1)](kdb-info.md) tool.
-Run `kdb list` for a list of plugins.
+[kdb-info(1)](kdb-info.md) tool:<br>
+`kdb info`
+
+Run `kdb list` for a list of plugins:<br>
+`kdb list`
+
+Each of these commands has its own man page for
+further details.
 
 ## BASIC OPTIONS
 
@@ -48,9 +69,11 @@ Every core-tool has the following options:
 Most tools have the following options:
 
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Also shows Configfile and Mountpoint in case of an error/warning
 - `-q`, `--quiet`:
   Suppress non-error messages.
+- `-d`, `--debug`:
+  Shows the line at which an error happened in case an error or warning is issued
 
 ## KDB
 
@@ -59,7 +82,7 @@ within the KDB (key database):
 
 1. /sw/kdb/**profile**/ (for legacy configuration)
 2. /sw/elektra/kdb/#0/%/ (for empty profile, `%` in Elektra
-   is used to represent a emptiness)
+   is used to represent emptiness)
 3. /sw/elektra/kdb/#0/**profile**/ (for current profile,
    if no `-p` or `--profile` is given, `current` will be
    used)
@@ -140,13 +163,17 @@ The string until the first `/` will be considered as bookmark.
 
 For example, if you set the bookmark kdb:
 
-    kdb set user/sw/elektra/kdb/#0/current/bookmarks
-    kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+```sh
+kdb set user/sw/elektra/kdb/#0/current/bookmarks
+kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+```
 
 You are able to use:
 
-    kdb ls +kdb/bookmarks
-    kdb get +kdb/format
+```sh
+kdb ls +kdb/bookmarks
+kdb get +kdb/format
+```
 
 ## RETURN VALUES
 
@@ -174,5 +201,5 @@ You are able to use:
 ## SEE ALSO
 
 - [elektra-introduction(7)](elektra-introduction.md)
-- [kdb-introduction(1)](kdb-introduction.md)
+- [kdb(1)](kdb.md)
 - Get a [big picture about Elektra](/doc/BIGPICTURE.md)

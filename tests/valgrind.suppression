@@ -248,17 +248,6 @@
    obj:*/ld-2.19.so
 }
 {
-   semlock plugin sem_open
-   Memcheck:Param
-   write(buf)
-   fun:*
-   fun:sem_open
-   ...
-   fun:elektraSemlockOpen
-   fun:elektraPluginOpen
-   ...
-}
-{
    rest-backend loadEnabledFormats jni plugin
    Memcheck:Leak
    match-leak-kinds: all

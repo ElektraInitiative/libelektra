@@ -56,7 +56,11 @@ unset (_lua_library_names)
 
 # this is a function only to have all the variables inside go away automatically
 function (set_lua_version_vars)
-	set (LUA_VERSIONS5 5.3 5.2 5.1 5.0)
+	set (LUA_VERSIONS5
+	     5.3
+	     5.2
+	     5.1
+	     5.0)
 
 	if (Lua_FIND_VERSION_EXACT)
 		if (Lua_FIND_VERSION_COUNT GREATER 1)
@@ -68,10 +72,12 @@ function (set_lua_version_vars)
 			if (Lua_FIND_VERSION_COUNT EQUAL 1)
 				set (lua_append_versions ${LUA_VERSIONS5})
 			else ()
-				foreach (subver IN LISTS LUA_VERSIONS5)
+				foreach (subver
+					 IN
+					 LISTS
+					 LUA_VERSIONS5)
 					if (NOT subver VERSION_LESS ${Lua_FIND_VERSION})
-						list (APPEND lua_append_versions
-							     ${subver})
+						list (APPEND lua_append_versions ${subver})
 					endif ()
 				endforeach ()
 			endif ()
@@ -80,7 +86,10 @@ function (set_lua_version_vars)
 		set (lua_append_versions ${LUA_VERSIONS5}) # once there is a different major version supported this should become a loop
 	endif ()
 
-	foreach (ver IN LISTS lua_append_versions)
+	foreach (ver
+		 IN
+		 LISTS
+		 lua_append_versions)
 		string (REGEX MATCH
 			      "^([0-9]+)\\.([0-9]+)$"
 			      _ver
@@ -115,8 +124,7 @@ function (verify_lua_executable_version)
 	execute_process (COMMAND ${LUA_EXECUTABLE} "-v"
 			 OUTPUT_VARIABLE LUABIN_VERSION_STRING
 			 ERROR_VARIABLE LUABIN_VERSION_STRING
-			 OUTPUT_STRIP_TRAILING_WHITESPACE
-			 ERROR_STRIP_TRAILING_WHITESPACE)
+			 OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE)
 
 	if (LUA_EXECUTABLE AND (NOT LUABIN_VERSION_STRING STREQUAL ""))
 
@@ -144,13 +152,9 @@ function (verify_lua_executable_version)
 	endif (LUA_EXECUTABLE AND (NOT LUABIN_VERSION_STRING STREQUAL ""))
 endfunction (verify_lua_executable_version)
 
-find_path (LUA_INCLUDE_DIR
-	   lua.h
-	   HINTS ENV
-		 LUA_DIR
-	   PATH_SUFFIXES ${_lua_include_subdirs}
-			 include/lua
-			 include
+find_path (LUA_INCLUDE_DIR lua.h
+	   HINTS ENV LUA_DIR
+	   PATH_SUFFIXES ${_lua_include_subdirs} include/lua include
 	   PATHS ~/Library/Frameworks
 		 /Library/Frameworks
 		 /sw # Fink
@@ -160,10 +164,8 @@ find_path (LUA_INCLUDE_DIR
 unset (_lua_include_subdirs)
 
 find_library (LUA_LIBRARY
-	      NAMES ${_lua_library_names}
-		    lua
-	      HINTS ENV
-		    LUA_DIR
+	      NAMES ${_lua_library_names} lua
+	      HINTS ENV LUA_DIR
 	      PATH_SUFFIXES lib
 	      PATHS ~/Library/Frameworks
 		    /Library/Frameworks
@@ -175,11 +177,7 @@ unset (_lua_library_names)
 
 if (LUA_LIBRARY)
 
-	if (UNIX
-	    AND NOT
-		APPLE
-	    AND NOT
-		BEOS) # include the math library for Unix
+	if (UNIX AND NOT APPLE AND NOT BEOS) # include the math library for Unix
 		find_library (LUA_MATH_LIBRARY m)
 		set (LUA_LIBRARIES "${LUA_LIBRARY};${LUA_MATH_LIBRARY}")
 
@@ -188,14 +186,11 @@ if (LUA_LIBRARY)
 	endif ()
 endif ()
 
-if (LUA_INCLUDE_DIR
-    AND EXISTS
-	"${LUA_INCLUDE_DIR}/lua.h")
+if (LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
 
 	# At least 5.[012] have different ways to express the version so all of them need to be tested. Lua 5.2 defines LUA_VERSION and
 	# LUA_RELEASE as joined by the C preprocessor, so avoid those.
-	file (STRINGS "${LUA_INCLUDE_DIR}/lua.h"
-		      lua_version_strings
+	file (STRINGS "${LUA_INCLUDE_DIR}/lua.h" lua_version_strings
 	      REGEX "^#define[ \t]+LUA_(RELEASE[ \t]+\"Lua [0-9]|VERSION([ \t]+\"Lua [0-9]|_[MR])).*")
 
 	string (REGEX
@@ -254,6 +249,11 @@ verify_lua_executable_version () # LUA_VERSION_STRING available from here
 include (FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set LUA_FOUND to TRUE if all listed variables are TRUE
-find_package_handle_standard_args (Lua REQUIRED_VARS LUA_LIBRARIES LUA_INCLUDE_DIR VERSION_VAR LUA_VERSION_STRING)
+find_package_handle_standard_args (Lua
+				   REQUIRED_VARS
+				   LUA_LIBRARIES
+				   LUA_INCLUDE_DIR
+				   VERSION_VAR
+				   LUA_VERSION_STRING)
 
 mark_as_advanced (LUA_INCLUDE_DIR LUA_LIBRARY LUA_MATH_LIBRARY)

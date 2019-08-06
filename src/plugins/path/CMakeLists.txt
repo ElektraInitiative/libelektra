@@ -40,6 +40,5 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (path
-	    SOURCES path.h
-		    path.c
+	    SOURCES path.h path.c
 	    TEST_README)

@@ -139,7 +139,7 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	if (ret < 0)
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, strerror (errno));
 		fclose (fp);
 		return -1;
 	}

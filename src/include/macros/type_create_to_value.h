@@ -1,3 +1,5 @@
+// lgtm [cpp/missing-header-guard]
+
 /**
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

@@ -5,7 +5,7 @@
 - infos/provides = storage/mmapstorage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest preview concept
+- infos/status = maintained unittest shelltest specific
 - infos/metadata =
 - infos/description = high performance storage using memory mapped files
 
@@ -23,11 +23,15 @@ Therefore, the files must not be edited by hand. Files written by mmapstorage ar
 
 Mount mmapstorage using `kdb mount`:
 
-    sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
+```sh
+sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
+```
 
 Unmount mmapstorage using `kdb umount`:
 
-    sudo kdb umount user/tests/mmapstorage
+```sh
+sudo kdb umount user/tests/mmapstorage
+```
 
 ## Compiling
 
@@ -84,3 +88,8 @@ sudo kdb umount user/tests/mmapstorage
 ## Limitations
 
 Mapped files shall not be altered, otherwise the behavior is undefined.
+
+The `mmap()` system call only supports regular files and so does the mmapstorage
+plugin with one notable exception: The plugin detects when it is called with the
+files `/dev/stdin` and `/dev/stdout` and makes an internal copy. This makes the
+plugin compatible with `kdb import` and `kdb export`.

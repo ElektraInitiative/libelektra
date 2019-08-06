@@ -38,6 +38,11 @@ public:
 
 	virtual const char * what () const throw ()
 	{
+		return whatWithArguments (true, true);
+	}
+
+	virtual const char * whatWithArguments (bool printVerbose, bool printDebug) const throw ()
+	{
 		if (!m_key)
 		{
 			return "Generic KDBException";
@@ -53,17 +58,39 @@ public:
 			// used either from namespace kdb or global
 			// namespace.
 			std::stringstream ss;
-			printWarnings (ss, m_key);
-			printError (ss, m_key);
+			printWarnings (ss, m_key, printVerbose, printDebug);
+			printError (ss, m_key, printVerbose, printDebug);
 			m_str = ss.str ();
 		}
 		return m_str.c_str ();
 	}
 
-private:
+protected:
 	Key m_key;
+
+private:
 	mutable std::string m_str;
 };
+
+class ContractException : public KDBException
+{
+public:
+	explicit ContractException (Key key) : KDBException (key)
+	{
+	}
+
+	~ContractException () noexcept override = default;
+
+	const char * what () const noexcept override
+	{
+		if (!m_key)
+		{
+			return "Malformed contract";
+		}
+		return KDBException::what ();
+	}
+};
+
 } // namespace kdb
 
 #endif

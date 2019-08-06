@@ -1,4 +1,4 @@
-# Why should I use Elektra?
+# Why Should I use Elektra?
 
 The three main points relevant for most people are:
 
@@ -16,10 +16,10 @@ The three main points relevant for most people are:
    - use the value of other configuration values (symbolic links)
    - calculate the values based on other configuration values
    - [validate configuration files](/doc/tutorials/validation.md)
-   - [generate code based on specifications](/src/tools/gen)
+   - [generate code based on specifications](../src/tools/pythongen)
    - [and much more](/src/plugins/README.md)
 
-## Why not other solutions?
+## Why not Other Solutions?
 
 Some might ask: isn't this solution overkill?
 Why not tackle these three issues separately?
@@ -53,7 +53,7 @@ three issues, and then users can easily **externally** manipulate
 file and getting feedback of the **semantics** (you might get validation
 errors and you can receive the value exactly as the application will get it).
 
-## Who should use Elektra?
+## Who Should use Elektra?
 
 Elektra targets different kinds of users:
 
@@ -116,8 +116,7 @@ Features that rarely can be found elsewhere (at least in this combination):
 
 ## Further Readings
 
-- Continue reading [big picture](BIGPICTURE.md)
+- Continue reading [the vision](VISION.md).
 - Look into [the glossary](/doc/help/elektra-glossary.md).
-- For more about tools go on reading [here](/doc/help/kdb.md).
 - Another viewpoint [why to use Elektra is described here](/doc/help/elektra-introduction.md)
 - [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra

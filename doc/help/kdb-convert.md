@@ -31,7 +31,9 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 

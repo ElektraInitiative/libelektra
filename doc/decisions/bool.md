@@ -27,8 +27,10 @@ Use, depending on what your default should be:
 
 Example:
 
-    if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
-    if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
+```c
+if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
+if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
+```
 
 In the documentation it should mention that a bool is used
 and which is the default.
@@ -54,7 +56,7 @@ The convenience plugin should transform (it might be combined with a plugin that
 
 - change code with different behavior
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

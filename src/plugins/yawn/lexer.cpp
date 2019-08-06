@@ -39,7 +39,7 @@ namespace
  *
  * @return A token storing the data provided as arguments to this function
  */
-unique_ptr<Token> createToken (int const type, Location const & location, string const & text)
+unique_ptr<Token> createToken (int const type, Location const & location, string const & text = "")
 {
 	return unique_ptr<Token>{ new Token{ type, location, text } };
 }
@@ -67,7 +67,7 @@ namespace yawn
  */
 bool Lexer::isValue (size_t const offset) const
 {
-	return (input.LA (offset) == ':') && (input.LA (offset + 1) == '\n' || input.LA (offset + 1) == ' ');
+	return (input.LA (offset) == ':') && (input.LA (offset + 1) == '\n' || input.LA (offset + 1) == ' ' || !input.LA (offset + 1));
 }
 
 /**
@@ -138,8 +138,8 @@ void Lexer::addBlockEnd (size_t const lineIndex)
 	while (lineIndex < levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
-		tokens.push_back (levels.top ().type == Level::Type::MAP ? createToken (Token::MAP_END, location, "MAP END") :
-									   createToken (Token::SEQUENCE_END, location, "SEQUENCE END"));
+		tokens.push_back (levels.top ().type == Level::Type::MAP ? createToken (Token::MAP_END, location) :
+									   createToken (Token::SEQUENCE_END, location));
 		levels.pop ();
 	}
 }
@@ -175,7 +175,7 @@ bool Lexer::addIndentation (size_t const lineIndex, Level::Type type)
 void Lexer::addSimpleKeyCandidate ()
 {
 	size_t position = tokens.size () + emitted.size ();
-	simpleKey = make_pair (createToken (Token::KEY, location, "KEY"), position);
+	simpleKey = make_pair (createToken (Token::KEY, location), position);
 }
 
 /**
@@ -273,7 +273,7 @@ void Lexer::fetchTokens ()
 void Lexer::scanStart ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan start token");
-	tokens.push_back (createToken (Token::STREAM_START, location, "STREAM START"));
+	tokens.push_back (createToken (Token::STREAM_START, location));
 }
 
 /**
@@ -284,8 +284,8 @@ void Lexer::scanEnd ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan end token");
 	addBlockEnd (0);
-	tokens.push_back (createToken (Token::STREAM_END, location, "STREAM END"));
-	tokens.push_back (createToken (-1, location, "EOF"));
+	tokens.push_back (createToken (Token::STREAM_END, location));
+	tokens.push_back (createToken (-1, location));
 	done = true;
 }
 
@@ -425,20 +425,20 @@ void Lexer::scanValue ()
 	ELEKTRA_LOG_DEBUG ("Scan value");
 	forward (1);
 	tokens.push_back (createToken (Token::VALUE, location, input.getText (input.index () - 1)));
-	forward (1);
+	if (input.LA (1)) forward (1);
 	if (simpleKey.first == nullptr)
 	{
 		throw runtime_error ("Unable to locate key for value");
 	}
 	size_t offset = simpleKey.second - emitted.size ();
 	auto key = move (simpleKey.first);
-	auto start = key->getStart ();
+	auto mapStartLocation = key->getLocation ();
 	tokens.insert (tokens.begin () + offset, move (key));
 	simpleKey.first = nullptr; // Remove key candidate
-	if (addIndentation (start.column, Level::Type::MAP))
+	if (addIndentation (mapStartLocation.begin.column, Level::Type::MAP))
 	{
-		location.begin = start;
-		tokens.insert (tokens.begin () + offset, createToken (Token::MAP_START, location, "MAPPING START"));
+		mapStartLocation.end = mapStartLocation.begin;
+		tokens.insert (tokens.begin () + offset, createToken (Token::MAP_START, mapStartLocation));
 	}
 }
 
@@ -451,7 +451,7 @@ void Lexer::scanElement ()
 	ELEKTRA_LOG_DEBUG ("Scan element");
 	if (addIndentation (location.end.column, Level::Type::SEQUENCE))
 	{
-		tokens.push_back (createToken (Token::SEQUENCE_START, location, "SEQUENCE START"));
+		tokens.push_back (createToken (Token::SEQUENCE_START, location));
 	}
 	forward (1);
 	tokens.push_back (createToken (Token::ELEMENT, location, input.getText (input.index () - 1)));
@@ -493,18 +493,16 @@ int Lexer::nextToken (void ** attribute)
 		fetchTokens ();
 	}
 #ifdef HAVE_LOGGER
-	string output;
-	output += "\n\nTokens:\n";
+	ELEKTRA_LOG_DEBUG ("Tokens:");
 	for (auto const & token : tokens)
 	{
-		output += "\t" + to_string (*token) + "\n";
+		ELEKTRA_LOG_DEBUG ("\t%s\n", to_string (*token).c_str ());
 	}
-	ELEKTRA_LOG_DEBUG ("%s", output.c_str ());
 #endif
 
 	if (tokens.size () <= 0)
 	{
-		tokens.push_front (createToken (-1, location, "EOF"));
+		tokens.push_front (createToken (-1, location));
 	}
 
 	emitted.push_back (move (tokens.front ()));
@@ -512,6 +510,16 @@ int Lexer::nextToken (void ** attribute)
 
 	*attribute = &emitted.back ();
 	return emitted.back ()->getType ();
+}
+
+/**
+ * @brief This method returns the current input of the lexer
+ *
+ * @return A UTF-8 encoded string version of the parser input
+ */
+string Lexer::getText ()
+{
+	return input.toString ();
 }
 
 } // namespace yawn

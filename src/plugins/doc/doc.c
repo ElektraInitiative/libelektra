@@ -85,13 +85,12 @@ static void doAction (Key * k ELEKTRA_UNUSED)
 number:60
 description:Invalid Line encountered
 severity:error
-ingroup:plugin
 macro:NOEOF
 module:simpleini
 //! [plugin errors spec]
 
 //! [plugin errors usage]
-ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
+ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "Not at the end of file");
 //! [plugin errors usage]
 */
 
@@ -128,7 +127,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 		Key * read = keyNew (keyName (parentKey), KEY_END);
 		if (keyAddName (read, key) == -1)
 		{
-			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, key);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", key);
 			keyDel (read);
 			continue;
 		}
@@ -140,7 +139,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 	if (feof (fp) == 0)
 	{
 		fclose (fp);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid line encountered: not at the end of file");
 		return -1;
 	}
 

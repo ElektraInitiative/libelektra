@@ -127,7 +127,7 @@ static void test_search (void)
 	succeed_if (result == 15, "insertpos wrong");
 
 	/*
-	   Generation of new Testcases:
+	   Generation of new test cases:
 	for (int i=0; i< 16; ++i)
 	{
 		s = a->array[i];

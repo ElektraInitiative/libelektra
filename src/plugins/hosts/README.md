@@ -41,24 +41,34 @@ _not_ preserved.
 
 Mount the plugin:
 
-    $ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
+```bash
+sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
+```
 
 Print out all known hosts and their aliases:
 
-    $ kdb ls system/hosts
+```bash
+kdb ls system/hosts
+```
 
 Get IP address of ipv4 host "localhost":
 
-    $ kdb get system/hosts/ipv4/localhost
+```bash
+kdb get system/hosts/ipv4/localhost
+```
 
 Check if a comment is belonging to host "localhost":
 
-    $ kdb lsmeta system/hosts/ipv4/localhost
+```bash
+kdb lsmeta system/hosts/ipv4/localhost
+```
 
 Try to change the host "localhost", should fail because it is not an
 IPv4 address:
 
-    $ sudo kdb set system/hosts/ipv4/localhost ::1
+```bash
+sudo kdb set system/hosts/ipv4/localhost ::1
+```
 
 ```sh
 # Backup-and-Restore:/tests/hosts
@@ -80,13 +90,13 @@ kdb get /tests/hosts/ipv4/localhost
 kdb get /tests/hosts/ipv6/localhost
 #> ::1
 
-# Should both fail with error 51 and return 5
+# Should both fail with error 04200 and return 5
 kdb set /tests/hosts/ipv4/localhost ::1
 # RET:5
-# ERROR:51
+# ERROR:C03200
 kdb set /tests/hosts/ipv6/localhost 127.0.0.1
 # RET:5
-# ERROR:51
+# ERROR:C03200
 
 # cleanup
 kdb rm -r /tests/hosts

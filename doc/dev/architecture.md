@@ -24,7 +24,7 @@ Further important concepts are explained in:
 
 ## API
 
-The aim of the Elektra Project is to design and implement a powerful
+The aim of the Elektra Initiative is to design and implement a powerful
 API for configuration. When the project started, we assumed that this
 goal was easy to achieve, but dealing with the semantics turned out to
 be a difficult problem. For the implementation, an ambitious solution
@@ -180,33 +180,35 @@ within the mount point configuration provided by the administrator.
 
 Example for a mount point configuration:
 
-    system/elektra/mountpoints
-    system/elektra/mountpoints/fstab
-    system/elektra/mountpoints/fstab/config
-    system/elektra/mountpoints/fstab/config/path=fstab
-    system/elektra/mountpoints/fstab/config/struct=list FStab
-    system/elektra/mountpoints/fstab/config/struct/FStab
-    system/elektra/mountpoints/fstab/config/struct/FStab/device
-    system/elektra/mountpoints/fstab/config/struct/FStab/dumpfreq
-    system/elektra/mountpoints/fstab/config/struct/FStab/mpoint
-    system/elektra/mountpoints/fstab/config/struct/FStab/options
-    system/elektra/mountpoints/fstab/config/struct/FStab/passno
-    system/elektra/mountpoints/fstab/config/struct/FStab/type
-    system/elektra/mountpoints/fstab/errorplugins
-    system/elektra/mountpoints/fstab/errorplugins/#5#resolver#resolver#
-    system/elektra/mountpoints/fstab/getplugins
-    system/elektra/mountpoints/fstab/getplugins/#0#resolver
-    system/elektra/mountpoints/fstab/getplugins/#5#fstab#fstab#
-    system/elektra/mountpoints/fstab/mountpoint /fstab
-    system/elektra/mountpoints/fstab/setplugins
-    system/elektra/mountpoints/fstab/setplugins/#0#resolver
-    system/elektra/mountpoints/fstab/setplugins/#1#struct#struct#
-    system/elektra/mountpoints/fstab/setplugins/#2#type#type#
-    system/elektra/mountpoints/fstab/setplugins/#3#path#path#
-    system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config
-    system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow=proc tmpfs none
-    system/elektra/mountpoints/fstab/setplugins/#5#fstab
-    system/elektra/mountpoints/fstab/setplugins/#7#resolver
+```
+system/elektra/mountpoints
+system/elektra/mountpoints/fstab
+system/elektra/mountpoints/fstab/config
+system/elektra/mountpoints/fstab/config/path=fstab
+system/elektra/mountpoints/fstab/config/struct=list FStab
+system/elektra/mountpoints/fstab/config/struct/FStab
+system/elektra/mountpoints/fstab/config/struct/FStab/device
+system/elektra/mountpoints/fstab/config/struct/FStab/dumpfreq
+system/elektra/mountpoints/fstab/config/struct/FStab/mpoint
+system/elektra/mountpoints/fstab/config/struct/FStab/options
+system/elektra/mountpoints/fstab/config/struct/FStab/passno
+system/elektra/mountpoints/fstab/config/struct/FStab/type
+system/elektra/mountpoints/fstab/errorplugins
+system/elektra/mountpoints/fstab/errorplugins/#5#resolver#resolver#
+system/elektra/mountpoints/fstab/getplugins
+system/elektra/mountpoints/fstab/getplugins/#0#resolver
+system/elektra/mountpoints/fstab/getplugins/#5#fstab#fstab#
+system/elektra/mountpoints/fstab/mountpoint /fstab
+system/elektra/mountpoints/fstab/setplugins
+system/elektra/mountpoints/fstab/setplugins/#0#resolver
+system/elektra/mountpoints/fstab/setplugins/#1#struct#struct#
+system/elektra/mountpoints/fstab/setplugins/#2#type#type#
+system/elektra/mountpoints/fstab/setplugins/#3#path#path#
+system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config
+system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow=proc tmpfs none
+system/elektra/mountpoints/fstab/setplugins/#5#fstab
+system/elektra/mountpoints/fstab/setplugins/#7#resolver
+```
 
 Let us look at the subkeys below the key
 `system/elektra/mountpoints/fstab`:
@@ -217,14 +219,18 @@ Let us look at the subkeys below the key
   this configuration directly below `system` in its
   **plugin configuration**. For example,
 
-      system/elektra/mountpoints/fstab/config/struct/FStab/mpoint
+  ```
+  system/elektra/mountpoints/fstab/config/struct/FStab/mpoint
+  ```
 
-will be translated to
+  will be translated to
 
-    system/struct/FStab/mpoint
+  ```
+  system/struct/FStab/mpoint
+  ```
 
-and inserted into the plugin configuration for all plugins in the
-`fstab` backend.
+  and inserted into the plugin configuration for all plugins in the
+  `fstab` backend.
 
 It is the place where configuration can be provided for every plugin
 of a backend. The contract checker deduces this configuration to
@@ -269,11 +275,15 @@ Each of the plugins inside the three lists may have the subkey
 configuration. This configuration appears in the user's configuration
 of the plugin. Configuration is renamed properly. For example, the key
 
-    system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow
+```
+system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow
+```
 
 is transformed to
 
-    user/path/allow
+```
+user/path/allow
+```
 
 and appears in the plugin configuration of the path plugin
 inside the fstab backend.

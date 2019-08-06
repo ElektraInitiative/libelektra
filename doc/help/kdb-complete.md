@@ -36,11 +36,11 @@ originates from.
   Specify the maximum depth of completion suggestions (unlimited by default, 1
   to show only the next level), inclusive and relative to the name to complete.
 - `-v`, `--verbose`:
-  Give a more detailed output, showing the number of child nodes and the depth level.
+  Give a more detailed output, showing the number of child nodes and the depth level. Prints additional information in case of errors/warnings.
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-d`, `--debug`:
-  Give debug information.
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 

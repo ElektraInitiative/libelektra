@@ -120,7 +120,7 @@ static void ioEvBindingTimerCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_timer 
 
 /**
  * Calls the associated callback.
- * Called by libuv whenever a idle operation can perform its operations.
+ * Called by libuv whenever an idle operation can perform its operations.
  *
  * @param handle libuv idle handle
  */

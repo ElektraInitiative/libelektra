@@ -39,7 +39,7 @@ When mounting a backend with the hexnumber plugin, a few settings can be configu
    NOTE: be careful when using this option, as any configuration value that contains invalid non-hexadecimal characters
    (i.e. does not match `0[xX][0-9A-Fa-f]+`) will result in an error.
 
-   ```
+   ```bash
    sudo kdb mount test.ecf /examples/hexnumber/forced hexnumber /force=1
    ```
 
@@ -47,7 +47,7 @@ When mounting a backend with the hexnumber plugin, a few settings can be configu
    possible hexadecimal conversion as an Elektra array. All keys with a type from `/accept/types/#`, or one of the default types, will
    be converted to hexadecimal if the value starts with `0x` (or `0X`).
 
-   ```
+   ```bash
    sudo kdb mount test.ecf /examples/hexnumber/customtypes hexnumber /accept/types/#0=customint /accept/types/#1=othercustomint
    ```
 

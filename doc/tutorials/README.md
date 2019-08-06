@@ -22,11 +22,13 @@ provides.
 - [Integration of your Application](application-integration.md)
 - [Hello, Elektra](hello-elektra.md)
 - [Plugins Introduction](plugins.md)
+- [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)
 - [Java Bindings](java-kdb.md)
+- [Java Plugins](java-plugins.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
-- [Code Generation](/src/tools/gen/README.md)
+- [Code Generation](../../src/tools/pythongen/README.md)
 - [Notifications](notifications.md)
 - [High Level API](/src/libs/highlevel/README.md)
 - [Command Line Options](command-line-options.md)
@@ -43,6 +45,7 @@ already somehow integrated with Elektra.
 - [Intercept File System](/src/bindings/intercept/fs/README.md)
 - [Merge Configuration](merge.md)
 - [Validate Configuration](validation.md)
+- [Encrypt Configurations](crypto.md)
 
 ## Package Maintainers
 
@@ -50,6 +53,17 @@ For these tutorials we assume that you maintain
 upstream packages.
 
 - [Merge Configuration Files](elektra-merge-integration.md)
+
+## Elektra Developers
+
+These tutorials are for persons that want to contribute to
+Elektra:
+
+- [Contributing with CLion](contributing-clion.md)
+- [Benchmarking](benchmarking.md)
+- [Profiling](profiling.md)
+- [Run all Tests with Docker](run_all_tests_with_docker.md)
+- [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
 
 ## Installation Manuals
 

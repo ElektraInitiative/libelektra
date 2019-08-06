@@ -13,7 +13,10 @@ find_path (ANTLR4CPP_INCLUDE_DIR NAMES antlr4-runtime.h PATH_SUFFIXES antlr4-run
 find_library (ANTLR4CPP_LIBRARY NAMES antlr4-runtime)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (ANTLR4CPP DEFAULT_MSG ANTLR4CPP_LIBRARY ANTLR4CPP_INCLUDE_DIR)
+find_package_handle_standard_args (ANTLR4CPP
+				   DEFAULT_MSG
+				   ANTLR4CPP_LIBRARY
+				   ANTLR4CPP_INCLUDE_DIR)
 
 mark_as_advanced (ANTLR4CPP_INCLUDE_DIR ANTLR4CPP_LIBRARY)
 

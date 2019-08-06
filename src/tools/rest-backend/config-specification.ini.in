@@ -4,7 +4,7 @@ mountpoint = rest-backend.ini
 [@config_default_profile@/backend/api/description/raw]
 check/type = string
 description = A link to the blueprint describing the API.
-default = https://git.libelektra.org/tree/master/doc/api_blueprints/snippet-sharing.apib
+default = https://master.libelektra.org/doc/api_blueprints/snippet-sharing.apib
 
 [@config_default_profile@/backend/api/description/html]
 check/type = string
@@ -176,7 +176,7 @@ default = 65536
 
 [@config_default_profile@/cppcms/security/file_in_memory_limit]
 check/type = long
-description = When files are uploaded for efficiency, small files are generally stored in memory and big ones are saved in files. This is the limit on the file size to be stored in memory in bytes. 
+description = When files are uploaded for efficiency, small files are generally stored in memory and big ones are saved in files. This is the limit on the file size to be stored in memory in bytes.
 default = 128
 
 [@config_default_profile@/cppcms/security/uploads_path]

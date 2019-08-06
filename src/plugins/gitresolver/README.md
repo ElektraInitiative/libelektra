@@ -27,4 +27,7 @@ Currently it only works inside existing git repositories.
 
 ## Examples
 
-    kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
+```sh
+kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell \
+    execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
+```

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-IMPORT" "1" "August 2018" "" ""
+.TH "KDB\-IMPORT" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-import\fR \- Import an existing configuration into the key database
@@ -55,7 +55,11 @@ Specify which strategy should be used to resolve conflicts\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .TP
 \fB\-c\fR, \fB\-\-plugins\-config\fR

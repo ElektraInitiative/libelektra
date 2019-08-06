@@ -27,11 +27,11 @@ This command will list the name of all keys below a given path.
   Specify the maximum path depth of the output (unlimited by default, 1
   to show only the next level), inclusive and relative to the name to list.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-0`, `--null`:
   Use binary 0 termination.
-- `-d`, `--debug`:
-  Give debug information.
 
 ## EXAMPLES
 

@@ -134,8 +134,10 @@ All Elektra Domains directly hosted by us are now only served by `https`.
 The former `http` sites are only redirects to `https`. This might cause
 trouble with some software, e.g., update `/etc/apt/sources.list`:
 
-    deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
-    deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
+deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
 
 The build Server is no longer reachable at port 8080, but now only directly at
 [https://build.libelektra.org/](https://build.libelektra.org/).

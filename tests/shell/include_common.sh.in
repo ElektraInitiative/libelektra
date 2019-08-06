@@ -32,8 +32,6 @@ USER_ROOT="user/tests/script"
 SYSTEM_ROOT="system/tests/script"
 SPEC_ROOT="spec/tests/script"
 
-ROOTS="$USER_ROOT $SYSTEM_ROOT"
-
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]; then
 	DATADIR="@CMAKE_INSTALL_PREFIX@/@TARGET_TEST_DATA_FOLDER@/shell"
@@ -44,12 +42,12 @@ fi
 USER="$(id -un)"
 GROUP="$(id -gn)"
 
-SYSTEM_FOLDER=@KDB_DB_SYSTEM@
-SPEC_FOLDER=@KDB_DB_SPEC@
+SYSTEM_FOLDER="@KDB_DB_SYSTEM@"
+SPEC_FOLDER="@KDB_DB_SPEC@"
 if [ -n "$HOME" ]; then
-	USER_FOLDER=$HOME/@KDB_DB_USER@
+	USER_FOLDER="$HOME/@KDB_DB_USER@"
 else
-	USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+	USER_FOLDER="@KDB_DB_HOME@/$USER/@KDB_DB_USER@"
 fi
 PLUGINS=$(echo "@ADDED_PLUGINS@" | tr ';' ' ')
 ADDED_PLUGINS_WITHOUT_ONLY_SHARED=$(echo "@ADDED_PLUGINS_WITHOUT_ONLY_SHARED@" | tr ';' ' ')
@@ -60,11 +58,17 @@ DATE=$(date "+%b %d %H:%M")
 KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
 KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
-KDB_GETENV=$(kdb elektrify-getenv getenv KDB 2> /dev/null)
+if [ -z "${KDB}" ]; then
+	KDB=$({ command -v kdb || command -v kdb-full || command -v kdb-static; } | sed -nE 's/.*(kdb-?[a-z]*)$/\1/p')
+fi
+
+KDB_GETENV=$("$KDB" elektrify-getenv getenv KDB 2> /dev/null)
 
 if [ "${KDB_GETENV}" ]; then
 	KDB=${KDB_GETENV}
 fi
+
+export KDB_EXEC_PATH="@CMAKE_BINARY_DIR@/bin"
 
 # ensure ruby plugin finds Ruby bindings without installation
 # (require both the src and the build dir)
@@ -131,7 +135,7 @@ SO_VERSION="@SO_VERSION@"
 check_version() {
 	echo "Check if script tests the correct version"
 
-	if [ "x$(kdb elektrify-getenv getenv CHECK_VERSION 2> /dev/null)" = "xNO" ]; then
+	if [ "x$("$KDB" elektrify-getenv getenv CHECK_VERSION 2> /dev/null)" = "xNO" ]; then
 		return 0
 	fi
 
@@ -150,11 +154,11 @@ check_version() {
 }
 
 check_remaining_files() {
-	USER_REMAINING="$(find $USER_FOLDER -maxdepth 1 -name $1'*' -print -quit)"
+	USER_REMAINING="$(find "$USER_FOLDER" -maxdepth 1 -name $1'*' -print -quit)"
 	test -z "$USER_REMAINING"
 	exit_if_fail "files $USER_REMAINING in $USER_FOLDER would be removed during tests, so test is aborted"
 
-	SYSTEM_REMAINING="$(find $SYSTEM_FOLDER -maxdepth 1 -name $1'*' -print -quit)"
+	SYSTEM_REMAINING="$(find "$SYSTEM_FOLDER" -maxdepth 1 -name $1'*' -print -quit)"
 	test -z "$SYSTEM_REMAINING"
 	exit_if_fail "files $SYSTEM_REMAINING in $SYSTEM_FOLDER would be removed during tests, so test is aborted"
 }
@@ -370,11 +374,7 @@ export_check() {
 	fi
 }
 
-#
-#
-#
-#
-#
+### END OF INCLUDE FILE ###
 #
 #
 #

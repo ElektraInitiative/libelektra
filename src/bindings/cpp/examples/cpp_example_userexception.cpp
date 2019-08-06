@@ -121,9 +121,29 @@ public:
 		return "User Exception: KDB";
 	}
 
-private:
+protected:
 	Key m_key;
 };
+
+class ContractException : public KDBException
+{
+public:
+	explicit ContractException (Key key) : KDBException (key)
+	{
+	}
+
+	~ContractException () noexcept override = default;
+
+	const char * what () const noexcept override
+	{
+		if (!m_key)
+		{
+			return "Malformed contract";
+		}
+		return KDBException::what ();
+	}
+};
+
 } // namespace kdb
 
 

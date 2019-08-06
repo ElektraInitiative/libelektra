@@ -97,15 +97,8 @@ static Key * elektraKeyMalloc (void)
  *
  * @snippet keyNew.c Simple
  *
- * If you want the key object to contain a name, value, comment and other
- * meta info read on.
- *
- * @note When you already have a key with similar properties its
- * easier to keyDup() the key.
- *
- * You can call it in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as #keyswitch_t values, and
- * tell keyNew() which Key attribute comes next.
+ * keyNew() allocates memory for a key object and keyDel() cleans
+ * everything up.
  *
  * We can also give an empty key name and a KEY_END tag with the same
  * effect as before:
@@ -116,10 +109,15 @@ static Key * elektraKeyMalloc (void)
  *
  * @snippet keyNew.c With Name
  *
- * So, keyNew() allocates memory for a key object and keyDel() cleans
- * everything up.
+ * If you want the key object to contain a name, value, comment and other
+ * meta info read on.
  *
- * keyNew() processes the given argument list even further.
+ * @note When you already have a key with similar properties its
+ * easier to keyDup() the key.
+ *
+ * You can call keyNew() in many different ways depending on the attribute tags you
+ * pass as parameters. Tags are represented as #keyswitch_t values, and
+ * tell keyNew() which Key attribute comes next.
  * The Key attribute tags are the following:
  * - ::KEY_VALUE \n
  *   Next parameter is a pointer to the value that will be used.
@@ -156,7 +154,7 @@ static Key * elektraKeyMalloc (void)
  * @deprecated The flags below are deprecated and ::KEY_META should be
  * preferred. They remain some time, however, for compatibility:
  * - ::KEY_DIR \n
- *   Define that the key is a directory rather than a ordinary key.
+ *   Define that the key is a directory rather than an ordinary key.
  *   This means its executable bits in its mode are set.
  *   But even without this option the key can have subkeys.
  *   See keySetDir().

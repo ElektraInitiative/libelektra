@@ -1,13 +1,16 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-PLUGINS" "7" "February 2019" "" ""
+.TH "ELEKTRA\-PLUGINS" "7" "August 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
 .
 .P
 Multiple plugins can be mounted into the key database \fI/doc/help/elektra\-glossary\.md\fR (KDB)\. On every access to the key data base they are executed and thus can change the functionality and behavior\.
+.
+.P
+Unlike Elektra\'s core the plugins have all kinds of dependencies\. It is the responsibility of the plugin to find and check its dependencies using CMake\. If a dependency cannot be found, the plugin will automatically disable itself\.
 .
 .SH "Description"
 Elektra has a wide range of different plugins\. The plugin folders should contain a README\.md with further information\. (Or follow links below\.) The plugins are:
@@ -56,7 +59,7 @@ For mount plugin(s) use kdb\-mount(1) \fI/doc/help/kdb\-mount\.md\fR\.
 .
 .IP "" 0
 .
-.SH "See also"
+.SH "See Also"
 For an easy introduction, see this tutorial how to write a storage plugin \fI/doc/tutorials/plugins\.md\fR\. For more background information of the plugins framework, continue here \fI/doc/dev/plugins\-framework\.md\fR\. Otherwise, you can visit the the API documentation \fIhttps://doc\.libelektra\.org/api/current/html/group__plugin\.html\fR\.
 .
 .SH "Plugins"
@@ -104,6 +107,9 @@ ini \fIini/\fR supports a range of INI file formats\.
 .
 .IP "\(bu" 4
 dump \fIdump/\fR makes a dump of a KeySet in an Elektra\-specific format
+.
+.IP "\(bu" 4
+quickdump \fIquickdump/\fR uses binary portable format based on dump \fIdump/\fR, but more efficient
 .
 .IP "" 0
 .
@@ -208,6 +214,9 @@ yaypeg \fIyaypeg/\fR reads YAML data using a PEG parser combinators based on PEG
 .
 .IP "\(bu" 4
 mmapstorage \fImmapstorage/\fR uses binary, not portable memory mapped file for a high performance storage
+.
+.IP "\(bu" 4
+specload \fIspecload/\fR calls an external application to request its specification, depends on quickdump \fIquickdump/\fR
 .
 .IP "" 0
 .
@@ -382,10 +391,13 @@ ipaddr \fIipaddr/\fR checks IP addresses using regular expressions
 path \fIpath/\fR by checking files on file system
 .
 .IP "\(bu" 4
-type \fItype/\fR using run\-time type checking (CORBA types/)
+cpptype \fIcpptype/\fR obsolete plugin for run\-time type checking (CORBA types/), use \fBtype\fR instead
 .
 .IP "\(bu" 4
 enum \fIenum/\fR compares the keyvalue against a list of valid values
+.
+.IP "\(bu" 4
+type \fItype/\fR type checking (CORBA types) and enum functionality
 .
 .IP "\(bu" 4
 mathcheck \fImathcheck/\fR by mathematical expressions using key values as operands
@@ -404,6 +416,15 @@ range \fIrange/\fR checks if a value is within a given range
 .
 .IP "\(bu" 4
 reference \fIreference/\fR checks if a value is a valid reference to another key
+.
+.IP "\(bu" 4
+rgbcolor \fIrgbcolor/\fR validates and normalizes hexcolors
+.
+.IP "\(bu" 4
+macaddr \fImacaddr/\fR checks if MAC addresses are valid and normalizes them
+.
+.IP "\(bu" 4
+unit \fIunit/\fR validates and normalizes units of memory (e\.g\. 20KB to 20000 Bytes)
 .
 .IP "" 0
 .
@@ -465,9 +486,6 @@ list \fIlist/\fR loads other plugins
 iterate \fIiterate/\fR iterate over all keys and run exported functions on tagged keys
 .
 .IP "\(bu" 4
-semlock \fIsemlock/\fR a semaphore based global locking logic
-.
-.IP "\(bu" 4
 process \fIprocess/\fR proxy plugin that executes other plugins in a separate process
 .
 .IP "\(bu" 4
@@ -475,6 +493,12 @@ profile \fIprofile/\fR links profile keys
 .
 .IP "\(bu" 4
 simplespeclang \fIsimplespeclang/\fR simple configuration specification language
+.
+.IP "\(bu" 4
+gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
+.
+.IP "\(bu" 4
+cache \fIcache/\fR caches keysets from previous \fBkdbGet()\fR calls
 .
 .IP "" 0
 

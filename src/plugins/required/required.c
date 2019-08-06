@@ -51,8 +51,8 @@ int elektraRequiredSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 				{
 					++c;
 				}
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REQUIRED, parentKey, "key '%s' with %d metadata is not required",
-						    keyName (cur), c);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key '%s' with %d metadata is not required",
+									keyName (cur), c);
 				return -1; // error
 			}
 		}

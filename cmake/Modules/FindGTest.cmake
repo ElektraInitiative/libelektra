@@ -6,11 +6,7 @@
 if (NOT GOOGLETEST_ROOT)
 	if (NOT (GTEST_ROOT STREQUAL ""))
 		if (EXISTS ${GTEST_ROOT}/CMakeLists.txt)
-			set (GOOGLETEST_ROOT
-			     "${GTEST_ROOT}"
-			     CACHE INTERNAL
-				   "Path to a local copy of Google Test"
-			     FORCE)
+			set (GOOGLETEST_ROOT "${GTEST_ROOT}" CACHE INTERNAL "Path to a local copy of Google Test" FORCE)
 			message (STATUS "Use Google Test framework located at “${GOOGLETEST_ROOT}”")
 		endif ()
 	endif ()

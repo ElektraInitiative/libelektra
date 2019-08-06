@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-LIBS" "7" "February 2019" "" ""
+.TH "ELEKTRA\-LIBS" "7" "August 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-libs\fR \- libs overview
@@ -58,6 +58,9 @@ libelektra\-kdb\.so
 Accesses the configuration files by orchestrating the plugins\. The implementation lives in \fIelektra\fR\.
 .
 .P
+It coordinates the interactions between the applications and the plugins\.
+.
+.P
 \fBloader \fIloader/\fR\fR contains source files that implement the plugin loader functionality as used by \fBlibelektra\-kdb\fR\.
 .
 .SS "Libcore"
@@ -104,7 +107,7 @@ libelektra\-proposal\.so
 .fi
 .
 .P
-\fBlibproposal \fIproposal/\fR\fR contains functions that are proposed for libcore\. Depends on internas of libcore and as such must always fit to the exact same version\.
+\fBlibproposal \fIproposal/\fR\fR contains functions that are proposed for libcore\. Depends on internals of libcore and as such must always fit to the exact same version\.
 .
 .SS "Libmeta"
 .

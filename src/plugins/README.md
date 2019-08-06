@@ -4,6 +4,10 @@ Multiple plugins can be mounted into the [key database](/doc/help/elektra-glossa
 On every access to the key data base they are executed and thus can change
 the functionality and behavior.
 
+Unlike Elektra's core the plugins have all kinds of dependencies. It is the
+responsibility of the plugin to find and check its dependencies using CMake.
+If a dependency cannot be found, the plugin will automatically disable itself.
+
 ## Description
 
 Elektra has a wide range of different plugins.
@@ -41,7 +45,7 @@ All plugins implement the same interface:
 - For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-## See also
+## See Also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
 For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
@@ -76,6 +80,7 @@ Read and write everything a KeySet might contain:
 - [dini](dini/) uses by default the ini plugin but has legacy support for dump
 - [ini](ini/) supports a range of INI file formats.
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
+- [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
 
 Read (and write) standard config files:
 
@@ -121,6 +126,7 @@ productive use:
 - [yawn](yawn/) reads YAML data using [YAEP](https://github.com/vnmakarov/yaep)
 - [yaypeg](yaypeg/) reads YAML data using a PEG parser combinators based on [PEGTL](https://github.com/taocpp/PEGTL)
 - [mmapstorage](mmapstorage/) uses binary, not portable memory mapped file for a high performance storage
+- [specload](specload/) calls an external application to request its specification, depends on [quickdump](quickdump/)
 
 [yaml]: http://www.yaml.org
 
@@ -223,14 +229,18 @@ copied by the `spec` plugin just before):
 - [network](network/) by using network APIs
 - [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
-- [type](type/) using run-time type checking (CORBA types/)
+- [cpptype](cpptype/) obsolete plugin for run-time type checking (CORBA types/), use `type` instead
 - [enum](enum/) compares the keyvalue against a list of valid values
+- [type](type/) type checking (CORBA types) and enum functionality
 - [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
 - [range](range/) checks if a value is within a given range
 - [reference](reference/) checks if a value is a valid reference to another key
+- [rgbcolor](rgbcolor/) validates and normalizes hexcolors
+- [macaddr](macaddr/) checks if MAC addresses are valid and normalizes them
+- [unit](unit/) validates and normalizes units of memory (e.g. 20KB to 20000 Bytes)
 
 **Other Validation**
 
@@ -260,7 +270,8 @@ binding during run-time.
 - [cpptemplate](cpptemplate/) a template for C++ based plugins
 - [list](list/) loads other plugins
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
-- [semlock](semlock/) a semaphore based global locking logic
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
+- [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
+- [cache](cache/) caches keysets from previous `kdbGet()` calls

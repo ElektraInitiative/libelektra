@@ -1,4 +1,4 @@
-# Use Case: Reset password
+# Use Case: Reset Password
 
 ## Summary
 

@@ -43,10 +43,10 @@
  */
 
 #ifndef KDBOS_H
+#define KDBOS_H
 #ifndef KDB_H
 #error you attempted to include kdbos.h outside from kdb.h, please include kdb.h instead
 #endif
-#define KDBOS_H
 
 #ifdef __cplusplus
 #define KS_END (static_cast<ckdb::Key *> (0))

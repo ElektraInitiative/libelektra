@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief A error listener reacting to mismatches of the grammar defined in `YAML.g4`
+ * @brief an error listener reacting to mismatches of the grammar defined in `YAML.g4`
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -9,6 +9,8 @@
 // -- Imports ------------------------------------------------------------------
 
 #include <iostream>
+
+#include <kdbconfig.h>
 
 #include "error_listener.hpp"
 
@@ -20,6 +22,12 @@ using antlr4::CommonTokenStream;
 
 namespace
 {
+
+using std::string;
+
+using antlr4::Recognizer;
+using antlr4::Token;
+
 /**
  * @brief This function returns a Clang-like error message for a given error.
  *
@@ -33,6 +41,8 @@ namespace
  *                           `line`, where the parsing process failed.
  * @param prefix This variable stores as prefix that this function prepends
  *               to every line of the visualized error message.
+ *
+ * @return A string representation of the error
  */
 string visualizeError (Recognizer * recognizer, Token * offendingSymbol, size_t const line, size_t const charPositionInLine,
 		       string const & prefix)
@@ -65,6 +75,11 @@ string visualizeError (Recognizer * recognizer, Token * offendingSymbol, size_t 
 
 // -- Class --------------------------------------------------------------------
 
+namespace yanlr
+{
+
+using antlr4::Recognizer;
+
 /**
  * @brief This constructor creates a new error listener using the given arguments.
  *
@@ -91,7 +106,7 @@ ErrorListener::ErrorListener (string const & errorSource)
  *              failure.
  */
 void ErrorListener::syntaxError (Recognizer * recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
-				 const std::string & message, std::exception_ptr error __attribute__ ((unused)))
+				 const std::string & message, std::exception_ptr error ELEKTRA_UNUSED)
 {
 	auto location = source + ":" + to_string (line) + ":" + to_string (charPositionInLine) + ": ";
 	auto indent = string (location.length (), ' ');
@@ -107,4 +122,5 @@ void ErrorListener::syntaxError (Recognizer * recognizer, Token * offendingSymbo
 char const * ErrorListener::message ()
 {
 	return errorMessage.c_str ();
+}
 }

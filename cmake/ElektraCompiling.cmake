@@ -38,8 +38,7 @@ endif (NOT HAS_CXX_STD)
 # different
 #
 set (__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
-file (WRITE ${__symbols_file}
-	    "{ local: *; };\n")
+file (WRITE ${__symbols_file} "{ local: *; };\n")
 set (CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
 check_cxx_compiler_flag ("" LD_ACCEPTS_VERSION_SCRIPT)
 unset (CMAKE_REQUIRED_FLAGS)
@@ -64,8 +63,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion
-			 OUTPUT_VARIABLE GCC_VERSION)
+	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
 
@@ -126,9 +124,7 @@ if (ENABLE_ASAN)
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
 
 		# in case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on unix
-		if (UNIX
-		    AND NOT
-			APPLE)
+		if (UNIX AND NOT APPLE)
 			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
 		endif (UNIX AND NOT APPLE)
 	endif ()

@@ -17,4 +17,4 @@ Set default resolver plugin to resolver_fm_hpu_b:<br>
 
 ## SEE ALSO
 
-- [kdb-change-storage-symlink(7)](kdb-change-storage-symlink.md)
+- [kdb-change-storage-symlink(1)](kdb-change-storage-symlink.md)

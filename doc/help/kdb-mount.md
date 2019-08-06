@@ -51,8 +51,10 @@ Use `kdb file <path>` to determine where the file(s) are.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
-  Give debug information or ask debug questions (in interactive mode).
+  Give debug information or ask debug questions (in interactive mode). Prints additional information in case of errors/warnings.
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-i`, `--interactive`:
@@ -117,6 +119,6 @@ To recode and rename a configuration file using Elektra:<br>
 ## SEE ALSO
 
 - [elektra-glossary(7)](elektra-glossary.md).
-- [kdb-spec-mount(7)](kdb-spec-mount.md).
-- [kdb-umount(7)](kdb-umount.md).
+- [kdb-spec-mount(1)](kdb-spec-mount.md).
+- [kdb-umount(1)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).

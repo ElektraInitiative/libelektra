@@ -21,7 +21,9 @@ It is quite suitable to export configuration if you want line-by-line key, value
 without sections or metadata.
 (Thus +3000 in status)
 
-    $ kdb export system/samba simpleini
+```sh
+kdb export system/samba simpleini
+```
 
 ## Configuration
 
@@ -37,9 +39,11 @@ The default is `% = %`.
 
 For example, if you want every key to be marked `%:key value` you would use:
 
-    $ kdb export -c "format=%%:% %" system/samba simpleini
-    %:key value
-    %:key2 value2
+```sh
+kdb export -c "format=%%:% %" system/samba simpleini
+#> %:key value
+#> %:key2 value2
+```
 
 ## Restrictions
 
@@ -57,9 +61,11 @@ For example, if you want every key to be marked `%:key value` you would use:
 
 Mount the plugin:
 
-    $ kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
+```sh
+kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
+```
 
 ## Limitations
 
-- will be excluded in Mac OS X
+- will be excluded in macOS
 - cannot parse entries where key or value is missing

@@ -13,11 +13,11 @@
 
 ## Introduction
 
-This plugin uses Bison to generate a parser for the [YAML](http://yaml.org) serialization format.
+This plugin uses [Bison](https://www.gnu.org/software/bison) to generate a parser for the [YAML](http://yaml.org) serialization format.
 
 ## Dependencies
 
-The plugin requires [Bison](https://www.gnu.org/software/bison/) (3.0 or later).
+The plugin requires [Bison](https://repology.org/metapackage/bison/versions) (version 3.0 or later).
 
 ## Examples
 
@@ -85,32 +85,79 @@ kdb rm -r user/tests/yambi
 sudo kdb umount user/tests/yambi
 ```
 
+### Boolean Values
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yambi yambi
+
+# Manually add a boolean value to the database
+printf 'boolean: false' > `kdb file user/tests/yambi`
+
+# Elektra stores boolean values as `0` and `1`
+kdb get user/tests/yambi/boolean
+#> 0
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yambi
+sudo kdb umount user/tests/yambi
+```
+
 ### Error Messages
 
 ```sh
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yambi yambi
 
-# Manually add data containing a syntax error
+# Manually add data containing syntax errors
 printf -- 'Thumper: - Eating greens is a special treat.\n'      >  `kdb file user/tests/yambi`
 printf -- '         - It makes long ears and great big feet.\n' >> `kdb file user/tests/yambi`
-printf -- '- But it sure is awful stuff to eat.'                >> `kdb file user/tests/yambi`
+printf -- '- But it sure is awful stuff to eat.\n'              >> `kdb file user/tests/yambi`
+printf -- '         - I made that last part up myself\n.'       >> `kdb file user/tests/yambi`
+printf -- 'Stephen King:\n'                                     >> `kdb file user/tests/yambi`
+printf -- ' The first movie I ever saw was a horror movie.\n'   >> `kdb file user/tests/yambi`
+printf -- ' - It was Bambi.\n'                                  >> `kdb file user/tests/yambi`
 
 # Try to retrieve data
 kdb get user/tests/yambi/Thumper/#2
 # RET: 5
-# STDERR: .*config.yaml:3:1: syntax error, unexpected ELEMENT, expecting MAP_END or KEY.*
+# STDERR: .*config.yaml:3:1: syntax error, unexpected element, expecting end of map or key.*
 
-# Fix syntax error
+# Let us look at the error message more closely.
+# Since the location of `config.yaml` depends on the current user and OS,
+# we store the text before `config.yaml` as `user/tests/error/prefix`.
+kdb set user/tests/error "$(2>&1 kdb ls user/tests/yambi)"
+kdb set user/tests/error/prefix "$(kdb get user/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
+kdb get user/tests/error/prefix
+# We also store the length of the prefix, so we can remove it from every
+# line of the error message.
+kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
+
+# Since we only want to look at the “reason” of the error, we
+# remove the other part of the error message with `head` and `tail`.
+kdb get user/tests/error | tail -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
+#> config.yaml:3:1: syntax error, unexpected element, expecting end of map or key
+#>                  - But it sure is awful stuff to eat.
+#>                  ^
+#> config.yaml:7:2: syntax error, unexpected start of sequence, expecting end of map or key
+#>                   - It was Bambi.
+#>                   ^
+
+# Fix syntax errors
 printf -- 'Thumper: - Eating greens is a special treat.\n'      >  `kdb file user/tests/yambi`
 printf -- '         - It makes long ears and great big feet.\n' >> `kdb file user/tests/yambi`
-printf -- '         - But it sure is awful stuff to eat.'       >> `kdb file user/tests/yambi`
+printf -- '         - But it sure is awful stuff to eat.\n'     >> `kdb file user/tests/yambi`
+printf -- '         - I made that last part up myself\n.'       >> `kdb file user/tests/yambi`
+printf -- 'Stephen King:\n'                                     >> `kdb file user/tests/yambi`
+printf -- ' - The first movie I ever saw was a horror movie.\n' >> `kdb file user/tests/yambi`
+printf -- ' - It was Bambi.\n'                                  >> `kdb file user/tests/yambi`
 
 # Retrieve data
 kdb get user/tests/yambi/Thumper/#2
 #> But it sure is awful stuff to eat.
 
 # Undo modifications
+kdb rm -r user/tests/error
 kdb rm -r user/tests/yambi
 sudo kdb umount user/tests/yambi
 ```

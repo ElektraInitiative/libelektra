@@ -1,6 +1,6 @@
 - infos =
 - infos/author = Markus Raab <elektra@libelektra.org>
-- infos/status = experimental maintained
+- infos/status = maintained
 - infos/provides =
 - infos/description =
 
@@ -30,23 +30,31 @@ make sure that CLASSPATH includes jna.jar and libelektra.jar (or this directory
 which contains the libelektra4j subdirectory that corresponds to the
 libelektra.jar), e.g.:
 
-    export CLASSPATH="/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
-    export CLASSPATH="~e/src/bindings/jna:/usr/share/java/jna.jar"
+```sh
+export CLASSPATH="/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
+export CLASSPATH="~e/src/bindings/jna:/usr/share/java/jna.jar"
+```
 
 to set it permanently for your user, you can use:
 
-    kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
+```sh
+kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
+```
 
 then you can compile and run [HelloElektra](HelloElektra.java):
 
-    javac HelloElektra.java && java HelloElektra
+```sh
+javac HelloElektra.java && java HelloElektra
+```
 
 You can also specify the classpath directly, both during compilation and execution.
 Also note its important in that case to include this directory containing the
 compiled HelloElektra.class when executing it, otherwise it will not find it:
 
-    javac -cp /usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra.java
-    java -cp .:/usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra
+```sh
+javac -cp /usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra.java
+java -cp .:/usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra
+```
 
 For plugin development, see [plugins](libelektra4j/plugin)
 and also [here](/src/plugins/jni) for more information.
@@ -65,14 +73,45 @@ bindings included, they should have been automatically installed to
 ´/usr/share/java/´ along with a pom file for the library. To install it to your
 local maven repository from that location, execute the following command:
 
-    mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/share/java/libelektra4j-*version*.jar -DpomFile=/usr/local/share/java/libelektra4j-*version*.pom.xml
+```sh
+mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
+    -Dfile=/usr/local/share/java/libelektra4j-*version*.jar \
+    -DpomFile=/usr/local/share/java/libelektra4j-*version*.pom.xml
+```
 
 Given that libelektra is actually installed on your system you can use it by
 including the following maven dependency in your project afterwards:
 
-    <groupId>org.libelektra</groupId>
-    <artifactId>libelektra4j</artifactId>
-    <version>*version*</version>
+```xml
+<groupId>org.libelektra</groupId>
+<artifactId>libelektra4j</artifactId>
+<version>*version*</version>
+```
+
+If you wish to make the jna bindings part of your project, copy _version_.jar file to some location within your project, for example,
+to `libs` directory in the project root. Then add to your pom.xml the following element as child of the `<dependencies>` element.
+
+```xml
+<dependency>
+	<groupId>org.libelektra</groupId>
+	<artifactId>libelektra4j</artifactId>
+	<version>*version*</version>
+	<scope>system</scope>
+	<systemPath>${basedir}/libs/libelektra4j-*version*.jar</systemPath>
+</dependency>
+```
+
+Most likely, you have to include this dependency as well:
+
+```xml
+<dependency>
+     <groupId>net.java.dev.jna</groupId>
+     <artifactId>jna</artifactId>
+     <version>4.5.0</version>
+ </dependency>
+```
+
+[here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file.
 
 ## Testing
 
@@ -102,8 +141,13 @@ It should also be possible to run the tests by command line:
     jna are installed and/or path is correct). Execute the following commands inside
     the libelektra4j folder:
 
-        mkdir ./target (if it does not exist yet)
-        javac -cp <path to junit and jna and hamcrest*> -d ./target src/main/java/org/libelektra/*.java src/main/java/org/libelektra/plugin/*.java src/test/java/org/libelektra/*.java
+    ```sh
+    mkdir ./target (if it does not exist yet)
+    javac -cp <path to junit and jna and hamcrest*> -d \
+          ./target src/main/java/org/libelektra/*.java \
+          src/main/java/org/libelektra/plugin/*.java \
+          src/test/java/org/libelektra/*.java
+    ```
 
     If you copied the jna.jar, junit.jar and hamcrest-core.jar directly to the
     jna directory, the correct path would be `./jna.jar:./junit.jar:./hamcrest-core.jar`
@@ -116,12 +160,16 @@ It should also be possible to run the tests by command line:
     include the target directory we created in the first step, where the compiled
     classfiles are):
 
-        		java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.AllTests
+    ```sh
+    java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.AllTests
+    ```
 
     Or run all tests on their own:
 
-        		java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.KeyTest
-        		java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.KeySetTest
+    ```sh
+    java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.KeyTest
+    java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.KeySetTest
+    ```
 
 ### Maven
 

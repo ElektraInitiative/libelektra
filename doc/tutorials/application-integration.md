@@ -137,7 +137,7 @@ KeySet *conf = ksNew(200, KS_END);
 
 - 200 is an approximation for how many `Key`s we think we will have in
   the `KeySet` `conf`, intended for optimization purposes.
-- After the first argument we can list build-in keys that should be
+- After the first argument we can list built-in keys that should be
   available in any case.
 - The last argument needs to be `KS_END`.
 
@@ -195,7 +195,7 @@ So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe frontend.
 
 For more information about that, continue reading
-[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
+[here](https://master.libelektra.org/src/tools/pythongen).
 
 ## Specification
 
@@ -206,11 +206,15 @@ the goal of Elektra.
 
 Elektra 0.8.11 introduces the so called specification for the
 application's configuration, located below its own [namespace](/doc/help/elektra-namespaces.md)
-`spec` (next to user and system).
+`spec`. The specification itself also consists of (meta) key-value pairs.
 
 Keys in `spec` allow us to specify which keys the application reads,
 which fallback they might have and which is the default value using
-metadata. The implementation of these features happened in `ksLookup`.
+metadata.
+
+### Links
+
+The implementation of links are in `ksLookup`.
 When using cascading keys (those starting with `/`), the following features
 are now available (in the metadata of respective `spec`-keys):
 
@@ -241,9 +245,7 @@ kdb get "/sw/org/myapp/#0/current/section/subsection/key"
 above lookup C code.
 
 What we do not see in the program above are the default values and
-fallbacks. They are present in the so-called specification (namespace `spec`).
-The specification consists of (meta) key-value pairs, too. So we do not have
-to learn something new.
+fallbacks. They are also present in the specification (namespace `spec`).
 
 So lets say, that another application `otherapp` has the
 value we actually want. We want to improve the integration. In the case that we
@@ -265,6 +267,49 @@ and not like most other systems have implemented, on configuration _file level_.
 To make this work within your application make sure to always call
 `ksLookup` before using a value from Elektra.
 
+### Specfiles
+
+We call the files, that contain a complete schema for configuration
+below a specific path in form of metadata, _Specfiles_.
+
+Particularly a _Specfile_ contains metadata that defines
+
+- the mount points of paths,
+- the plugins to load and
+- the behavior of these plugins.
+
+```sh
+sudo kdb mount tutorial.ecf spec/sw/org/myapp/#0/current"
+cat << HERE | kdb import spec/sw/org/myapp/#0/current ni  \
+[]                                         \
+ mountpoint = my-config-file.ini           \
+ infos/plugins = ini validation            \
+                                           \
+[section/subsection/key]                   \
+fallback/#0=/sw/otherorg/otherapp/#0/current/section/subsection/key  \
+description = A description of the key     \
+HERE
+kdb lsmeta spec/sw/org/myapp/#0/current # verify if specification is present now
+#> infos/plugins
+#> mountpoint
+```
+
+Now we apply this _Specfile_ to the key database to all keys below
+`/sw/org/myapp/#0/current`:
+
+```sh
+kdb spec-mount /sw/org/myapp/#0/current
+```
+
+Then the configuration of our application will be in my-config-file.ini
+(because of `mountpoint` in the specification) and it will use the INI
+format (because of `infos/plugins` in the specification).
+`section/subsection/key` contains the specification of what we
+already specified imperatively before.
+
+For a description which metadata is available, have a look in
+[METADATA.ini](/doc/METADATA.ini).
+
 ## Conclusion
 
 Elektra does not hard code any configuration data in your application.
@@ -277,6 +322,6 @@ In this specification you can define to consider or prefer configuration data
 from other applications or shared places. Doing so, we can achieve configuration
 integration.
 
-## SEE ALSO
+## See Also
 
-- [for advanced techniques e.g. transformations](https://www.libelektra.org/ftp/elektra/publications/raab2015sharing.pdf)
+- [how to validate configuration with the specification](validation.md)

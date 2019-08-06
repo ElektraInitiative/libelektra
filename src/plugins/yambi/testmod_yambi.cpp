@@ -25,23 +25,21 @@ using CppKey = kdb::Key;
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
 	CppKeySet modules{ 0, KS_END };                                                                                                    \
-	CppKeySet config{ 0, KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
+	CppKeySet config{ 0, KS_END };                                                                                                     \
 	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
-	Plugin * plugin = elektraPluginOpen ("yambi", modules.getKeySet (), config.getKeySet (), *parent);                                 \
-	exit_if_fail (plugin != NULL, "Could not open yambi plugin")
+	Plugin * plugin = elektraPluginOpen ("yambi", modules.getKeySet (), config.getKeySet (), *parent);
 
 #define CLOSE_PLUGIN()                                                                                                                     \
+	config.release ();                                                                                                                 \
 	elektraPluginClose (plugin, 0);                                                                                                    \
-	elektraModulesClose (modules.getKeySet (), 0);                                                                                     \
-	ksDel (modules.release ());                                                                                                        \
-	config.release ()
+	elektraModulesClose (modules.getKeySet (), 0)
 
 #define PREFIX "user/tests/yambi/"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-void test_read (string const & filepath, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+void test_read (string const & filepath, CppKeySet expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
 			annotate ("oclint:suppress[too few branches in switch statement]")))
@@ -59,7 +57,7 @@ void test_read (string const & filepath, CppKeySet expected, int const status = 
 	}
 
 	CppKeySet keys;
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbGet` failed");
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` failed");
 	compare_keyset (expected, keys);
 
 	CLOSE_PLUGIN ();
@@ -84,10 +82,10 @@ TEST (yambi, empty)
 {
 	test_read ("yambi/null.yaml",
 #include "yambi/null.hpp"
-		   , ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
+	);
 	test_read ("yambi/comment.yaml",
 #include "yambi/null.hpp"
-		   , ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
+	);
 }
 
 TEST (yambi, scalar)

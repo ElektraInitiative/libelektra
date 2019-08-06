@@ -3,12 +3,13 @@
 # =================
 
 s/\<occured\>/occurred/g
+s/build-in/built-in/g
 
 # ==============================
 # = British → American English =
 # ==============================
 
-s/behaviour/behavior/g
+s/([Bb])ehaviour/\1ehavior/g
 s/f(l?)avour/f\1avor/g
 s/generalises/generalizes/g
 s/organisation/organization/g
@@ -23,7 +24,9 @@ s/synchronised/synchronized/g
 # = Brands =
 # ==========
 
-s/Electra/Elektra/g
+s/[eE]lectra/Elektra/g
+s/[eE]lektra [iI]nitiative/Elektra Initiative/g
+s/[eE]lektra [pP]roject/Elektra Initiative/g
 s/\<[CcFf]engine/CFEngine/g
 
 # Only fix spelling of GitHub outside of URLs:
@@ -31,7 +34,8 @@ s/([^.`/])git[hH]ub([^.][^\w])/\1GitHub\2/g
 
 s/\<[Ll]ibreoffice/LibreOffice/g
 
-s/([^/-])\<mark[Dd]own\>/\1Markdown/g
+s/([^./[-])\<mark[Dd]own\>/\1Markdown/g
+s/\<([Mm]ac )?OS X\>/macOS/g
 
 s/\<unix|UNIX/Unix/g
 s/\<XCode\>/Xcode/g
@@ -52,6 +56,7 @@ s/\<plug-in(s)?\>/plugin\1/g
 
 # key-value pair
 s:\<key/value:key-value:g
+s:\<Key/value:Key-value:g
 
 s/[^#"]\<data-?type/data type/g
 

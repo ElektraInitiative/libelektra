@@ -5,8 +5,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (tcl
-	    CPP
+add_plugin (tcl CPP
 	    INCLUDE_SYSTEM_DIRECTORIES ${Boost_INCLUDE_DIR}
 	    SOURCES tcl.hpp
 		    tcl.cpp

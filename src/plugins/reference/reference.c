@@ -37,95 +37,38 @@ int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-static bool isReferenceRedundant (const char * reference)
-{
-	const char * cur = reference;
-	while (strncmp (cur, "../", 3) == 0)
-	{
-		cur += 3;
-	}
-
-	return strstr (reference, "/./") != NULL || strstr (cur, "/../") != NULL;
-}
-
-static Key * resolveReference (KeySet * allKeys, const char * reference, const char * baseKeyName, Key * parentKey)
+static Key * resolveReference (KeySet * allKeys, const char * reference, const Key * baseKey, Key * parentKey)
 {
 	if (reference == NULL || strlen (reference) == 0)
 	{
 		return NULL;
 	}
 
-	if (isReferenceRedundant (reference))
+	if (elektraIsReferenceRedundant (reference))
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, parentKey, "Reference '%s' uses '/./' or '/../' redundantly.", reference);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "Reference '%s' uses '/./' or '/../' redundantly", reference);
 	}
 
-	Key * fullReference = keyNew ("", KEY_END);
+	char * fullReference = elektraResolveReference (reference, baseKey, parentKey);
+	Key * result = ksLookupByName (allKeys, fullReference, 0);
+	elektraFree (fullReference);
 
-	if (elektraStrNCmp (reference, "@/", 2) == 0)
-	{
-		keySetName (fullReference, keyName (parentKey));
-		keyAddName (fullReference, &reference[2]);
-	}
-	else if (elektraStrNCmp (reference, "./", 2) == 0)
-	{
-		keySetName (fullReference, baseKeyName);
-		keyAddName (fullReference, &reference[2]);
-	}
-	else if (elektraStrNCmp (reference, "../", 3) == 0)
-	{
-		keySetName (fullReference, baseKeyName);
-		keyAddName (fullReference, reference);
-	}
-	else
-	{
-		keySetName (fullReference, reference);
-	}
-
-	return ksLookup (allKeys, fullReference, KDB_O_DEL);
+	return result;
 }
 
-static char * resolveRestriction (const char * restriction, const char * baseKeyName, Key * parentKey)
+static char * resolveRestriction (const char * restriction, const Key * baseKey, Key * parentKey)
 {
 	if (restriction == NULL || strlen (restriction) == 0)
 	{
 		return NULL;
 	}
 
-	if (isReferenceRedundant (restriction))
+	if (elektraIsReferenceRedundant (restriction))
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_REFERENCE_REDUNDANT, parentKey, "Restriction '%s' uses '/./' or '/../' redundantly.",
-				      restriction);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "Restriction '%s' uses '/./' or '/../' redundantly", restriction);
 	}
 
-	Key * fullReference = keyNew ("", KEY_END);
-
-	if (elektraStrNCmp (restriction, "@/", 2) == 0)
-	{
-		keySetName (fullReference, keyName (parentKey));
-		keyAddName (fullReference, &restriction[2]);
-	}
-	else if (elektraStrNCmp (restriction, "./", 2) == 0)
-	{
-		keySetName (fullReference, baseKeyName);
-		keyAddName (fullReference, &restriction[2]);
-	}
-	else if (elektraStrNCmp (restriction, "../", 3) == 0)
-	{
-		keySetName (fullReference, baseKeyName);
-		keyAddName (fullReference, restriction);
-	}
-	else
-	{
-		keySetName (fullReference, restriction);
-	}
-
-	size_t resultSize = (size_t) keyGetNameSize (fullReference);
-	char * result = elektraMalloc (resultSize);
-	keyGetName (fullReference, result, resultSize);
-	keyDel (fullReference);
-
-	return result;
+	return elektraResolveReference (restriction, baseKey, parentKey);
 }
 
 
@@ -188,12 +131,12 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 
 		const char * elementName = keyName (arrayElement);
 
-		Key * refKey = resolveReference (allKeys, ref, elementName, parentKey);
+		Key * refKey = resolveReference (allKeys, ref, arrayElement, parentKey);
 		bool error = false;
 		if (refKey == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_NOT_FOUND, parentKey,
-					    "Reference '%s', set in key '%s', does not reference an existing key.", ref, elementName);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				parentKey, "Reference '%s', set in key '%s', does not reference an existing key", ref, elementName);
 			error = true;
 		}
 
@@ -204,7 +147,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 			bool anyMatch = false;
 			while ((curRestriction = ksNext (restrictions)) != NULL)
 			{
-				char * restriction = resolveRestriction (keyString (curRestriction), keyName (key), parentKey);
+				char * restriction = resolveRestriction (keyString (curRestriction), key, parentKey);
 				if (checkRestriction (refKey, restriction))
 				{
 					anyMatch = true;
@@ -214,9 +157,9 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 
 			if (!anyMatch)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
-						    "Reference '%s', set in key '%s', does not any of the given restrictions.", ref,
-						    elementName);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+					parentKey, "Reference '%s', set in key '%s', does not any of the given restrictions", ref,
+					elementName);
 				error = true;
 			}
 		}
@@ -391,13 +334,13 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 
 				const char * elementName = keyName (arrayElement);
 
-				Key * refKey = resolveReference (allKeys, ref, elementName, parentKey);
+				Key * refKey = resolveReference (allKeys, ref, arrayElement, parentKey);
 				bool error = false;
 				if (refKey == NULL)
 				{
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_NOT_FOUND, parentKey,
-							    "Reference '%s', set in key '%s', does not reference an existing key.", ref,
-							    elementName);
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey, "Reference '%s', set in key '%s', does not reference an existing key", ref,
+						elementName);
 					error = true;
 				}
 
@@ -410,8 +353,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					bool anyMatch = false;
 					while ((curRestriction = ksNext (restrictions)) != NULL)
 					{
-						char * restriction =
-							resolveRestriction (keyString (curRestriction), keyName (baseKey), parentKey);
+						char * restriction = resolveRestriction (keyString (curRestriction), baseKey, parentKey);
 						if (checkRestriction (refKey, restriction))
 						{
 							anyMatch = true;
@@ -421,9 +363,9 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 
 					if (!anyMatch)
 					{
-						ELEKTRA_SET_ERRORF (
-							ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
-							"Reference '%s', set in key '%s', does not any of the given restrictions.", ref,
+						ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+							parentKey,
+							"Reference '%s', set in key '%s', does not any of the given restrictions", ref,
 							elementName);
 						error = true;
 					}
@@ -465,7 +407,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 	*strrchr (rootName, '/') = '\0';
 	if (!checkReferenceGraphAcyclic (referenceGraph, rootName))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_REFERENCE_CYCLIC_GRAPH, parentKey, "The configuration contains a cyclic reference.");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, "The configuration contains a cyclic reference");
 
 		elektraFree (rootName);
 		rgDel (referenceGraph);

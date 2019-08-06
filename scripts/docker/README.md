@@ -9,7 +9,7 @@ A list of all Dockerfiles used by the build server can be found in the
 > Any commands in this file are expected to be run from the root
 > of the repository.
 
-## Downloading prebuilt images
+## Downloading Prebuilt Images
 
 You can download prebuilt images for local testing from our build environment.
 List available images via `docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org`.
@@ -43,7 +43,7 @@ docker build -t buildelektra-stretch-full \
     scripts/docker/debian/stretch/
 ```
 
-, if you use [`fish`](https://www.fishshell.com).
+, if you use [`fish`](https://fishshell.com).
 
 You can adapt the targeted Dockerfile via `-f`.
 You should also adjust the tag used via `-t` if you are building a different
@@ -52,7 +52,7 @@ image.
 Please note that the complete images used to test Elektra are quite big
 (~3.7GB) and take a some time (15min+) to build.
 
-## Testing Elektra via Docker images
+## Testing Elektra via Docker Images
 
 To replicate errors on the test server you can build the image that ran the
 test as shown above.
@@ -89,7 +89,7 @@ If you enable the leak sanitizer using the option `ENABLE_ASAN` the build [might
 
 . To fix that problem please add the option `--cap-add SYS_PTRACE` to the `docker run` command.
 
-## Differences to the build server
+## Differences to the Build Server
 
 The build server does not create a bash shell inside the containers.
 Instead it runs a nonterminating command (usually `cat`) to keep the container

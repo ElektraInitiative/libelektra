@@ -29,18 +29,24 @@ The plugin has been tested on Ubuntu 18.04 with `libgpgme` version 1.10.
 
 You can mount the plugin like this:
 
-    kdb mount test.ecf /t gpgme "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```sh
+kdb mount test.ecf /t gpgme "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
+```
 
 Now you can specify a key `user/t/a` and protect its content by using:
 
-    kdb set user/t/a
-    kdb setmeta user/t/a crypt/encrypt 1
-    kdb set user/t/a "secret"
+```sh
+kdb set user/t/a
+kdb setmeta user/t/a crypt/encrypt 1
+kdb set user/t/a "secret"
+```
 
 The value of `user/t/a` (for this example: "secret") will be stored encrypted.
 You can still access the original value by using `kdb get`:
 
-    kdb get user/t/a
+```sh
+kdb get user/t/a
+```
 
 ## Configuration
 
@@ -53,8 +59,10 @@ The GPG recipient keys can be specified in two ways:
 
 The following example illustrates how multiple GPG recipient keys can be specified:
 
-    encrypt/key/#0
-    encrypt/key/#1
+```
+encrypt/key/#0
+encrypt/key/#1
+```
 
 ### Textmode
 

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief A error listener reacting to mismatches of the grammar defined in `YAML.g4`
+ * @brief an error listener reacting to mismatches of the grammar defined in `YAML.g4`
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -10,25 +10,21 @@
 
 #include <antlr4-runtime.h>
 
-using antlr4::BaseErrorListener;
-using antlr4::Recognizer;
-using antlr4::Token;
-
-using std::exception_ptr;
-using std::string;
+namespace yanlr
+{
 
 // -- Class --------------------------------------------------------------------
 
 /**
  * @brief This class specifies methods to alter error messages.
  */
-class ErrorListener : public BaseErrorListener
+class ErrorListener : public antlr4::BaseErrorListener
 {
 	/** This variable stores the last error message emitted via the function `syntaxError`. */
-	string errorMessage;
+	std::string errorMessage;
 
 	/** This attribute stores the source, for which the error listener reports an error. */
-	string source;
+	std::string source;
 
 public:
 	/**
@@ -36,7 +32,7 @@ public:
 	 *
 	 * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
 	 */
-	ErrorListener (string const & errorSource);
+	ErrorListener (std::string const & errorSource);
 
 	/**
 	 * @brief This method will be called if the parsing process fails.
@@ -53,8 +49,8 @@ public:
 	 * @param error This parameter stores the exception caused by the parsing
 	 *              failure.
 	 */
-	void syntaxError (Recognizer * recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine, const string & message,
-			  exception_ptr error);
+	void syntaxError (antlr4::Recognizer * recognizer, antlr4::Token * offendingSymbol, size_t line, size_t charPositionInLine,
+			  const std::string & message, std::exception_ptr error);
 
 	/**
 	 * @brief This method returns the last error message saved by the error listener.
@@ -63,3 +59,4 @@ public:
 	 */
 	char const * message ();
 };
+}

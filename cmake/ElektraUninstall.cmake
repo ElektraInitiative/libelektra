@@ -10,8 +10,7 @@ if (NOT EXISTS "${MANIFEST}")
 endif (NOT EXISTS "${MANIFEST}")
 
 # message (MANIFEST IS ${MANIFEST})
-file (READ "${MANIFEST}"
-	   files)
+file (READ "${MANIFEST}" files)
 
 # ==========
 # = Python =
@@ -57,11 +56,11 @@ string (REGEX
 		"${files}")
 foreach (file ${files})
 	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
-	if (IS_SYMLINK
-	    "$ENV{DESTDIR}${file}"
-	    OR EXISTS
-	       "$ENV{DESTDIR}${file}")
-		execute_process (COMMAND "${CMAKE_COMMAND}" -E remove "$ENV{DESTDIR}${file}"
+	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
+		execute_process (COMMAND "${CMAKE_COMMAND}"
+					 -E
+					 remove
+					 "$ENV{DESTDIR}${file}"
 				 OUTPUT_VARIABLE rm_out
 				 RESULT_VARIABLE rm_retval)
 		if (NOT "${rm_retval}" STREQUAL 0)
@@ -81,7 +80,10 @@ function (remove_directories directories)
 		set (dir "$ENV{DESTDIR}${directory}")
 		if (EXISTS "${dir}")
 			message (STATUS "Uninstalling directory ${dir}")
-			execute_process (COMMAND "${CMAKE_COMMAND}" -E remove_directory "${dir}"
+			execute_process (COMMAND "${CMAKE_COMMAND}"
+						 -E
+						 remove_directory
+						 "${dir}"
 					 OUTPUT_VARIABLE rm_out
 					 RESULT_VARIABLE rm_retval)
 
@@ -101,12 +103,10 @@ set (DIRECTORIES
      "${CMAKE_INSTALL_PREFIX}/share/elektra"
      "${CMAKE_INSTALL_PREFIX}/share/share/elektra")
 if (${PYTHON2_SITE_PACKAGES})
-	list (APPEND DIRECTORIES
-		     "${PYTHON2_SITE_PACKAGES}/support")
+	list (APPEND DIRECTORIES "${PYTHON2_SITE_PACKAGES}/support")
 endif (${PYTHON2_SITE_PACKAGES})
 if (${PYTHON_SITE_PACKAGES})
-	list (APPEND DIRECTORIES
-		     "${PYTHON_SITE_PACKAGES}/support")
+	list (APPEND DIRECTORIES "${PYTHON_SITE_PACKAGES}/support")
 endif (${PYTHON_SITE_PACKAGES})
 
 remove_directories ("${DIRECTORIES}")
@@ -150,10 +150,8 @@ set (REMOVAL_CANDIDATES
 
 foreach (directory ${REMOVAL_CANDIDATES})
 	set (dir "$ENV{DESTDIR}${directory}")
-	file (GLOB content
-		   "${dir}/*")
-	list (LENGTH content
-		     size)
+	file (GLOB content "${dir}/*")
+	list (LENGTH content size)
 	if (size EQUAL 0)
 		remove_directories ("${directory}")
 	endif (size EQUAL 0)

@@ -10,10 +10,26 @@
 #include "helper.h"
 #include "crypto.h"
 #include "gpg.h"
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinvoke.h>
 #include <stdlib.h>
 
+/**
+ * @brief lookup if the test mode for unit testing is enabled.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 test mode is not enabled
+ * @retval 1 test mode is enabled
+ */
+static int inTestMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
+	if (k && !strcmp (keyString (k), "1"))
+	{
+		return 1;
+	}
+	return 0;
+}
 
 /**
  * @brief Encodes arbitrary data using the Base64 schema by utilizing libinvoke.
@@ -96,20 +112,20 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "missing salt as metakey %s in key %s",
-				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT,
+							keyName (k));
 		return -1;
 	}
 
 	int result = ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Salt was not stored Base64 encoded.");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Salt was not stored Base64 encoded in key %s", keyName (k));
 		return -1;
 	}
 	else if (result == -2)
 	{
-		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
 		return -1;
 	}
 	else if (result < -2)
@@ -139,8 +155,8 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate payload length
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
+		// TODO: Correct??
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Payload is too small to contain a salt (payload length is: %zu)", payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -156,8 +172,9 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate restored salt length
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen, payloadLen);
+		// TODO: Correct??
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
+					     payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -179,8 +196,7 @@ Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * conf
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in plugin configuration",
-				    ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Missing %s in plugin configuration", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return NULL;
 	}
 	Key * msg = keyDup (master);
@@ -210,10 +226,155 @@ kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey,
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_CRYPTO_CONFIG, errorKey,
-					     "iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
-					     " is invalid. Using default value instead.");
+			// TODO: Correct?
+			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
+								    " is invalid. Using default value instead.");
 		}
 	}
 	return ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+}
+
+/**
+ * @brief call the gpg binary to encrypt the random master password.
+ *
+ * @param conf holds the backend/plugin configuration
+ * @param errorKey holds the error description in case of failure
+ * @param msgKey holds the master password to be encrypted
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
+{
+	// [0]: <path to binary>, [argc-3]: --batch, [argc-2]: -e, [argc-1]: NULL-terminator
+	static const kdb_unsigned_short_t staticArgumentsCount = 4;
+	Key * k;
+
+	// determine the number of total GPG keys to be used
+	kdb_unsigned_short_t recipientCount = 0;
+	kdb_unsigned_short_t testMode = 0;
+	Key * root = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
+
+	// check root key crypto/key
+	if (root && strlen (keyString (root)) > 0)
+	{
+		recipientCount++;
+	}
+
+	// check for key beneath crypto/key (like crypto/key/#0 etc)
+	ksRewind (conf);
+	while ((k = ksNext (conf)) != 0)
+	{
+		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
+		{
+			recipientCount++;
+		}
+	}
+
+	if (recipientCount == 0)
+	{
+		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, errorDescription);
+		elektraFree (errorDescription);
+		return -1;
+	}
+
+	if (inTestMode (conf))
+	{
+		// add two parameters for unit testing
+		testMode = 2;
+	}
+
+	// initialize argument vector for gpg call
+	const kdb_unsigned_short_t argc = (2 * recipientCount) + staticArgumentsCount + testMode;
+	kdb_unsigned_short_t i = 1;
+	char * argv[argc];
+
+	// append root (crypto/key) as gpg recipient
+	if (root && strlen (keyString (root)) > 0)
+	{
+		argv[i++] = "-r";
+		// NOTE argv[] values will not be modified, so const can be discarded safely
+		argv[i++] = (char *) keyString (root);
+	}
+
+	// append keys beneath root (crypto/key/#_) as gpg recipients
+	ksRewind (conf);
+	while ((k = ksNext (conf)) != 0)
+	{
+		const char * kStringVal = keyString (k);
+		if (keyIsBelow (k, root) && strlen (kStringVal) > 0)
+		{
+			argv[i++] = "-r";
+			// NOTE argv[] values will not be modified, so const can be discarded safely
+			argv[i++] = (char *) kStringVal;
+		}
+	}
+
+	// append option for unit tests
+	if (testMode)
+	{
+		argv[i++] = "--trust-model";
+		argv[i++] = "always";
+	}
+
+	argv[i++] = "--batch";
+	argv[i++] = "-e";
+	argv[i++] = NULL;
+
+	ELEKTRA_ASSERT (i == argc, "invalid number of arguments generated in method gpgEncryptMasterPassword()");
+
+	// call gpg
+	int gpgResult = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, argc);
+	if (gpgResult != 1) // no success
+	{
+		return gpgResult; // error set by ELEKTRA_PLUGIN_FUNCTION (gpgCall)
+	}
+
+	// encode result as Base64 string
+	char * base64Encoded = NULL;
+	int base64Result = ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, keyValue (msgKey), keyGetValueSize (msgKey), &base64Encoded);
+	if (base64Encoded)
+	{
+		keySetString (msgKey, base64Encoded);
+		elektraFree (base64Encoded);
+	}
+
+	return base64Result;
+}
+
+/**
+ * @brief call the gpg binary to decrypt the random master password.
+ *
+ * @param conf holds the backend/plugin configuration
+ * @param errorKey holds the error description in case of failure
+ * @param msgKey holds the master password to be decrypted. Note that the content of this key will be modified.
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
+{
+	kdb_octet_t * binaryData = NULL;
+	size_t binaryDataLength;
+
+	// decode the master password string
+	ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (msgKey), &binaryData, &binaryDataLength);
+	if (binaryData)
+	{
+		keySetBinary (msgKey, binaryData, binaryDataLength);
+		elektraFree (binaryData);
+	}
+
+	// password decryption
+	if (inTestMode (conf))
+	{
+		char * argv[] = { "", "--batch", "--trust-model", "always", "-d", NULL };
+		return ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 6);
+	}
+	else
+	{
+		char * argv[] = { "", "--batch", "-d", NULL };
+		return ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 4);
+	}
 }

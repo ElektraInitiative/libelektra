@@ -1,7 +1,5 @@
 // clang-format off
 
-#define PREFIX "user/examples/yamlcpp/"
-
 ksNew (20,
        keyNew (PREFIX "American Football", KEY_BINARY, KEY_META, "array", "#2", KEY_END),
        keyNew (PREFIX "American Football/#0", KEY_VALUE, "American Football (EP)", KEY_END),

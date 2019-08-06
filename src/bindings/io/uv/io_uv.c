@@ -167,7 +167,7 @@ static void ioUvBindingTimerCallback (uv_timer_t * handle)
 
 /**
  * Calls the associated callback.
- * Called by libuv whenever a idle operation can perform its operations.
+ * Called by libuv whenever an idle operation can perform its operations.
  *
  * @param handle libuv idle handle
  */
