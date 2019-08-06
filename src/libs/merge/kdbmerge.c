@@ -11,7 +11,39 @@
 
 // static bool metaEqual (Key * a, Key * b, bool semanticallySuffices);
 static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool);
-int conflictCounter = 0;
+int nonOverlapConflictCounter = 0;
+int overlap3different = 0; // Only overlap conflicts where all three keys exist and have different values
+// always access with getter
+int overlap1empty = 0; // counts overlaps where one set is empty. Is the double of the real amount in the end.
+
+int getOverlap3different (void)
+{
+	if (overlap3different % 3 != 0)
+	{
+		fprintf (stderr, "This should be a multiple of 3 at the end of each checkSingleSet\n");
+		return -1;
+	}
+	return overlap3different / 3;
+}
+
+int getOverlap1empty (void)
+{
+	if (overlap1empty % 2 != 0)
+	{
+		fprintf (stderr, "This should be a multiple of 2 at the end of each checkSingleSet\n");
+		return -1;
+	}
+	return overlap1empty / 2;
+}
+
+int getTotalOverlaps (void)
+{
+	return getOverlap1empty () + getOverlap3different ();
+}
+int getTotalConflicts (void)
+{
+	return nonOverlapConflictCounter + getTotalOverlaps ();
+}
 
 void printKs (KeySet * ks)
 {
@@ -299,14 +331,21 @@ static bool keysAreEqual (Key * a, Key * b)
  * and the element is not already in the result key set.
  * It should be called 3 times, each time with a different of our key set, their key set and base key set as checkedSet parameter.
  * Which of the remaining two key sets is firstCompared or secondCompared is irrelevant.
+ *
  * The checkedIsDominant parameter is for the merge strategy. If a conflict occurs and checkedIsDominant is true then the current element
  * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
+ *
+ * checkedIsBase must be true when the checkedSet parameter is the base set of the three way merge.
  *
  * This returns -1 on error and 0 if successful.
  *
  */
-int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant)
+int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
+		    bool checkedIsBase)
 {
+	ksRewind (checkedSet);
+	ksRewind (firstCompared);
+	ksRewind (secondCompared);
 	Key * checkedKey;
 	while ((checkedKey = ksNext (checkedSet)) != NULL)
 	{
@@ -318,8 +357,10 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 		Key * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
 		if (keyInFirst != NULL && keyInSecond != NULL)
 		{
+			printf ("all exist\n");
 			if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
 			{
+				printf ("A\n");
 				// append any of the three keys
 				if (ksAppendKey (result, checkedKey) < 0)
 				{
@@ -328,6 +369,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else if (keysAreEqual (checkedKey, keyInFirst))
 			{
+				printf ("b\n");
 				if (ksAppendKey (result, keyInSecond) < 0)
 				{
 					return -1;
@@ -335,6 +377,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else if (keysAreEqual (checkedKey, keyInSecond))
 			{
+				printf ("c\n");
 				if (ksAppendKey (result, keyInFirst) < 0)
 				{
 					return -1;
@@ -342,9 +385,17 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else
 			{
-				// Conflict case
+				/**
+				 * Conflict case
+				 *
+				 * The same non-overlap conflict gets detected three times, once for each of the three invocations of
+				 * checkSingleSet. However, only one of those three times is required. Thus use a getter function that
+				 * calculates a third.
+				 */
+				overlap3different++;
 				if (checkedIsDominant)
 				{
+					printf ("appending key\n");
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
 						return -1;
@@ -354,29 +405,66 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 		}
 		else if (keyInFirst == NULL && keyInSecond == NULL)
 		{
-			if (ksAppendKey (result, checkedKey) < 0)
+			printf ("both other keys are null\n");
+			if (checkedIsBase)
 			{
-				return -1;
+				/**
+				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
+				 */
+				nonOverlapConflictCounter++;
+				if (checkedIsDominant) // currently iterating over base and base strategy is set
+				{
+					printf ("checked is dominant\n");
+					if (ksAppendKey (result, checkedKey) < 0)
+					{
+						return -1;
+					}
+				}
+			}
+			else
+			{
+				if (ksAppendKey (result, checkedKey) < 0)
+				{
+					return -1;
+				}
 			}
 		}
 		else
 		{
+			printf ("wop\n");
 			Key * existingKey;
 			if (keyInFirst != NULL)
 			{
+				printf ("first\n");
 				existingKey = keyInFirst;
 			}
 			else if (keyInSecond != NULL)
 			{
+				printf ("second\n");
 				existingKey = keyInSecond;
 			}
 			else
 			{
 				return -1;
 			}
-			if (ksAppendKey (result, existingKey) < 0)
+			if (keysAreEqual (checkedKey, existingKey))
 			{
-				return -1;
+				printf ("equal key thingy\n");
+			}
+			else
+			{
+				// overlap  with single empty
+				// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
+				overlap1empty++;
+			}
+			if (checkedIsDominant)
+			{
+				printf ("checked Is dominant\n");
+				if (ksAppendKey (result, checkedKey) < 0)
+				{
+					fprintf (stderr, "Could not append key\n");
+					return -1;
+				}
 			}
 		}
 	}
@@ -391,7 +479,10 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 		   int strategy)
 {
 	ELEKTRA_LOG ("cmerge starts");
-	conflictCounter = 0;
+	fprintf (stdout, "cmerge starts with strategy %d\n", strategy);
+	nonOverlapConflictCounter = 0;
+	overlap3different = 0;
+	overlap1empty = 0;
 	KeySet * result = ksNew (0, KS_END);
 	KeySet * ourCropped = removeRoots (our, ourRoot);
 	KeySet * theirCropped = removeRoots (their, theirRoot);
@@ -405,26 +496,29 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	switch (strategy)
 	{
 	case 3:
+		printf ("our dominant\n");
 		ourDominant = true;
 		break;
 	case 4:
+		printf ("their dominant\n");
 		theirDominant = true;
 		break;
 	case 5:
+		printf ("base dominant\n");
 		baseDominant = true;
 		break;
 	}
 
-	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant);
-	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant);
-	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant);
-	ELEKTRA_LOG ("Resulting keyset of cmerge has size %ld. There were %d conflicts.\n", ksGetSize (result), conflictCounter);
+	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant, true);
+	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, false);
+	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, false);
 	ksDel (ourCropped);
 	ksDel (theirCropped);
 	ksDel (baseCropped);
-	if (conflictCounter > 0)
+	if (getTotalConflicts () > 0)
 	{
-		fprintf (stdout, "There are %d conflicts\n", conflictCounter);
+		fprintf (stdout, "Conflict statistic:\n  %2d overlaps\n  %2d non-overlaps\n   --------------\n  %2d total\n",
+			 getTotalOverlaps (), nonOverlapConflictCounter, getTotalConflicts ());
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			return NULL;
