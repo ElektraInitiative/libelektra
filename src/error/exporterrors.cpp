@@ -31,7 +31,7 @@ static ostream & printKDBErrors (ostream & os, parse_t & p)
 	   << "#ifndef KDBERRORS_H" << endl
 	   << "#define KDBERRORS_H" << endl
 	   << endl
-	   << "#include <kdb.h>" << endl
+	   << "#include <elektra/kdb.h>" << endl
 	   << "#include <kdbhelper.h>" << endl
 	   << "#include <kdblogger.h>" << endl
 	   << "#include <kdbmacros.h>" << endl

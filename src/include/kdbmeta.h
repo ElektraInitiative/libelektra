@@ -11,7 +11,7 @@
 #ifndef KDBMETA_H
 #define KDBMETA_H
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 
 #ifdef __cplusplus
 namespace ckdb

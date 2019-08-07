@@ -17,7 +17,7 @@
  *
  */
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbhelper.h>       // elektraFree
 #include <kdbio.h>	   // I/O binding functions (elektraIo*)
 #include <kdbio/uv.h>	// I/O binding constructor for uv (elektraIoUvNew)

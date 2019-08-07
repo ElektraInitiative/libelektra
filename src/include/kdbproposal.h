@@ -11,7 +11,7 @@
 #ifndef KDBPROPOSAL_H
 #define KDBPROPOSAL_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 #ifdef __cplusplus
 namespace ckdb

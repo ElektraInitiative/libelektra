@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_INCLUDES_HPP
 #define ELEKTRA_INCLUDES_HPP
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdb.hpp>
 #include <key.hpp>
 #include <keyset.hpp>

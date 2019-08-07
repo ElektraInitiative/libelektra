@@ -9,7 +9,7 @@
 #ifndef KDBMODULE_H
 #define KDBMODULE_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbplugin.h>
 
 #ifdef __cplusplus

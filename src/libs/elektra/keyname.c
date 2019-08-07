@@ -30,7 +30,7 @@
  *
  * To use them:
  * @code
-#include <kdb.h>
+#include <elektra/kdb.h>
 * @endcode
  *
  * These functions make it easier for C programmers to work with key names.
@@ -160,7 +160,7 @@
 #include <stdlib.h>
 #endif
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdbhelper.h"
 #include "kdbinternal.h"
 
