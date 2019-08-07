@@ -25,7 +25,7 @@ module Elektra.Key (
   tmpRef
 ) where
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
 import Foreign.Ptr (castPtr, nullPtr)
 import Foreign.ForeignPtr (FinalizerPtr (..), withForeignPtr, addForeignPtrFinalizer)

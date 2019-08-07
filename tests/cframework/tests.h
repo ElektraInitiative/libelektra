@@ -25,7 +25,7 @@
 #include <string.h>
 #endif
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbhelper.h>
 #include <kdbmacros.h>
 

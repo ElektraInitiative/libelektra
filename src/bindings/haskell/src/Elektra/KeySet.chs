@@ -21,7 +21,7 @@ import Control.Monad (liftM, liftM2, mapM_)
 import Data.List (intercalate, deleteFirstsBy)
 import System.IO.Unsafe (unsafePerformIO)
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 -- ***
 -- TYPE DEFINITIONS

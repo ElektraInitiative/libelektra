@@ -25,7 +25,7 @@
 #endif
 
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdbprivate.h"
 #include "kdbtypes.h"
 #include <kdbassert.h>

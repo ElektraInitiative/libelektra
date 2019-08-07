@@ -29,7 +29,7 @@
  *
  * To use them:
  * @code
-#include <kdb.h>
+#include <elektra/kdb.h>
  * @endcode
  *
  * Next to \link keyname Name (key and owner) \endlink and
@@ -99,7 +99,7 @@
  */
 
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbconfig.h>
 #include <kdbprivate.h>
 
