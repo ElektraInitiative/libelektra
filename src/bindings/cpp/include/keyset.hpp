@@ -17,7 +17,7 @@
 
 #include <key.hpp>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 namespace kdb
 {

@@ -54,7 +54,7 @@
  *
  * To use them:
  * @code
- * #include <kdb.h>
+ * #include <elektra/kdb.h>
  * @endcode
  *
  * The kdb*() methods are used to access the storage, to get and set

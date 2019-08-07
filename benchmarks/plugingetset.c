@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbhelper.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h>

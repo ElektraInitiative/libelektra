@@ -16,7 +16,7 @@
 #include <conversion_application.hpp>
 #include <database_application.hpp>
 #include <exceptions.hpp>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdblogger.h>
 #include <root_application.hpp>
 #include <service.hpp>

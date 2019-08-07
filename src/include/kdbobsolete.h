@@ -12,7 +12,7 @@
 #ifndef KDBOBSOLETE_H
 #define KDBOBSOLETE_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 char * keyNameGetOneLevel (const char * keyname, size_t * size);
 

@@ -11,7 +11,7 @@
 #include <kdb.hpp>
 
 #include <helper/keyhelper.hpp>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h> // currently needed for plugin handling (struct _Plugin)

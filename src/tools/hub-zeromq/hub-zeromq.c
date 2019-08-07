@@ -11,7 +11,7 @@
 #include <signal.h> // signal
 #include <stdio.h>  // printf
 
-#include <kdb.h> // KDB
+#include <elektra/kdb.h> // KDB
 
 #include <zmq.h> // ZeroMq function
 

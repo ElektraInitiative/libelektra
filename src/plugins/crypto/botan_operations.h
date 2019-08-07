@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_BOTAN_OPERATIONS_H
 #define ELEKTRA_PLUGIN_BOTAN_OPERATIONS_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbtypes.h>
 
 #ifdef __cplusplus
