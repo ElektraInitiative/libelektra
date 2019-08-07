@@ -13,15 +13,10 @@ public class ErrorCodeTest {
 	private Key parentKey = Key.create("user/tests/javabinding");
 	private final String errorMeta = "trigger/error";
 	private final String warningMeta = "trigger/warnings";
-	private NativeElektraPlugin errorPlugin;
-
-	@Before
-	public void setup(){
-		errorPlugin = new NativeElektraPlugin("error", parentKey);
-	}
 
 	@Test(expected = OutOfMemoryException.class)
 	public void kdbSetWithError_shouldMapOutOfMemoryError() throws Exception {
+		NativeElektraPlugin errorPlugin = new NativeElektraPlugin("error", parentKey);
 		Key errorKey = Key.create("user/tests/myError");
 		errorKey.setMeta(errorMeta, OutOfMemoryException.errorCode());
 		final KeySet ks = KeySet.create(10, KeySet.KS_END);
@@ -31,6 +26,7 @@ public class ErrorCodeTest {
 
 	@Test
 	public void kdbSetWithWarning_shouldNotTriggerException() throws Exception {
+		NativeElektraPlugin errorPlugin = new NativeElektraPlugin("error", parentKey);
 		Key warningKey = Key.create("user/tests/myError");
 		warningKey.setMeta(warningMeta, ResourceException.errorCode());
 		final KeySet ks = KeySet.create(10, KeySet.KS_END);
@@ -40,6 +36,7 @@ public class ErrorCodeTest {
 
 	@Test
 	public void kdbSetWithWarningAndError_shouldHaveWarnings() {
+		NativeElektraPlugin errorPlugin = new NativeElektraPlugin("error", parentKey);
 		Key warningKey = Key.create("user/tests/myError");
 		warningKey.setMeta(warningMeta, SemanticValidationException.errorCode());
 		Key errorKey = Key.create("user/tests/myError2");
