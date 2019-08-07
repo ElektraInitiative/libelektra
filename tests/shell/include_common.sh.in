@@ -235,7 +235,8 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xtcl" \
 		-o "x$PLUGIN" = "xmini" \
 		-o "x$PLUGIN" = "xyaypeg" \
-		-o "x$PLUGIN" = "xyamlcpp"
+		-o "x$PLUGIN" = "xyamlcpp" \
+		-o "x$PLUGIN" = "xyanlr"
 }
 
 is_plugin_available() {
@@ -391,7 +392,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
 #
 #
 #
