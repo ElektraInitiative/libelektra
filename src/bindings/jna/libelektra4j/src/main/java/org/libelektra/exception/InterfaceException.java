@@ -4,13 +4,13 @@ import org.libelektra.Key;
 
 public class InterfaceException extends LogicalException {
 
-    private static String errorCode = "C01320";
+	private static String errorCode = "C01320";
 
-    public InterfaceException(Key k) {
-        super(k);
-    }
+	public InterfaceException(Key k) {
+		super(k);
+	}
 
-    public static String errorCode() {
-        return errorCode;
-    }
+	public static String errorCode() {
+		return errorCode;
+	}
 }
