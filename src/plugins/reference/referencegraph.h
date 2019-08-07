@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_REFERENCEGRAPH_H
 #define ELEKTRA_REFERENCEGRAPH_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdbool.h>
 
 typedef struct _RefGraph RefGraph;

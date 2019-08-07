@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_KDBOPTS_H
 #define ELEKTRA_KDBOPTS_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey);
 char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix);

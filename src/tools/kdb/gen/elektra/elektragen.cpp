@@ -18,7 +18,7 @@
 #include <modules.hpp>
 
 #include <fstream>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbease.h>
 #include <memory>
 #include <regex>

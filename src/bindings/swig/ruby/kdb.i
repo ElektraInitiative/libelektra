@@ -47,7 +47,7 @@ namespace std {
 %{
   extern "C" {
     #include "kdbconfig.h"
-    #include "kdb.h"
+    #include "elektra/kdb.h"
   }
 
   #include "keyexcept.hpp"
@@ -73,7 +73,7 @@ namespace std {
 %constant const short VERSION_MICRO = KDB_VERSION_MICRO;
 /* we only care about the enums. ignore the c functions */
 %ignore ckdb;
-%include "kdb.h"
+%include "elektra/kdb.h"
 
 
 

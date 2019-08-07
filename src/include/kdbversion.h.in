@@ -17,7 +17,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 static inline KeySet *elektraVersionKeySet (void)
 {

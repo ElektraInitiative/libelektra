@@ -8,7 +8,7 @@
 #ifndef HS_KDBERRORS_H
 #define HS_KDBERRORS_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 void hsElektraTriggerError (const char * nr, Key * parentKey, const char * message);
 void hsElektraTriggerWarnings (const char * nr, Key * parentKey, const char * message);

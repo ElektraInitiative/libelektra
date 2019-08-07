@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_CONVERSION_H
 #define ELEKTRA_CONVERSION_H
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "types.h"
 
 #ifdef __cplusplus

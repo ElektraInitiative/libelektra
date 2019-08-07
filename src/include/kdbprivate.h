@@ -11,7 +11,7 @@
 
 #include <elektra.h>
 #include <elektra/error.h>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>

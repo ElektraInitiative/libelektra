@@ -12,7 +12,7 @@
 
 #include <stdbool.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbplugin.h>
 #include <kdbtypes.h>
 

@@ -12,7 +12,7 @@ module Elektra.KDB (
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 {#pointer *KDB foreign newtype #}
 
