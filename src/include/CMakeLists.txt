@@ -72,8 +72,6 @@ endif (ENABLE_OPTIMIZATIONS)
 
 test_big_endian (ELEKTRA_BIG_ENDIAN)
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdb.h")
-
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h")
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h")
@@ -84,7 +82,6 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       kdbease.h
 	       kdbtypes.h
 	       kdbhelper.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
 	       kdbmodule.h
 	       kdbos.h
 	       kdbopts.h
@@ -103,7 +100,7 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 add_custom_target (elektra_config_headers ALL
-		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
+		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/elektra/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
 			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
 
 add_subdirectory (kdbio)
