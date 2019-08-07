@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 int main (void)
 {

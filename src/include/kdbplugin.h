@@ -9,7 +9,7 @@
 #ifndef KDBPLUGIN_H
 #define KDBPLUGIN_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 #include <errno.h>
 #include <kdbmacros.h>

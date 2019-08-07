@@ -1,5 +1,5 @@
 #include "referencegraph.h"
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <stdlib.h>

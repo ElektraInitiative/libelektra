@@ -9,7 +9,7 @@
 #ifndef BENCHMARKS_H
 #define BENCHMARKS_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbassert.h>
 #include <kdbinternal.h>
 #include <kdbrand.h>

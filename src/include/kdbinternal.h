@@ -9,7 +9,7 @@
 #ifndef KDBINTERNAL_H
 #define KDBINTERNAL_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbextension.h>

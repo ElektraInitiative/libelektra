@@ -8,7 +8,7 @@
 
 #include "kdbconfig.h"
 #include <external.hpp>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdb.hpp>
 
 #include <iostream>

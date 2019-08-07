@@ -15,7 +15,7 @@
 #include "gcrypt_operations.h"
 #include "gpg.h"
 #include "helper.h"
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <pthread.h>

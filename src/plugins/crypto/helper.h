@@ -11,7 +11,7 @@
 #define ELEKTRA_PLUGIN_CRYPTO_HELPER_H
 
 #include "crypto.h"
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbtypes.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);

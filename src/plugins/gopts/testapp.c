@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbopts.h>
 #include <kdbplugin.h>
 

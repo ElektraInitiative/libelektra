@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDBGLOBAL_H
 #define ELEKTRA_KDBGLOBAL_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbmacros.h>
 #include <kdbplugin.h>
 

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #endif
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdbinternal.h"
 #include "kdbprivate.h"
 
@@ -35,7 +35,7 @@
  *
  * To use them:
  * @code
-#include <kdb.h>
+#include <elektra/kdb.h>
  * @endcode
  *
  *

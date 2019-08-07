@@ -11,7 +11,7 @@
 
 #include <kdbpluginprocess.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
 #include <stdlib.h>

@@ -15,7 +15,7 @@
 #include <command.hpp>
 #include <modules.hpp>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbopts.h>

@@ -13,7 +13,7 @@
 #ifndef KDB_NOTIFICATION_PLUGIN_H_
 #define KDB_NOTIFICATION_PLUGIN_H_
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdbnotification.h"
 #include "kdbplugin.h"
 
