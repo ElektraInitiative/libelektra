@@ -1,3 +1,3 @@
 = root
-key = value
-key/subkey = another value
+key=value
+key/subkey=another value
