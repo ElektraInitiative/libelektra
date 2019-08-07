@@ -178,7 +178,7 @@ static size_t normalize (void * to_normalize, size_t * size)
 		{
 			if (i < *size - 1)
 			{
-				memmove (&as_int[i], &as_int[i + 1], *size - i);
+				memmove (&as_int[i], &as_int[i + 1], *size - 1 - i);
 			}
 			removed_count += 1;
 		}
