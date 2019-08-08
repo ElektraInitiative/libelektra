@@ -237,7 +237,8 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xyaypeg" \
 		-o "x$PLUGIN" = "xyamlcpp" \
 		-o "x$PLUGIN" = "xyanlr" \
-		-o "x$PLUGIN" = "xyawn"
+		-o "x$PLUGIN" = "xyawn" \
+		-o "x$PLUGIN" = "xdini"
 }
 
 is_plugin_available() {
