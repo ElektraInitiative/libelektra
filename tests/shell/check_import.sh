@@ -22,6 +22,9 @@ exit_if_fail "For export/import /dev must be mounted"
 [ -e /dev/stdout ]
 exit_if_fail "For export/import /dev must be mounted"
 
+"$KDB" rm -r $ROOT
+"$KDB" rm $SIDE
+
 for PLUGIN in $PLUGINS; do
 	if is_not_rw_storage; then
 		echo "-- $PLUGIN not a read-write storage"
