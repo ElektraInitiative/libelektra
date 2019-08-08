@@ -14,6 +14,12 @@ if (CARGO_EXECUTABLE)
 	# Configure Cargo.toml to insert the kdb version
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/Cargo.toml" @ONLY)
 
+	execute_process (COMMAND "echo 'void foo() {}' | gcc -x c -fPIC -shared -fsanitize=address -"
+			 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+	execute_process (COMMAND "export LD_PRELOAD=$(ldd a.out | grep libasan.so | awk '{print $3}')"
+			 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
 			    COMMAND ${CARGO_EXECUTABLE} build --release
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
