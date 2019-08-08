@@ -3,6 +3,8 @@ package org.libelektra;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import org.libelektra.exception.InstallationException;
+import org.libelektra.exception.InternalException;
 import org.libelektra.exception.KDBException;
 import org.libelektra.exception.mapper.ExceptionMapperService;
 
@@ -14,10 +16,16 @@ public class NativeElektraPlugin {
 
 	private NativePlugin nativePlugin;
 
-	public NativeElektraPlugin(String pluginName, Key errorKey) {
+	public NativeElektraPlugin(String pluginName, Key errorKey) throws InstallationException {
 		KeySet modules = KeySet.create();
 		KeySet config = KeySet.create();
 		nativePlugin = Elektra.INSTANCE.elektraPluginOpen(pluginName, modules.get(), config.get(), errorKey.get());
+		if (nativePlugin == null) {
+			Key temporaryError = Key.create("user/temporary/errorkey");
+			temporaryError.setMeta("error/number", InstallationException.errorCode());
+			temporaryError.setMeta("error/reason", String.format("I could not find plugin '%s'", pluginName));
+			throw new InstallationException(temporaryError);
+		}
 	}
 
 	public NativeElektraPlugin(String pluginName, KeySet modules, KeySet config, Key errorKey) {
@@ -107,7 +115,4 @@ public class NativeElektraPlugin {
 			return list;
 		}
 	}
-
 }
-
-
