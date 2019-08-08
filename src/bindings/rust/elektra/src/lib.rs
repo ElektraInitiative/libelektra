@@ -1,5 +1,7 @@
 extern crate elektra_sys;
 
+extern crate bitflags;
+
 pub mod key;
 pub mod keyset;
 

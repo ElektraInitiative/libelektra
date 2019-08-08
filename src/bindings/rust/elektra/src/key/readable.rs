@@ -180,7 +180,8 @@ pub trait ReadableKey {
         unsafe { elektra_sys::keyIsInactive(self.as_ref()) == 1 }
     }
 
-    // keymeta methods
+    // TODO: If the key that held the metakey is dropped, the return value is still valid,
+    // according to current semantics, but the pointer it holds is invalid.
     /// Returns the metadata with the given metaname
     fn get_meta(&self, metaname: &str) -> Result<ReadOnly<StringKey>, KeyError>
     where
