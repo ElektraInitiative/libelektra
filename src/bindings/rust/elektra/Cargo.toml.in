@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 elektra-sys = { version = "@KDB_VERSION@", path = "../elektra-sys" }
+bitflags = "1.1.0"

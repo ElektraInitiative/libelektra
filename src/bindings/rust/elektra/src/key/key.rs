@@ -63,8 +63,9 @@ macro_rules! add_traits {
 
         impl Drop for $t {
             fn drop(&mut self) {
-                println!("Drop {:?}", self);
-                unsafe { elektra_sys::keyDel(self.as_ptr()) };
+                    println!("Drop {:?}", self);
+                    let r = unsafe { elektra_sys::keyDel(self.as_ptr()) };
+                    println!("Was dropped: {}", r == 0);
             }
         }
 
@@ -128,7 +129,8 @@ impl BinaryKey {
             )
         };
 
-        if ret_val > 0 { // TODO try_into?
+        if ret_val > 0 {
+            // TODO try_into?
             unsafe { vec.set_len(ret_val as usize) };
             vec
         } else {
@@ -150,7 +152,6 @@ impl ReadableKey for StringKey {
             ptr: NonNull::new(ptr).unwrap(),
         }
     }
-
     fn get_value(&self) -> Self::Value {
         self.get_string().to_owned()
     }
@@ -168,6 +169,7 @@ impl ReadableKey for BinaryKey {
             ptr: NonNull::new(ptr).unwrap(),
         }
     }
+
     fn get_value(&self) -> Self::Value {
         self.get_binary()
     }
@@ -376,7 +378,7 @@ mod tests {
 
     #[test]
     fn can_cast_key_types() {
-        let mut key = StringKey::new("user/test/cast").unwrap();
+        let key = StringKey::new("user/test/cast").unwrap();
         let mut bin_key = BinaryKey::from(key);
         let val = "data".as_bytes();
         bin_key.set_value(val);

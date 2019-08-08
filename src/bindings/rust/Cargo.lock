@@ -123,6 +123,7 @@ dependencies = [
 name = "elektra"
 version = "0.8.26"
 dependencies = [
+ "bitflags 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "elektra-sys 0.8.26",
 ]
 
