@@ -303,43 +303,43 @@ mod tests {
         ks
     }
 
-    #[test]
-    fn can_lookup_key() {
-        let ret_val;
-        {
-            let mut ks = setup_keyset();
-            let lookup_key = StringKey::new("/test/key").unwrap();
-            println!("Lookup_key is {:?}", lookup_key);
-            ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
-            println!(
-                "retval {:?}, size {}, name {}",
-                ret_val,
-                ks.get_size(),
-                ks.tail().unwrap().get_name()
-            );
-            assert_eq!(ks.get_size(), 2);
-            assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
-        }
-        assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
-    }
+    // #[test]
+    // fn can_lookup_key() {
+    //     let ret_val;
+    //     {
+    //         let mut ks = setup_keyset();
+    //         let lookup_key = StringKey::new("/test/key").unwrap();
+    //         println!("Lookup_key is {:?}", lookup_key);
+    //         ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
+    //         println!(
+    //             "retval {:?}, size {}, name {}",
+    //             ret_val,
+    //             ks.get_size(),
+    //             ks.tail().unwrap().get_name()
+    //         );
+    //         assert_eq!(ks.get_size(), 2);
+    //         assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
+    //     }
+    //     assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
+    // }
 
-    #[test]
-    fn can_lookup_key_by_name() {
-        let key;
-        {
-            let mut ks = setup_keyset();
-            key = ks.lookup_by_name("/test/key", LookupOption::KDB_O_POP);
-            println!(
-                "retval {:?}, size {}, name {}",
-                key,
-                ks.get_size(),
-                ks.tail().unwrap().get_name()
-            );
-            assert_eq!(ks.get_size(), 1);
-            assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
-        } // <-- ks is dropped here
-          // key is still alive, because of KDB_O_POP
-        assert_eq!(key.unwrap().get_name(), "user/test/key");
-    }
+    // #[test]
+    // fn can_lookup_key_by_name() {
+    //     let key;
+    //     {
+    //         let mut ks = setup_keyset();
+    //         key = ks.lookup_by_name("/test/key", LookupOption::KDB_O_POP);
+    //         println!(
+    //             "retval {:?}, size {}, name {}",
+    //             key,
+    //             ks.get_size(),
+    //             ks.tail().unwrap().get_name()
+    //         );
+    //         assert_eq!(ks.get_size(), 1);
+    //         assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
+    //     } // <-- ks is dropped here
+    //       // key is still alive, because of KDB_O_POP
+    //     assert_eq!(key.unwrap().get_name(), "user/test/key");
+    // }
 
 }
