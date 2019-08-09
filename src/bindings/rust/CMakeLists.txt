@@ -14,11 +14,8 @@ if (CARGO_EXECUTABLE)
 	# Configure Cargo.toml to insert the kdb version
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/Cargo.toml" @ONLY)
 
-	execute_process (COMMAND "echo 'void foo() {}' | gcc -x c -fPIC -shared -fsanitize=address -"
-			 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-	execute_process (COMMAND "export LD_PRELOAD=$(ldd a.out | grep libasan.so | awk '{print $3}')"
-			 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	set (ENV{LD_PRELOAD} "/usr/lib/x86_64-linux-gnu/libasan.so.3")
+	set (ENABLE_ASAN, OFF)
 
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
 			    COMMAND ${CARGO_EXECUTABLE} build --release
@@ -30,6 +27,7 @@ if (CARGO_EXECUTABLE)
 	add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test --lib WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
 	set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	set_tests_properties (test_rust_elektra PROPERTIES ENABLE_ASAN OFF)
 
 else ()
 	exclude_binding (rust, "cargo not found")
