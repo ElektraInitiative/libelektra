@@ -201,10 +201,18 @@ impl KeySet {
                 options.bits() as elektra_sys::option_t,
             )
         };
+        if options.contains(LookupOption::KDB_O_DEL) {
+            println!("contains del");
+            std::mem::forget(key);
+        }
+
+        println!("keyptr is {:?}", key_ptr);
         if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+            println!("is null");
             None
         } else {
-            Some(StringKey::from_ptr(key_ptr))
+            let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
+            Some(StringKey::from_ptr(dup_ptr))
         }
     }
 
@@ -218,10 +226,19 @@ impl KeySet {
                 options.bits() as elektra_sys::option_t,
             )
         };
+        println!("keyptr is {:?}", key_ptr);
+
         if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+            println!("is null");
             None
         } else {
-            Some(StringKey::from_ptr(key_ptr))
+            if options.contains(LookupOption::KDB_O_DEL) {
+                println!("contains del");
+                None
+            } else {
+                let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
+                Some(StringKey::from_ptr(dup_ptr))
+            }
         }
     }
 }
@@ -303,43 +320,44 @@ mod tests {
         ks
     }
 
-    // #[test]
-    // fn can_lookup_key() {
-    //     let ret_val;
-    //     {
-    //         let mut ks = setup_keyset();
-    //         let lookup_key = StringKey::new("/test/key").unwrap();
-    //         println!("Lookup_key is {:?}", lookup_key);
-    //         ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
-    //         println!(
-    //             "retval {:?}, size {}, name {}",
-    //             ret_val,
-    //             ks.get_size(),
-    //             ks.tail().unwrap().get_name()
-    //         );
-    //         assert_eq!(ks.get_size(), 2);
-    //         assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
-    //     }
-    //     assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
-    // }
+    #[test]
+    fn can_lookup_key_with_none_option() {
+        let ret_val;
+        {
+            let mut ks = setup_keyset();
+            let lookup_key = StringKey::new("/test/key").unwrap();
+            println!("Lookup_key is {:?}", lookup_key);
+            ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
+            println!(
+                "retval {:?}, size {}, name {}",
+                ret_val,
+                ks.get_size(),
+                ks.tail().unwrap().get_name()
+            );
+            assert_eq!(ks.get_size(), 2);
+            assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
+        }
+        assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
+    }
 
-    // #[test]
-    // fn can_lookup_key_by_name() {
-    //     let key;
-    //     {
-    //         let mut ks = setup_keyset();
-    //         key = ks.lookup_by_name("/test/key", LookupOption::KDB_O_POP);
-    //         println!(
-    //             "retval {:?}, size {}, name {}",
-    //             key,
-    //             ks.get_size(),
-    //             ks.tail().unwrap().get_name()
-    //         );
-    //         assert_eq!(ks.get_size(), 1);
-    //         assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
-    //     } // <-- ks is dropped here
-    //       // key is still alive, because of KDB_O_POP
-    //     assert_eq!(key.unwrap().get_name(), "user/test/key");
-    // }
+    #[test]
+    fn can_lookup_key_with_del_option() {
+        let key;
+        {
+            let mut ks = setup_keyset();
+            let lookup_key = StringKey::new("/test/key").unwrap();
+            key = ks.lookup(lookup_key, LookupOption::KDB_O_DEL);
+            println!(
+                "retval {:?}, size {}, name {}",
+                key,
+                ks.get_size(),
+                ks.tail().unwrap().get_name()
+            );
+            assert_eq!(ks.get_size(), 2);
+            assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
+        } // <-- ks is dropped here
+          // Check that key is still valid
+        assert_eq!(key.unwrap().get_name(), "user/test/key");
+    }
 
 }
