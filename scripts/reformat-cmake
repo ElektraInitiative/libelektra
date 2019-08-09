@@ -9,13 +9,14 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
 CMAKE_FORMAT=$(which cmake-format)
+CMAKE_FORMAT_VERSION=$("$CMAKE_FORMAT" --version)
 
-cd "$SOURCE"
-
-if [ -z "${CMAKE_FORMAT}" ]; then
-	printf 2>&1 'Please install `cmake-format`\n'
+if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.5.4" ]; then
+	printf 2>&1 'Please install `cmake-format` version 0.5.4\n'
 	exit 1
 fi
+
+cd "$SOURCE" || exit 1
 
 output=$("${CMAKE_FORMAT}" 2>&1 CMakeLists.txt)
 
