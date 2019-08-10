@@ -119,6 +119,7 @@ When looking into the root classpath `org.libelektra` you will have noticed two 
 can be used to load a native Elektra plugin which is written in C/C++. It will behave exactly like a normal Elektra plugin. The main
 advantage is the isolation from the rest of Elektra as well as the circumvention of the "too many plugins" [error](https://github.com/ElektraInitiative/libelektra/issues/2133).
 You can load a Plugin like the following:
+
 ```java
 Key parentKey = Key.create("user/tests/javabinding");
 String errorPluginName = "error";
@@ -129,7 +130,9 @@ NativeElektraPlugin yourPlugin = null;
 			// Most likely the desired plugin is not installed or you had a typo in the pluginName
 		}
 ```
+
 Now you can pass a KeySet and let the Plugin do its work. E.g., the code below tests if the `error` plugin.
+
 ```java
 Key errorKey = Key.create("user/tests/myError");
 errorKey.setMeta(errorMeta, OutOfMemoryException.errorCode());
@@ -139,7 +142,7 @@ errorPlugin.kdbSet(ks, parentKey);
 \\ OutOfMemoryException is thrown
 ```
 
-The `Plugin` class on the other hand is used to develop your *own* Elektra plugins but written in Java.
+The `Plugin` class on the other hand is used to develop your _own_ Elektra plugins but written in Java.
 You can see various examples in the [plugin folder](src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin
 which can be used to save and load `.properties` files into Elektra.
 
