@@ -19,7 +19,7 @@ public class ErrorCodeTest {
 		try {
 			errorPlugin = new NativeElektraPlugin(errorPluginName, parentKey);
 		} catch (InstallationException e) {
-			// On some builds are not able to load the native error plugin
+			// Some builds are not able to load the native error plugin
 			Key temporaryError = Key.create("user/temporary/errorkey");
 			temporaryError.setMeta("error/number", OutOfMemoryException.errorCode());
 			throw new OutOfMemoryException(temporaryError);
@@ -37,7 +37,7 @@ public class ErrorCodeTest {
 		try {
 			errorPlugin = new NativeElektraPlugin(errorPluginName, parentKey);
 		} catch (InstallationException e) {
-			// On some builds are not able to load the native error plugin
+			// Some builds are not able to load the native error plugin
 			return;
 		}
 		Key warningKey = Key.create("user/tests/myError");
@@ -53,7 +53,7 @@ public class ErrorCodeTest {
 		try {
 			errorPlugin = new NativeElektraPlugin(errorPluginName, parentKey);
 		} catch (InstallationException e) {
-			// On some builds are not able to load the native error plugin
+			// Some builds are not able to load the native error plugin
 			return;
 		}
 		Key warningKey = Key.create("user/tests/myError");

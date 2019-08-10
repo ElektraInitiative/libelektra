@@ -4,14 +4,15 @@ import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import org.libelektra.exception.InstallationException;
-import org.libelektra.exception.InternalException;
 import org.libelektra.exception.KDBException;
 import org.libelektra.exception.mapper.ExceptionMapperService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * This class can be used to load native C/C++ written Elektra Plugins to be used by Java directly
+ */
 public class NativeElektraPlugin {
 
 	private NativePlugin nativePlugin;
@@ -32,18 +33,39 @@ public class NativeElektraPlugin {
 		nativePlugin = Elektra.INSTANCE.elektraPluginOpen(pluginName, modules.get(), config.get(), errorKey.get());
 	}
 
+	/**
+	 * Gets the config which was used to configure the plugin
+	 * @return A KeySet containing the configuration of the plugin
+	 */
 	public KeySet getConfig() {
 		return new KeySet(nativePlugin.config);
 	}
 
+	/**
+	 * Opens the session with the KeyDatabase
+	 * @param errorKey must be a valid key, e.g. created with Key.create()
+	 * @return 0 if success or -1 otherwise
+	 */
 	public int kdbOpen(Key errorKey) {
 		return nativePlugin.kdbOpen.invoke(nativePlugin, errorKey.get());
 	}
 
+	/**
+	 * Closes the session with the Key database.
+	 * @param errorKey must be a valid key, e.g. created with Key.create()
+	 * @return 0 if success or -1 otherwise
+	 */
 	public int kdbClose(Key errorKey) {
 		return nativePlugin.kdbClose.invoke(nativePlugin, errorKey.get());
 	}
 
+	/**
+	 * Lets the plugin transform the given KeySet
+	 * @param keySet The KeySet to transform
+	 * @param errorKey must be a valid key, e.g. created with Key.create()
+	 * @return 0 if success or -1 otherwise
+	 * @throws KDBException if return value was -1
+	 */
 	public int kdbSet(KeySet keySet, Key errorKey) throws KDBException {
 		keySet.rewind();
 		int returnValue = nativePlugin.kdbSet.invoke(nativePlugin, keySet.get(), errorKey.get());
@@ -53,6 +75,13 @@ public class NativeElektraPlugin {
 		return returnValue;
 	}
 
+	/**
+	 * Writes into the given KeySet in the parameter
+	 * @param keySet The KeySet you want returned
+	 * @param errorKey must be a valid key, e.g. created with Key.create()
+	 * @return 0 if success or -1 otherwise
+	 * @throws KDBException if return value was -1
+	 */
 	public int kdbGet(KeySet keySet, Key errorKey) throws KDBException {
 		keySet.rewind();
 		int returnValue = nativePlugin.kdbGet.invoke(nativePlugin, keySet.get(), errorKey.get());
@@ -62,11 +91,21 @@ public class NativeElektraPlugin {
 		return returnValue;
 	}
 
+	/**
+	 * Called in case an error happened
+	 * @param keySet The affected KeySet
+	 * @param errorKey ust be a valid key, e.g. created with Key.create() and contains error information
+	 * @return 0 if success or -1 otherwise
+	 */
 	public int kdbError(KeySet keySet, Key errorKey) {
 		keySet.rewind();
 		return nativePlugin.kdbError.invoke(nativePlugin, keySet.get(), errorKey.get());
 	}
 
+	/**
+	 * Returns the plugin name
+	 * @return plugin name
+	 */
 	public String getName() {
 		return nativePlugin.name;
 	}
@@ -115,4 +154,5 @@ public class NativeElektraPlugin {
 			return list;
 		}
 	}
+
 }
