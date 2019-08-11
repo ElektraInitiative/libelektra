@@ -512,9 +512,9 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant, true);
 	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, false);
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, false);
-	ksDel (ourCropped);
-	ksDel (theirCropped);
-	ksDel (baseCropped);
+	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel(baseCropped) != 0) {
+		fprintf(stderr, "Could not delete keysets\n");
+	}
 	if (getTotalConflicts () > 0)
 	{
 		fprintf (stdout, "Conflict statistic:\n  %2d overlaps\n  %2d non-overlaps\n   --------------\n  %2d total\n",

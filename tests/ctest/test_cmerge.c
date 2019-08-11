@@ -221,6 +221,7 @@ static void test_5 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -261,6 +262,7 @@ static void test_5a (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -301,6 +303,7 @@ static void test_5b (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -328,6 +331,7 @@ static void test_6 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -355,6 +359,7 @@ static void test_7 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -385,6 +390,7 @@ static void test_8 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -415,6 +421,7 @@ static void test_8a (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -457,6 +464,7 @@ static void test_8b (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -494,6 +502,7 @@ static void test_9 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -532,6 +541,7 @@ static void test_10 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -562,6 +572,7 @@ static void test_11a (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -593,6 +604,7 @@ static void test_11b (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -635,6 +647,7 @@ static void test_11c (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -677,6 +690,7 @@ static void test_11d (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -706,6 +720,7 @@ static void test_12 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -745,6 +760,7 @@ static void test_12 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -783,6 +799,7 @@ static void test_12 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -823,6 +840,7 @@ static void test_12 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -863,6 +881,7 @@ static void test_12 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
@@ -907,6 +926,7 @@ static void test_12 (void)
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
+	ksDel (result);
 	keyDel (a);
 	keyDel (b);
 	keyDel (c);
