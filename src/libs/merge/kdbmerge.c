@@ -155,8 +155,7 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 
 /**
  * Performs normalization for basic semantic equivalence checks
- * 1. Removes all whitespaces
- * 2. Removes trailing zeros from numbers
+ *   - Removes trailing zeros from numbers
  *
  * This modifies the contents of the parameter to_normalize and does not create a copy itself.
  * Normalizes up to size in memory.
@@ -164,33 +163,7 @@ static KeySet * removeRoots (KeySet * original, Key * root)
  */
 static size_t normalize (void * to_normalize, size_t * size)
 {
-	// Each character is checked alone
-	char * as_int = to_normalize;
-	int removed_count = 0;
-	size_t i = 0;
-	while (i < *size)
-	{
-		/**
-		 * 0123456789ab         012345
-		 * ___abc_abc__ becomes abcabc
-		 */
-		if (isblank (as_int[i]))
-		{
-			if (i < *size - 1)
-			{
-				memmove (&as_int[i], &as_int[i + 1], *size - 1 - i);
-			}
-			removed_count += 1;
-		}
-		else
-		{
-			// Only here! memmove => no increase of i
-			i++;
-		}
-	}
-	size_t reducedSize = *size - removed_count;
-	*size = reducedSize;
-	return reducedSize;
+	return *size;
 }
 
 ///**
