@@ -30,6 +30,7 @@ section here.
 - [Plugin Variants](plugin_variants.md)
 - [Ingroup Removal](ingroup_removal.md)
 - [Error Message Format](error_message_format.md)
+- [Commit Function](commit_function.md)
 
 ## In Discussion
 
@@ -51,4 +52,3 @@ section here.
 - [Default Values](default_values.md)
 - [High Level API](high_level_api.md)
 - [Global KeySet](global_keyset.md)
-- [Commit Function](commit_function.md)
