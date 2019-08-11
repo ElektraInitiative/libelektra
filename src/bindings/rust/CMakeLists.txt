@@ -1,5 +1,10 @@
 find_program (CARGO_EXECUTABLE cargo)
 
+if (NOT BUILD_SHARED)
+	exclude_binding (rust "it can only be built if `BUILD_SHARED` is enabled")
+	return ()
+endif ()
+
 if (CARGO_EXECUTABLE)
 	add_binding (rust)
 
@@ -14,9 +19,6 @@ if (CARGO_EXECUTABLE)
 	# Configure Cargo.toml to insert the kdb version
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/Cargo.toml" @ONLY)
 
-	set (ENV{LD_PRELOAD} "/usr/lib/x86_64-linux-gnu/libasan.so.3")
-	set (ENABLE_ASAN, OFF)
-
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
 			    COMMAND ${CARGO_EXECUTABLE} build --release
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -24,10 +26,18 @@ if (CARGO_EXECUTABLE)
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
-	add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test --lib WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	if (NOT ENABLE_ASAN)
+		# set (ENV{LD_PRELOAD} "/usr/lib/x86_64-linux-gnu/libasan.so.3")
+		add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test --lib WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
-	set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-	set_tests_properties (test_rust_elektra PROPERTIES ENABLE_ASAN OFF)
+		set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		# set_tests_properties (test_rust_elektra PROPERTIES ENABLE_ASAN OFF)
+		set_property (TEST test_rust_elektra
+			      PROPERTY LABELS
+				       kdbtests
+				       bindings
+				       memleak)
+	endif (NOT ENABLE_ASAN)
 
 else ()
 	exclude_binding (rust, "cargo not found")
