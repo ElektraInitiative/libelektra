@@ -21,8 +21,6 @@
 #define ORIGINAL_VALUE "1"
 #define CHANGED_VALUE "2"
 #define MORE_CHANGED_VALUE "3"
-#define SOME_STRING "abc"
-#define SOME_STRING_SPACE_BEFORE " abc"
 #define COMMENT "comment"
 #define SOME_COMMENT "some_comment"
 #define OTHER_COMMENT "other_comment"
@@ -807,88 +805,6 @@ static void test_12 (void)
 }
 
 /**
- * Spaces make no semantic difference.
- * Keep our version if the new version is semantically equal.
- * Base        Ours        Theirs       Result
- * key1="abc"  key1="abc"  key1=" abc"  key1="abc"
- */
- static void test_13 (void)
-{
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	printf ("In test function %s\n", __func__);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, SOME_STRING, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, SOME_STRING_SPACE_BEFORE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, SOME_STRING, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_THEIR); // any strategy different from our
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (SOME_STRING, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- * Spaces make no semantic difference.
- * Keep our version if the new version is semantically equal.
- * Base        Ours        Theirs       Result
- * key1="abc"  key1=" abc" key1="abc"   key1=" abc"
- */
- static void test_14 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, SOME_STRING_SPACE_BEFORE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, SOME_STRING, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, SOME_STRING, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_THEIR); // any strategy different from our
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (SOME_STRING_SPACE_BEFORE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
  * Changing a comment in a own configuration file leaves this comment be if an upgrade happens and
  * the comment changes
  * Similar to ucf https://packages.debian.org/sid/ucf
@@ -1254,8 +1170,6 @@ int main (int argc, char ** argv)
 	test_12 ();
 	test_12a ();
 	test_12b ();
-	test_13 ();
-	test_14 ();
 	test_15 ();
 	//	test_16 ();
 	//	test_17 ();
