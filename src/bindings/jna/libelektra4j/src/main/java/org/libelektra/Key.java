@@ -2,8 +2,6 @@ package org.libelektra;
 
 import com.sun.jna.Pointer;
 
-import static java.util.Objects.nonNull;
-
 /**
  * Key is an essential class that encapsulates key name , value and metainfo.
  */
@@ -748,7 +746,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Native pointer object for this key
 	 */
-	protected Pointer get() {
+	public Pointer get() {
 		return key;
 	}
 }

@@ -59,9 +59,25 @@ public abstract class KDBException extends java.io.IOException {
 		return getMessage();
 	}
 
+	public String getReason() {
+		return errorKey.getMeta("error/reason").getString();
+	}
+
 	@Override
 	public String getMessage() {
-		return errorKey.getMeta("error/reason").getString();
+		StringBuilder builder = new StringBuilder();
+		builder.append(String.format("Sorry, module %s issued error %s:", getModule(), getErrorCode())).append("\n");
+		builder.append(getReason()).append("\n");
+		if (!errorKey.getMeta("error/configfile").isNull()) {
+			builder.append("Configfile: ").append(getConfigFile()).append("\n");
+		}
+		if (!errorKey.getMeta("error/mountpoint").isNull()) {
+			builder.append("Mountpoint: ").append(getMountpoint()).append("\n");
+		}
+		if (!errorKey.getMeta("error/file").isNull()) {
+			builder.append(getDebugInformation()).append("\n");
+		}
+		return builder.toString();
 	}
 
 	public boolean hasWarnings() {

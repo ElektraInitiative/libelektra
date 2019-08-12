@@ -11,12 +11,17 @@ import java.util.Properties;
 public class PropertiesStorage implements Plugin {
 
 	@Override
-	public int open(final KeySet conf, final Key errorKey) {
+	public KeySet getConfig() {
+		return KeySet.create();
+	}
+
+	@Override
+	public int kdbOpen(final KeySet conf, final Key errorKey) {
 		return 0;
 	}
 
 	@Override
-	public int get(final KeySet ks, final Key parentKey) {
+	public int kdbGet(final KeySet ks, final Key parentKey) {
 		final String root = "system/elektra/modules/jni";
 		if (parentKey.isBelowOrSame(Key.create(root, Key.KEY_END))) {
 			ks.append(Key.create(root + "/infos/provides", "storage"));
@@ -42,7 +47,7 @@ public class PropertiesStorage implements Plugin {
 	}
 
 	@Override
-	public int set(final KeySet ks, final Key parentKey) {
+	public int kdbSet(final KeySet ks, final Key parentKey) {
 		final Properties properties = new Properties();
 		for (final Key k : ks) {
 			final String newName = k.getName().substring(parentKey.getNameSize());
@@ -58,13 +63,18 @@ public class PropertiesStorage implements Plugin {
 	}
 
 	@Override
-	public int error(final KeySet ks, final Key parentKey) {
+	public int kdbError(final KeySet ks, final Key parentKey) {
 		return 0;
 	}
 
 	@Override
-	public int close(final Key parentKey) {
+	public int kdbClose(final Key parentKey) {
 		return 0;
+	}
+
+	@Override
+	public String getName() {
+		return "PropertiesStorage";
 	}
 
 }

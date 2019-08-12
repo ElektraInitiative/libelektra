@@ -6,21 +6,30 @@ import org.libelektra.Plugin;
 
 public class Echo implements Plugin {
 
+	private KeySet conf;
+
 	public Echo() {
 		System.out.println("construct plugin");
+		conf = KeySet.create();
 	}
 
 	@Override
-	public int open(final KeySet conf, final Key errorKey) {
+	public KeySet getConfig() {
+		return conf;
+	}
+
+	@Override
+	public int kdbOpen(final KeySet conf, final Key errorKey) {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.getString());
 		System.out.println(conf);
+		this.conf = conf;
 		return 0;
 	}
 
 	@Override
-	public int get(final KeySet ks, final Key parentKey) {
+	public int kdbGet(final KeySet ks, final Key parentKey) {
 		System.out.println("get plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -32,7 +41,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int set(final KeySet ks, final Key parentKey) {
+	public int kdbSet(final KeySet ks, final Key parentKey) {
 		System.out.println("set plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -41,7 +50,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int error(final KeySet ks, final Key parentKey) {
+	public int kdbError(final KeySet ks, final Key parentKey) {
 		System.out.println("error plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -50,10 +59,15 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int close(final Key parentKey) {
+	public int kdbClose(final Key parentKey) {
 		System.out.println("close plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
 		return 0;
+	}
+
+	@Override
+	public String getName() {
+		return "Echo";
 	}
 }

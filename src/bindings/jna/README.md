@@ -113,11 +113,12 @@ Most likely, you have to include this dependency as well:
 
 [here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file.
 
-### Plugin vs. NativeElektraPlugin
+### Using Elektra plugins directly
 
-When looking into the root classpath `org.libelektra` you will have noticed two different `Plugin` classes. The `NativeElektraPlugin`
-can be used to load a native Elektra plugin which is written in C/C++. It will behave exactly like a normal Elektra plugin. The main
-advantage is the isolation from the rest of Elektra as well as the circumvention of the "too many plugins" [error](https://github.com/ElektraInitiative/libelektra/issues/2133).
+The `NativeElektraPlugin` can be used to load a native Elektra plugin which is written in C/C++. 
+It will behave exactly like a normal Elektra plugin. The main
+advantage is the isolation from the rest of Elektra as well as 
+the circumvention of the "too many plugins" [error](https://github.com/ElektraInitiative/libelektra/issues/2133).
 You can load a Plugin like the following:
 
 ```java
@@ -142,7 +143,31 @@ errorPlugin.kdbSet(ks, parentKey);
 \\ OutOfMemoryException is thrown
 ```
 
-The `Plugin` class on the other hand is used to develop your _own_ Elektra plugins but written in Java.
+Another example is the `range` plugin which throws the equivalent java exception:
+
+```java
+NativeElektraPlugin rangePlugin = null;
+try {
+    rangePlugin = new NativeElektraPlugin("range", Key.create("user/tests/javabinding"));
+} catch (InstallationException e) {
+    // Handle plugin not available
+    return;
+}
+Key rangeKey = Key.create("user/tests/myError", "30");
+rangeKey.setMeta("check/range", "1-20");
+final KeySet ks = KeySet.create(10, KeySet.KS_END);
+ks.append(rangeKey);
+rangePlugin.kdbSet(ks, parentKey);
+//org.libelektra.exception.SemanticValidationException: Sorry, module range issued error C03200:
+//Value '30' not within range 1-20
+//Configfile:
+//Mountpoint: user/tests/javabinding
+//At: .../elektra/src/plugins/range/range.c:447
+```
+
+Note that `Configfile` is empty since we access the plugin directly and not via a kdb tool.
+
+The `Plugin` interface can be used to develop your _own_ Elektra plugins but written in Java.
 You can see various examples in the [plugin folder](src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin
 which can be used to save and load `.properties` files into Elektra.
 

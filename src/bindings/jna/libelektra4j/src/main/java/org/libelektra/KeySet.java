@@ -43,7 +43,7 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @param p Pointer to another KeySet
 	 */
-	protected KeySet(final Pointer p) {
+	public KeySet(final Pointer p) {
 		ks = p;
 	}
 
@@ -370,7 +370,7 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Native pointer object used for this key set
 	 */
-	protected Pointer get() {
+	public Pointer get() {
 		return ks;
 	}
 }
