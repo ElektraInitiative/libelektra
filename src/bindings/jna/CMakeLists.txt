@@ -62,10 +62,8 @@ if (Java_JAVAC_EXECUTABLE)
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/NativeElektraPlugin.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/ExceptionTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/PropertiesStorage.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Return.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Template.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ConflictingStateException.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InstallationException.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InterfaceException.java
