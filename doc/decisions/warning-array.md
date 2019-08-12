@@ -6,12 +6,7 @@ Currently multiple warnings are saved in an elektra non-conforming array
 notation which is limited to 100 entries. The notation of `#00` is against
 the design [decision made](array.md).
 
-Furthermore if the number of warnings is exceeded, the earliest entries are overwritten
-which might yield the most useful warning messages.
-
 ## Constraints
-
-- The number of entries should stay limited but may be more than 100 entries.
 
 ## Assumptions
 
@@ -20,14 +15,15 @@ which might yield the most useful warning messages.
 ## Decision
 
 The format should be aligned with the correct array notation,
-starting with `#0`. The maximum number of warnings will be expanded to
-1001 entries (`#0` - `#1000`).
-
-If more warnings occur, warning `#1000` is overwritten each time.
+starting with `#0`. The maximum number of warnings will stay at
+100 entries (`#0` - `#_99`).
 
 ## Rationale
 
 ## Implications
+
+To keep the ordering we add an underscore `_` once we go to
+beyond 10 warnings (`#_10`).
 
 ## Related Decisions
 
