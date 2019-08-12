@@ -1,13 +1,14 @@
 extern crate elektra_sys;
 
-use crate::{KeySetError, ReadableKey, StringKey, WriteableKey};
+use crate::{KeySetError, ReadableKey, StrKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
-use std::ffi::CString;
+// use std::ffi::CString;
 
 #[derive(Debug)]
 pub struct KeySet {
     ptr: std::ptr::NonNull<elektra_sys::KeySet>,
+    phantom: std::marker::PhantomData<elektra_sys::KeySet>,
 }
 
 pub type Cursor = elektra_sys::cursor_t;
@@ -42,17 +43,17 @@ impl Drop for KeySet {
     }
 }
 
-impl Iterator for KeySet {
-    type Item = StringKey;
-    fn next(&mut self) -> Option<Self::Item> {
-        let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
-        if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
-            None
-        } else {
-            Some(StringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
-        }
-    }
-}
+// impl Iterator for KeySet {
+//     type Item = StrKey<'a>;
+//     fn next(&self) -> Option<Self::Item> {
+//         let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
+//         if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+//             None
+//         } else {
+//             Some(StrKey::from_ptr(key_ptr as *mut elektra_sys::Key))
+//         }
+//     }
+// }
 
 impl KeySet {
     fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
@@ -79,6 +80,7 @@ impl KeySet {
     fn from_ptr(keyset_ptr: *mut elektra_sys::KeySet) -> KeySet {
         KeySet {
             ptr: std::ptr::NonNull::new(keyset_ptr).unwrap(),
+            phantom: std::marker::PhantomData,
         }
     }
 
@@ -192,7 +194,11 @@ impl KeySet {
         }
     }
 
-    pub fn lookup(&mut self, mut key: StringKey, options: LookupOption) -> Option<StringKey> {
+    pub fn lookup<'a>(
+        &'a mut self,
+        mut key: StringKey,
+        options: LookupOption,
+    ) -> Option<StrKey<'a>> {
         println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
         let key_ptr = unsafe {
             elektra_sys::ksLookup(
@@ -202,45 +208,42 @@ impl KeySet {
             )
         };
         if options.contains(LookupOption::KDB_O_DEL) {
-            println!("contains del");
             std::mem::forget(key);
         }
 
-        println!("keyptr is {:?}", key_ptr);
         if key_ptr as *const elektra_sys::Key == std::ptr::null() {
-            println!("is null");
             None
         } else {
-            let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
-            Some(StringKey::from_ptr(dup_ptr))
+            // let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
+            Some(StrKey::from_ptr(key_ptr))
         }
     }
 
-    pub fn lookup_by_name(&mut self, name: &str, options: LookupOption) -> Option<StringKey> {
-        println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
-        let cname = CString::new(name).unwrap();
-        let key_ptr = unsafe {
-            elektra_sys::ksLookupByName(
-                self.as_ptr(),
-                cname.as_ptr(),
-                options.bits() as elektra_sys::option_t,
-            )
-        };
-        println!("keyptr is {:?}", key_ptr);
+    // pub fn lookup_by_name(&mut self, name: &str, options: LookupOption) -> Option<StringKey> {
+    //     println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
+    //     let cname = CString::new(name).unwrap();
+    //     let key_ptr = unsafe {
+    //         elektra_sys::ksLookupByName(
+    //             self.as_ptr(),
+    //             cname.as_ptr(),
+    //             options.bits() as elektra_sys::option_t,
+    //         )
+    //     };
+    //     println!("keyptr is {:?}", key_ptr);
 
-        if key_ptr as *const elektra_sys::Key == std::ptr::null() {
-            println!("is null");
-            None
-        } else {
-            if options.contains(LookupOption::KDB_O_DEL) {
-                println!("contains del");
-                None
-            } else {
-                let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
-                Some(StringKey::from_ptr(dup_ptr))
-            }
-        }
-    }
+    //     if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+    //         println!("is null");
+    //         None
+    //     } else {
+    //         if options.contains(LookupOption::KDB_O_DEL) {
+    //             println!("contains del");
+    //             None
+    //         } else {
+    //             let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
+    //             Some(StringKey::from_ptr(dup_ptr))
+    //         }
+    //     }
+    // }
 }
 
 #[cfg(test)]
@@ -269,35 +272,35 @@ mod tests {
         }
     }
 
-    #[test]
-    fn can_iterate_simple_keyset() {
-        let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
-        let values = ["value1", "value2", "value3"];
+    // #[test]
+    // fn can_iterate_simple_keyset() {
+    //     let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
+    //     let values = ["value1", "value2", "value3"];
 
-        let mut ks = KeySet::with_capacity(3);
+    //     let mut ks = KeySet::with_capacity(3);
 
-        ks.append_all(vec![
-            KeyBuilder::<StringKey>::new(names[0])
-                .value(values[0])
-                .build(),
-            KeyBuilder::<StringKey>::new(names[1])
-                .value(values[1])
-                .build(),
-            KeyBuilder::<StringKey>::new(names[2])
-                .value(values[2])
-                .build(),
-        ])
-        .unwrap();
-        ks.rewind();
+    //     ks.append_all(vec![
+    //         KeyBuilder::<StringKey>::new(names[0])
+    //             .value(values[0])
+    //             .build(),
+    //         KeyBuilder::<StringKey>::new(names[1])
+    //             .value(values[1])
+    //             .build(),
+    //         KeyBuilder::<StringKey>::new(names[2])
+    //             .value(values[2])
+    //             .build(),
+    //     ])
+    //     .unwrap();
+    //     ks.rewind();
 
-        let mut did_iterate = false;
-        for (i, key) in ks.enumerate() {
-            did_iterate = true;
-            assert_eq!(key.get_value(), values[i]);
-            assert_eq!(key.get_name(), names[i]);
-        }
-        assert!(did_iterate);
-    }
+    //     let mut did_iterate = false;
+    //     for (i, key) in ks.enumerate() {
+    //         did_iterate = true;
+    //         assert_eq!(key.get_value(), values[i]);
+    //         assert_eq!(key.get_name(), names[i]);
+    //     }
+    //     assert!(did_iterate);
+    // }
 
     fn setup_keyset() -> KeySet {
         let names = ["system/test/key", "user/test/key"];
@@ -322,42 +325,41 @@ mod tests {
 
     #[test]
     fn can_lookup_key_with_none_option() {
-        let ret_val;
-        {
-            let mut ks = setup_keyset();
-            let lookup_key = StringKey::new("/test/key").unwrap();
-            println!("Lookup_key is {:?}", lookup_key);
-            ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
-            println!(
-                "retval {:?}, size {}, name {}",
-                ret_val,
-                ks.get_size(),
-                ks.tail().unwrap().get_name()
-            );
-            assert_eq!(ks.get_size(), 2);
-            assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
-        }
+        let mut ks = setup_keyset();
+        let lookup_key = StringKey::new("/test/key").unwrap();
+        println!("Lookup_key is {:?}", lookup_key);
+        let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
         assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
+        assert_eq!(ks.get_size(), 2);
+        assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
     }
 
     #[test]
     fn can_lookup_key_with_del_option() {
+        let mut ks = setup_keyset();
+        let lookup_key = StringKey::new("/test/key").unwrap();
+        let key = ks.lookup(lookup_key, LookupOption::KDB_O_DEL);
+        assert_eq!(key.unwrap().get_name(), "user/test/key");
+        assert_eq!(ks.get_size(), 2);
+        assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
+    }
+
+    #[test]
+    fn can_lookup_and_duplicate_key() {
+        // Make sure that a duplicate of a key that is from a keyset
+        // can be used after the KeySet has been freed
         let key;
         {
-            let mut ks = setup_keyset();
             let lookup_key = StringKey::new("/test/key").unwrap();
-            key = ks.lookup(lookup_key, LookupOption::KDB_O_DEL);
-            println!(
-                "retval {:?}, size {}, name {}",
-                key,
-                ks.get_size(),
-                ks.tail().unwrap().get_name()
-            );
+            let mut ks = setup_keyset();
+            key = ks
+                .lookup(lookup_key, LookupOption::KDB_O_DEL)
+                .unwrap()
+                .to_owned();
             assert_eq!(ks.get_size(), 2);
             assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
-        } // <-- ks is dropped here
-          // Check that key is still valid
-        assert_eq!(key.unwrap().get_name(), "user/test/key");
+        }
+        assert_eq!(key.get_name(), "user/test/key");
     }
 
 }

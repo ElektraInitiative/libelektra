@@ -1,11 +1,14 @@
-use crate::{ReadableKey, WriteableKey};
+use crate::ReadableKey;
 
 #[derive(Debug)]
-pub struct ReadOnly<T: WriteableKey> {
+pub struct ReadOnly<T: ReadableKey> {
     key: T,
 }
 
-impl<T: WriteableKey> ReadableKey for ReadOnly<T> {
+impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
+    type Value = T::Value;
+    type Duplicate = T::Duplicate;
+
     fn as_ref(&self) -> &elektra_sys::Key {
         self.key.as_ref()
     }
@@ -16,8 +19,18 @@ impl<T: WriteableKey> ReadableKey for ReadOnly<T> {
         }
     }
 
-    type Value = T::Value;
     fn get_value(&self) -> Self::Value {
         self.key.get_value()
+    }
+
+    // TODO: This should return ReadOnly<T: ReadableKey> or similar
+    fn duplicate<'b>(&'b self) -> Self::Duplicate
+    where
+        Self::Duplicate: Sized,
+    {
+        let dup = self.key.duplicate();
+        // ReadOnly {
+        dup
+        // }
     }
 }
