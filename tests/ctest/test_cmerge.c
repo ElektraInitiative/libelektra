@@ -36,772 +36,80 @@ void printKs (KeySet * ks)
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != 0)
 	{ /* Iterates over all keys and prints their name */
-		fprintf (stdout, "DEBUG: --%s\n", keyName (cur));
+		fprintf (stdout, "DEBUG:   %s\n", keyName (cur));
 	}
 }
 
-/**
- *   Ours     Theirs   Base       Result
- *   key1=1   key1=1   key1=1     key1=1
- */
-static void test_1 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (resultValue, ORIGINAL_VALUE);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
 
 /**
- *   Ours     Theirs     Base     Result
- *   key1=1   key1=2     key1=1   key1=2
+ * When there is a single key in each key set and all key names are equal
+ *
+ * The parameters are the values for the single key in each set
+ *
+ * If a parameter is null then no key is set (!= key with empty value)
+ *
+ * If expected_result = NULL then the merge result must be NULL
  */
-static void test_2 (void)
+static void simple_test (char * our_value, char * their_value, char * base_value, int strategy, char * expected_result)
 {
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (CHANGED_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Ours     Theirs     Base     Result
- *   key1=2   key1=1     key1=1   key1=2
- */
-static void test_3 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (resultValue, CHANGED_VALUE);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Ours     Theirs     Base     Result
- *   key1=1   key1=1     key1=2   key1=1
- */
-static void test_4 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (ORIGINAL_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict test case.
- *   Merge strategy abort.
- *   Ours     Theirs     Base     Result
- *   key1=2   key1=3     key1=1   Abort
- */
-static void test_5 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, MORE_CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_ABORT);
-
-	succeed_if (result == NULL, "Merge strategy is abort. There should be a conflict and that should lead to NULL as keyset!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict test case.
- *   Merge strategy our.
- *   Base     Ours     Theirs     Result
- *   key1=1   key1=2   key1=3     key1=2
- */
-static void test_5a (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, MORE_CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_OUR);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (CHANGED_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict test case.
- *   Merge strategy their.
- *   Ours     Theirs    Base      Result
- *   key1=2   key1=3    key1=1    key1=3
- */
-static void test_5b (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, MORE_CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_THEIR);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (MORE_CHANGED_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Base     Ours     Theirs     Result
- *   key1=1   key1=1
- */
-static void test_6 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * their = ksNew (0, KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	succeed_if (ksLookupByName (result, RESULT_KEY1, 0) == 0, "Key should not be in result!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Base     Ours     Theirs     Result
- *   key1=1            key1=1
- */
-static void test_7 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
+	printf ("Executing %s with our=%s their=%s base=%s\n", __func__, our_value, their_value, base_value);
+	Key * our_root = keyNew ("user/our", KEY_END);
+	Key * their_root = keyNew ("user/their", KEY_END);
+	Key * base_root = keyNew ("user/base", KEY_END);
+	Key * result_root = keyNew ("user/result", KEY_END);
 	KeySet * our = ksNew (0, KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	succeed_if (ksLookupByName (result, RESULT_KEY1, 0) == 0, "Key should not be in result!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   this is a conflict but not an overlap.
- *
- *   Base     Ours     Theirs     Result
- *   key1=1
- */
-static void test_8 (void)
-{
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	printf ("In test function %s\n", __func__);
 	KeySet * their = ksNew (0, KS_END);
-	KeySet * our = ksNew (0, KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_OUR);
-
-	succeed_if (ksLookupByName (result, RESULT_KEY1, 0) == 0, "Key should not be in result!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   this is a conflict but not an overlap.
- *   
- *   Base     Ours     Theirs     Result
- *   key1=1
- */
-static void test_8a (void)
-{
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	printf ("In test function %s\n", __func__);
-	KeySet * their = ksNew (0, KS_END);
-	KeySet * our = ksNew (0, KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_ABORT);
-
-	succeed_if (ksLookupByName (result, RESULT_KEY1, 0) == 0, "Key should not be in result!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-
-/**
- *   According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   this is a conflict but not an overlap.
- *   
- *   Base     Ours     Theirs     Result
- *   key1=1                       key1=1
- */
-static void test_8b (void)
-{
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	printf ("In test function %s\n", __func__);
-	KeySet * their = ksNew (0, KS_END);
-	KeySet * our = ksNew (0, KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_BASE);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
+	KeySet * base = ksNew (0, KS_END);
+	if (our_value != NULL)
 	{
-		yield_error ("Should not be NULL");
+		ksAppendKey (our, keyNew ("user/our/key", KEY_VALUE, our_value, KEY_END));
+	}
+	if (their_value != NULL)
+	{
+		ksAppendKey (their, keyNew ("user/their/key", KEY_VALUE, their_value, KEY_END));
+	}
+	if (base_value != NULL)
+	{
+		ksAppendKey (base, keyNew ("user/base/key", KEY_VALUE, base_value, KEY_END));
+	}
+	KeySet * result = kdbMerge (our, our_root, their, their_root, base, base_root, result_root, strategy);
+
+	if (expected_result == NULL)
+	{
+		char msg[200];
+		snprintf (msg, 200, "Executing %s with our=%s their=%s base=%s and strategy %i. Expected the merge result to be NULL but it was existant.",
+			  __func__, our_value, their_value, base_value, strategy);
+		succeed_if (result == NULL, msg);
+		printKs(result);
 	}
 	else
 	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (ORIGINAL_VALUE, resultValue);
-		elektraFree (resultValue);
+		Key * resultKey = ksLookupByName (result, "user/result/key", 0);
+		if (resultKey == NULL)
+		{
+			yield_error ("Looked up key must not be NULL");
+		}
+		else
+		{
+			char * resultValue = elektraMalloc (default_result_size);
+			keyGetString (resultKey, resultValue, default_result_size);
+			char msg[200];
+			snprintf (msg, 200, "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was %s.\n",
+				  __func__, our_value, their_value, base_value, strategy, expected_result, resultValue);
+			succeed_if (strcmp (resultValue, expected_result) == 0, msg);
+			elektraFree (resultValue);
+		}
+		keyDel (resultKey); // Necessary?
 	}
 
 	ksDel (our);
 	ksDel (their);
 	ksDel (base);
 	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-/**
- *   Base     Ours     Theirs     Result
- *                     key1=1     key1=1
- */
-static void test_9 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * our = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (resultValue, ORIGINAL_VALUE);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Base     Ours     Theirs     Result
- *            key1=1              key1=1
- */
-static void test_10 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (0, KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (ORIGINAL_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict according to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   Strategy abort
- *
- *   Base     Ours     Theirs     Result
- *            key1=1   key1=1     
- */
-static void test_11a (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_ABORT);
-
-	succeed_if (ksLookupByName (result, RESULT_KEY1, 0) == 0, "Key should not be in result!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict according to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   Strategy base
- *
- *
- *   Base     Ours     Theirs     Result
- *            key1=1   key1=1
- */
-static void test_11b (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_BASE);
-
-	succeed_if (ksLookupByName (result, RESULT_KEY1, 0) == 0, "Key should not be in result!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict according to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   Strategy our
- *
- *
- *   Base     Ours     Theirs     Result
- *            key1=1   key1=1     key1=1
- */
-static void test_11c (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_OUR);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (ORIGINAL_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Conflict according to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html 
- *   Strategy their
- *
- *
- *   Base     Ours     Theirs     Result
- *            key1=1   key1=1     key1=1
- */
-static void test_11d (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_THEIR);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (ORIGINAL_VALUE, resultValue);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Overlap conflict 
- *
- *   Ours     Theirs     Base     Result
- *   key1=1   key1=2              Conflict
- */
-static void test_12 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_ABORT);
-
-	succeed_if (result == NULL, "There should be a conflict and that should lead to NULL as keyset!");
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-
-/**
- *   Ours     Theirs     Base     Result
- *   key1=1   key1=2              key1=1
- */
- static void test_12a (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_OUR);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (resultValue, ORIGINAL_VALUE);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
-
-/**
- *   Ours     Theirs     Base     Result
- *   key1=1   key1=2              key1=2
- */
- static void test_12b (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * base = ksNew (0, KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, CHANGED_VALUE, KEY_END), KS_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_THEIR);
-
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		keyGetString (resultKey, resultValue, default_result_size);
-		succeed_if_same_string (resultValue, CHANGED_VALUE);
-		elektraFree (resultValue);
-	}
-
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
 }
 
 /**
@@ -1149,28 +457,41 @@ int main (int argc, char ** argv)
 
 	/** Always check if all tests are listed here */
 	init (argc, argv);
-	test_1 ();
-	test_2 ();
-	test_3 ();
-	test_4 ();
-	test_5 ();
-	test_5a ();
-	test_5b ();
-	test_6 ();
-	test_7 ();
-	test_8 ();
-	test_8a ();
-	test_8b ();
-	test_9 ();
-	test_10 ();
-	test_11a ();
-	test_11b ();
-	test_11c ();
-	test_11d ();
-	test_12 ();
-	test_12a ();
-	test_12b ();
-	test_15 ();
+	simple_test ("1", "1", "1", MERGE_STRATEGY_IRRELEVANT, "1");
+	simple_test ("1", "2", "1", MERGE_STRATEGY_IRRELEVANT, "2");
+	simple_test ("2", "1", "1", MERGE_STRATEGY_IRRELEVANT, "2");
+	// Merge strategy is abort. There should be a conflict and that should lead to NULL as keyset
+	simple_test ("1", "2", "3", MERGE_STRATEGY_ABORT, NULL);
+	simple_test ("1", "2", "3", MERGE_STRATEGY_OUR, "1");
+	// simple_test ("1", "2", "3", MERGE_STRATEGY_THEIR, "2");
+	// simple_test ("1", NULL, "1", MERGE_STRATEGY_IRRELEVANT, NULL);
+	// simple_test (NULL, "1", "1", MERGE_STRATEGY_IRRELEVANT, NULL);
+	// simple_test (NULL, "1", NULL, MERGE_STRATEGY_IRRELEVANT, "1");
+	// simple_test ("1", NULL, NULL, MERGE_STRATEGY_IRRELEVANT, "1");
+	// /**
+	//  *   Begin section of conflicts that are not overlaps
+	//  *   According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
+	//  *   this is a conflict but not an overlap
+	//  */
+	// /**
+	//  * End section of conflicts that are not overlaps
+	//  */
+	// simple_test ("1", "1", "2", MERGE_STRATEGY_ABORT, NULL);
+	// simple_test ("1", "1", "2", MERGE_STRATEGY_OUR, "1");
+	// simple_test ("1", "1", "2", MERGE_STRATEGY_THEIR, "1");
+	// simple_test (NULL, NULL, "1", MERGE_STRATEGY_OUR, NULL);
+	// simple_test (NULL, NULL, "1", MERGE_STRATEGY_ABORT, NULL);
+	// simple_test ("1", "1", NULL, MERGE_STRATEGY_ABORT, NULL);
+	// simple_test ("1", "1", NULL, MERGE_STRATEGY_BASE, NULL);
+	// simple_test ("1", "1", NULL, MERGE_STRATEGY_OUR, "1");
+	// simple_test ("1", "1", NULL, MERGE_STRATEGY_THEIR, "1");
+	// simple_test (NULL, NULL, "1", MERGE_STRATEGY_BASE, "1");
+	// // Overlap conflict
+	// simple_test ("1", "2", NULL, MERGE_STRATEGY_ABORT, "1"); // TODO Result is NULL
+	// simple_test ("1", "2", NULL, MERGE_STRATEGY_OUR, "1");
+	// simple_test ("1", "2", NULL, MERGE_STRATEGY_THEIR, "2");
+
+	// test_15 ();
 	//	test_16 ();
 	//	test_17 ();
 	//	test_17a ();
