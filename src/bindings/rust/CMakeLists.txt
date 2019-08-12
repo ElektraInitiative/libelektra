@@ -1,10 +1,5 @@
 find_program (CARGO_EXECUTABLE cargo)
 
-if (NOT BUILD_SHARED)
-	exclude_binding (rust "it can only be built if `BUILD_SHARED` is enabled")
-	return ()
-endif ()
-
 if (CARGO_EXECUTABLE)
 	add_binding (rust ONLY_SHARED)
 
