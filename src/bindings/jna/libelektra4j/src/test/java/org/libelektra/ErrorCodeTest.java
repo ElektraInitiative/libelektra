@@ -2,6 +2,7 @@ package org.libelektra;
 
 import org.junit.Test;
 import org.libelektra.exception.*;
+import org.libelektra.plugin.NativeElektraPlugin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
