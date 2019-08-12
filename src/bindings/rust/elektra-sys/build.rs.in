@@ -4,11 +4,19 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // Add libelektra build directory to rustc's search path
+    // Add libelektra's lib directory to rustc's search path
     println!("cargo:rustc-link-search=@CMAKE_BINARY_DIR@/lib");
-    // May need to depend on BUILD_SHARED or BUILD_STATIC
-    // Tell cargo to tell rustc to link the elektra shared library.
-    println!("cargo:rustc-link-lib=elektra");
+
+    // Tell cargo to tell rustc to link the elektra library.
+    // Depending on the build type, link either to the
+    // dynamic or static lib
+    if "@BUILD_SHARED@" == "ON" || "@BUILD_FULL@" == "ON" {
+        println!("cargo:rustc-link-lib=dylib=elektra");
+    }
+
+    if "@BUILD_STATIC@" == "ON" {
+        println!("cargo:rustc-link-lib=static=elektra-static");
+    }
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -17,9 +25,6 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
-        // Blacklist types that will be written by hand
-        //.blacklist_type("Key")
-        //.blacklist_type("KeySet")
         // bindgen uses clang for anything C-related.
         // Here we set the necessary include directories
         // such that any includes in the wrapper can be found.
