@@ -116,7 +116,7 @@ with code like ([low-level C code](https://doc.libelektra.org/api/current/html/g
 no error-handling and no cleanup):
 
 ```c
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdio.h>
 
 int main (void)

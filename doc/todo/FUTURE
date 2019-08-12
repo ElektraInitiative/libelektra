@@ -58,8 +58,6 @@ KEY_* -> ELEKTRA_KEY_* to avoid clashes
 	e.g. clash with KEY_MODE in “linux/input-event-codes.h”
 consistently use singular (KEY_FLAGS -> KEY_FLAG)
 
-kdb.h -> elektra/kdb.h to avoid clashes
-
 Remove/Refactor/Rename obsolete/not needed methods:
 - keyClear
 - keyGetRef

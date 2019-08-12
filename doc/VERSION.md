@@ -16,7 +16,7 @@ system/elektra/version/constants/KDB_VERSION_MINOR
 ```
 
 This is the API to programs using Elektra. Its interface
-is defined in [src/include/kdb.h](/src/include/kdb.h.in).
+is defined in [src/include/elektra/kdb.h](/src/include/elektra/kdb.h.in).
 Both applications and plugins use this API.
 
 Additionally there is also a very small API
