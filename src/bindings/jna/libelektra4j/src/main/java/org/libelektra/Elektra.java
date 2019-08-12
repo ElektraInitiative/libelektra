@@ -3,6 +3,7 @@ package org.libelektra;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import org.libelektra.plugin.NativeElektraPlugin;
 
 /**
  * The JNA interface to libelektra.
