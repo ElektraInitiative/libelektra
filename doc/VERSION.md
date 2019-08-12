@@ -19,7 +19,7 @@ system:/elektra/version/constants/KDB_VERSION_PATCH
 The version applies to following parts of Elektra:
 
 - the API for programs using Elektra. Its interface
-  is declared in [src/include/kdb.h](/src/include/kdb.h.in).
+  is declared in [src/include/elektra/kdb.h](/src/include/elektra/kdb.h.in).
   Both applications and plugins use this API.
 - the high-level API as declared in
   [src/include/elektra.h](/src/include/elektra.h).

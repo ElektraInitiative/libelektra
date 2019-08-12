@@ -42,7 +42,7 @@ reading in one of these links above.
 A C or C++ source file that wants to use Elektra should include:
 
 ```c
-#include <kdb.h>
+#include <elektra/kdb.h>
 ```
 
 To link an executable with the Elektra library, one way is to
