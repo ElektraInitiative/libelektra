@@ -9,8 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// static bool metaEqual (Key * a, Key * b, bool semanticallySuffices);
-static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool);
 int nonOverlapConflictCounter = 0;
 int overlap3different = 0; // Only overlap conflicts where all three keys exist and have different values
 // always access with getter
@@ -153,73 +151,8 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 	return result;
 }
 
-/**
- * Performs normalization for basic semantic equivalence checks
- *   - Removes trailing zeros from numbers
- *
- * This modifies the contents of the parameter to_normalize and does not create a copy itself.
- * Normalizes up to size in memory.
- * Returns the number of elements in the normalized version.
- */
-static size_t normalize (void * to_normalize, size_t * size)
+static bool keysAreEqual (Key * a, Key * b)
 {
-	return *size;
-}
-
-///**
-// * Checks for each meta information of meta key a if it is in meta key b as well and has the same value
-// */
-// static bool metaEqualHelper (Key * a, Key * b, bool semanticallySuffices)
-//{
-//	keyRewindMeta (a);
-//	keyRewindMeta (b);
-//	const Key * currentMeta;
-//	while ((currentMeta = keyNextMeta (a)) != 0)
-//	{
-//		const char * currentName = keyName (currentMeta);
-//		if (currentName == 0 || strncmp (currentName, "", 2) == 0)
-//		{
-//			return false;
-//		}
-//		const Key * metaInB = keyGetMeta (b, currentName);
-//		if (metaInB == 0)
-//		{
-//			return false;
-//		}
-//		//		if (!keysAreSyntacticallyEqual (a, b, true))
-//		//		// key dup is only to discard const qualifier
-//		if (!keysAreSyntacticallyEqual (keyDup (currentMeta), keyDup (metaInB), true))
-//		{
-//			// comments may be different
-//			if (!semanticallySuffices && strcmp (currentName, "comment") != 0)
-//			{
-//				return false;
-//			}
-//		}
-//	}
-//	return true;
-//}
-///**
-// * Set semantically true if semantic differences like comments are irrelevant
-// */
-// static bool metaEqual (Key * a, Key * b, bool semanticallySuffices)
-//{
-//	// If a set A (meta keys of key a) is a subset of B and B is a subset of A then A == B
-//	return metaEqualHelper (a, b, semanticallySuffices) && metaEqualHelper (b, a, semanticallySuffices);
-//}
-
-/**
- * When checking the equality of a regular key, the meta information is relevant as well.
- * As then this function is not called from a successor of the function metaEqual, set callFromMeta false.
- * If checking the equality of a meta key, there is no additional meta information stored.
- * set callFromMeta true in this case (i.e. calling from metaEqual)
- */
-static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool callFromMeta)
-{
-	if (callFromMeta)
-	{
-		// only here for a compiler warning;
-	}
 	if (keyGetValueSize (a) != keyGetValueSize (b))
 	{
 		return false;
@@ -228,74 +161,7 @@ static bool keysAreSyntacticallyEqual (Key * a, Key * b, bool callFromMeta)
 	{
 		return false;
 	}
-	// Forget about metadata for the moment
-	//	if ((!callFromMeta) && !metaEqual (a, b, false))
-	//	{
-	//		return false;
-	//	}
 	return true;
-}
-
-static bool keysAreSemanticallyEqual (Key * a, Key * b)
-{
-	/**
-	 * Opposed to string values binary values can have '\0' inside the value
-	 * This is an important property for the semantic equivalence of values
-	 * containing whitespace such as 'aa'=='a  a'
-	 */
-	ssize_t a_size_original = keyGetValueSize (a); // ssize_t is not ANSI C99?
-	ssize_t b_size_original = keyGetValueSize (b);
-	if (a_size_original < 0 || b_size_original < 0)
-	{
-		fprintf (stderr, "ERROR in %s", __func__);
-		return false;
-	}
-	size_t a_size = (size_t) a_size_original;
-	size_t b_size = (size_t) b_size_original;
-	void * a_value = elektraMalloc (a_size); // Could contain string but also binary data
-	void * b_value = elektraMalloc (b_size);
-	if (a_value == 0 || b_value == 0)
-	{
-		fprintf (stderr, "ERROR in %s", __func__);
-		elektraFree (a_value);
-		elektraFree (b_value);
-		return false;
-	}
-	memcpy (a_value, keyValue (a), a_size);
-	memcpy (b_value, keyValue (b), b_size);
-	size_t new_a_size = normalize (a_value, &a_size);
-	size_t new_b_size = normalize (b_value, &b_size);
-	if (new_a_size != new_b_size)
-	{
-		elektraFree (a_value);
-		elektraFree (b_value);
-		return false;
-	}
-	bool result = false; // Don't return immediately because of free
-	if (memcmp (a_value, b_value, new_a_size) == 0)
-	{
-		result = true;
-	}
-	else
-	{
-		result = false;
-	}
-	elektraFree (a_value);
-	elektraFree (b_value);
-	return result;
-}
-
-static bool keysAreEqual (Key * a, Key * b)
-{
-	/**
-	 * In our case syntactic equivalence implies semantic equivalence but not vice versa.
-	 *
-	 * (...) the || operator guarantees left-to-right evaluation (...) If the first operand
-	 * compares unequal to 0, the second operand is not evaluated (C99 standard)
-	 *
-	 * As a result, a costly semantic analysis can be omitted.
-	 */
-	return (keysAreSyntacticallyEqual (a, b, false) || keysAreSemanticallyEqual (a, b));
 }
 
 
