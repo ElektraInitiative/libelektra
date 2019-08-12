@@ -3,7 +3,9 @@ use crate::WriteableKey;
 pub struct KeyBuilder<T: WriteableKey> {
     key: T,
 }
-
+// TODO: Documentation, add methods for owner, and other KEY_* options
+// and maybe an option for creating a key with no name, or:
+// KeyBuilder::new().name("user/test").build();
 impl<T: WriteableKey> KeyBuilder<T> {
     pub fn new(name: &str) -> KeyBuilder<T> {
         let key = T::new(name).unwrap();

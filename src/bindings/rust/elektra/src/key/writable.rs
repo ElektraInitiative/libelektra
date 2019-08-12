@@ -1,9 +1,11 @@
-use crate::{KeyError,StringKey,ReadOnly,ReadableKey};
+use crate::{KeyError, ReadOnly, ReadableKey, StringKey};
 use std::ffi::CString;
 
 pub trait WriteableKey: ReadableKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key;
-    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T) where Self: Sized;
+    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T)
+    where
+        Self: Sized;
 
     /// Construct a new key with a name
     fn new(name: &str) -> Result<Self, KeyError>
@@ -134,7 +136,10 @@ pub trait WriteableKey: ReadableKey {
         unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
     }
     /// Copies all metadata from source to the self
-    fn copy_all_meta(&mut self, source: &Self)  where Self: Sized {
+    fn copy_all_meta(&mut self, source: &Self)
+    where
+        Self: Sized,
+    {
         unsafe {
             elektra_sys::keyCopyAllMeta(self.as_ptr(), source.as_ref());
         }
@@ -150,7 +155,10 @@ pub trait WriteableKey: ReadableKey {
     /// key2.copy_meta(&key, "meta");
     /// assert_eq!(key2.get_meta("meta").unwrap().get_value(), "value");
     /// ```
-    fn copy_meta(&mut self, source: &Self, metaname: &str) -> i32  where Self: Sized {
+    fn copy_meta(&mut self, source: &Self, metaname: &str) -> i32
+    where
+        Self: Sized,
+    {
         let cstr = CString::new(metaname).unwrap();
         unsafe { elektra_sys::keyCopyMeta(self.as_ptr(), source.as_ref(), cstr.as_ptr()) }
     }

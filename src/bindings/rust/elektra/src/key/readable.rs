@@ -3,18 +3,16 @@ use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
 pub trait ReadableKey {
-    fn as_ref(&self) -> &elektra_sys::Key;
     type Value;
+    type Duplicate;
+
+    fn as_ref(&self) -> &elektra_sys::Key;
     fn get_value(&self) -> Self::Value;
-    // key methods
+
     /// Return a duplicate of the key.
-    fn duplicate(&self) -> Self
+    fn duplicate<'b>(&'b self) -> Self::Duplicate
     where
-        Self: Sized,
-    {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        Self::from_ptr(dup_ptr)
-    }
+        Self::Duplicate: Sized;
 
     /// Construct a new key from a raw key pointer
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
@@ -155,7 +153,10 @@ pub trait ReadableKey {
     /// let key2 = StringKey::new("user/sw/app/folder/key").unwrap();
     /// assert!(key2.is_below(&key));
     /// ```
-    fn is_below(&self, other: &Self) -> bool where Self: Sized {
+    fn is_below(&self, other: &Self) -> bool
+    where
+        Self: Sized,
+    {
         unsafe { elektra_sys::keyIsBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
@@ -167,7 +168,10 @@ pub trait ReadableKey {
     /// let key2 = StringKey::new("user/sw/app/key").unwrap();
     /// assert!(key2.is_direct_below(&key));
     /// ```
-    fn is_direct_below(&self, other: &Self) -> bool where Self: Sized {
+    fn is_direct_below(&self, other: &Self) -> bool
+    where
+        Self: Sized,
+    {
         unsafe { elektra_sys::keyIsDirectBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
