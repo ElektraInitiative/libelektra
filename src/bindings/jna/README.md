@@ -115,9 +115,9 @@ Most likely, you have to include this dependency as well:
 
 ### Using Elektra plugins directly
 
-The `NativeElektraPlugin` can be used to load a native Elektra plugin which is written in C/C++. 
+The `NativeElektraPlugin` can be used to load a native Elektra plugin which is written in C/C++.
 It will behave exactly like a normal Elektra plugin. The main
-advantage is the isolation from the rest of Elektra as well as 
+advantage is the isolation from the rest of Elektra as well as
 the circumvention of the "too many plugins" [error](https://github.com/ElektraInitiative/libelektra/issues/2133).
 You can load a Plugin like the following:
 
