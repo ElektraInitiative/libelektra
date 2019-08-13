@@ -1,9 +1,8 @@
-# Language Binding
+# Language Bindings
 
 ## Introduction
 
-In this section, we will explain the how to write a language binding for a native
-use of Elektra. We will go through ....
+In this section, we will explain the how to write a language binding for Elektra.
 
 ## TODO
 
@@ -22,7 +21,7 @@ Since v0.9.0, Elektra has a new error code system. You might want to take a look
 first to understand the concept of the error codes. These codes are hierarchically structured
 and are therefore perfectly suitable for inheritance if the language supports it.
 
-Some error codes like the `Permanent Errors` are generalizations and used for developers which want to catch
+Some error codes like the `Permanent Errors` are generalizations and used for developers who want to catch
 all specific types of errors (e.g., it does not matter if it is a Resource or Installation Error but
 the developer wants to check for both). Such errors should not be able to "instantiate" or emitted
 back to Elektra as we want to force developers to take a more specific category. In case of
@@ -56,7 +55,7 @@ Sorry, module `MODULE` issued [error|warning] `NR`:
 
 Please also keep the wording identical for consistency.
 Additionally the Exception/Error struct/etc. should have separate accessors to individual parts of the message.
-These include
+These include:
 
 1. Module
 2. Error Code
