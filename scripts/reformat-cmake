@@ -15,7 +15,10 @@ if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.5.4" ]; then
 	exit 1
 fi
 
-cd "$SOURCE" || exit 1
+cd "$SOURCE" || {
+	printf >&2 'Unable to change into source directory'
+	exit 1
+}
 
 output=$("${CMAKE_FORMAT}" 2>&1 CMakeLists.txt)
 
