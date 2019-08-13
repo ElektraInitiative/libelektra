@@ -11,7 +11,7 @@ SCRIPTS_DIR=$(dirname "$0")
 CMAKE_FORMAT=$(which cmake-format) && CMAKE_FORMAT_VERSION=$("$CMAKE_FORMAT" --version)
 
 if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.5.4" ]; then
-	printf 2>&1 'Please install `cmake-format` version 0.5.4\n'
+	printf >&2 'Please install `cmake-format` version 0.5.4\n'
 	exit 1
 fi
 
@@ -23,12 +23,12 @@ cd "$SOURCE" || {
 output=$("${CMAKE_FORMAT}" 2>&1 CMakeLists.txt)
 
 if [ $? != 0 ]; then
-	printf 2>&1 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
+	printf >&2 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
 	exit 1
 fi
 
 if [ -z "$(which sponge)" ]; then
-	printf 2>&1 'Please install `sponge`\n'
+	printf >&2 'Please install `sponge`\n'
 	exit 1
 fi
 
