@@ -2,6 +2,7 @@ extern crate elektra_sys;
 
 extern crate bitflags;
 
+pub mod kdb;
 pub mod key;
 pub mod keyset;
 
@@ -10,3 +11,5 @@ pub use self::key::{
 };
 
 pub use self::keyset::{KeySet, KeySetError};
+
+pub use self::kdb::{KDBError, KDB};
