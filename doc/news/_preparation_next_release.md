@@ -119,6 +119,8 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Added decision for array concept of warnings. _(Michael Zronek)_
+- Added a tutorial on how to write language bindings. Visit our new [README](../dev/language-binding.md)
+  _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
 - <<TODO>>
 - <<TODO>>
 
