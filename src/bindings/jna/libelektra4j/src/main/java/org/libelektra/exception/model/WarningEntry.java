@@ -4,7 +4,7 @@ import org.libelektra.Key;
 
 public class WarningEntry {
 
-	private final String warningCode;
+	private final String warningNumber;
 	private final String reason;
 	private final String mountpoint;
 	private final String configFile;
@@ -13,7 +13,7 @@ public class WarningEntry {
 
 	public WarningEntry(Key key, int current) {
 		final String warningKeyName = String.format("warnings/#%02d", current);
-		warningCode = key.getMeta(warningKeyName + "/number").getString();
+		warningNumber = key.getMeta(warningKeyName + "/number").getString();
 		reason = key.getMeta(warningKeyName + "/reason").getString();
 		module = key.getMeta(warningKeyName + "/module").getString();
 		debugInformation = String.format("\tAt: %s:%s%n", key.getMeta(warningKeyName + "/file").getString(),
@@ -28,7 +28,7 @@ public class WarningEntry {
 	 * @return the warningNumber from Elektra
 	 */
 	public String getWarningNumber() {
-		return warningCode;
+		return warningNumber;
 	}
 
 	/**
