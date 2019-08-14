@@ -39,7 +39,7 @@ section here.
 - [Relative Storages](relative.md)
 - [Definition of Boolean](boolean.md)
 - [Plugin Variants](plugin_variants.md)
-- [Binding implementation](binding_implementation.md)
+- [Error code implementation](error_code_implementation.md)
 
 ## In Discussion
 
