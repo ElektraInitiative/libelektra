@@ -113,7 +113,7 @@ Most likely, you have to include this dependency as well:
 
 [here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file.
 
-### Using Elektra plugins directly
+### Using Elektra Plugins
 
 The `NativeElektraPlugin` can be used to load a native Elektra plugin which is written in C/C++.
 It will behave exactly like a normal Elektra plugin. The main
@@ -143,7 +143,7 @@ errorPlugin.kdbSet(ks, parentKey);
 \\ OutOfMemoryException is thrown
 ```
 
-Another example is the `range` plugin which throws the equivalent java exception:
+Another example is the `range` plugin which throws the equivalent Java exception:
 
 ```java
 NativeElektraPlugin rangePlugin = null;

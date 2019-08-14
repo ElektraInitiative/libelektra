@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class can be used to load native C/C++ written Elektra Plugins to be used by Java directly
+ * This class can be used to load native Elektra Plugins in Java directly
  */
 public class NativeElektraPlugin implements Plugin {
 
