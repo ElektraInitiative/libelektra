@@ -16,12 +16,12 @@ public class PropertiesStorage implements Plugin {
 	}
 
 	@Override
-	public int kdbOpen(final KeySet conf, final Key errorKey) {
+	public int open(final KeySet conf, final Key errorKey) {
 		return 0;
 	}
 
 	@Override
-	public int kdbGet(final KeySet ks, final Key parentKey) {
+	public int get(final KeySet ks, final Key parentKey) {
 		final String root = "system/elektra/modules/jni";
 		if (parentKey.isBelowOrSame(Key.create(root, Key.KEY_END))) {
 			ks.append(Key.create(root + "/infos/provides", "storage"));
@@ -47,13 +47,14 @@ public class PropertiesStorage implements Plugin {
 	}
 
 	@Override
-	public int kdbSet(final KeySet ks, final Key parentKey) {
+	public int set(final KeySet ks, final Key parentKey) {
 		final Properties properties = new Properties();
 		for (final Key k : ks) {
 			final String newName = k.getName().substring(parentKey.getNameSize());
 			properties.setProperty(newName, k.getString());
 		}
-		try (final BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
+		try (final BufferedOutputStream stream =
+					 new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
 			properties.store(stream, "written by elektra using Java Properties");
 		} catch (final IOException e) {
 			parentKey.setError("Could not write file");
@@ -63,12 +64,12 @@ public class PropertiesStorage implements Plugin {
 	}
 
 	@Override
-	public int kdbError(final KeySet ks, final Key parentKey) {
+	public int error(final KeySet ks, final Key parentKey) {
 		return 0;
 	}
 
 	@Override
-	public int kdbClose(final Key parentKey) {
+	public int close(final Key parentKey) {
 		return 0;
 	}
 

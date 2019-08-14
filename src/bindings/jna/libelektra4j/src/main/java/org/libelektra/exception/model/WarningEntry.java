@@ -22,26 +22,56 @@ public class WarningEntry {
 		configFile = key.getMeta(warningKeyName + "/configfile").getString();
 	}
 
-	public String getWarningCode() {
+	/**
+	 * Returns the warningNumber from Elektra
+	 *
+	 * @return the warningNumber from Elektra
+	 */
+	public String getWarningNumber() {
 		return warningCode;
 	}
 
+	/**
+	 * Returns the reason text from the warning
+	 *
+	 * @return the reason text from the warning
+	 */
 	public String getReason() {
 		return reason;
 	}
 
+	/**
+	 * Returns the mountpoint from the warning
+	 *
+	 * @return the mountpoint from the warning
+	 */
 	public String getMountpoint() {
 		return mountpoint;
 	}
 
+	/**
+	 * Returns the module from the warning
+	 *
+	 * @return the module from the warning
+	 */
 	public String getModule() {
 		return module;
 	}
 
+	/**
+	 * Returns the configuration file from the warning
+	 *
+	 * @return the configuration file from the warning
+	 */
 	public String getConfigFile() {
 		return configFile;
 	}
 
+	/**
+	 * Returns the debug information from the warning in the form of "At: file:line"
+	 *
+	 * @return the debug information from the warning in the form of "At: file:line"
+	 */
 	public String getDebugInformation() {
 		return debugInformation;
 	}

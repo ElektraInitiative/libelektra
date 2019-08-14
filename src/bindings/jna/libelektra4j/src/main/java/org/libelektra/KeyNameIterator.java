@@ -17,8 +17,7 @@ public class KeyNameIterator implements Iterator<String> {
 	/**
 	 * Basic constructor for key name iterator
 	 *
-	 * @param key
-	 *            Key which name is used in iterator
+	 * @param key Key which name is used in iterator
 	 */
 	KeyNameIterator(final Key key) {
 		con = Elektra.INSTANCE.keyUnescapedName(key.get());

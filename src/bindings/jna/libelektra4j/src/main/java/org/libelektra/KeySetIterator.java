@@ -15,8 +15,7 @@ public class KeySetIterator implements Iterator<Key> {
 	/**
 	 * Basic constructor for key set iterator
 	 *
-	 * @param container
-	 *            KeySet which is used in iterator
+	 * @param container KeySet which is used in iterator
 	 */
 	KeySetIterator(final KeySet container) {
 		con = container;

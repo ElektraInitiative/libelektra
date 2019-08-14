@@ -6,12 +6,11 @@ import org.libelektra.exception.model.WarningEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Custom KDB exception class being used for I/O errors
- */
-public abstract class KDBException extends java.io.IOException {
 
-	private static final long serialVersionUID = 1L;
+/**
+ * This exception wraps Elektra errors into the corresponding Java Exceptions
+ */
+public abstract class KDBException extends Exception {
 
 	final transient Key errorKey;
 	private Collection<WarningEntry> warnings;
@@ -29,27 +28,62 @@ public abstract class KDBException extends java.io.IOException {
 		}
 	}
 
+	/**
+	 * Gets the errorKey from Elektra
+	 *
+	 * @return ErrorKey from Elektra
+	 */
 	public Key getErrorKey() {
 		return errorKey;
 	}
 
-	public String getErrorCode() {
+	/**
+	 * Gets the errorNumber from Elektra
+	 *
+	 * @return ErrorNumber from Elektra
+	 */
+	public String getErrorNumber() {
 		return errorKey.getMeta("error/number").getString();
 	}
 
+	/**
+	 * Returns the affected configuration file of the error.
+	 * It empty returns the parents Key name
+	 *
+	 * @return either the configuration file or if empty the parent key name
+	 */
 	public String getConfigFile() {
-		return errorKey.getMeta("error/configfile").getString();
+		Key configKey = errorKey.getMeta("error/configfile");
+		if (configKey.isNull()) {
+			return errorKey.getString();
+		}
+		return configKey.getString();
 	}
 
+	/**
+	 * Returns the mountpoint of the configuration
+	 *
+	 * @return the mountpoint of the configuration
+	 */
 	public String getMountpoint() {
 		return errorKey.getMeta("error/mountpoint").getString();
 	}
 
+	/**
+	 * Prints Elektra specific debug information in the form of "At: file:line"
+	 *
+	 * @return Elektra specific debug information in the form of "At: file:line"
+	 */
 	public String getDebugInformation() {
 		return String.format("At: %s:%s%n", errorKey.getMeta("error/file").getString(),
 				errorKey.getMeta("error/line").getString());
 	}
 
+	/**
+	 * Returns the module which has thrown the error
+	 *
+	 * @return the module which has thrown the error
+	 */
 	public String getModule() {
 		return errorKey.getMeta("error/module").getString();
 	}
@@ -66,7 +100,7 @@ public abstract class KDBException extends java.io.IOException {
 	@Override
 	public String getMessage() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("Sorry, module %s issued error %s:", getModule(), getErrorCode())).append("\n");
+		builder.append(String.format("Sorry, module %s issued error %s:", getModule(), getErrorNumber())).append("\n");
 		builder.append(getReason()).append("\n");
 		if (!errorKey.getMeta("error/configfile").isNull()) {
 			builder.append("Configfile: ").append(getConfigFile()).append("\n");
@@ -80,10 +114,21 @@ public abstract class KDBException extends java.io.IOException {
 		return builder.toString();
 	}
 
+	/**
+	 * If an error occurred it may also has important warnings which caused the error.
+	 * This method checks if they are available
+	 *
+	 * @return true if additional warnings were emitted
+	 */
 	public boolean hasWarnings() {
 		return !warnings.isEmpty();
 	}
 
+	/**
+	 * Returns the warnings collection
+	 *
+	 * @return the warnings collection
+	 */
 	public Collection<WarningEntry> getWarnings() {
 		return warnings;
 	}

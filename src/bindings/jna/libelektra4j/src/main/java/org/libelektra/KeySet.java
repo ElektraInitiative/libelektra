@@ -40,10 +40,14 @@ public class KeySet implements Iterable<Key> {
 
 	/**
 	 * Helper constructor for duplication by pointer
+	 * The pointer may not be null or an IllegalArgumentException is thrown
 	 *
 	 * @param p Pointer to another KeySet
 	 */
 	public KeySet(final Pointer p) {
+		if (p == null) {
+			throw new IllegalArgumentException("Passed pointer may not be null");
+		}
 		ks = p;
 	}
 
@@ -69,7 +73,8 @@ public class KeySet implements Iterable<Key> {
 		if (args.length > 0 && args[i - 1] != KeySet.KS_END) {
 			final Object[] sanitized = Arrays.copyOf(args, args.length + 1);
 			sanitized[i] = KeySet.KS_END;
-			return new KeySet(Elektra.INSTANCE.ksNew(alloc < sanitized.length ? alloc + 1 : sanitized.length, sanitized));
+			return new KeySet(Elektra.INSTANCE.ksNew(alloc < sanitized.length ? alloc + 1 : sanitized.length,
+					sanitized));
 		}
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
 	}
@@ -130,7 +135,8 @@ public class KeySet implements Iterable<Key> {
 
 	/**
 	 * Basic java function that represents object as String.<br>
-	 * Iterates though all keys in this key set and appends their representation to the output. Uses the toString() function of the Key
+	 * Iterates though all keys in this key set and appends their representation to the output. Uses the toString()
+	 * function of the Key
 	 * objects.
 	 *
 	 * @return List of key-value pairs contained in this key set
@@ -164,7 +170,8 @@ public class KeySet implements Iterable<Key> {
 	 * Copies key references from other key set
 	 *
 	 * @param other Key set that is used as source
-	 * @return 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an error (null pointer)
+	 * @return 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
+	 * error (null pointer)
 	 */
 	public int copy(final KeySet other) {
 		if (other == null)

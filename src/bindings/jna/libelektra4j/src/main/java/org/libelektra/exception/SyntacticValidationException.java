@@ -4,13 +4,13 @@ import org.libelektra.Key;
 
 public class SyntacticValidationException extends ValidationException {
 
-	private static String errorCode = "C03100";
+	private static final String errorNumber = "C03100";
 
 	public SyntacticValidationException(Key k) {
 		super(k);
 	}
 
-	public static String errorCode() {
-		return errorCode;
+	public static String errorNumber() {
+		return errorNumber;
 	}
 }

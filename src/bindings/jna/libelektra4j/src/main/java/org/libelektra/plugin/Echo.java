@@ -19,7 +19,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int kdbOpen(final KeySet conf, final Key errorKey) {
+	public int open(final KeySet conf, final Key errorKey) {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.getString());
@@ -29,7 +29,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int kdbGet(final KeySet ks, final Key parentKey) {
+	public int get(final KeySet ks, final Key parentKey) {
 		System.out.println("get plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -41,7 +41,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int kdbSet(final KeySet ks, final Key parentKey) {
+	public int set(final KeySet ks, final Key parentKey) {
 		System.out.println("set plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -50,7 +50,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int kdbError(final KeySet ks, final Key parentKey) {
+	public int error(final KeySet ks, final Key parentKey) {
 		System.out.println("error plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -59,7 +59,7 @@ public class Echo implements Plugin {
 	}
 
 	@Override
-	public int kdbClose(final Key parentKey) {
+	public int close(final Key parentKey) {
 		System.out.println("close plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());

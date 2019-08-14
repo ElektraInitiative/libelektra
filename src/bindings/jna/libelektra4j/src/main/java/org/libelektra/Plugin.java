@@ -9,67 +9,60 @@ public interface Plugin {
 
 	/**
 	 * Gets the config which was used to configure the plugin
+	 *
 	 * @return A KeySet containing the configuration of the plugin
 	 */
-	public KeySet getConfig();
+	KeySet getConfig();
 
 	/**
 	 * Calls the open function of the plugin.
 	 *
-	 * @param conf
-	 *            a configuration keyset
-	 * @param errorKey
-	 *            a key
+	 * @param conf     a configuration keyset
+	 * @param errorKey a key
 	 * @return the plugin's return value for open
 	 */
-	int kdbOpen(KeySet conf, Key errorKey);
+	int open(KeySet conf, Key errorKey);
 
 	/**
 	 * Calls the get function of the plugin.
 	 *
-	 * @param ks
-	 *            a keyset
-	 * @param parentKey
-	 *            a key
+	 * @param ks        a keyset
+	 * @param parentKey a key
 	 * @return the plugin's return value for get
 	 */
-	int kdbGet(KeySet ks, Key parentKey) throws KDBException;
+	int get(KeySet ks, Key parentKey) throws KDBException;
 
 	/**
 	 * Calls the set function of the plugin.
 	 *
-	 * @param ks
-	 *            a keyset
-	 * @param parentKey
-	 *            a key
+	 * @param ks        a keyset
+	 * @param parentKey a key
 	 * @return the plugin's return value for set
 	 */
-	int kdbSet(KeySet ks, Key parentKey) throws KDBException;
+	int set(KeySet ks, Key parentKey) throws KDBException;
 
 	/**
 	 * Calls the error function of the plugin.
 	 *
-	 * @param ks
-	 *            a keyset
-	 * @param parentKey
-	 *            a key
+	 * @param ks        a keyset
+	 * @param parentKey a key
 	 * @return the plugin's return value for error
 	 */
-	int kdbError(KeySet ks, Key parentKey);
+	int error(KeySet ks, Key parentKey);
 
 	/**
 	 * Calls the close function of the plugin.
 	 *
-	 * @param parentKey
-	 *            a key
+	 * @param parentKey a key
 	 * @return the plugin's return value for close
 	 */
-	int kdbClose(Key parentKey);
+	int close(Key parentKey);
 
 	/**
 	 * Returns the plugin name
+	 *
 	 * @return plugin name
 	 */
-	public String getName();
+	String getName();
 
 }

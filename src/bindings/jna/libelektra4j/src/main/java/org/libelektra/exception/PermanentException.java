@@ -4,13 +4,13 @@ import org.libelektra.Key;
 
 public abstract class PermanentException extends KDBException {
 
-	private static String errorCode = "C01000";
+	private static final String errorNumber = "C01000";
 
 	public PermanentException(Key k) {
 		super(k);
 	}
 
-	public static String errorCode() {
-		return errorCode;
+	public static String errorNumber() {
+		return errorNumber;
 	}
 }

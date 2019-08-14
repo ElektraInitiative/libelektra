@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ KeySetTest.class, KeyTest.class, KDBTest.class, ErrorCodeTest.class })
+@SuiteClasses({KeySetTest.class, KeyTest.class, KDBTest.class, ErrorNumberTest.class})
 public class AllTests {
 
 }

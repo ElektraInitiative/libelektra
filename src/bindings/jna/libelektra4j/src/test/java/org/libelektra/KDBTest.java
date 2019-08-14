@@ -30,7 +30,8 @@ public class KDBTest {
 	}
 
 	/*
-	 * This test is currently designed to work with the current behavior of kdbGet which returns all keys of the given namespace. As seen in
+	 * This test is currently designed to work with the current behavior of kdbGet which returns all keys of the given
+	 *  namespace. As seen in
 	 * https://github.com/ElektraInitiative/libelektra/issues/1258, this will probably change.
 	 */
 	@Test

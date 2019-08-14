@@ -1,6 +1,7 @@
 package org.libelektra;
 
 import com.sun.jna.Pointer;
+import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
  * Key is an essential class that encapsulates key name , value and metainfo.
@@ -70,8 +71,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper constructor for duplication by pointer in long format
 	 *
-	 * @param p
-	 *            Pointer in long format
+	 * @param p Pointer in long format
 	 */
 	protected Key(final long p) {
 		key = new Pointer(p);
@@ -81,8 +81,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper constructor for duplication by pointer
 	 *
-	 * @param p
-	 *            Pointer as Pointer object
+	 * @param p Pointer as Pointer object
 	 */
 	protected Key(final Pointer p) {
 		key = p;
@@ -92,11 +91,9 @@ public class Key implements Iterable<String> {
 	/**
 	 * Basic constructor of key class
 	 *
-	 * @param name
-	 *            Key name; first part of key-value pair
-	 * @param args
-	 *            Arguments used for key value. Example:<br>
-	 *            Key.KEY_VALUE, "custom key value", Key.KEY_END
+	 * @param name Key name; first part of key-value pair
+	 * @param args Arguments used for key value. Example:<br>
+	 *             Key.KEY_VALUE, "custom key value", Key.KEY_END
 	 * @return New key object
 	 */
 	protected static Key create(final String name, final Object... args) {
@@ -106,12 +103,10 @@ public class Key implements Iterable<String> {
 	/**
 	 * Basic constructor of key class
 	 *
-	 * @param name
-	 *            Key name; first part of key-value pair
-	 * @param value
-	 *            Key value; will be determine from the object by calling {@link Object#toString()}, null is supported too
-	 * @param meta
-	 *            Metadata that should be added to this key, null keys will be filtered away
+	 * @param name  Key name; first part of key-value pair
+	 * @param value Key value; will be determine from the object by calling {@link Object#toString()}, null is
+	 *                 supported too
+	 * @param meta  Metadata that should be added to this key, null keys will be filtered away
 	 * @return New key object
 	 */
 	public static Key create(final String name, final Object value, final Key... meta) {
@@ -140,10 +135,8 @@ public class Key implements Iterable<String> {
 	/**
 	 * Basic constructor of key class
 	 *
-	 * @param name
-	 *            Key name; first part of key-value pair
-	 * @param meta
-	 *            Metadata that should be added to this key. Will filter null values.
+	 * @param name Key name; first part of key-value pair
+	 * @param meta Metadata that should be added to this key. Will filter null values.
 	 * @return New key object
 	 */
 	public static Key create(final String name, final Key... meta) {
@@ -268,8 +261,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Boolean value to set
+	 * @param v Boolean value to set
 	 */
 	public void setBoolean(final boolean v) {
 		setString(Boolean.toString(v));
@@ -278,8 +270,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Byte value to set
+	 * @param v Byte value to set
 	 */
 	public void setByte(final byte v) {
 		setString(Byte.toString(v));
@@ -288,8 +279,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Short integer value to set
+	 * @param v Short integer value to set
 	 */
 	public void setShort(final short v) {
 		setString(Short.toString(v));
@@ -298,8 +288,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Integer value to set
+	 * @param v Integer value to set
 	 */
 	public void setInteger(final int v) {
 		setString(Integer.toString(v));
@@ -308,8 +297,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Long integer value to set
+	 * @param v Long integer value to set
 	 */
 	public void setLong(final long v) {
 		setString(Long.toString(v));
@@ -318,8 +306,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Float value to set
+	 * @param v Float value to set
 	 */
 	public void setFloat(final float v) {
 		setString(Float.toString(v));
@@ -328,8 +315,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Data type specific setter function
 	 *
-	 * @param v
-	 *            Double value to set
+	 * @param v Double value to set
 	 */
 	public void setDouble(final double v) {
 		setString(Double.toString(v));
@@ -338,15 +324,13 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to set proper error meta for key
 	 *
-	 * @param text
-	 *            Reason for the error
-	 * @param args
-	 *            Custom arguments
+	 * @param text Reason for the error
+	 * @param args Custom arguments
 	 */
 	public void setError(final String text, final Object... args) {
 		final StackTraceElement[] e = Thread.currentThread().getStackTrace();
 		setMeta("error", "number description module file line function reason");
-		setMeta("error/number", "102");
+		setMeta("error/number", PluginMisbehaviorException.errorNumber());
 		setMeta("error/description", "jni/java error");
 		setMeta("error/module", e[1].getClassName() + " " + e[1].getMethodName());
 		setMeta("error/file", e[1].getFileName());
@@ -359,10 +343,8 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to add warning meta for key
 	 *
-	 * @param text
-	 *            Reason for the warning
-	 * @param args
-	 *            Custom arguments
+	 * @param text Reason for the warning
+	 * @param args Custom arguments
 	 */
 	public void addWarning(final String text, final Object... args) {
 		final StackTraceElement[] e = Thread.currentThread().getStackTrace();
@@ -384,7 +366,7 @@ public class Key implements Iterable<String> {
 			setMeta(Key.WARNINGS, "00");
 		}
 		setMeta(builder + "", "number description module file line function reason");
-		setMeta(builder + "/number", "103");
+		setMeta(builder + "/number", PluginMisbehaviorException.errorNumber());
 		setMeta(builder + "/description", "jni/java warning");
 		setMeta(builder + "/module", e[1].getClassName() + " " + e[1].getMethodName());
 		setMeta(builder + "/file", e[1].getFileName());
@@ -410,8 +392,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Copies the information from the source key into this key. Does nothing if null is provided.
 	 *
-	 * @param source
-	 *            Source Key object containing the information to copy
+	 * @param source Source Key object containing the information to copy
 	 */
 	public void copy(final Key source) {
 		if (source != null) {
@@ -472,12 +453,11 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to copy some meta information from a source Key to this key.
 	 *
-	 * @param source
-	 *            Key object that is used as source
-	 * @param metaName
-	 *            Key name of the meta to be copied
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be done, -1 in case of an
-	 *         error or if the source parameter was null
+	 * @param source   Key object that is used as source
+	 * @param metaName Key name of the meta to be copied
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be
+	 * done, -1 in case of an
+	 * error or if the source parameter was null
 	 */
 	public int copyMeta(final Key source, final String metaName) {
 		if (source == null) {
@@ -489,10 +469,10 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to copy all meta information from a source key to this key
 	 *
-	 * @param source
-	 *            Key object that is used as source
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1 in case of an error or
-	 *         if the source parameter was null
+	 * @param source Key object that is used as source
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1
+	 * in case of an error or
+	 * if the source parameter was null
 	 */
 	public int copyAllMeta(final Key source) {
 		if (source == null) {
@@ -504,8 +484,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Getter for meta information
 	 *
-	 * @param metaName
-	 *            Key name of meta information to be fetched
+	 * @param metaName Key name of meta information to be fetched
 	 * @return New Key object containing the requested meta information
 	 */
 	public Key getMeta(final String metaName) {
@@ -515,12 +494,11 @@ public class Key implements Iterable<String> {
 	/**
 	 * Setter for meta information
 	 *
-	 * @param metaName
-	 *            Key name of meta information to be set
-	 * @param newMetaString
-	 *            Meta value to be set
-	 * @return -1 in case of an error, 0 if no meta with given name is available for the key and value > 0 representing the size of
-	 *         newMetaString if update successful
+	 * @param metaName      Key name of meta information to be set
+	 * @param newMetaString Meta value to be set
+	 * @return -1 in case of an error, 0 if no meta with given name is available for the key and value > 0
+	 * representing the size of
+	 * newMetaString if update successful
 	 */
 	public int setMeta(final String metaName, final String newMetaString) {
 		return Elektra.INSTANCE.keySetMeta(get(), metaName, newMetaString);
@@ -529,10 +507,10 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to compare two keys. Compares the key name with normal String comparison.
 	 *
-	 * @param other
-	 *            Other Key object that is used in comparison
-	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical order than the other key; 1 if this key has higher
-	 *         alphabetical order
+	 * @param other Other Key object that is used in comparison
+	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical order than the other key; 1 if this
+	 * key has higher
+	 * alphabetical order
 	 */
 	public int cmp(final Key other) {
 		if (other == null) {
@@ -544,8 +522,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to check for relation between keys
 	 *
-	 * @param other
-	 *            Other Key object that is used in relation check
+	 * @param other Other Key object that is used in relation check
 	 * @return 0 if other is equal to this; > 0 if other is sub-key of this key; < 0 otherwise or in case of an error
 	 */
 	public int rel(final Key other) {
@@ -567,8 +544,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to check if key is sub-key of other key
 	 *
-	 * @param other
-	 *            Key that is used in check as parent key
+	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is (non-direct) sub-key of other-key
 	 */
 	public boolean isBelow(final Key other) {
@@ -581,8 +557,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to check if key is other key or sub-key of other key
 	 *
-	 * @param other
-	 *            Key that is used in check as parent key
+	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is other key or (non-direct) sub-key of other-key
 	 */
 	public boolean isBelowOrSame(final Key other) {
@@ -595,8 +570,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to check if key is direct sub-key of other key
 	 *
-	 * @param other
-	 *            Key that is used in check as parent key
+	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is direct sub-key of other key ("child")
 	 */
 	public boolean isDirectBelow(final Key other) {
@@ -654,8 +628,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to set key name
 	 *
-	 * @param name
-	 *            New key name to use
+	 * @param name New key name to use
 	 * @throws KeyInvalidName
 	 */
 	public void setName(final String name) throws KeyInvalidName {
@@ -685,8 +658,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to set key base name; will replace current base name with new base name
 	 *
-	 * @param baseName
-	 *            New key base name to use
+	 * @param baseName New key base name to use
 	 * @throws KeyInvalidName
 	 */
 	public void setBaseName(final String baseName) throws KeyInvalidName {
@@ -696,10 +668,10 @@ public class Key implements Iterable<String> {
 	}
 
 	/**
-	 * Helper function to add key base name; will add given base name to current key so that new key is sub key of current key
+	 * Helper function to add key base name; will add given base name to current key so that new key is sub key of
+	 * current key
 	 *
-	 * @param baseName
-	 *            New key base name to add
+	 * @param baseName New key base name to add
 	 * @throws KeyInvalidName
 	 */
 	public void addBaseName(final String baseName) throws KeyInvalidName {
@@ -733,8 +705,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to set new key value
 	 *
-	 * @param newString
-	 *            New key value to set
+	 * @param newString New key value to set
 	 * @return value > 0 representing saved bytes (+null byte), -1 in case of an error (null key)
 	 */
 	public int setString(final String newString) {
