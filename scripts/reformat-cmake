@@ -11,7 +11,7 @@ SCRIPTS_DIR=$(dirname "$0")
 # The command `cmake-format --version` seems to print the version number either to `stdout` or `stderr`, depending on the current system.
 # To make sure we always capture the version number correctly we therefore redirect `stderr` to the same file descriptor as `stdout`,
 # before we save the output of the command.
-CMAKE_FORMAT=$(which cmake-format) && CMAKE_FORMAT_VERSION=$("$CMAKE_FORMAT" 2>&1 --version)
+CMAKE_FORMAT="$(which cmake-format)" && CMAKE_FORMAT_VERSION="$("$CMAKE_FORMAT" 2>&1 --version)"
 
 if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.5.4" ]; then
 	printf >&2 'cmake-format: %s\n' "$CMAKE_FORMAT"
