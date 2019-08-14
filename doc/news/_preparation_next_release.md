@@ -122,7 +122,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Added decision for array concept of warnings. _(Michael Zronek)_
 - We updated our [Doxygen configuration file](../../doc/Doxyfile), removing the outdated `PERL_PATH` and `MSCGEN_PATH` options. _(René Schwaiger)_
-- Added a tutorial on how to write language bindings. Visit our new [README](../dev/language-binding.md)
+- Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md)
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
 - <<TODO>>
 - <<TODO>>
