@@ -64,6 +64,7 @@ Elektra:
 - [Profiling](profiling.md)
 - [Run all Tests with Docker](run_all_tests_with_docker.md)
 - [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
+- [Language Bindings](language-bindings.md)
 
 ## Installation Manuals
 

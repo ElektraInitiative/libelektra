@@ -7,7 +7,6 @@ It complements the man pages found [here](/doc/help).
 - [Classes](classes.md)
 - [Data structures](data-structures.md)
 - [Plugins Framework](plugins-framework.md)
-- [Language Bindings](language-binding.md)
 
 ## Concepts
 

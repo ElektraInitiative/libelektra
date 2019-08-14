@@ -46,22 +46,24 @@ error code itself since the hierarchy is integrated in it. For example you can c
 ### Error Message
 
 In Elektra every error has a predefined format. You can take a look at the [related design decision](../decisions/error_message_format.md)
-to see how it looks like. In case of an error at least the following part has to be returned:
+to see how it looks like.
+
+Every Exception/Error struct/etc. should have separate accessors to individual parts of the message.
+These include:
+
+1. Module (getModule())
+2. Error Code (getErrorCode())
+3. Reason (getReason())
+4. Configfile (getConfigFile())
+5. Mountpoint (getMountpoint())
+6. Debuginformation (text looks like "At: file:line") (getDebugInformation())
+
+In case of an error at least the following part has to be returned:
 
 ```
-Sorry, module `MODULE` issued [error|warning] `NR`:
-`ERROR_CODE_DESCRIPTION`: Validation of key "<key>" with string "<value>" failed.
+Sorry, module getModule() issued error getErrorCode():
+getReason()
 ```
 
 Please also keep the wording identical for consistency.
-Additionally the Exception/Error struct/etc. should have separate accessors to individual parts of the message.
-These include:
-
-1. Module
-2. Error Code
-3. Reason
-4. Configfile
-5. Mountpoint
-6. Debuginformation ("At: file:line")
-
 Take a look how the Java Binding implemented it in the KDBException (TODO: Provide link after merge).
