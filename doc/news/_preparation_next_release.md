@@ -118,7 +118,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- Added decision for array concept of warnings. _(Michael Zronek)_
 - <<TODO>>
 - <<TODO>>
 
