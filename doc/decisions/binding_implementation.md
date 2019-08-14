@@ -16,13 +16,13 @@ In the previous error concept it was very useful to generate macros as we often 
   All we get out of this is the removal of `std::cout << ...` code from C++ but not much more.
 
 - Migrate to CMake code that generates such macros/classes (see also https://github.com/ElektraInitiative/libelektra/issues/2814)
-  Approach will have problems with more complex languages though
+  Approach will have problems with languages that have more refined error concepts.
 
 ## Decision
 
 Write down the few macros manually, and also manually write down exceptions for the language bindings (and also the mappings from Elektra's internal errors to nice errors specific for the languages)
 
-Since error codes and crucial parts Elektra's core implementation will not change often this is the best approach with the least error rate.
+Since error codes and crucial parts Elektra's core implementation will not change often this is the best approach with minimal effort.
 
 ## Rationale
 
@@ -37,5 +37,5 @@ Since error codes and crucial parts Elektra's core implementation will not chang
 
 ## Notes
 
-https://github.com/ElektraInitiative/libelektra/issues/2871
-https://github.com/ElektraInitiative/libelektra/issues/2814
+- https://github.com/ElektraInitiative/libelektra/issues/2871
+- https://github.com/ElektraInitiative/libelektra/issues/2814
