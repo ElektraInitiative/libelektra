@@ -13,9 +13,13 @@ Rust bindings for libelektra.
 Using the `buildelektra-stretch-full` docker image, we have to install cargo and rustc via [rustup](https://rustup.rs).
 We also need to install rusts formattings tools with `rustup component add rustfmt`.
 
-Bindings are generated when buildling the `elektra-sys` crate using `rust-bindgen`.
+Bindings are generated when buildling the `elektra-sys` crate using `rust-bindgen`. The `build.rs` script in the `elektra-sys` crate calls and configures bindgen. It also emits additional configuration for `rustc` to tell it what library to link against, and where to find it.
+Bindgen expects a `wrapper.h` file that includes all headers that bindings should be generated for. Since these headers could have additional includes, the `build.rs` also passes the elektra source and binary directory to clang, such that these includes can be found.
+Finally, bindgen outputs the bindings into a file, that is then included in the `elektra-sys/lib.rs` file, where it can be used from other crates.
 
-Additionally, clang is needed (`clang-4.0` worked), otherwise
+## Troublshooting
+
+Rust-bindgen needs clang to generate the bindings, so if you encounter the following error, make sure clang (3.9 or higher) is installed.
 
 ```
 /usr/include/limits.h:123:16: fatal error: 'limits.h' file not found
