@@ -106,6 +106,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 			       keyNew ("system/elektra/modules/doc/exports/close", KEY_FUNC, elektraDocClose, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/get", KEY_FUNC, elektraDocGet, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/commit", KEY_FUNC, elektraDocCommit, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/checkconf", KEY_FUNC, elektraDocCheckConf, KEY_END),
 #include ELEKTRA_README
