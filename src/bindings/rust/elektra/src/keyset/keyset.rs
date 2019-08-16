@@ -43,17 +43,17 @@ impl Drop for KeySet {
     }
 }
 
-// impl Iterator for KeySet {
-//     type Item = StrKey<'a>;
-//     fn next(&self) -> Option<Self::Item> {
-//         let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
-//         if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
-//             None
-//         } else {
-//             Some(StrKey::from_ptr(key_ptr as *mut elektra_sys::Key))
-//         }
-//     }
-// }
+impl Iterator for KeySet {
+    type Item = StringKey;
+    fn next(&mut self) -> Option<Self::Item> {
+        let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
+        if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+            None
+        } else {
+            Some(StringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
+        }
+    }
+}
 
 impl KeySet {
     fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
@@ -244,6 +244,48 @@ impl KeySet {
     //         }
     //     }
     // }
+
+    pub fn iter<'a>(&'a mut self) -> StrKeyIter<'a> {
+        StrKeyIter {
+            cursor: None,
+            keyset: self,
+        }
+    }
+}
+
+pub struct StrKeyIter<'a> {
+    cursor: Option<Cursor>,
+    keyset: &'a mut KeySet,
+}
+
+impl<'a> Iterator for StrKeyIter<'a> {
+    type Item = StrKey<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.cursor {
+            None => {
+                let key_ptr = unsafe { elektra_sys::ksNext(self.keyset.as_ptr()) };
+                if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+                    None
+                } else {
+                    self.cursor = Some(self.keyset.get_cursor());
+                    Some(StrKey::from_ptr(key_ptr))
+                }
+            }
+            Some(cursor) => {
+                self.cursor = Some(cursor + 1);
+                self.keyset.set_cursor(self.cursor.unwrap());
+                let key_ptr = unsafe { elektra_sys::ksCurrent(self.keyset.as_ptr()) };
+
+                if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+                    self.cursor = None;
+                    None
+                } else {
+                    Some(StrKey::from_ptr(key_ptr))
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -272,35 +314,69 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn can_iterate_simple_keyset() {
-    //     let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
-    //     let values = ["value1", "value2", "value3"];
+    #[test]
+    fn can_iterate_simple_keyset_immutably() {
+        let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
+        let values = ["value1", "value2", "value3"];
 
-    //     let mut ks = KeySet::with_capacity(3);
+        let mut ks = KeySet::with_capacity(3);
 
-    //     ks.append_all(vec![
-    //         KeyBuilder::<StringKey>::new(names[0])
-    //             .value(values[0])
-    //             .build(),
-    //         KeyBuilder::<StringKey>::new(names[1])
-    //             .value(values[1])
-    //             .build(),
-    //         KeyBuilder::<StringKey>::new(names[2])
-    //             .value(values[2])
-    //             .build(),
-    //     ])
-    //     .unwrap();
-    //     ks.rewind();
+        ks.append_all(vec![
+            KeyBuilder::<StringKey>::new(names[0])
+                .value(values[0])
+                .build(),
+            KeyBuilder::<StringKey>::new(names[1])
+                .value(values[1])
+                .build(),
+            KeyBuilder::<StringKey>::new(names[2])
+                .value(values[2])
+                .build(),
+        ])
+        .unwrap();
+        ks.rewind();
 
-    //     let mut did_iterate = false;
-    //     for (i, key) in ks.enumerate() {
-    //         did_iterate = true;
-    //         assert_eq!(key.get_value(), values[i]);
-    //         assert_eq!(key.get_name(), names[i]);
-    //     }
-    //     assert!(did_iterate);
-    // }
+        let mut did_iterate = false;
+        for (i, key) in ks.iter().enumerate() {
+            did_iterate = true;
+            assert_eq!(key.get_value(), values[i]);
+            assert_eq!(key.get_name(), names[i]);
+        }
+        assert!(did_iterate);
+
+        // Make sure that calling a method that takes &mut self
+        // does not produce a compile error here
+        ks.set_cursor(0);
+    }
+
+    #[test]
+    fn can_iterate_simple_keyset() {
+        let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
+        let values = ["value1", "value2", "value3"];
+
+        let mut ks = KeySet::with_capacity(3);
+
+        ks.append_all(vec![
+            KeyBuilder::<StringKey>::new(names[0])
+                .value(values[0])
+                .build(),
+            KeyBuilder::<StringKey>::new(names[1])
+                .value(values[1])
+                .build(),
+            KeyBuilder::<StringKey>::new(names[2])
+                .value(values[2])
+                .build(),
+        ])
+        .unwrap();
+        ks.rewind();
+
+        let mut did_iterate = false;
+        for (i, key) in ks.enumerate() {
+            did_iterate = true;
+            assert_eq!(key.get_value(), values[i]);
+            assert_eq!(key.get_name(), names[i]);
+        }
+        assert!(did_iterate);
+    }
 
     fn setup_keyset() -> KeySet {
         let names = ["system/test/key", "user/test/key"];
