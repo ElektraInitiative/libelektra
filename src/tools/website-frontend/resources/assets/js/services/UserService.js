@@ -1,143 +1,157 @@
-'use strict';
+"use strict";
 
-var angular = require('angular');
+var angular = require("angular");
 
-module.exports = function (Logger, $http, $q, config) {
+module.exports = function(Logger, $http, $q, config) {
+  var service = this;
 
-    var service = this;
+  this.cache = {
+    search: {
+      cached: false,
+      users: {},
+      params: {
+        filter: "",
+        filterby: "",
+        sort: "",
+        sortby: "",
+        rows: 0,
+        offset: 0
+      }
+    },
+    currentUser: {
+      hasUser: false,
+      lastFetch: 0,
+      user: {}
+    }
+  };
 
-    this.cache = {
-        search: {
-            cached: false,
-            users: {},
-            params: {
-                filter: "",
-                filterby: "",
-                sort: "",
-                sortby: "",
-                rows: 0,
-                offset: 0
-            }
-        },
-        currentUser: {
-            hasUser: false,
-            lastFetch: 0,
-            user: {}
-        }
-    };
+  this.clear = function() {
+    service.cache.currentUser.hasCache = false;
+    service.cache.currentUser.lastFetch = 0;
+    service.cache.currentUser.user = {};
+  };
 
+  this.get = function(username, currentUser, force) {
+    Logger.info("Attempting to load user details");
 
-    this.clear = function () {
-        service.cache.currentUser.hasCache = false;
-        service.cache.currentUser.lastFetch = 0;
-        service.cache.currentUser.user = {};
-    };
+    currentUser = typeof currentUser === "undefined" ? false : currentUser;
+    force = typeof force === "undefined" ? false : force;
+    if (
+      service.cache.currentUser.lastFetch + config.jwt.validity <
+      Math.floor(Date.now() / 1000)
+    ) {
+      force = true;
+    }
 
-    this.get = function (username, currentUser, force) {
-        Logger.info('Attempting to load user details');
+    var deferred = $q.defer();
 
-        currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
-        force = (typeof force === 'undefined') ? false : force;
-        if (service.cache.currentUser.lastFetch + config.jwt.validity < Math.floor(Date.now() / 1000)) {
-            force = true;
-        }
-
-        var deferred = $q.defer();
-
-        if (currentUser === true) {
-            if (!service.cache.currentUser.hasUser || force) {
-                $http.get(config.backend.root + 'user?current=true', {
-                    // custom options
-                }).then(function (response) {
-                    service.cache.currentUser.user = response.data;
-                    service.cache.currentUser.lastFetch = Math.floor(Date.now() / 1000);
-                    service.cache.currentUser.hasUser = true;
-                    deferred.resolve(service.cache.currentUser.user);
-                }, function (response) {
-                    deferred.reject(response.data);
-                });
-            } else {
-                deferred.resolve(service.cache.currentUser.user);
-            }
-        } else {
-            $http.get(config.backend.root + 'user/' + username, {
-                // custom options
-            }).then(function (response) {
-                deferred.resolve(response.data);
-            }, function (response) {
-                deferred.reject(response.data);
-            });
-        }
-
-        return deferred.promise;
-    };
-
-    this.update = function (username, data, currentUser) {
-
-        Logger.info('Attempting to update user');
-
-        currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
-
-        if (currentUser === true) {
-            return $http.put(config.backend.root + 'user?current=true', data, {
-                // custom options
-            });
-        } else {
-            return $http.put(config.backend.root + 'user/' + username, data, {
-                // custom options
-            });
-        }
-
-    };
-
-    this.delete = function (username) {
-
-        Logger.info('Attempting to delete user.');
-
-        return $http.delete(config.backend.root + 'user/' + username, {
+    if (currentUser === true) {
+      if (!service.cache.currentUser.hasUser || force) {
+        $http
+          .get(config.backend.root + "user?current=true", {
             // custom options
-        });
+          })
+          .then(
+            function(response) {
+              service.cache.currentUser.user = response.data;
+              service.cache.currentUser.lastFetch = Math.floor(
+                Date.now() / 1000
+              );
+              service.cache.currentUser.hasUser = true;
+              deferred.resolve(service.cache.currentUser.user);
+            },
+            function(response) {
+              deferred.reject(response.data);
+            }
+          );
+      } else {
+        deferred.resolve(service.cache.currentUser.user);
+      }
+    } else {
+      $http
+        .get(config.backend.root + "user/" + username, {
+          // custom options
+        })
+        .then(
+          function(response) {
+            deferred.resolve(response.data);
+          },
+          function(response) {
+            deferred.reject(response.data);
+          }
+        );
+    }
 
-    };
+    return deferred.promise;
+  };
 
-    this.search = function (params, force) {
+  this.update = function(username, data, currentUser) {
+    Logger.info("Attempting to update user");
 
-        Logger.info('Load users');
+    currentUser = typeof currentUser === "undefined" ? false : currentUser;
 
-        var deferred = $q.defer();
+    if (currentUser === true) {
+      return $http.put(config.backend.root + "user?current=true", data, {
+        // custom options
+      });
+    } else {
+      return $http.put(config.backend.root + "user/" + username, data, {
+        // custom options
+      });
+    }
+  };
 
-        if (!service.cache.search.cached || !angular.equals(service.cache.search.params, params) || force)
-        {
-            Logger.info('Loading users');
-            $http.get(config.backend.root + 'user', {
-                params: params
-            }).then(function (response) {
-                service.cache.search.users = response.data;
-                service.cache.search.params = params;
-                deferred.resolve(service.cache.search.users);
-            }, function (response) {
-                deferred.reject('Error loading data');
-            });
-        } else {
+  this.delete = function(username) {
+    Logger.info("Attempting to delete user.");
+
+    return $http.delete(config.backend.root + "user/" + username, {
+      // custom options
+    });
+  };
+
+  this.search = function(params, force) {
+    Logger.info("Load users");
+
+    var deferred = $q.defer();
+
+    if (
+      !service.cache.search.cached ||
+      !angular.equals(service.cache.search.params, params) ||
+      force
+    ) {
+      Logger.info("Loading users");
+      $http
+        .get(config.backend.root + "user", {
+          params: params
+        })
+        .then(
+          function(response) {
+            service.cache.search.users = response.data;
+            service.cache.search.params = params;
             deferred.resolve(service.cache.search.users);
-        }
+          },
+          function(response) {
+            deferred.reject("Error loading data");
+          }
+        );
+    } else {
+      deferred.resolve(service.cache.search.users);
+    }
 
-        return deferred.promise;
+    return deferred.promise;
+  };
 
-    };
+  this.hasSearchCache = function() {
+    return this.cache.search.cached;
+  };
 
-    this.hasSearchCache = function () {
-        return this.cache.search.cached;
-    };
+  this.getSearchCache = function() {
+    return this.cache.search.users;
+  };
 
-    this.getSearchCache = function () {
-        return this.cache.search.users;
-    };
+  this.getSearchFilter = function() {
+    return this.cache.search.params.filter;
+  };
 
-    this.getSearchFilter = function () {
-        return this.cache.search.params.filter;
-    };
-
-    Logger.info('User service ready!');
-
+  Logger.info("User service ready!");
 };

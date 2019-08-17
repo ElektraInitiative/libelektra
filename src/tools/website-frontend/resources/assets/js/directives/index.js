@@ -1,5 +1,5 @@
-'use strict';
+"use strict";
 
-require('./html');
-require('./permission');
-require('./text');
+require("./html");
+require("./permission");
+require("./text");
