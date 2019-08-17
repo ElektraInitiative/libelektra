@@ -48,11 +48,13 @@ void printKs (KeySet * ks)
  *
  * If a parameter is null then no key is set (!= key with empty value)
  *
- * If expected_result = NULL then the merge result must be NULL
+ * If expected_result = NULL then the merge result must be NULL, this is for error cases
+ * If expected_result = "EMPTY" then the merge result must not contain the key (it is completely
+ * empty as only one key could be in it)
  */
 static void simple_test (char * our_value, char * their_value, char * base_value, int strategy, char * expected_result)
 {
-	printf ("Executing %s with our=%s their=%s base=%s\n", __func__, our_value, their_value, base_value);
+	printf ("Executing %s with our=%s their=%s base=%s, strategy=%d, expected_result=%s\n", __func__, our_value, their_value, base_value, strategy, expected_result);
 	Key * our_root = keyNew ("user/our", KEY_END);
 	Key * their_root = keyNew ("user/their", KEY_END);
 	Key * base_root = keyNew ("user/base", KEY_END);
@@ -60,15 +62,15 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	KeySet * our = ksNew (0, KS_END);
 	KeySet * their = ksNew (0, KS_END);
 	KeySet * base = ksNew (0, KS_END);
-	if (our_value != NULL)
+	if (strcmp (our_value, "EMPTY") != 0)
 	{
 		ksAppendKey (our, keyNew ("user/our/key", KEY_VALUE, our_value, KEY_END));
 	}
-	if (their_value != NULL)
+	if (strcmp (their_value, "EMPTY") != 0)
 	{
 		ksAppendKey (their, keyNew ("user/their/key", KEY_VALUE, their_value, KEY_END));
 	}
-	if (base_value != NULL)
+	if (strcmp (base_value, "EMPTY") != 0)
 	{
 		ksAppendKey (base, keyNew ("user/base/key", KEY_VALUE, base_value, KEY_END));
 	}
@@ -77,7 +79,9 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	if (expected_result == NULL)
 	{
 		char msg[200];
-		snprintf (msg, 200, "Executing %s with our=%s their=%s base=%s and strategy %i. Expected the merge result to be NULL but it was existant.",
+		snprintf (msg, 200,
+			  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected the merge result to be NULL but it was "
+			  "existant.",
 			  __func__, our_value, their_value, base_value, strategy);
 		succeed_if (result == NULL, msg);
 		printKs(result);
@@ -87,14 +91,22 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 		Key * resultKey = ksLookupByName (result, "user/result/key", 0);
 		if (resultKey == NULL)
 		{
-			yield_error ("Looked up key must not be NULL");
+			char msg[200];
+			snprintf (msg, 200,
+				  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result to be %s and not an empty key set.\n",
+				  __func__, our_value, their_value, base_value, strategy, expected_result);
+			succeed_if (strcmp (expected_result, "EMPTY") == 0, msg);
+			succeed_if_same_string(expected_result, "EMPTY");
+			printKs(result);
 		}
 		else
 		{
 			char * resultValue = elektraMalloc (default_result_size);
 			keyGetString (resultKey, resultValue, default_result_size);
 			char msg[200];
-			snprintf (msg, 200, "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was %s.\n",
+			snprintf (msg, 200,
+				  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
+				  "%s.\n",
 				  __func__, our_value, their_value, base_value, strategy, expected_result, resultValue);
 			succeed_if (strcmp (resultValue, expected_result) == 0, msg);
 			elektraFree (resultValue);
@@ -113,6 +125,28 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 }
 
 /**
+ * Use this when the result of the merge is the same for all strategies
+ */
+static void all_strategies_same_result(char * our_value, char * their_value, char * base_value, char * expected_result){
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_ABORT, expected_result);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_OUR, expected_result);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_THEIR, expected_result);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_BASE, expected_result);
+}
+
+/**
+ * Use this when the merge conflicts or overlaps
+ * According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
+ */
+static void all_strategies_conflict(char * our_value, char * their_value, char * base_value){
+	printf("In %s with our=%s and their=%s and base=%s\n", __func__, our_value, their_value, base_value);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_ABORT, NULL);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_OUR, our_value);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_THEIR, their_value);
+	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_BASE, base_value);
+}
+
+/**
  * Changing a comment in a own configuration file leaves this comment be if an upgrade happens and
  * the comment changes
  * Similar to ucf https://packages.debian.org/sid/ucf
@@ -121,41 +155,41 @@ static void simple_test (char * our_value, char * their_value, char * base_value
  * comment=some_comment comment=other_comment comment=some_comment comment=other_comment
  *
  */
- static void test_15 (void)
-{
-	printf ("In test function %s\n", __func__);
-	Key * a = keyNew (OUR_ROOT, KEY_END);
-	Key * b = keyNew (THEIR_ROOT, KEY_END);
-	Key * c = keyNew (BASE_ROOT, KEY_END);
-	Key * d = keyNew (RESULT_ROOT, KEY_END);
-	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
-	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
+// static void test_15 (void)
+// {
+// 	printf ("In test function %s\n", __func__);
+// 	Key * a = keyNew (OUR_ROOT, KEY_END);
+// 	Key * b = keyNew (THEIR_ROOT, KEY_END);
+// 	Key * c = keyNew (BASE_ROOT, KEY_END);
+// 	Key * d = keyNew (RESULT_ROOT, KEY_END);
+// 	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
+// 	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
+// 	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
+// 	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
 
-	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-	if (resultKey == NULL)
-	{
-		yield_error ("Should not be NULL");
-	}
-	else
-	{
-		char * resultValue = elektraMalloc (default_result_size);
-		const Key * metakey = keyGetMeta (resultKey, COMMENT);
-		if (metakey == 0) yield_error ("Meta key must not be null");
-		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
-		elektraFree (resultValue);
-	}
+// 	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
+// 	if (resultKey == NULL)
+// 	{
+// 		yield_error ("Should not be NULL");
+// 	}
+// 	else
+// 	{
+// 		char * resultValue = elektraMalloc (default_result_size);
+// 		const Key * metakey = keyGetMeta (resultKey, COMMENT);
+// 		if (metakey == 0) yield_error ("Meta key must not be null");
+// 		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
+// 		elektraFree (resultValue);
+// 	}
 
-	ksDel (our);
-	ksDel (their);
-	ksDel (base);
-	ksDel (result);
-	keyDel (a);
-	keyDel (b);
-	keyDel (c);
-	keyDel (d);
-}
+// 	ksDel (our);
+// 	ksDel (their);
+// 	ksDel (base);
+// 	ksDel (result);
+// 	keyDel (a);
+// 	keyDel (b);
+// 	keyDel (c);
+// 	keyDel (d);
+// }
 
 ///**
 // * When local changes have been done and the comment gets updated then really do this update
@@ -455,41 +489,25 @@ int main (int argc, char ** argv)
 	printf ("CMERGE       TESTS\n");
 	printf ("==================\n\n");
 
-	/** Always check if all tests are listed here */
 	init (argc, argv);
-	simple_test ("1", "1", "1", MERGE_STRATEGY_IRRELEVANT, "1");
-	simple_test ("1", "2", "1", MERGE_STRATEGY_IRRELEVANT, "2");
-	simple_test ("2", "1", "1", MERGE_STRATEGY_IRRELEVANT, "2");
-	// Merge strategy is abort. There should be a conflict and that should lead to NULL as keyset
-	simple_test ("1", "2", "3", MERGE_STRATEGY_ABORT, NULL);
-	simple_test ("1", "2", "3", MERGE_STRATEGY_OUR, "1");
-	// simple_test ("1", "2", "3", MERGE_STRATEGY_THEIR, "2");
-	// simple_test ("1", NULL, "1", MERGE_STRATEGY_IRRELEVANT, NULL);
-	// simple_test (NULL, "1", "1", MERGE_STRATEGY_IRRELEVANT, NULL);
-	// simple_test (NULL, "1", NULL, MERGE_STRATEGY_IRRELEVANT, "1");
-	// simple_test ("1", NULL, NULL, MERGE_STRATEGY_IRRELEVANT, "1");
-	// /**
-	//  *   Begin section of conflicts that are not overlaps
-	//  *   According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
-	//  *   this is a conflict but not an overlap
-	//  */
-	// /**
-	//  * End section of conflicts that are not overlaps
-	//  */
-	// simple_test ("1", "1", "2", MERGE_STRATEGY_ABORT, NULL);
-	// simple_test ("1", "1", "2", MERGE_STRATEGY_OUR, "1");
-	// simple_test ("1", "1", "2", MERGE_STRATEGY_THEIR, "1");
-	// simple_test (NULL, NULL, "1", MERGE_STRATEGY_OUR, NULL);
-	// simple_test (NULL, NULL, "1", MERGE_STRATEGY_ABORT, NULL);
-	// simple_test ("1", "1", NULL, MERGE_STRATEGY_ABORT, NULL);
-	// simple_test ("1", "1", NULL, MERGE_STRATEGY_BASE, NULL);
-	// simple_test ("1", "1", NULL, MERGE_STRATEGY_OUR, "1");
-	// simple_test ("1", "1", NULL, MERGE_STRATEGY_THEIR, "1");
-	// simple_test (NULL, NULL, "1", MERGE_STRATEGY_BASE, "1");
-	// // Overlap conflict
-	// simple_test ("1", "2", NULL, MERGE_STRATEGY_ABORT, "1"); // TODO Result is NULL
-	// simple_test ("1", "2", NULL, MERGE_STRATEGY_OUR, "1");
-	// simple_test ("1", "2", NULL, MERGE_STRATEGY_THEIR, "2");
+	all_strategies_same_result ("EMPTY", "EMPTY", "EMPTY", "EMPTY");
+	all_strategies_conflict("EMPTY", "EMPTY", "1");
+	all_strategies_same_result ("EMPTY", "1", "EMPTY", "1");
+	all_strategies_same_result ("EMPTY", "1", "1", "EMPTY");
+	all_strategies_same_result ("1", "EMPTY", "EMPTY", "1");
+	all_strategies_same_result ("1", "EMPTY", "1", "EMPTY");
+	all_strategies_conflict("1", "1", "EMPTY");
+	all_strategies_same_result ("1", "1", "1", "1");
+	all_strategies_conflict("1", "1", "2");
+	all_strategies_same_result ("1", "2", "1", "2");
+	all_strategies_same_result ("1", "2", "2", "1");
+	all_strategies_same_result ("2", "1", "1", "2");
+	all_strategies_same_result ("2", "1", "2", "1");
+	all_strategies_conflict ("2", "2", "1");
+	all_strategies_conflict ("1", "2", "3");
+	all_strategies_conflict ("1", "2", "EMPTY");
+	all_strategies_conflict ("1", "EMPTY", "3");
+	all_strategies_conflict ("EMPTY", "2", "3");
 
 	// test_15 ();
 	//	test_16 ();
