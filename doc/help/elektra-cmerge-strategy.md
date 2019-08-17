@@ -20,7 +20,7 @@ The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet
 The following strategies are planned to be implemented:
 
 - abort:
-  Abort if any conflict occurs.
+  Abort if any conflict occurs. Default strategy.
 
 - our:
   This option forces conflicting hunks to be auto-resolved cleanly by favoring our version. Changes from base or their that do not conflict with our side are reflected to the merge result.

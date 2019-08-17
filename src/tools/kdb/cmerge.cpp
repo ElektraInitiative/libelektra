@@ -25,14 +25,45 @@ CMergeCommand::~CMergeCommand ()
 
 int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 {
-	if (cl.arguments.size () != 4)
+	if (cl.arguments.size () < 4)
 	{
-		throw invalid_argument ("Wrong number of arguments! 4 arguments needed");
+		throw invalid_argument ("Wrong number of arguments! At least 4 arguments needed");
 	}
 	kdb::Key oursRoot = cl.createKey (0);
 	kdb::Key theirsRoot = cl.createKey (1);
 	kdb::Key baseRoot = cl.createKey (2);
 	kdb::Key resultRoot = cl.createKey (3);
+	int strategy = MERGE_STRATEGY_ABORT;
+	if (cl.strategy == "preserve")
+	{
+		/** This is here for compatibility. The old merge has preserve as default as defined in cmdline.cpp.
+		 *  As cmerge uses the existing functionality it is still default, even though it does not exist in cmerge.
+		 *  Default in new merge is abort.
+		 */
+		strategy = MERGE_STRATEGY_ABORT;
+	}
+	else if (cl.strategy == "abort")
+	{
+		strategy = MERGE_STRATEGY_ABORT;
+	}
+	else if (cl.strategy == "our")
+	{
+		strategy = MERGE_STRATEGY_OUR;
+	}
+	else if (cl.strategy == "their")
+	{
+		strategy = MERGE_STRATEGY_THEIR;
+	}
+	else if (cl.strategy == "base")
+	{
+		strategy = MERGE_STRATEGY_BASE;
+	}
+	else
+	{
+		throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: abort, our, their, base");
+	}
+	printf ("Merge strategy is %d\n", strategy);
+
 	kdb::KeySet ours;
 	kdb::KeySet theirs;
 	kdb::KeySet base;
@@ -80,7 +111,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	ckdb::KeySet * c_theirs = theirs.getKeySet ();
 	ckdb::KeySet * c_base = base.getKeySet ();
 	ckdb::KeySet * c_merge_result = kdbMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base, baseRoot.getKey (),
-						  resultRoot.getKey (), MERGE_STRATEGY_OUR);
+						  resultRoot.getKey (), strategy);
 	kdb::KeySet merge_result = c_merge_result;
 	if (merge_result != NULL)
 	{
