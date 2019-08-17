@@ -1,3 +1,5 @@
+cmake_policy (PUSH)
+cmake_policy (SET CMP0078 OLD)
 set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 
 find_swig ()
@@ -56,3 +58,4 @@ check_binding_included ("swig_ruby"
 if (IS_INCLUDED)
 	add_subdirectory (ruby)
 endif ()
+cmake_policy (POP)
