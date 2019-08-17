@@ -5731,13 +5731,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     i = o._node && o._node.nodeType === H,
                     s = i ? o._node : o._ownerDocument;
                   F(t, s),
-                    r
-                      .getReactMountReady()
-                      .enqueue(a, {
-                        inst: e,
-                        registrationName: t,
-                        listener: n
-                      });
+                    r.getReactMountReady().enqueue(a, {
+                      inst: e,
+                      registrationName: t,
+                      listener: n
+                    });
                 }
               }
               function a() {
