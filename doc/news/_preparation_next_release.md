@@ -148,6 +148,9 @@ you up to date with the multi-language support provided by Elektra.
 - The script [`link-checker`](../../scripts/link-checker) now deduplicates the list of links before checking them. The timeout and amount of retries was also reduced.
   Lastly the script now supports a whitelist. Any link stored in [`tests/linkchecker.whitelist`](../../tests/linkchecker.whitelist) will not be checked. _(Klemens Böswirth)_
 - We removed a script used to compare the runtime performance of YAML plugins. _(René Schwaiger)_
+- Cleanup: separation of dev, admin and completion scripts. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
 
