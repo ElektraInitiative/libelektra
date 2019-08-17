@@ -138,7 +138,7 @@ Elektra accomplishes this task with _storage plugins_.
 
 > In Elektra [Plugins](/doc/tutorials/plugins.md) are the units that encapsulate functionality.
 > There are not only plugins that handle storage of data, but also plugins that modify your values ([iconv](/src/plugins/iconv/README.md)).
-> Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [enum](/src/plugins/enum/README.md), [boolean](/src/plugins/boolean/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
+> Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
 > You can get a complete list of all available plugins with `kdb list`.
 > Although an individual plugin does not provide much functionality, plugins are powerful because they are designed to be used together.
 
