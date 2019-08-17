@@ -101,8 +101,8 @@ other versions of 3+.
 
 After installing the dependencies, we are ready to build the applications.
 To do so, we can follow the steps explained in the [build guide](/doc/COMPILE.md).
-Make sure to include the two tools `rest-backend` and `rest-frontend`, e.g. by
-using the arguments `-DTOOLS="ALL;rest-backend;rest-frontend"`.
+Make sure to include the two tools `website-backend` and `rest-frontend`, e.g. by
+using the arguments `-DTOOLS="ALL;website-backend;rest-frontend"`.
 
 After building Elektra and the applications, we can use `make install` to install
 them. Further information and troubleshooting can be found in the
@@ -116,7 +116,7 @@ but some settings have to be set manually afterwards.
 ### Backend
 
 After the installation, the configuration specification of the backend has to be mounted
-with the command `kdb mount-rest-backend-config`. You can check if the mounting was successful
+with the command `kdb mount-website-backend-config`. You can check if the mounting was successful
 by issuing `kdb mount`. There should be an entry in the list with a path like
 `spec/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
 If you do not see this mount points, have a look at the mount script in the tool_exec
@@ -189,7 +189,7 @@ The parameters that need to be changed in order for the frontend to work correct
 
 As last step we need to run the applications:
 
-- First we start the backend server with `kdb run-rest-backend`. To ensure the backend is accessible, you can use `curl http://localhost:8080/version` (change port to your setting), which should show you some version information in JSON format.
+- First we start the backend server with `kdb run-website-backend`. To ensure the backend is accessible, you can use `curl http://localhost:8080/version` (change port to your setting), which should show you some version information in JSON format.
 - Although the frontend was compiled during installation already, we want to have a freshly built homepage and use `kdb build-rest-frontend` to do so.
 - Then we run the frontend analogously with `kdb run-rest-frontend`. It should now be reachable at the configured port.
 
@@ -199,7 +199,7 @@ If everything went smooth, both applications should now be online and reachable.
 
 Both applications can be stopped with a simple command:
 
-- Backend: `kdb stop-rest-backend`
+- Backend: `kdb stop-website-backend`
 - Frontend: `kdb stop-rest-frontend`
 
 ## Additional Tasks
@@ -247,7 +247,7 @@ As web server we use Debian Jessie’s Apache2.
 Several domains are used for different tasks, whereas only two are relevant for
 the here described service:
 
-- `restapi.libelektra.org` for the API provided by the `rest-backend`
+- `restapi.libelektra.org` for the API provided by the `website-backend`
 - `www.libelektra.org` for the website and frontend provided by the `rest-frontend`
 
 The server redirects requests on port 80 (non-SSL) to 443 using a very simple
@@ -317,7 +317,7 @@ For the `restapi.libelektra.org` domain we use an SCGI setup:
 
 ### Rest-Backend
 
-The `rest-backend` itself is configured normally as described in the configuration
+The `website-backend` itself is configured normally as described in the configuration
 section above, but with CppCMS using SCGI instead of HTTP as API variant.
 This requires setting the keys
 

@@ -1,5 +1,5 @@
 [@config_default_profile@]
-mountpoint = rest-backend.ini
+mountpoint = website-backend.ini
 
 [@config_default_profile@/backend/api/description/raw]
 check/type = string

@@ -5,8 +5,8 @@
 > Note: If you need a REST Service that provides get and set of
 > local configuration, you actually want [/src/tools/web/elektrad]
 
-This document aims to provide information about Elektra’s `rest-backend` feature.
-`rest-backend` offers a RESTful server to search, store and convert configuration snippets.
+This document aims to provide information about Elektra’s `website-backend` feature.
+`website-backend` offers a RESTful server to search, store and convert configuration snippets.
 It also offers authentication methods to restrict access to manipulative methods.
 A detailed description of the implemented API can be found in the
 [API description](/doc/api_blueprints/snippet-sharing.apib).
@@ -92,7 +92,7 @@ In detail, the options (without the base key `@config_root@`) are:
 
 ### Configure as Service
 
-To configure the rest-backend as service, it is possible to use `systemd` on most systems.
+To configure the website-backend as service, it is possible to use `systemd` on most systems.
 
 1. Create a new service file with the following command
    (and make sure the paths of `ExecStart` match your installation of Elektra):
@@ -116,9 +116,9 @@ To configure the rest-backend as service, it is possible to use `systemd` on mos
    ```
 
 2. Reload the configuration of `systemctl` with `systemctl daemon-reload`.
-3. Enable the rest-backend service with `systemctl enable @tool@.service`, a symbolic link should be created.
+3. Enable the website-backend service with `systemctl enable @tool@.service`, a symbolic link should be created.
 4. Make sure the service is enabled with `systemctl is-enabled @tool@.service`.
-5. Restart the rest-backend service with `systemctl restart @tool@.service`.
+5. Restart the website-backend service with `systemctl restart @tool@.service`.
    If everything went fine, the service should be reachable and `systemctl status @tool@.service`
    should print information about the running service (PID, etc).
 
@@ -139,7 +139,7 @@ An extensive tutorial describing the installation and configuration can be found
 ### Compiling
 
 Compile Elektra as normal as per the [COMPILE document](https://master.libelektra.org/doc/COMPILE.md),
-but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
+but make sure to include the `website-backend` tool using the `-DTOOLS` flag.
 
 For instance:
 `-DTOOLS=ALL` or `-DTOOLS=@tool@`

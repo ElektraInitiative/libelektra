@@ -75,7 +75,7 @@ RUN ldconfig \
     && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
              -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;camel;yajl" \
-             -DTOOLS="kdb;rest-backend" \
+             -DTOOLS="kdb;website-backend" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \
              -DCMAKE_CXX_FLAGS="$C_FLAGS" \
              -DCMAKE_EXE_LINKER_FLAGS="-Wl,-z,now -Wl,-z,relro" \
@@ -106,9 +106,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # prepare
-# asan errors in mount-rest-backend-config and run-rest-backend
+# asan errors in mount-website-backend-config and run-website-backend
 RUN kdb global-mount \
-    && kdb mount-rest-backend-config || /bin/true \
+    && kdb mount-website-backend-config || /bin/true \
     && kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret `pwgen -1cns 30` \
     && kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http" \
     && kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0" \
@@ -118,5 +118,5 @@ RUN kdb global-mount \
     && kdb set '/sw/elektra/restbackend/#0/current/cppcms/logging/level' 'debug'
 
 ENTRYPOINT ["kdb"]
-CMD ["run-rest-backend"]
+CMD ["run-website-backend"]
 EXPOSE 8080
