@@ -8,25 +8,32 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-CMAKE_FORMAT=$(which cmake-format)
-CMAKE_FORMAT_VERSION=$("$CMAKE_FORMAT" --version)
+# The command `cmake-format --version` seems to print the version number either to `stdout` or `stderr`, depending on the current system.
+# To make sure we always capture the version number correctly we therefore redirect `stderr` to the same file descriptor as `stdout`,
+# before we save the output of the command.
+CMAKE_FORMAT="$(which cmake-format)" && CMAKE_FORMAT_VERSION="$("$CMAKE_FORMAT" 2>&1 --version)"
 
 if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.5.4" ]; then
-	printf 2>&1 'Please install `cmake-format` version 0.5.4\n'
+	printf >&2 'cmake-format: %s\n' "$CMAKE_FORMAT"
+	printf >&2 'Version:      %s\n' "$CMAKE_FORMAT_VERSION"
+	printf >&2 'Please install `cmake-format` version 0.5.4\n'
 	exit 1
 fi
 
-cd "$SOURCE" || exit 1
+cd "$SOURCE" || {
+	printf >&2 'Unable to change into source directory'
+	exit 1
+}
 
 output=$("${CMAKE_FORMAT}" 2>&1 CMakeLists.txt)
 
 if [ $? != 0 ]; then
-	printf 2>&1 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
+	printf >&2 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
 	exit 1
 fi
 
 if [ -z "$(which sponge)" ]; then
-	printf 2>&1 'Please install `sponge`\n'
+	printf >&2 'Please install `sponge`\n'
 	exit 1
 fi
 

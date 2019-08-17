@@ -144,7 +144,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Other
 
-- The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth)_
+- The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
 
 ## Infrastructure
 
