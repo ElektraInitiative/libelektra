@@ -2,7 +2,7 @@
 
 The [Elektra buildserver](https://build.libelektra.org/) handles a variety of
 tasks that reaches from testing Pull Requests (PRs) to deploying new versions
-of the Elektra homepage.
+of the [Elektra website](https://www.libelektra.org).
 
 We reworked our build system to use a more modern Jenkinsfile approach with
 benefits such as
@@ -290,7 +290,7 @@ The following phrases can be used as comments to manually trigger a specific
 build:
 
 - jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
-- jenkins build [homepage](https://build.libelektra.org/job/elektra-website/) please
+- jenkins build [website](https://build.libelektra.org/job/elektra-website/) please
 - jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
 - jenkins build [monthly](https://build.libelektra.org/jenkins/job/libelektra-monthly/) please
 
