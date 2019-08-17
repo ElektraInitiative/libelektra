@@ -13,10 +13,10 @@
 
 ## Introduction
 
-Please use the script [copy-template](../../../scripts/copy-template) to create a new C++ plugin based on this template:
+Please use the script [copy-template](../../../scripts/dev/copy-template) to create a new C++ plugin based on this template:
 
 ```bash
-scripts/copy-template -p pluginname
+scripts/dev/copy-template -p pluginname
 ```
 
 . For more information please take a look [here](../template/README.md)

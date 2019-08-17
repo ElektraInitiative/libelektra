@@ -112,7 +112,7 @@ Thus please use following techniques (in order of preference):
   - Use space before and after `*` from Pointers.
   - Use space after `,` of every function argument.
 
-The [reformat script](/scripts/reformat-source) can ensure most code style rules,
+The [reformat script](/scripts/dev/reformat-source) can ensure most code style rules,
 but it is obviously not capable of ensuring everything (e.g. naming conventions).
 So do not give this responsibility out of hands entirely.
 
@@ -192,10 +192,10 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
-. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-source`](../scripts/reformat-source) that reformats all C and C++ code in Elektra’s code base
+. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-source`](../scripts/dev/reformat-source) that reformats all C and C++ code in Elektra’s code base
 
 ```sh
-scripts/reformat-source # This script will probably take some seconds to execute
+scripts/dev/reformat-source # This script will probably take some seconds to execute
 ```
 
 .
@@ -273,7 +273,7 @@ cmake-format --version
 
 , since otherwise the formatted code might look quite different.
 
-We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew][]:
+We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/dev/reformat-cmake), which you can install on macOS using [Homebrew][]:
 
 ```sh
 brew install moreutils
@@ -289,17 +289,17 @@ apt-get install moreutils
 
 ##### Usage
 
-If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/reformat-cmake):
+If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/dev/reformat-cmake):
 
 ```sh
-scripts/reformat-cmake # Running this script for the whole code base takes some time.
+scripts/dev/reformat-cmake # Running this script for the whole code base takes some time.
 ```
 
 . To reformat specific files add a list of file paths after the command:
 
 ```sh
 # The command below reformats the file `cmake/CMakeLists.txt`.
-scripts/reformat-cmake cmake/CMakeLists.txt
+scripts/dev/reformat-cmake cmake/CMakeLists.txt
 ```
 
 .
@@ -411,16 +411,16 @@ npm install --global prettier@1.17.1
 
 ##### Usage
 
-You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/reformat-markdown):
+You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/dev/reformat-markdown):
 
 ```sh
-scripts/reformat-markdown
+scripts/dev/reformat-markdown
 ```
 
 . To format only some files, please specify a list of filenames after the command:
 
 ```sh
-scripts/reformat-markdown doc/CODING.md # Reformat this file
+scripts/dev/reformat-markdown doc/CODING.md # Reformat this file
 ```
 
 .
@@ -503,16 +503,16 @@ export PATH=$PATH:"$HOME/bin"
 
 ##### Usage
 
-We provide the script [`reformat-shfmt`](../scripts/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
+We provide the script [`reformat-shfmt`](../scripts/dev/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
 
 ```sh
-scripts/reformat-shfmt
+scripts/dev/reformat-shfmt
 ```
 
 . You can also reformat specific files by listing filenames after the script:
 
 ```sh
-scripts/reformat-shfmt scripts/reformat-shfmt # Reformat the source of `reformat-shfmt`
+scripts/dev/reformat-shfmt scripts/dev/reformat-shfmt # Reformat the source of `reformat-shfmt`
 ```
 
 .
