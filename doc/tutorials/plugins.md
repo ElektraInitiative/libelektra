@@ -55,8 +55,8 @@ and `ELEKTRA_EXPORT_PLUGIN`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called [`template`](/src/plugins/template/) and a new plugin can be created by calling the
-[copy-template script](/scripts/copy-template) .
-For example, the author of the [line plugin](/src/plugins/line/) used the command `scripts/copy-template line` to create the initial version of the plugin. Afterwards two
+[copy-template script](/scripts/dev/copy-template) .
+For example, the author of the [line plugin](/src/plugins/line/) used the command `scripts/dev/copy-template line` to create the initial version of the plugin. Afterwards two
 important things are left to be done:
 
 - remove all functions (and their exports) from the plugin that are not needed. For example not every plugin actually makes use of the `elektraPluginOpen()` function.
@@ -67,11 +67,11 @@ After these two steps your plugin is ready to be compiled, installed and mounted
 
 #### C++ Based Plugins
 
-If you want to use C++ instead of C for plugin development you can use [`copy-template`](/scripts/copy-template) to create a plugin based
+If you want to use C++ instead of C for plugin development you can use [`copy-template`](/scripts/dev/copy-template) to create a plugin based
 on [`cpptemplate`](/src/plugins/cpptemplate/). For example, to create a new plugin called `pluginbaby` use the command:
 
 ```sh
-scripts/copy-template -p pluginbaby
+scripts/dev/copy-template -p pluginbaby
 ```
 
 .
@@ -214,7 +214,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 For every plugin you have to write a `CMakeLists.txt`. If your plugin has
 no dependencies, you can skip this section. The full documentation of
-`add_plugin` is available [here](/cmake/Modules/LibAddPlugin.cmake).
+`add_plugin` is available [here](/scripts/cmake/Modules/LibAddPlugin.cmake).
 
 In order to understand how to write the `CMakeLists.txt`, you need to know that
 the same file is included multiple times for different reasons.
@@ -240,22 +240,22 @@ So usually you would have:
 
 ```cmake
 if (DEPENDENCY_PHASE)
-	find_package (LibXml2 QUIET)
-	if (LIBXML2_FOUND)
+	find_package (MyLib QUIET)
+	if (MYLIB_FOUND)
 		# add testdata, test cases...
 	else ()
-		remove_plugin (xmltool "libxml2 not found")
+		remove_plugin (myplugin "mylib not found")
 	endif ()
 endif ()
 ```
 
 So if you are in the second phase (`DEPENDENCY_PHASE`), you will search for all
-dependencies, in this case `LibXml2`. If all dependencies are satisfied, you add
+dependencies, in this case `MyLib`. If all dependencies are satisfied, you add
 everything needed for the plugin, except the plugin itself.
 This happens after `endif ()`:
 
 ```cmake
-add_plugin (xmltool
+add_plugin (myplugin
 	SOURCES
 		...
 	LINK_LIBRARIES
