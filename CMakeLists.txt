@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 
 # allows us to override platform specific variables
-set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/cmake/Platform.cmake")
+set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/scripts/cmake/Platform.cmake")
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 9)
@@ -25,13 +25,13 @@ set (CMAKE_MACOSX_RPATH 1)
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # additional modules for loading libraries
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/Modules/")
 
 # needed by ifs below
-include (cmake/ElektraCache.cmake)
-include (cmake/ElektraCompiling.cmake)
+include (scripts/cmake/ElektraCache.cmake)
+include (scripts/cmake/ElektraCompiling.cmake)
 if (ENABLE_COVERAGE)
-	include (cmake/ElektraCoverage.cmake)
+	include (scripts/cmake/ElektraCoverage.cmake)
 endif (ENABLE_COVERAGE)
 
 if (ENABLE_TESTING)
@@ -73,7 +73,7 @@ set (SO_VERSION_TOOLS 2)
 set (SO_VERSION_GETENV 0)
 
 # needs version above
-include (cmake/ElektraPackaging.cmake)
+include (scripts/cmake/ElektraPackaging.cmake)
 
 # ensure KDB_DB_SYSTEM is an absolute path
 if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
@@ -85,14 +85,14 @@ if (NOT IS_ABSOLUTE "${KDB_DB_SPEC}")
 	set (KDB_DB_SPEC "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
 endif ()
 
-# now add all directories
-add_subdirectory (cmake)
+# let cmake folder be included before doc
+add_subdirectory (scripts/cmake)
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
 endif (BUILD_DOCUMENTATION)
 
-# add scripts after doc
+# add scripts after doc (without scripts/cmake)
 add_subdirectory (scripts)
 
 # is there anything to build except documentation?
