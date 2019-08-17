@@ -150,6 +150,57 @@ static void all_strategies_conflict (char * our_value, char * their_value, char 
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_BASE, base_value);
 }
 
+static void test_order (char * our_order, char * their_order, char * base_order, int strategy, char * expected_result)
+{
+	printf ("Executing %s with our=%s their=%s base=%s, strategy=%d, expected_result=%s\n", __func__, our_order, their_order,
+		base_order, strategy, expected_result);
+	Key * our_root = keyNew ("user/our", KEY_END);
+	Key * their_root = keyNew ("user/their", KEY_END);
+	Key * base_root = keyNew ("user/base", KEY_END);
+	Key * result_root = keyNew ("user/result", KEY_END);
+	KeySet * our = ksNew (1, keyNew ("user/our/key", KEY_VALUE, "1", KEY_META, "order", our_order, KEY_END), KS_END);
+	KeySet * their = ksNew (1, keyNew ("user/their/key", KEY_VALUE, "1", KEY_META, "order", their_order, KEY_END), KS_END);
+	KeySet * base = ksNew (1, keyNew ("user/base/key", KEY_VALUE, "1", KEY_META, "order", base_order, KEY_END), KS_END);
+
+	KeySet * result = kdbMerge (our, our_root, their, their_root, base, base_root, result_root, strategy);
+
+	if (expected_result == NULL)
+	{
+		yield_error ("expected_result parameter must not be null");
+	}
+	else
+	{
+		const Key * resultKey = ksLookupByName (result, "user/result/key", 0);
+		if (resultKey == NULL)
+		{
+			yield_error ("Lookup must succeed");
+		}
+		const Key * metaKey = keyGetMeta (resultKey, "order");
+		if (metaKey == NULL)
+		{
+			yield_error ("Meta key must exist");
+		}
+		char * resultValue = elektraMalloc (default_result_size);
+		keyGetString (metaKey, resultValue, default_result_size);
+		char msg[200];
+		snprintf (msg, 200,
+			  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
+			  "%s.\n",
+			  __func__, our_order, their_order, base_order, strategy, expected_result, resultValue);
+		succeed_if (strcmp (resultValue, expected_result) == 0, msg);
+		elektraFree (resultValue);
+	}
+
+	ksDel (our);
+	ksDel (their);
+	ksDel (base);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+}
+
 /**
  * Changing a comment in a own configuration file leaves this comment be if an upgrade happens and
  * the comment changes
@@ -512,6 +563,9 @@ int main (int argc, char ** argv)
 	all_strategies_conflict ("1", "2", "EMPTY");
 	all_strategies_conflict ("1", "EMPTY", "3");
 	all_strategies_conflict ("EMPTY", "2", "3");
+	test_order ("1", "1", "1", 1, "1");
+	test_order ("2", "1", "1", 1, "2");
+
 
 	// test_15 ();
 	//	test_16 ();

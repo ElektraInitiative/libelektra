@@ -143,27 +143,45 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 		if (keyGetName (currentKey, currentKeyNameString, keyGetNameSize (currentKey)) < 0)
 		{
 			ELEKTRA_ASSERT (false, "ERROR: This should not happen");
+			elektraFree (currentKeyNameString);
+			ksDel (result);
 			return NULL;
 		};
-		if (!keyIsBelow (root, currentKey))
+		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
+		{
+			Key * keyCopy = keyDup (currentKey);
+			int retVal;
+			if (keyIsBelow (root, currentKey))
+			{
+				currentKeyNameString = strremove (currentKeyNameString, rootKeyNameString);
+				retVal = keySetName (keyCopy, currentKeyNameString);
+			}
+			else
+			{
+				// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
+				retVal = keySetName (keyCopy, "root");
+			}
+			if (retVal < 0)
+			{
+				fprintf (stderr, "ERROR in %s: Setting new name was not possible! keySetName returned %d\n", __func__,
+					 retVal);
+				elektraFree (currentKeyNameString);
+				ksDel (result);
+				return NULL;
+			}
+			ksAppendKey (result, keyCopy);
+			elektraFree (currentKeyNameString);
+		}
+		else
 		{
 			fprintf (stderr,
 				 "ERROR in %s: Removing root %s from beginning of key %s is not possible as the current key is not below "
-				 "the "
-				 "root. Have you passed correct parameters to kdbMerge?\n",
+				 "the root. Have you passed correct parameters to kdbMerge?\n",
 				 __func__, rootKeyNameString, currentKeyNameString);
+			elektraFree (currentKeyNameString);
+			ksDel (result);
 			return NULL;
 		}
-		currentKeyNameString = strremove (currentKeyNameString, rootKeyNameString);
-		Key * keyCopy = keyDup (currentKey);
-		int retVal = keySetName (keyCopy, currentKeyNameString);
-		if (retVal < 0)
-		{
-			fprintf (stderr, "ERROR in %s: Setting new name was not possible! keySetName returned %d\n", __func__, retVal);
-			return NULL;
-		}
-		elektraFree (currentKeyNameString);
-		ksAppendKey (result, keyCopy);
 	}
 	return result;
 }
@@ -508,6 +526,7 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			puts ("Merge strategy abort and there were conflicts");
+			ksDel (result);
 			return NULL;
 		}
 	}
