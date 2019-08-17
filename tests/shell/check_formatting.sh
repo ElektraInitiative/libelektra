@@ -18,7 +18,7 @@ fi
 
 reformat() {
 	reformat_command=$1
-	reformat_command_output="$(scripts/$reformat_command 2>&1)" || {
+	reformat_command_output="$(scripts/dev/$reformat_command 2>&1)" || {
 		printf >&2 -- '————————————————————————————————————————————————————————————\n'
 		printf >&2 -- 'Warning — Reformatting command `%s` failed\n' "$reformat_command"
 		printf >&2 -- '\n%s\n' "$reformat_command_output"
