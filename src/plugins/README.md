@@ -77,7 +77,6 @@ files.
 
 Read and write everything a KeySet might contain:
 
-- [dini](dini/) uses by default the ini plugin but has legacy support for dump
 - [ini](ini/) supports a range of INI file formats.
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
 - [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
@@ -100,7 +99,6 @@ spec-namespace (put a focus on having nice syntax for metadata):
 Only suited for import/export:
 
 - [xerces](xerces/) uses XML (without a specific schema).
-- [xmltool](xmltool/) uses XML (in Elektra's XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
 - [mini](mini/) dependency free, line based key-value storage plugin.
@@ -112,7 +110,6 @@ productive use:
 - [typechecker](typechecker/) type checks a configuration specification
 - [regexdispatcher](regexdispatcher/) generates regex representations of specification keywords
 - [fstab](fstab/) for fstab files.
-- [regexstore](regexstore/)
 - [csvstorage](csvstorage/) for csv files
 - [passwd](passwd/) for passwd files
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status}
@@ -155,11 +152,7 @@ Most filter plugins available now encode and decode values.
 Storage plugins that use characters to separate key names, values or
 metadata will not work without them.
 
-- [cachefilter](cachefilter/) stores filtered keys internally so that they
-  do not get accidentally lost and can be written to the storage again without
-  the user having to remember including them in the writeout
-
-**Encoding**
+#### Encoding
 
 Rewrite unwanted characters with different techniques:
 
@@ -168,15 +161,14 @@ Rewrite unwanted characters with different techniques:
 - [hexcode](hexcode/) using hex codes
 - [base64](base64/) using the Base64 encoding scheme (RFC4648)
 
-Transformations:
+#### Transformations
 
 - [directoryvalue](directoryvalue/) converts directory values to leaf values
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
-- [boolean](boolean/) canonicalizes boolean keys
 - [hexnumber](hexnumber/) converts between hexadecimal and decimal
 
-Doing other stuff:
+#### Others
 
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [gpgme](gpgme/) encrypts / decrypts confidential values (with GPGME)
@@ -217,8 +209,6 @@ Copies metadata to keys:
 - [spec](spec/) copies metadata from spec namespace (the
   standard way)
 - [glob](glob/) using globbing techniques (needed by some plugins)
-- [struct](struct/) using a defined structure (may also reject
-  configuration not conforming to that structure)
 
 Plugins that check if values are valid based on metadata (typically
 copied by the `spec` plugin just before):
@@ -229,9 +219,7 @@ copied by the `spec` plugin just before):
 - [network](network/) by using network APIs
 - [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
-- [cpptype](cpptype/) obsolete plugin for run-time type checking (CORBA types/), use `type` instead
-- [enum](enum/) compares the keyvalue against a list of valid values
-- [type](type/) type checking (CORBA types) and enum functionality
+- [type](type/) type checking (CORBA types) with enum functionality
 - [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
@@ -272,6 +260,5 @@ binding during run-time.
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
-- [simplespeclang](simplespeclang/) simple configuration specification language
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [cache](cache/) caches keysets from previous `kdbGet()` calls
