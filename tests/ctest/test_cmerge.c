@@ -54,7 +54,8 @@ void printKs (KeySet * ks)
  */
 static void simple_test (char * our_value, char * their_value, char * base_value, int strategy, char * expected_result)
 {
-	printf ("Executing %s with our=%s their=%s base=%s, strategy=%d, expected_result=%s\n", __func__, our_value, their_value, base_value, strategy, expected_result);
+	printf ("Executing %s with our=%s their=%s base=%s, strategy=%d, expected_result=%s\n", __func__, our_value, their_value,
+		base_value, strategy, expected_result);
 	Key * our_root = keyNew ("user/our", KEY_END);
 	Key * their_root = keyNew ("user/their", KEY_END);
 	Key * base_root = keyNew ("user/base", KEY_END);
@@ -84,7 +85,7 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 			  "existant.",
 			  __func__, our_value, their_value, base_value, strategy);
 		succeed_if (result == NULL, msg);
-		printKs(result);
+		printKs (result);
 	}
 	else
 	{
@@ -93,11 +94,12 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 		{
 			char msg[200];
 			snprintf (msg, 200,
-				  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result to be %s and not an empty key set.\n",
+				  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result to be %s and not an empty "
+				  "key set.\n",
 				  __func__, our_value, their_value, base_value, strategy, expected_result);
 			succeed_if (strcmp (expected_result, "EMPTY") == 0, msg);
-			succeed_if_same_string(expected_result, "EMPTY");
-			printKs(result);
+			succeed_if_same_string (expected_result, "EMPTY");
+			printKs (result);
 		}
 		else
 		{
@@ -127,7 +129,8 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 /**
  * Use this when the result of the merge is the same for all strategies
  */
-static void all_strategies_same_result(char * our_value, char * their_value, char * base_value, char * expected_result){
+static void all_strategies_same_result (char * our_value, char * their_value, char * base_value, char * expected_result)
+{
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_ABORT, expected_result);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_OUR, expected_result);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_THEIR, expected_result);
@@ -138,8 +141,9 @@ static void all_strategies_same_result(char * our_value, char * their_value, cha
  * Use this when the merge conflicts or overlaps
  * According to https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
  */
-static void all_strategies_conflict(char * our_value, char * their_value, char * base_value){
-	printf("In %s with our=%s and their=%s and base=%s\n", __func__, our_value, their_value, base_value);
+static void all_strategies_conflict (char * our_value, char * their_value, char * base_value)
+{
+	printf ("In %s with our=%s and their=%s and base=%s\n", __func__, our_value, their_value, base_value);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_ABORT, NULL);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_OUR, our_value);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_THEIR, their_value);
@@ -491,14 +495,14 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 	all_strategies_same_result ("EMPTY", "EMPTY", "EMPTY", "EMPTY");
-	all_strategies_conflict("EMPTY", "EMPTY", "1");
+	all_strategies_conflict ("EMPTY", "EMPTY", "1");
 	all_strategies_same_result ("EMPTY", "1", "EMPTY", "1");
 	all_strategies_same_result ("EMPTY", "1", "1", "EMPTY");
 	all_strategies_same_result ("1", "EMPTY", "EMPTY", "1");
 	all_strategies_same_result ("1", "EMPTY", "1", "EMPTY");
-	all_strategies_conflict("1", "1", "EMPTY");
+	all_strategies_conflict ("1", "1", "EMPTY");
 	all_strategies_same_result ("1", "1", "1", "1");
-	all_strategies_conflict("1", "1", "2");
+	all_strategies_conflict ("1", "1", "2");
 	all_strategies_same_result ("1", "2", "1", "2");
 	all_strategies_same_result ("1", "2", "2", "1");
 	all_strategies_same_result ("2", "1", "1", "2");

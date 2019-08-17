@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include <string.h>
 
-int nonOverlapBaseEmptyCounter = 0; // Conflict where only base is different (it is empty) and our=their (not empty). 
-int nonOverlapAllExistCounter = 0; // All three values exist, only base is different
-int overlap3different = 0; // Only overlap conflicts where all three keys exist and have different values
+int nonOverlapBaseEmptyCounter = 0; // Conflict where only base is different (it is empty) and our=their (not empty).
+int nonOverlapAllExistCounter = 0;  // All three values exist, only base is different
+int overlap3different = 0;	  // Only overlap conflicts where all three keys exist and have different values
 // always access with getter
 int overlap1empty = 0; // counts overlaps where one set is empty. Is the double of the real amount in the end.
 
@@ -22,7 +22,7 @@ int getBaseEmptyConflicts (void)
 		fprintf (stderr, "This should be a multiple of 2 at the end of each checkSingleSet\n");
 		return -1;
 	}
-	return nonOverlapBaseEmptyCounter	/ 2;
+	return nonOverlapBaseEmptyCounter / 2;
 }
 
 int getOverlap3different (void)
@@ -50,13 +50,14 @@ int getTotalOverlaps (void)
 	return getOverlap1empty () + getOverlap3different ();
 }
 
-int getTotalNonOverlaps (void) {
-	return getBaseEmptyConflicts() + nonOverlapAllExistCounter;
+int getTotalNonOverlaps (void)
+{
+	return getBaseEmptyConflicts () + nonOverlapAllExistCounter;
 }
 
 int getTotalConflicts (void)
 {
-	return  getTotalNonOverlaps () + getTotalOverlaps ();
+	return getTotalNonOverlaps () + getTotalOverlaps ();
 }
 
 void printKs (KeySet * ks)
@@ -170,7 +171,8 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 static bool keysAreEqual (Key * a, Key * b)
 {
 	// Two nothings are not keys and thus false too
-	if (a == NULL || b == NULL) {
+	if (a == NULL || b == NULL)
+	{
 		return false;
 	}
 	if (keyGetValueSize (a) != keyGetValueSize (b))
@@ -195,7 +197,7 @@ static bool keysAreEqual (Key * a, Key * b)
  * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
  *
  * baseIndicator indicates which of the three key sets is the base key set. 0 is checkedSet, 1 firstcompared, 2 secondCompared
- * 
+ *
  * This returns -1 on error and 0 if successful.
  *
  */
@@ -220,7 +222,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
 			{
 				printf ("A\n");
-				/** 
+				/**
 				 * append any of the three keys
 				 * will be appended multiple times, but that doesn't matter for the result
 				 */
@@ -231,7 +233,6 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else
 			{
-				bool error = false;
 				if (keysAreEqual (keyInFirst, keyInSecond))
 				{
 					if (baseIndicator == 0)
@@ -239,7 +240,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						/** This is a non-overlap conflict
 						 *  Base is currently checked and has value A, their and our have a different value B
 						 */
-						puts("123");
+						puts ("123");
 						nonOverlapAllExistCounter++;
 						if (checkedIsDominant)
 						{
@@ -269,7 +270,8 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						if (baseIndicator == 2)
 						{
 							/** This is a non-overlap conflict
-							 *  Base is currently secondCompare and has value A, their and our have a different value
+							 *  Base is currently secondCompare and has value A, their and our have a different
+							 * value
 							 * B
 							 */
 							puts ("456");
@@ -305,7 +307,8 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						if (baseIndicator == 1)
 						{
 							/** This is a non-overlap conflict
-							 *  Base is currently secondCompare and has value A, their and our have a different value
+							 *  Base is currently secondCompare and has value A, their and our have a different
+							 * value
 							 * B
 							 */
 							puts ("456");
@@ -331,7 +334,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 					 * checkSingleSet. However, only one of those three times is required. Thus use a getter function
 					 * that calculates a third.
 					 */
-					puts("overlap3different");
+					puts ("overlap3different");
 					overlap3different++;
 					if (checkedIsDominant)
 					{
@@ -352,7 +355,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 				/**
 				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
 				 */
-				puts("nonoverlap all exist");
+				puts ("nonoverlap all exist");
 				nonOverlapAllExistCounter++;
 				if (checkedIsDominant) // currently iterating over base and base strategy is set
 				{
@@ -376,7 +379,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			printf ("wop\n");
 			Key * existingKey;
 			bool thisConflict = false;
-			/** This if or the else if happen when our and their set have a key that 
+			/** This if or the else if happen when our and their set have a key that
 			 *  base does not have. This is a conflict case.
 			 *  This place is hit twice, thus overlap1empty gets double the amount of errors.
 			 */
@@ -392,18 +395,19 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else
 			{
-				fprintf(stderr, "Something went wrong\n");
+				fprintf (stderr, "Something went wrong\n");
 				return -1;
 			}
-			if (thisConflict) {
-				puts("non overlap base empty");
+			if (thisConflict)
+			{
+				puts ("non overlap base empty");
 				nonOverlapBaseEmptyCounter++;
 			}
 			if (!keysAreEqual (checkedKey, existingKey))
 			{
 				// overlap  with single empty
 				// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
-				puts("overlap 1 empty");
+				puts ("overlap 1 empty");
 				overlap1empty++;
 				if (checkedIsDominant) // TODO This also happens when there is no conflict
 				{
@@ -414,25 +418,31 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						return -1;
 					}
 				}
-			} else {
-				puts("some keys are equal");
+			}
+			else
+			{
+				puts ("some keys are equal");
 				// uses the NULL properties of keysAreEqual
-				if (keysAreEqual(checkedKey, keyInFirst) && baseIndicator == 2) {
-					puts("firsty");
-					thisConflict = true;
-					
-				}
-				if (keysAreEqual(checkedKey, keyInSecond) && baseIndicator == 1) {
-					puts("secondy");
+				if (keysAreEqual (checkedKey, keyInFirst) && baseIndicator == 2)
+				{
+					puts ("firsty");
 					thisConflict = true;
 				}
-				if (thisConflict) {
+				if (keysAreEqual (checkedKey, keyInSecond) && baseIndicator == 1)
+				{
+					puts ("secondy");
+					thisConflict = true;
+				}
+				if (thisConflict)
+				{
 					// base is empty and other and their have the same (non-empty) value
 					// this is a conflict
-					puts("non overlap base empty");
+					puts ("non overlap base empty");
 					nonOverlapBaseEmptyCounter++;
-					if (checkedIsDominant) {
-						if (ksAppendKey(result, checkedKey) <0) {
+					if (checkedIsDominant)
+					{
+						if (ksAppendKey (result, checkedKey) < 0)
+						{
 							return -1;
 						}
 					}
@@ -494,16 +504,16 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	if (getTotalConflicts () > 0)
 	{
 		fprintf (stdout, "Conflict statistic:\n  %2d overlaps\n  %2d non-overlaps\n   --------------\n  %2d total\n",
-			 getTotalOverlaps (), getTotalNonOverlaps(), getTotalConflicts ());
+			 getTotalOverlaps (), getTotalNonOverlaps (), getTotalConflicts ());
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
-			puts("Merge strategy abort and there were conflicts");
+			puts ("Merge strategy abort and there were conflicts");
 			return NULL;
 		}
 	}
 	KeySet * resultWithRoot = ksNew (0, KS_END);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot));
 	ksDel (result);
-	printKs(resultWithRoot);
+	printKs (resultWithRoot);
 	return resultWithRoot;
 }
