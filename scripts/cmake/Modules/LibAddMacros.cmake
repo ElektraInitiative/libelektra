@@ -556,9 +556,11 @@ function (generate_manpage NAME)
 		if (RONN_LOC)
 			add_custom_command (OUTPUT ${OUTFILE}
 					    DEPENDS ${MDFILE}
-					    COMMAND export
-						    RUBYOPT="-Eutf-8"
-						    &&
+					    COMMAND ${CMAKE_COMMAND}
+						    -E
+						    env
+						    RUBYOPT="-Eutf-8:utf-8"
+						    LC_ALL="C.utf-8"
 						    ${RONN_LOC}
 						    ARGS
 						    -r
