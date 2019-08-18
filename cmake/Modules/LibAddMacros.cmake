@@ -143,10 +143,14 @@ endmacro ()
 
 macro (find_swig)
 	if (NOT SWIG_FOUND)
-		if (CMAKE_VERSION VERSION_GREATER 3.12)
+		# ~~~
+		# Disable warnings about unset CMake policy.
+		# TODO: Remove the calls to `cmake_policy` after we have upgraded to new behavior.
+		# ~~~
+		if (POLICY CMP0078)
 			cmake_policy (PUSH)
 			cmake_policy (SET CMP0078 OLD)
-		endif (CMAKE_VERSION VERSION_GREATER 3.12)
+		endif (POLICY CMP0078)
 
 		find_package (SWIG 3 QUIET)
 		if (NOT SWIG_FOUND)
@@ -154,9 +158,9 @@ macro (find_swig)
 			find_package (SWIG 2 QUIET)
 		endif ()
 
-		if (CMAKE_VERSION VERSION_GREATER 3.12)
+		if (POLICY CMP0078)
 			cmake_policy (POP)
-		endif (CMAKE_VERSION VERSION_GREATER 3.12)
+		endif (POLICY CMP0078)
 	endif (NOT SWIG_FOUND)
 endmacro (find_swig)
 
