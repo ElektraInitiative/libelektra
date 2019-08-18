@@ -15,8 +15,8 @@ if (EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 	get_filename_component (COVERAGE_PREFIX ${COVERAGE_PREFIX} ABSOLUTE)
 
 	# script to remove source files not from Elektra
-	set (COVERAGE_FILTER "${PROJECT_BINARY_DIR}/scripts/filter-coverage.awk")
-	configure_file ("${PROJECT_SOURCE_DIR}/scripts/filter-coverage.awk.in" "${COVERAGE_FILTER}" @ONLY)
+	set (COVERAGE_FILTER "${PROJECT_BINARY_DIR}/scripts/build/filter-coverage.awk")
+	configure_file ("${PROJECT_SOURCE_DIR}/scripts/build/filter-coverage.awk.in" "${COVERAGE_FILTER}" @ONLY)
 
 	add_custom_target (coverage-start
 			   COMMAND ${COVERAGE_LCOV}
