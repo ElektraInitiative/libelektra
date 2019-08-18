@@ -357,4 +357,4 @@ The build script basically builds the applications, runs tests, installs everyth
 and restarts the backend. Finally, it can run the configuration script for the frontend,
 which updates the website content.
 
-The current build script can be found [here](/scripts/build-homepage).
+The current build script can be found [here](/scripts/deploy/website).
