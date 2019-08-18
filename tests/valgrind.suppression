@@ -248,7 +248,7 @@
    obj:*/ld-2.19.so
 }
 {
-   rest-backend loadEnabledFormats jni plugin
+   website-backend loadEnabledFormats jni plugin
    Memcheck:Leak
    match-leak-kinds: all
    fun:malloc
