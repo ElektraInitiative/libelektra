@@ -11,6 +11,7 @@ RUN apt-get -y install \
         doxygen \
         graphviz \
         ronn \
+        googletest \
         ruby \
         ruby-dev \
         sloccount \
@@ -20,16 +21,6 @@ RUN apt-get -y install \
         texlive-fonts-recommended \
     && gem install apiaryio \
     && rm -rf /var/lib/apt/lists/*
-
-# Google Test
-ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
-RUN mkdir -p ${GTEST_ROOT} \
-    && cd /tmp \
-    && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
-    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
-    && rm gtest.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
