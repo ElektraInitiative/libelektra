@@ -290,7 +290,7 @@ The following phrases can be used as comments to manually trigger a specific
 build:
 
 - jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
-- jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
+- jenkins build [website](https://build.libelektra.org/job/elektra-website/) please
 - jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
 - jenkins build [monthly](https://build.libelektra.org/jenkins/job/libelektra-monthly/) please
 
