@@ -56,7 +56,8 @@ CMAKE_FLAGS_BASE = [
   'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
   'BUILD_DOCUMENTATION': 'OFF',
   'CMAKE_RULE_MESSAGES': 'OFF',
-  'COMMON_FLAGS': '-Werror'
+  'COMMON_FLAGS': '-Werror',
+  'GTEST_ROOT': '/usr/src/googletest/googletest'
 ]
 
 CMAKE_FLAGS_BUILD_ALL = [
