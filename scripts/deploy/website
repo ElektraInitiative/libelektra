@@ -12,7 +12,7 @@ ROOT_DIR=$PWD
 
 # concrete install location is configurable
 if [ -z "${INSTALL_PATH}" ]; then
-	INSTALL_PATH="/usr/local/elektra_backend"
+	INSTALL_PATH="/srv"
 fi
 
 # rotate backup of previous website
