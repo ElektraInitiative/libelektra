@@ -159,7 +159,7 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 			else
 			{
 				// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
-				retVal = keySetName (keyCopy, "root");
+				retVal = keySetName (keyCopy, "/root");
 			}
 			if (retVal < 0)
 			{
@@ -236,10 +236,8 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 		Key * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
 		if (keyInFirst != NULL && keyInSecond != NULL)
 		{
-			printf ("all exist\n");
 			if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
 			{
-				printf ("A\n");
 				/**
 				 * append any of the three keys
 				 * will be appended multiple times, but that doesn't matter for the result
@@ -258,12 +256,10 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						/** This is a non-overlap conflict
 						 *  Base is currently checked and has value A, their and our have a different value B
 						 */
-						puts ("123");
 						nonOverlapAllExistCounter++;
 						if (checkedIsDominant)
 						{
 							// If base is also dominant then append it's key
-							printf ("appending key\n");
 							if (ksAppendKey (result, checkedKey) < 0)
 							{
 								return -1;
@@ -273,10 +269,8 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 				}
 				else if (keysAreEqual (checkedKey, keyInFirst))
 				{
-					printf ("b\n");
 					if (baseIndicator == 0)
 					{
-						printf ("checked is base\n");
 						if (ksAppendKey (result, keyInSecond) < 0)
 						{
 							return -1;
@@ -284,7 +278,6 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 					}
 					else
 					{
-						printf ("checked is not base\n");
 						if (baseIndicator == 2)
 						{
 							/** This is a non-overlap conflict
@@ -292,12 +285,10 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 							 * value
 							 * B
 							 */
-							puts ("456");
 							nonOverlapAllExistCounter++;
 							if (checkedIsDominant)
 							{
 								// If base is also dominant then append it's key
-								printf ("appending key\n");
 								if (ksAppendKey (result, checkedKey) < 0)
 								{
 									return -1;
@@ -308,11 +299,9 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 				}
 				else if (keysAreEqual (checkedKey, keyInSecond))
 				{
-					printf ("c\n");
 
 					if (baseIndicator == 0)
 					{
-						printf ("checked is base\n");
 						if (ksAppendKey (result, keyInFirst) < 0)
 						{
 							return -1;
@@ -320,8 +309,6 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 					}
 					else
 					{
-						printf ("checked is not base\n");
-						printf ("checked is not base\n");
 						if (baseIndicator == 1)
 						{
 							/** This is a non-overlap conflict
@@ -329,12 +316,10 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 							 * value
 							 * B
 							 */
-							puts ("456");
 							nonOverlapAllExistCounter++;
 							if (checkedIsDominant)
 							{
 								// If base is also dominant then append it's key
-								printf ("appending key\n");
 								if (ksAppendKey (result, checkedKey) < 0)
 								{
 									return -1;
@@ -352,11 +337,9 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 					 * checkSingleSet. However, only one of those three times is required. Thus use a getter function
 					 * that calculates a third.
 					 */
-					puts ("overlap3different");
 					overlap3different++;
 					if (checkedIsDominant)
 					{
-						printf ("appending key\n");
 						if (ksAppendKey (result, checkedKey) < 0)
 						{
 							return -1;
@@ -367,17 +350,14 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 		}
 		else if (keyInFirst == NULL && keyInSecond == NULL)
 		{
-			printf ("both other keys are null\n");
 			if (baseIndicator == 0)
 			{
 				/**
 				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
 				 */
-				puts ("nonoverlap all exist");
 				nonOverlapAllExistCounter++;
 				if (checkedIsDominant) // currently iterating over base and base strategy is set
 				{
-					printf ("checked is dominant\n");
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
 						return -1;
@@ -394,7 +374,6 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 		}
 		else
 		{
-			printf ("wop\n");
 			Key * existingKey;
 			bool thisConflict = false;
 			/** This if or the else if happen when our and their set have a key that
@@ -404,12 +383,10 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			if (keyInFirst != NULL)
 			{
 				existingKey = keyInFirst;
-				printf ("first\n");
 			}
 			else if (keyInSecond != NULL)
 			{
 				existingKey = keyInSecond;
-				printf ("second\n");
 			}
 			else
 			{
@@ -418,18 +395,15 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			if (thisConflict)
 			{
-				puts ("non overlap base empty");
 				nonOverlapBaseEmptyCounter++;
 			}
 			if (!keysAreEqual (checkedKey, existingKey))
 			{
 				// overlap  with single empty
 				// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
-				puts ("overlap 1 empty");
 				overlap1empty++;
 				if (checkedIsDominant) // TODO This also happens when there is no conflict
 				{
-					printf ("checked Is dominant\n");
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
 						fprintf (stderr, "Could not append key\n");
@@ -439,23 +413,19 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else
 			{
-				puts ("some keys are equal");
 				// uses the NULL properties of keysAreEqual
 				if (keysAreEqual (checkedKey, keyInFirst) && baseIndicator == 2)
 				{
-					puts ("firsty");
 					thisConflict = true;
 				}
 				if (keysAreEqual (checkedKey, keyInSecond) && baseIndicator == 1)
 				{
-					puts ("secondy");
 					thisConflict = true;
 				}
 				if (thisConflict)
 				{
 					// base is empty and other and their have the same (non-empty) value
 					// this is a conflict
-					puts ("non overlap base empty");
 					nonOverlapBaseEmptyCounter++;
 					if (checkedIsDominant)
 					{
@@ -467,7 +437,6 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 				}
 			}
 
-			printKs (result);
 		}
 	}
 	return 0;
@@ -499,15 +468,12 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	switch (strategy)
 	{
 	case 3:
-		printf ("our dominant\n");
 		ourDominant = true;
 		break;
 	case 4:
-		printf ("their dominant\n");
 		theirDominant = true;
 		break;
 	case 5:
-		printf ("base dominant\n");
 		baseDominant = true;
 		break;
 	}
@@ -525,7 +491,6 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 			 getTotalOverlaps (), getTotalNonOverlaps (), getTotalConflicts ());
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
-			puts ("Merge strategy abort and there were conflicts");
 			ksDel (result);
 			return NULL;
 		}
@@ -533,6 +498,5 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	KeySet * resultWithRoot = ksNew (0, KS_END);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot));
 	ksDel (result);
-	printKs (resultWithRoot);
 	return resultWithRoot;
 }
