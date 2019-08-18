@@ -224,7 +224,6 @@ copied by the `spec` plugin just before):
 - [type](type/) type checking (CORBA types) with enum functionality
 - [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
-- [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
 - [range](range/) checks if a value is within a given range
 - [reference](reference/) checks if a value is a valid reference to another key
