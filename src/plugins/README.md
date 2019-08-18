@@ -99,6 +99,8 @@ spec-namespace (put a focus on having nice syntax for metadata):
 Only suited for import/export:
 
 - [xerces](xerces/) uses XML (without a specific schema).
+- [xmltool](xmltool/) uses XML in the deprecated Elektra XML schema
+  for importing configuration from Elektra 0.7.
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
 - [mini](mini/) dependency free, line based key-value storage plugin.
