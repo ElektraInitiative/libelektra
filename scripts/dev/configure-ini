@@ -16,4 +16,5 @@ cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-swig_ruby" \
+	-DGTEST_ROOT="/usr/src/googletest/googletest" \
 	$*
