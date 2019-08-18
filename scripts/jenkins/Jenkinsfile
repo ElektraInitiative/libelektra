@@ -159,11 +159,11 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  /*
-  maybeStage("Deploy Homepage", isMaster()) {
-    deployHomepage()
+  maybeStage("Deploy Website", isMaster()) {
+    deployWebsite()
   }
 
+  /*
   maybeStage("Deploy Web UI", isMaster()) {
     deployWebUI()
   }
@@ -334,24 +334,24 @@ def dockerInit() {
     )
 
     /* Image building the libelektra.org frontend */
-    DOCKER_IMAGES.homepage_frontend = createDockerImageDesc(
-      "homepage-frontend", this.&idHomepage,
+    DOCKER_IMAGES.website_frontend = createDockerImageDesc(
+      "website-frontend", this.&idWebsite,
       ".",
-      "./scripts/docker/homepage/frontend/Dockerfile",
+      "./scripts/docker/website/frontend/Dockerfile",
       false
     )
 
     /* Image building the libelektra.org backend */
-    DOCKER_IMAGES.homepage_backend = createDockerImageDesc(
-      "homepage-backend", this.&idHomepage,
+    DOCKER_IMAGES.website_backend = createDockerImageDesc(
+      "website-backend", this.&idWebsite,
       ".",
-      "./scripts/docker/homepage/backend/Dockerfile",
+      "./scripts/docker/website/backend/Dockerfile",
       false
     )
 
     /* Image building elektra web base image */
     DOCKER_IMAGES.webui_base = createDockerImageDesc(
-      "web-base", this.&idHomepage,
+      "web-base", this.&idWebsite,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       false
@@ -359,7 +359,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektrad-demo", this.&idHomepage,
+      "elektrad-demo", this.&idWebsite,
       "./scripts/docker/webui/elektrad-demo/",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
@@ -367,7 +367,7 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "webd-demo", this.&idHomepage,
+      "webd-demo", this.&idWebsite,
       "./scripts/docker/webui/webd-demo/",
       "./scripts/docker/webui/webd-demo/Dockerfile",
       false
@@ -1028,8 +1028,8 @@ yaypeg/parser\\.hpp\
 def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
+  tasks << buildWebsite()
   /*
-  tasks << buildHomepage()
   tasks << buildWebUI()
   */
   return tasks
@@ -1102,24 +1102,24 @@ def deployDockerContainer(name, imageDesc, hostName) {
   }
 }
 
-def deployHomepage() {
+def deployWebsite() {
   deployDockerContainer(
     "elektra-backend",
-    DOCKER_IMAGES.homepage_backend,
+    DOCKER_IMAGES.website_backend,
     "restapi.libelektra.org"
   )
   deployDockerContainer(
     "elektra-frontend",
-    DOCKER_IMAGES.homepage_frontend,
+    DOCKER_IMAGES.website_frontend,
     "www.libelektra.org"
   )
 }
 
-def buildHomepage() {
-  def homepageTasks = [:]
-  homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
-  homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
-  return homepageTasks
+def buildWebsite() {
+  def websiteTasks = [:]
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website_frontend)
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website_backend)
+  return websiteTasks
 }
 
 def deployWebUI() {
@@ -1346,7 +1346,7 @@ def xunitUpload(p = 'build/Testing/**/*.xml') {
  * @param name Name of the image, will be extended with registry, a common
  *             prefix and a tag
  * @param idFun Closure describing how the image id should be formatted
- *                      (see idTesting() / idHomepage())
+ *                      (see idTesting() / idWebsite())
  * @param context Build context for the docker build (base directory that will
  *                be sent to the docker agent). Relative to the current working
  *                directory.
@@ -1382,11 +1382,11 @@ def idTesting(imageMap) {
   return imageMap
 }
 
-/* Build id for homepage
+/* Build id for website
  *
  * @param imageMap Map identifying an docker image
  */
-def idHomepage(imageMap) {
+def idWebsite(imageMap) {
   imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
   return imageMap
 }
