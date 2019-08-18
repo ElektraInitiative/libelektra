@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- By Rémi <remipouak@yahoo.fr> -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="https://www.libelektra.org"
+	targetNamespace="https://www.libelektra.org"
+	attributeFormDefault="unqualified"
+	elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation>
+		This elektra schema lets you validate your Elektra XML Application.
+		This is the unstable version, please refer to elektra stable.
+		It validates against anything with a valid key and keyset skeleton,
+		arbitrary attributes and elements are accepted.
+
+		The targetNamespace is "https://www.libelektra.org".
+		To use the schema and the namespace, make sure that the root element
+		keyset has the following attributes:
+		xmlns="https://www.libelektra.org"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
+
+		Neither the elements (by using default namespace xmlns=) nor the attributes
+		(because of attributeFormDefault="unqualified" here)
+		needs to be qualifed then.
+
+		The stylesheet comes like the rest of Elektra-Project in BSD Licence.
+		</xsd:documentation>
+	</xsd:annotation>
+	
+	<xsd:element name="keyset"         type="KeySet_type"/>
+
+	<xsd:complexType name="KeySet_type">
+		<xsd:sequence>
+			<xsd:element name="key"        minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="keyset"     minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	
+		<xsd:attribute name="parent"   type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+				A parent indicates a directory key name that contains the keys
+				under this KeySet. But, if some key happens to have an absolute
+				name and is inside a keyset element, its absolute name wins.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="Key_type">
+		<xsd:sequence>
+			<xsd:element name="value"      type="xsd:string" minOccurs="0"/>
+			<xsd:element name="comment"    type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+
+			<xsd:element name="key"        minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+
+		<xsd:attribute name="id"       type="xsd:ID"       use="optional"/>
+		<xsd:attribute name="name"     type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+				A key must have a name (absolute) or a basename (relative). If both appear,
+				the absolute name wins.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="parent"   type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+				A parent can't appear in the same entry that has an absolute name.
+				If parent appears together, name wins.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="basename" type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+				A basename can't appear in the same entry that has an absolute name.
+				If basename appears together, name wins. Absolute name = parent + basename.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="value" type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+				Short values can be put as an attribute in the key element, to improve
+				readability. But, if a value element appears latter, it wins over the attribute.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="type"     type="value_type"   use="optional" default="string"/>
+		<xsd:attribute name="uid"      type="xsd:string"   use="optional"/>
+		<xsd:attribute name="gid"      type="xsd:string"   use="optional"/>
+		<xsd:attribute name="mode"     type="mode_type"    use="optional"/>
+		<xsd:attribute name="atime"    type="xsd:dateTime" use="optional"/>
+		<xsd:attribute name="ctime"    type="xsd:dateTime" use="optional"/>
+		<xsd:attribute name="mtime"    type="xsd:dateTime" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:simpleType name="value_type">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-9]*|undefined|string|binary|directory|link"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="mode_type">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-7]{4}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>
