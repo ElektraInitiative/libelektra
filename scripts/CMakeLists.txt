@@ -33,7 +33,6 @@ install (PROGRAMS mount-openicc DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS find-tools DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 generate_manpage (kdb-find-tools FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 
-install (PROGRAMS update-snippet-repository DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -135,3 +134,5 @@ add_custom_target (source-package
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoop.in" "${CMAKE_CURRENT_BINARY_DIR}/randoop/randoop" @ONLY)
 file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoopClasses.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/randoop/")
+
+add_subdirectory (admin)
