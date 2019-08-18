@@ -200,7 +200,7 @@ int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 
 int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	return elektraDocSet (handle, returned, parentKey);
+	return 0;
 }
 
 static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
