@@ -42,7 +42,7 @@ mkdir "$ICHECK_DIR"
 
 canonify "$ICHECK_DIR/new_interface.h"
 
-while read line; do
+while IFS= read line || test -n "$line"; do
 	printf '%s' "$line" | grep -q '^\s*//' && continue
 	printf 'Remove entry matching “%s” from new interface\n' "$line"
 	printf 'H\ng/^.*%s.*$/d\nw\n' "$line" | ed -s "$ICHECK_DIR/new_interface.h"

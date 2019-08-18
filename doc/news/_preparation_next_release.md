@@ -112,7 +112,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- The script [run_icheck](../../scripts/run_icheck) now also work correctly, if the last entry of [`icheck.suppression`](../../tests/icheck.suppression) does not end with a newline character. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
