@@ -143,11 +143,20 @@ endmacro ()
 
 macro (find_swig)
 	if (NOT SWIG_FOUND)
+		if (CMAKE_VERSION VERSION_GREATER 3.12)
+			cmake_policy (PUSH)
+			cmake_policy (SET CMP0078 OLD)
+		endif (CMAKE_VERSION VERSION_GREATER 3.12)
+
 		find_package (SWIG 3 QUIET)
 		if (NOT SWIG_FOUND)
 			message (STATUS "Search for swig2 instead")
 			find_package (SWIG 2 QUIET)
 		endif ()
+
+		if (CMAKE_VERSION VERSION_GREATER 3.12)
+			cmake_policy (POP)
+		endif (CMAKE_VERSION VERSION_GREATER 3.12)
 	endif (NOT SWIG_FOUND)
 endmacro (find_swig)
 

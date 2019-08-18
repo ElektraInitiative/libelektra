@@ -1,8 +1,3 @@
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-	cmake_policy (PUSH)
-	cmake_policy (SET CMP0078 OLD)
-endif (CMAKE_VERSION VERSION_GREATER 3.12)
-
 set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 
 find_swig ()
@@ -61,7 +56,3 @@ check_binding_included ("swig_ruby"
 if (IS_INCLUDED)
 	add_subdirectory (ruby)
 endif ()
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-	cmake_policy (POP)
-endif (CMAKE_VERSION VERSION_GREATER 3.12)
