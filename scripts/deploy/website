@@ -52,8 +52,11 @@ export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${INSTALL_PATH}/lib/elektra
 # now lets first output some version information for the build log
 kdb --version
 
+# who executed this?
+whoami
+
 # print key database for debugging
-kdb export / simpleini
+kdb export /sw/elektra ni
 
 # prevent jenkins from killing daemons
 BUILD_ID=dontKillMe
