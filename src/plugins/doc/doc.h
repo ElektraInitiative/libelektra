@@ -534,21 +534,22 @@ int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
 int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 /**
- * @brief Make changes to storage permanent.
+ * @brief Make changes to storage final.
  *
  * Once the content of @p returned has been stored, the changes need
- * to be made permanent and visible to other users, which is done by this function.
+ * to be made final and visible to other users, which is done by this function. After this function
+ * has been called, no further changes can be made by elektraPluginSet() functions within this invocation of kdbSet().
  *
- * It is called by kdbSet() if the plugin implementing it fulfills the `commit` role.
+ * The function is called by kdbSet() if the plugin implementing it fulfills the `commit` role.
  *
- * @pre The keyset @p returned holds all stored keys which must be made permanent for this keyset.
+ * @pre The keyset @p returned holds all stored keys which must be made final for this keyset.
  * The keyset is sorted and rewinded.
  *
  * @pre The @p parentKey is the key which is the ancestor for all other keys in the
  * keyset. The first key of the keyset @p returned has the same keyname.
  * The name of the parentKey marks the mountpoint.
  *
- * @post the storage changes made by the plugins previously called by kdbSet() will be made permanent.
+ * @post the storage changes made by the plugins previously called by kdbSet() will be made final.
  *
  * @see kdbSet() for caller.
  *

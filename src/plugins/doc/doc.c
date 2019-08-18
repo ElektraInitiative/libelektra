@@ -198,7 +198,7 @@ int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 0;
 }
 
-int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }
