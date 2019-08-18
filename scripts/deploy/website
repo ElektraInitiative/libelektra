@@ -10,13 +10,24 @@ set -x
 # remember the build directory
 ROOT_DIR=$PWD
 
-# build the applications
-rm -rf build && mkdir -p build && cd build
-
 # concrete install location is configurable
 if [ -z "${INSTALL_PATH}" ]; then
 	INSTALL_PATH="/usr/local/elektra_backend"
 fi
+
+# rotate backup of previous website
+rm -rf ${INSTALL_PATH}/share/elektra/tool_data_backup
+cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup
+
+# restore the previous page if something went wrong
+restore() {
+	rm -rf ${INSTALL_PATH}/share/elektra/tool_data
+	mv ${INSTALL_PATH}/share/elektra/tool_data_backup ${INSTALL_PATH}/share/elektra/tool_data
+}
+trap restore EXIT INT QUIT TERM
+
+# build the applications from scratch
+rm -rf build && mkdir -p build && cd build
 
 C_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie'
 LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
@@ -34,10 +45,6 @@ make -j 3
 
 # run tests (exclude tests which write in system paths)
 make run_nokdbtests
-
-# rotate backup of previous website
-rm -rf ${INSTALL_PATH}/share/elektra/tool_data_backup
-cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup
 
 # cleanup old installed libraries (might have plugin we do not want any more or cause problems)
 rm -rf ${INSTALL_PATH}/lib/*
