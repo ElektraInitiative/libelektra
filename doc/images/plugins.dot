@@ -161,7 +161,6 @@ strict digraph G {
 	regexdispatcher [shape=Mdiamond];
 	filter [shape=Mdiamond];
 	rename -> filter;
-	required [shape=Mdiamond];
 	resolver [shape=Mdiamond];
 	resolver -> resolver;
 	rgbcolor [shape=Mdiamond];
@@ -210,6 +209,10 @@ strict digraph G {
 	xerces -> storage;
 	xml [shape=Mdiamond];
 	xerces -> xml;
+	storage [shape=Mdiamond];
+	xmltool -> storage;
+	xml [shape=Mdiamond];
+	xmltool -> xml;
 	storage [shape=Mdiamond];
 	yajl -> storage;
 	json [shape=Mdiamond];

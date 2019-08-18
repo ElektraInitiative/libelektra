@@ -39,7 +39,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-- We removed 10 obsolete or unfinished plugins: boolean cachefilter cpptype dini enum regexstore required simplespeclang struct xmltool. _(Markus Raab)_
+- We removed 9 obsolete or unfinished plugins: boolean cachefilter cpptype dini enum regexstore required simplespeclang struct. _(Markus Raab)_
 
 ### GOpts
 
