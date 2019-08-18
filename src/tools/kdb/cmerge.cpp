@@ -62,7 +62,6 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	{
 		throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: abort, our, their, base");
 	}
-	printf ("Merge strategy is %d\n", strategy);
 
 	kdb::KeySet ours;
 	kdb::KeySet theirs;
