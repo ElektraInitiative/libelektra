@@ -142,9 +142,6 @@ deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
 The build Server is no longer reachable at port 8080, but now only directly at
 [https://build.libelektra.org/](https://build.libelektra.org/).
 
-The new [RestApi](https://restapi.libelektra.org) serves as backend
-for the website. For the docu, simply visit the site with your browser.
-
 While most `libelektra.org` now point to the new website, you can still
 directly go to [github](https://git.libelektra.org) and also to the
 [bug tracker](https://bugs.libelektra.org).
