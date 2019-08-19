@@ -17,12 +17,12 @@ fi
 
 # rotate backup of previous website
 rm -rf ${INSTALL_PATH}/share/elektra/tool_data_backup
-cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup
+cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup || /bin/true
 
 # restore the previous page if something went wrong
 restore() {
 	rm -rf ${INSTALL_PATH}/share/elektra/tool_data
-	mv ${INSTALL_PATH}/share/elektra/tool_data_backup ${INSTALL_PATH}/share/elektra/tool_data
+	mv ${INSTALL_PATH}/share/elektra/tool_data_backup ${INSTALL_PATH}/share/elektra/tool_data || /bin/true
 }
 trap restore EXIT INT QUIT TERM
 
