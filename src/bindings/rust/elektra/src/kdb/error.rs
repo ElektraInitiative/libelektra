@@ -58,7 +58,7 @@ impl KDBErrorWrapper {
         self.error_key
             .get_meta("error/number")
             .unwrap()
-            .get_string()
+            .get_value()
             .to_owned()
     }
 
@@ -67,7 +67,7 @@ impl KDBErrorWrapper {
         self.error_key
             .get_meta("error/reason")
             .unwrap()
-            .get_string()
+            .get_value()
             .to_owned()
     }
 
@@ -76,7 +76,7 @@ impl KDBErrorWrapper {
         self.error_key
             .get_meta("error/module")
             .unwrap()
-            .get_string()
+            .get_value()
             .to_owned()
     }
 
@@ -85,7 +85,7 @@ impl KDBErrorWrapper {
         self.error_key
             .get_meta("error/description")
             .unwrap()
-            .get_string()
+            .get_value()
             .to_owned()
     }
 
@@ -94,7 +94,7 @@ impl KDBErrorWrapper {
         self.error_key
             .get_meta("error/file")
             .unwrap()
-            .get_string()
+            .get_value()
             .to_owned()
     }
 
@@ -103,7 +103,7 @@ impl KDBErrorWrapper {
         self.error_key
             .get_meta("error/line")
             .unwrap()
-            .get_string()
+            .get_value()
             .to_owned()
     }
 
@@ -127,7 +127,7 @@ pub fn map_kdb_error(error_key: StringKey) -> KDBError {
     if let Ok(err_num_key) = err_num_key_res {
         let err_wrapper = KDBErrorWrapper::new(error_key);
 
-        match err_num_key.get_string() {
+        match err_num_key.get_value().as_str() {
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
                 return Permanent(Resource(OutOfMemory(err_wrapper)));
             }
