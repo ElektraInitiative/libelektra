@@ -1,7 +1,7 @@
 find_program (CARGO_EXECUTABLE cargo)
 
 if (CARGO_EXECUTABLE)
-	add_binding (rust)
+	add_binding (rust ONLY_SHARED)
 
 	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 

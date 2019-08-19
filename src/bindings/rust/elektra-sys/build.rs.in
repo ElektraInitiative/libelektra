@@ -14,9 +14,9 @@ fn main() {
         println!("cargo:rustc-link-lib=dylib=elektra");
     }
 
-    if "@BUILD_STATIC@" == "ON" {
-        println!("cargo:rustc-link-lib=static=elektra-static");
-    }
+    //if "@BUILD_STATIC@" == "ON" {
+    //    println!("cargo:rustc-link-lib=static=elektra-static");
+    //}
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
