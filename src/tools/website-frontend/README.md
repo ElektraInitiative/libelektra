@@ -45,10 +45,9 @@ To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
 
 ### application-config.json
 
-This file does not exist by default. It needs to be copied from the template `application-config.json.tpl`.
-To copy the configuration template and mount it into the key database, execute
-the command `kdb mount-website-frontend-config`. The configuration will then be available below
-`@config_root@/@config_default_profile@`.
+This file will be copied and mounted by the command `kdb
+mount-website-frontend-config`. The configuration will then be available
+below `@config_root@/@config_default_profile@` in Elektra.
 
 #### APIs (Backend & GitHub)
 
