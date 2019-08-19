@@ -1,7 +1,7 @@
 find_package (CppCMS)
 find_package (Boost 1.45 COMPONENTS system filesystem thread)
 find_package (LibJWT)
-find_package (OpenSSL)
+find_package (LibOpenSSL)
 
 if (NOT CPPCMS_FOUND)
 	remove_tool (${tool} "CppCMS package not found")
