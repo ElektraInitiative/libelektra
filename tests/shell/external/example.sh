@@ -52,7 +52,7 @@ mkdir build
 cd build
 
 # manually set Elektra_DIR and KDB to support non-standard install locations
-cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname $0)/../../cmake/Elektra)"
+cmake ../scripts/cmake -DElektra_DIR:PATH="$(realpath $(dirname $0)/../../cmake/Elektra)"
 succeed_if "could not run cmake"
 
 cmake --build .
