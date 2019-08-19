@@ -22,28 +22,21 @@ In this section, we will explain the how to write a language binding for Elektra
 After setting up our project, we have to add the projects directory to `src/bindings/CMakeLists.txt`.
 
 ```cmake
-check_binding_included ("our_bindings" IS_INCLUDED)
+check_binding_included ("our_binding" IS_INCLUDED)
 if (IS_INCLUDED)
-	add_subdirectory (our_bindings_directory)
+	add_subdirectory (our_binding_directory)
 endif ()
 ```
 
-At first we want to make sure that the build tools and compilers we need for the project are installed. We can use `find_program (BUILD_TOOL_EXECUTABLE build_tool)` to find our `build_tool` program. The result of the search will be stored in `BUILD_TOOL_EXECUTABLE`, so now we can use an if block to include the bindings in the build, if the program exists or exclude it, if it doesn't.
+At first we want to make sure that the build tools and compilers we need for the binding are installed. We can use `find_program (BUILD_TOOL_EXECUTABLE build_tool)` to find our `build_tool` program. The result of the search will be stored in `BUILD_TOOL_EXECUTABLE`, so now we can use an if block to include the bindings in the build, if the program exists or exclude it, if it doesn't.
+If, for example, our bindings only support linking against a dynamic library we can express that, by using the `BUILD_*` variables in if blocks or by passing `ONLY_SHARED` to `add_binding`. You can read more in the [compile doc](../COMPILE.md).
 
 ```cmake
-if (CARGO_EXECUTABLE)
-    add_binding (our_bindings)
+if (BUILD_TOOL_EXECUTABLE)
+    add_binding (our_binding ONLY_SHARED)
 else ()
-	exclude_binding (our_bindings, "build_tool not found")
+	exclude_binding (our_binding, "build_tool not found")
 	return ()
-endif ()
-```
-
-If our bindings only support linking against a dynamic library we can further restrict that, by using the `BUILD_*` or `ONLY_SHARED` variables. You can read more in the [compile doc](../COMPILE.md#bindings).
-
-```cmake
-if (ONLY_SHARED)
-    # Build logic
 endif ()
 ```
 
@@ -77,26 +70,28 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektr
             COMMAND ${BUILD_TOOL_EXECUTABLE} build --release
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/build.script" "${CMAKE_CURRENT_BINARY_DIR}/other-dependency.file")
-add_custom_target (our_bindings ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.lib")
+add_custom_target (our_binding ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.lib")
 ```
 
-We can then test to explicitly include the bindings in the build using `cmake -DBINDINGS="our_bindings" ..` in the build directory and following the further steps for [compilation](../COMPILE.md).
+We can then test to explicitly include the bindings in the build using `cmake -DBINDINGS="our_binding" ..` in the build directory and following the further steps for [compilation](../COMPILE.md).
 
 ### Testing
 
 To invoke our tests through CMake, we have to follow similar steps as in the build. We add a test by specifying a command that runs our tests. In our case, we're calling the same program for testing as in the building step.
 
 ```cmake
-add_test (NAME test_our_bindings COMMAND ${BUILD_TOOL_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+add_test (NAME test_our_binding COMMAND ${BUILD_TOOL_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 ```
 
 We may have to specify an additonal environment variable to tell the test command, where `libelektra.so` resides, so that the dynamic linker can find it.
 
 ```cmake
-set_property (TEST test_our_bindings PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+set_property (TEST test_our_binding PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 ```
 
 Now our bindings can be tested through `ctest` alongside all other tests.
+
+See the [java binding](../../src/bindings/jna/CMakeLists.txt) or the [haskell binding](../../src/bindings/haskell/CMakeLists.txt) for examples.
 
 ## Error Handling
 
