@@ -54,7 +54,7 @@ system keys always stay separated.
 - `backendOpenDefault()` opens the default backend
 - `/src/include/kdbconfig.h.in` contains above `KDB_*` variables
 - `src/plugins/CMakeLists.txt` creates the symbolic links
-- `cmake/Modules/LibAddMacros.cmake` `create_lib_symlink` function
+- `scripts/cmake/Modules/LibAddMacros.cmake` `create_lib_symlink` function
 
 ## SEE ALSO
 
