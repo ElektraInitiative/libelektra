@@ -12,4 +12,6 @@ pub use self::key::{
 
 pub use self::keyset::{KeySet, KeySetError};
 
-pub use self::kdb::{KDBError, KDB};
+pub use self::kdb::{
+    KDBError, KDBErrorWrapper, LogicalError, PermanentError, ResourceError, ValidationError, KDB,
+};
