@@ -9,11 +9,22 @@
 #include <stdio.h>
 #include <string.h>
 
+int nonOverlapOnlyBaseCounter = 0;  // Conflict where only base is different (it exists) and our and their are empty.
 int nonOverlapBaseEmptyCounter = 0; // Conflict where only base is different (it is empty) and our=their (not empty).
 int nonOverlapAllExistCounter = 0;  // All three values exist, only base is different
 int overlap3different = 0;	  // Only overlap conflicts where all three keys exist and have different values
 // always access with getter
 int overlap1empty = 0; // counts overlaps where one set is empty. Is the double of the real amount in the end.
+
+int getNonOverlapAllExistConflicts (void)
+{
+	if (nonOverlapAllExistCounter % 3 != 0)
+	{
+		fprintf (stderr, "This should be a multiple of 3 at the end of each checkSingleSet\n");
+		return -1;
+	}
+	return nonOverlapAllExistCounter / 3;
+}
 
 int getBaseEmptyConflicts (void)
 {
@@ -52,7 +63,7 @@ int getTotalOverlaps (void)
 
 int getTotalNonOverlaps (void)
 {
-	return getBaseEmptyConflicts () + nonOverlapAllExistCounter;
+	return getBaseEmptyConflicts () + getNonOverlapAllExistConflicts () + nonOverlapOnlyBaseCounter;
 }
 
 int getTotalConflicts (void)
@@ -249,6 +260,22 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 			}
 			else
 			{
+				/**
+				 * One example for the next 3 ifs
+				 *
+				 * Cell contents are the values of the keys (/#0, /#1, ...)
+				 * in the different key sets
+				 *     base     our      their
+				 * /#0 one      previous previous
+				 * /#1 two      one      one
+				 * /#2 three    two      two
+				 * /#3 four     three    three
+				 * /#4 five     four     four
+				 * /#5          five     five
+				 * In the area from top down to line /#4 (inclusive) each cell triggers
+				 * the nonOverlapAllExistCounter. However, we must not count one conflict
+				 * multiple times, thus divide by 3 as there are three key sets (=columns).
+				 */
 				if (keysAreEqual (keyInFirst, keyInSecond))
 				{
 					if (baseIndicator == 0)
@@ -282,8 +309,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						{
 							/** This is a non-overlap conflict
 							 *  Base is currently secondCompare and has value A, their and our have a different
-							 * value
-							 * B
+							 *  value B
 							 */
 							nonOverlapAllExistCounter++;
 							if (checkedIsDominant)
@@ -312,9 +338,8 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 						if (baseIndicator == 1)
 						{
 							/** This is a non-overlap conflict
-							 *  Base is currently secondCompare and has value A, their and our have a different
-							 * value
-							 * B
+							 *  Base is currently firstCompare and has value A, their and our have a different
+							 *  value B
 							 */
 							nonOverlapAllExistCounter++;
 							if (checkedIsDominant)
@@ -355,7 +380,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 				/**
 				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
 				 */
-				nonOverlapAllExistCounter++;
+				nonOverlapOnlyBaseCounter++;
 				if (checkedIsDominant) // currently iterating over base and base strategy is set
 				{
 					if (ksAppendKey (result, checkedKey) < 0)
@@ -436,7 +461,6 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 					}
 				}
 			}
-
 		}
 	}
 	return 0;
@@ -451,6 +475,7 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 {
 	ELEKTRA_LOG ("cmerge starts");
 	fprintf (stdout, "cmerge starts with strategy %d\n", strategy);
+	nonOverlapOnlyBaseCounter = 0;
 	nonOverlapBaseEmptyCounter = 0;
 	nonOverlapAllExistCounter = 0;
 	overlap3different = 0;
