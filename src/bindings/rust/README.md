@@ -27,3 +27,33 @@ Rust-bindgen needs clang to generate the bindings, so if you encounter the follo
 thread 'main' panicked at 'Unable to generate bindings: ()', src/libcore/result.rs:999:5
 note: Run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
 ```
+
+## Usage
+
+### Error Handling
+
+#### KDB
+
+For improved readability, import all the enum variants directly. Through error nesting, you can catch specific errors and ignore other ones.
+TODO: Complete example
+
+```rust
+use KDBError::*;
+use LogicalError::*;
+use PermanentError::*;
+use ResourceError::*;
+use ValidationError::*;
+
+fn call_kdb_function() {
+    let res = kdbGet().unwrap_err();
+    if let KDBError::Permanent(PermanentError::Logical(LogicalError::Internal(err))) = res {
+        // Handle Assertion error
+        println!("{:?}", err);
+    } else if let KDBError::Validation(ValidationError::Semantic(err)) = res {
+        // Handle Semantic error
+        println!("{:?}", err);
+    } else {
+        // Ignore Conflicting State errors
+    }
+}
+```
