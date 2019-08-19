@@ -10,8 +10,8 @@ resultpath="user/elektra-cmerge/result"
 resultfile="elektra-cmerge_result"
 
 if [ "$#" -ne 4 ]; then
-    echo "Usage is $0 our their base format"
-    exit 1;
+	echo "Usage is $0 our their base format"
+	exit 1
 fi
 format=$4
 kdb rm -rf $ourpath
