@@ -122,17 +122,6 @@ pub trait ReadableKey {
         ret_val.try_into().unwrap()
     }
 
-    /// Returns the string value of the key if the type of the key is string, an error if it's binary.
-    /// # Panics
-    /// Panics if the underlying string cannot be converted to UTF-8.
-    fn get_string(&self) -> Result<&str, KeyError> {
-        if self.is_binary() {
-            return Err(KeyError::TypeMismatch);
-        }
-        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyString(self.as_ref())) };
-        Ok(c_str.to_str().unwrap())
-    }
-
     // keytest methods
 
     /// Returns true if the key has a binary value.
