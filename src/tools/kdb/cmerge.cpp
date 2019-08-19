@@ -111,17 +111,21 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	ckdb::KeySet * c_base = base.getKeySet ();
 	ckdb::KeySet * c_merge_result = kdbMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base, baseRoot.getKey (),
 						  resultRoot.getKey (), strategy);
-	kdb::KeySet merge_result = c_merge_result;
-	if (merge_result != NULL)
+	if (c_merge_result != NULL)
 	{
+		kdb::KeySet merge_result = c_merge_result;
 		if (keysAtResultRoot.append (merge_result) < 0)
 		{
-			return -1;
+			return 1;
 		}
 		if (kdb.set (keysAtResultRoot, resultRoot) < 0)
 		{
-			return -1;
+			return 1;
 		}
+		return 0;
 	}
-	return 1;
+	else
+	{
+		return 1;
+	}
 }
