@@ -1,34 +1,42 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "May 2018" "" ""
+.TH "README" "" "August 2019" "" ""
 .
 .SH "Introduction"
-This document aims to provide information about Elektra’s \fBrest\-frontend\fR, which is the frontend of the \fBrest\-backend\fR allowing for search and sharing of configuration snippets\. Besides that functionality, the frontend also contains the Elektra website\.
+This document aims to provide information about Elektra’s \fBwebsite\-frontend\fR, which is the frontend of the \fBwebsite\-backend\fR allowing for search and sharing of configuration snippets\. Besides that functionality, the frontend also contains the Elektra website\.
 .
 .SH "Design and Structure"
 The frontend is developed as single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
 .
 .SH "Run and Configure"
-The application allows for some basic configuration\. Under normal circumstances it is sufficient to change the \fIapplication\-config\.json\fR in the root directory\. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Any change of this configuration does require to re\-run \fBgrunt full\fR (or \fBkdb build\-rest\-frontend\fR) in order to re\-compile the project\.
+The application allows for some basic configuration\. Under normal circumstances it is sufficient to change the \fIapplication\-config\.json\fR in the root directory\. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Any change of this configuration does require to re\-run \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) in order to re\-compile the project\.
 .
 .P
-To run the application, basically two options are available: \- Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory) or \fBkdb run\-rest\-frontend\fR from anywhere\. \- Use an own webserver to distribute the application\. In order to do so, first \fBgrunt full\fR (or \fBkdb build\-rest\-frontend\fR) should be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
+To run the application, basically two options are available:
+.
+.IP "\(bu" 4
+Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory) or \fBkdb run\-website\-frontend\fR from anywhere\.
+.
+.IP "\(bu" 4
+Use an own webserver to distribute the application\. In order to do so, first \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) should be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
+.
+.IP "" 0
 .
 .P
 In order to not receive any 404 errors by the webserver, it should serve the \fBindex\.html\fR for all requests that do not have a static file as target\. The \fBindex\.html\fR will then try to serve the (dynamic) URL itself\.
 .
 .P
-To stop the \fBrest\-frontend\fR, simply run \fBkdb stop\-rest\-frontend\fR from anywhere\.
+To stop the \fBwebsite\-frontend\fR, simply run \fBkdb stop\-website\-frontend\fR from anywhere\.
 .
 .SS "application\-config\.json"
-This file does not exist by default\. It needs to be copied from the template \fBapplication\-config\.json\.tpl\fR\. To copy the configuration template and mount it into the key database, execute the command \fBkdb mount\-rest\-frontend\-config\fR\. The configuration will then be available below \fB/sw/elektra/restfrontend/#0//current\fR\.
+This file does not exist by default\. It needs to be copied from the template \fBapplication\-config\.json\.tpl\fR\. To copy the configuration template and mount it into the key database, execute the command \fBkdb mount\-website\-frontend\-config\fR\. The configuration will then be available below \fB/sw/elektra/websitefrontend/#0//current\fR\.
 .
 .P
 The configuration file allows to set the URL to the backend in \fBbackend\.root\fR\. GitHub settings may be done in \fBgithub\fR\.
 .
 .P
-The configuration file also allows to specify available translations in \fBtranslations\.enabled\fR\. To add a translation, copy an existing translation file in \fIpublic/assets/translations\fR, translate it and add the name of the new language to the list in \fBtranslations\.enabled\fR\. After that run \fBgrunt full\fR (or \fBkdb build\-rest\-frontend\fR) to re\-compile the application\.
+The configuration file also allows to specify available translations in \fBtranslations\.enabled\fR\. To add a translation, copy an existing translation file in \fIpublic/assets/translations\fR, translate it and add the name of the new language to the list in \fBtranslations\.enabled\fR\. After that run \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) to re\-compile the application\.
 .
 .P
 If necessary, mappings for dialects as well as a default language can be specified as well\.
@@ -80,10 +88,24 @@ The website structure is dynamically adjustable\. There is a set of types which 
 The project has quite a few dependencies, of which most can be resolved automatically by the used package manager\. The only dependency that has to be installed beforehand is the package manager npm \fIhttps://www\.npmjs\.com/\fR itself, which comes bundled with Node\.js \fIhttps://nodejs\.org/\fR (preferred installation)\.
 .
 .SS "Compiling"
-The \fBrest\-frontend\fR has full CMake integration, which does actually only two things: \- Install (copy) the project files to a target directory\. \- Run \fBnpm install\fR in this target directory, which does \- resolve all \fBnpm\fR dependencies (into the directory node_modules \fInode_modules/\fR)\. \- run \fBgrunt full\fR to compile all application sources (resources \fIresources/\fR dir) into working production files (public \fIpublic/\fR dir) and copy required \fBnpm\fR dependencies in the \fBpublic\fR folder\.
+The \fBwebsite\-frontend\fR has full CMake integration, which does actually only two things:
+.
+.IP "\(bu" 4
+Install (copy) the project files to a target directory\.
+.
+.IP "\(bu" 4
+Run \fBnpm install\fR in this target directory, which does
+.
+.IP "\(bu" 4
+resolve all \fBnpm\fR dependencies (into the directory node_modules \fInode_modules/\fR)\.
+.
+.IP "\(bu" 4
+run \fBgrunt full\fR to compile all application sources (resources \fIresources/\fR dir) into working production files (public \fIpublic/\fR dir) and copy required \fBnpm\fR dependencies in the \fBpublic\fR folder\.
+.
+.IP "" 0
 .
 .SS "Installing"
-It is not necessary to install anything by hand, CMake does this job already\. If changes are made to the source files in resources \fIresources/\fR, it is sufficient to run \fBgrunt full\fR (or \fBkdb build\-rest\-frontend\fR) to build the application again\. During development, it can be handy to use \fBgrunt watch\fR to run a watcher daemon that re\-compiles LESS or JS files whenever a change was made in the respective resources \fIresources/\fR directory\.
+It is not necessary to install anything by hand, CMake does this job already\. If changes are made to the source files in resources \fIresources/\fR, it is sufficient to run \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) to build the application again\. During development, it can be handy to use \fBgrunt watch\fR to run a watcher daemon that re\-compiles LESS or JS files whenever a change was made in the respective resources \fIresources/\fR directory\.
 .
 .SS "resources/structure\.json\.in"
 This configuration file can be used to define the website structure\. The file consists at its root of an array, which will be transformed into the main menu of the website (the dynamic part of the menu)\. The array houses objects, of which every object represents an element on the website (e\.g\. a link)\.
@@ -111,7 +133,18 @@ It is possible to add additional attributes not used by the system without break
 The \fBsubmenu\fR type can be used to create a menu point that has a (hoverable) submenu, but does itself not link to any page\. It can only be used in the top hierarchy of the structure file\.
 .
 .P
-This field type supports following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/docs\fR for the subsequent example) \- \fBchildren\fR (array) holding other structure elements, but none of type \fBsubmenu\fR
+This field type supports following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/docs\fR for the subsequent example)
+.
+.IP "\(bu" 4
+\fBchildren\fR (array) holding other structure elements, but none of type \fBsubmenu\fR
+.
+.IP "" 0
 .
 .P
 Example:
@@ -121,10 +154,10 @@ Example:
 .nf
 
 {
-    "name": "Documentation",
-    "type": "submenu",
-    "ref": "docs",
-    "children": [ ]
+  "name": "Documentation",
+  "type": "submenu",
+  "ref": "docs",
+  "children": []
 }
 .
 .fi
@@ -135,7 +168,51 @@ Example:
 The \fBparsereadme\fR element type is the most powerful of all types\. It takes a text file as input (often README\.md) and creates with the help of some regex patterns a section of the website which contains parsed links of the input file\.
 .
 .P
-This field type support following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/plugins\fR for the subsequent example) \- \fBoptions\fR (object) with further options: \- \fBpath\fR (string) containing the path from the repository root to the text file to parse \- \fBtarget_file\fR (array[string]) containing some filenames that should be targeted for parsed links that are no files (i\.e\. links to directories) \- \fBparsing\fR (object) with further options: \- \fBstart_regex\fR (string, optional) defines the start point from where on the following regex types should be parsed \- \fBentry_regex\fR (string) defines a regex that will create links to files within a website section \- \fBsection_regex\fR (string, optional) can additionally be used to parse group names which will make the section links look nicer \- \fBstop_regex\fR (string, optional) defines the end point up to which the text file will be parsed \- \fBname\fR (object) with further options: \- \fBmake_pretty\fR (boolean) whether the link names within the text file which will also be used on the website should be made pretty (e\.g\. first\-capitalize, etc\.); this option is discouraged for this structure element type
+This field type support following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/plugins\fR for the subsequent example)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBpath\fR (string) containing the path from the repository root to the text file to parse
+.
+.IP "\(bu" 4
+\fBtarget_file\fR (array[string]) containing some filenames that should be targeted for parsed links that are no files (i\.e\. links to directories)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBstart_regex\fR (string, optional) defines the start point from where on the following regex types should be parsed
+.
+.IP "\(bu" 4
+\fBentry_regex\fR (string) defines a regex that will create links to files within a website section
+.
+.IP "\(bu" 4
+\fBsection_regex\fR (string, optional) can additionally be used to parse group names which will make the section links look nicer
+.
+.IP "\(bu" 4
+\fBstop_regex\fR (string, optional) defines the end point up to which the text file will be parsed
+.
+.IP "" 0
+
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBmake_pretty\fR (boolean) whether the link names within the text file which will also be used on the website should be made pretty (e\.g\. first\-capitalize, etc\.); this option is discouraged for this structure element type
+.
+.IP "" 0
+
+.
+.IP "" 0
+
+.
+.IP "" 0
 .
 .P
 Example:
@@ -145,22 +222,22 @@ Example:
 .nf
 
 {
-    "name": "Plugins",
-    "type": "parsereadme",
-    "ref": "plugins",
-    "options": {
-        "path": "src/plugins/README\.md",
-        "target_file": ["README\.md", "README", "readme\.md", "readme"],
-        "parsing": {
-            "start_regex": "# Plugins",
-            "stop_regex": "####### UNUSED",
-            "section_regex": "### ([^#]+)",
-            "entry_regex": "^\e\e\- \e\e[(\.+)\e\e]\e\e(([^\e\e)]+)\e\e)(\.*)"
-        },
-        "name": {
-            "make_pretty": false
-        }
+  "name": "Plugins",
+  "type": "parsereadme",
+  "ref": "plugins",
+  "options": {
+    "path": "src/plugins/README\.md",
+    "target_file": ["README\.md", "README", "readme\.md", "readme"],
+    "parsing": {
+      "start_regex": "# Plugins",
+      "stop_regex": "####### UNUSED",
+      "section_regex": "### ([^#]+)",
+      "entry_regex": "^\e\e\- \e\e[(\.+)\e\e]\e\e(([^\e\e)]+)\e\e)(\.*)"
+    },
+    "name": {
+      "make_pretty": false
     }
+  }
 }
 .
 .fi
@@ -171,7 +248,26 @@ Example:
 The \fBlistdirs\fR element type can be used to enumerate all sub\-directories of a specific directory\. It will try to find one of the target files (i\.e\. readme) within the sub\-directories and create a link to them\. All this is done in a newly created website section\.
 .
 .P
-This field type supports following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/tools\fR for the subsequent example) \- \fBoptions\fR (object) with further options: \- \fBpath\fR (string) containing the path from the repository root to the directory to enumerate \- \fBtarget_file\fR (array[string]) containing some filenames that should be targeted within the sub\-directories (e\.g\. find file \fBREADME\.md\fR in directory \fBmydir\fR to use it as information file for the directory)
+This field type supports following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/tools\fR for the subsequent example)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBpath\fR (string) containing the path from the repository root to the directory to enumerate
+.
+.IP "\(bu" 4
+\fBtarget_file\fR (array[string]) containing some filenames that should be targeted within the sub\-directories (e\.g\. find file \fBREADME\.md\fR in directory \fBmydir\fR to use it as information file for the directory)
+.
+.IP "" 0
+
+.
+.IP "" 0
 .
 .P
 Example:
@@ -181,13 +277,13 @@ Example:
 .nf
 
 {
-    "name": "Tools",
-    "type": "listdirs",
-    "ref": "tools",
-    "options": {
-        "path": "src/tools",
-        "target_file": ["README\.md", "README", "readme\.md", "readme"]
-    }
+  "name": "Tools",
+  "type": "listdirs",
+  "ref": "tools",
+  "options": {
+    "path": "src/tools",
+    "target_file": ["README\.md", "README", "readme\.md", "readme"]
+  }
 }
 .
 .fi
@@ -198,7 +294,26 @@ Example:
 The \fBlistfiles\fR element type is quite similar to the \fBlistdirs\fR type, but instead of sub\-directories it enumerates files within a directory\. It does also create a new website section\.
 .
 .P
-This field type supports following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/manpages\fR for the subsequent example) \- \fBoptions\fR (object) with further options: \- \fBpath\fR (string) containing the path from the repository root to the directory to enumerate \- \fBblacklist\fR (array[string]) containing some filenames that should be excluded from the result (e\.g\. CMakeLists\.txt)
+This field type supports following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/manpages\fR for the subsequent example)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBpath\fR (string) containing the path from the repository root to the directory to enumerate
+.
+.IP "\(bu" 4
+\fBblacklist\fR (array[string]) containing some filenames that should be excluded from the result (e\.g\. CMakeLists\.txt)
+.
+.IP "" 0
+
+.
+.IP "" 0
 .
 .P
 Example:
@@ -208,13 +323,13 @@ Example:
 .nf
 
 {
-    "name": "Manpages",
-    "type": "listfiles",
-    "ref": "manpages",
-    "options": {
-        "path": "doc/help",
-        "blacklist": ["CMakeLists\.txt"]
-    }
+  "name": "Manpages",
+  "type": "listfiles",
+  "ref": "manpages",
+  "options": {
+    "path": "doc/help",
+    "blacklist": ["CMakeLists\.txt"]
+  }
 }
 .
 .fi
@@ -225,7 +340,18 @@ Example:
 The \fBstaticlist\fR element type creates a new website section that is entirely customizable within the structure configuration file\. This type can be used instead of the \fBparsereadme\fR type if a mix of many types is required\.
 .
 .P
-This field type supports following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/getstarted\fR for the subsequent example) \- \fBchildren\fR (array) holding static structure elements like \fBstaticref\fR, \fBstaticfile\fR and \fBlink\fR
+This field type supports following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/getstarted\fR for the subsequent example)
+.
+.IP "\(bu" 4
+\fBchildren\fR (array) holding static structure elements like \fBstaticref\fR, \fBstaticfile\fR and \fBlink\fR
+.
+.IP "" 0
 .
 .P
 Example:
@@ -235,10 +361,10 @@ Example:
 .nf
 
 {
-    "name": "Getting started",
-    "type": "staticlist",
-    "ref": "getstarted",
-    "children": [ ]
+  "name": "Getting started",
+  "type": "staticlist",
+  "ref": "getstarted",
+  "children": []
 }
 .
 .fi
@@ -249,7 +375,20 @@ Example:
 The \fBstaticref\fR element type can be used in a \fBstaticlist\fR to create a reference to another website part\.
 .
 .P
-This field type support following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBoptions\fR (object) with further options: \- \fBpath\fR (string) containing a reference, which can either be the \fBref\fR attribute of another element or an even more specific reference
+This field type support following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBpath\fR (string) containing a reference, which can either be the \fBref\fR attribute of another element or an even more specific reference
+.
+.IP "" 0
+
+.
+.IP "" 0
 .
 .P
 Example:
@@ -259,11 +398,11 @@ Example:
 .nf
 
 {
-    "name": "Tutorials",
-    "type": "staticref",
-    "options": {
-        "path": "tutorials"
-    }
+  "name": "Tutorials",
+  "type": "staticref",
+  "options": {
+    "path": "tutorials"
+  }
 }
 .
 .fi
@@ -274,7 +413,20 @@ Example:
 The \fBstaticfile\fR element type can be used in a \fBstaticlist\fR to create a menu point for a file\. The file is then a page in the section created by the \fBstaticlist\fR\.
 .
 .P
-This field type support following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBoptions\fR (object) with further options: \- \fBpath\fR (string) containing the path to a file
+This field type support following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBpath\fR (string) containing the path to a file
+.
+.IP "" 0
+
+.
+.IP "" 0
 .
 .P
 Example:
@@ -284,11 +436,11 @@ Example:
 .nf
 
 {
-    "name": "Installation",
-    "type": "staticfile",
-    "options": {
-        "path": "doc/INSTALL\.md"
-    }
+  "name": "Installation",
+  "type": "staticfile",
+  "options": {
+    "path": "doc/INSTALL\.md"
+  }
 }
 .
 .fi
@@ -299,7 +451,23 @@ Example:
 The \fBlink\fR element type can be used to create a simple link to whatever is desired\. It is recommended to use it only for external links\.
 .
 .P
-This field type support following attributes: \- \fBname\fR (string) for the visible name of the menu point (i\.e\. button text) \- \fBref\fR (string) for the dynamic URL part (\fIcurrently unused\fR) \- \fBoptions\fR (object) with further options: \- \fBpath\fR (string) containing the path of the link
+This field type support following attributes:
+.
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (\fIcurrently unused\fR)
+.
+.IP "\(bu" 4
+.
+.IP "\(bu" 4
+\fBpath\fR (string) containing the path of the link
+.
+.IP "" 0
+
+.
+.IP "" 0
 .
 .P
 Example:
@@ -309,12 +477,12 @@ Example:
 .nf
 
 {
-    "name": "Build Server",
-    "type": "link",
-    "ref": "buildserver",
-    "options": {
-        "path": "https://build\.libelektra\.org/"
-    }
+  "name": "Build Server",
+  "type": "link",
+  "ref": "buildserver",
+  "options": {
+    "path": "https://build\.libelektra\.org/"
+  }
 }
 .
 .fi
@@ -330,10 +498,10 @@ An AngularJS application is bootstrapped by first instantiating constants (can b
 .P
 For detailed information, the website of Angular \fIhttps://angularjs\.org/\fR should be visited\.
 .
-.SS "Task configuration"
+.SS "Task Configuration"
 All \fBgrunt\fR tasks can be configured using the \fIGruntfile\.js\fR in the application root directory\.
 .
-.SS "Code formatting"
+.SS "Code Formatting"
 The task \fBgrunt jshint\fR can be used to check the code formatting of JS source files\.
 .
 .SS "Noteworthy Information"
