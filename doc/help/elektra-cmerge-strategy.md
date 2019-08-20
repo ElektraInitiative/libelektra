@@ -1,26 +1,30 @@
 # elektra-cmerge-strategies(7) -- how to merge key sets
 
+Elektra's cmerge tool tries to avoid conflicts using semantic aspects of configuration files. Those configuration files are represented as key sets in Elektra.  
+The three-way merge works by comparing the `our` key set and the `their` key set to the `base` key set. By looking for differences in these key sets, a new key set called `result` that represents a merge of these key sets is created.
+In case a conflict is unavoidable, different predefined merge strategies can be used to resolve them without user interaction. </br>
+
+These strategies will supersede the old [merge strategies](elektra-merge-strategies.md) once `kdb cmerge` supersedes `kdb merge`.
+
 ## 3-WAY
+A common scenario to use Elektra's cmerge is a package upgrade. Terminology is oriented to this scenario.
 
 - `base`:
-  The `base` KeySet is the original version of the KeySet.
+  The `base` key set is the original version of the key set before the package upgrade.
 
-- `ours`:
-  The `ours` KeySet represents the user's current version of the KeySet.
-  This KeySet differs from `base` for every key you changed.
+- `our`:
+  The `our` key set represents the user's current version of the key set.
+  This key set differs from `base` for every key you changed.
 
-- `theirs`:
-  The `theirs` KeySet usually represents the default version of a KeySet (usually the package maintainer's version).
-  This KeySet differs from `base` for every key someone has changed.
-
-The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet to the `base` KeySet. By looking for differences in these KeySets, a new KeySet called `result` that represents a merge of these KeySets is created.
+- `their`:
+  The `their` key set is the original version of the key set after the package upgrade. In a broader context, this version key set differs from `base` for every key somebody else changed.
 
 ## STRATEGIES
 
-The following strategies are planned to be implemented:
+The following strategies exist:
 
 - abort:
-  Abort if any conflict occurs. Default strategy.
+  Abort if any conflict occurs. This is the default strategy.
 
 - our:
   This option forces conflicting hunks to be auto-resolved cleanly by favoring our version. Changes from base or their that do not conflict with our side are reflected to the merge result.

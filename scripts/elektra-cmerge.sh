@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# Merges three files using Elektra
-# All files are written to a default_path
+# @author Dominic Jäger <e1634025@student.tuwien.ac.at>
+# @brief Perform a three-way merge with files using Elektra
+# @date 2019-08-20
+# @tags creator
 
 ourpath="user/elektra-cmerge/our"
 theirpath="user/elektra-cmerge/their"

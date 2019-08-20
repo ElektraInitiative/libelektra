@@ -115,7 +115,7 @@ you up to date with the multi-language support provided by Elektra.
 ### <<Binding3>>
 
 ## Tools
-
+- kdb can call cmerge and specify a [strategy](elektra-cmerge-strategy.md) to resolve conflicts_(Dominic Jäger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -195,7 +195,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 We are currently working on following topics:
 
-- Merge tool in C _(Dominic Jäger)_
+- Merge tool in C99 (the same language as the core of Elektra). This is planned to supersede the existing merge tool. The goal is to reduce the number of merge conflicts in contrast to regular merge tools using the specific semantics of configuration files. _(Dominic Jäger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
