@@ -7,6 +7,7 @@ In case a conflict is unavoidable, different predefined merge strategies can be 
 These strategies will supersede the old [merge strategies](elektra-merge-strategies.md) once `kdb cmerge` supersedes `kdb merge`.
 
 ## 3-WAY
+
 A common scenario to use Elektra's cmerge is a package upgrade. Terminology is oriented to this scenario.
 
 - `base`:

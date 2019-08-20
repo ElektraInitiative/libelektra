@@ -115,7 +115,8 @@ you up to date with the multi-language support provided by Elektra.
 ### <<Binding3>>
 
 ## Tools
-- kdb can call cmerge and specify a [strategy](elektra-cmerge-strategy.md) to resolve conflicts_(Dominic Jäger)_
+
+- kdb can call cmerge and specify a [strategy](elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

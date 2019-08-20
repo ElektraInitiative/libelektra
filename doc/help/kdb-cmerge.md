@@ -52,7 +52,8 @@ Conflicts occur when a key has a different value in all three key sets or when o
 ## EXAMPLES
 
 To complete a simple merge of three KeySets:<br>
-```sh
+
+````sh
 kdb set user/base "A"
 #> Create a new key user/base with string "A"
 kdb set user/their "A"
@@ -69,3 +70,4 @@ kdb get user/result
 
 - [elektra-cmerge-strategy(7)](elektra-cmerge-strategy.md)
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
+````

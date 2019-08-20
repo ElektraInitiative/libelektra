@@ -16,7 +16,7 @@ int overlap3different = 0;	  // Only overlap conflicts where all three keys exis
 // always access with getter
 int overlap1empty = 0; // counts overlaps where one set is empty. Is the double of the real amount in the end.
 
-int getNonOverlapAllExistConflicts (void)
+static int getNonOverlapAllExistConflicts (void)
 {
 	if (nonOverlapAllExistCounter % 3 != 0)
 	{
@@ -26,7 +26,7 @@ int getNonOverlapAllExistConflicts (void)
 	return nonOverlapAllExistCounter / 3;
 }
 
-int getBaseEmptyConflicts (void)
+static int getBaseEmptyConflicts (void)
 {
 	if (nonOverlapBaseEmptyCounter % 2 != 0)
 	{
@@ -36,7 +36,7 @@ int getBaseEmptyConflicts (void)
 	return nonOverlapBaseEmptyCounter / 2;
 }
 
-int getOverlap3different (void)
+static int getOverlap3different (void)
 {
 	if (overlap3different % 3 != 0)
 	{
@@ -46,7 +46,7 @@ int getOverlap3different (void)
 	return overlap3different / 3;
 }
 
-int getOverlap1empty (void)
+static int getOverlap1empty (void)
 {
 	if (overlap1empty % 2 != 0)
 	{
@@ -56,22 +56,22 @@ int getOverlap1empty (void)
 	return overlap1empty / 2;
 }
 
-int getTotalOverlaps (void)
+static int getTotalOverlaps (void)
 {
 	return getOverlap1empty () + getOverlap3different ();
 }
 
-int getTotalNonOverlaps (void)
+static int getTotalNonOverlaps (void)
 {
 	return getBaseEmptyConflicts () + getNonOverlapAllExistConflicts () + nonOverlapOnlyBaseCounter;
 }
 
-int getTotalConflicts (void)
+static int getTotalConflicts (void)
 {
 	return getTotalNonOverlaps () + getTotalOverlaps ();
 }
 
-void printKs (KeySet * ks)
+static void printKs (KeySet * ks)
 {
 	Key * cur = 0;
 	fprintf (stdout, "DEBUG: Iterate over all keys:\n");
@@ -82,7 +82,7 @@ void printKs (KeySet * ks)
 	}
 }
 
-char * strremove (char * string, const char * sub)
+static char * strremove (char * string, const char * sub)
 {
 	size_t length = strlen (sub);
 	if (length > 0)
@@ -100,7 +100,7 @@ char * strremove (char * string, const char * sub)
  * This is in contrast to the removeRoot function
  *  Returns -1 on error, 0 on success
  */
-int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string)
+static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string)
 {
 	if (input == NULL)
 	{
@@ -121,7 +121,7 @@ int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * st
 	ksRewind (input);
 	while ((key = ksNext (input)) != NULL)
 	{
-		char * newName = elektraMalloc (strlen (keyName (key)) + strlen (string) + 1);
+		char * newName = elektraMalloc (keyGetNameSize (key) + strlen (string));
 		strcpy (newName, string);
 		strcat (newName, keyName (key));
 		Key * duplicateKey = keyDup (key); // keySetName returns -1 if key was inserted to a keyset before
@@ -230,8 +230,8 @@ static bool keysAreEqual (Key * a, Key * b)
  * This returns -1 on error and 0 if successful.
  *
  */
-int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
-		    int baseIndicator)
+static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
+			   int baseIndicator)
 {
 	ksRewind (checkedSet);
 	ksRewind (firstCompared);
@@ -471,7 +471,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
  * Returns merged key set
  */
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
-		   int strategy)
+		       int strategy)
 {
 	ELEKTRA_LOG ("cmerge starts");
 	fprintf (stdout, "cmerge starts with strategy %d\n", strategy);
@@ -492,13 +492,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	bool theirDominant = false;
 	switch (strategy)
 	{
-	case 3:
+	case MERGE_STRATEGY_OUR:
 		ourDominant = true;
 		break;
-	case 4:
+	case MERGE_STRATEGY_THEIR:
 		theirDominant = true;
 		break;
-	case 5:
+	case MERGE_STRATEGY_BASE:
 		baseDominant = true;
 		break;
 	}
