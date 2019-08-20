@@ -13,8 +13,7 @@ int nonOverlapOnlyBaseCounter = 0;  // Conflict where only base is different (it
 int nonOverlapBaseEmptyCounter = 0; // Conflict where only base is different (it is empty) and our=their (not empty).
 int nonOverlapAllExistCounter = 0;  // All three values exist, only base is different
 int overlap3different = 0;	  // Only overlap conflicts where all three keys exist and have different values
-// always access with getter
-int overlap1empty = 0; // counts overlaps where one set is empty. Is the double of the real amount in the end.
+int overlap1empty = 0;		    // counts overlaps where one set is empty. Is the double of the real amount in the end.
 
 static int getNonOverlapAllExistConflicts (void)
 {
@@ -71,6 +70,10 @@ static int getTotalConflicts (void)
 	return getTotalNonOverlaps () + getTotalOverlaps ();
 }
 
+/**
+ * For debugging only
+ * Prints the names of all keys in a key set
+ */
 static void printKs (KeySet * ks)
 {
 	Key * cur = 0;
@@ -82,6 +85,12 @@ static void printKs (KeySet * ks)
 	}
 }
 
+/**
+ * @brief Removes one string from the other
+ * @param sub this will be removed from string
+ * @param string sub is removed from this char *
+ * @returns the resulting string
+ */
 static char * strremove (char * string, const char * sub)
 {
 	size_t length = strlen (sub);
@@ -97,8 +106,9 @@ static char * strremove (char * string, const char * sub)
 }
 
 /**
- * This is in contrast to the removeRoot function
- *  Returns -1 on error, 0 on success
+ *  @brief This is the counterpart to the removeRoot function
+ *  @retval -1 on error
+ *  @retval  0 on success
  */
 static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string)
 {
@@ -142,6 +152,15 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 	return 0;
 }
 
+/**
+ * @brief Remove the root from each key of a set
+ * @param original the key set from which root will be rmeoved
+ * @param root remove this from all the keys
+ * @returns a new key set without the root
+ *
+ * Example: If root is user/example and the KeySet contains a key with the name user/example/something then
+ * the returned KeySet will contain the key /something.
+ */
 static KeySet * removeRoot (KeySet * original, Key * root)
 {
 	ksRewind (original);
@@ -197,6 +216,11 @@ static KeySet * removeRoot (KeySet * original, Key * root)
 	return result;
 }
 
+/**
+ * @brief Compares two keys
+ * @retval true if two keys are equal
+ * @retval false otherwise
+ */
 static bool keysAreEqual (Key * a, Key * b)
 {
 	// Two nothings are not keys and thus false too
@@ -222,12 +246,13 @@ static bool keysAreEqual (Key * a, Key * b)
  * It should be called 3 times, each time with a different of our key set, their key set and base key set as checkedSet parameter.
  * Which of the remaining two key sets is firstCompared or secondCompared is irrelevant.
  *
- * The checkedIsDominant parameter is for the merge strategy. If a conflict occurs and checkedIsDominant is true then the current element
+ * @param checkedIsDominant parameter is for the merge strategy. If a conflict occurs and checkedIsDominant is true then the current element
  * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
  *
- * baseIndicator indicates which of the three key sets is the base key set. 0 is checkedSet, 1 firstcompared, 2 secondCompared
+ * @param baseIndicator indicates which of the three key sets is the base key set. 0 is checkedSet, 1 firstcompared, 2 secondCompared
  *
- * This returns -1 on error and 0 if successful.
+ * @retval -1 on error
+ * @retval 0 on success
  *
  */
 static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
@@ -468,7 +493,20 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 
 
 /**
- * Returns merged key set
+ *
+ * This function can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set.
+ * This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.
+ *
+ * @brief Join three key sets together
+ * @param our our key set
+ * @param ourRoot key that has the root of our as name
+ * @param their their key set
+ * @param theirRoot key that has the root of their as name
+ * @param base base key set
+ * @param baseRoot key that has the root of base as name
+ * @param resultRoot the name of this key determines where the resulting key set will be stored
+ * @param strategy specify which merge strategy to choose in case of a conflict
+ * @returns the merged key set and NULL on error
  */
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
 		       int strategy)
