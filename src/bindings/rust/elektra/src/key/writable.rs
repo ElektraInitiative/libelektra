@@ -21,7 +21,7 @@ pub trait WriteableKey: ReadableKey {
     where
         Self: Sized,
     {
-        let key_ptr = unsafe { elektra_sys::keyNew(0 as *const i8) };
+        let key_ptr = unsafe { elektra_sys::keyNew(std::ptr::null()) };
         Self::from_ptr(key_ptr)
     }
 

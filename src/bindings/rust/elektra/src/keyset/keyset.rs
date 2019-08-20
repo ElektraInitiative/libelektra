@@ -47,11 +47,17 @@ impl Iterator for KeySet {
     type Item = StringKey;
     fn next(&mut self) -> Option<Self::Item> {
         let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
-        if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+        if (key_ptr as *const elektra_sys::Key).is_null() {
             None
         } else {
             Some(StringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
         }
+    }
+}
+
+impl Default for KeySet {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -65,7 +71,7 @@ impl KeySet {
     }
 
     /// Create a new empty KeySet
-    pub fn new() -> KeySet {
+    pub fn new() -> Self {
         let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KEY_END) };
         KeySet::from_ptr(ks_ptr)
     }
@@ -140,7 +146,7 @@ impl KeySet {
     /// or None if the KeySet is empty.
     pub fn head(&self) -> Option<StringKey> {
         let key_ptr = unsafe { elektra_sys::ksHead(self.as_ref()) };
-        if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+        if (key_ptr as *const elektra_sys::Key).is_null() {
             None
         } else {
             Some(StringKey::from_ptr(key_ptr))
@@ -153,7 +159,7 @@ impl KeySet {
     /// [`rewind`]: #method.rewind
     pub fn current(&self) -> Option<StringKey> {
         let key_ptr = unsafe { elektra_sys::ksCurrent(self.as_ref()) };
-        if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+        if (key_ptr as *const elektra_sys::Key).is_null() {
             None
         } else {
             Some(StringKey::from_ptr(key_ptr))
@@ -164,7 +170,7 @@ impl KeySet {
     /// or None if the KeySet is empty.
     pub fn tail(&self) -> Option<StringKey> {
         let key_ptr = unsafe { elektra_sys::ksTail(self.as_ref()) };
-        if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+        if (key_ptr as *const elektra_sys::Key).is_null() {
             None
         } else {
             Some(StringKey::from_ptr(key_ptr))
@@ -180,7 +186,7 @@ impl KeySet {
     /// has a negative position or a position that does not lie within the keyset.
     pub fn at_cursor(&mut self, cursor: Cursor) -> Option<StringKey> {
         let key_ptr = unsafe { elektra_sys::ksAtCursor(self.as_ptr(), cursor) };
-        if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+        if (key_ptr as *const elektra_sys::Key).is_null() {
             None
         } else {
             Some(StringKey::from_ptr(key_ptr))
@@ -194,11 +200,11 @@ impl KeySet {
         }
     }
 
-    pub fn lookup<'a>(
-        &'a mut self,
+    pub fn lookup(
+        &mut self,
         mut key: StringKey,
         options: LookupOption,
-    ) -> Option<StrKey<'a>> {
+    ) -> Option<StrKey<'_>> {
         println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
         let key_ptr = unsafe {
             elektra_sys::ksLookup(
@@ -211,7 +217,7 @@ impl KeySet {
             std::mem::forget(key);
         }
 
-        if key_ptr as *const elektra_sys::Key == std::ptr::null() {
+        if (key_ptr as *const elektra_sys::Key).is_null() {
             None
         } else {
             // let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
@@ -229,7 +235,7 @@ impl KeySet {
     //             options.bits() as elektra_sys::option_t,
     //         )
     //     };
-    //     println!("keyptr is {:?}", key_ptr);
+    //     println!("key_ptr is {:?}", key_ptr);
 
     //     if key_ptr as *const elektra_sys::Key == std::ptr::null() {
     //         println!("is null");
@@ -245,7 +251,7 @@ impl KeySet {
     //     }
     // }
 
-    pub fn iter<'a>(&'a mut self) -> StrKeyIter<'a> {
+    pub fn iter(&mut self) -> StrKeyIter<'_> {
         StrKeyIter {
             cursor: None,
             keyset: self,
@@ -265,7 +271,7 @@ impl<'a> Iterator for StrKeyIter<'a> {
         match self.cursor {
             None => {
                 let key_ptr = unsafe { elektra_sys::ksNext(self.keyset.as_ptr()) };
-                if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+                if (key_ptr as *const elektra_sys::Key).is_null() {
                     None
                 } else {
                     self.cursor = Some(self.keyset.get_cursor());
@@ -277,7 +283,7 @@ impl<'a> Iterator for StrKeyIter<'a> {
                 self.keyset.set_cursor(self.cursor.unwrap());
                 let key_ptr = unsafe { elektra_sys::ksCurrent(self.keyset.as_ptr()) };
 
-                if (key_ptr as *const elektra_sys::Key) == std::ptr::null() {
+                if (key_ptr as *const elektra_sys::Key).is_null() {
                     self.cursor = None;
                     None
                 } else {

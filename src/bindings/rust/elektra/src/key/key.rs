@@ -80,7 +80,7 @@ impl Iterator for StringKey {
     type Item = ReadOnly<StringKey>;
     fn next(&mut self) -> Option<Self::Item> {
         let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
-        if key_ptr == std::ptr::null() {
+        if key_ptr.is_null() {
             None
         } else {
             Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
@@ -92,7 +92,7 @@ impl<'a> Iterator for BinaryKey<'a> {
     type Item = ReadOnly<StringKey>;
     fn next(&mut self) -> Option<Self::Item> {
         let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
-        if key_ptr == std::ptr::null() {
+        if key_ptr.is_null() {
             None
         } else {
             Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
@@ -228,7 +228,7 @@ impl ReadableKey for StringKey {
         self.get_string().to_owned()
     }
 
-    fn duplicate<'b>(&'b self) -> Self::Duplicate
+    fn duplicate(&self) -> Self::Duplicate
     where
         Self::Duplicate: Sized,
     {
@@ -256,7 +256,7 @@ impl<'a> ReadableKey for BinaryKey<'a> {
         self.get_binary()
     }
 
-    fn duplicate<'b>(&'b self) -> Self::Duplicate
+    fn duplicate(&self) -> Self::Duplicate
     where
         Self::Duplicate: Sized,
     {
@@ -324,7 +324,7 @@ mod tests {
     #[test]
     fn can_duplicate_key() {
         let key_name = "user/test/key";
-        let mut key_dup;
+        let key_dup;
         {
             let key = StringKey::new(key_name).unwrap();
             key_dup = Some(key.duplicate());
@@ -352,11 +352,11 @@ mod tests {
         assert_eq!(err, binary_content);
     }
 
+    #[allow(clippy::eq_op)]
     #[test]
     fn equality_is_exclusive() {
         let key = BinaryKey::new("user/test/exclusive").unwrap();
         let key2 = BinaryKey::new("dir/test/exclusive").unwrap();
-
         assert!(!(key != key));
         assert!(key == key);
 
@@ -364,6 +364,7 @@ mod tests {
         assert!(key != key2);
     }
 
+    #[allow(clippy::eq_op)]
     #[test]
     fn equality_is_reflexive() {
         let key = StringKey::new("user/test/reflexive").unwrap();
@@ -468,8 +469,8 @@ mod tests {
     fn can_cast_key_types() {
         let key = StringKey::new("user/test/cast").unwrap();
         let mut bin_key = BinaryKey::from(key);
-        let val = "data".as_bytes();
-        bin_key.set_value(val);
+        let val = b"data".to_vec();
+        bin_key.set_value(val.clone());
         assert_eq!(bin_key.get_value(), val);
     }
 }

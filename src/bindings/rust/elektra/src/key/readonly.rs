@@ -24,13 +24,13 @@ impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
     }
 
     // TODO: This should return ReadOnly<T: ReadableKey> or similar
-    fn duplicate<'b>(&'b self) -> Self::Duplicate
+    fn duplicate(&self) -> Self::Duplicate
     where
         Self::Duplicate: Sized,
     {
-        let dup = self.key.duplicate();
+        self.key.duplicate()
         // ReadOnly {
-        dup
+        // dup
         // }
     }
 }
