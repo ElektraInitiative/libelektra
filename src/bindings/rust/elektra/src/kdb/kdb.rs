@@ -25,7 +25,7 @@ impl KDB {
         let mut error_key = StringKey::new_empty();
         let kdb_ptr = unsafe { elektra_sys::kdbOpen(error_key.as_ptr()) };
 
-        if kdb_ptr as *const elektra_sys::KDB == std::ptr::null() {
+        if (kdb_ptr as *const elektra_sys::KDB).is_null() {
             Err(error::map_kdb_error(error_key))
         } else {
             Ok(KDB {

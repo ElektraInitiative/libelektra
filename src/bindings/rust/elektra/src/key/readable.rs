@@ -10,7 +10,7 @@ pub trait ReadableKey {
     fn get_value(&self) -> Self::Value;
 
     /// Return a duplicate of the key.
-    fn duplicate<'b>(&'b self) -> Self::Duplicate
+    fn duplicate(&self) -> Self::Duplicate
     where
         Self::Duplicate: Sized;
 
@@ -178,11 +178,11 @@ pub trait ReadableKey {
     /// Returns the metadata with the given metaname
     fn get_meta(&self, metaname: &str) -> Result<ReadOnly<StringKey>, KeyError>
     where
-        Self: Sized,
+        Self: Sized
     {
         let cstr = CString::new(metaname).unwrap();
         let key_ptr = unsafe { elektra_sys::keyGetMeta(self.as_ref(), cstr.as_ptr()) };
-        if key_ptr == std::ptr::null() {
+        if key_ptr.is_null() {
             Err(KeyError::NotFound)
         } else {
             let key: ReadOnly<StringKey> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
