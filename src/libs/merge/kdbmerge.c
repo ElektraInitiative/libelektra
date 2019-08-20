@@ -97,7 +97,7 @@ char * strremove (char * string, const char * sub)
 }
 
 /**
- * This is in contrast to the removeRoots function
+ * This is in contrast to the removeRoot function
  *  Returns -1 on error, 0 on success
  */
 int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string)
@@ -142,7 +142,7 @@ int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * st
 	return 0;
 }
 
-static KeySet * removeRoots (KeySet * original, Key * root)
+static KeySet * removeRoot (KeySet * original, Key * root)
 {
 	ksRewind (original);
 	KeySet * result = ksNew (0, KS_END);
@@ -187,7 +187,7 @@ static KeySet * removeRoots (KeySet * original, Key * root)
 		{
 			fprintf (stderr,
 				 "ERROR in %s: Removing root %s from beginning of key %s is not possible as the current key is not below "
-				 "the root. Have you passed correct parameters to kdbMerge?\n",
+				 "the root. Have you passed correct parameters to elektraMerge?\n",
 				 __func__, rootKeyNameString, currentKeyNameString);
 			elektraFree (currentKeyNameString);
 			ksDel (result);
@@ -470,7 +470,7 @@ int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * second
 /**
  * Returns merged key set
  */
-KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
+KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
 		   int strategy)
 {
 	ELEKTRA_LOG ("cmerge starts");
@@ -481,9 +481,9 @@ KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot,
 	overlap3different = 0;
 	overlap1empty = 0;
 	KeySet * result = ksNew (0, KS_END);
-	KeySet * ourCropped = removeRoots (our, ourRoot);
-	KeySet * theirCropped = removeRoots (their, theirRoot);
-	KeySet * baseCropped = removeRoots (base, baseRoot);
+	KeySet * ourCropped = removeRoot (our, ourRoot);
+	KeySet * theirCropped = removeRoot (their, theirRoot);
+	KeySet * baseCropped = removeRoot (base, baseRoot);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);

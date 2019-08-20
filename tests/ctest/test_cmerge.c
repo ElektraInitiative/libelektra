@@ -75,7 +75,7 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	{
 		ksAppendKey (base, keyNew ("user/base/key", KEY_VALUE, base_value, KEY_END));
 	}
-	KeySet * result = kdbMerge (our, our_root, their, their_root, base, base_root, result_root, strategy);
+	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy);
 
 	if (expected_result == NULL)
 	{
@@ -162,7 +162,7 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 	KeySet * their = ksNew (1, keyNew ("user/their/key", KEY_VALUE, "1", KEY_META, "order", their_order, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew ("user/base/key", KEY_VALUE, "1", KEY_META, "order", base_order, KEY_END), KS_END);
 
-	KeySet * result = kdbMerge (our, our_root, their, their_root, base, base_root, result_root, strategy);
+	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy);
 
 	if (expected_result == NULL)
 	{

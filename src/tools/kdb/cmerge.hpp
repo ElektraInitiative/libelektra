@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef NEWMERGE_HPP
-#define NEWMERGE_HPP
+#ifndef CMERGE_HPP
+#define CMERGE_HPP
 
 #include <command.hpp>
 #include <kdb.hpp>

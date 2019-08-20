@@ -23,7 +23,7 @@ extern "C" {
 #define MERGE_STRATEGY_THEIR 4
 #define MERGE_STRATEGY_BASE 5
 
-KeySet * kdbMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
+KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
 		   int strategy);
 
 #ifdef __cplusplus
