@@ -74,16 +74,16 @@ static int getTotalConflicts (void)
  * For debugging only
  * Prints the names of all keys in a key set
  */
-static void printKs (KeySet * ks)
-{
-	Key * cur = 0;
-	fprintf (stdout, "DEBUG: Iterate over all keys:\n");
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != 0)
-	{ /* Iterates over all keys and prints their name */
-		fprintf (stdout, "DEBUG: --%s\n", keyName (cur));
-	}
-}
+// static void printKs (KeySet * ks)
+//{
+//	Key * cur = 0;
+//	fprintf (stdout, "DEBUG: Iterate over all keys:\n");
+//	ksRewind (ks);
+//	while ((cur = ksNext (ks)) != 0)
+//	{ /* Iterates over all keys and prints their name */
+//		fprintf (stdout, "DEBUG: --%s\n", keyName (cur));
+//	}
+//}
 
 /**
  * @brief Removes one string from the other
@@ -107,25 +107,25 @@ static char * strremove (char * string, const char * sub)
 
 /**
  *  @brief This is the counterpart to the removeRoot function
+ *  @param input keys are from here
+ *  @param result all keys with extended name will be appended here
+ *  @param errorKey errors will be set here
  *  @retval -1 on error
  *  @retval  0 on success
  */
-static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string)
+static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string, Key * errorKey)
 {
 	if (input == NULL)
 	{
-		fprintf (stderr, "input must not be null\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Parameter input must not be null.");
 	}
 	if (result == NULL)
 	{
-		fprintf (stderr, "result must not be null!\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Parameter result must not be null.");
 	}
 	if (string == NULL)
 	{
-		fprintf (stderr, "string must not be null!\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Parameter string must not be null.");
 	}
 	Key * key;
 	ksRewind (input);
@@ -139,14 +139,12 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		elektraFree (newName);
 		if (status < 0)
 		{
-			fprintf (stderr, "Could not set new key name!\n");
-			return -1;
+			ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not set key name.");
 		}
 		status = ksAppendKey (result, duplicateKey);
 		if (status < 0)
 		{
-			fprintf (stderr, "Could not append key!\n");
-			return -1;
+			ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 		}
 	}
 	return 0;
@@ -156,12 +154,13 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
  * @brief Remove the root from each key of a set
  * @param original the key set from which root will be rmeoved
  * @param root remove this from all the keys
+ * @param errorKey will contain information if an error occurs
  * @returns a new key set without the root
  *
  * Example: If root is user/example and the KeySet contains a key with the name user/example/something then
  * the returned KeySet will contain the key /something.
  */
-static KeySet * removeRoot (KeySet * original, Key * root)
+static KeySet * removeRoot (KeySet * original, Key * root, Key * errorKey)
 {
 	ksRewind (original);
 	KeySet * result = ksNew (0, KS_END);
@@ -193,24 +192,18 @@ static KeySet * removeRoot (KeySet * original, Key * root)
 			}
 			if (retVal < 0)
 			{
-				fprintf (stderr, "ERROR in %s: Setting new name was not possible! keySetName returned %d\n", __func__,
-					 retVal);
 				elektraFree (currentKeyNameString);
 				ksDel (result);
-				return NULL;
+				ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Setting new key name was not possible.");
 			}
 			ksAppendKey (result, keyCopy);
 			elektraFree (currentKeyNameString);
 		}
 		else
 		{
-			fprintf (stderr,
-				 "ERROR in %s: Removing root %s from beginning of key %s is not possible as the current key is not below "
-				 "the root. Have you passed correct parameters to elektraMerge?\n",
-				 __func__, rootKeyNameString, currentKeyNameString);
 			elektraFree (currentKeyNameString);
 			ksDel (result);
-			return NULL;
+			ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Setting new key name was not possible.");
 		}
 	}
 	return result;
@@ -250,13 +243,14 @@ static bool keysAreEqual (Key * a, Key * b)
  * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
  *
  * @param baseIndicator indicates which of the three key sets is the base key set. 0 is checkedSet, 1 firstcompared, 2 secondCompared
+ * @param errorKey will contain information if an error ocurred
  *
  * @retval -1 on error
  * @retval 0 on success
  *
  */
 static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
-			   int baseIndicator)
+			   int baseIndicator, Key * errorKey)
 {
 	ksRewind (checkedSet);
 	ksRewind (firstCompared);
@@ -280,7 +274,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				 */
 				if (ksAppendKey (result, checkedKey) < 0)
 				{
-					return -1;
+					ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 				}
 			}
 			else
@@ -314,7 +308,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 							// If base is also dominant then append it's key
 							if (ksAppendKey (result, checkedKey) < 0)
 							{
-								return -1;
+								ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 							}
 						}
 					}
@@ -325,7 +319,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					{
 						if (ksAppendKey (result, keyInSecond) < 0)
 						{
-							return -1;
+							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 						}
 					}
 					else
@@ -342,7 +336,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 								// If base is also dominant then append it's key
 								if (ksAppendKey (result, checkedKey) < 0)
 								{
-									return -1;
+									ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 								}
 							}
 						}
@@ -355,7 +349,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					{
 						if (ksAppendKey (result, keyInFirst) < 0)
 						{
-							return -1;
+							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 						}
 					}
 					else
@@ -372,7 +366,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 								// If base is also dominant then append it's key
 								if (ksAppendKey (result, checkedKey) < 0)
 								{
-									return -1;
+									ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 								}
 							}
 						}
@@ -392,7 +386,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					{
 						if (ksAppendKey (result, checkedKey) < 0)
 						{
-							return -1;
+							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 						}
 					}
 				}
@@ -410,7 +404,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				{
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
-						return -1;
+						ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 					}
 				}
 			}
@@ -418,7 +412,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 			{
 				if (ksAppendKey (result, checkedKey) < 0)
 				{
-					return -1;
+					ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 				}
 			}
 		}
@@ -440,8 +434,8 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 			}
 			else
 			{
-				fprintf (stderr, "Something went wrong\n");
-				return -1;
+				ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+				return 0; // only to surpress compiler warning
 			}
 			if (thisConflict)
 			{
@@ -456,8 +450,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				{
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
-						fprintf (stderr, "Could not append key\n");
-						return -1;
+						ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 					}
 				}
 			}
@@ -481,7 +474,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					{
 						if (ksAppendKey (result, checkedKey) < 0)
 						{
-							return -1;
+							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
 						}
 					}
 				}
@@ -506,22 +499,22 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
  * @param baseRoot key that has the root of base as name
  * @param resultRoot the name of this key determines where the resulting key set will be stored
  * @param strategy specify which merge strategy to choose in case of a conflict
+ * @param informationKey stores errors as well as statistics
  * @returns the merged key set and NULL on error
  */
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
-		       int strategy)
+		       int strategy, Key * informationKey)
 {
-	ELEKTRA_LOG ("cmerge starts");
-	fprintf (stdout, "cmerge starts with strategy %d\n", strategy);
+	ELEKTRA_LOG ("cmerge starts with strategy %d", strategy);
 	nonOverlapOnlyBaseCounter = 0;
 	nonOverlapBaseEmptyCounter = 0;
 	nonOverlapAllExistCounter = 0;
 	overlap3different = 0;
 	overlap1empty = 0;
 	KeySet * result = ksNew (0, KS_END);
-	KeySet * ourCropped = removeRoot (our, ourRoot);
-	KeySet * theirCropped = removeRoot (their, theirRoot);
-	KeySet * baseCropped = removeRoot (base, baseRoot);
+	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
+	KeySet * theirCropped = removeRoot (their, theirRoot, informationKey);
+	KeySet * baseCropped = removeRoot (base, baseRoot, informationKey);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
@@ -541,12 +534,11 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		break;
 	}
 
-	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant, 0);
-	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1);
-	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2);
+	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant, 0, informationKey);
+	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
+	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
 	{
-		fprintf (stderr, "Could not delete keysets\n");
 	}
 	if (getTotalConflicts () > 0)
 	{
@@ -559,7 +551,7 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		}
 	}
 	KeySet * resultWithRoot = ksNew (0, KS_END);
-	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot));
+	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot), informationKey);
 	ksDel (result);
 	return resultWithRoot;
 }
