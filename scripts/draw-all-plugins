@@ -5,40 +5,40 @@ SCRIPTS_DIR=$(dirname "$0")
 
 #set -x
 
-OUTPUT=$SOURCE/doc/images/plugins.dot
+OUTPUT="$SOURCE/doc/images/plugins.dot"
 
-echo "strict digraph G {" > $OUTPUT
+echo "strict digraph G {" > "$OUTPUT"
 #echo "	ratio = 1.4;" >> $OUTPUT
 #echo "	fontsize = 20;" >> $OUTPUT
 #echo "	ratio = \"compress\";" >> $OUTPUT
 #echo "	size = \"140,100\";" >> $OUTPUT
 ## echo "	orientation = \"portrait\";" >> $OUTPUT
-echo "	splines = true;" >> $OUTPUT
+echo "	splines = true;" >> "$OUTPUT"
 echo
 #echo "	plugin [shape=Mdiamond];" >> $OUTPUT
-for i in $(ls $SOURCE/src/plugins); do
+for i in $(ls "$SOURCE/src/plugins"); do
 	if [ -d "$SOURCE/src/plugins/$i" ]; then
 		r="$SOURCE/src/plugins/$i/README.md"
 		p=$(grep "^- infos/provides" "$r" | cut -f 2 -d =)
 		if [ "$p" ]; then
 			p=$(echo "$p" | tr '/' ' ')
 			for x in $(echo $p); do
-				echo "	$x [shape=Mdiamond];" >> $OUTPUT
-				echo "	$i -> $x;" >> $OUTPUT #  [label=\"provides\"];"
+				echo "	$x [shape=Mdiamond];" >> "$OUTPUT"
+				echo "	$i -> $x;" >> "$OUTPUT" #  [label=\"provides\"];"
 				#echo "	$x -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 			done
 		else
-			echo "	$i [shape=Mdiamond];" >> $OUTPUT # [label=\"is a\"];"
+			echo "	$i [shape=Mdiamond];" >> "$OUTPUT" # [label=\"is a\"];"
 			#echo "	$i -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 		fi
 	fi
 done
-echo "}" >> $OUTPUT
+echo "}" >> "$OUTPUT"
 
-echo >> $OUTPUT
+echo >> "$OUTPUT"
 
-unflatten $OUTPUT -o ${OUTPUT}.flatten
+unflatten "$OUTPUT" -o "${OUTPUT}.flatten"
 rm -f "$SOURCE/doc/images/plugins.pdf"
-fdp -Tps ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.ps && gs -dDEVICEWIDTHPOINTS=1454 -dDEVICEHEIGHTPOINTS=1012 -dPDFFitPage -sPAPERSIZE=a4 -dFIXEDMEDIA -dSAFER -sDEVICE=pdfwrite -dSubsetFonts=true -dEmbedAllFonts=true -sPAPERSIZE=a4 -dBATCH -dNOPAUSE -f "$SOURCE/doc/images/plugins.ps" -sOutputFile="$SOURCE/doc/images/plugins.pdf"
+fdp -Tps "${OUTPUT}.flatten" -o "$SOURCE/doc/images/plugins.ps" && gs -dDEVICEWIDTHPOINTS=1454 -dDEVICEHEIGHTPOINTS=1012 -dPDFFitPage -sPAPERSIZE=a4 -dFIXEDMEDIA -dSAFER -sDEVICE=pdfwrite -dSubsetFonts=true -dEmbedAllFonts=true -sPAPERSIZE=a4 -dBATCH -dNOPAUSE -f "$SOURCE/doc/images/plugins.ps" -sOutputFile="$SOURCE/doc/images/plugins.pdf"
 #fdp -Tpdf ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.pdf   # bad fonts
-fdp -Tpng ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.png
+fdp -Tpng "${OUTPUT}.flatten" -o "$SOURCE/doc/images/plugins.png"
