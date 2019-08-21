@@ -70,7 +70,10 @@ if (BUILD_SHARED)
 
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra-core SHARED ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra-core kdberrors_generated elektra_error_codes_generated generate_version_script)
+	add_dependencies (elektra-core
+			  kdberrors_generated
+			  elektra_error_codes_generated
+			  generate_version_script)
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
 	target_link_libraries (elektra-core ${elektra-shared_LIBRARIES})
@@ -79,7 +82,10 @@ if (BUILD_SHARED)
 	include_directories (${elektra-shared_INCLUDES})
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
-	add_dependencies (elektra-kdb kdberrors_generated elektra_error_codes_generated generate_version_script)
+	add_dependencies (elektra-kdb
+			  kdberrors_generated
+			  elektra_error_codes_generated
+			  generate_version_script)
 	target_link_libraries (elektra-kdb elektra-core)
 
 	# ~~~
@@ -87,7 +93,10 @@ if (BUILD_SHARED)
 	# add_library (elektra INTERFACE) # no SOVERSION?
 	# ~~~
 	add_library (elektra SHARED ${KDB_FILES} ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra kdberrors_generated elektra_error_codes_generated generate_version_script)
+	add_dependencies (elektra
+			  kdberrors_generated
+			  elektra_error_codes_generated
+			  generate_version_script)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
 
@@ -116,9 +125,7 @@ if (BUILD_SHARED)
 					  "${__symbols_file}")
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (${elektra-all_LIBRARIES}
-				       PROPERTIES LINK_FLAGS
-						  "-Wl,--version-script='${__symbols_file}'")
+		set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	# ~~~
@@ -162,7 +169,10 @@ if (BUILD_FULL)
 				     GENERATED
 				     ON)
 	add_library (elektra-full SHARED ${SOURCES})
-	add_dependencies (elektra-full kdberrors_generated elektra_error_codes_generated generate_version_script)
+	add_dependencies (elektra-full
+			  kdberrors_generated
+			  elektra_error_codes_generated
+			  generate_version_script)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
@@ -180,9 +190,7 @@ if (BUILD_FULL)
 					  LINK_DEPENDS
 					  "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-full
-				       PROPERTIES LINK_FLAGS
-						  "-Wl,--version-script='${__symbols_file}'")
+		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
@@ -196,7 +204,10 @@ if (BUILD_STATIC)
 				     GENERATED
 				     ON)
 	add_library (elektra-static STATIC ${SOURCES})
-	add_dependencies (elektra-static kdberrors_generated elektra_error_codes_generated generate_version_script)
+	add_dependencies (elektra-static
+			  kdberrors_generated
+			  elektra_error_codes_generated
+			  generate_version_script)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 
@@ -214,9 +225,7 @@ if (BUILD_STATIC)
 					  LINK_DEPENDS
 					  "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-static
-				       PROPERTIES LINK_FLAGS
-						  "-Wl,--version-script='${__symbols_file}'")
+		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
