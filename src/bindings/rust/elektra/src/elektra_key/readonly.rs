@@ -19,8 +19,8 @@ impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
         }
     }
 
-    fn get_value(&self) -> Self::Value {
-        self.key.get_value()
+    fn value(&self) -> Self::Value {
+        self.key.value()
     }
 
     // TODO: This should return ReadOnly<T: ReadableKey> or similar

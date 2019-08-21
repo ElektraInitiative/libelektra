@@ -6,7 +6,7 @@ pub trait ReadableKey {
     type Value;
 
     fn as_ref(&self) -> &elektra_sys::Key;
-    fn get_value(&self) -> Self::Value;
+    fn value(&self) -> Self::Value;
 
     /// Construct a new key from a raw key pointer
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
@@ -20,7 +20,7 @@ pub trait ReadableKey {
     /// Return the name of the key as a borrowed slice.
     /// # Panics
     /// Panics if the underlying string cannot be converted to UTF-8.
-    fn get_name(&self) -> &str {
+    fn name(&self) -> &str {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyName(self.as_ref())) };
         c_str.to_str().unwrap()
     }
@@ -28,18 +28,18 @@ pub trait ReadableKey {
     /// Return the basename of the key as a borrowed slice.
     /// # Panics
     /// Panics if the underlying string cannot be converted to UTF-8.
-    fn get_basename(&self) -> &str {
+    fn basename(&self) -> &str {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyBaseName(self.as_ref())) };
         c_str.to_str().unwrap()
     }
 
     /// Calculates number of bytes needed to store basename of key.
-    fn get_basename_size(&self) -> isize {
+    fn basename_size(&self) -> isize {
         unsafe { elektra_sys::keyGetBaseNameSize(self.as_ref()) }
     }
 
     /// Bytes needed to store the key name including user domain and ending NULL.
-    fn get_fullname_size(&self) -> usize {
+    fn fullname_size(&self) -> usize {
         unsafe {
             elektra_sys::keyGetFullNameSize(self.as_ref())
                 .try_into()
@@ -47,12 +47,23 @@ pub trait ReadableKey {
         }
     }
 
+    /// Return how many references the key has.
+    fn get_ref(&self) -> isize {
+        unsafe { elektra_sys::keyGetRef(self.as_ref()) }
+    }
+
+    /// Returns the value of a meta-information which is current.
+    fn current_meta(&self) -> ReadOnly<StringKey> {
+        let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
+        ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key)
+    }
+
     /// Get key full name, including the user domain name.
     /// # Panics
     /// Panics if the underlying c_string contains interior nul bytes
     /// or cannot be converted to UTF-8
-    fn get_fullname(&self) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(self.get_fullname_size());
+    fn fullname(&self) -> String {
+        let mut vec: Vec<u8> = Vec::with_capacity(self.fullname_size());
 
         let ret_val = unsafe {
             elektra_sys::keyGetFullName(
@@ -69,38 +80,38 @@ pub trait ReadableKey {
             .to_owned()
     }
 
-    fn get_namespace(&self) -> u32 {
+    fn namespace(&self) -> u32 {
         unsafe { elektra_sys::keyGetNamespace(self.as_ref()) as u32 }
     }
 
     /// Determines if the key is in the spec namespace
     fn is_spec(&self) -> bool {
-        self.get_namespace() == elektra_sys::KEY_NS_SPEC
+        self.namespace() == elektra_sys::KEY_NS_SPEC
     }
 
     /// Determines if the key is in the dir namespace
     fn is_dir(&self) -> bool {
-        self.get_namespace() == elektra_sys::KEY_NS_DIR
+        self.namespace() == elektra_sys::KEY_NS_DIR
     }
 
     /// Determines if the key is in the proc namespace
     fn is_proc(&self) -> bool {
-        self.get_namespace() == elektra_sys::KEY_NS_PROC
+        self.namespace() == elektra_sys::KEY_NS_PROC
     }
 
     /// Determines if the key is in the user namespace
     fn is_user(&self) -> bool {
-        self.get_namespace() == elektra_sys::KEY_NS_USER
+        self.namespace() == elektra_sys::KEY_NS_USER
     }
 
     /// Determines if the key is in the system namespace
     fn is_system(&self) -> bool {
-        self.get_namespace() == elektra_sys::KEY_NS_SYSTEM
+        self.namespace() == elektra_sys::KEY_NS_SYSTEM
     }
 
     /// Determines if the key is in the dir namespace
     fn is_cascading(&self) -> bool {
-        self.get_namespace() == elektra_sys::KEY_NS_CASCADING
+        self.namespace() == elektra_sys::KEY_NS_CASCADING
     }
 
     // Omitted keyValue() due to return value of void pointer, which cannot be used safely in Rust
@@ -116,12 +127,12 @@ pub trait ReadableKey {
     /// let mut key = BinaryKey::new("user/sw/app")?;
     /// let binary_content = b"12345".to_vec();
     /// key.set_value(binary_content);
-    /// assert_eq!(key.get_value_size(), 5);
+    /// assert_eq!(key.value_size(), 5);
     /// #
     /// #     Ok(())
     /// # }
     /// ```
-    fn get_value_size(&self) -> usize {
+    fn value_size(&self) -> usize {
         let ret_val = unsafe { elektra_sys::keyGetValueSize(self.as_ref()) };
         // keyGetValueSize returns -1 on null pointers, but we can be sure self.ptr is valid
         // so this conversion is safe
@@ -232,7 +243,7 @@ pub trait ReadableKey {
     }
 
     /// Returns the metadata with the given metaname
-    fn get_meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>
+    fn meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>
     where
         Self: Sized,
     {

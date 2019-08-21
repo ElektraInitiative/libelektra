@@ -37,8 +37,8 @@ mod test {
         let name = "user/test/newkey";
         let val = "key_value";
         let key: StringKey = KeyBuilder::new(name).value(val).build();
-        assert_eq!(key.get_name(), name);
-        assert_eq!(key.get_value(), val);
+        assert_eq!(key.name(), name);
+        assert_eq!(key.value(), val);
     }
 
     #[test]
@@ -49,8 +49,8 @@ mod test {
             .value("overwrite me!")
             .value(val)
             .build();
-        assert_eq!(key.get_name(), name);
-        assert_eq!(key.get_value(), val.to_owned().into_bytes());
+        assert_eq!(key.name(), name);
+        assert_eq!(key.value(), val.to_owned().into_bytes());
     }
 
     #[test]
@@ -60,8 +60,8 @@ mod test {
             .meta("metaname", "metavalue")
             .meta("OWNER", "me")
             .build();
-        assert_eq!(key.get_meta("OWNER").unwrap().get_value(), "me");
-        assert_eq!(key.get_meta("metaname").unwrap().get_value(), "metavalue");
+        assert_eq!(key.meta("OWNER").unwrap().value(), "me");
+        assert_eq!(key.meta("metaname").unwrap().value(), "metavalue");
     }
 
 }
