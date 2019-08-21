@@ -1,6 +1,6 @@
 extern crate elektra_sys;
 
-use crate::{KeySetError, ReadableKey, StringKey, BinaryKey,WriteableKey};
+use crate::{KeySetError, ReadableKey, StringKey, KeyError,WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
 // use std::ffi::CString;
@@ -200,11 +200,15 @@ impl KeySet {
         }
     }
 
+    /// Lookup a given key in the keyset.
+    /// See also [`lookup_by_name`].
+    ///
+    /// [`lookup_by_name`]: #method.lookup_by_name
     pub fn lookup(
         &mut self,
         mut key: StringKey,
         options: LookupOption,
-    ) -> Option<BinaryKey<'_>> {
+    ) -> Option<StringKey<'_>> {
         println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
         let key_ptr = unsafe {
             elektra_sys::ksLookup(
@@ -221,35 +225,19 @@ impl KeySet {
             None
         } else {
             // let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
-            Some(BinaryKey::from_ptr(key_ptr))
+            Some(StringKey::from_ptr(key_ptr))
         }
     }
 
-    // pub fn lookup_by_name(&mut self, name: &str, options: LookupOption) -> Option<StringKey> {
-    //     println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
-    //     let cname = CString::new(name).unwrap();
-    //     let key_ptr = unsafe {
-    //         elektra_sys::ksLookupByName(
-    //             self.as_ptr(),
-    //             cname.as_ptr(),
-    //             options.bits() as elektra_sys::option_t,
-    //         )
-    //     };
-    //     println!("key_ptr is {:?}", key_ptr);
-
-    //     if key_ptr as *const elektra_sys::Key == std::ptr::null() {
-    //         println!("is null");
-    //         None
-    //     } else {
-    //         if options.contains(LookupOption::KDB_O_DEL) {
-    //             println!("contains del");
-    //             None
-    //         } else {
-    //             let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
-    //             Some(StringKey::from_ptr(dup_ptr))
-    //         }
-    //     }
-    // }
+    /// Lookup a key by name.
+    /// Returns a KeyError::InvalidName if the provided string is an invalid name.
+    /// Otherwise identical to [`lookup`].
+    ///
+    /// [`lookup`]: #method.lookup
+    pub fn lookup_by_name(&mut self, name: &str, options: LookupOption) -> Result<Option<StringKey>, KeyError> {
+        let key = StringKey::new(name)?;
+        Ok(self.lookup(key, options))
+    }
 
     pub fn iter(&mut self) -> StringKeyIter<'_> {
         StringKeyIter {
