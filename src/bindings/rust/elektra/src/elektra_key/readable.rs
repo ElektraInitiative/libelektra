@@ -1,18 +1,12 @@
-use crate::{KeyError, ReadOnly, StrKey};
+use crate::{KeyError, ReadOnly, StringKey};
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
 pub trait ReadableKey {
     type Value;
-    type Duplicate;
 
     fn as_ref(&self) -> &elektra_sys::Key;
     fn get_value(&self) -> Self::Value;
-
-    /// Return a duplicate of the key.
-    fn duplicate(&self) -> Self::Duplicate
-    where
-        Self::Duplicate: Sized;
 
     /// Construct a new key from a raw key pointer
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
@@ -174,7 +168,7 @@ pub trait ReadableKey {
     }
 
     /// Returns the metadata with the given metaname
-    fn get_meta(&self, metaname: &str) -> Result<StrKey<'_>, KeyError>
+    fn get_meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>
     where
         Self: Sized,
     {
@@ -183,7 +177,7 @@ pub trait ReadableKey {
         if key_ptr.is_null() {
             Err(KeyError::NotFound)
         } else {
-            let key = StrKey::from_ptr(key_ptr as *mut elektra_sys::Key);
+            let key:ReadOnly<StringKey<'_>> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
             Ok(key)
         }
     }

@@ -7,7 +7,7 @@ pub struct ReadOnly<T: ReadableKey> {
 
 impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
     type Value = T::Value;
-    type Duplicate = T::Duplicate;
+    // type Duplicate = T::Duplicate;
 
     fn as_ref(&self) -> &elektra_sys::Key {
         self.key.as_ref()
@@ -24,13 +24,13 @@ impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
     }
 
     // TODO: This should return ReadOnly<T: ReadableKey> or similar
-    fn duplicate(&self) -> Self::Duplicate
-    where
-        Self::Duplicate: Sized,
-    {
-        self.key.duplicate()
-        // ReadOnly {
-        // dup
-        // }
-    }
+    // fn duplicate(&self) -> Self::Duplicate
+    // where
+    //     Self::Duplicate: Sized,
+    // {
+    //     self.key.duplicate()
+    //     // ReadOnly {
+    //     // dup
+    //     // }
+    // }
 }
