@@ -109,12 +109,24 @@ pub trait ReadableKey {
         self.get_namespace() == elektra_sys::KEY_NS_CASCADING
     }
 
-    // keyvalue methds
-
     // Omitted keyValue() due to return value of void pointer, which cannot be used safely in Rust
 
-    /// Returns the number of bytes needed to store the key value, including the
+    /// Returns the number of bytes needed to store the key's value, including the
     /// NULL terminator.
+    /// 
+    /// # Examples
+    /// ```
+    /// # use std::error::Error;
+    /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let binary_content = b"12345".to_vec();
+    /// key.set_value(binary_content);
+    /// assert_eq!(key.get_value_size(), 5);
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn get_value_size(&self) -> usize {
         let ret_val = unsafe { elektra_sys::keyGetValueSize(self.as_ref()) };
         // keyGetValueSize returns -1 on null pointers, but we can be sure self.ptr is valid
@@ -122,25 +134,60 @@ pub trait ReadableKey {
         ret_val.try_into().unwrap()
     }
 
-    // keytest methods
-
     /// Returns true if the key has a binary value.
+    /// 
+    /// # Notes
+    /// Note that this does not return true for a newly created BinaryKey,
+    /// but only when actual binary data has been set, due to the underlying
+    /// generic Key.
+    /// 
+    /// # Examples
+    /// ```
+    /// # use std::error::Error;
+    /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let binary_content = b"0".to_vec();
+    /// key.set_value(binary_content);
+    /// assert!(key.is_binary());
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn is_binary(&self) -> bool {
         unsafe { elektra_sys::keyIsBinary(self.as_ref()) == 1 }
     }
 
     /// Returns true if the key has a string value.
+    /// 
+    /// # Examples
+    /// ```
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let key = StringKey::new("user/sw/app")?;
+    /// assert!(key.is_string());
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn is_string(&self) -> bool {
         unsafe { elektra_sys::keyIsString(self.as_ref()) == 1 }
     }
 
     /// Returns true if other is below self
+    /// 
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// let key = StringKey::new("user/sw/app").unwrap();
-    /// let key2 = StringKey::new("user/sw/app/folder/key").unwrap();
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let key = StringKey::new("user/sw/app")?;
+    /// let key2 = StringKey::new("user/sw/app/folder/key")?;
     /// assert!(key2.is_below(&key));
+    /// #
+    /// #     Ok(())
+    /// # }
     /// ```
     fn is_below(&self, other: &Self) -> bool
     where
@@ -150,12 +197,18 @@ pub trait ReadableKey {
     }
 
     /// Returns true if other is *directly* below self
+    /// 
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// let key = StringKey::new("user/sw/app").unwrap();
-    /// let key2 = StringKey::new("user/sw/app/key").unwrap();
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let key = StringKey::new("user/sw/app")?;
+    /// let key2 = StringKey::new("user/sw/app/key")?;
     /// assert!(key2.is_direct_below(&key));
+    /// #
+    /// #     Ok(())
+    /// # }
     /// ```
     fn is_direct_below(&self, other: &Self) -> bool
     where
@@ -165,10 +218,21 @@ pub trait ReadableKey {
     }
 
     /// Returns true if the key is inactive.
+    /// 
     /// In Elektra terminology a hierarchy of keys is inactive if the
     /// rootkey's basename starts with '.'. So a key is also inactive
-    /// if it is below an inactive key. For example, `user/key/.hidden`
-    /// is inactive and so is `user/.hidden/below`.
+    /// if it is below an inactive key.
+    /// # Examples
+    /// ```
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let key = StringKey::new("user/key/.hidden")?;
+    /// assert!(key.is_inactive());
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn is_inactive(&self) -> bool {
         unsafe { elektra_sys::keyIsInactive(self.as_ref()) == 1 }
     }
@@ -185,7 +249,7 @@ pub trait ReadableKey {
         if key_ptr.is_null() {
             Err(KeyError::NotFound)
         } else {
-            let key: ReadOnly<StringKey> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
+            let key: ReadOnly<StringKey<'_>> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
             Ok(key)
         }
     }
