@@ -13,8 +13,7 @@ include (CheckCCompilerFlag)
 include (CheckCXXCompilerFlag)
 
 #
-# The mode (standard) to be used by the compiler
-#
+# The mode (standard) to be used by the compiler -
 if (C_STD)
 	message (STATUS "use C_STD as given by user: ${C_STD}")
 else ()
@@ -46,10 +45,21 @@ if (ELEKTRA_SYMVER_SUPPORTED)
 	set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
 else (ELEKTRA_SYMVER_SUPPORTED)
 	set (ELEKTRA_SYMVER_COMMAND "")
-	set (LD_ACCEPTS_VERSION_SCRIPT FALSE)
+
+	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED
+		     ${CMAKE_BINARY_DIR}/src/symvertest/build
+		     ${CMAKE_SOURCE_DIR}/src/symvertest
+		     symvertest
+		     basic)
+	if (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+		set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
+	else (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+		set (LD_ACCEPTS_VERSION_SCRIPT FALSE)
+	endif (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
 endif (ELEKTRA_SYMVER_SUPPORTED)
 
-message (STATUS "compiler/linker accepts version script? ${ELEKTRA_SYMVER_SUPPORTED}")
+message (STATUS "compiler/linker accepts version script? ${LD_ACCEPTS_VERSION_SCRIPT}")
+message (STATUS "compiler/linker supports symbol versioning? ${ELEKTRA_SYMVER_SUPPORTED}")
 
 #
 # Extra handling/flags for specific compilers/OS
