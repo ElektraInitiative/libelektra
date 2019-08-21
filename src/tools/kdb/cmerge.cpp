@@ -39,6 +39,8 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 		/** This is here for compatibility. The old merge has preserve as default as defined in cmdline.cpp.
 		 *  As cmerge uses the existing functionality it is still default, even though it does not exist in cmerge.
 		 *  Default in new merge is abort.
+		 *
+		 *  This will be obsolete as soon as cmerge supersedes the old merge.
 		 */
 		strategy = MERGE_STRATEGY_ABORT;
 	}
@@ -53,10 +55,6 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	else if (cl.strategy == "their")
 	{
 		strategy = MERGE_STRATEGY_THEIR;
-	}
-	else if (cl.strategy == "base")
-	{
-		strategy = MERGE_STRATEGY_BASE;
 	}
 	else
 	{

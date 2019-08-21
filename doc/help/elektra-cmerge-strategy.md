@@ -32,6 +32,3 @@ The following strategies exist:
 
 - their:
   This option forces conflicting hunks to be auto-resolved cleanly by favoring their version. Changes from our or base that do not conflict with their side are reflected to the merge result.
-
-- base:
-  This option forces conflicting hunks to be auto-resolved cleanly by favoring base version. Changes from our or their that do not conflict with base side are reflected to the merge result.

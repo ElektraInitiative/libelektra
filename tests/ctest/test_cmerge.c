@@ -122,7 +122,6 @@ static void all_strategies_same_result (char * our_value, char * their_value, ch
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_ABORT, expected_result);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_OUR, expected_result);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_THEIR, expected_result);
-	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_BASE, expected_result);
 }
 
 /**
@@ -135,7 +134,6 @@ static void all_strategies_conflict (char * our_value, char * their_value, char 
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_ABORT, NULL);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_OUR, our_value);
 	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_THEIR, their_value);
-	simple_test (our_value, their_value, base_value, MERGE_STRATEGY_BASE, base_value);
 }
 
 static void test_order (char * our_order, char * their_order, char * base_order, int strategy, char * expected_result)

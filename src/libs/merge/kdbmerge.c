@@ -483,15 +483,10 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 			{
 				/**
 				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
+				 *
+				 * Here keys from base could be appended. But doing so is not useful.
 				 */
 				increaseStatisticalValue (informationKey, "nonOverlapOnlyBaseCounter");
-				if (checkedIsDominant) // currently iterating over base and base strategy is set
-				{
-					if (ksAppendKey (result, checkedKey) < 0)
-					{
-						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-					}
-				}
 			}
 			else
 			{
@@ -598,7 +593,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
-	bool baseDominant = false;
 	bool ourDominant = false;
 	bool theirDominant = false;
 	switch (strategy)
@@ -609,12 +603,9 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	case MERGE_STRATEGY_THEIR:
 		theirDominant = true;
 		break;
-	case MERGE_STRATEGY_BASE:
-		baseDominant = true;
-		break;
 	}
 
-	checkSingleSet (baseCropped, ourCropped, theirCropped, result, baseDominant, 0, informationKey);
+	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, 0, informationKey); // base is never dominant
 	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
