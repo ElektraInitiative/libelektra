@@ -12,7 +12,6 @@ bsd_task:
   install_script:
     - >
       pkg install -y
-      bison
       cmake
       git
       ninja
@@ -89,7 +88,6 @@ mac_task:
       antlr
       antlr4-cpp-runtime
       augeas
-      bison
       boost
       botan
       cmake
