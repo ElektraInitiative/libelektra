@@ -196,10 +196,6 @@ func DeleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetKdbFindHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func StringBody(r *http.Request) (string, error) {
 	value, err := ioutil.ReadAll(r.Body)
 
