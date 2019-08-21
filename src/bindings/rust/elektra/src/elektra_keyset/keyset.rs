@@ -1,6 +1,6 @@
 extern crate elektra_sys;
 
-use crate::{KeySetError, ReadableKey, StrKey, StringKey, WriteableKey};
+use crate::{KeySetError, ReadableKey, StringKey, BinaryKey,WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
 // use std::ffi::CString;
@@ -43,17 +43,17 @@ impl Drop for KeySet {
     }
 }
 
-impl Iterator for KeySet {
-    type Item = StringKey;
-    fn next(&mut self) -> Option<Self::Item> {
-        let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
-        if (key_ptr as *const elektra_sys::Key).is_null() {
-            None
-        } else {
-            Some(StringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
-        }
-    }
-}
+// impl Iterator for KeySet {
+//     type Item = StringKey<'_>;
+//     fn next(&mut self) -> Option<Self::Item> {
+//         let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
+//         if (key_ptr as *const elektra_sys::Key).is_null() {
+//             None
+//         } else {
+//             Some(StringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
+//         }
+//     }
+// }
 
 impl Default for KeySet {
     fn default() -> Self {
@@ -204,7 +204,7 @@ impl KeySet {
         &mut self,
         mut key: StringKey,
         options: LookupOption,
-    ) -> Option<StrKey<'_>> {
+    ) -> Option<BinaryKey<'_>> {
         println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
         let key_ptr = unsafe {
             elektra_sys::ksLookup(
@@ -221,7 +221,7 @@ impl KeySet {
             None
         } else {
             // let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
-            Some(StrKey::from_ptr(key_ptr))
+            Some(BinaryKey::from_ptr(key_ptr))
         }
     }
 
@@ -251,21 +251,21 @@ impl KeySet {
     //     }
     // }
 
-    pub fn iter(&mut self) -> StrKeyIter<'_> {
-        StrKeyIter {
+    pub fn iter(&mut self) -> StringKeyIter<'_> {
+        StringKeyIter {
             cursor: None,
             keyset: self,
         }
     }
 }
 
-pub struct StrKeyIter<'a> {
+pub struct StringKeyIter<'a> {
     cursor: Option<Cursor>,
     keyset: &'a mut KeySet,
 }
 
-impl<'a> Iterator for StrKeyIter<'a> {
-    type Item = StrKey<'a>;
+impl<'a> Iterator for StringKeyIter<'a> {
+    type Item = StringKey<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.cursor {
@@ -275,7 +275,7 @@ impl<'a> Iterator for StrKeyIter<'a> {
                     None
                 } else {
                     self.cursor = Some(self.keyset.get_cursor());
-                    Some(StrKey::from_ptr(key_ptr))
+                    Some(StringKey::from_ptr(key_ptr))
                 }
             }
             Some(cursor) => {
@@ -287,7 +287,7 @@ impl<'a> Iterator for StrKeyIter<'a> {
                     self.cursor = None;
                     None
                 } else {
-                    Some(StrKey::from_ptr(key_ptr))
+                    Some(StringKey::from_ptr(key_ptr))
                 }
             }
         }
@@ -376,7 +376,7 @@ mod tests {
         ks.rewind();
 
         let mut did_iterate = false;
-        for (i, key) in ks.enumerate() {
+        for (i, key) in ks.iter().enumerate() {
             did_iterate = true;
             assert_eq!(key.get_value(), values[i]);
             assert_eq!(key.get_name(), names[i]);
@@ -437,7 +437,7 @@ mod tests {
             key = ks
                 .lookup(lookup_key, LookupOption::KDB_O_DEL)
                 .unwrap()
-                .to_owned();
+                .duplicate();
             assert_eq!(ks.get_size(), 2);
             assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
         }

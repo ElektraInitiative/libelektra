@@ -4,13 +4,7 @@ use std::ffi::{CStr, CString};
 use std::ptr::NonNull;
 
 #[derive(Debug)]
-pub struct StringKey {
-    ptr: NonNull<elektra_sys::Key>,
-    phantom: std::marker::PhantomData<elektra_sys::Key>,
-}
-
-#[derive(Debug)]
-pub struct StrKey<'a> {
+pub struct StringKey<'a> {
     ptr: NonNull<elektra_sys::Key>,
     phantom: std::marker::PhantomData<&'a mut elektra_sys::Key>,
 }
@@ -71,13 +65,12 @@ macro_rules! add_traits {
     )*)
 }
 
-add_traits!(StringKey);
-add_traits!(StrKey<'_>);
+add_traits!(StringKey<'_>);
 add_traits!(BinaryKey<'_>);
 
 // Due to lifetimes, this cannot be moved to the macro atm
-impl Iterator for StringKey {
-    type Item = ReadOnly<StringKey>;
+impl<'a> Iterator for StringKey<'a> {
+    type Item = ReadOnly<StringKey<'a>>;
     fn next(&mut self) -> Option<Self::Item> {
         let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
         if key_ptr.is_null() {
@@ -89,7 +82,7 @@ impl Iterator for StringKey {
 }
 
 impl<'a> Iterator for BinaryKey<'a> {
-    type Item = ReadOnly<StringKey>;
+    type Item = ReadOnly<StringKey<'a>>;
     fn next(&mut self) -> Option<Self::Item> {
         let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
         if key_ptr.is_null() {
@@ -108,7 +101,7 @@ impl<'a> Drop for BinaryKey<'a> {
     }
 }
 
-impl Drop for StringKey {
+impl<'a> Drop for StringKey<'a> {
     fn drop(&mut self) {
         println!("Drop {:?}", self);
         let r = unsafe { elektra_sys::keyDel(self.as_ptr()) };
@@ -116,7 +109,7 @@ impl Drop for StringKey {
     }
 }
 
-impl StringKey {
+impl<'a> StringKey<'a> {
     /// Sets the value of the key to the supplied string.
     /// # Panics
     /// Panics if the provided string contains internal nul bytes.
@@ -131,6 +124,12 @@ impl StringKey {
     fn get_string(&self) -> &str {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyString(self.as_ref())) };
         c_str.to_str().unwrap()
+    }
+
+pub fn duplicate<'b>(&'a self) -> StringKey<'b>
+    {
+        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
+        StringKey::from_ptr(dup_ptr)
     }
 }
 
@@ -168,78 +167,35 @@ impl<'a> BinaryKey<'a> {
             vec
         }
     }
-}
-
-impl<'a> StrKey<'a> {
-    fn get_string(&self) -> &str {
-        let c_str = unsafe { CStr::from_ptr(elektra_sys::keyString(self.as_ref())) };
-        c_str.to_str().unwrap()
-    }
-
-    pub fn to_owned(&self) -> StringKey {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.ptr.as_ptr()) };
-        StringKey::from_ptr(dup_ptr)
-    }
-}
-
-impl<'a> ReadableKey for StrKey<'a> {
-    type Value = String;
-    type Duplicate = StrKey<'a>;
-
-    fn as_ref(&self) -> &elektra_sys::Key {
-        unsafe { self.ptr.as_ref() }
-    }
-
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> StrKey<'a> {
-        StrKey {
-            ptr: NonNull::new(ptr).unwrap(),
-            phantom: std::marker::PhantomData,
-        }
-    }
-
-    fn get_value(&self) -> Self::Value {
-        self.get_string().to_owned()
-    }
-
-    fn duplicate(&self) -> Self::Duplicate
-    where
-        Self::Duplicate: Sized,
+    
+    pub fn duplicate<'b>(&'a self) -> BinaryKey<'b>
     {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        StrKey::from_ptr(dup_ptr)
+        BinaryKey::from_ptr(dup_ptr)
     }
 }
 
-impl ReadableKey for StringKey {
+impl<'a> ReadableKey for StringKey<'a> {
     type Value = String;
-    type Duplicate = StringKey;
 
     fn as_ref(&self) -> &elektra_sys::Key {
         unsafe { self.ptr.as_ref() }
     }
 
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey {
+    fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
         StringKey {
             ptr: NonNull::new(ptr).unwrap(),
             phantom: std::marker::PhantomData,
         }
     }
+
     fn get_value(&self) -> Self::Value {
         self.get_string().to_owned()
-    }
-
-    fn duplicate(&self) -> Self::Duplicate
-    where
-        Self::Duplicate: Sized,
-    {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        StringKey::from_ptr(dup_ptr)
     }
 }
 
 impl<'a> ReadableKey for BinaryKey<'a> {
     type Value = Vec<u8>;
-    type Duplicate = BinaryKey<'a>;
 
     fn as_ref(&self) -> &elektra_sys::Key {
         unsafe { self.ptr.as_ref() }
@@ -255,14 +211,6 @@ impl<'a> ReadableKey for BinaryKey<'a> {
     fn get_value(&self) -> Self::Value {
         self.get_binary()
     }
-
-    fn duplicate(&self) -> Self::Duplicate
-    where
-        Self::Duplicate: Sized,
-    {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        BinaryKey::from_ptr(dup_ptr)
-    }
 }
 
 impl<'a> WriteableKey for BinaryKey<'a> {
@@ -274,7 +222,7 @@ impl<'a> WriteableKey for BinaryKey<'a> {
         self.set_binary(&t.into());
     }
 }
-impl WriteableKey for StringKey {
+impl<'a> WriteableKey for StringKey<'a> {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key {
         self.ptr.as_ptr()
     }
@@ -283,7 +231,7 @@ impl WriteableKey for StringKey {
     }
 }
 
-impl From<StringKey> for BinaryKey<'_> {
+impl From<StringKey<'_>> for BinaryKey<'_> {
     fn from(mut sk: StringKey) -> Self {
         let binary_key = BinaryKey::from_ptr(sk.as_ptr());
         std::mem::forget(sk);
@@ -291,7 +239,7 @@ impl From<StringKey> for BinaryKey<'_> {
     }
 }
 
-impl From<BinaryKey<'_>> for StringKey {
+impl From<BinaryKey<'_>> for StringKey<'_> {
     fn from(mut bk: BinaryKey) -> Self {
         let str_key = StringKey::from_ptr(bk.as_ptr());
         std::mem::forget(bk);

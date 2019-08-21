@@ -21,7 +21,7 @@ impl Drop for KDB {
 impl KDB {
     /// Opens the session with the Key database.
     /// In case of a failure, a KDBError is returned.
-    pub fn open() -> Result<Self, KDBError> {
+    pub fn open<'a>() -> Result<Self, KDBError<'a>> {
         let mut error_key = StringKey::new_empty();
         let kdb_ptr = unsafe { elektra_sys::kdbOpen(error_key.as_ptr()) };
 

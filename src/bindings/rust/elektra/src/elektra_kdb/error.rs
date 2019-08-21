@@ -15,39 +15,39 @@ const ELEKTRA_ERROR_CONFLICTING_STATE: &str = "C02000";
 const ELEKTRA_ERROR_VALIDATION_SYNTACTIC: &str = "C03100";
 const ELEKTRA_ERROR_VALIDATION_SEMANTIC: &str = "C03200";
 
-pub enum KDBError {
-    Permanent(PermanentError),
-    ConflictingState(KDBErrorWrapper),
-    Validation(ValidationError),
+pub enum KDBError<'a> {
+    Permanent(PermanentError<'a>),
+    ConflictingState(KDBErrorWrapper<'a>),
+    Validation(ValidationError<'a>),
 }
 
-pub enum PermanentError {
-    Resource(ResourceError),
-    Logical(LogicalError),
-    Installation(KDBErrorWrapper),
+pub enum PermanentError<'a> {
+    Resource(ResourceError<'a>),
+    Logical(LogicalError<'a>),
+    Installation(KDBErrorWrapper<'a>),
 }
 
-pub enum LogicalError {
-    Internal(KDBErrorWrapper),
-    Interface(KDBErrorWrapper),
-    PluginMisbehavior(KDBErrorWrapper),
+pub enum LogicalError<'a> {
+    Internal(KDBErrorWrapper<'a>),
+    Interface(KDBErrorWrapper<'a>),
+    PluginMisbehavior(KDBErrorWrapper<'a>),
 }
 
-pub enum ResourceError {
-    OutOfMemory(KDBErrorWrapper),
+pub enum ResourceError<'a> {
+    OutOfMemory(KDBErrorWrapper<'a>),
 }
 
-pub enum ValidationError {
-    Syntactic(KDBErrorWrapper),
-    Semantic(KDBErrorWrapper),
+pub enum ValidationError<'a> {
+    Syntactic(KDBErrorWrapper<'a>),
+    Semantic(KDBErrorWrapper<'a>),
 }
 
 #[derive(Debug)]
-pub struct KDBErrorWrapper {
-    error_key: StringKey,
+pub struct KDBErrorWrapper<'a> {
+    error_key: StringKey<'a>,
 }
 
-impl KDBErrorWrapper {
+impl<'a> KDBErrorWrapper<'a> {
     /// Constructs a new KDBErrorWrapper from a StringKey.
     /// Only pass keys where the metakeys error/* are set.
     pub fn new(error_key: StringKey) -> KDBErrorWrapper {
@@ -120,18 +120,18 @@ impl KDBErrorWrapper {
     }
 }
 
-impl std::fmt::Display for KDBErrorWrapper {
+impl<'a> std::fmt::Display for KDBErrorWrapper<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         write!(f, "{}", self.to_error_message())
     }
 }
 
-impl std::error::Error for KDBErrorWrapper {}
+impl<'a> std::error::Error for KDBErrorWrapper<'a> {}
 
 pub fn map_kdb_error(error_key: StringKey) -> KDBError {
     let err_num_key_res = error_key.get_meta("error/number");
     if let Ok(err_num_key) = err_num_key_res {
-        let err_wrapper = KDBErrorWrapper::new(error_key);
+        let err_wrapper = KDBErrorWrapper::new(error_key.duplicate());
 
         match err_num_key.get_value().as_str() {
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
