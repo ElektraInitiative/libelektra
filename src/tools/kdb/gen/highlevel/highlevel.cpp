@@ -16,6 +16,7 @@
 #include <modules.hpp>
 
 #include <elektra/kdb.h>
+#include <fstream>
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbplugin.h>
