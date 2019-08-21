@@ -95,17 +95,13 @@ impl<'a> Iterator for BinaryKey<'a> {
 
 impl<'a> Drop for BinaryKey<'a> {
     fn drop(&mut self) {
-        println!("Drop {:?}", self);
-        let r = unsafe { elektra_sys::keyDel(self.as_ptr()) };
-        println!("Was dropped: {}", r == 0);
+        unsafe { elektra_sys::keyDel(self.as_ptr()) };
     }
 }
 
 impl<'a> Drop for StringKey<'a> {
     fn drop(&mut self) {
-        println!("Drop {:?}", self);
-        let r = unsafe { elektra_sys::keyDel(self.as_ptr()) };
-        println!("Was dropped: {}", r == 0);
+        unsafe { elektra_sys::keyDel(self.as_ptr()) };
     }
 }
 

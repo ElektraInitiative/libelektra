@@ -1,9 +1,8 @@
 extern crate elektra_sys;
 
-use crate::{KeySetError, ReadableKey, StringKey, KeyError,WriteableKey};
+use crate::{KeyError, KeySetError, ReadableKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
-// use std::ffi::CString;
 
 #[derive(Debug)]
 pub struct KeySet {
@@ -36,24 +35,11 @@ bitflags! {
 
 impl Drop for KeySet {
     fn drop(&mut self) {
-        println!("Drop {:?}", self);
         unsafe {
             elektra_sys::ksDel(self.as_ptr());
         }
     }
 }
-
-// impl Iterator for KeySet {
-//     type Item = StringKey<'_>;
-//     fn next(&mut self) -> Option<Self::Item> {
-//         let key_ptr = unsafe { elektra_sys::ksNext(self.as_ptr()) };
-//         if key_ptr.is_null() {
-//             None
-//         } else {
-//             Some(StringKey::from_ptr(key_ptr as *mut elektra_sys::Key))
-//         }
-//     }
-// }
 
 impl Default for KeySet {
     fn default() -> Self {
@@ -101,10 +87,14 @@ impl KeySet {
         }
     }
 
-    /// Append a vector of keys to the KeySet.
+    /// Append a collection of keys to the KeySet.
     /// It will call append_key on every key. If any key returns an error it will be returned,
     /// but only after iterating over all keys.
-    pub fn append_all<T: WriteableKey>(&mut self, keys: Vec<T>) -> Result<(), KeySetError> {
+    pub fn append_all<T>(&mut self, keys: T) -> Result<(), KeySetError>
+    where
+        T: IntoIterator,
+        T::Item: WriteableKey,
+    {
         let mut err = None;
         for key in keys {
             if let Err(ks_err) = self.append_key(key) {
@@ -204,12 +194,7 @@ impl KeySet {
     /// See also [`lookup_by_name`].
     ///
     /// [`lookup_by_name`]: #method.lookup_by_name
-    pub fn lookup(
-        &mut self,
-        mut key: StringKey,
-        options: LookupOption,
-    ) -> Option<StringKey<'_>> {
-        println!("Got flags {:?}", options.bits() as elektra_sys::option_t);
+    pub fn lookup(&mut self, mut key: StringKey, options: LookupOption) -> Option<StringKey<'_>> {
         let key_ptr = unsafe {
             elektra_sys::ksLookup(
                 self.as_ptr(),
@@ -234,7 +219,11 @@ impl KeySet {
     /// Otherwise identical to [`lookup`].
     ///
     /// [`lookup`]: #method.lookup
-    pub fn lookup_by_name(&mut self, name: &str, options: LookupOption) -> Result<Option<StringKey>, KeyError> {
+    pub fn lookup_by_name(
+        &mut self,
+        name: &str,
+        options: LookupOption,
+    ) -> Result<Option<StringKey>, KeyError> {
         let key = StringKey::new(name)?;
         Ok(self.lookup(key, options))
     }
@@ -309,40 +298,6 @@ mod tests {
     }
 
     #[test]
-    fn can_iterate_simple_keyset_immutably() {
-        let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
-        let values = ["value1", "value2", "value3"];
-
-        let mut ks = KeySet::with_capacity(3);
-
-        ks.append_all(vec![
-            KeyBuilder::<StringKey>::new(names[0])
-                .value(values[0])
-                .build(),
-            KeyBuilder::<StringKey>::new(names[1])
-                .value(values[1])
-                .build(),
-            KeyBuilder::<StringKey>::new(names[2])
-                .value(values[2])
-                .build(),
-        ])
-        .unwrap();
-        ks.rewind();
-
-        let mut did_iterate = false;
-        for (i, key) in ks.iter().enumerate() {
-            did_iterate = true;
-            assert_eq!(key.get_value(), values[i]);
-            assert_eq!(key.get_name(), names[i]);
-        }
-        assert!(did_iterate);
-
-        // Make sure that calling a method that takes &mut self
-        // does not produce a compile error here
-        ks.set_cursor(0);
-    }
-
-    #[test]
     fn can_iterate_simple_keyset() {
         let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
         let values = ["value1", "value2", "value3"];
@@ -362,14 +317,25 @@ mod tests {
         ])
         .unwrap();
         ks.rewind();
-
+        let new_values = ["Newvalue1", "Newvalue2", "Newvalue3"];
         let mut did_iterate = false;
-        for (i, key) in ks.iter().enumerate() {
+        for (i, mut key) in ks.iter().enumerate() {
             did_iterate = true;
             assert_eq!(key.get_value(), values[i]);
+            key.set_value(new_values[i]);
+        }
+        assert!(did_iterate);
+        ks.rewind();
+
+        did_iterate = false;
+        for (i, key) in ks.iter().enumerate() {
+            did_iterate = true;
+            assert_eq!(key.get_value(), new_values[i]);
             assert_eq!(key.get_name(), names[i]);
         }
         assert!(did_iterate);
+        // Check that the iterator did not consume the keyset
+        assert_eq!(ks.get_size(), 3);
     }
 
     fn setup_keyset() -> KeySet {
@@ -385,9 +351,6 @@ mod tests {
             KeyBuilder::<StringKey>::new(names[1])
                 .value(values[1])
                 .build(),
-            // KeyBuilder::<StringKey>::new(names[2])
-            //     .value(values[2])
-            //     .build(),
         ])
         .unwrap();
         ks
@@ -397,7 +360,6 @@ mod tests {
     fn can_lookup_key_with_none_option() {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
-        println!("Lookup_key is {:?}", lookup_key);
         let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
         assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
         assert_eq!(ks.get_size(), 2);
@@ -415,21 +377,22 @@ mod tests {
     }
 
     #[test]
-    fn can_lookup_and_duplicate_key() {
+    fn can_lookup_by_name_and_duplicate_key() -> Result<(), KeyError> {
         // Make sure that a duplicate of a key that is from a keyset
         // can be used after the KeySet has been freed
         let key;
         {
-            let lookup_key = StringKey::new("/test/key").unwrap();
+            // let lookup_key = StringKey::new("/test/key").unwrap();
             let mut ks = setup_keyset();
             key = ks
-                .lookup(lookup_key, LookupOption::KDB_O_DEL)
+                .lookup_by_name("/test/key", LookupOption::KDB_O_DEL)?
                 .unwrap()
                 .duplicate();
             assert_eq!(ks.get_size(), 2);
             assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
         }
         assert_eq!(key.get_name(), "user/test/key");
+        Ok(())
     }
 
 }
