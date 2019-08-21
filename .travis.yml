@@ -165,7 +165,6 @@ matrix:
         homebrew:
           packages:
             - augeas
-            - bison
             - dbus
             - discount
             - gpgme
