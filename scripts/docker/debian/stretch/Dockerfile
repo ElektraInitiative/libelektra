@@ -79,7 +79,6 @@ RUN apt-get update \
         bison \
         uuid-dev \
         ninja-build \
-	clang-3.9 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
@@ -218,7 +217,3 @@ RUN mkdir -p $HASKELL_SHARED_SANDBOX \
         'hspec -any' 'QuickCheck-any' --avoid-reinstalls
 # Workaround for issue [#2139](http://issues.libelektra.org/2139)
 RUN mkdir -p /home/jenkins/.cabal/lib
-
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/home/jenkins/.cargo/bin:${PATH}"
-RUN rustup component add rustfmt
