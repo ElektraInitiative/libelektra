@@ -16,14 +16,14 @@ if (CARGO_EXECUTABLE)
 
 	# Call cargo to build the bindings in release mode
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
-			    COMMAND ${CARGO_EXECUTABLE} build --release
+			    COMMAND ${CARGO_EXECUTABLE} build --release --quiet
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs" "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
 	if ((NOT ENABLE_ASAN) AND BUILD_SHARED)
-		add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test --lib WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+		add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
 		# The test executables need to know where they can find libelektra.so
 		set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
