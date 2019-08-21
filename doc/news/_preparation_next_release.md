@@ -55,6 +55,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
 
+### YAMBi
+
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
+
 ### YAwn
 
 - We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_

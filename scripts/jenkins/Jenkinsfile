@@ -1000,7 +1000,6 @@ coveralls -b '${buildDir}' \
 constants/constants\\.c|\
 (haskell|regexdispatcher|typechecker)/haskell\\.c|\
 (lua|ruby)/runtime\\.h|\
-yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
 ).*' \
           -E '.*/src/error/.*' \

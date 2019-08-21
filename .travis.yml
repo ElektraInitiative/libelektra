@@ -105,7 +105,6 @@ matrix:
           -wresolver;\
           -xmltool;\
           -yajl;\
-          -yambi;\
           -yamlcpp;\
           -yamlsmith;\
           -yanlr;\
