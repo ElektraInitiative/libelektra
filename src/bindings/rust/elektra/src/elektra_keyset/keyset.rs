@@ -1,6 +1,6 @@
 extern crate elektra_sys;
 
-use crate::{KeyError, KeySetError, ReadableKey, StringKey, WriteableKey};
+use crate::{KeyError, KeySetError, ReadOnly, ReadableKey, StringKey, WriteableKey, ReadOnlyStringKeyIter,StringKeyIter};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
@@ -47,13 +47,15 @@ impl Default for KeySet {
     }
 }
 
+impl AsRef<elektra_sys::KeySet> for KeySet {
+    fn as_ref(&self) -> &elektra_sys::KeySet {
+        unsafe { self.ptr.as_ref() }
+    }
+}
+
 impl KeySet {
     pub fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
         self.ptr.as_ptr()
-    }
-
-    pub fn as_ref(&self) -> &elektra_sys::KeySet {
-        unsafe { self.ptr.as_ref() }
     }
 
     /// Create a new empty KeySet
@@ -228,7 +230,19 @@ impl KeySet {
         Ok(self.lookup(key, options))
     }
 
-    pub fn iter(&mut self) -> StringKeyIter<'_> {
+    /// Returns an iterator that conceptually returns &StringKey
+    /// It has to take &mut self because the internal cursor of the keyset is modified.
+    pub fn iter(&mut self) -> ReadOnlyStringKeyIter<'_> {
+        ReadOnlyStringKeyIter {
+            cursor: None,
+            keyset: self,
+        }
+    }
+    
+    /// Returns an iterator that returns StringKey
+    /// that can be modified.
+    /// Note that you should not change the name of the key.
+    pub fn iter_mut(&mut self) -> StringKeyIter<'_> {
         StringKeyIter {
             cursor: None,
             keyset: self,
@@ -236,40 +250,6 @@ impl KeySet {
     }
 }
 
-pub struct StringKeyIter<'a> {
-    cursor: Option<Cursor>,
-    keyset: &'a mut KeySet,
-}
-
-impl<'a> Iterator for StringKeyIter<'a> {
-    type Item = StringKey<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.cursor {
-            None => {
-                let key_ptr = unsafe { elektra_sys::ksNext(self.keyset.as_ptr()) };
-                if key_ptr.is_null() {
-                    None
-                } else {
-                    self.cursor = Some(self.keyset.get_cursor());
-                    Some(StringKey::from_ptr(key_ptr))
-                }
-            }
-            Some(cursor) => {
-                self.cursor = Some(cursor + 1);
-                self.keyset.set_cursor(self.cursor.unwrap());
-                let key_ptr = unsafe { elektra_sys::ksCurrent(self.keyset.as_ptr()) };
-
-                if key_ptr.is_null() {
-                    self.cursor = None;
-                    None
-                } else {
-                    Some(StringKey::from_ptr(key_ptr))
-                }
-            }
-        }
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -316,17 +296,18 @@ mod tests {
                 .build(),
         ])
         .unwrap();
+
         ks.rewind();
         let new_values = ["Newvalue1", "Newvalue2", "Newvalue3"];
         let mut did_iterate = false;
-        for (i, mut key) in ks.iter().enumerate() {
+        for (i, mut key) in ks.iter_mut().enumerate() {
             did_iterate = true;
             assert_eq!(key.value(), values[i]);
             key.set_value(new_values[i]);
         }
         assert!(did_iterate);
-        ks.rewind();
 
+        ks.rewind();
         did_iterate = false;
         for (i, key) in ks.iter().enumerate() {
             did_iterate = true;

@@ -9,10 +9,6 @@ impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
     type Value = T::Value;
     // type Duplicate = T::Duplicate;
 
-    fn as_ref(&self) -> &elektra_sys::Key {
-        self.key.as_ref()
-    }
-
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
         ReadOnly {
             key: T::from_ptr(ptr),
@@ -33,4 +29,10 @@ impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
     //     // dup
     //     // }
     // }
+}
+
+impl<T: ReadableKey> AsRef<elektra_sys::Key> for ReadOnly<T> {
+    fn as_ref(&self) -> &elektra_sys::Key {
+        self.key.as_ref()
+    }
 }

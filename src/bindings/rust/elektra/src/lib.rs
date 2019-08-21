@@ -10,7 +10,7 @@ pub use self::elektra_key::{
     BinaryKey, KeyBuilder, KeyError, ReadOnly, ReadableKey, StringKey, WriteableKey,
 };
 
-pub use self::elektra_keyset::{KeySet, KeySetError};
+pub use self::elektra_keyset::{Cursor,KeySet, KeySetError,ReadOnlyStringKeyIter,StringKeyIter};
 
 pub use self::elektra_kdb::{
     KDBError, KDBErrorWrapper, LogicalError, PermanentError, ResourceError, ValidationError, KDB,
