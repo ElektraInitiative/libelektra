@@ -1,8 +1,8 @@
 #ifndef G_ELEKTRA_KDB_H
 #define G_ELEKTRA_KDB_H
 
-#include <glib-object.h>
 #include <elektra/kdb.h>
+#include <glib-object.h>
 
 // clang-format off
 
