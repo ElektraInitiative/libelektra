@@ -21,7 +21,10 @@ function (add_lib name)
 	endif (ARG_CPP)
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
-	add_dependencies (elektra-${name}-objects kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (elektra-${name}-objects
+			  kdberrors_generated
+			  elektra_error_codes_generated
+			  generate_version_script)
 	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
 	target_include_directories (elektra-${name}-objects SYSTEM PUBLIC ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
@@ -45,6 +48,11 @@ function (add_lib name)
 
 	if (BUILD_SHARED)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
+
+		if (${LD_ACCEPTS_VERSION_SCRIPT})
+			set_target_properties (elektra-${name}
+					       PROPERTIES LINK_FLAGS "-Wl,--version-script='${CMAKE_BINARY_DIR}/src/libs/symbols.map'")
+		endif ()
 
 		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
