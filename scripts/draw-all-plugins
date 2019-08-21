@@ -39,6 +39,20 @@ echo >> "$OUTPUT"
 
 unflatten -o "${OUTPUT}.flatten" "$OUTPUT"
 rm -f "$SOURCE/doc/images/plugins.pdf"
-fdp -Tps "${OUTPUT}.flatten" -o "$SOURCE/doc/images/plugins.ps" && gs -dDEVICEWIDTHPOINTS=1454 -dDEVICEHEIGHTPOINTS=1012 -dPDFFitPage -sPAPERSIZE=a4 -dFIXEDMEDIA -dSAFER -sOutputFile="$SOURCE/doc/images/plugins.pdf" -sDEVICE=pdfwrite -dSubsetFonts=true -dEmbedAllFonts=true -sPAPERSIZE=a4 -dBATCH -dNOPAUSE -f "$SOURCE/doc/images/plugins.ps"
+fdp -Tps "${OUTPUT}.flatten" -o "$SOURCE/doc/images/plugins.ps" &&
+	gs -dDEVICEWIDTHPOINTS=1454 \
+		-dDEVICEHEIGHTPOINTS=1012 \
+		-dPDFFitPage \
+		-sPAPERSIZE=a4 \
+		-dFIXEDMEDIA \
+		-dSAFER \
+		-sOutputFile="$SOURCE/doc/images/plugins.pdf" \
+		-sDEVICE=pdfwrite \
+		-dSubsetFonts=true \
+		-dEmbedAllFonts=true \
+		-sPAPERSIZE=a4 \
+		-dBATCH \
+		-dNOPAUSE \
+		-f "$SOURCE/doc/images/plugins.ps"
 #fdp -Tpdf ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.pdf   # bad fonts
 fdp -Tpng "${OUTPUT}.flatten" -o "$SOURCE/doc/images/plugins.png"
