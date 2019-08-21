@@ -29,18 +29,6 @@
 // In test cases were no conflict should occur the strategy is irrelevant.
 #define MERGE_STRATEGY_IRRELEVANT 1
 
-void printKs (KeySet * ks)
-{
-	Key * cur = 0;
-	fprintf (stdout, "DEBUG: Iterate over all keys:\n");
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != 0)
-	{ /* Iterates over all keys and prints their name */
-		fprintf (stdout, "DEBUG:   %s\n", keyName (cur));
-	}
-}
-
-
 /**
  * When there is a single key in each key set and all key names are equal
  *
@@ -60,6 +48,7 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	Key * their_root = keyNew ("user/their", KEY_END);
 	Key * base_root = keyNew ("user/base", KEY_END);
 	Key * result_root = keyNew ("user/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
 	KeySet * our = ksNew (0, KS_END);
 	KeySet * their = ksNew (0, KS_END);
 	KeySet * base = ksNew (0, KS_END);
@@ -75,7 +64,7 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	{
 		ksAppendKey (base, keyNew ("user/base/key", KEY_VALUE, base_value, KEY_END));
 	}
-	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy, NULL);
+	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy, informationKey);
 
 	if (expected_result == NULL)
 	{
@@ -85,7 +74,6 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 			  "existant.",
 			  __func__, our_value, their_value, base_value, strategy);
 		succeed_if (result == NULL, msg);
-		printKs (result);
 	}
 	else
 	{
@@ -99,7 +87,6 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 				  __func__, our_value, their_value, base_value, strategy, expected_result);
 			succeed_if (strcmp (expected_result, "EMPTY") == 0, msg);
 			succeed_if_same_string (expected_result, "EMPTY");
-			printKs (result);
 		}
 		else
 		{
@@ -124,6 +111,7 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	keyDel (their_root);
 	keyDel (base_root);
 	keyDel (result_root);
+	keyDel (informationKey);
 }
 
 /**
@@ -158,11 +146,12 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 	Key * their_root = keyNew ("user/their", KEY_END);
 	Key * base_root = keyNew ("user/base", KEY_END);
 	Key * result_root = keyNew ("user/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
 	KeySet * our = ksNew (1, keyNew ("user/our/key", KEY_VALUE, "1", KEY_META, "order", our_order, KEY_END), KS_END);
 	KeySet * their = ksNew (1, keyNew ("user/their/key", KEY_VALUE, "1", KEY_META, "order", their_order, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew ("user/base/key", KEY_VALUE, "1", KEY_META, "order", base_order, KEY_END), KS_END);
 
-	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy, NULL);
+	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy, informationKey);
 
 	if (expected_result == NULL)
 	{
@@ -199,6 +188,7 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 	keyDel (their_root);
 	keyDel (base_root);
 	keyDel (result_root);
+	keyDel (informationKey);
 }
 
 /**

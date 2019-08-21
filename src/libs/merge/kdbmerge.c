@@ -7,83 +7,164 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-int nonOverlapOnlyBaseCounter = 0;  // Conflict where only base is different (it exists) and our and their are empty.
-int nonOverlapBaseEmptyCounter = 0; // Conflict where only base is different (it is empty) and our=their (not empty).
-int nonOverlapAllExistCounter = 0;  // All three values exist, only base is different
-int overlap3different = 0;	  // Only overlap conflicts where all three keys exist and have different values
-int overlap1empty = 0;		    // counts overlaps where one set is empty. Is the double of the real amount in the end.
+#define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
-static int getNonOverlapAllExistConflicts (void)
+/**
+ * @brief Get a statistical value from an information key
+ * @param informationKey contains the statistics in its meta information
+ * @param metaName which statistic to get
+ * @param retval the statistical value
+ * @param retval -1 on error
+ */
+static int getStatisticalValue (Key * informationKey, char * metaName)
 {
+	const Key * metaKey = keyGetMeta (informationKey, metaName);
+	if (metaKey == NULL)
+	{
+		return 0;
+	}
+	char * test = elektraMalloc (keyGetValueSize (metaKey));
+	if (keyGetString (metaKey, test, keyGetValueSize (metaKey)) < 0)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not get statistical value.");
+		return -1;
+	}
+	int asInt = atoi (test);
+	elektraFree (test);
+	return asInt;
+}
+
+/**
+ * @brief Set a statistical value in an information key.
+ * @param informationKey contains the statistics in its meta information
+ * @param metaName which statistic to set
+ * @param value which value to set it to, must be a number
+ *
+ * This enforces that a number is set.
+ */
+static void setStatisticalValue (Key * informationKey, char * metaName, int value)
+{
+	char stringy[INT_BUF_SIZE];
+	int printsize = snprintf(stringy, INT_BUF_SIZE, "%d", value);
+	if (printsize < INT_BUF_SIZE) {
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Statistical value was too large for its buffer.");
+	}
+	ssize_t size = keySetMeta (informationKey, metaName, stringy);
+	if (size <= 0)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set statistical value.");
+	}
+}
+
+/**
+ * @brief Increase a statistical value in an information key by one
+ * @param informationKey contains the statistics in its meta information
+ * @param metaName which statistic to increase
+ * @retval new value
+ */
+static int increaseStatisticalValue (Key * informationKey, char * metaName)
+{
+	int value = getStatisticalValue (informationKey, metaName);
+	value++;
+	setStatisticalValue (informationKey, metaName, value);
+	return value;
+}
+
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of non-overlap conflicts where only base exists
+ */
+static int getNonOverlapOnlyBaseConflicts (Key * informationKey)
+{
+	return getStatisticalValue (informationKey, "nonOverlapOnlyBaseCounter");
+}
+
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of non-overlap conflicts where all keys existed
+ */
+static int getNonOverlapAllExistConflicts (Key * informationKey)
+{
+	int nonOverlapAllExistCounter = getStatisticalValue (informationKey, "nonOverlapAllExistCounter");
 	if (nonOverlapAllExistCounter % 3 != 0)
 	{
-		fprintf (stderr, "This should be a multiple of 3 at the end of each checkSingleSet\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter input must not be null.");
 	}
 	return nonOverlapAllExistCounter / 3;
 }
 
-static int getBaseEmptyConflicts (void)
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of non-overlap conflicts where the key in the base set was empty
+ */
+static int getNonOverlapBaseEmptyConflicts (Key * informationKey)
 {
+	int nonOverlapBaseEmptyCounter = getStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
 	if (nonOverlapBaseEmptyCounter % 2 != 0)
 	{
-		fprintf (stderr, "This should be a multiple of 2 at the end of each checkSingleSet\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter input must not be null.");
 	}
 	return nonOverlapBaseEmptyCounter / 2;
 }
 
-static int getOverlap3different (void)
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of overlaps where all 3 keys were different
+ */
+static int getOverlap3different (Key * informationKey)
 {
+	int overlap3different = getStatisticalValue (informationKey, "overlap3different");
 	if (overlap3different % 3 != 0)
 	{
-		fprintf (stderr, "This should be a multiple of 3 at the end of each checkSingleSet\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter input must not be null.");
 	}
 	return overlap3different / 3;
 }
 
-static int getOverlap1empty (void)
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of overlaps where one key was empty, thus the other two keys had different values
+ */
+static int getOverlap1empty (Key * informationKey)
 {
+	int overlap1empty = getStatisticalValue (informationKey, "overlap1empty");
 	if (overlap1empty % 2 != 0)
 	{
-		fprintf (stderr, "This should be a multiple of 2 at the end of each checkSingleSet\n");
-		return -1;
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter input must not be null.");
 	}
 	return overlap1empty / 2;
 }
 
-static int getTotalOverlaps (void)
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of overlaps that happened
+ */
+static int getTotalOverlaps (Key * informationKey)
 {
-	return getOverlap1empty () + getOverlap3different ();
-}
-
-static int getTotalNonOverlaps (void)
-{
-	return getBaseEmptyConflicts () + getNonOverlapAllExistConflicts () + nonOverlapOnlyBaseCounter;
-}
-
-static int getTotalConflicts (void)
-{
-	return getTotalNonOverlaps () + getTotalOverlaps ();
+	return getOverlap1empty (informationKey) + getOverlap3different (informationKey);
 }
 
 /**
- * For debugging only
- * Prints the names of all keys in a key set
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of non-overlaps that happened
  */
-// static void printKs (KeySet * ks)
-//{
-//	Key * cur = 0;
-//	fprintf (stdout, "DEBUG: Iterate over all keys:\n");
-//	ksRewind (ks);
-//	while ((cur = ksNext (ks)) != 0)
-//	{ /* Iterates over all keys and prints their name */
-//		fprintf (stdout, "DEBUG: --%s\n", keyName (cur));
-//	}
-//}
+static int getTotalNonOverlaps (Key * informationKey)
+{
+	return getNonOverlapBaseEmptyConflicts (informationKey) + getNonOverlapAllExistConflicts (informationKey) +
+	       getNonOverlapOnlyBaseConflicts (informationKey);
+}
+
+/**
+ * @param informationKey contains the statistics in its meta information
+ * @retval the number of overlaps and non-overlaps that happened
+ */
+static int getTotalConflicts (Key * informationKey)
+{
+	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
+}
 
 /**
  * @brief Removes one string from the other
@@ -109,23 +190,26 @@ static char * strremove (char * string, const char * sub)
  *  @brief This is the counterpart to the removeRoot function
  *  @param input keys are from here
  *  @param result all keys with extended name will be appended here
- *  @param errorKey errors will be set here
+ *  @param informationKey errors will be set here
  *  @retval -1 on error
  *  @retval  0 on success
  */
-static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string, Key * errorKey)
+static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string, Key * informationKey)
 {
 	if (input == NULL)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Parameter input must not be null.");
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter input must not be null.");
+		return -1;
 	}
 	if (result == NULL)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Parameter result must not be null.");
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter result must not be null.");
+		return -1;
 	}
 	if (string == NULL)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Parameter string must not be null.");
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter string must not be null.");
+		return -1;
 	}
 	Key * key;
 	ksRewind (input);
@@ -139,12 +223,12 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		elektraFree (newName);
 		if (status < 0)
 		{
-			ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not set key name.");
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set key name.");
 		}
 		status = ksAppendKey (result, duplicateKey);
 		if (status < 0)
 		{
-			ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 		}
 	}
 	return 0;
@@ -154,13 +238,13 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
  * @brief Remove the root from each key of a set
  * @param original the key set from which root will be rmeoved
  * @param root remove this from all the keys
- * @param errorKey will contain information if an error occurs
+ * @param informationKey will contain information if an error occurs
  * @returns a new key set without the root
  *
  * Example: If root is user/example and the KeySet contains a key with the name user/example/something then
  * the returned KeySet will contain the key /something.
  */
-static KeySet * removeRoot (KeySet * original, Key * root, Key * errorKey)
+static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 {
 	ksRewind (original);
 	KeySet * result = ksNew (0, KS_END);
@@ -194,7 +278,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * errorKey)
 			{
 				elektraFree (currentKeyNameString);
 				ksDel (result);
-				ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Setting new key name was not possible.");
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
 			}
 			ksAppendKey (result, keyCopy);
 			elektraFree (currentKeyNameString);
@@ -203,7 +287,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * errorKey)
 		{
 			elektraFree (currentKeyNameString);
 			ksDel (result);
-			ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Setting new key name was not possible.");
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
 		}
 	}
 	return result;
@@ -234,7 +318,6 @@ static bool keysAreEqual (Key * a, Key * b)
 
 
 /**
- * checkSingleSet iterates over the elements of the checkedSet key set and puts them into result if the 3-way merge rules are fulfilled
  * and the element is not already in the result key set.
  * It should be called 3 times, each time with a different of our key set, their key set and base key set as checkedSet parameter.
  * Which of the remaining two key sets is firstCompared or secondCompared is irrelevant.
@@ -243,14 +326,14 @@ static bool keysAreEqual (Key * a, Key * b)
  * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
  *
  * @param baseIndicator indicates which of the three key sets is the base key set. 0 is checkedSet, 1 firstcompared, 2 secondCompared
- * @param errorKey will contain information if an error ocurred
+ * @param informationKey will contain information if an error ocurred
  *
  * @retval -1 on error
  * @retval 0 on success
  *
  */
 static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
-			   int baseIndicator, Key * errorKey)
+			   int baseIndicator, Key * informationKey)
 {
 	ksRewind (checkedSet);
 	ksRewind (firstCompared);
@@ -274,7 +357,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				 */
 				if (ksAppendKey (result, checkedKey) < 0)
 				{
-					ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 				}
 			}
 			else
@@ -302,13 +385,13 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 						/** This is a non-overlap conflict
 						 *  Base is currently checked and has value A, their and our have a different value B
 						 */
-						nonOverlapAllExistCounter++;
+						increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
 						if (checkedIsDominant)
 						{
 							// If base is also dominant then append it's key
 							if (ksAppendKey (result, checkedKey) < 0)
 							{
-								ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+								ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 							}
 						}
 					}
@@ -319,7 +402,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					{
 						if (ksAppendKey (result, keyInSecond) < 0)
 						{
-							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 						}
 					}
 					else
@@ -330,13 +413,14 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 							 *  Base is currently secondCompare and has value A, their and our have a different
 							 *  value B
 							 */
-							nonOverlapAllExistCounter++;
+							increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
 							if (checkedIsDominant)
 							{
 								// If base is also dominant then append it's key
 								if (ksAppendKey (result, checkedKey) < 0)
 								{
-									ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+									ELEKTRA_SET_INTERNAL_ERROR (informationKey,
+												    "Could not append key.");
 								}
 							}
 						}
@@ -349,7 +433,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					{
 						if (ksAppendKey (result, keyInFirst) < 0)
 						{
-							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 						}
 					}
 					else
@@ -360,13 +444,14 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 							 *  Base is currently firstCompare and has value A, their and our have a different
 							 *  value B
 							 */
-							nonOverlapAllExistCounter++;
+							increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
 							if (checkedIsDominant)
 							{
 								// If base is also dominant then append it's key
 								if (ksAppendKey (result, checkedKey) < 0)
 								{
-									ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+									ELEKTRA_SET_INTERNAL_ERROR (informationKey,
+												    "Could not append key.");
 								}
 							}
 						}
@@ -381,12 +466,12 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 					 * checkSingleSet. However, only one of those three times is required. Thus use a getter function
 					 * that calculates a third.
 					 */
-					overlap3different++;
+					increaseStatisticalValue (informationKey, "overlap3different");
 					if (checkedIsDominant)
 					{
 						if (ksAppendKey (result, checkedKey) < 0)
 						{
-							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 						}
 					}
 				}
@@ -399,12 +484,12 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				/**
 				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
 				 */
-				nonOverlapOnlyBaseCounter++;
+				increaseStatisticalValue (informationKey, "nonOverlapOnlyBaseCounter");
 				if (checkedIsDominant) // currently iterating over base and base strategy is set
 				{
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
-						ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 					}
 				}
 			}
@@ -412,7 +497,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 			{
 				if (ksAppendKey (result, checkedKey) < 0)
 				{
-					ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 				}
 			}
 		}
@@ -434,23 +519,23 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 			}
 			else
 			{
-				ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 				return 0; // only to surpress compiler warning
 			}
 			if (thisConflict)
 			{
-				nonOverlapBaseEmptyCounter++;
+				increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
 			}
 			if (!keysAreEqual (checkedKey, existingKey))
 			{
 				// overlap  with single empty
 				// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
-				overlap1empty++;
+				increaseStatisticalValue (informationKey, "overlap1empty");
 				if (checkedIsDominant) // TODO This also happens when there is no conflict
 				{
 					if (ksAppendKey (result, checkedKey) < 0)
 					{
-						ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 					}
 				}
 			}
@@ -469,12 +554,12 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				{
 					// base is empty and other and their have the same (non-empty) value
 					// this is a conflict
-					nonOverlapBaseEmptyCounter++;
+					increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
 					if (checkedIsDominant)
 					{
 						if (ksAppendKey (result, checkedKey) < 0)
 						{
-							ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not append key.");
+							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 						}
 					}
 				}
@@ -506,11 +591,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		       int strategy, Key * informationKey)
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d", strategy);
-	nonOverlapOnlyBaseCounter = 0;
-	nonOverlapBaseEmptyCounter = 0;
-	nonOverlapAllExistCounter = 0;
-	overlap3different = 0;
-	overlap1empty = 0;
 	KeySet * result = ksNew (0, KS_END);
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
 	KeySet * theirCropped = removeRoot (their, theirRoot, informationKey);
@@ -540,13 +620,12 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
 	{
 	}
-	if (getTotalConflicts () > 0)
+	if (getTotalConflicts (informationKey) > 0)
 	{
-		fprintf (stdout, "Conflict statistic:\n  %2d overlaps\n  %2d non-overlaps\n   --------------\n  %2d total\n",
-			 getTotalOverlaps (), getTotalNonOverlaps (), getTotalConflicts ());
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			ksDel (result);
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Abort strategy was set and at least one conflict occured.");
 			return NULL;
 		}
 	}
