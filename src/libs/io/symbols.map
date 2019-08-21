@@ -44,4 +44,22 @@ libelektra_0.8 {
 	elektraIoTimerSetBindingData;
 	elektraIoTimerSetEnabled;
 	elektraIoTimerSetInterval;
+
+	# kdbio/adapters/dbus.h
+	elektraIoAdapterDbusAttach;
+	elektraIoAdapterDbusCleanup;
+
+	# kdbio/adapters/zeromq.h
+	elektraIoAdapterZeroMqAttach;
+	elektraIoAdapterZeroMqSetContext;
+	elektraIoAdapterZeroMqDetach;
+
+	# kdbio/ev.h
+	elektraIoEvNew;
+
+	# kdbio/glib.h
+	elektraIoGlibNew;
+
+	# kdbio/uv.h
+	elektraIoUvNew;
 };
