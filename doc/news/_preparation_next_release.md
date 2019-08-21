@@ -121,7 +121,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Added decision for array concept of warnings. _(Michael Zronek)_
-- <<TODO>>
+- We updated our [Doxygen configuration file](../../doc/Doxyfile), removing the outdated `PERL_PATH` and `MSCGEN_PATH` options. _(René Schwaiger)_
 - <<TODO>>
 
 ## Tests
