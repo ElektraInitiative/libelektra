@@ -12,8 +12,8 @@
 #endif
 #include "gpgme.h"
 #include "keylist.h"
-#include <gpgme.h>
 #include <elektra/kdb.h>
+#include <gpgme.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <locale.h>

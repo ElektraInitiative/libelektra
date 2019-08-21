@@ -1,7 +1,7 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
-#include <fcntl.h>
 #include <elektra/kdb.h>
+#include <fcntl.h>
 #include <libgen.h>
 #include <limits.h>
 #include <linux/limits.h>

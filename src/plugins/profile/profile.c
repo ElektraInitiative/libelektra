@@ -11,9 +11,9 @@
 
 #include <kdbhelper.h>
 
-#include <elektra/kdb.h>     //actual namespaces
-#include <kdbease.h> //elektraKeyGetRelativeName
-#include <kdbos.h>   //elektraNamespace
+#include <elektra/kdb.h> //actual namespaces
+#include <kdbease.h>     //elektraKeyGetRelativeName
+#include <kdbos.h>       //elektraNamespace
 #include <stdio.h>
 #include <string.h>
 
