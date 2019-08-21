@@ -110,20 +110,23 @@ impl KDBErrorWrapper {
             .to_owned()
     }
 
-    //     pub fn to_error_message(&self) -> String {
-    //         let error_or_warning =
-    //         format!("Sorry, module {module} issued error {error_number}:
-    // `ERROR_CODE_DESCRIPTION`: Validation of key \"{key}\" with string \"{string}\" failed.", module = self.module(), error_number = self.number(), key=)
-    //     }
+    pub fn to_error_message(&self) -> String {
+        format!("Sorry, module {module} issued error {error_number}:\n{description}: Validation of key \"{key}\" with string \"{string}\" failed.", 
+            module = self.module(),
+            error_number = self.number(),
+            description = self.description(),
+            key = self.error_key.get_name(),
+            string = self.error_key.get_value())
+    }
 }
 
-// impl std::fmt::Display for KDBErrorWrapper {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+impl std::fmt::Display for KDBErrorWrapper {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, "{}", self.to_error_message())
+    }
+}
 
-//     }
-// }
-
-// impl std::error::Error for KDBErrorWrapper {}
+impl std::error::Error for KDBErrorWrapper {}
 
 pub fn map_kdb_error(error_key: StringKey) -> KDBError {
     let err_num_key_res = error_key.get_meta("error/number");
