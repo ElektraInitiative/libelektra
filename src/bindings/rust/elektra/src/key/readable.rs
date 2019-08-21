@@ -1,4 +1,4 @@
-use crate::{KeyError, ReadOnly, StringKey};
+use crate::{KeyError, ReadOnly, StrKey};
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
@@ -173,19 +173,17 @@ pub trait ReadableKey {
         unsafe { elektra_sys::keyIsInactive(self.as_ref()) == 1 }
     }
 
-    // TODO: If the key that held the metakey is dropped, the return value is still valid,
-    // according to current semantics, but the pointer it holds is invalid.
     /// Returns the metadata with the given metaname
-    fn get_meta(&self, metaname: &str) -> Result<ReadOnly<StringKey>, KeyError>
+    fn get_meta(&self, metaname: &str) -> Result<StrKey<'_>, KeyError>
     where
-        Self: Sized
+        Self: Sized,
     {
         let cstr = CString::new(metaname).unwrap();
         let key_ptr = unsafe { elektra_sys::keyGetMeta(self.as_ref(), cstr.as_ptr()) };
         if key_ptr.is_null() {
             Err(KeyError::NotFound)
         } else {
-            let key: ReadOnly<StringKey> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
+            let key = StrKey::from_ptr(key_ptr as *mut elektra_sys::Key);
             Ok(key)
         }
     }
