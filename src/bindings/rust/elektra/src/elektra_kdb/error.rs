@@ -109,7 +109,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .get_value()
             .to_owned()
     }
-
+    // TODO: key is not the error_key, but the key that the keysets internal cursor points to, but this is not accessible here
     pub fn to_error_message(&self) -> String {
         format!("Sorry, module {module} issued error {error_number}:\n{description}: Validation of key \"{key}\" with string \"{string}\" failed.", 
             module = self.module(),
