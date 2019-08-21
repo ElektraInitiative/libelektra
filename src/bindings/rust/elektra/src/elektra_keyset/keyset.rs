@@ -62,11 +62,11 @@ impl Default for KeySet {
 }
 
 impl KeySet {
-    fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
+    pub fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
         self.ptr.as_ptr()
     }
 
-    fn as_ref(&self) -> &elektra_sys::KeySet {
+    pub fn as_ref(&self) -> &elektra_sys::KeySet {
         unsafe { self.ptr.as_ref() }
     }
 
@@ -193,7 +193,7 @@ impl KeySet {
         }
     }
 
-    /// Set the KeySet cursor.
+    /// Set the KeySet internal cursor.
     pub fn set_cursor(&mut self, cursor: Cursor) {
         unsafe {
             elektra_sys::ksSetCursor(self.as_ptr(), cursor);

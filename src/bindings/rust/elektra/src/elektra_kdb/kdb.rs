@@ -1,5 +1,5 @@
 use super::error;
-use crate::{KDBError, StringKey, WriteableKey};
+use crate::{KDBError, KeySet, StringKey, WriteableKey};
 use std::ptr::NonNull;
 
 #[derive(Debug)]
@@ -20,7 +20,6 @@ impl Drop for KDB {
 
 impl KDB {
     /// Opens the session with the Key database.
-    /// In case of a failure, a KDBError is returned.
     pub fn open<'a>() -> Result<Self, KDBError<'a>> {
         let mut error_key = StringKey::new_empty();
         let kdb_ptr = unsafe { elektra_sys::kdbOpen(error_key.as_ptr()) };
@@ -32,6 +31,69 @@ impl KDB {
                 ptr: unsafe { NonNull::new_unchecked(kdb_ptr) },
                 phantom: std::marker::PhantomData,
             })
+        }
+    }
+
+    /// Retrieve keys in an atomic and universal way.
+    /// Note that the provided keyset is modified and contains the result.
+    /// The return value is true, if the keys were successfully retrieved
+    /// and false if there were no changes to the keyset.
+    pub fn get<'a>(
+        &mut self,
+        keyset: &mut KeySet,
+        key: &mut StringKey<'a>,
+    ) -> Result<bool, KDBError<'a>> {
+        let ret_val = unsafe { elektra_sys::kdbGet(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
+
+        if ret_val == 1 {
+            Ok(true)
+        } else if ret_val == 0 {
+            Ok(false)
+        } else {
+            Err(error::map_kdb_error(key.duplicate()))
+        }
+    }
+
+    /// Set keys in an atomic and universal way.
+    /// The return value is true on success,
+    /// and false if there were no changes to the KDB.
+    /// # Notes
+    /// You have to call [`get`] with `keyset` first.
+    ///
+    /// [`get`]: #method.get
+    pub fn set<'a>(
+        &mut self,
+        keyset: &mut KeySet,
+        key: &mut StringKey<'a>,
+    ) -> Result<bool, KDBError<'a>> {
+        let ret_val = unsafe { elektra_sys::kdbSet(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
+
+        if ret_val == 1 {
+            Ok(true)
+        } else if ret_val == 0 {
+            Ok(false)
+        } else {
+            Err(error::map_kdb_error(key.duplicate()))
+        }
+    }
+
+    /// This method can be used the given KDB handle meets certain clauses, specified in contract.
+    /// The return value is true on success,
+    /// and false if clauses of the contract are unmet.
+    pub fn ensure<'a>(
+        &mut self,
+        keyset: &mut KeySet,
+        key: &mut StringKey<'a>,
+    ) -> Result<bool, KDBError<'a>> {
+        let ret_val =
+            unsafe { elektra_sys::kdbEnsure(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
+
+        if ret_val == 0 {
+            Ok(true)
+        } else if ret_val == 1 {
+            Ok(false)
+        } else {
+            Err(error::map_kdb_error(key.duplicate()))
         }
     }
 
