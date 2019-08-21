@@ -48,8 +48,9 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
 static void setStatisticalValue (Key * informationKey, char * metaName, int value)
 {
 	char stringy[INT_BUF_SIZE];
-	int printsize = snprintf(stringy, INT_BUF_SIZE, "%d", value);
-	if (printsize < INT_BUF_SIZE) {
+	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
+	if (printsize < INT_BUF_SIZE)
+	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Statistical value was too large for its buffer.");
 	}
 	ssize_t size = keySetMeta (informationKey, metaName, stringy);
@@ -316,6 +317,235 @@ static bool keysAreEqual (Key * a, Key * b)
 	return true;
 }
 
+/**
+ * @brief Helper function for checkSingleSet for when the key (name is relevant) is only in two of the three key sets
+ * @retval -1 on error
+ * @retval 0 on success
+ */
+static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
+				  int baseIndicator, Key * informationKey)
+{
+	Key * existingKey;
+	bool thisConflict = false;
+	/** This if or the else if happen when our and their set have a key that
+	 *  base does not have. This is a conflict case.
+	 *  This place is hit twice, thus overlap1empty gets double the amount of errors.
+	 */
+	if (keyInFirst != NULL)
+	{
+		existingKey = keyInFirst;
+	}
+	else if (keyInSecond != NULL)
+	{
+		existingKey = keyInSecond;
+	}
+	else
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+		return -1;
+	}
+	if (thisConflict)
+	{
+		increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
+	}
+	if (!keysAreEqual (checkedKey, existingKey))
+	{
+		// overlap  with single empty
+		// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
+		increaseStatisticalValue (informationKey, "overlap1empty");
+		if (checkedIsDominant) // TODO This also happens when there is no conflict
+		{
+			if (ksAppendKey (result, checkedKey) < 0)
+			{
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+				return -1;
+			}
+		}
+	}
+	else
+	{
+		// uses the NULL properties of keysAreEqual
+		if (keysAreEqual (checkedKey, keyInFirst) && baseIndicator == 2)
+		{
+			thisConflict = true;
+		}
+		if (keysAreEqual (checkedKey, keyInSecond) && baseIndicator == 1)
+		{
+			thisConflict = true;
+		}
+		if (thisConflict)
+		{
+			// base is empty and other and their have the same (non-empty) value
+			// this is a conflict
+			increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
+			if (checkedIsDominant)
+			{
+				if (ksAppendKey (result, checkedKey) < 0)
+				{
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+					return -1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+/**
+ * @brief Helper function for allExistHelper checking if two of the three keys are equal and acting accordingly (side effects!)
+ * @retval true if exactly two of the three keys have the same value
+ * @retval false otherwise
+ */
+static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
+				    int baseIndicator, Key * informationKey)
+{
+	/**
+	 * One example for the next 3 ifs
+	 *
+	 * Cell contents are the values of the keys (/#0, /#1, ...)
+	 * in the different key sets
+	 *     base     our      their
+	 * /#0 one      previous previous
+	 * /#1 two      one      one
+	 * /#2 three    two      two
+	 * /#3 four     three    three
+	 * /#4 five     four     four
+	 * /#5          five     five
+	 * In the area from top down to line /#4 (inclusive) each cell triggers
+	 * the nonOverlapAllExistCounter. However, we must not count one conflict
+	 * multiple times, thus divide by 3 as there are three key sets (=columns).
+	 */
+	if (keysAreEqual (keyInFirst, keyInSecond))
+	{
+		if (baseIndicator == 0)
+		{
+			/** This is a non-overlap conflict
+			 *  Base is currently checked and has value A, their and our have a different value B
+			 */
+			increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
+			if (checkedIsDominant)
+			{
+				// If base is also dominant then append it's key
+				if (ksAppendKey (result, checkedKey) < 0)
+				{
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+				}
+			}
+		}
+		return true;
+	}
+	else if (keysAreEqual (checkedKey, keyInFirst))
+	{
+		if (baseIndicator == 0)
+		{
+			if (ksAppendKey (result, keyInSecond) < 0)
+			{
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+			}
+		}
+		else
+		{
+			if (baseIndicator == 2)
+			{
+				/** This is a non-overlap conflict
+				 *  Base is currently secondCompare and has value A, their and our have a different
+				 *  value B
+				 */
+				increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
+				if (checkedIsDominant)
+				{
+					// If base is also dominant then append it's key
+					if (ksAppendKey (result, checkedKey) < 0)
+					{
+						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+					}
+				}
+			}
+		}
+		return true;
+	}
+	else if (keysAreEqual (checkedKey, keyInSecond))
+	{
+
+		if (baseIndicator == 0)
+		{
+			if (ksAppendKey (result, keyInFirst) < 0)
+			{
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+			}
+		}
+		else
+		{
+			if (baseIndicator == 1)
+			{
+				/** This is a non-overlap conflict
+				 *  Base is currently firstCompare and has value A, their and our have a different
+				 *  value B
+				 */
+				increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
+				if (checkedIsDominant)
+				{
+					// If base is also dominant then append it's key
+					if (ksAppendKey (result, checkedKey) < 0)
+					{
+						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+					}
+				}
+			}
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+/**
+ * @brief Helper function for checkSingleSet for when a key exists in all key sets.
+ * @retval -1 on error
+ * @retval 0 on success
+ */
+static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
+			   int baseIndicator, Key * informationKey)
+{
+	if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
+	{
+		/**
+		 * append any of the three keys
+		 * will be appended multiple times, but that doesn't matter for the result
+		 */
+		if (ksAppendKey (result, checkedKey) < 0)
+		{
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+			return -1;
+		}
+	}
+	else
+	{
+		if (!twoOfThoseKeysAreEqual (checkedKey, keyInFirst, keyInSecond, result, checkedIsDominant, baseIndicator, informationKey))
+		{
+			/**
+			 * Overlap conflict case
+			 *
+			 * The same overlap conflict gets detected three times, once for each of the three invocations of
+			 * checkSingleSet. However, only one of those three times is required. Thus use a getter function
+			 * that calculates a third.
+			 */
+			increaseStatisticalValue (informationKey, "overlap3different");
+			if (checkedIsDominant)
+			{
+				if (ksAppendKey (result, checkedKey) < 0)
+				{
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
+					return -1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 
 /**
  * and the element is not already in the result key set.
@@ -349,133 +579,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 		Key * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
 		if (keyInFirst != NULL && keyInSecond != NULL)
 		{
-			if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
-			{
-				/**
-				 * append any of the three keys
-				 * will be appended multiple times, but that doesn't matter for the result
-				 */
-				if (ksAppendKey (result, checkedKey) < 0)
-				{
-					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-				}
-			}
-			else
-			{
-				/**
-				 * One example for the next 3 ifs
-				 *
-				 * Cell contents are the values of the keys (/#0, /#1, ...)
-				 * in the different key sets
-				 *     base     our      their
-				 * /#0 one      previous previous
-				 * /#1 two      one      one
-				 * /#2 three    two      two
-				 * /#3 four     three    three
-				 * /#4 five     four     four
-				 * /#5          five     five
-				 * In the area from top down to line /#4 (inclusive) each cell triggers
-				 * the nonOverlapAllExistCounter. However, we must not count one conflict
-				 * multiple times, thus divide by 3 as there are three key sets (=columns).
-				 */
-				if (keysAreEqual (keyInFirst, keyInSecond))
-				{
-					if (baseIndicator == 0)
-					{
-						/** This is a non-overlap conflict
-						 *  Base is currently checked and has value A, their and our have a different value B
-						 */
-						increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
-						if (checkedIsDominant)
-						{
-							// If base is also dominant then append it's key
-							if (ksAppendKey (result, checkedKey) < 0)
-							{
-								ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-							}
-						}
-					}
-				}
-				else if (keysAreEqual (checkedKey, keyInFirst))
-				{
-					if (baseIndicator == 0)
-					{
-						if (ksAppendKey (result, keyInSecond) < 0)
-						{
-							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-						}
-					}
-					else
-					{
-						if (baseIndicator == 2)
-						{
-							/** This is a non-overlap conflict
-							 *  Base is currently secondCompare and has value A, their and our have a different
-							 *  value B
-							 */
-							increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
-							if (checkedIsDominant)
-							{
-								// If base is also dominant then append it's key
-								if (ksAppendKey (result, checkedKey) < 0)
-								{
-									ELEKTRA_SET_INTERNAL_ERROR (informationKey,
-												    "Could not append key.");
-								}
-							}
-						}
-					}
-				}
-				else if (keysAreEqual (checkedKey, keyInSecond))
-				{
-
-					if (baseIndicator == 0)
-					{
-						if (ksAppendKey (result, keyInFirst) < 0)
-						{
-							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-						}
-					}
-					else
-					{
-						if (baseIndicator == 1)
-						{
-							/** This is a non-overlap conflict
-							 *  Base is currently firstCompare and has value A, their and our have a different
-							 *  value B
-							 */
-							increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
-							if (checkedIsDominant)
-							{
-								// If base is also dominant then append it's key
-								if (ksAppendKey (result, checkedKey) < 0)
-								{
-									ELEKTRA_SET_INTERNAL_ERROR (informationKey,
-												    "Could not append key.");
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					/**
-					 * Overlap conflict case
-					 *
-					 * The same overlap conflict gets detected three times, once for each of the three invocations of
-					 * checkSingleSet. However, only one of those three times is required. Thus use a getter function
-					 * that calculates a third.
-					 */
-					increaseStatisticalValue (informationKey, "overlap3different");
-					if (checkedIsDominant)
-					{
-						if (ksAppendKey (result, checkedKey) < 0)
-						{
-							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-						}
-					}
-				}
-			}
+			allExistHelper (checkedKey, keyInFirst, keyInSecond, result, checkedIsDominant, baseIndicator, informationKey);
 		}
 		else if (keyInFirst == NULL && keyInSecond == NULL)
 		{
@@ -498,67 +602,8 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 		}
 		else
 		{
-			Key * existingKey;
-			bool thisConflict = false;
-			/** This if or the else if happen when our and their set have a key that
-			 *  base does not have. This is a conflict case.
-			 *  This place is hit twice, thus overlap1empty gets double the amount of errors.
-			 */
-			if (keyInFirst != NULL)
-			{
-				existingKey = keyInFirst;
-			}
-			else if (keyInSecond != NULL)
-			{
-				existingKey = keyInSecond;
-			}
-			else
-			{
-				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-				return 0; // only to surpress compiler warning
-			}
-			if (thisConflict)
-			{
-				increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
-			}
-			if (!keysAreEqual (checkedKey, existingKey))
-			{
-				// overlap  with single empty
-				// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
-				increaseStatisticalValue (informationKey, "overlap1empty");
-				if (checkedIsDominant) // TODO This also happens when there is no conflict
-				{
-					if (ksAppendKey (result, checkedKey) < 0)
-					{
-						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-					}
-				}
-			}
-			else
-			{
-				// uses the NULL properties of keysAreEqual
-				if (keysAreEqual (checkedKey, keyInFirst) && baseIndicator == 2)
-				{
-					thisConflict = true;
-				}
-				if (keysAreEqual (checkedKey, keyInSecond) && baseIndicator == 1)
-				{
-					thisConflict = true;
-				}
-				if (thisConflict)
-				{
-					// base is empty and other and their have the same (non-empty) value
-					// this is a conflict
-					increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
-					if (checkedIsDominant)
-					{
-						if (ksAppendKey (result, checkedKey) < 0)
-						{
-							ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
-						}
-					}
-				}
-			}
+			twoOfThreeExistHelper (checkedKey, keyInFirst, keyInSecond, result, checkedIsDominant, baseIndicator,
+					       informationKey);
 		}
 	}
 	return 0;
