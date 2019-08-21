@@ -9,7 +9,6 @@ RUN apt-get update \
         antlr4 \
         automake \
         autotools-dev \
-        bison \
         build-essential \
         cmake \
         curl \

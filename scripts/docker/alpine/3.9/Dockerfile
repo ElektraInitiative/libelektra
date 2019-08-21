@@ -2,7 +2,6 @@ FROM alpine:3.9
 
 RUN apk update \
     && apk add --no-cache \
-        bison \
         build-base \
         cmake \
         curl \

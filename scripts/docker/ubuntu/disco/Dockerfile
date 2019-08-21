@@ -2,7 +2,6 @@ FROM ubuntu:disco
 
 RUN apt-get update && apt-get -y install \
         antlr4 \
-        bison \
         build-essential \
         clang-8 \
         cmake \

@@ -76,7 +76,6 @@ RUN apt-get update \
         ed \
         dnsutils \
         virtualenv \
-        bison \
         uuid-dev \
         ninja-build \
     && rm -rf /var/lib/apt/lists/*

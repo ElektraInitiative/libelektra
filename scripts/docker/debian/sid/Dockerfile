@@ -8,7 +8,6 @@ RUN apt-get update && apt-get -y install \
         antlr4 \
         automake \
         autotools-dev \
-        bison \
         build-essential \
         checkinstall \
         clang-6.0 \
