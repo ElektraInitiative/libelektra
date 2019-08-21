@@ -2,10 +2,9 @@ use crate::{KeyError, ReadOnly, StringKey};
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
-pub trait ReadableKey {
+pub trait ReadableKey: AsRef<elektra_sys::Key> {
     type Value;
 
-    fn as_ref(&self) -> &elektra_sys::Key;
     fn value(&self) -> Self::Value;
 
     /// Construct a new key from a raw key pointer

@@ -57,6 +57,12 @@ macro_rules! add_traits {
             }
         }
 
+        impl AsRef<elektra_sys::Key> for $t {
+                fn as_ref(&self) -> &elektra_sys::Key {
+                    unsafe { self.ptr.as_ref() }
+                }
+        }
+
         impl Clone for $t {
             fn clone(&self) -> Self {
                 self.duplicate()
@@ -174,10 +180,6 @@ impl<'a> BinaryKey<'a> {
 impl<'a> ReadableKey for StringKey<'a> {
     type Value = String;
 
-    fn as_ref(&self) -> &elektra_sys::Key {
-        unsafe { self.ptr.as_ref() }
-    }
-
     fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
         StringKey {
             ptr: NonNull::new(ptr).unwrap(),
@@ -192,10 +194,6 @@ impl<'a> ReadableKey for StringKey<'a> {
 
 impl<'a> ReadableKey for BinaryKey<'a> {
     type Value = Vec<u8>;
-
-    fn as_ref(&self) -> &elektra_sys::Key {
-        unsafe { self.ptr.as_ref() }
-    }
 
     fn from_ptr(ptr: *mut elektra_sys::Key) -> BinaryKey<'a> {
         BinaryKey {
