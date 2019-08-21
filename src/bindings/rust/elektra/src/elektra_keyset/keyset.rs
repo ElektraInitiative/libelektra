@@ -289,11 +289,11 @@ mod tests {
         // without deleting the actual key
         {
             let head = ks.head().unwrap();
-            assert_eq!(head.get_value(), "true");
+            assert_eq!(head.value(), "true");
         }
         {
             let head = ks.head().unwrap();
-            assert_eq!(head.get_value(), "true");
+            assert_eq!(head.value(), "true");
         }
     }
 
@@ -321,7 +321,7 @@ mod tests {
         let mut did_iterate = false;
         for (i, mut key) in ks.iter().enumerate() {
             did_iterate = true;
-            assert_eq!(key.get_value(), values[i]);
+            assert_eq!(key.value(), values[i]);
             key.set_value(new_values[i]);
         }
         assert!(did_iterate);
@@ -330,8 +330,8 @@ mod tests {
         did_iterate = false;
         for (i, key) in ks.iter().enumerate() {
             did_iterate = true;
-            assert_eq!(key.get_value(), new_values[i]);
-            assert_eq!(key.get_name(), names[i]);
+            assert_eq!(key.value(), new_values[i]);
+            assert_eq!(key.name(), names[i]);
         }
         assert!(did_iterate);
         // Check that the iterator did not consume the keyset
@@ -361,9 +361,9 @@ mod tests {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
         let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
-        assert_eq!(ret_val.unwrap().get_name(), "user/test/key");
+        assert_eq!(ret_val.unwrap().name(), "user/test/key");
         assert_eq!(ks.get_size(), 2);
-        assert_eq!(ks.tail().unwrap().get_name(), "user/test/key");
+        assert_eq!(ks.tail().unwrap().name(), "user/test/key");
     }
 
     #[test]
@@ -371,9 +371,9 @@ mod tests {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
         let key = ks.lookup(lookup_key, LookupOption::KDB_O_DEL);
-        assert_eq!(key.unwrap().get_name(), "user/test/key");
+        assert_eq!(key.unwrap().name(), "user/test/key");
         assert_eq!(ks.get_size(), 2);
-        assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
+        assert_eq!(ks.head().unwrap().name(), "system/test/key");
     }
 
     #[test]
@@ -389,9 +389,9 @@ mod tests {
                 .unwrap()
                 .duplicate();
             assert_eq!(ks.get_size(), 2);
-            assert_eq!(ks.head().unwrap().get_name(), "system/test/key");
+            assert_eq!(ks.head().unwrap().name(), "system/test/key");
         }
-        assert_eq!(key.get_name(), "user/test/key");
+        assert_eq!(key.name(), "user/test/key");
         Ok(())
     }
 

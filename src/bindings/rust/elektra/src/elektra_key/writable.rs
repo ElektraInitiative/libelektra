@@ -1,4 +1,4 @@
-use crate::{KeyError, ReadOnly, ReadableKey, StringKey};
+use crate::{KeyError, ReadableKey};
 use std::ffi::CString;
 
 pub trait WriteableKey: ReadableKey {
@@ -45,11 +45,6 @@ pub trait WriteableKey: ReadableKey {
         unsafe { elektra_sys::keyIncRef(self.as_ptr()) }
     }
 
-    /// Return how many references the key has.
-    fn get_ref(&self) -> isize {
-        unsafe { elektra_sys::keyGetRef(self.as_ref()) }
-    }
-
     /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.
     /// Returns the size in bytes of this new key name including the ending NUL.
     /// # Examples
@@ -57,7 +52,7 @@ pub trait WriteableKey: ReadableKey {
     /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new_empty();
     /// key.set_name("user/test/rust").unwrap();
-    /// assert_eq!(key.get_name(), "user/test/rust");
+    /// assert_eq!(key.name(), "user/test/rust");
     /// ```
     /// # Panics
     /// Panics if the provided string contains internal nul bytes.
@@ -78,7 +73,7 @@ pub trait WriteableKey: ReadableKey {
     /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new("user/test/key").unwrap();
     /// key.set_basename("rust").unwrap();
-    /// assert_eq!(key.get_name(), "user/test/rust");
+    /// assert_eq!(key.name(), "user/test/rust");
     /// ```
     fn set_basename(&mut self, basename: &str) -> Result<(), KeyError> {
         let cstr = CString::new(basename).unwrap();
@@ -97,7 +92,7 @@ pub trait WriteableKey: ReadableKey {
     /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new("user/test/key").unwrap();
     /// key.add_basename("rust").unwrap();
-    /// assert_eq!(key.get_name(), "user/test/key/rust");
+    /// assert_eq!(key.name(), "user/test/key/rust");
     /// ```
     fn add_basename(&mut self, basename: &str) -> Result<(), KeyError> {
         let cstr = CString::new(basename).unwrap();
@@ -116,7 +111,7 @@ pub trait WriteableKey: ReadableKey {
     /// use elektra::{StringKey,WriteableKey,ReadableKey};
     /// let mut key = StringKey::new("user/x/r").unwrap();
     /// key.add_name("../y/a//././z").unwrap();
-    /// assert_eq!(key.get_name(), "user/x/y/a/z");
+    /// assert_eq!(key.name(), "user/x/y/a/z");
     /// ```
     fn add_name(&mut self, name: &str) -> Result<(), KeyError> {
         let cstr = CString::new(name).unwrap();
@@ -153,7 +148,7 @@ pub trait WriteableKey: ReadableKey {
     /// key.set_meta("meta", "value");
     /// let mut key2 = StringKey::new_empty();
     /// key2.copy_meta(&key, "meta");
-    /// assert_eq!(key2.get_meta("meta").unwrap().get_value(), "value");
+    /// assert_eq!(key2.meta("meta").unwrap().value(), "value");
     /// ```
     fn copy_meta(&mut self, source: &Self, metaname: &str) -> i32
     where
@@ -180,11 +175,5 @@ pub trait WriteableKey: ReadableKey {
         unsafe {
             elektra_sys::keyRewindMeta(self.as_ptr());
         }
-    }
-
-    /// Returns the value of a meta-information which is current.
-    fn current_meta(&self) -> ReadOnly<StringKey> {
-        let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
-        ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key)
     }
 }

@@ -144,7 +144,7 @@ impl<'a> BinaryKey<'a> {
     /// Returns the keys binary content
     /// Returns a TypeMismatch if the key is of type string
     fn get_binary(&self) -> Vec<u8> {
-        let mut vec: Vec<u8> = Vec::with_capacity(self.get_value_size());
+        let mut vec: Vec<u8> = Vec::with_capacity(self.value_size());
 
         let ret_val = unsafe {
             elektra_sys::keyGetBinary(
@@ -185,7 +185,7 @@ impl<'a> ReadableKey for StringKey<'a> {
         }
     }
 
-    fn get_value(&self) -> Self::Value {
+    fn value(&self) -> Self::Value {
         self.get_string().to_owned()
     }
 }
@@ -204,7 +204,7 @@ impl<'a> ReadableKey for BinaryKey<'a> {
         }
     }
 
-    fn get_value(&self) -> Self::Value {
+    fn value(&self) -> Self::Value {
         self.get_binary()
     }
 }
@@ -252,7 +252,7 @@ mod tests {
     fn can_write_read_key() {
         let key_name = "user/test/key";
         let key = StringKey::new(key_name).unwrap();
-        assert_eq!(key.get_name(), key_name);
+        assert_eq!(key.name(), key_name);
     }
 
     #[test]
@@ -261,7 +261,7 @@ mod tests {
         let utf8_value = "😃";
         let mut key: StringKey = StringKey::new(key_name).unwrap();
         key.set_string(utf8_value);
-        assert_eq!(key.get_name(), key_name);
+        assert_eq!(key.name(), key_name);
         assert_eq!(key.get_string(), utf8_value);
     }
 
@@ -274,7 +274,7 @@ mod tests {
             key_dup = Some(key.duplicate());
             // key is dropped here
         }
-        assert_eq!(key_dup.unwrap().get_name(), key_name);
+        assert_eq!(key_dup.unwrap().name(), key_name);
     }
 
     #[test]
@@ -374,14 +374,14 @@ mod tests {
     #[test]
     fn error_on_missing_metaname() {
         let key = StringKey::new("user/test/metatest").unwrap();
-        assert!(key.get_meta("nonexistent metaname").is_err());
+        assert!(key.meta("nonexistent metaname").is_err());
     }
     #[test]
     fn can_set_get_metavalue() {
         let mut key = StringKey::new_empty();
         key.set_meta("metakey", "metaval");
-        let meta_key = key.get_meta("metakey").unwrap();
-        assert_eq!(meta_key.get_value(), "metaval");
+        let meta_key = key.meta("metakey").unwrap();
+        assert_eq!(meta_key.value(), "metaval");
     }
 
     #[test]
@@ -395,8 +395,8 @@ mod tests {
         let mut did_iterate = false;
         for (i, metakey) in key.enumerate() {
             did_iterate = true;
-            assert_eq!(metakey.get_name(), meta[i].0);
-            assert_eq!(metakey.get_value(), meta[i].1);
+            assert_eq!(metakey.name(), meta[i].0);
+            assert_eq!(metakey.value(), meta[i].1);
         }
         assert!(did_iterate);
     }
@@ -406,7 +406,7 @@ mod tests {
         let mut key = StringKey::new_empty();
         key.set_meta("metakey", "metaval");
         assert_eq!(key.delete_meta("metakey"), 0);
-        assert_eq!(key.get_meta("metakey").unwrap_err(), KeyError::NotFound);
+        assert_eq!(key.meta("metakey").unwrap_err(), KeyError::NotFound);
     }
 
     #[test]
@@ -415,6 +415,6 @@ mod tests {
         let mut bin_key = BinaryKey::from(key);
         let val = b"data".to_vec();
         bin_key.set_value(val.clone());
-        assert_eq!(bin_key.get_value(), val);
+        assert_eq!(bin_key.value(), val);
     }
 }

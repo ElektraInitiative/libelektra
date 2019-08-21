@@ -59,54 +59,54 @@ impl<'a> KDBErrorWrapper<'a> {
     /// Returns the error number.
     pub fn number(&self) -> String {
         self.error_key
-            .get_meta("error/number")
+            .meta("error/number")
             .unwrap()
-            .get_value()
+            .value()
             .to_owned()
     }
 
     /// Returns the error reason.
     pub fn reason(&self) -> String {
         self.error_key
-            .get_meta("error/reason")
+            .meta("error/reason")
             .unwrap()
-            .get_value()
+            .value()
             .to_owned()
     }
 
     /// Returns the module where the error occured.
     pub fn module(&self) -> String {
         self.error_key
-            .get_meta("error/module")
+            .meta("error/module")
             .unwrap()
-            .get_value()
+            .value()
             .to_owned()
     }
 
     /// Returns a description of the error.
     pub fn description(&self) -> String {
         self.error_key
-            .get_meta("error/description")
+            .meta("error/description")
             .unwrap()
-            .get_value()
+            .value()
             .to_owned()
     }
 
     /// Returns the source file from where the error information comes.
     pub fn file(&self) -> String {
         self.error_key
-            .get_meta("error/file")
+            .meta("error/file")
             .unwrap()
-            .get_value()
+            .value()
             .to_owned()
     }
 
     /// Returns the the exact line of that source file.
     pub fn line(&self) -> String {
         self.error_key
-            .get_meta("error/line")
+            .meta("error/line")
             .unwrap()
-            .get_value()
+            .value()
             .to_owned()
     }
     // TODO: key is not the error_key, but the key that the keysets internal cursor points to, but this is not accessible here
@@ -115,8 +115,8 @@ impl<'a> KDBErrorWrapper<'a> {
             module = self.module(),
             error_number = self.number(),
             description = self.description(),
-            key = self.error_key.get_name(),
-            string = self.error_key.get_value())
+            key = self.error_key.name(),
+            string = self.error_key.value())
     }
 }
 
@@ -129,11 +129,11 @@ impl<'a> std::fmt::Display for KDBErrorWrapper<'a> {
 impl<'a> std::error::Error for KDBErrorWrapper<'a> {}
 
 pub fn map_kdb_error(error_key: StringKey) -> KDBError {
-    let err_num_key_res = error_key.get_meta("error/number");
+    let err_num_key_res = error_key.meta("error/number");
     if let Ok(err_num_key) = err_num_key_res {
         let err_wrapper = KDBErrorWrapper::new(error_key.duplicate());
 
-        match err_num_key.get_value().as_str() {
+        match err_num_key.value().as_str() {
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
                 return Permanent(Resource(OutOfMemory(err_wrapper)));
             }
