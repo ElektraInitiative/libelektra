@@ -3,8 +3,10 @@ use std::ffi::CString;
 use std::convert::TryInto;
 
 pub trait WriteableKey: ReadableKey {
+    type SetValue;
+
     fn as_ptr(&mut self) -> *mut elektra_sys::Key;
-    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T)
+    fn set_value(&mut self, value: Self::SetValue)
     where
         Self: Sized;
 

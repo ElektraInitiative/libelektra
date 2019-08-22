@@ -4,9 +4,9 @@ use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
 pub trait ReadableKey: AsRef<elektra_sys::Key> {
-    type Value;
+    type GetValue;
 
-    fn value(&self) -> Self::Value;
+    fn value(&self) -> Self::GetValue;
 
     /// Construct a new key from a raw key pointer
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
@@ -124,7 +124,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn Error>> {
     /// let mut key = BinaryKey::new("user/sw/app")?;
-    /// let binary_content = b"12345".to_vec();
+    /// let binary_content = b"12345";
     /// key.set_value(binary_content);
     /// assert_eq!(key.value_size(), 5);
     /// #
@@ -150,9 +150,9 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     /// # use std::error::Error;
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let binary_content = [0];
     /// let mut key = BinaryKey::new("user/sw/app")?;
-    /// let binary_content = b"0".to_vec();
-    /// key.set_value(binary_content);
+    /// key.set_value(&binary_content);
     /// assert!(key.is_binary());
     /// #
     /// #     Ok(())
