@@ -1,7 +1,7 @@
 extern crate elektra_sys;
 
 use crate::{
-    KeyError, KeySetError, ReadOnlyStringKeyIter, ReadableKey, StringKey, StringKeyIter,
+    KeyError, ReadOnlyStringKeyIter, ReadableKey, StringKey, StringKeyIter,
     WriteableKey,
 };
 use bitflags::bitflags;
@@ -251,6 +251,25 @@ impl KeySet {
         }
     }
 }
+
+use std::error::Error;
+use std::fmt;
+
+#[derive(Debug, PartialEq)]
+pub enum KeySetError {
+    InsertionFailure,
+}
+
+impl fmt::Display for KeySetError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            KeySetError::InsertionFailure => write!(f, "Key could not be inserted."),
+            // _ => unimplemented!(),
+        }
+    }
+}
+
+impl Error for KeySetError {}
 
 #[cfg(test)]
 mod tests {
