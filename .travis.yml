@@ -178,7 +178,6 @@ matrix:
             - lua
             - ninja
             - openssl
-            - pegtl
             - qt
             - swig
             - yajl
@@ -245,7 +244,6 @@ before_install:
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install cmake-format[yaml]==0.5.4
-      git clone --branch 2.7.1 --depth 1 https://github.com/taocpp/PEGTL.git && sudo cp -R PEGTL/include/tao /usr/local/include
       mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
         curl -L "https://github.com/mvdan/sh/releases/download/v2.6.3/shfmt_v2.6.3_linux_amd64" -o shfmt && \
         chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
