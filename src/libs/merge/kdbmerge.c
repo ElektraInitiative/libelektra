@@ -5,6 +5,7 @@
 #include "kdblogger.h"
 #include "kdbprivate.h"
 #include <ctype.h>
+#include <git2.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
