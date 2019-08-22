@@ -58,9 +58,12 @@ pub trait WriteableKey: ReadableKey {
     /// key.set_name("user/test/rust").unwrap();
     /// assert_eq!(key.name(), "user/test/rust");
     /// ```
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn set_name(&mut self, name: &str) -> Result<u32, KeyError> {
-        let cptr = unsafe { CString::from_vec_unchecked(name.as_bytes().to_vec()) };
-        let ret_val = unsafe { elektra_sys::keySetName(self.as_ptr(), cptr.as_ptr()) };
+        let cstr = CString::new(name).unwrap();
+        let ret_val = unsafe { elektra_sys::keySetName(self.as_ptr(), cstr.as_ptr()) };
 
         if ret_val > 0 {
             Ok(ret_val as u32)
@@ -85,8 +88,11 @@ pub trait WriteableKey: ReadableKey {
     /// #     Ok(())
     /// # }
     /// ```
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn set_basename(&mut self, basename: &str) -> Result<(), KeyError> {
-        let cstr = unsafe { CString::from_vec_unchecked(basename.as_bytes().to_vec()) };
+        let cstr = CString::new(basename).unwrap();
         let ret_val = unsafe { elektra_sys::keySetBaseName(self.as_ptr(), cstr.as_ptr()) };
         if ret_val == -1 {
             Err(KeyError::NameReadOnly)
@@ -111,8 +117,11 @@ pub trait WriteableKey: ReadableKey {
     /// #     Ok(())
     /// # }
     /// ```
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn add_basename(&mut self, basename: &str) -> Result<(), KeyError> {
-        let cstr = unsafe { CString::from_vec_unchecked(basename.as_bytes().to_vec()) };
+        let cstr = CString::new(basename).unwrap();
         let ret_val = unsafe { elektra_sys::keyAddBaseName(self.as_ptr(), cstr.as_ptr()) };
         if ret_val == -1 {
             Err(KeyError::NameReadOnly)
@@ -134,8 +143,11 @@ pub trait WriteableKey: ReadableKey {
     /// #     Ok(())
     /// # }
     /// ```
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn add_name(&mut self, name: &str) -> Result<(), KeyError> {
-        let cstr = unsafe { CString::from_vec_unchecked(name.as_bytes().to_vec()) };
+        let cstr = CString::new(name).unwrap();
         let ret_val = unsafe { elektra_sys::keyAddName(self.as_ptr(), cstr.as_ptr()) };
         if ret_val <= 0 {
             Err(KeyError::InvalidName)
@@ -179,20 +191,26 @@ pub trait WriteableKey: ReadableKey {
     /// key2.copy_meta(&key, "meta");
     /// assert_eq!(key2.meta("meta").unwrap().value(), "value");
     /// ```
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn copy_meta(&mut self, source: &Self, metaname: &str) -> i32
     where
         Self: Sized,
     {
-        let cstr = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
+        let cstr = CString::new(metaname).unwrap();
         unsafe { elektra_sys::keyCopyMeta(self.as_ptr(), source.as_ref(), cstr.as_ptr()) }
     }
 
     /// Set a new meta-information.
     /// Returns the size of the new meta information on success,
     /// or a `KeyError::InvalidName` if the name is invalid or out of memory.
+    /// 
+    /// # Panics
+    /// Panics if any of the provided strings contains interior nul bytes.
     fn set_meta(&mut self, metaname: &str, metavalue: &str) -> Result<usize, KeyError> {
-        let name = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
-        let value = unsafe { CString::from_vec_unchecked(metavalue.as_bytes().to_vec()) };
+        let name = CString::new(metaname).unwrap();
+        let value = CString::new(metavalue).unwrap();
         let ret_val = unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) };
         if ret_val < 0 {
             Err(KeyError::InvalidName)
@@ -204,8 +222,11 @@ pub trait WriteableKey: ReadableKey {
     /// Delete the metadata at metaname
     /// Returns the size of the new meta information on success,
     /// or a `KeyError::InvalidName` if the name is invalid or out of memory.
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn delete_meta(&mut self, metaname: &str) -> Result<usize, KeyError> {
-        let name = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
+        let name = CString::new(metaname).unwrap();
         let ret_val = unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), std::ptr::null()) };
         if ret_val < 0 {
             Err(KeyError::InvalidName)

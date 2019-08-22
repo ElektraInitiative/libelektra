@@ -28,7 +28,7 @@ impl KDB {
             Err(error::map_kdb_error(error_key))
         } else {
             Ok(KDB {
-                ptr: unsafe { NonNull::new_unchecked(kdb_ptr) },
+                ptr: NonNull::new(kdb_ptr).unwrap(),
                 phantom: std::marker::PhantomData,
             })
         }

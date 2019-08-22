@@ -64,9 +64,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Get key full name, including the user domain name.
-    /// # Panics
-    /// Panics if the underlying c_string contains interior nul bytes
-    /// or cannot be converted to UTF-8
     fn fullname(&self) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(self.fullname_size());
         debug_assert_eq!(vec.capacity(), self.fullname_size());
@@ -246,12 +243,14 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     ///
     /// # Errors
     /// Returns `KeyError::NotFound` if no metakey with the given name was found.
+    /// 
+    /// # Panics
+    /// Panics if the provided string contains interior nul bytes.
     fn meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>
     where
         Self: Sized,
     {
-        // Rust strings never contain internal NUL bytes, so this is safe.
-        let cstr = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
+        let cstr = CString::new(metaname).unwrap();
         let key_ptr = unsafe { elektra_sys::keyGetMeta(self.as_ref(), cstr.as_ptr()) };
         if key_ptr.is_null() {
             Err(KeyError::NotFound)

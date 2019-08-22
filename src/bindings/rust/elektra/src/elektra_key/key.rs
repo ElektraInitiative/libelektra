@@ -115,11 +115,12 @@ impl<'a> Drop for StringKey<'a> {
 
 impl<'a> StringKey<'a> {
     /// Sets the value of the key to the supplied string.
+    /// 
     /// # Panics
-    /// Panics if the provided string contains internal nul bytes.
+    /// Panics if the provided string contains interior nul bytes.
     fn set_string(&mut self, value: &str) {
-        let cptr = CString::new(value).unwrap();
-        unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
+        let cstr = CString::new(value).unwrap();
+        unsafe { elektra_sys::keySetString(self.as_ptr(), cstr.as_ptr()) };
     }
 
     /// Returns the string value of the key or a Utf8Error if it cannot be converted.
@@ -414,4 +415,15 @@ mod tests {
         bin_key.set_value(val);
         assert_eq!(bin_key.value(), val);
     }
+
+    #[test]
+    fn can_get_fullname() {
+        let name = "user/test/fulltest";
+        let key: StringKey = KeyBuilder::new(name)
+            .meta("metaname", "metavalue")
+            .meta("owner", "me")
+            .build();
+        assert_eq!(key.fullname(), "user:me/test/fulltest");
+    }
+
 }
