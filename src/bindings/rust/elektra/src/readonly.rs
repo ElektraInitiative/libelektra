@@ -1,8 +1,15 @@
 use crate::ReadableKey;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ReadOnly<T: ReadableKey> {
     key: T,
+}
+
+impl<T: ReadableKey> ReadOnly<T> {
+    /// Returns the inner key
+    pub fn key(&self) -> &T {
+        &self.key
+    }
 }
 
 impl<T: ReadableKey> ReadableKey for ReadOnly<T> {

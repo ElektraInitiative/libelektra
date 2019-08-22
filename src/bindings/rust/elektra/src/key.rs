@@ -60,14 +60,8 @@ macro_rules! add_traits {
         }
 
         impl AsRef<elektra_sys::Key> for $t {
-                fn as_ref(&self) -> &elektra_sys::Key {
-                    unsafe { self.ptr.as_ref() }
-                }
-        }
-
-        impl Clone for $t {
-            fn clone(&self) -> Self {
-                self.duplicate()
+            fn as_ref(&self) -> &elektra_sys::Key {
+                unsafe { self.ptr.as_ref() }
             }
         }
     )*)
