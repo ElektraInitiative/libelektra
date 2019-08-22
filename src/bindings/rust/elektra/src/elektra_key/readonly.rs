@@ -6,7 +6,7 @@ pub struct ReadOnly<T: ReadableKey> {
 }
 
 impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
-    type Value = T::Value;
+    type GetValue = T::GetValue;
     // type Duplicate = T::Duplicate;
 
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
@@ -15,7 +15,7 @@ impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
         }
     }
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::GetValue {
         self.key.value()
     }
 

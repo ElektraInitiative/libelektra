@@ -13,7 +13,7 @@ impl<T: WriteableKey> KeyBuilder<T> {
         KeyBuilder { key }
     }
 
-    pub fn value<V: Into<Vec<u8>>>(mut self, key_value: V) -> Self {
+    pub fn value(mut self, key_value: T::SetValue) -> Self {
         self.key.set_value(key_value);
         self
     }
@@ -47,8 +47,8 @@ mod test {
         let name = "user/test/binarykey";
         let val = "😎";
         let key: BinaryKey = KeyBuilder::new(name)
-            .value("overwrite me!")
-            .value(val)
+            .value("overwrite me!".as_bytes())
+            .value(val.as_bytes())
             .build();
         assert_eq!(key.name(), name);
         assert_eq!(key.value(), val.to_owned().into_bytes());

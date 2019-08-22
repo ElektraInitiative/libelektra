@@ -1,9 +1,9 @@
 use crate::{ReadOnly, ReadableKey, WriteableKey};
 use elektra_sys;
+use std::borrow::Cow;
+use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 use std::ptr::NonNull;
-use std::convert::TryInto;
-use std::borrow::Cow;
 
 #[derive(Debug)]
 pub struct StringKey<'a> {
@@ -117,9 +117,8 @@ impl<'a> StringKey<'a> {
     /// Sets the value of the key to the supplied string.
     /// # Panics
     /// Panics if the provided string contains internal nul bytes.
-    fn set_string<T: Into<Vec<u8>>>(&mut self, value: T) {
+    fn set_string(&mut self, value: &str) {
         let cptr = CString::new(value).unwrap();
-        // TODO: unsafe { CString::from_vec_unchecked(value.as_bytes().to_vec()) };
         unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
     }
 
@@ -129,8 +128,7 @@ impl<'a> StringKey<'a> {
         c_str.to_string_lossy()
     }
 
-pub fn duplicate<'b>(&'a self) -> StringKey<'b>
-    {
+    pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
         StringKey::from_ptr(dup_ptr)
     }
@@ -163,22 +161,19 @@ impl<'a> BinaryKey<'a> {
 
         if ret_val > 0 {
             unsafe { vec.set_len(ret_val.try_into().unwrap()) };
-            vec
-        } else {
-            unsafe { vec.set_len(0) }
-            vec
         }
+
+        vec
     }
-    
-    pub fn duplicate<'b>(&'a self) -> BinaryKey<'b>
-    {
+
+    pub fn duplicate<'b>(&'a self) -> BinaryKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
         BinaryKey::from_ptr(dup_ptr)
     }
 }
 
 impl<'a> ReadableKey for StringKey<'a> {
-    type Value = Cow<'a, str>;
+    type GetValue = Cow<'a, str>;
 
     fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
         StringKey {
@@ -187,13 +182,13 @@ impl<'a> ReadableKey for StringKey<'a> {
         }
     }
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::GetValue {
         self.string()
     }
 }
 
 impl<'a> ReadableKey for BinaryKey<'a> {
-    type Value = Vec<u8>;
+    type GetValue = Vec<u8>;
 
     fn from_ptr(ptr: *mut elektra_sys::Key) -> BinaryKey<'a> {
         BinaryKey {
@@ -202,26 +197,30 @@ impl<'a> ReadableKey for BinaryKey<'a> {
         }
     }
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::GetValue {
         self.get_binary()
     }
 }
 
 impl<'a> WriteableKey for BinaryKey<'a> {
+    type SetValue = &'a [u8];
+
     fn as_ptr(&mut self) -> *mut elektra_sys::Key {
         self.ptr.as_ptr()
     }
 
-    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T) {
-        self.set_binary(&t.into());
+    fn set_value(&mut self, value: Self::SetValue) {
+        self.set_binary(value);
     }
 }
 impl<'a> WriteableKey for StringKey<'a> {
+    type SetValue = &'a str;
+
     fn as_ptr(&mut self) -> *mut elektra_sys::Key {
         self.ptr.as_ptr()
     }
-    fn set_value<T: Into<Vec<u8>>>(&mut self, t: T) {
-        self.set_string(t);
+    fn set_value(&mut self, value: Self::SetValue) {
+        self.set_string(value);
     }
 }
 
@@ -411,8 +410,8 @@ mod tests {
     fn can_cast_key_types() {
         let key = StringKey::new("user/test/cast").unwrap();
         let mut bin_key = BinaryKey::from(key);
-        let val = b"data".to_vec();
-        bin_key.set_value(val.clone());
+        let val = b"data";
+        bin_key.set_value(val);
         assert_eq!(bin_key.value(), val);
     }
 }
