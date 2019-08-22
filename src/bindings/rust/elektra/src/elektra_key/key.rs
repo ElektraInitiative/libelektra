@@ -352,11 +352,12 @@ mod tests {
     }
 
     #[test]
-    fn keys_are_ordered_with_metadata() {
-        let k1: StringKey = KeyBuilder::new("user/a").meta("owner", "abc").build();
-        let k2: StringKey = KeyBuilder::new("user/a").meta("owner", "abz").build();
+    fn keys_are_ordered_with_metadata()  -> Result<(), KeyError> {
+        let k1: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abc")?.build();
+        let k2: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abz")?.build();
         assert!(k1 < k2);
         assert!(k2 > k1);
+        Ok(())
     }
 
     #[test]
@@ -417,13 +418,14 @@ mod tests {
     }
 
     #[test]
-    fn can_get_fullname() {
+    fn can_get_fullname() -> Result<(), KeyError>  {
         let name = "user/test/fulltest";
-        let key: StringKey = KeyBuilder::new(name)
-            .meta("metaname", "metavalue")
-            .meta("owner", "me")
+        let key: StringKey = KeyBuilder::new(name)?
+            .meta("metaname", "metavalue")?
+            .meta("owner", "me")?
             .build();
         assert_eq!(key.fullname(), "user:me/test/fulltest");
+        Ok(())
     }
 
 }

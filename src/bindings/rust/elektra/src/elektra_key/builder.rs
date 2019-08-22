@@ -1,4 +1,4 @@
-use crate::WriteableKey;
+use crate::{KeyError, WriteableKey};
 
 pub struct KeyBuilder<T: WriteableKey> {
     key: T,
@@ -8,9 +8,9 @@ pub struct KeyBuilder<T: WriteableKey> {
 // KeyBuilder::new().name("user/test").build();
 // TODO: Handle Result from new() and set_meta().
 impl<T: WriteableKey> KeyBuilder<T> {
-    pub fn new(name: &str) -> KeyBuilder<T> {
-        let key = T::new(name).unwrap();
-        KeyBuilder { key }
+    pub fn new(name: &str) -> Result<Self, KeyError> {
+        let key = T::new(name)?;
+        Ok(KeyBuilder { key })
     }
 
     pub fn value(mut self, key_value: T::SetValue) -> Self {
@@ -18,9 +18,9 @@ impl<T: WriteableKey> KeyBuilder<T> {
         self
     }
 
-    pub fn meta(mut self, metaname: &str, metavalue: &str) -> Self {
-        self.key.set_meta(metaname, metavalue);
-        self
+    pub fn meta(mut self, metaname: &str, metavalue: &str) -> Result<Self, KeyError> {
+        self.key.set_meta(metaname, metavalue)?;
+        Ok(self)
     }
 
     pub fn build(self) -> T {
@@ -34,35 +34,38 @@ mod test {
     use crate::{BinaryKey, ReadableKey, StringKey};
 
     #[test]
-    fn can_build_string_key() {
+    fn can_build_string_key() -> Result<(), KeyError> {
         let name = "user/test/newkey";
         let val = "key_value";
-        let key: StringKey = KeyBuilder::new(name).value(val).build();
+        let key: StringKey = KeyBuilder::new(name)?.value(val).build();
         assert_eq!(key.name(), name);
         assert_eq!(key.value(), val);
+        Ok(())
     }
 
     #[test]
-    fn can_build_binary_key() {
+    fn can_build_binary_key() -> Result<(), KeyError> {
         let name = "user/test/binarykey";
         let val = "😎";
-        let key: BinaryKey = KeyBuilder::new(name)
+        let key: BinaryKey = KeyBuilder::new(name)?
             .value("overwrite me!".as_bytes())
             .value(val.as_bytes())
             .build();
         assert_eq!(key.name(), name);
         assert_eq!(key.value(), val.to_owned().into_bytes());
+        Ok(())
     }
 
     #[test]
-    fn can_build_key_with_meta() {
+    fn can_build_key_with_meta() -> Result<(), KeyError> {
         let name = "user/test/metatest";
-        let key: StringKey = KeyBuilder::new(name)
-            .meta("metaname", "metavalue")
-            .meta("OWNER", "me")
+        let key: StringKey = KeyBuilder::new(name)?
+            .meta("metaname", "metavalue")?
+            .meta("OWNER", "me")?
             .build();
         assert_eq!(key.meta("OWNER").unwrap().value(), "me");
         assert_eq!(key.meta("metaname").unwrap().value(), "metavalue");
+        Ok(())
     }
 
 }
