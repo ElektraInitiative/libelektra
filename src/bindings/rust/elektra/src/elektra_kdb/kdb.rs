@@ -100,8 +100,10 @@ impl KDB {
     pub fn as_ptr(&mut self) -> *mut elektra_sys::KDB {
         self.ptr.as_ptr()
     }
+}
 
-    pub fn as_ref(&self) -> &elektra_sys::KDB {
+impl AsRef<elektra_sys::KDB> for KDB {
+    fn as_ref(&self) -> &elektra_sys::KDB {
         unsafe { self.ptr.as_ref() }
     }
 }

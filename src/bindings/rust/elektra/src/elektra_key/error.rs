@@ -1,11 +1,11 @@
 use std::error::Error;
 use std::fmt;
-
+// TODO: Separate into structs
 #[derive(Debug, PartialEq)]
 pub enum KeyError {
     InvalidName,
     TypeMismatch,
-    ReadOnly, // TypeConversion,
+    ReadOnly,
     NotFound,
 }
 

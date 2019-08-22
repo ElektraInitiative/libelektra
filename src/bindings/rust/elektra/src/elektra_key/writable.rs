@@ -54,10 +54,8 @@ pub trait WriteableKey: ReadableKey {
     /// key.set_name("user/test/rust").unwrap();
     /// assert_eq!(key.name(), "user/test/rust");
     /// ```
-    /// # Panics
-    /// Panics if the provided string contains internal nul bytes.
     fn set_name(&mut self, name: &str) -> Result<u32, KeyError> {
-        let cptr = CString::new(name).unwrap();
+        let cptr = unsafe { CString::from_vec_unchecked(name.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keySetName(self.as_ptr(), cptr.as_ptr()) };
 
         if ret_val > 0 {
@@ -76,7 +74,7 @@ pub trait WriteableKey: ReadableKey {
     /// assert_eq!(key.name(), "user/test/rust");
     /// ```
     fn set_basename(&mut self, basename: &str) -> Result<(), KeyError> {
-        let cstr = CString::new(basename).unwrap();
+        let cstr = unsafe { CString::from_vec_unchecked(basename.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keySetBaseName(self.as_ptr(), cstr.as_ptr()) };
         // TODO: Is read only a correct description of the error?
         if ret_val == -1 {
@@ -95,7 +93,7 @@ pub trait WriteableKey: ReadableKey {
     /// assert_eq!(key.name(), "user/test/key/rust");
     /// ```
     fn add_basename(&mut self, basename: &str) -> Result<(), KeyError> {
-        let cstr = CString::new(basename).unwrap();
+        let cstr = unsafe { CString::from_vec_unchecked(basename.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keyAddBaseName(self.as_ptr(), cstr.as_ptr()) };
         // TODO: Is read only a correct description of the error?
         if ret_val == -1 {
@@ -114,7 +112,7 @@ pub trait WriteableKey: ReadableKey {
     /// assert_eq!(key.name(), "user/x/y/a/z");
     /// ```
     fn add_name(&mut self, name: &str) -> Result<(), KeyError> {
-        let cstr = CString::new(name).unwrap();
+        let cstr = unsafe { CString::from_vec_unchecked(name.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keyAddName(self.as_ptr(), cstr.as_ptr()) };
         // TODO: Is read only a correct description of the error?
         if ret_val <= 0 {
@@ -124,10 +122,8 @@ pub trait WriteableKey: ReadableKey {
         }
     }
     /// Sets the value of the key to the supplied string.
-    /// # Panics
-    /// Panics if the provided string contains internal nul bytes.
     fn set_string(&mut self, value: &str) {
-        let cptr = CString::new(value).unwrap();
+        let cptr = unsafe { CString::from_vec_unchecked(value.as_bytes().to_vec()) };
         unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
     }
     /// Copies all metadata from source to the self
@@ -154,19 +150,19 @@ pub trait WriteableKey: ReadableKey {
     where
         Self: Sized,
     {
-        let cstr = CString::new(metaname).unwrap();
+        let cstr = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
         unsafe { elektra_sys::keyCopyMeta(self.as_ptr(), source.as_ref(), cstr.as_ptr()) }
     }
     /// Set a new meta-information.
     fn set_meta(&mut self, metaname: &str, metavalue: &str) -> isize {
-        let name = CString::new(metaname).unwrap();
-        let value = CString::new(metavalue).unwrap();
+        let name = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
+        let value = unsafe { CString::from_vec_unchecked(metavalue.as_bytes().to_vec()) };
         unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) }
     }
 
     /// Delete the metadata at metaname
     fn delete_meta(&mut self, metaname: &str) -> isize {
-        let name = CString::new(metaname).unwrap();
+        let name = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
         unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), std::ptr::null()) }
     }
 
