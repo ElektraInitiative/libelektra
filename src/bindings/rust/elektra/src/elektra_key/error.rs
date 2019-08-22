@@ -5,7 +5,7 @@ use std::fmt;
 pub enum KeyError {
     InvalidName,
     TypeMismatch,
-    ReadOnly,
+    NameReadOnly,
     NotFound,
 }
 
@@ -14,7 +14,7 @@ impl fmt::Display for KeyError {
         match self {
             KeyError::InvalidName => write!(f, "Key has an invalid name"),
             KeyError::TypeMismatch => write!(f, "Binary/String key mismatch, use the appropriate method for your key type, get_string or get_binary"),
-            KeyError::ReadOnly => write!(f, "Key is read only"),
+            KeyError::NameReadOnly => write!(f, "Key is read only"),
             KeyError::NotFound => write!(f, "Key/Metakey was not found"),
             // _ => unimplemented!(),
         }

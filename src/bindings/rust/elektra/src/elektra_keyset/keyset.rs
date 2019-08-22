@@ -1,6 +1,6 @@
 extern crate elektra_sys;
 
-use crate::{KeyError, KeySetError, ReadOnly, ReadableKey, StringKey, WriteableKey, ReadOnlyStringKeyIter,StringKeyIter};
+use crate::{KeyError, KeySetError, ReadableKey, StringKey, WriteableKey, ReadOnlyStringKeyIter,StringKeyIter};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
