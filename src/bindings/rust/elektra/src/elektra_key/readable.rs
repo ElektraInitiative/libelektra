@@ -4,18 +4,27 @@ use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
 pub trait ReadableKey: AsRef<elektra_sys::Key> {
+    /// The type returned by value.
     type GetValue;
 
+    /// Returns the value this key holds.
+    /// # Examples
+    /// ```
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let mut key = StringKey::new("user/sw/app")?;
+    /// key.set_value("myvalue");
+    /// assert_eq!(key.value(), "myvalue");
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn value(&self) -> Self::GetValue;
 
     /// Construct a new key from a raw key pointer
     fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
     where
         Self: Sized;
-
-    // TODO keyCopy?
-
-    // keyname methods
 
     /// Return the name of the key as a borrowed slice.
     fn name(&self) -> Cow<str> {
@@ -120,12 +129,10 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     ///
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = BinaryKey::new("user/sw/app")?;
-    /// let binary_content = b"12345";
-    /// key.set_value(binary_content);
+    /// key.set_value(b"12345");
     /// assert_eq!(key.value_size(), 5);
     /// #
     /// #     Ok(())
@@ -147,12 +154,10 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     ///
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
-    /// let binary_content = [0];
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = BinaryKey::new("user/sw/app")?;
-    /// key.set_value(&binary_content);
+    /// key.set_value(b"0");
     /// assert!(key.is_binary());
     /// #
     /// #     Ok(())
@@ -166,9 +171,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     ///
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let key = StringKey::new("user/sw/app")?;
     /// assert!(key.is_string());
     /// #
@@ -183,9 +187,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     ///
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let key = StringKey::new("user/sw/app")?;
     /// let key2 = StringKey::new("user/sw/app/folder/key")?;
     /// assert!(key2.is_below(&key));
@@ -204,9 +207,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     ///
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let key = StringKey::new("user/sw/app")?;
     /// let key2 = StringKey::new("user/sw/app/key")?;
     /// assert!(key2.is_direct_below(&key));
@@ -228,9 +230,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     /// if it is below an inactive key.
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let key = StringKey::new("user/key/.hidden")?;
     /// assert!(key.is_inactive());
     /// #
@@ -242,7 +243,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns the metadata with the given metaname
-    /// 
+    ///
     /// # Errors
     /// Returns `KeyError::NotFound` if no metakey with the given name was found.
     fn meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>

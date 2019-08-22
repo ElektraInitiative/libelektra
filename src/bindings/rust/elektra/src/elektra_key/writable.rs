@@ -76,9 +76,8 @@ pub trait WriteableKey: ReadableKey {
     /// 
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = StringKey::new("user/test/key")?;
     /// key.set_basename("rust")?;
     /// assert_eq!(key.name(), "user/test/rust");
@@ -103,9 +102,8 @@ pub trait WriteableKey: ReadableKey {
     /// 
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = StringKey::new("user/test/key")?;
     /// key.add_basename("rust")?;
     /// assert_eq!(key.name(), "user/test/key/rust");
@@ -127,9 +125,8 @@ pub trait WriteableKey: ReadableKey {
     /// 
     /// # Examples
     /// ```
-    /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = StringKey::new("user/x/r").unwrap();
     /// key.add_name("../y/a//././z").unwrap();
     /// assert_eq!(key.name(), "user/x/y/a/z");
@@ -153,7 +150,7 @@ pub trait WriteableKey: ReadableKey {
     /// ```
     /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = StringKey::new("user/test/mykey")?;
     /// let mut key2 = StringKey::new("user/test/mykey")?;
     /// key.set_meta("rusty", "metal");
