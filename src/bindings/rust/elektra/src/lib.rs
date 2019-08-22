@@ -1,17 +1,25 @@
+extern crate bitflags;
 extern crate elektra_sys;
 
-extern crate bitflags;
+pub mod iterator;
+pub mod kdb;
+pub mod key;
+pub mod keybuilder;
+pub mod keyset;
+pub mod readable;
+pub mod readonly;
+pub mod writable;
 
-pub mod elektra_kdb;
-pub mod elektra_key;
-pub mod elektra_keyset;
+pub use self::kdb::KDB;
+pub use self::key::{BinaryKey,KeyError, StringKey};
+pub use self::keyset::{Cursor, KeySet,KeySetError};
 
-pub use self::elektra_key::{
-    BinaryKey, KeyBuilder, KeyError, ReadOnly, ReadableKey, StringKey, WriteableKey,
+pub use self::kdb::{
+    KDBError, KDBErrorWrapper,LogicalError, PermanentError, ResourceError,
+    ValidationError,
 };
-
-pub use self::elektra_keyset::{Cursor,KeySet, KeySetError,ReadOnlyStringKeyIter,StringKeyIter};
-
-pub use self::elektra_kdb::{
-    KDBError, KDBErrorWrapper, LogicalError, PermanentError, ResourceError, ValidationError, KDB,
-};
+pub use self::iterator::{ReadOnlyStringKeyIter, StringKeyIter};
+pub use self::keybuilder::KeyBuilder;
+pub use self::readable::ReadableKey;
+pub use self::readonly::ReadOnly;
+pub use self::writable::WriteableKey;

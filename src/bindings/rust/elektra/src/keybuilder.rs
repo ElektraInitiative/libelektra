@@ -46,9 +46,10 @@ mod test {
     #[test]
     fn can_build_binary_key() -> Result<(), KeyError> {
         let name = "user/test/binarykey";
+        let overwrite = "overwrite me";
         let val = "😎";
         let key: BinaryKey = KeyBuilder::new(name)?
-            .value("overwrite me!".as_bytes())
+            .value(overwrite.as_bytes())
             .value(val.as_bytes())
             .build();
         assert_eq!(key.name(), name);

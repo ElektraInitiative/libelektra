@@ -76,7 +76,6 @@ macro_rules! add_traits {
 add_traits!(StringKey<'_>);
 add_traits!(BinaryKey<'_>);
 
-// Due to lifetimes, this cannot be moved to the macro atm
 impl<'a> Iterator for StringKey<'a> {
     type Item = ReadOnly<StringKey<'a>>;
     fn next(&mut self) -> Option<Self::Item> {
@@ -129,6 +128,7 @@ impl<'a> StringKey<'a> {
         c_str.to_string_lossy()
     }
 
+    //TODO: Move to trait if possible
     pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
         StringKey::from_ptr(dup_ptr)
@@ -241,10 +241,34 @@ impl From<BinaryKey<'_>> for StringKey<'_> {
     }
 }
 
+// TODO: Separate into structs
+#[derive(Debug, PartialEq)]
+pub enum KeyError {
+    InvalidName,
+    TypeMismatch,
+    NameReadOnly,
+    NotFound,
+}
+
+impl std::fmt::Display for KeyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        match self {
+            KeyError::InvalidName => write!(f, "Key has an invalid name"),
+            KeyError::TypeMismatch => write!(f, "Binary/String key mismatch, use the appropriate method for your key type, get_string or get_binary"),
+            KeyError::NameReadOnly => write!(f, "Key is read only"),
+            KeyError::NotFound => write!(f, "Key/Metakey was not found"),
+            // _ => unimplemented!(),
+        }
+    }
+}
+
+impl std::error::Error for KeyError {}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{KeyBuilder, KeyError};
+    use crate::{KeyBuilder};
 
     #[test]
     fn can_write_read_key() {
