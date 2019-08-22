@@ -1,0 +1,53 @@
+package main
+
+import (
+	"net/http"
+	"strconv"
+	"strings"
+)
+
+type VersionResult struct {
+	Api     int            `json:"api"`
+	Elektra ElektraVersion `json:"elektra"`
+}
+
+type ElektraVersion struct {
+	Version string `json:"version"`
+	Major   int    `json:"major"`
+	Minor   int    `json:"minor"`
+	Micro   int    `json:"micro"`
+}
+
+func GetVersionHandler(w http.ResponseWriter, r *http.Request) {
+	kdb := kdbHandle()
+
+	version, _ := kdb.Version()
+
+	major, minor, micro := parseSemVer(version)
+
+	response := VersionResult{
+		Api: 1,
+		Elektra: ElektraVersion{
+			Version: version,
+			Major:   major,
+			Minor:   minor,
+			Micro:   micro,
+		},
+	}
+
+	writeResponse(w, response)
+}
+
+func parseSemVer(version string) (major, minor, micro int) {
+	parts := strings.SplitN(version, ".", 3)
+
+	if len(parts) != 3 {
+		return
+	}
+
+	major, _ = strconv.Atoi(parts[0])
+	minor, _ = strconv.Atoi(parts[1])
+	micro, _ = strconv.Atoi(parts[2])
+
+	return
+}
