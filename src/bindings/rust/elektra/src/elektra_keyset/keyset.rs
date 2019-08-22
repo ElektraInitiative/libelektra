@@ -1,6 +1,9 @@
 extern crate elektra_sys;
 
-use crate::{KeyError, KeySetError, ReadableKey, StringKey, WriteableKey, ReadOnlyStringKeyIter,StringKeyIter};
+use crate::{
+    KeyError, KeySetError, ReadOnlyStringKeyIter, ReadableKey, StringKey, StringKeyIter,
+    WriteableKey,
+};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
@@ -90,7 +93,7 @@ impl KeySet {
     }
 
     /// Append a collection of keys to the KeySet.
-    /// It will call append_key on every key. If any key returns an error it will be returned,
+    /// Calls append_key on every key. If any key returns an error it will be returned,
     /// but only after iterating over all keys.
     pub fn append_all<T>(&mut self, keys: T) -> Result<(), KeySetError>
     where
@@ -230,7 +233,7 @@ impl KeySet {
         Ok(self.lookup(key, options))
     }
 
-    /// Returns an iterator that conceptually returns &StringKey
+    /// Returns an iterator that should be used to immutably iterate over a keyset.
     /// It has to take &mut self because the internal cursor of the keyset is modified.
     pub fn iter(&mut self) -> ReadOnlyStringKeyIter<'_> {
         ReadOnlyStringKeyIter {
@@ -238,7 +241,6 @@ impl KeySet {
             keyset: self,
         }
     }
-    
     /// Returns an iterator that returns StringKey
     /// that can be modified.
     /// Note that you should not change the name of the key.
@@ -250,17 +252,16 @@ impl KeySet {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::KeyBuilder;
 
     #[test]
-    fn can_build_simple_keyset() {
+    fn can_build_simple_keyset() -> Result<(), KeyError> {
         let mut ks = KeySet::new();
         ks.append_key(
-            KeyBuilder::<StringKey>::new("user/sw/org/app/bool")
+            KeyBuilder::<StringKey>::new("user/sw/org/app/bool")?
                 .value("true")
                 .build(),
         )
@@ -275,23 +276,24 @@ mod tests {
             let head = ks.head().unwrap();
             assert_eq!(head.value(), "true");
         }
+        Ok(())
     }
 
     #[test]
-    fn can_iterate_simple_keyset() {
+    fn can_iterate_simple_keyset() -> Result<(), KeyError> {
         let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
         let values = ["value1", "value2", "value3"];
 
         let mut ks = KeySet::with_capacity(3);
 
         ks.append_all(vec![
-            KeyBuilder::<StringKey>::new(names[0])
+            KeyBuilder::<StringKey>::new(names[0])?
                 .value(values[0])
                 .build(),
-            KeyBuilder::<StringKey>::new(names[1])
+            KeyBuilder::<StringKey>::new(names[1])?
                 .value(values[1])
                 .build(),
-            KeyBuilder::<StringKey>::new(names[2])
+            KeyBuilder::<StringKey>::new(names[2])?
                 .value(values[2])
                 .build(),
         ])
@@ -317,6 +319,7 @@ mod tests {
         assert!(did_iterate);
         // Check that the iterator did not consume the keyset
         assert_eq!(ks.get_size(), 3);
+        Ok(())
     }
 
     fn setup_keyset() -> KeySet {
@@ -327,9 +330,11 @@ mod tests {
 
         ks.append_all(vec![
             KeyBuilder::<StringKey>::new(names[0])
+                .unwrap()
                 .value(values[0])
                 .build(),
             KeyBuilder::<StringKey>::new(names[1])
+                .unwrap()
                 .value(values[1])
                 .build(),
         ])
