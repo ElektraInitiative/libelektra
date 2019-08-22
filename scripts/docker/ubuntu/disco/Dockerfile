@@ -19,7 +19,6 @@ RUN apt-get update && apt-get -y install \
         pkg-config \
         python3-dev \
         ruby-dev \
-        tao-pegtl-dev \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
 

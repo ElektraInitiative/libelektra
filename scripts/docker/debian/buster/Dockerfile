@@ -71,7 +71,6 @@ RUN apt-get update \
         ruby-dev \
         swig3.0 \
         systemd \
-        tao-pegtl-dev \
         tclcl-dev \
         uuid-dev \
         valgrind \

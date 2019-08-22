@@ -56,7 +56,6 @@ RUN apt-get update && apt-get -y install \
         sloccount \
         swig3.0 \
         systemd \
-        tao-pegtl-dev \
         tclcl-dev \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
