@@ -10,7 +10,7 @@ use ValidationError::*;
 #[derive(Debug)]
 pub struct KDB {
     ptr: NonNull<elektra_sys::KDB>,
-    phantom: std::marker::PhantomData<elektra_sys::KDB>,
+    _marker: std::marker::PhantomData<elektra_sys::KDB>,
 }
 
 impl Drop for KDB {
@@ -34,7 +34,7 @@ impl KDB {
         } else {
             Ok(KDB {
                 ptr: NonNull::new(kdb_ptr).unwrap(),
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             })
         }
     }

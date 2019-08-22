@@ -10,7 +10,7 @@ use std::convert::TryInto;
 #[derive(Debug)]
 pub struct KeySet {
     ptr: std::ptr::NonNull<elektra_sys::KeySet>,
-    phantom: std::marker::PhantomData<elektra_sys::KeySet>,
+    _marker: std::marker::PhantomData<elektra_sys::KeySet>,
 }
 
 pub type Cursor = elektra_sys::cursor_t;
@@ -77,7 +77,7 @@ impl KeySet {
     fn from_ptr(keyset_ptr: *mut elektra_sys::KeySet) -> KeySet {
         KeySet {
             ptr: std::ptr::NonNull::new(keyset_ptr).unwrap(),
-            phantom: std::marker::PhantomData,
+            _marker: std::marker::PhantomData,
         }
     }
 
