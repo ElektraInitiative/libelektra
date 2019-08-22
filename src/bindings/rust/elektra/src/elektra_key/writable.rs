@@ -1,5 +1,6 @@
 use crate::{KeyError, ReadableKey};
 use std::ffi::CString;
+use std::convert::TryInto;
 
 pub trait WriteableKey: ReadableKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key;
@@ -47,6 +48,7 @@ pub trait WriteableKey: ReadableKey {
 
     /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.
     /// Returns the size in bytes of this new key name including the ending NUL.
+    /// 
     /// # Examples
     /// ```
     /// use elektra::{StringKey,WriteableKey,ReadableKey};
@@ -61,72 +63,104 @@ pub trait WriteableKey: ReadableKey {
         if ret_val > 0 {
             Ok(ret_val as u32)
         } else {
-            // TODO: May also be a ReadOnly Error...
+            // TODO: May also be a NameReadOnly Error...
             Err(KeyError::InvalidName)
         }
     }
     /// Set the basename of the key
+    /// 
+    /// # Errors
+    /// Returns a `KeyError::NameReadOnly` if the key is part of a keyset.
+    /// 
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// let mut key = StringKey::new("user/test/key").unwrap();
-    /// key.set_basename("rust").unwrap();
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut key = StringKey::new("user/test/key")?;
+    /// key.set_basename("rust")?;
     /// assert_eq!(key.name(), "user/test/rust");
+    /// #
+    /// #     Ok(())
+    /// # }
     /// ```
     fn set_basename(&mut self, basename: &str) -> Result<(), KeyError> {
         let cstr = unsafe { CString::from_vec_unchecked(basename.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keySetBaseName(self.as_ptr(), cstr.as_ptr()) };
-        // TODO: Is read only a correct description of the error?
         if ret_val == -1 {
-            Err(KeyError::ReadOnly)
+            Err(KeyError::NameReadOnly)
         } else {
             Ok(())
         }
     }
 
     /// Add a basename to the key
+    /// 
+    /// # Errors
+    /// Returns a `KeyError::NameReadOnly` if the key is part of a keyset.
+    /// 
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// let mut key = StringKey::new("user/test/key").unwrap();
-    /// key.add_basename("rust").unwrap();
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut key = StringKey::new("user/test/key")?;
+    /// key.add_basename("rust")?;
     /// assert_eq!(key.name(), "user/test/key/rust");
+    /// #
+    /// #     Ok(())
+    /// # }
     /// ```
     fn add_basename(&mut self, basename: &str) -> Result<(), KeyError> {
         let cstr = unsafe { CString::from_vec_unchecked(basename.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keyAddBaseName(self.as_ptr(), cstr.as_ptr()) };
-        // TODO: Is read only a correct description of the error?
         if ret_val == -1 {
-            Err(KeyError::ReadOnly)
+            Err(KeyError::NameReadOnly)
         } else {
             Ok(())
         }
     }
 
     /// Add an already escaped name to the keyname.
+    /// 
     /// # Examples
     /// ```
-    /// use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
     /// let mut key = StringKey::new("user/x/r").unwrap();
     /// key.add_name("../y/a//././z").unwrap();
     /// assert_eq!(key.name(), "user/x/y/a/z");
+    /// #
+    /// #     Ok(())
+    /// # }
     /// ```
     fn add_name(&mut self, name: &str) -> Result<(), KeyError> {
         let cstr = unsafe { CString::from_vec_unchecked(name.as_bytes().to_vec()) };
         let ret_val = unsafe { elektra_sys::keyAddName(self.as_ptr(), cstr.as_ptr()) };
-        // TODO: Is read only a correct description of the error?
         if ret_val <= 0 {
             Err(KeyError::InvalidName)
         } else {
             Ok(())
         }
     }
-    /// Sets the value of the key to the supplied string.
-    fn set_string(&mut self, value: &str) {
-        let cptr = unsafe { CString::from_vec_unchecked(value.as_bytes().to_vec()) };
-        unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
-    }
+
     /// Copies all metadata from source to the self
+    /// 
+    /// # Examples
+    /// ```
+    /// # use std::error::Error;
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut key = StringKey::new("user/test/mykey")?;
+    /// let mut key2 = StringKey::new("user/test/mykey")?;
+    /// key.set_meta("rusty", "metal");
+    /// key2.copy_all_meta(&key);
+    /// assert_eq!(key.meta("rusty")?.value(), "metal");
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn copy_all_meta(&mut self, source: &Self)
     where
         Self: Sized,
@@ -153,17 +187,32 @@ pub trait WriteableKey: ReadableKey {
         let cstr = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
         unsafe { elektra_sys::keyCopyMeta(self.as_ptr(), source.as_ref(), cstr.as_ptr()) }
     }
+
     /// Set a new meta-information.
-    fn set_meta(&mut self, metaname: &str, metavalue: &str) -> isize {
+    /// Returns the size of the new meta information on success,
+    /// or a `KeyError::InvalidName` if the name is invalid or out of memory.
+    fn set_meta(&mut self, metaname: &str, metavalue: &str) -> Result<usize, KeyError> {
         let name = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
         let value = unsafe { CString::from_vec_unchecked(metavalue.as_bytes().to_vec()) };
-        unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) }
+        let ret_val = unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) };
+        if ret_val < 0 {
+            Err(KeyError::InvalidName)
+        } else {
+            Ok(ret_val.try_into().unwrap())
+        }
     }
 
     /// Delete the metadata at metaname
-    fn delete_meta(&mut self, metaname: &str) -> isize {
+    /// Returns the size of the new meta information on success,
+    /// or a `KeyError::InvalidName` if the name is invalid or out of memory.
+    fn delete_meta(&mut self, metaname: &str) -> Result<usize, KeyError> {
         let name = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
-        unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), std::ptr::null()) }
+        let ret_val = unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), std::ptr::null()) };
+        if ret_val < 0 {
+            Err(KeyError::InvalidName)
+        } else {
+            Ok(ret_val.try_into().unwrap())
+        }
     }
 
     /// Rewind the internal iterator to first metadata.

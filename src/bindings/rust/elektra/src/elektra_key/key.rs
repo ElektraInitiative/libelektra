@@ -377,7 +377,7 @@ mod tests {
     #[test]
     fn can_set_get_metavalue() {
         let mut key = StringKey::new_empty();
-        key.set_meta("metakey", "metaval");
+        key.set_meta("metakey", "metaval").unwrap();
         let meta_key = key.meta("metakey").unwrap();
         assert_eq!(meta_key.value(), "metaval");
     }
@@ -386,8 +386,8 @@ mod tests {
     fn can_iterate_key() {
         let mut key = StringKey::new_empty();
         let meta = [("meta1", "val1"), ("meta2", "val2")];
-        key.set_meta(meta[0].0, meta[0].1);
-        key.set_meta(meta[1].0, meta[1].1);
+        key.set_meta(meta[0].0, meta[0].1).unwrap();
+        key.set_meta(meta[1].0, meta[1].1).unwrap();
         key.rewind_meta();
 
         let mut did_iterate = false;
@@ -402,8 +402,8 @@ mod tests {
     #[test]
     fn can_delete_metadata() {
         let mut key = StringKey::new_empty();
-        key.set_meta("metakey", "metaval");
-        assert_eq!(key.delete_meta("metakey"), 0);
+        key.set_meta("metakey", "metaval").unwrap();
+        assert_eq!(key.delete_meta("metakey").unwrap(), 0);
         assert_eq!(key.meta("metakey").unwrap_err(), KeyError::NotFound);
     }
 
