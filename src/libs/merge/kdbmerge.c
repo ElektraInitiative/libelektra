@@ -655,6 +655,8 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
 	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
+		return NULL;
 	}
 	if (getTotalConflicts (informationKey) > 0)
 	{
