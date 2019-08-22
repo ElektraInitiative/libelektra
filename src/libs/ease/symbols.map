@@ -1,0 +1,18 @@
+libelektra_0.8 {
+	# kdbease.h
+	elektraArrayDecName;
+	elektraArrayGet;
+	elektraArrayGetNextKey;
+	elektraArrayIncName;
+	elektraArrayValidateBaseNameString;
+	elektraArrayValidateName;
+	elektraIsReferenceRedundant;
+	elektraKeyGetRelativeName;
+	elektraKsFilter;
+	elektraResolveReference;
+};
+
+libelektraprivate_1.0 {
+	# kdbprivate.h
+	elektraReadArrayNumber;
+};

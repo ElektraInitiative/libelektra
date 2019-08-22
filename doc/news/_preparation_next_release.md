@@ -138,6 +138,10 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Compilation
+
+- We now have a setup for proper symbol versioning. [More information](../dev/symbol-versioning.md) _(Klemens Böswirth)_
+
 ### Docker
 
 - <<TODO>>

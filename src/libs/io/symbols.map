@@ -1,0 +1,65 @@
+libelektra_0.8 {
+	# kdbio.h
+	elektraIoBindingAddFd;
+	elektraIoBindingAddIdle;
+	elektraIoBindingAddTimer;
+	elektraIoBindingCleanup;
+	elektraIoBindingGetData;
+	elektraIoBindingRemoveFd;
+	elektraIoBindingRemoveIdle;
+	elektraIoBindingRemoveTimer;
+	elektraIoBindingSetData;
+	elektraIoBindingUpdateFd;
+	elektraIoBindingUpdateIdle;
+	elektraIoBindingUpdateTimer;
+	elektraIoFdGetBinding;
+	elektraIoFdGetBindingData;
+	elektraIoFdGetCallback;
+	elektraIoFdGetData;
+	elektraIoFdGetFd;
+	elektraIoFdGetFlags;
+	elektraIoFdIsEnabled;
+	elektraIoFdSetBindingData;
+	elektraIoFdSetEnabled;
+	elektraIoFdSetFlags;
+	elektraIoGetBinding;
+	elektraIoIdleGetBinding;
+	elektraIoIdleGetBindingData;
+	elektraIoIdleGetCallback;
+	elektraIoIdleGetData;
+	elektraIoIdleIsEnabled;
+	elektraIoIdleSetBindingData;
+	elektraIoIdleSetEnabled;
+	elektraIoNewBinding;
+	elektraIoNewFdOperation;
+	elektraIoNewIdleOperation;
+	elektraIoNewTimerOperation;
+	elektraIoSetBinding;
+	elektraIoTimerGetBinding;
+	elektraIoTimerGetBindingData;
+	elektraIoTimerGetCallback;
+	elektraIoTimerGetData;
+	elektraIoTimerGetInterval;
+	elektraIoTimerIsEnabled;
+	elektraIoTimerSetBindingData;
+	elektraIoTimerSetEnabled;
+	elektraIoTimerSetInterval;
+
+	# kdbio/adapters/dbus.h
+	elektraIoAdapterDbusAttach;
+	elektraIoAdapterDbusCleanup;
+
+	# kdbio/adapters/zeromq.h
+	elektraIoAdapterZeroMqAttach;
+	elektraIoAdapterZeroMqSetContext;
+	elektraIoAdapterZeroMqDetach;
+
+	# kdbio/ev.h
+	elektraIoEvNew;
+
+	# kdbio/glib.h
+	elektraIoGlibNew;
+
+	# kdbio/uv.h
+	elektraIoUvNew;
+};

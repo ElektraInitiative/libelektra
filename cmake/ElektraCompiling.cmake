@@ -13,8 +13,7 @@ include (CheckCCompilerFlag)
 include (CheckCXXCompilerFlag)
 
 #
-# The mode (standard) to be used by the compiler
-#
+# The mode (standard) to be used by the compiler -
 if (C_STD)
 	message (STATUS "use C_STD as given by user: ${C_STD}")
 else ()
@@ -37,11 +36,30 @@ endif (NOT HAS_CXX_STD)
 # check if -Wl,--version-script linker option is supported TODO: darwin ld only supports -Wl,-exported_symbols_list + the file syntax is
 # different
 #
-set (__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
-file (WRITE ${__symbols_file} "{ local: *; };\n")
-set (CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
-check_cxx_compiler_flag ("" LD_ACCEPTS_VERSION_SCRIPT)
-unset (CMAKE_REQUIRED_FLAGS)
+try_compile (ELEKTRA_SYMVER_SUPPORTED
+	     ${CMAKE_BINARY_DIR}/src/symvertest/build
+	     ${CMAKE_SOURCE_DIR}/src/symvertest
+	     symvertest)
+if (ELEKTRA_SYMVER_SUPPORTED)
+	set (ELEKTRA_SYMVER_COMMAND "__asm__(\".symver \" arg1 \", \" arg2);")
+	set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
+else (ELEKTRA_SYMVER_SUPPORTED)
+	set (ELEKTRA_SYMVER_COMMAND "")
+
+	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED
+		     ${CMAKE_BINARY_DIR}/src/symvertest/build
+		     ${CMAKE_SOURCE_DIR}/src/symvertest
+		     symvertest
+		     basic)
+	if (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+		set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
+	else (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+		set (LD_ACCEPTS_VERSION_SCRIPT FALSE)
+	endif (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+endif (ELEKTRA_SYMVER_SUPPORTED)
+
+message (STATUS "compiler/linker accepts version script? ${LD_ACCEPTS_VERSION_SCRIPT}")
+message (STATUS "compiler/linker supports symbol versioning? ${ELEKTRA_SYMVER_SUPPORTED}")
 
 #
 # Extra handling/flags for specific compilers/OS

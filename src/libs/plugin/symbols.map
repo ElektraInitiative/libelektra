@@ -1,0 +1,8 @@
+libelektra_0.8 {
+	# kdbplugin.h
+	elektraPluginExport;
+	elektraPluginGetConfig;
+	elektraPluginGetData;
+	elektraPluginGetGlobalKeySet;
+	elektraPluginSetData;
+};
