@@ -21,6 +21,10 @@ func TestKdbPut(t *testing.T) {
 	comparePut(t, "/kdb/user/hello", "Testvalue")
 }
 
+func TestKdbFind(t *testing.T) {
+	compareGet(t, "/kdbFind/dump/exports")
+}
+
 func comparePut(t *testing.T, path string, body string) {
 	req, err := http.NewRequest("PUT", "http://localhost:33333"+path, strings.NewReader(body))
 	req.Header.Add("Content-Type", "text/plain")
