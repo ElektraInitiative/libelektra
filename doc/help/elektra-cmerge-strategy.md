@@ -4,7 +4,7 @@ Elektra's cmerge tool tries to avoid conflicts using semantic aspects of configu
 The three-way merge works by comparing the `our` key set and the `their` key set to the `base` key set. By looking for differences in these key sets, a new key set called `result` is created. This result represents a merge of these key sets.
 In case a conflict is unavoidable, different predefined merge strategies can be used to resolve them without user interaction.
 
-These strategies will supersede the old [merge strategies](elektra-merge-strategies.md) once `kdb cmerge` supersedes `kdb merge`.
+These strategies will supersede the old [merge strategies](elektra-merge-strategy.md) once `kdb cmerge` supersedes `kdb merge`.
 
 ## 3-WAY
 
