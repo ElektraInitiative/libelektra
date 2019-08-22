@@ -8,13 +8,13 @@ use std::ptr::NonNull;
 #[derive(Debug)]
 pub struct StringKey<'a> {
     ptr: NonNull<elektra_sys::Key>,
-    phantom: std::marker::PhantomData<&'a mut elektra_sys::Key>,
+    _marker: std::marker::PhantomData<&'a mut elektra_sys::Key>,
 }
 
 #[derive(Debug)]
 pub struct BinaryKey<'a> {
     ptr: NonNull<elektra_sys::Key>,
-    phantom: std::marker::PhantomData<&'a mut elektra_sys::Key>,
+    _marker: std::marker::PhantomData<&'a mut elektra_sys::Key>,
 }
 
 macro_rules! add_traits {
@@ -173,7 +173,7 @@ impl<'a> ReadableKey for StringKey<'a> {
     fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
         StringKey {
             ptr: NonNull::new(ptr).unwrap(),
-            phantom: std::marker::PhantomData,
+            _marker: std::marker::PhantomData,
         }
     }
 
@@ -188,7 +188,7 @@ impl<'a> ReadableKey for BinaryKey<'a> {
     fn from_ptr(ptr: *mut elektra_sys::Key) -> BinaryKey<'a> {
         BinaryKey {
             ptr: NonNull::new(ptr).unwrap(),
-            phantom: std::marker::PhantomData,
+            _marker: std::marker::PhantomData,
         }
     }
 
