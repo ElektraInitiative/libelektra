@@ -62,7 +62,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .meta("error/number")
             .unwrap()
             .value()
-            .to_owned()
+            .to_owned().to_string()
     }
 
     /// Returns the error reason.
@@ -71,7 +71,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .meta("error/reason")
             .unwrap()
             .value()
-            .to_owned()
+            .to_owned().to_string()
     }
 
     /// Returns the module where the error occured.
@@ -80,7 +80,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .meta("error/module")
             .unwrap()
             .value()
-            .to_owned()
+            .to_owned().to_string()
     }
 
     /// Returns a description of the error.
@@ -89,7 +89,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .meta("error/description")
             .unwrap()
             .value()
-            .to_owned()
+            .to_owned().to_string()
     }
 
     /// Returns the source file from where the error information comes.
@@ -98,7 +98,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .meta("error/file")
             .unwrap()
             .value()
-            .to_owned()
+            .to_owned().to_string()
     }
 
     /// Returns the the exact line of that source file.
@@ -107,7 +107,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .meta("error/line")
             .unwrap()
             .value()
-            .to_owned()
+            .to_owned().to_string()
     }
     // TODO: key is not the error_key, but the key that the keysets internal cursor points to, but this is not accessible here
     pub fn to_error_message(&self) -> String {
@@ -133,7 +133,7 @@ pub fn map_kdb_error(error_key: StringKey) -> KDBError {
     if let Ok(err_num_key) = err_num_key_res {
         let err_wrapper = KDBErrorWrapper::new(error_key.duplicate());
 
-        match err_num_key.value().as_str() {
+        match err_num_key.value().to_owned().to_string().as_str() {
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
                 return Permanent(Resource(OutOfMemory(err_wrapper)));
             }

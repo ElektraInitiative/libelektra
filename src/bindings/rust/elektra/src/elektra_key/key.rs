@@ -2,6 +2,8 @@ use crate::{ReadOnly, ReadableKey, WriteableKey};
 use elektra_sys;
 use std::ffi::{CStr, CString};
 use std::ptr::NonNull;
+use std::convert::TryInto;
+use std::borrow::Cow;
 
 #[derive(Debug)]
 pub struct StringKey<'a> {
@@ -117,15 +119,14 @@ impl<'a> StringKey<'a> {
     /// Panics if the provided string contains internal nul bytes.
     fn set_string<T: Into<Vec<u8>>>(&mut self, value: T) {
         let cptr = CString::new(value).unwrap();
+        // TODO: unsafe { CString::from_vec_unchecked(value.as_bytes().to_vec()) };
         unsafe { elektra_sys::keySetString(self.as_ptr(), cptr.as_ptr()) };
     }
 
-    /// Returns the string value of the key if the type of the key is string, an error if it's binary.
-    /// # Panics
-    /// Panics if the underlying string cannot be converted to UTF-8.
-    fn get_string(&self) -> &str {
+    /// Returns the string value of the key or a Utf8Error if it cannot be converted.
+    fn string(&self) -> Cow<'a, str> {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyString(self.as_ref())) };
-        c_str.to_str().unwrap()
+        c_str.to_string_lossy()
     }
 
 pub fn duplicate<'b>(&'a self) -> StringKey<'b>
@@ -161,8 +162,7 @@ impl<'a> BinaryKey<'a> {
         };
 
         if ret_val > 0 {
-            // TODO try_into?
-            unsafe { vec.set_len(ret_val as usize) };
+            unsafe { vec.set_len(ret_val.try_into().unwrap()) };
             vec
         } else {
             unsafe { vec.set_len(0) }
@@ -178,7 +178,7 @@ impl<'a> BinaryKey<'a> {
 }
 
 impl<'a> ReadableKey for StringKey<'a> {
-    type Value = String;
+    type Value = Cow<'a, str>;
 
     fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
         StringKey {
@@ -188,7 +188,7 @@ impl<'a> ReadableKey for StringKey<'a> {
     }
 
     fn value(&self) -> Self::Value {
-        self.get_string().to_owned()
+        self.string()
     }
 }
 
@@ -260,7 +260,7 @@ mod tests {
         let mut key: StringKey = StringKey::new(key_name).unwrap();
         key.set_string(utf8_value);
         assert_eq!(key.name(), key_name);
-        assert_eq!(key.get_string(), utf8_value);
+        assert_eq!(key.value(), utf8_value);
     }
 
     #[test]

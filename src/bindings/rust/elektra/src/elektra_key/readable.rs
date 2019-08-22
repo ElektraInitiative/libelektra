@@ -1,4 +1,5 @@
 use crate::{KeyError, ReadOnly, StringKey};
+use std::borrow::Cow;
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
@@ -17,19 +18,15 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     // keyname methods
 
     /// Return the name of the key as a borrowed slice.
-    /// # Panics
-    /// Panics if the underlying string cannot be converted to UTF-8.
-    fn name(&self) -> &str {
+    fn name(&self) -> Cow<str> {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyName(self.as_ref())) };
-        c_str.to_str().unwrap()
+        c_str.to_string_lossy()
     }
 
     /// Return the basename of the key as a borrowed slice.
-    /// # Panics
-    /// Panics if the underlying string cannot be converted to UTF-8.
-    fn basename(&self) -> &str {
+    fn basename(&self) -> Cow<str> {
         let c_str = unsafe { CStr::from_ptr(elektra_sys::keyBaseName(self.as_ref())) };
-        c_str.to_str().unwrap()
+        c_str.to_string_lossy()
     }
 
     /// Calculates number of bytes needed to store basename of key.
@@ -63,6 +60,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     /// or cannot be converted to UTF-8
     fn fullname(&self) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(self.fullname_size());
+        debug_assert_eq!(vec.capacity(), self.fullname_size());
 
         let ret_val = unsafe {
             elektra_sys::keyGetFullName(
@@ -72,11 +70,13 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
             )
         };
         unsafe { vec.set_len(ret_val.try_into().unwrap()) };
-        CStr::from_bytes_with_nul(&vec)
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_owned()
+        // Elektra strings are guaranteed not to contain NUL bytes
+        unsafe {
+            CStr::from_bytes_with_nul_unchecked(&vec)
+                .to_string_lossy()
+                .to_owned()
+                .to_string()
+        }
     }
 
     fn namespace(&self) -> u32 {
@@ -117,7 +117,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
 
     /// Returns the number of bytes needed to store the key's value, including the
     /// NULL terminator.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # use std::error::Error;
@@ -139,12 +139,12 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns true if the key has a binary value.
-    /// 
+    ///
     /// # Notes
     /// Note that this does not return true for a newly created BinaryKey,
     /// but only when actual binary data has been set, due to the underlying
     /// generic Key.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # use std::error::Error;
@@ -163,7 +163,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns true if the key has a string value.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # use std::error::Error;
@@ -180,7 +180,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns true if other is below self
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # use std::error::Error;
@@ -201,7 +201,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns true if other is *directly* below self
-    /// 
+    ///
     /// # Examples
     /// ```
     /// # use std::error::Error;
@@ -222,7 +222,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns true if the key is inactive.
-    /// 
+    ///
     /// In Elektra terminology a hierarchy of keys is inactive if the
     /// rootkey's basename starts with '.'. So a key is also inactive
     /// if it is below an inactive key.
@@ -242,11 +242,15 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     }
 
     /// Returns the metadata with the given metaname
+    /// 
+    /// # Errors
+    /// Returns `KeyError::NotFound` if no metakey with the given name was found.
     fn meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>
     where
         Self: Sized,
     {
-        let cstr = CString::new(metaname).unwrap();
+        // Rust strings never contain internal NUL bytes, so this is safe.
+        let cstr = unsafe { CString::from_vec_unchecked(metaname.as_bytes().to_vec()) };
         let key_ptr = unsafe { elektra_sys::keyGetMeta(self.as_ref(), cstr.as_ptr()) };
         if key_ptr.is_null() {
             Err(KeyError::NotFound)
