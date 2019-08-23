@@ -122,7 +122,6 @@ impl<'a> StringKey<'a> {
         c_str.to_string_lossy()
     }
 
-    //TODO: Move to trait if possible
     pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
         StringKey::from_ptr(dup_ptr)
@@ -235,7 +234,6 @@ impl From<BinaryKey<'_>> for StringKey<'_> {
     }
 }
 
-// TODO: Separate into structs
 #[derive(Debug, PartialEq)]
 pub enum KeyError {
     InvalidName,
