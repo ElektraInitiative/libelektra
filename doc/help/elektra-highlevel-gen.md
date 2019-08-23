@@ -34,7 +34,7 @@ To avoid this case of a misconfigured mountpoint, you can use `specValidation=mi
 cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected
 mountpoint or if the specification was not `spec-mount`ed.
 
-<b id="f1">1</b>: At the time of writing, the processed specification is the same as the input specification, but in future the code-generator may
+<sup id="f1">1</sup>: At the time of writing, the processed specification is the same as the input specification, but in future the code-generator may
 automatically add metadata, e.g. to allow better validation. [↩](#a1)
 
 ## Enums
