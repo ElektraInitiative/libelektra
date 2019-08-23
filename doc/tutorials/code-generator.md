@@ -31,6 +31,9 @@ First we need to define a few terms:
   mustache file corresponding to the part. Similarly it is appended to the output name to obtain the output file for this part. The empty
   string `""` is a valid part suffix, although it is only recommend for templates with a single output file.
 
+All templates consist of two pieces. The set of mustache files (on for each part) and an accompanying C++ class to supply the mustache
+rendering engine with data from the input keyset.
+
 ## Creating a new template
 
 In this guide we will create a basic template, that generates a single file containing a simple list of all keys in our input keyset. An
@@ -70,6 +73,9 @@ Our CMke script will collect all `.mustache` files in `src/tools/kdb/gen/templat
 for each file and a `std::unordered_map` containing references to all the fields. The naming scheme is needed so that the other C++ code can
 access the files contents via the map. This approach was chosen to allow executing the code-generator without first running the install
 script.
+
+When you create a new `.mustache` file (either for a new part or a new partial), you need to invoke `cmake` again, so that all the files are
+collected.
 
 ### Creating the supporting class
 
@@ -124,6 +130,8 @@ As you can see, the header is quite simple. The more important part is actually 
 For our example we will use this implementation:
 
 ```cpp
+#include "example.hpp"
+
 kainjow::mustache::data ExampleGenTemplate::getTemplateData (const std::string & outputName, const std::string & part,
                                                              const kdb::KeySet & ks, const std::string & parentKey) const
 {
@@ -153,7 +161,7 @@ as well as the current part suffix (`part`) and the input keyset `ks`. All keys 
 The code above simply iterates over the input KeySet and for each key creates an object `{ name: $keyName }`. All those objects are collected
 into a list, which is then stored under the key `keys` in the global object.
 
-## Adding the class to `GenTemplateList`
+### Adding the class to `GenTemplateList`
 
 To make the framework aware of our class (and by extension our template), we have to then add it to `GenTemplateList`. This is simply done
 by adding a line to the implementation of `GenTemplateList::GenTemplateList ()` in [`template.cpp`](/src/tools/kdb/gen/template.cpp).
@@ -166,6 +174,12 @@ addTemplate<ExampleGenTemplate> ("example");
 
 We need to specify `"example"` again, because this string defines how our template shall be called, i.e. what we need to specify in the
 terminal to invoke it.
+
+You also need to add the appropriate `#include` at the top of the file. In our case this is:
+
+```cpp
+#include "example/example.hpp"
+```
 
 ## Using the new template
 

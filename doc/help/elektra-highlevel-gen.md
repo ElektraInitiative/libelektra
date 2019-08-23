@@ -7,7 +7,7 @@ with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.
 
 The parameters that are relevant to the concepts described here are (for the rest see [`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)):
 
-- `enumConv`: allowed values: `strcmp`, `trie`, `default` (default)
+- `enumConv`: allowed values: `strcmp`, `switch`, `default` (default)
 - `embeddedSpec`: allowed values: `full` (default), `defaults`, `none`
 - `specValidation`: allowed values: `none` (default), `minimal`
 
@@ -101,7 +101,7 @@ if (strcmp (string, "blue") == 0) { /* ... */ }
 ```
 
 This code is not really optimal, since we really only need to look at the first character to determine the correct enum value. This is where
-`enumConv=trie` comes in. With this option, we use a trie to generate a series of (nested, if necessary) switch/case statements:
+`enumConv=switch` comes in. With this option, we generate a series of (nested, if necessary) switch/case statements:
 
 ```c
 switch (string[0])
@@ -114,7 +114,7 @@ case 'r': /* red */
 ```
 
 Of course this version also has its own problems. Take for example the the enum with the values: `blue`, `blueish` and `brown`. With
-`enumConv=trie` this would generate the following code:
+`enumConv=switch` this would generate the following code:
 
 ```c
 switch (string[0])
@@ -144,10 +144,11 @@ case 'b':
 }
 ```
 
-This is not only hard to read, but also not very efficient. Of course we could just look at `string[1]` and `string[4]` or at
-`strlen(string)` or at any number of other things. But writing a code-generator that does this for the general case is very hard. That is
-why the default option `enumConv=default` uses the trie version, if the depth is less than 3 (i.e. if looking at `string[0]` and `string[1]`
-is sufficient), and the `strcmp` version in all other cases. This should be a good compromise for most cases.
+This is already quite hard to read and `blueish` isn't even that long.
+
+To provide a compromise between readability and performance, we default to `enumConv=default`. This options uses the switch version, if the
+depth is less than 3, and the `strcmp` version in all other cases. A depth of `n` means looking at the first `n` characters
+`string[0], string[1], ..., string[n-1]`. In other words a depth of `n` uses `n` switch statements.
 
 ## Structs
 
