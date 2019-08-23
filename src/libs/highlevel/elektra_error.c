@@ -29,7 +29,7 @@ extern "C" {
  * @param file        The file that raised the error. Must be compile-time constant.
  * @param line        The line in which the error was raised.
  *
- * @return A newly allocated ElektraError (free with elektraFree()).
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
  */
 ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line)
 {
@@ -55,7 +55,7 @@ ElektraError * elektraErrorCreate (const char * code, const char * description, 
  *
  * @param error   The error to which @p warning shall be added.
  * @param warning The warning to add. Once added it is owned by @p error.
- *                Do not call elektraErrorReset() on it afterwards.
+ *                DO NOT call elektraErrorReset() on it afterwards.
  */
 void elektraErrorAddWarning (ElektraError * error, ElektraError * warning)
 {
@@ -85,7 +85,7 @@ void elektraErrorAddWarning (ElektraError * error, ElektraError * warning)
  *
  * @param key The to extract error and warnings from.
  *
- * @return A newly allocated ElektraError (free with elektraFree()).
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
  */
 ElektraError * elektraErrorFromKey (Key * key)
 {
@@ -156,6 +156,13 @@ ElektraError * elektraErrorFromKey (Key * key)
 	return error;
 }
 
+/**
+ * Creates a "Key not found" error
+ *
+ * @param keyname The name of the key that wasn't found.
+ *
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
+ */
 ElektraError * elektraErrorKeyNotFound (const char * keyname)
 {
 	char * description = elektraFormat ("The key '%s' could not be found.", keyname);
@@ -164,6 +171,15 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname)
 	return error;
 }
 
+/**
+ * Creates a "Wrong type" error
+ *
+ * @param keyname      The name of the key that had the wrong type.
+ * @param expectedType The type that was expected.
+ * @param actualType   The type that was actually found.
+ *
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
+ */
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType)
 {
 	char * description =
@@ -173,6 +189,13 @@ ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType
 	return error;
 }
 
+/**
+ * Creates a "Null error argument" error
+ *
+ * @param function The name of the function that was called with a null pointer error argument.
+ *
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
+ */
 ElektraError * elektraErrorNullError (const char * function)
 {
 	char * description = elektraFormat ("The value passed to the ElektraError ** argument of %s was NULL.", function);
@@ -181,6 +204,14 @@ ElektraError * elektraErrorNullError (const char * function)
 	return error;
 }
 
+/**
+ * Creates a "Conversion to string failed" error
+ *
+ * @param sourceType The type which failed to be converted to string.
+ * @param keyname    The name of the key that couldn't be converted.
+ *
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
+ */
 ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * keyname)
 {
 	char * description = elektraFormat ("The value of key '%s' with type '%s' could not be converted to string.", keyname, sourceType);
@@ -189,10 +220,36 @@ ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * 
 	return error;
 }
 
+/**
+ * Creates a "Conversion from string failed" error
+ *
+ * @param targetType  The type into which @p sourceValue couldn't be converted.
+ * @param keyname     The name of the key that couldn't be converted.
+ * @param sourceValue The value that couldn't be converted.
+ *
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
+ */
 ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * keyname, const char * sourceValue)
 {
 	char * description =
 		elektraFormat ("The value '%s' of key '%s' could not be converted to type '%s'.", sourceValue, keyname, targetType);
+	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
+	elektraFree (description);
+	return error;
+}
+
+/**
+ * Creates a "kdbEnsure failed" error
+ *
+ * This intended for the case when kdbEnsure() returns 1.
+ *
+ * @param reason The error/reason metadata returned by kdbEnsure().
+ *
+ * @return A newly allocated ElektraError (free with elektraErrorReset()).
+ */
+ElektraError * elektraErrorEnsureFailed (const char * reason)
+{
+	char * description = elektraFormat ("The given contract could not be ensured: %s", reason);
 	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
 	elektraFree (description);
 	return error;
@@ -214,14 +271,6 @@ ElektraError * elektraErrorConversionFromString (KDBType targetType, const char 
 ElektraError * elektraErrorPureWarning (void)
 {
 	return elektraErrorCreate (NULL, "", NULL, NULL, -1);
-}
-
-ElektraError * elektraErrorEnsureFailed (const char * reason)
-{
-	char * description = elektraFormat ("The given contract could not be ensured: %s", reason);
-	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
-	elektraFree (description);
-	return error;
 }
 
 /**
