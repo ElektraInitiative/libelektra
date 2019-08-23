@@ -45,6 +45,9 @@
 {{/ args }}{{/ args? }}
  *
  * @return the value of '{{{ name }}}'.
+{{# is_string? }} *   The returned pointer may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
+{{/ is_string? }}
  */// {{=/*% %*/=}}
 static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
 								    /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,

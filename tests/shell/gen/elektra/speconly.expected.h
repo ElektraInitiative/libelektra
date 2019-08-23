@@ -166,6 +166,7 @@ extern "C" {
 
  *
  * @return the value of 'mydouble'.
+
  */// 
 static inline kdb_double_t ELEKTRA_GET (Mydouble) (Elektra * elektra )
 {
@@ -200,6 +201,7 @@ static inline void ELEKTRA_SET (Mydouble) (Elektra * elektra,
  * @param index1 Replaces occurence no. 1 of # in the keyname.
  *
  * @return the value of 'myfloatarray/#'.
+
  */// 
 static inline kdb_float_t ELEKTRA_GET (Myfloatarray) (Elektra * elektra ,
 								     kdb_long_long_t index1   )
@@ -252,6 +254,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (Myfloatarray) (Elektra * elektra )
 
  *
  * @return the value of 'myint'.
+
  */// 
 static inline kdb_long_t ELEKTRA_GET (Myint) (Elektra * elektra )
 {
@@ -286,6 +289,8 @@ static inline void ELEKTRA_SET (Myint) (Elektra * elektra,
 
  *
  * @return the value of 'mystring'.
+ *   The returned pointer may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// 
 static inline const char * ELEKTRA_GET (Mystring) (Elektra * elektra )
 {
@@ -320,6 +325,7 @@ static inline void ELEKTRA_SET (Mystring) (Elektra * elektra,
 
  *
  * @return the value of 'print'.
+
  */// 
 static inline kdb_boolean_t ELEKTRA_GET (Print) (Elektra * elektra )
 {
@@ -378,6 +384,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  *
  * @return The value stored at the given key.
+ *   The lifetime of returned pointers is documented in the ELEKTRA_GET(*) functions above.
  */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
@@ -388,14 +395,16 @@ void specloadCheck (int argc, const char ** argv);
  * @param ...     Variable arguments depending on the given tag.
  *
  * @return The value stored at the given key.
+ *   The lifetime of returned pointers is documented in the ELEKTRA_GET(*) functions above.
  */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
 
 /**
  * @param elektra The elektra instance initialized with loadConfiguration().
- * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
+ *   The lifetime of pointers in this struct is documented in the ELEKTRA_GET(*) functions above.
+ * @param tag     The tag to look up.
  */// 
 #define elektraFillStruct(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
@@ -403,6 +412,7 @@ void specloadCheck (int argc, const char ** argv);
 /**
  * @param elektra The elektra instance initialized with loadConfiguration().
  * @param result  Points to the struct into which results will be stored.
+ *   The lifetime of pointers in this struct is documented in the ELEKTRA_GET(*) functions above.
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  */// 

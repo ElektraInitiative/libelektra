@@ -12,6 +12,8 @@
 {{/ args }}{{/ args? }}
  *
  * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ type_name }}}).
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// {{=/*% %*/=}}
 static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
 								      /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
@@ -36,6 +38,8 @@ static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * 
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
  * @param result  The value will be stored in the referenced variable.
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
 {{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
 {{/ args }}{{/ args? }}
  */// {{=/*% %*/=}}

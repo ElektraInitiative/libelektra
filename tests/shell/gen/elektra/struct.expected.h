@@ -294,6 +294,8 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param result  The value will be stored in the referenced variable.
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
 
  */// 
 static inline void ELEKTRA_GET (Myotherstruct) (Elektra * elektra, ElektraStructMyotherstruct *result )
@@ -330,6 +332,7 @@ static inline void ELEKTRA_SET (Myotherstruct) (Elektra * elektra, const Elektra
 
  *
  * @return the value of 'myotherstruct/x'.
+
  */// 
 static inline kdb_long_t ELEKTRA_GET (MyotherstructX) (Elektra * elektra )
 {
@@ -364,6 +367,7 @@ static inline void ELEKTRA_SET (MyotherstructX) (Elektra * elektra,
 
  *
  * @return the value of 'myotherstruct/x/y'.
+
  */// 
 static inline kdb_long_t ELEKTRA_GET (MyotherstructXY) (Elektra * elektra )
 {
@@ -399,6 +403,8 @@ static inline void ELEKTRA_SET (MyotherstructXY) (Elektra * elektra,
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param result  The value will be stored in the referenced variable.
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
 
  */// 
 static inline void ELEKTRA_GET (Mystruct) (Elektra * elektra, ElektraStructMystruct *result )
@@ -435,6 +441,8 @@ static inline void ELEKTRA_SET (Mystruct) (Elektra * elektra, const ElektraStruc
 
  *
  * @return the value of 'mystruct/a'.
+ *   The returned pointer may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// 
 static inline const char * ELEKTRA_GET (MystructA) (Elektra * elektra )
 {
@@ -469,6 +477,7 @@ static inline void ELEKTRA_SET (MystructA) (Elektra * elektra,
 
  *
  * @return the value of 'mystruct/b'.
+
  */// 
 static inline kdb_long_t ELEKTRA_GET (MystructB) (Elektra * elektra )
 {
@@ -506,6 +515,8 @@ static inline void ELEKTRA_SET (MystructB) (Elektra * elektra,
 succeed_if_same_string ($1)
  *
  * @return the value of 'people/#', free with ELEKTRA_STRUCT_FREE (StructPerson).
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// 
 static inline Person * ELEKTRA_GET (People) (Elektra * elektra ,
 								      kdb_long_long_t index1 
@@ -574,6 +585,8 @@ static inline kdb_long_long_t ELEKTRA_SIZE (People) (Elektra * elektra )
  * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_', free with ELEKTRA_STRUCT_FREE (StructPerson).
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// 
 static inline Person * ELEKTRA_GET (Person) (Elektra * elektra ,
 								       const char * name1   )
@@ -617,6 +630,7 @@ static inline void ELEKTRA_SET (Person) (Elektra * elektra, const Person * value
  * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/age'.
+
  */// 
 static inline kdb_short_t ELEKTRA_GET (PersonAge) (Elektra * elektra ,
 								     const char * name1   )
@@ -661,6 +675,8 @@ static inline void ELEKTRA_SET (PersonAge) (Elektra * elektra,
 succeed_if_same_string ($1)
  *
  * @return the value of 'person/_/children/#', free with ELEKTRA_STRUCT_FREE (StructPerson).
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// 
 static inline Person * ELEKTRA_GET (PersonChildren) (Elektra * elektra ,
 								      const char * name1 , 
@@ -736,6 +752,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (PersonChildren) (Elektra * elektra ,
  * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/height'.
+
  */// 
 static inline kdb_float_t ELEKTRA_GET (PersonHeight) (Elektra * elektra ,
 								     const char * name1   )
@@ -777,6 +794,8 @@ static inline void ELEKTRA_SET (PersonHeight) (Elektra * elektra,
  * @param name1 Replaces occurence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/name'.
+ *   The returned pointer may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
  */// 
 static inline const char * ELEKTRA_GET (PersonName) (Elektra * elektra ,
 								     const char * name1   )
@@ -842,6 +861,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  *
  * @return The value stored at the given key.
+ *   The lifetime of returned pointers is documented in the ELEKTRA_GET(*) functions above.
  */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
@@ -852,14 +872,16 @@ void specloadCheck (int argc, const char ** argv);
  * @param ...     Variable arguments depending on the given tag.
  *
  * @return The value stored at the given key.
+ *   The lifetime of returned pointers is documented in the ELEKTRA_GET(*) functions above.
  */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
 
 /**
  * @param elektra The elektra instance initialized with loadConfiguration().
- * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
+ *   The lifetime of pointers in this struct is documented in the ELEKTRA_GET(*) functions above.
+ * @param tag     The tag to look up.
  */// 
 #define elektraFillStruct(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
@@ -867,6 +889,7 @@ void specloadCheck (int argc, const char ** argv);
 /**
  * @param elektra The elektra instance initialized with loadConfiguration().
  * @param result  Points to the struct into which results will be stored.
+ *   The lifetime of pointers in this struct is documented in the ELEKTRA_GET(*) functions above.
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  */// 
