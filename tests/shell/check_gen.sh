@@ -75,6 +75,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 		old_dir=$(pwd)
 		cd "$output_folder" || exit 1
+		# shellcheck disable=SC2086
 		"$KDB" gen "$template" "$cascading_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
@@ -124,7 +125,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		fi
 		rm "$output_folder$test_name.stderr"
 
-		if [ "$gen" == "0" ]; then
+		if [ "$gen" = "0" ]; then
 			for expected_part in "$test_folder$test_name".expected*; do
 				[ -e "$expected_part" ] || continue
 
@@ -165,8 +166,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				old_dir=$(pwd)
 				cd "$output_folder" || exit 1
 
-				KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
-				if [ "$?" != "0" ]; then
+				if KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1; then
 					test "1" = "0"
 					succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
 
