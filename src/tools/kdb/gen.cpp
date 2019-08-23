@@ -50,6 +50,12 @@ int GenCommand::execute (Cmdline const & cl)
 	const auto & templates = GenTemplateList::getInstance ();
 	const auto tmpl = templates.getTemplate (templateName, parameters);
 
+	if (tmpl->isEmpty ())
+	{
+		// empty template -> correct one not found
+		throw invalid_argument ("couldn't find template '" + templateName + "'");
+	}
+
 	KeySet ks;
 
 	if (cl.inputFile.empty ())
