@@ -36,5 +36,6 @@ if stringContain "Darwin" "$(uname)"; then
 fi
 
 SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
+DEV_SCRIPTS=$(dirname "$SELF")
+SCRIPTS=$(dirname "$DEV_SCRIPTS")
 SOURCE=$(dirname "$SCRIPTS")

@@ -5,15 +5,15 @@
 # @date 29.03.2019
 # @tags reformat
 
-SCRIPTS_DIR=$(dirname "$0")
-. "${SCRIPTS_DIR}/include-common"
+DEV_SCRIPTS_DIR=$(dirname "$0")
+. "${DEV_SCRIPTS_DIR}/include-common"
 
 cd "$SOURCE"
 
 OLD_IFS="$IFS"
 IFS='
 '
-for reformat in $(ls "$SCRIPTS_DIR"/reformat-*); do
+for reformat in $(ls "$DEV_SCRIPTS_DIR"/reformat-*); do
 	[ "$(basename "$reformat")" = "reformat-all" ] && continue
 	echo "running $reformat..."
 	"$reformat" "$@"
