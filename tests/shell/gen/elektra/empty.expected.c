@@ -38,6 +38,14 @@
 
 #include <elektra/conversion.h>
 
+static KeySet * embeddedSpec (void)
+{
+	return ksNew (1,
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
+	KS_END);
+;
+}
+
 
 /**
  * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/empty'.
@@ -61,10 +69,7 @@
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (1,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
-	KS_END);
-;
+	KeySet * defaults = embeddedSpec ();
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, error);
 
 	if (e == NULL)
@@ -109,12 +114,9 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (1,
-	keyNew ("spec/tests/script/gen/elektra/empty", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
-	KS_END);
-;
+	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/empty", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/empty", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);

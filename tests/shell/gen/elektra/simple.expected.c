@@ -38,6 +38,19 @@
 
 #include <elektra/conversion.h>
 
+static KeySet * embeddedSpec (void)
+{
+	return ksNew (6,
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
+	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
+	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
+	KS_END);
+;
+}
+
 
 /**
  * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/simple'.
@@ -61,15 +74,7 @@
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
-	keyNew ("/mydouble", KEY_VALUE, "0.0", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("/myfloatarray/#", KEY_VALUE, "1.1", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
-	keyNew ("/myint", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/print", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
-	KS_END);
-;
+	KeySet * defaults = embeddedSpec ();
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/simple", defaults, error);
 
 	if (e == NULL)
@@ -114,17 +119,9 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (6,
-	keyNew ("spec/tests/script/gen/elektra/simple", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
-	KS_END);
-;
+	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/simple", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/simple", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);

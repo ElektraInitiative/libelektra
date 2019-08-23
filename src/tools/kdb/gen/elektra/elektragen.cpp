@@ -206,14 +206,10 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto parentLength = specParentName.length ();
 
 	kdb::KeySet spec;
-	kdb::KeySet defaults;
 
 	kdb::Key parent = ks.lookup (specParent).dup ();
-	spec.append (parent);
-
-	parent = ks.lookup (specParent).dup ();
 	parent.setName ("");
-	defaults.append (parent);
+	spec.append (parent);
 
 	auto parentKeyParts = getKeyParts (specParent);
 
@@ -227,6 +223,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		}
 
 		kdb::Key specKey = key.dup ();
+		specKey.setName (specKey.getName ().substr (parentLength));
 		spec.append (specKey);
 
 		if (!hasType (key))
@@ -246,11 +243,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		{
 			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
 		}
-
-		kdb::Key defaultsKey = key.dup ();
-		defaultsKey.setName (defaultsKey.getName ().substr (parentLength));
-		defaultsKey.setString (key.getMeta<std::string> ("default"));
-		defaults.append (defaultsKey);
 
 		std::unordered_set<std::string> allowedTypes = { "enum",
 								 "string",
@@ -280,7 +272,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		if (type == "discriminator")
 		{
 			type = "enum";
-			defaultsKey.setMeta ("type", "enum");
 			specKey.setMeta ("type", "enum");
 		}
 
@@ -432,7 +423,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["enums"] = enums;
 	data["unions"] = unions;
 	data["structs"] = structs;
-	data["defaults"] = keySetToCCode (defaults);
 	data["spec"] = keySetToCCode (spec);
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = specloadArg;
