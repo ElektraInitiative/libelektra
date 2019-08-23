@@ -230,10 +230,6 @@ strict digraph G {
 	yanlr -> storage;
 	yaml [shape=Mdiamond];
 	yanlr -> yaml;
-	storage [shape=Mdiamond];
-	yawn -> storage;
-	yaml [shape=Mdiamond];
-	yawn -> yaml;
 	notification [shape=Mdiamond];
 	zeromqrecv -> notification;
 	notification [shape=Mdiamond];
