@@ -34,20 +34,14 @@ const char * HighlevelGenTemplate::Params::TagPrefix = "tagPrefix";
 const char * HighlevelGenTemplate::Params::EnumConversion = "enumConv";
 const char * HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
 const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
-const char * HighlevelGenTemplate::Params::SpecLocation = "specLocation";
-const char * HighlevelGenTemplate::Params::DefaultsHandling = "defaultsHandling";
+const char * HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
 const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 
-enum class SpecLocation
+enum class EmbeddedSpec
 {
-	Embedded,
-	External
-};
-
-enum class DefaultsHandling
-{
-	Embedded,
-	SpecOnly
+	Full,
+	Defaults,
+	None
 };
 
 enum class SpecValidation
@@ -210,12 +204,10 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "default");
 	auto generateSetters = getBoolParameter (Params::GenerateSetters, true);
-	auto specLocation = getParameter<SpecLocation> (
-		Params::SpecLocation,
-		{ { "", SpecLocation::Embedded }, { "embedded", SpecLocation::Embedded }, { "external", SpecLocation::External } });
-	auto defaultsHandling = getParameter<DefaultsHandling> (Params::DefaultsHandling, { { "", DefaultsHandling::Embedded },
-											    { "embedded", DefaultsHandling::Embedded },
-											    { "speconly", DefaultsHandling::SpecOnly } });
+	auto specHandling = getParameter<EmbeddedSpec> (Params::EmbeddedSpec, { { "", EmbeddedSpec::Full },
+										{ "full", EmbeddedSpec::Full },
+										{ "defaults", EmbeddedSpec::Defaults },
+										{ "none", EmbeddedSpec::None } });
 	auto specValidation = getParameter<SpecValidation> (
 		Params::SpecValidation,
 		{ { "", SpecValidation::Minimal }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
@@ -237,19 +229,18 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 	auto cascadingParent = parentKey.substr (4);
 
-	auto data =
-		object{ { "header_file", headerFile },
-			{ "include_guard", includeGuard },
-			{ "spec_parent_key", parentKey },
-			{ "parent_key", cascadingParent },
-			{ "init_function_name", initFunctionName },
-			{ "help_function_name", helpFunctionName },
-			{ "specload_function_name", specloadFunctionName },
-			{ "generate_setters?", generateSetters },
-			{ "embed_spec?", specLocation == SpecLocation::Embedded },
-			{ "embed_defaults?", specLocation != SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
-			{ "spec_as_defaults?", specLocation == SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
-			{ "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
+	auto data = object{ { "header_file", headerFile },
+			    { "include_guard", includeGuard },
+			    { "spec_parent_key", parentKey },
+			    { "parent_key", cascadingParent },
+			    { "init_function_name", initFunctionName },
+			    { "help_function_name", helpFunctionName },
+			    { "specload_function_name", specloadFunctionName },
+			    { "generate_setters?", generateSetters },
+			    { "embed_spec?", specHandling == EmbeddedSpec::Full },
+			    { "embed_defaults?", specHandling == EmbeddedSpec::Defaults },
+			    { "spec_as_defaults?", specHandling == EmbeddedSpec::Full },
+			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
 	list enums;
 	list structs;
@@ -500,7 +491,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = "--elektra-spec";
 
-	if (specLocation == SpecLocation::External)
+	if (specHandling != EmbeddedSpec::Full)
 	{
 		keySetToQuickdump (spec, outputName + ".spec.eqd", parentKey);
 	}
