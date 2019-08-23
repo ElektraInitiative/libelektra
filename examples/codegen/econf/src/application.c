@@ -14,6 +14,7 @@
 static void onFatalError (ElektraError * error)
 {
 	fprintf (stderr, "ERROR: %s\n", elektraErrorDescription (error));
+	elektraErrorReset (&error);
 	exit (EXIT_FAILURE);
 }
 
