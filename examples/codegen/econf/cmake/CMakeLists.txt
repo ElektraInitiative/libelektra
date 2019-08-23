@@ -24,7 +24,7 @@ if (ELEKTRA_FOUND)
 				    gen
 				    -F
 				    "ni=${CMAKE_CURRENT_SOURCE_DIR}/../spec.ini"
-				    elektra
+				    highlevel
 				    "spec/sw/example/econf/#0/current"
 				    "genelektra"
 			    MAIN_DEPENDENCY ../spec.ini
