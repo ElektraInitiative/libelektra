@@ -111,6 +111,8 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	return elektra;
 }
 
+ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", elektraOpen, v1);
+
 Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, KeySet * defaults, ElektraError ** error)
 {
 	return elektraOpen (application, defaults, NULL, error);
