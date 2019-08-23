@@ -45,8 +45,7 @@ To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
 
 ### application-config.json
 
-This file will be copied and mounted by the command `kdb
-mount-website-frontend-config`. The configuration will then be available
+This file will be copied and mounted by the command `kdb mount-website-frontend-config`. The configuration will then be available
 below `@config_root@/@config_default_profile@` in Elektra.
 
 #### APIs (Backend & GitHub)
