@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Copyright (C) 2019 Elektra Initiative.
 # BSD License (see LICENSE.md or https://www.libelektra.org)
