@@ -78,7 +78,7 @@ sudo kdb umount user/tests/together
 ```
 
 The approach is not limited to validation via regular expressions, but
-any values-validation plugin can be used, e.g. [enum](/src/plugins/enum).
+any values-validation plugin can be used, e.g. [type](/src/plugins/type).
 For a full list refer to the section "Value Validation" in the
 [list of all plugins](/src/plugins/README.md).
 
