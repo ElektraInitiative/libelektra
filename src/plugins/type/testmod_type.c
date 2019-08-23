@@ -527,7 +527,8 @@ static void test_booleanDefaultRestore (const char * type)
 	Key * parentKey = keyNew ("user/tests/type", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("type");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/type/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+	KeySet * ks = ksNew (30, keyNew ("user/tests/type/a0", KEY_VALUE, "x", KEY_END),
+			     keyNew ("user/tests/type/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
 			     keyNew ("user/tests/type/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
 			     keyNew ("user/tests/type/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
 			     keyNew ("user/tests/type/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
