@@ -62,6 +62,7 @@ static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * el
 	/*%/ args? %*/
 }
 
+/*%# generate_setters? %*/
 /*%={{ }}=%*/
 /**
  * Set the value of '{{{ name }}}'.
@@ -87,6 +88,7 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra,
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
 	/*%/ args? %*/
 }
+/*%/ generate_setters? %*/
 /*%/ is_struct_ref? %*/
 /*%/ is_struct? %*/
 /*%# is_array? %*/

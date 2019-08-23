@@ -152,6 +152,7 @@ ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_nam
 }
 /*%/ alloc? %*/
 
+/*%# generate_setters? %*/
 ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
 {
 	size_t nameLen = strlen (keyname);
@@ -246,4 +247,5 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_nam
 
 	/*%/ fields %*/
 }
+/*%/ generate_setters? %*/
 /*%/ structs %*/

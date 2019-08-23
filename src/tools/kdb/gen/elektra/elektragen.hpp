@@ -21,6 +21,7 @@ class ElektraGenTemplate : public GenTemplate
 		static const char * TagPrefix;
 		static const char * EnumConversion;
 		static const char * AdditionalHeaders;
+		static const char * GenerateSetters;
 	};
 
 public:
@@ -28,12 +29,15 @@ public:
 	: GenTemplate ("elektra", { ".c", ".h" },
 		       { "enum.c", "union.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "union.decl.h",
 			 "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
-		       { { Params::InitFunctionName, false },
-			 { Params::HelpFunctionName, false },
-			 { Params::SpecloadFunctionName, false },
-			 { Params::TagPrefix, false },
-			 { Params::EnumConversion, false },
-			 { Params::AdditionalHeaders, false } })
+		       {
+			       { Params::InitFunctionName, false },
+			       { Params::HelpFunctionName, false },
+			       { Params::SpecloadFunctionName, false },
+			       { Params::TagPrefix, false },
+			       { Params::EnumConversion, false },
+			       { Params::GenerateSetters, false },
+			       { Params::AdditionalHeaders, false },
+		       })
 	{
 	}
 

@@ -32,6 +32,7 @@ const char * ElektraGenTemplate::Params::SpecloadFunctionName = "specloadFn";
 const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
 const char * ElektraGenTemplate::Params::EnumConversion = "enumConv";
 const char * ElektraGenTemplate::Params::AdditionalHeaders = "headers";
+const char * ElektraGenTemplate::Params::GenerateSetters = "genSetters";
 
 static std::string createIncludeGuard (const std::string & fileName)
 {
@@ -165,6 +166,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "default");
+	auto generateSetters = getParameter (Params::GenerateSetters, "1") != "0";
 
 	auto enumConversion = EnumConversion::Default;
 	if (enumConversionString == "trie")
@@ -190,6 +192,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			    { "init_function_name", initFunctionName },
 			    { "help_function_name", helpFunctionName },
 			    { "specload_function_name", specloadFunctionName },
+			    { "generate_setters?", generateSetters },
 			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
 	list enums;
