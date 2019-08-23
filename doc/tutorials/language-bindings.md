@@ -93,7 +93,7 @@ set_property (TEST test_our_binding PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAK
 
 Now our bindings can be tested through `ctest` alongside all other tests.
 
-See the [java binding](../../src/bindings/jna/CMakeLists.txt) or the [haskell binding](../../src/bindings/haskell/CMakeLists.txt) for examples.
+See the [Java binding](../../src/bindings/jna/CMakeLists.txt) or the [Haskell binding](../../src/bindings/haskell/CMakeLists.txt) for examples.
 
 ## Error Handling
 
