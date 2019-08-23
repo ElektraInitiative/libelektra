@@ -210,7 +210,7 @@ static void handleConflict (Key * parentKey, const char * msg, OnConflict onConf
  * @param specKey   The spec Key causing the conflict (for additional information, e.g. max array size)
  * @param ch        How conflicts should be handled
  *
- * @retval  0 if no conflicts where found
+ * @retval  0 if no conflicts where found, or all found conflicts are ignored
  * @retval -1 otherwise
  */
 static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const ConflictHandling * ch)
@@ -228,6 +228,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		keyGetString (metaKey, conflicts, SIZE_CONFLICTS);
 	}
 
+	int ret = 0;
 	if (conflicts[CONFLICT_INVALID] == '1' && ch->invalid != IGNORE)
 	{
 		const Key * moreMsg = keyGetMeta (key, "conflict/invalid");
@@ -243,6 +244,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 
 		handleConflict (parentKey, msg, ch->invalid);
 		elektraFree (msg);
+		ret = -1;
 	}
 
 	if (conflicts[CONFLICT_ARRAYMEMBER] == '1' && ch->member != IGNORE)
@@ -253,6 +255,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		handleConflict (parentKey, msg, ch->member);
 		elektraFree (msg);
 		safeFree (problemKeys);
+		ret = -1;
 	}
 
 	if (conflicts[CONFLICT_WILDCARDMEMBER] == '1' && ch->member != IGNORE)
@@ -263,6 +266,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		handleConflict (parentKey, msg, ch->member);
 		elektraFree (msg);
 		safeFree (problemKeys);
+		ret = -1;
 	}
 
 	if (conflicts[CONFLICT_COLLISION] == '1' && ch->conflict != IGNORE)
@@ -272,6 +276,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		handleConflict (parentKey, msg, ch->conflict);
 		elektraFree (msg);
 		safeFree (problemKeys);
+		ret = -1;
 	}
 
 	if (conflicts[CONFLICT_OUTOFRANGE] == '1' && ch->range != IGNORE)
@@ -284,9 +289,10 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 					    max == NULL ? "" : keyString (max));
 		handleConflict (parentKey, msg, ch->range);
 		elektraFree (msg);
+		ret = -1;
 	}
 
-	return -1;
+	return ret;
 }
 
 /**
