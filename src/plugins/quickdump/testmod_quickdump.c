@@ -166,6 +166,7 @@ static void test_noParent (void)
 	remove (outfile);
 
 	elektraFree (outfile);
+	ksDel (input);
 	ksDel (expected);
 }
 
