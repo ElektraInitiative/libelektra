@@ -82,8 +82,6 @@ mac_task:
         KDB_DB_INIT: elektra.mmap
 
   install_script:
-    - > # Add external Homebrew taps
-      brew tap sanssecours/yaep
     - > # Install Homebrew casks
       brew cask install java oclint
     - > # Install Homebrew formulas
@@ -118,7 +116,6 @@ mac_task:
       swig
       tree
       xerces-c
-      yaep
       yajl
       yaml-cpp
       zeromq
