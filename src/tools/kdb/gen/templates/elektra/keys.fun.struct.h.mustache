@@ -55,6 +55,7 @@ static inline void ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra, /*%& nati
 }
 /*%/ alloc? %*/
 
+/*%# generate_setters? %*/
 /*%={{ }}=%*/
 /**
  * Set the value of '{{{ name }}}'.
@@ -79,3 +80,4 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, const /*%
 	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
 	/*%/ args? %*/
 }
+/*%/ generate_setters? %*/

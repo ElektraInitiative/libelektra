@@ -94,6 +94,7 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv);
  */// {{=/*% %*/=}}
 #define elektraFillStructV(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
+/*%# generate_setters? %*/
 /*%={{ }}=%*/
 /**
  * @param elektra The elektra instance initialized with the {{{ init_function_name }}}().
@@ -112,6 +113,7 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv);
  * @param ...     Variable arguments depending on the given tag.
  */// {{=/*% %*/=}}
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_SET (tag) (elektra, value, __VA_ARGS__, error)
+/*%/ generate_setters? %*/
 
 /*%={{ }}=%*/
 /**
