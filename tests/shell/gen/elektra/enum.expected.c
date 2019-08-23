@@ -38,8 +38,6 @@
 
 #include <elektra/conversion.h>
 
-static Key * helpKey = NULL;
-
 
 /**
  * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/enum'.
@@ -51,13 +49,13 @@ static Key * helpKey = NULL;
  *                Has to be disposed of with elektraClose().
  * @param error   A reference to an ElektraError pointer. Will be passed to elektraOpen().
  *
- * @retval 0  on success, @p elektra will be set, @p error will be unchanged
+ * @retval 0  on success, @p elektra will contain a new Elektra instance coming from elektraOpen(),
+ *            @p error will be unchanged
  * @retval -1 on error, @p elektra will be unchanged, @p error will be set
- * @retval 1  specload mode, exit as soon as possible and must DO NOT write anything to stdout,
- *            @p elektra and @p error are both unchanged
- * @retval 2  help mode, '-h' or '--help' was specified call printHelpMessage and exit
- *            @p elektra and @p error are both unchanged
- *            IMPORTANT: there will be memory leaks, if you don't call printHelpMessage !!
+ * @retval 1  help mode, '-h' or '--help' was specified call printHelpMessage to display
+ *            the help message. @p elektra will contain a new Elektra instance. It has to be passed
+ *            to printHelpMessage. You also need to elektraClose() it.
+ *            @p error will be unchanged
  *
  * @see elektraOpen
  */// 
@@ -93,15 +91,8 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		return -1;
 	}
 
-	helpKey = elektraHelpKey (e);
-	if (helpKey != NULL)
-	{
-		elektraClose (e);
-		return 2;
-	}
-
 	*elektra = e;
-	return 0;
+	return elektraHelpKey (e) != NULL ? 1 : 0;
 }
 
 /**
@@ -148,25 +139,17 @@ void specloadCheck (int argc, const char ** argv)
 	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-/**
- * Extracts the help message from the @p errorKey used in elektraGetOpts().
- *
- * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
- * @param usage	   If this is not NULL, it will be used instead of the default usage line.
- * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- *
- * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
- * The returned string has to be freed with elektraFree().
- */
 
 /**
  * Outputs the help message to stdout
  *
+ * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
  * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- */
-void printHelpMessage (const char * usage, const char * prefix)
+ */// 
+void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
+	Key * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{
 		return;
@@ -175,8 +158,6 @@ void printHelpMessage (const char * usage, const char * prefix)
 	char * help = elektraGetOptsHelpMessage (helpKey, usage, prefix);
 	printf ("%s", help);
 	elektraFree (help);
-	keyDel (helpKey);
-	helpKey = NULL;
 }
 
 // clang-format off

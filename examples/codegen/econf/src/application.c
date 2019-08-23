@@ -68,7 +68,8 @@ int main (int argc, const char ** argv)
 	if (rc == 1)
 	{
 		// help mode
-		printHelpMessage (NULL, NULL);
+		printHelpMessage (elektra, NULL, NULL);
+		elektraClose (elektra);
 		return EXIT_SUCCESS;
 	}
 

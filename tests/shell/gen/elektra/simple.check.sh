@@ -69,9 +69,10 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	if (rc == 2)
+	if (rc == 1)
 	{
 		fprintf (stderr, "unexpected help mode");
+		elektraClose (elektra);
 		return EXIT_FAILURE;
 	}
 
