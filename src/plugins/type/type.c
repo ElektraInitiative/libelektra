@@ -308,7 +308,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		const char * typeName = getTypeName (cur);
 		if (typeName == NULL)
 		{
-			return true;
+			continue;
 		}
 
 		const Type * type = findType (typeName);
