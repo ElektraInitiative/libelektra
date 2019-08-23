@@ -22,8 +22,7 @@ class HighlevelGenTemplate : public GenTemplate
 		static const char * EnumConversion;
 		static const char * AdditionalHeaders;
 		static const char * GenerateSetters;
-		static const char * SpecLocation;
-		static const char * DefaultsHandling;
+		static const char * EmbeddedSpec;
 		static const char * SpecValidation;
 	};
 
@@ -40,8 +39,7 @@ public:
 			       { Params::EnumConversion, false },
 			       { Params::GenerateSetters, false },
 			       { Params::AdditionalHeaders, false },
-			       { Params::SpecLocation, false },
-			       { Params::DefaultsHandling, false },
+			       { Params::EmbeddedSpec, false },
 			       { Params::SpecValidation, false },
 		       })
 	{
