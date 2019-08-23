@@ -30,7 +30,6 @@ endif ()
 
 At first we want to make sure that the build tools and compilers we need for the binding are installed. We can use `find_program (BUILD_TOOL_EXECUTABLE build_tool)` to find our `build_tool` program. The result of the search will be stored in `BUILD_TOOL_EXECUTABLE`, so now we can use an if block to include the bindings in the build, if the program exists or exclude it, if it doesn't. To do that, we use `add_binding` which adds ours to the list of bindings that will be built. For more provided functions, [see here](../../cmake/Modules/LibAddBinding.cmake).
 
-
 If, for example, our bindings only support linking against a dynamic library we can express that, by using the `BUILD_*` variables in if blocks or by passing `ONLY_SHARED` to `add_binding`. You can read more in the [compile doc](../COMPILE.md).
 
 ```cmake
