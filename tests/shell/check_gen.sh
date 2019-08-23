@@ -133,20 +133,27 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				[ -f "$actual_part" ]
 				succeed_if "missing part $test_name.actual$part"
 
-				diff -u "$expected_part" "$actual_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+				diff_result=$(diff -u "$expected_part" "$actual_part")
+				if [ -n "$diff_result" ]; then
+					if echo "$diff_result" | grep "^Binary files"; then
+						printf "" > "$diff_part"
 
-				if [ -s "$diff_part" ]; then
-					test "1" = "0"
-					succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
-					if [ "$nodiff" = "" ]; then
-						echo "Here is the diff:"
-						cat "$diff_part"
+						echo "Binary file didn't match."
+						echo "The actual file is stored at $actual_part"
+						echo
+					else
+						printf "%s" "$diff_result" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+
+						test "1" = "0"
+						succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
+						if [ "$nodiff" = "" ]; then
+							echo "Here is the diff:"
+							cat "$diff_part"
+							echo
+						fi
+						echo "The diff is also stored at $diff_part"
 						echo
 					fi
-					echo "The diff is also stored at $diff_part"
-					echo
-				else
-					rm "$diff_part"
 				fi
 			done
 
@@ -181,11 +188,13 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				diff_part="$output_folder$test_name$part.diff"
 
 				if [ -e "$diff_part" ]; then
-					rm "$actual_part"
-					continue
-				fi
-
-				if [ -e "$expected_part" ]; then
+					if [ -s "$diff_part" ]; then
+						rm "$actual_part"
+						continue
+					else
+						rm "$diff_part"
+					fi
+				elif [ -e "$expected_part" ]; then
 					rm "$actual_part"
 					continue
 				fi

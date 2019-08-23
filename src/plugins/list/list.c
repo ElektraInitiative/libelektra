@@ -723,6 +723,11 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 
 	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, pluginConfig, errorKey);
 
+	if (plugin == NULL)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	// Store key with plugin handle
 	Key * searchKey = keyNew ("/", KEY_END);
 	keyAddBaseName (searchKey, pluginName);

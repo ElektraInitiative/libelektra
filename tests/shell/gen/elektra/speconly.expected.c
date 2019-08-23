@@ -24,7 +24,7 @@
  *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "empty.actual.h"
+#include "speconly.actual.h"
 
 
 
@@ -40,15 +40,20 @@
 
 static KeySet * embeddedSpec (void)
 {
-	return ksNew (1,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
+	return ksNew (6,
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
+	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
+	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
 	KS_END);
 ;
 }
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/empty'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/speconly'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -69,10 +74,11 @@ static KeySet * embeddedSpec (void)
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = embeddedSpec ();
 	
+	
+	KeySet * defaults = NULL;
 
-	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/elektra/speconly", defaults, error);
 
 	if (e == NULL)
 	{
@@ -118,7 +124,7 @@ void specloadCheck (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/empty", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/speconly", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);

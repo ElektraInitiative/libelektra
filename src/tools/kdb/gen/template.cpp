@@ -1,3 +1,5 @@
+#include <utility>
+
 /**
  * @file
  *
@@ -123,6 +125,11 @@ std::string GenTemplate::getParameter (const std::string & name, const std::stri
 	auto search = _parameters.find (name);
 	auto param = search != _parameters.end () ? search->second : "";
 	return param.empty () ? defaultValue : param;
+}
+
+bool GenTemplate::getBoolParameter (const std::string & name, bool defaultValue) const
+{
+	return getParameter<bool> (name, { { "", defaultValue }, { "0", false }, { "1", true } });
 }
 
 void GenTemplate::setParameter (const std::string & name, const std::string & value)
