@@ -10,6 +10,7 @@ RUN apt-get update && apt-get -y install \
         ed \
         git \
         libantlr4-runtime-dev \
+        libyajl-dev \
         libyaml-cpp-dev \
         llvm \
         locales \
