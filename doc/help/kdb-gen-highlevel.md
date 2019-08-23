@@ -79,7 +79,21 @@ For detailed information about the contents of the header file see [elektra-high
 
 ## EXAMPLES
 
-[//]: # "TODO [kodebach]"
+The simplest invocation is:
+
+`kdb gen highlevel /sw/org/app/#0/current config`
+
+However, it is not recommended to have the code-generator read from the KDB, so one should instead use:
+
+`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config`
+
+If you don't want to embed the full specification in your binary, we recommend:
+
+`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config specLocation=external specValidation=minimal`
+
+For the minimal binary size you may use (this comes with its own drawbacks, see [elektra-highlevel-gen(7)](elektra-highlevel-gen.md)):
+
+`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config specLocation=external defaultsHandling=speconly specValidation=minimal`
 
 ## SEE ALSO
 
