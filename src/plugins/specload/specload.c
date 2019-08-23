@@ -143,6 +143,12 @@ int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key 
 	Key * errorKey = keyNew (0, KEY_END);
 
 	KeySet * quickDumpConf = ksNew (0, KS_END);
+
+	if (keyGetMeta (parentKey, "system/elektra/quickdump/noparent") != NULL)
+	{
+		ksAppendKey (quickDumpConf, keyNew ("system/noparent", KEY_END));
+	}
+
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConf, errorKey);
 
 	Key * quickDumpParent = keyNew (keyName (parentKey), KEY_VALUE, STDOUT_FILENAME, KEY_END);

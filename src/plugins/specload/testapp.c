@@ -22,9 +22,14 @@
 #define STDOUT_FILENAME ("/dev/stdout")
 #endif
 
-static int outputKeySet (KeySet * ks)
+static int outputKeySet (KeySet * ks, int noparent)
 {
 	Key * parentKey = keyNew (PARENT_KEY, KEY_END);
+
+	if (noparent)
+	{
+		keySetMeta (parentKey, "system/elektra/quickdump/noparent", "");
+	}
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
@@ -41,7 +46,15 @@ static int outputKeySet (KeySet * ks)
 static int outputDefaultSpec (void)
 {
 	KeySet * ks = DEFAULT_SPEC;
-	int result = outputKeySet (ks);
+	int result = outputKeySet (ks, 0);
+	ksDel (ks);
+	return result;
+}
+
+static int outputNoParentSpec (void)
+{
+	KeySet * ks = NOPARENT_SPEC;
+	int result = outputKeySet (ks, 1);
 	ksDel (ks);
 	return result;
 }
@@ -51,6 +64,11 @@ static int outputSpec (const char * name)
 	if (strcmp (name, "default") == 0)
 	{
 		return outputDefaultSpec ();
+	}
+
+	if (strcmp (name, "noparent") == 0)
+	{
+		return outputNoParentSpec ();
 	}
 
 	return EXIT_FAILURE;
