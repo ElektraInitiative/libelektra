@@ -24,7 +24,7 @@
  *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "empty.actual.h"
+#include "externalwithdefaults.actual.h"
 
 
 
@@ -38,17 +38,11 @@
 
 #include <elektra/conversion.h>
 
-static KeySet * embeddedSpec (void)
-{
-	return ksNew (1,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
-	KS_END);
-;
-}
+
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/empty'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/externalwithdefaults'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -69,10 +63,18 @@ static KeySet * embeddedSpec (void)
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = embeddedSpec ();
+	
+	KeySet * defaults = ksNew (5,
+	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
+	keyNew ("/myfloatarray/#", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
+	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
+	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
+	KS_END);
+;
 	
 
-	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/elektra/externalwithdefaults", defaults, error);
 
 	if (e == NULL)
 	{
@@ -97,41 +99,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	return elektraHelpKey (e) != NULL ? 1 : 0;
 }
 
-/**
- * Checks whether specload mode was invoked and if so, sends the specification over stdout
- * in the format expected by specload.
- *
- * You MUST not output anything to stdout before invoking this function. Ideally invoking this
- * is the first thing you do in your main()-function.
- *
- * This function will ONLY RETURN, if specload mode was NOT invoked. Otherwise it will call `exit()`.
- *
- * @param argc pass the value of argc from main
- * @param argv pass the value of argv from main
- */
-void specloadCheck (int argc, const char ** argv)
-{
-	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
-	{
-		return;
-	}
 
-	KeySet * spec = embeddedSpec ();
-
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/empty", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
-
-	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
-	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
-
-	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
-
-	elektraInvokeClose (specload, parentKey);
-	keyDel (parentKey);
-	ksDel (specloadConf);
-	ksDel (spec);
-
-	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
-}
 
 
 /**

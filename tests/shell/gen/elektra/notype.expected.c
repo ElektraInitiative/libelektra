@@ -71,6 +71,8 @@ static KeySet * embeddedSpec (void)
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = embeddedSpec ();
+	
+
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/notype", defaults, error);
 
 	if (e == NULL)

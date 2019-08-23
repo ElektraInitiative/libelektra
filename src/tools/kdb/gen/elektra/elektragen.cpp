@@ -20,6 +20,7 @@
 #include <fstream>
 #include <kdb.h>
 #include <kdbease.h>
+#include <kdbplugin.h>
 #include <memory>
 #include <regex>
 #include <set>
@@ -33,6 +34,28 @@ const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
 const char * ElektraGenTemplate::Params::EnumConversion = "enumConv";
 const char * ElektraGenTemplate::Params::AdditionalHeaders = "headers";
 const char * ElektraGenTemplate::Params::GenerateSetters = "genSetters";
+const char * ElektraGenTemplate::Params::SpecLocation = "specLocation";
+const char * ElektraGenTemplate::Params::DefaultsHandling = "defaultsHandling";
+const char * ElektraGenTemplate::Params::SpecValidation = "specValidation";
+
+enum class SpecLocation
+{
+	Embedded,
+	External
+};
+
+enum class DefaultsHandling
+{
+	Embedded,
+	SpecOnly
+};
+
+enum class SpecValidation
+{
+	None,
+	Minimal,
+	Full // TODO: implement?
+};
 
 static std::string createIncludeGuard (const std::string & fileName)
 {
@@ -123,7 +146,7 @@ static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainj
 	fmtString.pop_back ();
 }
 
-static std::string keySetToCCode (kdb::KeySet set)
+static std::string keySetToCCode (kdb::KeySet & set)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -133,7 +156,10 @@ static std::string keySetToCCode (kdb::KeySet set)
 
 	auto file = "/tmp/elektra.elektragen." + std::to_string (std::time (nullptr));
 	Key errorKey ("", KEY_VALUE, file.c_str (), KEY_END);
-	plugin->set (set, errorKey);
+	if (plugin->set (set, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		throw CommandAbortException ("c (plugin) failed");
+	}
 
 	std::ifstream is (file);
 	std::string line;
@@ -145,6 +171,23 @@ static std::string keySetToCCode (kdb::KeySet set)
 	}
 
 	return ss.str ();
+}
+
+static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, const std::string & parent)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+
+	Modules modules;
+	KeySet config;
+	config.append (Key ("system/noparent", KEY_END));
+	PluginPtr plugin = modules.load ("quickdump", config);
+
+	Key parentKey (parent.c_str (), KEY_VALUE, path.c_str (), KEY_END);
+	if (plugin->set (set, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		throw CommandAbortException ("quickdump failed");
+	}
 }
 
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
@@ -166,7 +209,16 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "default");
-	auto generateSetters = getParameter (Params::GenerateSetters, "1") != "0";
+	auto generateSetters = getBoolParameter (Params::GenerateSetters, true);
+	auto specLocation = getParameter<SpecLocation> (
+		Params::SpecLocation,
+		{ { "", SpecLocation::Embedded }, { "embedded", SpecLocation::Embedded }, { "external", SpecLocation::External } });
+	auto defaultsHandling = getParameter<DefaultsHandling> (Params::DefaultsHandling, { { "", DefaultsHandling::Embedded },
+											    { "embedded", DefaultsHandling::Embedded },
+											    { "speconly", DefaultsHandling::SpecOnly } });
+	auto specValidation = getParameter<SpecValidation> (
+		Params::SpecValidation,
+		{ { "", SpecValidation::Minimal }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
 
 	auto enumConversion = EnumConversion::Default;
 	if (enumConversionString == "trie")
@@ -185,15 +237,20 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	auto cascadingParent = parentKey.substr (4);
 
-	auto data = object{ { "header_file", headerFile },
-			    { "include_guard", includeGuard },
-			    { "spec_parent_key", parentKey },
-			    { "parent_key", cascadingParent },
-			    { "init_function_name", initFunctionName },
-			    { "help_function_name", helpFunctionName },
-			    { "specload_function_name", specloadFunctionName },
-			    { "generate_setters?", generateSetters },
-			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
+	auto data =
+		object{ { "header_file", headerFile },
+			{ "include_guard", includeGuard },
+			{ "spec_parent_key", parentKey },
+			{ "parent_key", cascadingParent },
+			{ "init_function_name", initFunctionName },
+			{ "help_function_name", helpFunctionName },
+			{ "specload_function_name", specloadFunctionName },
+			{ "generate_setters?", generateSetters },
+			{ "embed_spec?", specLocation == SpecLocation::Embedded },
+			{ "embed_defaults?", specLocation != SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
+			{ "spec_as_defaults?", specLocation == SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
+			{ "check_spec_mountpoint?", specValidation != SpecValidation::None }, // TODO: implement
+			{ "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
 	list enums;
 	list structs;
@@ -209,6 +266,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto parentLength = specParentName.length ();
 
 	kdb::KeySet spec;
+	kdb::KeySet defaults;
 
 	kdb::Key parent = ks.lookup (specParent).dup ();
 	parent.setName ("");
@@ -246,6 +304,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		{
 			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
 		}
+
+		kdb::Key defaultsKey (key.getName ().substr (parentLength), KEY_END);
+		defaultsKey.setMeta ("default", key.getMeta<std::string> ("default"));
+		defaultsKey.setMeta ("type", key.getMeta<std::string> ("type"));
+		defaults.append (defaultsKey);
 
 		std::unordered_set<std::string> allowedTypes = { "enum",
 								 "string",
@@ -415,9 +478,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		keys.emplace_back (keyObject);
 	}
 
-	// TODO: make configurable?
-	auto specloadArg = "--elektra-spec";
-
 	kdb::KeySet contract;
 	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
@@ -427,8 +487,14 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["unions"] = unions;
 	data["structs"] = structs;
 	data["spec"] = keySetToCCode (spec);
+	data["defaults"] = keySetToCCode (defaults);
 	data["contract"] = keySetToCCode (contract);
-	data["specload_arg"] = specloadArg;
+	data["specload_arg"] = "--elektra-spec";
+
+	if (specLocation == SpecLocation::External)
+	{
+		keySetToQuickdump (spec, outputName + ".spec.eqd", parentKey);
+	}
 
 	return data;
 }

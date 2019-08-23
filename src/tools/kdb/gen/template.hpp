@@ -67,6 +67,44 @@ protected:
 	 */
 	std::string getParameter (const std::string & name, const std::string & defaultValue = "") const;
 
+	/**
+	 * Get the boolean value of a parameter.
+	 * The allowed values are 0 for false and 1 for true.
+	 *
+	 * @param name         The parameter name
+	 * @param defaultValue The default value
+	 *
+	 * @return the value of the parameter or @p defaultValue, if it wasn't set or is unknown
+	 */
+	bool getBoolParameter (const std::string & name, bool defaultValue = false) const;
+
+	/**
+	 * Get the value of a parameter with limited allowed values.
+	 *
+	 * The value of the parameter will be searched in @p values. If found, the mapped value is returned,
+	 * otherwise a std::invalid_argument is thrown. If the parameter isn't set, or is unknown to the template,
+	 * this function looks for the empty string in @p values.
+	 *
+	 * @param name         The parameter name
+	 * @param values       The allowed values
+	 *
+	 * @return the mapped value of the parameter
+	 *
+	 * @throws std::invalid_argument
+	 */
+	template <class T>
+	T getParameter (const std::string & name, const std::unordered_map<std::string, T> & values) const
+	{
+		// has to be in header for template to work
+		std::string param = getParameter (name);
+		auto value = values.find (param);
+		if (value == values.end ())
+		{
+			throw std::invalid_argument (param);
+		}
+		return value->second;
+	}
+
 public:
 	/**
 	 * @retval true if this is the empty template
