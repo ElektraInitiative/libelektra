@@ -202,6 +202,7 @@ if (rc == -1)
 if (rc == 1)
 {
     // help mode - application was called with '-h' or '--help'
+    // for more information see "Command line options" below
     printHelpMessage (elektra, NULL, NULL);
     elektraClose (elektra);
     exit (EXIT_SUCCESS);
@@ -291,6 +292,17 @@ There is not setter for array sizes. Since Elektra's low-level part supports dis
 necessary, if an array element setter is called. However, the high-level API has no support for discontinuous arrays, so take care not to
 create holes in your arrays, if you want to iterate over them. Remember, accessing non-existent keys (and this includes array elements) is a
 fatal error.
+
+### Command-line options
+
+The generated `loadConfiguration` function automatically mounts the `gopts` plugin. This means that command-line options (as described
+[here](command-line-options.md)) are parsed and their values are set on the corresponding keys. You don't have to do anything, apart from
+setting the `opt` metadata. The only exception to that is the _help mode_.
+
+When your application is called with `-h` or `--help`, we enter help mode. This is indicated by the return value `1` of `loadConfiguration`.
+As you can see in the example above, you should call `printHelpMessage` to print an appropriate help message to `stdout` and then close the
+allocated `Elektra` instance and `exit`. **Beware** an `Elektra` instance created in help mode may not be fully functional, which is why you
+should immediately close it once you called `printHelpMessage`.
 
 ### Advanced concepts
 

@@ -7,8 +7,13 @@ In Elektra this can be automated by providing a specification that maps command-
 to keys in the KDB.
 
 The function `elektraGetOpts` uses this specification together with `argv` and `envp` and creates new keys in the `proc`
-namespace for any command-line option or environment variable it finds. Because the `proc` namespace is uses, these values
+namespace for any command-line option or environment variable it finds. Because the `proc` namespace is used, these values
 will be preferred over any stored values in a cascading lookup.
+
+There is also the `gopts` plugin. It is a global plugin and should be mounted via `kdbEnsure`. This plugin extracts `argv`
+and `envp` via OS specific APIs and then calls `elektraGetOpts`. The advantage of using `gopts` is that it retrieves
+command-line options before any validation plugins are called. This means that values passed on the command-line can be
+validated.
 
 ## Setup
 

@@ -19,9 +19,9 @@ choose `defaults` or `none`. The `defaults` setting embeds a reduced version of 
 by `elektraOpen`. By setting `embeddedSpec=none` you can also remove this reduced specification.
 
 The advantage of using `full` is that your application is contained in a single executable file. If you don't use `full`, the code-generator
-produces an additional `.spec.eqd` file. This file contains the full specification in quickdump format. You can either mount it directly via
-`quickdump`, or if you want the features of `specload` use a `specload` configuration like this:
-`app=/usr/bin/cat args=#0 args/#0="path-to-spec-output-file"`.
+produces an additional `.spec.eqd` file and omits specload function (called `exitForSpecload` by default). This file contains the full
+specification in quickdump format. You can either mount it directly via `quickdump`, or if you want the features of `specload` use a
+`specload` configuration like this: `app=/usr/bin/cat args=#0 args/#0="path-to-spec-output-file"`.
 
 Setting `embeddedSpec=none` is only recommended, if you must have the minimal binary size and you know what you are doing. In this case no
 defaults are passed to `elektraOpen` and defaults are only handled via the `spec` plugin. If the specification/configuration isn't mounted,
