@@ -5,22 +5,29 @@
 
 # shellcheck disable=SC2016
 AWK_ESCAPE_SCRIPT='
+BEGIN {
+	for (n = 0; n < 256; n++)
+	{
+		ord[sprintf("%c", n)] = n
+	}
+}
+
 {
-	split($0, chars, "")
-	for (i=1; i <= length($0); i++) {
-		if (chars[i] ~ /["'"'"'\\?]/) {
-			printf("\\%s", chars[i])
-		} else if (chars[i] == "\t") {
-			printf("%s", "\\t")
-		} else if (chars[i] == "\r") {
-			printf("%s", "\\r")
-		} else if (chars[i] ~ /[[:print:]]/) {
-			printf("%s", chars[i])
+	for (i = 1; i <= length; i++) {
+	    c = substr($0, i, 1)
+		if (c ~ /[\"'"'"'\?]/) {
+			printf("\\%s", c)
+		} else if (c == "\t") {
+			printf("%s", "\t")
+		} else if (c == "\r") {
+			printf("%s", "\r")
+		} else if (c ~ /[ -~]/) {
+			printf("%s", c)
 		} else {
-			printf("\\x%02x", chars[i])
+			printf("\\x%02x", ord[c])
 		}
 	}
-	printf ("%s", "\\n")
+	printf("%s", "\\n")
 }
 '
 
