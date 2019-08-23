@@ -249,7 +249,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			{ "embed_spec?", specLocation == SpecLocation::Embedded },
 			{ "embed_defaults?", specLocation != SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
 			{ "spec_as_defaults?", specLocation == SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
-			{ "check_spec_mountpoint?", specValidation != SpecValidation::None }, // TODO: implement
+			{ "check_spec_mountpoint?", specValidation != SpecValidation::None }, // TODO (kodebach): implement
 			{ "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
 	list enums;
