@@ -39,7 +39,7 @@ pub trait WriteableKey: ReadableKey {
     /// Construct a new key with a name.
     ///
     /// # Panics
-    /// Will panic when an allocation error in the C-constructor occurs.
+    /// Panics when an allocation error (out of memory) in the C-constructor occurs.
     fn new(name: &str) -> Result<Self, KeyError>
     where
         Self: Sized,
@@ -50,6 +50,9 @@ pub trait WriteableKey: ReadableKey {
     }
 
     /// Construct a new nameless key.
+    /// 
+    /// # Panics
+    /// Panics when an allocation error (out of memory) in the C-constructor occurs.
     fn new_empty() -> Self
     where
         Self: Sized,
@@ -239,7 +242,7 @@ pub trait WriteableKey: ReadableKey {
 
     /// Set a new meta-information.
     /// Returns the size of the new meta information on success,
-    /// or a `KeyError::InvalidName` if the name is invalid or out of memory.
+    /// or a `KeyError::InvalidName` if the name is invalid.
     ///
     /// # Panics
     /// Panics if any of the provided strings contains interior nul bytes.
