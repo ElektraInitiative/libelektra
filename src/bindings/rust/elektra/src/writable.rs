@@ -105,7 +105,7 @@ pub trait WriteableKey: ReadableKey {
         if ret_val > 0 {
             Ok(ret_val as u32)
         } else {
-            // TODO: May also be a NameReadOnly Error...
+            // This error is either InvalidName or NameReadOnly, but only one can be returned.
             Err(KeyError::InvalidName)
         }
     }
