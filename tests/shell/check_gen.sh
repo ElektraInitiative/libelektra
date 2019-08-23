@@ -75,7 +75,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 		old_dir=$(pwd)
 		cd "$output_folder" || exit 1
-		"$KDB" gen "$template" "$spec_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
+		"$KDB" gen "$template" "$cascading_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
 			test "1" = "0"
