@@ -63,8 +63,6 @@ typedef struct _Elektra Elektra;
  *
  **************************************/
 
-ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", elektraOpen, v1);
-
 Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, KeySet * defaults, ElektraError ** error);
 
 Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error);
