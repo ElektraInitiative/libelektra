@@ -184,16 +184,29 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 	}
 }
 
-kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string & outputName, const std::string & part ELEKTRA_UNUSED,
-							       const kdb::KeySet & ks, const std::string & parentKey) const
+static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 {
-	if (parentKey.substr (0, 5) != "spec/")
+	auto result = kdb::KeySet (ks.size (), KS_END);
+	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{
-		throw CommandAbortException ("parentKey has to be in spec namespace");
+		if (it->isCascading ())
+		{
+			auto specKey = kdb::Key (it->dup ());
+			specKey.setName ("spec" + specKey.getName ());
+			result.append (specKey);
+		}
+		if (it->isSpec ())
+		{
+			result.append (*it);
+		}
 	}
+	return result;
+}
 
+kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string & outputName, const std::string & part ELEKTRA_UNUSED,
+							       const kdb::KeySet & keySet, const std::string & parentKey) const
+{
 	using namespace kainjow::mustache;
-
 
 	auto headerFile = outputName + ".h";
 	auto includeGuard = createIncludeGuard (headerFile);
@@ -218,11 +231,30 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 										      { "strcmp", EnumConversion::Strcmp } });
 
 
-	auto cascadingParent = parentKey.substr (4);
+	std::string cascadingParent;
+	std::string specParentName;
+	kdb::KeySet ks;
+
+	if (parentKey[0] == '/')
+	{
+		cascadingParent = parentKey;
+		specParentName = "spec" + parentKey;
+		ks = cascadingToSpec (keySet);
+	}
+	else if (parentKey.substr (0, 5) == "spec/")
+	{
+		cascadingParent = parentKey.substr (4);
+		specParentName = parentKey;
+		ks = keySet;
+	}
+	else
+	{
+		throw CommandAbortException ("parentKey has to start with spec/ or /");
+	}
 
 	auto data = object{ { "header_file", headerFile },
 			    { "include_guard", includeGuard },
-			    { "spec_parent_key", parentKey },
+			    { "spec_parent_key", specParentName },
 			    { "parent_key", cascadingParent },
 			    { "init_function_name", initFunctionName },
 			    { "help_function_name", helpFunctionName },
@@ -238,12 +270,11 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	list keys;
 	list unions;
 
-	auto specParent = kdb::Key (parentKey, KEY_END);
+	auto specParent = kdb::Key (specParentName, KEY_END);
 
 	EnumProcessor enumProcessor (enumConversion);
 	StructProcessor structProcessor (specParent, ks);
 
-	const std::string & specParentName = specParent.getName ();
 	auto parentLength = specParentName.length ();
 
 	kdb::KeySet spec;
@@ -484,7 +515,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 	if (specHandling != EmbeddedSpec::Full)
 	{
-		keySetToQuickdump (spec, outputName + ".spec.eqd", parentKey);
+		keySetToQuickdump (spec, outputName + ".spec.eqd", specParentName);
 	}
 
 	return data;
