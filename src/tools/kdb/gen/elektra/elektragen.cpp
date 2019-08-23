@@ -300,9 +300,10 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		list args;
 		getKeyArgs (key, parentKeyParts.size (), args, fmtString);
 
-		if (!key.hasMeta ("default"))
+		if (!key.hasMeta ("default") && !key.hasMeta ("require"))
 		{
-			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
+			throw CommandAbortException ("The key '" + name +
+						     "' doesn't have a default value and is not marked with 'require'!");
 		}
 
 		kdb::Key defaultsKey (key.getName ().substr (parentLength), KEY_END);
@@ -341,7 +342,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			specKey.setMeta ("type", "enum");
 		}
 
-		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
+		bool isString = type == "string";
+		auto nativeType = isString ? "const char *" : "kdb_" + type + "_t";
 		auto typeName = snakeCaseToPascalCase (type);
 
 		auto tagName = getTagName (key, specParentName);
@@ -353,6 +355,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				     { "macro_name", tagPrefix + snakeCaseToMacroCase (tagName) },
 				     { "tag_name", snakeCaseToPascalCase (tagName) },
 				     { "type_name", typeName },
+				     { "is_string?", isString },
 				     { "is_array?", isArray } };
 
 		if (!args.empty ())

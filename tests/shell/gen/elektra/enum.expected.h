@@ -220,6 +220,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
  *
  * @return the value of 'disjointed'.
+
  */// 
 static inline ElektraEnumDisjointed ELEKTRA_GET (Disjointed) (Elektra * elektra )
 {
@@ -254,6 +255,7 @@ static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra,
 
  *
  * @return the value of 'existinggentype'.
+
  */// 
 static inline ExistingColors ELEKTRA_GET (Existinggentype) (Elektra * elektra )
 {
@@ -288,6 +290,7 @@ static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra,
 
  *
  * @return the value of 'gentype'.
+
  */// 
 static inline Colors ELEKTRA_GET (Gentype) (Elektra * elektra )
 {
@@ -322,6 +325,7 @@ static inline void ELEKTRA_SET (Gentype) (Elektra * elektra,
 
  *
  * @return the value of 'gentype2'.
+
  */// 
 static inline Colors ELEKTRA_GET (Gentype2) (Elektra * elektra )
 {
@@ -356,6 +360,7 @@ static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra,
 
  *
  * @return the value of 'myenum'.
+
  */// 
 static inline ElektraEnumMyenum ELEKTRA_GET (Myenum) (Elektra * elektra )
 {
@@ -414,6 +419,7 @@ void specloadCheck (int argc, const char ** argv);
  * @param tag     The tag to look up.
  *
  * @return The value stored at the given key.
+ *   The lifetime of returned pointers is documented in the ELEKTRA_GET(*) functions above.
  */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
@@ -424,14 +430,16 @@ void specloadCheck (int argc, const char ** argv);
  * @param ...     Variable arguments depending on the given tag.
  *
  * @return The value stored at the given key.
+ *   The lifetime of returned pointers is documented in the ELEKTRA_GET(*) functions above.
  */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
 
 /**
  * @param elektra The elektra instance initialized with loadConfiguration().
- * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
+ *   The lifetime of pointers in this struct is documented in the ELEKTRA_GET(*) functions above.
+ * @param tag     The tag to look up.
  */// 
 #define elektraFillStruct(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
@@ -439,6 +447,7 @@ void specloadCheck (int argc, const char ** argv);
 /**
  * @param elektra The elektra instance initialized with loadConfiguration().
  * @param result  Points to the struct into which results will be stored.
+ *   The lifetime of pointers in this struct is documented in the ELEKTRA_GET(*) functions above.
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  */// 

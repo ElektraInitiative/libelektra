@@ -9,6 +9,8 @@ while getopts ":q" opt; do
 	q)
 		nodiff=1
 		;;
+	*) ;;
+
 	esac
 done
 
@@ -72,7 +74,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		succeed_if "couldn't spec-mount data"
 
 		old_dir=$(pwd)
-		cd "$output_folder"
+		cd "$output_folder" || exit 1
 		"$KDB" gen "$template" "$spec_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
@@ -80,7 +82,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			succeed_if "kdb gen failed: "
 			cat "$output_folder$test_name.stderr"
 		fi
-		cd "$old_dir"
+		cd "$old_dir" || exit 1
 
 		if [ -e "$test_folder$test_name.stdout" ]; then
 			diff -u "$test_folder$test_name.stdout" "$output_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
@@ -142,7 +144,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 						echo "The actual file is stored at $actual_part"
 						echo
 					else
-						printf "%s" "$diff_result" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+						printf "%s\n" "$diff_result" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
 
 						test "1" = "0"
 						succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
@@ -159,7 +161,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 
 			if [ -e "$output_folder$test_name.check.sh" ]; then
 				old_dir=$(pwd)
-				cd "$output_folder"
+				cd "$output_folder" || exit 1
 
 				KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
 				if [ "$?" != "0" ]; then
@@ -177,7 +179,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 					rm "$output_folder$test_name.check.log"
 				fi
 
-				cd "$old_dir"
+				cd "$old_dir" || exit 1
 			fi
 
 			for actual_part in "$output_folder$test_name".actual*; do
