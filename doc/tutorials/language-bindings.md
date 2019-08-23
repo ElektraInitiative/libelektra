@@ -19,24 +19,26 @@ In this section, we will explain the how to write a language binding for Elektra
 
 ### Building
 
-After setting up our project, we have to add the projects directory to `src/bindings/CMakeLists.txt`.
+To add the subdirectory containing our binding to the build, we have to modify `src/bindings/CMakeLists.txt`.
 
 ```cmake
 check_binding_included ("our_binding" IS_INCLUDED)
 if (IS_INCLUDED)
-	add_subdirectory (our_binding_directory)
+    add_subdirectory (our_binding_directory)
 endif ()
 ```
 
-At first we want to make sure that the build tools and compilers we need for the binding are installed. We can use `find_program (BUILD_TOOL_EXECUTABLE build_tool)` to find our `build_tool` program. The result of the search will be stored in `BUILD_TOOL_EXECUTABLE`, so now we can use an if block to include the bindings in the build, if the program exists or exclude it, if it doesn't.
+At first we want to make sure that the build tools and compilers we need for the binding are installed. We can use `find_program (BUILD_TOOL_EXECUTABLE build_tool)` to find our `build_tool` program. The result of the search will be stored in `BUILD_TOOL_EXECUTABLE`, so now we can use an if block to include the bindings in the build, if the program exists or exclude it, if it doesn't. To do that, we use `add_binding` which adds ours to the list of bindings that will be built. For more provided functions, [see here](../../cmake/Modules/LibAddBinding.cmake).
+
+
 If, for example, our bindings only support linking against a dynamic library we can express that, by using the `BUILD_*` variables in if blocks or by passing `ONLY_SHARED` to `add_binding`. You can read more in the [compile doc](../COMPILE.md).
 
 ```cmake
 if (BUILD_TOOL_EXECUTABLE)
     add_binding (our_binding ONLY_SHARED)
 else ()
-	exclude_binding (our_binding, "build_tool not found")
-	return ()
+    exclude_binding (our_binding, "build_tool not found")
+    return ()
 endif ()
 ```
 
@@ -108,9 +110,9 @@ Here is an example of how Java has implemented it:
 
 ```java
 public abstract class PermanentException extends Exception {...}
-	public class ResourceException extends PermanentException {...}
-		public class MemoryAllocationException extends ResourceException {...}
-	public class InstallationException extends PermanentException {...}
+    public class ResourceException extends PermanentException {...}
+        public class MemoryAllocationException extends ResourceException {...}
+    public class InstallationException extends PermanentException {...}
 ...
 ```
 
