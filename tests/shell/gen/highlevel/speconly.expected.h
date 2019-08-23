@@ -5,7 +5,7 @@
 /**
  * @file
  *
- * This file was automatically generated using `kdb gen elektra`.
+ * This file was automatically generated using `kdb gen highlevel`.
  * Any changes will be overwritten, when the file is regenerated.
  *
  * @copyright BSD Zero Clause License
@@ -25,8 +25,8 @@
  */
 
 
-#ifndef SIMPLE_ACTUAL_H
-#define SIMPLE_ACTUAL_H
+#ifndef SPECONLY_ACTUAL_H
+#define SPECONLY_ACTUAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -461,4 +461,4 @@ void specloadCheck (int argc, const char ** argv);
 }
 #endif
 
-#endif // SIMPLE_ACTUAL_H
+#endif // SPECONLY_ACTUAL_H

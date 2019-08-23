@@ -1,14 +1,11 @@
 // clang-format off
-{{!
-This template file is licensed under BSD Zero Clause License (0BSD).
-For the full text see ./elektra/LICENSE.txt
-}}
-{{=/*% %*/=}}
+
+
 // clang-format on
 /**
  * @file
  *
- * This file was automatically generated using `kdb gen elektra`.
+ * This file was automatically generated using `kdb gen highlevel`.
  * Any changes will be overwritten, when the file is regenerated.
  *
  * @copyright BSD Zero Clause License
@@ -27,11 +24,9 @@ For the full text see ./elektra/LICENSE.txt
  *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "/*% header_file %*/"
+#include "empty.actual.h"
 
-/*%# more_headers %*/
-#include "/*% . %*/"
-/*%/ more_headers %*/
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,16 +38,17 @@ For the full text see ./elektra/LICENSE.txt
 
 #include <elektra/conversion.h>
 
-/*%# embed_spec? %*/
 static KeySet * embeddedSpec (void)
 {
-	return /*%& spec %*/;
+	return ksNew (1,
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_empty.ini", KEY_END),
+	KS_END);
+;
 }
-/*%/ embed_spec? %*/
 
-/*%={{ }}=%*/
+
 /**
- * Initializes an instance of Elektra for the application '{{{ parent_key }}}'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/highlevel/empty'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -64,30 +60,25 @@ static KeySet * embeddedSpec (void)
  * @retval 0  on success, @p elektra will contain a new Elektra instance coming from elektraOpen(),
  *            @p error will be unchanged
  * @retval -1 on error, @p elektra will be unchanged, @p error will be set
- * @retval 1  help mode, '-h' or '--help' was specified call {{{ help_function_name }}} to display
+ * @retval 1  help mode, '-h' or '--help' was specified call printHelpMessage to display
  *            the help message. @p elektra will contain a new Elektra instance. It has to be passed
- *            to {{{ help_function_name }}}. You also need to elektraClose() it.
+ *            to printHelpMessage. You also need to elektraClose() it.
  *            @p error will be unchanged
  *
  * @see elektraOpen
- */// {{=/*% %*/=}}
-int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
+ */// 
+int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	/*%# spec_as_defaults? %*/
 	KeySet * defaults = embeddedSpec ();
-	/*%/ spec_as_defaults? %*/
-	/*%^ spec_as_defaults? %*/
-	/*%# embed_defaults? %*/
-	KeySet * defaults = /*%& defaults %*/;
-	/*%/ embed_defaults? %*/
-	/*%^ embed_defaults? %*/
-	KeySet * defaults = NULL;
-	/*%/ embed_defaults? %*/
-	/*%/ spec_as_defaults? %*/
+	
 
-	KeySet * contract = /*%& contract %*/;
+	KeySet * contract = ksNew (2,
+	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END),
+	KS_END);
+;
 
-	Elektra * e = elektraOpen ("/*% parent_key %*/", defaults, contract, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/empty", defaults, contract, error);
 
 	if (e == NULL)
 	{
@@ -98,7 +89,6 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 	return elektraHelpKey (e) != NULL ? 1 : 0;
 }
 
-/*%# embed_spec? %*/
 /**
  * Checks whether specload mode was invoked and if so, sends the specification over stdout
  * in the format expected by specload.
@@ -111,16 +101,16 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void /*%& specload_function_name %*/ (int argc, const char ** argv)
+void specloadCheck (int argc, const char ** argv)
 {
-	if (argc != 2 || strcmp (argv[1], "/*% specload_arg %*/") != 0)
+	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
 	{
 		return;
 	}
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("/*% spec_parent_key %*/", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/empty", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
@@ -134,17 +124,16 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv)
 
 	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
 }
-/*%/ embed_spec? %*/
 
-/*%={{ }}=%*/
+
 /**
  * Outputs the help message to stdout
  *
- * @param elektra  The Elektra instance produced by {{{ init_function_name }}}.
+ * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
  * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- */// {{=/*% %*/=}}
-void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const char * prefix)
+ */// 
+void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
 	Key * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
@@ -157,8 +146,41 @@ void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const c
 	elektraFree (help);
 }
 
-/*%> partial.enum.c %*/
+// clang-format off
 
-/*%> partial.union.c %*/
+// clang-format on
 
-/*%> partial.struct.c %*/
+// -------------------------
+// Enum conversion functions
+// -------------------------
+
+
+
+// -------------------------
+// Enum accessor functions
+// -------------------------
+
+
+
+
+// clang-format off
+
+// clang-format on
+
+// -------------------------
+// Union accessor functions
+// -------------------------
+
+
+
+
+// clang-format off
+
+// clang-format on
+
+// -------------------------
+// Struct accessor functions
+// -------------------------
+
+
+

@@ -5,7 +5,7 @@
 /**
  * @file
  *
- * This file was automatically generated using `kdb gen elektra`.
+ * This file was automatically generated using `kdb gen highlevel`.
  * Any changes will be overwritten, when the file is regenerated.
  *
  * @copyright BSD Zero Clause License
@@ -24,7 +24,7 @@
  *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "externalwithdefaults.actual.h"
+#include "externalspec.actual.h"
 
 
 
@@ -42,7 +42,7 @@
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/externalwithdefaults'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/highlevel/externalspec'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -64,15 +64,8 @@
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	
-	KeySet * defaults = ksNew (5,
-	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("/myfloatarray/#", KEY_META, "default", "1.1", KEY_META, "type", "float", KEY_END),
-	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
-	KS_END);
-;
 	
+	KeySet * defaults = NULL;
 
 	KeySet * contract = ksNew (2,
 	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
@@ -80,7 +73,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KS_END);
 ;
 
-	Elektra * e = elektraOpen ("/tests/script/gen/elektra/externalwithdefaults", defaults, contract, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/externalspec", defaults, contract, error);
 
 	if (e == NULL)
 	{

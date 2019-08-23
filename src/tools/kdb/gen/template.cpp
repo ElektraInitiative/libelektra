@@ -16,7 +16,7 @@
 
 #include "gen/templates.hpp"
 
-#include "elektra/elektragen.hpp"
+#include "highlevel/highlevel.hpp"
 
 GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> parts, std::vector<std::string> partials,
 			  const std::unordered_map<std::string, bool> & parameters)
@@ -151,5 +151,5 @@ const GenTemplate * GenTemplateList::getTemplate (const std::string & name,
 
 GenTemplateList::GenTemplateList () : _templates ()
 {
-	addTemplate<ElektraGenTemplate> ("elektra");
+	addTemplate<HighlevelGenTemplate> ("highlevel");
 }

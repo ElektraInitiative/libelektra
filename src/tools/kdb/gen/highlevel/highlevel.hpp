@@ -6,12 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_ELEKTRAGEN_HPP
-#define ELEKTRA_ELEKTRAGEN_HPP
+#ifndef ELEKTRA_KDB_GEN_HIGHLEVEL_HPP
+#define ELEKTRA_KDB_GEN_HIGHLEVEL_HPP
 
 #include <gen/template.hpp>
 
-class ElektraGenTemplate : public GenTemplate
+class HighlevelGenTemplate : public GenTemplate
 {
 	struct Params
 	{
@@ -28,8 +28,8 @@ class ElektraGenTemplate : public GenTemplate
 	};
 
 public:
-	ElektraGenTemplate ()
-	: GenTemplate ("elektra", { ".c", ".h" },
+	HighlevelGenTemplate ()
+	: GenTemplate ("highlevel", { ".c", ".h" },
 		       { "enum.c", "union.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "union.decl.h",
 			 "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
 		       {
@@ -54,4 +54,4 @@ protected:
 	std::string escapeFunction (const std::string & str) const override;
 };
 
-#endif // ELEKTRA_ELEKTRAGEN_HPP
+#endif // ELEKTRA_KDB_GEN_HIGHLEVEL_HPP

@@ -16,7 +16,6 @@ It complements the man pages found [here](/doc/help).
 - [Error Categorization](error-categorization.md)
 - [Metadata](metadata.md)
 - [Symbol Versioning](symbol-versioning.md)
-- [Code generator](code-generator.md)
 
 ## Internals
 

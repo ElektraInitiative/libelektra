@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "elektragen.hpp"
+#include "highlevel.hpp"
 
 #include "common.hpp"
 #include "enums.hpp"
@@ -27,16 +27,16 @@
 #include <streambuf>
 #include <string>
 
-const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
-const char * ElektraGenTemplate::Params::HelpFunctionName = "helpFn";
-const char * ElektraGenTemplate::Params::SpecloadFunctionName = "specloadFn";
-const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
-const char * ElektraGenTemplate::Params::EnumConversion = "enumConv";
-const char * ElektraGenTemplate::Params::AdditionalHeaders = "headers";
-const char * ElektraGenTemplate::Params::GenerateSetters = "genSetters";
-const char * ElektraGenTemplate::Params::SpecLocation = "specLocation";
-const char * ElektraGenTemplate::Params::DefaultsHandling = "defaultsHandling";
-const char * ElektraGenTemplate::Params::SpecValidation = "specValidation";
+const char * HighlevelGenTemplate::Params::InitFunctionName = "initFn";
+const char * HighlevelGenTemplate::Params::HelpFunctionName = "helpFn";
+const char * HighlevelGenTemplate::Params::SpecloadFunctionName = "specloadFn";
+const char * HighlevelGenTemplate::Params::TagPrefix = "tagPrefix";
+const char * HighlevelGenTemplate::Params::EnumConversion = "enumConv";
+const char * HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
+const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
+const char * HighlevelGenTemplate::Params::SpecLocation = "specLocation";
+const char * HighlevelGenTemplate::Params::DefaultsHandling = "defaultsHandling";
+const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 
 enum class SpecLocation
 {
@@ -154,7 +154,7 @@ static std::string keySetToCCode (kdb::KeySet & set)
 	Modules modules;
 	PluginPtr plugin = modules.load ("c", KeySet ());
 
-	auto file = "/tmp/elektra.elektragen." + std::to_string (std::time (nullptr));
+	auto file = "/tmp/elektra.highlevelgen." + std::to_string (std::time (nullptr));
 	Key errorKey ("", KEY_VALUE, file.c_str (), KEY_END);
 	if (plugin->set (set, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
@@ -190,8 +190,8 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 	}
 }
 
-kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const std::string & part ELEKTRA_UNUSED,
-							     const kdb::KeySet & ks, const std::string & parentKey) const
+kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string & outputName, const std::string & part ELEKTRA_UNUSED,
+							       const kdb::KeySet & ks, const std::string & parentKey) const
 {
 	if (parentKey.substr (0, 5) != "spec/")
 	{
@@ -508,7 +508,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	return data;
 }
 
-std::string ElektraGenTemplate::escapeFunction (const std::string & str) const
+std::string HighlevelGenTemplate::escapeFunction (const std::string & str) const
 {
 	std::stringstream ss;
 	for (const auto & c : str)

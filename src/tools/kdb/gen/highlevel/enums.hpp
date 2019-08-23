@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_KDB_ELEKTRAGEN_ENUMS_HPP
-#define ELEKTRA_KDB_ELEKTRAGEN_ENUMS_HPP
+#ifndef ELEKTRA_KDB_GEN_HIGHLEVEL_ENUMS_HPP
+#define ELEKTRA_KDB_GEN_HIGHLEVEL_ENUMS_HPP
 
 #include <gen/template.hpp>
 #include <map>
@@ -64,4 +64,4 @@ public:
 };
 
 
-#endif // ELEKTRA_KDB_ELEKTRAGEN_ENUMS_HPP
+#endif // ELEKTRA_KDB_GEN_HIGHLEVEL_ENUMS_HPP

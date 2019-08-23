@@ -5,7 +5,7 @@
 /**
  * @file
  *
- * This file was automatically generated using `kdb gen elektra`.
+ * This file was automatically generated using `kdb gen highlevel`.
  * Any changes will be overwritten, when the file is regenerated.
  *
  * @copyright BSD Zero Clause License
@@ -53,7 +53,7 @@ static KeySet * embeddedSpec (void)
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/speconly'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/highlevel/speconly'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -84,7 +84,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KS_END);
 ;
 
-	Elektra * e = elektraOpen ("/tests/script/gen/elektra/speconly", defaults, contract, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/speconly", defaults, contract, error);
 
 	if (e == NULL)
 	{
@@ -116,7 +116,7 @@ void specloadCheck (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/speconly", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/speconly", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
