@@ -38,6 +38,28 @@
 
 #include <elektra/conversion.h>
 
+static KeySet * embeddedSpec (void)
+{
+	return ksNew (15,
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
+	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct", KEY_END),
+	keyNew ("/myotherstruct/x", KEY_META, "default", "4", KEY_META, "type", "long", KEY_END),
+	keyNew ("/myotherstruct/x/y", KEY_META, "default", "6", KEY_META, "type", "long", KEY_END),
+	keyNew ("/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
+	keyNew ("/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long", KEY_END),
+	keyNew ("/people", KEY_META, "check/reference", "single", KEY_META, "check/reference/restrict", "../person/_", KEY_META, "default", "", KEY_END),
+	keyNew ("/people/#", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
+	keyNew ("/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
+	keyNew ("/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short", KEY_END),
+	keyNew ("/person/_/children", KEY_META, "check/reference", "recursive", KEY_META, "check/reference/restrict", "../../../person/_", KEY_META, "default", "", KEY_END),
+	keyNew ("/person/_/children/#", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
+	keyNew ("/person/_/height", KEY_META, "default", "1.80", KEY_META, "type", "float", KEY_END),
+	keyNew ("/person/_/name", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
+	KS_END);
+;
+}
+
 
 /**
  * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/struct'.
@@ -61,22 +83,7 @@
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (13,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
-	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct", KEY_END),
-	keyNew ("/myotherstruct/x", KEY_VALUE, "4", KEY_META, "default", "4", KEY_META, "type", "long", KEY_END),
-	keyNew ("/myotherstruct/x/y", KEY_VALUE, "6", KEY_META, "default", "6", KEY_META, "type", "long", KEY_END),
-	keyNew ("/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
-	keyNew ("/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/mystruct/b", KEY_VALUE, "8", KEY_META, "default", "8", KEY_META, "type", "long", KEY_END),
-	keyNew ("/people/#", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
-	keyNew ("/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
-	keyNew ("/person/_/age", KEY_VALUE, "30", KEY_META, "default", "30", KEY_META, "type", "short", KEY_END),
-	keyNew ("/person/_/children/#", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
-	keyNew ("/person/_/height", KEY_VALUE, "1.80", KEY_META, "default", "1.80", KEY_META, "type", "float", KEY_END),
-	keyNew ("/person/_/name", KEY_VALUE, "Max", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
-	KS_END);
-;
+	KeySet * defaults = embeddedSpec ();
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/struct", defaults, error);
 
 	if (e == NULL)
@@ -121,26 +128,9 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (15,
-	keyNew ("spec/tests/script/gen/elektra/struct", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/myotherstruct/x", KEY_META, "default", "4", KEY_META, "type", "long", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/myotherstruct/x/y", KEY_META, "default", "6", KEY_META, "type", "long", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/people", KEY_META, "check/reference", "single", KEY_META, "check/reference/restrict", "../person/_", KEY_META, "default", "", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/children", KEY_META, "check/reference", "recursive", KEY_META, "check/reference/restrict", "../../../person/_", KEY_META, "default", "", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/children/#", KEY_META, "default", "", KEY_META, "type", "struct_ref", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type", "float", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/name", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
-	KS_END);
-;
+	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/struct", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/struct", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);

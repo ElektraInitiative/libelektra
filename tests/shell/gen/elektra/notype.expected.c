@@ -38,6 +38,15 @@
 
 #include <elektra/conversion.h>
 
+static KeySet * embeddedSpec (void)
+{
+	return ksNew (2,
+	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
+	keyNew ("/notype", KEY_META, "default", "2", KEY_END),
+	KS_END);
+;
+}
+
 
 /**
  * Initializes an instance of Elektra for the application '/tests/script/gen/elektra/notype'.
@@ -61,10 +70,7 @@
  */// 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	KeySet * defaults = ksNew (1,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
-	KS_END);
-;
+	KeySet * defaults = embeddedSpec ();
 	Elektra * e = elektraOpen ("/tests/script/gen/elektra/notype", defaults, error);
 
 	if (e == NULL)
@@ -109,13 +115,9 @@ void specloadCheck (int argc, const char ** argv)
 		return;
 	}
 
-	KeySet * spec = ksNew (2,
-	keyNew ("spec/tests/script/gen/elektra/notype", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/notype/notype", KEY_META, "default", "2", KEY_END),
-	KS_END);
-;
+	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/notype", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/elektra/notype", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
