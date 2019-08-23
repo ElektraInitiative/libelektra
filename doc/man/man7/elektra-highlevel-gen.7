@@ -13,7 +13,7 @@ This document focuses on the advanced features of the high\-level API code\-gene
 The parameters that are relevant to the concepts described here are (for the rest see `kdb\-gen\-highlevel(1) \fIkdb\-gen\-highlevel\.md\fR):
 .
 .IP "\(bu" 4
-\fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBtrie\fR, \fBdefault\fR (default)
+\fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBdefault\fR (default)
 .
 .IP "\(bu" 4
 \fBembeddedSpec\fR: allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR
@@ -126,7 +126,7 @@ if (strcmp (string, "blue") == 0) { /* \.\.\. */ }
 .IP "" 0
 .
 .P
-This code is not really optimal, since we really only need to look at the first character to determine the correct enum value\. This is where \fBenumConv=trie\fR comes in\. With this option, we use a trie to generate a series of (nested, if necessary) switch/case statements:
+This code is not really optimal, since we really only need to look at the first character to determine the correct enum value\. This is where \fBenumConv=switch\fR comes in\. With this option, we generate a series of (nested, if necessary) switch/case statements:
 .
 .IP "" 4
 .
@@ -145,7 +145,7 @@ case \'r\': /* red */
 .IP "" 0
 .
 .P
-Of course this version also has its own problems\. Take for example the the enum with the values: \fBblue\fR, \fBblueish\fR and \fBbrown\fR\. With \fBenumConv=trie\fR this would generate the following code:
+Of course this version also has its own problems\. Take for example the the enum with the values: \fBblue\fR, \fBblueish\fR and \fBbrown\fR\. With \fBenumConv=switch\fR this would generate the following code:
 .
 .IP "" 4
 .
@@ -182,7 +182,10 @@ case \'b\':
 .IP "" 0
 .
 .P
-This is not only hard to read, but also not very efficient\. Of course we could just look at \fBstring[1]\fR and \fBstring[4]\fR or at \fBstrlen(string)\fR or at any number of other things\. But writing a code\-generator that does this for the general case is very hard\. That is why the default option \fBenumConv=default\fR uses the trie version, if the depth is less than 3 (i\.e\. if looking at \fBstring[0]\fR and \fBstring[1]\fR is sufficient), and the \fBstrcmp\fR version in all other cases\. This should be a good compromise for most cases\.
+This is already quite hard to read and \fBblueish\fR isn\'t even that long\.
+.
+.P
+To provide a compromise between readability and performance, we default to \fBenumConv=default\fR\. This options uses the switch version, if the depth is less than 3, and the \fBstrcmp\fR version in all other cases\. A depth of \fBn\fR means looking at the first \fBn\fR characters \fBstring[0], string[1], \.\.\., string[n\-1]\fR\. In other words a depth of \fBn\fR uses \fBn\fR switch statements\.
 .
 .SH "Structs"
 The \fBhighlevel\fR template also has support for structs\. By setting \fBtype = struct\fR on a key, you can enable the generation of a native C \fBstruct\fR for the keys below it\.

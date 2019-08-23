@@ -71,7 +71,7 @@ For detailed information about the contents of the header file see elektra\-high
 \fBhelpFn\fR: Changes the name of the function that prints the generated help message (default: \fBprintHelpMessage\fR)
 .
 .IP "\(bu" 4
-\fBspecloadFn\fR: Changes the name of the function that checks for "specload mode" (default: \fBspecloadCheck\fR)
+\fBspecloadFn\fR: Changes the name of the function that checks for "specload mode" (default: \fBexitForSpecload\fR)
 .
 .IP "\(bu" 4
 \fBtagPrefix\fR: Changes the prefix of the generated tags (default: \fBELEKTRA_TAG_\fR)
@@ -82,10 +82,10 @@ For detailed information about the contents of the header file see elektra\-high
 \fBstrcmp\fR: uses a simple series of \fBif (strcmp(*, *) == 0)\fR to convert strings into enums
 .
 .IP "\(bu" 4
-\fBtrie\fR: constructs a character based trie to convert strings into enums
+\fBswitch\fR: constructs a series of \fBswitch\fR statements to convert strings into enums
 .
 .IP "\(bu" 4
-\fBdefault\fR: uses a \fBtrie\fR up to a depth of 2, then switches to \fBstrcmp\fR
+\fBdefault\fR: uses a \fBswitch\fR up to a depth of 2, then switches to \fBstrcmp\fR
 .
 .IP "" 0
 

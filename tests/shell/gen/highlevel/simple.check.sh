@@ -56,7 +56,7 @@ void callAll (Elektra * elektra)
 
 int main (int argc, const char ** argv)
 {
-	specloadCheck (argc, argv);
+	exitForSpecload (argc, argv);
 
 	ElektraError * error = NULL;
 	Elektra * elektra = NULL;

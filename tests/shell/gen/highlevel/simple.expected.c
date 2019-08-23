@@ -77,9 +77,8 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KeySet * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (2,
+	KeySet * contract = ksNew (1,
 	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END),
 	KS_END);
 ;
 
@@ -106,7 +105,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void specloadCheck (int argc, const char ** argv)
+void exitForSpecload (int argc, const char ** argv)
 {
 	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
 	{

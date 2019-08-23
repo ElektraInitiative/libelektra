@@ -212,7 +212,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	auto includeGuard = createIncludeGuard (headerFile);
 	auto initFunctionName = getParameter (Params::InitFunctionName, "loadConfiguration");
 	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
-	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "specloadCheck");
+	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "exitForSpecload");
 	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "default");
