@@ -1,7 +1,7 @@
 @INCLUDE_COMMON@
 
 echo
-echo ELEKTRA CHECK EXTERNAL
+echo ELEKTRA CHECK EXTERNAL CODEGEN ECONF
 echo
 
 if command -v pkg-config; then
