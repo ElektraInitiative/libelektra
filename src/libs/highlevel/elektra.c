@@ -23,7 +23,7 @@ extern "C" {
 static void defaultFatalErrorHandler (ElektraError * error)
 {
 	ELEKTRA_LOG_DEBUG ("FATAL ERROR [%s]: %s", error->code, error->description);
-	elektraFree (error);
+	elektraErrorReset (&error);
 	exit (EXIT_FAILURE);
 }
 
