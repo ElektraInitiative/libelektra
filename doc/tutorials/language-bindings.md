@@ -74,7 +74,7 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektr
 add_custom_target (our_binding ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.lib")
 ```
 
-We can then test to explicitly include the bindings in the build using `cmake -DBINDINGS="our_binding" ..` in the build directory and following the further steps for [compilation](../COMPILE.md).
+We can then explicitly include the bindings using `cmake -DBINDINGS="our_binding" ..` in the build directory and follow the further steps for [compilation](../COMPILE.md).
 
 ### Testing
 
