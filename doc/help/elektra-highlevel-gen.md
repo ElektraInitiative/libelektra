@@ -32,8 +32,7 @@ application will not run anymore.
 
 To avoid this case of a misconfigured mountpoint, you can use `specValidation=minimal`. It is by far not a perfect solution, but it will
 cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected
-mountpoint. The check will ensure that the `spec` and `type` plugin are enabled for `spec/@` (where `@` is your parent key) and that the
-metadata of `spec/@` matches the expected values.
+mountpoint or if the specification was not `spec-mount`ed.
 
 ## Enums
 

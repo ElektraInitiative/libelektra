@@ -28,6 +28,7 @@ static void defaultFatalErrorHandler (ElektraError * error)
 }
 
 static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
+static bool checkHighlevelContract (const char * application, KeySet * contract, ElektraError ** error);
 
 /**
  * \defgroup highlevel High-level API
@@ -77,6 +78,17 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (contract != NULL)
 	{
+		Key * contractCut = keyNew ("system/elektra/highlevel", KEY_END);
+		KeySet * highlevelContract = ksCut (contract, contractCut);
+
+		if (ksGetSize (highlevelContract) > 0)
+		{
+			if (!checkHighlevelContract (application, highlevelContract, error))
+			{
+				return NULL;
+			}
+		}
+
 		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
 
 		if (kdbEnsureResult == 1)
@@ -277,6 +289,73 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 		ksAppendKey (config, dup);
 	}
 }
+
+static bool minimalValidation (const char * application)
+{
+	Key * parent = keyNew ("system/elektra/mountpoints", KEY_END);
+	KDB * kdb = kdbOpen (parent);
+	KeySet * mountpoints = ksNew (0, KS_END);
+	if (kdbGet (kdb, mountpoints, parent) < 0)
+	{
+		ksDel (mountpoints);
+		kdbClose (kdb, parent);
+		keyDel (parent);
+		return false;
+	}
+
+	char * specName = elektraFormat ("spec%s", application);
+	Key * lookup = keyNew ("system/elektra/mountpoints", KEY_END);
+	keyAddBaseName (lookup, specName);
+	elektraFree (specName);
+
+	if (ksLookup (mountpoints, lookup, 0) == NULL)
+	{
+		keyDel (lookup);
+
+		ksDel (mountpoints);
+		kdbClose (kdb, parent);
+		keyDel (parent);
+		return false;
+	}
+
+	keyDel (lookup);
+
+	lookup = keyNew ("system/elektra/mountpoints", KEY_END);
+	keyAddBaseName (lookup, application);
+
+	if (ksLookup (mountpoints, lookup, 0) == NULL)
+	{
+		keyDel (lookup);
+
+		ksDel (mountpoints);
+		kdbClose (kdb, parent);
+		keyDel (parent);
+		return false;
+	}
+	keyDel (lookup);
+
+	ksDel (mountpoints);
+	kdbClose (kdb, parent);
+	keyDel (parent);
+
+	return true;
+}
+
+bool checkHighlevelContract (const char * application, KeySet * contract, ElektraError ** error)
+{
+	Key * validationKey = ksLookupByName (contract, "system/elektra/highlevel/validation", 0);
+	if (validationKey != NULL)
+	{
+		if (strcmp (keyString (validationKey), "minimal") == 0 && !minimalValidation (application))
+		{
+			*error = elektraErrorMinimalValidationFailed (application);
+			return false;
+		}
+	}
+
+	return true;
+}
+
 
 #ifdef __cplusplus
 };
