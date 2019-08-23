@@ -120,7 +120,7 @@ public:
 	 * @retval true if this is the empty template
 	 * @retval false otherwise
 	 */
-	virtual explicit operator bool () const
+	virtual bool isEmpty () const
 	{
 		return false;
 	}
@@ -220,7 +220,7 @@ public:
 		return instance;
 	}
 
-	explicit operator bool () const override
+	bool isEmpty () const override
 	{
 		return true;
 	}
