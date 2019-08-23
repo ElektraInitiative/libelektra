@@ -223,7 +223,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 										{ "none", EmbeddedSpec::None } });
 	auto specValidation = getParameter<SpecValidation> (
 		Params::SpecValidation,
-		{ { "", SpecValidation::Minimal }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
+		{ { "", SpecValidation::None }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
 
 	auto enumConversion = getParameter<EnumConversion> (Params::EnumConversion, { { "", EnumConversion::Default },
 										      { "default", EnumConversion::Default },
