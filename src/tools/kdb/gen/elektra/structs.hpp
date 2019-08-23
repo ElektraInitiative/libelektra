@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDB_ELEKTRAGEN_STRUCTS_HPP
 #define ELEKTRA_KDB_ELEKTRAGEN_STRUCTS_HPP
 
-#include "../template.hpp"
+#include <gen/template.hpp>
 
 class StructProcessor
 {

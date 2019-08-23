@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_ELEKTRAGEN_HPP
 #define ELEKTRA_ELEKTRAGEN_HPP
 
-#include "../template.hpp"
+#include <gen/template.hpp>
 
 class ElektraGenTemplate : public GenTemplate
 {
