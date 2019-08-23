@@ -156,6 +156,8 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 						echo "The diff is also stored at $diff_part"
 						echo
 					fi
+				else
+					rm "$diff_part"
 				fi
 			done
 

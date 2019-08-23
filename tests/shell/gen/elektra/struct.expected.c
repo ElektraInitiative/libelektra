@@ -86,8 +86,9 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KeySet * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (1,
+	KeySet * contract = ksNew (2,
 	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END),
 	KS_END);
 ;
 
@@ -554,110 +555,5 @@ result->fullName = ELEKTRA_GET (String) (elektra, field);
 }
 
 
-ELEKTRA_SET_SIGNATURE (const Person *, StructPerson)
-{
-	size_t nameLen = strlen (keyname);
-	char * field = elektraCalloc ((nameLen + 1 + 9 +1) * sizeof (char));
-	strcpy (field, keyname);
-	field[nameLen] = '/';
-	++nameLen;
 
-	strncpy (&field[nameLen], "age", 9);
-	
-	
-	ELEKTRA_SET (Short) (elektra, field, value->age, error);
-	if (error != NULL)
-	{
-		return;
-	}
-
-	
-
-	strncpy (&field[nameLen], "children", 9);
-	
-	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
-	{
-		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, i, value->children[i], error);
-	}
-	
-	if (error != NULL)
-	{
-		return;
-	}
-
-	strncpy (&field[nameLen], "height", 9);
-	
-	
-	ELEKTRA_SET (Float) (elektra, field, value->height, error);
-	if (error != NULL)
-	{
-		return;
-	}
-
-	strncpy (&field[nameLen], "name", 9);
-	
-	
-	ELEKTRA_SET (String) (elektra, field, value->fullName, error);
-	if (error != NULL)
-	{
-		return;
-	}
-
-}
-
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson)
-{
-	size_t nameLen = strlen (keyname);
-	char * field = elektraCalloc ((nameLen + 1 + 9 +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
-	strcpy (field, keyname);
-	field[nameLen] = '/';
-	++nameLen;
-
-	elektraWriteArrayNumber (&field[nameLen], index);
-	nameLen = strlen (field);
-	field[nameLen] = '/';
-	++nameLen;
-
-	strncpy (&field[nameLen], "age", 9);
-	
-	
-	ELEKTRA_SET (Short) (elektra, field, value->age, error);
-	if (error != NULL)
-	{
-		return;
-	}
-
-	
-
-	strncpy (&field[nameLen], "children", 9);
-	
-	for (kdb_long_long_t i = 0; i < value->childrenSize; ++i)
-	{
-		ELEKTRA_SET_ARRAY_ELEMENT (StructPerson) (elektra, field, i, value->children[i], error);
-	}
-	
-	if (error != NULL)
-	{
-		return;
-	}
-
-	strncpy (&field[nameLen], "height", 9);
-	
-	
-	ELEKTRA_SET (Float) (elektra, field, value->height, error);
-	if (error != NULL)
-	{
-		return;
-	}
-
-	strncpy (&field[nameLen], "name", 9);
-	
-	
-	ELEKTRA_SET (String) (elektra, field, value->fullName, error);
-	if (error != NULL)
-	{
-		return;
-	}
-
-}
 

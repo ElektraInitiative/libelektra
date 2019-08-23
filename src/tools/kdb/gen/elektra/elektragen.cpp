@@ -414,6 +414,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				keyObject["native_type"] = nativeType;
 				keyObject["is_struct_ref?"] = true;
 				keyObject["alloc?"] = allocate;
+				keyObject["generate_setters?"] = false;
 			}
 			else
 			{
@@ -470,6 +471,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			keyObject["native_type"] = structData["native_type"].string_value ();
 			keyObject["is_struct?"] = true;
 			keyObject["alloc?"] = structData["alloc?"].is_true ();
+			keyObject["generate_setters?"] = structData["generate_setters?"].is_true ();
 
 			if (structData["new"].is_true ())
 			{
