@@ -84,7 +84,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
 			*error = elektraErrorEnsureFailed (reason);
 		}
-		else
+		else if (kdbEnsureResult != 0)
 		{
 			*error = elektraErrorFromKey (parentKey);
 			return NULL;

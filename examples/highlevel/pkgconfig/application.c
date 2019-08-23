@@ -20,7 +20,7 @@ static void onFatalError (ElektraError * error)
 int main (int argc, char ** argv)
 {
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen ("/sw/example/highlevel/#0/current", NULL, &error);
+	Elektra * elektra = elektraOpen ("/sw/example/highlevel/#0/current", NULL, NULL, &error);
 	if (elektra == NULL)
 	{
 		fprintf (stderr, "An error occured while opening elektra: %s", elektraErrorDescription (error));

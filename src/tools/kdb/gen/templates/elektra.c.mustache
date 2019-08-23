@@ -85,21 +85,12 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 	/*%/ embed_defaults? %*/
 	/*%/ spec_as_defaults? %*/
 
-	Elektra * e = elektraOpen ("/*% parent_key %*/", defaults, error);
+	KeySet * contract = /*%& contract %*/;
+
+	Elektra * e = elektraOpen ("/*% parent_key %*/", defaults, contract, error);
 
 	if (e == NULL)
 	{
-		return -1;
-	}
-
-	KeySet * contract = /*%& contract %*/;
-
-	ElektraError * err = NULL;
-	elektraEnsure (e, contract, &err);
-
-	if (err != NULL)
-	{
-		*error = err;
 		return -1;
 	}
 
