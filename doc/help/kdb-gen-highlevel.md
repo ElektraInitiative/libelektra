@@ -2,10 +2,8 @@
 
 ## SYNOPSIS
 
-`kdb gen [options...] highlevel <parentKey> <outputName> [parameters...]`
+`kdb gen highlevel <parentKey> <outputName> [parameters...]`
 
-- `[options...]`:
-  see [kdb-gen(1)](kdb-gen.md)
 - `<parentKey>`:
   the parent key to use, MUST be in the `spec` namespace
 - `<outputName>`:

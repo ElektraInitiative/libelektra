@@ -2,10 +2,8 @@
 
 ## SYNOPSIS
 
-`kdb gen [options...] <templateName> <parentKey> <outputName> [parameters...]`
+`kdb gen <templateName> <parentKey> <outputName> [parameters...]`
 
-- `[options...]`:
-  see [below](#options)
 - `<templateName>`:
   one of the templates listed [below](#templates)
 - `<parentKey>`:

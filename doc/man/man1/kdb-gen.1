@@ -7,11 +7,7 @@
 \fBkdb\-gen\fR \- Elektra\'s code\-generator
 .
 .SH "SYNOPSIS"
-\fBkdb gen [options\.\.\.] <templateName> <parentKey> <outputName> [parameters\.\.\.]\fR
-.
-.TP
-\fB[options\.\.\.]\fR
-see \fIbelow\fR
+\fBkdb gen <templateName> <parentKey> <outputName> [parameters\.\.\.]\fR
 .
 .TP
 \fB<templateName>\fR
@@ -30,7 +26,7 @@ the base name of the output files\. If a template produces multiple files, it wi
 a list of parameters, the supported parameters depend on the template
 .
 .SH "DESCRIPTION"
-This command invokes Elektra code\-generator\.
+This command invokes Elektra\'s code\-generator\.
 .
 .P
 It supports different templates\. All templates require a \fBparentKey\fR parameter, because this determines the input for the code\-generator, as well as an \fBoutputName\fR parameter to specify the output file(s)\.
