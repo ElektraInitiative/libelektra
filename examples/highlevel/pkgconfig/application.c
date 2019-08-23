@@ -24,7 +24,7 @@ int main (int argc, char ** argv)
 	Elektra * elektra = elektraOpen ("/sw/example/highlevel/#0/current", NULL, NULL, &error);
 	if (elektra == NULL)
 	{
-		fprintf (stderr, "An error occured while opening elektra: %s", elektraErrorDescription (error));
+		fprintf (stderr, "An error occured while opening Elektra: %s", elektraErrorDescription (error));
 		elektraErrorReset (&error);
 		return EXIT_FAILURE;
 	}

@@ -43,7 +43,7 @@ int main (int argc, const char ** argv)
 
 	if (rc == -1)
 	{
-		fprintf (stderr, "An error occurred while opening elektra: %s", elektraErrorDescription (error));
+		fprintf (stderr, "An error occurred while opening Elektra: %s", elektraErrorDescription (error));
 		elektraErrorReset (&error);
 		return EXIT_FAILURE;
 	}
