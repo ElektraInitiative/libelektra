@@ -20,7 +20,6 @@ oclint -p "@PROJECT_BINARY_DIR@" -no-analytics -enable-global-analysis -enable-c
 	"src/libs/ease/keyname.c" \
 	"src/libs/utility/text.c" \
 	"src/plugins/base64/"*.c \
-	"src/plugins/camel/camel.c" \
 	"src/plugins/ccode/"*.cpp \
 	"src/plugins/cpptemplate/"*.cpp \
 	"src/plugins/directoryvalue/"*.cpp \
