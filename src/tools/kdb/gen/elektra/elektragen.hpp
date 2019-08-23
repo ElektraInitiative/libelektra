@@ -18,6 +18,7 @@ class ElektraGenTemplate : public GenTemplate
 		static const char * InitFunctionName;
 		static const char * HelpFunctionName;
 		static const char * SpecloadFunctionName;
+		static const char * TagPrefix;
 		static const char * EnumConversion;
 		static const char * AdditionalHeaders;
 	};
@@ -30,6 +31,7 @@ public:
 		       { { Params::InitFunctionName, false },
 			 { Params::HelpFunctionName, false },
 			 { Params::SpecloadFunctionName, false },
+			 { Params::TagPrefix, false },
 			 { Params::EnumConversion, false },
 			 { Params::AdditionalHeaders, false } })
 	{

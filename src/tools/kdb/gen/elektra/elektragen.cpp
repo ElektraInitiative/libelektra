@@ -29,6 +29,7 @@
 const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
 const char * ElektraGenTemplate::Params::HelpFunctionName = "helpFn";
 const char * ElektraGenTemplate::Params::SpecloadFunctionName = "specloadFn";
+const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
 const char * ElektraGenTemplate::Params::EnumConversion = "enumConv";
 const char * ElektraGenTemplate::Params::AdditionalHeaders = "headers";
 
@@ -161,6 +162,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto initFunctionName = getParameter (Params::InitFunctionName, "loadConfiguration");
 	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
 	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "specloadCheck");
+	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "default");
 
@@ -291,7 +293,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		object keyObject = { { "name", name.substr (cascadingParent.size () + 1) }, // + 2 to remove slash
 				     { "native_type", nativeType },
-				     { "macro_name", snakeCaseToMacroCase (tagName) },
+				     { "macro_name", tagPrefix + snakeCaseToMacroCase (tagName) },
 				     { "tag_name", snakeCaseToPascalCase (tagName) },
 				     { "type_name", typeName },
 				     { "is_array?", isArray } };
