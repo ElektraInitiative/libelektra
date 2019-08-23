@@ -119,6 +119,15 @@ void test_default (void)
 	RESTORE_STDIN ();
 }
 
+void test_noparent (void)
+{
+	START_TESTAPP ("spec", "noparent");
+
+	succeed_if (check_binary_file (STDIN_FILENO, noparent_spec_expected_size, noparent_spec_expected), "output differs");
+
+	RESTORE_STDIN ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("SPECLOAD_TESTAPP     TESTS\n");
@@ -127,6 +136,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_default ();
+	test_noparent ();
 
 	print_result ("test_testapp");
 
