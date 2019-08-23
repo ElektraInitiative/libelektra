@@ -16,10 +16,7 @@ The parameters that are relevant to the concepts described here are (for the res
 \fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBtrie\fR, \fBdefault\fR (default)
 .
 .IP "\(bu" 4
-\fBspecLocation\fR: allowed values: \fBembedded\fR (default), \fBexternal\fR
-.
-.IP "\(bu" 4
-\fBdefaultsHandling\fR: allowed values: \fBembedded\fR (default), \fBspeconly\fR
+\fBembeddedSpec\fR: allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR
 .
 .IP "\(bu" 4
 \fBspecValidation\fR: allowed values: \fBnone\fR (default), \fBminimal\fR
@@ -30,19 +27,16 @@ The parameters that are relevant to the concepts described here are (for the res
 The \fBenumConv\fR option is described \fIbelow\fR\.
 .
 .P
-With \fBspecLocation\fR and \fBdefaultsHandling\fR you can configure what data is embedded into your application\'s binary\. The default option for both is \fBembedded\fR\. This embeds the full specification into your application\. It should then be mounted into the KDB via \fBspecload\fR and will also be used as the \fBdefaults\fR keyset passed to the high\-level API\'s \fBelektraOpen\fR\. The idea behind this is that the compilation still results in a single file\.
+Using \fBembeddedSpec\fR you can configure how much of the specification is embedded into your application\. By default we use \fBfull\fR\. This means the full specification is embedded into your application\'s binary\. Since this can drastically increase the size of the binary, you can also choose \fBdefaults\fR or \fBnone\fR\. The \fBdefaults\fR setting embeds a reduced version of the specification, which only contains the metadata required by \fBelektraOpen\fR\. By setting \fBembeddedSpec=none\fR you can also remove this reduced specification\.
 .
 .P
-If you don\'t care that additional files will be required to run your application, you can switch to \fBspecLocation=external\fR\. With this option the code\-generator creates an additional output file, which contains the processed specification\.  The file is in \fBquickdump\fR format, so it can be mounted directly via \fBquickdump\fR\. If embedding the specification into your application is not something you want to do (e\.g\. because of the size increase), but you still want to use \fBspecload\fR, you can do that too\. Just use a configuration like \fBapp=/usr/bin/cat args=#0 args/#0="path\-to\-spec\-output\-file"\fR\.
+The advantage of using \fBfull\fR is that your application is contained in a single executable file\. If you don\'t use \fBfull\fR, the code\-generator produces an additional \fB\.spec\.eqd\fR file\. This file contains the full specification in quickdump format\. You can either mount it directly via \fBquickdump\fR, or if you want the features of \fBspecload\fR use a \fBspecload\fR configuration like this: \fBapp=/usr/bin/cat args=#0 args/#0="path\-to\-spec\-output\-file"\fR\.
 .
 .P
-Using the combination \fBspecLocation=external defaultsHandling=embedded\fR, still embeds a smaller keyset only containing the default values into your application\. If that is still too much for you, may use \fBdefaultsHandling=speconly\fR\. This way defaults are not passed to \fBelektraOpen\fR anymore\. Instead default values are handled only via the \fBspec\fR plugin\. If your specification is not mounted correctly, your application will not run anymore\.
+Setting \fBembeddedSpec=none\fR is only recommended, if you must have the minimal binary size and you know what you are doing\. In this case no defaults are passed to \fBelektraOpen\fR and defaults are only handled via the \fBspec\fR plugin\. If the specification/configuration isn\'t mounted, the getter functions may fail\.
 .
 .P
 To avoid this case of a misconfigured mountpoint, you can use \fBspecValidation=minimal\fR\. It is by far not a perfect solution, but it will cause the initialization function (by default named \fBloadConfiguration\fR) to fail, if the specification is not mounted at the expected mountpoint or if the specification was not \fBspec\-mount\fRed\.
-.
-.P
-: At the time of writing, the processed specification is the same as the input specification, but in future the code\-generator may automatically add metadata, e\.g\. to allow better validation\. \fI↩\fR
 .
 .SH "Enums"
 We support the mapping of a set of string values to a native C \fBenum\fR\. To use this feature, you need to write your specification the same way that the enum part of the \fBtype\fR plugin expects\.
