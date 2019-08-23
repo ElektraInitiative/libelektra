@@ -103,6 +103,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 
 ### Rust
+
 - Add the `elektra-sys` crate which contains raw bindings to libelektra for Rust. _(Philipp Gackstatter)_
 
 ### <<Binding3>>
