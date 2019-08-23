@@ -191,7 +191,7 @@ int rc = loadConfiguration (&elektra, &error);
 
 if (rc == -1)
 {
-    fprintf (stderr, "An error occurred while opening elektra: %s", elektraErrorDescription (error));
+    fprintf (stderr, "An error occurred while opening Elektra: %s", elektraErrorDescription (error));
     elektraErrorReset (&error);
     exit (EXIT_FAILURE);
 }

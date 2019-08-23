@@ -265,7 +265,7 @@ ElektraError * elektraErrorEnsureFailed (const char * reason)
 ElektraError * elektraErrorMinimalValidationFailed (const char * application)
 {
 	char * description = elektraFormat (
-		"The validation of your KDB has failed. Please ensure that spec%s contains the"
+		"The validation of your KDB has failed. Please ensure that spec%s contains the "
 		"specification and that 'kdb spec-mount %s' was executed.",
 		application, application);
 	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
