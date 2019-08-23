@@ -45,7 +45,9 @@ be unique.
 The `type` metadata specifies the type of a key. The available types can be found [here](/src/libs/highlevel/README.md#data-types). It is
 important to set the `type`, because the code-generator will ignore all keys that don't have a `type`.
 
-Because we want our getters to be unable to fail (makes error handling trivial), we need to provide a `default` value as well.
+Because we want our getters to be unable to fail (makes error handling trivial), we need to provide a `default` value as well. Note that
+`default`s for array keys like `myfloatarray/#` only work via the `spec` plugin. If you didn't mount everything correctly, you will get an
+error.
 
 That's it. The code-generator just requires that each key (that you want to access) has a `type` and a `default` value.
 
