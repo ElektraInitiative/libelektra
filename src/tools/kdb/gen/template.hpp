@@ -39,7 +39,7 @@ protected:
 	 * @param parts	           The suffixes of the different mustache files associated with this template.
 	 *                         Pass `{ "" }` if this template only uses a single file, identified by the @p templateBaseName.
 	 * @param parameters       The list of parameters this template uses. The keys are the names, while the value
-	 *                         determines whether the parameter is required or not.
+	 *                         determines whether the parameter is required or not (true means required).
 	 */
 	GenTemplate (std::string templateBaseName, std::vector<std::string> parts, std::vector<std::string> partials,
 		     const std::unordered_map<std::string, bool> & parameters);
@@ -49,12 +49,13 @@ protected:
 	 *
 	 * @param outputName the basename of all output files. The output files are expected to use the same names
 	 *                   as the template files, except that `templateBaseName` is replaced by @p outputName.
-	 * @param ks         A KeySet containing the data for this template.
+	 * @param part       the part suffix for the current part
+	 * @param ks         A KeySet containing the data for this template. All keys are below @p parentKey.
 	 * @param parentKey  The parent key below which the data for this template resides.
 	 *
 	 * @return The mustache data needed to render this template.
 	 */
-	virtual kainjow::mustache::data getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
+	virtual kainjow::mustache::data getTemplateData (const std::string & outputName, const std::string & part, const kdb::KeySet & ks,
 							 const std::string & parentKey) const = 0;
 
 	/**
@@ -104,6 +105,15 @@ protected:
 		}
 		return value->second;
 	}
+
+	/**
+	 * The escape function used when instantiating the mustache templates. Override to customise.
+	 *
+	 * @param str an unescaped value
+	 *
+	 * @return the escaped version of @p str
+	 */
+	virtual std::string escapeFunction (const std::string & str) const;
 
 public:
 	/**
@@ -155,8 +165,6 @@ private:
 	std::vector<std::string> _partials;
 	std::unordered_map<std::string, std::string> _parameters;
 	std::unordered_set<std::string> _requiredParameters;
-
-	static std::string escapeFunction (const std::string & str);
 
 	std::unordered_map<std::string, kainjow::mustache::partial> getPartials () const;
 };
@@ -217,7 +225,8 @@ public:
 		return true;
 	}
 
-	kainjow::mustache::data getTemplateData (const std::string & outputName ELEKTRA_UNUSED, const kdb::KeySet & ks ELEKTRA_UNUSED,
+	kainjow::mustache::data getTemplateData (const std::string & outputName ELEKTRA_UNUSED, const std::string & part ELEKTRA_UNUSED,
+						 const kdb::KeySet & ks ELEKTRA_UNUSED,
 						 const std::string & parentKey ELEKTRA_UNUSED) const override
 	{
 		return {};

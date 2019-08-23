@@ -190,8 +190,8 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 	}
 }
 
-kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
-							     const std::string & parentKey) const
+kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const std::string & part ELEKTRA_UNUSED,
+							     const kdb::KeySet & ks, const std::string & parentKey) const
 {
 	if (parentKey.substr (0, 5) != "spec/")
 	{
@@ -500,4 +500,56 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	}
 
 	return data;
+}
+
+std::string ElektraGenTemplate::escapeFunction (const std::string & str) const
+{
+	std::stringstream ss;
+	for (const auto & c : str)
+	{
+		switch (c)
+		{
+		case '\a':
+			ss << "\\a";
+			break;
+		case '\b':
+			ss << "\\b";
+			break;
+		case '\f':
+			ss << "\\f";
+			break;
+		case '\n':
+			ss << "\\n";
+			break;
+		case '\r':
+			ss << "\\r";
+			break;
+		case '\t':
+			ss << "\\t";
+			break;
+		case '\v':
+			ss << "\\v";
+			break;
+		case '\\':
+			ss << "\\\\";
+			break;
+		case '\'':
+			ss << "\\'";
+			break;
+		case '"':
+			ss << "\\\"";
+			break;
+		default:
+			if (isprint (c))
+			{
+				ss << c;
+			}
+			else
+			{
+				ss << "\\x" << std::hex << std::setw (2) << static_cast<unsigned char> (c);
+			}
+		}
+	}
+
+	return ss.str ();
 }
