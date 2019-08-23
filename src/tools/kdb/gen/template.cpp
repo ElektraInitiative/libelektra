@@ -14,7 +14,7 @@
 #include <command.hpp>
 #include <fstream>
 
-#include "gen/templates.hpp"
+#include <gen/templates.hpp>
 
 #include "highlevel/highlevel.hpp"
 
