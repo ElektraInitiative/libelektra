@@ -54,7 +54,7 @@ std::string StructFieldsProcessor::discriminatorEnumType (const kdb::Key & key)
 	if (!key.hasMeta ("gen/reference/discriminator/enum"))
 	{
 		throw CommandAbortException ("To use alternative references, the key '" + key.getName () +
-					     "' have gen/reference/union set.");
+					     "' must have gen/reference/enum set.");
 	}
 
 	auto result = key.getMeta<std::string> ("gen/reference/discriminator/enum");
@@ -67,7 +67,7 @@ std::string StructFieldsProcessor::discriminatorUnionType (const kdb::Key & key)
 	if (!key.hasMeta ("gen/reference/discriminator/union"))
 	{
 		throw CommandAbortException ("To use alternative references, the key '" + key.getName () +
-					     "' have gen/reference/union set.");
+					     "' must have gen/reference/union set.");
 	}
 
 	auto result = key.getMeta<std::string> ("gen/reference/discriminator/union");
