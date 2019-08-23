@@ -53,7 +53,7 @@ static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * def
  * @param error		If an error occurs during initialization of the Elektra instance, this pointer
  * 			will be used to report the error.
  *
- * @return An Elektra instance initialized with the application.
+ * @return An Elektra instance initialized for the application (free with elektraClose()).
  *
  * @see elektraClose
  * @see kdbEnsure
@@ -138,6 +138,9 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
  * @param elektra The Elektra instance to check
  *
  * @return the help key if found, NULL otherwise
+ *   The pointer returned may become invalid, when any `elektraSet*()` function or
+ *   any other function that modifies the state of @p elektra is called.
+ *   It will always become invalid, when elektraClose() is called on @p elektra.
  */
 Key * elektraHelpKey (Elektra * elektra)
 {
