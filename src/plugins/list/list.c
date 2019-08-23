@@ -717,7 +717,12 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	Key * configBase = keyNew ("user/plugins", KEY_END);
 	KeySet * array = elektraArrayGet (configBase, config);
 	Key * pluginItem = elektraArrayGetNextKey (array);
-	ELEKTRA_NOT_NULL (pluginItem);
+
+	if (pluginItem == NULL)
+	{
+		pluginItem = keyNew ("user/plugins/#0", KEY_END);
+	}
+
 	keySetString (pluginItem, pluginName);
 	keyDel (configBase);
 
