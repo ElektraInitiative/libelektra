@@ -38,7 +38,7 @@
 /*%^ is_struct_ref? %*/
 /*%={{ }}=%*/
 /**
- * Get the value of '{{{ name }}}'.
+ * Get the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
 {{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
@@ -49,9 +49,9 @@
  *   is modified. All calls to elektraSet* modify this state.
 {{/ is_string? }}
  */// {{=/*% %*/=}}
-static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
-								    /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
-								    /*%/ last? %*/ /*%/ args %*/ /*%/ args? %*/)
+static inline /*%& native_type %*/ ELEKTRA_GET (/*%& macro_name %*/) (Elektra * elektra /*%# args? %*/,
+								      /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+								      /*%/ last? %*/ /*%/ args %*/ /*%/ args? %*/)
 {
 	/*%# args? %*/
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
@@ -68,7 +68,7 @@ static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * el
 /*%# generate_setters? %*/
 /*%={{ }}=%*/
 /**
- * Set the value of '{{{ name }}}'.
+ * Set the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
  * @param value   The value of '{{{ name }}}'.
@@ -77,9 +77,10 @@ static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * el
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// {{=/*% %*/=}}
-static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra,
-						    /*%& native_type %*/ value, /*%# args? %*/ /*%# args %*/
-						    /*%& native_type %*/ /*%& name %*/, /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
+static inline void ELEKTRA_SET (/*%& macro_name %*/) (Elektra * elektra,
+						      /*%& native_type %*/ value, /*%# args? %*/ /*%# args %*/
+						      /*%& native_type %*/ /*%& name %*/,
+						      /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
 {
 	/*%# args? %*/
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
@@ -97,15 +98,15 @@ static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra,
 /*%# is_array? %*/
 /*%={{ }}=%*/
 /**
- * Get the size of the array '{{{ name }}}'.
+ * Get the size of the array '{{{ name }}}' (tag #{{{ macro_name }}}).
  *
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
 {{# array_args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
 {{/ args }}{{/ array_args? }}
  */// {{=/*% %*/=}}
-static inline kdb_long_long_t ELEKTRA_SIZE (/*%& tag_name %*/) (Elektra * elektra /*%# array_args? %*/,
-								/*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
-								/*%/ last? %*/ /*%/ args %*/ /*%/ array_args? %*/)
+static inline kdb_long_long_t ELEKTRA_SIZE (/*%& macro_name %*/) (Elektra * elektra /*%# array_args? %*/,
+								  /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+								  /*%/ last? %*/ /*%/ args %*/ /*%/ array_args? %*/)
 {
 	/*%# array_args? %*/
 	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,

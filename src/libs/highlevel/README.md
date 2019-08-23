@@ -200,8 +200,8 @@ to use these functions directly, but they might still be useful sometimes (e.g. 
 `elektraGetRawString`). We also provide a `KDB_TPYE_*` constant for each of the types listed above. Again, most users won't use these
 but, if you ever do need to use the raw type metadata using constants enables code completion and protects against typos.
 
-There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is currently neither used nor supported by this API. However, we reserve it
-for a future expansion of this API.
+There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is only supported via the
+[code-generation API](/doc/help/elektra-highlevel-gen.md).
 
 ##### Note about Floating Point Types
 

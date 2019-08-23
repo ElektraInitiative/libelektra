@@ -18,7 +18,12 @@
 
 ## DESCRIPTION
 
-[//]: # "TODO [kodebach]"
+This command invokes Elektra code-generator.
+
+It supports different templates. All templates require a `parentKey` parameter, because this determines
+the input for the code-generator, as well as an `outputName` parameter to specify the output file(s).
+
+For more information see the [list of templates](#templates) below and the man-pages for each of them.
 
 ## RETURN VALUES
 

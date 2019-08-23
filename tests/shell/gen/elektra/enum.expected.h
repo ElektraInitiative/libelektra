@@ -214,7 +214,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 
 
 /**
- * Get the value of 'disjointed'.
+ * Get the value of key 'disjointed' (tag #ELEKTRA_TAG_DISJOINTED).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 
@@ -222,7 +222,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
  * @return the value of 'disjointed'.
 
  */// 
-static inline ElektraEnumDisjointed ELEKTRA_GET (Disjointed) (Elektra * elektra )
+static inline ElektraEnumDisjointed ELEKTRA_GET (ELEKTRA_TAG_DISJOINTED) (Elektra * elektra )
 {
 	
 	return ELEKTRA_GET (EnumDisjointed) (elektra, "disjointed");
@@ -230,7 +230,7 @@ static inline ElektraEnumDisjointed ELEKTRA_GET (Disjointed) (Elektra * elektra 
 
 
 /**
- * Set the value of 'disjointed'.
+ * Set the value of key 'disjointed' (tag #ELEKTRA_TAG_DISJOINTED).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'disjointed'.
@@ -238,8 +238,8 @@ static inline ElektraEnumDisjointed ELEKTRA_GET (Disjointed) (Elektra * elektra 
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra,
-						    ElektraEnumDisjointed value,  ElektraError ** error)
+static inline void ELEKTRA_SET (ELEKTRA_TAG_DISJOINTED) (Elektra * elektra,
+						      ElektraEnumDisjointed value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (EnumDisjointed) (elektra, "disjointed", value, error);
@@ -249,7 +249,7 @@ static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra,
 
 
 /**
- * Get the value of 'existinggentype'.
+ * Get the value of key 'existinggentype' (tag #ELEKTRA_TAG_EXISTINGGENTYPE).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 
@@ -257,7 +257,7 @@ static inline void ELEKTRA_SET (Disjointed) (Elektra * elektra,
  * @return the value of 'existinggentype'.
 
  */// 
-static inline ExistingColors ELEKTRA_GET (Existinggentype) (Elektra * elektra )
+static inline ExistingColors ELEKTRA_GET (ELEKTRA_TAG_EXISTINGGENTYPE) (Elektra * elektra )
 {
 	
 	return ELEKTRA_GET (EnumExistingColors) (elektra, "existinggentype");
@@ -265,7 +265,7 @@ static inline ExistingColors ELEKTRA_GET (Existinggentype) (Elektra * elektra )
 
 
 /**
- * Set the value of 'existinggentype'.
+ * Set the value of key 'existinggentype' (tag #ELEKTRA_TAG_EXISTINGGENTYPE).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'existinggentype'.
@@ -273,8 +273,8 @@ static inline ExistingColors ELEKTRA_GET (Existinggentype) (Elektra * elektra )
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra,
-						    ExistingColors value,  ElektraError ** error)
+static inline void ELEKTRA_SET (ELEKTRA_TAG_EXISTINGGENTYPE) (Elektra * elektra,
+						      ExistingColors value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (EnumExistingColors) (elektra, "existinggentype", value, error);
@@ -284,7 +284,7 @@ static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra,
 
 
 /**
- * Get the value of 'gentype'.
+ * Get the value of key 'gentype' (tag #ELEKTRA_TAG_GENTYPE).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 
@@ -292,7 +292,7 @@ static inline void ELEKTRA_SET (Existinggentype) (Elektra * elektra,
  * @return the value of 'gentype'.
 
  */// 
-static inline Colors ELEKTRA_GET (Gentype) (Elektra * elektra )
+static inline Colors ELEKTRA_GET (ELEKTRA_TAG_GENTYPE) (Elektra * elektra )
 {
 	
 	return ELEKTRA_GET (EnumColors) (elektra, "gentype");
@@ -300,7 +300,7 @@ static inline Colors ELEKTRA_GET (Gentype) (Elektra * elektra )
 
 
 /**
- * Set the value of 'gentype'.
+ * Set the value of key 'gentype' (tag #ELEKTRA_TAG_GENTYPE).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'gentype'.
@@ -308,8 +308,8 @@ static inline Colors ELEKTRA_GET (Gentype) (Elektra * elektra )
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Gentype) (Elektra * elektra,
-						    Colors value,  ElektraError ** error)
+static inline void ELEKTRA_SET (ELEKTRA_TAG_GENTYPE) (Elektra * elektra,
+						      Colors value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (EnumColors) (elektra, "gentype", value, error);
@@ -319,7 +319,7 @@ static inline void ELEKTRA_SET (Gentype) (Elektra * elektra,
 
 
 /**
- * Get the value of 'gentype2'.
+ * Get the value of key 'gentype2' (tag #ELEKTRA_TAG_GENTYPE2).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 
@@ -327,7 +327,7 @@ static inline void ELEKTRA_SET (Gentype) (Elektra * elektra,
  * @return the value of 'gentype2'.
 
  */// 
-static inline Colors ELEKTRA_GET (Gentype2) (Elektra * elektra )
+static inline Colors ELEKTRA_GET (ELEKTRA_TAG_GENTYPE2) (Elektra * elektra )
 {
 	
 	return ELEKTRA_GET (EnumColors) (elektra, "gentype2");
@@ -335,7 +335,7 @@ static inline Colors ELEKTRA_GET (Gentype2) (Elektra * elektra )
 
 
 /**
- * Set the value of 'gentype2'.
+ * Set the value of key 'gentype2' (tag #ELEKTRA_TAG_GENTYPE2).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'gentype2'.
@@ -343,8 +343,8 @@ static inline Colors ELEKTRA_GET (Gentype2) (Elektra * elektra )
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra,
-						    Colors value,  ElektraError ** error)
+static inline void ELEKTRA_SET (ELEKTRA_TAG_GENTYPE2) (Elektra * elektra,
+						      Colors value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (EnumColors) (elektra, "gentype2", value, error);
@@ -354,7 +354,7 @@ static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra,
 
 
 /**
- * Get the value of 'myenum'.
+ * Get the value of key 'myenum' (tag #ELEKTRA_TAG_MYENUM).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
 
@@ -362,7 +362,7 @@ static inline void ELEKTRA_SET (Gentype2) (Elektra * elektra,
  * @return the value of 'myenum'.
 
  */// 
-static inline ElektraEnumMyenum ELEKTRA_GET (Myenum) (Elektra * elektra )
+static inline ElektraEnumMyenum ELEKTRA_GET (ELEKTRA_TAG_MYENUM) (Elektra * elektra )
 {
 	
 	return ELEKTRA_GET (EnumMyenum) (elektra, "myenum");
@@ -370,7 +370,7 @@ static inline ElektraEnumMyenum ELEKTRA_GET (Myenum) (Elektra * elektra )
 
 
 /**
- * Set the value of 'myenum'.
+ * Set the value of key 'myenum' (tag #ELEKTRA_TAG_MYENUM).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'myenum'.
@@ -378,8 +378,8 @@ static inline ElektraEnumMyenum ELEKTRA_GET (Myenum) (Elektra * elektra )
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
-static inline void ELEKTRA_SET (Myenum) (Elektra * elektra,
-						    ElektraEnumMyenum value,  ElektraError ** error)
+static inline void ELEKTRA_SET (ELEKTRA_TAG_MYENUM) (Elektra * elektra,
+						      ElektraEnumMyenum value,  ElektraError ** error)
 {
 	
 	ELEKTRA_SET (EnumMyenum) (elektra, "myenum", value, error);
