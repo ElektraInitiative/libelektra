@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDB_ELEKTRAGEN_ENUMS_HPP
 #define ELEKTRA_KDB_ELEKTRAGEN_ENUMS_HPP
 
-#include "../template.hpp"
+#include <gen/template.hpp>
 #include <map>
 #include <set>
 

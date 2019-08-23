@@ -4,7 +4,7 @@ file (GLOB
       HDR_FILES
       *.hpp
       gen/*.hpp
-      gen/elektra/*.hpp)
+      gen/*/*.hpp)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
@@ -14,7 +14,8 @@ file (GLOB
       SRC_FILES
       *.cpp
       gen/*.cpp
-      gen/elektra/*.cpp)
+      gen/*/*.cpp)
+list (REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/gen/templates/collect.cpp")
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 add_subdirectory (gen/templates)

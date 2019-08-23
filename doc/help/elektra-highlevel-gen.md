@@ -1,7 +1,7 @@
 # elektra-highlevel-gen(7) -- High-level API code-generation advanced features
 
-This document focuses on the advanced features of the high-level API code-generator template. For the basic features see
-[`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)
+This document focuses on the advanced features of the high-level API code-generator template. We assume you already familiarized yourself
+with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.md).
 
 ## Configuration Options
 
@@ -20,19 +20,22 @@ also be used as the `defaults` keyset passed to the high-level API's `elektraOpe
 results in a single file.
 
 If you don't care that additional files will be required to run your application, you can switch to `specLocation=external`. With this option
-the code-generator creates an additional output file, which contains the processed specification. The files is in `quickdump` format, so it
-can be mounted directly via `quickdump`. If embedding the specification into your application is not something you want to do (e.g. because
-of the size increase), but you still want to use `specload`, you can do that too. Just use a configuration like
+the code-generator creates an additional output file, which contains the processed specification. <sup id="a1">[1](#f1)</sup> The file is in `quickdump` format, so
+it can be mounted directly via `quickdump`. If embedding the specification into your application is not something you want to do (e.g.
+because of the size increase), but you still want to use `specload`, you can do that too. Just use a configuration like
 `app=/usr/bin/cat args=#0 args/#0="path-to-spec-output-file"`.
 
 Using the combination `specLocation=external defaultsHandling=embedded`, still embeds a smaller keyset only containing the default values
-into your application. If that is still too much for you, may use `defaultsHandling=embedded`. This way defaults are not passed to
+into your application. If that is still too much for you, may use `defaultsHandling=speconly`. This way defaults are not passed to
 `elektraOpen` anymore. Instead default values are handled only via the `spec` plugin. If your specification is not mounted correctly, your
 application will not run anymore.
 
 To avoid this case of a misconfigured mountpoint, you can use `specValidation=minimal`. It is by far not a perfect solution, but it will
 cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected
 mountpoint or if the specification was not `spec-mount`ed.
+
+<b id="f1">1</b>: At the time of writing, the processed specification is the same as the input specification, but in future the code-generator may
+automatically add metadata, e.g. to allow better validation. [↩](#a1)
 
 ## Enums
 
