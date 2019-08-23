@@ -24,14 +24,13 @@ provides.
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
+- [High Level API](highlevel.md)
+- [Command Line Options](command-line-options.md)
 - [Python Bindings](python-kdb.md)
 - [Java Bindings](java-kdb.md)
 - [Java Plugins](java-plugins.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
-- [Code Generation](../../src/tools/pythongen/README.md)
 - [Notifications](notifications.md)
-- [High Level API](highlevel.md)
-- [Command Line Options](command-line-options.md)
 
 ## System Administrators
 
