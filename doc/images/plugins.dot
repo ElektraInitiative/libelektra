@@ -6,15 +6,11 @@ strict digraph G {
 	base64 -> binary;
 	resolver [shape=Mdiamond];
 	blockresolver -> resolver;
-	check [shape=Mdiamond];
-	boolean -> check;
 	storage [shape=Mdiamond];
 	c -> storage;
 	c [shape=Mdiamond];
 	c -> c;
 	cache [shape=Mdiamond];
-	filter [shape=Mdiamond];
-	cachefilter -> filter;
 	storage [shape=Mdiamond];
 	camel -> storage;
 	camel [shape=Mdiamond];
@@ -32,8 +28,6 @@ strict digraph G {
 	cpptemplate -> storage;
 	info [shape=Mdiamond];
 	cpptemplate -> info;
-	check [shape=Mdiamond];
-	cpptype -> check;
 	crypto [shape=Mdiamond];
 	crypto -> crypto;
 	storage [shape=Mdiamond];
@@ -50,10 +44,6 @@ strict digraph G {
 	desktop -> storage;
 	info [shape=Mdiamond];
 	desktop -> info;
-	storage [shape=Mdiamond];
-	dini -> storage;
-	ini [shape=Mdiamond];
-	dini -> ini;
 	directoryvalue [shape=Mdiamond];
 	doc [shape=Mdiamond];
 	storage [shape=Mdiamond];
@@ -64,8 +54,6 @@ strict digraph G {
 	dump -> storage;
 	dump [shape=Mdiamond];
 	dump -> dump;
-	check [shape=Mdiamond];
-	enum -> check;
 	error [shape=Mdiamond];
 	error -> error;
 	sync [shape=Mdiamond];
@@ -171,11 +159,8 @@ strict digraph G {
 	range [shape=Mdiamond];
 	reference [shape=Mdiamond];
 	regexdispatcher [shape=Mdiamond];
-	storage [shape=Mdiamond];
-	regexstore -> storage;
 	filter [shape=Mdiamond];
 	rename -> filter;
-	required [shape=Mdiamond];
 	resolver [shape=Mdiamond];
 	resolver -> resolver;
 	rgbcolor [shape=Mdiamond];
@@ -186,8 +171,6 @@ strict digraph G {
 	simpleini -> storage;
 	ini [shape=Mdiamond];
 	simpleini -> ini;
-	storage [shape=Mdiamond];
-	simplespeclang -> storage;
 	check [shape=Mdiamond];
 	spec -> check;
 	apply [shape=Mdiamond];
@@ -196,10 +179,6 @@ strict digraph G {
 	specload -> storage;
 	specload [shape=Mdiamond];
 	specload -> specload;
-	apply [shape=Mdiamond];
-	struct -> apply;
-	check [shape=Mdiamond];
-	struct -> check;
 	sync [shape=Mdiamond];
 	sync -> sync;
 	logging [shape=Mdiamond];
