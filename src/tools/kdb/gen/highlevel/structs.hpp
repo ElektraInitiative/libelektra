@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_KDB_ELEKTRAGEN_STRUCTS_HPP
-#define ELEKTRA_KDB_ELEKTRAGEN_STRUCTS_HPP
+#ifndef ELEKTRA_KDB_HIGHLEVEL_STRUCTS_HPP
+#define ELEKTRA_KDB_HIGHLEVEL_STRUCTS_HPP
 
 #include <gen/template.hpp>
 
@@ -135,4 +135,4 @@ public:
 };
 
 
-#endif // ELEKTRA_KDB_ELEKTRAGEN_STRUCTS_HPP
+#endif // ELEKTRA_KDB_HIGHLEVEL_STRUCTS_HPP

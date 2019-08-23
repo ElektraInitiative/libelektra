@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_TEMPLATE_HPP
-#define ELEKTRA_TEMPLATE_HPP
+#ifndef ELEKTRA_KDB_GEN_TEMPLATE_HPP
+#define ELEKTRA_KDB_GEN_TEMPLATE_HPP
 
 #include "mustache.hpp"
 
@@ -244,4 +244,4 @@ public:
 	void operator= (EmptyGenTemplate const &) = delete;
 };
 
-#endif // ELEKTRA_TEMPLATE_HPP
+#endif // ELEKTRA_KDB_GEN_TEMPLATE_HPP

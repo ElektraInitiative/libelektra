@@ -7,8 +7,8 @@
  */
 
 
-#ifndef ELEKTRA_KDB_ELEKTRAGEN_COMMON_HPP
-#define ELEKTRA_KDB_ELEKTRAGEN_COMMON_HPP
+#ifndef ELEKTRA_KDB_GEN_HIGHLEVEL_COMMON_HPP
+#define ELEKTRA_KDB_GEN_HIGHLEVEL_COMMON_HPP
 
 #include <kdb.hpp>
 #include <regex>
@@ -34,4 +34,4 @@ std::string snakeCaseToMacroCase (const std::string & s);
 
 std::string camelCaseToMacroCase (const std::string & s);
 
-#endif // ELEKTRA_KDB_ELEKTRAGEN_COMMON_HPP
+#endif // ELEKTRA_KDB_GEN_HIGHLEVEL_COMMON_HPP

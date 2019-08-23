@@ -5,7 +5,7 @@
 /**
  * @file
  *
- * This file was automatically generated using `kdb gen elektra`.
+ * This file was automatically generated using `kdb gen highlevel`.
  * Any changes will be overwritten, when the file is regenerated.
  *
  * @copyright BSD Zero Clause License
@@ -25,8 +25,8 @@
  */
 
 
-#ifndef EXTERNALSPEC_ACTUAL_H
-#define EXTERNALSPEC_ACTUAL_H
+#ifndef NOTYPE_ACTUAL_H
+#define NOTYPE_ACTUAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,40 +90,6 @@ extern "C" {
 
 // clang-format off
 
-/**
-* Tag name for 'mydouble'
-* 
-*/// 
-#define ELEKTRA_TAG_MYDOUBLE Mydouble
-
-/**
-* Tag name for 'myfloatarray/#'
-* 
-* Required arguments:
-* 
-* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
-* 
-* 
-*/// 
-#define ELEKTRA_TAG_MYFLOATARRAY Myfloatarray
-
-/**
-* Tag name for 'myint'
-* 
-*/// 
-#define ELEKTRA_TAG_MYINT Myint
-
-/**
-* Tag name for 'mystring'
-* 
-*/// 
-#define ELEKTRA_TAG_MYSTRING Mystring
-
-/**
-* Tag name for 'print'
-* 
-*/// 
-#define ELEKTRA_TAG_PRINT Print
 // clang-format on
 
 
@@ -156,200 +122,6 @@ extern "C" {
 
 #define ELEKTRA_SIZE(tagName) ELEKTRA_CONCAT (elektraSize, tagName)
 
-
-
-
-/**
- * Get the value of key 'mydouble' (tag #ELEKTRA_TAG_MYDOUBLE).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'mydouble'.
-
- */// 
-static inline kdb_double_t ELEKTRA_GET (ELEKTRA_TAG_MYDOUBLE) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (Double) (elektra, "mydouble");
-}
-
-
-/**
- * Set the value of key 'mydouble' (tag #ELEKTRA_TAG_MYDOUBLE).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'mydouble'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_MYDOUBLE) (Elektra * elektra,
-						      kdb_double_t value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (Double) (elektra, "mydouble", value, error);
-}
-
-
-
-
-/**
- * Get the value of key 'myfloatarray/#' (tag #ELEKTRA_TAG_MYFLOATARRAY).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param index1 Replaces occurence no. 1 of # in the keyname.
- *
- * @return the value of 'myfloatarray/#'.
-
- */// 
-static inline kdb_float_t ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (Elektra * elektra ,
-								       kdb_long_long_t index1   )
-{
-	char * name = elektraFormat ("myfloatarray/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
-	kdb_float_t result = ELEKTRA_GET (Float) (elektra, name);
-	elektraFree (name);
-	return result;
-	
-}
-
-
-/**
- * Set the value of key 'myfloatarray/#' (tag #ELEKTRA_TAG_MYFLOATARRAY).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'myfloatarray/#'.
- * @param index1 Replaces occurence no. 1 of # in the keyname.
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_MYFLOATARRAY) (Elektra * elektra,
-						      kdb_float_t value,  
-						      kdb_long_long_t index1,
-						        ElektraError ** error)
-{
-	char * name = elektraFormat ("myfloatarray/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
-	ELEKTRA_SET (Float) (elektra, name, value, error);
-	elektraFree (name);
-	
-}
-
-/**
- * Get the size of the array 'myfloatarray/#' (tag #ELEKTRA_TAG_MYFLOATARRAY).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- */// 
-static inline kdb_long_long_t ELEKTRA_SIZE (ELEKTRA_TAG_MYFLOATARRAY) (Elektra * elektra )
-{
-	
-	return elektraArraySize (elektra, "myfloatarray");
-}
-
-
-
-/**
- * Get the value of key 'myint' (tag #ELEKTRA_TAG_MYINT).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'myint'.
-
- */// 
-static inline kdb_long_t ELEKTRA_GET (ELEKTRA_TAG_MYINT) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (Long) (elektra, "myint");
-}
-
-
-/**
- * Set the value of key 'myint' (tag #ELEKTRA_TAG_MYINT).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'myint'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_MYINT) (Elektra * elektra,
-						      kdb_long_t value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (Long) (elektra, "myint", value, error);
-}
-
-
-
-
-/**
- * Get the value of key 'mystring' (tag #ELEKTRA_TAG_MYSTRING).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'mystring'.
- *   The returned pointer may become invalid, if the internal state of @p elektra
- *   is modified. All calls to elektraSet* modify this state.
- */// 
-static inline const char * ELEKTRA_GET (ELEKTRA_TAG_MYSTRING) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (String) (elektra, "mystring");
-}
-
-
-/**
- * Set the value of key 'mystring' (tag #ELEKTRA_TAG_MYSTRING).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'mystring'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_MYSTRING) (Elektra * elektra,
-						      const char * value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (String) (elektra, "mystring", value, error);
-}
-
-
-
-
-/**
- * Get the value of key 'print' (tag #ELEKTRA_TAG_PRINT).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
-
- *
- * @return the value of 'print'.
-
- */// 
-static inline kdb_boolean_t ELEKTRA_GET (ELEKTRA_TAG_PRINT) (Elektra * elektra )
-{
-	
-	return ELEKTRA_GET (Boolean) (elektra, "print");
-}
-
-
-/**
- * Set the value of key 'print' (tag #ELEKTRA_TAG_PRINT).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'print'.
-
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_PRINT) (Elektra * elektra,
-						      kdb_boolean_t value,  ElektraError ** error)
-{
-	
-	ELEKTRA_SET (Boolean) (elektra, "print", value, error);
-}
 
 
 #undef elektra_len19
@@ -461,4 +233,4 @@ void specloadCheck (int argc, const char ** argv);
 }
 #endif
 
-#endif // EXTERNALSPEC_ACTUAL_H
+#endif // NOTYPE_ACTUAL_H

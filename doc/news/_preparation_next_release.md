@@ -25,11 +25,16 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- Code generation
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+### Code Generation
+
+While the new `kdb gen` was already included in the last release, it is now fully functional and ready for use. To get started take a look
+at the new man-page for [`kdb-gen(1)`](https://www.libelektra.org/manpages/kdb-gen). _(Klemens Böswirth)_
+
+If specifically want to use it with the High-Level API take a look at [this tutorial](https://www.libelektra.org/tutorials/high-level-api).
 
 ### <<HIGHLIGHT2>>
 
@@ -119,15 +124,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
-### Code Generation
-
-`kdb gen` is now no longer an external tool implemented via python, but rather a first class command of the `kdb` tool. For now it only
-supports code generation for use with the highlevel API. Try it by running `kdb gen elektra <parentKey> <outputName>`, where `<parentKey>`
-is the parent key of the specification to use and `<outputName>` is some prefix for the output files. If you don't have your specification
-mounted, use `kdb gen -F <plugin>:<file> elektra <parentKey> <outputName>` to load it from `<file>` using plugin `<plugin>`.
-
-.. _(Klemens Böswirth)_
 
 ## Scripts
 
