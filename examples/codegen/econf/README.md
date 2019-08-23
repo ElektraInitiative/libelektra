@@ -1,4 +1,4 @@
-# EConf example
+# EConf Example
 
 This example application reads its configuration from the KDB using code-generated functions.
 It then prints an EditorConfig file created from the configuration inside the KDB.
@@ -65,7 +65,7 @@ create an entry in the array `format/#`. The pattern used to match files is give
 The other keynames used are similar to the keys used by EditorConfig, so they should be self-explanatory.
 The values however are sometimes different, to fit Elektra's type system:
 
-- then general `unset` option is not supported everywhere
+- the general `unset` option is not supported everywhere
 - `format/#/indent/size` uses `0` instead of `tab`
 - `format/#/tabwidth` allows `0`, but this is equivalent to `unset`.
 - `1` and `0` are used for booleans instead of `true`/`false`

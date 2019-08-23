@@ -43,8 +43,6 @@ For the full text see ./elektra/LICENSE.txt
 
 #include <elektra/conversion.h>
 
-static Key * helpKey = NULL;
-
 /*%={{ }}=%*/
 /**
  * Initializes an instance of Elektra for the application '{{{ parent_key }}}'.
@@ -87,7 +85,7 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 		return -1;
 	}
 
-	helpKey = elektraHelpKey (e);
+	Key * helpKey = elektraHelpKey (e);
 	if (helpKey != NULL)
 	{
 		elektraClose (e);
@@ -135,17 +133,6 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv)
 }
 
 /**
- * Extracts the help message from the @p errorKey used in elektraGetOpts().
- *
- * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
- * @param usage	   If this is not NULL, it will be used instead of the default usage line.
- * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- *
- * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
- * The returned string has to be freed with elektraFree().
- */
-
-/**
  * Outputs the help message to stdout
  *
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
@@ -153,6 +140,7 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv)
  */
 void /*%& help_function_name %*/ (const char * usage, const char * prefix)
 {
+	Key * helpKey = elektraHelpKey (e);
 	if (helpKey == NULL)
 	{
 		return;
@@ -161,8 +149,6 @@ void /*%& help_function_name %*/ (const char * usage, const char * prefix)
 	char * help = elektraGetOptsHelpMessage (helpKey, usage, prefix);
 	printf ("%s", help);
 	elektraFree (help);
-	keyDel (helpKey);
-	helpKey = NULL;
 }
 
 /*%> partial.enum.c %*/
