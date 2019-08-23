@@ -72,24 +72,15 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KeySet * defaults = embeddedSpec ();
 	
 
-	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, error);
-
-	if (e == NULL)
-	{
-		return -1;
-	}
-
 	KeySet * contract = ksNew (1,
 	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
 	KS_END);
 ;
 
-	ElektraError * err = NULL;
-	elektraEnsure (e, contract, &err);
+	Elektra * e = elektraOpen ("/tests/script/gen/elektra/empty", defaults, contract, error);
 
-	if (err != NULL)
+	if (e == NULL)
 	{
-		*error = err;
 		return -1;
 	}
 
