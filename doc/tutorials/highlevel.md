@@ -62,13 +62,14 @@ everything just the way you want to, take a look at the man-pages [`kdb-gen(1)`]
 To get started the basic invocation of the code-generator should be enough:
 
 ```sh
-kdb gen -F ni=spec.ini highlevel "/sw/example/myapp/#0/current" conf
+kdb gen -F ni=spec.ini highlevel "spec/sw/example/myapp/#0/current" conf
 ```
 
-This tells the code-generator that your application uses the parent key `/sw/example/myapp/#0/current` and that the output files should be
-called `conf.*`. The argument `highlevel` just specifies which template to use and the option `-F ni=spec.ini` indicates that the
-file `spec.ini` (in the `ni` plugin's format) contains the specification. While the code-generator can read a specification from the KDB,
-we recommend you use the `-F` option. It keeps the KDB clean and can avoid troubles later on, when installing your application.
+This tells the code-generator that your application uses the parent key `/sw/example/myapp/#0/current` (the `spec` namespace prefix is
+needed for technical reasons) and that the output files should be called `conf.*`. The argument `highlevel` just specifies which template to
+use and the option `-F ni=spec.ini` indicates that the file `spec.ini` (in the `ni` plugin's format) contains the specification. While the
+code-generator can read a specification from the KDB, we recommend you use the `-F` option. It keeps the KDB clean and can avoid troubles
+later on, when installing your application.
 
 ## Using the generated code
 
