@@ -34,7 +34,7 @@ First we need to define a few terms:
 ## Creating a new template
 
 In this guide we will create a basic template, that generates a single file containing a simple list of all keys in our input keyset. An
-example output file would be:
+example output from running `kdb gen` with our to-be-developed template would be:
 
 ```
 user/sw/myapp/#0/current
@@ -85,7 +85,7 @@ subdirectories (beyond the one matching your template name) like `src/tools/kdb/
 In `example.cpp` and `example.hpp` we create our subclass of `GenTemplate`. Therefore `example.hpp` should look like this:
 
 ```cpp
-#ifndef ELEKTRA_EXAMPLE_HPP // choose a unique header guard
+#ifndef ELEKTRA_EXAMPLE_HPP
 #define ELEKTRA_EXAMPLE_HPP
 
 #include <gen/template.hpp>
