@@ -8,34 +8,28 @@ with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.
 The parameters that are relevant to the concepts described here are (for the rest see [`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)):
 
 - `enumConv`: allowed values: `strcmp`, `trie`, `default` (default)
-- `specLocation`: allowed values: `embedded` (default), `external`
-- `defaultsHandling`: allowed values: `embedded` (default), `speconly`
+- `embeddedSpec`: allowed values: `full` (default), `defaults`, `none`
 - `specValidation`: allowed values: `none` (default), `minimal`
 
 The `enumConv` option is described [below](#enums).
 
-With `specLocation` and `defaultsHandling` you can configure what data is embedded into your application's binary. The default option for
-both is `embedded`. This embeds the full specification into your application. It should then be mounted into the KDB via `specload` and will
-also be used as the `defaults` keyset passed to the high-level API's `elektraOpen`. The idea behind this is that the compilation still
-results in a single file.
+Using `embeddedSpec` you can configure how much of the specification is embedded into your application. By default we use `full`. This means
+the full specification is embedded into your application's binary. Since this can drastically increase the size of the binary, you can also
+choose `defaults` or `none`. The `defaults` setting embeds a reduced version of the specification, which only contains the metadata required
+by `elektraOpen`. By setting `embeddedSpec=none` you can also remove this reduced specification.
 
-If you don't care that additional files will be required to run your application, you can switch to `specLocation=external`. With this option
-the code-generator creates an additional output file, which contains the processed specification. <sup id="a1">[1](#f1)</sup> The file is in `quickdump` format, so
-it can be mounted directly via `quickdump`. If embedding the specification into your application is not something you want to do (e.g.
-because of the size increase), but you still want to use `specload`, you can do that too. Just use a configuration like
+The advantage of using `full` is that your application is contained in a single executable file. If you don't use `full`, the code-generator
+produces an additional `.spec.eqd` file. This file contains the full specification in quickdump format. You can either mount it directly via
+`quickdump`, or if you want the features of `specload` use a `specload` configuration like this:
 `app=/usr/bin/cat args=#0 args/#0="path-to-spec-output-file"`.
 
-Using the combination `specLocation=external defaultsHandling=embedded`, still embeds a smaller keyset only containing the default values
-into your application. If that is still too much for you, may use `defaultsHandling=speconly`. This way defaults are not passed to
-`elektraOpen` anymore. Instead default values are handled only via the `spec` plugin. If your specification is not mounted correctly, your
-application will not run anymore.
+Setting `embeddedSpec=none` is only recommended, if you must have the minimal binary size and you know what you are doing. In this case no
+defaults are passed to `elektraOpen` and defaults are only handled via the `spec` plugin. If the specification/configuration isn't mounted,
+the getter functions may fail.
 
 To avoid this case of a misconfigured mountpoint, you can use `specValidation=minimal`. It is by far not a perfect solution, but it will
 cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected
 mountpoint or if the specification was not `spec-mount`ed.
-
-<sup id="f1">1</sup>: At the time of writing, the processed specification is the same as the input specification, but in future the code-generator may
-automatically add metadata, e.g. to allow better validation. [↩](#a1)
 
 ## Enums
 

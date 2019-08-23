@@ -67,11 +67,8 @@ For detailed information about the contents of the header file see [elektra-high
   statement
 - `genSetters`:
   Switches whether setters should be generated at all; allowed values: `true` (default), `false`
-- `specLocation`:
-  Changes where the processed specification will be stored; allowed values: `embedded` (default), `external`.
-  see [elektra-highlevel-gen(7)](elektra-highlevel-gen.md)
-- `defaultsHandling`:
-  Changes how the default values are embedded into the application; allowed values: `embedded` (default), `speconly`.
+- `embeddedSpec`:
+  Changes how much of the specification is embedded into the application; allowed values: `full` (default), `defaults`, `none`.
   see [elektra-highlevel-gen(7)](elektra-highlevel-gen.md)
 - `specValidation`:
   Changes how the specification will be validated on application start-up; allowed values: `none` (default), `minimal`.
@@ -89,11 +86,11 @@ However, it is not recommended to have the code-generator read from the KDB, so 
 
 If you don't want to embed the full specification in your binary, we recommend:
 
-`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config specLocation=external specValidation=minimal`
+`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config embeddedSpec=defaults specValidation=minimal`
 
 For the minimal binary size you may use (this comes with its own drawbacks, see [elektra-highlevel-gen(7)](elektra-highlevel-gen.md)):
 
-`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config specLocation=external defaultsHandling=speconly specValidation=minimal`
+`kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config embeddedSpec=none specValidation=minimal`
 
 ## SEE ALSO
 

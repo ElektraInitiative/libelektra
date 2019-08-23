@@ -101,10 +101,7 @@ For detailed information about the contents of the header file see elektra\-high
 \fBgenSetters\fR: Switches whether setters should be generated at all; allowed values: \fBtrue\fR (default), \fBfalse\fR
 .
 .IP "\(bu" 4
-\fBspecLocation\fR: Changes where the processed specification will be stored; allowed values: \fBembedded\fR (default), \fBexternal\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
-.
-.IP "\(bu" 4
-\fBdefaultsHandling\fR: Changes how the default values are embedded into the application; allowed values: \fBembedded\fR (default), \fBspeconly\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
+\fBembeddedSpec\fR: Changes how much of the specification is embedded into the application; allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
 .
 .IP "\(bu" 4
 \fBspecValidation\fR: Changes how the specification will be validated on application start\-up; allowed values: \fBnone\fR (default), \fBminimal\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
@@ -112,6 +109,28 @@ For detailed information about the contents of the header file see elektra\-high
 .IP "" 0
 .
 .SH "EXAMPLES"
+The simplest invocation is:
+.
+.P
+\fBkdb gen highlevel /sw/org/app/#0/current config\fR
+.
+.P
+However, it is not recommended to have the code\-generator read from the KDB, so one should instead use:
+.
+.P
+\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config\fR
+.
+.P
+If you don\'t want to embed the full specification in your binary, we recommend:
+.
+.P
+\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=defaults specValidation=minimal\fR
+.
+.P
+For the minimal binary size you may use (this comes with its own drawbacks, see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR):
+.
+.P
+\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=none specValidation=minimal\fR
 .
 .SH "SEE ALSO"
 .
