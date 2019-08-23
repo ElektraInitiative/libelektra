@@ -56,10 +56,10 @@ For detailed information about the contents of the header file see [elektra-high
 - `tagPrefix`:
   Changes the prefix of the generated tags (default: `ELEKTRA_TAG_`)
 - `enumConv`:
-  Switches how enum conversion should be done; allowed values: `default` (default), `trie`, `strcmp`
+  Switches how enum conversion should be done; allowed values: `default` (default), `switch`, `strcmp`
   - `strcmp`: uses a simple series of `if (strcmp(*, *) == 0)` to convert strings into enums
-  - `trie`: constructs a character based trie to convert strings into enums
-  - `default`: uses a `trie` up to a depth of 2, then switches to `strcmp`
+  - `switch`: constructs a series of `switch` statements to convert strings into enums
+  - `default`: uses a `switch` up to a depth of 2, then switches to `strcmp`
 - `headers`:
   Comma-separated (`,`) list of additional header files to include. For each of the listed headers we will generate an `#include "*"`
   statement

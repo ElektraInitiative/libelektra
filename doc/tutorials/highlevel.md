@@ -13,7 +13,7 @@ at [its documentation](/src/libs/highlevel/README.md). Please note, however, tha
 
 ## Overview
 
-The code-generation API builds on Elektra's specification feature. Instead of just using specifications at runtime, the code-generator parses
+The code-generation API builds on Elektra's specifications. Instead of just using specifications at runtime, the code-generator parses
 them when invoked (ideally right before compiling) and utilises the specification when generating configuration accessor functions.
 
 ## Writing a specification
@@ -112,10 +112,13 @@ First there is some boilerplate, including the copyright header, include stateme
 #define ELEKTRA_TAG_MYFLOATARRAY Myfloatarray
 ```
 
-Next we see all of the 'tag macros'. These are essentially just aliases, but the allow for some flexibility in how we generate the names of
-the `static inline` functions further down. You should always refer to your config values via these macros. Additionally, the comments for
-these macros contain the documentation on what arguments are needed for accessing the tag in question. For example to access the elements of
-the array `myfloatarray/#`, we obviously need to provide an index.
+Next we see all of the 'tag macros' used to refer to config values. These are essentially just aliases, but they allow for some flexibility
+in how we generate the names of the `static inline` functions further down. You should always refer to your config values via these macros,
+even if they are just aliases. This is because we might have to change the naming scheme for the functions, but we will try to keep the tag
+macros unchanged.
+
+Additionally, the comments for these macros contain the documentation on what arguments are needed for accessing the tag in question. For
+example to access the elements of the array `myfloatarray/#`, we obviously need to provide an index.
 
 ```c
 #define elektra_len19(x) ((x) < 10000000000000000000ULL ? 19 : 20)
@@ -212,46 +215,52 @@ elektraFatalErrorHandler (elektra, onFatalError);
 
 `onFatalError` will receive the fatal `ElektraError *`. It must at least call `elektraErrorReset` on the error and then call `exit()`.
 
+If you want to try out the application immediately, skip down to the [section about compiling](#compiling-your-application). You may also
+have to follow the section on [running your application](#running-your-application) to get everything up and running.
+
 ### Reading config values
 
 Once you have your `Elektra` instance, reading config values is easy. You just call one of the getter functions.
 
 ```c
-kdb_double_t mydouble = ELEKTRA_GET (Mydouble) (elektra);
-```
-
-Alternatively, you can use the convenience macro `elektraGet` and/or the tag macros. We recommend you use one of the ways below, to avoid
-problems in case we have to change how we generate the names of the `static inline` functions.
-
-```c
-kdb_double_t mydouble = ELEKTRA_GET (ELEKTRA_TAG_MYDOUBLE) (elektra);
 kdb_double_t mydouble = elektraGet (elektra, ELEKTRA_TAG_MYDOUBLE);
 ```
 
-To access config values that don't have static key name, like arrays, you have to supply additional arguments (and use `elektraGetV`):
+Here we used the convenience macro `elektraGet`. You could also invoke the `static inline` accessor function directly:
 
 ```c
-kdb_float_t myfloat0 = ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (elektra, 0);
-float myfloat1 = ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (elektra, 1);
-// or
+kdb_double_t mydouble = ELEKTRA_GET (ELEKTRA_TAG_MYDOUBLE) (elektra);
+```
+
+No error handling is required, because getter functions are designed to not fail. In a correct setup, either the initialization fails and
+getters are never called, or getter calls always succeed.
+
+To access config values that don't have a static key name, like arrays, you have to supply additional arguments (and use `elektraGetV`):
+
+```c
 kdb_float_t myfloat0 = elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0);
 kdb_float_t myfloat1 = elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 1);
+// or
+kdb_float_t myfloat0 = ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (elektra, 0);
+float myfloat1 = ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (elektra, 1);
 ```
 
 Of course we also need to know, how big the `myfloatarray/#` array actually is. To that end we can use `ELEKTRA_SIZE` or `elektraSize`:
 
 ```c
-kdb_long_long_t myfloat_size = ELEKTRA_SIZE (ELEKTRA_TAG_MYFLOATARRAY) (elektra);
-// or
 kdb_long_long_t myfloat_size = elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY);
+// or
+kdb_long_long_t myfloat_size = ELEKTRA_SIZE (ELEKTRA_TAG_MYFLOATARRAY) (elektra);
 ```
+
+`ELEKTRA_SIZE` functions like their `ELEKTRA_GET` counterparts are designed to not fail.
 
 Please note that, while it shouldn't happen, if you setup everything correctly, calling a getter on a non-existent, wrongly typed or otherwise
 inconvertible key is a fatal error. All fatal errors result in a call to the fatal error handler and therefore exit the application.
 
 ### Writing config values
 
-Writing config values is just as easy as reading them.
+Writing config values is not quite as easy as reading, but it is still quite simple:
 
 ```c
 ElektraError * error = NULL;
@@ -262,8 +271,9 @@ if (error == NULL) {
 }
 ```
 
-Admittedly writing is not quite as easy as reading, because of the error handling, but that is just a necessary evil when working in C. It
-is important to call `elektraErrorReset`, if an error was returned. Calling a setter with a non-null error pointer is a fatal error.
+As you can see the complexity stems from the necessary error handling. Because setting values involves IO and other uncontrollable factors,
+setter calls cannot be designed to not fail. This is why they accept an additional `ElektraError **` argument. It is important to call
+`elektraErrorReset`, if an error was set. Calling a setter with a non-null `ElektraError **` parameter is a fatal error.
 
 Of course you can also use `elektraSet` (error handling omitted):
 
@@ -273,7 +283,7 @@ elektraSetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 2.718282f, &error, 2);
 ```
 
 Note that `elektraSetV` takes the `ElektraError` argument before the variable arguments, while in `ELEKTA_SET` the error is always the last
-argument. This is simply because of limitations in the C macro system.
+argument. This is because of limitations in the C macro system.
 
 There is not setter for array sizes. Since Elektra's low-level part supports discontinuous arrays, we simply change the array size whenever
 necessary, if an array element setter is called. However, the high-level API has no support for discontinuous arrays, so take care not to
@@ -304,8 +314,9 @@ Note: At least C99 is required, so if your compiler defaults to an older version
 ## Running your application
 
 Running your application is easy, just run the executable (e.g. `myapp`). While this might work out of the box, you will just get the default
-configuration. To change the configuration you need to use `kdb`, which doesn't know about your specification yet, so you would need to set
-the `type` metadata and all the other stuff that your application expects yourself. For every single key.
+configuration. To change the configuration you need to use `kdb`, which doesn't know about your specification yet. This means you would need
+to set the `type` metadata and all the other stuff that your application expects by hand. For every single key. Obviously this is not the
+right solution.
 
 ### Mounting the specification
 
@@ -315,11 +326,16 @@ First you need to mount your specification itself into the KDB. Mounting is basi
 the KDB, similar to how mounting an external hard drive informs the OS about a new part of the file system.
 
 ```sh
-sudo kdb mount -R noresolver myapp_spec.eqd "spec/sw/example/myapp/#0/current" specload app="$PWD/myapp"
+sudo kdb mount -R noresolver /etc/myapp_spec.eqd "spec/sw/example/myapp/#0/current" specload app="$PWD/myapp"
 ```
 
 The command above assumes that you also used the `kdb gen` command from [above](#invoking-the-code-generator) and that the `myapp` executable
 is located in `$PWD`.
+
+> **Note:** Because of a limitation in `specload`, we have to use the `noresolver` resolver. This also means that the the path to the config
+> file (here `/etc/myapp_spec.eqd`) has to be absolute. Otherwise it will always be relative to the current working directory in which `kdb`
+> or your application was executed. The file _should not_ exist when calling `kdb mount`. `specload` works different to other plugins. The
+> given config file is only used, if the user makes changes to the specification via `kdb set`.
 
 Now that Elektra knows about your specification, calling your application might work better, since metadata should now be copied, when you
 set a config value via `kdb set`. However, there won't be any type checking. For that we need to enable the `type` plugin. While this could

@@ -212,19 +212,10 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		Params::SpecValidation,
 		{ { "", SpecValidation::Minimal }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
 
-	auto enumConversion = EnumConversion::Default;
-	if (enumConversionString == "trie")
-	{
-		enumConversion = EnumConversion::Trie;
-	}
-	else if (enumConversionString == "strcmp")
-	{
-		enumConversion = EnumConversion::Strcmp;
-	}
-	else if (enumConversionString != "default")
-	{
-		throw CommandAbortException ("enumConv must be one of: default, trie, strcmp");
-	}
+	auto enumConversion = getParameter<EnumConversion> (Params::EnumConversion, { { "", EnumConversion::Default },
+										      { "default", EnumConversion::Default },
+										      { "switch", EnumConversion::Trie },
+										      { "strcmp", EnumConversion::Strcmp } });
 
 
 	auto cascadingParent = parentKey.substr (4);
