@@ -47,6 +47,8 @@ static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * def
  * 			a non-existent value will cause a fatal error. It is recommended, to
  * 			only pass NULL, if you are using a specification, which provides
  * 			default values inside of the KDB.
+ * 			If a key in this KeySet doesn't have a value, we will use the value of the "default"
+ * 			metakey of this key.
  * @param error		If an error occurs during initialization of the Elektra instance, this pointer
  * 			will be used to report the error.
  *
@@ -290,6 +292,16 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 			const char * name = keyName (key);
 			keySetName (dup, keyName (parentKey));
 			keyAddName (dup, name);
+
+			if (strlen (keyString (dup)) == 0)
+			{
+				const Key * defaultMeta = keyGetMeta (dup, "default");
+				if (defaultMeta != NULL)
+				{
+					keySetString (dup, keyString (defaultMeta));
+				}
+			}
+
 			ksAppendKey (config, dup);
 		}
 	}
