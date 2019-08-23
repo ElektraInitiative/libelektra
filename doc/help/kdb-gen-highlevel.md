@@ -52,7 +52,7 @@ For detailed information about the contents of the header file see [elektra-high
 - `helpFn`:
   Changes the name of the function that prints the generated help message (default: `printHelpMessage`)
 - `specloadFn`:
-  Changes the name of the function that checks for "specload mode" (default: `specloadCheck`)
+  Changes the name of the function that checks for "specload mode" (default: `exitForSpecload`)
 - `tagPrefix`:
   Changes the prefix of the generated tags (default: `ELEKTRA_TAG_`)
 - `enumConv`:

@@ -67,9 +67,8 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	
 	KeySet * defaults = NULL;
 
-	KeySet * contract = ksNew (2,
+	KeySet * contract = ksNew (1,
 	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END),
 	KS_END);
 ;
 

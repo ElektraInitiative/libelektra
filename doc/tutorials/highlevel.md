@@ -150,11 +150,11 @@ line.
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
-void specloadCheck (int argc, const char ** argv);
+void exitForSpecload (int argc, const char ** argv);
 ```
 
 Then we undefine the local macros we defined before and declare the three initialization functions `loadConfiguration`, `printHelpMessage`
-and `specloadCheck`.
+and `exitForSpecload`.
 
 ```c
 /* elektra* macros ... */
@@ -171,14 +171,14 @@ like normal function calls and avoid the ugly double parentheses in e.g. `ELEKTR
 
 ### Obtaining an `Elektra` handle
 
-We start at the bottom of our `conf.h` excerpt. `specloadCheck` is used to initiate specload mode, if needed. This mode makes your application
+We start at the bottom of our `conf.h` excerpt. `exitForSpecload` is used to initiate specload mode, if needed. This mode makes your application
 provide its specification to Elektra. How this works exactly is not so important (see [specload plugin](/src/plugins/specload/README.md)).
-You only need to know, that `specloadCheck` should be called immediately at the start of your `main` function and that it only returns, when
+You only need to know, that `exitForSpecload` should be called immediately at the start of your `main` function and that it only returns, when
 your application is not in specload mode.
 
 ```c
 int main (int argc, const char ** argv) {
-    specloadCheck (argc, argv);
+    exitForSpecload (argc, argv);
     // ...
 }
 ```

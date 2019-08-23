@@ -412,7 +412,7 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_MYENUM) (Elektra * elektra,
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
-void specloadCheck (int argc, const char ** argv);
+void exitForSpecload (int argc, const char ** argv);
 
 
 /**
