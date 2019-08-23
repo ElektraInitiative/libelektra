@@ -249,7 +249,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			{ "embed_spec?", specLocation == SpecLocation::Embedded },
 			{ "embed_defaults?", specLocation != SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
 			{ "spec_as_defaults?", specLocation == SpecLocation::Embedded && defaultsHandling == DefaultsHandling::Embedded },
-			{ "check_spec_mountpoint?", specValidation != SpecValidation::None }, // TODO (kodebach): implement
 			{ "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
 	list enums;
@@ -483,6 +482,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	kdb::KeySet contract;
 	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+
+	if (specValidation == SpecValidation::Minimal)
+	{
+		contract.append (kdb::Key ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+	}
 
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
