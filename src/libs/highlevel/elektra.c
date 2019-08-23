@@ -49,14 +49,16 @@ static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * def
  * 			default values inside of the KDB.
  * 			If a key in this KeySet doesn't have a value, we will use the value of the "default"
  * 			metakey of this key.
+ * @param contract      Will be passed to kdbEnsure() as the contract. If it is NULL, kdbEnsure() won't be called.
  * @param error		If an error occurs during initialization of the Elektra instance, this pointer
  * 			will be used to report the error.
  *
  * @return An Elektra instance initialized with the application.
  *
  * @see elektraClose
+ * @see kdbEnsure
  */
-Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error)
+Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error)
 {
 	Key * const parentKey = keyNew (application, KEY_END);
 	KDB * const kdb = kdbOpen (parentKey);
@@ -68,7 +70,26 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	}
 
 	KeySet * const config = ksNew (0, KS_END);
-	insertDefaults (config, parentKey, defaults);
+	if (defaults != NULL)
+	{
+		insertDefaults (config, parentKey, defaults);
+	}
+
+	if (contract != NULL)
+	{
+		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
+
+		if (kdbEnsureResult == 1)
+		{
+			const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
+			*error = elektraErrorEnsureFailed (reason);
+		}
+		else
+		{
+			*error = elektraErrorFromKey (parentKey);
+			return NULL;
+		}
+	}
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
@@ -90,61 +111,9 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	return elektra;
 }
 
-/**
- * Calls kdbEnsure() on the internal KDB handle of this Elektra instance.
- *
- * @param elektra  Elektra instance to use.
- * @param contract The contract to ensure.
- * @param error    Pass a reference to an ElektraError pointer.
- *                 Will only be set in case of an error.
- *
- * @see kdbEnsure()
- */
-void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error)
+Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, KeySet * defaults, ElektraError ** error)
 {
-	if (error == NULL)
-	{
-		elektraFatalError (elektra, elektraErrorNullError (__func__));
-		return;
-	}
-
-	Key * parentKey = keyDup (elektra->parentKey);
-
-	kdbClose (elektra->kdb, parentKey);
-	ksClear (elektra->config);
-	KDB * const kdb = kdbOpen (parentKey);
-
-	if (kdb == NULL)
-	{
-		*error = elektraErrorFromKey (parentKey);
-		return;
-	}
-
-	int rc = kdbEnsure (kdb, contract, parentKey);
-	if (rc == 0)
-	{
-		// if successful, refresh config
-		elektra->kdb = kdb;
-		insertDefaults (elektra->config, elektra->parentKey, elektra->defaults);
-		const int kdbGetResult = kdbGet (elektra->kdb, elektra->config, parentKey);
-
-		if (kdbGetResult == -1)
-		{
-			*error = elektraErrorFromKey (parentKey);
-			return;
-		}
-	}
-	else if (rc == 1)
-	{
-		const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
-		*error = elektraErrorEnsureFailed (reason);
-	}
-	else
-	{
-		*error = elektraErrorFromKey (parentKey);
-	}
-
-	keyDel (parentKey);
+	return elektraOpen (application, defaults, NULL, error);
 }
 
 /**
@@ -283,27 +252,24 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 
 void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 {
-	if (defaults != NULL)
+	ksRewind (defaults);
+	for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
 	{
-		ksRewind (defaults);
-		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+		Key * const dup = keyDup (key);
+		const char * name = keyName (key);
+		keySetName (dup, keyName (parentKey));
+		keyAddName (dup, name);
+
+		if (strlen (keyString (dup)) == 0)
 		{
-			Key * const dup = keyDup (key);
-			const char * name = keyName (key);
-			keySetName (dup, keyName (parentKey));
-			keyAddName (dup, name);
-
-			if (strlen (keyString (dup)) == 0)
+			const Key * defaultMeta = keyGetMeta (dup, "default");
+			if (defaultMeta != NULL)
 			{
-				const Key * defaultMeta = keyGetMeta (dup, "default");
-				if (defaultMeta != NULL)
-				{
-					keySetString (dup, keyString (defaultMeta));
-				}
+				keySetString (dup, keyString (defaultMeta));
 			}
-
-			ksAppendKey (config, dup);
 		}
+
+		ksAppendKey (config, dup);
 	}
 }
 
