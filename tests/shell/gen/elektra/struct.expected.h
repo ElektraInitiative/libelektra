@@ -137,8 +137,7 @@ ELEKTRA_STRUCT_FREE_SIGNATURE (Person *, StructPerson);
 ELEKTRA_GET_SIGNATURE (Person *, StructPerson);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 
-ELEKTRA_SET_SIGNATURE (const Person *, StructPerson);
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const Person *, StructPerson);
+
 
 
 
@@ -537,28 +536,6 @@ static inline Person * ELEKTRA_GET (ELEKTRA_TAG_PEOPLE) (Elektra * elektra ,
 
 
 
-/**
- * Set the value of key 'people/#' (tag #ELEKTRA_TAG_PEOPLE).
- *
- * WARNING: if the given value does not reference a valid struct, from this specification,
- * ELEKTRA_GET (People) will fail. Use the `reference` plugin to ensure valid values.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'people/#', you must prefix it with '/tests/script/gen/elektra/struct' yourself.
- *                This is because you may want to specify a namespace.
- * @param index1 Replaces occurence no. 1 of # in the keyname.
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_PEOPLE) (Elektra * elektra, const char * value,
-						        kdb_long_long_t index1,
-						        ElektraError ** error)
-{
-	char * name = elektraFormat ("people/%*.*s%lld",  elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
-	elektraSetRawString (elektra, name, value, "struct_ref", error);
-	elektraFree (name);
-	
-}
 
 
 
@@ -600,24 +577,6 @@ static inline Person * ELEKTRA_GET (ELEKTRA_TAG_PERSON) (Elektra * elektra ,
 
 
 
-/**
- * Set the value of key 'person/_' (tag #ELEKTRA_TAG_PERSON).
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'person/_'.
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_PERSON) (Elektra * elektra, const Person * value,  
-						      const char * name1,
-						        ElektraError ** error)
-{
-	char * name = elektraFormat ("person/%s",  name1  );
-	ELEKTRA_SET (StructPerson) (elektra, name, value, error);
-	elektraFree (name);
-	
-}
 
 
 
@@ -701,31 +660,6 @@ static inline Person * ELEKTRA_GET (ELEKTRA_TAG_PERSON_CHILDREN) (Elektra * elek
 
 
 
-/**
- * Set the value of key 'person/_/children/#' (tag #ELEKTRA_TAG_PERSON_CHILDREN).
- *
- * WARNING: if the given value does not reference a valid struct, from this specification,
- * ELEKTRA_GET (PersonChildren) will fail. Use the `reference` plugin to ensure valid values.
- *
- * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param value   The value of 'person/_/children/#', you must prefix it with '/tests/script/gen/elektra/struct' yourself.
- *                This is because you may want to specify a namespace.
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
- * @param index1 Replaces occurence no. 1 of # in the keyname.
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */// 
-static inline void ELEKTRA_SET (ELEKTRA_TAG_PERSON_CHILDREN) (Elektra * elektra, const char * value,
-						        const char * name1,
-						       kdb_long_long_t index1,
-						        ElektraError ** error)
-{
-	char * name = elektraFormat ("person/%s/children/%*.*s%lld",  name1 ,
-				       elektra_len (index1), elektra_len (index1), "#___________________", (long long) index1  );
-	elektraSetRawString (elektra, name, value, "struct_ref", error);
-	elektraFree (name);
-	
-}
 
 
 

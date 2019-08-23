@@ -51,6 +51,7 @@ private:
 	kainjow::mustache::list unions;
 
 	bool processed = false;
+	bool containsStructRef = false;
 
 	static inline std::string getName (const kdb::Key & key, const std::string & fieldKeyName);
 	static inline std::string arraySizeName (const kdb::Key & key, const std::string & arrayFieldName);
@@ -116,6 +117,15 @@ public:
 			processAll ();
 		}
 		return fieldsString;
+	}
+
+	bool getContainsStructRef ()
+	{
+		if (!processed)
+		{
+			processAll ();
+		}
+		return containsStructRef;
 	}
 
 	static bool processStructRef (const kdb::Key & key, const kdb::Key & parentKey, const kdb::KeySet & allKeys, std::string & typeName,

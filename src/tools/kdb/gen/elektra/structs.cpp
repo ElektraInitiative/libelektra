@@ -357,7 +357,8 @@ kainjow::mustache::object StructFieldsProcessor::processStructRefUnion (const kd
 							{ "fields", unionFields },
 							{ "generate_typedef?", generateUnion },
 							{ "discr_native_type", enumType },
-							{ "default_type", unionFields[0]["native_type"] } });
+							{ "default_type", unionFields[0]["native_type"] },
+							{ "generate_setters?", false } });
 
 	return field;
 }
@@ -481,6 +482,8 @@ void StructFieldsProcessor::processAll ()
 
 		if (isStruct)
 		{
+			containsStructRef = true;
+
 			if (isArray)
 			{
 				fields.push_back (processArrayStructRef (key, keyName, fieldKeyName));
@@ -560,6 +563,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 	std::string fieldsString = fieldsProcessor.getFieldsString ();
 	size_t maxFieldNameLen = fieldsProcessor.getMaxFieldNameLen ();
 	unions = fieldsProcessor.getUnions ();
+	auto containsStructRef = fieldsProcessor.getContainsStructRef ();
 
 	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
@@ -587,5 +591,6 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 		       { "generate_typedef?", generateTypeDef },
 		       { "fields", fields },
 		       { "max_field_len", std::to_string (maxFieldNameLen + 1) },
-		       { "alloc?", allocate } };
+		       { "alloc?", allocate },
+		       { "generate_setters?", !containsStructRef } };
 }

@@ -37,14 +37,6 @@ void callAll (Elektra * elektra)
 	// Person * adam = elektraGetV (elektra, ELEKTRA_TAG_PERSON, "adam");
 	Person * p0 = elektraGetV (elektra, ELEKTRA_TAG_PEOPLE, 0);
 
-	ElektraError * error = NULL;
-
-	elektraSet (elektra, ELEKTRA_TAG_MYSTRUCT, &mystruct, &error);
-	// FIXME: bugs in spec plugin
-	// elektraSetV (elektra, ELEKTRA_TAG_PERSON, p0, &error, "adam");
-	elektraSetV (elektra, ELEKTRA_TAG_PEOPLE, "../../person/adam", &error, 0);
-	elektraSetV (elektra, ELEKTRA_TAG_PEOPLE, "../../person/adam", &error, 1);
-
 	// FIXME: bugs in spec plugin
 	// ELEKTRA_STRUCT_FREE (StructPerson) (&adam);
 	ELEKTRA_STRUCT_FREE (StructPerson) (&p0);
@@ -94,7 +86,7 @@ foreach (LIB @ElektraCodegen_ALL_LIBRARIES@)
 endforeach ()
 EOF
 
-mkdir build && cd build
+mkdir build && cd build || exit 123
 
 cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
