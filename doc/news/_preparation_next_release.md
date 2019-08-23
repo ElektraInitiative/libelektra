@@ -163,7 +163,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - We upgraded all servers to buster so that debian buster docker image work. _(Markus Raab)_
-- <<TODO>>
+- Enable WebUI build job again. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
