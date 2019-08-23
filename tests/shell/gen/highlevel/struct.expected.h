@@ -791,6 +791,7 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_PERSON_NAME) (Elektra * elektra,
 
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
+
 void exitForSpecload (int argc, const char ** argv);
 
 
