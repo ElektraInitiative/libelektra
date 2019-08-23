@@ -96,10 +96,12 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
+	auto inputKs = ks.cut (Key (parentKey, KEY_END));
+
 	for (const auto & part : tmpl->getParts ())
 	{
 		std::ofstream output (outputName + part);
-		tmpl->render (output, outputName, part, ks, parentKey);
+		tmpl->render (output, outputName, part, inputKs, parentKey);
 	}
 
 	return 0;

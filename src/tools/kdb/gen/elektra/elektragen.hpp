@@ -48,8 +48,10 @@ public:
 	}
 
 protected:
-	kainjow::mustache::data getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
+	kainjow::mustache::data getTemplateData (const std::string & outputName, const std::string & part, const kdb::KeySet & ks,
 						 const std::string & parentKey) const override;
+
+	std::string escapeFunction (const std::string & str) const override;
 };
 
 #endif // ELEKTRA_ELEKTRAGEN_HPP

@@ -54,8 +54,11 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 
 	auto tmpl = mustache (kdbgenTemplates.at (name));
-	tmpl.set_custom_escape (GenTemplate::escapeFunction);
-	auto data = getTemplateData (outputName, ks, parentKey);
+	std::function<std::string (const std::string &)> escapeFunction = [this](const std::string & str) {
+		return this->escapeFunction (str);
+	};
+	tmpl.set_custom_escape (escapeFunction);
+	auto data = getTemplateData (outputName, part, ks, parentKey);
 	for (const auto & partial : getPartials ())
 	{
 		data[partial.first] = partial.second;
@@ -68,56 +71,9 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	}
 }
 
-std::string GenTemplate::escapeFunction (const std::string & str)
+std::string GenTemplate::escapeFunction (const std::string & str) const
 {
-	std::stringstream ss;
-	for (const auto & c : str)
-	{
-		switch (c)
-		{
-		case '\a':
-			ss << "\\a";
-			break;
-		case '\b':
-			ss << "\\b";
-			break;
-		case '\f':
-			ss << "\\f";
-			break;
-		case '\n':
-			ss << "\\n";
-			break;
-		case '\r':
-			ss << "\\r";
-			break;
-		case '\t':
-			ss << "\\t";
-			break;
-		case '\v':
-			ss << "\\v";
-			break;
-		case '\\':
-			ss << "\\\\";
-			break;
-		case '\'':
-			ss << "\\'";
-			break;
-		case '"':
-			ss << "\\\"";
-			break;
-		default:
-			if (isprint (c))
-			{
-				ss << c;
-			}
-			else
-			{
-				ss << "\\x" << std::hex << std::setw (2) << static_cast<unsigned char> (c);
-			}
-		}
-	}
-
-	return ss.str ();
+	return kainjow::mustache::html_escape (str);
 }
 
 std::string GenTemplate::getParameter (const std::string & name, const std::string & defaultValue) const
