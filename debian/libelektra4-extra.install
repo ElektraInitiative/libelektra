@@ -1,10 +1,8 @@
 usr/lib/*/elektra4/libelektra-ccode.so*
 usr/lib/*/elektra4/libelektra-conditionals.so*
 usr/lib/*/elektra4/libelektra-counter.so*
-usr/lib/*/elektra4/libelektra-cpptype.so
 usr/lib/*/elektra4/libelektra-date.so*
 usr/lib/*/elektra4/libelektra-desktop.so*
-usr/lib/*/elektra4/libelektra-dini.so*
 usr/lib/*/elektra4/libelektra-dpkg.so*
 usr/lib/*/elektra4/libelektra-error.so*
 usr/lib/*/elektra4/libelektra-filecheck.so*
@@ -22,7 +20,6 @@ usr/lib/*/elektra4/libelektra-mmapstorage_crc.so
 usr/lib/*/elektra4/libelektra-mozprefs.so*
 usr/lib/*/elektra4/libelektra-path.so*
 usr/lib/*/elektra4/libelektra-profile.so*
-usr/lib/*/elektra4/libelektra-regexstore.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_b_b.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_hb_b.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_hp_b.so*
@@ -33,7 +30,6 @@ usr/lib/*/elektra4/libelektra-resolver_fm_xb_x.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_xhp_x.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_xp_x.so*
 usr/lib/*/elektra4/libelektra-rgbcolor.so
-usr/lib/*/elektra4/libelektra-struct.so*
 usr/lib/*/elektra4/libelektra-syslog.so*
 usr/lib/*/elektra4/libelektra-tcl.so*
 usr/lib/*/elektra4/libelektra-timeofday.so*

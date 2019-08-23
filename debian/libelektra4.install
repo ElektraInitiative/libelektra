@@ -1,5 +1,4 @@
 usr/lib/*/elektra4/libelektra-base64.so
-usr/lib/*/elektra4/libelektra-boolean.so*
 usr/lib/*/elektra4/libelektra-cache.so
 usr/lib/*/elektra4/libelektra-camel.so*
 usr/lib/*/elektra4/libelektra-constants.so*
@@ -7,7 +6,6 @@ usr/lib/*/elektra4/libelektra-c.so*
 usr/lib/*/elektra4/libelektra-csvstorage.so*
 usr/lib/*/elektra4/libelektra-directoryvalue.so
 usr/lib/*/elektra4/libelektra-dump.so*
-usr/lib/*/elektra4/libelektra-enum.so*
 usr/lib/*/elektra4/libelektra-glob.so*
 usr/lib/*/elektra4/libelektra-hosts.so*
 usr/lib/*/elektra4/libelektra-ini.so*
@@ -23,7 +21,6 @@ usr/lib/*/elektra4/libelektra-noresolver.so*
 usr/lib/*/elektra4/libelektra-null.so*
 usr/lib/*/elektra4/libelektra-quickdump.so*
 usr/lib/*/elektra4/libelektra-rename.so*
-usr/lib/*/elektra4/libelektra-required.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_hpu_b.so*
 usr/lib/*/elektra4/libelektra-resolver.so*
 usr/lib/*/elektra4/libelektra-shell.so*
