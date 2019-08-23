@@ -175,8 +175,6 @@ that you implement your own callback, so that you get proper error message logge
 callback is only viable for very simple applications, because you won't get any indication as to which key caused the error (unless you
 compiled Elektra with debug logging enabled).
 
-<a name="data-types"></a>
-
 ## Data Types
 
 The API determines the data type of a given key, by reading its `type` metadata. The API supports the following types,
