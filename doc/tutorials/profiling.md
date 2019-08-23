@@ -139,11 +139,11 @@ cmake -GNinja "$REPOSITORY_DIRECTORY"                                   \
       -DPLUGINS=ALL
 ```
 
-We will analyze the [YAMBi plugin][yambi] below. Please make sure that the CMake command above includes the plugin:
+We will analyze the [YAJL plugin][yajl] below. Please make sure that the CMake command above includes the plugin:
 
 ```
 …
--- Include Plugin yambi
+-- Include Plugin yajl
 …
 ```
 
@@ -154,29 +154,29 @@ ninja
 cd "$REPOSITORY_DIRECTORY"
 ```
 
-. In the next step we use [`benchmark_plugingetset`](../../benchmarks/README.md) to execute [YAMBi][] for the input file [`generated.yaml`][]. To do that we
+. In the next step we use [`benchmark_plugingetset`](../../benchmarks/README.md) to execute [YAJL][] for the input file [`keyframes_complex.json`]. To do that we
 
 1. create the folder `data` in the directory [`benchmarks`](../../benchmarks), and
-2. download the file [`generated.yaml`][] as `test.yambi.in`
+2. save the file [`keyframes_complex.json`][] as `test.yajl.in`
 
 . The following commands show you how to do that:
 
 ```sh
 mkdir -p benchmarks/data
-curl -L https://github.com/ElektraInitiative/rawdata/raw/master/YAML/Input/generated.yaml -o benchmarks/data/test.yambi.in
+cp src/plugins/yajl/yajl/keyframes_complex.json benchmarks/data/test.yajl.in
 ```
 
 . Now we first check if running [`benchmark_plugingetset`][] works without instrumentation:
 
 ```sh
-"$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yambi get
+"$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yajl get
 ```
 
 . If everything worked correctly, then the command above should finish successfully and not produce any output. To instrument the binary we set the environment variable `XRAY_OPTIONS` to the value `xray_mode=xray-basic verbosity=1`.
 
 ```sh
 export XRAY_OPTIONS='xray_mode=xray-basic patch_premain=true verbosity=1'
-"$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yambi get
+"$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yajl get
 ```
 
 . The command above will print the location of the XRay log file to `stdterr`:
@@ -190,7 +190,7 @@ export XRAY_OPTIONS='xray_mode=xray-basic patch_premain=true verbosity=1'
 . Now we can use the log file to analyze the runtime of the execution paths of the binary. To do that we first save the name of the log file in the variable `LOGFILE`. This way we do not need to repeat the filename every time in the commands below.
 
 ```sh
-LOGFILE=$("$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yambi get 2>&1 |
+LOGFILE=$("$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yajl get 2>&1 |
           sed -nE "s/.*Log file in '(.*)'.*/\1/p")
 ```
 
@@ -198,10 +198,10 @@ LOGFILE=$("$BUILD_DIRECTORY/bin/benchmark_plugingetset" benchmarks/data user yam
 
 ```sh
 llvm-xray account "$LOGFILE" -top=10 -sort=sum -sortorder=dsc -instr_map "$BUILD_DIRECTORY/bin/benchmark_plugingetset"
-#> Functions with latencies: 94
+#> Functions with latencies: 35
 #>    funcid      count [      min,       med,       90p,       99p,       max]       sum  function
-#>         1          1 [ 2.414035,  2.414035,  2.414035,  2.414035,  2.414035]  2.414035  <invalid>:0:0: main
-#>      1340          1 [ 2.403729,  2.403729,  2.403729,  2.403729,  2.403729]  2.403729  <invalid>:0:0: elektraYambiGet
+#>         1          1 [ 0.004791,  0.004791,  0.004791,  0.004791,  0.004791]  0.004791  <invalid>:0:0: main
+#>      1333          1 [ 0.002007,  0.002007,  0.002007,  0.002007,  0.002007]  0.002007  <invalid>:0:0: elektraYajlGet
 #> …
 ```
 
@@ -226,5 +226,4 @@ flamegraph flamegraph.txt > flamegraph.svg
 
 . Additional information on how to use the data produced by [XRay][] is available [here](https://llvm.org/docs/XRayExample.html).
 
-[yambi]: ../../src/plugins/yambi/README.md
-[`generated.yaml`]: https://github.com/ElektraInitiative/rawdata/blob/master/YAML/Input/generated.yaml
+[`keyframes_complex.json`]: ../../src/plugins/yajl/yajl/keyframes_complex.json
