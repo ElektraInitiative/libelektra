@@ -63,10 +63,12 @@ typedef struct _Elektra Elektra;
  *
  **************************************/
 
-Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
-void elektraClose (Elektra * elektra);
+ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", elektraOpen, v1);
 
-void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error);
+Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, KeySet * defaults, ElektraError ** error);
+
+Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error);
+void elektraClose (Elektra * elektra);
 
 // endregion Basics
 
