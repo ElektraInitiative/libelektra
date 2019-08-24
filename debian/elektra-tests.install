@@ -7,7 +7,6 @@ usr/share/libelektra-test/test-data/yajl/*
 usr/share/libelektra-test/test-data/augeas/*
 usr/share/libelektra-test/test-data/ini/*
 usr/share/libelektra-test/test-data/mini/*
-usr/share/libelektra-test/test-data/camel/*
 usr/share/libelektra-test/test-data/fstab/*
 usr/share/libelektra-test/test-data/hosts/*
 usr/share/libelektra-test/test-data/line/*
