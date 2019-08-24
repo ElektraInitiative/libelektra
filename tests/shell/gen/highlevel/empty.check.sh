@@ -76,7 +76,7 @@ foreach (LIB @ElektraCodegen_ALL_LIBRARIES@)
 endforeach ()
 EOF
 
-mkdir build && cd build
+mkdir build && cd build || exit 1
 
 cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
@@ -86,8 +86,8 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy exited with: $res"
 
-	if [ "$res" = "0" ] && which valgrind; then
-		valgrind --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=1 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
 		res=$?
 		echo "valgrind dummy exited with: $res"
 	fi

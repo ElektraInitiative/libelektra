@@ -158,7 +158,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 						echo
 					fi
 				else
-					rm "$diff_part"
+					rm -f "$diff_part"
 				fi
 			done
 
@@ -166,7 +166,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				old_dir=$(pwd)
 				cd "$output_folder" || exit 1
 
-				if KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1; then
+				if ! (KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1); then
 					test "1" = "0"
 					succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
 
@@ -178,7 +178,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 					echo "The log is also stored at $output_folder$test_name.check.log"
 					echo
 				else
-					rm "$output_folder$test_name.check.log"
+					echo rm "$output_folder$test_name.check.log"
 				fi
 
 				cd "$old_dir" || exit 1
