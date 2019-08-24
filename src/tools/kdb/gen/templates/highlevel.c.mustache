@@ -89,6 +89,11 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 
 	Elektra * e = elektraOpen ("/*% parent_key %*/", defaults, contract, error);
 
+	if (defaults != NULL)
+	{
+		ksDel (defaults);
+	}
+
 	if (e == NULL)
 	{
 		return -1;

@@ -93,6 +93,11 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/struct", defaults, contract, error);
 
+	if (defaults != NULL)
+	{
+		ksDel (defaults);
+	}
+
 	if (e == NULL)
 	{
 		return -1;
