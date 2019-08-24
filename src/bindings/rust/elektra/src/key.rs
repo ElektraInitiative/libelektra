@@ -64,51 +64,37 @@ macro_rules! add_traits {
                 unsafe { self.ptr.as_ref() }
             }
         }
+
+        impl Drop for $t {
+            fn drop(&mut self) {
+                unsafe { elektra_sys::keyDel(self.as_ptr()) };
+            }
+        }
     )*)
 }
 
 add_traits!(StringKey<'_>);
 add_traits!(BinaryKey<'_>);
 
-impl<'a> Iterator for StringKey<'a> {
+pub struct KeyMetaIter<'a, T: WriteableKey> {
+    key: &'a mut T,
+}
+
+impl<'a, T: WriteableKey> Iterator for KeyMetaIter<'a, T> {
     type Item = ReadOnly<StringKey<'a>>;
     fn next(&mut self) -> Option<Self::Item> {
-        let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
+        let key_ptr = unsafe { elektra_sys::keyNextMeta(self.key.as_ptr()) };
         if key_ptr.is_null() {
             None
         } else {
             Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
         }
-    }
-}
-
-impl<'a> Iterator for BinaryKey<'a> {
-    type Item = ReadOnly<StringKey<'a>>;
-    fn next(&mut self) -> Option<Self::Item> {
-        let key_ptr = unsafe { elektra_sys::keyNextMeta(self.as_ptr()) };
-        if key_ptr.is_null() {
-            None
-        } else {
-            Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
-        }
-    }
-}
-
-impl<'a> Drop for BinaryKey<'a> {
-    fn drop(&mut self) {
-        unsafe { elektra_sys::keyDel(self.as_ptr()) };
-    }
-}
-
-impl<'a> Drop for StringKey<'a> {
-    fn drop(&mut self) {
-        unsafe { elektra_sys::keyDel(self.as_ptr()) };
     }
 }
 
 impl<'a> StringKey<'a> {
     /// Sets the value of the key to the supplied string.
-    /// 
+    ///
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
     fn set_string(&mut self, value: &str) {
@@ -122,9 +108,15 @@ impl<'a> StringKey<'a> {
         c_str.to_string_lossy()
     }
 
+    /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
         StringKey::from_ptr(dup_ptr)
+    }
+
+    /// Returns an iterator over the key's metakeys.
+    pub fn iter<'b>(&'b mut self) -> KeyMetaIter<'b, StringKey<'a>> {
+        KeyMetaIter { key: self }
     }
 }
 
@@ -160,9 +152,15 @@ impl<'a> BinaryKey<'a> {
         vec
     }
 
+    /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> BinaryKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
         BinaryKey::from_ptr(dup_ptr)
+    }
+
+    /// Returns an iterator over the key's metakeys.
+    pub fn iter<'b>(&'b mut self) -> KeyMetaIter<'b, BinaryKey<'a>> {
+        KeyMetaIter { key: self }
     }
 }
 
@@ -256,11 +254,10 @@ impl std::fmt::Display for KeyError {
 
 impl std::error::Error for KeyError {}
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{KeyBuilder};
+    use crate::KeyBuilder;
 
     #[test]
     fn can_write_read_key() {
@@ -368,7 +365,7 @@ mod tests {
     }
 
     #[test]
-    fn keys_are_ordered_with_metadata()  -> Result<(), KeyError> {
+    fn keys_are_ordered_with_metadata() -> Result<(), KeyError> {
         let k1: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abc")?.build();
         let k2: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abz")?.build();
         assert!(k1 < k2);
@@ -408,7 +405,7 @@ mod tests {
         key.rewind_meta();
 
         let mut did_iterate = false;
-        for (i, metakey) in key.enumerate() {
+        for (i, metakey) in key.iter().enumerate() {
             did_iterate = true;
             assert_eq!(metakey.name(), meta[i].0);
             assert_eq!(metakey.value(), meta[i].1);
@@ -434,7 +431,7 @@ mod tests {
     }
 
     #[test]
-    fn can_get_fullname() -> Result<(), KeyError>  {
+    fn can_get_fullname() -> Result<(), KeyError> {
         let name = "user/test/fulltest";
         let key: StringKey = KeyBuilder::new(name)?
             .meta("metaname", "metavalue")?
