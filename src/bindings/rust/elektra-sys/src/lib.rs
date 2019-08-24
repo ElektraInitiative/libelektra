@@ -1,0 +1,61 @@
+#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+
+// Include the created bindings
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        keyDel, keyName, keyNew, keyString, ksAppendKey, ksDel, ksNew, ksNext, ksRewind, Key,
+        KEY_END, KEY_VALUE,
+    };
+    use std::ffi::{CStr, CString};
+
+    #[test]
+    fn can_write_read_key() {
+        let key_name = CString::new("user/test/key").unwrap();
+        let key_val = CString::new("rust-bindings").unwrap();
+        let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
+        let ret_val_str = unsafe { CStr::from_ptr(keyString(key)) };
+        assert_eq!(ret_val_str, key_val.as_c_str());
+        assert_eq!(unsafe { keyDel(key) }, 0);
+    }
+
+    #[test]
+    fn can_iterate_keyset() {
+        let key_name = CString::new("user/test/key").unwrap();
+        let key_name2 = CString::new("user/test/key2").unwrap();
+
+        let key = unsafe { keyNew(key_name.as_ptr(), KEY_END) };
+        let key2 = unsafe { keyNew(key_name2.as_ptr(), KEY_END) };
+        let ks = unsafe { ksNew(2) };
+
+        let mut append_res = unsafe { ksAppendKey(ks, key) };
+        assert_eq!(append_res, 1);
+
+        append_res = unsafe { ksAppendKey(ks, key2) };
+        assert_eq!(append_res, 2);
+
+        assert_eq!(unsafe { ksRewind(ks) }, 0);
+
+        let mut key_next = unsafe { ksNext(ks) };
+        assert_eq!(key_name.as_c_str(), unsafe {
+            CStr::from_ptr(keyName(key_next))
+        });
+
+        key_next = unsafe { ksNext(ks) };
+        assert_eq!(key_name2.as_c_str(), unsafe {
+            CStr::from_ptr(keyName(key_next))
+        });
+
+        key_next = unsafe { ksNext(ks) };
+        let key_next_ptr: *const Key = key_next;
+        assert!(key_next_ptr.is_null());
+
+        // Deletes ks and both keys
+        assert_eq!(unsafe { ksDel(ks) }, 0);
+    }
+
+}

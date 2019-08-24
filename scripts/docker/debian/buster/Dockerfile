@@ -77,6 +77,8 @@ RUN apt-get update \
         valgrind \
         virtualenv \
         wine \
+        rustc \
+        clang-6.0 \
     && rm -rf /var/lib/apt/lists/*
 
 
