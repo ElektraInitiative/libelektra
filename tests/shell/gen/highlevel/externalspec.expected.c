@@ -88,7 +88,22 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	return elektraHelpKey (e) != NULL ? 1 : 0;
 }
 
-
+/**
+ * Checks whether specload mode was invoked and if so, sends the specification over stdout
+ * in the format expected by specload.
+ *
+ * You MUST not output anything to stdout before invoking this function. Ideally invoking this
+ * is the first thing you do in your main()-function.
+ *
+ * This function will ONLY RETURN, if specload mode was NOT invoked. Otherwise it will call `exit()`.
+ *
+ * @param argc pass the value of argc from main
+ * @param argv pass the value of argv from main
+ */
+void exitForSpecload (int argc, const char ** argv)
+{
+	
+}
 
 
 /**
