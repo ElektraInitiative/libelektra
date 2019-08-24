@@ -144,7 +144,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Compilation
 
-- We now have a setup for proper symbol versioning. [More information](../dev/symbol-versioning.md) _(Klemens Böswirth)_
+- We now have a [setup for proper symbol versioning](../dev/symbol-versioning.md). _(Klemens Böswirth)_
 
 ### Docker
 
