@@ -59,10 +59,8 @@ function (add_scripttest testname)
 
 				list (FIND excluded_tests "${testname_we}" index_excluded)
 				if (index_excluded EQUAL -1)
-					set (KDB_COMMAND ${KDB_COMMAND_BASENAME})
 					set (RACE_COMMAND "$KDB race")
-					set (INCLUDE_COMMON
-					     "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
+					set (INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}")
 					configure_file ("${filename}" "${CMAKE_CURRENT_BINARY_DIR}/${testname}" @ONLY)
 					install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
 						 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
@@ -82,7 +80,7 @@ function (add_scripttest testname)
 				if (NOT ${testname_we} STREQUAL "run_all")
 					set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/${KDB_COMMAND_BASENAME}")
 					set (RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
-					set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}KDB=\"${KDB_COMMAND}\"")
+					set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}")
 					set (testscriptname "${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}")
 					configure_file ("${filename}" "${testscriptname}" @ONLY)
 					add_test (testscr_${testname_we} "${testscriptname}") # dash does memleak:
