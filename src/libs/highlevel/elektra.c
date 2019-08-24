@@ -50,9 +50,8 @@ static bool checkHighlevelContract (const char * application, KeySet * contract,
  * 			default values inside of the KDB.
  * 			If a key in this KeySet doesn't have a value, we will use the value of the "default"
  * 			metakey of this key.
- * 			The KeySet is attached to this Elektra instance. It will be ksDel()ed, when elektraClose()
- * 			is called.
  * @param contract      Will be passed to kdbEnsure() as the contract. If it is NULL, kdbEnsure() won't be called.
+ * 			Unlike @p defaults, this KeySet is consumed and must not be used afterwards.
  * @param error		If an error occurs during initialization of the Elektra instance, this pointer
  * 			will be used to report the error.
  *
@@ -125,7 +124,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
-	elektra->defaults = defaults;
+	elektra->defaults = ksDup (defaults);
 
 	return elektra;
 }
