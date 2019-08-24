@@ -79,45 +79,45 @@ Now that you know how to execute `benchmark_plugingetset`, you can use it to com
 it makes sense to use a benchmarking tool such as [hyperfine](https://github.com/sharkdp/hyperfine) for that task. For our tutorial we assume that you copied the file [`keyframes.yaml`](https://github.com/ElektraInitiative/rawdata/blob/master/YAML/Input/keyframes.yaml) to the locations
 
 - `benchmarks/data/test.yamlcpp.in`, and
-- `benchmarks/data/test.yaypeg.in`
+- `benchmarks/data/test.yanlr.in`
 
 . You can do that using the following commands:
 
 ```sh
 mkdir -p benchmarks/data
 curl -L https://github.com/ElektraInitiative/rawdata/raw/master/YAML/Input/keyframes.yaml -o benchmarks/data/test.yamlcpp.in
-cp benchmarks/data/test.yamlcpp.in benchmarks/data/test.yaypeg.in
+cp benchmarks/data/test.yamlcpp.in benchmarks/data/test.yanlr.in
 ```
 
 . Afterwards you can use:
 
 ```sh
 hyperfine --warmup 3 'build/bin/benchmark_plugingetset benchmarks/data user yamlcpp get' \
-                     'build/bin/benchmark_plugingetset benchmarks/data user yaypeg get'
+                     'build/bin/benchmark_plugingetset benchmarks/data user yanlr get'
 
 ```
 
 to compare the performance of the plugins. The output of this benchmark would look something like this:
 
 ```
-Benchmark #1: bin/benchmark_plugingetset /tmp user yamlcpp get
-  Time (mean ± σ):      26.9 ms ±   1.1 ms    [User: 21.0 ms, System: 3.7 ms]
-  Range (min … max):    24.5 ms …  31.6 ms    98 runs
+Benchmark #1: build/bin/benchmark_plugingetset benchmarks/data user yamlcpp get
+  Time (mean ± σ):      18.3 ms ±   0.9 ms    [User: 15.2 ms, System: 1.4 ms]
+  Range (min … max):    17.1 ms …  21.2 ms    136 runs
 
-Benchmark #2: bin/benchmark_plugingetset /tmp user yaypeg get
-  Time (mean ± σ):      26.8 ms ±   1.0 ms    [User: 20.8 ms, System: 3.8 ms]
-  Range (min … max):    24.9 ms …  30.1 ms    101 runs
+Benchmark #2: build/bin/benchmark_plugingetset benchmarks/data user yanlr get
+  Time (mean ± σ):      16.2 ms ±   0.9 ms    [User: 12.7 ms, System: 1.7 ms]
+  Range (min … max):    14.8 ms …  20.0 ms    161 runs
 
 Summary
-  'bin/benchmark_plugingetset /tmp user yaypeg get' ran
-    1.01 ± 0.06 times faster than 'bin/benchmark_plugingetset /tmp user yamlcpp get'
+  'build/bin/benchmark_plugingetset benchmarks/data user yanlr get' ran
+    1.13 ± 0.08 times faster than 'build/bin/benchmark_plugingetset benchmarks/data user yamlcpp get'
 ```
 
 . You can now remove the input files and the folder `benchmarks/data`:
 
 ```sh
 rm benchmarks/data/test.yamlcpp.in
-rm benchmarks/data/test.yaypeg.in
+rm benchmarks/data/test.yanlr.in
 rmdir benchmarks/data
 ```
 

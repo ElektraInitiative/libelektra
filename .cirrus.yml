@@ -111,7 +111,6 @@ mac_task:
       moreutils
       ninja
       openssl
-      pegtl
       pkg-config
       prettier
       qt

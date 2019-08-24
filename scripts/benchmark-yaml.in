@@ -11,7 +11,7 @@ BUILD_DIRECTORY="@CMAKE_BINARY_DIR@"
 SOURCE_DIRECTORY="@CMAKE_SOURCE_DIR@"
 
 KDB_COMMAND="$BUILD_DIRECTORY/bin/kdb"
-PLUGINS=(yamlcpp yanlr yambi yawn yaypeg)
+PLUGINS=(yamlcpp yanlr yambi yawn)
 DATA_DIRECTORY="benchmarks/data"
 BENCHMARK_TOOL="$BUILD_DIRECTORY/bin/benchmark_plugingetset"
 INPUT_FILE=generated.yaml

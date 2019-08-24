@@ -1005,10 +1005,8 @@ constants/constants\\.c|\
 yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
 yawn/yaml_grammar\\.h|\
-yaypeg/parser\\.hpp\
 ).*' \
           -E '.*/src/error/.*' \
-          -E '.*/src/plugins/yaypeg/parser.in.hpp' \
 """)
               }
             }
