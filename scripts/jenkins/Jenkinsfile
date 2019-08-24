@@ -163,11 +163,9 @@ def main() {
     deployWebsite()
   }
 
-  /*
   maybeStage("Deploy Web UI", isMaster()) {
     deployWebUI()
   }
-  */
 }
 
 try {
@@ -1027,9 +1025,7 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
   tasks << buildWebsite()
-  /*
   tasks << buildWebUI()
-  */
   return tasks
 }
 
