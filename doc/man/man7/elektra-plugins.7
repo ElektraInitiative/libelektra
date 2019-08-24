@@ -100,9 +100,6 @@ Are responsible for reading writing the configuration to configuration files\.
 Read and write everything a KeySet might contain:
 .
 .IP "\(bu" 4
-dini \fIdini/\fR uses by default the ini plugin but has legacy support for dump
-.
-.IP "\(bu" 4
 ini \fIini/\fR supports a range of INI file formats\.
 .
 .IP "\(bu" 4
@@ -148,7 +145,7 @@ Only suited for import/export:
 xerces \fIxerces/\fR uses XML (without a specific schema)\.
 .
 .IP "\(bu" 4
-xmltool \fIxmltool/\fR uses XML (in Elektra\'s XML schema)\.
+xmltool \fIxmltool/\fR uses XML in the deprecated Elektra XML schema for importing configuration from Elektra 0\.7\.
 .
 .IP "\(bu" 4
 simpleini \fIsimpleini/\fR line\-based key\-value pairs with configurable format (without sections)
@@ -172,9 +169,6 @@ regexdispatcher \fIregexdispatcher/\fR generates regex representations of specif
 .
 .IP "\(bu" 4
 fstab \fIfstab/\fR for fstab files\.
-.
-.IP "\(bu" 4
-regexstore \fIregexstore/\fR
 .
 .IP "\(bu" 4
 csvstorage \fIcsvstorage/\fR for csv files
@@ -245,14 +239,6 @@ uname \fIuname/\fR information from the uname syscall\.
 .SS "Filter"
 \fIFilter plugins\fR process keys and their values in both directions\. In one direction they undo what they do in the other direction\. Most filter plugins available now encode and decode values\. Storage plugins that use characters to separate key names, values or metadata will not work without them\.
 .
-.IP "\(bu" 4
-cachefilter \fIcachefilter/\fR stores filtered keys internally so that they do not get accidentally lost and can be written to the storage again without the user having to remember including them in the writeout
-.
-.IP "" 0
-.
-.P
-\fBEncoding\fR
-.
 .P
 Rewrite unwanted characters with different techniques:
 .
@@ -267,9 +253,6 @@ base64 \fIbase64/\fR using the Base64 encoding scheme (RFC4648)
 .
 .IP "" 0
 .
-.P
-Transformations:
-.
 .IP "\(bu" 4
 directoryvalue \fIdirectoryvalue/\fR converts directory values to leaf values
 .
@@ -280,15 +263,9 @@ keytometa \fIkeytometa/\fR transforms keys to metadata
 rename \fIrename/\fR renames keys according to different rules
 .
 .IP "\(bu" 4
-boolean \fIboolean/\fR canonicalizes boolean keys
-.
-.IP "\(bu" 4
 hexnumber \fIhexnumber/\fR converts between hexadecimal and decimal
 .
 .IP "" 0
-.
-.P
-Doing other stuff:
 .
 .IP "\(bu" 4
 crypto \fIcrypto/\fR encrypts / decrypts confidential values
@@ -367,9 +344,6 @@ spec \fIspec/\fR copies metadata from spec namespace (the standard way)
 .IP "\(bu" 4
 glob \fIglob/\fR using globbing techniques (needed by some plugins)
 .
-.IP "\(bu" 4
-struct \fIstruct/\fR using a defined structure (may also reject configuration not conforming to that structure)
-.
 .IP "" 0
 .
 .P
@@ -391,22 +365,13 @@ ipaddr \fIipaddr/\fR checks IP addresses using regular expressions
 path \fIpath/\fR by checking files on file system
 .
 .IP "\(bu" 4
-cpptype \fIcpptype/\fR obsolete plugin for run\-time type checking (CORBA types/), use \fBtype\fR instead
-.
-.IP "\(bu" 4
-enum \fIenum/\fR compares the keyvalue against a list of valid values
-.
-.IP "\(bu" 4
-type \fItype/\fR type checking (CORBA types) and enum functionality
+type \fItype/\fR type checking (CORBA types) with enum functionality
 .
 .IP "\(bu" 4
 mathcheck \fImathcheck/\fR by mathematical expressions using key values as operands
 .
 .IP "\(bu" 4
 conditionals \fIconditionals/\fR by using if\-then\-else like statements
-.
-.IP "\(bu" 4
-required \fIrequired/\fR rejects non\-required keys
 .
 .IP "\(bu" 4
 date \fIdate/\fR validates date and time data
@@ -490,9 +455,6 @@ process \fIprocess/\fR proxy plugin that executes other plugins in a separate pr
 .
 .IP "\(bu" 4
 profile \fIprofile/\fR links profile keys
-.
-.IP "\(bu" 4
-simplespeclang \fIsimplespeclang/\fR simple configuration specification language
 .
 .IP "\(bu" 4
 gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
