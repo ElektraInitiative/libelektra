@@ -13,9 +13,8 @@ set (SUBDIRS
      invoke
      notification
      highlevel
+     merge
      opts)
-
-add_subdirectory (merge)
 
 # The subdirectory for LibElektra must be the last entry!
 list (APPEND SUBDIRS elektra)
