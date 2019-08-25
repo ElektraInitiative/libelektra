@@ -93,7 +93,6 @@ include_directories (data)
 
 add_subdirectory (cframework)
 add_subdirectory (shell)
-add_subdirectory (shell/shell_recorder)
 add_subdirectory (abi)
 add_subdirectory (ctest)
 if (ENABLE_KDB_TESTING)

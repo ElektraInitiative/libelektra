@@ -121,3 +121,4 @@ endforeach (file ${SCRIPT_TESTS})
 
 add_subdirectory (gen)
 add_subdirectory (external)
+add_subdirectory (shell_recorder)
