@@ -156,7 +156,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- The `🔗 Check` build job now merges PRs before checking links. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
