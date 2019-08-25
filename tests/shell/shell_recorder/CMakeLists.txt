@@ -24,22 +24,15 @@ if (ENABLE_KDB_TESTING)
 
 	set (USE_CMAKE_KDB_COMMAND "") # set kdb command
 	if (BUILD_SHARED)
-		set (KDB_COMMAND "kdb")
 		list (FIND REMOVED_PLUGINS list list_index)
 		if (list_index EQUAL -1)
 			set (ENABLE_REPLAY_TESTS TRUE)
 		endif (list_index EQUAL -1)
-	elseif (BUILD_FULL)
-		set (KDB_COMMAND "kdb-full")
-	elseif (BUILD_STATIC)
-		set (KDB_COMMAND "kdb-static")
-	else ()
-		message (SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
 
 	string (LENGTH "${USE_CMAKE_KDB_COMMAND}" LENGTH_KDB_COMMAND)
 	if (LENGTH_KDB_COMMAND EQUAL 0)
-		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}export KDB=\"${KDB_COMMAND}\" PATH=\"${CMAKE_BINARY_DIR}/bin:$PATH\"")
+		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}export KDB=\"${KDB_COMMAND_BASENAME}\" PATH=\"${CMAKE_BINARY_DIR}/bin:$PATH\"")
 	endif (LENGTH_KDB_COMMAND EQUAL 0)
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/shell_recorder.sh" "${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh" @ONLY)
