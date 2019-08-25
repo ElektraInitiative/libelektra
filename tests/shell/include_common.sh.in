@@ -64,7 +64,7 @@ fi
 
 KDB_GETENV=$("$KDB" elektrify-getenv getenv KDB 2> /dev/null)
 
-if [ "${KDB_GETENV}" ]; then
+if [ $? = 0 ]; then
 	KDB=${KDB_GETENV}
 fi
 
