@@ -29,7 +29,7 @@ if (ENABLE_KDB_TESTING)
 		endif (list_index EQUAL -1)
 	endif ()
 
-	set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}export KDB=\"${KDB_COMMAND_BASENAME}\" PATH=\"${CMAKE_BINARY_DIR}/bin:$PATH\"")
+	set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}export PATH=\"${CMAKE_BINARY_DIR}/bin:$PATH\"")
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/shell_recorder.sh" "${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh" @ONLY)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/tutorial_wrapper/markdown_shell_recorder.sh"
