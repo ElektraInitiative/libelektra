@@ -8,9 +8,9 @@ pub trait WriteableKey: ReadableKey {
 
     /// Returns the raw pointer of the key.
     /// Should be used with caution. In particular,
-    /// `keyDel` should not be called and the pointer
-    /// should not be modified with anything other than
-    /// `elektra_sys::key*` functions.
+    /// the pointer should only be modified with
+    /// `elektra_sys::key*` functions, but `keyDel` 
+    /// should not be called. 
     /// 
     /// You can use it to call functions in the raw bindings
     /// that modify the key, if the safe API doesn't fulfill your usecase.
@@ -32,6 +32,18 @@ pub trait WriteableKey: ReadableKey {
     fn as_ptr(&mut self) -> *mut elektra_sys::Key;
 
     /// Set the value of the key.
+    /// 
+    /// # Examples
+    /// ```
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let mut key = StringKey::new_empty();
+    /// key.set_value("rust");
+    /// assert_eq!(key.value(), "rust");
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn set_value(&mut self, value: Self::SetValue)
     where
         Self: Sized;
@@ -39,7 +51,7 @@ pub trait WriteableKey: ReadableKey {
     /// Construct a new key with a name.
     ///
     /// # Panics
-    /// Panics when an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
     fn new(name: &str) -> Result<Self, KeyError>
     where
         Self: Sized,
@@ -52,7 +64,7 @@ pub trait WriteableKey: ReadableKey {
     /// Construct a new nameless key.
     /// 
     /// # Panics
-    /// Panics when an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
     fn new_empty() -> Self
     where
         Self: Sized,

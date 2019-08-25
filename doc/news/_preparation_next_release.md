@@ -129,7 +129,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Rust
 
 - Add the `elektra-sys` crate which contains raw bindings to libelektra for Rust. _(Philipp Gackstatter)_
-- Add the `elektra` crate which contains safe wrapper methods for the raw bindings. _(Philipp Gackstatter)_
+- Add the `elektra` crate which contains safe wrapper methods for the raw bindings. See the [Readme](../../src/bindings/rust/README.md) for more. _(Philipp Gackstatter)_
 
 ### <<Binding3>>
 

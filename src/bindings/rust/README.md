@@ -27,6 +27,46 @@ fn main() {
 }
 ```
 
+### Key
+
+A full example for using some of the key functionality. For all methods, see the documentation.
+
+```rust
+fn main() -> Result<(), KeyError> {
+    // To create a simple key with a name and value
+    let mut key = StringKey::new("user/test/language")?;
+    key.set_value("rust");
+    assert_eq!(key.name(), "user/test/language");
+    assert_eq!(key.value(), "rust");
+
+    // Duplicate a key
+    let key_duplicate = key.duplicate();
+
+    // And compare them
+    assert_eq!(key, key_duplicate);
+
+    // To create a key with multiple meta values, use the KeyBuilder
+    let mut key: StringKey = KeyBuilder::new("user/test/fruits")?
+        .meta("banana", "🍌")?
+        .meta("pineapple", "🍍")?
+        .meta("strawberry", "🍓")?
+        .build();
+    assert_eq!(key.meta("pineapple")?.value(), "🍍");
+
+    // We can iterate over the metakeys
+    key.rewind_meta();
+    for metakey in key.iter() {
+        println!("Key: {}, Value: {}", metakey.name(), metakey.value());
+    }
+
+    // Delete a metakey
+    key.delete_meta("banana")?;
+
+    // Check if key is in the user namespace
+    assert!(key.is_user());
+}
+```
+
 ## Generation
 
 Bindings are generated when buildling the `elektra-sys` crate using `rust-bindgen`. The `build.rs` script in the `elektra-sys` crate calls and configures bindgen. It also emits additional configuration for `rustc` to tell it what library to link against, and where to find it.

@@ -8,7 +8,7 @@ impl<T: WriteableKey> KeyBuilder<T> {
     /// Construct a new key with a name.
     ///
     /// # Panics
-    /// Panics when an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
     pub fn new(name: &str) -> Result<Self, KeyError> {
         let key = T::new(name)?;
         Ok(KeyBuilder { key })
@@ -16,7 +16,7 @@ impl<T: WriteableKey> KeyBuilder<T> {
     /// Construct a new nameless key.
     ///
     /// # Panics
-    /// Panics when an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
     pub fn new_empty() -> Self {
         let key = T::new_empty();
         KeyBuilder { key }

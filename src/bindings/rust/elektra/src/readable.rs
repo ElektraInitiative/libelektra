@@ -85,8 +85,22 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
         }
     }
 
+    /// Returns the namespace of the name of this key.
+    /// Note that there are some convenience methods implemented.
+    /// 
+    /// # Examples
+    /// ```
+    /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
+    /// # use elektra_sys;
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// assert_eq!(key.namespace(), elektra_sys::KEY_NS_USER);
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
     fn namespace(&self) -> u32 {
-        unsafe { elektra_sys::keyGetNamespace(self.as_ref()) as u32 }
+        unsafe { elektra_sys::keyGetNamespace(self.as_ref())  as u32 }
     }
 
     /// Determines if the key is in the spec namespace
@@ -114,7 +128,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
         self.namespace() == elektra_sys::KEY_NS_SYSTEM
     }
 
-    /// Determines if the key is in the dir namespace
+    /// Determines if the key is a cascading key
     fn is_cascading(&self) -> bool {
         self.namespace() == elektra_sys::KEY_NS_CASCADING
     }
