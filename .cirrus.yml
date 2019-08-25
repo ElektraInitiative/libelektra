@@ -199,7 +199,7 @@ linux_task:
     else
       git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
-      git merge --no-ff $CIRRUS_CHANGE_IN_REPO
+      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
     fi
 
   script:
