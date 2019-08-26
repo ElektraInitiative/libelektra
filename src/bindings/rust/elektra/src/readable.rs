@@ -22,7 +22,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     fn value(&self) -> Self::GetValue;
 
     /// Construct a new key from a raw key pointer
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
+    unsafe fn from_ptr(ptr: *mut elektra_sys::Key) -> Self
     where
         Self: Sized;
 
@@ -60,7 +60,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     /// Returns the value of a meta-information which is current.
     fn current_meta(&self) -> ReadOnly<StringKey> {
         let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
-        ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key)
+        unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) }
     }
 
     /// Get key full name, including the user domain name.
@@ -131,8 +131,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     fn is_cascading(&self) -> bool {
         self.namespace() == elektra_sys::KEY_NS_CASCADING
     }
-
-    // Omitted keyValue() due to return value of void pointer, which cannot be used safely in Rust
 
     /// Returns the number of bytes needed to store the key's value, including the
     /// NULL terminator.
@@ -268,7 +266,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
         if key_ptr.is_null() {
             Err(KeyError::NotFound)
         } else {
-            let key: ReadOnly<StringKey<'_>> = ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key);
+            let key: ReadOnly<StringKey<'_>> = unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) };
             Ok(key)
         }
     }

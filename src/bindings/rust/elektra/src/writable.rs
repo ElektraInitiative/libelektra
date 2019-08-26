@@ -51,7 +51,7 @@ pub trait WriteableKey: ReadableKey {
     /// Construct a new key with a name.
     ///
     /// # Panics
-    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     fn new(name: &str) -> Result<Self, KeyError>
     where
         Self: Sized,
@@ -70,13 +70,41 @@ pub trait WriteableKey: ReadableKey {
         Self: Sized,
     {
         let key_ptr = unsafe { elektra_sys::keyNew(std::ptr::null()) };
-        Self::from_ptr(key_ptr)
+        unsafe { Self::from_ptr(key_ptr) }
+    }
+
+    /// Increment the viability of a key object.
+    /// Returns the value of the new reference counter.
+    /// 
+    /// # Notes
+    /// This function is unsafe, since forgetting to call `dec_ref`
+    /// after a call to `inc_ref` results in a memory leak. 
+    /// It is preferable to use duplicate instead.
+    /// 
+    /// # Examples
+    /// ```
+    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let mut key2;
+    /// {
+    ///     let mut key = StringKey::new("user/test/language")?;
+    ///     unsafe { key.inc_ref(); }
+    ///     key2 = unsafe { StringKey::from_ptr(key.as_ptr()) };
+    /// } // <- key is dropped here, but key2 can still be used
+    /// assert_eq!(key2.name(), "user/test/language");
+    /// // Forgetting to call this method would leak memory.
+    /// unsafe { key2.dec_ref(); }
+    /// #     Ok(())
+    /// # }
+    /// ```
+    unsafe fn inc_ref(&mut self) -> isize {
+        elektra_sys::keyIncRef(self.as_ptr())
     }
 
     /// Decrement the viability of a key object.
     /// Returns the value of the new reference counter.
-    fn dec_ref(&mut self) -> isize {
-        unsafe { elektra_sys::keyDecRef(self.as_ptr()) }
+    unsafe fn dec_ref(&mut self) -> isize {
+        elektra_sys::keyDecRef(self.as_ptr())
     }
 
     /// Clears the key.
@@ -85,12 +113,6 @@ pub trait WriteableKey: ReadableKey {
         unsafe {
             elektra_sys::keyClear(self.as_ptr());
         }
-    }
-
-    /// Increment the viability of a key object.
-    /// Returns the value of the new reference counter.
-    fn inc_ref(&mut self) -> isize {
-        unsafe { elektra_sys::keyIncRef(self.as_ptr()) }
     }
 
     /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.

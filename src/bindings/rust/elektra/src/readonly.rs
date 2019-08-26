@@ -15,7 +15,7 @@ impl<T: ReadableKey> ReadOnly<T> {
 impl<T: ReadableKey> ReadableKey for ReadOnly<T> {
     type GetValue = T::GetValue;
 
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
+    unsafe fn from_ptr(ptr: *mut elektra_sys::Key) -> Self {
         ReadOnly {
             key: T::from_ptr(ptr),
         }

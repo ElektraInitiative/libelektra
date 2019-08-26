@@ -88,7 +88,7 @@ impl<'a, T: WriteableKey> Iterator for MetaIter<'a, T> {
         if key_ptr.is_null() {
             None
         } else {
-            Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
+            Some(unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) })
         }
     }
 }
@@ -136,7 +136,7 @@ impl<'a> StringKey<'a> {
     /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        StringKey::from_ptr(dup_ptr)
+        unsafe { StringKey::from_ptr(dup_ptr) }
     }
 
     /// Returns an iterator over the key's metakeys.
@@ -193,7 +193,7 @@ impl<'a> BinaryKey<'a> {
     /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> BinaryKey<'b> {
         let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
-        BinaryKey::from_ptr(dup_ptr)
+        unsafe { BinaryKey::from_ptr(dup_ptr) }
     }
 
     /// Returns an iterator over the key's metakeys.
@@ -218,7 +218,7 @@ impl<'a> BinaryKey<'a> {
 impl<'a> ReadableKey for StringKey<'a> {
     type GetValue = Cow<'a, str>;
 
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
+    unsafe fn from_ptr(ptr: *mut elektra_sys::Key) -> StringKey<'a> {
         StringKey {
             ptr: NonNull::new(ptr).unwrap(),
             _marker: std::marker::PhantomData,
@@ -233,7 +233,7 @@ impl<'a> ReadableKey for StringKey<'a> {
 impl<'a> ReadableKey for BinaryKey<'a> {
     type GetValue = Vec<u8>;
 
-    fn from_ptr(ptr: *mut elektra_sys::Key) -> BinaryKey<'a> {
+    unsafe fn from_ptr(ptr: *mut elektra_sys::Key) -> BinaryKey<'a> {
         BinaryKey {
             ptr: NonNull::new(ptr).unwrap(),
             _marker: std::marker::PhantomData,
@@ -269,7 +269,7 @@ impl<'a> WriteableKey for StringKey<'a> {
 
 impl From<StringKey<'_>> for BinaryKey<'_> {
     fn from(mut sk: StringKey) -> Self {
-        let binary_key = BinaryKey::from_ptr(sk.as_ptr());
+        let binary_key = unsafe { BinaryKey::from_ptr(sk.as_ptr()) };
         std::mem::forget(sk);
         binary_key
     }
@@ -277,7 +277,7 @@ impl From<StringKey<'_>> for BinaryKey<'_> {
 
 impl From<BinaryKey<'_>> for StringKey<'_> {
     fn from(mut bk: BinaryKey) -> Self {
-        let str_key = StringKey::from_ptr(bk.as_ptr());
+        let str_key = unsafe { StringKey::from_ptr(bk.as_ptr()) };
         std::mem::forget(bk);
         str_key
     }
@@ -398,7 +398,7 @@ mod tests {
     }
 
     #[test]
-    fn keys_are_ordered_1() {
+    fn keys_are_ordered() {
         let key = BinaryKey::new("user/test/a").unwrap();
         let key2 = BinaryKey::new("user/test/b").unwrap();
         let key3 = BinaryKey::new("user/test/c").unwrap();
@@ -428,9 +428,9 @@ mod tests {
     fn can_reference_count() {
         let mut key = BinaryKey::new("user/test/a").unwrap();
         assert_eq!(key.get_ref(), 0);
-        key.inc_ref();
+        unsafe { key.inc_ref() };
         assert_eq!(key.get_ref(), 1);
-        key.dec_ref();
+        unsafe { key.dec_ref() };
         assert_eq!(key.get_ref(), 0);
     }
 
@@ -509,7 +509,7 @@ mod tests {
 
         Ok(())
     }
-
+   
     #[test]
     fn bindings_full_example() -> Result<(), KeyError> {
         // This test should stay in sync with the example in the Readme
