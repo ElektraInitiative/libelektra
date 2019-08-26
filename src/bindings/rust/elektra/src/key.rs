@@ -517,6 +517,11 @@ mod tests {
 
         Ok(())
     }
+}
+
+#[cfg(test)]
+mod full_example {
+    use crate::{KeyBuilder, KeyError, ReadableKey, StringKey, WriteableKey};
     #[test]
     fn bindings_full_example() -> Result<(), KeyError> {
         // This test should stay in sync with the example in the Readme
@@ -559,5 +564,4 @@ mod tests {
 
         Ok(())
     }
-
 }

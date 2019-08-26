@@ -32,6 +32,8 @@ fn main() {
 A full example for using some of the key functionality. For all methods, see the documentation.
 
 ```rust
+use elektra::{KeyBuilder, KeyError, ReadableKey, StringKey, WriteableKey};
+
 fn main() -> Result<(), KeyError> {
     // To create a simple key with a name and value
     let mut key = StringKey::new("user/test/language")?;
@@ -71,6 +73,10 @@ fn main() -> Result<(), KeyError> {
     assert!(key.is_user());
 }
 ```
+
+Compared to the C-API, there are two distinct key types, `StringKey` and `BinaryKey`. With these, type mismatches such as calling `keyString` on a `BinaryKey` is not possible. The only difference between them is the type of value you can set and get from them. They are only wrappers over the `Key` from the C-API.
+
+The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
 
 ## Generation
 
