@@ -27,7 +27,7 @@ execute() {
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(printf '%s' "$proto" | sed -e "s~kdb\ ~$KDB ~g" \
+	command=$(printf '%s' "$proto" | sed \
 		-e "s~\$Mountpoint~${Mountpoint}~g" \
 		-e "s~\$File~${DBFile}~g" \
 		-e "s~\$Storage~${Storage}~g" \
@@ -37,6 +37,8 @@ execute() {
 
 	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
+
+	command=$(printf '%s' "$command" | sed "s~kdb\ ~\"$KDB\" ~g")
 
 	# ===============
 	# = INTERACTIVE =
