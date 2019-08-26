@@ -75,7 +75,7 @@ EOF
 cat << 'EOF' > CMakeLists.txt
 cmake_minimum_required(VERSION 3.0)
 
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} @C_FLAG_32BIT@ -Wpedantic -Wall -Werror")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} @C_FLAG_32BIT@ -std=c99 -Wpedantic -Wall -Werror")
 
 add_executable (dummy dummy.c struct.actual.c)
 target_include_directories(dummy PRIVATE "@CMAKE_BINARY_DIR@/src/include" "@CMAKE_SOURCE_DIR@/src/include")
