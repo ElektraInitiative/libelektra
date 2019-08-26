@@ -88,6 +88,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			{
 				keyDel (contractCut);
 				ksDel (highlevelContract);
+				ksDel (contract); // consume contract, like kdbEnsure would
 				return NULL;
 			}
 		}
