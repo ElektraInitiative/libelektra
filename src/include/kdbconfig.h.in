@@ -58,15 +58,6 @@
 
 #define ELEKTRA_TOOLS            "@TOOLS@"
 
-/** Declares a parameter as unused. */
-#define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
-
-/** Declares a switch fallthrough case. */
-#define ELEKTRA_FALLTHROUGH      @ELEKTRA_FALLTHROUGH@
-
-/** Declares an API as deprecated. */
-#define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
-
 /** Declares non sanitize for asan. */
 #define ELEKTRA_NO_SANITIZE_INTEGER	@ELEKTRA_NO_SANITIZE_INTEGER@
 #define ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW	@ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW@
@@ -98,9 +89,6 @@
 #ifdef HAVE_SIZEOF_LONG_DOUBLE
 # define SIZEOF_LONG_DOUBLE       @SIZEOF_LONG_DOUBLE@
 #endif
-
-/* ENABLE_OPTIMIZATIONS */
-#cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
 
 /* ENDIANNESS */
 #cmakedefine ELEKTRA_BIG_ENDIAN

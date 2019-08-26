@@ -12,12 +12,6 @@
 #ifndef KDB_HELPER
 #define KDB_HELPER
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#else
-#define ELEKTRA_ATTRIBUTE_FORMAT
-#endif
-
 #include <kdbmacros.h>
 #include <kdbtypes.h>
 

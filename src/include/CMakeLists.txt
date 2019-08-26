@@ -102,6 +102,12 @@ if (NOT SIZEOF_DOUBLE EQUAL 8)
 	message (FATAL_ERROR "double must be a 64-bit type")
 endif ()
 
+if (SIZEOF_SIZE_T EQUAL 8)
+	set (KDB_OPMPHM_MAX_N "4294967295") # = (2^32) - 1
+else ()
+	set (KDB_OPMPHM_MAX_N "795364313") # bound by opmphm->size max value
+endif ()
+
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbtypes.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h")
 
 unset (INT32_T)
