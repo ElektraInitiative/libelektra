@@ -11,7 +11,6 @@
 #include "type.h"
 #include "types.h"
 
-#include <elektra/conversion.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 

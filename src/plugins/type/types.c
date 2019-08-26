@@ -17,7 +17,7 @@
 
 #include <kdbhelper.h>
 
-#include <elektra/conversion.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
