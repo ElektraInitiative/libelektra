@@ -23,7 +23,7 @@ check() {
 		echo "check the link format of $1"
 		return
 	fi
-	wget --spider --quiet "$link"
+	wget --spider --quiet --timeout=10 "$link"
 	if [ "$?" -ne "0" ]; then
 		wget -O - --quiet "$link" > /dev/null
 		if [ "$?" -ne "0" ]; then
