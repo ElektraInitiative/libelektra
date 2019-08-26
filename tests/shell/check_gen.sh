@@ -4,10 +4,13 @@ echo
 echo ELEKTRA CHECK GEN
 echo
 
-while getopts ":q" opt; do
+while getopts ":qk" opt; do
 	case $opt in
 	q)
 		nodiff=1
+		;;
+	k)
+		keeplogs=1
 		;;
 	*) ;;
 
@@ -178,7 +181,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 					echo "The log is also stored at $output_folder$test_name.check.log"
 					echo
 				else
-					echo rm "$output_folder$test_name.check.log"
+					[ "$keeplogs" = "1" ] || rm "$output_folder$test_name.check.log"
 				fi
 
 				cd "$old_dir" || exit 1
