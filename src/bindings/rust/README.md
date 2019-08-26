@@ -74,7 +74,7 @@ fn main() -> Result<(), KeyError> {
 
 ## Generation
 
-Bindings are generated when buildling the `elektra-sys` crate using `rust-bindgen`. The `build.rs` script in the `elektra-sys` crate calls and configures bindgen. It also emits additional configuration for `rustc` to tell it what library to link against, and where to find it.
+Bindings are generated when building the `elektra-sys` crate using `rust-bindgen`. The `build.rs` script in the `elektra-sys` crate calls and configures bindgen. It also emits additional configuration for `rustc` to tell it what library to link against, and where to find it.
 Bindgen expects a `wrapper.h` file that includes all headers that bindings should be generated for. Since these headers could have additional includes, the `build.rs` also passes the elektra source and binary directory to clang, such that these includes can be found.
 Finally, bindgen outputs the bindings into a file, that is then included in the `elektra-sys/lib.rs` file, where it can be used from other crates.
 
