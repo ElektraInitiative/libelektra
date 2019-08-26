@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbconfig.h>
 #include <kdberrors.h>
+#include <kdbmacros.h>
 #include <kdbobsolete.h>
 
 #include <yajl/yajl_gen.h>

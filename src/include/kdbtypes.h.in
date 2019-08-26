@@ -163,4 +163,6 @@ static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limi
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 #endif // __cplusplus
 
-#endif
+#define KDB_OPMPHM_MAX_N @KDB_OPMPHM_MAX_N@
+
+#endif // KDBTYPES_H

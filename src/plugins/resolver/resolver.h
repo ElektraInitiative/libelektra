@@ -15,7 +15,6 @@
 
 #include <sys/stat.h>
 
-#include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbplugin.h>
 #include <sys/types.h>

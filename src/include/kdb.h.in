@@ -26,6 +26,9 @@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
+/* ENABLE_OPTIMIZATIONS */
+#cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
+
 #ifdef __cplusplus
 extern "C" {
 #endif

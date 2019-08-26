@@ -9,8 +9,6 @@
 #ifndef ELEKTRA_KDBCONTEXT_HPP
 #define ELEKTRA_KDBCONTEXT_HPP
 
-#include <kdbconfig.h>
-
 #include <kdbmeta.h>
 #include <kdbvalue.hpp>
 

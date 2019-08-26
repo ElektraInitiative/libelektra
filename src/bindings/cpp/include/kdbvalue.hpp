@@ -9,7 +9,14 @@
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 
+#include <kdbmacros.h>
+
+#ifdef HAVE_KDBCONFIG_H
 #include <kdbconfig.h>
+#else
+#define DEBUG 0
+#define VERBOSE 0
+#endif
 
 #include <algorithm>
 #include <cassert>

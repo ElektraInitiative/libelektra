@@ -9,6 +9,7 @@
 #include "resolver.h"
 
 #include <kdbassert.h>
+#include <kdbconfig.h>
 #include <kdbhelper.h>  // elektraStrDup
 #include <kdbprivate.h> // KDB_CACHE_PREFIX
 #include <kdbproposal.h>
