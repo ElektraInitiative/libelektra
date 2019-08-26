@@ -1,3 +1,5 @@
+#!/bin/sh
+
 cat << 'EOF' > dummy.c
 #include "nosetter.actual.h"
 #include <stdlib.h>

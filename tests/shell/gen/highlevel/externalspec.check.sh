@@ -1,3 +1,5 @@
+#!/bin/sh
+
 cat << 'EOF' > dummy.c
 #include "externalspec.actual.h"
 #include <stdlib.h>
