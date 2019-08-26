@@ -12,7 +12,7 @@
 #ifndef KDB_HELPER
 #define KDB_HELPER
 
-#ifndef HAVE_KDBCONFIG
+#ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #else
 #define ELEKTRA_ATTRIBUTE_FORMAT
