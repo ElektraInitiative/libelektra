@@ -104,11 +104,11 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 	const char * origTrueValue;
 	const char * origFalseValue;
 
-	bool restore = data->booleanRestore >= 0;
+	bool restoreAs = data->booleanRestore >= 0;
 
 	if (value[0] == '1' && value[1] == '\0')
 	{
-		if (restore)
+		if (restoreAs)
 		{
 			keySetMeta (key, "origvalue", data->booleans[data->booleanRestore].trueValue);
 		}
@@ -118,7 +118,7 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 
 	if (value[0] == '0' && value[1] == '\0')
 	{
-		if (restore)
+		if (restoreAs)
 		{
 			keySetMeta (key, "origvalue", data->booleans[data->booleanRestore].falseValue);
 		}
@@ -128,22 +128,28 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 
 	char * origValue = elektraStrDup (value);
 
-	origTrueValue = restore ? data->booleans[data->booleanRestore].trueValue : origValue;
-	origFalseValue = restore ? data->booleans[data->booleanRestore].falseValue : origValue;
+	origTrueValue = restoreAs ? data->booleans[data->booleanRestore].trueValue : origValue;
+	origFalseValue = restoreAs ? data->booleans[data->booleanRestore].falseValue : origValue;
 
 	for (kdb_long_long_t i = 0; i < data->booleanCount; ++i)
 	{
 		if (strcasecmp (data->booleans[i].trueValue, value) == 0)
 		{
 			keySetString (key, "1");
-			keySetMeta (key, "origvalue", origTrueValue);
+			if (data->booleanRestore != -2)
+			{
+				keySetMeta (key, "origvalue", origTrueValue);
+			}
 			elektraFree (origValue);
 			return true;
 		}
 		else if (strcasecmp (data->booleans[i].falseValue, value) == 0)
 		{
 			keySetString (key, "0");
-			keySetMeta (key, "origvalue", origFalseValue);
+			if (data->booleanRestore != -2)
+			{
+				keySetMeta (key, "origvalue", origFalseValue);
+			}
 			elektraFree (origValue);
 			return true;
 		}

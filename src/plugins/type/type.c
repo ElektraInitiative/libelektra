@@ -203,10 +203,15 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 
 	const char * restoreString = keyString (restore);
 
+	if (strcmp (restoreString, "none") == 0)
+	{
+		return -2;
+	}
+
 	int digitStart = elektraArrayValidateBaseNameString (restoreString);
 	if (digitStart <= 0)
 	{
-		return -2;
+		return -3;
 	}
 
 	Key * restoreKey = keyNew ("", KEY_VALUE, &restoreString[digitStart], KEY_END);
@@ -215,7 +220,7 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 	if (!elektraKeyToLongLong (restoreKey, &size))
 	{
 		keyDel (restoreKey);
-		return -2;
+		return -3;
 	}
 
 	keyDel (restoreKey);
@@ -251,7 +256,7 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 	}
 
 	data->booleanRestore = readBooleanRestore (conf);
-	if (data->booleanRestore < -1 || data->booleanRestore >= data->booleanCount)
+	if (data->booleanRestore < -2 || data->booleanRestore >= data->booleanCount)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "The value of the config key /boolean/restoreas was invalid");
 		elektraFree (data);
