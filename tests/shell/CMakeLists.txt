@@ -17,11 +17,13 @@ elseif (ENABLE_KDB_TESTING)
 endif (BUILD_FULL)
 
 set (IS_INSTALLED "YES")
+set (KDB_COMMAND "${KDB_COMMAND_BASENAME}")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" @ONLY)
 
 file (READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" INCLUDE_COMMON_INSTALLED_FILE)
 
 set (IS_INSTALLED "NO")
+set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/${KDB_COMMAND_BASENAME}")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" @ONLY)
 
 file (READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" INCLUDE_COMMON_FILE)
@@ -78,7 +80,6 @@ function (add_scripttest testname)
 		else (TARGET)
 			if (ENABLE_KDB_TESTING)
 				if (NOT ${testname_we} STREQUAL "run_all")
-					set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/${KDB_COMMAND_BASENAME}")
 					set (RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
 					set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}")
 					set (testscriptname "${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}")
