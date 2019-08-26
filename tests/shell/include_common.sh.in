@@ -146,11 +146,11 @@ check_version() {
 
 	REAL_KDB_VERSION="$("$KDB" get system/elektra/version/constants/KDB_VERSION 2> /dev/null)"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
-	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
+	exit_if_fail "Script was not compiled ($KDB_VERSION) with this Elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 
 	REAL_SO_VERSION="$("$KDB" get system/elektra/version/constants/SO_VERSION 2> /dev/null)"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
-	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
+	exit_if_fail "Script was not compiled ($SO_VERSION) with this Elektra version ($REAL_SO_VERSION): SO_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 }
 
 check_remaining_files() {
