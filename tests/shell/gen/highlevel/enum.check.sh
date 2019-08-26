@@ -1,3 +1,5 @@
+#!/bin/sh
+
 cat << 'EOF' > colors.h
 #ifndef COLORS_H
 #define COLORS_H

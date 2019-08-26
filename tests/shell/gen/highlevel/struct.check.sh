@@ -1,3 +1,5 @@
+#!/bin/sh
+
 cat << 'EOF' > dummy.c
 #include "struct.actual.h"
 #include <stdlib.h>
