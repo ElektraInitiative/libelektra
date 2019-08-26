@@ -50,11 +50,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
 
-### <<Plugin2>>
+### Type
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
+  native boolean types. _(Klemens Böswirth)_
 
 ### <<Plugin3>>
 
