@@ -82,7 +82,12 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
+<<<<<<< HEAD
 - A new plugin function, `kdbCommit`, was implemented. The function is carried out in the `commit` phase of `kdbSet` and separates the commit functionality from the `kdbSet()` function. _(Vid Leskovar)_
+=======
+- `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
+  `config.h`-type headers from applications. _(Klemens Böswirth)_
+>>>>>>> headers: don't install kdbconfig anymore
 - <<TODO>>
 - <<TODO>>
 
@@ -155,7 +160,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- `kdbtypes.h` is now generated directly via a CMake `configure_file` call. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 

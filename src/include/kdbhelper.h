@@ -14,6 +14,8 @@
 
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
+#else
+#define ELEKTRA_ATTRIBUTE_FORMAT
 #endif
 
 #include <kdbmacros.h>
