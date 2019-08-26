@@ -1,5 +1,6 @@
 use crate::ReadableKey;
 
+/// A wrapper that provides only readable methods on a key.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ReadOnly<T: ReadableKey> {
     key: T,

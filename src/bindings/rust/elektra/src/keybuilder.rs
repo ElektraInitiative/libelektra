@@ -1,5 +1,6 @@
 use crate::{KeyError, WriteableKey};
 
+/// A builder to easily construct a new key.
 pub struct KeyBuilder<T: WriteableKey> {
     key: T,
 }
@@ -8,7 +9,7 @@ impl<T: WriteableKey> KeyBuilder<T> {
     /// Construct a new key with a name.
     ///
     /// # Panics
-    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn new(name: &str) -> Result<Self, KeyError> {
         let key = T::new(name)?;
         Ok(KeyBuilder { key })
@@ -16,7 +17,7 @@ impl<T: WriteableKey> KeyBuilder<T> {
     /// Construct a new nameless key.
     ///
     /// # Panics
-    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn new_empty() -> Self {
         let key = T::new_empty();
         KeyBuilder { key }

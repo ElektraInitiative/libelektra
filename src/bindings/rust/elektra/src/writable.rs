@@ -64,7 +64,7 @@ pub trait WriteableKey: ReadableKey {
     /// Construct a new nameless key.
     /// 
     /// # Panics
-    /// Panics if an allocation error (out of memory) in the C-constructor occurs.
+    /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     fn new_empty() -> Self
     where
         Self: Sized,

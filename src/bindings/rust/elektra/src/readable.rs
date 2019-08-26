@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 
-pub trait ReadableKey: AsRef<elektra_sys::Key> {
+pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + Ord {
     /// The type returned by value.
     type GetValue;
 

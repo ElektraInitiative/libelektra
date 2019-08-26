@@ -70,6 +70,18 @@ macro_rules! add_traits {
                 unsafe { elektra_sys::keyDel(self.as_ptr()) };
             }
         }
+
+        impl Clone for $t {
+            fn clone(&self) -> Self {
+                self.duplicate()
+            }
+        }
+
+        impl Default for $t {
+            fn default() -> Self {
+                Self::new_empty()
+            }
+        }
     )*)
 }
 
@@ -171,8 +183,7 @@ impl<'a> BinaryKey<'a> {
     }
 
     /// Returns the keys binary content
-    /// Returns a TypeMismatch if the key is of type string
-    fn get_binary(&self) -> Vec<u8> {
+    fn binary(&self) -> Vec<u8> {
         let mut vec: Vec<u8> = Vec::with_capacity(self.value_size());
 
         let ret_val = unsafe {
@@ -241,7 +252,7 @@ impl<'a> ReadableKey for BinaryKey<'a> {
     }
 
     fn value(&self) -> Self::GetValue {
-        self.get_binary()
+        self.binary()
     }
 }
 
@@ -286,7 +297,6 @@ impl From<BinaryKey<'_>> for StringKey<'_> {
 #[derive(Debug, PartialEq)]
 pub enum KeyError {
     InvalidName,
-    TypeMismatch,
     NameReadOnly,
     NotFound,
 }
@@ -295,10 +305,8 @@ impl std::fmt::Display for KeyError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
             KeyError::InvalidName => write!(f, "Key has an invalid name"),
-            KeyError::TypeMismatch => write!(f, "Binary/String key mismatch, use the appropriate method for your key type, get_string or get_binary"),
-            KeyError::NameReadOnly => write!(f, "Key is read only"),
+            KeyError::NameReadOnly => write!(f, "The name of the key is read only"),
             KeyError::NotFound => write!(f, "Key/Metakey was not found"),
-            // _ => unimplemented!(),
         }
     }
 }
@@ -333,10 +341,10 @@ mod tests {
         let key_dup;
         {
             let key = StringKey::new(key_name).unwrap();
-            key_dup = Some(key.duplicate());
+            key_dup = key.clone();
             // key is dropped here
         }
-        assert_eq!(key_dup.unwrap().name(), key_name);
+        assert_eq!(key_dup.name(), key_name);
     }
 
     #[test]
@@ -344,7 +352,7 @@ mod tests {
         let mut key = BinaryKey::new("user/test/rust").unwrap();
         let binary_content: [u8; 7] = [25, 34, 0, 254, 1, 0, 7];
         key.set_binary(&binary_content);
-        let read_content = key.get_binary();
+        let read_content = key.binary();
         assert_eq!(read_content, binary_content);
     }
     #[test]
@@ -354,7 +362,7 @@ mod tests {
         key.set_binary(&binary_content);
         // set_binary does not set binary flag, size is 0
         // so get_binary should return empty vec
-        let err = key.get_binary();
+        let err = key.binary();
         assert_eq!(err, binary_content);
     }
 
@@ -509,7 +517,6 @@ mod tests {
 
         Ok(())
     }
-   
     #[test]
     fn bindings_full_example() -> Result<(), KeyError> {
         // This test should stay in sync with the example in the Readme
