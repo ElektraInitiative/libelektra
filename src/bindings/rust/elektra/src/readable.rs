@@ -66,7 +66,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> {
     /// Get key full name, including the user domain name.
     fn fullname(&self) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(self.fullname_size());
-        debug_assert_eq!(vec.capacity(), self.fullname_size());
 
         let ret_val = unsafe {
             elektra_sys::keyGetFullName(

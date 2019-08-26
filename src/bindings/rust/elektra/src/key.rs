@@ -76,11 +76,12 @@ macro_rules! add_traits {
 add_traits!(StringKey<'_>);
 add_traits!(BinaryKey<'_>);
 
-pub struct KeyMetaIter<'a, T: WriteableKey> {
+/// An iterator over the metakeys.
+pub struct MetaIter<'a, T: WriteableKey> {
     key: &'a mut T,
 }
 
-impl<'a, T: WriteableKey> Iterator for KeyMetaIter<'a, T> {
+impl<'a, T: WriteableKey> Iterator for MetaIter<'a, T> {
     type Item = ReadOnly<StringKey<'a>>;
     fn next(&mut self) -> Option<Self::Item> {
         let key_ptr = unsafe { elektra_sys::keyNextMeta(self.key.as_ptr()) };
@@ -89,6 +90,30 @@ impl<'a, T: WriteableKey> Iterator for KeyMetaIter<'a, T> {
         } else {
             Some(ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key))
         }
+    }
+}
+
+/// An iterator over the name.
+pub struct NameIter<'a, T: ReadableKey> {
+    key: &'a T,
+    curr_offset: isize,
+    name_len: isize,
+}
+
+impl<'a, T: ReadableKey> Iterator for NameIter<'a, T> {
+    type Item = std::borrow::Cow<'a, str>;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.curr_offset >= self.name_len {
+            return None;
+        };
+        let name_ptr = unsafe { elektra_sys::keyUnescapedName(self.key.as_ref()) };
+
+        let cow_str = unsafe {
+            CStr::from_ptr((name_ptr as *const std::os::raw::c_char).offset(self.curr_offset))
+        }
+        .to_string_lossy();
+        self.curr_offset += cow_str.len() as isize + 1;
+        Some(cow_str)
     }
 }
 
@@ -115,8 +140,21 @@ impl<'a> StringKey<'a> {
     }
 
     /// Returns an iterator over the key's metakeys.
-    pub fn iter<'b>(&'b mut self) -> KeyMetaIter<'b, StringKey<'a>> {
-        KeyMetaIter { key: self }
+    pub fn meta_iter<'b>(&'b mut self) -> MetaIter<'b, StringKey<'a>> {
+        MetaIter { key: self }
+    }
+
+    /// Returns an iterator over the key's name.
+    pub fn name_iter<'b>(&'b self) -> NameIter<'b, StringKey<'a>> {
+        NameIter {
+            key: self,
+            curr_offset: 0,
+            name_len: unsafe {
+                elektra_sys::keyGetUnescapedNameSize(self.as_ref())
+                    .try_into()
+                    .unwrap()
+            },
+        }
     }
 }
 
@@ -159,8 +197,21 @@ impl<'a> BinaryKey<'a> {
     }
 
     /// Returns an iterator over the key's metakeys.
-    pub fn iter<'b>(&'b mut self) -> KeyMetaIter<'b, BinaryKey<'a>> {
-        KeyMetaIter { key: self }
+    pub fn meta_iter<'b>(&'b mut self) -> MetaIter<'b, BinaryKey<'a>> {
+        MetaIter { key: self }
+    }
+
+    /// Returns an iterator over the key's name.
+    pub fn name_iter<'b>(&'b self) -> NameIter<'b, BinaryKey<'a>> {
+        NameIter {
+            key: self,
+            curr_offset: 0,
+            name_len: unsafe {
+                elektra_sys::keyGetUnescapedNameSize(self.as_ref())
+                    .try_into()
+                    .unwrap()
+            },
+        }
     }
 }
 
@@ -405,7 +456,7 @@ mod tests {
         key.rewind_meta();
 
         let mut did_iterate = false;
-        for (i, metakey) in key.iter().enumerate() {
+        for (i, metakey) in key.meta_iter().enumerate() {
             did_iterate = true;
             assert_eq!(metakey.name(), meta[i].0);
             assert_eq!(metakey.value(), meta[i].1);
@@ -442,6 +493,24 @@ mod tests {
     }
 
     #[test]
+    fn can_iterate_name() -> Result<(), KeyError> {
+        let names = ["user", "test", "fulltest"];
+        let key = StringKey::new(&names.join("/"))?;
+        let mut did_iterate = false;
+        for (i, name) in key.name_iter().enumerate() {
+            did_iterate = true;
+            assert_eq!(name, names[i]);
+        }
+        assert!(did_iterate);
+
+        let nameless_key = StringKey::new_empty();
+        let mut iter = nameless_key.name_iter();
+        assert_eq!(iter.next(), None);
+
+        Ok(())
+    }
+
+    #[test]
     fn bindings_full_example() -> Result<(), KeyError> {
         // This test should stay in sync with the example in the Readme
         // To create a simple key with a name and value
@@ -449,6 +518,11 @@ mod tests {
         key.set_value("rust");
         assert_eq!(key.name(), "user/test/language");
         assert_eq!(key.value(), "rust");
+
+        // To iterate over the name
+        for name in key.name_iter() {
+            println!("Name: {}", name);
+        }
 
         // Duplicate a key
         let key_duplicate = key.duplicate();
@@ -466,7 +540,7 @@ mod tests {
 
         // We can iterate over the metakeys
         key.rewind_meta();
-        for metakey in key.iter() {
+        for metakey in key.meta_iter() {
             println!("Key: {}, Value: {}", metakey.name(), metakey.value());
         }
 

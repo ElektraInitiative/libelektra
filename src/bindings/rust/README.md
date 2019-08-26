@@ -39,6 +39,11 @@ fn main() -> Result<(), KeyError> {
     assert_eq!(key.name(), "user/test/language");
     assert_eq!(key.value(), "rust");
 
+    // To iterate over the name
+    for name in key.name_iter() {
+        println!("Name: {}", name);
+    }
+
     // Duplicate a key
     let key_duplicate = key.duplicate();
 
