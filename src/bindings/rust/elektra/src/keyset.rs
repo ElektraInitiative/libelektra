@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt;
 
-use crate::{KeyError, ReadOnly, ReadableKey, StringKey, WriteableKey};
+use crate::{ReadOnly, ReadableKey, StringKey, WriteableKey, KeyNameInvalidError, KeyNameReadOnlyError};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
@@ -236,7 +236,7 @@ impl KeySet {
     }
 
     /// Lookup a key by name.
-    /// Returns a KeyError::InvalidName if the provided string is an invalid name.
+    /// Returns a `KeyNameInvalidError` if the provided string is an invalid name.
     /// Otherwise identical to [`lookup`].
     ///
     /// [`lookup`]: #method.lookup
@@ -244,7 +244,7 @@ impl KeySet {
         &mut self,
         name: &str,
         options: LookupOption,
-    ) -> Result<Option<StringKey>, KeyError> {
+    ) -> Result<Option<StringKey>, KeyNameInvalidError> {
         let key = StringKey::new(name)?;
         Ok(self.lookup(key, options))
     }
@@ -347,7 +347,7 @@ mod tests {
     use crate::KeyBuilder;
 
     #[test]
-    fn can_build_simple_keyset() -> Result<(), KeyError> {
+    fn can_build_simple_keyset() -> Result<(), KeyNameInvalidError> {
         let mut ks = KeySet::new();
         ks.append_key(
             KeyBuilder::<StringKey>::new("user/sw/org/app/bool")?
@@ -369,7 +369,7 @@ mod tests {
     }
 
     #[test]
-    fn can_iterate_simple_keyset() -> Result<(), KeyError> {
+    fn can_iterate_simple_keyset() -> Result<(), KeyNameInvalidError> {
         let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
         let values = ["value1", "value2", "value3"];
 
@@ -452,7 +452,7 @@ mod tests {
     }
 
     #[test]
-    fn can_lookup_by_name_and_duplicate_key() -> Result<(), KeyError> {
+    fn can_lookup_by_name_and_duplicate_key() -> Result<(), KeyNameInvalidError> {
         // Make sure that a duplicate of a key that is from a keyset
         // can be used after the KeySet has been freed
         let key;
