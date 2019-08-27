@@ -5,16 +5,18 @@ use crate::{KeyError, ReadOnly, ReadableKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
+/// A set of StringKeys.
 #[derive(Debug)]
 pub struct KeySet {
     ptr: std::ptr::NonNull<elektra_sys::KeySet>,
     _marker: std::marker::PhantomData<elektra_sys::KeySet>,
 }
 
+/// The internal cursor for the KeySet.
 pub type Cursor = elektra_sys::cursor_t;
 
 bitflags! {
-    // Results in default value with bits: 0
+    /// Bitflags to be passed to [`lookup`](struct.KeySet.html#method.lookup) and [`lookup_by_name`](struct.KeySet.html#method.lookup_by_name).
     #[derive(Default)]
     pub struct LookupOption: elektra_sys::option_t {
         const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::option_t;
@@ -55,36 +57,52 @@ impl AsRef<elektra_sys::KeySet> for KeySet {
 }
 
 impl KeySet {
+
+    /// Returns the raw pointer of the KeySet.
+    /// Should be used with caution. In particular,
+    /// the pointer should only be modified with
+    /// `elektra_sys::ks*` functions, but `ksDel` 
+    /// should not be called.
     pub fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
         self.ptr.as_ptr()
     }
 
-    /// Create a new empty KeySet
+    /// Create a new empty KeySet.
+    /// 
+    /// # Panics
+    /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn new() -> Self {
         let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KEY_END) };
-        KeySet::from_ptr(ks_ptr)
+        unsafe { KeySet::from_ptr(ks_ptr)}
     }
 
     /// Create a new KeySet that allocates enough space for the
-    /// given capacity of keys
+    /// given capacity of keys.
+    /// 
+    /// # Panics
+    /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn with_capacity(capacity: usize) -> Self {
         let ks_ptr = unsafe { elektra_sys::ksNew(capacity, elektra_sys::KEY_END) };
-        Self::from_ptr(ks_ptr)
+        unsafe { Self::from_ptr(ks_ptr)}
     }
 
-    fn from_ptr(keyset_ptr: *mut elektra_sys::KeySet) -> KeySet {
+    /// Construct a new KeySet from a raw KeySet pointer
+    /// 
+    /// # Panics
+    /// Panics if the provided pointer is null.
+    unsafe fn from_ptr(keyset_ptr: *mut elektra_sys::KeySet) -> KeySet {
         KeySet {
             ptr: std::ptr::NonNull::new(keyset_ptr).unwrap(),
             _marker: std::marker::PhantomData,
         }
     }
 
-    /// Append a key to the keyset
-    /// May return an InsertionFailure error, if the key was already added
-    pub fn append_key<T: WriteableKey>(&mut self, mut key: T) -> Result<(), KeySetError> {
+    /// Append a key to the keyset.
+    /// Returns an InsertionError if TODO: when exactly?
+    pub fn append_key<T: WriteableKey>(&mut self, mut key: T) -> Result<(), InsertionError> {
         let ret_val = unsafe { elektra_sys::ksAppendKey(self.as_ptr(), key.as_ptr()) };
         if ret_val == -1 {
-            Err(KeySetError::InsertionFailure)
+            Err(InsertionError)
         } else {
             Ok(())
         }
@@ -93,7 +111,7 @@ impl KeySet {
     /// Append a collection of keys to the KeySet.
     /// Calls append_key on every key. If any key returns an error it will be returned,
     /// but only after iterating over all keys.
-    pub fn append_all<T>(&mut self, keys: T) -> Result<(), KeySetError>
+    pub fn append_all<T>(&mut self, keys: T) -> Result<(), InsertionError>
     where
         T: IntoIterator,
         T::Item: WriteableKey,
@@ -114,7 +132,7 @@ impl KeySet {
     /// Return a duplicate of a keyset.
     pub fn duplicate(&self) -> Self {
         let ks_ptr = unsafe { elektra_sys::ksDup(self.as_ref()) };
-        Self::from_ptr(ks_ptr)
+        unsafe { Self::from_ptr(ks_ptr)}
     }
 
     /// Replace the content of a keyset with another one.
@@ -279,6 +297,7 @@ fn next<T: ReadableKey>(
     }
 }
 
+/// A iterator over immutable keys.
 pub struct ReadOnlyStringKeyIter<'a> {
     cursor: Option<Cursor>,
     keyset: &'a mut KeySet,
@@ -294,6 +313,7 @@ impl<'a> Iterator for ReadOnlyStringKeyIter<'a> {
     }
 }
 
+/// A iterator over mutable keys.
 pub struct StringKeyIter<'a> {
     cursor: Option<Cursor>,
     keyset: &'a mut KeySet,
@@ -309,20 +329,17 @@ impl<'a> Iterator for StringKeyIter<'a> {
     }
 }
 
+/// An error returned by [`append_key`](struct.KeySet.html#method.append_key) if insertion in the keyset failed.
 #[derive(Debug, PartialEq)]
-pub enum KeySetError {
-    InsertionFailure,
-}
+pub struct InsertionError;
 
-impl fmt::Display for KeySetError {
+impl fmt::Display for InsertionError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            KeySetError::InsertionFailure => write!(f, "Key could not be inserted."),
-        }
+        write!(f, "key could not be inserted")
     }
 }
 
-impl Error for KeySetError {}
+impl Error for InsertionError {}
 
 #[cfg(test)]
 mod tests {

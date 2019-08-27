@@ -13,4 +13,4 @@ pub use self::keybuilder::KeyBuilder;
 pub use self::readable::ReadableKey;
 pub use self::readonly::ReadOnly;
 pub use self::writable::WriteableKey;
-pub use self::keyset::{KeySet, KeySetError, ReadOnlyStringKeyIter, StringKeyIter, Cursor, LookupOption};
+pub use self::keyset::{KeySet, InsertionError, ReadOnlyStringKeyIter, StringKeyIter, Cursor, LookupOption};
