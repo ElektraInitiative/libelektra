@@ -1,4 +1,4 @@
-use crate::{KeyError, ReadOnly, StringKey};
+use crate::{KeyNotFoundError, ReadOnly, StringKey};
 use std::borrow::Cow;
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
@@ -253,18 +253,18 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// Returns the metadata with the given metaname
     ///
     /// # Errors
-    /// Returns `KeyError::NotFound` if no metakey with the given name was found.
+    /// Returns `KeyNotFoundError` if no metakey with the given name was found.
     /// 
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    fn meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyError>
+    fn meta(&self, metaname: &str) -> Result<ReadOnly<StringKey<'_>>, KeyNotFoundError>
     where
         Self: Sized,
     {
         let cstr = CString::new(metaname).unwrap();
         let key_ptr = unsafe { elektra_sys::keyGetMeta(self.as_ref(), cstr.as_ptr()) };
         if key_ptr.is_null() {
-            Err(KeyError::NotFound)
+            Err(KeyNotFoundError::new(metaname.to_owned()))
         } else {
             let key: ReadOnly<StringKey<'_>> = unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) };
             Ok(key)

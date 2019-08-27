@@ -1,4 +1,4 @@
-use crate::{KeyError, WriteableKey};
+use crate::{WriteableKey, KeyNameInvalidError};
 
 /// A builder to easily construct a new key.
 pub struct KeyBuilder<T: WriteableKey> {
@@ -7,10 +7,11 @@ pub struct KeyBuilder<T: WriteableKey> {
 
 impl<T: WriteableKey> KeyBuilder<T> {
     /// Construct a new key with a name.
+    /// Returns a `KeyNameInvalidError` if the name is invalid.
     ///
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
-    pub fn new(name: &str) -> Result<Self, KeyError> {
+    pub fn new(name: &str) -> Result<Self, KeyNameInvalidError> {
         let key = T::new(name)?;
         Ok(KeyBuilder { key })
     }
@@ -23,12 +24,12 @@ impl<T: WriteableKey> KeyBuilder<T> {
         KeyBuilder { key }
     }
 
-    /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.
+    /// Set the name of a key. Must adhere to the rules for keynames otherwise an `KeyNameInvalidError` is returned.
     /// Returns the size in bytes of this new key name including the ending NUL.
     ///
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    pub fn name(mut self, name: &str) -> Result<Self, KeyError> {
+    pub fn name(mut self, name: &str) -> Result<Self, KeyNameInvalidError> {
         self.key.set_name(name)?;
         Ok(self)
     }
@@ -40,11 +41,11 @@ impl<T: WriteableKey> KeyBuilder<T> {
     }
 
     /// Set a new meta-information.
-    /// Returns a `KeyError::InvalidName` if the name is invalid.
+    /// Returns a `KeyNameInvalidError` if the name is invalid.
     ///
     /// # Panics
     /// Panics if any of the provided strings contains interior nul bytes.
-    pub fn meta(mut self, metaname: &str, metavalue: &str) -> Result<Self, KeyError> {
+    pub fn meta(mut self, metaname: &str, metavalue: &str) -> Result<Self, KeyNameInvalidError> {
         self.key.set_meta(metaname, metavalue)?;
         Ok(self)
     }
@@ -75,7 +76,7 @@ mod test {
     use crate::{BinaryKey, ReadableKey, StringKey};
 
     #[test]
-    fn can_build_string_key() -> Result<(), KeyError> {
+    fn can_build_string_key() -> Result<(), KeyNameInvalidError> {
         let name = "user/test/newkey";
         let val = "key_value";
         let key: StringKey = KeyBuilder::new(name)?.value(val).build();
@@ -85,7 +86,7 @@ mod test {
     }
 
     #[test]
-    fn can_build_binary_key() -> Result<(), KeyError> {
+    fn can_build_binary_key() -> Result<(), KeyNameInvalidError> {
         let name = "user/test/binarykey";
         let overwrite = "overwrite me";
         let val = "😎";
@@ -99,7 +100,7 @@ mod test {
     }
 
     #[test]
-    fn can_build_key_with_meta() -> Result<(), KeyError> {
+    fn can_build_key_with_meta() -> Result<(), KeyNameInvalidError> {
         let name = "user/test/metatest";
         let key: StringKey = KeyBuilder::new(name)?
             .meta("metaname", "metavalue")?

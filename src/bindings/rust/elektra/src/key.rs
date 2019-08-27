@@ -294,24 +294,73 @@ impl From<BinaryKey<'_>> for StringKey<'_> {
     }
 }
 
+/// An error indicating that a keys name is readonly.
 #[derive(Debug, PartialEq)]
-pub enum KeyError {
-    InvalidName,
-    NameReadOnly,
-    NotFound,
+pub struct KeyNameReadOnlyError{
+    name: String,
 }
-
-impl std::fmt::Display for KeyError {
+impl KeyNameReadOnlyError {
+    pub fn new(name: String) -> Self {
+        KeyNameReadOnlyError { name }
+    }
+    /// Returns the name of the key whose name is readonly.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+impl std::fmt::Display for KeyNameReadOnlyError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-        match self {
-            KeyError::InvalidName => write!(f, "Key has an invalid name"),
-            KeyError::NameReadOnly => write!(f, "The name of the key is read only"),
-            KeyError::NotFound => write!(f, "Key/Metakey was not found"),
-        }
+        write!(f, r#"name of the key "{}" is read only"#, self.name())
     }
 }
 
-impl std::error::Error for KeyError {}
+impl std::error::Error for KeyNameReadOnlyError {}
+
+/// An error indicating that a provided name is invalid.
+#[derive(Debug, PartialEq)]
+pub struct KeyNameInvalidError{
+    name: String,
+}
+impl KeyNameInvalidError {
+    pub fn new(name: String) -> Self {
+        KeyNameInvalidError { name }
+    }
+    /// Returns the name that is invalid.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+impl std::fmt::Display for KeyNameInvalidError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, r#"provided name "{}" is invalid"#, self.name())
+    }
+}
+
+impl std::error::Error for KeyNameInvalidError {}
+
+/// An error indicating that a metakey was not found.
+#[derive(Debug, PartialEq)]
+pub struct KeyNotFoundError {
+    name: String,
+}
+
+impl KeyNotFoundError {
+    pub fn new(name: String) -> Self {
+        KeyNotFoundError { name }
+    }
+    /// Returns the name that caused the search failure.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl std::fmt::Display for KeyNotFoundError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, r#"metakey with name "{}" was not found"#, self.name())
+    }
+}
+
+impl std::error::Error for KeyNotFoundError {}
 
 #[cfg(test)]
 mod tests {
@@ -424,7 +473,7 @@ mod tests {
     }
 
     #[test]
-    fn keys_are_ordered_with_metadata() -> Result<(), KeyError> {
+    fn keys_are_ordered_with_metadata() -> Result<(), KeyNameInvalidError> {
         let k1: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abc")?.build();
         let k2: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abz")?.build();
         assert!(k1 < k2);
@@ -477,7 +526,12 @@ mod tests {
         let mut key = StringKey::new_empty();
         key.set_meta("metakey", "metaval").unwrap();
         assert_eq!(key.delete_meta("metakey").unwrap(), 0);
-        assert_eq!(key.meta("metakey").unwrap_err(), KeyError::NotFound);
+        assert_eq!(
+            key.meta("metakey").unwrap_err(),
+            KeyNotFoundError {
+                name: "metakey".to_owned()
+            }
+        );
     }
 
     #[test]
@@ -490,7 +544,7 @@ mod tests {
     }
 
     #[test]
-    fn can_get_fullname() -> Result<(), KeyError> {
+    fn can_get_fullname() -> Result<(), KeyNameInvalidError> {
         let name = "user/test/fulltest";
         let key: StringKey = KeyBuilder::new(name)?
             .meta("metaname", "metavalue")?
@@ -501,7 +555,7 @@ mod tests {
     }
 
     #[test]
-    fn can_iterate_name() -> Result<(), KeyError> {
+    fn can_iterate_name() -> Result<(), KeyNameInvalidError> {
         let names = ["user", "test", "fulltest"];
         let key = StringKey::new(&names.join("/"))?;
         let mut did_iterate = false;
@@ -521,9 +575,9 @@ mod tests {
 
 #[cfg(test)]
 mod full_example {
-    use crate::{KeyBuilder, KeyError, ReadableKey, StringKey, WriteableKey};
+    use crate::{KeyBuilder, ReadableKey, StringKey, WriteableKey};
     #[test]
-    fn bindings_full_example() -> Result<(), KeyError> {
+    fn bindings_full_example() -> Result<(), Box<dyn std::error::Error>> {
         // This test should stay in sync with the example in the Readme
         // To create a simple key with a name and value
         let mut key = StringKey::new("user/test/language")?;

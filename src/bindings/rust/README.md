@@ -33,9 +33,9 @@ A full example for using some of the key functionality. For all methods, see the
 
 ```rust
 extern crate elektra;
-use elektra::{KeyBuilder, KeyError, ReadableKey, StringKey, WriteableKey};
+use elektra::{KeyBuilder, ReadableKey, StringKey, WriteableKey};
 
-fn main() -> Result<(), KeyError> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To create a simple key with a name and value
     let mut key = StringKey::new("user/test/language")?;
     key.set_value("rust");

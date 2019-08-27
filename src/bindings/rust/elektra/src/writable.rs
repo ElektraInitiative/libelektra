@@ -1,4 +1,4 @@
-use crate::{KeyError, ReadableKey};
+use crate::{ReadableKey, KeyNameInvalidError, KeyNameReadOnlyError};
 use std::convert::TryInto;
 use std::ffi::CString;
 
@@ -52,7 +52,7 @@ pub trait WriteableKey: ReadableKey {
     ///
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
-    fn new(name: &str) -> Result<Self, KeyError>
+    fn new(name: &str) -> Result<Self, KeyNameInvalidError>
     where
         Self: Sized,
     {
@@ -132,22 +132,20 @@ pub trait WriteableKey: ReadableKey {
     /// 
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    fn set_name(&mut self, name: &str) -> Result<u32, KeyError> {
+    fn set_name(&mut self, name: &str) -> Result<u32, KeyNameInvalidError> {
         let cstr = CString::new(name).unwrap();
         let ret_val = unsafe { elektra_sys::keySetName(self.as_ptr(), cstr.as_ptr()) };
 
         if ret_val > 0 {
             Ok(ret_val as u32)
         } else {
-            // This error is either InvalidName or NameReadOnly, but only one can be returned.
-            Err(KeyError::InvalidName)
+            // This error is either InvalidName or NameReadOnly, but error codes are equal.
+            Err(KeyNameInvalidError::new(name.to_owned()))
         }
     }
 
     /// Set the basename of the key
-    ///
-    /// # Errors
-    /// Returns a `KeyError::NameReadOnly` if the key is part of a keyset.
+    /// Returns a `KeyNameReadOnlyError` if the key is part of a keyset.
     ///
     /// # Examples
     /// ```
@@ -163,20 +161,18 @@ pub trait WriteableKey: ReadableKey {
     ///
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    fn set_basename(&mut self, basename: &str) -> Result<(), KeyError> {
+    fn set_basename(&mut self, basename: &str) -> Result<(), KeyNameReadOnlyError> {
         let cstr = CString::new(basename).unwrap();
         let ret_val = unsafe { elektra_sys::keySetBaseName(self.as_ptr(), cstr.as_ptr()) };
         if ret_val == -1 {
-            Err(KeyError::NameReadOnly)
+            Err(KeyNameReadOnlyError::new(basename.to_owned()))
         } else {
             Ok(())
         }
     }
 
     /// Add a basename to the key
-    ///
-    /// # Errors
-    /// Returns a `KeyError::NameReadOnly` if the key is part of a keyset.
+    /// Returns a `KeyNameReadOnlyError` if the key is part of a keyset.
     ///
     /// # Examples
     /// ```
@@ -192,17 +188,18 @@ pub trait WriteableKey: ReadableKey {
     ///
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    fn add_basename(&mut self, basename: &str) -> Result<(), KeyError> {
+    fn add_basename(&mut self, basename: &str) -> Result<(), KeyNameReadOnlyError> {
         let cstr = CString::new(basename).unwrap();
         let ret_val = unsafe { elektra_sys::keyAddBaseName(self.as_ptr(), cstr.as_ptr()) };
         if ret_val == -1 {
-            Err(KeyError::NameReadOnly)
+            Err(KeyNameReadOnlyError::new(basename.to_owned()))
         } else {
             Ok(())
         }
     }
 
     /// Add an already escaped name to the keyname.
+    /// Returns an `KeyNameInvalidError` if the name is not a valid escaped name.
     ///
     /// # Examples
     /// ```
@@ -218,17 +215,17 @@ pub trait WriteableKey: ReadableKey {
     ///
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    fn add_name(&mut self, name: &str) -> Result<(), KeyError> {
+    fn add_name(&mut self, name: &str) -> Result<(), KeyNameInvalidError> {
         let cstr = CString::new(name).unwrap();
         let ret_val = unsafe { elektra_sys::keyAddName(self.as_ptr(), cstr.as_ptr()) };
         if ret_val <= 0 {
-            Err(KeyError::InvalidName)
+            Err(KeyNameInvalidError::new(name.to_owned()))
         } else {
             Ok(())
         }
     }
 
-    /// Copies all metadata from source to the self
+    /// Copies all metadata from source to the self.
     ///
     /// # Examples
     /// ```
@@ -253,7 +250,8 @@ pub trait WriteableKey: ReadableKey {
         }
     }
 
-    /// Copy metakey with name metaname from source to self
+    /// Copy metakey with name metaname from source to self.
+    /// 
     /// # Examples
     /// ```
     /// use elektra::{StringKey,WriteableKey,ReadableKey};
@@ -276,17 +274,17 @@ pub trait WriteableKey: ReadableKey {
 
     /// Set a new meta-information.
     /// Returns the size of the new meta information on success,
-    /// or a `KeyError::InvalidName` if the name is invalid.
+    /// or a `KeyNameInvalidError` if the name is invalid.
     ///
     /// # Panics
     /// Panics if any of the provided strings contains interior nul bytes.
-    fn set_meta(&mut self, metaname: &str, metavalue: &str) -> Result<usize, KeyError> {
+    fn set_meta(&mut self, metaname: &str, metavalue: &str) -> Result<usize, KeyNameInvalidError> {
         let name = CString::new(metaname).unwrap();
         let value = CString::new(metavalue).unwrap();
         let ret_val =
             unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), value.as_ptr()) };
         if ret_val < 0 {
-            Err(KeyError::InvalidName)
+            Err(KeyNameInvalidError::new(metaname.to_owned()))
         } else {
             Ok(ret_val.try_into().unwrap())
         }
@@ -294,16 +292,16 @@ pub trait WriteableKey: ReadableKey {
 
     /// Delete the metadata at metaname
     /// Returns the size of the new meta information on success,
-    /// or a `KeyError::InvalidName` if the name is invalid or out of memory.
+    /// or a `KeyNameInvalidError` if the name is invalid or out of memory.
     ///
     /// # Panics
     /// Panics if the provided string contains interior nul bytes.
-    fn delete_meta(&mut self, metaname: &str) -> Result<usize, KeyError> {
+    fn delete_meta(&mut self, metaname: &str) -> Result<usize, KeyNameInvalidError> {
         let name = CString::new(metaname).unwrap();
         let ret_val =
             unsafe { elektra_sys::keySetMeta(self.as_ptr(), name.as_ptr(), std::ptr::null()) };
         if ret_val < 0 {
-            Err(KeyError::InvalidName)
+            Err(KeyNameInvalidError::new(metaname.to_owned()))
         } else {
             Ok(ret_val.try_into().unwrap())
         }

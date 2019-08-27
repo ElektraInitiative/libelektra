@@ -7,7 +7,7 @@ pub mod readable;
 pub mod readonly;
 pub mod writable;
 
-pub use self::key::{BinaryKey, KeyError, StringKey, MetaIter, NameIter};
+pub use self::key::{BinaryKey, StringKey, MetaIter, NameIter, KeyNameInvalidError, KeyNameReadOnlyError, KeyNotFoundError};
 pub use self::keybuilder::KeyBuilder;
 pub use self::readable::ReadableKey;
 pub use self::readonly::ReadOnly;
