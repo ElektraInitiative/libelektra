@@ -252,3 +252,21 @@ By default mustache escapes values for use in HTML (unless `{{{ name }}}` or `{{
 HTML, the escape function can be customised. You simply have to override `GenTemplate::escapeFunction`. For an example see
 `HighlevelGenTemplate::escapeFunction` in [`src/tools/kdb/gen/highlevel/highlevel.hpp`](/src/tools/kdb/gen/highlevel/highlevel.hpp), it is
 designed for C code instead of HTML.
+
+### Dynamic list of parts
+
+For some templates it might be necessary to switch which parts are produced based on the given parameters. This can be
+done by overriding `getParts()` in your template class.
+
+To achieve a dynamic parts list, simply pass _all possible_ parts in the constructor invocation. Then in your override
+of `getParts()` you simply inspect the given parameters and remove any parts that should not be generated.
+
+### Non-Mustache parts
+
+It may also be useful to generate some output files without a mustache template. You could of course just write a
+template that renders as its string input data, but that won't work for binary files.
+
+The proper way to achieve non-mustache-based parts is to inspect the `part` value passed to `getTemplateData()`. When
+you detect a non-mustache-based part you write to the file named `outputName + part` and once you are done you return
+`kainjow::mustache::data(false)`. This tells the render function to not invoke mustache for this part and instead
+continue with the next part.
