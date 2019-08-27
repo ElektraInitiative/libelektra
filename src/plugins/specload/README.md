@@ -80,19 +80,44 @@ with the original specification. Currently this verification is very restrictive
 This is because the necessary verification becomes very complex very quickly. For example adding `opt/arg` is only safe, if `opt` was also
 added by the user, because the application might rely on the default `opt/arg=none`. See also [Limitations](#limitations).
 
+### Direct File Mode
+
+Instead of loading the specification via `stdin`/`stdout` from another app, you can also instruct `specload` to directly
+load a `quickdump` file. This can be done by setting the `file` config key instead of `app`. The provided path must be
+absolute, same as an `app` path.
+
+Note: If `file` is specified, `app` will be ignored.
+
 ## Examples
 
 This assumes you compiled the file [`testapp.c`](testapp.c) and it is available as the executable `testapp` in the current folder.
 
 ```
-# Mount as readonly storage
 sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "app=$(pwd)/testapp"
+
+kdb lsmeta spec/tests/specload/mykey
+#> default
 
 kdb get /tests/specload/mykey
 #> 7
 
 sudo kdb umount spec/tests/specload
 
+```
+
+Or in direct file mode:
+
+```sh
+# This assumes that `$PWD` is the root of the Elektra source tree.
+sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "file=$(pwd)/src/plugins/specload/specload/spec.quickdump"
+
+kdb lsmeta spec/tests/specload/mykey
+#> default
+
+kdb get /tests/specload/mykey
+#> 7
+
+sudo kdb umount spec/tests/specload
 ```
 
 ## Limitations

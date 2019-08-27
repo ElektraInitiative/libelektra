@@ -45,20 +45,24 @@ static struct change allowedChanges[] = { { "description", true, true, true },
 					  { "type", true, false, false },
 					  { NULL, false, false, false } };
 
-static bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * errorKey);
-static bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentKey, ElektraInvokeHandle * quickDump);
+static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, Key * errorKey);
+static bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,
+		      ElektraInvokeHandle * quickDump);
 static int isChangeAllowed (Key * oldKey, Key * newKey);
 static KeySet * calculateMetaDiff (Key * oldKey, Key * newKey);
 
 static inline void freeArgv (char ** argv)
 {
-	size_t index = 0;
-	while (argv[index] != NULL)
+	if (argv != NULL)
 	{
-		elektraFree (argv[index]);
-		++index;
+		size_t index = 0;
+		while (argv[index] != NULL)
+		{
+			elektraFree (argv[index]);
+			++index;
+		}
+		elektraFree (argv);
 	}
-	elektraFree (argv);
 }
 
 static int copyError (Key * dest, Key * src)
@@ -86,7 +90,7 @@ int elektraSpecloadOpen (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	if (!getAppAndArgs (conf, &specload->app, &specload->argv, errorKey))
+	if (!readConfig (conf, &specload->directFile, &specload->app, &specload->argv, errorKey))
 	{
 		elektraFree (specload);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -115,7 +119,17 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
 		elektraInvokeClose (specload->quickDump, errorKey);
 
 		ksDel (specload->quickDumpConfig);
-		elektraFree (specload->app);
+
+		if (specload->directFile != NULL)
+		{
+			elektraFree (specload->directFile);
+		}
+
+		if (specload->app != NULL)
+		{
+			elektraFree (specload->app);
+		}
+
 		freeArgv (specload->argv);
 
 		elektraFree (specload);
@@ -194,7 +208,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	KeySet * spec = ksNew (0, KS_END);
 
-	if (!loadSpec (spec, specload->app, specload->argv, parentKey, specload->quickDump))
+	if (!loadSpec (spec, specload->directFile, specload->app, specload->argv, parentKey, specload->quickDump))
 	{
 		ksDel (spec);
 		ELEKTRA_SET_INSTALLATION_ERROR (
@@ -222,7 +236,6 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	ksAppend (returned, spec);
 	ksDel (spec);
-	keyDel (parentKey);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -238,7 +251,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Specload * specload = elektraPluginGetData (handle);
 
 	KeySet * spec = ksNew (0, KS_END);
-	if (!loadSpec (spec, specload->app, specload->argv, parentKey, specload->quickDump))
+	if (!loadSpec (spec, specload->directFile, specload->app, specload->argv, parentKey, specload->quickDump))
 	{
 		ksDel (spec);
 		ELEKTRA_SET_INSTALLATION_ERROR (
@@ -321,10 +334,11 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
 {
+	char * directFile;
 	char * app;
 	char ** argv;
 
-	if (!getAppAndArgs (conf, &app, &argv, errorKey))
+	if (!readConfig (conf, &directFile, &app, &argv, errorKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -334,7 +348,7 @@ int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
 
 	KeySet * spec = ksNew (0, KS_END);
 
-	bool result = loadSpec (spec, app, argv, errorKey, quickDump);
+	bool result = loadSpec (spec, directFile, app, argv, errorKey, quickDump);
 
 	elektraInvokeClose (quickDump, errorKey);
 	ksDel (quickDumpConfig);
@@ -344,16 +358,50 @@ int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
 
 	if (!result)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (
-			errorKey, "Couldn't load the specification. Make sure the app is available and the arguments are correct");
+		if (directFile != NULL)
+		{
+			ELEKTRA_SET_INSTALLATION_ERROR (
+				errorKey, "Couldn't load the specification. Make sure the specified file is a valid quickdump file");
+		}
+		else
+		{
+			ELEKTRA_SET_INSTALLATION_ERROR (
+				errorKey, "Couldn't load the specification. Make sure the app is available and the arguments are correct");
+		}
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * errorKey)
+bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, Key * errorKey)
 {
+	Key * fileKey = ksLookupByName (conf, "/file", 0);
+
+	if (fileKey != NULL)
+	{
+		const char * directFile = keyString (fileKey);
+
+		if (directFile[0] != '/')
+		{
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value of the file config key '%s' is not an absolute path",
+								 directFile);
+			return false;
+		}
+
+		if (access (directFile, R_OK) != 0)
+		{
+			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "File '%s' doesn't exist or cannot be read", directFile);
+			return false;
+		}
+
+		*directFilePtr = elektraStrDup (directFile);
+		*appPtr = NULL;
+		*argvPtr = NULL;
+
+		return true;
+	}
+
 	Key * appKey = ksLookupByName (conf, "/app", 0);
 
 	if (appKey == NULL)
@@ -403,21 +451,37 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 	argv[index] = NULL;
 	ksDel (args);
 
+	*directFilePtr = NULL;
 	*appPtr = elektraStrDup (app);
 	*argvPtr = argv;
 
 	return true;
 }
 
-bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentKey, ElektraInvokeHandle * quickDump)
+bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,
+	       ElektraInvokeHandle * quickDump)
 {
+	if (directFile != NULL)
+	{
+		Key * quickDumpParent = keyNew (keyName (parentKey), KEY_VALUE, directFile, KEY_END);
+		int result = elektraInvoke2Args (quickDump, "get", returned, quickDumpParent);
+
+		if (result != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+		{
+			copyError (parentKey, quickDumpParent);
+		}
+		keyDel (quickDumpParent);
+
+		return result == ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
 	pid_t pid;
 	int fd[2];
 
 	if (pipe (fd) != 0)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app. Reason: %s", strerror (errno));
-		return NULL;
+		return false;
 	}
 
 	pid = fork ();
@@ -425,7 +489,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 	if (pid == -1)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app. Reason: %s", strerror (errno));
-		return NULL;
+		return false;
 	}
 
 	if (pid == 0)
@@ -452,7 +516,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 	if (dup2 (fd[0], STDIN_FILENO) == -1)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app. Reason: %s", strerror (errno));
-		return NULL;
+		return false;
 	}
 
 	close (fd[0]);
@@ -470,11 +534,11 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 	if (dup2 (stdin_copy, STDIN_FILENO) == -1)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app. Reason: %s", strerror (errno));
-		return NULL;
+		return false;
 	}
 	close (stdin_copy);
 
-	return result;
+	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /**
