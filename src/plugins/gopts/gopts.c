@@ -10,9 +10,9 @@
 #include "gopts.h"
 
 #include <kdbassert.h>
-#include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 #include <kdbopts.h>
 
 static int loadArgs (char *** argvp);

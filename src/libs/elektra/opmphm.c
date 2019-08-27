@@ -11,6 +11,7 @@
 #include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <kdbmacros.h>
 #include <kdbopmphm.h>
 #include <kdbrand.h>
 

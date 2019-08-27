@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include <kdbconfig.h>
+#include <kdbmacro.h>
 
 #include "error_listener.hpp"
 

@@ -10,7 +10,7 @@
 #define ELEKTRA_KDBGLOBAL_H
 
 #include <kdb.h>
-#include <kdbconfig.h>
+#include <kdbmacros.h>
 #include <kdbplugin.h>
 
 /**

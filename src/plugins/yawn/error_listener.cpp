@@ -11,8 +11,8 @@
 #include <memory>
 #include <string>
 
-#include <kdbconfig.h>
 #include <kdblogger.h>
+#include <kdbmacros.h>
 
 #include <yaep.h>
 
