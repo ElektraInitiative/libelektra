@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt;
 
-use crate::{ReadOnly, ReadableKey, StringKey, WriteableKey, KeyNameInvalidError, KeyNameReadOnlyError};
+use crate::{KeyNameInvalidError, ReadOnly, ReadableKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
@@ -57,37 +57,36 @@ impl AsRef<elektra_sys::KeySet> for KeySet {
 }
 
 impl KeySet {
-
     /// Returns the raw pointer of the KeySet.
     /// Should be used with caution. In particular,
     /// the pointer should only be modified with
-    /// `elektra_sys::ks*` functions, but `ksDel` 
+    /// `elektra_sys::ks*` functions, but `ksDel`
     /// should not be called.
     pub fn as_ptr(&mut self) -> *mut elektra_sys::KeySet {
         self.ptr.as_ptr()
     }
 
     /// Create a new empty KeySet.
-    /// 
+    ///
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn new() -> Self {
         let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KEY_END) };
-        unsafe { KeySet::from_ptr(ks_ptr)}
+        unsafe { KeySet::from_ptr(ks_ptr) }
     }
 
     /// Create a new KeySet that allocates enough space for the
     /// given capacity of keys.
-    /// 
+    ///
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn with_capacity(capacity: usize) -> Self {
         let ks_ptr = unsafe { elektra_sys::ksNew(capacity, elektra_sys::KEY_END) };
-        unsafe { Self::from_ptr(ks_ptr)}
+        unsafe { Self::from_ptr(ks_ptr) }
     }
 
     /// Construct a new KeySet from a raw KeySet pointer
-    /// 
+    ///
     /// # Panics
     /// Panics if the provided pointer is null.
     unsafe fn from_ptr(keyset_ptr: *mut elektra_sys::KeySet) -> KeySet {
@@ -95,6 +94,11 @@ impl KeySet {
             ptr: std::ptr::NonNull::new(keyset_ptr).unwrap(),
             _marker: std::marker::PhantomData,
         }
+    }
+
+    /// Append a KeySet to self.
+    pub fn append(&mut self, to_append: &KeySet) -> isize {
+        unsafe { elektra_sys::ksAppend(self.as_ptr(), to_append.as_ref()) }
     }
 
     /// Append a key to the keyset.
@@ -108,31 +112,10 @@ impl KeySet {
         }
     }
 
-    /// Append a collection of keys to the KeySet.
-    /// Calls append_key on every key. If any key returns an error it will be returned,
-    /// but only after iterating over all keys.
-    pub fn append_all<T>(&mut self, keys: T) -> Result<(), InsertionError>
-    where
-        T: IntoIterator,
-        T::Item: WriteableKey,
-    {
-        let mut err = None;
-        for key in keys {
-            if let Err(ks_err) = self.append_key(key) {
-                err = Some(ks_err);
-            }
-        }
-        if let Some(error) = err {
-            Err(error)
-        } else {
-            Ok(())
-        }
-    }
-
     /// Return a duplicate of a keyset.
     pub fn duplicate(&self) -> Self {
         let ks_ptr = unsafe { elektra_sys::ksDup(self.as_ref()) };
-        unsafe { Self::from_ptr(ks_ptr)}
+        unsafe { Self::from_ptr(ks_ptr) }
     }
 
     /// Replace the content of a keyset with another one.
@@ -230,7 +213,6 @@ impl KeySet {
         if key_ptr.is_null() {
             None
         } else {
-            // let dup_ptr = unsafe { elektra_sys::keyDup(key_ptr as *const elektra_sys::Key) };
             Some(unsafe { StringKey::from_ptr(key_ptr) })
         }
     }
@@ -264,6 +246,24 @@ impl KeySet {
         StringKeyIter {
             cursor: None,
             keyset: self,
+        }
+    }
+}
+
+impl<'a> std::iter::FromIterator<StringKey<'a>> for KeySet {
+    fn from_iter<I: IntoIterator<Item = StringKey<'a>>>(iter: I) -> Self {
+        let mut ks = KeySet::new();
+        for item in iter {
+            let _ = ks.append_key(item);
+        }
+        ks
+    }
+}
+
+impl<'a> Extend<StringKey<'a>> for KeySet {
+    fn extend<T: IntoIterator<Item = StringKey<'a>>>(&mut self, iter: T) {
+        for item in iter {
+            let _ = self.append_key(item);
         }
     }
 }
@@ -345,6 +345,7 @@ impl Error for InsertionError {}
 mod tests {
     use super::*;
     use crate::KeyBuilder;
+    use std::iter::FromIterator;
 
     #[test]
     fn can_build_simple_keyset() -> Result<(), KeyNameInvalidError> {
@@ -373,9 +374,7 @@ mod tests {
         let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
         let values = ["value1", "value2", "value3"];
 
-        let mut ks = KeySet::with_capacity(3);
-
-        ks.append_all(vec![
+        let mut ks = KeySet::from_iter(vec![
             KeyBuilder::<StringKey>::new(names[0])?
                 .value(values[0])
                 .build(),
@@ -385,8 +384,7 @@ mod tests {
             KeyBuilder::<StringKey>::new(names[2])?
                 .value(values[2])
                 .build(),
-        ])
-        .unwrap();
+        ]);
 
         ks.rewind();
         let new_values = ["Newvalue1", "Newvalue2", "Newvalue3"];
@@ -415,9 +413,7 @@ mod tests {
         let names = ["system/test/key", "user/test/key"];
         let values = ["value1", "value2"];
 
-        let mut ks = KeySet::with_capacity(2);
-
-        ks.append_all(vec![
+        KeySet::from_iter(vec![
             KeyBuilder::<StringKey>::new(names[0])
                 .unwrap()
                 .value(values[0])
@@ -427,8 +423,29 @@ mod tests {
                 .value(values[1])
                 .build(),
         ])
-        .unwrap();
-        ks
+    }
+
+    #[test]
+    fn extend_keyset_and_append_are_equal() {
+        let mut ks = setup_keyset();
+        let mut ks2 = KeySet::with_capacity(1);
+        let k = StringKey::new("user/test/key").unwrap();
+        ks2.append_key(k).unwrap();
+
+        // Test append
+        ks.append(&ks2);
+        assert_eq!(ks.get_size(), 2);
+        assert_eq!(ks.tail().unwrap().name(), "user/test/key");
+        assert_eq!(ks.tail().unwrap().value(), "");
+
+        // Test extend from the Extend trait
+        let mut ksext = setup_keyset();
+        ks2.rewind();
+        ksext.extend(ks2.iter_mut());
+
+        assert_eq!(ksext.get_size(), 2);
+        assert_eq!(ksext.tail().unwrap().name(), "user/test/key");
+        assert_eq!(ksext.tail().unwrap().value(), "");
     }
 
     #[test]
