@@ -7,8 +7,8 @@
  */
 
 #include <kdb.h>
-#include <kdbconfig.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 
 #include <fcntl.h>
 #include <pthread.h>

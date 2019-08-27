@@ -12,10 +12,8 @@
 #endif
 
 #include "lua.hpp"
-#ifndef HAVE_KDBCONFIG
-#include <kdbconfig.h>
-#endif
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 
 #include <key.hpp>
 #include <keyset.hpp>

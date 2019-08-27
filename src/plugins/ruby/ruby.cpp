@@ -17,6 +17,8 @@
 #include <kdbconfig.h>
 #endif
 
+#include <kdbmacros.h>
+
 #include SWIG_RUNTIME
 #include "ruby.hpp"
 

@@ -11,7 +11,7 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <kdbconfig.h>
+#include <kdbmacros.h>
 #include <kdbproposal.h> // for some options
 
 #include <iostream>

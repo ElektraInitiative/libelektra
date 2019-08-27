@@ -17,6 +17,7 @@
 #include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdbinternal.h>
+#include <kdbmacros.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
