@@ -203,7 +203,7 @@ static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 	return result;
 }
 
-kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string & outputName, const std::string & part ELEKTRA_UNUSED,
+kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string & outputName, const std::string & part,
 							       const kdb::KeySet & keySet, const std::string & parentKey) const
 {
 	using namespace kainjow::mustache;
@@ -513,9 +513,10 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = "--elektra-spec";
 
-	if (specHandling != EmbeddedSpec::Full)
+	if (part == ".spec.eqd")
 	{
-		keySetToQuickdump (spec, outputName + ".spec.eqd", specParentName);
+		keySetToQuickdump (spec, outputName + part, specParentName);
+		return kainjow::mustache::data (false);
 	}
 
 	return data;
@@ -571,4 +572,14 @@ std::string HighlevelGenTemplate::escapeFunction (const std::string & str) const
 	}
 
 	return ss.str ();
+}
+
+std::vector<std::string> HighlevelGenTemplate::getActualParts () const
+{
+	std::vector<std::string> parts (GenTemplate::getActualParts ());
+	if (getParameter (Params::EmbeddedSpec, "full") == "full")
+	{
+		parts.erase (std::remove (parts.begin (), parts.end (), ".spec.eqd"), parts.end ());
+	}
+	return parts;
 }

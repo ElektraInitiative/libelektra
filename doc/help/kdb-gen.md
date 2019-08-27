@@ -8,6 +8,7 @@
   one of the templates listed [below](#templates)
 - `<parentKey>`:
   the parent key to use, templates may have certain restrictions on e.g. the allowed namespaces
+  You may also use the special value `-` (see below).
 - `<outputName>`:
   the base name of the output files. If a template produces multiple files, it will append different
   suffixes (e.g. file extensions) to this base name.
@@ -20,6 +21,9 @@ This command invokes Elektra's code-generator.
 
 It supports different templates. All templates require a `parentKey` parameter, because this determines
 the input for the code-generator, as well as an `outputName` parameter to specify the output file(s).
+
+If the given `parentKey` is `-`, instead of actually invoking the code generator, `kdb gen` will just
+print the filenames of the files that would be written with a valid `parentKey`.
 
 For more information see the [list of templates](#templates) below and the man-pages for each of them.
 

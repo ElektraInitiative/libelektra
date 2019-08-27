@@ -15,7 +15,7 @@ one of the templates listed \fIbelow\fR
 .
 .TP
 \fB<parentKey>\fR
-the parent key to use, templates may have certain restrictions on e\.g\. the allowed namespaces
+the parent key to use, templates may have certain restrictions on e\.g\. the allowed namespaces You may also use the special value \fB\-\fR (see below)\.
 .
 .TP
 \fB<outputName>\fR
@@ -30,6 +30,9 @@ This command invokes Elektra\'s code\-generator\.
 .
 .P
 It supports different templates\. All templates require a \fBparentKey\fR parameter, because this determines the input for the code\-generator, as well as an \fBoutputName\fR parameter to specify the output file(s)\.
+.
+.P
+If the given \fBparentKey\fR is \fB\-\fR, instead of actually invoking the code generator, \fBkdb gen\fR will just print the filenames of the files that would be written with a valid \fBparentKey\fR\.
 .
 .P
 For more information see the \fIlist of templates\fR below and the man\-pages for each of them\.

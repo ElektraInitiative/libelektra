@@ -28,7 +28,7 @@ class HighlevelGenTemplate : public GenTemplate
 
 public:
 	HighlevelGenTemplate ()
-	: GenTemplate ("highlevel", { ".c", ".h" },
+	: GenTemplate ("highlevel", { ".c", ".h", ".spec.eqd" },
 		       { "enum.c", "union.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "union.decl.h",
 			 "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
 		       {
@@ -50,6 +50,7 @@ protected:
 						 const std::string & parentKey) const override;
 
 	std::string escapeFunction (const std::string & str) const override;
+	std::vector<std::string> getActualParts () const override;
 };
 
 #endif // ELEKTRA_KDB_GEN_HIGHLEVEL_HPP

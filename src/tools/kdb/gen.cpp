@@ -56,6 +56,15 @@ int GenCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("couldn't find template '" + templateName + "'");
 	}
 
+	if (parentKey == "-")
+	{
+		for (const auto & part : tmpl->getParts ())
+		{
+			std::cout << outputName + part << std::endl;
+		}
+		return 0;
+	}
+
 	KeySet ks;
 
 	if (cl.inputFile.empty ())
