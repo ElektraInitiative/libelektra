@@ -60,6 +60,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
   native boolean types. _(Klemens Böswirth)_
 
+### Noresolver
+
+- The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
+
 ### <<Plugin3>>
 
 - <<TODO>>
@@ -78,12 +82,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-<<<<<<< HEAD
 - A new plugin function, `kdbCommit`, was implemented. The function is carried out in the `commit` phase of `kdbSet` and separates the commit functionality from the `kdbSet()` function. _(Vid Leskovar)_
-=======
 - `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
   `config.h`-type headers from applications. _(Klemens Böswirth)_
->>>>>>> headers: don't install kdbconfig anymore
 - <<TODO>>
 - <<TODO>>
 
