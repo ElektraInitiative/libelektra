@@ -202,6 +202,14 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
+	const char * overlayFile = keyString (parentKey);
+	if (overlayFile[0] != '/')
+	{
+		char * path = elektraFormat ("%s/%s", KDB_DB_SPEC, overlayFile);
+		keySetString (parentKey, path);
+		elektraFree (path);
+	}
+
 	if (access (keyString (parentKey), F_OK) != -1)
 	{
 		if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
@@ -211,20 +219,10 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
-	else
-	{
-		KeySet * ks = ksNew (0, KS_END);
-		if (elektraInvoke2Args (specload->quickDump, "set", ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			ksDel (ks);
-			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't create an empty overlay specification");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-		ksDel (ks);
-	}
 
 	ksAppend (returned, spec);
 	ksDel (spec);
+	keyDel (parentKey);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -248,6 +246,14 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
+	const char * overlayFile = keyString (parentKey);
+	if (overlayFile[0] != '/')
+	{
+		char * path = elektraFormat ("%s/%s", KDB_DB_SPEC, overlayFile);
+		keySetString (parentKey, path);
+		elektraFree (path);
+	}
+
 	KeySet * oldData = ksNew (ksGetSize (returned), KS_END);
 	if (access (keyString (parentKey), F_OK) != -1)
 	{
@@ -255,15 +261,6 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			ksDel (oldData);
 			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't load the overlay specification");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-	}
-	else
-	{
-		if (elektraInvoke2Args (specload->quickDump, "set", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			ksDel (oldData);
-			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't create an empty overlay specification");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}

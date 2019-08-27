@@ -97,11 +97,10 @@ sudo kdb umount spec/tests/specload
 
 ## Limitations
 
-- The plugin would technically allow the following modifications right now:
-
+- The plugin only allows the following modifications right now:
   - add/edit/remove `description` or `opt/help`
   - add/edit `default`
   - add `type`
-
-  However, because the default `resolver` is not compatible with plugins that produce a KeySet without a file present, you can only use
-  `noresolver`. This means that you cannot set any values. (You will get an error about a non-existent file, if you try.)
+- The plugin must be mounted using `noresolver` or another resolver that always calls the storage plugin. To work arround
+  this limitation, `specload` prefixes relative paths with `KDB_DB_SPEC` before passing the path on to `quickdump`. This
+  means that your overlay files will be stored in the same directory as any other `spec` configurations.

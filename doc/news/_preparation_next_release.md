@@ -68,11 +68,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
 
-### <<Plugin3>>
+### Specload
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
 
 ## Libraries
 
