@@ -32,6 +32,7 @@ fn main() {
 A full example for using some of the key functionality. For all methods, see the documentation.
 
 ```rust
+extern crate elektra;
 use elektra::{KeyBuilder, KeyError, ReadableKey, StringKey, WriteableKey};
 
 fn main() -> Result<(), KeyError> {
@@ -62,7 +63,7 @@ fn main() -> Result<(), KeyError> {
 
     // We can iterate over the metakeys
     key.rewind_meta();
-    for metakey in key.iter() {
+    for metakey in key.meta_iter() {
         println!("Key: {}, Value: {}", metakey.name(), metakey.value());
     }
 
@@ -71,6 +72,8 @@ fn main() -> Result<(), KeyError> {
 
     // Check if key is in the user namespace
     assert!(key.is_user());
+
+    Ok(())
 }
 ```
 
