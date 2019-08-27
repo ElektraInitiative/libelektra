@@ -69,3 +69,13 @@ additional_commands:
       PROJ: 1
       GIT_REPOSITORY: 1
       GIT_TAG: 1
+
+  elektra_kdb_gen:
+    kwargs:
+      pargs: 3
+      OUTPUT_DIR: 1
+      KDB: 1
+      INPUT: 2
+      PARTS: +
+      PARAMS: +
+      OPTIONS: +
