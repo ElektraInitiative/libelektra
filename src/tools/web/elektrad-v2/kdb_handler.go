@@ -62,7 +62,7 @@ func GetKdbHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PutKdbHandler(w http.ResponseWriter, r *http.Request) {
-	value, err := StringBody(r)
+	value, err := stringBody(r)
 
 	if err != nil {
 		writeError(w, err)
