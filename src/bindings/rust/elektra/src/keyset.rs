@@ -136,6 +136,68 @@ impl KeySet {
         }
     }
 
+    /// Removes and returns the last key of the KeySet.
+    /// Returns None if the KeySet is empty.
+    ///
+    /// # Examples
+    /// ```
+    /// # use elektra::{KeySet, StringKey, WriteableKey, ReadableKey};
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let key = StringKey::new("user/key/elektra")?;
+    /// let mut keyset = KeySet::with_capacity(1);
+    /// keyset.append_key(key);
+    /// if let Some(popped_key) = keyset.pop() {
+    ///     assert_eq!(popped_key.basename(), "elektra");
+    /// } else {
+    ///     panic!("Could not pop a key!");
+    /// }
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
+    pub fn pop<'a, 'b>(&'a mut self) -> Option<StringKey<'b>> {
+        let key_ptr = unsafe { elektra_sys::ksPop(self.as_ptr()) };
+        if key_ptr.is_null() {
+            None
+        } else {
+            Some(unsafe { StringKey::from_ptr(key_ptr) })
+        }
+    }
+
+    /// Cuts the keys that are below `cut_point` from self.
+    /// If the provided key has no name or the `cut_point` is not found,
+    /// an empty KeySet is returned.
+    ///
+    /// # Examples
+    /// ```
+    /// # use elektra::{KeySet, StringKey, WriteableKey, ReadableKey};
+    /// # use std::iter::FromIterator;
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let mut keyset = KeySet::from_iter(vec![
+    ///     StringKey::new("user/key/parent")?,
+    ///     StringKey::new("user/key/parent/below")?,
+    ///     StringKey::new("user/key/other")?,
+    /// ]);
+    /// let cut_key = StringKey::new("user/key/parent")?;
+    /// let cut_keyset = keyset.cut(&cut_key);
+    /// assert_eq!(keyset.size(), 1);
+    /// assert_eq!(cut_keyset.size(), 2);
+    /// assert_eq!(cut_keyset.head().unwrap().name(), "user/key/parent");
+    /// assert_eq!(cut_keyset.tail().unwrap().name(), "user/key/parent/below");
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
+    pub fn cut(&mut self, cut_point: &StringKey) -> KeySet {
+        let ks_ptr = unsafe { elektra_sys::ksCut(self.as_ptr(), cut_point.as_ref()) };
+        if ks_ptr.is_null() {
+            println!("was null");
+            KeySet::new()
+        } else {
+            unsafe { KeySet::from_ptr(ks_ptr) }
+        }
+    }
+
     /// Return the first key in the KeySet
     /// or None if the KeySet is empty.
     pub fn head(&self) -> Option<StringKey> {
@@ -407,6 +469,26 @@ mod tests {
         // Check that the iterator did not consume the keyset
         assert_eq!(ks.size(), 3);
         Ok(())
+    }
+
+    #[test]
+    fn can_use_popped_key_after_keyset_freed() {
+        let popped_key;
+        {
+            let key = StringKey::new("user/key/k2").unwrap();
+            let mut keyset = KeySet::with_capacity(1);
+            keyset.append_key(key).unwrap();
+            popped_key = keyset.pop().unwrap();
+            assert_eq!(keyset.size(), 0);
+        }
+        assert_eq!(popped_key.basename(), "k2");
+    }
+
+    #[test]
+    fn pop_on_empty_keyset_returns_none() {
+        let mut keyset = KeySet::new();
+        let p = keyset.pop();
+        assert!(p.is_none());
     }
 
     fn setup_keyset() -> KeySet {
