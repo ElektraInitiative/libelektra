@@ -2,7 +2,7 @@
 
 if [ -z "$SPEC_FILE" ]; then
 	# TODO: set SPEC_FILE to the installed path of your spec.eqd file
-	SPEC_FILE='/home/klemens/.config/kdb/dbg-cc/spec/tests_script_gen_highlevel_externalspec.spec.eqd'
+	SPEC_FILE='/usr/local/share/tests_script_gen_highlevel_externalspec.spec.eqd'
 fi
 
 if ! [ -f "$SPEC_FILE" ]; then

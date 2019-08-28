@@ -16,7 +16,6 @@
 #include <modules.hpp>
 
 #include <kdb.h>
-#include <kdbconfig.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbplugin.h>
@@ -317,7 +316,6 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 			       { "mount_file", appName + ".overlay.spec.eqd" },
 			       { "spec_mount_file", mountpoint },
 			       { "direct_file?", specHandling != EmbeddedSpec::Full },
-			       { "kdb_db_spec", KDB_DB_SPEC },
 			       { "org_and_app", appNameWithOrg },
 			       { "app", appName } };
 	}
