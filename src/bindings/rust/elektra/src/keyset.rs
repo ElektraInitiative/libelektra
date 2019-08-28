@@ -210,9 +210,7 @@ impl KeySet {
     }
 
     /// Return the key pointed at by the internal cursor
-    /// or None if the end is reached or after [`rewind`].
-    ///
-    /// [`rewind`]: #method.rewind
+    /// or None if the end is reached or after [`rewind`](#method.rewind).
     pub fn current(&self) -> Option<StringKey> {
         let key_ptr = unsafe { elektra_sys::ksCurrent(self.as_ref()) };
         if key_ptr.is_null() {
@@ -257,9 +255,33 @@ impl KeySet {
     }
 
     /// Lookup a given key in the keyset.
-    /// See also [`lookup_by_name`].
+    /// See also [`lookup_by_name`](#method.lookup_by_name).
     ///
-    /// [`lookup_by_name`]: #method.lookup_by_name
+    /// # Notes
+    /// Note that the returned key is only alive for as long as the keyset is. This is still true
+    /// when you pass `LookupOption::KDB_O_POP`, although not expected. To get around this limitation,
+    /// you can duplicate the returned key, such that it is no longer bound by the lifetime of the KeySet.
+    ///
+    /// # Examples
+    /// ```
+    /// # use elektra::{KeySet, StringKey, LookupOption, WriteableKey, ReadableKey};
+    /// # use std::iter::FromIterator;
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let key = StringKey::new("user/key/elektra")?;
+    /// let mut ks = KeySet::with_capacity(1);
+    /// ks.append_key(key)?;
+    ///
+    /// let lookup_key = StringKey::new("user/key/elektra")?;
+    /// if let Some(mut key) = ks.lookup(lookup_key, LookupOption::KDB_O_NONE) {
+    ///     key.set_value("newvalue");
+    /// } else {
+    ///     panic!("Key was not found!");
+    /// }
+    /// // The key in the keyset was changed
+    /// assert_eq!(ks.head().unwrap().value(), "newvalue");
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn lookup(&mut self, mut key: StringKey, options: LookupOption) -> Option<StringKey<'_>> {
         let key_ptr = unsafe {
             elektra_sys::ksLookup(
@@ -268,7 +290,10 @@ impl KeySet {
                 options.bits() as elektra_sys::option_t,
             )
         };
+
         if options.contains(LookupOption::KDB_O_DEL) {
+            // If this option is passed, ksLookup will delete the key.
+            // Thus we have to prevent the drop code from running on the rust side.
             std::mem::forget(key);
         }
 
@@ -281,9 +306,7 @@ impl KeySet {
 
     /// Lookup a key by name.
     /// Returns a `KeyNameInvalidError` if the provided string is an invalid name.
-    /// Otherwise identical to [`lookup`].
-    ///
-    /// [`lookup`]: #method.lookup
+    /// Otherwise identical to [`lookup`](#method.lookup).
     pub fn lookup_by_name(
         &mut self,
         name: &str,
@@ -551,12 +574,24 @@ mod tests {
     }
 
     #[test]
+    fn can_lookup_key_with_del_and_pop_option() {
+        let mut ks = setup_keyset();
+        let lookup_key = StringKey::new("/test/key").unwrap();
+        let key = ks.lookup(
+            lookup_key,
+            LookupOption::KDB_O_DEL | LookupOption::KDB_O_POP,
+        );
+        assert_eq!(key.unwrap().name(), "user/test/key");
+        assert_eq!(ks.size(), 1);
+        assert_eq!(ks.head().unwrap().name(), "system/test/key");
+    }
+
+    #[test]
     fn can_lookup_by_name_and_duplicate_key() -> Result<(), KeyNameInvalidError> {
         // Make sure that a duplicate of a key that is from a keyset
         // can be used after the KeySet has been freed
         let key;
         {
-            // let lookup_key = StringKey::new("/test/key").unwrap();
             let mut ks = setup_keyset();
             key = ks
                 .lookup_by_name("/test/key", LookupOption::KDB_O_DEL)?
