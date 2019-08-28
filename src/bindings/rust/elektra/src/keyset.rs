@@ -125,7 +125,7 @@ impl KeySet {
     }
 
     /// Return the number of keys that ks contains.
-    pub fn get_size(&self) -> usize {
+    pub fn size(&self) -> usize {
         unsafe { elektra_sys::ksGetSize(self.as_ref()).try_into().unwrap() }
     }
 
@@ -172,7 +172,7 @@ impl KeySet {
     }
 
     /// Get the KeySet internal cursor.
-    pub fn get_cursor(&self) -> Cursor {
+    pub fn cursor(&self) -> Cursor {
         unsafe { elektra_sys::ksGetCursor(self.as_ref()) }
     }
 
@@ -278,7 +278,7 @@ fn next<T: ReadableKey>(
             if key_ptr.is_null() {
                 (None, None)
             } else {
-                let new_cursor = Some(keyset.get_cursor());
+                let new_cursor = Some(keyset.cursor());
                 (new_cursor, Some(unsafe { T::from_ptr(key_ptr) }))
             }
         }
@@ -405,7 +405,7 @@ mod tests {
         }
         assert!(did_iterate);
         // Check that the iterator did not consume the keyset
-        assert_eq!(ks.get_size(), 3);
+        assert_eq!(ks.size(), 3);
         Ok(())
     }
 
@@ -434,7 +434,7 @@ mod tests {
 
         // Test append
         ks.append(&ks2);
-        assert_eq!(ks.get_size(), 2);
+        assert_eq!(ks.size(), 2);
         assert_eq!(ks.tail().unwrap().name(), "user/test/key");
         assert_eq!(ks.tail().unwrap().value(), "");
 
@@ -443,7 +443,7 @@ mod tests {
         ks2.rewind();
         ksext.extend(ks2.iter_mut());
 
-        assert_eq!(ksext.get_size(), 2);
+        assert_eq!(ksext.size(), 2);
         assert_eq!(ksext.tail().unwrap().name(), "user/test/key");
         assert_eq!(ksext.tail().unwrap().value(), "");
     }
@@ -454,7 +454,7 @@ mod tests {
         let lookup_key = StringKey::new("/test/key").unwrap();
         let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
         assert_eq!(ret_val.unwrap().name(), "user/test/key");
-        assert_eq!(ks.get_size(), 2);
+        assert_eq!(ks.size(), 2);
         assert_eq!(ks.tail().unwrap().name(), "user/test/key");
     }
 
@@ -464,7 +464,7 @@ mod tests {
         let lookup_key = StringKey::new("/test/key").unwrap();
         let key = ks.lookup(lookup_key, LookupOption::KDB_O_DEL);
         assert_eq!(key.unwrap().name(), "user/test/key");
-        assert_eq!(ks.get_size(), 2);
+        assert_eq!(ks.size(), 2);
         assert_eq!(ks.head().unwrap().name(), "system/test/key");
     }
 
@@ -480,7 +480,7 @@ mod tests {
                 .lookup_by_name("/test/key", LookupOption::KDB_O_DEL)?
                 .unwrap()
                 .duplicate();
-            assert_eq!(ks.get_size(), 2);
+            assert_eq!(ks.size(), 2);
             assert_eq!(ks.head().unwrap().name(), "system/test/key");
         }
         assert_eq!(key.name(), "user/test/key");
