@@ -917,6 +917,11 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return 1; // success
 }
 
+int elektraMultifileCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraMultifileSet (handle, returned, parentKey);
+}
+
 int elektraMultifileCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
@@ -938,6 +943,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	    ELEKTRA_PLUGIN_GET,	&elektraMultifileGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraMultifileSet,
 	    ELEKTRA_PLUGIN_ERROR,	&elektraMultifileError,
+	    ELEKTRA_PLUGIN_COMMIT,      &elektraMultifileCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

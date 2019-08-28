@@ -1005,6 +1005,11 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return retval; // success
 }
 
+int elektraCurlgetCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraCurlgetSet (handle, returned, parentKey);
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -1014,6 +1019,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	    ELEKTRA_PLUGIN_OPEN,	&elektraCurlgetOpen,
 	    ELEKTRA_PLUGIN_CLOSE,	&elektraCurlgetClose,
 	    ELEKTRA_PLUGIN_ERROR,	&elektraCurlgetError,
+	    ELEKTRA_PLUGIN_COMMIT,	&elektraCurlgetCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

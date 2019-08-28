@@ -1185,6 +1185,11 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED,
 	return 0;
 }
 
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	return ELEKTRA_PLUGIN_FUNCTION (set) (handle, returned, parentKey);
+}
+
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
@@ -1195,6 +1200,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
             ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(get),
             ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(set),
             ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(error),
+            ELEKTRA_PLUGIN_COMMIT, &ELEKTRA_PLUGIN_FUNCTION (commit),
             ELEKTRA_PLUGIN_END);
 }
 

@@ -30,6 +30,7 @@ section here.
 - [Plugin Variants](plugin_variants.md)
 - [Ingroup Removal](ingroup_removal.md)
 - [Error Message Format](error_message_format.md)
+- [Commit Function](commit_function.md)
 
 ## In Discussion
 

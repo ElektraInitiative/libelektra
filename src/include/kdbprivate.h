@@ -81,7 +81,7 @@ typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
 typedef int (*kdbGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
-
+typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
 typedef Backend * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Backend *);
@@ -409,6 +409,7 @@ struct _Plugin
 	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
 	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
+	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
 
 	const char * name; /*!< The name of the module responsible for that plugin. */
 
