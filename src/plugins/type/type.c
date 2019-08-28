@@ -193,6 +193,16 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
 	return size;
 }
 
+/**
+ * Reads the value of the config key /boolean/restoreas.
+ *
+ * @p config The config KeySet obtained from elektraPluginGetConfig().
+ *
+ * @retval -3 on error
+ * @retval -2 if /boolean/restoreas = none
+ * @retval -1 if /boolean/restoreas is unset
+ * @retval >= 0 index of chosen boolean pair
+ */
 static kdb_long_long_t readBooleanRestore (KeySet * config)
 {
 	Key * restore = ksLookupByName (config, "/boolean/restoreas", 0);

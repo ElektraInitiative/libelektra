@@ -104,11 +104,11 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 	const char * origTrueValue;
 	const char * origFalseValue;
 
-	bool restoreAs = data->booleanRestore >= 0;
+	bool restore = data->booleanRestore >= 0;
 
 	if (value[0] == '1' && value[1] == '\0')
 	{
-		if (restoreAs)
+		if (restore)
 		{
 			keySetMeta (key, "origvalue", data->booleans[data->booleanRestore].trueValue);
 		}
@@ -118,7 +118,7 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 
 	if (value[0] == '0' && value[1] == '\0')
 	{
-		if (restoreAs)
+		if (restore)
 		{
 			keySetMeta (key, "origvalue", data->booleans[data->booleanRestore].falseValue);
 		}
@@ -128,8 +128,8 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 
 	char * origValue = elektraStrDup (value);
 
-	origTrueValue = restoreAs ? data->booleans[data->booleanRestore].trueValue : origValue;
-	origFalseValue = restoreAs ? data->booleans[data->booleanRestore].falseValue : origValue;
+	origTrueValue = restore ? data->booleans[data->booleanRestore].trueValue : origValue;
+	origFalseValue = restore ? data->booleans[data->booleanRestore].falseValue : origValue;
 
 	for (kdb_long_long_t i = 0; i < data->booleanCount; ++i)
 	{

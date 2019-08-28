@@ -129,7 +129,7 @@ If no `booleans` array was given the allowed values for `boolean/restoreas` are:
 - `#4` for `enable`/`disable`
 
 The special value `boolean/restoreas=none` completely disables the restore procedure. In other words, `kdbSet` will
-always return either `0` or `1` for boolean values. This is useful, if a storage format with buitlin support for boolean
+always return either `0` or `1` for boolean values. This is useful, if a storage format with built-in support for boolean
 values is used.
 
 ### Enums
