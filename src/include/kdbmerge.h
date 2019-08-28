@@ -29,6 +29,15 @@ enum
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
 		       int strategy, Key * informationKey);
 
+int getNonOverlapOnlyBaseConflicts (Key * informationKey);
+int getNonOverlapAllExistConflicts (Key * informationKey);
+int getNonOverlapBaseEmptyConflicts (Key * informationKey);
+int getOverlap3different (Key * informationKey);
+int getOverlap1empty (Key * informationKey);
+int getTotalOverlaps (Key * informationKey);
+int getTotalNonOverlaps (Key * informationKey);
+int getTotalConflicts (Key * informationKey);
+
 #ifdef __cplusplus
 }
 #endif
