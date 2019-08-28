@@ -343,6 +343,8 @@ int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
+	bool directFileMode = directFile != NULL;
+
 	KeySet * quickDumpConfig = ksNew (0, KS_END);
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConfig, errorKey);
 
@@ -352,13 +354,14 @@ int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
 
 	elektraInvokeClose (quickDump, errorKey);
 	ksDel (quickDumpConfig);
+	elektraFree (directFile);
 	elektraFree (app);
 	freeArgv (argv);
 	ksDel (spec);
 
 	if (!result)
 	{
-		if (directFile != NULL)
+		if (directFileMode)
 		{
 			ELEKTRA_SET_INSTALLATION_ERROR (
 				errorKey, "Couldn't load the specification. Make sure the specified file is a valid quickdump file");
