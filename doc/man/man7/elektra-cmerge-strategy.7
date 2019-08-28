@@ -1,0 +1,37 @@
+.
+.TH "ELEKTRA\-CMERGE\-STRATEGIES" "7" "July 2019" "" ""
+.
+.SH "NAME"
+\fBelektra\-cmerge\-strategies\fR \- how to merge key sets
+.
+.SH "3\-WAY"
+.
+.TP
+\fBbase\fR
+The \fBbase\fR KeySet is the original version of the KeySet\.
+.
+.TP
+\fBours\fR
+The \fBour\fR KeySet represents the user\'s current version of the KeySet\. This KeySet differs from \fBbase\fR for every key you changed\.
+.
+.TP
+\fBtheir\fR
+The \fBtheir\fR KeySet usually represents the default version of a KeySet (usually the package maintainer\'s version)\. This KeySet differs from \fBbase\fR for every key someone has changed\.
+.
+.P
+The three\-way merge works by comparing the \fBour\fR KeySet and the \fBtheir\fR KeySet to the \fBbase\fR KeySet\. By looking for differences in these KeySets, a new KeySet called \fBresult\fR is created that represents a merge of these KeySets\.
+.
+.SH "STRATEGIES"
+Currently the following strategies exist:
+.
+.IP "\(bu" 4
+abort: Abort if any conflict occurs\.
+.
+.IP "\(bu" 4
+our: Whenever a conflict exists, use our version\.
+.
+.IP "\(bu" 4
+their: Whenever a conflict exists, use their version\.
+.
+.IP "\(bu" 4
+base: Whenever a conflict exists, use base version\.

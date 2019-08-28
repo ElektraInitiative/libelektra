@@ -13,6 +13,7 @@ set (SUBDIRS
      invoke
      notification
      highlevel
+     merge
      opts)
 
 # The subdirectory for LibElektra must be the last entry!

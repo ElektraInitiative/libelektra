@@ -34,7 +34,8 @@ if (BUILD_SHARED)
 	target_link_libraries (kdb
 			       elektra-core
 			       elektra-kdb
-			       elektratools)
+			       elektratools
+			       elektra-merge)
 
 	install (TARGETS kdb DESTINATION bin)
 endif (BUILD_SHARED)
