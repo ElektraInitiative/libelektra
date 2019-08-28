@@ -170,6 +170,12 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 		char * resultValue = elektraMalloc (default_result_size);
 		keyGetString (metaKey, resultValue, default_result_size);
 		char msg[200];
+		if(resultValue == NULL) {
+			yield_error("resultValue must not be null");
+		}
+		if(expected_result == NULL) {
+			yield_error("expectedResult must not be null");
+		}
 		snprintf (msg, 200,
 			  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
 			  "%s.\n",
@@ -177,6 +183,76 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 		succeed_if (strcmp (resultValue, expected_result) == 0, msg);
 		elektraFree (resultValue);
 	}
+
+	ksDel (our);
+	ksDel (their);
+	ksDel (base);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+	keyDel (informationKey);
+}
+
+/**
+ * Checks if adding a single line to an array gives one error as happens in regular diff algorithms
+ * or as many errors as there are number of lines, which a trivial implementation does.
+ *
+ *       ours their base result
+ *  /#0  0    0     a
+ *  /#1  1    1     0
+ *  /#2  2    2     1
+ *  /#3  3    3     2
+ *  /#4             3
+ */
+static void array_conflict_number_test (void)
+{
+	printf ("Executing %s\n", __func__);
+	Key * our_root = keyNew ("user/our", KEY_END);
+	Key * their_root = keyNew ("user/their", KEY_END);
+	Key * base_root = keyNew ("user/base", KEY_END);
+	Key * result_root = keyNew ("user/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
+	KeySet * our = ksNew (5, keyNew ("user/our/#0", KEY_VALUE, "a", KEY_END), keyNew ("user/our/#1", KEY_VALUE, "0", KEY_END),
+			      keyNew ("user/our/#2", KEY_VALUE, "1", KEY_END), keyNew ("user/our/#3", KEY_VALUE, "2", KEY_END),
+			      keyNew ("user/our/#4", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * their =
+		ksNew (4, keyNew ("user/their/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/their/#1", KEY_VALUE, "1", KEY_END),
+		       keyNew ("user/their/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/their/#3", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * base = ksNew (4, keyNew ("user/base/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/base/#1", KEY_VALUE, "1", KEY_END),
+			       keyNew ("user/base/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/base/#3", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
+	//Key * resultKey = ksLookupByName (result, "user/result/#0", 0);
+	//if (resultKey == NULL)
+	//{
+	//	yield_error ("Result must exist");
+	//}
+	//else
+	//{
+	//	char * resultValue = elektraMalloc (default_result_size);
+	//	keyGetString (resultKey, resultValue, default_result_size);
+	//	succeed_if_same_string (resultValue, "a");
+	//	elektraFree (resultValue);
+	//}
+	//resultKey = ksLookupByName (result, "user/result/#4", 0);
+	//if (resultKey == NULL)
+	//{
+	//	yield_error ("Result must exist");
+	//}
+	//else
+	//{
+	//	char * resultValue = elektraMalloc (default_result_size);
+	//	keyGetString (resultKey, resultValue, default_result_size);
+	//	succeed_if_same_string (resultValue, "3");
+	//	elektraFree (resultValue);
+	//}
+
+	//int expectedConflicts = 4;
+	//int actualConflicts = 4; //getTotalConflicts (informationKey);
+	//char msg[200];
+	//snprintf (msg, 200, "Number of conflicts was %d but should have been %d.\n", actualConflicts, expectedConflicts);
+	//succeed_if (expectedConflicts == actualConflicts, msg);
 
 	ksDel (our);
 	ksDel (their);
@@ -553,7 +629,7 @@ int main (int argc, char ** argv)
 	all_strategies_conflict ("EMPTY", "2", "3");
 	test_order ("1", "1", "1", 1, "1");
 	test_order ("2", "1", "1", 1, "2");
-
+	array_conflict_number_test ();
 
 	// test_15 ();
 	//	test_16 ();
