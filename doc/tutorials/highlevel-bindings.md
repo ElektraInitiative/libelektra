@@ -33,7 +33,7 @@ preserving the goals.
 If you decide to write a binding, proceed with this tutorial.
 
 If not, designing an API to meet our goals is up to you. While designing the API you should keep in mind that you can
-always utilise the code-generator like the C API does.
+always use code-generator (`kdb gen`) templates like the C API does.
 
 ## How to write Bindings
 
