@@ -27,8 +27,8 @@ the remaining values (`enum`, `struct`, `struct_ref`, `discriminator`) are treat
 For more information on these concepts take a look at [elektra-highlevel-gen(7)](elektra-highlevel-gen.md). If one of the
 advanced `type` values is used, you should also set `check/type = any`; otherwise the `type` plugin may produce an error.
 
-The template produces two output files: `<outputName>.c` and `<outputName>.h`. The `.c` file only contains implementations,
-therefore its precise content will not be documented.
+The template produces at least three output files: `<outputName>.c`, `<outputName>.h` and `<outputName>.mount.sh`.
+The `.c` file only contains implementations, therefore its precise content will not be documented.
 
 The header (`.h`) file contains the following parts:
 
@@ -42,6 +42,11 @@ The header (`.h`) file contains the following parts:
 Anything else that may be part of the header file is not considered public API and may be subject to change at any point in time.
 There is also no guarantee of full compatibility between Elektra version for the documented parts of the header, however,
 we try to have as little breaking changes as possible for the six parts listed above.
+
+The `.mount.sh` file is a shell script that can be used to mount the specification for the application. You can either
+use it as a basis for your own script, or wrap it in another script that correctly sets `APP_PATH` or `SPEC_FILE`
+(depending on your configuration). If the generated script happens to use the correct paths already, you can of course
+use it directly as well.
 
 For detailed information about the contents of the header file see [elektra-highlevel-gen(7)](elektra-highlevel-gen.md).
 
