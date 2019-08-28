@@ -82,7 +82,6 @@ matrix:
           -multifile;\
           -network;\
           -ni;\
-          -noresolver;\
           -null;\
           -passwd;\
           -path;\
