@@ -20,7 +20,7 @@ func parseKeyNameFromURL(r *http.Request) string {
 	return keyName
 }
 
-func StringBody(r *http.Request) (string, error) {
+func stringBody(r *http.Request) (string, error) {
 	value, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -43,8 +43,12 @@ func noContent(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func writeError(w http.ResponseWriter, err error) {
+func badRequest(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusBadRequest)
+}
+
+func writeError(w http.ResponseWriter, err error) {
+	badRequest(w)
 
 	writeResponse(w, map[string]string{
 		"error": err.Error(),
