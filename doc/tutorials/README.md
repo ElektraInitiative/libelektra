@@ -63,11 +63,8 @@ Elektra:
 - [Profiling](profiling.md)
 - [Run all Tests with Docker](run_all_tests_with_docker.md)
 - [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
-<<<<<<< HEAD
 - [Language Bindings](language-bindings.md)
-=======
 - [Code generator](code-generator.md)
->>>>>>> codegen: move stuff around and rename
 
 ## Installation Manuals
 
