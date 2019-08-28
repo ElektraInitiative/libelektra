@@ -1,0 +1,45 @@
+#!/bin/sh
+
+{{# direct_file? }}
+if [ -z "$SPEC_FILE" ]; then
+	# TODO: set SPEC_FILE to the installed path of your spec.eqd file
+	SPEC_FILE='{{{ kdb_db_spec }}}/{{{ org_and_app }}}.spec.eqd'
+fi
+
+if ! [ -f "$SPEC_FILE" ]; then
+	echo "ERROR: SPEC_FILE points to non-existent file" 1>&2
+	exit 1
+fi
+{{/ direct_file? }}{{^ direct_file? }}
+if [ -z "$APP_PATH" ]; then
+	# TODO: set APP_PATH to the installed path of your application
+	APP_PATH='/usr/local/bin/{{{ app }}}'
+fi
+
+if ! [ -f "$APP_PATH" ]; then
+	echo "ERROR: APP_PATH points to non-existent file" 1>&2
+	exit 1
+fi
+{{/ direct_file? }}
+
+if kdb mount -13 | grep -Fxq '{{{ spec_parent_key }}}'; then
+	if ! kdb mount | grep -Fxq '{{{ mount_file }}} on {{{ spec_parent_key }}} with name {{{ spec_parent_key }}}'; then
+		echo "ERROR: another mountpoint already exists on {{{ spec_parent_key }}}. Please umount first." 1>&2
+		exit 1
+	fi
+else
+	{{# direct_file? }}
+	sudo kdb mount -R noresolver "{{{ mount_file }}}" "{{{ spec_parent_key }}}" specload "file=$SPEC_FILE"
+	{{/ direct_file? }}{{^ direct_file? }}
+	sudo kdb mount -R noresolver "{{{ mount_file }}}" "{{{ spec_parent_key }}}" specload "app=$APP_PATH"
+	{{/ direct_file? }}
+fi
+
+if kdb mount -13 | grep -Fxq '{{{ parent_key }}}'; then
+	if ! kdb mount | grep -Fxq '{{{ spec_mount_file }}} on {{{ parent_key }}} with name {{{ parent_key }}}'; then
+		echo "ERROR: another mountpoint already exists on {{{ parent_key }}}. Please umount first." 1>&2
+		exit 1
+	fi
+else
+	sudo kdb spec-mount '{{{ parent_key }}}'
+fi
