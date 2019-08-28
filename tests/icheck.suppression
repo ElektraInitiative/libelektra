@@ -28,3 +28,15 @@ elektraUnsignedLongLongToString
 elektraFloatToString
 elektraDoubleToString
 elektraLongDoubleToString
+kdb_octet_t
+kdb_boolean_t
+kdb_short_t
+kdb_long_t
+kdb_long_long_t
+kdb_unsigned_short_t
+kdb_unsigned_long_t
+kdb_unsigned_long_long_t
+kdb_char_t
+kdb_float_t
+kdb_double_t
+kdb_long_double_t
