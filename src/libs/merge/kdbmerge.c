@@ -281,6 +281,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 				elektraFree (currentKeyNameString);
 				ksDel (result);
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
+				return NULL;
 			}
 			ksAppendKey (result, keyCopy);
 			elektraFree (currentKeyNameString);
@@ -289,7 +290,10 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		{
 			elektraFree (currentKeyNameString);
 			ksDel (result);
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
+			ELEKTRA_SET_INTERNAL_ERROR (
+				informationKey,
+				"Setting new key name was not possible. The current key is not below or equal to the root key.");
+			return NULL;
 		}
 	}
 	return result;
@@ -610,7 +614,6 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 	return 0;
 }
 
-
 /**
  *
  * This function can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set.
@@ -632,10 +635,25 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		       int strategy, Key * informationKey)
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d", strategy);
-	KeySet * result = ksNew (0, KS_END);
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
+	if (ourCropped == NULL)
+	{
+		return NULL;
+	}
 	KeySet * theirCropped = removeRoot (their, theirRoot, informationKey);
+	if (theirCropped == NULL)
+	{
+		ksDel (ourCropped);
+		return NULL;
+	}
 	KeySet * baseCropped = removeRoot (base, baseRoot, informationKey);
+	if (baseCropped == NULL)
+	{
+		ksDel (ourCropped);
+		ksDel (theirCropped);
+		return NULL;
+	}
+	KeySet * result = ksNew (0, KS_END);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
@@ -654,8 +672,10 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, 0, informationKey); // base is never dominant
 	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
+
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
 	{
+		ksDel (result);
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
 		return NULL;
 	}
