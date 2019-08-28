@@ -16,7 +16,7 @@
 
 static int createModeBits (const char * modes);
 
-static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes);
+static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, Key * key);
 
 static int switchUser (Key * key, Key * parentKey, const struct passwd * p);
 
@@ -146,7 +146,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	// If user metadata is available but empty
 	else if (userMeta)
 	{
-		return handleNoUserCase (parentKey, validPath, modes);
+		return handleNoUserCase (parentKey, validPath, modes, key);
 	}
 
 	// If user metadata is not given ... can only check if root can access the file
@@ -213,8 +213,8 @@ static int validatePermission (Key * key, Key * parentKey)
 	if (canAccess != 0)
 	{
 		// No Resource error per se because related to the specification check!
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on %s", name, modes,
-							validPath);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on '%s'. Key: %s", name,
+							modes, validPath, keyName (key));
 		return -1;
 	}
 
@@ -309,15 +309,15 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
  * @retval 1 if success
  * @retval -1 if failure happens
  */
-static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes)
+static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, Key * key)
 {
 	int modeMask = createModeBits (modes);
 	struct passwd * p = getpwuid (getuid ());
 	int result = access (validPath, modeMask);
 	if (result != 0)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User '%s' does not have required permission (%s) on %s", p->pw_name,
-							modes, validPath);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User '%s' does not have required permission (%s) on '%s'. Key: %s",
+							p->pw_name, modes, validPath, keyName (key));
 		return -1;
 	}
 	return 1;
