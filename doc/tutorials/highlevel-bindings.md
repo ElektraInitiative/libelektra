@@ -27,7 +27,7 @@ The goals of any high-level API (or binding to the C high-level API) for Elektra
 
 ## When to write Bindings
 
-Based on the goals above, you should decided, whether it is possible to write a binding for the C high-level API while
+Based on the goals above, you should decide, whether it is possible to write a binding for the C high-level API while
 preserving the goals.
 
 If you decide to write a binding, proceed with this tutorial.
@@ -51,7 +51,7 @@ that builds on the first one. The second part then uses the languages additional
 to be used directly, but through generated code, it might not be necessary to write the second part. It may be
 sufficient to write (or generate) a one-to-one mirror of the C API and use that in the code-generator template.
 
-On the other hand, the generated code should still be understandable. So if writing a more idiomatic API on top of the
+The generated code should still be understandable. So if writing a more idiomatic API on top of the
 direct mapping, significantly simplifies the generated code (and maybe also the template), you should write such an API.
 
 ### Creating the Code-Generator Template
@@ -59,10 +59,10 @@ direct mapping, significantly simplifies the generated code (and maybe also the 
 How to create a template for `kdb gen` is detailed in [this tutorial](code-generator.md).
 
 The created template should support the same input keysets (and parent keys) as the `highlevel` template. If and how
-exactly you implement the advanced features (structs, unions, ...) is up to you. It might make sense for your language
-or it might not. Note: enums should always be supported (if your language has them) as they are one of the `type`
+exactly you implement the advanced features (structs, unions, ...) is up to you.
+Note: enums should always be supported (if your language has them) as they are one of the `type`
 plugins types.
 
-For example in C++ the generated code could consist of nested structs with lots of overloaded operators. In that case
+For example, in C++ the generated code could consist of nested structs with overloaded operators. In that case
 the structs features doesn't really make sense, since everything is already structs. Of course you could reuse some of
 the `gen/*` metadata to allow some cross-compatibility.
