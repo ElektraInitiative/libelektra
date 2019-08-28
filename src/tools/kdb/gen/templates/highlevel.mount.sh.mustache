@@ -3,7 +3,7 @@
 {{# direct_file? }}
 if [ -z "$SPEC_FILE" ]; then
 	# TODO: set SPEC_FILE to the installed path of your spec.eqd file
-	SPEC_FILE='{{{ kdb_db_spec }}}/{{{ org_and_app }}}.spec.eqd'
+	SPEC_FILE='/usr/local/share/{{{ org_and_app }}}.spec.eqd'
 fi
 
 if ! [ -f "$SPEC_FILE" ]; then
