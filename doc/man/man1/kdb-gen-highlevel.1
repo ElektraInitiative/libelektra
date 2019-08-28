@@ -31,7 +31,7 @@ The input for this template is a specification\. Keys below the \fBparentKey\fR 
 The \fBtype\fR metakey may only have one of the following values: \fBenum\fR, \fBstring\fR, \fBboolean\fR, \fBchar\fR, \fBoctet\fR, \fBshort\fR, \fBunsigned_short\fR, \fBlong\fR, \fBunsigned_long\fR, \fBlong_long\fR, \fBunsigned_long_long\fR, \fBfloat\fR, \fBdouble\fR, \fBlong_double\fR, \fBstruct\fR, \fBstruct_ref\fR and \fBdiscriminator\fR\. Most of these values correspond to the values supported by the high\-level API, the remaining values (\fBenum\fR, \fBstruct\fR, \fBstruct_ref\fR, \fBdiscriminator\fR) are treated specially and are part of advanced concepts\. For more information on these concepts take a look at elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR\. If one of the advanced \fBtype\fR values is used, you should also set \fBcheck/type = any\fR; otherwise the \fBtype\fR plugin may produce an error\.
 .
 .P
-The template produces two output files: \fB<outputName>\.c\fR and \fB<outputName>\.h\fR\. The \fB\.c\fR file only contains implementations, therefore its precise content will not be documented\.
+The template produces at least three output files: \fB<outputName>\.c\fR, \fB<outputName>\.h\fR and \fB<outputName>\.mount\.sh\fR\. The \fB\.c\fR file only contains implementations, therefore its precise content will not be documented\.
 .
 .P
 The header (\fB\.h\fR) file contains the following parts:
@@ -58,6 +58,9 @@ Convenience accessor macros
 .
 .P
 Anything else that may be part of the header file is not considered public API and may be subject to change at any point in time\. There is also no guarantee of full compatibility between Elektra version for the documented parts of the header, however, we try to have as little breaking changes as possible for the six parts listed above\.
+.
+.P
+The \fB\.mount\.sh\fR file is a shell script that can be used to mount the specification for the application\. You can either use it as a basis for your own script, or wrap it in another script that correctly sets \fBAPP_PATH\fR or \fBSPEC_FILE\fR (depending on your configuration)\. If the generated script happens to use the correct paths already, you can of course use it directly as well\.
 .
 .P
 For detailed information about the contents of the header file see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR\.
