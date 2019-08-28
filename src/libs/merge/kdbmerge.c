@@ -79,7 +79,7 @@ static int increaseStatisticalValue (Key * informationKey, char * metaName)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlap conflicts where only base exists
  */
-static int getNonOverlapOnlyBaseConflicts (Key * informationKey)
+int getNonOverlapOnlyBaseConflicts (Key * informationKey)
 {
 	return getStatisticalValue (informationKey, "nonOverlapOnlyBaseCounter");
 }
@@ -88,7 +88,7 @@ static int getNonOverlapOnlyBaseConflicts (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlap conflicts where all keys existed
  */
-static int getNonOverlapAllExistConflicts (Key * informationKey)
+int getNonOverlapAllExistConflicts (Key * informationKey)
 {
 	int nonOverlapAllExistCounter = getStatisticalValue (informationKey, "nonOverlapAllExistCounter");
 	if (nonOverlapAllExistCounter % 3 != 0)
@@ -102,7 +102,7 @@ static int getNonOverlapAllExistConflicts (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlap conflicts where the key in the base set was empty
  */
-static int getNonOverlapBaseEmptyConflicts (Key * informationKey)
+int getNonOverlapBaseEmptyConflicts (Key * informationKey)
 {
 	int nonOverlapBaseEmptyCounter = getStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
 	if (nonOverlapBaseEmptyCounter % 2 != 0)
@@ -116,7 +116,7 @@ static int getNonOverlapBaseEmptyConflicts (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps where all 3 keys were different
  */
-static int getOverlap3different (Key * informationKey)
+int getOverlap3different (Key * informationKey)
 {
 	int overlap3different = getStatisticalValue (informationKey, "overlap3different");
 	if (overlap3different % 3 != 0)
@@ -130,7 +130,7 @@ static int getOverlap3different (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps where one key was empty, thus the other two keys had different values
  */
-static int getOverlap1empty (Key * informationKey)
+int getOverlap1empty (Key * informationKey)
 {
 	int overlap1empty = getStatisticalValue (informationKey, "overlap1empty");
 	if (overlap1empty % 2 != 0)
@@ -144,7 +144,7 @@ static int getOverlap1empty (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps that happened
  */
-static int getTotalOverlaps (Key * informationKey)
+int getTotalOverlaps (Key * informationKey)
 {
 	return getOverlap1empty (informationKey) + getOverlap3different (informationKey);
 }
@@ -153,7 +153,7 @@ static int getTotalOverlaps (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlaps that happened
  */
-static int getTotalNonOverlaps (Key * informationKey)
+int getTotalNonOverlaps (Key * informationKey)
 {
 	return getNonOverlapBaseEmptyConflicts (informationKey) + getNonOverlapAllExistConflicts (informationKey) +
 	       getNonOverlapOnlyBaseConflicts (informationKey);
@@ -163,7 +163,7 @@ static int getTotalNonOverlaps (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps and non-overlaps that happened
  */
-static int getTotalConflicts (Key * informationKey)
+int getTotalConflicts (Key * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
