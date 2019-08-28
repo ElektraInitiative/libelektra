@@ -13,14 +13,16 @@
 #include "structs.hpp"
 
 #include <command.hpp>
-#include <kdbhelper.h>
-#include <kdbtypes.h>
 #include <modules.hpp>
 
-#include <fstream>
 #include <kdb.h>
+#include <kdbconfig.h>
 #include <kdbease.h>
+#include <kdbhelper.h>
 #include <kdbplugin.h>
+#include <kdbtypes.h>
+
+#include <fstream>
 #include <memory>
 #include <regex>
 #include <set>
@@ -36,6 +38,7 @@ const char * HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
 const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
 const char * HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
 const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
+const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
 
 enum class EmbeddedSpec
 {
@@ -214,6 +217,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
 	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "exitForSpecload");
 	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
+	auto installPrefix = getParameter (Params::InstallPrefix, "/usr/local");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "default");
 	auto generateSetters = getBoolParameter (Params::GenerateSetters, true);
@@ -285,6 +289,38 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	spec.append (parent);
 
 	auto parentKeyParts = getKeyParts (specParent);
+
+	auto mountpoint = parent.getMeta<std::string> ("mountpoint");
+
+	std::regex appNameRegex ("/sw/[^/]+/[^/]+/#0/current");
+	std::string appName;
+	std::string appNameWithOrg;
+	if (std::regex_match (cascadingParent, appNameRegex))
+	{
+		appName = parentKeyParts[3];
+		escapeNonAlphaNum (appName);
+		std::string orgName = parentKeyParts[2];
+		escapeNonAlphaNum (orgName);
+		appNameWithOrg = orgName + "/" + appName;
+	}
+	else
+	{
+		appName = cascadingParent.substr (1);
+		escapeNonAlphaNum (appName);
+		appNameWithOrg = appName;
+	}
+
+	if (part == ".mount.sh")
+	{
+		return object{ { "parent_key", cascadingParent },
+			       { "spec_parent_key", specParentName },
+			       { "mount_file", appName + ".overlay.spec.eqd" },
+			       { "spec_mount_file", mountpoint },
+			       { "direct_file?", specHandling != EmbeddedSpec::Full },
+			       { "kdb_db_spec", KDB_DB_SPEC },
+			       { "org_and_app", appNameWithOrg },
+			       { "app", appName } };
+	}
 
 	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{

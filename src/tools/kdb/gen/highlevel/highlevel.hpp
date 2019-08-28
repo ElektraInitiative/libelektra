@@ -24,11 +24,12 @@ class HighlevelGenTemplate : public GenTemplate
 		static const char * GenerateSetters;
 		static const char * EmbeddedSpec;
 		static const char * SpecValidation;
+		static const char * InstallPrefix;
 	};
 
 public:
 	HighlevelGenTemplate ()
-	: GenTemplate ("highlevel", { ".c", ".h", ".spec.eqd" },
+	: GenTemplate ("highlevel", { ".c", ".h", ".spec.eqd", ".mount.sh" },
 		       { "enum.c", "union.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "union.decl.h",
 			 "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
 		       {
