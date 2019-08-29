@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt;
 
-use crate::{KeyNameInvalidError, ReadOnly, ReadableKey, StringKey, WriteableKey};
+use crate::{ReadOnly, ReadableKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
 
@@ -305,15 +305,13 @@ impl KeySet {
     }
 
     /// Lookup a key by name.
-    /// Returns a `KeyNameInvalidError` if the provided string is an invalid name.
+    /// Returns None if the provided string is an invalid name.
     /// Otherwise identical to [`lookup`](#method.lookup).
-    pub fn lookup_by_name(
-        &mut self,
-        name: &str,
-        options: LookupOption,
-    ) -> Result<Option<StringKey>, KeyNameInvalidError> {
-        let key = StringKey::new(name)?;
-        Ok(self.lookup(key, options))
+    pub fn lookup_by_name(&mut self, name: &str, options: LookupOption) -> Option<StringKey> {
+        if let Ok(key) = StringKey::new(name) {
+            return self.lookup(key, options);
+        }
+        None
     }
 
     /// Returns an iterator that should be used to immutably iterate over a keyset.
@@ -429,7 +427,7 @@ impl Error for InsertionError {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::KeyBuilder;
+    use crate::{KeyBuilder, KeyNameInvalidError};
     use std::iter::FromIterator;
 
     #[test]
@@ -594,7 +592,7 @@ mod tests {
         {
             let mut ks = setup_keyset();
             key = ks
-                .lookup_by_name("/test/key", LookupOption::KDB_O_DEL)?
+                .lookup_by_name("/test/key", LookupOption::KDB_O_DEL)
                 .unwrap()
                 .duplicate();
             assert_eq!(ks.size(), 2);
