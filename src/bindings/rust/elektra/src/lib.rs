@@ -1,6 +1,8 @@
 extern crate bitflags;
 extern crate elektra_sys;
 
+mod examples;
+
 pub mod key;
 pub mod keybuilder;
 pub mod readable;
