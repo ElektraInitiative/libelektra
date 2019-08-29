@@ -19,16 +19,15 @@ bitflags! {
     /// Bitflags to be passed to [`lookup`](struct.KeySet.html#method.lookup) and [`lookup_by_name`](struct.KeySet.html#method.lookup_by_name).
     #[derive(Default)]
     pub struct LookupOption: elektra_sys::option_t {
-        /// No Option set
+        /// No Option set.
         const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::option_t;
-        const KDB_O_DEL = elektra_sys::KDB_O_DEL as elektra_sys::option_t;
-        /// The found key will be popped from the keyset
+        /// The found key will be popped from the keyset.
         const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::option_t;
-        /// Ignore case
+        /// Ignore case.
         const KDB_O_NOCASE = elektra_sys::KDB_O_NOCASE as elektra_sys::option_t;
-        /// Search with owner
+        /// Search with owner.
         const KDB_O_WITHOWNER = elektra_sys::KDB_O_WITHOWNER as elektra_sys::option_t;
-        /// Linear search from start -> cursor to cursor -> end
+        /// Linear search from start -> cursor to cursor -> end.
         const KDB_O_NOALL = elektra_sys::KDB_O_NOALL as elektra_sys::option_t;
     }
 }
@@ -287,12 +286,6 @@ impl KeySet {
                 options.bits() as elektra_sys::option_t,
             )
         };
-
-        if options.contains(LookupOption::KDB_O_DEL) {
-            // If this option is passed, ksLookup will delete the key.
-            // Thus we have to prevent the drop code from running on the rust side.
-            std::mem::forget(key);
-        }
 
         if key_ptr.is_null() {
             None
@@ -570,23 +563,23 @@ mod tests {
     }
 
     #[test]
-    fn can_lookup_key_with_del_option() {
+    fn can_lookup_key_with_nocase_and_pop_option() {
         let mut ks = setup_keyset();
-        let lookup_key = StringKey::new("/test/key").unwrap();
-        let key = ks.lookup(lookup_key, LookupOption::KDB_O_DEL);
+        let lookup_key = StringKey::new("/TEST/key").unwrap();
+        let key = ks.lookup(
+            lookup_key,
+            LookupOption::KDB_O_NOCASE | LookupOption::KDB_O_POP,
+        );
         assert_eq!(key.unwrap().name(), "user/test/key");
-        assert_eq!(ks.size(), 2);
+        assert_eq!(ks.size(), 1);
         assert_eq!(ks.head().unwrap().name(), "system/test/key");
     }
 
     #[test]
-    fn can_lookup_key_with_del_and_pop_option() {
+    fn can_lookup_key_with_pop_option() {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
-        let key = ks.lookup(
-            lookup_key,
-            LookupOption::KDB_O_DEL | LookupOption::KDB_O_POP,
-        );
+        let key = ks.lookup(lookup_key, LookupOption::KDB_O_POP);
         assert_eq!(key.unwrap().name(), "user/test/key");
         assert_eq!(ks.size(), 1);
         assert_eq!(ks.head().unwrap().name(), "system/test/key");
@@ -600,7 +593,7 @@ mod tests {
         {
             let mut ks = setup_keyset();
             key = ks
-                .lookup_by_name("/test/key", LookupOption::KDB_O_DEL)
+                .lookup_by_name("/test/key", LookupOption::KDB_O_NONE)
                 .unwrap()
                 .duplicate();
             assert_eq!(ks.size(), 2);

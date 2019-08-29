@@ -99,6 +99,42 @@ fn main() {
 ## Documentation
 
 Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
+### KeySet
+
+A KeySet is a set of StringKeys.
+
+- You can create an empty keyset with `new` or preallocate space for a number of keys with `with_capacity`. 
+- It has two implementations of the `Iterator` trait, so you can iterate immutably or mutably.
+
+```rust
+extern crate elektra;
+use elektra::{KeyBuilder, KeySet, ReadableKey, StringKey};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create a new KeySet with enough preallocated space for 5 keys
+    let mut keyset = KeySet::with_capacity(5);
+
+    // Append some keys
+    keyset.append_key(
+        KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
+            .value("localhost")
+            .build(),
+    )?;
+    keyset.append_key(
+        KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
+            .value("8080")
+            .build(),
+    )?;
+
+    // Iterate the keyset
+    keyset.rewind();
+    for key in keyset.iter() {
+        println!("Key ({}, {})", key.name(), key.value());
+    }
+
+    Ok(())
+    }
+```
 
 ## Generation
 
