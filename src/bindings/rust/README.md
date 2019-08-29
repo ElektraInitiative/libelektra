@@ -19,6 +19,10 @@ elektra = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/
 elektra-sys = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/elektra-sys" }
 ```
 
+## Documentation
+
+Documentation can be built in the `src/bindings/rust/` directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
+
 ## Usage
 
 ### Raw Bindings
@@ -40,7 +44,7 @@ fn main() {
 
 ### Key
 
-A full example for using some of the key functionality. For all methods, see the documentation.
+An example for using a key. For a full example, see the [examples](elektra/src/examples.rs).
 
 ```rust
 extern crate elektra;
@@ -50,39 +54,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To create a simple key with a name and value
     let mut key = StringKey::new("user/test/language")?;
     key.set_value("rust");
+
     assert_eq!(key.name(), "user/test/language");
     assert_eq!(key.value(), "rust");
-
-    // To iterate over the name
-    for name in key.name_iter() {
-        println!("Name: {}", name);
-    }
-
-    // Duplicate a key
-    let key_duplicate = key.duplicate();
-
-    // And compare them
-    assert_eq!(key, key_duplicate);
-
-    // To create a key with multiple meta values, use the KeyBuilder
-    let mut key: StringKey = KeyBuilder::new("user/test/fruits")?
-        .meta("banana", "🍌")?
-        .meta("pineapple", "🍍")?
-        .meta("strawberry", "🍓")?
-        .build();
-    assert_eq!(key.meta("pineapple")?.value(), "🍍");
-
-    // We can iterate over the metakeys
-    key.rewind_meta();
-    for metakey in key.meta_iter() {
-        println!("Key: {}, Value: {}", metakey.name(), metakey.value());
-    }
-
-    // Delete a metakey
-    key.delete_meta("banana")?;
-
-    // Check if key is in the user namespace
-    assert!(key.is_user());
 
     Ok(())
 }
@@ -95,8 +69,7 @@ The functionality of the keys is split into two traits, `ReadableKey` and `Writa
 ## Generation
 
 Bindings are generated when building the `elektra-sys` crate using `rust-bindgen`. The `build.rs` script in the `elektra-sys` crate calls and configures bindgen. It also emits additional configuration for `rustc` to tell it what library to link against, and where to find it.
-Bindgen expects a `wrapper.h` file that includes all headers that bindings should be generated for. Since these headers could have additional includes, the `build.rs` also passes the elektra source and binary directory to clang, such that these includes can be found.
-Finally, bindgen outputs the bindings into a file, that is then included in the `elektra-sys/lib.rs` file, where it can be used from other crates.
+Bindgen expects a `wrapper.h` file that includes all headers that bindings should be generated for. Finally, bindgen outputs the bindings into a file, that is then included in the `elektra-sys/lib.rs` file, where it can be used from other crates.
 
 ## Troubleshooting
 
