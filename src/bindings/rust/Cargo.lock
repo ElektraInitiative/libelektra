@@ -124,11 +124,11 @@ name = "elektra"
 version = "0.9.0"
 dependencies = [
  "bitflags 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "elektra-sys 0.9.0",
+ "elektra_sys 0.9.0",
 ]
 
 [[package]]
-name = "elektra-sys"
+name = "elektra_sys"
 version = "0.9.0"
 dependencies = [
  "bindgen 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",

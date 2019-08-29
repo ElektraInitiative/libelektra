@@ -1,2 +1,2 @@
 [workspace]
-members = ["elektra", "elektra-sys"]
+members = ["elektra", "elektra_sys"]
