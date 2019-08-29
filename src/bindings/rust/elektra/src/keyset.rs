@@ -19,19 +19,16 @@ bitflags! {
     /// Bitflags to be passed to [`lookup`](struct.KeySet.html#method.lookup) and [`lookup_by_name`](struct.KeySet.html#method.lookup_by_name).
     #[derive(Default)]
     pub struct LookupOption: elektra_sys::option_t {
+        /// No Option set
         const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::option_t;
         const KDB_O_DEL = elektra_sys::KDB_O_DEL as elektra_sys::option_t;
+        /// The found key will be popped from the keyset
         const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::option_t;
-        const KDB_O_NODIR = elektra_sys::KDB_O_NODIR as elektra_sys::option_t;
-        const KDB_O_DIRONLY = elektra_sys::KDB_O_DIRONLY as elektra_sys::option_t;
-        const KDB_O_NOREMOVE = elektra_sys::KDB_O_NOREMOVE as elektra_sys::option_t;
-        const KDB_O_REMOVEONLY = elektra_sys::KDB_O_REMOVEONLY as elektra_sys::option_t;
-        const KDB_O_INACTIVE = elektra_sys::KDB_O_INACTIVE as elektra_sys::option_t;
-        const KDB_O_SYNC = elektra_sys::KDB_O_SYNC as elektra_sys::option_t;
-        const KDB_O_SORT = elektra_sys::KDB_O_SORT as elektra_sys::option_t;
-        const KDB_O_NORECURSIVE = elektra_sys::KDB_O_NORECURSIVE as elektra_sys::option_t;
+        /// Ignore case
         const KDB_O_NOCASE = elektra_sys::KDB_O_NOCASE as elektra_sys::option_t;
+        /// Search with owner
         const KDB_O_WITHOWNER = elektra_sys::KDB_O_WITHOWNER as elektra_sys::option_t;
+        /// Linear search from start -> cursor to cursor -> end
         const KDB_O_NOALL = elektra_sys::KDB_O_NOALL as elektra_sys::option_t;
     }
 }
@@ -529,6 +526,17 @@ mod tests {
     }
 
     #[test]
+    fn can_duplicate_keyset() {
+        // Make sure that freeing the original ks does not invalidate the duplicate
+        let ks_dup;
+        {
+            let ks = setup_keyset();
+            ks_dup = ks.duplicate();
+        }
+        assert_eq!(ks_dup.size(), 2);
+    }
+
+    #[test]
     fn extend_keyset_and_append_are_equal() {
         let mut ks = setup_keyset();
         let mut ks2 = KeySet::with_capacity(1);
@@ -601,5 +609,4 @@ mod tests {
         assert_eq!(key.name(), "user/test/key");
         Ok(())
     }
-
 }
