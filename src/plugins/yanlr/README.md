@@ -217,6 +217,16 @@ sudo kdb umount user/tests/yanlr
 
 - Yan LR does not provide write support for data. Please use the [YAML Smith](../yamlsmith/) plugin for that purpose.
 
+### Input Restrictions
+
+The plugin should, but does not, limit the amount
+
+- of **nesting levels**,
+- the **length of numbers**, and
+- the **length of scalars**
+
+. These restrictions would make it less easy to crash the parser, by feeding it unrestricted data.
+
 ### Comments
 
 The [lexer](yaml_lexer.cpp) does currently tokenize comments. Consequently the [plugin grammar](YAML.g4) of the plugin does also match comments. However, the [listener](listener.cpp) does currently **ignore comments**.
