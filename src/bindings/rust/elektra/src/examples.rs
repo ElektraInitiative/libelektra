@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod elektra_examples {
-    use crate::{KeyBuilder, ReadableKey, StringKey, WriteableKey};
+    use crate::{KeyBuilder, KeySet, LookupOption, ReadableKey, StringKey, WriteableKey};
 
     #[test]
     fn key_example() -> Result<(), Box<dyn std::error::Error>> {
@@ -44,8 +44,6 @@ mod elektra_examples {
 
         Ok(())
     }
-
-    use crate::{KeySet, LookupOption};
 
     #[test]
     fn keyset_example() -> Result<(), Box<dyn std::error::Error>> {
