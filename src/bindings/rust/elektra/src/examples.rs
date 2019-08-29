@@ -4,6 +4,7 @@ mod elektra_examples {
 
     #[test]
     fn key_example() -> Result<(), Box<dyn std::error::Error>> {
+        // This test should stay in sync with the example in the Readme
         // To create a simple key with a name and value
         let mut key = StringKey::new("user/test/language")?;
         key.set_value("rust");

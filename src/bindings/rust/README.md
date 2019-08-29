@@ -8,15 +8,6 @@
 
 Rust bindings for libelektra.
 
-## Build
-
-To build the bindings explicitly as part of the elektra build process, we pass the option `-DBINDINGS="rust"` to cmake. After [building the project](../../../doc/COMPILE.md), we can now add the `elektra` crate to the dependencies. The exact path depends on your system.
-
-```toml
-[dependencies]
-elektra = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/elektra" }
-```
-
 ## Usage
 
 ### Raw Bindings
@@ -38,19 +29,49 @@ fn main() {
 
 ### Key
 
-A small example for using a Key. For a full example, see the [examples](elektra/src/examples.rs). For all methods, see the documentation.
+A full example for using some of the key functionality. For all methods, see the documentation.
 
 ```rust
 extern crate elektra;
-use elektra::{ReadableKey, StringKey, WriteableKey};
+use elektra::{KeyBuilder, ReadableKey, StringKey, WriteableKey};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To create a simple key with a name and value
     let mut key = StringKey::new("user/test/language")?;
     key.set_value("rust");
-
     assert_eq!(key.name(), "user/test/language");
     assert_eq!(key.value(), "rust");
+
+    // To iterate over the name
+    for name in key.name_iter() {
+        println!("Name: {}", name);
+    }
+
+    // Duplicate a key
+    let key_duplicate = key.duplicate();
+
+    // And compare them
+    assert_eq!(key, key_duplicate);
+
+    // To create a key with multiple meta values, use the KeyBuilder
+    let mut key: StringKey = KeyBuilder::new("user/test/fruits")?
+        .meta("banana", "🍌")?
+        .meta("pineapple", "🍍")?
+        .meta("strawberry", "🍓")?
+        .build();
+    assert_eq!(key.meta("pineapple")?.value(), "🍍");
+
+    // We can iterate over the metakeys
+    key.rewind_meta();
+    for metakey in key.meta_iter() {
+        println!("Key: {}, Value: {}", metakey.name(), metakey.value());
+    }
+
+    // Delete a metakey
+    key.delete_meta("banana")?;
+
+    // Check if key is in the user namespace
+    assert!(key.is_user());
 
     Ok(())
 }
