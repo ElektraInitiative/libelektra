@@ -334,7 +334,6 @@ mod test {
         remove_test_keys();
     }
 
-    #[test]
     fn remove_test_keys() {
         let (mut parent_key, _, _) = create_test_keys();
         let mut kdb = KDB::open().unwrap();
