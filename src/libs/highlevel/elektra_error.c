@@ -108,7 +108,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 		const char * module = keyString (keyGetMeta (key, "error/module"));
 		const char * file = keyString (keyGetMeta (key, "error/file"));
 
-		const char * fullDescription =
+		char * fullDescription =
 			reasonMeta != NULL ? elektraFormat ("%s: %s", description, keyString (reasonMeta)) : elektraStrDup (description);
 
 		kdb_long_t line = 0;
