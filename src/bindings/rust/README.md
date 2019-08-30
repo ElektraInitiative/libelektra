@@ -10,7 +10,11 @@ Rust bindings for libelektra.
 
 ## Build
 
-To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. After [building libelektra](../../../doc/COMPILE.md), we can now add the `elektra` crate to the dependencies. The exact paths depends on your system.
+To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](../../../doc/COMPILE.md) and the bindings will be built as part of this process.
+
+## Example
+
+Start a new project with `cargo new elektra_rust`. Now add the `elektra` crate to the dependencies. The crate is in the `src/bindings/rust` subdirectory of your `build` directory, so the exact paths depends on your system. Change the paths (and possibly version) appropriately and add the following dependencies to your `Cargo.toml`.
 
 ```toml
 [dependencies]
@@ -19,25 +23,28 @@ elektra = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/
 elektra-sys = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/elektra-sys" }
 ```
 
-## Documentation
-
-Documentation can be built in the `src/bindings/rust/` directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
+If you run `cargo run` and everything builds correctly and prints `Hello, world!`, you can replace the contents of `main.rs` with the examples shown in the next section.
 
 ## Usage
+
+Note that your dynamic linker must be able to find `libelektra`. If you just compiled it, you can run `source ../scripts/run_dev_env` from the `build` directory to modify your `PATH` appropriately.
 
 ### Raw Bindings
 
 Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.
 
 ```rust
-use elektra_sys::{keyNew, keyDel, keyString, KEY_VALUE, KEY_END};
+extern crate elektra_sys;
+use elektra_sys::{keyDel, keyName, keyNew, keyString, KEY_END, KEY_VALUE};
+use std::ffi::{CStr, CString};
 
 fn main() {
     let key_name = CString::new("user/test/key").unwrap();
     let key_val = CString::new("rust-bindings").unwrap();
     let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
-    let ret_val_str = unsafe { CStr::from_ptr(keyString(key)) };
-    assert_eq!(ret_val_str, key_val.as_c_str());
+    let name_str = unsafe { CStr::from_ptr(keyName(key)) };
+    let val_str = unsafe { CStr::from_ptr(keyString(key)) };
+    println!("Key with name {:?} has value {:?}", name_str, val_str);
     assert_eq!(unsafe { keyDel(key) }, 0);
 }
 ```
@@ -48,15 +55,14 @@ An example for using a key. For a full example, see the [examples](elektra/src/e
 
 ```rust
 extern crate elektra;
-use elektra::{KeyBuilder, ReadableKey, StringKey, WriteableKey};
+use elektra::{ReadableKey, StringKey, WriteableKey};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To create a simple key with a name and value
     let mut key = StringKey::new("user/test/language")?;
     key.set_value("rust");
 
-    assert_eq!(key.name(), "user/test/language");
-    assert_eq!(key.value(), "rust");
+    println!("Key with name {} has value {}", key.name(), key.value());
 
     Ok(())
 }
@@ -65,6 +71,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 Compared to the C-API, there are two distinct key types, `StringKey` and `BinaryKey`. With these, type mismatches such as calling `keyString` on a `BinaryKey` is not possible. The only difference between them is the type of value you can set and get from them. They are only wrappers over the `Key` from the C-API.
 
 The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
+
+
+## Documentation
+
+Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
+
 
 ## Generation
 
