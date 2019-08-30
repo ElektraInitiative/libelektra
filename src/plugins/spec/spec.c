@@ -185,13 +185,15 @@ static void addConflict (Key * key, int conflict)
  */
 static void handleConflict (Key * parentKey, const char * msg, OnConflict onConflict)
 {
+	ELEKTRA_LOG_DEBUG ("spec conflict: %s", msg);
+
 	switch (onConflict)
 	{
 	case ERROR:
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Globbing error: %s", msg);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
 		break;
 	case WARNING:
-		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "Globbing warning: %s", msg);
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "%s", msg);
 		break;
 	case INFO:
 		elektraMetaArrayAdd (parentKey, "logs/spec/info", msg);
