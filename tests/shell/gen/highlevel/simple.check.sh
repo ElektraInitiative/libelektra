@@ -117,9 +117,8 @@ if [ "$res" = "0" ]; then
 	"$KDB" export "spec$MOUNTPOINT" ni > ~/export.spec.ini
 	"$KDB" export "user$MOUNTPOINT" ni > ~/export.user.ini
 
-	if [ "$res" = "0" ] && command -v valgrind; then
-		valgrind --error-exitcode=1 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		res=$?
+	if command -v valgrind; then
+		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
 		echo "valgrind dummy exited with: $res"
 	fi
 fi
