@@ -180,6 +180,12 @@ public:
 	int set (kdb::KeySet & ks, kdb::Key & parentKey);
 
 	/**
+	 * Calls the commit function of the plugin
+	 * @pre parse()
+	 */
+	int commit (kdb::KeySet & ks, kdb::Key & parentKey);
+
+	/**
 	 * Calls the error function of the plugin
 	 * @pre parse()
 	 */
