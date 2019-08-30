@@ -614,6 +614,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 			keyNew ("system/elektra/modules/multifile/exports/close", KEY_FUNC, elektraMultifileClose, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/get", KEY_FUNC, elektraMultifileGet, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/set", KEY_FUNC, elektraMultifileSet, KEY_END),
+			keyNew ("system/elektra/modules/multifile/exports/commit", KEY_FUNC, elektraMultifileCommit, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/error", KEY_FUNC, elektraMultifileError, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConfig, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/checkfile", KEY_FUNC, elektraMultifileCheckFile, KEY_END),
