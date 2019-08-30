@@ -39,7 +39,7 @@ do_tests() {
 	succeed_if "application didn't read empty menu correctly"
 
 	EXPECTED_MENU=$(mktemp)
-	cat <<- 'EOF' > "$EXPECTED_MENU"
+	cat <<- 'EOF' | tr -d '\n' > "$EXPECTED_MENU"
 		Main Menu:
 		
 		  [1] Menu 1
@@ -73,7 +73,7 @@ do_tests() {
 
 	ACTUAL_MENU=$(mktemp)
 
-	: | ./application > "$ACTUAL_MENU"
+	: | ./application | tr -d '\n' > "$ACTUAL_MENU"
 	succeed_if "application could not read test menu"
 
 	diff -u "$EXPECTED_MENU" "$ACTUAL_MENU"
