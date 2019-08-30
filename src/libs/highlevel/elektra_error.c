@@ -95,21 +95,29 @@ ElektraError * elektraErrorFromKey (Key * key)
 	}
 
 	ElektraError * error;
-	if (keyGetMeta (key, "error"))
+	if (keyGetMeta (key, "error") == NULL)
 	{
 		error = elektraErrorPureWarning ();
 	}
 	else
 	{
+		const Key * reasonMeta = keyGetMeta (key, "error/reason");
+
 		const char * codeFromKey = keyString (keyGetMeta (key, "error/number"));
 		const char * description = keyString (keyGetMeta (key, "error/description"));
 		const char * module = keyString (keyGetMeta (key, "error/module"));
 		const char * file = keyString (keyGetMeta (key, "error/file"));
+
+		const char * fullDescription =
+			reasonMeta != NULL ? elektraFormat ("%s: %s", description, keyString (reasonMeta)) : elektraStrDup (description);
+
 		kdb_long_t line = 0;
 		elektraKeyToLong (key, &line);
-		error = elektraErrorCreate (NULL, description, module, file, line);
+		error = elektraErrorCreate (NULL, fullDescription, module, file, line);
 		error->codeFromKey = elektraStrDup (codeFromKey);
 		error->errorKey = key;
+
+		elektraFree (fullDescription);
 	}
 
 
