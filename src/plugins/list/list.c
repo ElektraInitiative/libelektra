@@ -724,12 +724,15 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	}
 
 	keySetString (pluginItem, pluginName);
+
 	keyDel (configBase);
+	ksDel (array);
 
 	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, pluginConfig, errorKey);
 
 	if (plugin == NULL)
 	{
+		keyDel (pluginItem);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -782,7 +785,6 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	}
 	elektraFree (errorPlacementsString);
 	elektraFree (placementList);
-	ksDel (array);
 
 	// reload configuration
 	resetPlugins (handle, errorKey);

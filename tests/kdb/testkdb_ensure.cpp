@@ -111,7 +111,7 @@ TEST_F (Ensure, GlobalRemount)
 
 		Key newRoot (testRoot, KEY_END);
 		KeySet ks;
-		kdb.get (ks, newRoot);
+		EXPECT_THROW (kdb.get (ks, newRoot), KDBException);
 
 		EXPECT_EQ (newRoot.getMeta<std::string> ("error/number"), "C03200") << "spec plugin should have produced error";
 	}

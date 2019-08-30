@@ -71,12 +71,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		return NULL;
 	}
 
-	KeySet * const config = ksNew (0, KS_END);
-	if (defaults != NULL)
-	{
-		insertDefaults (config, parentKey, defaults);
-	}
-
 	if (contract != NULL)
 	{
 		Key * contractCut = keyNew ("system/elektra/highlevel", KEY_END);
@@ -89,6 +83,10 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 				keyDel (contractCut);
 				ksDel (highlevelContract);
 				ksDel (contract); // consume contract, like kdbEnsure would
+
+				kdbClose (kdb, parentKey);
+				keyDel (parentKey);
+
 				return NULL;
 			}
 		}
@@ -102,12 +100,25 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		{
 			const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
 			*error = elektraErrorEnsureFailed (reason);
+
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
+			return NULL;
 		}
 		else if (kdbEnsureResult != 0)
 		{
 			*error = elektraErrorFromKey (parentKey);
+
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
 			return NULL;
 		}
+	}
+
+	KeySet * const config = ksNew (0, KS_END);
+	if (defaults != NULL)
+	{
+		insertDefaults (config, parentKey, defaults);
 	}
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
