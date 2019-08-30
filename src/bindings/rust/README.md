@@ -10,7 +10,7 @@ Rust bindings for libelektra.
 
 ## Build
 
-To build the bindings explicitly as part of the elektra build process, we pass the option `-DBINDINGS="rust"` to cmake. After [building libelektra](../../../doc/COMPILE.md), we can now add the `elektra` crate to the dependencies. The exact paths depends on your system.
+To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. After [building libelektra](../../../doc/COMPILE.md), we can now add the `elektra` crate to the dependencies. The exact paths depends on your system.
 
 ```toml
 [dependencies]
