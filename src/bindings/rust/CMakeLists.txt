@@ -14,6 +14,8 @@ if (CARGO_EXECUTABLE)
 	# Configure Cargo.toml to insert the kdb version
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/Cargo.toml" @ONLY)
 
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/example/Cargo.toml.in" "${CMAKE_CURRENT_BINARY_DIR}/example/Cargo.toml" @ONLY)
+
 	# Call cargo to build the bindings in release mode
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
 			    COMMAND ${CARGO_EXECUTABLE} build
@@ -21,6 +23,15 @@ if (CARGO_EXECUTABLE)
 				    --quiet
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/build.rs" "${CMAKE_CURRENT_BINARY_DIR}/elektra-sys/Cargo.toml")
+
+	# Call cargo to build the example in release mode
+	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/rust_bindings_example"
+			    COMMAND ${CARGO_EXECUTABLE}
+				    build
+				    --release
+				    --quiet
+			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR/example}
+			    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/example/Cargo.toml")
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 

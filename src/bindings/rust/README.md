@@ -14,6 +14,8 @@ To build the bindings explicitly as part of the elektra build process, we add th
 
 ## Example
 
+See the `example` directory for a fully setup project, otherwise follow the steps below.
+
 Start a new project with `cargo new elektra_rust`. Now add the `elektra` crate to the dependencies. The crate is in the `src/bindings/rust` subdirectory of your `build` directory, so the exact paths depends on your system. Change the paths (and possibly version) appropriately and add the following dependencies to your `Cargo.toml`.
 
 ```toml
