@@ -14,9 +14,11 @@ To build the bindings explicitly as part of the elektra build process, we add th
 
 ## Example
 
-See the `example` directory for a fully setup project, otherwise follow the steps below.
+Note that your dynamic linker must be able to find `libelektra`. If you just compiled it, you can run `source ../scripts/run_dev_env` from the `build` directory to modify your `PATH` appropriately.
 
-Start a new project with `cargo new elektra_rust`. Now add the `elektra` crate to the dependencies. The crate is in the `src/bindings/rust` subdirectory of your `build` directory, so the exact paths depends on your system. Change the paths (and possibly version) appropriately and add the following dependencies to your `Cargo.toml`.
+See the `example` directory for a fully setup project. To run it, change directories into `build/src/bindings/rust/example/` and run `cargo run`.
+
+To start with a new project, use `cargo new elektra_rust`. Now add the `elektra` crate to the dependencies. The crate is in the `src/bindings/rust` subdirectory of your `build` directory, so the exact paths depends on your system. Change the paths (and possibly version) appropriately and add the following dependencies to your `Cargo.toml`.
 
 ```toml
 [dependencies]
@@ -28,8 +30,6 @@ elektra-sys = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/r
 If you run `cargo run` and everything builds correctly and prints `Hello, world!`, you can replace the contents of `main.rs` with the examples shown in the next section.
 
 ## Usage
-
-Note that your dynamic linker must be able to find `libelektra`. If you just compiled it, you can run `source ../scripts/run_dev_env` from the `build` directory to modify your `PATH` appropriately.
 
 ### Raw Bindings
 
@@ -74,11 +74,9 @@ Compared to the C-API, there are two distinct key types, `StringKey` and `Binary
 
 The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
 
-
 ## Documentation
 
 Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
-
 
 ## Generation
 
