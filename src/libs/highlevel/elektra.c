@@ -94,6 +94,12 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		keyDel (contractCut);
 		ksDel (highlevelContract);
 
+		ksAppendKey (contract, keyNew ("system/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
+		ksAppendKey (contract,
+			     keyNew ("system/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract,
+			     keyNew ("system/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+
 		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
 
 		if (kdbEnsureResult == 1)
