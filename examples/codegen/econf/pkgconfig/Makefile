@@ -9,4 +9,5 @@ genelektra.c:../spec.ini
 clean:
 	rm -f genelektra.c
 	rm -f genelektra.h
+	rm -f genelektra.mount.sh
 	rm -f application
