@@ -88,9 +88,8 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy exited with: $res"
 
-	if [ "$res" = "0" ] && command -v valgrind; then
-		valgrind --error-exitcode=1 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		res=$?
+	if command -v valgrind; then
+		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
 		echo "valgrind dummy exited with: $res"
 	fi
 fi
