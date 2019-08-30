@@ -120,7 +120,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
-- <<TODO>>
+- Checks for `kdbCommit` have been added to [kdb check](../help/kdb-check.md). _(Vid Leskovar)_
 - <<TODO>>
 - <<TODO>>
 
