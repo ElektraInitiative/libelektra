@@ -4,6 +4,11 @@
 
 In this section, we will explain the how to write a language binding for Elektra.
 
+### High-level API
+
+Writing bindings for the high-level API is described in a [different document](highlevel-bindings.md), since it is a bit
+less straightforward and needs additional considerations.
+
 ## TODO
 
 1. which parts of Elektra bindings make sense (application, plugin, tools, ...)
