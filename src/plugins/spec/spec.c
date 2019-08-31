@@ -190,6 +190,7 @@ static void handleConflict (Key * parentKey, const char * msg, OnConflict onConf
 	switch (onConflict)
 	{
 	case ERROR:
+		keySetMeta (parentKey, "internal/spec/error", "1");
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
 		break;
 	case WARNING:
@@ -855,7 +856,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	if (keyGetMeta (parentKey, "error") != NULL)
+	if (keyGetMeta (parentKey, "internal/spec/error") != NULL)
 	{
 		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -886,6 +887,8 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// cleanup
 	ksDel (ks);
 	ksDel (specKS);
+
+	keySetMeta (parentKey, "internal/spec/error", NULL);
 
 	return ret;
 }
@@ -919,7 +922,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	if (keyGetMeta (parentKey, "error") != NULL)
+	if (keyGetMeta (parentKey, "internal/spec/error") != NULL)
 	{
 		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -970,6 +973,8 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// cleanup
 	ksDel (ks);
 	ksDel (specKS);
+
+	keySetMeta (parentKey, "internal/spec/error", NULL);
 
 	return ret;
 }
