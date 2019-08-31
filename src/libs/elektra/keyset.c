@@ -854,6 +854,10 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * If the keyname already existed in the keyset, it will be replaced with
  * the new key.
  *
+ * ksAppendKey() will also lock the key's name from `toAppend`.
+ * This is necessary so that the order of the KeySet cannot
+ * be destroyed via calls to keySetName().
+ *
  * The KeySet internal cursor will be set to the new key.
  *
  * It is save to directly append newly created keys:
@@ -899,7 +903,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* Seems like the key already exist. */
 		if (toAppend == ks->array[result])
 		{
-			/* user tried to insert the same key again */
+			/* user tried to insert the key with same identity */
 			return ks->size;
 		}
 
