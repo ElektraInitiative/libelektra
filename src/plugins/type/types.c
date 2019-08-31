@@ -136,14 +136,20 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key)
 		if (strcasecmp (data->booleans[i].trueValue, value) == 0)
 		{
 			keySetString (key, "1");
-			keySetMeta (key, "origvalue", origTrueValue);
+			if (data->booleanRestore != -2)
+			{
+				keySetMeta (key, "origvalue", origTrueValue);
+			}
 			elektraFree (origValue);
 			return true;
 		}
 		else if (strcasecmp (data->booleans[i].falseValue, value) == 0)
 		{
 			keySetString (key, "0");
-			keySetMeta (key, "origvalue", origFalseValue);
+			if (data->booleanRestore != -2)
+			{
+				keySetMeta (key, "origvalue", origFalseValue);
+			}
 			elektraFree (origValue);
 			return true;
 		}

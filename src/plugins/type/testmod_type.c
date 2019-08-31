@@ -769,6 +769,42 @@ static void test_booleanRestoreAs (const char * type)
 	PLUGIN_CLOSE ();
 }
 
+static void test_booleanRestoreDisabled (const char * type)
+{
+	Key * parentKey = keyNew ("user/tests/type", KEY_END);
+	KeySet * conf = ksNew (1, keyNew ("user/boolean/restoreas", KEY_VALUE, "none", KEY_END), KS_END);
+	PLUGIN_OPEN ("type");
+	Key * k1 = keyNew ("user/tests/type/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END);
+	KeySet * ks = ksNew (30, k1, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1");
+
+	keySetString (k1, "1");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "1");
+
+	keySetString (k1, "false");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "0");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "0");
+
+	keySetString (k1, "0");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "0");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/type/t1", 0)), "0");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("TYPE     TESTS\n");
@@ -809,6 +845,9 @@ int main (int argc, char ** argv)
 	test_booleanUserValueWeird ("check/type");
 	test_booleanChangeValue ("check/type");
 	test_booleanOverride ("check/type");
+
+	test_booleanRestoreDisabled ("type");
+	test_booleanRestoreDisabled ("check/type");
 
 	test_booleanRestoreAs ("type");
 	test_booleanRestoreAs ("check/type");
