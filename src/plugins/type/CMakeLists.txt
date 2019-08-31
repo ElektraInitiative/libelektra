@@ -3,5 +3,5 @@ add_plugin (type
 		    type.c
 		    types.h
 		    types.c
-	    LINK_ELEKTRA elektra-highlevel elektra-meta elektra-ease
+	    LINK_ELEKTRA elektra-meta elektra-ease
 	    ADD_TEST TEST_README)
