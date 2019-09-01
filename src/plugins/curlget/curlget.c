@@ -588,6 +588,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/curlget/exports", KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/set", KEY_FUNC, elektraCurlgetSet, KEY_END),
+			       keyNew ("system/elektra/modules/curlget/exports/commit", KEY_FUNC, elektraCurlgetCommit, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/open", KEY_FUNC, elektraCurlgetOpen, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
