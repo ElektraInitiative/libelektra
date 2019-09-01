@@ -439,7 +439,7 @@ int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
 
 int Plugin::commit (kdb::KeySet & ks, kdb::Key & parentKey)
 {
-	if(!plugin->kdbCommit)
+	if (!plugin->kdbCommit)
 	{
 		throw MissingSymbol ("kdbCommit");
 	}
