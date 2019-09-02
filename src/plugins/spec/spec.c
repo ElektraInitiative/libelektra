@@ -793,7 +793,10 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			char * msg = elektraFormat ("Required key %s is missing.", strchr (keyName (specKey), '/'));
 			handleConflict (parentKey, msg, ch->missing);
 			elektraFree (msg);
-			ret = -1;
+			if (ch->missing != IGNORE)
+			{
+				ret = -1;
+			}
 		}
 
 		if (isKdbGet)
