@@ -409,7 +409,7 @@ static void validateEmptyArray (KeySet * ks, Key * arraySpecParent, Key * parent
 	}
 
 	bool immediate = arrayParent == NULL;
-	if (arrayParent == NULL)
+	if (immediate)
 	{
 		arrayParent = keyNew (keyName (parentLookup), KEY_END);
 	}
@@ -450,15 +450,18 @@ static void validateEmptyArray (KeySet * ks, Key * arraySpecParent, Key * parent
 		}
 	}
 
-	if (immediate && haveConflict)
+	if (immediate)
 	{
-		char * problemKeys =
-			elektraMetaArrayToString (arrayParent, keyName (keyGetMeta (arrayParent, "conflict/arraymember")), ", ");
-		char * msg = elektraFormat ("Array key %s has invalid children (only array elements allowed): %s", keyName (arrayParent),
-					    problemKeys);
-		handleConflict (parentKey, msg, onConflict);
-		elektraFree (msg);
-		safeFree (problemKeys);
+		if (haveConflict)
+		{
+			char * problemKeys =
+				elektraMetaArrayToString (arrayParent, keyName (keyGetMeta (arrayParent, "conflict/arraymember")), ", ");
+			char * msg = elektraFormat ("Array key %s has invalid children (only array elements allowed): %s",
+						    keyName (arrayParent), problemKeys);
+			handleConflict (parentKey, msg, onConflict);
+			elektraFree (msg);
+			safeFree (problemKeys);
+		}
 		keyDel (arrayParent);
 	}
 
