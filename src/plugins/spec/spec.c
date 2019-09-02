@@ -396,10 +396,9 @@ static bool validateArraySize (Key * arrayParent, Key * spec)
 	return (arrayMin == NULL || strcmp (arrayMin, arrayActual) <= 0) && (arrayMax == NULL || 0 <= strcmp (arrayActual, arrayMax));
 }
 
-static void validateEmptyArray (KeySet * ks, Key * arraySpec, Key * parentKey, OnConflict onConflict)
+static void validateEmptyArray (KeySet * ks, Key * arraySpecParent, Key * parentKey, OnConflict onConflict)
 {
-	Key * parentLookup = keyNew (strchr (keyName (arraySpec), '/'), KEY_END);
-	keySetBaseName (parentLookup, NULL);
+	Key * parentLookup = keyNew (strchr (keyName (arraySpecParent), '/'), KEY_END);
 
 	// either existed already, or was added by processSpecKey because of KeySet order
 	Key * arrayParent = ksLookup (ks, parentLookup, 0);
@@ -420,17 +419,30 @@ static void validateEmptyArray (KeySet * ks, Key * arraySpec, Key * parentKey, O
 	KeySet * subKeys = ksCut (ksCopy, parentLookup);
 	ksDel (ksCopy);
 
+	ssize_t parentLen = keyGetUnescapedNameSize (parentLookup);
+
 	bool haveConflict = false;
 	Key * cur;
 	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (!keyIsDirectBelow (parentLookup, cur))
+		if (keyIsBelow (parentLookup, cur) == 0)
 		{
 			continue;
 		}
 
-		if (elektraArrayValidateBaseNameString (keyBaseName (cur)) < 0)
+		const char * checkStr = keyUnescapedName (cur);
+		ssize_t len = strlen (checkStr);
+
+		if (keyGetUnescapedNameSize (cur) - len == parentLen)
+		{
+			continue;
+		}
+
+		checkStr += len;
+		checkStr += parentLen;
+
+		if (elektraArrayValidateBaseNameString (checkStr) < 0)
 		{
 			haveConflict = true;
 			addConflict (arrayParent, CONFLICT_ARRAYMEMBER);
@@ -561,7 +573,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 				if (strlen (arraySize) == 0)
 				{
 					// empty array
-					validateEmptyArray (ks, arraySpec, parentKey, onConflict);
+					validateEmptyArray (ks, k, parentKey, onConflict);
 					continue;
 				}
 
