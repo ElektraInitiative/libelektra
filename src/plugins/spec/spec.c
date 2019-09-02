@@ -770,10 +770,6 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 		return processAllConflicts (specKey, ks, parentKey, ch, isKdbGet);
 	}
 
-	if (keyGetMeta (specKey, "internal/spec/array") != NULL)
-	{
-	}
-
 	int found = 0;
 	Key * cur;
 
