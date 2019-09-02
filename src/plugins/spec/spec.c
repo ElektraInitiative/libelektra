@@ -499,7 +499,7 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 		checkStr += len;
 		checkStr += parentLen;
 
-		if (elektraArrayValidateBaseNameString (checkStr) <= 0)
+		if (elektraArrayValidateBaseNameString (checkStr) < 0)
 		{
 			addConflict (arrayParent, CONFLICT_ARRAYMEMBER);
 			elektraMetaArrayAdd (arrayParent, "conflict/arraymember", keyName (cur));
