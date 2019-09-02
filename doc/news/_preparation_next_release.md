@@ -124,7 +124,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - The script [run_icheck](../../scripts/run_icheck) now also work correctly, if the last entry of [`icheck.suppression`](../../tests/icheck.suppression) does not end with a newline character. _(René Schwaiger)_
 - The script [`draw-all-plugins`](../../scripts/draw-all-plugins) now also works properly, if the repository path contains space characters. _(René Schwaiger)_
-- The script [link-checker](../../scripts/link-checker) now deduplicates the list of links before checking them. The timeout and amount of retries was also reduced. _(Klemens Böswirth)_
+- The script [`link-checker`](../../scripts/link-checker) now deduplicates the list of links before checking them. The timeout and amount of retries was also reduced.
+  Lastly the script now supports a whitelist. Any link stored in [`tests/linkchecker.whitelist`](../../tests/linkchecker.whitelist) will not be checked. _(Klemens Böswirth)_
 
 ## Documentation
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @author Kurt Micheli <kurt.micheli@libelektra.org>, Klemens Böswirth <k.boeswirth+git@gmail.com>
 # @brief Checks http, https and ftp links if they are broken.
 # @date 05.09.2016
 # @tags validation
@@ -9,6 +9,8 @@ if [ -z "$1" ]; then
 	echo "Usage: link-checker <linkfile>"
 	exit
 fi
+
+SCRIPT_DIR="$(dirname "$0")"
 
 LINKFILE=$(mktemp)
 awk -F '|' '
@@ -38,14 +40,20 @@ END {
 	print data
 }' > "$LINKFILE"
 
+WHITELIST=$(mktemp)
+grep -v '^#' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
+
 NUMTHREADS=10
 
 check() {
 	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
 	files=$(echo "$1" | grep -oE "\|.*" | sed 's/|/ /g')
-	# The following link only works if you are logged into the build server
-	# See also: https://github.com/ElektraInitiative/libelektra/issues/2674
-	echo "$link" | grep -Eq 'https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax' && return
+
+	if grep -Fxq "$link" "$WHITELIST"; then
+		echo "whitelisted: $link"
+		printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
+		return
+	fi
 	if [ -z "$link" ]; then
 		echo "check the link format of $1"
 		return
