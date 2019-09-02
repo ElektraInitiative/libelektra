@@ -39,7 +39,7 @@ do_tests() {
 	succeed_if "application didn't read empty menu correctly"
 
 	EXPECTED_MENU=$(mktemp)
-	cat <<- 'EOF'
+	cat > "$EXPECTED_MENU" <<- 'EOF'
 		Main Menu:
 		
 		  [1] Menu 1
