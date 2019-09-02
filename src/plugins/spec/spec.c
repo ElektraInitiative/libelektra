@@ -477,16 +477,29 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 	KeySet * subKeys = ksCut (ksCopy, parentLookup);
 	ksDel (ksCopy);
 
+	ssize_t parentLen = keyGetUnescapedNameSize (parentLookup);
+
 	Key * cur;
 	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (!keyIsDirectBelow (parentLookup, cur))
+		if (keyIsBelow (parentLookup, cur) == 0)
 		{
 			continue;
 		}
 
-		if (elektraArrayValidateBaseNameString (keyBaseName (cur)) <= 0)
+		const char * checkStr = keyUnescapedName (cur);
+		ssize_t len = strlen (checkStr);
+
+		if (keyGetUnescapedNameSize (cur) - len == parentLen)
+		{
+			continue;
+		}
+
+		checkStr += len;
+		checkStr += parentLen;
+
+		if (elektraArrayValidateBaseNameString (checkStr) <= 0)
 		{
 			addConflict (arrayParent, CONFLICT_ARRAYMEMBER);
 			elektraMetaArrayAdd (arrayParent, "conflict/arraymember", keyName (cur));
@@ -510,6 +523,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 	cur += strlen (cur) + 1; // skip "spec"
 
 	KeySet * newKeys = ksNew (1, keyNew ("spec", KEY_END), KS_END);
+	KeySet * parents = ksNew (0, KS_END);
 	Key * specCur = keyNew ("spec", KEY_END);
 
 	while (cur < end)
@@ -571,6 +585,10 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 					++i;
 					elektraWriteArrayNumber (elem, i);
 				}
+
+				Key * parent = keyNew (keyName (k), KEY_END);
+				keyAddBaseName (parent, "#");
+				ksAppendKey (parents, parent);
 			}
 		}
 		else
@@ -592,6 +610,9 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 	}
 
 	keyDel (specCur);
+
+	ksAppend (newKeys, parents);
+	ksDel (parents);
 
 	Key * k;
 	ksRewind (newKeys);
@@ -728,6 +749,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 
 	if (isArraySpec (specKey))
 	{
+		validateArrayMembers (ks, specKey);
 		// only process possible conflicts (e.g. from empty arrays)
 		// then skip uninstantiated array specs
 		return processAllConflicts (specKey, ks, parentKey, ch, isKdbGet);
@@ -735,7 +757,6 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 
 	if (keyGetMeta (specKey, "internal/spec/array") != NULL)
 	{
-		validateArrayMembers (ks, specKey);
 	}
 
 	int found = 0;
