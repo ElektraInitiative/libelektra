@@ -34,7 +34,7 @@ void callAll (Elektra * elektra)
 {
 	VALUE_CHECK (elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY), 1);
 
-	VALUE_CHECK (elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 1.1f);
+	VALUE_CHECK (elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 2.5f);
 	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_PRINT), false);
 	VALUE_CHECK (strcmp (elektraGet (elektra, ELEKTRA_TAG_MYSTRING), ""), 0);
 	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_MYINT), 0);
