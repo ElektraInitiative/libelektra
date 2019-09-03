@@ -8,6 +8,8 @@
 #
 # Elektra_TEMPLATES_DIR - Folder where to find templates for kdb gen
 
+include (CMakeParseArguments)
+
 # Compute paths
 get_filename_component (ELEKTRA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
