@@ -90,7 +90,8 @@ add_traits!(BinaryKey<'_>);
 
 /// An iterator over the metakeys.
 pub struct MetaIter<'a, T: WriteableKey> {
-    key: &'a mut T,
+    key: T,
+    _marker: std::marker::PhantomData<&'a mut T>
 }
 
 impl<'a, T: WriteableKey> Iterator for MetaIter<'a, T> {
@@ -153,7 +154,9 @@ impl<'a> StringKey<'a> {
 
     /// Returns an iterator over the key's metakeys.
     pub fn meta_iter<'b>(&'b mut self) -> MetaIter<'b, StringKey<'a>> {
-        MetaIter { key: self }
+        let mut dup = self.duplicate();
+        dup.rewind_meta();
+        MetaIter { key: dup, _marker: std::marker::PhantomData }
     }
 
     /// Returns an iterator over the key's name.
@@ -209,7 +212,9 @@ impl<'a> BinaryKey<'a> {
 
     /// Returns an iterator over the key's metakeys.
     pub fn meta_iter<'b>(&'b mut self) -> MetaIter<'b, BinaryKey<'a>> {
-        MetaIter { key: self }
+        let mut dup = self.duplicate();
+        dup.rewind_meta();
+        MetaIter { key: dup, _marker: std::marker::PhantomData }
     }
 
     /// Returns an iterator over the key's name.
@@ -510,7 +515,6 @@ mod tests {
         let meta = [("meta1", "val1"), ("meta2", "val2")];
         key.set_meta(meta[0].0, meta[0].1).unwrap();
         key.set_meta(meta[1].0, meta[1].1).unwrap();
-        key.rewind_meta();
 
         let mut did_iterate = false;
         for (i, metakey) in key.meta_iter().enumerate() {
