@@ -51,7 +51,7 @@ int main (int argc, const char ** argv)
 
 	if (rc == -1)
 	{
-		fprintf (stderr, "couldn't load config %s", elektraErrorDescription (error));
+		fprintf (stderr, "couldn't load config %s\n", elektraErrorDescription (error));
 		elektraErrorReset (&error);
 		return EXIT_FAILURE;
 	}
