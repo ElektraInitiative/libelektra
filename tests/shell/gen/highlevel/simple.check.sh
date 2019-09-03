@@ -34,6 +34,8 @@ void callAll (Elektra * elektra)
 {
 	VALUE_CHECK (elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY), 1);
 
+	printf("\n#################\nfloat/#0 got %.9g expected %.9g\n##############\n", elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 1.1f);
+
 	VALUE_CHECK (elektraGetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 0), 1.1f);
 	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_PRINT), false);
 	VALUE_CHECK (strcmp (elektraGet (elektra, ELEKTRA_TAG_MYSTRING), ""), 0);
