@@ -14,6 +14,7 @@
 #include <kdb.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+#include <stdlib.h>
 
 #include <tests.h>
 
