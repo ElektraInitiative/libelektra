@@ -56,7 +56,9 @@ direct mapping, significantly simplifies the generated code (and maybe also the 
 
 ### Creating the Code-Generator Template
 
-How to create a template for `kdb gen` is detailed in [this tutorial](code-generator.md).
+<!-- TODO: Use only `code-generator.md` as target in the link below and remove this comment after we merge [PR #2927](https://issues.libelektra.org/2927). -->
+
+How to create a template for `kdb gen` is detailed in [this tutorial](https://github.com/ElektraInitiative/libelektra/blob/b0c2f81249ec2f1c519b2411f779edf5b5bc01da/doc/tutorials/code-generator.md).
 
 The created template should support the same input keysets (and parent keys) as the `highlevel` template. If and how
 exactly you implement the advanced features (structs, unions, ...) is up to you.
