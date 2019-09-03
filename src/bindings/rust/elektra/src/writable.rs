@@ -115,7 +115,9 @@ pub trait WriteableKey: ReadableKey {
         }
     }
 
-    /// Set the name of a key. Must adhere to the rules for keynames otherwise an error is returned.
+    /// Set the name of a key. Must adhere to the rules for keynames otherwise a `KeyNameInvalidError` is returned.
+    /// Note that the error could also represent a KeyNameReadOnlyError, but the C-API doesn't allow for the distinction,
+    /// so only one error can be returned.
     /// Returns the size in bytes of this new key name including the ending NUL.
     ///
     /// # Examples
