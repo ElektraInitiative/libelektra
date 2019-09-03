@@ -53,7 +53,7 @@ fn main() {
 
 ### Key
 
-An example for using a key. For a full example, see the [examples](elektra/src/examples.rs).
+An example for using a `StringKey`. For a full example, see the [examples](elektra/src/examples.rs).
 
 ```rust
 extern crate elektra;
@@ -71,6 +71,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 Compared to the C-API, there are two distinct key types, `StringKey` and `BinaryKey`. With these, type mismatches such as calling `keyString` on a `BinaryKey` is not possible. The only difference between them is the type of value you can set and get from them. They are only wrappers over the `Key` from the C-API.
+
+Use a `BinaryKey` for setting arbitrary byte values.
+
+```rust
+extern crate elektra;
+use elektra::{BinaryKey, ReadableKey, WriteableKey};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let binary_content: [u8; 7] = [25, 34, 0, 254, 1, 0, 7];
+    let mut key = BinaryKey::new("user/test/rust")?;
+    key.set_value(&binary_content);
+    let read_content = key.value();
+
+    println!(
+        "Key with name {} holds bytes {:?}",
+        key.name(),
+        read_content
+    );
+
+    Ok(())
+}
+```
 
 The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
 
