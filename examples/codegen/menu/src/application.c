@@ -40,7 +40,7 @@ void showMenu (Menu * menu)
 
 	char * end;
 	char buf[20];
-	int selection;
+	int selection = -1;
 	int minSelection = menu->command[0] != '\0' ? 0 : 1;
 
 	do
@@ -63,7 +63,7 @@ void showMenu (Menu * menu)
 	{
 		system (menu->command);
 	}
-	else
+	else if (selection > 0)
 	{
 		showMenu (menu->children[selection - 1]);
 	}
