@@ -123,21 +123,6 @@ RUN cd /tmp \
     && cd /tmp \
     && rm -r antlr4
 
-# YAEP
-ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
-RUN cd /tmp \
-    && mkdir yaep \
-    && curl -o yaep.tar.gz \
-       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
-    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
-    && cd yaep \
-    && mkdir build \
-    && cd build \
-    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
-    && make install \
-    && cd ../.. \
-    && rm -r yaep yaep.tar.gz
-
 # yaml-cpp
 RUN cd /tmp \
     && git clone --branch yaml-cpp-0.6.2 --depth 1 https://github.com/jbeder/yaml-cpp.git \

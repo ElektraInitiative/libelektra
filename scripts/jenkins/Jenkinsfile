@@ -1002,7 +1002,6 @@ constants/constants\\.c|\
 (lua|ruby)/runtime\\.h|\
 yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
-yawn/yaml_grammar\\.h|\
 ).*' \
           -E '.*/src/error/.*' \
 """)

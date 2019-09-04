@@ -28,8 +28,7 @@ oclint -p "@PROJECT_BINARY_DIR@" -no-analytics -enable-global-analysis -enable-c
 	"src/plugins/yambi/"*.cpp \
 	"src/plugins/yamlcpp/"*.{c,cpp} \
 	"src/plugins/yamlsmith/"*.{c,cpp} \
-	"src/plugins/yanlr/"*.cpp \
-	"src/plugins/yawn/"*.cpp
+	"src/plugins/yanlr/"*.cpp
 exit_if_fail "OCLint found problematic code"
 
 end_script

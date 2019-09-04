@@ -46,6 +46,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The error message, if non of the gopts variants can be compiled, was improved. _(Klemens Böswirth)_
 - A better error, if the plugin fails to load `argv` from the system, was added. _(Klemens Böswirth)_
 
+### YAwn
+
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
+
 ### YAy PEG
 
 - We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
