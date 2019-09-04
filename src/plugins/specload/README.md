@@ -126,6 +126,6 @@ sudo kdb umount spec/tests/specload
   - add/edit/remove `description` or `opt/help`
   - add/edit `default`
   - add `type`
-- The plugin must be mounted using `noresolver` or another resolver that always calls the storage plugin. To work arround
+- The plugin must be mounted using `noresolver` or another resolver that always calls the storage plugin. To work around
   this limitation, `specload` prefixes relative paths with `KDB_DB_SPEC` before passing the path on to `quickdump`. This
   means that your overlay files will be stored in the same directory as any other `spec` configurations.

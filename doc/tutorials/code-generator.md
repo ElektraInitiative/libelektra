@@ -69,7 +69,7 @@ Note: we will not go into detail on how mustache templates work, for more inform
 [here](https://mustache.github.io/mustache.5.html). All of features supported by the kainjow library should be supported by our framework
 as well.
 
-Our CMke script will collect all `.mustache` files in `src/tools/kdb/gen/templates` into a header containing a `static const char *` field
+Our CMake script will collect all `.mustache` files in `src/tools/kdb/gen/templates` into a header containing a `static const char *` field
 for each file and a `std::unordered_map` containing references to all the fields. The naming scheme is needed so that the other C++ code can
 access the files contents via the map. This approach was chosen to allow executing the code-generator without first running the install
 script.

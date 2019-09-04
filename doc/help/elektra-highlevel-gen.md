@@ -222,7 +222,7 @@ Allocating structs also generate `ELEKTRA_STRUCT_FREE (/* struct name */)`, whic
 The main difference between allocating and non-allocating structs, is how their getter function works.
 
 Allocating structs use a getter similar to the one primitive types, strings and enums use. It returns a pointer to a newly allocated struct,
-which has to be free using the generated `ELEKTRA_STRUCT_FREE` function.
+which has to be freed using the generated `ELEKTRA_STRUCT_FREE` function.
 
 Non-allocating structs meanwhile use a different kind of getter declared via `ELEKTRA_GET_OUT_PTR_SIGNATURE` instead of
 `ELEKTRA_GET_SIGNATURE`. This version doesn't return a pointer, instead it takes a pointer to an existing struct and only sets its fields.
