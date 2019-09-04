@@ -39,6 +39,24 @@ func kdbHandle() elektra.KDB {
 	return kdb
 }
 
+func getKeySet(key elektra.Key) (elektra.KeySet, error) {
+	kdb := kdbHandle()
+
+	ks, err := elektra.CreateKeySet()
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = kdb.Get(ks, key)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ks, nil
+}
+
 func noContent(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
