@@ -16,15 +16,42 @@ func PostMoveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fromKey, err := elektra.CreateKey(from)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	toKey, err := elektra.CreateKey(to)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	root := elektra.CommonKeyName(fromKey, toKey)
 
 	rootKey, err := elektra.CreateKey(root)
 
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	conf, err := elektra.CreateKeySet()
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	kdb := kdbHandle()
 	_, err = kdb.Get(conf, rootKey)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	oldConf := conf.Cut(fromKey)
 
@@ -35,6 +62,11 @@ func PostMoveHandler(w http.ResponseWriter, r *http.Request) {
 
 	newConf, err := elektra.CreateKeySet()
 
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	oldConf.Rewind()
 
 	for k := oldConf.Next(); k != nil; k = oldConf.Next() {
@@ -42,12 +74,15 @@ func PostMoveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newConf.Append(conf) // these are unrelated keys
-
 	newConf.Rewind()
 
 	_, err = kdb.Set(newConf, rootKey)
 
-	noContent(w)
+	if err != nil {
+		writeError(w, err)
+	} else {
+		noContent(w)
+	}
 }
 
 func renameKey(k elektra.Key, from, to string) elektra.Key {
