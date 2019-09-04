@@ -12,15 +12,7 @@ func GetFindHandler(w http.ResponseWriter, r *http.Request) {
 	regex, err := regexp.Compile(query)
 
 	if err != nil {
-		writeError(w, err)
-	}
-
-	kdb := kdbHandle()
-
-	ks, err := elektra.CreateKeySet()
-
-	if err != nil {
-		writeError(w, err)
+		badRequest(w)
 		return
 	}
 
@@ -31,7 +23,7 @@ func GetFindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = kdb.Get(ks, root)
+	ks, err := getKeySet(root)
 
 	if err != nil {
 		writeError(w, err)
