@@ -2,63 +2,112 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
 type LookupResult struct {
-	Exists bool     `json:"exists"`
-	Name   string   `json:"name"`
-	Path   string   `json:"path"`
-	Ls     []string `json:"ls"`
-	Value  string   `json:"value"`
-	Meta   string   `json:"meta"`
+	Exists   bool              `json:"exists"`
+	Name     string            `json:"name"`
+	Path     string            `json:"path"`
+	Ls       []string          `json:"ls"`
+	Value    string            `json:"value,omitempty"`
+	Meta     map[string]string `json:"meta,omitempty"`
+	Children []LookupResult    `json:"children,omitempty"`
 }
 
 func GetKdbHandler(w http.ResponseWriter, r *http.Request) {
-	kdb := kdbHandle()
+	var err error
+	preload := 0
 
-	ks, err := elektra.CreateKeySet()
+	if preloadQuery, ok := r.URL.Query()["preload"]; ok {
+		preload, err = strconv.Atoi(preloadQuery[0])
 
-	if err != nil {
-		writeError(w, err)
-		return
+		if err != nil || preload < 0 || preload > 9 {
+			badRequest(w)
+			return
+		}
 	}
 
 	keyName := parseKeyNameFromURL(r)
 
-	key, _ := elektra.CreateKey(keyName)
-	_, err = kdb.Get(ks, key)
+	key, err := elektra.CreateKey(keyName)
+
+	if err != nil {
+		badRequest(w)
+		return
+	}
+
+	ks, err := getKeySet(key)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
+	response, err := lookup(ks, key, preload)
+
+	if err != nil {
+		writeError(w, err)
+	} else {
+		writeResponse(w, response)
+	}
+}
+
+func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*LookupResult, error) {
 	ks = ks.Cut(key)
+	foundKey, err := ks.Lookup(key)
 
-	key = ks.LookupByName(keyName)
-
-	exists := key != nil
-	name := ""
-	path := keyName
-	ls := ks.KeyNames()
-	value := ""
-
-	if exists {
-		name = key.BaseName()
-		value = key.Value()
+	if err != nil {
+		return nil, err
 	}
 
-	response := LookupResult{
+	var meta map[string]string
+	exists := foundKey != nil
+	name := key.BaseName()
+	value := ""
+	path := key.Name()
+
+	if exists {
+		value = foundKey.Value()
+		meta = foundKey.MetaMap()
+	}
+
+	ls := ks.KeyNames()
+
+	result := &LookupResult{
 		Exists: exists,
 		Name:   name,
 		Path:   path,
 		Ls:     ls,
 		Value:  value,
+		Meta:   meta,
 	}
 
-	writeResponse(w, response)
+	if depth > 0 {
+		for _, subKeyName := range result.Ls {
+			subKey, err := elektra.CreateKey(subKeyName)
+
+			if err != nil {
+				return nil, err
+			}
+
+			if subKeyName == key.Name() || !key.IsDirectBelow(subKey) {
+				continue
+			}
+
+			childLookup, err := lookup(ks, subKey, depth-1)
+
+			if err != nil {
+				return nil, err
+			}
+
+			result.Children = append(result.Children, *childLookup)
+		}
+	}
+
+	return result, nil
 }
 
 func PutKdbHandler(w http.ResponseWriter, r *http.Request) {
