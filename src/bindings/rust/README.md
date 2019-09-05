@@ -16,7 +16,7 @@ To build the bindings explicitly as part of the elektra build process, we add th
 
 Note that your dynamic linker must be able to find `libelektra`. If you just compiled it, you can run `source ../scripts/run_dev_env` from the `build` directory to modify your `PATH` appropriately.
 
-See the `example` directory for a fully setup project. To run it, change directories into `build/src/bindings/rust/example/` and run `cargo run`.
+See the `example` directory for a fully setup project. To run it, change directories into `build/src/bindings/rust/example/` and run `cargo run --bin key`.
 
 To start with a new project, use `cargo new elektra_rust`. Now add the `elektra` crate to the dependencies. The crate is in the `src/bindings/rust` subdirectory of your `build` directory, so the exact paths depends on your system. Change the paths (and possibly version) appropriately and add the following dependencies to your `Cargo.toml`.
 
@@ -76,34 +76,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
 
-### Raw Bindings
-
-Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.
-
-```rust
-extern crate elektra_sys;
-use elektra_sys::{keyDel, keyName, keyNew, keyString, KEY_END, KEY_VALUE};
-use std::ffi::{CStr, CString};
-
-fn main() {
-    let key_name = CString::new("user/test/key").unwrap();
-    let key_val = CString::new("rust-bindings").unwrap();
-    let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
-    let name_str = unsafe { CStr::from_ptr(keyName(key)) };
-    let val_str = unsafe { CStr::from_ptr(keyString(key)) };
-    println!("Key with name {:?} has value {:?}", name_str, val_str);
-    assert_eq!(unsafe { keyDel(key) }, 0);
-}
-```
-
-## Documentation
-
-Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 ### KeySet
 
 A KeySet is a set of StringKeys.
 
-- You can create an empty keyset with `new` or preallocate space for a number of keys with `with_capacity`. 
+- You can create an empty keyset with `new` or preallocate space for a number of keys with `with_capacity`.
 - It has two implementations of the `Iterator` trait, so you can iterate immutably or mutably.
 
 ```rust
@@ -135,6 +112,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
     }
 ```
+
+### Raw Bindings
+
+Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.
+
+```rust
+extern crate elektra_sys;
+use elektra_sys::{keyDel, keyName, keyNew, keyString, KEY_END, KEY_VALUE};
+use std::ffi::{CStr, CString};
+
+fn main() {
+    let key_name = CString::new("user/test/key").unwrap();
+    let key_val = CString::new("rust-bindings").unwrap();
+    let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
+    let name_str = unsafe { CStr::from_ptr(keyName(key)) };
+    let val_str = unsafe { CStr::from_ptr(keyString(key)) };
+    println!("Key with name {:?} has value {:?}", name_str, val_str);
+    assert_eq!(unsafe { keyDel(key) }, 0);
+}
+```
+
+## Documentation
+
+Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 
 ## Generation
 
