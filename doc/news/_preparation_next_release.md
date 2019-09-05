@@ -184,6 +184,7 @@ you up to date with the multi-language support provided by Elektra.
 - Checks for `kdbCommit` have been added to [kdb check](../help/kdb-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - Added `kdb showmeta` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
+- elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings.
 - <<TODO>>
 
 ## Scripts
