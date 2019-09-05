@@ -113,6 +113,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 ```
 
+A `KeySet` only contains `StringKey`s, since they are far more prevalent than `BinaryKey`s. However since the underlying KeySet holds generic `Key`s, `BinaryKey`s can occur. You can cast between the two keys, by using the `From` trait. This is safe memory-wise, but can be unsafe if you cast a `BinaryKey` holding arbitrary bytes to a `StringKey`. You can use `is_string` or `is_binary` to find out whether the cast is safe.
+
+```rust
+let mut key = StringKey::new("user/test/language")?;
+
+// Cast the StringKey to BinaryKey
+let binary_key = BinaryKey::from(key);
+
+// And cast it back
+let string_key = StringKey::from(binary_key);
+```
+
 ### Raw Bindings
 
 Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.

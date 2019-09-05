@@ -1,6 +1,6 @@
 extern crate elektra;
 
-use elektra::{KeyBuilder, KeySet, LookupOption, ReadableKey, StringKey, WriteableKey};
+use elektra::{BinaryKey, KeyBuilder, KeySet, LookupOption, ReadableKey, StringKey, WriteableKey};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a new KeySet with enough preallocated space for 5 Keys
@@ -41,9 +41,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Remove the last (and now only) key in the set
     let removed_key = keyset.pop().unwrap();
 
-    println!("Value of {} changed to {}", removed_key.name(), removed_key.value());
+    // Cast the StringKey to BinaryKey
+    let binary_key = BinaryKey::from(removed_key);
+
+    // And cast it back
+    let string_key = StringKey::from(binary_key);
+
+    println!(
+        "Value of {} changed to {}",
+        string_key.name(),
+        string_key.value()
+    );
     // Check that the meta information is set
-    println!(r#"Value of "setby" metakey is "{}""#, removed_key.meta("setby")?.value());
+    println!(
+        r#"Value of "setby" metakey is "{}""#,
+        string_key.meta("setby")?.value()
+    );
 
     // The keyset is now empty
     println!("KeySet size is now {}", keyset.size());
