@@ -31,26 +31,6 @@ If you run `cargo run` and everything builds correctly and prints `Hello, world!
 
 ## Usage
 
-### Raw Bindings
-
-Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.
-
-```rust
-extern crate elektra_sys;
-use elektra_sys::{keyDel, keyName, keyNew, keyString, KEY_END, KEY_VALUE};
-use std::ffi::{CStr, CString};
-
-fn main() {
-    let key_name = CString::new("user/test/key").unwrap();
-    let key_val = CString::new("rust-bindings").unwrap();
-    let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
-    let name_str = unsafe { CStr::from_ptr(keyName(key)) };
-    let val_str = unsafe { CStr::from_ptr(keyString(key)) };
-    println!("Key with name {:?} has value {:?}", name_str, val_str);
-    assert_eq!(unsafe { keyDel(key) }, 0);
-}
-```
-
 ### Key
 
 An example for using a `StringKey`. For a full example, see the [examples](elektra/src/examples.rs).
@@ -95,6 +75,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
+
+### Raw Bindings
+
+Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.
+
+```rust
+extern crate elektra_sys;
+use elektra_sys::{keyDel, keyName, keyNew, keyString, KEY_END, KEY_VALUE};
+use std::ffi::{CStr, CString};
+
+fn main() {
+    let key_name = CString::new("user/test/key").unwrap();
+    let key_val = CString::new("rust-bindings").unwrap();
+    let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
+    let name_str = unsafe { CStr::from_ptr(keyName(key)) };
+    let val_str = unsafe { CStr::from_ptr(keyString(key)) };
+    println!("Key with name {:?} has value {:?}", name_str, val_str);
+    assert_eq!(unsafe { keyDel(key) }, 0);
+}
+```
 
 ## Documentation
 
