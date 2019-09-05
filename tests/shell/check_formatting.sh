@@ -66,13 +66,15 @@ to fix the formatting problems. For that please
 EOF
 )"
 
-git diff --quiet
-succeed_if "$error_message"
+difference="$(git diff -p 2>&1)"
 
-git diff --quiet || {
+if test -n "$difference"; then
+	false
+	succeed_if "$error_message"
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
-	git diff -p
+	printf '%s' "$difference"
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
-}
+
+fi
 
 end_script
