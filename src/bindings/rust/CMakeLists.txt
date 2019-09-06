@@ -18,7 +18,8 @@ if (CARGO_EXECUTABLE)
 
 	# Call cargo to build the bindings in release mode
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib"
-			    COMMAND ${CARGO_EXECUTABLE} build
+			    COMMAND ${CARGO_EXECUTABLE}
+				    build
 				    --release
 				    --quiet
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
