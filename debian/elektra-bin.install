@@ -1,6 +1,8 @@
 usr/bin/kdb
 usr/lib/*/libelektratools.so
 usr/lib/*/libelektratools.so*
+usr/lib/*/libelektra-merge.so
+usr/lib/*/libelektra-merge.so.*
 usr/lib/*/elektra/tool_exec/backup
 usr/lib/*/elektra/tool_exec/stash
 usr/lib/*/elektra/tool_exec/restore
