@@ -19,7 +19,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     // Iterate the keyset
-    keyset.rewind();
     for mut key in keyset.iter_mut() {
         println!("Value of {} is {}", key.name(), key.value());
         // Add a metakey to each key

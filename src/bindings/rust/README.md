@@ -104,7 +104,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     // Iterate the keyset
-    keyset.rewind();
     for key in keyset.iter() {
         println!("Key ({}, {})", key.name(), key.value());
     }

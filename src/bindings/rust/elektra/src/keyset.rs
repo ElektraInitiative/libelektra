@@ -305,10 +305,9 @@ impl KeySet {
     }
 
     /// Returns an iterator that should be used to immutably iterate over a keyset.
-    /// It has to take &mut self because the internal cursor of the keyset is modified.
-    pub fn iter(&mut self) -> ReadOnlyStringKeyIter<'_> {
+    pub fn iter(&self) -> ReadOnlyStringKeyIter<'_> {
         ReadOnlyStringKeyIter {
-            cursor: None,
+            cursor: Some(0),
             keyset: self,
         }
     }
@@ -317,7 +316,7 @@ impl KeySet {
     /// Note that you should not change the name of the key.
     pub fn iter_mut(&mut self) -> StringKeyIter<'_> {
         StringKeyIter {
-            cursor: None,
+            cursor: Some(0),
             keyset: self,
         }
     }
@@ -341,29 +340,23 @@ impl<'a> Extend<StringKey<'a>> for KeySet {
     }
 }
 
-fn next<T: ReadableKey>(
-    cursor: &Option<Cursor>,
-    keyset: &mut KeySet,
-) -> (Option<Cursor>, Option<T>) {
+fn next<T: ReadableKey>(cursor: &Option<Cursor>, keyset: &KeySet) -> (Option<Cursor>, Option<T>) {
     match cursor {
-        None => {
-            let key_ptr = unsafe { elektra_sys::ksNext(keyset.as_ptr()) };
+        None => (None, None),
+        Some(cursor) => {
+            let key_ptr = unsafe {
+                // The cast is necessary, such that the ReadOnly iterator can take &KeySet instead of &mut KeySet
+                // Since ReadOnly prevents any modification, this is fine.
+                elektra_sys::ksAtCursor(
+                    keyset.as_ref() as *const elektra_sys::KeySet as *mut elektra_sys::KeySet,
+                    *cursor,
+                )
+            };
+
             if key_ptr.is_null() {
                 (None, None)
             } else {
-                let new_cursor = Some(keyset.cursor());
-                (new_cursor, Some(unsafe { T::from_ptr(key_ptr) }))
-            }
-        }
-        Some(cursor) => {
-            let mut new_cursor = Some(cursor + 1);
-            keyset.set_cursor(new_cursor.unwrap());
-            let key_ptr = unsafe { elektra_sys::ksCurrent(keyset.as_ptr()) };
-
-            if key_ptr.is_null() {
-                new_cursor = None;
-                (new_cursor, None)
-            } else {
+                let new_cursor = Some(cursor + 1);
                 (new_cursor, Some(unsafe { T::from_ptr(key_ptr) }))
             }
         }
@@ -373,14 +366,14 @@ fn next<T: ReadableKey>(
 /// A iterator over immutable keys.
 pub struct ReadOnlyStringKeyIter<'a> {
     cursor: Option<Cursor>,
-    keyset: &'a mut KeySet,
+    keyset: &'a KeySet,
 }
 
 impl<'a> Iterator for ReadOnlyStringKeyIter<'a> {
     type Item = ReadOnly<StringKey<'a>>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let (new_cursor, item) = next(&self.cursor, &mut self.keyset);
+        let (new_cursor, item) = next(&self.cursor, &self.keyset);
         self.cursor = new_cursor;
         item
     }
@@ -396,7 +389,7 @@ impl<'a> Iterator for StringKeyIter<'a> {
     type Item = StringKey<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let (new_cursor, item) = next(&self.cursor, &mut self.keyset);
+        let (new_cursor, item) = next(&self.cursor, &self.keyset);
         self.cursor = new_cursor;
         item
     }
@@ -459,7 +452,6 @@ mod tests {
                 .build(),
         ]);
 
-        ks.rewind();
         let new_values = ["Newvalue1", "Newvalue2", "Newvalue3"];
         let mut did_iterate = false;
         for (i, mut key) in ks.iter_mut().enumerate() {
@@ -469,7 +461,6 @@ mod tests {
         }
         assert!(did_iterate);
 
-        ks.rewind();
         did_iterate = false;
         for (i, key) in ks.iter().enumerate() {
             did_iterate = true;
@@ -544,7 +535,6 @@ mod tests {
 
         // Test extend from the Extend trait
         let mut ksext = setup_keyset();
-        ks2.rewind();
         ksext.extend(ks2.iter_mut());
 
         assert_eq!(ksext.size(), 2);
