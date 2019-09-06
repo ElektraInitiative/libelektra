@@ -33,7 +33,7 @@ If you run `cargo run` and everything builds correctly and prints `Hello, world!
 
 ### Key
 
-An example for using a `StringKey`. For a full example, see the [examples](elektra/src/examples.rs).
+An example for using a `StringKey`. See the [full example](example/src/bin/key.rs) for more.
 
 ```rust
 extern crate elektra;
@@ -82,6 +82,8 @@ A KeySet is a set of StringKeys.
 
 - You can create an empty keyset with `new` or preallocate space for a number of keys with `with_capacity`.
 - It has two implementations of the `Iterator` trait, so you can iterate immutably or mutably.
+
+See the [full example](example/src/bin/keyset.rs) for more.
 
 ```rust
 extern crate elektra;
