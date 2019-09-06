@@ -9,7 +9,6 @@ usr/include/elektra/elektra.h
 usr/include/elektra/elektra/types.h
 usr/include/elektra/helper/comparison.hpp
 usr/include/elektra/helper/keyhelper.hpp
-usr/include/elektra/kdbconfig.h
 usr/include/elektra/kdbcontext.hpp
 usr/include/elektra/kdbease.h
 usr/include/elektra/kdbendian.h
