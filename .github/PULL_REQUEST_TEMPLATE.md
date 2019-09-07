@@ -17,21 +17,21 @@ Check relevant points but **please do not remove entries**.
 For docu fixes, spell checking, and similar none of these points below
 need to be checked.
 
-- [ ] I added unit tests
-- [ ] I ran all tests locally and everything went fine
-- [ ] affected documentation is fixed
-- [ ] I added code comments, logging, and assertions (see [Coding Guidelines](https://master.libelektra.org/doc/CODING.md))
-- [ ] meta data is updated (e.g. README.md of plugins and [METADATA.ini](https://master.libelektra.org/doc/METADATA.ini))
+- [ ] I added unit tests for my code
+- [ ] I fixed all affected documentation
+- [ ] I added code comments, logging, and assertions as appropriate (see [Coding Guidelines](https://master.libelektra.org/doc/CODING.md))
+- [ ] I updated all meta data (e.g. README.md of plugins and [METADATA.ini](https://master.libelektra.org/doc/METADATA.ini))
+- [ ] I mentioned every code not directly written by me in [THIRD-PARTY-LICENSES](doc/THIRD-PARTY-LICENSES)
 
 ## Review
 
 Reviewers will usually check the following:
 
+- [ ] Documentation is introductory, concise and good to read
+- [ ] Examples are well chosen and understandable
 - [ ] Code is conforming to [our Coding Guidelines](https://master.libelektra.org/doc/CODING.md)
 - [ ] APIs are conforming to [our Design Guidelines](https://master.libelektra.org/doc/DESIGN.md)
 - [ ] Code is consistent to [our Design Decisions](https://master.libelektra.org/doc/decisions)
-- [ ] Documentation is concise and good to read
-- [ ] Examples are well chosen and understandable
 
 ## Labels
 
