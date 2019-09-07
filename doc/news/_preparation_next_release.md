@@ -31,10 +31,14 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### Code Generation
 
-While the new `kdb gen` was already included in the last release, it is now fully functional and ready for use. To get started take a look
-at the new man-page for [`kdb-gen(1)`](https://www.libelektra.org/manpages/kdb-gen). _(Klemens Böswirth)_
+While the new `kdb gen` was already included in the last release, it is now fully functional and ready for productive use. To get started take a look
+at the new man-page for [`kdb-gen(1)`](https://www.libelektra.org/manpages/kdb-gen).
 
-If specifically want to use it with the High-Level API take a look at [this tutorial](https://www.libelektra.org/tutorials/high-level-api).
+If you specifically want to use it with the High-Level API take a look at [this tutorial](https://www.libelektra.org/tutorials/high-level-api).
+
+We also created a new CMake function that will be available, if you include Elektra via CMake's
+`find_package`. The function is called `elektra_kdb_gen` and can be used to tell CMake about files
+that are generated via `kdb gen`. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 
