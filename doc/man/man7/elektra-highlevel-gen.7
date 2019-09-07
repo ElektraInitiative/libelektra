@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "August 2019" "" ""
+.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "September 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-highlevel\-gen\fR \- High\-level API code\-generation advanced features
@@ -299,7 +299,7 @@ Allocating structs also generate \fBELEKTRA_STRUCT_FREE (/* struct name */)\fR, 
 The main difference between allocating and non\-allocating structs, is how their getter function works\.
 .
 .P
-Allocating structs use a getter similar to the one primitive types, strings and enums use\. It returns a pointer to a newly allocated struct, which has to be free using the generated \fBELEKTRA_STRUCT_FREE\fR function\.
+Allocating structs use a getter similar to the one primitive types, strings and enums use\. It returns a pointer to a newly allocated struct, which has to be freed using the generated \fBELEKTRA_STRUCT_FREE\fR function\.
 .
 .P
 Non\-allocating structs meanwhile use a different kind of getter declared via \fBELEKTRA_GET_OUT_PTR_SIGNATURE\fR instead of \fBELEKTRA_GET_SIGNATURE\fR\. This version doesn\'t return a pointer, instead it takes a pointer to an existing struct and only sets its fields\. This is why you have to use the convenience macros \fBelektraFillStruct\fR and \fBelektraFillStructV\fR for these structs\.
