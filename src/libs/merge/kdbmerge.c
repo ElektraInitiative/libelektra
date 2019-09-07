@@ -1,6 +1,6 @@
 
 #include "kdbmerge.h"
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdbassert.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"

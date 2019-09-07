@@ -9,7 +9,7 @@
 #ifndef KDBMERGE_H_
 #define KDBMERGE_H_
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdberrors.h"
 #include "kdbprivate.h"
 
