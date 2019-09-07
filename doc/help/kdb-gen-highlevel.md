@@ -64,7 +64,7 @@ For detailed information about the contents of the header file see [elektra-high
   Switches how enum conversion should be done; allowed values: `default` (default), `switch`, `strcmp`
   - `strcmp`: uses a simple series of `if (strcmp(*, *) == 0)` to convert strings into enums
   - `switch`: constructs a series of `switch` statements to convert strings into enums
-  - `default`: uses a `switch` up to a depth of 2, then switches to `strcmp`
+  - `auto`: uses a `switch` up to a depth of 2, then switches to `strcmp`
 - `headers`:
   Comma-separated (`,`) list of additional header files to include. For each of the listed headers we will generate an `#include "*"`
   statement

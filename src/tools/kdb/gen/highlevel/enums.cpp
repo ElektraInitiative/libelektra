@@ -115,7 +115,7 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 
 	enumTypes[typeName] = std::make_pair (name, valuesString);
 
-	auto useTrie = conversion == EnumConversion::Trie || (conversion == EnumConversion::Default && trieDepth < 3);
+	auto useTrie = conversion == EnumConversion::Trie || (conversion == EnumConversion::Auto && trieDepth < 3);
 
 	return object{ { "new", isNew },
 		       { "name", name },
