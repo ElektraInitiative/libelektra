@@ -1,12 +1,15 @@
+# ~~~
 # - Config file for Elektra
 #
 # Variables for the Elektra library:
 #
-# Elektra_INCLUDE_DIRS  - where to find kdb.h, etc. Elektra_LIBRARIES     - List of libraries when using Elektra.
+# Elektra_INCLUDE_DIRS  - where to find kdb.h, etc.
+# Elektra_LIBRARIES     - List of libraries when using Elektra.
 #
 # Find the kdb tools:
 #
 # Elektra_TEMPLATES_DIR - Folder where to find templates for kdb gen
+# ~~~
 
 include (CMakeParseArguments)
 
@@ -46,7 +49,7 @@ set (Elektra_STATIC @BUILD_STATIC@)
 
 # ~~~
 # Invoke the `kdb gen` during the build.
-# 
+#
 # elektra_kdb_gen (template parent_key output_name
 #                  INPUT <plugin> <file>
 #                  OUTPUT_DIR <output_dir>
@@ -56,7 +59,7 @@ set (Elektra_STATIC @BUILD_STATIC@)
 #
 # This will call `<kdb> gen -F <plugin>=<file> <options>... template parent_key output_name <params>...` in the
 # directory <output_dir>.
-# 
+#
 # ~~~
 function (elektra_kdb_gen
 	  template
@@ -92,8 +95,17 @@ function (elektra_kdb_gen
 		list (APPEND PARAMS "${param}")
 	endforeach (param ${ARG_PARAMS})
 
-	execute_process (COMMAND ${KDB} gen "${template}" - "${output_name}" ${PARAMS} OUTPUT_VARIABLE PARTS_LINES)
-	string (REPLACE "\n" ";" PARTS ${PARTS_LINES})
+	execute_process (COMMAND ${KDB}
+				 gen
+				 "${template}"
+				 -
+				 "${output_name}"
+				 ${PARAMS}
+			 OUTPUT_VARIABLE PARTS_LINES)
+	string (REPLACE "\n"
+			";"
+			PARTS
+			${PARTS_LINES})
 
 	set (OUTPUTS "")
 	foreach (part ${PARTS})
