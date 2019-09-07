@@ -40,7 +40,7 @@ Should only be used on embedded systems (where whole application stack is done b
 
 ```
 libelektra-kdb.so
-<kdb.h> (kdb*)
+<elektra/kdb.h> (kdb*)
 ```
 
 Contains `kdb*` symbols and applications should link against it.
