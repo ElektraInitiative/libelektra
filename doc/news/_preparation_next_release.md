@@ -185,7 +185,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - The `🔗 Check` build job now merges PRs before checking links. _(Klemens Böswirth)_
-- <<TODO>>
+- We enabled logging in the build job `🍎 Clang`. This update makes sure that Elektra’s logging code compiles without warnings on macOS. _(René Schwaiger)_
 - <<TODO>>
 
 ### Jenkins
