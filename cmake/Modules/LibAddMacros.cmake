@@ -143,11 +143,24 @@ endmacro ()
 
 macro (find_swig)
 	if (NOT SWIG_FOUND)
+		# ~~~
+		# Disable warnings about unset CMake policy.
+		# TODO: Remove the calls to `cmake_policy` after we have upgraded to new behavior.
+		# ~~~
+		if (POLICY CMP0078)
+			cmake_policy (PUSH)
+			cmake_policy (SET CMP0078 OLD)
+		endif (POLICY CMP0078)
+
 		find_package (SWIG 3 QUIET)
 		if (NOT SWIG_FOUND)
 			message (STATUS "Search for swig2 instead")
 			find_package (SWIG 2 QUIET)
 		endif ()
+
+		if (POLICY CMP0078)
+			cmake_policy (POP)
+		endif (POLICY CMP0078)
 	endif (NOT SWIG_FOUND)
 endmacro (find_swig)
 

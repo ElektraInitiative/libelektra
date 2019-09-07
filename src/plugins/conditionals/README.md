@@ -120,9 +120,6 @@ echo "key=false" > `kdb file /tests/conditionals/sub`
 
 # should fail and yield an error
 kdb export /tests/conditionals ini
-#> sub/key=false
-#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
-#> key1=val1
 # ERROR:C03200
 # Sorry, module conditionals issued the error C03200:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)

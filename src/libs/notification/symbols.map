@@ -1,0 +1,25 @@
+libelektra_0.8 {
+	# kdbnotification.h;
+	elektraNotificationClose;
+	elektraNotificationOpen;
+	elektraNotificationRegisterCallback;
+	elektraNotificationRegisterCallbackSameOrBelow;
+	elektraNotificationRegisterDouble;
+	elektraNotificationRegisterFloat;
+	elektraNotificationRegisterInt;
+	elektraNotificationRegisterKdbBoolean;
+	elektraNotificationRegisterKdbChar;
+	elektraNotificationRegisterKdbDouble;
+	elektraNotificationRegisterKdbFloat;
+	elektraNotificationRegisterKdbLong;
+	elektraNotificationRegisterKdbLongDouble;
+	elektraNotificationRegisterKdbLongLong;
+	elektraNotificationRegisterKdbOctet;
+	elektraNotificationRegisterKdbShort;
+	elektraNotificationRegisterKdbUnsignedLong;
+	elektraNotificationRegisterKdbUnsignedLongLong;
+	elektraNotificationRegisterKdbUnsignedShort;
+	elektraNotificationRegisterLong;
+	elektraNotificationRegisterUnsignedInt;
+	elektraNotificationRegisterUnsignedLong;
+};

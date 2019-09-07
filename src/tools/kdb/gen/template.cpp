@@ -1,3 +1,5 @@
+#include <utility>
+
 /**
  * @file
  *
@@ -12,14 +14,14 @@
 #include <command.hpp>
 #include <fstream>
 
-#include "gen/templates.hpp"
+#include <gen/templates.hpp>
 
-#include "elektra/elektragen.hpp"
+#include "highlevel/highlevel.hpp"
 
-GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> parts, std::vector<std::string> partials,
+GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> allParts, std::vector<std::string> partials,
 			  const std::unordered_map<std::string, bool> & parameters)
-: _templateBaseName (std::move (templateBaseName)), _parts (std::move (parts)), _partials (std::move (partials)), _parameters (),
-  _requiredParameters ()
+: _templateBaseName (std::move (templateBaseName)), _allParts (std::move (allParts)), _parts (), _partials (std::move (partials)),
+  _parameters (), _requiredParameters ()
 {
 	std::for_each (parameters.begin (), parameters.end (), [this](const std::pair<std::string, bool> & p) {
 		_parameters[p.first] = "";
@@ -51,9 +53,19 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	auto name = _templateBaseName + part;
 	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 
+	auto data = getTemplateData (outputName, part, ks, parentKey);
+
+	if (data.is_false ())
+	{
+		return;
+	}
+
 	auto tmpl = mustache (kdbgenTemplates.at (name));
-	tmpl.set_custom_escape (GenTemplate::escapeFunction);
-	auto data = getTemplateData (outputName, ks, parentKey);
+	std::function<std::string (const std::string &)> escapeFunction = [this](const std::string & str) {
+		return this->escapeFunction (str);
+	};
+	tmpl.set_custom_escape (escapeFunction);
+
 	for (const auto & partial : getPartials ())
 	{
 		data[partial.first] = partial.second;
@@ -66,56 +78,9 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	}
 }
 
-std::string GenTemplate::escapeFunction (const std::string & str)
+std::string GenTemplate::escapeFunction (const std::string & str) const
 {
-	std::stringstream ss;
-	for (const auto & c : str)
-	{
-		switch (c)
-		{
-		case '\a':
-			ss << "\\a";
-			break;
-		case '\b':
-			ss << "\\b";
-			break;
-		case '\f':
-			ss << "\\f";
-			break;
-		case '\n':
-			ss << "\\n";
-			break;
-		case '\r':
-			ss << "\\r";
-			break;
-		case '\t':
-			ss << "\\t";
-			break;
-		case '\v':
-			ss << "\\v";
-			break;
-		case '\\':
-			ss << "\\\\";
-			break;
-		case '\'':
-			ss << "\\'";
-			break;
-		case '"':
-			ss << "\\\"";
-			break;
-		default:
-			if (isprint (c))
-			{
-				ss << c;
-			}
-			else
-			{
-				ss << "\\x" << std::hex << std::setw (2) << static_cast<unsigned char> (c);
-			}
-		}
-	}
-
-	return ss.str ();
+	return kainjow::mustache::html_escape (str);
 }
 
 std::string GenTemplate::getParameter (const std::string & name, const std::string & defaultValue) const
@@ -123,6 +88,11 @@ std::string GenTemplate::getParameter (const std::string & name, const std::stri
 	auto search = _parameters.find (name);
 	auto param = search != _parameters.end () ? search->second : "";
 	return param.empty () ? defaultValue : param;
+}
+
+bool GenTemplate::getBoolParameter (const std::string & name, bool defaultValue) const
+{
+	return getParameter<bool> (name, { { "", defaultValue }, { "0", false }, { "1", true } });
 }
 
 void GenTemplate::setParameter (const std::string & name, const std::string & value)
@@ -140,7 +110,17 @@ void GenTemplate::clearParameters ()
 		       [this](const std::pair<std::string, std::string> & param) { _parameters[param.first] = ""; });
 }
 
-std::vector<std::string> GenTemplate::getParts () const
+std::vector<std::string> GenTemplate::getActualParts () const
+{
+	return _allParts;
+}
+
+void GenTemplate::loadParts ()
+{
+	_parts = getActualParts ();
+}
+
+const std::vector<std::string> & GenTemplate::getParts () const
 {
 	return _parts;
 }
@@ -183,10 +163,11 @@ const GenTemplate * GenTemplateList::getTemplate (const std::string & name,
 	tmpl->clearParameters ();
 	std::for_each (parameters.begin (), parameters.end (),
 		       [tmpl](const std::pair<std::string, std::string> & param) { tmpl->setParameter (param.first, param.second); });
+	tmpl->loadParts ();
 	return tmpl;
 }
 
 GenTemplateList::GenTemplateList () : _templates ()
 {
-	addTemplate<ElektraGenTemplate> ("elektra");
+	addTemplate<HighlevelGenTemplate> ("highlevel");
 }

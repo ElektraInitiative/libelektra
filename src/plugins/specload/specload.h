@@ -15,6 +15,7 @@
 
 typedef struct
 {
+	char * directFile;
 	char * app;
 	char ** argv;
 	KeySet * quickDumpConfig;

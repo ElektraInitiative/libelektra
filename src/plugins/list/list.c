@@ -717,11 +717,24 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	Key * configBase = keyNew ("user/plugins", KEY_END);
 	KeySet * array = elektraArrayGet (configBase, config);
 	Key * pluginItem = elektraArrayGetNextKey (array);
-	ELEKTRA_NOT_NULL (pluginItem);
+
+	if (pluginItem == NULL)
+	{
+		pluginItem = keyNew ("user/plugins/#0", KEY_END);
+	}
+
 	keySetString (pluginItem, pluginName);
+
 	keyDel (configBase);
+	ksDel (array);
 
 	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, pluginConfig, errorKey);
+
+	if (plugin == NULL)
+	{
+		keyDel (pluginItem);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	// Store key with plugin handle
 	Key * searchKey = keyNew ("/", KEY_END);
@@ -772,7 +785,6 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	}
 	elektraFree (errorPlacementsString);
 	elektraFree (placementList);
-	ksDel (array);
 
 	// reload configuration
 	resetPlugins (handle, errorKey);

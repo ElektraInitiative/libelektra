@@ -12,7 +12,6 @@
 #include <elektra.h>
 #include <elektra/error.h>
 #include <kdb.h>
-#include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>
 #include <kdbio.h>
@@ -81,7 +80,7 @@ typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
 typedef int (*kdbGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
-
+typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
 typedef Backend * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Backend *);
@@ -409,6 +408,7 @@ struct _Plugin
 	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
 	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
+	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
 
 	const char * name; /*!< The name of the module responsible for that plugin. */
 
@@ -654,7 +654,6 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
 
-ElektraError * elektraErrorEnsureFailed (const char * reason);
 ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
 void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
 ElektraError * elektraErrorFromKey (Key * key);
@@ -662,6 +661,8 @@ ElektraError * elektraErrorFromKey (Key * key);
 ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
+ElektraError * elektraErrorEnsureFailed (const char * reason);
+ElektraError * elektraErrorMinimalValidationFailed (const char * function);
 
 #ifdef __cplusplus
 }

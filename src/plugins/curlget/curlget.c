@@ -588,6 +588,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/curlget/exports", KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/set", KEY_FUNC, elektraCurlgetSet, KEY_END),
+			       keyNew ("system/elektra/modules/curlget/exports/commit", KEY_FUNC, elektraCurlgetCommit, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/open", KEY_FUNC, elektraCurlgetOpen, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
@@ -1005,6 +1006,11 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return retval; // success
 }
 
+int elektraCurlgetCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraCurlgetSet (handle, returned, parentKey);
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -1014,6 +1020,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	    ELEKTRA_PLUGIN_OPEN,	&elektraCurlgetOpen,
 	    ELEKTRA_PLUGIN_CLOSE,	&elektraCurlgetClose,
 	    ELEKTRA_PLUGIN_ERROR,	&elektraCurlgetError,
+	    ELEKTRA_PLUGIN_COMMIT,	&elektraCurlgetCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

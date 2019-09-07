@@ -24,7 +24,7 @@ LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
 cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
 	-DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}" \
 	-DPLUGINS='ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;camel;-dbus' \
-	-DTOOLS='kdb;rest-backend;rest-frontend' \
+	-DTOOLS='kdb;website-backend;website-frontend' \
 	-DCMAKE_C_FLAGS="$C_FLAGS" \
 	-DCMAKE_CXX_FLAGS="$C_FLAGS" \
 	-DCMAKE_EXE_LINKER_FLAGS="$LD_FLAGS" \
@@ -64,7 +64,7 @@ ulimit -c unlimited
 # place for core dumps (name by: echo "core_%t_%p" > /proc/sys/kernel/core_pattern)
 cd ${INSTALL_PATH}
 
-PID_FILE=$(kdb sget /sw/elektra/restbackend/#0/current/cppcms/daemon/lock /run/elektra-rest-backend.pid)
+PID_FILE=$(kdb sget /sw/elektra/restbackend/#0/current/cppcms/daemon/lock /run/elektra-website-backend.pid)
 
 ps -ef
 printf "Old PID was: "
@@ -79,7 +79,7 @@ echo "The backend should running on $IP:$PORT"
 netstat -tlpen
 
 # then start the backend; succeed if it was not started before..
-kdb stop-rest-backend || /bin/true
+kdb stop-website-backend || /bin/true
 
 # cleanup /tmp files from build
 find /tmp -mindepth 1 -user $(id -u) -delete || true
@@ -93,7 +93,7 @@ done
 kdb set '/sw/elektra/restbackend/#0/current/cppcms/daemon/enable' '1'
 
 # now start again
-kdb run-rest-backend
+kdb run-website-backend
 
 printf "New PID is: "
 cat ${PID_FILE} || /bin/true
@@ -106,7 +106,7 @@ netstat -tlpen
 # - the configuration script does also take care of deleting old files,
 #   every configuration run will first clean the deployment directory and copy
 #   required files afterwards, ensuring an always up-to-date deployment
-kdb build-rest-frontend
+kdb build-website-frontend
 
 ELEKTRA_VERSION=$(kdb get --no-newline system/elektra/version/constants/KDB_VERSION)
 API_DOC_DIR="${ROOT_DIR}/build/API_DOC/restapi/${ELEKTRA_VERSION}"

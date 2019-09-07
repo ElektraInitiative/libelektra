@@ -159,15 +159,13 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  /*
-  maybeStage("Deploy Homepage", isMaster()) {
-    deployHomepage()
+  maybeStage("Deploy Website", isMaster()) {
+    deployWebsite()
   }
 
   maybeStage("Deploy Web UI", isMaster()) {
     deployWebUI()
   }
-  */
 }
 
 try {
@@ -334,24 +332,24 @@ def dockerInit() {
     )
 
     /* Image building the libelektra.org frontend */
-    DOCKER_IMAGES.homepage_frontend = createDockerImageDesc(
-      "homepage-frontend", this.&idHomepage,
+    DOCKER_IMAGES.website_frontend = createDockerImageDesc(
+      "website-frontend", this.&idWebsite,
       ".",
-      "./scripts/docker/homepage/frontend/Dockerfile",
+      "./scripts/docker/website/frontend/Dockerfile",
       false
     )
 
     /* Image building the libelektra.org backend */
-    DOCKER_IMAGES.homepage_backend = createDockerImageDesc(
-      "homepage-backend", this.&idHomepage,
+    DOCKER_IMAGES.website_backend = createDockerImageDesc(
+      "website-backend", this.&idWebsite,
       ".",
-      "./scripts/docker/homepage/backend/Dockerfile",
+      "./scripts/docker/website/backend/Dockerfile",
       false
     )
 
     /* Image building elektra web base image */
     DOCKER_IMAGES.webui_base = createDockerImageDesc(
-      "web-base", this.&idHomepage,
+      "web-base", this.&idWebsite,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       false
@@ -359,7 +357,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektrad-demo", this.&idHomepage,
+      "elektrad-demo", this.&idWebsite,
       "./scripts/docker/webui/elektrad-demo/",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
@@ -367,7 +365,7 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "webd-demo", this.&idHomepage,
+      "webd-demo", this.&idWebsite,
       "./scripts/docker/webui/webd-demo/",
       "./scripts/docker/webui/webd-demo/Dockerfile",
       false
@@ -471,6 +469,20 @@ def generateMainBuildStages() {
   tasks << buildAndTest(
     "debian-stretch-full",
     DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
+  // Add a task that should build the whole project to catch all test errors
+  // in a standard environment
+  tasks << buildAndTest(
+    "debian-buster-full",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -990,11 +1002,8 @@ constants/constants\\.c|\
 (lua|ruby)/runtime\\.h|\
 yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
-yawn/yaml_grammar\\.h|\
-yaypeg/parser\\.hpp\
 ).*' \
           -E '.*/src/error/.*' \
-          -E '.*/src/plugins/yaypeg/parser.in.hpp' \
 """)
               }
             }
@@ -1013,19 +1022,21 @@ yaypeg/parser\\.hpp\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildPackageDebianStretch()
-  /*
-  tasks << buildHomepage()
+  tasks << buildDebianPackage("buildPackage/debian/stretch", DOCKER_IMAGES.stretch)
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  tasks << buildWebsite()
   tasks << buildWebUI()
-  */
   return tasks
 }
 
-def buildPackageDebianStretch() {
-  def stageName = "buildPackage/debian/stretch"
+/* Merges into debian branch and runs gbp buildpackage
+ *
+ * stageName: e.g. buildPackage/debian/<codename>
+ * image: must be one of DOCKER_IMAGES */
+def buildDebianPackage(stageName, image) {
   return [(stageName): {
     stage(stageName) {
-      return withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      return withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
@@ -1088,24 +1099,24 @@ def deployDockerContainer(name, imageDesc, hostName) {
   }
 }
 
-def deployHomepage() {
+def deployWebsite() {
   deployDockerContainer(
     "elektra-backend",
-    DOCKER_IMAGES.homepage_backend,
+    DOCKER_IMAGES.website_backend,
     "restapi.libelektra.org"
   )
   deployDockerContainer(
     "elektra-frontend",
-    DOCKER_IMAGES.homepage_frontend,
+    DOCKER_IMAGES.website_frontend,
     "www.libelektra.org"
   )
 }
 
-def buildHomepage() {
-  def homepageTasks = [:]
-  homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
-  homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
-  return homepageTasks
+def buildWebsite() {
+  def websiteTasks = [:]
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website_frontend)
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website_backend)
+  return websiteTasks
 }
 
 def deployWebUI() {
@@ -1332,7 +1343,7 @@ def xunitUpload(p = 'build/Testing/**/*.xml') {
  * @param name Name of the image, will be extended with registry, a common
  *             prefix and a tag
  * @param idFun Closure describing how the image id should be formatted
- *                      (see idTesting() / idHomepage())
+ *                      (see idTesting() / idWebsite())
  * @param context Build context for the docker build (base directory that will
  *                be sent to the docker agent). Relative to the current working
  *                directory.
@@ -1368,11 +1379,11 @@ def idTesting(imageMap) {
   return imageMap
 }
 
-/* Build id for homepage
+/* Build id for website
  *
  * @param imageMap Map identifying an docker image
  */
-def idHomepage(imageMap) {
+def idWebsite(imageMap) {
   imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
   return imageMap
 }

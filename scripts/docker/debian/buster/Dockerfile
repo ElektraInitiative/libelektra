@@ -31,7 +31,7 @@ RUN apt-get update \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
-        libboost-all-dev \
+        libboost-dev \
         libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
@@ -71,12 +71,15 @@ RUN apt-get update \
         ruby-dev \
         swig3.0 \
         systemd \
-        tao-pegtl-dev \
         tclcl-dev \
         uuid-dev \
         valgrind \
         virtualenv \
         wine \
+        rustc \
+        clang-6.0 \
+        libbotan-2-dev \
+        libcurl4-gnutls-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -89,21 +92,6 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
-
-# YAEP
-ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
-RUN cd /tmp \
-    && mkdir yaep \
-    && curl -o yaep.tar.gz \
-       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
-    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
-    && cd yaep \
-    && mkdir build \
-    && cd build \
-    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
-    && make install \
-    && cd ../.. \
-    && rm -r yaep yaep.tar.gz
 
 # Update cache for shared libraries
 RUN ldconfig

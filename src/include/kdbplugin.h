@@ -38,7 +38,7 @@
  * @ingroup plugin
  *
  * @param plugin the name of the plugin
- * @param function which function it is (open, close, get, set, error)
+ * @param function which function it is (open, close, get, set, error, commit)
  */
 #define ELEKTRA_PLUGIN_FUNCTION(function) ELEKTRA_PLUGIN_FUNCTION2 (ELEKTRA_PLUGIN_NAME_C, function)
 #define ELEKTRA_PLUGIN_FUNCTION2(module, function) ELEKTRA_PLUGIN_FUNCTION3 (module, function)
@@ -71,6 +71,7 @@ typedef enum
 	ELEKTRA_PLUGIN_GET=1<<2,	/*!< Next arg is backend for kdbGet() */
 	ELEKTRA_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
 	ELEKTRA_PLUGIN_ERROR=1<<4,	/*!< Next arg is backend for kdbError() */
+	ELEKTRA_PLUGIN_COMMIT=1<<5,	/*!< Next arg is backend for kdbCommit()*/
 	ELEKTRA_PLUGIN_END=0		/*!< End of arguments */
 	// clang-format on
 } plugin_t;

@@ -138,7 +138,7 @@ Elektra accomplishes this task with _storage plugins_.
 
 > In Elektra [Plugins](/doc/tutorials/plugins.md) are the units that encapsulate functionality.
 > There are not only plugins that handle storage of data, but also plugins that modify your values ([iconv](/src/plugins/iconv/README.md)).
-> Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [enum](/src/plugins/enum/README.md), [boolean](/src/plugins/boolean/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
+> Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
 > You can get a complete list of all available plugins with `kdb list`.
 > Although an individual plugin does not provide much functionality, plugins are powerful because they are designed to be used together.
 
@@ -193,22 +193,26 @@ The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/R
 
 Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
 I chose the `ni` plugin for this demonstration, because it supports metadata and is human readable.
-So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
+So let us have a look at the [type](/src/plugins/type/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 
 ```sh
 # mount the backend with the plugins ...
-kdb mount example.ni user/example ni enum
+kdb mount example.ni user/example ni type
 
 # ... and set a value for the demonstration
 kdb set user/example/enumtest/fruit apple
 #> Create a new key user/example/enumtest/fruit with string "apple"
 ```
 
-By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
+By entering `kdb info type` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the metavalue `check/enum`.
 
 ```sh
-kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
+kdb setmeta user/example/enumtest/fruit check/type enum
+kdb setmeta user/example/enumtest/fruit check/enum "#2"
+kdb setmeta user/example/enumtest/fruit check/enum/#0 apple
+kdb setmeta user/example/enumtest/fruit check/enum/#1 banana
+kdb setmeta user/example/enumtest/fruit check/enum/#2 grape
 kdb set user/example/enumtest/fruit tomato
 # RET:5
 # this fails because tomato is not in the list of valid values
@@ -220,7 +224,11 @@ You can have a look or even edit the configuration file with `kdb editor user/ex
 enumtest/fruit = apple
 
 [enumtest/fruit]
-check/enum = 'apple', 'banana', 'grape'
+check/type = enum
+check/enum = #2
+check/enum/#0 apple
+check/enum/#1 banana
+check/enum/#2 grape
 ```
 
 The example shows an important problem: the configuration file is now changed in ways that might not be acceptable for applications.

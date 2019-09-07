@@ -1,0 +1,174 @@
+libelektra_0.8 {
+	# kdbmodule.h
+	elektraModulesClose;
+	elektraModulesInit;
+	elektraModulesLoad;
+
+	# kdbhelper.h
+	elektraCalloc;
+	elektraFormat;
+	elektraFree;
+	elektraMalloc;
+	elektraMemCaseCmp;
+	elektraRealloc;
+	elektraStrCaseCmp;
+	elektraStrCmp;
+	elektraStrDup;
+	elektraStrLen;
+	elektraStrNCaseCmp;
+	elektraStrNCmp;
+	elektraStrNDup;
+	elektraVFormat;
+	elektraWriteArrayNumber;
+
+	# kdbmeta.h
+	keyGetOwner;
+	keyGetOwnerSize;
+	keyOwner;
+	keySetOwner;
+
+	# kdbease.h
+	keyCompare;
+	keyCompareMeta;
+
+	# kdb.h
+	## KDB functions
+	kdbClose;
+	kdbEnsure;
+	kdbGet;
+	kdbOpen;
+	kdbSet;
+
+	## Key functions
+	keyAddBaseName;
+	keyAddName;
+	keyBaseName;
+	keyClear;
+	keyCmp;
+
+	keyCopy;
+	keyCopyAllMeta;
+	keyCopyMeta;
+	keyCurrentMeta;
+	keyDecRef;
+	keyDel;
+	keyDup;
+	keyGetBaseName;
+	keyGetBaseNameSize;
+	keyGetBinary;
+	keyGetFullName;
+	keyGetFullNameSize;
+	keyGetMeta;
+	keyGetName;
+	keyGetNameSize;
+	keyGetNamespace;
+	keyGetRef;
+	keyGetString;
+	keyGetUnescapedNameSize;
+	keyGetValueSize;
+	keyIncRef;
+	keyIsBelow;
+	keyIsBelowOrSame;
+	keyIsBinary;
+	keyIsDirectBelow;
+	keyIsInactive;
+	keyIsString;
+	keyName;
+	keyNeedSync;
+	keyNew;
+	keyNextMeta;
+	keyRel;
+	keyRewindMeta;
+	keySetBaseName;
+	keySetBinary;
+	keySetMeta;
+	keySetName;
+	keySetString;
+	keyString;
+	keyUnescapedName;
+	keyValue;
+	keyVNew;
+
+	## KeySet functions
+	ksAppend;
+	ksAppendKey;
+	ksAtCursor;
+	ksClear;
+	ksClose;
+	ksCopy;
+	ksCopyInternal;
+	ksCurrent;
+	ksCut;
+	ksDeepDup;
+	ksDel;
+	ksDup;
+	ksGetAlloc;
+	ksGetCursor;
+	ksGetSize;
+	ksHead;
+	ksInit;
+	ksLookup;
+	ksLookupByBinary;
+	ksLookupByName;
+	ksLookupByString;
+	ksNeedSync;
+	ksNew;
+	ksNext;
+	ksPop;
+	ksResize;
+	ksRewind;
+	ksSearchInternal;
+	ksSetCursor;
+	ksTail;
+	ksVNew;
+
+	# kdbobsolete.h
+	keyNameGetOneLevel;
+
+	# kdbproposal.h
+	elektraKeySetName;
+};
+
+libelektraprivate_1.0 {
+	# kdbprivate.h
+	elektraAbort;
+	elektraEscapeKeyNamePart;
+	elektraGlobalError;
+	elektraGlobalGet;
+	elektraGlobalSet;
+	elektraKeyLock;
+	elektraKsPopAtCursor;
+	elektraKsPrev;
+	elektraRenameKeys;
+	elektraUnescapeKeyName;
+	elektraUnescapeKeyNamePart;
+	elektraValidateKeyName;
+	keyClearSync;
+	keyIsDir;
+	keyIsProc;
+	keyIsSpec;
+	keyIsSystem;
+	keyIsUser;
+	keyNameIsDir;
+	keyNameIsProc;
+	keyNameIsSpec;
+	keyNameIsSystem;
+	keyNameIsUser;
+	keySetRaw;
+	keyVInit;
+	elektraPluginClose;
+	elektraPluginFindGlobal;
+	elektraPluginGetFunction;
+	elektraPluginMissing;
+	elektraPluginOpen;
+	elektraPluginVersion;
+	elektraProcessPlugin;
+	elektraProcessPlugins;
+
+	# kdblogger.h
+	elektraLog;
+
+	# kdbrand.h
+	elektraRand;
+	elektraRandGetInitSeed;
+};

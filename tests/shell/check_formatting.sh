@@ -66,13 +66,21 @@ to fix the formatting problems. For that please
 EOF
 )"
 
-git diff --quiet
-succeed_if "$error_message"
+git_diff_output="$(git diff -p 2>&1)"
 
-git diff --quiet || {
+if [ $? -ne 0 ]; then
+	error_message="$(printf 'Unable to create diff: %s' "$git_diff_output" 2>&1)"
+	false
+	exit_if_fail "$error_message"
+fi
+
+if [ -n "$git_diff_output" ]; then
+	false
+	succeed_if "$error_message"
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
-	git diff -p
+	printf '%s' "$git_diff_output"
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
-}
+
+fi
 
 end_script

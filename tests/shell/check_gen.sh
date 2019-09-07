@@ -4,11 +4,16 @@ echo
 echo ELEKTRA CHECK GEN
 echo
 
-while getopts ":q" opt; do
+while getopts ":qk" opt; do
 	case $opt in
 	q)
 		nodiff=1
 		;;
+	k)
+		keeplogs=1
+		;;
+	*) ;;
+
 	esac
 done
 
@@ -72,15 +77,16 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		succeed_if "couldn't spec-mount data"
 
 		old_dir=$(pwd)
-		cd "$output_folder"
-		"$KDB" gen "$template" "$spec_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
+		cd "$output_folder" || exit 1
+		# shellcheck disable=SC2086
+		"$KDB" gen "$template" "$cascading_parent" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
 			test "1" = "0"
 			succeed_if "kdb gen failed: "
 			cat "$output_folder$test_name.stderr"
 		fi
-		cd "$old_dir"
+		cd "$old_dir" || exit 1
 
 		if [ -e "$test_folder$test_name.stdout" ]; then
 			diff -u "$test_folder$test_name.stdout" "$output_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
@@ -122,7 +128,7 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		fi
 		rm "$output_folder$test_name.stderr"
 
-		if [ "$gen" == "0" ]; then
+		if [ "$gen" = "0" ]; then
 			for expected_part in "$test_folder$test_name".expected*; do
 				[ -e "$expected_part" ] || continue
 
@@ -133,29 +139,37 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				[ -f "$actual_part" ]
 				succeed_if "missing part $test_name.actual$part"
 
-				diff -u "$expected_part" "$actual_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+				diff_result=$(diff -u "$expected_part" "$actual_part")
+				if [ -n "$diff_result" ]; then
+					if echo "$diff_result" | grep "^Binary files"; then
+						printf "" > "$diff_part"
 
-				if [ -s "$diff_part" ]; then
-					test "1" = "0"
-					succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
-					if [ "$nodiff" = "" ]; then
-						echo "Here is the diff:"
-						cat "$diff_part"
+						echo "Binary file didn't match."
+						echo "The actual file is stored at $actual_part"
+						echo
+					else
+						printf "%s\n" "$diff_result" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+
+						test "1" = "0"
+						succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
+						if [ "$nodiff" = "" ]; then
+							echo "Here is the diff:"
+							cat "$diff_part"
+							echo
+						fi
+						echo "The diff is also stored at $diff_part"
 						echo
 					fi
-					echo "The diff is also stored at $diff_part"
-					echo
 				else
-					rm "$diff_part"
+					rm -f "$diff_part"
 				fi
 			done
 
 			if [ -e "$output_folder$test_name.check.sh" ]; then
 				old_dir=$(pwd)
-				cd "$output_folder"
+				cd "$output_folder" || exit 1
 
-				KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
-				if [ "$?" != "0" ]; then
+				if ! (KDB="$KDB" MOUNTPOINT="$MOUNTPOINT/gen/$template/$test_name" sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1); then
 					test "1" = "0"
 					succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
 
@@ -167,10 +181,10 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 					echo "The log is also stored at $output_folder$test_name.check.log"
 					echo
 				else
-					rm "$output_folder$test_name.check.log"
+					[ "$keeplogs" = "1" ] || rm "$output_folder$test_name.check.log"
 				fi
 
-				cd "$old_dir"
+				cd "$old_dir" || exit 1
 			fi
 
 			for actual_part in "$output_folder$test_name".actual*; do
@@ -181,11 +195,13 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 				diff_part="$output_folder$test_name$part.diff"
 
 				if [ -e "$diff_part" ]; then
-					rm "$actual_part"
-					continue
-				fi
-
-				if [ -e "$expected_part" ]; then
+					if [ -s "$diff_part" ]; then
+						rm "$actual_part"
+						continue
+					else
+						rm "$diff_part"
+					fi
+				elif [ -e "$expected_part" ]; then
 					rm "$actual_part"
 					continue
 				fi

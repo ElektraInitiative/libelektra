@@ -30,6 +30,7 @@ section here.
 - [Plugin Variants](plugin_variants.md)
 - [Ingroup Removal](ingroup_removal.md)
 - [Error Message Format](error_message_format.md)
+- [Commit Function](commit_function.md)
 
 ## In Discussion
 
@@ -40,6 +41,7 @@ section here.
 - [Vendor Spec](vendor_spec.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
 - [Error codes](error_codes.md)
+- [Array for Warnings](warning-array.md)
 
 ## Drafts
 

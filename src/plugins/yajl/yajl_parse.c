@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbconfig.h>
 #include <kdbease.h>
 #include <kdberrors.h>
+#include <kdbmacros.h>
 #include <yajl/yajl_parse.h>
 
 

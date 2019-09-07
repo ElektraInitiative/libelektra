@@ -23,6 +23,7 @@
   */
 
 #include <kdbconfig.h>
+#include <kdbmacros.h>
 
 #include <dlfcn.h>
 

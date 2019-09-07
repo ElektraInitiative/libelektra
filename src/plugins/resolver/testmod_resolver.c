@@ -48,6 +48,7 @@ void test_resolve (void)
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
+	succeed_if (plugin->kdbCommit != 0, "no open pointer");
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
@@ -116,6 +117,7 @@ void test_name (void)
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
+	succeed_if (plugin->kdbCommit != 0, "no open pointer");
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
@@ -163,6 +165,7 @@ void test_lockname (void)
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
+	succeed_if (plugin->kdbCommit != 0, "no open pointer");
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
@@ -212,6 +215,7 @@ void test_tempname (void)
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
+	succeed_if (plugin->kdbCommit != 0, "no open pointer");
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 

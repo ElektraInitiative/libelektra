@@ -10,9 +10,9 @@
 #include "gopts.h"
 
 #include <kdbassert.h>
-#include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 #include <kdbopts.h>
 
 static int loadArgs (char *** argvp);
@@ -57,6 +57,7 @@ int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	if (argv == NULL || envp == NULL)
 	{
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "could not load current process' arguments");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

@@ -18,6 +18,7 @@ int elektraMultifileClose (Plugin * handle, Key * errorKey);
 int elektraMultifileGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMultifileSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMultifileError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraMultifileCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMultifileCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <kdbtypes.h>
+
 /**
  * Order Preserving Minimal Perfect Hash Map
  *
@@ -35,12 +37,6 @@
  *
  * To save space the limit of elements is set to (2^32) - 1.
  */
-
-#if SIZEOF_SIZE_T == 8
-#define KDB_OPMPHM_MAX_N 4294967295 // = (2^32) - 1
-#else
-#define KDB_OPMPHM_MAX_N 795364313 // bound by opmphm->size max value
-#endif
 
 /**
  * The r-uniform r-partite hypergraph

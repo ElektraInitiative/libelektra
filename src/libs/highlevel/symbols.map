@@ -1,0 +1,112 @@
+libelektra_0.8 {
+	# elektra.h;
+	#- elektraOpen : moved to 0.9
+
+	## Getter;
+	elektraGetRawString;
+	elektraGetString;
+	elektraGetBoolean;
+	elektraGetChar;
+	elektraGetOctet;
+	elektraGetShort;
+	elektraGetUnsignedShort;
+	elektraGetLong;
+	elektraGetUnsignedLong;
+	elektraGetLongLong;
+	elektraGetUnsignedLongLong;
+	elektraGetFloat;
+	elektraGetDouble;
+	elektraGetLongDouble;
+
+	## Setter;
+	elektraSetRawString;
+	elektraSetString;
+	elektraSetBoolean;
+	elektraSetChar;
+	elektraSetOctet;
+	elektraSetShort;
+	elektraSetUnsignedShort;
+	elektraSetLong;
+	elektraSetUnsignedLong;
+	elektraSetLongLong;
+	elektraSetUnsignedLongLong;
+	elektraSetFloat;
+	elektraSetDouble;
+	elektraSetLongDouble;
+
+	## Array Getter;
+	elektraGetRawStringArrayElement;
+	elektraGetStringArrayElement;
+	elektraGetBooleanArrayElement;
+	elektraGetCharArrayElement;
+	elektraGetOctetArrayElement;
+	elektraGetShortArrayElement;
+	elektraGetUnsignedShortArrayElement;
+	elektraGetLongArrayElement;
+	elektraGetUnsignedLongArrayElement;
+	elektraGetLongLongArrayElement;
+	elektraGetUnsignedLongLongArrayElement;
+	elektraGetFloatArrayElement;
+	elektraGetDoubleArrayElement;
+	elektraGetLongDoubleArrayElement;
+
+	## Array Setter;
+	elektraSetRawStringArrayElement;
+	elektraSetStringArrayElement;
+	elektraSetBooleanArrayElement;
+	elektraSetCharArrayElement;
+	elektraSetOctetArrayElement;
+	elektraSetShortArrayElement;
+	elektraSetUnsignedShortArrayElement;
+	elektraSetLongArrayElement;
+	elektraSetUnsignedLongArrayElement;
+	elektraSetLongLongArrayElement;
+	elektraSetUnsignedLongLongArrayElement;
+	elektraSetFloatArrayElement;
+	elektraSetDoubleArrayElement;
+	elektraSetLongDoubleArrayElement;
+
+	## Other functions;
+	elektraGetType;
+	elektraGetArrayElementType;
+	elektraArraySize;
+	elektraClose;
+	elektraFatalErrorHandler;
+	elektraFindKey;
+	elektraFindArrayElementKey;
+	elektraFatalError;
+
+	# elektra/types.h;
+	KDB_TYPE_BOOLEAN;
+	KDB_TYPE_CHAR;
+	KDB_TYPE_DOUBLE;
+	KDB_TYPE_ENUM;
+	KDB_TYPE_FLOAT;
+	KDB_TYPE_LONG;
+	KDB_TYPE_LONG_DOUBLE;
+	KDB_TYPE_LONG_LONG;
+	KDB_TYPE_OCTET;
+	KDB_TYPE_SHORT;
+	KDB_TYPE_STRING;
+	KDB_TYPE_UNSIGNED_LONG;
+	KDB_TYPE_UNSIGNED_LONG_LONG;
+	KDB_TYPE_UNSIGNED_SHORT;
+
+	# elektra/error.h;
+	elektraErrorDescription;
+	elektraErrorReset;
+
+	# elektra/errors.h;
+	elektraErrorConversionFromString;
+	elektraErrorConversionToString;
+};
+
+libelektra_0.9 {
+	elektraOpen;
+	elektraFindReference;
+	elektraFindReferenceArrayElement;
+	elektraHelpKey;
+};
+
+libelektraprivate_1.0 {
+};

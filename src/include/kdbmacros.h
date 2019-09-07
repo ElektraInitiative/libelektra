@@ -123,4 +123,42 @@
 #define ELEKTRA_ATTRIBUTE_NO_RETURN
 #endif
 
+#ifdef __GNUC__
+/** Declares a parameter as unused. */
+#define ELEKTRA_UNUSED __attribute__ ((unused))
+#else
+#define ELEKTRA_UNUSED
+#endif
+
+#ifdef __GNUC__
+/** Declares a switch fallthrough case. */
+#define ELEKTRA_FALLTHROUGH __attribute__ ((fallthrough))
+#else
+#define ELEKTRA_FALLTHROUGH
+#endif
+
+#ifdef __GNUC__
+/** Declares an API as deprecated. */
+#define ELEKTRA_DEPRECATED __attribute__ ((deprecated))
+#else
+#define ELEKTRA_DEPRECATED
+#endif
+
+/**
+ * Helper macro to create a versioned name of a symbol.
+ *
+ * @param sym  unversioned name of the symbol
+ * @param impl version suffix
+ */
+#define ELEKTRA_SYMVER(sym, impl) sym##_##impl
+
+/**
+ * Declares another version of a symbol using the `.symver` assembler pseudo command
+ *
+ * @param ver  the version name as declared versions.def
+ * @param sym  the unversioned name of the symbol
+ * @param impl the version suffix to use for this version
+ */
+#define ELEKTRA_SYMVER_DECLARE(ver, sym, impl) ELEKTRA_SYMVER_COMMAND (ELEKTRA_STRINGIFY (ELEKTRA_SYMVER (sym, impl)), #sym "@" ver)
+
 #endif

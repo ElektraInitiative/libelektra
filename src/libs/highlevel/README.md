@@ -22,7 +22,7 @@ The quickest way to get started is to adapt the following piece of code to your 
 
 ```c
 ElektraError * error = NULL;
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL, &error);
 if (elektra == NULL)
 {
 	printf ("An error occurred: %s", elektraErrorDescription (error));
@@ -78,7 +78,7 @@ All key-value read and write operations expect this handle to be passed as in as
 
 ```c
 ElektraError * error = NULL;
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL, &error);
 ```
 
 Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [here](/doc/tutorials/application-integration.md)
@@ -119,7 +119,7 @@ developer to handle runtime-errors appropriately in the application.
 Functions that can produce errors, despite correct use of the API, accept an `ElektraError` pointer as parameter, for example:
 
 ```c
-Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
+Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error);
 ```
 
 In most cases you'll want to set the error variable to `NULL` before passing it to the function. You can do this either by declaring and
@@ -175,8 +175,6 @@ that you implement your own callback, so that you get proper error message logge
 callback is only viable for very simple applications, because you won't get any indication as to which key caused the error (unless you
 compiled Elektra with debug logging enabled).
 
-<a name="data-types"></a>
-
 ## Data Types
 
 The API determines the data type of a given key, by reading its `type` metadata. The API supports the following types,
@@ -200,8 +198,8 @@ to use these functions directly, but they might still be useful sometimes (e.g. 
 `elektraGetRawString`). We also provide a `KDB_TPYE_*` constant for each of the types listed above. Again, most users won't use these
 but, if you ever do need to use the raw type metadata using constants enables code completion and protects against typos.
 
-There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is currently neither used nor supported by this API. However, we reserve it
-for a future expansion of this API.
+There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is only supported via the
+[code-generation API](/doc/help/elektra-highlevel-gen.md).
 
 ##### Note about Floating Point Types
 
@@ -358,7 +356,7 @@ The high-level API does not support binary key values at this time.
 int main ()
 {
   ElektraError * error = NULL;
-  Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
+  Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL, &error);
 
   if (elektra == NULL)
   {

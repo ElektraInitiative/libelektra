@@ -50,6 +50,21 @@ int GenCommand::execute (Cmdline const & cl)
 	const auto & templates = GenTemplateList::getInstance ();
 	const auto tmpl = templates.getTemplate (templateName, parameters);
 
+	if (tmpl->isEmpty ())
+	{
+		// empty template -> correct one not found
+		throw invalid_argument ("couldn't find template '" + templateName + "'");
+	}
+
+	if (parentKey == "-")
+	{
+		for (const auto & part : tmpl->getParts ())
+		{
+			std::cout << outputName + part << std::endl;
+		}
+		return 0;
+	}
+
 	KeySet ks;
 
 	if (cl.inputFile.empty ())
@@ -96,10 +111,12 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
+	auto inputKs = ks.cut (Key (parentKey, KEY_END));
+
 	for (const auto & part : tmpl->getParts ())
 	{
 		std::ofstream output (outputName + part);
-		tmpl->render (output, outputName, part, ks, parentKey);
+		tmpl->render (output, outputName, part, inputKs, parentKey);
 	}
 
 	return 0;

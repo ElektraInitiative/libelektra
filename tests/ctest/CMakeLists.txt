@@ -10,6 +10,7 @@ endforeach (file ${TESTS})
 include_directories ("${CMAKE_SOURCE_DIR}/src/libs/elektra")
 
 target_link_elektra (test_array elektra-ease)
+target_link_elektra (test_conversion elektra-ease)
 target_link_elektra (test_backend elektra-plugin)
 target_link_elektra (test_keyname elektra-ease)
 
@@ -35,3 +36,5 @@ target_link_elektra (test_utility elektra-utility)
 target_link_elektra (test_globbing elektra-globbing)
 
 target_link_elektra (test_opts elektra-opts)
+
+target_link_elektra (test_cmerge elektra-merge)

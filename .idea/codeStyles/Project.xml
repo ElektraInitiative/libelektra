@@ -23,6 +23,9 @@
         <pair source="c" header="h" fileNamingConvention="NONE" />
       </extensions>
     </Objective-C-extensions>
+    <Shell_Script>
+      <option name="REDIRECT_FOLLOWED_BY_SPACE" value="true" />
+    </Shell_Script>
     <clangFormatSettings>
       <option name="ENABLED" value="true" />
     </clangFormatSettings>
@@ -52,6 +55,11 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="Python">
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="Shell Script">
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />
       </indentOptions>

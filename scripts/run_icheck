@@ -10,7 +10,7 @@ BASE_DIR="$(pwd)"
 BUILD_DIR="$BASE_DIR/build"
 ICHECK_DIR="$BASE_DIR/icheck"
 
-CMPVERSION="0.8.26"
+CMPVERSION="0.9.0"
 FILES="src/include/kdbmeta.h src/include/kdbease.h src/include/kdbplugin.h src/include/kdbproposal.h"
 
 # =============
@@ -42,7 +42,7 @@ mkdir "$ICHECK_DIR"
 
 canonify "$ICHECK_DIR/new_interface.h"
 
-while read line; do
+while IFS= read line || test -n "$line"; do
 	printf '%s' "$line" | grep -q '^\s*//' && continue
 	printf 'Remove entry matching “%s” from new interface\n' "$line"
 	printf 'H\ng/^.*%s.*$/d\nw\n' "$line" | ed -s "$ICHECK_DIR/new_interface.h"

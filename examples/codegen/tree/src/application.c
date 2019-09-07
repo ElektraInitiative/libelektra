@@ -14,6 +14,7 @@
 static void onFatalError (ElektraError * error)
 {
 	fprintf (stderr, "ERROR: %s\n", elektraErrorDescription (error));
+	elektraErrorReset (&error);
 	exit (EXIT_FAILURE);
 }
 
@@ -34,7 +35,7 @@ void printTree (Tree * tree, int level)
 
 int main (int argc, const char ** argv)
 {
-	specloadCheck (argc, argv);
+	exitForSpecload (argc, argv);
 
 	ElektraError * error = NULL;
 	Elektra * elektra = NULL;
@@ -42,7 +43,7 @@ int main (int argc, const char ** argv)
 
 	if (rc == -1)
 	{
-		fprintf (stderr, "An error occurred while opening elektra: %s", elektraErrorDescription (error));
+		fprintf (stderr, "An error occurred while opening Elektra: %s", elektraErrorDescription (error));
 		elektraErrorReset (&error);
 		return EXIT_FAILURE;
 	}
@@ -50,7 +51,8 @@ int main (int argc, const char ** argv)
 	if (rc == 1)
 	{
 		// help mode
-		printHelpMessage (NULL, NULL);
+		printHelpMessage (elektra, NULL, NULL);
+		elektraClose (elektra);
 		return EXIT_SUCCESS;
 	}
 
