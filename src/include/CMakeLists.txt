@@ -86,7 +86,13 @@ else ()
 	set (ELEKTRA_TIME_USEC_F "\"%d\"")
 endif ()
 
-if (SIZEOF_STAT_ST_SIZE EQUAL SIZEOF_LONG)
+# Unfortunately `long` and `long long` have the same size (8 bytes) on `amd64` architectures in macOS and Debian GNU/Linux. This means we
+# can not differentiate these types only based on their size. Consequently we set the `long long` format specifier for `st_size` on macOS,
+# and hope that all other operating systems, either use differently sized types for `long` and `long long`, or just use `long` as data type
+# for `st_size`.
+if (APPLE)
+	set (ELEKTRA_STAT_ST_SIZE_F "\"%llu\"")
+elseif (SIZEOF_STAT_ST_SIZE EQUAL SIZEOF_LONG)
 	set (ELEKTRA_STAT_ST_SIZE_F "\"%lu\"")
 elseif (SIZEOF_STAT_ST_SIZE EQUAL SIZEOF_LONG_LONG)
 	set (ELEKTRA_STAT_ST_SIZE_F "\"%llu\"")
