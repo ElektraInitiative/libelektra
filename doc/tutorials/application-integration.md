@@ -15,11 +15,11 @@ In Elektra different forms of application integrations are possible:
    1. Using the low-level API.
    2. Using the high-level API.
 
-In this tutorial we will discuss (3.i), i.e., how to
+In this tutorial we will discuss (3.1), i.e., how to
 extend an application to directly access Elektra’s
 key database. If you are new to Elektra, we recommend you familiarize
 yourself with the basic concepts using this guide, but when it comes
-to elektrifying your application (3.ii) is mostly likely the better option.
+to elektrifying your application (3.2) is mostly likely the better option.
 So take a look at [how to use the high-level API](highlevel.md).
 
 When the application is fully integrated in Elektra’s ecosystem

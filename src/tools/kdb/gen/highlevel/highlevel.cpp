@@ -218,7 +218,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
 	auto installPrefix = getParameter (Params::InstallPrefix, "/usr/local");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
-	auto enumConversionString = getParameter (Params::EnumConversion, "default");
+	auto enumConversionString = getParameter (Params::EnumConversion, "auto");
 	auto generateSetters = getBoolParameter (Params::GenerateSetters, true);
 	auto specHandling = getParameter<EmbeddedSpec> (Params::EmbeddedSpec, { { "", EmbeddedSpec::Full },
 										{ "full", EmbeddedSpec::Full },
@@ -228,8 +228,8 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		Params::SpecValidation,
 		{ { "", SpecValidation::None }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
 
-	auto enumConversion = getParameter<EnumConversion> (Params::EnumConversion, { { "", EnumConversion::Default },
-										      { "default", EnumConversion::Default },
+	auto enumConversion = getParameter<EnumConversion> (Params::EnumConversion, { { "", EnumConversion::Auto },
+										      { "auto", EnumConversion::Auto },
 										      { "switch", EnumConversion::Trie },
 										      { "strcmp", EnumConversion::Strcmp } });
 

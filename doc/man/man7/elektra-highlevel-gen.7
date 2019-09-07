@@ -13,7 +13,7 @@ This document focuses on the advanced features of the high\-level API code\-gene
 The parameters that are relevant to the concepts described here are (for the rest see `kdb\-gen\-highlevel(1) \fIkdb\-gen\-highlevel\.md\fR):
 .
 .IP "\(bu" 4
-\fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBdefault\fR (default)
+\fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBauto\fR (default)
 .
 .IP "\(bu" 4
 \fBembeddedSpec\fR: allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR
@@ -185,7 +185,7 @@ case \'b\':
 This is already quite hard to read and \fBblueish\fR isn\'t even that long\.
 .
 .P
-To provide a compromise between readability and performance, we default to \fBenumConv=default\fR\. This options uses the switch version, if the depth is less than 3, and the \fBstrcmp\fR version in all other cases\. A depth of \fBn\fR means looking at the first \fBn\fR characters \fBstring[0], string[1], \.\.\., string[n\-1]\fR\. In other words a depth of \fBn\fR uses \fBn\fR switch statements\.
+To provide a compromise between readability and performance, we default to \fBenumConv=auto\fR\. This options uses the switch version, if the depth is less than 3, and the \fBstrcmp\fR version in all other cases\. A depth of \fBn\fR means looking at the first \fBn\fR characters \fBstring[0], string[1], \.\.\., string[n\-1]\fR\. In other words a depth of \fBn\fR uses \fBn\fR switch statements\.
 .
 .SH "Structs"
 The \fBhighlevel\fR template also has support for structs\. By setting \fBtype = struct\fR on a key, you can enable the generation of a native C \fBstruct\fR for the keys below it\.

@@ -7,7 +7,7 @@ with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.
 
 The parameters that are relevant to the concepts described here are (for the rest see [`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)):
 
-- `enumConv`: allowed values: `strcmp`, `switch`, `default` (default)
+- `enumConv`: allowed values: `strcmp`, `switch`, `auto` (default)
 - `embeddedSpec`: allowed values: `full` (default), `defaults`, `none`
 - `specValidation`: allowed values: `none` (default), `minimal`
 
@@ -146,7 +146,7 @@ case 'b':
 
 This is already quite hard to read and `blueish` isn't even that long.
 
-To provide a compromise between readability and performance, we default to `enumConv=default`. This options uses the switch version, if the
+To provide a compromise between readability and performance, we default to `enumConv=auto`. This options uses the switch version, if the
 depth is less than 3, and the `strcmp` version in all other cases. A depth of `n` means looking at the first `n` characters
 `string[0], string[1], ..., string[n-1]`. In other words a depth of `n` uses `n` switch statements.
 

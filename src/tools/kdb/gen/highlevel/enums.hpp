@@ -15,7 +15,7 @@
 
 enum class EnumConversion
 {
-	Default,
+	Auto,
 	Trie,
 	Strcmp
 };
