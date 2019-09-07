@@ -1,4 +1,4 @@
-_: BSD 3-Clause License
+_: BSD-3-Clause
 cmake/Modules/DownloadProject.cmake: mit
 cmake/Modules/DownloadProject.CMakeLists.cmake.in: mit
 cmake/Modules/DownloadProjectLicense.txt: mit
@@ -13,3 +13,4 @@ src/tools/website-frontend/resources/assets/skin/base/fonts/font-awesome/font-aw
 src/tools/website-frontend/resources/assets/skin/base/util/space.less: mit
 src/tools/web/client/public/Roboto-Light.ttf: apache-2.0
 src/tools/web/client/public/Roboto-Regular.ttf: apache-2.0
+src/tools/kdb/gen/mustache.hpp: BSL-1.0

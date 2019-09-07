@@ -123,6 +123,27 @@
 #define ELEKTRA_ATTRIBUTE_NO_RETURN
 #endif
 
+#ifdef __GNUC__
+/** Declares a parameter as unused. */
+#define ELEKTRA_UNUSED __attribute__ ((unused))
+#else
+#define ELEKTRA_UNUSED
+#endif
+
+#ifdef __GNUC__
+/** Declares a switch fallthrough case. */
+#define ELEKTRA_FALLTHROUGH __attribute__ ((fallthrough))
+#else
+#define ELEKTRA_FALLTHROUGH
+#endif
+
+#ifdef __GNUC__
+/** Declares an API as deprecated. */
+#define ELEKTRA_DEPRECATED __attribute__ ((deprecated))
+#else
+#define ELEKTRA_DEPRECATED
+#endif
+
 /**
  * Helper macro to create a versioned name of a symbol.
  *

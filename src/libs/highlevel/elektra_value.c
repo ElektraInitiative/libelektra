@@ -40,6 +40,8 @@ extern "C" {
  * @param name    The relative name of the key.
  * @param type    The expected type metadata value.
  * @return the Key referenced by @p name or NULL, if a fatal error occurs and the fatal error handler returns to this function
+ *   The returned pointer remains valid until the KeySet inside @p elektra is modified. Calls to elektraSet*() functions may
+ *   cause such modifications. In any case, it becomes invalid when elektraClose() is called on @p elektra.
  */
 Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 {
@@ -78,6 +80,8 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
  * @return the resolved version of the reference stored in the specified key (relative to the parent key of @p elektra)
  * or NULL, if the key was not found, or the reference resolves two a key not below the parent key. The empty string is
  * returned, if the value was the empty string (no resolution is attempted).
+ *   The returned pointer becomes invalid when this function is called again (even with the same arguments). It is also
+ *   invalidated when elektraFindReferenceArrayElement() or elektraClose() are called on @p elektra.
  */
 const char * elektraFindReference (Elektra * elektra, const char * name)
 {
@@ -134,6 +138,9 @@ KDBType elektraGetType (Elektra * elektra, const char * keyname)
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the key.
  * @return the raw value of the specified key or NULL, if the key was not found
+ *   The returned pointer remains valid until the internal state of @p elektra is modified.
+ *   Calls to elektraSet*() functions may cause such modifications. In any case, it becomes
+ *   invalid when elektraClose() is called on @p elektra.
  */
 const char * elektraGetRawString (Elektra * elektra, const char * name)
 {
@@ -175,6 +182,9 @@ void elektraSetRawString (Elektra * elektra, const char * name, const char * val
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the string stored at the given key
+ *   The returned pointer remains valid until the internal state of @p elektra is modified.
+ *   Calls to elektraSet*() functions may cause such modifications. In any case, it becomes
+ *   invalid when elektraClose() is called on @p elektra.
  */
 const char * elektraGetString (Elektra * elektra, const char * keyname)
 {

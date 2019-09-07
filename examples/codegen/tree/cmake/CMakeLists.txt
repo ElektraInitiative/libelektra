@@ -18,17 +18,9 @@ if (ELEKTRA_FOUND)
 
 	include_directories (${Elektra_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
-	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/genelektra.c ${CMAKE_CURRENT_BINARY_DIR}/genelektra.h
-			    COMMAND ${KDB}
-				    ARGS
-				    gen
-				    -F
-				    "ni=${CMAKE_CURRENT_SOURCE_DIR}/../spec.ini"
-				    elektra
-				    "spec/sw/example/tree/#0/current"
-				    "genelektra"
-			    MAIN_DEPENDENCY ../spec.ini
-			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+	elektra_kdb_gen (highlevel "spec/sw/example/tree/#0/current" "genelektra"
+			 INPUT ni "${CMAKE_CURRENT_SOURCE_DIR}/../spec.ini"
+			 KDB ${KDB})
 
 	add_executable (application ../src/application.c ${CMAKE_CURRENT_BINARY_DIR}/genelektra.c)
 	target_link_libraries (application ${ElektraCodegen_LIBRARIES})

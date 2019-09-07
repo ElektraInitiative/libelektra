@@ -41,7 +41,6 @@ protected:
 		ks.append (Key (userRoot + "/speckey", KEY_META, "array", "#0", KEY_END));
 		ks.append (Key (userRoot + "/speckey/#0", KEY_VALUE, "", KEY_END));
 		ks.append (Key (userRoot + "/errorkey", KEY_META, "trigger/warnings", "3", KEY_END));
-		// ks.append (Key (specRoot + "/goptskey", KEY_META, "opt", "1", KEY_END));
 
 		kdb.set (ks, testRoot);
 	}
@@ -85,6 +84,36 @@ TEST_F (Ensure, GlobalUnmount)
 		kdb.get (ks, testRoot);
 
 		EXPECT_FALSE (ks.lookup (userRoot + "/speckey/#0", 0).hasMeta ("mymeta")) << "global unmount should be idempotent";
+	}
+}
+
+TEST_F (Ensure, GlobalRemount)
+{
+	using namespace kdb;
+	{
+		KDB kdb;
+		KeySet ks;
+		kdb.get (ks, testRoot);
+
+		ks.append (Key (specRoot + "/otherspeckey", KEY_META, "require", "", KEY_END));
+		kdb.set (ks, testRoot);
+	}
+
+	{
+		KDB kdb;
+		KeySet contract;
+		contract.append (Key ("system/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
+		contract.append (Key ("system/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+		contract.append (Key ("system/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+		Key root (specRoot, KEY_END);
+		kdb.ensure (contract, root);
+
+
+		Key newRoot (testRoot, KEY_END);
+		KeySet ks;
+		EXPECT_THROW (kdb.get (ks, newRoot), KDBException);
+
+		EXPECT_EQ (newRoot.getMeta<std::string> ("error/number"), "C03200") << "spec plugin should have produced error";
 	}
 }
 

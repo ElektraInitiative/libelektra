@@ -25,11 +25,16 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- Code generation
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+### Code Generation
+
+While the new `kdb gen` was already included in the last release, it is now fully functional and ready for use. To get started take a look
+at the new man-page for [`kdb-gen(1)`](https://www.libelektra.org/manpages/kdb-gen). _(Klemens Böswirth)_
+
+If specifically want to use it with the High-Level API take a look at [this tutorial](https://www.libelektra.org/tutorials/high-level-api).
 
 ### <<HIGHLIGHT2>>
 
@@ -59,11 +64,13 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
   native boolean types. _(Klemens Böswirth)_
 
-### <<Plugin3>>
+### Noresolver
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
+
+### Specload
+
+- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
 
 ## Libraries
 
@@ -78,8 +85,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - A new plugin function, `kdbCommit`, was implemented. The function is carried out in the `commit` phase of `kdbSet` and separates the commit functionality from the `kdbSet()` function. _(Vid Leskovar)_
-- <<TODO>>
-- <<TODO>>
+- `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
+  `config.h`-type headers from applications. _(Klemens Böswirth)_
 
 ### <<Library1>>
 
@@ -150,7 +157,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- `kdbtypes.h` is now generated directly via a CMake `configure_file` call. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 

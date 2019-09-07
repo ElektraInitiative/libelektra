@@ -12,10 +12,6 @@
 #ifndef KDB_HELPER
 #define KDB_HELPER
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
-
 #include <kdbmacros.h>
 #include <kdbtypes.h>
 

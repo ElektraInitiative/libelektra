@@ -75,8 +75,12 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return 1; /* success */
 }
 
-int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
+	if (pathKey) keySetString (parentKey, keyString (pathKey));
+
 	return 1; /* success */
 }
 

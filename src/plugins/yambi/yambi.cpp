@@ -10,8 +10,8 @@
 #include <stdexcept>
 
 #include <kdb.hpp>
-#include <kdbconfig.h>
 #include <kdberrors.h>
+#include <kdbmacros.h>
 
 #include "convert.hpp"
 #include "yambi.hpp"

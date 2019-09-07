@@ -8,7 +8,7 @@
 
 // -- Imports ------------------------------------------------------------------
 
-#include <kdbconfig.h>
+#include <kdbmacros.h>
 
 #include "listener.hpp"
 

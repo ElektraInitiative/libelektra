@@ -431,7 +431,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	cursor_t cursor = ksGetCursor (returned);
 	ksRewind (returned);
@@ -469,6 +469,14 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	// we assume all keys in returned are below parentKey
 	size_t parentOffset = keyGetNameSize (parentKey);
+
+	// ... unless /noparent is in config, then we just take the full
+	// (cascading) keynames as relative to the parentKey
+	KeySet * config = elektraPluginGetConfig (handle);
+	if (ksLookupByName (config, "/noparent", 0) != NULL)
+	{
+		parentOffset = 1;
+	}
 
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
