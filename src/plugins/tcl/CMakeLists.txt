@@ -6,7 +6,7 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (tcl CPP
-	    INCLUDE_SYSTEM_DIRECTORIES ${Boost_INCLUDE_DIR}
+	    INCLUDE_SYSTEM_DIRECTORIES ${Boost_INCLUDE_DIRS}
 	    SOURCES tcl.hpp
 		    tcl.cpp
 		    action.hpp
