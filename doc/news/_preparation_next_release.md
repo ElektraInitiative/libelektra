@@ -153,7 +153,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- We changed how the [formatting test](../../tests/shell/check_formatting.sh) detects code differences. This update should get rid of transient errors as [reported here](https://issues.libelektra.org/2927#issuecomment-528058641). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
