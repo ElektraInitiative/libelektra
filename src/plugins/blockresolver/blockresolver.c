@@ -232,6 +232,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
+			keyNew ("system/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
