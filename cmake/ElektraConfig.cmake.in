@@ -50,15 +50,21 @@ set (Elektra_STATIC @BUILD_STATIC@)
 # ~~~
 # Invoke the `kdb gen` during the build.
 #
-# elektra_kdb_gen (template parent_key output_name
+# elektra_kdb_gen (<template> <parent_key> <output_name>
 #                  INPUT <plugin> <file>
-#                  OUTPUT_DIR <output_dir>
-#                  KDB <kdb>
-#                  PARAMS <params>...
-#                  OPTIONS <options>...)
+#                  [OUTPUT_DIR <output_dir>]
+#                  [KDB <kdb>]
+#                  [PARAMS <params>...]
+#                  [OPTIONS <options>...])
 #
-# This will call `<kdb> gen -F <plugin>=<file> <options>... template parent_key output_name <params>...` in the
-# directory <output_dir>.
+# This will call `add_custom_command` to define the command 
+# `<kdb> gen -F <plugin>=<file> <options>... <template> <parent_key> <output_name> <params>...` with working directory
+# <output_dir>. The relevant output files of `kdb gen` are automatically detected at configure time. Therefore `kdb gen`
+# is automatically called, if any target requires one of the output files as an input.
+#
+# The default value for <kdb> is just 'kdb' (i.e. the system default Elektra instance).
+# If <output_dir> is not set explicitly, it defaults to `CMAKE_CURRENT_BINARY_DIR`.
+# `<params>...` and `<options>...` are omitted from the `kdb gen` call, if they aren't defined. 
 #
 # ~~~
 function (elektra_kdb_gen
