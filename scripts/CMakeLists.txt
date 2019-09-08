@@ -14,10 +14,6 @@ string (REGEX
 
 install (PROGRAMS benchmark-createtree DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-install (PROGRAMS elektra-merge DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install (PROGRAMS elektra-mount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install (PROGRAMS elektra-umount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
 install (PROGRAMS convert-fstab DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS convert-hosts DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS convert-inittab DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -60,8 +56,6 @@ install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" DESTINAT
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/change-storage-symlink.in" "${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" @ONLY)
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/backup.in" "${CMAKE_CURRENT_BINARY_DIR}/backup" @ONLY)
-install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/backup" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS stash DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS restore DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
