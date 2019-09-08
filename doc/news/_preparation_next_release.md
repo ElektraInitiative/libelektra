@@ -91,6 +91,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - A new plugin function, `kdbCommit`, was implemented. The function is carried out in the `commit` phase of `kdbSet` and separates the commit functionality from the `kdbSet()` function. _(Vid Leskovar)_
 - `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
   `config.h`-type headers from applications. _(Klemens Böswirth)_
+- `kdb.h` was moved into the subfolder `elektra`, to prevent conflicts with header files with the same name. `kbd.h` can now be included via `elektra/kdb.h`. _(Jakob Fischer)_
 
 ### <<Library1>>
 
