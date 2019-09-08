@@ -13,17 +13,17 @@ The goals of any high-level API (or binding to the C high-level API) for Elektra
   be mapped to native types of the target language. All API calls interacting with keys should reflect the type of the
   key. Type mismatches should produce errors.
 - **Easy to Use:** The API should be easy to use and abstract as much of the low-level API as possible. The main part of
-  the API should not conists of more than an initialization method, typed `get` and `set` calls and if required by the
+  the API should not consists of more than an initialization method, typed `get` and `set` calls and if required by the
   language a method freeing the acquired resources.
-  - **No Errors in Getters:** It is a stated goal of our high-level API to make `get` calls not able to fail. This means
-    `get` calls _cannot_ return an error under normal conditions. This can be ensure via checks during initialization or
-    via code-generation. Both are based on the specification. Without a specification it is not possible to prevent
-    errors because of missing keys, since we have no way of knowing which keys should exist. <br/><br/>
-    There is an exception to this rule. Some target languages have a standard error concept, which not only forces the
-    user to handle arising errors, but also does so in a simple and concise way. An example of this is Rust. Its `Result`
-    type forces the user to handle errors and the `?` operator allows to do this in a concise way. <br/>
-    However, we still recommend to avoid errors as far as possible.
-- **Idomatic Code:** If the targt language has a concept of "idomatic code", the API should fall into that category.
+- **No Errors in Getters:** It is a stated goal of our high-level API to make `get` calls not able to fail. This means
+  `get` calls _cannot_ return an error under normal conditions. This can be ensure via checks during initialization or
+  via code-generation. Both are based on the specification. Without a specification it is not possible to prevent
+  errors because of missing keys, since we have no way of knowing which keys should exist. <br/><br/>
+  There is an exception to this rule. Some target languages have a standard error concept, which not only forces the
+  user to handle arising errors, but also does so in a simple and concise way. An example of this is Rust. Its `Result`
+  type forces the user to handle errors and the `?` operator allows to do this in a concise way. <br/>
+  However, we still recommend to avoid errors as far as possible.
+- **Idiomatic Code:** If the targt language has a concept of "idiomatic code", the API should fall into that category.
 
 ## When to write Bindings
 
@@ -37,7 +37,7 @@ always use code-generator (`kdb gen`) templates like the C API does.
 
 ## How to write Bindings
 
-Since the C high-level API consits of a shared library API and a code-generated part, your binding will also have these
+Since the C high-level API consists of a shared library API and a code-generated part, your binding will also have these
 two parts.
 
 ### Bindings for the `highlevel` Library
