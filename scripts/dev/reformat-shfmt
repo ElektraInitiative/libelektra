@@ -24,7 +24,7 @@ additional_files=$(
 		'scripts/kdb/elektrify-getenv.in' \
 		'scripts/kdb/elektrify-open.in' \
 		'scripts/completion/install-sh-completion.in' \
-		'scripts/list-tools.in' \
+		'scripts/completion/list-tools.in' \
 		'scripts/make-source-package.in' \
 		'scripts/run_all.in' \
 		'scripts/run_memcheck.in' \
