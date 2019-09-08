@@ -7,11 +7,9 @@ with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.
 
 The parameters that are relevant to the concepts described here are (for the rest see [`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)):
 
-- `enumConv`: allowed values: `strcmp`, `switch`, `auto` (default)
 - `embeddedSpec`: allowed values: `full` (default), `defaults`, `none`
 - `specValidation`: allowed values: `none` (default), `minimal`
-
-The `enumConv` option is described [below](#enums).
+- `enumConv`: allowed values: `strcmp`, `switch`, `auto` (default)
 
 Using `embeddedSpec` you can configure how much of the specification is embedded into your application. By default we use `full`. This means
 the full specification is embedded into your application's binary. Since this can drastically increase the size of the binary, you can also
