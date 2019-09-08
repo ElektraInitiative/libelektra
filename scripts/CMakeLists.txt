@@ -31,7 +31,6 @@ install (PROGRAMS mount-kde DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-openicc DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS find-tools DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-generate_manpage (kdb-find-tools FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 
 install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
