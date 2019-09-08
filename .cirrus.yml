@@ -56,6 +56,8 @@ mac_task:
     - name: 🍎 Clang
       osx_instance:
         image: mojave-xcode-10.1
+      env:
+        ENABLE_LOGGER: ON
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -148,6 +150,7 @@ mac_task:
         -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
         -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
         -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+        -DENABLE_LOGGER="${ENABLE_LOGGER:-OFF}"
         -DENABLE_DEBUG=ON
         -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
         -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
@@ -187,7 +190,7 @@ linux_task:
     - name: 🔗 Check
       container:
           dockerfile: scripts/docker/cirrus/Dockerfile
-  
+
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
       git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
