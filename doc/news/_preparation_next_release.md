@@ -141,7 +141,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- Removed the scripts 'scripts/elektra-merge', 'scripts/elektra-mount', 'scripts/elektra-umount', 'convert-fstab', 'convert-hosts', 'convert-inittab', 'convert-users', and 'example-xorg'
+- Removed the scripts 'scripts/elektra-merge', 'scripts/elektra-mount', 'scripts/elektra-umount', 'convert-fstab', 'convert-hosts', 'convert-inittab', 'convert-users', 'scripts/benchmark_libsplit.sh', 'scripts/zsh' and 'example-xorg'
 .
 - The script [run_icheck](../../scripts/build/run_icheck) now also work correctly, if the last entry of [`icheck.suppression`](../../tests/icheck.suppression) does not end with a newline character. _(René Schwaiger)_
 - The script [`link-checker`](../../scripts/link-checker) now deduplicates the list of links before checking them. The timeout and amount of retries was also reduced.
