@@ -44,12 +44,6 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nokdbtests.in" "${CMAKE_CURRENT
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_checkshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_checkshell" @ONLY)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nocheckshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nocheckshell" @ONLY)
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrify-getenv.in" "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv")
-install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrify-open.in" "${CMAKE_CURRENT_BINARY_DIR}/elektrify-open")
-install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-open" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in" "${CMAKE_CURRENT_BINARY_DIR}/make-source-package")
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/list-tools.in" "${CMAKE_CURRENT_BINARY_DIR}/list-tools")
@@ -83,5 +77,6 @@ add_custom_target (source-package
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoop.in" "${CMAKE_CURRENT_BINARY_DIR}/randoop/randoop" @ONLY)
 file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoopClasses.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/randoop/")
 
+add_subdirectory (kdb)
 add_subdirectory (admin)
 add_subdirectory (completion)
