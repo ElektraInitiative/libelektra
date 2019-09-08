@@ -6,15 +6,17 @@ if (SHARED_ONLY_PLUGINS)
 	list (REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
 endif (SHARED_ONLY_PLUGINS)
 
-if (BUILD_FULL)
+# We prefer `kdb` over `kdb-full` over `kdb-static`. Some tests, such as the Markdown Shell Recorder test for the `typechecker` plugin
+# (which only supports shared builds), will fail otherwise.
+if (BUILD_SHARED)
+	set (KDB_COMMAND_BASENAME kdb)
+elseif (BUILD_FULL)
 	set (KDB_COMMAND_BASENAME kdb-full)
 elseif (BUILD_STATIC)
 	set (KDB_COMMAND_BASENAME kdb-static)
-elseif (BUILD_SHARED)
-	set (KDB_COMMAND_BASENAME kdb)
 elseif (ENABLE_KDB_TESTING)
 	message (SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
-endif (BUILD_FULL)
+endif (BUILD_SHARED)
 
 set (IS_INSTALLED "YES")
 set (KDB_COMMAND "${KDB_COMMAND_BASENAME}")
