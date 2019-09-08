@@ -723,7 +723,7 @@ def buildCheckReleaseNotes() {
   return [(stageName): {
     maybeStage(stageName, !isMaster()) {
       withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
-        sh "scripts/run_check_release_notes"
+        sh "scripts/build/run_check_release_notes"
         deleteDir()
       }
     }
@@ -736,7 +736,7 @@ def buildIcheck() {
   return [(stageName): {
     stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
-        sh "scripts/run_icheck"
+        sh "scripts/build/run_icheck"
         deleteDir()
       }
     }
@@ -882,7 +882,7 @@ def buildAndTestMingwW64() {
       withDockerEnv(DOCKER_IMAGES.buster) {
         dir('build') {
           deleteDir()
-          sh '../scripts/configure-mingw-w64 ..'
+          sh '../scripts/dev/configure-mingw-w64 ..'
           sh 'make'
           def destdir='elektra'
           withEnv(["DESTDIR=${destdir}"]){
