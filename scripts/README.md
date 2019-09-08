@@ -6,9 +6,11 @@ There should be no scripts top-level but only in sub directories.
 
 These files are installed on the target system.
 
-- [kdb](kdb): for scripts to be used with `kdb <script>`. -[ffconfig](ffconfig): to configure firefox.
+- [kdb](kdb): for scripts to be used with `kdb <script>`.
+- [ffconfig](ffconfig): to configure firefox.
 - [completion](completion): for shell completion files.
-  The completion files need [INSTALL_SYSTEM_FILES](/doc/COMPILE.md) to be installed.
+
+The completion files need [INSTALL_SYSTEM_FILES](/doc/COMPILE.md) to be installed.
 
 ### Scripts For Elektra Developers
 
