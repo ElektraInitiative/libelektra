@@ -7,7 +7,7 @@ RUN apt-get update -y && apt-get install -y cmake git build-essential libyajl-de
 
 # elektra web deps
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install -y nodejs golang
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
