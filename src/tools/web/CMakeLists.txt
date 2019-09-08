@@ -36,15 +36,7 @@ else ()
 		install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
 		install (
 			CODE
-				"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
-			)
-		install (
-			CODE
-				"execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
-			)
-		install (
-			CODE
-				"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)"
+				"execute_process (COMMAND go build WORKING_DIRECTORY -o ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad)"
 			)
 		install (CODE "message (\"-- Installing: elektra-web > webd\")")
 		install (
