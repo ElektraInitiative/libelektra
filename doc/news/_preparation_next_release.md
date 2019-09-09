@@ -262,7 +262,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- Added Dockerfile for Ubuntu Bionic(../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
+- Added [Dockerfile for Ubuntu Bionic](../../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
