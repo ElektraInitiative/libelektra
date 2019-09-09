@@ -68,8 +68,11 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	if (kdb == NULL)
 	{
 		*error = elektraErrorFromKey (parentKey);
+		keyDel (parentKey);
 		return NULL;
 	}
+
+	int ignoreRequireInHelpMode = 0;
 
 	if (contract != NULL)
 	{
@@ -78,6 +81,11 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 		if (ksGetSize (highlevelContract) > 0)
 		{
+			if (ksLookupByName (highlevelContract, "system/elektra/highlevel/helpmode/ignore/require", 0) != NULL)
+			{
+				ignoreRequireInHelpMode = 1;
+			}
+
 			if (!checkHighlevelContract (application, highlevelContract, error))
 			{
 				keyDel (contractCut);
@@ -99,6 +107,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			     keyNew ("system/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
 		ksAppendKey (contract,
 			     keyNew ("system/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract, keyNew ("system/elektra/ensure/plugins/global/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
 
 		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
 
@@ -131,8 +140,31 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (kdbGetResult == -1)
 	{
-		*error = elektraErrorFromKey (parentKey);
-		return NULL;
+		Key * helpKey = ksLookupByName (config, "proc/elektra/gopts/help", 0);
+		const Key * missingKeys = keyGetMeta (parentKey, "logs/spec/missing");
+		if (ignoreRequireInHelpMode == 1 && helpKey != NULL && missingKeys != NULL)
+		{
+			// proc/elektra/gopts/help was set -> we are in help mode
+			// logs/spec/missing exists on parentKey -> spec detected missing keys
+			// we ensured that spec uses conflict/get = ERROR -> the error in kdbGet must be from spec
+			// --> we are in the error case that should be ignored
+
+			// BUT: anything other than helpKey may be incorrect
+			// and only helpKey should be used anyway
+			// so create a new config KeySet
+			Key * helpKeyDup = keyDup (helpKey);
+			ksClear (config);
+			ksAppendKey (config, helpKeyDup);
+		}
+		else
+		{
+			*error = elektraErrorFromKey (parentKey);
+
+			ksDel (config);
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
+			return NULL;
+		}
 	}
 
 	Elektra * const elektra = elektraCalloc (sizeof (struct _Elektra));
