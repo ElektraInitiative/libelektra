@@ -54,6 +54,7 @@ typedef struct
 	OnConflict conflict;
 	OnConflict range;
 	OnConflict missing;
+	int logMissing;
 } ConflictHandling;
 
 static void copyMeta (Key * dest, Key * src);
@@ -128,6 +129,9 @@ static void parseConfig (KeySet * config, ConflictHandling * ch, const char base
 	strcpy (nameBufferEnd, "/missing");
 	key = ksLookupByName (config, nameBuffer, 0);
 	ch->missing = key == NULL ? base : parseOnConflictKey (key);
+
+	key = ksLookupByName (config, "/missing/log", 0);
+	ch->logMissing = key != NULL && strcmp (keyString (key), "1") == 0;
 }
 
 static void parseLocalConfig (Key * specKey, ConflictHandling * ch, bool isKdbGet)
@@ -801,12 +805,18 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 	{
 		if (require)
 		{
-			char * msg = elektraFormat ("Required key %s is missing.", strchr (keyName (specKey), '/'));
+			const char * missing = strchr (keyName (specKey), '/');
+			char * msg = elektraFormat ("Required key %s is missing.", missing);
 			handleConflict (parentKey, msg, ch->missing);
 			elektraFree (msg);
 			if (ch->missing != IGNORE)
 			{
 				ret = -1;
+			}
+
+			if (ch->logMissing)
+			{
+				elektraMetaArrayAdd (parentKey, "logs/spec/missing", missing);
 			}
 		}
 

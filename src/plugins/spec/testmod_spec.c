@@ -172,6 +172,45 @@ static void test_require (void)
 	ksDel (_conf);
 }
 
+static void test_logMissing (void)
+{
+	printf ("test logMissing\n");
+
+	KeySet * _conf = ksNew (2, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END),
+				keyNew ("user/missing/log", KEY_VALUE, "1", KEY_END), KS_END);
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
+
+		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+
+		succeed_if (keyGetMeta (parentKey, "logs/spec/missing") != NULL, "missing key should have been logged");
+		succeed_if_same_string (keyString (keyGetMeta (parentKey, "logs/spec/missing")), "#0");
+
+		succeed_if (keyGetMeta (parentKey, "logs/spec/missing/#0") != NULL, "missing key should have been logged");
+		succeed_if_same_string (keyString (keyGetMeta (parentKey, "logs/spec/missing/#0")), PARENT_KEY "/a");
+
+		ksDel (ks);
+	}
+	TEST_END
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
+				     keyNew ("user" PARENT_KEY "/a", KEY_END), KS_END);
+
+		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_ON_FAIL (output_error (parentKey));
+
+		succeed_if (keyGetMeta (parentKey, "logs/spec/missing") == NULL, "missing key should not have been logged");
+
+		ksDel (ks);
+	}
+	TEST_END
+	ksDel (_conf);
+}
+
 static void test_array (void)
 {
 	printf ("test array\n");
@@ -573,6 +612,7 @@ int main (int argc, char ** argv)
 	test_assign_condition ();
 	test_wildcard ();
 	test_require ();
+	test_logMissing ();
 	test_array ();
 	test_require_array ();
 	test_array_member ();
