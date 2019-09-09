@@ -6,7 +6,7 @@ There should be no scripts top-level but only in sub directories.
 
 These files are installed on the target system.
 
-- kdb: for scripts to be used with `kdb <script>`.
+- [kdb](kdb): for scripts to be used with `kdb <script>`.
 - [ffconfig](ffconfig): to configure firefox.
 - [completion](completion): for shell completion files.
 
