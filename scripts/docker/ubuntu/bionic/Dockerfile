@@ -2,43 +2,43 @@ FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y install \
-        locales \
+        automake \
+        autotools-dev \
+        build-essential \
+        cmake \
         curl \
         debhelper \
+        devscripts \
         dh-exec \
+        dh-lua \
+        discount \
+        doxygen \
+        git \
+        graphviz \
+        libaugeas-dev \
+        libboost-dev \
+        libbotan-2-dev \ 
+        libdbus-1-dev \
+        libgit2-dev \
+        libgpgme-dev \
+        libgtest-dev \
+        liblua5.2-dev \
+        libmarkdown2-dev \ 
+        libssl-dev \
+        libsystemd-dev \ 
+        libxerces-c-dev \
+        libxml2-dev \
+        libyajl-dev \
         libzmq3-dev \
+        locales \
+        pkg-config \
+        python-all \ 
+        python-dev \
+        python3-all \
+        python3-dev \
         qtbase5-dev \
         qtdeclarative5-dev \ 
-        libmarkdown2-dev \ 
-        discount \
-        dh-lua \
-        python-all \ 
-        python3-all \
-        python-dev \
-        python3-dev \
-        libgtest-dev \
-        libsystemd-dev \ 
-        liblua5.2-dev \
-        libbotan-2-dev \ 
-        doxygen \
-        graphviz \
-        build-essential \
-        autotools-dev \
-        automake \
-        cmake \
-        devscripts \
-        pkg-config \
         ruby-dev \
-        libxml2-dev \
-        libaugeas-dev \
-        libyajl-dev \
-        git \
-        libxerces-c-dev \
-        libgpgme-dev \
-        libgit2-dev \
-        libboost-dev \
-        libssl-dev \
-        libdbus-1-dev \
         swig \
     && rm -rf /var/lib/apt/lists/*
 
@@ -59,6 +59,7 @@ RUN mkdir -p ${GTEST_ROOT} \
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
+    -f \
     jenkins
 
 ARG JENKINS_USERID
