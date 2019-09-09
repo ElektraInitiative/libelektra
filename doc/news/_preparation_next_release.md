@@ -38,7 +38,7 @@ If you specifically want to use it with the High-Level API take a look at [this 
 
 We also created a new CMake function that will be available, if you include Elektra via CMake's
 `find_package`. The function is called `elektra_kdb_gen` and can be used to tell CMake about files
-that are generated with `kdb gen`. _(Klemens Böswirth)_
+that are generated via `kdb gen`. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 
