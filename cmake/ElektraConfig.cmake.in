@@ -66,6 +66,7 @@ set (Elektra_STATIC @BUILD_STATIC@)
 # If <output_dir> is not set explicitly, it defaults to `CMAKE_CURRENT_BINARY_DIR`.
 # `<params>...` and `<options>...` are omitted from the `kdb gen` call, if they aren't defined. 
 #
+# Full examples can be found online: https://master.libelektra.org/examples/codegen
 # ~~~
 function (elektra_kdb_gen
 	  template
