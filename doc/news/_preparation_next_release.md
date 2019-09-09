@@ -80,6 +80,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
 
+### Spec
+
+- There is now the config key `missing/log` that allows logging of all missing `require`d keys. _(Klemens Böswirth)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
