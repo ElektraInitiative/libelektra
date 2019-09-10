@@ -11,12 +11,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
             .value("localhost")
             .build(),
-    )?;
+    );
     keyset.append_key(
         KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
             .value("8080")
             .build(),
-    )?;
+    );
 
     // Iterate the keyset
     for mut key in keyset.iter_mut() {

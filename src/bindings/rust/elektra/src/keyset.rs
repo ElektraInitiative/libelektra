@@ -1,6 +1,3 @@
-use std::error::Error;
-use std::fmt;
-
 use crate::{ReadOnly, ReadableKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
@@ -98,13 +95,13 @@ impl KeySet {
     }
 
     /// Append a key to the keyset.
-    /// Returns an InsertionError if TODO: when exactly?
-    pub fn append_key<T: WriteableKey>(&mut self, mut key: T) -> Result<(), InsertionError> {
+    /// 
+    /// # Panics
+    /// Panics on out-of-memory errors.
+    pub fn append_key<T: WriteableKey>(&mut self, mut key: T) {
         let ret_val = unsafe { elektra_sys::ksAppendKey(self.as_ptr(), key.as_ptr()) };
         if ret_val == -1 {
-            Err(InsertionError)
-        } else {
-            Ok(())
+            panic!("ksAppendKey: Out of memory");
         }
     }
 
@@ -265,7 +262,7 @@ impl KeySet {
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let key = StringKey::new("user/key/elektra")?;
     /// let mut ks = KeySet::with_capacity(1);
-    /// ks.append_key(key)?;
+    /// ks.append_key(key);
     ///
     /// let lookup_key = StringKey::new("user/key/elektra")?;
     /// if let Some(mut key) = ks.lookup(lookup_key, LookupOption::KDB_O_NONE) {
@@ -326,7 +323,7 @@ impl<'a> std::iter::FromIterator<StringKey<'a>> for KeySet {
     fn from_iter<I: IntoIterator<Item = StringKey<'a>>>(iter: I) -> Self {
         let mut ks = KeySet::new();
         for item in iter {
-            let _ = ks.append_key(item);
+            ks.append_key(item);
         }
         ks
     }
@@ -335,7 +332,7 @@ impl<'a> std::iter::FromIterator<StringKey<'a>> for KeySet {
 impl<'a> Extend<StringKey<'a>> for KeySet {
     fn extend<T: IntoIterator<Item = StringKey<'a>>>(&mut self, iter: T) {
         for item in iter {
-            let _ = self.append_key(item);
+            self.append_key(item);
         }
     }
 }
@@ -395,18 +392,6 @@ impl<'a> Iterator for StringKeyIter<'a> {
     }
 }
 
-/// An error returned by [`append_key`](struct.KeySet.html#method.append_key) if insertion in the keyset failed.
-#[derive(Debug, PartialEq)]
-pub struct InsertionError;
-
-impl fmt::Display for InsertionError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        write!(f, "key could not be inserted")
-    }
-}
-
-impl Error for InsertionError {}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -420,8 +405,7 @@ mod tests {
             KeyBuilder::<StringKey>::new("user/sw/org/app/bool")?
                 .value("true")
                 .build(),
-        )
-        .unwrap();
+        );
         // Make sure that the returned key from head can be dropped
         // without deleting the actual key
         {
@@ -479,7 +463,7 @@ mod tests {
         {
             let key = StringKey::new("user/key/k2").unwrap();
             let mut keyset = KeySet::with_capacity(1);
-            keyset.append_key(key).unwrap();
+            keyset.append_key(key);
             popped_key = keyset.pop().unwrap();
             assert_eq!(keyset.size(), 0);
         }
@@ -525,7 +509,7 @@ mod tests {
         let mut ks = setup_keyset();
         let mut ks2 = KeySet::with_capacity(1);
         let k = StringKey::new("user/test/key").unwrap();
-        ks2.append_key(k).unwrap();
+        ks2.append_key(k);
 
         // Test append
         ks.append(&ks2);
