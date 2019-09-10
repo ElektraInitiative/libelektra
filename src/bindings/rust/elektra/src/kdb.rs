@@ -1,6 +1,8 @@
 use crate::ReadableKey;
 use crate::{KeySet, StringKey, WriteableKey};
 use std::ptr::NonNull;
+use std::fmt::{Display, Formatter, self};
+use std::error::Error;
 use KDBError::*;
 use LogicalError::*;
 use PermanentError::*;
@@ -216,7 +218,7 @@ impl<'a> KDBErrorWrapper<'a> {
             .to_string()
     }
 
-    /// Returns the the exact line of that source file.
+    /// Returns the exact line of that source file.
     pub fn line(&self) -> String {
         self.error_key
             .meta("error/line")
@@ -225,24 +227,83 @@ impl<'a> KDBErrorWrapper<'a> {
             .to_owned()
             .to_string()
     }
-    // TODO: key is not the error_key, but the key that the keysets internal cursor points to, but this is not accessible here
+
     pub fn to_error_message(&self) -> String {
-        format!("Sorry, module {module} issued error {error_number}:\n{description}: Validation of key \"{key}\" with string \"{string}\" failed.", 
+        format!("Sorry, module {module} issued error {error_number}:\n{description}: {reason}", 
             module = self.module(),
             error_number = self.number(),
             description = self.description(),
-            key = self.error_key.name(),
-            string = self.error_key.value())
+            reason = self.reason())
     }
 }
 
-impl<'a> std::fmt::Display for KDBErrorWrapper<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+// Display + Error impl for all variants. Needed such that an error can be catched an printed, instead of
+// matched all the way down, since only KDBErrorWrapper implements the actual message conversion.
+
+impl<'a> Display for KDBError<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            KDBError::ConflictingState(err) => write!(f, "{}", err),
+            KDBError::Permanent(err) => write!(f, "{}", err),
+            KDBError::Validation(err) => write!(f, "{}", err),
+        }
+    }
+}
+
+impl<'a> Error for KDBError<'a> {}
+
+impl<'a> Display for PermanentError<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            PermanentError::Installation(err) => write!(f, "{}", err),
+            PermanentError::Logical(err) => write!(f, "{}", err),
+            PermanentError::Resource(err) => write!(f, "{}", err),
+        }
+    }
+}
+
+impl<'a> Error for PermanentError<'a> {}
+
+impl<'a> Display for ResourceError<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            ResourceError::OutOfMemory(err) => write!(f, "{}", err)
+        }
+    }
+}
+
+impl<'a> Error for ResourceError<'a> {}
+
+impl<'a> Display for LogicalError<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            LogicalError::Interface(err) => write!(f, "{}", err),
+            LogicalError::Internal(err) => write!(f, "{}", err),
+            LogicalError::PluginMisbehavior(err) => write!(f, "{}", err),
+        }
+    }
+}
+
+impl<'a> Error for LogicalError<'a> {}
+
+impl<'a> Display for ValidationError<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        match self {
+            ValidationError::Semantic(err) => write!(f, "{}", err),
+            ValidationError::Syntactic(err) => write!(f, "{}", err)
+        }
+    }
+}
+
+impl<'a> Error for ValidationError<'a> {}
+
+impl<'a> Display for KDBErrorWrapper<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self.to_error_message())
     }
 }
 
-impl<'a> std::error::Error for KDBErrorWrapper<'a> {}
+impl<'a> Error for KDBErrorWrapper<'a> {}
 
 fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
     let err_num_key_res = error_key.meta("error/number");
