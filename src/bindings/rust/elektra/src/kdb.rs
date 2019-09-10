@@ -3,11 +3,7 @@ use crate::{KeySet, StringKey, WriteableKey};
 use std::ptr::NonNull;
 use std::fmt::{Display, Formatter, self};
 use std::error::Error;
-use KDBError::*;
-use LogicalError::*;
-use PermanentError::*;
-use ResourceError::*;
-use ValidationError::*;
+use {KDBError::*, LogicalError::*, PermanentError::*, ResourceError::*, ValidationError::*};
 
 #[derive(Debug)]
 pub struct KDB {
