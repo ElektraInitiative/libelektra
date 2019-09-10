@@ -332,6 +332,13 @@ def dockerInit() {
       "./scripts/docker/alpine/3.9/Dockerfile"
     )
 
+    /* Bionic image*/
+    DOCKER_IMAGES.bionic = createDockerImageDesc(
+      "bionic", this.&idTesting,
+      "./scripts/docker/ubuntu/xenial",
+      ".scripts/docker/ubuntu/xeniel/Dockerfile"
+    )
+
     /* Image building the libelektra.org frontend */
     DOCKER_IMAGES.website_frontend = createDockerImageDesc(
       "website-frontend", this.&idWebsite,
@@ -1024,6 +1031,7 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildDebianPackage("buildPackage/debian/stretch", DOCKER_IMAGES.stretch)
   // tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   tasks << buildWebUI()
   return tasks
