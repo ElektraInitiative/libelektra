@@ -153,7 +153,7 @@ impl<'a> StringKey<'a> {
     }
 
     /// Returns an iterator over the key's metakeys.
-    pub fn meta_iter<'b>(&'b mut self) -> MetaIter<'b, StringKey<'a>> {
+    pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, StringKey<'a>> {
         let mut dup = self.duplicate();
         dup.rewind_meta();
         MetaIter { key: dup, _marker: std::marker::PhantomData }
@@ -211,7 +211,7 @@ impl<'a> BinaryKey<'a> {
     }
 
     /// Returns an iterator over the key's metakeys.
-    pub fn meta_iter<'b>(&'b mut self) -> MetaIter<'b, BinaryKey<'a>> {
+    pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, BinaryKey<'a>> {
         let mut dup = self.duplicate();
         dup.rewind_meta();
         MetaIter { key: dup, _marker: std::marker::PhantomData }
