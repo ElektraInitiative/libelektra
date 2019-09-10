@@ -335,7 +335,7 @@ def dockerInit() {
     DOCKER_IMAGES.bionic = createDockerImageDesc(
       "bionic", this.&idTesting,
       "./scripts/docker/ubuntu/bionic",
-      ".scripts/docker/ubuntu/bionic/Dockerfile"
+      "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
     /* Image building the libelektra.org frontend */
