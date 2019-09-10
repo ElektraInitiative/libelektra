@@ -19,6 +19,7 @@ List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
 - [swig_python2](swig/python2/) Python 2 SWIG bindings
 - [swig_ruby](swig/ruby/) Ruby bindings
 - [jna](jna/) A full java binding using JNA
+- [rust](rust/) Bindings for the low-level API in Rust
 
 Experimental bindings (included in `EXPERIMENTAL`):
 
