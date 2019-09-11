@@ -25,6 +25,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
+- do not merge _(Markus Raab)_
 - Code generation
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
