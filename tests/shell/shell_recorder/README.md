@@ -7,7 +7,6 @@ regression tests.
 
 Generally you do not want to directly use the shell recorder but use the [Markdown format](tutorial_wrapper/README.md) instead.
 
-
 ## Example
 
 Lets take a look at a simple Shell Recorder test first. We store the text:
@@ -87,7 +86,7 @@ STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
 
 You can use the global values below at the start of Shell Recorder test. The basic syntax is `Variable: Value`.
 
-### Mountpoint
+### Mount Point
 
 This is the only configuration variable that has to be set. It is used to determine where the `shell_recorder` should look for changes.
 e.g. `Mountpoint: user/test` tells `shell_recorder` that you will be working under `user/test`.
@@ -119,7 +118,7 @@ STDOUT-REGEX: key1.*key2
 < kdb ls user/test
 ```
 
-. As you can see the line ending is considered  a normal character (`.`) in the output.
+. As you can see the line ending is considered a normal character (`.`) in the output.
 
 ### Options
 
@@ -127,6 +126,7 @@ The Shell Recorder provides the following checks
 
 - `STDOUT:` The Shell Recorder matches the **text** after this directive 1:1 with the standard output of the command.
 - `STDOUT-REGEX:` Use this directive if you want to compare the standard output of the command with a **regular expression**.
+
 * `STDERR:` The Shell Recorder compares the **regular expression** after this directive with the standard error output of the command.
 * `RET:` The Shell Recorder compares this **regular expression** with the return code (exit status) of the command.
 * `WARNINGS:` This **comma separated list** of numbers is compared with the warnings thrown by a `kdb` command.
@@ -203,7 +203,6 @@ the protocol file in it’s output:
 Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE
 ```
 
-
 . If we take a look at the protocol file we see that it contains the the commands from above, together with return values, standard (error)
 output, warnings and error values. For example, the last `kdb set` command produced the following text in the protocol file:
 
@@ -214,7 +213,6 @@ STDOUT: Set null value
 ```
 
 . We can now take the file `ls.esr` and the protocol file to check if running the test a second time produces the same output:
-
 
 ```sh
 mv /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE ~/Documents/ls.epf
@@ -239,4 +237,4 @@ Replay test succeeded
 ### Adding Replay Tests
 
 If you want to add a replay test to the test suite of Elektra, you can do so by moving your test file (`filename.esr`) and your protocol
-file (`filename.epf`) to the folder `replay_tests`. The text `filename`  specifies the name of the replay test.
+file (`filename.epf`) to the folder `replay_tests`. The text `filename` specifies the name of the replay test.

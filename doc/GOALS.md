@@ -1,5 +1,8 @@
 # Goals
 
+The vision of Elektra is to make it trivial to access and specify configuration by APIs.
+This helps in achieving the following goals:
+
 - Improve robustness of configuration systems by
   - avoiding reimplementation of parsers for the same configuration settings.
   - rejecting invalid configuration.
@@ -16,17 +19,26 @@
 
 - Embedded: Elektra is on the frontier for embedded systems because of
   its tiny core and the many possibilities with its plugins.
+  Known users:
+  - OpenWRT (distribution)
+  - Broadcom (blue-ray devices)
+  - Kapsch (cameras)
+  - Toshiba (TVs)
 - Server: Elektra is ideal suited for a local configuration storage by
   mounting existing configuration files into the global tree. Nodes
   using Elektra can be connected by already existing configuration
   management tools.
+  Known users:
+  - Allianz
+  - TU Wien
+  - Other Universities
 - Desktop: Elektra allows applications to read and write from a global
   configuration tree. We miss a specification (schema) so that these
   configuration values can be shared (integrated).
 
 ## Quality Goals
 
-1.) Simplicity
+### 1. Simplicity
 
 An overly complex system cannot be managed nor understood.
 Extensibility brings some complex issues,
@@ -47,7 +59,7 @@ Special care for simplicity is taken for the users:
   according to their needs
 - Key-value uniformity that allows introspection
 
-2.) Robustness
+### 2. Robustness
 
 Configuration systems today suffer badly from:
 
@@ -64,7 +76,7 @@ are necessary only within Elektra and not in the applications using
 Elektra! This makes your code not only portable towards more systems,
 but also enables global improvements in the configuration systems.
 
-3.) Extensibility
+### 3. Extensibility
 
 There are so many variants of
 
@@ -79,7 +91,7 @@ so that this extensible system works reproducible and predictable.
 Only key-value pairs are the common factor and a way to get and set
 them, everything else is an extension.
 
-4.) Performance
+### 4. Performance
 
 Accessing configuration has impact on bootup and startup-time.
 Elektra needs to be similar fast then current solutions.
@@ -94,3 +106,6 @@ Only pay for what you need.
 - Support for non-configuration issues, e.g., storing key-value data unrelated to configuration settings.
 - Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed file system below Elektra.
 
+## Further Readings
+
+- Continue reading: [Why should I use Elektra?](WHY.md)

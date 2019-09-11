@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iostream>
 
+#include <kdbconfig.h>
 #include <plugindatabase.hpp>
 
 #include <gtest/gtest.h>
@@ -79,10 +80,13 @@ TEST (PluginVariantsDatabase, getPluginVariants)
 		ASSERT_EQ (0, dump_variants.size ());
 	}
 
+#ifndef ENABLE_ASAN
+	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
 	if (std::find (allPlugins.begin (), allPlugins.end (), "augeas") != allPlugins.end ())
 	{
 		PluginSpec augeas ("augeas");
 		std::vector<PluginSpec> augeas_variants (db.getPluginVariants (augeas));
 		ASSERT_TRUE (augeas_variants.size () > 0);
 	}
+#endif
 }

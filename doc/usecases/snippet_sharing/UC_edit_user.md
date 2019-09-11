@@ -1,4 +1,4 @@
-# Use Case: Edit user
+# Use Case: Edit User
 
 ## Summary
 

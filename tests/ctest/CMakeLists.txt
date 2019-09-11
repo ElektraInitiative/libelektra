@@ -1,5 +1,4 @@
-file (GLOB TESTS
-	   test_*.c)
+file (GLOB TESTS test_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	if (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
@@ -11,6 +10,7 @@ endforeach (file ${TESTS})
 include_directories ("${CMAKE_SOURCE_DIR}/src/libs/elektra")
 
 target_link_elektra (test_array elektra-ease)
+target_link_elektra (test_conversion elektra-ease)
 target_link_elektra (test_backend elektra-plugin)
 target_link_elektra (test_keyname elektra-ease)
 
@@ -32,3 +32,9 @@ target_link_elektra (test_operation elektra-proposal)
 target_link_elektra (test_proposal elektra-proposal)
 
 target_link_elektra (test_utility elektra-utility)
+
+target_link_elektra (test_globbing elektra-globbing)
+
+target_link_elektra (test_opts elektra-opts)
+
+target_link_elektra (test_cmerge elektra-merge)

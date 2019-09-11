@@ -13,7 +13,7 @@
 #define G_ELEKTRA_TEST_STRING "test"
 
 #ifndef G_ELEKTRA_SETTINGS_MODULE_PRIORITY
-#define G_ELEKTRA_SETTINGS_MODULE_PRIORITY 200
+#error "no gsetting priority selected"
 #endif
 
 #define G_ELEKTRA_SETTINGS_SYSTEM "system"

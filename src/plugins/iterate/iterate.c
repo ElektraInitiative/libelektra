@@ -54,7 +54,7 @@ int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/iterate/exports/get", KEY_FUNC, elektraIterateGet, KEY_END),
 			       keyNew ("system/elektra/modules/iterate/exports/set", KEY_FUNC, elektraIterateSet, KEY_END),
 			       keyNew ("system/elektra/modules/iterate/exports/error", KEY_FUNC, elektraIterateError, KEY_END),
-#include ELEKTRA_README (iterate)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/iterate/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -77,7 +77,7 @@ int elektraIterateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (iterate)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("iterate",

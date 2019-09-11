@@ -21,7 +21,8 @@
 #include <strings.h>
 
 
-typedef enum {
+typedef enum
+{
 	INT,
 	UINT,
 	FLOAT,
@@ -335,7 +336,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	else if (rc == -1)
 	{
 		elektraFree (localCopy);
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", token);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", token);
 		return -1;
 	}
 	while ((token = strtok_r (NULL, ",", &savePtr)) != NULL)
@@ -349,7 +350,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 		else if (rc == -1)
 		{
 			elektraFree (localCopy);
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", token);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", token);
 			return -1;
 		}
 	}
@@ -438,13 +439,12 @@ static int validateKey (Key * key, Key * parentKey)
 		int rc = validateSingleRange (keyString (key), rangeString, type);
 		if (rc == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", keyString (rangeMeta));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", keyString (rangeMeta));
 			return -1;
 		}
 		else if (rc == 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_RANGE, parentKey, "value %s not within range %s", keyString (key),
-					    rangeString);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Value '%s' not within range %s", keyString (key), rangeString);
 			return 0;
 		}
 		else
@@ -457,8 +457,7 @@ static int validateKey (Key * key, Key * parentKey)
 		int rc = validateMultipleRanges (keyString (key), rangeString, parentKey, type);
 		if (rc == 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_RANGE, parentKey, "value %s not within range %s", keyString (key),
-					    rangeString);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Value '%s' not within range %s", keyString (key), rangeString);
 		}
 		return rc;
 	}
@@ -474,7 +473,7 @@ int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 			       keyNew ("system/elektra/modules/range/exports/get", KEY_FUNC, elektraRangeGet, KEY_END),
 			       keyNew ("system/elektra/modules/range/exports/set", KEY_FUNC, elektraRangeSet, KEY_END),
 			       keyNew ("system/elektra/modules/range/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
-#include ELEKTRA_README (range)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/range/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -506,7 +505,7 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (range)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("range",

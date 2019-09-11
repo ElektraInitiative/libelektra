@@ -1,4 +1,5 @@
 include (LibAddMacros)
+include (LibAddBinding)
 
 # don't call add_headers in a loop
 add_headers (HDR_FILES)
@@ -7,20 +8,19 @@ macro (do_example source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated)
+	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (${source} elektra-kdb)
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)
 
-file (GLOB TESTS
-	   *.c)
+file (GLOB TESTS *.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
-	do_example (${name})
+	if (NOT "${name}" MATCHES "^notification")
+		do_example (${name})
+	endif ()
 endforeach (file ${TESTS})
 
 target_link_elektra (cascading elektra-kdb)
@@ -31,3 +31,92 @@ target_link_elektra (kdbintro elektra-kdb)
 target_link_elektra (kdbopen elektra-kdb)
 target_link_elektra (kdbset elektra-kdb)
 target_link_elektra (set_key elektra-kdb)
+target_link_elektra (opts elektra-ease elektra-opts)
+target_link_elektra (optsSnippets elektra-opts)
+target_link_elektra (gopts
+		     elektra-ease
+		     elektra-opts
+		     elektra-kdb)
+
+# Notification examples
+
+# Cannot build examples without notification library which requires the internalnotification plugin
+list (FIND ADDED_PLUGINS "internalnotification" FOUND_NAME)
+if (FOUND_NAME GREATER -1)
+
+	# Build notification polling example
+	set (EXAMPLE notificationPolling)
+
+	set (SRC_FILES notificationPolling.c)
+	set (SOURCES ${SRC_FILES} ${HDR_FILES})
+
+	add_executable (${EXAMPLE} ${SOURCES})
+	add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
+
+	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
+
+	# TODO resolve https://issues.libelektra.org/2007
+	check_binding_was_added ("io_uv" IS_INCLUDED)
+	if (IS_INCLUDED)
+
+		# Build notification async example
+		set (EXAMPLE notificationAsync)
+
+		set (SRC_FILES notificationAsync.c)
+		set (SOURCES ${SRC_FILES} ${HDR_FILES})
+		if (BUILD_FULL OR BUILD_STATIC)
+			list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full
+										      # builds
+		endif ()
+
+		add_executable (${EXAMPLE} ${SOURCES})
+		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
+
+		target_link_elektra (${EXAMPLE}
+				     elektra-kdb
+				     elektra-notification
+				     elektra-io
+				     elektra-io-uv)
+		if (BUILD_FULL OR BUILD_STATIC)
+			target_link_libraries (${EXAMPLE} ${PC_libuv_LDFLAGS})
+		endif ()
+
+		find_package (libuv QUIET) # Make sure `libuv_VERSION` is defined correctly
+		if (libuv_VERSION VERSION_LESS "1.0")
+			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV0")
+		else ()
+			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV1")
+		endif ()
+		target_include_directories (${EXAMPLE} PRIVATE ${libuv_INCLUDE_DIRS})
+
+	endif ()
+
+	check_binding_was_added ("io_glib" IS_INCLUDED)
+	if (IS_INCLUDED)
+
+		# Build notification reload example
+		set (EXAMPLE notificationReload)
+
+		set (SRC_FILES notificationReload.c)
+		set (SOURCES ${SRC_FILES} ${HDR_FILES})
+
+		find_package (GLib QUIET)
+		include_directories (${GLib_INCLUDE_DIRS})
+
+		list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-glib-objects>)
+
+		add_executable (${EXAMPLE} ${SOURCES})
+		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
+
+		target_link_elektra (${EXAMPLE}
+				     elektra-kdb
+				     elektra-notification
+				     elektra-io
+				     elektra-io-glib)
+		if (BUILD_FULL OR BUILD_STATIC)
+			target_link_libraries (${EXAMPLE} ${GLib_LIBRARY})
+		endif ()
+
+	endif ()
+
+endif ()

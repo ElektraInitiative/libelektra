@@ -9,12 +9,12 @@
 When this library is loaded (either in LD_PRELOAD or ld.so) calls to `open` and `open64` will be intercepted and redirected.
 Additionally, you can force files to be read-only, or even generated from Elektra backends.
 
-
 ## CONFIGURATION
 
 The libraries configuration is stored under `/elektra/intercept/open`.
 
 Syntax:
+
 ```
 /elektra/intercept/open/path\/to\/realfile = path/to/myfile
 /elektra/intercept/open/path\/to\/realfile/readonly = 1

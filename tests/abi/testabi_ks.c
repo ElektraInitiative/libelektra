@@ -1133,6 +1133,9 @@ static void test_ksLookupByName (void)
 }
 
 
+#ifdef __SANITIZE_ADDRESS__
+ELEKTRA_UNUSED
+#endif
 static void test_ksLookupName (void)
 {
 	Key * found;
@@ -1150,7 +1153,7 @@ static void test_ksLookupName (void)
 	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
-	// a positive testcase
+	// a positive test case
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 
@@ -1951,17 +1954,17 @@ static void test_ksFunctional (void)
 	succeed_if (ksGetSize (ks) == 7, "initial size wrong");
 	succeed_if (ksGetSize (out) == 0, "initial size wrong");
 	ksFilter (out, ks, has_a);
-	succeed_if (ksGetSize (out) == 5, "has_a cutted more then the user/b");
+	succeed_if (ksGetSize (out) == 5, "has_a cut more than the user/b");
 	ksDel (out);
 
 	out = ksNew (0, KS_END);
 	ksFilter (out, ks, below_a);
-	succeed_if (ksGetSize (out) == 4, "below_a cutted more then the user/ab/2");
+	succeed_if (ksGetSize (out) == 4, "below_a cut more than the user/ab/2");
 	ksDel (out);
 
 	out = ksNew (0, KS_END);
 	ksFilter (out, ks, direct_below_a);
-	succeed_if (ksGetSize (out) == 2, "direct_below_a cutted more then the user/a/b/*");
+	succeed_if (ksGetSize (out) == 2, "direct_below_a cut more than the user/a/b/*");
 	ksDel (out);
 
 	ksDel (ks);
@@ -1988,6 +1991,9 @@ static void test_ksFunctional (void)
 	ksDel (values_below_30);
 }
 
+#ifdef __SANITIZE_ADDRESS__
+ELEKTRA_UNUSED
+#endif
 static void test_ksLookupPop (void)
 {
 	printf ("Test ksLookup with KDB_O_POP\n");
@@ -2020,7 +2026,7 @@ static void test_ksLookupPop (void)
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
 	found = ksLookupByName (small, "user/b", KDB_O_POP);
-	succeed_if (found == 0, "found something, but shouldnt");
+	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
@@ -2032,7 +2038,7 @@ static void test_ksLookupPop (void)
 
 	succeed_if (ksGetSize (small) == 0, "could not append all keys");
 	found = ksLookupByName (small, "user/d", KDB_O_POP);
-	succeed_if (found == 0, "found something, but shouldnt");
+	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	ksDel (small);
@@ -2049,7 +2055,7 @@ static void test_ksLookupPop (void)
 	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
-	// a positive testcase
+	// a positive test case
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
@@ -2080,7 +2086,7 @@ static void test_ksLookupPop (void)
 	succeed_if (ksLookupByName (ks, "user/named/k/ey", KDB_O_POP) == 0, "seperation that should be");
 	succeed_if (ksLookupByName (ks, "user/na/med/key", KDB_O_POP) == 0, "seperation that should be");
 
-	// a positive testcase
+	// a positive test case
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
@@ -2803,6 +2809,37 @@ static void test_cutbelow (void)
 	keyDel (cutpoint);
 }
 
+static void test_cascading_cutbelow (void)
+{
+	printf ("Testing cutting below some keys (cascading)\n");
+
+	Key * cutpoint = keyNew ("/export", KEY_END);
+	KeySet * orig = ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+			       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END),
+			       keyNew ("/export-backup/b", KEY_END), keyNew ("/export-backup-2/x", KEY_END), KS_END);
+	ksRewind (orig);
+	ksNext (orig);
+	succeed_if_same_string (keyName (ksCurrent (orig)), "/export/a");
+	ksLookupByName (orig, "/export-backup/b", 0);
+	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
+
+	KeySet * part = ksCut (orig, cutpoint);
+
+	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
+
+	KeySet * cmp_orig = ksNew (15, keyNew ("/export-backup-2/x", KEY_END), keyNew ("/export-backup/b", KEY_END), KS_END);
+	compare_keyset (orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet * cmp_part = ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+				   keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END), KS_END);
+	compare_keyset (part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
 KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
@@ -3069,7 +3106,7 @@ static void test_nsLookup (void)
 		keySetName (lookupKey, namespaces[i]);
 		keyAddName (lookupKey, "test/keyset/dir7/key1");
 		Key * k3 = ksLookup (ks, lookupKey, 0);
-		succeed_if (!k3, "we have a problem: found key cutted out");
+		succeed_if (!k3, "we have a problem: found key cut out");
 
 		keyDel (lookupKey);
 		keyDel (searchKey);
@@ -3216,6 +3253,7 @@ int main (int argc, char ** argv)
 	test_cutpointRoot ();
 	test_unique_cutpoint ();
 	test_cutbelow ();
+	test_cascading_cutbelow ();
 	test_simple ();
 	test_cursor ();
 	test_morecut ();

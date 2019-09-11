@@ -9,7 +9,6 @@ for file in $(find src/plugins/ini/crash_test -regex '.*crash[0-9][0-9]*.ini$' |
 	kdb rm -rf user/tests/ini 2>&1 | grep -q 'SIG' && echo "File $file caused a crash"                      \
 	# Check if we successfully removed all keys                                                             \
 	kdb ls user/tests/ini                                                                                   \
-done                                                                                                      \
-echo 'OK'
-#> OK
+done
+#>
 ```

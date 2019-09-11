@@ -31,18 +31,20 @@
 
 #include <kdbinternal.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int nbError;
 int nbTest;
 
 char file[KDB_MAX_PATH_LENGTH];
-char srcdir[KDB_MAX_PATH_LENGTH];
+char srcdir[KDB_MAX_PATH_LENGTH + 1];
 
 char * tmpfilename;
 char * tempHome;
 int tempHomeLen;
 char * tempHomeConf;
-
-static void clean_temp_home (void);
 
 /**Does some useful startup.
  */
@@ -53,11 +55,11 @@ int init (int argc, char ** argv)
 
 	if (argc > 1)
 	{
-		strncpy (srcdir, argv[1], sizeof (srcdir));
+		strncpy (srcdir, argv[1], sizeof (srcdir) - 1);
 	}
 	else
 	{
-		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof (srcdir));
+		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof (srcdir) - 1);
 	}
 
 	tmpvar = getenv ("TMPDIR");
@@ -98,7 +100,7 @@ int init (int argc, char ** argv)
 
 /**Create a root key for a backend.
  *
- * @return a allocated root key */
+ * @return an allocated root key */
 Key * create_root_key (const char * backendName)
 {
 	Key * root = keyNew ("user/tests", KEY_END);
@@ -111,7 +113,7 @@ Key * create_root_key (const char * backendName)
 
 /**Create a configuration keyset for a backend.
  *
- * @return a allocated configuration keyset for a backend*/
+ * @return an allocated configuration keyset for a backend*/
 KeySet * create_conf (const char * filename)
 {
 	return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END);
@@ -406,11 +408,11 @@ int output_warnings (Key * warningKey)
 	if (!metaWarnings) return 1; /* There are no current warnings */
 
 	int nrWarnings = atoi (keyString (metaWarnings));
-	char buffer[] = "warnings/#00\0description";
 
 	printf ("There are %d warnings\n", nrWarnings + 1);
 	for (int i = 0; i <= nrWarnings; ++i)
 	{
+		char buffer[] = "warnings/#00\0description";
 		buffer[10] = i / 10 % 10 + '0';
 		buffer[11] = i % 10 + '0';
 		printf ("buffer is: %s\n", buffer);
@@ -419,10 +421,6 @@ int output_warnings (Key * warningKey)
 		buffer[12] = '\0';
 		strncat (buffer, "/description", sizeof (buffer) - strlen (buffer) - 1);
 		printf ("description: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/ingroup", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("ingroup: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
 		strncat (buffer, "/module", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
@@ -471,7 +469,6 @@ int output_error (Key * errorKey)
 
 	printf ("number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));
 	printf ("description: : %s\n", keyString (keyGetMeta (errorKey, "error/description")));
-	printf ("ingroup: : %s\n", keyString (keyGetMeta (errorKey, "error/ingroup")));
 	printf ("module: : %s\n", keyString (keyGetMeta (errorKey, "error/module")));
 	printf ("at: %s:%s\n", keyString (keyGetMeta (errorKey, "error/file")), keyString (keyGetMeta (errorKey, "error/line")));
 	printf ("reason: : %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
@@ -503,7 +500,7 @@ static int rm_all (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, in
 }
 #endif
 
-static void clean_temp_home (void)
+void clean_temp_home (void)
 {
 	if (tmpfilename)
 	{
@@ -546,3 +543,7 @@ static void clean_temp_home (void)
 		tempHomeLen = 0;
 	}
 }
+
+#ifdef __cplusplus
+} // end extern "C"
+#endif

@@ -11,7 +11,7 @@ if (DEPENDENCY_PHASE)
 
 	# Plugin variant: crypto_gcrypt
 	set (plugin crypto_gcrypt)
-	find_package (LibGcrypt QUIET)
+	find_package (Libgcrypt QUIET)
 	if (NOT LIBGCRYPT_FOUND)
 		remove_plugin (${plugin} "libgcrypt development files not found")
 	endif ()
@@ -19,16 +19,10 @@ if (DEPENDENCY_PHASE)
 	# Plugin variant: crypto_botan
 	set (plugin crypto_botan)
 	find_package (LibBotan)
-	if (NOT BOTAN_FOUND)
+	if (NOT Botan_FOUND)
 		remove_plugin (${plugin} "botan development files not found")
 	endif ()
-	if (ENABLE_ASAN
-	    AND (CMAKE_C_COMPILER_ID
-		 STREQUAL
-		 "GNU"
-		 OR CMAKE_CXX_COMPILER_ID
-		    STREQUAL
-		    "GNU"))
+	if (ENABLE_ASAN AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
 		remove_plugin (${plugin} "ENABLE_ASAN + GNU not supported by botan")
 	endif ()
 
@@ -36,52 +30,43 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 endif ()
 
-set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
-
-#
-# Compile Variant: OpenSSL
-#
-add_plugin (crypto_gcrypt
-	    SOURCES gcrypt_operations.h
-		    gcrypt_operations.c
-		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${LIBGCRYPT_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${LIBGCRYPT_LIBRARIES}
-	    LINK_ELEKTRA elektra-invoke
-	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_gcrypt\"
-				ELEKTRA_PLUGIN_NAME_C=crypto
-				ELEKTRA_VARIANT=gcrypt
-				ELEKTRA_CRYPTO_API_GCRYPT)
+set (CRYPTO_COMMON_FILES
+     helper.h
+     helper.c
+     gpg.h
+     gpg.c
+     crypto.h
+     crypto.c)
 
 #
 # Compile Variant: libgcrypt
 #
+add_plugin (crypto_gcrypt
+	    SOURCES gcrypt_operations.h gcrypt_operations.c ${CRYPTO_COMMON_FILES}
+	    INCLUDE_DIRECTORIES ${Libgcrypt_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${Libgcrypt_LIBRARIES}
+	    LINK_ELEKTRA elektra-invoke
+	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=gcrypt ELEKTRA_CRYPTO_API_GCRYPT)
+
+#
+# Compile Variant: OpenSSL
+#
 add_plugin (crypto_openssl
-	    SOURCES openssl_operations.h
-		    openssl_operations.c
-		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIRS}
+	    SOURCES openssl_operations.h openssl_operations.c ${CRYPTO_COMMON_FILES}
+	    INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIR}
 	    LINK_LIBRARIES ${OPENSSL_LIBRARIES}
 	    LINK_ELEKTRA elektra-invoke
-	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_openssl\"
-				ELEKTRA_PLUGIN_NAME_C=crypto
-				ELEKTRA_VARIANT=openssl
-				ELEKTRA_CRYPTO_API_OPENSSL)
+	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=openssl ELEKTRA_CRYPTO_API_OPENSSL)
 
 #
 # Compile Variant: Botan
 #
 add_plugin (crypto_botan
-	    SOURCES botan_operations.h
-		    botan_operations.cpp
-		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${BOTAN_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${BOTAN_LIBRARIES}
+	    SOURCES botan_operations.h botan_operations.cpp ${CRYPTO_COMMON_FILES}
+	    INCLUDE_DIRECTORIES ${Botan_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${Botan_LIBRARIES}
 	    LINK_ELEKTRA elektra-invoke
-	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_botan\"
-				ELEKTRA_PLUGIN_NAME_C=crypto
-				ELEKTRA_VARIANT=botan
-				ELEKTRA_CRYPTO_API_BOTAN)
+	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=botan ELEKTRA_CRYPTO_API_BOTAN)
 
 if (ADDTESTING_PHASE)
 	if (HAS_OPENSSL_4SURE)

@@ -64,18 +64,18 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
-			Backend * backend = backendOpen (cut, modules, errorKey);
+			Backend * backend = backendOpen (cut, modules, kdb->global, errorKey);
 
 			if (!backend)
 			{
-				ELEKTRA_ADD_WARNING (24, errorKey, "could not create missing backend");
+				ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not create missing backend");
 				ret = -1;
 				continue;
 			}
 
 			if (!backend->mountpoint)
 			{
-				ELEKTRA_ADD_WARNING (25, errorKey, "no mountpoint");
+				ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Backend has no mount point");
 				ret = -1;
 				backendClose (backend, errorKey);
 				continue;
@@ -83,7 +83,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 
 			if (mountBackend (kdb, backend, errorKey) == -1)
 			{
-				ELEKTRA_ADD_WARNING (24, errorKey, "mounting of backend failed");
+				ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting of backend failed");
 				ret = -1;
 				/* mountBackend modified the refcounter. */
 				backend->refcounter = 1;
@@ -112,23 +112,23 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 {
 	// open the defaultBackend the first time
-	kdb->defaultBackend = backendOpenDefault (modules, KDB_DB_FILE, errorKey);
+	kdb->defaultBackend = backendOpenDefault (modules, kdb->global, KDB_DB_FILE, errorKey);
 	kdb->initBackend = 0;
 
 	if (!kdb->defaultBackend)
 	{
-		ELEKTRA_ADD_WARNING (43, errorKey, "could not (re)open default backend");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not (re)open default backend");
 		return -1;
 	}
 
 	if (!inFallback)
 	{
 		/* Reopen the init Backend for fresh user experience (update issue) */
-		kdb->initBackend = backendOpenDefault (modules, KDB_DB_INIT, errorKey);
+		kdb->initBackend = backendOpenDefault (modules, kdb->global, KDB_DB_INIT, errorKey);
 
 		if (!kdb->initBackend)
 		{
-			ELEKTRA_ADD_WARNING (43, errorKey, "could not (re)open init backend");
+			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not (re)open init backend");
 			return -1;
 		}
 	}
@@ -277,16 +277,24 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
 	return refKey;
 }
 
-Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules, Key * errorKey)
+/**
+ * Loads global plugin
+ *
+ * @retval -1 on failure
+ * @retval 0 on empty plugin name (nothing configured at given position)
+ * @retval 1 on success
+ */
+int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * system,
+				   KeySet * modules, Key * errorKey)
 {
-	Plugin * plugin;
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
+	Key * openKey = keyDup (errorKey);
 
 	if (refKey)
 	{
 		// plugin already loaded, just reference it
-		plugin = *(Plugin **) keyValue (refKey);
-		plugin->refcounter += 1;
+		*plugin = *(Plugin **) keyValue (refKey);
+		(*plugin)->refcounter += 1;
 	}
 	else
 	{
@@ -294,33 +302,50 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 		ELEKTRA_NOT_NULL (config);
 		// config holds a newly allocated KeySet
 		const char * pluginName = keyString (cur);
-		// loading the new plugin
-		plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
-		if (!plugin)
+		if (!pluginName || pluginName[0] == '\0')
 		{
-			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
-			return NULL;
+			keyDel (openKey);
+			ksDel (config);
+			return 0;
+		}
+
+		// loading the new plugin
+		*plugin = elektraPluginOpen (pluginName, modules, config, openKey);
+		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !ksLookupByName (system, "system/elektra/cache/enabled", 0))
+		{
+			keyDel (openKey);
+			return 0;
+		}
+		else if (!(*plugin))
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin '%s'", pluginName);
+			keyCopyAllMeta (errorKey, openKey);
+			keyDel (openKey);
+			return -1;
 		}
 
 		// saving the plugin reference to avoid having to load the plugin multiple times
-		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &plugin, KEY_END);
+		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &(*plugin), KEY_END);
 		keyAddBaseName (refKey, keyString (cur));
 		ksAppendKey (referencePlugins, refKey);
 		keyDel (refKey);
 	}
 
-	return plugin;
+	keyCopyAllMeta (errorKey, openKey);
+	keyDel (openKey);
+	return 1;
 }
 
-KeySet * elektraDefaultGlobalConfig (void)
+KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 {
-	return ksNew (
-		18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
+	KeySet * config = ksNew (
+		24, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
+			"pregetstorage procgetstorage postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
 			KEY_END),
 #ifndef __MINGW32__
@@ -330,23 +355,39 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
 #endif
+		keyNew ("system/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+		keyNew ("system/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+
+	Key * cacheEnabled = ksLookupByName (keys, "system/elektra/cache/enabled", 0);
+	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
+	{
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
+	}
+
+	return config;
 }
 
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 {
 	int retval = 0;
 	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
+	KeySet * system = ksDup (keys);
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
-		ksDel (keys);
-		keys = elektraDefaultGlobalConfig ();
+		KeySet * tmp = keys;
+		keys = elektraDefaultGlobalConfig (keys);
+		ksDel (tmp);
 		root = ksHead (keys);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
@@ -369,11 +410,20 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
 #endif
 				// load plugins in implicit max once placement
-				Plugin * plugin = elektraMountGlobalsLoadPlugin (referencePlugins, cur, global, modules, errorKey);
-				if (!plugin)
+				Plugin * plugin = 0;
+				int mountRet =
+					elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, system, modules, errorKey);
+
+				if (mountRet == -1)
 					retval = -1; // error loading plugin
+				else if (mountRet == 0)
+					continue; // no plugin configured here
 				else
+				{
 					kdb->globalPlugins[i][MAXONCE] = plugin;
+					// set handle to global keyset
+					plugin->global = kdb->global;
+				}
 
 				// load plugins in explicit placements
 				const char * placementName = keyName (cur);
@@ -391,12 +441,20 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 
 						if (!elektraStrCaseCmp (subPlacement, GlobalpluginSubPositionsStr[j]))
 						{
-							Plugin * subPlugin = elektraMountGlobalsLoadPlugin (
-								referencePlugins, curSubPosition, subPositions, modules, errorKey);
-							if (!subPlugin)
+							Plugin * subPlugin = 0;
+							int subRet =
+								elektraMountGlobalsLoadPlugin (&subPlugin, referencePlugins, curSubPosition,
+											       subPositions, system, modules, errorKey);
+							if (subRet == -1)
 								retval = -1; // error loading plugin
+							else if (subRet == 0)
+								continue; // no plugin configured here
 							else
+							{
 								kdb->globalPlugins[i][j] = subPlugin;
+								// set handle to global keyset
+								subPlugin->global = kdb->global;
+							}
 						}
 					}
 				}
@@ -408,6 +466,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	ksDel (global);
 	ksDel (keys);
 	ksDel (referencePlugins);
+	ksDel (system);
 	return retval;
 }
 
@@ -429,7 +488,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	if (!root)
 	{
-		ELEKTRA_ADD_WARNING (23, errorKey, "no root key found for modules");
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "No root key found for modules");
 		return -1;
 	}
 
@@ -438,7 +497,14 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	while ((cur = ksNext (modules)) != 0)
 	{
-		Backend * backend = backendOpenModules (modules, errorKey);
+		Backend * backend = backendOpenModules (modules, kdb->global, errorKey);
+
+		if (!backend)
+		{
+			// error already set in errorKey
+			continue;
+		}
+
 		ksAppendKey (alreadyMounted, backend->mountpoint);
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{
@@ -464,7 +530,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  */
 int mountVersion (KDB * kdb, Key * errorKey)
 {
-	Backend * backend = backendOpenVersion (errorKey);
+	Backend * backend = backendOpenVersion (kdb->global, errorKey);
 	mountBackend (kdb, backend, errorKey);
 
 	return 0;

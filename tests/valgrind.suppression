@@ -248,18 +248,7 @@
    obj:*/ld-2.19.so
 }
 {
-   semlock plugin sem_open
-   Memcheck:Param
-   write(buf)
-   fun:*
-   fun:sem_open
-   ...
-   fun:elektraSemlockOpen
-   fun:elektraPluginOpen
-   ...
-}
-{
-   rest-backend loadEnabledFormats jni plugin
+   website-backend loadEnabledFormats jni plugin
    Memcheck:Leak
    match-leak-kinds: all
    fun:malloc
@@ -366,3 +355,61 @@
    fun:g_once_init_enter
    fun:g_main_context_new
 }
+{
+   libc 2.19 free
+   Memcheck:Free
+   fun:free
+   fun:__libc_freeres
+   fun:_vgnU_freeres
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   Binary: `testio_uv`, `testmod_zeromqrecv` | OS: Debian Sid | Type: Unitialized Bytes
+   Memcheck:Param
+   epoll_ctl(event)
+   ...
+   fun:main
+}
+{
+   gpg-agent npth_create _dl_allocate_tls
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_2.2.5
+   fun:npth_create
+   obj:/usr/bin/gpg-agent
+   obj:/usr/bin/gpg-agent
+   fun:(below main)
+}
+{
+   PluginProcess child dies keyDup
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:elektraMalloc
+   fun:elektraKeyMalloc
+   fun:keyDup
+   fun:elektraPluginProcessStart
+   fun:elektraDummyOpenAndDie
+   fun:test_childDies
+   fun:main
+}
+{
+   PluginProcess child dies ksNew
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:elektraMalloc
+   fun:ksVNew
+   fun:ksNew
+   fun:elektraPluginProcessStart
+   fun:elektraDummyOpenAndDie
+   fun:test_childDies
+   fun:main
+}
+

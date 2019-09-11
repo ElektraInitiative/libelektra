@@ -2,36 +2,34 @@
 
 The Markdown Shell Recorder extracts executable shell snippets from Markdown files and translate them into a suitable format for the [`shell_recorder`](../shell_recorder/README.md).
 
-Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ```` ```sh ````  and end with ```` ``` ````.
+Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ` ```sh ` and end with ` ``` `.
 
 ## Example
 
 Let us look at a simple example first:
 
 ```sh
-kdb set /tests/markdown/napalm death
-#> Using name user/tests/markdown/napalm
+kdb set user/tests/markdown/napalm death
 #> Create a new key user/tests/markdown/napalm with string "death"
 
-kdb rm /tests/markdown/napalm
+kdb rm user/tests/markdown/napalm
 
 kdb rm /tests/markdown/babymetal
-# RET: 1
+# RET: 11
 # STDERR: Did not find the key
 ```
 
-. The test above invokes three commands. The first command sets the [cascading key](/doc/tutorials/cascading.md)
-`/tests/markdown/napalm` to the value `death`. The special comment `#> ` below the command specifies the expected output to the standard
+. The test above invokes three commands. The first command stores the value `death` in the key with the name
+`user/tests/markdown/napalm`. The special comment `#>` below the command specifies the expected output to the standard
 output. This means the Markdown Shell Recorder expects the command
 
 ```
-kdb set /tests/markdown/napalm death
+kdb set user/tests/markdown/napalm death
 ```
 
 to print the text
 
 ```
-Using name user/tests/markdown/napalm
 Create a new key user/tests/markdown/napalm with string "death"
 ```
 
@@ -76,7 +74,7 @@ If the plugin is missing, the test will not be added.
 
 ### Commands
 
-- Lines not starting with a comment sign (`#`) are treated as (shell) commands. They are  executed by the Shell Recorder.
+- Lines not starting with a comment sign (`#`) are treated as (shell) commands. They are executed by the Shell Recorder.
 - Commands starting with `sudo` will be executed without `sudo`.
 
 #### Multiline Commands
@@ -106,12 +104,12 @@ kdb rm user/tests/tempfile
 
 All check start with a comment sign (`#`).
 
-- `#> text`: The **text** after `#> ` is matched 1:1 against the command output. Multiple `#> ` will be concatenated automatically using `⏎` (the Shell Recorder equivalent of `\n`).
+- `#> text`: The **text** after `#>` and the single space character afterwards is matched 1:1 against the command output. Multiple `#>` will be concatenated automatically using `⏎` (the Shell Recorder equivalent of `\n`). If you want to check for empty output you can also just use `#>` (without the single space character afterwards).
 
 - `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
 - `# ERROR: regex` Checks if the `kdb` command produced error `regex`. The text `regex` is a **regular expression** (e.g. `1|7` will check if the error `1` or the error `7` occurred).
-   If you do not specify a regex, then the Markdown Shell Recorder will check if the command printed nothing to the standard error output.
+  If you do not specify a regex, then the Markdown Shell Recorder will check if the command printed nothing to the standard error output.
 
 - `# WARNINGS: csl` The Shell Recorder compares this **comma separated list** of numbers to the warnings thrown by a `kdb` command.
 

@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Reformats Shell source code
+# @date 07.09.2018
+# @tags reformat
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+cd "$SOURCE"
+
+if ! which shfmt > /dev/null; then
+	printf 2>&1 'Please install `shfmt`\n'
+	exit 1
+fi
+
+shell_files=$(shfmt -f 'scripts' 'src' 'tests/shell')
+additional_files=$(
+	for filepath in 'scripts/change-resolver-symlink.in' \
+		'scripts/change-storage-symlink.in' \
+		'scripts/configure-firefox.in' \
+		'scripts/elektrify-getenv.in' \
+		'scripts/elektrify-open.in' \
+		'scripts/install-sh-completion.in' \
+		'scripts/list-tools.in' \
+		'scripts/make-source-package.in' \
+		'scripts/run_all.in' \
+		'scripts/run_memcheck.in' \
+		'scripts/run_nocheckshell.in' \
+		'scripts/run_nokdbtests.in'; do
+		printf '%s\n' "$filepath"
+	done
+)
+shell_files=$(printf '%s\n' "$shell_files" "$additional_files")
+
+if [ $# -gt 0 ]; then
+	tmpfile=$(mktemp /tmp/elektra-reformat-shfmt.XXXXXX)
+	printf "%s\n" "$@" > "$tmpfile"
+	shell_files=$(printf "%s\n" "$shell_files" | grep -x -F -f "$tmpfile")
+	rm "$tmpfile"
+fi
+
+non_ignored=$(printf "%s\n" "$shell_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs git check-ignore -vn | sed -nE 's/^::[[:blank:]]*(.*)$/\1/p')
+printf "%s\n" "$non_ignored" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs shfmt -s -sr -w
+shfmt -s -sr -w 'tests/shell/include_common.sh.in'
+
+end_line=$(grep -n '^### END OF INCLUDE FILE ###$' 'tests/shell/include_common.sh.in' | cut -d':' -f1)
+
+if [ -z "$end_line" ]; then
+	printf 2>&1 'tests/shell/include_common.sh.in must contain the line "### END OF INCLUDE FILE ###" to indicate the end of the actual file content\n'
+	exit 1
+fi
+
+if [ "$end_line" -ge 1000 ]; then
+	printf 2>&1 'tests/shell/include_common.sh.in too long only 999 lines allowed.\n'
+	exit 1
+fi
+
+comment_lines=$((999 - end_line))
+head -n "$end_line" 'tests/shell/include_common.sh.in' > a.tmp && mv a.tmp 'tests/shell/include_common.sh.in'
+awk -v LINES="${comment_lines}" 'BEGIN { for (c = 0; c < LINES; c++) printf "#\n"; }' >> 'tests/shell/include_common.sh.in'
+echo "# empty lines up to 1000 so that line numbers in the resulting scripts are more useful" >> 'tests/shell/include_common.sh.in'

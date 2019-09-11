@@ -19,12 +19,12 @@ using ckdb::Plugin;
 extern "C" {
 int elektraCppTemplateOpen (Plugin * handle, Key * errorKey);
 int elektraCppTemplateClose (Plugin * handle, Key * errorKey);
-int elektraCppTemplateGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCppTemplateSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCppTemplateError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCppTemplateGet (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraCppTemplateSet (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraCppTemplateError (Plugin * handle, KeySet * conf, Key * parentKey);
 int elektraCppTemplateCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (cpptemplate);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"
 
 #endif

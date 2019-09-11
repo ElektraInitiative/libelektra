@@ -72,7 +72,7 @@ bindings and libraries sections will get some more attention.
 
 If you are interested in the techniques we use to structure our files,
 you can have a look at the
-[rest-frontend readme](https://blob.libelektra.org/src/tools/rest-frontend/README.md).
+[website-frontend readme](https://blob.libelektra.org/src/tools/website-frontend/README.md).
 The website is already the fourth view of our markdown pages!
 The others are man pages, doxygen, and github.
 
@@ -123,7 +123,7 @@ repository:
    can find all resources also [here](https://git.libelektra.org).
 2. If you are only worried about executed untrusted JavaScript,
    you can study and improve the
-   [Web Frontend](https://blob.libelektra.org/src/tools/rest-frontend/README.md),
+   [Web Frontend](https://blob.libelektra.org/src/tools/website-frontend/README.md),
    which builds the website.
    Based on this, we hope you disable `NoScript` for our page
    so that you are able to share snippets!
@@ -134,14 +134,13 @@ All Elektra Domains directly hosted by us are now only served by `https`.
 The former `http` sites are only redirects to `https`. This might cause
 trouble with some software, e.g., update `/etc/apt/sources.list`:
 
-    deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
-    deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
+deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
 
 The build Server is no longer reachable at port 8080, but now only directly at
 [https://build.libelektra.org/](https://build.libelektra.org/).
-
-The new [RestApi](https://restapi.libelektra.org) serves as backend
-for the website. For the docu, simply visit the site with your browser.
 
 While most `libelektra.org` now point to the new website, you can still
 directly go to [github](https://git.libelektra.org) and also to the

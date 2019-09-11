@@ -1,4 +1,4 @@
-# Use Case: View configuration of an instance
+# Use Case: View Configuration of an Instance
 
 ## Summary
 

@@ -64,7 +64,7 @@ specification and then prelude.
 In case a new plugin has been written which can be described using regular expressions, a
 plugin developer may want to teach the type system about this plugin. In order to do that,
 each configuration specification may contain a section describing the effects of keywords.
-There are three metakeys that are interpreted by the typechecker, `elektra/spec/order`, 
+There are three metakeys that are interpreted by the typechecker, `elektra/spec/order`,
 `elektra/spec/type` and `elektra/spec/impl`. These metakeys get explained and introduced
 along the following examples. Let's take the example of the fallback keyword,
 that would be formalized in the ini format as follows:
@@ -79,11 +79,11 @@ In the implementation `elektra/spec/impl` we are limited to the two functions `l
 forming the basic building blocks for describing more complex keywords. They respective type signatures
 are `RegexContains b a => Key b :: . -> Key a -> Key a` for `link` and
 `Intersectable (RegexIntersection a b) => Key a -> Regex b -> Key (RegexIntersection a b)`
-for `intersect`. 
+for `intersect`.
 A type signature, inspired by Haskell's type signatures, typically has two parts. The first
 part describes its constraints followed by `=>`. Then its parameter's types follow separated
 by a `->`, where the last parameter type is the result type.
-A constraint can bei either a containment constraint or a intersection constraint, written
+A constraint can bei either a containment constraint or an intersection constraint, written
 `RegexContains` or `Intersectable` followed by two type variables. Type variables may as well
 be a string constant describing a regex as we will see in the next example. In our case
 `RegexContains b a` means that the regex stored in the type variable a is either equal to or
@@ -139,7 +139,7 @@ that can be used on keys representing letters, and outputs a number:
 Create a sample configuration specification with three keys. As it is valid, there will be no error
 issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini), which already
 contains the type definitions for `check/range`, `check/long` and `fallback/#` and mount it along.
-Please note not to mount prelude below the specification. We use kdb shell to delay the type checking 
+Please note not to mount prelude below the specification. We use kdb shell to delay the type checking
 until we have finished writing the whole specification.
 
 ```sh
@@ -181,7 +181,7 @@ obviously cannot be linked together.
 ```sh
 kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
-# STDERR-REGEX: .*Could not not deduce:*
+# STDERR: .*Could not deduce:.*
 
 sudo kdb umount spec/tests/typechecker
 ```
@@ -210,10 +210,10 @@ Type checking or compilation failed:
 
 It is still fairly easy to map the error message back to the configuration
 specification. The above error message shows that there was an error when type checking the
-specification of `key2` as indicated by the line "In an equation for ...". The line 
+specification of `key2` as indicated by the line "In an equation for ...". The line
 "In the expression: ..." then shows the exact part where its happen. The incompatibility arises
-during checking the fallback from `key2` to `key1`. The regexes describing the contents of the 
-two keys are not compatible with each other. The first key contains numbers between 0 and 5000, 
+during checking the fallback from `key2` to `key1`. The regexes describing the contents of the
+two keys are not compatible with each other. The first key contains numbers between 0 and 5000,
 while the secondkey is restricted to numbers between 7200 and 10000.
 
 ## Debugging
@@ -225,10 +225,10 @@ type behavior can be observed when getting/setting a key in a specification.
 
 ## Dependencies
 
-* ghc >= 8.0.1 and <= 8.2
-* ghc-pkg, usually bundled with ghc
-* cabal, the haskell build system, usually bundled with ghc
-* augeas, which provides libfa utilized by this plugin
+- ghc >= 8.0.1 and <= 8.2
+- ghc-pkg, usually bundled with ghc
+- cabal, the haskell build system, usually bundled with ghc
+- augeas, which provides libfa utilized by this plugin
 
 Furthermore the following haskell dependencies need to be installed to the sandbox
 as explained in the [bindings readme](/src/bindings/haskell/README.md):

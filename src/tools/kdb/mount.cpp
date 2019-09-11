@@ -155,7 +155,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 	}
 
 	backend.needPlugin ("storage");
-	backend.recommendPlugin ("sync");
+	backend.needPlugin ("sync");
 	backend.addPlugins (parseArguments (cl.plugins));
 
 	if (cl.interactive)
@@ -257,7 +257,7 @@ void MountCommand::appendPlugins (MountBackendInterface & backend)
 		{
 			std::ostringstream os;
 			backend.status (os);
-			throw CommandAbortException (os.str ().c_str ());
+			throw CommandAbortException (os.str ());
 		}
 	}
 }

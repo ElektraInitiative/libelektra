@@ -1,24 +1,24 @@
-kdb-mount(1) - Mount a file to the key database
-===============================================
+# kdb-mount(1) - Mount a file to the key database
 
 ## SYNOPSIS
 
-`kdb mount [<path> <mountpoint>] [<plugin> [<config>] [..]]`<br>
+`kdb mount [<path> <mount point>] [<plugin> [<config>] [..]]`<br>
 
 - Where `path` is the path to the file the user wants to mount.
   See `kdb info resolver` for details what an absolute and relative path means.
   See also IMPORTANT below.
-- `mountpoint` is where in the key database the new backend should be mounted.
-  For a cascading mountpoint, `mountpoint` should start with `/`.
-  See also IMPORTANT below.
-- A list of such plugins with a configuration for each of them can be given:
- - `plugin` should be an Elektra plugin.
- - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
+- `mountpoint` is where in the key database the new backend should be mounted.
+  For a cascading mount point, `mountpoint` should start with `/`.
+  See also IMPORTANT below.
+
+- A list of such plugins with a configuration for each of them can be given:
+  - `plugin` should be an Elektra plugin.
+  - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
 ## DESCRIPTION
 
-This command allows a user to mount a new *backend*.
+This command allows a user to mount a new _backend_.
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
 
 Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a partition into the current file system.
@@ -26,22 +26,20 @@ This functionality is key to Elektra as it allows users to build a global key da
 A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa.
 Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.
 
-
 ## IMPORTANT
 
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
 Absolute paths are still relative to their namespace (see `kdb info resolver`).
-Only system+spec mountpoints are actually absolute.
+Only system+spec mount points are actually absolute.
 Read [elektra-namespaces(7)](elektra-namespaces.md) for further information.
 
-For cascading mountpoints (starting with `/`) a mountpoint for the namespace
-`dir`, `user` and `system` is created. Each of this mountpoint uses a different
+For cascading mount points (starting with `/`) a mount point for the namespace
+`dir`, `user` and `system` is created. Each of this mount point uses a different
 configuration file, either below current directory, below home directory
 or anywhere in the system.
 Use `kdb file <path>` to determine where the file(s) are.
-
 
 ## OPTIONS
 
@@ -53,12 +51,19 @@ Use `kdb file <path>` to determine where the file(s) are.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
-  Give debug information or ask debug questions (in interactive mode).
+  Give debug information or ask debug questions (in interactive mode). Prints additional information in case of errors/warnings.
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
+- `-s`, `--strategy`:
+  (experimental, use with care)
+  By default mounting is rejected if the mountpoint already exists. With the strategy
+  _unchanged_ you can change the behavior to be successful if _exactly_ the same config
+  would be written (see #1306 why this does not always work correctly).
 - `-R`, `--resolver <resolver>`
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
@@ -75,9 +80,7 @@ Use `kdb file <path>` to determine where the file(s) are.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 - `-f`, `--force`:
-  Unmount before mounting: Does not fail on already existing mountpoints.
-
-
+  Unmount before mounting: Does not fail on already existing mount points.
 
 ## KDB
 
@@ -92,8 +95,6 @@ Use `kdb file <path>` to determine where the file(s) are.
   which are added automatically (by default sync).
   The plugin-configuration syntax is as described above in the
   [synopsis](#SYNOPSIS).
-
-
 
 ## EXAMPLES
 
@@ -118,6 +119,6 @@ To recode and rename a configuration file using Elektra:<br>
 ## SEE ALSO
 
 - [elektra-glossary(7)](elektra-glossary.md).
-- [kdb-spec-mount(7)](kdb-spec-mount.md).
-- [kdb-umount(7)](kdb-umount.md).
+- [kdb-spec-mount(1)](kdb-spec-mount.md).
+- [kdb-umount(1)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).

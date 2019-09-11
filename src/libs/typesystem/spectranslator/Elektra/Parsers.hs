@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP, GADTs #-}
 --
 -- @file
 --
@@ -11,7 +12,7 @@
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 --
-module Elektra.Parsers (parseTypeSignature, parseRange, 
+module Elektra.Parsers (parseTypeSignature, parseRange,
   regexTypeP, regexTypeParameterP, typeSignatureP, rangeP) where
 
 import Control.Applicative (empty)
@@ -63,7 +64,7 @@ parensL :: Parser a -> Parser a
 parensL = between (symbolL "(") (symbolL ")")
 
 identifierL :: Parser String
-identifierL = lexeme $ qual <|> unqual 
+identifierL = lexeme $ qual <|> unqual
   where
     qual   = try $ (++) <$> ((++) <$> unqual <*> symbolL ".") <*> unqual
     unqual = (:) <$> letterChar <*> many alphaNumChar

@@ -27,7 +27,7 @@ Delayed to 1.0.0
 
 - ABI, API
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

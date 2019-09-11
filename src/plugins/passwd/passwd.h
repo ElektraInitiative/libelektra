@@ -16,6 +16,6 @@
 int elektraPasswdGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraPasswdSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (passwd);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

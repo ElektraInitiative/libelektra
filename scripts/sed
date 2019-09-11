@@ -1,10 +1,15 @@
-s/Electra/Elektra/g
+# =================
+# = General Terms =
+# =================
+
+s/\<occured\>/occurred/g
+s/build-in/built-in/g
 
 # ==============================
 # = British → American English =
 # ==============================
 
-s/behaviour/behavior/g
+s/([Bb])ehaviour/\1ehavior/g
 s/f(l?)avour/f\1avor/g
 s/generalises/generalizes/g
 s/organisation/organization/g
@@ -19,14 +24,18 @@ s/synchronised/synchronized/g
 # = Brands =
 # ==========
 
+s/[eE]lectra/Elektra/g
+s/[eE]lektra [iI]nitiative/Elektra Initiative/g
+s/[eE]lektra [pP]roject/Elektra Initiative/g
 s/\<[CcFf]engine/CFEngine/g
 
 # Only fix spelling of GitHub outside of URLs:
-s/([^.`])git[hH]ub([^.][^\w])/\1GitHub\2/g
+s/([^.`/])git[hH]ub([^.][^\w])/\1GitHub\2/g
 
 s/\<[Ll]ibreoffice/LibreOffice/g
 
-s/([^/])\<mark[Dd]own\>/\1Markdown/g
+s/([^./[-])\<mark[Dd]own\>/\1Markdown/g
+s/\<([Mm]ac )?OS X\>/macOS/g
 
 s/\<unix|UNIX/Unix/g
 s/\<XCode\>/Xcode/g
@@ -39,38 +48,23 @@ s/\<meta[- ]key\>/metakey/g
 s/\<meta[- ]name\>/metaname/g
 s/\<meta[- ]value\>/metavalue/g
 
-# s/\<dir name\>/dirname/g
-# s/\<base name\>/basename/g
-
 s/\<name space\>/namespace/g
 
 s/\<meta[- ]data\>/metadata/g
 
 s/\<plug-in(s)?\>/plugin\1/g
 
-# s/\<key-name\>/key name/g
-# s/\<keyname\>/key name/g
-
 # key-value pair
 s:\<key/value:key-value:g
+s:\<Key/value:Key-value:g
 
-# s/key-value/key value/g
-# s/keyvalue/key value/g
-
-s/\<data-?type/data type/g
+s/[^#"]\<data-?type/data type/g
 
 s/([^\./`-])[Jj]son/\1JSON/
-
-s/\<look up/lookup/g
-
-s/\<mount[- ]point/mountpoint/g
 
 s/\<metaspecification/meta-specification/g
 s/\<metamodel/meta-model/g
 s/\<metalanguage/meta-language/g
-
-# \<command line or command-line (context)
-# \<up-to-date vs. up to date (depending on position!)
 
 s/\<round ?trip/round-trip/g
 
@@ -82,15 +76,6 @@ s/\<time[- ]stamp/timestamp/g
 s/\<sub[- ]project/subproject/g
 
 s/\<C-(array|code|name|string)/C \1/g
-
-# s/\<valgrind\>/Valgrind/g
-
-# s/\<UTF/UTF/g
-# s/\<Utf/UTF/g
-# s/\<utf/UTF/g
-
-# s/\<UTF8/UTF-8/g
-# s/\<UTF 8/UTF-8/g
 
 s/\<worstcase/worst-case/g
 
@@ -115,13 +100,8 @@ s/\<[^-]symlink/symbolic link/g
 
 s/\<middle[- ]ware/middleware/g
 
-# s/\</gcc/GCC/g
-
 # plural
 s/\<files-?system\>/file system/g
-
-#s/\<dependencies/dependences/g
-#s/\<dependency/dependence/g
 
 s/type-?system/type system/g
 s/type-checker/type checker/g

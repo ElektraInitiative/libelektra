@@ -22,5 +22,5 @@ import Data.Maybe (catMaybes)
 rangeDispatch :: Dispatcher
 rangeDispatch ks = ksList ks >>= fmap catMaybes . mapM dispatch
   where
-  	dispatch k    = keyGetMeta k "check/range" >>= ifKey (return Nothing) (dispatch' k)
-  	dispatch' k m = fmap ((k, "check/validation", ) . uncurry regexForRange) . parseRange <$> keyString m
+    dispatch k    = keyGetMeta k "check/range" >>= ifKey (return Nothing) (dispatch' k)
+    dispatch' k m = fmap ((k, "check/validation", ) . uncurry regexForRange) . parseRange <$> keyString m

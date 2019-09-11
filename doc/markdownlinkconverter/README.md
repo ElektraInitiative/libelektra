@@ -11,26 +11,26 @@ happens in 2 passes, which is needed because there can be files with no title.
 
 ## Usage for Manual Invocation
 
-	markdownlinkconverter [<cmake-cache-file>] <input-file>
+```sh
+markdownlinkconverter [<cmake-cache-file>] <input-file>
+```
 
 **The <input-file> parameter must be an absolute path!**
 
 ## Conventions
 
-* Links starting with `@ref`, `#` for anchors and `http`, `https` or `ftp` for extern links
+- Links starting with `@ref`, `#` for anchors and `http`, `https` or `ftp` for extern links
   wont be touched.
-* All other links to Markdown or arbitrary source files will be converted.
-* All links to folders will be altered to the README.md in the Folder.
+- All other links to Markdown or arbitrary source files will be converted.
+- All links to folders will be altered to the README.md in the Folder.
   This feature was introduced to be compatible with GitHub, where you can show the content of a folder in
   combination with the README.md of the containing folder.
-* Anchors wont work in imported Markdown pages.
+- Anchors wont work in imported Markdown pages.
 
 ## GitHub Specialities
 
-* GitHub supports source code fences with syntax highlighting which are not recognized by Doxygen.
+- GitHub supports source code fences with syntax highlighting which are not recognized by Doxygen.
   Thus `sh` after the fence is removed for Doxygen.
-
-
 
 ## Link Validation
 
@@ -44,7 +44,9 @@ which the link refers to.
 Every link starting with `http`, `https` or `ftp` will be written to a file named `external-links.txt` located in your
 build folder. With the following syntax:
 
-	<file>|<line> col 0 | <url>
+```
+<file>:<line>:0 <url>
+```
 
 Note: Due to the nature of the Markdown Link Converter the file can only be opened in append mode. So delete it and rerun the
 html build process (`make clean` could be needed) to get a list without duplicates.
@@ -54,6 +56,6 @@ Broken links will be printed. False positive not excluded (very rare).
 
 ## Further Improvements (Which Will be Introduced in a Later Version):
 
-* optimize pdf output (also UTF-8 encoding)
-* if title contains --, this should be @brief
-* also remove other fences doxygen does not understand
+- optimize pdf output (also UTF-8 encoding)
+- if title contains --, this should be @brief
+- also remove other fences doxygen does not understand

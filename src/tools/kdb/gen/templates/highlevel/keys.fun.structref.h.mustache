@@ -1,0 +1,106 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+/*%# alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+succeed_if_same_string ($1)
+ *
+ * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ type_name }}}).
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& macro_name %*/) (Elektra * elektra /*%# args? %*/,
+									/*%# args %*/
+									/*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+									/*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	const char * actualName = elektraFindReference (elektra, name);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	const char * actualName = elektraFindReference (elektra, "/*% name %*/");
+	/*%/ args? %*/
+
+	if (actualName == NULL || strlen (actualName) == 0)
+	{
+		return NULL;
+	}
+
+	return ELEKTRA_GET (/*%& type_name %*/) (elektra, actualName);
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param result  The value will be stored in the referenced variable.
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_GET (/*%& macro_name %*/) (Elektra * elektra, /*%& native_type %*/ *result /*%# args? %*/,
+						      /*%# args %*/
+						      /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+						      /*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	const char * actualName = elektraFindReference (elektra, name);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	const char * actualName = elektraFindReference (elektra, "/*% name %*/");
+	/*%/ args? %*/
+
+	if (actualName == NULL || strlen (actualName) == 0)
+	{
+		return NULL;
+	}
+
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, actualName, result);
+}
+/*%/ alloc? %*/
+
+/*%# generate_setters? %*/
+/*%={{ }}=%*/
+/**
+ * Set the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * WARNING: if the given value does not reference a valid struct, from this specification,
+ * ELEKTRA_GET ({{{ tag_name }}}) will fail. Use the `reference` plugin to ensure valid values.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param value   The value of '{{{ name }}}', you must prefix it with '{{{ parent_key }}}' yourself.
+ *                This is because you may want to specify a namespace.
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET (/*%& macro_name %*/) (Elektra * elektra, const char * value,
+						      /*%# args? %*/ /*%# args %*/ /*%& native_type %*/ /*%& name %*/,
+						      /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	elektraSetRawString (elektra, name, value, "struct_ref", error);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	elektraSetRawString (elektra, "/*% name %*/", value, "struct_ref", error);
+	/*%/ args? %*/
+}
+/*%/ generate_setters? %*/

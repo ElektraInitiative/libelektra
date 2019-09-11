@@ -9,7 +9,7 @@ Avoid anything starting with _
 
 remove elektraInvokeInitialize compatibility layer
 
-ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
+ksClear/keyClear weg (can be done with *Copy(,0))
 	meta handling should be the same
 
 Single Interface: only get pointers, no memcopy (only one keyGetString, no
@@ -25,6 +25,8 @@ backslash:
 
 remove old metadata get/set
 
+change key name of a key that was popped from all keysets?
+
 remove null ptr checks? (see decision)
 
 C++:
@@ -37,11 +39,11 @@ sentinel, have a single way how to terminate vaargs
 
 remove key/keyset flags
 - that are obsolete/deprecated
-- KDB_O_NOCASE (because it needs POSIX-only elektraStrCaseCmp)
+- KDB_O_NOCASE (because it needs POSIX-only elektraStrCaseCmp
+		and is not performant)
 
 _t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
 should be renamed to something elektra specific
-
 
 internal APIs: malloc, realloc should use 2 parameters and
 	check for multiplication overflow
@@ -55,6 +57,7 @@ empty/invalid keys should lead to an error in kdbGet
 KEY_* -> ELEKTRA_KEY_* to avoid clashes
 	e.g. clash with KEY_MODE in “linux/input-event-codes.h”
 consistently use singular (KEY_FLAGS -> KEY_FLAG)
+
 kdb.h -> elektra/kdb.h to avoid clashes
 
 Remove/Refactor/Rename obsolete/not needed methods:
@@ -104,6 +107,8 @@ Remove/Refactor/Rename obsolete/not needed methods:
    (system/elektra/mountpoints and system/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
 - recursive backend=plugin (separate commit method)
+- remove legacy configuration of the `kdb` tool
+  (% profile and /sw/kdb/ in src/tools/kdb/cmdline.cpp line 290-300)
 
 
 == Methods ==
@@ -113,7 +118,7 @@ all exported methods of elektra need to be:
 	well documented in behavior
 	having test cases for behavior
 	behavior not overlapping with another function
-	well documented error cases, return and errno values
+	well documented error cases and return values
 	having test cases for error cases
 	otherwise fix or mark it obsolete
 

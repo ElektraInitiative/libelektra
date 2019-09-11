@@ -12,4 +12,4 @@
 
 int elektraErrorGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraErrorSet (Plugin * handle, KeySet * ks, Key * parentKey);
-Plugin * ELEKTRA_PLUGIN_EXPORT (error);
+Plugin * ELEKTRA_PLUGIN_EXPORT;

@@ -10,7 +10,6 @@
 #include "yaml-cpp/yaml.h"
 
 #include <kdb.hpp>
-#include <kdbease.h>
 #include <kdblogger.h>
 #include <kdbplugin.h>
 
@@ -22,6 +21,25 @@ using namespace kdb;
 namespace
 {
 /**
+ * @brief This function converts a given number to an array base name.
+ *
+ * @param index This number specifies the index of the array entry.
+ *
+ * @return A string representing the given indices as Elektra array name.
+ */
+string indexToArrayBaseName (uintmax_t const index)
+{
+	size_t digits = 1;
+
+	for (uintmax_t value = index; value > 9; digits++)
+	{
+		value /= 10;
+	}
+
+	return "#" + string (digits - 1, '_') + to_string (index);
+}
+
+/**
  * @brief This function creates a new key from the given parameters.
  *
  * @param name This string specifies the postfix of the name of the key produced by this function.
@@ -31,7 +49,9 @@ namespace
  */
 Key newKey (string const & name, Key const & parent)
 {
-	Key key{ parent.getFullName (), KEY_END };
+	ELEKTRA_LOG_DEBUG ("Add new key with base name “%s”", name.c_str ());
+
+	Key key{ parent.getFullName (), KEY_BINARY, KEY_END };
 	key.addBaseName (name);
 
 	return key;
@@ -40,23 +60,17 @@ Key newKey (string const & name, Key const & parent)
 /**
  * @brief This function creates a new array key from the given parameters.
  *
- * @param mappings This argument specifies the key set of the new key this function creates.
  * @param arrayKey This argument specifies the key that represents the root of the array.
+ * @param index This parameter specifies the index of the array key this function creates.
  *
  * @returns The function returns a new key that is part of the array represented by `arrayKey`.
  */
-Key newArrayKey (KeySet const & mappings, Key & arrayKey)
+Key newArrayKey (Key & arrayKey, uintmax_t const index)
 {
-	KeySet arrayEntries{ elektraArrayGet (arrayKey.getKey (), mappings.getKeySet ()) };
+	ELEKTRA_LOG_DEBUG ("Add new array element to array parent “%s”", arrayKey.getName ().c_str ());
 
-	if (arrayEntries.size () <= 0)
-	{
-		Key first = arrayKey.dup ();
-		first.addBaseName ("#");
-		arrayEntries.append (first);
-	}
-
-	Key newKey{ elektraArrayGetNextKey (arrayEntries.getKeySet ()) };
+	Key newKey{ arrayKey.getName (), KEY_BINARY, KEY_END };
+	newKey.addBaseName (indexToArrayBaseName (index));
 	arrayKey.setMeta ("array", newKey.getBaseName ());
 
 	return newKey;
@@ -89,21 +103,50 @@ void addMetadata (Key & key, YAML::Node const & node)
  */
 Key createLeafKey (YAML::Node const & node, string const & name)
 {
-	Key key (name, KEY_END);
-	if (node.IsNull ())
+	Key key{ name, KEY_BINARY, KEY_END };
+	if (!node.IsNull ())
 	{
-		key.setMeta ("binary", "");
+		auto value = node.as<string> ();
+		if (value == "true" || value == "false")
+		{
+			try
+			{
+				key.set<bool> (node.as<bool> ());
+			}
+			catch (YAML::BadConversion const &)
+			{
+				key.set<string> (value); // Save value as string, if `node` is a quoted scalar
+			}
+		}
+		else
+		{
+			key.set<string> (value);
+		}
 	}
-	else
-	{
-		key.setString (node.as<string> ());
-	}
-	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
 	if (node.Tag () == "tag:yaml.org,2002:binary")
 	{
 		ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
 		key.setMeta ("type", "binary");
 	}
+	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
+			   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.get<string> ().c_str ());
+	return key;
+}
+
+/**
+ * @brief Convert the key value of a YAML meta node to a key
+ *
+ * @param node This YAML meta node stores the data this function stores in the returned key
+ * @param parent This key stores the prefix for the key name
+ *
+ * @return A key representing the key value stored in `node`
+ */
+Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
+{
+	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_BINARY, KEY_END } :
+				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
+	ELEKTRA_LOG_DEBUG ("Add key “%s”: “%s”", key.getName ().c_str (),
+			   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 	return key;
 }
 
@@ -118,8 +161,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 {
 	if (node.Tag () == "!elektra/meta")
 	{
-		Key key (parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END);
-		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		auto key = convertMetaNodeToKey (node, parent);
 		mappings.append (key);
 		addMetadata (key, node[1]);
 	}
@@ -128,14 +170,30 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		auto key = createLeafKey (node, parent.getFullName ());
 		mappings.append (key);
 	}
-	else if (node.IsMap () || node.IsSequence ())
+	else if (node.IsMap ())
 	{
 		for (auto element : node)
 		{
-			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
-			// Add intermediate key for array parent
-			if ((node.IsMap () ? element.second : element).IsSequence ()) mappings.append (key);
-			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
+			Key key = newKey (element.first.as<string> (), parent);
+			convertNodeToKeySet (element.second, mappings, key);
+		}
+	}
+	else if (node.IsSequence ())
+	{
+		uintmax_t index = 0;
+		uintmax_t lastIndex = 0;
+		for (auto element : node)
+		{
+			if (lastIndex == UINTMAX_MAX)
+			{
+				Key key = newArrayKey (parent, lastIndex);
+				throw std::overflow_error ("Unable to add element after “" + key.getName () + "”" + "in array “" +
+							   parent.getName () + "”");
+			}
+			Key key = newArrayKey (parent, index);
+			mappings.append (parent); // Update array metadata
+			convertNodeToKeySet (element, mappings, key);
+			lastIndex = index++;
 		}
 	}
 }
@@ -151,10 +209,22 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 {
 	YAML::Node config = YAML::LoadFile (parent.getString ());
 
+	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
+
 #ifdef HAVE_LOGGER
 	ostringstream data;
 	data << config;
-	ELEKTRA_LOG_DEBUG ("Read data “%s”", data.str ().c_str ());
+
+	ELEKTRA_LOG_DEBUG ("Read Data:");
+	ELEKTRA_LOG_DEBUG ("——————————");
+
+	istringstream stream (data.str ());
+	for (string line; std::getline (stream, line);)
+	{
+		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+	}
+
+	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
 	convertNodeToKeySet (config, mappings, parent);

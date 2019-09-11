@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-COMPLETE" "1" "May 2018" "" ""
+.TH "KDB\-COMPLETE" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-complete\fR \- Show suggestions how to complete a given path
@@ -13,7 +13,7 @@
 Where \fBpath\fR is the path for which the user would like to receive completion suggestion\. If \fBpath\fR is not specified, it will show every possible completion\. Its synonymous to calling \fBkdb complete ""\fR\.
 .
 .SH "DESCRIPTION"
-Show suggestions how the current name could be completed\. Suggestions will include existing key names, path segments of existing key names, namespaces and mountpoints\. Additionally, the output will indicate whether the given path is a node or a leaf in the hierarchy of keys, nodes end with \'/\' as opposed to leaves\. It will also work for cascading keys, and will additionally display a cascading key\'s namespace in the output to indicate from which namespace this suggestion originates from\.
+Show suggestions how the current name could be completed\. Suggestions will include existing key names, path segments of existing key names, namespaces and mount points\. Additionally, the output will indicate whether the given path is a node or a leaf in the hierarchy of keys, nodes end with \'/\' as opposed to leaves\. It will also work for cascading keys, and will additionally display a cascading key\'s namespace in the output to indicate from which namespace this suggestion originates from\.
 .
 .SH "OPTIONS"
 .
@@ -43,7 +43,7 @@ Specify the maximum depth of completion suggestions (unlimited by default, 1 to 
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Give a more detailed output, showing the number of child nodes and the depth level\.
+Give a more detailed output, showing the number of child nodes and the depth level\. Prints additional information in case of errors/warnings\.
 .
 .TP
 \fB\-0\fR, \fB\-\-null\fR
@@ -51,21 +51,21 @@ Use binary 0 termination\.
 .
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
-Give debug information\.
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .SH "EXAMPLES"
 .
 .nf
 
-# Backup\-and\-Restore: /tests/complete/examples
+# Backup\-and\-Restore: user/tests/complete/examples
 
 # Create the keys we use for the examples
-kdb set /tests/complete/examples/kdb\-complete/level1 foo
-kdb set /tests/complete/examples/kdb\-complete/lvl1/lvl2 bar
-kdb set /tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
-kdb set /tests/complete/examples/kdb\-complete/buzz fizzBuzz
-kdb set /tests/complete/examples/kdb\-complete/#array_1 asdf
-kdb set /tests/complete/examples/kdb\-complete/% nothing
+kdb set user/tests/complete/examples/kdb\-complete/level1 foo
+kdb set user/tests/complete/examples/kdb\-complete/lvl1/lvl2 bar
+kdb set user/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+kdb set user/tests/complete/examples/kdb\-complete/buzz fizzBuzz
+kdb set user/tests/complete/examples/kdb\-complete/#array_1 asdf
+kdb set user/tests/complete/examples/kdb\-complete/% nothing
 
 # list suggestions for namespaces starting with us, only the current level
 kdb complete us \-\-max\-depth=1
@@ -80,7 +80,7 @@ kdb complete user \-\-max\-depth=1
 kdb complete user/ \-\-max\-depth=1
 # STDOUT\-REGEX: \.+
 
-# list all possible namespaces or mountpoints, only the current level
+# list all possible namespaces or mount points, only the current level
 kdb complete \-\-max\-depth=1
 # STDOUT\-REGEX: \.+
 

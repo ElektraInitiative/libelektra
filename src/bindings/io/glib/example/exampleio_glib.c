@@ -10,7 +10,7 @@
  * This example uses two I/O operations:
  * - The "input" operation is a file descriptor watcher that waits for
  *   STDIN_FILENO (stdin) to become readable.
- *   Since input is buffered, this typically happends when the user enters some
+ *   Since input is buffered, this typically happens when the user enters some
  *   text and presses return.
  *   In practice code using the I/O binding will attach non-blocking file
  *   descriptors (e.g. from sockets).
@@ -26,7 +26,7 @@
 #include <kdbassert.h>  // assertions (ELEKTRA_NOT_NULL)
 #include <kdbhelper.h>  // malloc & free
 #include <kdbio.h>      // I/O binding functions (elektraIo*)
-#include <kdbio_glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
+#include <kdbio/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
 
 #include <glib.h> // glib functions
 
@@ -79,7 +79,7 @@ void readText (ElektraIoFdOperation * fdOp, int flags ELEKTRA_UNUSED)
 		int error = errno;
 		if (error != EINTR)
 		{
-			printf ("input: I/O error occured - exiting\n");
+			printf ("input: I/O error occurred - exiting\n");
 			stopLoop ();
 		}
 	}

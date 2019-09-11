@@ -3,7 +3,22 @@ cmake_minimum_required (VERSION 3.0)
 # allows us to override platform specific variables
 set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/cmake/Platform.cmake")
 
-project (Elektra)
+set (KDB_VERSION_MAJOR 0)
+set (KDB_VERSION_MINOR 9)
+set (KDB_VERSION_MICRO 0)
+set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
+
+set (ELEKTRA_DESCRIPTION
+     "Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.")
+set (ELEKTRA_HOMEPAGE_URL "https://www.libelektra.org")
+
+if (CMAKE_VERSION VERSION_LESS 3.9)
+	project (Elektra VERSION "${KDB_VERSION}")
+elseif (CMAKE_VERSION VERSION_LESS 3.12)
+	project (Elektra VERSION ${KDB_VERSION} DESCRIPTION ${ELEKTRA_DESCRIPTION})
+else (CMAKE_VERSION VERSION_LESS 3.12)
+	project (Elektra VERSION ${KDB_VERSION} DESCRIPTION ${ELEKTRA_DESCRIPTION} HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
+endif (CMAKE_VERSION VERSION_LESS 3.9)
 
 # fix macOS RPATH issues
 set (CMAKE_MACOSX_RPATH 1)
@@ -40,9 +55,7 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE
 	     RelWithDebInfo
-	     CACHE STRING
-		   "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-	     FORCE)
+	     CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -53,11 +66,6 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set (DOMAIN libelektra.org) # needed by doxygen
 set (REVERSE_DOMAIN org.libelektra)
 
-set (KDB_VERSION_MAJOR 0)
-set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 23)
-
-set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 message (STATUS "You are building Elektra ${KDB_VERSION}")
 
 set (SO_VERSION 4)
@@ -66,6 +74,16 @@ set (SO_VERSION_GETENV 0)
 
 # needs version above
 include (cmake/ElektraPackaging.cmake)
+
+# ensure KDB_DB_SYSTEM is an absolute path
+if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
+	set (KDB_DB_SYSTEM "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SYSTEM}")
+endif ()
+
+# process KDB_DB_SPEC so it is available everywhere
+if (NOT IS_ABSOLUTE "${KDB_DB_SPEC}")
+	set (KDB_DB_SPEC "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+endif ()
 
 # now add all directories
 add_subdirectory (cmake)
@@ -85,12 +103,11 @@ if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
 
 	add_subdirectory (src)
 	add_subdirectory (examples)
-	add_subdirectory (benchmarks)
 
 	if (BUILD_TESTING)
+		add_subdirectory (benchmarks)
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
 endif ()
 
 install (FILES LICENSE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-

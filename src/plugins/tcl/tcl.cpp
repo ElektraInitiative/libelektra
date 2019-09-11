@@ -65,17 +65,17 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	}
 	catch (boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const & e)
 	{
-		ELEKTRA_SET_ERROR (61, *parent,
-				   std::string (std::string ("file: ") + parent.getString () +
-						" could not be parsed because: " + std::string (e.first, e.last))
-					   .c_str ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (*parent,
+							std::string (std::string ("File '") + parent.getString () +
+								     "' could not be parsed. Reason: " + std::string (e.first, e.last))
+								.c_str ());
 		ret = -1;
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERROR (
-			61, *parent,
-			std::string (std::string ("file: ") + parent.getString () + " could not be parsed because: " + e.what ()).c_str ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (
+			*parent, std::string (std::string ("File '") + parent.getString () + "' could not be parsed. Reason: " + e.what ())
+					 .c_str ());
 		ret = -1;
 	}
 	input.release ();
@@ -107,7 +107,7 @@ int elektraTclSet (Plugin *, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (tcl)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("tcl",

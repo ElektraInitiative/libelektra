@@ -1,19 +1,17 @@
 #!/bin/sh
 #
 # @author Thomas Waser <thomas.waser@libelektra.org>
-# @brief Restores a backup (or stash) 
+# @brief Restores a backup
 # @date 14.08.2017
 # @tags backup, stash, helper
 
-if [ -z "$KDB" ];
-then
-    KDB=kdb
+if [ -z "$KDB" ]; then
+	KDB=kdb
 fi
 
 DIR="/var/tmp/elektra_backup"
 
-if [ "$#" -ne 1 ];
-then
+if [ "$#" -ne 1 ]; then
 	echo "Usage: kdb restore <timestamp>"
 	echo "Available timestamp(s) are:"
 	ls "${DIR}"
@@ -23,8 +21,7 @@ fi
 TS="$1"
 TMPDIR="${DIR}/${TS}"
 
-if [ ! -d "$TMPDIR" ];
-then
+if [ ! -d "$TMPDIR" ]; then
 	echo "Timestamp $TS doesn't exist"
 	echo "Available timestamp(s) are:"
 	ls "${DIR}"
@@ -33,15 +30,13 @@ fi
 
 PATHS="$(cat "${TMPDIR}/info")"
 
-$KDB umount-all 2>/dev/null
-$KDB rm -r / 2>/dev/null
+"$KDB" reset -f
 
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"
 
-for line in $PATHS;
-do
+for line in $PATHS; do
 	SOURCE="$(echo "$line" | cut -d '=' -f2)"
 	TARGET="$(echo "$line" | cut -d '=' -f1)"
-	cp -a "${TMPDIR}/${SOURCE}" "${TARGET}" 2>/dev/null
+	cp -a "${TMPDIR}/${SOURCE}" "${TARGET}"
 done

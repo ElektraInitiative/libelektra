@@ -193,7 +193,7 @@ int elektraTimeofdayError (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (timeofday)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(BACKENDNAME,

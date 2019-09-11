@@ -1,5 +1,4 @@
-kdb-getmeta(1) -- Get the value of a metakey stored in the key database
-========================================================================
+# kdb-getmeta(1) -- Get the value of a metakey stored in the key database
 
 ## SYNOPSIS
 
@@ -19,13 +18,13 @@ Make sure to use the namespace `spec`, if you want metadata from there.
 ## RETURN VALUES
 
 This command will return the following values as an exit status:<br>
-* 0:
-  No errors.
-* 1:
-  Key not found. (Invalid `path`)
-* 2:
-  Meta key not found. (Invalid `metaname`).
 
+- 0:
+  No errors.
+- 1:
+  Key not found. (Invalid `path`)
+- 2:
+  Meta key not found. (Invalid `metaname`).
 
 ## OPTIONS
 
@@ -39,6 +38,10 @@ This command will return the following values as an exit status:<br>
   Print never/auto(default)/always colored output.
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 

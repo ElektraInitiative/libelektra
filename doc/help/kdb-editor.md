@@ -1,5 +1,4 @@
-kdb-editor(1) -- Use your editor for editing KDB
-================================================
+# kdb-editor(1) -- Use your editor for editing KDB
 
 ## SYNOPSIS
 
@@ -33,7 +32,6 @@ The user should specify the format that the current configuration or keys are in
   could not import configuration because of error during kdbSet()
   (Most likely a validation error)
 
-
 ## OPTIONS
 
 - `-H`, `--help`:
@@ -47,7 +45,9 @@ The user should specify the format that the current configuration or keys are in
 - `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-e`, `--editor <editor>`:
   Which editor to use.
 - `-N`, `--namespace`=<ns>:
@@ -56,7 +56,7 @@ The user should specify the format that the current configuration or keys are in
 
 ## Strategies
 
-- `validate`: 
+- `validate`:
   apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
@@ -80,10 +80,10 @@ The other strategies are implemented by the merge framework and are documented i
 
 ## EXAMPLES
 
-To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you would use:
+To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you would use:<br>
 `kdb editor -e /usr/bin/vim user/ini`
 
-Or set a new editor as default using:
+Or set a new editor as default using:<br>
 `kdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano`
 
 ## SEE ALSO

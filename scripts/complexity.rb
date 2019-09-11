@@ -2,7 +2,7 @@
 # @author Anton Hoessl <e1427045@student.tuwien.ac.at>
 # @brief This script approximates the complexity of Elektra configuration settings
 # @date 18.04.2018
-# @tags specification calculation
+# @tags specification
 #
 # This script calculates the complexity of Elektra configuration settings.
 # It does so by checking for the meta information 'type' and 'check/type'.

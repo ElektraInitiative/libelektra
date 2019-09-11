@@ -1,5 +1,9 @@
 /**
- * This lexer uses the same idea as the scanner of `libyaml` (and various other
+ * @file
+ *
+ * @brief This file specifies a lexer that scans a subset of YAML.
+ *
+ * The lexer uses the same idea as the scanner of `libyaml` (and various other
  * YAML libs) to detect simple keys (keys with no `?` prefix).
  *
  * For a detailed explanation of the algorithm, I recommend to take a look at
@@ -28,28 +32,69 @@ using std::stack;
 using std::string;
 using std::unique_ptr;
 
-using antlr4::CharStream;
-using antlr4::CommonToken;
-using antlr4::CommonTokenFactory;
-using antlr4::Token;
-using antlr4::TokenFactory;
-using antlr4::TokenSource;
+namespace yanlr
+{
 
 // -- Class --------------------------------------------------------------------
 
-class YAMLLexer : public TokenSource
+class YAMLLexer : public antlr4::TokenSource
 {
+	/** This class stores information about indentation that starts a new block node. */
+	class Level
+	{
+	public:
+		/** This enumeration specifies the type of a block node. */
+		enum class Type
+		{
+			MAP,      ///< The current indentation starts a block map
+			SEQUENCE, ///< The current indentation starts a block sequence
+			OTHER     ///< The current indentation starts a block scalar
+		};
+		size_t indent = 0;
+		Type type = Level::Type::OTHER;
+
+		/**
+		 * @brief This constructor creates a level object from the given arguments.
+		 *
+		 * @param indentation This number specifies the number of spaces used to start this level object.
+		 * @param levelType This argument specifies the type of node `indentation` created.
+		 */
+		Level (size_t indentation, Level::Type levelType = Level::Type::OTHER) : indent{ indentation }, type{ levelType }
+		{
+		}
+	};
+
+	/** This structure represents the position inside the input. */
+	struct Position
+	{
+		/** This parameter stores the offset to the start of the input in bytes. */
+		size_t index;
+		/** This parameter stores the line number. */
+		size_t line;
+		/** This parameter stores the column offset inside `line`. */
+		size_t column;
+
+		/**
+		 * @brief This constructor creates a position from the given arguments.
+		 *
+		 * @param byteIndex This number specifies the byte offset of the position relative to the start of the input.
+		 * @param lineNumber This number specifies the line number of the position.
+		 * @param columnOffset This number specifies the offset to the beginning of the line.
+		 */
+		Position (size_t byteIndex, size_t lineNumber, size_t columnOffset);
+	};
+
 	/** This variable stores the input that this lexer scans. */
-	CharStream * input;
+	antlr4::CharStream * input;
 
 	/** This queue stores the list of tokens produced by the lexer. */
-	deque<unique_ptr<CommonToken>> tokens;
+	deque<unique_ptr<antlr4::CommonToken>> tokens;
 
 	/** The lexer uses this factory to produce tokens. */
-	Ref<TokenFactory<CommonToken>> factory = CommonTokenFactory::DEFAULT;
+	Ref<antlr4::TokenFactory<antlr4::CommonToken>> factory = antlr4::CommonTokenFactory::DEFAULT;
 
 	/** This pair stores the token source (this lexer) and the current `input`. */
-	pair<TokenSource *, CharStream *> source;
+	pair<antlr4::TokenSource *, antlr4::CharStream *> source;
 
 	/**
 	 * This variable saves the current line position of the lexer inside
@@ -61,7 +106,7 @@ class YAMLLexer : public TokenSource
 	 * This number stores the current character position of the lexer inside of
 	 * `line`.
 	 */
-	size_t column = 0;
+	size_t column = 1;
 
 	/**
 	 * This counter stores the number of tokens already emitted by the lexer.
@@ -71,10 +116,10 @@ class YAMLLexer : public TokenSource
 	size_t tokensEmitted = 0;
 
 	/**
-	 * This stack stores the indentation (in number of characters) for each
-	 * block collection.
+	 * This stack stores the indentation (in number of characters) and block
+	 * type for each block node.
 	 */
-	stack<long long> indents{ deque<long long>{ -1 } };
+	stack<Level> levels{ deque<Level>{ Level{ 0 } } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
@@ -90,14 +135,21 @@ class YAMLLexer : public TokenSource
 	 * use a single token here. If we need support for flow collections we have
 	 * to store a candidate for each flow level (block context = flow level 0).
 	 */
-	pair<unique_ptr<CommonToken>, size_t> simpleKey;
+	pair<unique_ptr<antlr4::CommonToken>, size_t> simpleKey;
+
+	/**
+	 * @brief This function returns the current position of the lexer inside the input.
+	 *
+	 * @return A position containing the current byte index, line number and column offset.
+	 */
+	Position getPosition ();
 
 	/**
 	 * @brief This function creates a new token with the specified parameters.
 	 *
 	 * @param type This parameter specifies the type of the token this function
 	 *             should create.
-	 * @param start This number specifies the start index of the returned token
+	 * @param start This variable specifies the start position of the returned token
 	 *              inside the character stream `input`.
 	 * @param stop This number specifies the stop index of the returned token
 	 *             inside the character stream `input`.
@@ -105,33 +157,22 @@ class YAMLLexer : public TokenSource
 	 *
 	 * @return A token with the specified parameters
 	 */
-	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop, string text);
+	unique_ptr<antlr4::CommonToken> commonToken (size_t type, Position const & start, size_t stop, string text);
 
 	/**
-	 * @brief This function creates a new token with the specified parameters.
-	 *
-	 * @param type This parameter specifies the type of the token this function
-	 *             should create.
-	 * @param start This number specifies the start index of the returned token
-	 *              inside the character stream `input`.
-	 * @param stop This number specifies the stop index of the returned token
-	 *             inside the character stream `input`.
-	 *
-	 * @return A token with the specified parameters
-	 */
-	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop);
-
-	/**
-	 * @brief This function adds an indentation value if the given value is
-	 * smaller than the current indentation.
+	 * @brief This function adds an indentation value if the given value is smaller
+	 *        than the current indentation.
 	 *
 	 * @param lineIndex This parameter specifies the indentation value that this
 	 *                  function compares to the current indentation.
 	 *
+	 * @param type This value specifies the block collection type that
+	 *             `lineIndex` might start.
+	 *
 	 * @retval true If the function added an indentation value
 	 *         false Otherwise
 	 */
-	bool addIndentation (size_t const column);
+	bool addIndentation (size_t const column, Level::Type type);
 
 	/**
 	 * @brief This function checks if the lexer needs to scan additional tokens.
@@ -196,7 +237,7 @@ class YAMLLexer : public TokenSource
 	 * @brief This method saves a token for a simple key candidate located at the
 	 *        current input position.
 	 */
-	void addSimpleKeycCandidate ();
+	void addSimpleKeyCandidate ();
 
 	/**
 	 * @brief This method adds block closing tokens to the token queue, if the
@@ -206,7 +247,7 @@ class YAMLLexer : public TokenSource
 	 *                  of spaces) for which this method should add block end
 	 *                  tokens.
 	 */
-	void addBlockEnd (long long const lineIndex);
+	void addBlockEnd (size_t const lineIndex);
 
 	/**
 	 * @brief This method adds the token for the start of the YAML stream to
@@ -231,11 +272,11 @@ class YAMLLexer : public TokenSource
 	void scanPlainScalar ();
 
 	/**
-	 * @brief This method counts the number of non space characters that can be
+	 * @brief This method counts the number of non-space characters that can be
 	 *        part of a plain scalar at position `offset`.
 	 *
 	 * @param offset This parameter specifies an offset to the current input
-	 *               position, where this function searches for non space
+	 *               position, where this function searches for non-space
 	 *               characters.
 	 *
 	 * @return The number of non-space characters at the input position `offset`
@@ -278,33 +319,35 @@ public:
 	static const size_t STREAM_START = 1;
 	/** This token type ends the YAML stream. */
 	static const size_t STREAM_END = 2;
-	/** This token type specifies that the token stores a plain scalar. */
-	static const size_t PLAIN_SCALAR = 3;
-	/** This token type indicates the start of a mapping key. */
-	static const size_t KEY = 4;
-	/** This token type indicates the start of a mapping value. */
-	static const size_t VALUE = 5;
-	/** This token type indicates the start of a mapping. */
-	static const size_t MAPPING_START = 6;
-	/** This token type indicates the end of a block collection. */
-	static const size_t BLOCK_END = 7;
-	/** This token type indicates a list element. */
-	static const size_t ELEMENT = 8;
-	/** This token type indicates the start of a sequence. */
-	static const size_t SEQUENCE_START = 9;
-	/** This token type specifies that the token stores a double quoted scalar. */
-	static const size_t DOUBLE_QUOTED_SCALAR = 10;
 	/** This token type specifies that the token stores a (line) comment. */
-	static const size_t COMMENT = 11;
+	static const size_t COMMENT = 3;
+	/** This token type specifies that the token stores a plain scalar. */
+	static const size_t PLAIN_SCALAR = 4;
 	/** This token type specifies that the token stores a single quoted scalar. */
-	static const size_t SINGLE_QUOTED_SCALAR = 12;
+	static const size_t SINGLE_QUOTED_SCALAR = 5;
+	/** This token type specifies that the token stores a double quoted scalar. */
+	static const size_t DOUBLE_QUOTED_SCALAR = 6;
+	/** This token type indicates the start of a mapping. */
+	static const size_t MAP_START = 7;
+	/** This token type indicates the end of a mapping. */
+	static const size_t MAP_END = 8;
+	/** This token type indicates the start of a mapping key. */
+	static const size_t KEY = 9;
+	/** This token type indicates the start of a mapping value. */
+	static const size_t VALUE = 10;
+	/** This token type indicates the start of a sequence. */
+	static const size_t SEQUENCE_START = 11;
+	/** This token type indicates the end of a sequence. */
+	static const size_t SEQUENCE_END = 12;
+	/** This token type indicates a list element. */
+	static const size_t ELEMENT = 13;
 
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.
 	 *
-	 * @param input This character stream stores the data this lexer scans.
+	 * @param stream This character stream stores the data this lexer scans.
 	 */
-	YAMLLexer (CharStream * input);
+	YAMLLexer (antlr4::CharStream * stream);
 
 	/**
 	 * @brief This method retrieves the current (not already emitted) token
@@ -312,7 +355,7 @@ public:
 	 *
 	 * @return A token of the token stream produced by the lexer
 	 */
-	unique_ptr<Token> nextToken () override;
+	unique_ptr<antlr4::Token> nextToken () override;
 
 	/**
 	 * @brief This method retrieves the current line index.
@@ -333,7 +376,7 @@ public:
 	 *
 	 * @return The input of the lexer
 	 */
-	CharStream * getInputStream () override;
+	antlr4::CharStream * getInputStream () override;
 
 	/**
 	 * @brief This method retrieves the name of the source the lexer is
@@ -350,12 +393,13 @@ public:
 	 *                     should use to create tokens.
 	 */
 	template <typename T1>
-	void setTokenFactory (TokenFactory<T1> * tokenFactory);
+	void setTokenFactory (antlr4::TokenFactory<T1> * tokenFactory);
 
 	/**
 	 * @brief Retrieve the current token factory.
 	 *
 	 * @return The factory the scanner uses to create tokens
 	 */
-	Ref<TokenFactory<CommonToken>> getTokenFactory () override;
+	Ref<antlr4::TokenFactory<antlr4::CommonToken>> getTokenFactory () override;
 };
+}

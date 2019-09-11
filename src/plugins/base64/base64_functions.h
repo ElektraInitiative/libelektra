@@ -10,7 +10,7 @@
 #define ELEKTRA_PLUGIN_BASE64_ESCAPE "@"
 #define ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR '@'
 
-#define PLUGIN_FUNCTION_HELPER(module, function) ELEKTRA_PLUGIN_FUNCTION (module, function)
+#define PLUGIN_FUNCTION_HELPER(module, function) ELEKTRA_PLUGIN_FUNCTION (function)
 #define PLUGIN_FUNCTION(function) PLUGIN_FUNCTION_HELPER (ELEKTRA_PLUGIN_NAME_C, function)
 
 // encoding functions

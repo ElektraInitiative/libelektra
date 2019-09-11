@@ -31,8 +31,8 @@
 #define CMAKE_CACHE_FILENAME "CMakeCache.txt"
 #define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
-#define INVALIDLINK_MESS "%s|%i col 0| warning: invalid link '%s'\n"
-#define HTTPLINK_FORMAT "%s|%i col 0| %s\n"
+#define INVALIDLINK_MESS "%s:%i:0 warning: invalid link '%s'\n"
+#define HTTPLINK_FORMAT "%s:%i:0| %s\n"
 #define HTTPLINK_FILENAME "external-links.txt"
 
 // Link Blacklist: do not convert links with the following starting and ending
@@ -154,7 +154,7 @@ struct transitionTitle genTitleTransitionTable (void)
 	return out;
 }
 
-// Maps a given char to a int, used for the transition table
+// Maps a given char to an int, used for the transition table
 static int resolveChar (int c)
 {
 	if (c != '\n' && isblank (c)) return 3;
@@ -221,7 +221,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	{
 		fprintf (stderr, "WARNING http link file %s could not be opened\n", HTTPLINK_FILENAME);
 	}
-	int lineCount = 0;
+	int lineCount = 1;
 	int c;
 	fpos_t pos;
 	int state = linkStart;

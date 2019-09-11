@@ -1,0 +1,90 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+// -------------------------
+// Union accessor functions
+// -------------------------
+
+/*%# unions %*/
+ELEKTRA_UNION_FREE_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/, /*%& discr_native_type %*/)
+{
+	if (ptr == NULL)
+	{
+		return;
+	}
+
+	switch (discriminator)
+	{
+	/*%# fields %*/
+	case /*%& enum_value %*/:
+		ELEKTRA_STRUCT_FREE (/*% type_name %*/) (&ptr->/*%& name %*/);
+		break;
+	/*%/ fields %*/
+	default:
+		break;
+	}
+}
+
+ELEKTRA_UNION_GET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/, /*%& discr_native_type %*/)
+{
+	switch (discriminator)
+	{
+	/*%# fields %*/
+	case /*%& enum_value %*/:
+		return (/*%& union_type %*/) ELEKTRA_GET (/*% type_name %*/) (elektra, keyname);
+	/*%/ fields %*/
+	default:
+		// TODO: fatal error
+		break;
+	}
+	return (/*%& native_type %*/) (/*%& default_type %*/ *) NULL;
+}
+
+ELEKTRA_UNION_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/, /*%& discr_native_type %*/)
+{
+	switch (discriminator)
+	{
+	/*%# fields %*/
+	case /*%& enum_value %*/:
+		return (/*%& union_type %*/) ELEKTRA_GET_ARRAY_ELEMENT (/*% type_name %*/) (elektra, keyname, index);
+	/*%/ fields %*/
+	default:
+		// TODO: fatal error
+		break;
+	}
+	return (/*%& native_type %*/) (/*%& default_type %*/ *) NULL;
+}
+
+/*%# generate_setters? %*/
+ELEKTRA_UNION_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/, /*%& discr_native_type %*/)
+{
+	switch (discriminator)
+	{
+	/*%# fields %*/
+	case /*%& enum_value %*/:
+		ELEKTRA_SET (/*% type_name %*/) (elektra, keyname, value./*%& name %*/, error);
+		break;
+	/*%/ fields %*/
+	default:
+		// TODO: set error
+		break;
+	}
+}
+
+ELEKTRA_UNION_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/, /*%& discr_native_type %*/)
+{
+	switch (discriminator)
+	{
+	/*%# fields %*/
+	case /*%& enum_value %*/:
+		ELEKTRA_SET_ARRAY_ELEMENT (/*% type_name %*/) (elektra, keyname, index, value./*%& name %*/, error);
+		break;
+	/*%/ fields %*/
+	default:
+		// TODO: set error
+		break;
+	}
+}
+/*%/ generate_setters? %*/
+/*%/ unions %*/

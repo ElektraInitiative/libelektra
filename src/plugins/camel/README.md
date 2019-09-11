@@ -13,7 +13,7 @@
 
 ## Introduction
 
-This plugin reads configuration data specified in a **very limited** subset of  the data serialization language [YAML](http://www.yaml.org).
+This plugin reads configuration data specified in a **very limited** subset of the data serialization language [YAML](http://www.yaml.org).
 
 ## Examples
 

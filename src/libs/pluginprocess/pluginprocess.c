@@ -107,9 +107,9 @@ static char * longToStr (long i)
 {
 	long size;
 	char * str;
-	size = snprintf (NULL, 0, "%zd", i);
+	size = snprintf (NULL, 0, "%ld", i);
 	str = elektraMalloc (size + 1);
-	size = snprintf (str, size + 1, "%zd", i);
+	size = snprintf (str, size + 1, "%ld", i);
 	return str;
 }
 
@@ -199,7 +199,8 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		else
 		{
 			ELEKTRA_LOG_DEBUG ("Child: Unrecognized command %s", keyString (commandKey));
-			ELEKTRA_SET_ERRORF (191, key, "Received invalid command code or no KeySet: %s", keyString (commandKey));
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (key, "Received invalid command code or no KeySet from child process: %s",
+							       keyString (commandKey));
 		}
 		errno = prevErrno;
 		char * resultStr = longToStr (result);
@@ -264,8 +265,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	if ((command == ELEKTRA_PLUGINPROCESS_GET || command == ELEKTRA_PLUGINPROCESS_SET || command == ELEKTRA_PLUGINPROCESS_ERROR) &&
 	    originalKeySet == NULL)
 	{
-		ELEKTRA_SET_ERROR (191, key,
-				   "originalKeySet has to exist when calling GET SET and ERROR via pluginprocess; but it is NULL");
+		ELEKTRA_SET_INTERFACE_ERROR (
+			key, "Variable originalKeySet has to exist when calling GET SET and ERROR via pluginprocess but it is NULL");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -329,7 +330,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	long lresult = strtol (keyString (resultKey), &endPtr, 10);
 	if (*endPtr != '\0' || errno == ERANGE || lresult > INT_MAX || lresult < INT_MIN)
 	{
-		ELEKTRA_SET_ERRORF (191, key, "Received invalid return code or no KeySet: %s", keyString (resultKey));
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (key, "Received invalid return code or no KeySet from child process: %s",
+						       keyString (resultKey));
 		lresult = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else // Copy everything back into the actual keysets
@@ -394,7 +396,7 @@ static char * concat (const char * str1, const char * str2)
 	const int str1Len = strlen (str1);
 	const int str2Len = strlen (str2);
 	char * concat = elektraMalloc (str1Len + str2Len + 1);
-	strncpy (concat, str1, str1Len);
+	strcpy (concat, str1);
 	strncpy (concat + str1Len, str2, str2Len + 1);
 	return concat;
 }
@@ -405,7 +407,7 @@ static int makePipe (ElektraPluginProcess * pp, Key * errorKey, const char * pip
 	if ((ret = pipe (pipeRef)))
 	{
 		cleanupPluginData (pp, errorKey, 1);
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to initialize %s, pipe () returned %d", pipeName, ret);
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Failed to initialize %s, pipe () returned %d", pipeName, ret);
 		return 0;
 	}
 	return 1;
@@ -476,7 +478,7 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	if (!pp->dump)
 	{
 		cleanupPluginData (pp, errorKey, 0);
-		ELEKTRA_SET_ERROR (190, errorKey, "Failed to initialize the dump plugin");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Failed to initialize the dump plugin");
 		return NULL;
 	}
 
@@ -496,7 +498,7 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	if (pp->pid < 0)
 	{
 		cleanupPluginData (pp, errorKey, 1);
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to fork the plugin process, fork () returned %d", pp->pid);
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Failed to fork the plugin process, fork () returned %d", pp->pid);
 		return NULL;
 	}
 

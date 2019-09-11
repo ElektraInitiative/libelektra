@@ -12,7 +12,7 @@
  * Lookup for a key which any of its @p where components matches the
  * @p regex regular expression.
  *
- * TODO: Does not work (no example, no testcase)
+ * TODO: Does not work (no example, no test case)
  *
  * @deprecated Does not work
  * @param ks the KeySet to lookup into

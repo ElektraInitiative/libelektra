@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # bash required for platform independent time
+#
+# @tags benchmark
 
 # $Id$
 
@@ -17,38 +19,38 @@ genLevel() {
 	local myRoot=$2
 	local pad
 	local counter=0
-	
+
 	while [ $counter -lt $level ]; do
-		pad=`echo -n " $pad"`
-		counter=`expr $counter + 1`
+		pad=$(echo -n " $pad")
+		counter=$(expr $counter + 1)
 	done
 
 	echo "Generating keys under $myRoot" >&2
 	echo "$pad<key type=\"dir\" basename=\"$level-$myRoot\">"
-	
+
 	# Generate local keys
 	local k=0
 	while [ $k -lt $KEYS ]; do
 		echo "$pad<key basename=\"$k-${RANDOM}${RANDOM}\" value=\"$k ${RANDOM}${RANDOM}\"></key>"
-		keyCounter=`expr $keyCounter + 1`
+		keyCounter=$(expr $keyCounter + 1)
 		$KDB set "$myRoot/${RANDOM}${RANDOM}" \
 			"${RANDOM}${RANDOM}"
 
-		k=`expr $k + 1`
+		k=$(expr $k + 1)
 	done
-	
+
 	if [ $level -lt $LEVELS ]; then
 		# Generate sublevels
 		local d=0
 		while [ $d -lt $DIRS ]; do
 			echo "$pad<key type=\"directory\" basename=\"dir-$level-$d\">"
-			keyCounter=`expr $keyCounter + 1`
-			genLevel `expr $level + 1` "${RANDOM}${RANDOM}"
+			keyCounter=$(expr $keyCounter + 1)
+			genLevel $(expr $level + 1) "${RANDOM}${RANDOM}"
 			echo "$pad</key>"
-			d=`expr $d + 1`
+			d=$(expr $d + 1)
 		done
 	fi
-	
+
 }
 
 keyCounter=0

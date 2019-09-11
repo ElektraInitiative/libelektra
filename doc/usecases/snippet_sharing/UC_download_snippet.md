@@ -1,4 +1,4 @@
-# Use Case: Download configuration snippet in specific format
+# Use Case: Download Configuration Snippet in Specific Format
 
 ## Summary
 

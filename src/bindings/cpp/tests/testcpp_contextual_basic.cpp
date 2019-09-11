@@ -986,7 +986,7 @@ TEST (test_contextual_basic, operators)
 	ASSERT_EQ (n, 4 | 8 | 16);
 
 	n = 8;
-	n = n;
+	n = *&n; // *& added to suppress clang warning
 	m = n;
 	ASSERT_EQ (n, 8);
 	ASSERT_EQ (m, 8);

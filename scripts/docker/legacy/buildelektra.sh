@@ -5,7 +5,8 @@ set -o pipefail
 
 __FILE="$(basename "$0")"
 
-USAGE=$(cat <<EOF
+USAGE=$(
+	cat << EOF
 Usage: ${__FILE} [-h] [-b NAME] [-t DIR] [-j JOBS] TAG
 Downloads the Elektra commit specified by TAG.
 Then builds and installs Elektra.
@@ -24,39 +25,39 @@ EOF
 
 while getopts "hb:s:t:j:c:D:" opt; do
 	case $opt in
-		h)
-			echo "${USAGE}"
-			exit
-			;;
-		b)
-			NAME="${OPTARG}"
-			;;
-		s)
-			SOURCE="${OPTARG}"
-			;;
-		t)
-			DIR="${OPTARG}"
-			;;
-    j)
-			JOBS="${OPTARG}"
-			;;
-    c)
-			CLANG_VERSION="${OPTARG}"
-			;;
-    D)
-			CMAKE_PARAMS="${OPTARG}"
-			;;
-		:)
-			printf "%s: missing argument for -%s\n" "${__FILE}" "${OPTARG}" >&2
-			echo "${USAGE}"
-			exit 1
-			;;
-		\?)
-			printf "%s: illegal option: -%s\n" "${__FILE}" "${OPTARG}" >&2
-			echo "${USAGE}"
-			exit 1
-			;;
-		esac
+	h)
+		echo "${USAGE}"
+		exit
+		;;
+	b)
+		NAME="${OPTARG}"
+		;;
+	s)
+		SOURCE="${OPTARG}"
+		;;
+	t)
+		DIR="${OPTARG}"
+		;;
+	j)
+		JOBS="${OPTARG}"
+		;;
+	c)
+		CLANG_VERSION="${OPTARG}"
+		;;
+	D)
+		CMAKE_PARAMS="${OPTARG}"
+		;;
+	:)
+		printf "%s: missing argument for -%s\n" "${__FILE}" "${OPTARG}" >&2
+		echo "${USAGE}"
+		exit 1
+		;;
+	\?)
+		printf "%s: illegal option: -%s\n" "${__FILE}" "${OPTARG}" >&2
+		echo "${USAGE}"
+		exit 1
+		;;
+	esac
 done
 shift $((OPTIND - 1))
 if [ -z "${1}" ]; then
@@ -69,7 +70,6 @@ TAG="${1}"
 SOURCE="${SOURCE:-"https://codeload.github.com/ElektraInitiative/libelektra/tar.gz/${TAG}"}"
 DIR="${DIR:-"libelektra-${TAG}"}"
 
-
 # download Elektra
 if [ ! -d "${DIR}" ]; then
 	curl --fail --silent --show-error ${SOURCE} | tar xz --transform "s/libelektra-${TAG}/${DIR}/"
@@ -77,8 +77,8 @@ fi
 
 # set compiler
 if [ ! -z "${CLANG_VERSION}" ]; then
-  export CC=clang-${CLANG_VERSION}
-  export CXX=clang++-${CLANG_VERSION}
+	export CC=clang-${CLANG_VERSION}
+	export CXX=clang++-${CLANG_VERSION}
 fi
 
 # build Elektra

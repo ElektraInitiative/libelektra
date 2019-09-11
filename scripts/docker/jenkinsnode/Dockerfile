@@ -18,7 +18,6 @@ RUN apt-get -y install \
   libpcre++-dev \
   libglib2.0-dev \
   libxerces-c-dev \
-  libyaml-cpp-dev \
   swig \
   valgrind \
   libmarkdown2-dev \
@@ -29,9 +28,13 @@ RUN apt-get -y install \
   libgtest-dev \
   ruby-ronn \
   libgcrypt20-dev \
+  libgpgme-dev \
   libbotan1.10-dev \
   libev-dev \
+  libuv1-dev \
   libsystemd-dev \
+  libuv1-dev \
+	libzmq3-dev \
   openjdk-8-jdk-headless \
   ghc \
   ghc-dynamic \

@@ -1,0 +1,226 @@
+bsd_task:
+  matrix:
+
+    - name: 😈 FreeBSD 11
+      freebsd_instance:
+        image: freebsd-11-2-release-amd64
+
+    - name: 😈 FreeBSD 12
+      freebsd_instance:
+        image: freebsd-12-0-release-amd64
+
+  install_script:
+    - >
+      pkg install -y
+      bison
+      cmake
+      git
+      ninja
+      yajl
+      yaml-cpp
+
+  script:
+    - &create_and_chage_to_build_dir mkdir build && cd build
+    - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
+      cmake
+      -DBINDINGS='ALL;-io_glib'
+      -DINSTALL_SYSTEM_FILES=ON
+      -DCMAKE_SKIP_INSTALL_RPATH=ON
+      -DCOMMON_FLAGS=-Werror
+      -DC_STD=-std=c11
+      -DPLUGINS=ALL
+      -DTARGET_PLUGIN_FOLDER=''
+      -GNinja
+      ..
+    - &build ninja
+    - &install output="$(ninja install 2>&1)" || printf '%s' "$output"
+
+  tests_script:
+    # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
+    - sudo mount -t fdescfs fdesc /dev/fd
+    - &run_tests | # Run tests
+      cd build
+      if [ "$ENABLE_ASAN" == 'ON' ]; then
+        ninja run_nocheckshell
+      elif [ "$BUILD_FULL" == 'ON' ]; then
+        # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
+        # if we do not add the alternative `false`.
+        ninja run_all && kdb-full run_all || false
+      else
+        ninja run_all && kdb run_all || false
+      fi
+
+mac_task:
+  matrix:
+
+    - name: 🍎 Clang
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        ENABLE_LOGGER: ON
+
+    - name: 🍎 Clang ASAN
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        ASAN_OPTIONS: 'detect_leaks=1'
+        BINDINGS: cpp
+        ENABLE_ASAN: ON
+        TOOLS: kdb
+
+    - name: 🍎 FULL
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        BUILD_FULL: ON
+        BUILD_SHARED: OFF
+
+    - name: 🍎 MMap
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        KDB_DEFAULT_STORAGE: mmapstorage
+        KDB_DB_FILE: default.mmap
+        KDB_DB_INIT: elektra.mmap
+
+  install_script:
+    - > # Install Homebrew casks
+      brew cask install java oclint
+    - > # Install Homebrew formulas
+      brew install
+      antlr
+      antlr4-cpp-runtime
+      augeas
+      bison
+      boost
+      botan
+      cmake
+      dbus
+      discount
+      doxygen
+      glib
+      gpgme
+      graphviz
+      libev
+      libgcrypt
+      libgit2
+      libuv
+      llvm
+      lua
+      maven
+      moreutils
+      ninja
+      openssl
+      pkg-config
+      prettier
+      qt
+      shfmt
+      swig
+      tree
+      xerces-c
+      yajl
+      yaml-cpp
+      zeromq
+    - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
+      brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
+    - > # Start D-Bus session bus
+      brew services start dbus
+    - | # Install Python
+      brew install python@2; brew link --overwrite python@2
+      brew install python || brew upgrade python
+    - | # Install Python packages
+      pip install cmake-format[yaml]==0.5.4
+    - | # Install Ruby
+      brew install ruby@2.5
+    - | # Install Ruby gems
+      gem install ronn test-unit --user-install --no-document
+
+  script:
+    - > # Use latest version of LLVM to translate Elektra
+      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
+    - SYSTEM_DIR="$PWD/kdbsystem"
+    - INSTALL_DIR="$PWD/install"
+    - *create_and_chage_to_build_dir
+    - |
+      CMAKE_OPTIONS=(
+        -DBINDINGS="${BINDINGS:-ALL}"
+        -DBUILD_FULL="${BUILD_FULL:-OFF}"
+        -DBUILD_SHARED="${BUILD_SHARED:-ON}"
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+        -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+        -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+        -DENABLE_LOGGER="${ENABLE_LOGGER:-OFF}"
+        -DENABLE_DEBUG=ON
+        -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+        -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
+        -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+        -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+        -DPLUGINS="${PLUGINS:-ALL}"
+        -DTOOLS="${TOOLS:-ALL}"
+        -GNinja
+        ..
+      )
+    - |
+      printf '—— CMake Config ——\n'
+      for option in "${CMAKE_OPTIONS[@]}"; do printf '%s\n' "$option"; done
+    - cmake ${CMAKE_OPTIONS[@]}
+    - *build
+    - *install
+
+  tests_script:
+    # Remove files produced by `ronn`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
+    - git checkout .
+    - export PATH=$PATH:"$PWD/install/bin:/usr/local/opt/llvm/bin"
+    - *run_tests
+    - | # Uninstall Elektra
+      output="$(ninja uninstall 2>&1)" || printf '%s' "$output"
+    - | # Make sure uninstalling removes all files
+      cd ../install
+      if find . -name '*' | grep -Eqv '^.$'; then
+        printf 'The command `ninja uninstall` did not uninstall all files:\n'
+        tree .
+        printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
+        false
+      fi
+
+linux_task:
+  matrix:
+
+    - name: 🔗 Check
+      container:
+          dockerfile: scripts/docker/cirrus/Dockerfile
+
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    else
+      git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+      git config user.email "nobody@example.com"
+      git config user.name "nobody"
+      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
+    fi
+
+  script:
+    - mkdir build && cd build
+    - >
+      cmake -GNinja ..
+      -DBUILD_FULL=OFF
+      -DBUILD_SHARED=OFF
+      -DBUILD_STATIC=OFF
+      -DBUILD_TESTING=OFF
+    - cd ..
+    - ninja -C build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+    - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s broken_links.txt; then
+        printf >&2 'Broken Links:\n'
+        printf >&2 '—————————————\n'
+        cat >&2 broken_links.txt
+        printf >&2 '—————————————\n'
+        false
+      fi

@@ -52,9 +52,7 @@
 # ~~~
 
 function (_XercesC_GET_VERSION version_hdr)
-	file (STRINGS ${version_hdr}
-		      _contents
-	      REGEX "^[ \t]*#define XERCES_VERSION_.*")
+	file (STRINGS ${version_hdr} _contents REGEX "^[ \t]*#define XERCES_VERSION_.*")
 	if (_contents)
 		string (REGEX
 			REPLACE ".*#define XERCES_VERSION_MAJOR[ \t]+([0-9]+).*"
@@ -93,15 +91,8 @@ find_path (XercesC_INCLUDE_DIR NAMES "xercesc/util/PlatformUtils.hpp" DOC "Xerce
 mark_as_advanced (XercesC_INCLUDE_DIR)
 
 if (NOT XercesC_LIBRARY) # Find all XercesC libraries
-	find_library (XercesC_LIBRARY_RELEASE
-		      NAMES "xerces-c"
-			    "xerces-c_3"
-		      DOC "Xerces-C++ libraries (release)")
-	find_library (XercesC_LIBRARY_DEBUG
-		      NAMES "xerces-cd"
-			    "xerces-c_3D"
-			    "xerces-c_3_1D"
-		      DOC "Xerces-C++ libraries (debug)")
+	find_library (XercesC_LIBRARY_RELEASE NAMES "xerces-c" "xerces-c_3" DOC "Xerces-C++ libraries (release)")
+	find_library (XercesC_LIBRARY_DEBUG NAMES "xerces-cd" "xerces-c_3D" "xerces-c_3_1D" DOC "Xerces-C++ libraries (debug)")
 	include (SelectLibraryConfigurations)
 	select_library_configurations (XercesC)
 	mark_as_advanced (XercesC_LIBRARY_RELEASE XercesC_LIBRARY_DEBUG)
@@ -132,9 +123,7 @@ if (XercesC_FOUND)
 	if (NOT TARGET XercesC::XercesC)
 		add_library (XercesC::XercesC UNKNOWN IMPORTED)
 		if (XercesC_INCLUDE_DIRS)
-			set_target_properties (XercesC::XercesC
-					       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-							  "${XercesC_INCLUDE_DIRS}")
+			set_target_properties (XercesC::XercesC PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${XercesC_INCLUDE_DIRS}")
 		endif ()
 		if (EXISTS "${XercesC_LIBRARY}")
 			set_target_properties (XercesC::XercesC
@@ -144,10 +133,7 @@ if (XercesC_FOUND)
 							  "${XercesC_LIBRARY}")
 		endif ()
 		if (EXISTS "${XercesC_LIBRARY_DEBUG}")
-			set_property (TARGET XercesC::XercesC
-				      APPEND
-				      PROPERTY IMPORTED_CONFIGURATIONS
-					       DEBUG)
+			set_property (TARGET XercesC::XercesC APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 			set_target_properties (XercesC::XercesC
 					       PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG
 							  "CXX"
@@ -155,10 +141,7 @@ if (XercesC_FOUND)
 							  "${XercesC_LIBRARY_DEBUG}")
 		endif ()
 		if (EXISTS "${XercesC_LIBRARY_RELEASE}")
-			set_property (TARGET XercesC::XercesC
-				      APPEND
-				      PROPERTY IMPORTED_CONFIGURATIONS
-					       RELEASE)
+			set_property (TARGET XercesC::XercesC APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 			set_target_properties (XercesC::XercesC
 					       PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE
 							  "CXX"

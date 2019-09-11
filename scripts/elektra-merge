@@ -5,66 +5,87 @@ base=$2
 theirs=$3
 dest=$4
 
-help()
-{
-    echo "Usage: $(basename $0) <ourfile> <basefile> <theirfile> <resultfile>"
-    echo "ourfile: our version of the file to be merged. This file must be"
-    echo "         already mounted in Elektra. The mount has to be unique. That means"
-    echo "         that the file must be mounted only once. The mount configuration"
-    echo "         of this file is reused for mounting all other files"
-    echo "basfile: base version of the file to be merged"
-    echo "theirfile: their version of the file to be merged"
-    echo "resultfile: the file where the merge result is written to"
+help() {
+	echo "Usage: $(basename $0) <ourfile> <basefile> <theirfile> <resultfile>"
+	echo "ourfile: our version of the file to be merged. This file must be"
+	echo "         already mounted in Elektra. The mount has to be unique. That means"
+	echo "         that the file must be mounted only once. The mount configuration"
+	echo "         of this file is reused for mounting all other files"
+	echo "basfile: base version of the file to be merged"
+	echo "theirfile: their version of the file to be merged"
+	echo "resultfile: the file where the merge result is written to"
 }
 
 if [ "$#" != "4" ]; then
-    echo "4 arguments required, but $# given"
-    help
-    exit 1  
+	echo "4 arguments required, but $# given"
+	help
+	exit 1
 fi
 
-
-wccmd=$(command -v wc) ||  { >&2 echo "No wc command found"; exit 1; }
-grepcmd=$(command -v grep) || { >&2 echo "No grep command found"; exit 1; }
-awkcmd=$(command -v awk) || { >&2 echo "No awk command found"; exit 1; }
-kdbcmd=$(command -v kdb) || { >&2 echo "No kdb command found"; exit 1; }
+wccmd=$(command -v wc) || {
+	echo >&2 "No wc command found"
+	exit 1
+}
+grepcmd=$(command -v grep) || {
+	echo >&2 "No grep command found"
+	exit 1
+}
+awkcmd=$(command -v awk) || {
+	echo >&2 "No awk command found"
+	exit 1
+}
+kdbcmd=$(command -v kdb) || {
+	echo >&2 "No kdb command found"
+	exit 1
+}
 
 mounts=$($kdbcmd mount | $grepcmd "$ours")
 nummounts=$($wccmd -l <<< "$mounts")
 
 if [ "$nummounts" -gt "1" ]; then
-    >&2 echo "multiple mountpoints for the file $ours were found"
-    >&2 echo "unable to decide which mountpoint is ours"
-    help
-    exit 1
+	echo >&2 "multiple mountpoints for the file $ours were found"
+	echo >&2 "unable to decide which mountpoint is ours"
+	help
+	exit 1
 fi
 
 if [ "$nummounts" -eq "0" ]; then
-    >&2 echo "the file $ours is not yet mounted in Elektra"
-    help
-    exit 1
+	echo >&2 "the file $ours is not yet mounted in Elektra"
+	help
+	exit 1
 fi
 
-ourparent=$($awkcmd '{print $3}' <<<  "$mounts")
+ourparent=$($awkcmd '{print $3}' <<< "$mounts")
 theirparent="system/temp/$$/theirs"
 baseparent="system/temp/$$/base"
 destparent="system/temp/$$/result"
 
-cleanup()
-{
-    $kdbcmd umount $theirparent &> /dev/null
-    $kdbcmd umount $baseparent &> /dev/null
-    $kdbcmd umount $destparent &> /dev/null
+cleanup() {
+	$kdbcmd umount $theirparent &> /dev/null
+	$kdbcmd umount $baseparent &> /dev/null
+	$kdbcmd umount $destparent &> /dev/null
 }
 
 # prepare all mountpoints
-$kdbcmd remount $theirs $theirparent $ourparent || { echo "Unable to mount $theirs"; cleanup; exit 1;}
-$kdbcmd remount $base $baseparent $ourparent || { echo "Unable to mount $base"; cleanup; exit 1; }
-$kdbcmd remount $dest $destparent $ourparent || { echo "Unable to mount $dest"; cleanup; exit 1; }
+$kdbcmd remount $theirs $theirparent $ourparent || {
+	echo "Unable to mount $theirs"
+	cleanup
+	exit 1
+}
+$kdbcmd remount $base $baseparent $ourparent || {
+	echo "Unable to mount $base"
+	cleanup
+	exit 1
+}
+$kdbcmd remount $dest $destparent $ourparent || {
+	echo "Unable to mount $dest"
+	cleanup
+	exit 1
+}
 
 # do the merge
 $kdbcmd merge -s preserve \
-    $ourparent system/temp/$$/theirs system/temp/$$/base system/temp/$$/result
+	$ourparent system/temp/$$/theirs system/temp/$$/base system/temp/$$/result
 ret=$?
 
 cleanup

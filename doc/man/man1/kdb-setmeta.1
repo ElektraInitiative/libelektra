@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-SETMETA" "1" "December 2017" "" ""
+.TH "KDB\-SETMETA" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-setmeta\fR \- Set the value of a metakey
@@ -38,7 +38,11 @@ Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
@@ -59,10 +63,16 @@ Same as \fB\-q\fR: Suppress default messages\.
 Specifies which default namespace should be used when setting a cascading name\. By default the namespace is \fBuser\fR, except \fBkdb\fR is used as root, then \fBsystem\fR is the default\.
 .
 .SH "EXAMPLES"
-To set a metakey called \fBdescription\fR associated with the key \fBuser/example/key\fR to the value \fBHello World!\fR: \fBkdb setmeta spec/example/key description "Hello World!"\fR
+To set a metakey called \fBdescription\fR associated with the key \fBuser/example/key\fR to the value \fBHello World!\fR:
+.
+.br
+\fBkdb setmeta spec/example/key description "Hello World!"\fR
 .
 .P
-To create a new key \fBspec/example/newkey\fR with a null value (if it did not exist before) and a metakey \fBnamespace/#0\fR associated with it to the value \fBsystem\fR: \fBkdb setmeta /example/newkey "namespace/#0" system\fR
+To create a new key \fBspec/example/newkey\fR with a null value (if it did not exist before) and a metakey \fBnamespace/#0\fR associated with it to the value \fBsystem\fR:
+.
+.br
+\fBkdb setmeta /example/newkey "namespace/#0" system\fR
 .
 .P
 To create an override link for a \fB/test\fR key:

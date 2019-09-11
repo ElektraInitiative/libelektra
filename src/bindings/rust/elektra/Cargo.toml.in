@@ -1,0 +1,8 @@
+[package]
+name = "elektra"
+version = "@KDB_VERSION@"
+authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
+edition = "2018"
+
+[dependencies]
+elektra-sys = { version = "@KDB_VERSION@", path = "../elektra-sys" }

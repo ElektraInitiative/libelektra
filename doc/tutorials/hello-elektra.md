@@ -1,6 +1,6 @@
 # Hello, Elektra
 
-This basic tutorial shows you how to compile and run a very basic  Elektra application. For this tutorial we assume that you installed [Elektra](/doc/INSTALL.md) and [CMake](http://cmake.org) on your machine. We also assume that you work a Unix based OS like Linux or macOS.
+This basic tutorial shows you how to compile and run a very basic Elektra application. For this tutorial we assume that you installed [Elektra](/doc/INSTALL.md) and [CMake](http://cmake.org) on your machine. We also assume that you work a Unix based OS like Linux or macOS.
 
 1. Create a folder called `Hello` somewhere on your disk
 2. Copy the file `examples/helloElektra.c` to the folder `Hello` you just created
@@ -50,32 +50,32 @@ This basic tutorial shows you how to compile and run a very basic  Elektra appli
    -- Detecting CXX compiler ABI info - done
    -- Detecting CXX compile features
    -- Detecting CXX compile features - done
-   -- Elektra 0.8.19 found
+   -- Elektra 0.9.0 found
    -- Configuring done
    -- Generating done
    -- Build files have been written to: Hello/build
    ```
 
-6. No it’s time to build your application. For that step run `make` inside the folder `Hello/build`:
+6. Now it’s time to build your application. For that step run `make` inside the folder `Hello/build`:
 
    ```sh
    make
    ```
 
-   . If the last step completed successfully, then  the build directory now contains the application `hello`.
+   . If the last step completed successfully, then the build directory now contains the application `hello`.
 
 7. You can now run your Elektra application by calling `./hello` inside the build directory. The output of the application should look something like this:
 
    ```
    Open key database
    Retrieve key set
-   Number of mappings: 0
-   Add new key system/test/hello
-   Number of mappings: 1
+   Number of key-value pairs: 0
+   Add key user/test/hello
+   Number of key-value pairs: 1
 
    hello, elektra
 
-   Delete mappings
+   Delete key-value pairs inside memory
    Close key database
    ```
 

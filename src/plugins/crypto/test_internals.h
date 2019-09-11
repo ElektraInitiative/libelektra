@@ -20,6 +20,7 @@
 #include <tests_plugin.h>
 
 #include "common_gpg_tests.c"
+#include "gpgagent_teardown.h"
 #include "test_key.h"
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
@@ -33,6 +34,7 @@ static KeySet * newPluginConfiguration (void);
 		test_init (PLUGIN_NAME);                                                                                                   \
 		test_incomplete_config (PLUGIN_NAME);                                                                                      \
 		test_crypto_operations (PLUGIN_NAME);                                                                                      \
+		test_teardown ();                                                                                                          \
 	}                                                                                                                                  \
 	else                                                                                                                               \
 	{                                                                                                                                  \
@@ -270,7 +272,7 @@ static void test_gpg (void)
 	Key * msg = keyNew (0);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
-	succeed_if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
 
 	keyDel (msg);
 	keyDel (errorKey);

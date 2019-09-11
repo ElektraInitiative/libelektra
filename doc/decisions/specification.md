@@ -4,9 +4,9 @@
 
 - The commandline for mounting a backend can be very long
 - A specification is already used for code generation, but
- - the data is not available in KDB
- - the specification cannot be used for mounting, even though the
-   needed information is in the specification
+  - the data is not available in KDB
+  - the specification cannot be used for mounting, even though the
+    needed information is in the specification
 
 ## Constraints
 
@@ -45,6 +45,6 @@
 6. define necessary metadata
 7. mounting spec files
 
-## Related decisions
+## Related Decisions
 
 ## Notes

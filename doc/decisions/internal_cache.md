@@ -31,7 +31,7 @@ Semantics can be provided without additional code or overhead in the core.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 
@@ -39,12 +39,18 @@ internal caches lead to duplication of memory consumption
 (most of it is avoided by reference counting, though)
 
 in some cases caches cannot be avoided?
- -> filesys, databases?
+-> filesys, databases?
 
-cache discussion:
-+ not more keys than needed
-+ kdbGet avoids IO even if done somewhere else
-+ KDB handles could be more locally
+### Cache Discussion
+
+**Pros:**
+
+- not more keys than needed
+- kdbGet avoids IO even if done somewhere else
+- KDB handles could be more locally
+
+**Cons:**
+
 - not possible to access cache with current architecture, KDB high level API
 - implementation overhead
 - where should the caches be

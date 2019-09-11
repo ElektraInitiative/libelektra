@@ -54,7 +54,8 @@ int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
 	return 0;
 }
 
-enum GlobDirection {
+enum GlobDirection
+{
 	GET,
 	SET,
 };
@@ -220,7 +221,7 @@ int elektraGlobSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (glob)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("glob",

@@ -15,7 +15,17 @@ This plugin parses `passwd` files, e.g. `/etc/passwd`.
 
 ## Implementation Details
 
-If present, the not-posix compliant `fgetpwent` function will be used to read the file supplied by the resolver, otherwise `getpwent` will be used. For writing, if present, `putpwent` will be used, if not a simple implementation writing straight to the config file.
+The non-POSIX function `fgetpwent` (GNU_SOURCE) will be used to
+read the file supplied by the resolver.
+As a fallback we implemented our own version based on musls `fgetpwent`.
+
+For writing `putpwent` (GNU_SOURCE) will be used.
+If it is not available the plugin will write straight to the config file.
+
+## Requirements
+
+For the plugin to be build at least `POSIX_C_SOURCE >= 200809L` compatibility
+is required.
 
 ## Configuration
 
@@ -32,13 +42,13 @@ If the config key `index` is set to `name` passwd entries will be sorted by name
 
 ## Usage
 
-    kdb mount /etc/passwd system/passwd passwd index=name
-    kdb export system/passwd/root
-
-    gecos = root
-    gid = 0
-    home = /root
-    passwd = x
-    shell = /bin/zsh
-    uid = 0
-
+```sh
+kdb mount /etc/passwd system/passwd passwd index=name
+kdb export system/passwd/root
+#> gecos = root
+#> gid = 0
+#> home = /root
+#> passwd = x
+#> shell = /bin/zsh
+#> uid = 0
+```

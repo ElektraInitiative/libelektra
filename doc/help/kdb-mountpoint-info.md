@@ -1,13 +1,12 @@
-kdb-mountpoint-info -- Print information about the default storage and resolver or a mountpoint
-===============================================================================================
+# kdb-mountpoint-info -- Print information about the default storage and resolver or a mount point
 
 ## SYNOPSIS
 
-`kdb mountpoint-info [mountpoint]`
+`kdb mountpoint-info [mount point]`
 
 ## DESCRIPTION
 
-This command will print information about the version, default resolver and default storage plugin. When a mountpoint is given as argument additional informations about the mountpoint (e.g. configuration) is printed.
+This command will print information about the version, default resolver and default storage plugin. When a mount point is given as argument additional informations about the mount point (e.g. configuration) is printed.
 
 ## EXAMPLES
 

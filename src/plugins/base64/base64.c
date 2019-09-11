@@ -36,7 +36,7 @@ static int unescape (Key * key, Key * parent)
 	char * unescaped = elektraStrDup (&strVal[1]);
 	if (!unescaped)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "Memory allocation failed");
 		return -1;
 	}
 	keySetString (key, unescaped);
@@ -107,12 +107,12 @@ static int decode (Key * key, Key * parent, bool metaMode)
 	else if (result == -1)
 	{
 		// Decoding error
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parent, "Not Base64 encoded: %s", strVal);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parent, "Key %s was not Base64 encoded: %s", keyName (key), strVal);
 	}
 	else if (result == -2)
 	{
 		// Memory error
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "Memory allocation failed");
 		return -1;
 	}
 
@@ -138,7 +138,7 @@ static int encode (Key * key, Key * parent, bool metaMode)
 	char * base64 = base64Encode (keyValue (key), (size_t) keyGetValueSize (key));
 	if (!base64)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "Memory allocation failed");
 		return -1;
 	}
 
@@ -152,7 +152,7 @@ static int encode (Key * key, Key * parent, bool metaMode)
 		char * newVal = elektraMalloc (newValLen);
 		if (!newVal)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "Memory allocation failed");
 			elektraFree (base64);
 			return -1;
 		}
@@ -192,7 +192,7 @@ static int escape (Key * key, Key * parent)
 	char * escapedVal = elektraMalloc (strValLen + 2);
 	if (!escapedVal)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "Memory allocation failed");
 		return -1;
 	}
 
@@ -290,7 +290,7 @@ int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &PLUGIN_FUNCTION (get), ELEKTRA_PLUGIN_SET,
 				    &PLUGIN_FUNCTION (set), ELEKTRA_PLUGIN_END);

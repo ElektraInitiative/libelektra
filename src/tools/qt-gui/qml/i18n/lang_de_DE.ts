@@ -1032,7 +1032,7 @@ Note that you cannot undo creating the backend. If you want to remove a backend 
     </message>
     <message>
         <location filename="../../src/treeviewmodel.cpp" line="657"/>
-        <source>Synchronizing failed, conflicts occured.</source>
+        <source>Synchronizing failed, conflicts occurred.</source>
         <translation>Synchronisieren fehlgeschlagen, es traten Konflikte auf.</translation>
     </message>
     <message>

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-CONVERT" "1" "December 2017" "" ""
+.TH "KDB\-CONVERT" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-convert\fR \- Convert configuration files using elektra
@@ -44,13 +44,29 @@ Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .SH "EXAMPLES"
-To convert an Elektra dump file to xml: \fBcat sw\.ecf | kdb convert dump xmltool > sw\.xml\fR
+To convert an Elektra dump file to xml:
+.
+.br
+\fBcat sw\.ecf | kdb convert dump xmltool > sw\.xml\fR
 .
 .P
-Another way to convert an Elektra dump file to xml: \fBkdb convert dump xmltool /home/user/dump_file\.ecf /home/user/xml_file\.xml\fR
+Another way to convert an Elektra dump file to xml:
+.
+.br
+\fBkdb convert dump xmltool /home/user/dump_file\.ecf /home/user/xml_file\.xml\fR
 .
 .P
-To print an xml file using the \fBline\fR format: \fBcat \.\./tests/xml_file\.xml | kdb convert xmltool line\fR Note that this command won\'t save the output, it will just display it to \fBstdout\fR\.
+To print an xml file using the \fBline\fR format:
+.
+.br
+\fBcat \.\./tests/xml_file\.xml | kdb convert xmltool line\fR
+.
+.br
+Note that this command won\'t save the output, it will just display it to \fBstdout\fR\.

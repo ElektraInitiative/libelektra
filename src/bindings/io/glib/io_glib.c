@@ -25,7 +25,7 @@ typedef struct _GlibBindingData GlibBindingData;
 typedef struct
 {
 	GSource gSource;	       /*!< FdSource and GSource start at the same address */
-	GPollFD pollFd;		       /*!< polling information: includes file desciptor and flags */
+	GPollFD pollFd;		       /*!< polling information: includes file descriptor and flags */
 	int isPolling;		       /*!< indicates wheter source is currently polling */
 	GlibBindingData * bindingData; /*!< backreference to binding data */
 } FdSource;
@@ -102,7 +102,7 @@ static GlibBindingData * newBindingData (void)
 	GlibBindingData * bindingData = elektraCalloc (sizeof (*bindingData));
 	if (bindingData == NULL)
 	{
-		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
+		ELEKTRA_LOG_WARNING ("elektraCalloc failed");
 		return NULL;
 	}
 
@@ -127,7 +127,7 @@ static int ioGlibBindingFdPrepare (GSource * source, gint * timeout)
 }
 
 /**
- * Check the file desciptor source after poll() was called.
+ * Check the file descriptor source after poll() was called.
  *
  * @param  source glib source
  * @return        G_SOURCE_CONTINUE if I/O operation is enabled and events are present
@@ -179,6 +179,17 @@ static int ioGlibBindingFdDispatch (GSource * source, GSourceFunc callback, void
 }
 
 /**
+ * Cleanup after file descriptor has been detached
+ * @param  source glib source
+ */
+static void ioGlibBindingFdCleanup (GSource * source)
+{
+	FdSource * fdSource = (FdSource *) source;
+	elektraFree (fdSource->bindingData->fdFuncs);
+	elektraFree (fdSource->bindingData);
+}
+
+/**
  * Calls the associated callback.
  * Called by glib whenever a timer has elapsed.
  *
@@ -200,7 +211,7 @@ static int ioGlibBindingTimerCallback (void * data)
 
 /**
  * Calls the associated callback.
- * Called by glib whenever a idle operation can perform its operations.
+ * Called by glib whenever an idle operation can perform its operations.
  *
  * @param data  source callback data
  */
@@ -247,7 +258,7 @@ static int ioGlibBindingUpdateFd (ElektraIoFdOperation * fdOp)
 
 	if (!bindingData->enabled && fdSource->isPolling)
 	{
-		// Stop polling file desciptor
+		// Stop polling file descriptor
 		g_source_remove_poll (gSource, &fdSource->pollFd);
 		fdSource->isPolling = 0;
 	}
@@ -282,7 +293,7 @@ static int ioGlibBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperatio
 	funcs->prepare = ioGlibBindingFdPrepare;
 	funcs->check = ioGlibBindingFdCheck;
 	funcs->dispatch = ioGlibBindingFdDispatch;
-	funcs->finalize = NULL;
+	funcs->finalize = ioGlibBindingFdCleanup;
 	bindingData->fdFuncs = funcs;
 	FdSource * fdSource = (FdSource *) g_source_new (funcs, sizeof *fdSource);
 	GSource * gSource = &fdSource->gSource;
@@ -320,8 +331,6 @@ static int ioGlibBindingRemoveFd (ElektraIoFdOperation * fdOp)
 	}
 	g_source_destroy (gSource);
 	g_source_unref (gSource);
-	elektraFree (bindingData->fdFuncs);
-	elektraFree (bindingData);
 
 	return 1;
 }

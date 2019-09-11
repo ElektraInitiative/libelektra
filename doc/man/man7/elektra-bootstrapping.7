@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-BOOTSTRAPPING" "7" "February 2018" "" ""
+.TH "ELEKTRA\-BOOTSTRAPPING" "7" "June 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-bootstrapping\fR \- default backend
@@ -13,7 +13,7 @@ One important aspect of a configuration library is the out\-of\-the\-box experie
 To support that experience, a so\-called \fBdefault backend\fR is responsible in the case that nothing was configured so far\. It must have a storage that is able to store full Elektra semantics\. To avoid reimplementation of storage plugins, for default storage plugins (\fBstorage\fR or in code \fBKDB_STORAGE\fR) is used\. A resolver plugin (\fBresolver\fR or in code \fBKDB_RESOLVER\fR) takes care of the inevitable portability issues\. The \fBdefault backend\fR stores configuration in \fBKDB_DB_FILE\fR\. One can easily avoid the usage of the default backend by simple mounting another backend to \fB/\fR\.
 .
 .P
-The mounting configuration (the configuration how to mount the mountpoints) also needs to be stored somewhere\. The so called \fBinit backend\fR is responsible for fetching configuration from \fBsystem/elektra\fR, where the mountpoints are stored\. Again \fBKDB_STORAGE\fR and \fBKDB_RESOLVER\fR is used, but now they write into the configuration file \fBKDB_DB_INIT\fR (elektra\.ecf by default)\.
+The mounting configuration (the configuration how to mount the mount points) also needs to be stored somewhere\. The so called \fBinit backend\fR is responsible for fetching configuration from \fBsystem/elektra\fR, where the mount points are stored\. Again \fBKDB_STORAGE\fR and \fBKDB_RESOLVER\fR is used, but now they write into the configuration file \fBKDB_DB_INIT\fR (\fBelektra\.ecf\fR by default)\.
 .
 .P
 Thus for full and static build variants an exchange at run\-time is not possible\. Using shared libraries, however, \fBKDB_STORAGE\fR and \fBKDB_RESOLVER\fR are actually symbolic links (\fBlibelektra\-resolver\.so\fR and \fBlibelektra\-storage\.so\fR) to concrete plugins and thus can be changed without recompilation\.
@@ -30,19 +30,19 @@ The default backend consists of a default storage plugin and default resolver pl
 .SH "TRACEABILITY"
 .
 .IP "\(bu" 4
-elektraOpenBootstrap() implements above algorithm
+\fBelektraOpenBootstrap()\fR implements above algorithm
 .
 .IP "\(bu" 4
-backendOpenDefault() opens the default backend
+\fBbackendOpenDefault()\fR opens the default backend
 .
 .IP "\(bu" 4
-/src/include/kdbconfig\.h\.in contains above KDB_* variables
+\fB/src/include/kdbconfig\.h\.in\fR contains above \fBKDB_*\fR variables
 .
 .IP "\(bu" 4
-src/plugins/CMakeLists\.txt creates the symbolic links
+\fBsrc/plugins/CMakeLists\.txt\fR creates the symbolic links
 .
 .IP "\(bu" 4
-cmake/Modules/LibAddMacros\.cmake create_lib_symlink function
+\fBcmake/Modules/LibAddMacros\.cmake\fR \fBcreate_lib_symlink\fR function
 .
 .IP "" 0
 .

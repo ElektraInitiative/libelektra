@@ -1,0 +1,145 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+// local helper macros to determine the length of a 64 bit integer
+#define elektra_len19(x) ((x) < 10000000000000000000ULL ? 19 : 20)
+#define elektra_len18(x) ((x) < 1000000000000000000ULL ? 18 : elektra_len19 (x))
+#define elektra_len17(x) ((x) < 100000000000000000ULL ? 17 : elektra_len18 (x))
+#define elektra_len16(x) ((x) < 10000000000000000ULL ? 16 : elektra_len17 (x))
+#define elektra_len15(x) ((x) < 1000000000000000ULL ? 15 : elektra_len16 (x))
+#define elektra_len14(x) ((x) < 100000000000000ULL ? 14 : elektra_len15 (x))
+#define elektra_len13(x) ((x) < 10000000000000ULL ? 13 : elektra_len14 (x))
+#define elektra_len12(x) ((x) < 1000000000000ULL ? 12 : elektra_len13 (x))
+#define elektra_len11(x) ((x) < 100000000000ULL ? 11 : elektra_len12 (x))
+#define elektra_len10(x) ((x) < 10000000000ULL ? 10 : elektra_len11 (x))
+#define elektra_len09(x) ((x) < 1000000000ULL ? 9 : elektra_len10 (x))
+#define elektra_len08(x) ((x) < 100000000ULL ? 8 : elektra_len09 (x))
+#define elektra_len07(x) ((x) < 10000000ULL ? 7 : elektra_len08 (x))
+#define elektra_len06(x) ((x) < 1000000ULL ? 6 : elektra_len07 (x))
+#define elektra_len05(x) ((x) < 100000ULL ? 5 : elektra_len06 (x))
+#define elektra_len04(x) ((x) < 10000ULL ? 4 : elektra_len05 (x))
+#define elektra_len03(x) ((x) < 1000ULL ? 3 : elektra_len04 (x))
+#define elektra_len02(x) ((x) < 100ULL ? 2 : elektra_len03 (x))
+#define elektra_len01(x) ((x) < 10ULL ? 1 : elektra_len02 (x))
+#define elektra_len00(x) ((x) < 0ULL ? 0 : elektra_len01 (x))
+#define elektra_len(x) elektra_len00 (x)
+
+#define ELEKTRA_SIZE(tagName) ELEKTRA_CONCAT (elektraSize, tagName)
+
+/*%# keys %*/
+/*%# is_struct? %*/
+/*%> partial.keys.fun.struct.h %*/
+/*%/ is_struct? %*/
+/*%^ is_struct? %*/
+/*%# is_struct_ref? %*/
+/*%> partial.keys.fun.structref.h %*/
+/*%/ is_struct_ref? %*/
+/*%^ is_struct_ref? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ *
+ * @return the value of '{{{ name }}}'.
+{{# is_string? }} *   The returned pointer may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
+{{/ is_string? }}
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ ELEKTRA_GET (/*%& macro_name %*/) (Elektra * elektra /*%# args? %*/,
+								      /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+								      /*%/ last? %*/ /*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	/*%& native_type %*/ result = ELEKTRA_GET (/*%& type_name %*/) (elektra, name);
+	elektraFree (name);
+	return result;
+	/*%/ args? %*/
+	/*%^ args? %*/
+	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
+	/*%/ args? %*/
+}
+
+/*%# generate_setters? %*/
+/*%={{ }}=%*/
+/**
+ * Set the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param value   The value of '{{{ name }}}'.
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET (/*%& macro_name %*/) (Elektra * elektra,
+						      /*%& native_type %*/ value, /*%# args? %*/ /*%# args %*/
+						      /*%& native_type %*/ /*%& name %*/,
+						      /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, name, value, error);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
+	/*%/ args? %*/
+}
+/*%/ generate_setters? %*/
+/*%/ is_struct_ref? %*/
+/*%/ is_struct? %*/
+/*%# is_array? %*/
+/*%={{ }}=%*/
+/**
+ * Get the size of the array '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+{{# array_args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ array_args? }}
+ */// {{=/*% %*/=}}
+static inline kdb_long_long_t ELEKTRA_SIZE (/*%& macro_name %*/) (Elektra * elektra /*%# array_args? %*/,
+								  /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+								  /*%/ last? %*/ /*%/ args %*/ /*%/ array_args? %*/)
+{
+	/*%# array_args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	kdb_long_long_t size = elektraArraySize (elektra, name);
+	elektraFree (name);
+	return size;
+	/*%/ array_args? %*/
+	/*%^ array_args? %*/
+	return elektraArraySize (elektra, "/*% array_name %*/");
+	/*%/ array_args? %*/
+}
+/*%/ is_array? %*/
+/*%/ keys %*/
+
+#undef elektra_len19
+#undef elektra_len18
+#undef elektra_len17
+#undef elektra_len16
+#undef elektra_len15
+#undef elektra_len14
+#undef elektra_len13
+#undef elektra_len12
+#undef elektra_len11
+#undef elektra_len10
+#undef elektra_len09
+#undef elektra_len08
+#undef elektra_len07
+#undef elektra_len06
+#undef elektra_len05
+#undef elektra_len04
+#undef elektra_len03
+#undef elektra_len02
+#undef elektra_len01
+#undef elektra_len00
+#undef elektra_len

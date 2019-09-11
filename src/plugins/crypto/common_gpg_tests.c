@@ -13,7 +13,7 @@ static int gpg_available (KeySet * conf)
 	char * gpgPath = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
 
-	int gpg_search_result = CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (&gpgPath, conf, parentKey);
+	int gpg_search_result = ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (&gpgPath, conf, parentKey);
 	if (gpg_search_result == 1)
 	{
 		available = 1;

@@ -1,5 +1,4 @@
-kdb-export(1) -- Export keys from the key database
-==================================================
+# kdb-export(1) -- Export keys from the key database
 
 ## SYNOPSIS
 
@@ -18,7 +17,6 @@ Additionally, the user can specify a format to use by passing it as the option a
 The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.<br>
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
 
-
 ## OPTIONS
 
 - `-H`, `--help`:
@@ -33,6 +31,10 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
   Omit the `system/elektra` directory.
 - `-c`, `--plugins-config <plugins-config>`:
   Add a configuration to the format plugin.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## KDB
 

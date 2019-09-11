@@ -13,76 +13,74 @@
 
 The following representation standards of dates and times are currently supported and can be use by setting `check/date` to:
 
-* `POSIX`
+- `POSIX`
 
-   see `STRPTIME(3)` for more information. a valid format has to be specified in `check/date/format`
+  see `STRPTIME(3)` for more information. a valid format has to be specified in `check/date/format`
 
-* `ISO8601`
+- `ISO8601`
 
-   see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`, default: `datetime complete+truncated`:
+  see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`, default: `datetime complete+truncated`:
 
-  * Dates/Time:
+  - Dates/Time:
 
-    * Date:
+    - Date:
 
-      * `calendardate`
+      - `calendardate`
         calendar dates: day of month - month - year.
 
-      * `weekdate`
+      - `weekdate`
         calendar week and day numbers, e.g. YYYY-Www-D
 
-      * `ordinaldate`
+      - `ordinaldate`
         year + day of the year
 
-      * `date`
+      - `date`
         `calendardate`, `weekdate`, and `ordinaldate` combined
 
-    * Time:
+    - Time:
 
-      * `timeofday`
+      - `timeofday`
         24-hour timekeeyping system
 
-      * `utc`
+      - `utc`
         coordinates universal time. either by appending a time-zone designator or the time difference to `UTC` to `timeofday`
 
-    * Combined:
+    - Combined:
       `datetime`
       combination of Dates and Time according to th ISO8601 specification.
 
-  * Representation:
+  - Representation:
     if no representation is specified, `complete+reduced+truncated` is used as default.
 
-    * `complete`
+    - `complete`
       complete representation, dates are separated by hyphens, times by colon. e.g. YYYY-MM-DD or hh:mm:ss
 
-    * `reduced`
-       reduced precision, e.g. YYYY-MM, or hh
+    - `reduced`
+      reduced precision, e.g. YYYY-MM, or hh
 
-    * `truncated`
-       truncated representation, hyphens used to indicate omitted components. e.g. --MM-DD or --ss
+    - `truncated`
+      truncated representation, hyphens used to indicate omitted components. e.g. --MM-DD or --ss
 
-    * `complete+reduced+truncated`
-       allow all 3 representations
+    - `complete+reduced+truncated`
+      allow all 3 representations
 
-    * `complete+reduced`
-       allow only `complete` + `reduced` representation
+    - `complete+reduced`
+      allow only `complete` + `reduced` representation
 
-    * `complete+truncated`
-       allow only `complete` + `truncated` representation
+    - `complete+truncated`
+      allow only `complete` + `truncated` representation
 
-    * `reduced+truncated`
-       allow only `reduced` + `truncated` representation.
+    - `reduced+truncated`
+      allow only `reduced` + `truncated` representation.
 
-  * Format:
-       if no format is specified both `basic` and `extended` are treated as valid.
+  - Format:
+    if no format is specified both `basic` and `extended` are treated as valid.
 
-    * `basic`
+    - `basic`
       no separating character between individual components of a `date`, `time` or `datetime` expressen
 
-    * `extended`
+    - `extended`
       separating characters between components. `date` components separated by hyphen, `time` components by colon.
-
-
 
 * `RFC2822`
 

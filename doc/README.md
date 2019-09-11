@@ -4,10 +4,10 @@ This folder contains documentation for “Elektra – the configuration framewor
 
 ## Introductory
 
-- [Glossary](help/elektra-glossary.md): The glossary explains common terminology used in the documentation.
-- [Why](WHY.md): This document describes why you should use Elektra.
-- [Big Picture](BIGPICTURE.md): This document provides an birds eye view of Elektra and the key database (KDB).
 - [Goals](GOALS.md): We specify the goals and target audiences for Elektra in this document.
+- [Why](WHY.md): This document describes why you should use Elektra.
+- [Vision](VISION.md): This document describes the vision behind Elektra.
+- [Big Picture](BIGPICTURE.md): This document provides an birds eye view of Elektra and the key database (KDB).
 - [Security](SECURITY.md): This guideline shows how Elektra handles security concerns.
 - [Tutorials](tutorials): The tutorials folder provides various **user related tutorials**. If you are interested in **developer related tutorials** instead, then please take a look at the folder [dev](dev).
 - [News](news): The news folder contains release notes and other recent information about Elektra.
@@ -43,3 +43,4 @@ This folder contains documentation for “Elektra – the configuration framewor
 - [Decisions](decisions): If you are interested in why Elektra uses a certain technology or strategy, then please check out the documents in this folder.
 - [Markdown Link Converter](markdownlinkconverter/README.md): This tool converts links in Markdown files to make them usable in our [Doxygen documentation](https://doc.libelektra.org/api/current/html).
 - [Usecases](usecases): This folder contains use cases for our [snippet sharing service](https://www.libelektra.org/auth/login) and the upcoming web user interface for the KDB.
+- [Glossary](help/elektra-glossary.md): The glossary explains common terminology used in the documentation.

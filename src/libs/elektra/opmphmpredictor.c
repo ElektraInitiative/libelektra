@@ -14,6 +14,12 @@
 #include <string.h>
 
 /**
+ * The benchmarked and evaluated values of the predictors configuration
+ */
+const uint16_t opmphmPredictorHistoryMask = 0x1FF; // 9 bit history
+const size_t opmphmPredictorActionLimit = 599;
+
+/**
  * Prediction Automata A2
  *
  * state 0 and 1 are not worth using the OPMPHM
@@ -59,7 +65,7 @@ inline void opmphmPredictorIncCountOpmphm (OpmphmPredictor * op)
 /**
  * @brief Increases the counter when the Binary Search was used for the ksLookup (...) .
  *
- * Prevents also a endless Binary Search usage by a simple heuristic.
+ * Prevents also an endless Binary Search usage by a simple heuristic.
  *
  * @param op the Predictor
  * @param n the number of elements in the KeySet
@@ -152,7 +158,6 @@ OpmphmPredictor * opmphmPredictorNew (void)
 		bytesInPatternTable = 1;
 	}
 	out->patternTable = elektraCalloc (bytesInPatternTable * sizeof (uint8_t));
-	//~ memset (out->patternTable, 0x0, bytesInPatternTable * sizeof (uint8_t));
 	if (!out->patternTable)
 	{
 		elektraFree (out);
@@ -176,6 +181,7 @@ void opmphmPredictorCopy (OpmphmPredictor * dest, OpmphmPredictor * source)
 	dest->history = source->history;
 	dest->size = source->size;
 	dest->lookupCount = source->lookupCount;
+	dest->ksSize = source->ksSize;
 	// copy patternTable
 	memcpy (dest->patternTable, source->patternTable, source->size * sizeof (uint8_t));
 }

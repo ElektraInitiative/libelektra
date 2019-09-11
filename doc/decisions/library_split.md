@@ -40,7 +40,7 @@ are all linked together to libelektra.org.
 - maybe to bindings?
 - plugins and applications need changes in order to profit from less dependencies
 
-## Related decisions
+## Related Decisions
 
 - none
 
@@ -52,16 +52,15 @@ Sizes of libelektra.so
 
 - 0.8.14 unmodified 128K
 - 0.8.14 w/o meta.c 120K
-- 0.8.14 w/o array  126K
+- 0.8.14 w/o array 126K
 
 So the removal of the non-core functionality is actually relevant.
 And kdb/core is now nearly half-split:
 
--  52K lib/libelektra-core.so.0.8.14
+- 52K lib/libelektra-core.so.0.8.14
 - 7,5K lib/libelektra-ease.so.0.8.14
 - 1,3M lib/libelektra-full.so.0.8.14
--  76K lib/libelektra-kdb.so.0.8.14
+- 76K lib/libelektra-kdb.so.0.8.14
 - 9,3K lib/libelektra-meta.so.0.8.14
 - 5,1K lib/libelektra-plugin.so.0.8.14
 - 7,6K lib/libelektra-proposal.so.0.8.14
-

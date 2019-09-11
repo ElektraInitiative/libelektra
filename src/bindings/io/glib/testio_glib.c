@@ -16,7 +16,7 @@
 
 #include <glib.h>
 
-#include <kdbio_glib.h>
+#include <kdbio/glib.h>
 
 GMainLoop * loop;
 GMainContext * context;

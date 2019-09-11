@@ -21,7 +21,7 @@ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 ```
 
 1. `/etc/hosts` is the configuration file we want to mount
-2. `system/hosts` is the path it should have in the key database, also known as **mountpoint**
+2. `system/hosts` is the path it should have in the key database, also known as **mount point**
 3. `hosts` is the _storage plugin_ that can read and write this configuration format.
 
 > Consider using mount with the option `--with-recommends`, which loads all plugins recommended by the _hosts_ plugin.
@@ -78,9 +78,9 @@ sudo kdb rm system/hosts/ipv4/mylocalhost
 sudo kdb umount system/hosts
 ```
 
-> ###### Why do you Need Superuser Privileges to Mount Files? ######
+> ###### Why do you Need Superuser Privileges to Mount Files?
 >
-> Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
+> Elektra manages its mount points in configuration below **system/elektra/mountpoints**.
 > The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
 >
 >     $ kdb file system/elektra/mountpoints
@@ -95,7 +95,7 @@ absolute or relative path in your file system, but gets resolved to one by Elekt
 The plugin that is responsible for this is the [_Resolver_](/src/plugins/resolver/README.md).
 
 When you mount a configuration file the resolver first looks at the namespace of
-your mountpoint. Based on that namespace and if the supplied path was relative or
+your mount point. Based on that namespace and if the supplied path was relative or
 absolute the resolver then resolves the supplied path to a path in the file system.
 The resolving happens dynamically for every `kdb` invocation.
 
@@ -104,21 +104,21 @@ Also here you only see the unresolved paths.
 
 If you supplied an absolute path (e.g. `/example.ini`) it gets resolved to this:
 
-| namespace        | resolved path         |
-| ---------------- |---------------------- |
-| `spec`           | `/example.ini`        |
-| `dir`            | `${PWD}/example.ini`  |
-| `user`           | `${HOME}/example.ini` |
-| `system`         | `/example.ini`        |
+| namespace | resolved path         |
+| --------- | --------------------- |
+| `spec`    | `/example.ini`        |
+| `dir`     | `${PWD}/example.ini`  |
+| `user`    | `${HOME}/example.ini` |
+| `system`  | `/example.ini`        |
 
 If you supplied a relative path (e.g. `example.ini`) it gets resolved to this:
 
-| namespace        | resolved path                                  |
-| ---------------- |----------------------------------------------- |
-| `spec`           | `/usr/share/elektra/specification/example.ini` |
-| `dir`            | `${PWD}/.dir/example.ini`                      |
-| `user`           | `${HOME}/.config/example.ini`                  |
-| `system`         | `/etc/kdb/example.ini`                         |
+| namespace | resolved path                                  |
+| --------- | ---------------------------------------------- |
+| `spec`    | `/usr/share/elektra/specification/example.ini` |
+| `dir`     | `${PWD}/.dir/example.ini`                      |
+| `user`    | `${HOME}/.config/example.ini`                  |
+| `system`  | `/etc/kdb/example.ini`                         |
 
 If this differs on your system, the resolver has a different configuration.
 Type `kdb info resolver` for more information about the resolvers.
@@ -138,7 +138,7 @@ Elektra accomplishes this task with _storage plugins_.
 
 > In Elektra [Plugins](/doc/tutorials/plugins.md) are the units that encapsulate functionality.
 > There are not only plugins that handle storage of data, but also plugins that modify your values ([iconv](/src/plugins/iconv/README.md)).
-> Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [enum](/src/plugins/enum/README.md), [boolean](/src/plugins/boolean/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
+> Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
 > You can get a complete list of all available plugins with `kdb list`.
 > Although an individual plugin does not provide much functionality, plugins are powerful because they are designed to be used together.
 
@@ -160,7 +160,7 @@ sudo kdb mount /.git/config dir/git ini multiline=0
 
 As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
-we did with `multiline=0`. Git intents the entries in its configuration
+we did with `multiline=0`. Git indents the entries in its configuration
 files and the default behavior of the `ini` plugin is to interpret these indented
 entries as values that span multiple lines. The passed parameter disables
 this behavior and makes the ini-plugin compatible with git configuration.
@@ -193,22 +193,26 @@ The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/R
 
 Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
 I chose the `ni` plugin for this demonstration, because it supports metadata and is human readable.
-So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
+So let us have a look at the [type](/src/plugins/type/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 
 ```sh
 # mount the backend with the plugins ...
-kdb mount example.ni user/example ni enum
+kdb mount example.ni user/example ni type
 
 # ... and set a value for the demonstration
 kdb set user/example/enumtest/fruit apple
 #> Create a new key user/example/enumtest/fruit with string "apple"
 ```
 
-By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
+By entering `kdb info type` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the metavalue `check/enum`.
 
 ```sh
-kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
+kdb setmeta user/example/enumtest/fruit check/type enum
+kdb setmeta user/example/enumtest/fruit check/enum "#2"
+kdb setmeta user/example/enumtest/fruit check/enum/#0 apple
+kdb setmeta user/example/enumtest/fruit check/enum/#1 banana
+kdb setmeta user/example/enumtest/fruit check/enum/#2 grape
 kdb set user/example/enumtest/fruit tomato
 # RET:5
 # this fails because tomato is not in the list of valid values
@@ -220,7 +224,11 @@ You can have a look or even edit the configuration file with `kdb editor user/ex
 enumtest/fruit = apple
 
 [enumtest/fruit]
-check/enum = 'apple', 'banana', 'grape'
+check/type = enum
+check/enum = #2
+check/enum/#0 apple
+check/enum/#1 banana
+check/enum/#2 grape
 ```
 
 The example shows an important problem: the configuration file is now changed in ways that might not be acceptable for applications.
@@ -233,16 +241,16 @@ If you want to find out more about validation I recommend reading [this](/doc/tu
 
 #### Backends
 
-The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mountpoint.
-You can examine every mountpoints backend by looking at the configuration below `system/elektra/mountpoints/<mountpoint>/`.
+The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mount point.
+You can examine every mount points backend by looking at the configuration below `system/elektra/mountpoints/<mount point>/`.
 
 ## Limitations
 
 One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorials/validation.md) new configuration values before updating them, this is something you do not want to happen.
 
-Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir/git`. Now the `dir` namespace of every directory stores the configuration below `dir/git` in this directories `/.git/config` file. And this mountpoint is the same for all users and all directories.
-So you can't have different configuration files for the same mountpoints in other directories.
-Because of the same reason you cannot have different configuration file names or syntax for the same mountpoint in the `user` namespace.
+Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir/git`. Now the `dir` namespace of every directory stores the configuration below `dir/git` in this directories `/.git/config` file. And this mount point is the same for all users and all directories.
+So you can't have different configuration files for the same mount points in other directories.
+Because of the same reason you cannot have different configuration file names or syntax for the same mount point in the `user` namespace.
 
 This is one of the reasons why Elektra promotes this [naming convention](/doc/help/elektra-key-names.md) for keys:
 

@@ -10,8 +10,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif (DEPENDENCY_PHASE)
 
-add_plugin (xerces
-	    CPP
+add_plugin (xerces CPP
 	    SOURCES xerces.hpp
 		    xerces.cpp
 		    deserializer.hpp
@@ -19,11 +18,10 @@ add_plugin (xerces
 		    serializer.hpp
 		    serializer.cpp
 		    util.hpp
-	    INCLUDE_DIRECTORIES ${XercesC_INCLUDE_DIRS}
+	    INCLUDE_SYSTEM_DIRECTORIES ${XercesC_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${XercesC_LIBRARIES}
 	    LINK_ELEKTRA elektra-meta
-	    INSTALL_TEST_DATA
-	    TEST_README)
+	    INSTALL_TEST_DATA TEST_README)
 
 if (ADDTESTING_PHASE)
 	include (LibAddTest)

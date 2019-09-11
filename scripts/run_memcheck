@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [ $# -ne 1 ]
-then
-	echo "No build config. This script is supposed to run by using make run_memcheck"
-	exit 1
-fi
-
-ctest -T memcheck --output-on-failure --build-config $1 -LE memleak

@@ -1,5 +1,4 @@
-kdb-umount(1) - Unmount a file from the key database
-====================================================
+# kdb-umount(1) - Unmount a file from the key database
 
 ## SYNOPSIS
 
@@ -8,6 +7,7 @@ kdb-umount(1) - Unmount a file from the key database
 ## DESCRIPTION
 
 Unmount backend from key database.
+This command writes into the `/etc` directory and as such it requires root permissions.
 
 ## OPTIONS
 
@@ -20,9 +20,9 @@ Unmount backend from key database.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Show which mountpoints were considered.
+  Show which mount points were considered.
 
 ## SEE ALSO
 
-- [kdb-mount(7)](kdb-mount.md).
+- [kdb-mount(1)](kdb-mount.md).
 - [elektra-mounting(7)](elektra-mounting.md).

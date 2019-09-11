@@ -7,8 +7,10 @@
  */
 
 #include "write.hpp"
+#include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
+#include <kdbassert.h>
 #include <kdbease.h>
 #include <kdblogger.h>
 #include <kdbplugin.h>
@@ -20,6 +22,200 @@ using namespace kdb;
 
 namespace
 {
+
+using KeySetPair = pair<KeySet, KeySet>;
+
+/**
+ * @brief This function checks if `element` is an array element of `parent`.
+ *
+ * @pre The key `child` must be below `parent`.
+ *
+ * @param parent This parameter specifies a parent key.
+ * @param keys This variable stores a direct or indirect child of `parent`.
+ *
+ * @retval true If `element` is an array element
+ * @retval false Otherwise
+ */
+bool isArrayElementOf (Key const & parent, Key const & child)
+{
+	char const * relative = elektraKeyGetRelativeName (*child, *parent);
+	auto offsetIndex = ckdb::elektraArrayValidateBaseNameString (relative);
+	if (offsetIndex <= 0) return false;
+	// Skip `#`, underscores and digits
+	relative += 2 * offsetIndex;
+	// The next character has to be the separation char (`/`) or end of string
+	if (relative[0] != '\0' && relative[0] != '/') return false;
+
+	return true;
+}
+
+/**
+ * @brief This function determines if the given key is an array parent.
+ *
+ * @param parent This parameter specifies a possible array parent.
+ * @param keys This variable stores the key set of `parent`.
+ *
+ * @retval true If `parent` is the parent key of an array
+ * @retval false Otherwise
+ */
+bool isArrayParent (Key const & parent, KeySet const & keys)
+{
+	for (auto const & key : keys)
+	{
+		if (!key.isBelow (parent)) continue;
+		if (!isArrayElementOf (parent, key)) return false;
+	}
+
+	return true;
+}
+
+/**
+ * @brief This function returns all array parents for a given key set.
+ *
+ * @note This function also adds empty parent keys for arrays, if they did not exist beforehand. For example for the key set that **only**
+ *       contains the keys:
+ *
+ *       - `user/array/#0`, and
+ *       - `user/array/#1`
+ *
+ *       the function will add the array parent `user/array` to the returned key set.
+ *
+ * @param keys This parameter contains the key set this function searches for array parents.
+ *
+ * @return A key sets that contains all array parents stored in `keys`
+ */
+KeySet splitArrayParents (KeySet const & keys)
+{
+	KeySet arrayParents;
+
+	keys.rewind ();
+	Key previous;
+	for (; keys.next (); previous = keys.current ())
+	{
+		if (keys.current ().hasMeta ("array"))
+		{
+			arrayParents.append (keys.current ());
+			continue;
+		}
+
+		if (keys.current ().getBaseName ()[0] == '#')
+		{
+			if (!keys.current ().isDirectBelow (previous))
+			{
+				Key directParent{ keys.current ().getName (), KEY_END };
+				ckdb::keySetBaseName (*directParent, NULL);
+				if (isArrayParent (*directParent, keys)) arrayParents.append (directParent);
+			}
+			else if (isArrayParent (*previous, keys))
+			{
+				arrayParents.append (previous);
+			}
+		}
+	}
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Array parents:");
+	logKeySet (arrayParents);
+#endif
+
+	return arrayParents;
+}
+
+/**
+ * @brief This function splits `keys` into two key sets, one for array parents and elements, and the other one for all other keys.
+ *
+ * @param arrayParents This key set contains a (copy) of all array parents of `keys`.
+ * @param keys This parameter contains the key set this function splits.
+ *
+ * @return A pair of key sets, where the first key set contains all array parents and elements,
+ *         and the second key set contains all other keys
+ */
+KeySetPair splitArrayOther (KeySet const & arrayParents, KeySet const & keys)
+{
+	KeySet others = keys.dup ();
+	KeySet arrays;
+
+	for (auto const & parent : arrayParents)
+	{
+		arrays.append (others.cut (parent));
+	}
+
+	return make_pair (arrays, others);
+}
+
+/**
+ * @brief This function removes all **non-essential** array metadata from a given key set.
+ *
+ * @param keys This parameter contains the key set this function modifies.
+ *
+ * @return A copy of `keys` that only contains array metadata for empty arrays
+ */
+KeySet removeArrayMetaData (KeySet const & keys)
+{
+	KeySet result;
+	for (auto const & key : keys)
+	{
+		result.append (key.dup ());
+	}
+
+	Key previous;
+	result.rewind ();
+	while (result.next ())
+	{
+		if (result.current ().isBelow (previous)) previous.delMeta ("array");
+		previous = result.current ();
+	}
+
+	ELEKTRA_ASSERT (keys.size () == result.size (), "Size of input and output keys set is different (%zu ≠ %zu)", keys.size (),
+			result.size ());
+
+	return result;
+}
+/**
+ * @brief This function determines all keys “missing” from the given keyset.
+ *
+ * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
+ *
+ *  - `user/parent`
+ *
+ * that contains the keys
+ *
+ * - `user/parent/level1/level2`, and
+ * - `user/parent/level1/level2/level3/level4`
+ *
+ * , the keys
+ *
+ * - `user/parent/level1`, and
+ * - user/parent/level1/level2/level3
+ *
+ * are missing.
+ *
+ * @param keys This parameter contains the key set for which this function determines missing keys.
+ * @param parent This value stores the parent key of `keys`.
+ *
+ * @return A key set that contains all keys missing from `keys`
+ */
+KeySet missingKeys (KeySet const & keys, Key const & parent)
+{
+	KeySet missing;
+
+	keys.rewind ();
+	Key previous{ parent.getName (), KEY_BINARY, KEY_END };
+	for (; keys.next (); previous = keys.current ())
+	{
+		if (keys.current ().isDirectBelow (previous) || !keys.current ().isBelow (previous)) continue;
+
+		Key current{ keys.current ().getName (), KEY_BINARY, KEY_END };
+		while (!current.isDirectBelow (previous))
+		{
+			ckdb::keySetBaseName (*current, NULL);
+			missing.append (current);
+			current = current.dup ();
+		}
+	}
+
+	return missing;
+}
 
 /**
  * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
@@ -56,23 +252,42 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameIterator)
 {
 	string const name = *nameIterator;
-	if (name.size () < 2 || name.front () != '#') return std::make_pair (false, 0);
+	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
+	auto const isArrayElement = offsetIndex >= 1;
+	return { isArrayElement, isArrayElement ? stoull (name.substr (offsetIndex)) : 0 };
+}
 
-	auto errnoValue = errno;
+/**
+ * @brief This function creates a YAML node representing a key value.
+ *
+ * @param key This key specifies the data that should be saved in the YAML node returned by this function.
+ *
+ * @note Since YAML does not support non-empty binary data directly this function replaces data stored in binary keys with the string
+ *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 plugin before you use YAML CPP.
+ *
+ * @returns A new YAML node containing the data specified in `key`
+ */
+YAML::Node createMetaDataNode (Key const & key)
+{
+	if (key.hasMeta ("array"))
+	{
+		return YAML::Node (YAML::NodeType::Sequence);
+	}
+	if (key.getBinarySize () == 0)
+	{
+		return YAML::Node (YAML::NodeType::Null);
+	}
+	if (key.isBinary ())
+	{
+		return YAML::Node ("Unsupported binary value!");
+	}
 
-	try
+	auto value = key.get<string> ();
+	if (value == "0" || value == "1")
 	{
-		return std::make_pair (true, stoull (name.substr (name.find_first_not_of ("#\\_"))));
+		return YAML::Node (key.get<bool> ());
 	}
-	catch (invalid_argument const &)
-	{
-		return std::make_pair (false, 0);
-	}
-	catch (out_of_range const &)
-	{
-		errno = errnoValue;
-		return std::make_pair (false, 0);
-	}
+	return YAML::Node (value);
 }
 
 /**
@@ -87,16 +302,14 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  */
 YAML::Node createLeafNode (Key & key)
 {
-	key.rewindMeta ();
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode{ key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
-							 YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ()) };
-	Key meta;
+	YAML::Node dataNode = createMetaDataNode (key);
 
-	while ((meta = key.nextMeta ()))
+	key.rewindMeta ();
+	while (Key meta = key.nextMeta ())
 	{
-		if (meta.getName () == "array") continue;
+		if (meta.getName () == "array" || meta.getName () == "binary") continue;
 		if (meta.getName () == "type" && meta.getString () == "binary")
 		{
 			dataNode.SetTag ("tag:yaml.org,2002:binary");
@@ -108,7 +321,8 @@ YAML::Node createLeafNode (Key & key)
 
 	if (metaNode.size () <= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", dataNode.IsNull () ? "~" : dataNode.as<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”",
+				   dataNode.IsNull () ? "~" : dataNode.IsSequence () ? "[]" : dataNode.as<string> ().c_str ());
 		return dataNode;
 	}
 
@@ -137,29 +351,25 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 	ELEKTRA_LOG_DEBUG ("Add %lld empty array elements", numberOfElements);
 	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
 	{
-		sequence.push_back (YAML::Node ());
+		sequence.push_back ({});
 	}
 }
 
 /**
- * @brief This function adds a key to a YAML node.
+ * @brief This function adds a key that is not part of any array to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
  * @param key This parameter specifies the key that should be added to `data`.
  */
-void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
+void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 {
-	auto const isArrayAndIndex = isArrayIndex (keyIterator);
-	auto const isArray = isArrayAndIndex.first;
-	auto const arrayIndex = isArrayAndIndex.second;
-
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
 
 #ifdef HAVE_LOGGER
 	ostringstream output;
 	output << data;
-	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 #endif
 
 	if (keyIterator == key.end ())
@@ -170,7 +380,47 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 	}
 	if (keyIterator == --key.end ())
 	{
-		if (isArray)
+		data[*keyIterator] = createLeafNode (key);
+		return;
+	}
+
+	YAML::Node node;
+
+	node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
+	data[*keyIterator] = node;
+	addKeyNoArray (node, ++keyIterator, key);
+}
+
+/**
+ * @brief This function adds a key that is either, element of an array, or an array parent to a YAML node.
+ *
+ * @param data This node stores the data specified via `keyIterator`.
+ * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
+ * @param key This parameter specifies the key that should be added to `data`.
+ */
+void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
+{
+	auto const isArrayAndIndex = isArrayIndex (keyIterator);
+	auto const isArrayElement = isArrayAndIndex.first;
+	auto const arrayIndex = isArrayAndIndex.second;
+
+	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
+
+#ifdef HAVE_LOGGER
+	ostringstream output;
+	output << data;
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
+#endif
+
+	if (keyIterator == key.end ())
+	{
+		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
+		data = createLeafNode (key);
+		return;
+	}
+	if (keyIterator == --key.end ())
+	{
+		if (isArrayElement)
 		{
 			addEmptyArrayElements (data, arrayIndex - data.size ());
 			data.push_back (createLeafNode (key));
@@ -185,7 +435,7 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 
 	YAML::Node node;
 
-	if (isArray)
+	if (isArrayElement)
 	{
 		node = (data[arrayIndex] && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
 		data[arrayIndex] = node;
@@ -195,7 +445,7 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 		node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
 		data[*keyIterator] = node;
 	}
-	addKey (node, ++keyIterator, key);
+	addKeyArray (node, ++keyIterator, key);
 }
 
 /**
@@ -204,19 +454,40 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
  * @param data This node stores the data specified via `mappings`.
  * @param mappings This keyset specifies all keys and values this function adds to `data`.
  * @param parent This key is the root of all keys stored in `mappings`.
+ * @param isArray This value specifies if the keys inside `keys` are all part of an array (either element or parent), or if none of them is
+ *                part of an array.
  */
-void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
+void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bool const isArray = false)
 {
 	for (auto key : mappings)
 	{
-		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.isString () ? key.getString ().c_str () : "binary");
+		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
-		addKey (data, keyIterator, key);
+
+		if (isArray)
+		{
+			addKeyArray (data, keyIterator, key);
+		}
+		else
+		{
+			addKeyNoArray (data, keyIterator, key);
+		}
 
 #ifdef HAVE_LOGGER
 		ostringstream output;
 		output << data;
-		ELEKTRA_LOG_DEBUG ("Converted key data “%s”", output.str ().c_str ());
+
+		ELEKTRA_LOG_DEBUG ("Converted Data:");
+		ELEKTRA_LOG_DEBUG ("——————————");
+
+		istringstream stream (output.str ());
+		for (string line; std::getline (stream, line);)
+		{
+			ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+		}
+
+		ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 	}
 }
@@ -231,16 +502,36 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
  */
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
-	ofstream output (parent.getString ());
+	auto keys = removeArrayMetaData (mappings);
+	auto missing = missingKeys (keys, parent);
+	keys.append (missing);
+
+	KeySet arrayParents;
+	KeySet arrays;
+	KeySet nonArrays;
+
+	arrayParents = splitArrayParents (keys);
+	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
+
 	auto data = YAML::Node ();
-	addKeys (data, mappings, parent);
+	addKeys (data, nonArrays, parent);
+	addKeys (data, arrays, parent, true);
 
 #ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Write Data:");
+	ELEKTRA_LOG_DEBUG ("——————————");
+
 	ostringstream outputString;
 	outputString << data;
+	istringstream stream (outputString.str ());
+	for (string line; std::getline (stream, line);)
+	{
+		ELEKTRA_LOG_DEBUG ("%s", line.c_str ());
+	}
 
-	ELEKTRA_LOG_DEBUG ("Write data “%s”", outputString.str ().c_str ());
+	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
+	ofstream output (parent.getString ());
 	output << data;
 }

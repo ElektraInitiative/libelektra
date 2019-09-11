@@ -22,7 +22,9 @@ It is compatible with the sending D-Bus plugin.
 
 The recommended way is to globally mount the plugin together with the dbus plugin:
 
-	kdb global-mount dbus dbusrecv
+```sh
+kdb global-mount dbus dbusrecv
+```
 
 This plugin is designed to be used as a transport plugin for Elektra's
 notification feature.
@@ -36,7 +38,7 @@ plugin is mounted globally.
 
 # Transport Plugin
 
-Mount this plugin globally with default settings to use it as *receiving*
+Mount this plugin globally with default settings to use it as _receiving_
 transport plugin for Elektra's notification feature:
 
 > kdb global-mount dbusrecv

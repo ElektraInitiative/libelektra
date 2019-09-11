@@ -232,8 +232,9 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
+			keyNew ("system/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
-#include ELEKTRA_README (blockresolver)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -255,7 +256,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		struct stat buf;
 		if (stat (data->realFile, &buf))
 		{
-			ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to stat file %s\n", data->realFile);
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to stat file %s\n. Reason: %s", data->realFile, strerror (errno));
 			return -1;
 		}
 		if (buf.st_mtime == data->mtime) return 0;
@@ -264,7 +265,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	fin = fopen (data->realFile, "r");
 	if (!fin)
 	{
-		ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->realFile);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open %s for reading. Reason: %s", data->realFile, strerror (errno));
 		goto GET_CLEANUP;
 	}
 
@@ -273,14 +274,14 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	data->endPos = getBlockEnd (fin, data->identifier, data->startPos);
 	if (data->endPos == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_NO_EOB, parentKey, "Couldn't find end of block %s", data->identifier);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Couldn't find end of block %s", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
 	block = (char *) getBlock (fin, data->startPos, data->endPos);
 	if (!block)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block %s\n", data->identifier);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block %s\n", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -289,7 +290,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	fout = fopen (data->tmpFile, "w");
 	if (!fout)
 	{
-		ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for writing", data->tmpFile);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open %s for writing. Reason: %s", data->tmpFile, strerror (errno));
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -312,12 +313,12 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	struct stat buf;
 	if (stat (data->realFile, &buf))
 	{
-		ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to stat file %s\n", data->realFile);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Failed to stat file %s\n. Reason: %s", data->realFile, strerror (errno));
 		return -1;
 	}
 	if (buf.st_mtime > data->mtime)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "%s has been modified", data->realFile);
+		ELEKTRA_SET_CONFLICTING_STATE_ERRORF (parentKey, "File '%s' has been modified", data->realFile);
 		return -1;
 	}
 	FILE * fout = NULL;
@@ -337,20 +338,21 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		fout = fopen (mergeFile, "w");
 		if (!fout)
 		{
-			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for writing", data->realFile);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open %s for writing. Reason: %s", data->realFile,
+						     strerror (errno));
 			goto SET_CLEANUP;
 		}
 		fin = fopen (data->realFile, "r");
 		if (!fin)
 		{
-			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->realFile);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open %s for reading. Reason: %s", data->realFile,
+						     strerror (errno));
 			goto SET_CLEANUP;
 		}
 		block = (char *) getBlock (fin, 0, data->startPos);
 		if (!block)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block before %s\n",
-					    data->identifier);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block before %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
 		fwrite (block, 1, data->startPos, fout);
@@ -361,15 +363,14 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		block = (char *) getBlock (fin, data->endPos, ftell (fin));
 		if (!block)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block after %s\n",
-					    data->identifier);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block after %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
 		fclose (fin);
 		fin = fopen (data->tmpFile, "r");
 		if (!fin)
 		{
-			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->tmpFile);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open %s for reading Reason: %s", data->tmpFile, strerror (errno));
 			goto SET_CLEANUP;
 		}
 		char buffer[BUFSIZE_MAX];
@@ -405,7 +406,12 @@ int elektraBlockresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (blockresolver)
+int elektraBlockresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraBlockresolverSet (handle, returned, parentKey);
+}
+
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("blockresolver",
@@ -413,6 +419,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (blockresolver)
 	    ELEKTRA_PLUGIN_ERROR, &elektraBlockresolverError,
 	    ELEKTRA_PLUGIN_GET,	&elektraBlockresolverGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraBlockresolverSet,
+	    ELEKTRA_PLUGIN_COMMIT, &elektraBlockresolverCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

@@ -1,5 +1,4 @@
-kdb-backup -- Make a backup of current KDB
-==========================================
+# kdb-backup -- Make a backup of current KDB
 
 ## SYNOPSES
 
@@ -16,9 +15,10 @@ The backup will be done in the `/var/tmp` directory, so make sure the backup is 
 
 ```
 kdb backup
-#> restore with "kdb restore 1500000000"
+#> kdb restore 1500000000
 ```
 
 ## SEE ALSO
-- [kdb-stash(7)](kdb-stash.md)
-- [kdb-restore(7)](kdb-restore.md)
+
+- [kdb-stash(1)](kdb-stash.md)
+- [kdb-restore(1)](kdb-restore.md)

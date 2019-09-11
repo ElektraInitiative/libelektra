@@ -9,8 +9,9 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra.h>
+#include <elektra/error.h>
 #include <kdb.h>
-#include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>
 #include <kdbio.h>
@@ -21,6 +22,7 @@
 #include <kdbtypes.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
+#include <kdbopmphmpredictor.h>
 #endif
 #include <kdbglobal.h>
 
@@ -56,6 +58,9 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** All keys below this are used for cache metadata in the global keyset */
+#define KDB_CACHE_PREFIX "system/elektra/cache"
+
 
 #ifdef __cplusplus
 namespace ckdb
@@ -67,6 +72,7 @@ typedef struct _Trie Trie;
 typedef struct _Split Split;
 typedef struct _Backend Backend;
 
+
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
 typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
@@ -74,7 +80,7 @@ typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
 typedef int (*kdbGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
-
+typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
 typedef Backend * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Backend *);
@@ -84,7 +90,10 @@ typedef int (*CloseMapper) (Backend *);
  * Key Flags
  *****************/
 
-enum { KEY_EMPTY_NAME = 1 << 22 };
+enum
+{
+	KEY_EMPTY_NAME = 1 << 22
+};
 
 // clang-format off
 
@@ -115,12 +124,26 @@ typedef enum {
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys*/
-	KEY_FLAG_RO_META = 1 << 3	/*!<
+	KEY_FLAG_RO_META = 1 << 3,	/*!<
 			 Read only flag for meta.
 			 Key meta is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys.*/
+	KEY_FLAG_MMAP_STRUCT = 1 << 4,	/*!<
+			 Key struct lies inside a mmap region.
+			 This flag is set for Keys inside a mapped region.
+			 It prevents erroneous free() calls on these keys. */
+	KEY_FLAG_MMAP_KEY = 1 << 5,	/*!<
+			 Key name lies inside a mmap region.
+			 This flag is set once a Key name has been moved to a mapped region,
+			 and is removed if the name moves out of the mapped region.
+			 It prevents erroneous free() calls on these keys. */
+	KEY_FLAG_MMAP_DATA = 1 << 6	/*!<
+			 Key value lies inside a mmap region.
+			 This flag is set once a Key value has been moved to a mapped region,
+			 and is removed if the value moves out of the mapped region.
+			 It prevents erroneous free() calls on these keys. */
 } keyflag_t;
 
 
@@ -144,6 +167,15 @@ typedef enum {
 		 Every Key add, Key removal or Key name change operation
 		 sets this flag.*/
 #endif
+	,KS_FLAG_MMAP_STRUCT = 1 << 2	/*!<
+		 KeySet struct lies inside a mmap region.
+		 This flag is set for KeySets inside a mapped region.
+		 It prevents erroneous free() calls on these KeySets. */
+	,KS_FLAG_MMAP_ARRAY = 1 << 3	/*!<
+		 Array of the KeySet lies inside a mmap region.
+		 This flag is set for KeySets where the array is in a mapped region,
+		 and is removed if the array is moved out from the mapped region.
+		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 
 
@@ -243,11 +275,16 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
 	 * The Order Preserving Minimal Perfect Hash Map.
 	 */
 	Opmphm * opmphm;
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map Predictor.
+	 */
+	OpmphmPredictor * opmphmPredictor;
 #endif
 };
 
@@ -288,8 +325,9 @@ struct _KDB
 
 	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
 
-	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
-	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
 };
 
 
@@ -370,6 +408,7 @@ struct _Plugin
 	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
 	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
+	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
 
 	const char * name; /*!< The name of the module responsible for that plugin. */
 
@@ -378,6 +417,10 @@ struct _Plugin
 
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
+
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
 };
 
 
@@ -451,7 +494,8 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
 int splitGet (Split * split, Key * warningKey, KDB * handle);
-int splitMerge (Split * split, KeySet * dest);
+int splitMergeBackends (Split * split, KeySet * dest);
+int splitMergeDefault (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
 int splitDivide (Split * split, KDB * handle, KeySet * ks);
@@ -459,12 +503,17 @@ int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
 
+/* for cache: store/load state to/from global keyset */
+void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
+int splitCacheCheckState (Split * split, KeySet * global);
+int splitCacheLoadState (Split * split, KeySet * global);
+
 
 /*Backend handling*/
-Backend * backendOpen (KeySet * elektra_config, KeySet * modules, Key * errorKey);
-Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
-Backend * backendOpenModules (KeySet * modules, Key * errorKey);
-Backend * backendOpenVersion (Key * errorKey);
+Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
+Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
+Backend * backendOpenVersion (KeySet * global, Key * errorKey);
 int backendClose (Backend * backend, Key * errorKey);
 
 int backendUpdateSize (Backend * backend, Key * parent, int size);
@@ -474,8 +523,9 @@ Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet *
 int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
-			   Key * errorKey);
+			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
+Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
@@ -552,9 +602,9 @@ int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
 
 /* global plugin calls */
-void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))
@@ -566,6 +616,59 @@ void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int positio
 #ifdef __cplusplus
 }
 }
+
+#define KDB ckdb::KDB
+#define Key ckdb::Key
+#define KeySet ckdb::KeySet
+extern "C" {
+#endif
+
+struct _Elektra
+{
+	KDB * kdb;
+	Key * parentKey;
+	KeySet * config;
+	KeySet * defaults;
+	Key * lookupKey;
+	ElektraErrorHandler fatalErrorHandler;
+	char * resolvedReference;
+	size_t parentKeyLength;
+};
+
+struct _ElektraError
+{
+	const char * code;
+	char * codeFromKey;
+	char * description;
+	const char * module;
+	const char * file;
+	kdb_long_t line;
+	kdb_long_t warningCount;
+	kdb_long_t warningAlloc;
+	struct _ElektraError ** warnings;
+	Key * errorKey;
+};
+
+/* high-level API */
+void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
+void elektraSetLookupKey (Elektra * elektra, const char * name);
+void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
+
+ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
+void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
+ElektraError * elektraErrorFromKey (Key * key);
+
+ElektraError * elektraErrorKeyNotFound (const char * keyname);
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
+ElektraError * elektraErrorNullError (const char * function);
+ElektraError * elektraErrorEnsureFailed (const char * reason);
+ElektraError * elektraErrorMinimalValidationFailed (const char * function);
+
+#ifdef __cplusplus
+}
+#undef Key
+#undef KeySet
+#undef KDB
 #endif
 
 #endif /* KDBPRIVATE_H */

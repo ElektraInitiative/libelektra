@@ -5,6 +5,7 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
+#include <kdbassert.h>
 #include <kdbinvoke.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h> // for elektraPluginOpen/Close
@@ -293,13 +294,13 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 {
 	if (!handle || !elektraPluginFunctionName) return -2;
 
-	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
-	elektra2Args func = *(elektra2Args *) elektraInvokeGetFunction (handle, elektraPluginFunctionName);
+	// If we cast this right away although the function wasn't found it will cause a deadlock
+	const void * rawFunc = elektraInvokeGetFunction (handle, elektraPluginFunctionName);
 
-	if (!func)
-	{
-		return -2;
-	}
+	if (!rawFunc) return -2;
+
+	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
+	elektra2Args func = *(elektra2Args *) rawFunc;
 
 	return func (handle->plugin, ks, k);
 }
@@ -337,7 +338,7 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 }
 
 /**
- * Invokes a deferable function on a plugin handle.
+ * Invokes a deferable function on an invoke handle.
  * If the function is exported by the plugin it is directly invoked,
  * if the plugin supports deferring calls, the call is deferred.
  *
@@ -345,33 +346,17 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
  *
  * @param  handle                    invoke handle
  * @param  elektraPluginFunctionName function name
- * @param  ks                        parameter key set
+ * @param  parameters                parameter key set
  * @retval 0 on success
- * @retval 1 when function not exported and deferring unsupported by plugin
+ * @retval -1 when the call failed (direct call and deferring not available)
  */
 int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters)
 {
-	ElektraDeferredCallable direct = *(ElektraDeferredCallable *) elektraInvokeGetFunction (handle, elektraPluginFunctionName);
-	if (direct)
+	if (!handle)
 	{
-		direct (handle->plugin, parameters);
+		return -1;
 	}
-	else
-	{
-		ElektraDeferredCall deferredCall = *(ElektraDeferredCall *) elektraInvokeGetFunction (handle, "deferredCall");
-		if (deferredCall)
-		{
-			deferredCall (handle->plugin, elektraPluginFunctionName, parameters);
-		}
-		else
-		{
-			// no direct call and deferring possible
-			return 1;
-		}
-	}
-
-	// success
-	return 0;
+	return elektraDeferredCall (handle->plugin, elektraPluginFunctionName, parameters);
 }
 
 /**
@@ -384,7 +369,59 @@ int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elekt
  */
 void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)
 {
+	if (!handle)
+	{
+		return;
+	}
 	elektraDeferredCallsExecute (handle->plugin, list);
+}
+
+/**
+ * Call a deferable function on a plugin handle.
+ * If the function is exported by the plugin it is directly invoked,
+ * if the plugin supports deferring calls, the call is deferred.
+ * If both is possible (function is exported and deferred calls are supported),
+ * the function is directly called and the call is deferred (i.e. for nested plugins).
+ *
+ * @param  handle                    invoke handle
+ * @param  elektraPluginFunctionName function name
+ * @param  parameters                parameter key set. Can bee freed afterwards.
+ * @retval 0 on success
+ * @retval -1 when the call failed (direct call and deferring not available)
+ */
+int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, KeySet * parameters)
+{
+	ELEKTRA_NOT_NULL (handle);
+	ELEKTRA_NOT_NULL (elektraPluginFunctionName);
+
+	int result;
+	size_t direct = elektraPluginGetFunction (handle, elektraPluginFunctionName);
+	if (direct)
+	{
+		ElektraDeferredCallable directFn = (ElektraDeferredCallable) direct;
+		directFn (handle, parameters);
+		result = 0; // success
+	}
+	else
+	{
+		// no direct call possible
+		result = -1;
+	}
+
+	size_t deferredCall = elektraPluginGetFunction (handle, "deferredCall");
+	if (deferredCall)
+	{
+		ElektraDeferredCall deferredCallFn = (ElektraDeferredCall) deferredCall;
+		deferredCallFn (handle, elektraPluginFunctionName, parameters);
+		result = 0; // success
+	}
+	else
+	{
+		// deferred calls not possible
+		result = -1;
+	}
+
+	return result;
 }
 
 /**
@@ -400,6 +437,8 @@ void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDef
  */
 int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, KeySet * parameters)
 {
+	ELEKTRA_NOT_NULL (list);
+	ELEKTRA_NOT_NULL (name);
 	_ElektraDeferredCall * item = elektraMalloc (sizeof *item);
 	if (item == NULL)
 	{
@@ -453,6 +492,7 @@ ElektraDeferredCallList * elektraDeferredCallCreateList (void)
  */
 void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
 {
+	ELEKTRA_NOT_NULL (list);
 	_ElektraDeferredCall * item = list->head;
 	while (item != NULL)
 	{
@@ -478,6 +518,8 @@ void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
  */
 void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list)
 {
+	ELEKTRA_NOT_NULL (plugin);
+	ELEKTRA_NOT_NULL (list);
 	_ElektraDeferredCall * item = list->head;
 	while (item != NULL)
 	{

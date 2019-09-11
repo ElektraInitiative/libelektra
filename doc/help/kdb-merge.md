@@ -1,20 +1,19 @@
-kdb-merge(1) -- Three-way merge of KeySets
-==========================================
+# kdb-merge(1) -- Three-way merge of KeySets
 
 ## SYNOPSIS
 
 `kdb merge [options] ourpath theirpath basepath resultpath`<br>
 
-* ourpath:
+- ourpath:
   Path to the keyset to serve as `ours`<br>
 
-* theirpath:
+- theirpath:
   path to the keyset to serve as `theirs`<br>
 
-* basepath:
+- basepath:
   path to the `base` keyset<br>
 
-* resultpath:
+- resultpath:
   path without keys where the merged keyset will be saved<br>
 
 ## DESCRIPTION
@@ -29,18 +28,18 @@ The `kdb merge` command uses a three-way merge by default.<br>
 A three-way merge is when three versions of a file (or in this case, KeySet) are compared in order to automatically merge the changes made to the KeySet over time.<br>
 These three versions of the KeySet are:<br>
 
-* `base`:
+- `base`:
   The `base` KeySet is the original version of the KeySet.<br>
 
-* `ours`:
+- `ours`:
   The `ours` KeySet represents the user's current version of the KeySet.<br>
   This KeySet differs from `base` for every key you changed.<br>
 
-* `theirs`:
+- `theirs`:
   The `theirs` KeySet usually represents the default version of a KeySet (usually the package maintainer's version).<br>
   This KeySet differs from `base` for every key someone has changed.<br>
 
-The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet to the `base` KeySet. By looking for differences  in these KeySets, a new KeySet called `result` is created that represents a merge of these KeySets.<br>
+The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet to the `base` KeySet. By looking for differences in these KeySets, a new KeySet called `result` is created that represents a merge of these KeySets.<br>
 
 ## CONFLICTS
 
@@ -59,25 +58,26 @@ To interactively resolve conflicts, use the `-i` option.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-f`, `--force`:
-   Will remove existing keys from `resultpath` instead of failing.
+  Will remove existing keys from `resultpath` instead of failing.
 - `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-i`, `--interactive`
   Interactively resolve the conflicts.
-
 
 ## EXAMPLES
 
 To complete a simple merge of three KeySets:<br>
-    `kdb merge user/ours user/theirs user/base user/result`<br>
+`kdb merge user/ours user/theirs user/base user/result`<br>
 
 To complete a merge whilst using the `ours` version of the KeySet to resolve conflicts:<br>
-    `kdb merge -s ours user/ours user/theirs user/base user/result`<br>
+`kdb merge -s ours user/ours user/theirs user/base user/result`<br>
 
 To complete a three-way merge and overwrite all current keys in the `resultpath`:<br>
-    `kdb merge -s cut user/ours user/theirs user/base user/result`<br>
+`kdb merge -s cut user/ours user/theirs user/base user/result`<br>
 
 ## SEE ALSO
 

@@ -10,8 +10,7 @@ if (NOT EXISTS "${MANIFEST}")
 endif (NOT EXISTS "${MANIFEST}")
 
 # message (MANIFEST IS ${MANIFEST})
-file (READ "${MANIFEST}"
-	   files)
+file (READ "${MANIFEST}" files)
 
 # ==========
 # = Python =
@@ -27,7 +26,10 @@ if (PYTHON2INTERP_FOUND)
 	execute_process (COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
 			 OUTPUT_VARIABLE PYTHON2_SITE_PACKAGES
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
-	string (APPEND files "\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info")
+	string (APPEND
+		files
+		"\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info"
+		"\n${PYTHON2_SITE_PACKAGES}/__pycache__/kdb.cpython-27.pyc")
 endif (PYTHON2INTERP_FOUND)
 
 find_package (PythonInterp 3 QUIET)
@@ -39,7 +41,8 @@ if (PYTHONINTERP_FOUND)
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
 	string (APPEND
 		files
-		"\n${PYTHON_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.egg-info")
+		"\n${PYTHON_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.egg-info"
+		"\n${PYTHON_SITE_PACKAGES}/__pycache__/kdb.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.pyc")
 endif (PYTHONINTERP_FOUND)
 
 # =========
@@ -54,7 +57,10 @@ string (REGEX
 foreach (file ${files})
 	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
 	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
-		execute_process (COMMAND "${CMAKE_COMMAND}" -E remove "$ENV{DESTDIR}${file}"
+		execute_process (COMMAND "${CMAKE_COMMAND}"
+					 -E
+					 remove
+					 "$ENV{DESTDIR}${file}"
 				 OUTPUT_VARIABLE rm_out
 				 RESULT_VARIABLE rm_retval)
 		if (NOT "${rm_retval}" STREQUAL 0)
@@ -74,7 +80,10 @@ function (remove_directories directories)
 		set (dir "$ENV{DESTDIR}${directory}")
 		if (EXISTS "${dir}")
 			message (STATUS "Uninstalling directory ${dir}")
-			execute_process (COMMAND "${CMAKE_COMMAND}" -E remove_directory "${dir}"
+			execute_process (COMMAND "${CMAKE_COMMAND}"
+						 -E
+						 remove_directory
+						 "${dir}"
 					 OUTPUT_VARIABLE rm_out
 					 RESULT_VARIABLE rm_retval)
 
@@ -94,12 +103,10 @@ set (DIRECTORIES
      "${CMAKE_INSTALL_PREFIX}/share/elektra"
      "${CMAKE_INSTALL_PREFIX}/share/share/elektra")
 if (${PYTHON2_SITE_PACKAGES})
-	list (APPEND DIRECTORIES
-		     "${PYTHON2_SITE_PACKAGES}/support")
+	list (APPEND DIRECTORIES "${PYTHON2_SITE_PACKAGES}/support")
 endif (${PYTHON2_SITE_PACKAGES})
 if (${PYTHON_SITE_PACKAGES})
-	list (APPEND DIRECTORIES
-		     "${PYTHON_SITE_PACKAGES}/support")
+	list (APPEND DIRECTORIES "${PYTHON_SITE_PACKAGES}/support")
 endif (${PYTHON_SITE_PACKAGES})
 
 remove_directories ("${DIRECTORIES}")
@@ -114,7 +121,14 @@ set (REMOVAL_CANDIDATES
      "${CMAKE_INSTALL_PREFIX}/lib/lua"
      "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig"
      "${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages"
+     "${CMAKE_INSTALL_PREFIX}/lib/python2.7/__pycache__"
      "${CMAKE_INSTALL_PREFIX}/lib/python2.7"
+     "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/__pycache__"
+     "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages"
+     "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}"
+     "${CMAKE_INSTALL_PREFIX}/lib/ruby/site_ruby"
+     "${CMAKE_INSTALL_PREFIX}/lib/ruby"
+     "${CMAKE_INSTALL_PREFIX}/lib"
      "${CMAKE_INSTALL_PREFIX}/share/appdata"
      "${CMAKE_INSTALL_PREFIX}/share/applications"
      "${CMAKE_INSTALL_PREFIX}/share/doc"
@@ -136,10 +150,8 @@ set (REMOVAL_CANDIDATES
 
 foreach (directory ${REMOVAL_CANDIDATES})
 	set (dir "$ENV{DESTDIR}${directory}")
-	file (GLOB content
-		   "${dir}/*")
-	list (LENGTH content
-		     size)
+	file (GLOB content "${dir}/*")
+	list (LENGTH content size)
 	if (size EQUAL 0)
 		remove_directories ("${directory}")
 	endif (size EQUAL 0)

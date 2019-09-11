@@ -84,7 +84,7 @@ static UvBindingData * newBindingData (void)
 	UvBindingData * bindingData = elektraCalloc (sizeof (*bindingData));
 	if (bindingData == NULL)
 	{
-		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
+		ELEKTRA_LOG_WARNING ("elektraCalloc failed");
 		return NULL;
 	}
 
@@ -167,7 +167,7 @@ static void ioUvBindingTimerCallback (uv_timer_t * handle)
 
 /**
  * Calls the associated callback.
- * Called by libuv whenever a idle operation can perform its operations.
+ * Called by libuv whenever an idle operation can perform its operations.
  *
  * @param handle libuv idle handle
  */

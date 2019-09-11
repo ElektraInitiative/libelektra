@@ -17,6 +17,8 @@
 #include <kdbconfig.h>
 #endif
 
+#include <kdbmacros.h>
+
 #include SWIG_RUNTIME
 #include "ruby.hpp"
 
@@ -133,7 +135,7 @@ static VALUE clear_ruby_exception_add_warning (ckdb::Key * warningsKey)
 	VALUE exception = clear_ruby_exception ();
 	VALUE msg = get_exception_string (exception);
 
-	ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, StringValueCStr (msg));
+	ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (warningsKey, StringValueCStr (msg));
 
 	return exception;
 }
@@ -143,7 +145,7 @@ static VALUE clear_ruby_exception_set_error (ckdb::Key * errorKey)
 	VALUE exception = clear_ruby_exception ();
 	VALUE msg = get_exception_string (exception);
 
-	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, errorKey, StringValueCStr (msg));
+	ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, StringValueCStr (msg));
 
 	return exception;
 }
@@ -311,7 +313,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 	ELEKTRA_LOG ("init and start Ruby-VM");
 	if (ruby_setup ())
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, "could not initialize Ruby-VM");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not initialize Ruby-VM");
 		return -1;
 	}
 
@@ -338,7 +340,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 	rb_protect (require_kdb, Qnil, &state);
 	if (state)
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, "could not load Ruby module 'kdb'");
+		ELEKTRA_ADD_INSTALLATION_WARNING (warningsKey, "Could not load Ruby module 'kdb'");
 		return -1;
 	}
 
@@ -404,7 +406,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 	{
 		/* no script specified
 		 * do not issue an error or 'kdb info ruby' causes problems */
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, errorKey, "no 'script' config value specified");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "No 'script' config value specified");
 		return -1;
 	}
 
@@ -430,7 +432,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 
 	if (global_plugin_instance == Qnil)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, errorKey, "invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
 
 		global_context_mutex.unlock ();
 		return -1;
@@ -511,7 +513,7 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 
 		/* error, the Ruby-plugin did not call Kdb::Plugin.define
 		 * so we do not have a Plugin instance */
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, "Error in Ruby-plugin, didn't call Kdb::Plugin.define");
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (warningsKey, "Error in Ruby-plugin, didn't call Kdb::Plugin.define");
 
 		return 0;
 	}
@@ -620,7 +622,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 				     keyNew (_MODULE_CONFIG_PATH "/exports/open", KEY_FUNC, RUBY_PLUGIN_FUNCTION (Open), KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/close", KEY_FUNC, RUBY_PLUGIN_FUNCTION (Close), KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/checkconf", KEY_FUNC, RUBY_PLUGIN_FUNCTION (CheckConf), KEY_END),
-#include ELEKTRA_README (RUBY_PLUGIN_NAME)
+#include ELEKTRA_README
 				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 		return 0;
@@ -651,7 +653,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	else
 	{
 		/* if not 'get' method is available, this plugin is useless, therefore set and error */
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, parentKey, "plugin does not have a 'get' method");
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Plugin does not have a 'get' method");
 		return -1;
 	}
 	return -1;
@@ -709,7 +711,7 @@ int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned
 }
 
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (RUBY_PLUGIN_NAME)
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(RUBY_PLUGIN_NAME_STR,

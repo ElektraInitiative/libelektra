@@ -20,25 +20,24 @@ Use the `elektraIoUvNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-uv`, `elektra-io` and `uv` or
 simply use `pkg-config --cflags --libs elektra-io-uv`.
 
-### ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop)
+### ElektraIoInterface _ elektraIoUvNew (uv_loop_t _ loop)
 
 Create and initialize a new I/O binding.
 
-*Parameters*
+_Parameters_
 
 - loop: Loop to use for I/O operations
 
-*Returns*
+_Returns_
 
 Populated I/O interface
 
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio/uv.h>
 
 #include <uv.h>
 
@@ -63,5 +62,7 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }
-
 ```
+
+Please check out the ["notificationAsync" example](https://www.libelektra.org/examples/notificationasync)
+which uses this I/O binding.

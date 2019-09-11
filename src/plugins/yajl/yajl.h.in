@@ -49,6 +49,6 @@
 int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(yajl);
+Plugin *ELEKTRA_PLUGIN_EXPORT;
 
 #endif

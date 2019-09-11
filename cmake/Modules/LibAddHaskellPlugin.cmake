@@ -21,7 +21,12 @@ include (LibAddMacros)
 #  Cabal file and c test file and setup file, you can specify them here
 # ~~~
 macro (add_haskell_plugin target)
-	set (MULTI_VALUE_KEYWORDS MODULES SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES TEST_ENVIRONMENT TEST_REQUIRED_PLUGINS)
+	set (MULTI_VALUE_KEYWORDS
+	     MODULES
+	     SANDBOX_ADD_SOURCES
+	     ADDITIONAL_SOURCES
+	     TEST_ENVIRONMENT
+	     TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
 			       "NO_SHARED_SANDBOX;TEST_README;INSTALL_TEST_DATA" # optional keywords
 			       "MODULE" # one value keywords
@@ -37,8 +42,7 @@ macro (add_haskell_plugin target)
 				  0
 				  1
 				  FIRST_LETTER)
-		string (TOUPPER ${FIRST_LETTER}
-				FIRST_LETTER)
+		string (TOUPPER ${FIRST_LETTER} FIRST_LETTER)
 		string (REGEX
 			REPLACE "^.(.*)"
 				"${FIRST_LETTER}\\1"
@@ -80,40 +84,29 @@ macro (add_haskell_plugin target)
 	set (PLUGIN_LD_LIBRARY_PATH "${CMAKE_BINARY_DIR}/lib:${CMAKE_CURRENT_BINARY_DIR}/haskell")
 	set (PLUGIN_ARGS "")
 	if (ARG_TEST_README)
-		list (APPEND PLUGIN_ARGS
-			     "TEST_README")
-		list (APPEND PLUGIN_ARGS
-			     "TEST_ENVIRONMENT")
-		list (APPEND PLUGIN_ARGS
-			     "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB}")
-		list (APPEND PLUGIN_ARGS
-			     "LD_LIBRARY_PATH=${PLUGIN_LD_LIBRARY_PATH}")
+		list (APPEND PLUGIN_ARGS "TEST_README")
+		list (APPEND PLUGIN_ARGS "TEST_ENVIRONMENT")
+		list (APPEND PLUGIN_ARGS "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB}")
+		list (APPEND PLUGIN_ARGS "LD_LIBRARY_PATH=${PLUGIN_LD_LIBRARY_PATH}")
 		if (ARG_TEST_ENVIRONMENT)
-			list (APPEND PLUGIN_ARGS
-				     "${ARG_TEST_ENVIRONMENT}")
+			list (APPEND PLUGIN_ARGS "${ARG_TEST_ENVIRONMENT}")
 		endif (ARG_TEST_ENVIRONMENT)
 
 		if (ARG_TEST_REQUIRED_PLUGINS)
-			list (APPEND PLUGIN_ARGS
-				     "TEST_REQUIRED_PLUGINS")
-			list (APPEND PLUGIN_ARGS
-				     "${ARG_TEST_REQUIRED_PLUGINS}")
+			list (APPEND PLUGIN_ARGS "TEST_REQUIRED_PLUGINS")
+			list (APPEND PLUGIN_ARGS "${ARG_TEST_REQUIRED_PLUGINS}")
 		endif (ARG_TEST_REQUIRED_PLUGINS)
 
 	endif (ARG_TEST_README)
 
 	# compile our c wrapper which takes care of invoking the haskell runtime the actual haskell plugin gets linked in dynamically as a
 	# library
-	add_plugin (${target}
-		    ONLY_SHARED
-		    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/haskell.h
-			    ${CMAKE_CURRENT_BINARY_DIR}/haskell.c
+	add_plugin (${target} ONLY_SHARED
+		    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/haskell.h ${CMAKE_CURRENT_BINARY_DIR}/haskell.c
 		    INCLUDE_DIRECTORIES ${GHC_INCLUDE_DIRS}
 		    LINK_LIBRARIES ${GHC_LIBS}
-		    LINK_ELEKTRA elektra-pluginprocess
-				 "${PLUGIN_ARGS}"
-		    DEPENDS ${target}
-			    c2hs_haskell)
+		    LINK_ELEKTRA elektra-pluginprocess "${PLUGIN_ARGS}"
+		    DEPENDS ${target} c2hs_haskell)
 
 	if (DEPENDENCY_PHASE AND TARGET elektra-${target})
 		set_target_properties (elektra-${target}
@@ -126,8 +119,7 @@ macro (add_haskell_plugin target)
 	if (ADDTESTING_PHASE AND TARGET elektra-${target})
 		set (PLUGINTEST_ARGS "")
 		if (ARG_INSTALL_TEST_DATA)
-			list (APPEND PLUGINTEST_ARGS
-				     "INSTALL_TEST_DATA")
+			list (APPEND PLUGINTEST_ARGS "INSTALL_TEST_DATA")
 		endif (ARG_INSTALL_TEST_DATA)
 
 		add_plugintest (${target} MEMLEAK "${PLUGINTEST_ARGS}")
@@ -135,24 +127,30 @@ macro (add_haskell_plugin target)
 		get_target_property (SANDBOX_PACKAGEDB elektra-${target} SANDBOX_PACKAGEDB)
 
 		# this is required so that it finds the type checker plugin and all the libraries
-		set_target_properties (testmod_${target}
-				       PROPERTIES INSTALL_RPATH
-						  "${HASKELL_RPATH}")
+		set_target_properties (testmod_${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}")
 		set_property (TEST testmod_${target}
-			      PROPERTY ENVIRONMENT
-				       "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB};LD_LIBRARY_PATH=${PLUGIN_LD_LIBRARY_PATH}")
+			      PROPERTY ENVIRONMENT "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB};LD_LIBRARY_PATH=${PLUGIN_LD_LIBRARY_PATH}")
 	endif (ADDTESTING_PHASE AND TARGET elektra-${target})
 
-	mark_as_advanced (GHC_FFI_LIB GHC_RTS_LIB GHC_BASE_LIB GHC_GMP_LIB GHC_PRIM_LIB)
+	mark_as_advanced (GHC_FFI_LIB
+			  GHC_RTS_LIB
+			  GHC_BASE_LIB
+			  GHC_GMP_LIB
+			  GHC_PRIM_LIB)
 endmacro (add_haskell_plugin)
 
-macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITALIZED)
-	cmake_parse_arguments (ARG "" "" "SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES" ${ARGN})
+macro (prepare_and_compile_haskell_plugin
+       target
+       PLUGIN_NAME
+       PLUGIN_NAME_CAPITALIZED)
+	cmake_parse_arguments (ARG
+			       ""
+			       ""
+			       "SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES"
+			       ${ARGN})
 
 	# needed for HsFFI.h
-	execute_process (COMMAND ${GHC_EXECUTABLE} --print-libdir
-			 OUTPUT_VARIABLE GHC_LIB_DIR
-			 OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process (COMMAND ${GHC_EXECUTABLE} --print-libdir OUTPUT_VARIABLE GHC_LIB_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 	# for the haskell function stubs and HsFFI.h
 	set (GHC_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/dist/build/Elektra ${GHC_LIB_DIR}/include)
@@ -173,26 +171,26 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 	set (GHC_RTS_PATH "${GHC_LIB_DIR}/rts")
 	find_library (GHC_RTS_LIB "HSrts${GHC_DYNAMIC_SUFFIX}" PATHS ${GHC_RTS_PATH})
 
-	execute_process (COMMAND ${GHC-PKG_EXECUTABLE} latest base
-			 OUTPUT_VARIABLE GHC_BASE_NAME
-			 OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process (COMMAND ${GHC-PKG_EXECUTABLE} latest base OUTPUT_VARIABLE GHC_BASE_NAME OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set (GHC_BASE_PATH "${GHC_LIB_DIR}/${GHC_BASE_NAME}")
 	find_library (GHC_BASE_LIB "HS${GHC_BASE_NAME}${GHC_DYNAMIC_SUFFIX}" PATHS ${GHC_BASE_PATH})
 
-	execute_process (COMMAND ${GHC-PKG_EXECUTABLE} latest integer-gmp
-			 OUTPUT_VARIABLE GHC_GMP_NAME
-			 OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process (COMMAND ${GHC-PKG_EXECUTABLE} latest integer-gmp OUTPUT_VARIABLE GHC_GMP_NAME OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set (GHC_GMP_PATH "${GHC_LIB_DIR}/${GHC_GMP_NAME}")
 	find_library (GHC_GMP_LIB "HS${GHC_GMP_NAME}${GHC_DYNAMIC_SUFFIX}" PATHS ${GHC_GMP_PATH})
 
-	execute_process (COMMAND ${GHC-PKG_EXECUTABLE} latest ghc-prim
-			 OUTPUT_VARIABLE GHC_PRIM_NAME
-			 OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process (COMMAND ${GHC-PKG_EXECUTABLE} latest ghc-prim OUTPUT_VARIABLE GHC_PRIM_NAME OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set (GHC_PRIM_PATH "${GHC_LIB_DIR}/${GHC_PRIM_NAME}")
 	find_library (GHC_PRIM_LIB "HS${GHC_PRIM_NAME}${GHC_DYNAMIC_SUFFIX}" PATHS ${GHC_PRIM_PATH})
 
 	set (PLUGIN_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHS${target}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
-	set (GHC_LIBS ${GHC_RTS_LIB} ${GHC_BASE_LIB} ${GHC_GMP_LIB} gmp ${GHC_PRIM_LIB} ${PLUGIN_HASKELL_NAME})
+	set (GHC_LIBS
+	     ${GHC_RTS_LIB}
+	     ${GHC_BASE_LIB}
+	     ${GHC_GMP_LIB}
+	     gmp
+	     ${GHC_PRIM_LIB}
+	     ${PLUGIN_HASKELL_NAME})
 
 	# GHC's structure differs between OSX and Linux On OSX we need to link iconv and Cffi additionally
 	if (APPLE)
@@ -237,7 +235,11 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 endmacro (prepare_and_compile_haskell_plugin)
 
 macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
-	cmake_parse_arguments (ARG "" "" "SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES" ${ARGN})
+	cmake_parse_arguments (ARG
+			       ""
+			       ""
+			       "SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES"
+			       ${ARGN})
 
 	# configure include paths
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in" "${CMAKE_CURRENT_BINARY_DIR}/${target}.cabal" @ONLY)
@@ -259,7 +261,12 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	configure_file (${CABAL_CUSTOM_SETUP_FILE} "${CMAKE_CURRENT_BINARY_DIR}/Setup.hs" @ONLY)
 
 	# as we require the sandbox to exist we can do this during the configuration phase it doesn't compile or install anything
-	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0
+	execute_process (COMMAND ${CABAL_EXECUTABLE}
+				 sandbox
+				 init
+				 --sandbox
+				 "${HASKELL_SHARED_SANDBOX}"
+				 -v0
 			 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 	foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 
@@ -268,23 +275,27 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 		if (NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 			add_subdirectory ("${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}" "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 		endif (NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
-		execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0
+		execute_process (COMMAND ${CABAL_EXECUTABLE}
+					 sandbox
+					 add-source
+					 "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}"
+					 -v0
 				 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 	endforeach ()
 
 	# Grab potential haskell source files
-	file (GLOB_RECURSE PLUGIN_SOURCE_FILES_UNFILTERED
-			   "${CMAKE_CURRENT_SOURCE_DIR}/*.hs"
-			   "${CMAKE_CURRENT_SOURCE_DIR}/*.lhs"
-			   "${CMAKE_CURRENT_BINARY_DIR}/*.hs"
-			   "${CMAKE_CURRENT_BINARY_DIR}/*.lhs")
+	file (GLOB_RECURSE
+	      PLUGIN_SOURCE_FILES_UNFILTERED
+	      "${CMAKE_CURRENT_SOURCE_DIR}/*.hs"
+	      "${CMAKE_CURRENT_SOURCE_DIR}/*.lhs"
+	      "${CMAKE_CURRENT_BINARY_DIR}/*.hs"
+	      "${CMAKE_CURRENT_BINARY_DIR}/*.lhs")
 
 	# exclude the dist directory
 	set (PLUGIN_SOURCE_FILES)
 	foreach (file ${PLUGIN_SOURCE_FILES_UNFILTERED})
 		if (NOT file MATCHES "${CMAKE_CURRENT_BINARY_DIR}/dist/")
-			list (APPEND PLUGIN_SOURCE_FILES
-				     ${file})
+			list (APPEND PLUGIN_SOURCE_FILES ${file})
 		endif ()
 	endforeach ()
 
@@ -300,32 +311,44 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	if (NOT HASKELL_LAST_PLUGIN)
 		set (HASKELL_LAST_PLUGIN ${target})
 		add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-				    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS}
+				    COMMAND ${CABAL_EXECUTABLE}
+					    install
+					    ${CABAL_OPTS}
 					    --only-dependencies
-					    --offline -v0 || true
+					    --offline
+					    -v0
+					    ||
+					    true
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				    DEPENDS c2hs_haskell)
 	else (NOT HASKELL_LAST_PLUGIN)
 		add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-				    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS}
+				    COMMAND ${CABAL_EXECUTABLE}
+					    install
+					    ${CABAL_OPTS}
 					    --only-dependencies
-					    --offline -v0 || true
+					    --offline
+					    -v0
+					    ||
+					    true
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				    DEPENDS ${HASKELL_LAST_PLUGIN})
 	endif (NOT HASKELL_LAST_PLUGIN)
-	set_property (GLOBAL
-		      PROPERTY HASKELL_LAST_PLUGIN
-			       "${target}")
+	set_property (GLOBAL PROPERTY HASKELL_LAST_PLUGIN "${target}")
 
 	# reconfiguration due to Cabal library version issues on stretch
 	add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-			    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
-			    COMMAND ${CABAL_EXECUTABLE} build -v0 ||
+			    COMMAND ${CABAL_EXECUTABLE}
+				    configure
+				    ${CABAL_OPTS}
+				    -v0
+			    COMMAND ${CABAL_EXECUTABLE}
+				    build
+				    -v0
+				    ||
 				    (${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE} build -v0)
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			    DEPENDS c2hs_haskell
-				    ${PLUGIN_SOURCE_FILES}
-				    ${HASKELL_ADD_SOURCES_TARGET}
+			    DEPENDS c2hs_haskell ${PLUGIN_SOURCE_FILES} ${HASKELL_ADD_SOURCES_TARGET}
 			    APPEND)
 	add_custom_target (${target} ALL DEPENDS ${PLUGIN_HASKELL_NAME})
 

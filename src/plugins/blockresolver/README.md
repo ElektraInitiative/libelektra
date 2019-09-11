@@ -13,7 +13,7 @@
 
 The `blockresolver` can be used to only resolve a tagged block inside a configuration file.
 
-### Implementation details
+### Implementation Details
 
 `blockresolver` extracts the requested block from the configurations file and writes it into a temporary file. Afterwards Elektra will only work on the temporary file until kdbSet is called. On kdbSet the contents of the temporary file will be merged with parts outside of the requested block from the original file.
 
@@ -24,6 +24,7 @@ The `blockresolver` can be used to only resolve a tagged block inside a configur
 where `identifier` specifies the tag `blockresolver` will search for in the configuration file.
 
 A block consists of 2 parts:
+
 - beginning: the identifier suffixed with `start`
 - end: the identifier suffixed with `stop`
 
@@ -32,6 +33,7 @@ A block consists of 2 parts:
 Currently the identifier must be unique.
 
 ## Example
+
 ```sh
 # Backup-and-Restore:system/tests/blockresolver
 
@@ -42,9 +44,9 @@ echo 'more text'              >> $(kdb get system/tests/blockfile)
 echo 'some more text'         >> $(kdb get system/tests/blockfile)
 echo '>>> block config start' >> $(kdb get system/tests/blockfile)
 echo '[section1]'             >> $(kdb get system/tests/blockfile)
-echo 'key1 = val1'            >> $(kdb get system/tests/blockfile)
+echo 'key1=val1'            >> $(kdb get system/tests/blockfile)
 echo '[section2]'             >> $(kdb get system/tests/blockfile)
-echo 'key2 = val2'            >> $(kdb get system/tests/blockfile)
+echo 'key2=val2'            >> $(kdb get system/tests/blockfile)
 echo '>>> block config stop'  >> $(kdb get system/tests/blockfile)
 echo 'text again'             >> $(kdb get system/tests/blockfile)
 echo 'and more text'          >> $(kdb get system/tests/blockfile)
@@ -59,9 +61,9 @@ cat $(kdb get system/tests/blockfile)
 #> some more text
 #> >>> block config start
 #> [section1]
-#> key1 = val1
+#> key1=val1
 #> [section2]
-#> key2 = val2
+#> key2=val2
 #> >>> block config stop
 #> text again
 #> and more text
@@ -70,9 +72,9 @@ cat $(kdb get system/tests/blockfile)
 # only the block between the tags is read!
 kdb export system/tests/blockresolver ini
 #> [section1]
-#> key1 = val1
+#> key1=val1
 #> [section2]
-#> key2 = val2
+#> key2=val2
 
 # add a new key to the resolved block
 kdb set system/tests/blockresolver/section1/key12 val12
@@ -83,10 +85,10 @@ cat $(kdb get system/tests/blockfile)
 #> some more text
 #> >>> block config start
 #> [section1]
-#> key1 = val1
-#> key12 = val12
+#> key1=val1
+#> key12=val12
 #> [section2]
-#> key2 = val2
+#> key2=val2
 #> >>> block config stop
 #> text again
 #> and more text

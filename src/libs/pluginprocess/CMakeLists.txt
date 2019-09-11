@@ -1,14 +1,19 @@
 find_package (Pluginprocess)
 
-file (GLOB SOURCES
-	   *.c)
+file (GLOB SOURCES *.c)
 
 if (PLUGINPROCESS_FOUND)
-	add_lib (pluginprocess SOURCES ${SOURCES} LINK_ELEKTRA elektra elektra-invoke elektra-plugin)
+	add_lib (pluginprocess
+		 SOURCES
+		 ${SOURCES}
+		 LINK_ELEKTRA
+		 elektra
+		 elektra-invoke
+		 elektra-plugin)
 
 	if (ENABLE_TESTING)
 		add_subdirectory (tests)
 	endif (ENABLE_TESTING)
 else (PLUGINPROCESS_FOUND)
-	message ("${PLUGINPROCESS_NOTFOUND_INFO}, excluding pluginprocess library")
+	message ("${PLUGINPROCESS_NOTFOUND_INFO}")
 endif (PLUGINPROCESS_FOUND)

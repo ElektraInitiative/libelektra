@@ -4,31 +4,83 @@ echo
 echo ELEKTRA CHECK FORMATTING
 echo
 
-command -v git >/dev/null 2>&1 || { echo "git command needed for this test, aborting" >&2; exit 0; }
+command -v git > /dev/null 2>&1 || {
+	printf >&2 'This test requires the `git` command, aborting test!\n\n'
+	exit 0
+}
 
 cd "@CMAKE_SOURCE_DIR@"
 
-if ! git diff --exit-code
-then
-	echo "Seems like source is already modified, aborting test" >&2
+if ! git diff --quiet; then
+	printf >&2 'Source is already modified, aborting test!\n\n'
 	exit 0
 fi
 
-if which clang-format-5.0 > /dev/null || which clang-format > /dev/null
-then
-	scripts/reformat-source
-else
-	echo 'Warning: clang-format not available, skipping reformat-source'
+reformat() {
+	reformat_command=$1
+	reformat_command_output="$(scripts/$reformat_command 2>&1)" || {
+		printf >&2 -- '————————————————————————————————————————————————————————————\n'
+		printf >&2 -- 'Warning — Reformatting command `%s` failed\n' "$reformat_command"
+		printf >&2 -- '\n%s\n' "$reformat_command_output"
+		printf >&2 -- '————————————————————————————————————————————————————————————\n\n'
+	}
+}
+
+reformat reformat-source &
+reformat reformat-cmake &
+reformat reformat-markdown &
+reformat reformat-shfmt &
+wait
+
+error_message="$(
+	cat << 'EOF'
+The reformatting check detected code that **does not** fit the guidelines given in `doc/CODING.md`.
+If you see this message on one of the build servers, you can either install one or multiple of the following tools:
+
+- [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format C and C++ source code,
+- [`cmake_format`](https://github.com/cheshirekow/cmake_format) to format CMake code,
+- [`prettier`](https://prettier.io) to format Markdown code, and
+- [`shfmt`](https://github.com/mvdan/sh) to format Shell code
+
+. Afterwards you can use the following scripts to fix the formatting problems
+
+- `reformat-source` to format C/C++ source files,
+- `reformat-cmake` to format CMake files,
+- `reformat-markdown` to format Markdown files, and
+- `reformat-shfmt` to format files that contain shell code
+
+. If you do not want to install any of the tools listed above you can also use the `patch` command after this message
+to fix the formatting problems. For that please
+
+1. copy the lines between the long dashes (`—`),
+2. store them in a file called `format.patch` **in the root of the repository**
+
+. After that use the following command to apply the changes:
+
+    sh -c '
+    line_prefix="$(head -n1 format.patch | sed -nE '"'"'s/(^[0-9]+:).*/\1_/p'"'"' | wc -c | sed -E '"'"'s/[ ]*//g'"'"')"
+    { test "$line_prefix" -gt 1 && cut -c"$line_prefix"- format.patch || cat format.patch ; } | patch -p1
+    '
+
+.
+EOF
+)"
+
+git_diff_output="$(git diff -p 2>&1)"
+
+if [ $? -ne 0 ]; then
+	error_message="$(printf 'Unable to create diff: %s' "$git_diff_output" 2>&1)"
+	false
+	exit_if_fail "$error_message"
 fi
 
-if which sponge > /dev/null || which cmake-format > /dev/null
-then
-	scripts/reformat-cmake || exit 1
-else
-	echo 'Warning: Since either `sponge` or `cmake-format` is not available I will not check the formatting of the CMake code.'
-fi
+if [ -n "$git_diff_output" ]; then
+	false
+	succeed_if "$error_message"
+	printf '\n\n————————————————————————————————————————————————————————————\n\n'
+	printf '%s' "$git_diff_output"
+	printf '\n\n————————————————————————————————————————————————————————————\n\n'
 
-git diff --exit-code
-succeed_if "Please commit the reformatting changes before pushing"
+fi
 
 end_script

@@ -17,6 +17,11 @@
 /** Surround a **macro value** with double quotes */
 #define ELEKTRA_STRINGIFY(x) ELEKTRA_QUOTE (x)
 
+/** Concat two values */
+#define ELEKTRA_CONCAT2(X, Y) X##Y
+/** Concat two **macro values** */
+#define ELEKTRA_CONCAT(X, Y) ELEKTRA_CONCAT2 (X, Y)
+
 #if defined(__APPLE__)
 #define ELEKTRA_STAT_SECONDS(status) status.st_mtime
 #define ELEKTRA_STAT_NANO_SECONDS(status) status.st_mtimespec.tv_nsec
@@ -31,25 +36,35 @@
 #define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES)                                                                                                       \
-			ELEKTRA_SET_ERROR (109, parentKey, strerror (errno));                                                              \
+		if (errno == EACCES) /*TODO: Solution*/                                                                                    \
+			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
+				parentKey,                                                                                                 \
+				"Insufficient permissions to open configuration file %s for reading. Reason: %s. You might want "          \
+				"to retry as root or change access using chmod.",                                                          \
+				keyString (parentKey), strerror (errno));                                                                  \
 		else                                                                                                                       \
-			ELEKTRA_SET_ERROR (110, parentKey, strerror (errno));                                                              \
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open configuration file %s for reading. Reason: %s",            \
+						     keyString (parentKey), strerror (errno));                                             \
 	} while (0)
 
 #define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES)                                                                                                       \
-			ELEKTRA_SET_ERROR (9, parentKey, strerror (errno));                                                                \
+		if (errno == EACCES) /*TODO: Solution*/                                                                                    \
+			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
+				parentKey,                                                                                                 \
+				"Insufficient permissions to open configuration file %s for writing. You might want to retry as "          \
+				"root. Reason: %s",                                                                                        \
+				keyString (parentKey), strerror (errno));                                                                  \
 		else                                                                                                                       \
-			ELEKTRA_SET_ERROR (75, parentKey, strerror (errno));                                                               \
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing. Reason: %s", keyString (parentKey),   \
+						     strerror (errno));                                                                    \
 	} while (0)
 
-#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, key, "Unable to allocate %zu bytes.", size);
+#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (key, "Unable to allocate %zu bytes", size);
 
 /**
- * @brief Sets error 84 if info != returned
+ * @brief Sets error if info != returned
  *
  * @param info how the info is now (freshly received)
  * @param returned how the info passed from user is
@@ -68,26 +83,82 @@
 			Key * c = ksNext (info);                                                                                           \
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
-				ELEKTRA_SET_ERRORF (84, error, "the key %s (value %s) was added", keyName (k), keyString (k));             \
+				ELEKTRA_SET_INTERFACE_ERRORF (                                                                             \
+					error, "Read only plugin, 'kdbSet' not supported but the key %s (value %s) tried to be added",     \
+					keyName (k), keyString (k));                                                                       \
 				ksDel (info);                                                                                              \
 				return -1;                                                                                                 \
 			}                                                                                                                  \
 			if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))                                    \
 			{                                                                                                                  \
-				ELEKTRA_SET_ERRORF (84, error, "the key %s (expected %s) was modified to %s (expected %s)", keyName (k),   \
-						    keyName (c), keyString (k), keyString (c));                                            \
+				ELEKTRA_SET_INTERFACE_ERRORF (error,                                                                       \
+							      "Read only plugin, 'kdbSet' not supported but the key %s (expected %s) was " \
+							      "tried to be modified to "                                                   \
+							      "'%s' (expected '%s')",                                                      \
+							      keyName (k), keyName (c), keyString (k), keyString (c));                     \
 				ksDel (info);                                                                                              \
 				return -1;                                                                                                 \
 			}                                                                                                                  \
 		}                                                                                                                          \
 		if ((k = ksNext (info)) != 0)                                                                                              \
 		{                                                                                                                          \
-			ELEKTRA_SET_ERRORF (84, error, "the key %s (value %s) was removed", keyName (k), keyString (k));                   \
+			ELEKTRA_SET_INTERFACE_ERRORF (                                                                                     \
+				error, "Read only plugin, 'kdbSet' not supported but the key %s (value %s) tried to be removed",           \
+				keyName (k), keyString (k));                                                                               \
 			ksDel (info);                                                                                                      \
 			return -1;                                                                                                         \
 		}                                                                                                                          \
 		ksDel (info);                                                                                                              \
 	} while (0)
 
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck) __attribute__ ((format (archetype, stringIndex, firstToCheck)))
+#else
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck)
+#endif
+
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_NO_RETURN __attribute__ ((noreturn))
+#else
+#define ELEKTRA_ATTRIBUTE_NO_RETURN
+#endif
+
+#ifdef __GNUC__
+/** Declares a parameter as unused. */
+#define ELEKTRA_UNUSED __attribute__ ((unused))
+#else
+#define ELEKTRA_UNUSED
+#endif
+
+#ifdef __GNUC__
+/** Declares a switch fallthrough case. */
+#define ELEKTRA_FALLTHROUGH __attribute__ ((fallthrough))
+#else
+#define ELEKTRA_FALLTHROUGH
+#endif
+
+#ifdef __GNUC__
+/** Declares an API as deprecated. */
+#define ELEKTRA_DEPRECATED __attribute__ ((deprecated))
+#else
+#define ELEKTRA_DEPRECATED
+#endif
+
+/**
+ * Helper macro to create a versioned name of a symbol.
+ *
+ * @param sym  unversioned name of the symbol
+ * @param impl version suffix
+ */
+#define ELEKTRA_SYMVER(sym, impl) sym##_##impl
+
+/**
+ * Declares another version of a symbol using the `.symver` assembler pseudo command
+ *
+ * @param ver  the version name as declared versions.def
+ * @param sym  the unversioned name of the symbol
+ * @param impl the version suffix to use for this version
+ */
+#define ELEKTRA_SYMVER_DECLARE(ver, sym, impl) ELEKTRA_SYMVER_COMMAND (ELEKTRA_STRINGIFY (ELEKTRA_SYMVER (sym, impl)), #sym "@" ver)
 
 #endif

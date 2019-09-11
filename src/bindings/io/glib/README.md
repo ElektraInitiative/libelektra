@@ -20,26 +20,25 @@ Use the `elektraIoGlibNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-glib`, `elektra-io` and `glib` or
 simply use `pkg-config --cflags --libs elektra-io-glib`.
 
-### ElektraIoInterface * elektraIoGlibNew (GMainContext * context)
+### ElektraIoInterface _ elektraIoGlibNew (GMainContext _ context)
 
 Create and initialize a new I/O binding.
 
-*Parameters*
+_Parameters_
 
 - context: Context to use for I/O operations. May be NULL to indicate the glib's
   default context.
 
-*Returns*
+_Returns_
 
 Populated I/O interface
 
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_glib.h>
+#include <elektra/kdbio/glib.h>
 
 #include <glib.h>
 
@@ -65,5 +64,7 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	g_main_loop_unref (loop);
 }
-
 ```
+
+Please check out the ["notificationReload" example](https://www.libelektra.org/examples/notificationreload)
+which uses this I/O binding.

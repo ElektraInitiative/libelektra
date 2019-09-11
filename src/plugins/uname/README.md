@@ -14,7 +14,7 @@ No resolver is needed for that plugin to work.
 
 ## Special Values
 
-This plugin defines following keynames below its mountpoint:
+This plugin defines following keynames below its mount point:
 
 - sysname
 - nodename

@@ -1,27 +1,27 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-REMOUNT" "1" "December 2017" "" ""
+.TH "KDB\-REMOUNT" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-remount\fR \- Use an existing backend to mount a new file
 .
 .SH "SYNOPSIS"
-\fBkdb remount <new path> <new mountpoint> <existing mountpoint>\fR
+\fBkdb remount <new path> <new mount point> <existing mount point>\fR
 .
 .P
 Where \fBnew path\fR is the path to the file the user wants to mount, (Absolute for system files, relative for user files)
 .
 .br
-\fBnew mountpoint\fR is where in the key database the new configuration file should be mounted at, (For a cascading mount pount, \fBmountpoint\fR should start with \fB/\fR)
+\fBnew mount point\fR is where in the key database the new configuration file should be mounted at, (For a cascading mount pount, \fBmountpoint\fR should start with \fB/\fR)
 .
 .br
-and \fBexisting mountpoint\fR is the mountpoint where the existing backend is mounted\.
+and \fBexisting mount point\fR is the mount point where the existing backend is mounted\.
 .
 .br
 .
 .SH "DESCRIPTION"
-This command allows a user to use an existing backend (such as one from a previous mount) to mount a new configuration file to a new mountpoint in the key database\.
+This command allows a user to use an existing backend (such as one from a previous mount) to mount a new configuration file to a new mount point in the key database\.
 .
 .br
 .
@@ -44,8 +44,12 @@ Use a different kdb profile\.
 Print never/auto(default)/always colored output\.
 .
 .TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
 \fB\-d\fR, \fB\-\-debug\fR
-Give debug information or ask debug questions (in interactive mode)\.
+Give debug information or ask debug questions (in interactive mode)\. Prints additional debug information in case of errors/warnings\.
 .
 .TP
 \fB\-i\fR, \fB\-\-interactive\fR

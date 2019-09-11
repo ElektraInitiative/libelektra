@@ -7,8 +7,7 @@
 
 # generates seeds distributed uniformly from 1 to 2147483646 = ELEKTRARANDMAX - 1
 
-if [ ! "$1" ] || [ ! "$2" ]
-then
+if [ ! "$1" ] || [ ! "$2" ]; then
 	echo "Usage: $0 <numberOfSeeds> <outfile>"
 fi
 

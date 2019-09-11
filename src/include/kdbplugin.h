@@ -16,21 +16,15 @@
 #include <string.h>
 
 #ifdef ELEKTRA_STATIC
-#ifdef ELEKTRA_VARIANT
-#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2 (module, ELEKTRA_VARIANT)
-#define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3 (module, variant)
-#define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol (void)
-#else
-#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2 (module)
+#define ELEKTRA_PLUGIN_EXPORT ELEKTRA_PLUGIN_EXPORT2 (ELEKTRA_PLUGIN_NAME_C)
 #define ELEKTRA_PLUGIN_EXPORT2(module) ELEKTRA_PLUGIN_EXPORT3 (module)
 #define ELEKTRA_PLUGIN_EXPORT3(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
-#endif
 #else
-#define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol (void)
+#define ELEKTRA_PLUGIN_EXPORT elektraPluginSymbol (void)
 #endif
 
 #ifdef ELEKTRA_VARIANT
-#define ELEKTRA_PLUGIN_FUNCTION(module, function) ELEKTRA_PLUGIN_FUNCTION2 (module, ELEKTRA_VARIANT, function)
+#define ELEKTRA_PLUGIN_FUNCTION(function) ELEKTRA_PLUGIN_FUNCTION2 (ELEKTRA_PLUGIN_NAME_C, ELEKTRA_VARIANT, function)
 #define ELEKTRA_PLUGIN_FUNCTION2(module, variant, function) ELEKTRA_PLUGIN_FUNCTION3 (module, variant, function)
 #define ELEKTRA_PLUGIN_FUNCTION3(module, variant, function) libelektra_##module##_##variant##_LTX_elektraPlugin##function
 #else
@@ -44,16 +38,13 @@
  * @ingroup plugin
  *
  * @param plugin the name of the plugin
- * @param function which function it is (open, close, get, set, error)
+ * @param function which function it is (open, close, get, set, error, commit)
  */
-#define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
+#define ELEKTRA_PLUGIN_FUNCTION(function) ELEKTRA_PLUGIN_FUNCTION2 (ELEKTRA_PLUGIN_NAME_C, function)
+#define ELEKTRA_PLUGIN_FUNCTION2(module, function) ELEKTRA_PLUGIN_FUNCTION3 (module, function)
+#define ELEKTRA_PLUGIN_FUNCTION3(module, function) libelektra_##module##_LTX_elektraPlugin##function
 #endif
 
-#ifdef ELEKTRA_VARIANT
-#define ELEKTRA_README(module) ELEKTRA_README2 (module, ELEKTRA_VARIANT)
-#define ELEKTRA_README2(module, variant) ELEKTRA_README3 (module, variant)
-#define ELEKTRA_README3(module, variant) ELEKTRA_QUOTE (readme_##module##_##variant.c)
-#else
 /**
  * @brief The filename for inclusion of the readme for
  * compilation variants (see doc/tutorials).
@@ -62,9 +53,9 @@
  *
  * @param plugin the name of the plugin
  */
-#define ELEKTRA_README(module) ELEKTRA_README2 (module)
-#define ELEKTRA_README2(module) ELEKTRA_QUOTE (readme_##module.c)
-#endif
+#define ELEKTRA_README ELEKTRA_README2 (ELEKTRA_PLUGIN_NAME_C)
+#define ELEKTRA_README2(module) ELEKTRA_README3 (module)
+#define ELEKTRA_README3(module) ELEKTRA_QUOTE (readme_##module.c)
 
 
 /**
@@ -72,13 +63,15 @@
  *
  * @ingroup backend
  */
-typedef enum {
+typedef enum
+{
 	// clang-format off
 	ELEKTRA_PLUGIN_OPEN=1,		/*!< Next arg is backend for kdbOpen() */
 	ELEKTRA_PLUGIN_CLOSE=1<<1,	/*!< Next arg is backend for kdbClose() */
 	ELEKTRA_PLUGIN_GET=1<<2,	/*!< Next arg is backend for kdbGet() */
 	ELEKTRA_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
 	ELEKTRA_PLUGIN_ERROR=1<<4,	/*!< Next arg is backend for kdbError() */
+	ELEKTRA_PLUGIN_COMMIT=1<<5,	/*!< Next arg is backend for kdbCommit()*/
 	ELEKTRA_PLUGIN_END=0		/*!< End of arguments */
 	// clang-format on
 } plugin_t;
@@ -94,6 +87,9 @@ typedef enum {
 /** Everything went fine and the function **did not** update the given keyset/configuration */
 #define ELEKTRA_PLUGIN_STATUS_NO_UPDATE 0
 
+/** Everything went fine and we have a cache hit */
+#define ELEKTRA_PLUGIN_STATUS_CACHE_HIT 2
+
 #ifdef __cplusplus
 namespace ckdb
 {
@@ -108,6 +104,7 @@ KeySet * elektraPluginGetConfig (Plugin * handle);
 void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
 
+KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
 #define PLUGINVERSION "1"
 

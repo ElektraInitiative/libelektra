@@ -21,7 +21,15 @@
 #define LF_BYTE 0x0A
 #define CR_BYTE 0x0D
 
-typedef enum { NA, CR, LF, CRLF, LFCR, NUM_TYPES } Lineending;
+typedef enum
+{
+	NA,
+	CR,
+	LF,
+	CRLF,
+	LFCR,
+	NUM_TYPES
+} Lineending;
 
 static inline char * LEString (Lineending index)
 {
@@ -85,7 +93,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 			if (validLineEnding != NA && lineEnding != validLineEnding)
 			{
 				fclose (fp);
-				ELEKTRA_SET_ERRORF (114, parentKey, "Invalid line ending at line %lu", line);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid line ending at line %lu", line);
 				return -2;
 			}
 			++line;
@@ -93,7 +101,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 		else if (lineEnding != found && found != NA)
 		{
 			fclose (fp);
-			ELEKTRA_SET_ERRORF (115, parentKey, "inconsistent line endings at line %lu", line);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Inconsistent line endings at line %lu", line);
 			return -3;
 		}
 		fc = sc;
@@ -112,7 +120,7 @@ int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			keyNew ("system/elektra/modules/lineendings/exports", KEY_END),
 			keyNew ("system/elektra/modules/lineendings/exports/get", KEY_FUNC, elektraLineendingsGet, KEY_END),
 			keyNew ("system/elektra/modules/lineendings/exports/set", KEY_FUNC, elektraLineendingsSet, KEY_END),
-#include ELEKTRA_README (lineendings)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/lineendings/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -143,7 +151,7 @@ int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 	switch (ret)
 	{
 	case (-1):
-		ELEKTRA_SET_ERRORF (113, parentKey, "Couldn't open file %s\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s\n", keyString (parentKey));
 		return 1;
 		break;
 	case (-2):
@@ -159,7 +167,7 @@ int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 	}
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (lineendings)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("lineendings",

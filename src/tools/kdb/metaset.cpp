@@ -60,7 +60,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 
 	if (cl.arguments.size () == 2)
 	{
-		if (cl.verbose) cout << "Deleting metaname " << metaname << endl;
+		if (!cl.quiet) cout << "Only two arguments, thus deleting metaname " << metaname << endl;
 		k.delMeta (metaname);
 	}
 	else
@@ -81,8 +81,8 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	}
 
 	kdb.set (conf, parentKey);
-	printWarnings (cerr, parentKey);
-	printError (cerr, k);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
+	printError (cerr, k, cl.verbose, cl.debug);
 
 	return 0;
 }

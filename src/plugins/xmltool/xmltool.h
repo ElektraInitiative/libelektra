@@ -24,6 +24,6 @@ int elektraXmltoolGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraXmltoolSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraXmltoolError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (xmltool);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

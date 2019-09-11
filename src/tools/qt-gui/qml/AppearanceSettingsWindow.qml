@@ -17,11 +17,10 @@ BasicWindow {
 		GroupBox {
 			id: colorSettings
 
-			anchors.top: parent.top
-			anchors.left: parent.left
-			anchors.leftMargin: (parent.parent.width - width) / 2 - width / 16
-			anchors.topMargin: parent.parent.height / 32
-			anchors.bottomMargin: width / 10
+                        Layout.alignment: Qt.alignTop | Qt.alignLeft
+			Layout.leftMargin: (parent.parent.width - width) / 2 - width / 16
+			Layout.topMargin: parent.parent.height / 32
+			Layout.bottomMargin: width / 10
 			title: qsTr("Choose Colors")
 			GridLayout {
 				anchors.fill: parent
@@ -101,7 +100,7 @@ BasicWindow {
 				Button {
 					id: resetButton
 					text: qsTr("Reset to system colors")
-					anchors.right: parent.right
+					Layout.alignment: Qt.AlignRight
 					width: parent.width
 					onClicked: {
 						guiSettings.highlightColor = activePalette.highlight
@@ -116,11 +115,10 @@ BasicWindow {
 		GroupBox{
 			flat: false
 			title: qsTr("Icon Theme")
-			anchors.left: parent.left
-			anchors.leftMargin: (parent.parent.width - width) / 2 - width / 16
-			anchors.topMargin: parent.parent.height / 32
-			anchors.bottomMargin: width / 10
-			anchors.top: colorSettings.bottom
+                        Layout.alignment: Qt.AlignLeft
+			Layout.leftMargin: (parent.parent.width - width) / 2 - width / 16
+			Layout.topMargin: parent.parent.height / 32
+			Layout.bottomMargin: width / 10
 			GridLayout {
 				anchors.fill: parent
 				anchors.margins: defaultMargins

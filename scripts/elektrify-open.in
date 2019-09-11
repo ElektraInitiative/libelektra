@@ -2,15 +2,13 @@
 
 interceptOpen="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept-fs.so"
 
-if [ ! -f "$interceptOpen" ]
-then
+if [ ! -f "$interceptOpen" ]; then
 	echo "You do not have $interceptOpen installed" 1>&2
-	echo "Maybe your system is not supported (currently needs to be glibc-based)"  1>&2
+	echo "Maybe your system is not supported (currently needs to be glibc-based)" 1>&2
 	exit 1
 fi
 
-if [ "$#" -eq 0 ]
-then
+if [ "$#" -eq 0 ]; then
 	echo "Usage: kdb elektrify-open <application>"
 	echo "Path to library is:"
 	echo "$interceptOpen"

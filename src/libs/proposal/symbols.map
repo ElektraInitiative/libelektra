@@ -1,0 +1,13 @@
+libelektra_0.8 {
+	# kdbproposal.h
+	elektraKeyGetMetaKeySet;
+	elektraKsToMemArray;
+	keyAsCascading;
+	keyGetLevelsBelow;
+	keyLock;
+	keyRel2;
+	keySetStringF;
+	ksPopAtCursor;
+	ksPrev;
+	ksRenameKeys;
+};

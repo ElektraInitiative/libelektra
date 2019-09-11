@@ -34,6 +34,7 @@
 
 void timeInit (void);
 void timePrint (char * msg);
+int timeGetDiffMicroseconds (void);
 
 void benchmarkCreate (void);
 void benchmarkFillup (void);
@@ -87,7 +88,7 @@ extern const char * const alphabetspecial;
  *       * Create fresh subKeys:
  *          Set subKeys >= 0 and label = 0, to create a branch you do not want to reuse.
  *          Set subKeys >= 0 and label > 0, to create a branch you want to link later, using the label number.
- *       * Use a already existing branch:
+ *       * Use an already existing branch:
  *          Set subKeys < 0 and label > 0, the subKeys will be taken from the labelled branch.
  *     Data:
  *      The shapef function has also a memory, the data pointer points to it.

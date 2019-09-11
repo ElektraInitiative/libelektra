@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Configure a debian build with optimizations
+# @date 02.09.2014
+# @tags configure, debian
 
 # a variant where everything is in a home-directory
 # below .config by default
@@ -7,16 +12,12 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
-cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
-	-DKDB_DEFAULT_STORAGE="ini" \
-	-DKDB_DB_FILE="default.ini" \
-	-DKDB_DB_INIT="elektra.ini" \
-	-DKDB_DEFAULT_STORAGE=ini \
+cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DKDB_DB_USER=".config/kdb/user" \
 	-DKDB_DB_SYSTEM="~/.config/kdb/system" \
 	-DKDB_DB_SPEC="~/.config/kdb/spec" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL;-swig_ruby" \
+	-DBINDINGS="ALL" \
 	$*
 
-	#-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691
+#-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691

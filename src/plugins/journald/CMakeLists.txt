@@ -9,7 +9,6 @@ if (DEPENDENCY_PHASE)
 endif ()
 
 add_plugin (journald
-	    SOURCES journald.h
-		    journald.c
+	    SOURCES journald.h journald.c
 	    INCLUDE_DIRECTORIES ${LIBSYSTEMD_JOURNAL_INCLUDE_DIR}
 	    LINK_LIBRARIES ${LIBSYSTEMD_JOURNAL_LIBRARIES})

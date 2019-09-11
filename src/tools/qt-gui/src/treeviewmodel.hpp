@@ -40,7 +40,8 @@ public:
 	/**
 	 * @brief The TreeViewModelRoles enum
 	 */
-	enum TreeViewModelRoles {
+	enum TreeViewModelRoles
+	{
 		NameRole = Qt::UserRole + 1, ///< The role QML can access the name of a ConfigNode at a specified index.
 		PathRole,		     ///< The role QML can access the path of a ConfigNode at a specified index.
 		ValueRole,		     ///< The role QML can access the value of a ConfigNode at a specified index.
@@ -304,6 +305,13 @@ private:
 	 * @brief Connect to system D-Bus
 	 */
 	void connectDBus ();
+
+	/**
+	 * @brief Extract the contents of an KDBException::what() function for usage in a TreeViewModel::showMessage() function.
+	 * @param e The KDBException.
+	 * @return A QMap with the contents of the KDBException.
+	 */
+	QMap<QString, QString> getErrorMessage (kdb::KDBException const & e);
 
 protected:
 	QHash<int, QByteArray> roleNames () const override;

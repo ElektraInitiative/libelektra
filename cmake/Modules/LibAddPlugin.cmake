@@ -2,6 +2,39 @@ include (LibAddMacros)
 include (LibAddTest)
 
 # ~~~
+# Provides additional compiler definitions:
+#
+# - ELEKTRA_PLUGIN_NAME containing the short plugin name as string
+# - ELEKTRA_PLUGIN_NAME_C containing the short plugin name which can be used in function names
+#
+# shortname:
+#   pass the PLUGIN_SHORT_NAME as this argument
+#
+# ADDITIONAL_COMPILE_DEFINITIONS:
+#   will contain the additional compiler definitions mentioned above.
+#   will be set to the parent scope, i.e. the caller of the function
+#
+# ~~~
+function (set_additional_compile_definitions shortname)
+	# provide the plugin name as string to the compiler/preprocessor
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
+	endif ()
+
+	# provide the plugin name as macro that can be used for building function names, etc.
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME_C")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_PLUGIN_NAME_C=${shortname}")
+	endif ()
+
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_MODULE_NAME")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_MODULE_NAME=${shortname}")
+	endif ()
+
+	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
+	unset (ADDITIONAL_COMPILE_DEFINITIONS_PARTS)
+endfunction (set_additional_compile_definitions)
+
+# ~~~
 # Add a test for a plugin
 #
 # Will include the common tests.h file + its source file
@@ -38,28 +71,34 @@ function (add_plugintest testname)
 		set (MULTI_VALUE_KEYWORDS
 		     COMPILE_DEFINITIONS
 		     INCLUDE_DIRECTORIES
+		     INCLUDE_SYSTEM_DIRECTORIES
 		     LINK_LIBRARIES
 		     LINK_ELEKTRA
 		     TEST_LINK_LIBRARIES
 		     TEST_LINK_ELEKTRA
 		     LINK_PLUGIN
 		     ENVIRONMENT
+		     TIMEOUT
 		     WORKING_DIRECTORY)
 
 		cmake_parse_arguments (ARG
 				       "MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
-				       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
+				       "" # one value keywords
 				       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 				       ${ARGN})
 
-		list (FIND ADDED_PLUGINS
-			   "${testname}"
-			   FOUND_NAME)
+		if (ARG_LINK_PLUGIN)
+			set (testplugin "${ARG_LINK_PLUGIN}")
+		else (ARG_LINK_PLUGIN)
+			set (testplugin "${testname}")
+		endif (ARG_LINK_PLUGIN)
+
+		list (FIND ADDED_PLUGINS "${testplugin}" FOUND_NAME)
 		if (FOUND_NAME EQUAL -1)
 			if (NOT ARG_LINK_PLUGIN)
 				message (
 					FATAL_ERROR
-						"Trying to add plugintest ${testname} but no such plugin was added (try to use LINK_PLUGIN)"
+						"Trying to add plugintest ${testplugin} but no such plugin was added (try to use LINK_PLUGIN)"
 					)
 			endif ()
 
@@ -67,7 +106,7 @@ function (add_plugintest testname)
 			return ()
 		endif ()
 
-		set (PLUGIN_NAME elektra-${testname})
+		set (PLUGIN_NAME elektra-${testplugin})
 		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
@@ -80,16 +119,15 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
+		restore_variable (${PLUGIN_NAME} ARG_TIMEOUT)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
 		foreach (A ${ARG_UNPARSED_ARGUMENTS})
 			if (EXISTS "${A}")
-				list (APPEND TEST_SOURCES
-					     "${A}")
+				list (APPEND TEST_SOURCES "${A}")
 			else ()
-				list (APPEND TEST_SOURCES
-					     "${CMAKE_CURRENT_SOURCE_DIR}/${A}")
+				list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${A}")
 			endif ()
 		endforeach ()
 
@@ -98,30 +136,34 @@ function (add_plugintest testname)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
 
 		if (ARG_CPP)
-			list (APPEND TEST_SOURCES
-				     "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
+			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
 			include_directories (${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
 		else (ARG_CPP)
-			list (APPEND TEST_SOURCES
-				     "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
+			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
 		endif (ARG_CPP)
 
-		if (BUILD_SHARED)
-			set (PLUGIN_TARGET_OBJS "")
-			if (ARG_LINK_PLUGIN)
-				if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
-					set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
-				endif ()
-			else ()
-				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be
-													 # tested have same name:
+		set (PLUGIN_TARGET_OBJS "")
+		if (ARG_LINK_PLUGIN)
+			if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
+				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
 			endif ()
-			list (APPEND TEST_SOURCES
-				     "${PLUGIN_TARGET_OBJS}")
+		else ()
+			set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that test case+plugin to be tested
+												 # have same name:
 		endif ()
+		list (APPEND TEST_SOURCES "${PLUGIN_TARGET_OBJS}")
+
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
-		add_dependencies (${testexename} kdberrors_generated)
+		add_dependencies (${testexename} kdberrors_generated elektra_error_codes_generated)
+
+		if (BUILD_SHARED)
+			if (ARG_LINK_PLUGIN)
+				add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
+			else ()
+				add_dependencies (${testexename} elektra-${testname})
+			endif ()
+		endif ()
 
 		# ~~~
 		# alternative approach to restore_variable
@@ -135,26 +177,35 @@ function (add_plugintest testname)
 			endif ()
 		endif (INSTALL_TESTING)
 
-		target_link_elektra (${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA} ${ARG_TEST_LINK_ELEKTRA})
+		target_link_elektra (${testexename}
+				     elektra-kdb
+				     elektra-plugin
+				     ${ARG_LINK_ELEKTRA}
+				     ${ARG_TEST_LINK_ELEKTRA})
 
 		if (ARG_CPP)
 			target_link_libraries (${testexename} gtest_main)
 		endif (ARG_CPP)
 
+		set_additional_compile_definitions (${testname})
+
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
-		set_target_properties (${testexename}
-				       PROPERTIES COMPILE_DEFINITIONS
-						  "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS}")
-		set_property (TARGET ${testexename}
-			      APPEND
-			      PROPERTY INCLUDE_DIRECTORIES
-				       ${ARG_INCLUDE_DIRECTORIES})
-		if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
-			set_property (TARGET ${testexename}
-				      APPEND
-				      PROPERTY COMPILE_FLAGS
-					       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
-		endif ()
+		set_target_properties (
+			${testexename}
+			PROPERTIES COMPILE_DEFINITIONS
+				   "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
+		set_property (TARGET ${testexename} APPEND PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
+
+		unset (ADDITIONAL_COMPILE_DEFINITIONS)
+
+		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
+
+			if (DIR AND NOT DIR STREQUAL "/usr/include")
+				set_property (TARGET ${testexename}
+					      APPEND_STRING
+					      PROPERTY COMPILE_FLAGS " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} \"${DIR}\"")
+			endif ()
+		endforeach (DIR)
 
 		if (ARG_WORKING_DIRECTORY)
 			set (WORKING_DIRECTORY "${ARG_WORKING_DIRECTORY}")
@@ -165,32 +216,29 @@ function (add_plugintest testname)
 		add_test (NAME ${testexename}
 			  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 			  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-		set_property (TEST ${testexename}
-			      PROPERTY ENVIRONMENT
-				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-				       "${ARG_ENVIRONMENT}")
+
+		if (ARG_TIMEOUT)
+			set_tests_properties (${testexename} PROPERTIES TIMEOUT "${ARG_TIMEOUT}")
+		endif (ARG_TIMEOUT)
+
+		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
 
 		if (ARG_MEMLEAK)
-			set_property (TEST ${testexename}
-				      PROPERTY LABELS
-					       memleak)
+			set_property (TEST ${testexename} PROPERTY LABELS memleak)
 		endif (ARG_MEMLEAK)
 	endif ()
 endfunction (add_plugintest)
 
 function (plugin_check_if_included PLUGIN_SHORT_NAME)
-	list (FIND PLUGINS
-		   "-${PLUGIN_SHORT_NAME}"
-		   FOUND_EXCLUDE_NAME)
+	set (NOT_INCLUDED "" PARENT_SCOPE)
+	list (FIND PLUGINS "-${PLUGIN_SHORT_NAME}" FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
 		set (NOT_INCLUDED "explicitly excluded" PARENT_SCOPE) # let explicit exclusion win
 
 		return ()
 	endif ()
 
-	list (FIND PLUGINS
-		   "${PLUGIN_SHORT_NAME}"
-		   FOUND_NAME)
+	list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
 		set (NOT_INCLUDED "silent" PARENT_SCOPE) # maybe it is included by category
 
@@ -199,8 +247,7 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 		return () # plugin is given explicit
 	endif ()
 
-	file (READ ${CMAKE_CURRENT_SOURCE_DIR}/README.md
-		   contents)
+	file (READ ${CMAKE_CURRENT_SOURCE_DIR}/README.md contents)
 	string (REGEX MATCH
 		      "- +infos/status *= *([-a-zA-Z0-9 ]*)"
 		      CATEGORIES
@@ -230,19 +277,14 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 			";"
 			PROVIDES
 			"${PROVIDES}")
-	list (APPEND CATEGORIES
-		     "ALL"
-		     "${PROVIDES}")
+	list (APPEND CATEGORIES "ALL" "${PROVIDES}")
 
 	split_plugin_providers (CATEGORIES)
 
-	string (TOUPPER "${CATEGORIES}"
-			CATEGORIES) # message (STATUS "CATEGORIES ${CATEGORIES}")
+	string (TOUPPER "${CATEGORIES}" CATEGORIES) # message (STATUS "CATEGORIES ${CATEGORIES}")
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND PLUGINS
-			   "-${CAT}"
-			   FOUND_EXCLUDE_CATEGORY)
+		list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
 		if (FOUND_EXCLUDE_CATEGORY GREATER -1)
 			set (NOT_INCLUDED "excluded by category ${CAT}" PARENT_SCOPE)
 			return ()
@@ -250,9 +292,7 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 	endforeach ()
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND PLUGINS
-			   "${CAT}"
-			   FOUND_CATEGORY)
+		list (FIND PLUGINS "${CAT}" FOUND_CATEGORY)
 		if (FOUND_CATEGORY GREATER -1)
 			set (NOT_INCLUDED "" PARENT_SCOPE)
 			return ()
@@ -285,9 +325,7 @@ function (restore_variable PLUGIN_NAME VARIABLE)
 		if (DEFINED ${VARIABLE})
 
 			# given by user, but not stored: store it
-			set_property (GLOBAL
-				      PROPERTY "${PROP_NAME}"
-					       "${${VARIABLE}}")
+			set_property (GLOBAL PROPERTY "${PROP_NAME}" "${${VARIABLE}}")
 		endif ()
 	endif ()
 endfunction ()
@@ -316,8 +354,7 @@ endfunction ()
 #
 # INCLUDE_SYSTEM_DIRECTORIES:
 #  Same as INCLUDE_DIRECTORIES, but avoids warnings and dependency calculation
-#  for these include folders. (TODO currently allows only a single argument because
-#  ; -> " " is not yet implemented)
+#  for these include folders.
 #
 # ONLY_SHARED:
 #  Do not include this plugin in FULL or STATIC builds.
@@ -355,13 +392,14 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	     LINK_LIBRARIES
 	     COMPILE_DEFINITIONS
 	     INCLUDE_DIRECTORIES
+	     INCLUDE_SYSTEM_DIRECTORIES
 	     LINK_ELEKTRA
 	     DEPENDS
 	     TEST_ENVIRONMENT
 	     TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
 			       "CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
-			       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
+			       "" # one value keywords
 			       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			       ${ARGN})
 
@@ -414,9 +452,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 					INCLUDE_DIRECTORIES "${ARG_INCLUDE_DIRECTORIES}"
 					INCLUDE_SYSTEM_DIRECTORIES "${ARG_INCLUDE_SYSTEM_DIRECTORIES}"
 					ENVIRONMENT "${ARG_TEST_ENVIRONMENT}"
-					LINK_ELEKTRA "${ARG_LINK_ELEKTRA}"
-						     "${HAS_INSTALL_TEST_DATA}"
-						     ${CPP_TEST})
+					LINK_ELEKTRA "${ARG_LINK_ELEKTRA}" "${HAS_INSTALL_TEST_DATA}" ${CPP_TEST})
 		endif ()
 
 		if (ARG_TEST_README AND ENABLE_KDB_TESTING)
@@ -445,17 +481,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			set (TMP "${ADDED_PLUGINS};${PLUGIN_SHORT_NAME}")
 			list (SORT TMP)
 			list (REMOVE_DUPLICATES TMP)
-			set (ADDED_PLUGINS
-			     "${TMP}"
-			     CACHE STRING
-				   "${ADDED_PLUGINS_DOC}"
-			     FORCE)
+			set (ADDED_PLUGINS "${TMP}" CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
 		else ()
-			set (ADDED_PLUGINS
-			     "${PLUGIN_SHORT_NAME}"
-			     CACHE STRING
-				   "${ADDED_PLUGINS_DOC}"
-			     FORCE)
+			set (ADDED_PLUGINS "${PLUGIN_SHORT_NAME}" CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
 		endif ()
 
 		# needed for variants where PLUGIN_SHORT_NAME != PLUGIN_FOLDER_NAME
@@ -464,29 +492,17 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			set (TMP "${ADDED_DIRECTORIES};${PLUGIN_FOLDER_NAME}")
 			list (SORT TMP)
 			list (REMOVE_DUPLICATES TMP)
-			set (ADDED_DIRECTORIES
-			     "${TMP}"
-			     CACHE STRING
-				   "${ADDED_DIRECTORIES_DOC}"
-			     FORCE)
+			set (ADDED_DIRECTORIES "${TMP}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
 		else ()
-			set (ADDED_DIRECTORIES
-			     "${PLUGIN_FOLDER_NAME}"
-			     CACHE STRING
-				   "${ADDED_DIRECTORIES_DOC}"
-			     FORCE)
+			set (ADDED_DIRECTORIES "${PLUGIN_FOLDER_NAME}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
 		endif ()
 
 		return ()
 	endif ()
 
-	list (FIND ADDED_PLUGINS
-		   "${PLUGIN_SHORT_NAME}"
-		   FOUND_NAME)
+	list (FIND ADDED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
-		list (FIND REMOVED_PLUGINS
-			   "${PLUGIN_SHORT_NAME}"
-			   FOUND_NAME)
+		list (FIND REMOVED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
 		if (FOUND_NAME EQUAL -1)
 			message (
 				FATAL_ERROR
@@ -521,10 +537,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 		# also add it to the list of ONLY_SHARED plugins for exportsymbols.c configuration
 		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
-		set_property (GLOBAL
-			      APPEND
-			      PROPERTY SHARED_ONLY_PLUGINS
-				       "${PLUGIN_SHORT_NAME}")
+		set_property (GLOBAL APPEND PROPERTY SHARED_ONLY_PLUGINS "${PLUGIN_SHORT_NAME}")
 	endif (ARG_ONLY_SHARED)
 	message (STATUS "${STATUS_MESSAGE}")
 
@@ -534,17 +547,19 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif (ARG_CPP)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
-	add_dependencies (${PLUGIN_OBJS} kdberrors_generated)
+	add_dependencies (${PLUGIN_OBJS} kdberrors_generated elektra_error_codes_generated)
 	if (ARG_DEPENDS)
 		add_dependencies (${PLUGIN_OBJS} ${ARG_DEPENDS})
 	endif ()
 
 	generate_readme (${PLUGIN_SHORT_NAME})
+	set_additional_compile_definitions (${PLUGIN_SHORT_NAME})
 
 	set_property (TARGET ${PLUGIN_OBJS}
 		      APPEND
 		      PROPERTY COMPILE_DEFINITIONS
 			       ${ARG_COMPILE_DEFINITIONS}
+			       ${ADDITIONAL_COMPILE_DEFINITIONS}
 			       "ELEKTRA_STATIC"
 			       "HAVE_KDBCONFIG_H"
 			       "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
@@ -557,26 +572,25 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 		      )
 
-	if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
-		set_property (TARGET ${PLUGIN_OBJS}
-			      APPEND
-			      PROPERTY COMPILE_FLAGS
-				       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES} ${CMAKE_PIC_FLAGS}")
-	else ()
-		set_property (TARGET ${PLUGIN_OBJS}
-			      APPEND
-			      PROPERTY COMPILE_FLAGS
-				       ${CMAKE_PIC_FLAGS} # needed for shared libraries
-			      )
-	endif ()
-
 	set_property (TARGET ${PLUGIN_OBJS}
-		      PROPERTY CMAKE_POSITION_INDEPENDENT_CODE
-			       ON)
+		      APPEND_STRING
+		      PROPERTY COMPILE_FLAGS
+			       "${CMAKE_PIC_FLAGS}" # needed for shared libraries
+		      )
+
+	foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
+		if (DIR AND NOT DIR STREQUAL "/usr/include")
+			set_property (TARGET ${PLUGIN_OBJS}
+				      APPEND_STRING
+				      PROPERTY COMPILE_FLAGS " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} \"${DIR}\"")
+		endif (DIR AND NOT DIR STREQUAL "/usr/include")
+	endforeach (DIR)
+
+	set_property (TARGET ${PLUGIN_OBJS} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
-		add_dependencies (${PLUGIN_NAME} kdberrors_generated)
+		add_dependencies (${PLUGIN_NAME} kdberrors_generated elektra_error_codes_generated)
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
 		endif ()
@@ -591,6 +605,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			      APPEND
 			      PROPERTY COMPILE_DEFINITIONS
 				       ${ARG_COMPILE_DEFINITIONS}
+				       ${ADDITIONAL_COMPILE_DEFINITIONS}
 				       "HAVE_KDBCONFIG_H"
 				       "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
 				       "README=readme_${PLUGIN_SHORT_NAME}.c")
@@ -600,32 +615,28 @@ function (add_plugin PLUGIN_SHORT_NAME)
 				       ${ARG_INCLUDE_DIRECTORIES}
 				       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 			      )
-		if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
-			set_property (TARGET ${PLUGIN_NAME}
-				      APPEND
-				      PROPERTY COMPILE_FLAGS
-					       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
-		endif ()
+		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
+			if (DIR AND NOT DIR STREQUAL "/usr/include")
+				set_property (TARGET ${PLUGIN_NAME}
+					      APPEND_STRING
+					      PROPERTY COMPILE_FLAGS " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} \"${DIR}\"")
+			endif ()
+		endforeach (DIR)
 		if (${LD_ACCEPTS_VERSION_SCRIPT})
 			set_property (TARGET ${PLUGIN_NAME}
 				      APPEND
-				      PROPERTY LINK_FLAGS
-					       "-Wl,--version-script=${PROJECT_SOURCE_DIR}/src/plugins/plugin-symbols.map")
+				      PROPERTY LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/src/plugins/plugin-symbols.map")
 		endif ()
 	endif ()
 
 	if (NOT ARG_ONLY_SHARED)
 
 		# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
-		set_property (GLOBAL
-			      APPEND
-			      PROPERTY "elektra-full_SRCS"
-				       ${PLUGIN_TARGET_OBJS}
-				       ${ARG_OBJECT_SOURCES})
+		set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${PLUGIN_TARGET_OBJS} ${ARG_OBJECT_SOURCES})
 
-		set_property (GLOBAL
-			      APPEND
-			      PROPERTY "elektra-full_LIBRARIES"
-				       "${ARG_LINK_LIBRARIES}")
+		set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${ARG_LINK_LIBRARIES}")
 	endif (NOT ARG_ONLY_SHARED)
+
+	# cleanup
+	unset (ADDITIONAL_COMPILE_DEFINITIONS)
 endfunction (add_plugin)

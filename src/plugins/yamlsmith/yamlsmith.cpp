@@ -43,51 +43,15 @@ namespace
  */
 CppKeySet contractYamlsmith ()
 {
-	return CppKeySet (30, keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
+	return CppKeySet{ 30,
+			  keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
-#include ELEKTRA_README (yamlsmith)
-			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-}
-
-/**
- * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
- *
- * @pre The parameter `key` must be a child of `parent`.
- *
- * @param key This is the key for which this function returns a relative iterator.
- * @param parent This key specifies the part of the name iterator that will not be part of the return value of this function.
- *
- * @returns A relative iterator that starts with the first part of the name of `key` not contained in `parent`.
- */
-NameIterator relativeKeyIterator (CppKey const & key, CppKey const & parent)
-{
-	auto parentIterator = parent.begin ();
-	auto keyIterator = key.begin ();
-	while (parentIterator != parent.end () && keyIterator != key.end ())
-	{
-		parentIterator++;
-		keyIterator++;
-	}
-	return keyIterator;
-}
-
-/**
- * @brief This function compares the structure of two key names.
- *
- * @param key1 The function returns `true` if this `Key` is below or at the same level as `key2`.
- * @param key2 The function returns `true` if this `Key` is above or at the same level as `key1`.
- *
- * @retval true If `key1` is below or on the same level as `key2`
- * @retval false Otherwise
- */
-bool sameLevelOrBelow (CppKey const & key1, CppKey const & key2)
-{
-	if (!key1 || !key2) return false;
-
-	return key2.isBelow (key1) || key1.getFullName ().substr (0, key1.getFullNameSize () - key1.getBaseNameSize ()) ==
-					      key2.getFullName ().substr (0, key2.getFullNameSize () - key2.getBaseNameSize ());
+#include ELEKTRA_README
+			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system/elektra/modules/yamlcpp/config/needs/boolean/restore", KEY_VALUE, "#1", KEY_END),
+			  KS_END };
 }
 
 /**
@@ -122,6 +86,26 @@ CppKeySet leaves (CppKeySet const & keys)
 }
 
 /**
+ * @brief This function counts the levels of a certain key name.
+ *
+ * @param key This parameter stores the key for which this function retrieves the number of parts.
+ *
+ * @return The number of parts of `key`
+ */
+size_t countKeyLevels (CppKey const & key)
+{
+	auto keyIterator = key.begin ();
+	size_t levels = 0;
+
+	while (keyIterator != key.end ())
+	{
+		keyIterator++;
+		levels++;
+	}
+	return levels;
+}
+
+/**
  * @brief This function writes a YAML collection entry (either mapping key or array element) to the given stream.
  *
  * @pre The parameter `output` must be a valid and open output stream.
@@ -144,6 +128,52 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
 }
 
 /**
+ * @brief This function returns a name iterator for a key that starts after `levelsToSkip` levels.
+ *
+ * @param key This parameter stores the key for which this function returns a name iterator.
+ * @param levelsToSkip This value stores the number of parts of `key` that the returned iterator should skip.
+ *
+ * @return A name iterator for `key`, that skips the first `levelsToSkip` parts of `key`
+ */
+inline NameIterator getIteratorSkippedLevels (CppKey const & key, size_t levelsToSkip)
+{
+	auto iterator = key.begin ();
+	for (auto levels = levelsToSkip; levels > 0; levels--)
+	{
+		iterator++;
+	}
+
+	return iterator;
+}
+
+/**
+ * @brief This function writes a representation of a key value to the given output stream.
+ *
+ * @param output This parameter specifies where this function should emit the serialized YAML data.
+ * @param key This parameter stores the key which stores the value this function should emit to `output`.
+ */
+void writeYAMLScalar (ofstream & output, CppKey const & key)
+{
+	if (!key.isString ()) return;
+
+	string value = key.getString ();
+
+	if (value == "0")
+	{
+		output << "false";
+		return;
+	}
+
+	if (value == "1")
+	{
+		output << "true";
+		return;
+	}
+
+	output << '"' << value << '"';
+}
+
+/**
  * @brief This function converts a `KeySet` into the YAML serialization format.
  *
  * @pre The parameter `output` must be a valid and open output stream.
@@ -154,34 +184,43 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
  */
 void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 {
+	auto levelsParent = countKeyLevels (parent);
+
 	ELEKTRA_LOG_DEBUG ("Convert %zu key%s", keys.size (), keys.size () == 1 ? "" : "s");
 	keys.rewind ();
-	for (CppKey last = nullptr; keys.next (); last = keys.current ())
+	for (CppKey last = parent; keys.next (); last = keys.current ())
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", keys.current ().getName ().c_str (), keys.current ().getString ().c_str ());
 
-		string indent;
-		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
-		auto relative = relativeKeyIterator (keys.current (), parent);
-		auto baseName = --keys.current ().end ();
-		bool isCollection = relative != keys.current ().end ();
-		CppKey current{ parent.getName (), KEY_END };
+		// Skip common prefix (parent key name) for all keys in key set
+		auto relativeLast = getIteratorSkippedLevels (last, levelsParent);
+		auto relative = getIteratorSkippedLevels (keys.current (), levelsParent);
 
-		while (isCollection && relative != baseName)
+		// Add indentation for each part of the key that was already added to the file
+		string indent;
+		while (relativeLast != last.end () && relative != keys.current ().end () && *relative == *relativeLast)
+		{
+			relative++;
+			relativeLast++;
+			indent += "  ";
+		}
+
+		// Add YAML mapping key for each part of the key we did not already write into the file
+		auto endCurrent = keys.current ().end ();
+		CppKey current{ "user", KEY_END };
+
+		while (relative != endCurrent)
 		{
 			current.addBaseName (*relative);
 			ELEKTRA_LOG_DEBUG ("Current name: %s", current.getName ().c_str ());
-			if (!sameOrBelowLast) writeCollectionEntry (output, *current, indent);
+			writeCollectionEntry (output, *current, indent);
 			relative++;
 			indent += "  ";
 		}
 
-		if (isCollection)
-		{
-			writeCollectionEntry (output, *keys.current (), indent);
-			indent += "  ";
-		}
-		if (keys.current ().getStringSize () > 1) output << indent << keys.current ().getString () << endl;
+		output << indent;
+		writeYAMLScalar (output, keys.current ());
+		output << endl;
 	}
 }
 
@@ -225,8 +264,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
-				    parent.getString ().c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to open file '%s'", parent.getString ().c_str ());
 	}
 
 	parent.release ();
@@ -235,7 +273,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yamlsmith)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yamlsmith", ELEKTRA_PLUGIN_GET, &elektraYamlsmithGet, ELEKTRA_PLUGIN_SET, &elektraYamlsmithSet,
 				    ELEKTRA_PLUGIN_END);

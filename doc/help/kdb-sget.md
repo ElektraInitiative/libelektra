@@ -1,5 +1,4 @@
-kdb-sget(1) -- Get the value of a key stored in the key database from a script
-==============================================================================
+# kdb-sget(1) -- Get the value of a key stored in the key database from a script
 
 ## SYNOPSIS
 
@@ -26,13 +25,12 @@ This command will either print the value of the key it retrieves or a default va
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 
-
 ## EXAMPLES
 
-To get the value of a key from a script or return the value `0`:
+To get the value of a key from a script or return the value `0`:<br>
 `kdb sget user/example/key 0`
 
-To get the value of a key using a cascading lookup or return the value `notfound`:
+To get the value of a key using a cascading lookup or return the value `notfound`:<br>
 `kdb sget /example/key "notfound"`
 
 ## SEE ALSO

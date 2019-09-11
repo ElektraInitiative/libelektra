@@ -14,6 +14,7 @@
 #include <kdb.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+#include <stdlib.h>
 
 #include <tests.h>
 
@@ -39,16 +40,17 @@ static int elektraDummyOpen (Plugin * handle, Key * errorKey)
 static int elektraDummyClose (Plugin * handle, Key * errorKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (pp && elektraPluginProcessIsParent (pp))
+	if (pp)
 	{
 		int * testData = (int *) elektraPluginProcessGetData (pp);
-		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
-		if (result.cleanedUp)
+		elektraPluginSetData (handle, NULL);
+		elektraFree (testData);
+
+		if (elektraPluginProcessIsParent (pp))
 		{
-			elektraPluginSetData (handle, NULL);
-			elektraFree (testData);
+			ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
+			return result.result;
 		}
-		return result.result;
 	}
 
 	keySetMeta (errorKey, "user/tests/pluginprocess/close", "");

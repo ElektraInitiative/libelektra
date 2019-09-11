@@ -43,27 +43,29 @@ an easy task.
 The serialized configuration can look like (0 bytes at end of strings are
 omitted):
 
-    kdbOpen 1
-    ksNew 207
-    keyNew 27 1
-    system/elektra/mountpoints
-    keyMeta 8 27
-    commentBelow are the mountpoints.
-    keyEnd
-    keyNew 32 19
-    system/elektra/mountpoints/dbusserialized Backend
-    keyEnd keyNew 39 1
-    system/elektra/mountpoints/dbus/config
-    keyMeta 8 72
-    commentThis is a configuration for a backend, see subkeys for more information
-    keyEnd
-    keyNew 53 1
-    system/elektra/mountpoints/fstab/config/struct/FStab
-    keyCopyMeta 59 11
-    system/elektra/mountpoints/file
-    systems/config/struct/FStabcheck/type
-    keyEnd
-    ksEnd
+```
+kdbOpen 1
+ksNew 207
+keyNew 27 1
+system/elektra/mountpoints
+keyMeta 8 27
+commentBelow are the mount points.
+keyEnd
+keyNew 32 19
+system/elektra/mountpoints/dbusserialized Backend
+keyEnd keyNew 39 1
+system/elektra/mountpoints/dbus/config
+keyMeta 8 72
+commentThis is a configuration for a backend, see subkeys for more information
+keyEnd
+keyNew 53 1
+system/elektra/mountpoints/fstab/config/struct/FStab
+keyCopyMeta 59 11
+system/elektra/mountpoints/file
+systems/config/struct/FStabcheck/type
+keyEnd
+ksEnd
+```
 
 ## Limitations
 
@@ -76,14 +78,19 @@ omitted):
 
 Export a KeySet using `dump`:
 
-    kdb export system/example dump > example.ecf
+```sh
+kdb export system/example dump > example.ecf
+```
 
 Import a KeySet using `dump`:
 
-    cat example.ecf | kdb import system/example dump
+```sh
+cat example.ecf | kdb import system/example dump
+```
 
 Using grep/diff or other Unix tools on the dump file. Make sure that you
 treat it as text file, e.g.:
 
-    grep --text mountpoints example.ecf
-
+```sh
+grep --text 'mount points' example.ecf
+```

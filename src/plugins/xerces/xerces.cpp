@@ -46,7 +46,7 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 			       keyNew ("system/elektra/modules/xerces/exports/close", KEY_FUNC, elektraXercesClose, KEY_END),
 			       keyNew ("system/elektra/modules/xerces/exports/get", KEY_FUNC, elektraXercesGet, KEY_END),
 			       keyNew ("system/elektra/modules/xerces/exports/set", KEY_FUNC, elektraXercesSet, KEY_END),
-#include ELEKTRA_README (xerces)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/xerces/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -65,23 +65,23 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XMLException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const DOMException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XercesPluginException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, e.what ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, e.what ());
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, "Unknown exception occurred while reading xml file");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, "Unknown exception occurred while reading xml file");
 	}
 
 	// Avoid destruction of the pointers at the end
@@ -103,23 +103,23 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XMLException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const DOMException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, asCStr (e.getMessage ()));
 	}
 	catch (const XercesPluginException & e)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, e.what ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, e.what ());
 	}
 	catch (...)
 	{
-		ELEKTRA_SET_ERROR (174, parentKey, "Unknown exception occurred while writing xml file");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, "Unknown exception occurred while writing xml file");
 	}
 
 	// Avoid destruction of the pointers at the end
@@ -128,7 +128,7 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	return ret;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (xerces)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("xerces",

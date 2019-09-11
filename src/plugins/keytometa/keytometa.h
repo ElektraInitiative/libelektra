@@ -21,6 +21,6 @@ int elektraKeyToMetaSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraKeyToMetaClose (Plugin * handle, Key * errorKey);
 
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (keytometa);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

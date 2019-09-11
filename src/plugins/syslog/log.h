@@ -17,6 +17,6 @@ int elektraSyslogGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSyslogSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSyslogError (Plugin * handle, KeySet * returned, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (syslog);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

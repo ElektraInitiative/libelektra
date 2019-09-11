@@ -50,7 +50,7 @@
 static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->flags |= KS_FLAG_NAME_CHANGE;
+	set_bit (ks->flags, KS_FLAG_NAME_CHANGE);
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -58,7 +58,7 @@ static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 /**
  * @internal
  *
- * @brief KeySets OPMPHM copy.
+ * @brief KeySets OPMPHM and OPMPHM predictor copy.
  *
  * Should be invoked by every function making a copy of a KeySet.
  *
@@ -73,10 +73,23 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 		return;
 	}
 	// nothing to copy
+	// OPMPHM predictor
+	if (source->opmphmPredictor)
+	{
+		if (!dest->opmphmPredictor)
+		{
+			dest->opmphmPredictor = opmphmPredictorNew ();
+		}
+		if (dest->opmphmPredictor)
+		{
+			opmphmPredictorCopy (dest->opmphmPredictor, source->opmphmPredictor);
+		}
+	}
 	if (!opmphmIsBuild (source->opmphm))
 	{
 		return;
 	}
+	// OPMPHM
 	if (!dest->opmphm)
 	{
 		dest->opmphm = opmphmNew ();
@@ -151,7 +164,7 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * Objects created with ksNew() must be destroyed with ksDel().
  *
- * You can use a arbitrary long list of parameters to preload the keyset
+ * You can use an arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
  *
@@ -345,7 +358,7 @@ KeySet * ksDeepDup (const KeySet * source)
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
  * But in some situations you need to copy a
- * keyset to a existing keyset, for that this function
+ * keyset to an existing keyset, for that this function
  * exists.
  *
  * @note You can also use it to clear a keyset when you pass
@@ -421,9 +434,17 @@ int ksDel (KeySet * ks)
 	{
 		opmphmDel (ks->opmphm);
 	}
+	if (ks->opmphmPredictor)
+	{
+		opmphmPredictorDel (ks->opmphmPredictor);
+	}
+
 #endif
 
-	elektraFree (ks);
+	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
+	{
+		elektraFree (ks);
+	}
 
 	return rc;
 }
@@ -628,7 +649,7 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * If the name is equal then:
  *
  * - No owner will be found to be smaller then every other owner.
- * If both don't have a owner, 0 is returned.
+ * If both don't have an owner, 0 is returned.
  *
  * @note the owner will only be used if the names are equal.
  *
@@ -735,7 +756,7 @@ ssize_t ksGetSize (const KeySet * ks)
 /**
  * @internal
  *
- * Binary search in a keyset that informs where key should be inserted.
+ * Binary search in a KeySet that informs where a key should be inserted.
  *
  * @code
 
@@ -762,10 +783,21 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 	ssize_t left = 0;
 	ssize_t right = ks->size;
 	--right;
-	register int cmpresult = 1;
+	register int cmpresult;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
 
+	if (ks->size == 0)
+	{
+		return -1;
+	}
+
+	cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[right]);
+	if (cmpresult > 0)
+	{
+		return -((ssize_t) ks->size) - 1;
+	}
+	cmpresult = 1;
 
 	while (1)
 	{
@@ -822,6 +854,10 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * If the keyname already existed in the keyset, it will be replaced with
  * the new key.
  *
+ * ksAppendKey() will also lock the key's name from `toAppend`.
+ * This is necessary so that the order of the KeySet cannot
+ * be destroyed via calls to keySetName().
+ *
  * The KeySet internal cursor will be set to the new key.
  *
  * It is save to directly append newly created keys:
@@ -867,7 +903,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* Seems like the key already exist. */
 		if (toAppend == ks->array[result])
 		{
-			/* user tried to insert the same key again */
+			/* user tried to insert the key with same identity */
 			return ks->size;
 		}
 
@@ -1003,6 +1039,74 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 }
 
 /**
+ * Searches for the start and end indicies corresponding to the given cutpoint.
+ *
+ * @see ksCut() for explanation of cutpoints
+ *
+ * @param ks       the keyset to cut
+ * @param cutpoint the cutpoint
+ * @param from     we will store the start index here
+ * @param to       we will store the end index here
+ *
+ * @retval -1 if the cutpoint wasn't found
+ * @retval  1 if the cursor has to updated to match ks->current
+ * @retval  0 otherwise
+ */
+static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * from, size_t * to)
+{
+	int set_cursor = 0;
+
+	// search the cutpoint
+	ssize_t search = ksSearchInternal (ks, cutpoint);
+	size_t it = search < 0 ? -search - 1 : search;
+
+	// we found nothing
+	if (it == ks->size) return -1;
+
+	// we found the cutpoint
+	size_t found = it;
+
+	// search the end of the keyset to cut
+	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
+	{
+		++it;
+	}
+
+	// correct cursor if cursor is in cut keyset
+	if (ks->current >= found && ks->current < it)
+	{
+		if (found == 0)
+		{
+			ksRewind (ks);
+		}
+		else
+		{
+			ks->current = found - 1;
+			set_cursor = 1;
+		}
+	}
+
+	// correct the cursor for the keys after the cut keyset
+	if (ks->current >= it)
+	{
+		if (it >= ks->size)
+		{
+			ksRewind (ks);
+		}
+		else
+		{
+			ks->current = found + ks->current - it;
+			set_cursor = 1;
+		}
+	}
+
+	*from = it;
+	*to = found;
+
+	return set_cursor;
+}
+
+/**
  * Cuts out a keyset at the cutpoint.
  *
  * Searches for the cutpoint inside the KeySet ks.
@@ -1062,6 +1166,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 {
 	KeySet * returned = 0;
+	KeySet * ret = 0; // for cascading version
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
@@ -1084,7 +1189,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
 		char newname[length * 2];
 
-		KeySet * ret = ksNew (0, KS_END);
+		ret = ksNew (0, KS_END);
 
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
@@ -1092,7 +1197,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				strncpy (newname + 2, "spec", 4);
+				strncpy (newname + 2, "spec", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1100,7 +1205,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_PROC:
-				strncpy (newname + 2, "proc", 4);
+				strncpy (newname + 2, "proc", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1108,7 +1213,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_DIR:
-				strncpy (newname + 3, "dir", 3);
+				strncpy (newname + 3, "dir", 4);
 				strcpy (newname + 6, name);
 				key->key = newname + 3;
 				key->keySize = length - 3;
@@ -1116,7 +1221,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_USER:
-				strncpy (newname + 2, "user", 4);
+				strncpy (newname + 2, "user", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1124,7 +1229,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_SYSTEM:
-				strncpy (newname, "system", 6);
+				strncpy (newname, "system", 7);
 				strcpy (newname + 6, name);
 				key->key = newname;
 				key->keySize = length;
@@ -1149,54 +1254,12 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		key->key = name;
 		key->keySize = size;
 		key->keyUSize = usize;
-		return ret;
+
+		// now look for cascading keys
 	}
 
-	// search the cutpoint
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 0)
-	{
-		++it;
-	}
-
-	// we found nothing
-	if (it == ks->size) return ksNew (0, KS_END);
-
-	// we found the cutpoint
-	found = it;
-
-	// search the end of the keyset to cut
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
-	{
-		++it;
-	}
-
-	// correct cursor if cursor is in cutted keyset
-	if (ks->current >= found && ks->current < it)
-	{
-		if (found == 0)
-		{
-			ksRewind (ks);
-		}
-		else
-		{
-			ks->current = found - 1;
-			set_cursor = 1;
-		}
-	}
-
-	// correct the cursor for the keys after the cutted keyset
-	if (ks->current >= it)
-	{
-		if (it >= ks->size)
-		{
-			ksRewind (ks);
-		}
-		else
-		{
-			ks->current = found + ks->current - it;
-			set_cursor = 1;
-		}
-	}
+	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);
+	if (set_cursor < 0) return ret ? ret : ksNew (0, KS_END);
 
 	newsize = it - found;
 
@@ -1208,6 +1271,12 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	ksCopyInternal (ks, found, it);
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
+
+	if (ret)
+	{
+		ksAppend (returned, ret);
+		ksDel (ret);
+	}
 
 	return returned;
 }
@@ -1611,7 +1680,7 @@ int elektraWriteArrayNumber (char * newName, kdb_long_long_t newIndex)
 		newName[index++] = '_'; // index n-1 of decimals
 		i /= 10;
 	}
-	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE, ELEKTRA_LONG_LONG_F, newIndex) < 0)
+	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE - index, ELEKTRA_UNSIGNED_LONG_LONG_F, newIndex) < 0)
 	{
 		return -1;
 	}
@@ -1668,6 +1737,9 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 
 /**
  * @internal
+ *
+ * @param specKey must have a cascading key name
+ *
  * @brief Helper for elektraLookupBySpec
  */
 static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
@@ -1804,7 +1876,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!(options & KDB_O_NOSPEC))
 	{
-		strncpy (newname + 2, "spec", 4);
+		strncpy (newname + 2, "spec", 5);
 		strcpy (newname + 6, name);
 		key->key = newname + 2;
 		key->keySize = length - 2;
@@ -1835,7 +1907,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	}
 
 	// default cascading:
-	strncpy (newname + 2, "proc", 4);
+	strncpy (newname + 2, "proc", 5);
 	strcpy (newname + 6, name);
 	key->key = newname + 2;
 	key->keySize = length - 2;
@@ -1844,7 +1916,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname + 3, "dir", 3);
+		strncpy (newname + 3, "dir", 4);
 		strcpy (newname + 6, name);
 		key->key = newname + 3;
 		key->keySize = length - 3;
@@ -1854,7 +1926,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname + 2, "user", 4);
+		strncpy (newname + 2, "user", 5);
 		strcpy (newname + 6, name);
 		key->key = newname + 2;
 		key->keySize = length - 2;
@@ -1864,7 +1936,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname, "system", 6);
+		strncpy (newname, "system", 7);
 		strcpy (newname + 6, name);
 		key->key = newname;
 		key->keySize = length;
@@ -2104,38 +2176,97 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
-	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
+	// flags incompatible with OPMPHM
+	if (test_bit (options, (KDB_O_WITHOWNER | KDB_O_NOCASE)))
 	{
-		// remove OPMPHM
-		options ^= KDB_O_OPMPHM;
+		// remove KDB_O_OPMPHM and set KDB_O_BINSEARCH
+		clear_bit (options, KDB_O_OPMPHM);
+		set_bit (options, KDB_O_BINSEARCH);
 	}
 
-	if (options & KDB_O_OPMPHM)
+	if (!ks->opmphmPredictor && ks->size > opmphmPredictorActionLimit)
 	{
-		// remove OPMPHM, due to callback stuff
-		options ^= KDB_O_OPMPHM;
-		if (!opmphmIsBuild (ks->opmphm))
+		// lazy loading of predictor when over action limit
+		ks->opmphmPredictor = opmphmPredictorNew ();
+	}
+
+	// predictor
+	if (!test_bit (options, (KDB_O_BINSEARCH | KDB_O_OPMPHM)))
+	{
+		// predictor not overruled
+		if (ks->opmphmPredictor)
 		{
-			if (elektraLookupBuildOpmphm (ks))
+			if (test_bit (ks->flags, KS_FLAG_NAME_CHANGE))
 			{
-				// when OPMPHM build fails use binary search as backup
-				found = elektraLookupBinarySearch (ks, key, options);
+				// KeySet changed ask predictor
+				if (opmphmPredictor (ks->opmphmPredictor, ks->size))
+				{
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else
+				{
+					set_bit (options, KDB_O_BINSEARCH);
+				}
+				// resolve flag
+				clear_bit (ks->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
-				found = elektraLookupOpmphmSearch (ks, key, options);
+				if (opmphmIsBuild (ks->opmphm))
+				{
+					opmphmPredictorIncCountOpmphm (ks->opmphmPredictor);
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else if (opmphmPredictorIncCountBinarySearch (ks->opmphmPredictor, ks->size))
+				{
+					// endless binary search protection
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else
+				{
+					set_bit (options, KDB_O_BINSEARCH);
+				}
 			}
 		}
 		else
 		{
-			found = elektraLookupOpmphmSearch (ks, key, options);
+			// when predictor is not here use binary search as backup
+			set_bit (options, KDB_O_BINSEARCH);
 		}
 	}
-	else
+
+	// the actual lookup
+	if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_OPMPHM)
+	{
+		if (opmphmIsBuild (ks->opmphm) || !elektraLookupBuildOpmphm (ks))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			// when OPMPHM build fails use binary search as backup
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+	else if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_BINSEARCH)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
+	else
+	{
+		// both flags set, make the best out of it
+		if (opmphmIsBuild (ks->opmphm))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+
+	// remove flags to not interfere with callback
+	clear_bit (options, (KDB_O_OPMPHM | KDB_O_BINSEARCH));
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2250,6 +2381,12 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * @par KDB_O_NOCASE (deprecated)
  * Lookup ignoring case (needs ::KDB_O_NOALL).
+ *
+ *
+ * @par Hybrid search
+ * When Elektra is compiled with `ENABLE_OPTIMIZATIONS=ON` a hybrid search decides
+ * dynamically between the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+ * The hybrid search can be overruled by passing ::KDB_O_OPMPHM or ::KDB_O_BINSEARCH in the options to ksLookup().
  *
  *
  *
@@ -2494,7 +2631,7 @@ Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t o
  *
  * Resize keyset.
  *
- * For internal useage only.
+ * For internal usage only.
  *
  * Don't use that function to be portable. You can give an hint
  * how large the keyset should be in ksNew().
@@ -2534,6 +2671,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2542,6 +2680,19 @@ int ksResize (KeySet * ks, size_t alloc)
 	}
 	ks->alloc = alloc;
 
+	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		// need to move the ks->array out of mmap
+		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		if (!new)
+		{
+			/*errno = KDB_ERR_NOMEM;*/
+			return -1;
+		}
+		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
+		ks->array = new;
+		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
+	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
@@ -2598,6 +2749,7 @@ int ksInit (KeySet * ks)
 	ks->opmphm = NULL;
 	// first lookup should predict so invalidate it
 	elektraOpmphmInvalidate (ks);
+	ks->opmphmPredictor = NULL;
 #endif
 
 	return 0;
@@ -2623,7 +2775,12 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	if (ks->array) elektraFree (ks->array);
+	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		elektraFree (ks->array);
+	}
+	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
+
 	ks->array = 0;
 	ks->alloc = 0;
 

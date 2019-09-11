@@ -28,7 +28,8 @@ public:
 	explicit InvalidConflictOperation (std::string message) : ToolException (message){};
 };
 
-enum ConflictOperation {
+enum ConflictOperation
+{
 	CONFLICT_ADD, ///< Conflict because of adding key
 	CONFLICT_DELETE,
 	CONFLICT_MODIFY,

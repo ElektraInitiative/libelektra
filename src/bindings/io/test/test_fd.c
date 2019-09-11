@@ -21,7 +21,7 @@
 #include <kdbio.h>
 #include <kdbiotest.h>
 
-#define FD_CONTROL_INTERVAL 100
+#define FD_CONTROL_INTERVAL 200
 
 #define FD_BUFFER_TESTDATA "T"
 #define FD_BUFFER_TESTDATA_LENGTH 1

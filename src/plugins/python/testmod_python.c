@@ -20,7 +20,7 @@ static void init_env (void)
 	setenv ("PYTHONDONTWRITEBYTECODE", "1", 1);
 }
 
-char filebuf[KDB_MAX_PATH_LENGTH];
+char filebuf[KDB_MAX_PATH_LENGTH + 1];
 static char * srcdir_rewrite = NULL;
 static char * python_file (const char * filename)
 {
@@ -155,7 +155,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 	if (argc > 1)
 	{
-		strncpy (filebuf, argv[1], sizeof (filebuf));
+		strncpy (filebuf, argv[1], sizeof (filebuf) - 1);
 		/* our files are in pythons plugin directory
 		 * -> rewrite srcdir from xxx/python2 to xxx/python
 		 */

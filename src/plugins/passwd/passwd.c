@@ -21,7 +21,8 @@
 
 #define ID_MAX_CHARACTERS 11
 
-typedef enum {
+typedef enum
+{
 	NAME,
 	UID,
 } SortBy;
@@ -47,6 +48,75 @@ static int validatepwent (struct passwd * pwd)
 	if (!pwd->pw_shell) return -1;
 	return 0;
 }
+
+#if defined(USE_FGETPWENT_LOCAL)
+// clang-format off
+/* Taken from musl libc
+ *
+ * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/getpwent_a.c
+ * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/fgetpwent.c
+ */
+
+static unsigned atou(char **s)
+{
+	unsigned x;
+	for (x=0; (unsigned char)(**s-'0')<10U; ++*s) x=10*x+((unsigned char)**s-'0');
+	return x;
+}
+
+int __getpwent_a(FILE *f, struct passwd *pw, char **line, size_t *size, struct passwd **res)
+{
+	ssize_t l;
+	char *s;
+	int rv = 0;
+	for (;;) {
+		if ((l=getline(line, size, f)) < 0) {
+			rv = ferror(f) ? errno : 0;
+			free(*line);
+			*line = 0;
+			pw = 0;
+			break;
+		}
+		line[0][l-1] = 0;
+
+		s = line[0];
+		pw->pw_name = s++;
+		if (!(s = strchr(s, ':'))) continue;
+
+		*s++ = 0; pw->pw_passwd = s;
+		if (!(s = strchr(s, ':'))) continue;
+
+		*s++ = 0; pw->pw_uid = atou(&s);
+		if (*s != ':') continue;
+
+		*s++ = 0; pw->pw_gid = atou(&s);
+		if (*s != ':') continue;
+
+		*s++ = 0; pw->pw_gecos = s;
+		if (!(s = strchr(s, ':'))) continue;
+
+		*s++ = 0; pw->pw_dir = s;
+		if (!(s = strchr(s, ':'))) continue;
+
+		*s++ = 0; pw->pw_shell = s;
+		break;
+	}
+	*res = pw;
+	if (rv) errno = rv;
+	return rv;
+}
+
+struct passwd *fgetpwent_l(FILE *f)
+{
+	static char *line;
+	static struct passwd pw;
+	size_t size=0;
+	struct passwd *res;
+	__getpwent_a(f, &pw, &line, &size, &res);
+	return res;
+}
+// clang-format on
+#endif
 
 static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 {
@@ -106,7 +176,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 			       keyNew ("system/elektra/modules/passwd/exports", KEY_END),
 			       keyNew ("system/elektra/modules/passwd/exports/get", KEY_FUNC, elektraPasswdGet, KEY_END),
 			       keyNew ("system/elektra/modules/passwd/exports/set", KEY_FUNC, elektraPasswdSet, KEY_END),
-#include ELEKTRA_README (passwd)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/passwd/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -129,26 +199,26 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	else
 		index = UID;
 	struct passwd * pwd;
-#if HAS_FGETPWENT
 	FILE * pwfile = fopen (keyString (parentKey), "r");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_ERRORF (110, parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open configuration file %s. Reason: %s\n", keyString (parentKey),
+					     strerror (errno));
 		return -1;
 	}
+#if defined(USE_FGETPWENT)
 	while ((pwd = fgetpwent (pwfile)) != NULL)
+#elif defined(USE_FGETPWENT_LOCAL)
+	while ((pwd = fgetpwent_l (pwfile)) != NULL)
 #else
-	while ((pwd = getpwent ()) != NULL)
+#error Configuration error in CMakeLists.txt. Neither fgetpwent nor getline were provided. Please open an issue at https://issue.libelektra.org.
 #endif
 	{
 		KeySet * ks = pwentToKS (pwd, parentKey, index);
 		ksAppend (returned, ks);
 		ksDel (ks);
 	}
-	endpwent ();
-#if HAS_FGETPWENT
 	fclose (pwfile);
-#endif
 	return 1; // success
 }
 
@@ -227,7 +297,8 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 	FILE * pwfile = fopen (keyString (parentKey), "w");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_ERRORF (75, parentKey, "Failed to open %s for writing\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing\n. Reason: %s", keyString (parentKey),
+					     strerror (errno));
 		return -1;
 	}
 	Key * cur;
@@ -239,13 +310,13 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PASSWD_VALIDATION, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n",
-					    pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir,
-					    pwd->pw_shell);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name,
+								 pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir,
+								 pwd->pw_shell);
 		}
 		else
 		{
-#if HAS_PUTPWENT
+#if defined(USE_PUTPWENT)
 			putpwent (pwd, pwfile);
 #else
 			fprintf (pwfile, "%s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos,
@@ -284,10 +355,10 @@ int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return rc; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (passwd)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-    return elektraPluginExport ("passwd",
+	return elektraPluginExport ("passwd",
 	    ELEKTRA_PLUGIN_GET,	&elektraPasswdGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraPasswdSet,
 	    ELEKTRA_PLUGIN_END);

@@ -1,13 +1,19 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-FIND\-TOOLS" "1" "May 2018" "" ""
+.TH "KDB\-FIND\-TOOLS" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-find\-tools\fR \- The tool for finding tools
 .
 .SH "SYNOPSIS"
-\fBkdb find\-tools\fR [\-h] [\-\-warnings] [\-\-good] [\-\-alltags] [\-n NAME] [\-a AUTHOR] [\-d DATE] [\-t TAGS [TAGS \.\.\.]] [\-b BRIEF] [\-e EXECUTE]
+.
+.nf
+
+kdb find\-tools [\-h] [\-\-warnings] [\-\-good] [\-\-alltags] [\-n NAME] [\-a AUTHOR] [\-d DATE]
+               [\-t TAGS [TAGS \.\.\.]] [\-b BRIEF] [\-e EXECUTE]
+.
+.fi
 .
 .SH "DESCRIPTION"
 If you are looking for a tool, then you have found the right tool to find tools! \fBkdb find\-tools\fR provides search and list functionality for tools\.
@@ -31,7 +37,7 @@ Full Text Search:
 \fBkdb find\-tools \-b BRIEF\fR to search for a short text\.
 .
 .IP "\(bu" 4
-\fBkdb find\-tools \-a AUTHOR\fR to search for a author\.
+\fBkdb find\-tools \-a AUTHOR\fR to search for an author\.
 .
 .IP "\(bu" 4
 \fBkdb find\-tools \-d DATE\fR to search for a creation date\.
@@ -47,7 +53,7 @@ Full Text Search:
 .P
 All methods can be combined\. For example if you search all bash scripts which do some configuration work\. You can type \fBkdb find\-tools \-t configuration \-e bash\fR\.
 .
-.SH "The right Way to add your script to the find tools"
+.SH "The Right Way to Add Your Script to the Find Tools"
 Meta Tags as comments in the beginning of a script are parsed\. Mate Tags start with an \fB@\fR, here is a list of all Meta Tags:
 .
 .P
@@ -56,33 +62,18 @@ Do not mind the \'\e\' at the beginning it is a doxygen escaping\.
 .P
 Beware, that these metatags should be applied at the beginning of the file (in the first 10 rows)!
 .
-.SH "Tags"
-List of Common Tags:
-.
-.P
-If you choose to add a tag to the \fB@tags\fR then do not forget to add it in the tags map of the \fBfind\-tools\fR script and in the table here\.
-.
 .SH "Example"
-\everbatim
-.
-.IP "" 4
 .
 .nf
 
-    <Start of File>
-    #!/usr/bin/bash
-    #
-    # @author Kurt Micheli <kurt\.micheli@libelektra\.org>
-    # @brief This is a example
-    # @date 01\.06\.2016
-    # @tags configure, creator, arch
+#!/bin/sh
+#
+# @author Kurt Micheli <kurt\.micheli@libelektra\.org>
+# @brief This is an example of a build script
+# @date 31\.10\.2018
+# @tags configure, build
 .
 .fi
-.
-.IP "" 0
-.
-.P
-\eendverbatim
 .
 .SH "Notes"
 The Metatag System of Epydoc is used (http://epydoc\.sourceforge\.net/manual\-fields\.html#module\-metadata\-variables) and extended with special tags\.

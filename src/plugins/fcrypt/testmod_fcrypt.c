@@ -19,6 +19,7 @@
 #include <test_key.h>
 
 #include "../crypto/common_gpg_tests.c"
+#include "../crypto/gpgagent_teardown.h"
 #include "fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
@@ -157,7 +158,7 @@ static void test_gpg (void)
 	Key * msg = keyNew (0);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
-	succeed_if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
 
 	keyDel (msg);
 	keyDel (errorKey);
@@ -300,6 +301,7 @@ int main (int argc, char ** argv)
 	test_file_crypto_operations ();
 	test_file_signature_operations ();
 	test_file_faulty_signature ();
+	test_teardown ();
 
 	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;

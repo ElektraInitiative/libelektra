@@ -32,4 +32,4 @@ int elektraTimeofdayClose (Plugin * handle, Key *);
 int elektraTimeofdayGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTimeofdaySet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTimeofdayError (Plugin * handle, KeySet * ks, Key * parentKey);
-Plugin * ELEKTRA_PLUGIN_EXPORT (timeofday);
+Plugin * ELEKTRA_PLUGIN_EXPORT;

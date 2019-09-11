@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Configure a build which is XDG compiliant
+# @date 02.09.2014
+# @tags configure, debian
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
@@ -6,6 +11,6 @@ SCRIPTS_DIR=$(dirname "$0")
 XDG_RESOLVER="resolver_mf_xp_x"
 
 cd "$BUILD"
-cmake	-DPLUGINS="$XDG_RESOLVER;dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob" \
+cmake -DPLUGINS="$XDG_RESOLVER;dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob" \
 	-DKDB_DEFAULT_RESOLVER="$XDG_RESOLVER" \
 	$*

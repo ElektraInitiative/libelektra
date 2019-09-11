@@ -18,6 +18,8 @@
 
 #include <errno.h>
 #include <stddef.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,12 +100,12 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ret == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NO_INC, parentKey, "could not increment array from %s", keyName (ksTail (returned)));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not increment array from %s", keyName (ksTail (returned)));
 		ret = -1;
 	}
 	else if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid line encountered: not at the end of file");
 		ret = -1;
 	}
 
@@ -143,7 +145,7 @@ int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (line)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("line",

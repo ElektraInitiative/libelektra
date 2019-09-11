@@ -207,12 +207,17 @@ void Plugin::check (vector<string> & warnings)
 		pp.push_back ("rollback");
 		pp.push_back ("postrollback");
 		pp.push_back ("getresolver");
+		pp.push_back ("pregetcache");
 		pp.push_back ("pregetstorage");
 		pp.push_back ("getstorage");
+		pp.push_back ("procgetstorage");
 		pp.push_back ("postgetstorage");
+		pp.push_back ("postgetcache");
 		pp.push_back ("setresolver");
+		pp.push_back ("postgetcleanup");
 		pp.push_back ("presetstorage");
 		pp.push_back ("setstorage");
+		pp.push_back ("presetcleanup");
 		pp.push_back ("precommit");
 		pp.push_back ("commit");
 		pp.push_back ("postcommit");
@@ -288,6 +293,15 @@ void Plugin::check (vector<string> & warnings)
 		ret = checkDups.insert (symbols["set"]);
 		if (!ret.second) throw SymbolDuplicate ("set");
 	}
+	if (plugin->kdbCommit)
+	{
+		if (symbols.find ("commit") == symbols.end ())
+			warnings.push_back ("no commit symbol exported");
+		else if (symbols["commit"] != reinterpret_cast<func_t> (plugin->kdbCommit))
+			throw SymbolMismatch ("commit");
+		ret = checkDups.insert (symbols["commit"]);
+		if (!ret.second) throw SymbolDuplicate ("commit");
+	}
 	if (plugin->kdbError)
 	{
 		if (symbols.find ("error") == symbols.end ())
@@ -312,6 +326,10 @@ void Plugin::check (vector<string> & warnings)
 	if (symbols.find ("set") != symbols.end ())
 	{
 		if (!plugin->kdbSet) throw SymbolMismatch ("set");
+	}
+	if (symbols.find ("commit") != symbols.end ())
+	{
+		if (!plugin->kdbCommit) throw SymbolMismatch ("commit");
 	}
 	if (symbols.find ("error") != symbols.end ())
 	{
@@ -417,6 +435,16 @@ int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
 	}
 
 	return plugin->kdbSet (plugin, ks.getKeySet (), parentKey.getKey ());
+}
+
+int Plugin::commit (kdb::KeySet & ks, kdb::Key & parentKey)
+{
+	if (!plugin->kdbCommit)
+	{
+		throw MissingSymbol ("kdbCommit");
+	}
+
+	return plugin->kdbCommit (plugin, ks.getKeySet (), parentKey.getKey ());
 }
 
 int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)

@@ -36,7 +36,7 @@ BasicWindow {
 			TabView {
 				id: tabs
 
-				anchors.fill: parent
+				//anchors.fill: parent
 				Layout.fillHeight: true
 				Layout.fillWidth: true
 

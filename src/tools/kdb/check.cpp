@@ -29,8 +29,8 @@ int printProblems (Key const & k, std::string const & action, int off)
 	bool wo = k.getMeta<const kdb::Key> ("warnings");
 	bool eo = k.getMeta<const kdb::Key> ("error");
 	if (wo || eo) std::cerr << "\n======\n" << action << " of kdb yield following problems:" << std::endl;
-	printWarnings (cerr, k);
-	printError (cerr, k);
+	printWarnings (cerr, k, true, true);
+	printError (cerr, k, true, true);
 	return (wo + eo * 2) << off;
 }
 

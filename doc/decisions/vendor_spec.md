@@ -36,6 +36,6 @@ Provide means that a single specification can satisfy every distribution and adm
 
 Provide means for a single specification to be very good integrated in every system.
 
-## Related decisions
+## Related Decisions
 
 ## Notes

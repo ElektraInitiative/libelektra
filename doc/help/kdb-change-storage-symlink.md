@@ -1,5 +1,4 @@
-kdb-change-storage-symlink -- Changes the default storage symlink
-===================================================================
+# kdb-change-storage-symlink -- Changes the default storage symlink
 
 ## SYNOPSIS
 
@@ -13,9 +12,9 @@ This command updates the symlink pointing to the default storage if `storage` is
 
 ## EXAMPLES
 
-Set default storage plugin to ini:
+Set default storage plugin to ini:<br>
 `kdb change-storage-symlink ini`
 
 ## SEE ALSO
 
-- [kdb-change-resolver-symlink(7)](kdb-change-resolver-symlink.md)
+- [kdb-change-resolver-symlink(1)](kdb-change-resolver-symlink.md)

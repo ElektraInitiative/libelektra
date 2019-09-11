@@ -62,7 +62,8 @@ typedef void (*ElektraIoTimerCallback) (ElektraIoTimerOperation * timerOp);
 /**
  * Available flags for file descriptors operation bitmask
  */
-typedef enum {
+typedef enum
+{
 
 	/** file descriptor is readable */
 	ELEKTRA_IO_READABLE = 1 << 0,
@@ -78,7 +79,7 @@ typedef enum {
  * An operation may only be added to one binding.
  *
  * @param  binding I/O binding handle
- * @param  fdOp    file desciptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -90,7 +91,7 @@ int elektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation * 
  * An operation may only be added to one binding.
  *
  * @param  binding I/O binding handle
- * @param  fdOp    file desciptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -99,7 +100,7 @@ typedef int ElektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOper
 /**
  * Notify I/O binding about changes to file descriptor watch operation.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -108,7 +109,7 @@ int elektraIoBindingUpdateFd (ElektraIoFdOperation * fdOp);
 /**
  * Notify I/O binding about changes to file descriptor watch operation.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -117,7 +118,7 @@ typedef int ElektraIoBindingUpdateFd (ElektraIoFdOperation * fdOp);
 /**
  * Remove file descriptor from I/O binding.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -126,7 +127,7 @@ int elektraIoBindingRemoveFd (ElektraIoFdOperation * fdOp);
 /**
  * Remove file descriptor from I/O binding.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -434,7 +435,7 @@ ElektraIoFdCallback elektraIoFdGetCallback (ElektraIoFdOperation * fdOp);
  *
  * Free returned data after use.
  *
- * @param  interval    timer interval in miliseconds
+ * @param  interval    timer interval in milliseconds
  * @param  enabled     0 to disable, any other value for enabled
  * @param  callback    Called when file descriptor state has changes
  * @param  data        Custom private data
@@ -465,7 +466,7 @@ int elektraIoTimerIsEnabled (ElektraIoTimerOperation * timerOp);
  * Update interval of timer operation.
  *
  * @param  timerOp  timer operation handle
- * @param  interval timer interval in miliseconds
+ * @param  interval timer interval in milliseconds
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -475,7 +476,7 @@ int elektraIoTimerSetInterval (ElektraIoTimerOperation * timerOp, unsigned int i
  * Get interval of timer operation.
  *
  * @param  timerOp  timer operation handle
- * @return          timer interval in miliseconds, 0 on error
+ * @return          timer interval in milliseconds, 0 on error
  */
 unsigned int elektraIoTimerGetInterval (ElektraIoTimerOperation * timerOp);
 

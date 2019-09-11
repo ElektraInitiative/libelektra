@@ -10,7 +10,7 @@
 #define ELEKTRA_KDBGLOBAL_H
 
 #include <kdb.h>
-#include <kdbconfig.h>
+#include <kdbmacros.h>
 #include <kdbplugin.h>
 
 /**
@@ -28,9 +28,12 @@
 	POSITION(ROLLBACK) \
 	POSITION(POSTROLLBACK) \
 	POSITION(GETRESOLVER) \
+	POSITION(PREGETCACHE) \
 	POSITION(PREGETSTORAGE) \
 	POSITION(GETSTORAGE) \
+	POSITION(PROCGETSTORAGE) \
 	POSITION(POSTGETSTORAGE) \
+	POSITION(POSTGETCACHE) \
 	POSITION(SETRESOLVER) \
 	POSITION(POSTGETCLEANUP) \
 	POSITION(PRESETSTORAGE) \
@@ -52,9 +55,15 @@
 #define GENERATE_STRING(STRING) #STRING,
 // clang-format on
 
-typedef enum { FOREACH_POSITION (GENERATE_ENUM) } GlobalpluginPositions;
+typedef enum
+{
+	FOREACH_POSITION (GENERATE_ENUM)
+} GlobalpluginPositions;
 
-typedef enum { FOREACH_SUBPOSITION (GENERATE_ENUM) } GlobalpluginSubPositions;
+typedef enum
+{
+	FOREACH_SUBPOSITION (GENERATE_ENUM)
+} GlobalpluginSubPositions;
 
 static const char * GlobalpluginPositionsStr[] ELEKTRA_UNUSED = { FOREACH_POSITION (GENERATE_STRING) };
 

@@ -2,10 +2,9 @@
 
 Elektra solves a non-trivial issue: how to abstract configuration
 in a way that software can be integrated and reconfiguration can
-be automated.  Elektra solves this problem in a holistic way.
+be automated. Elektra solves this problem in a holistic way.
 Read [why Elektra](WHY.md) for an explanation of why such a
 solution is necessary.
-
 
 ## Virtual File System Analogy
 
@@ -29,7 +28,7 @@ For file systems, the API is `open`, `read`, `write`, and then `close`.
 For configuration key-value access is more suitable because values are
 so small that a single read/write always suffices. Thus Elektra [has a
 key-value API](https://doc.libelektra.org/api/current/html) with `kdbOpen`,
-`kdbGet`, `kdbSet` and `kdbClose`.  Not every application is written in C,
+`kdbGet`, `kdbSet` and `kdbClose`. Not every application is written in C,
 thus many `bindings` where written to access file systems. For example,
 in C++ you have `fstream`, and in Java `FileReader`. Also Elektra provides
 different [bindings](/src/bindings/README.md): In C++ you have a class
@@ -39,30 +38,30 @@ to use.
 
 Furthermore, command-line tools like `cat` and `ls` provide an additional
 interface to the content of file systems for users and administrators.
-In Elektra also [command-line tools](/doc/help/kdb-introduction.md)
+In Elektra also [command-line tools](/doc/help/kdb.md)
 for the analog purpose exist: With `kdb cp`, `kdb mv`, and `kdb ls`
 some command-line tools operating on file systems are mimicked.
 
 There is not one file system satisfying every need, e.g., `proc`, `tmpfs`,
 `nfs` and `ext4` have quite different use cases and are needed at the
-same time in parallel.  In analogy, different configuration file format
-(parsers) have different advantages and disadvantages.  For example,
+same time in parallel. In analogy, different configuration file format
+(parsers) have different advantages and disadvantages. For example,
 `/etc/passwd` or `/etc/hosts` are structured and very compact, while
 many other configuration files are semi-structured.
 
 To have multiple file systems present at the same time a virtual
 file system is able to mount (2) concrete file systems and thus give
-applications a way to uniformly access them.  Similarly, Elektra also
+applications a way to uniformly access them. Similarly, Elektra also
 implements a [mount](/doc/help/elektra-mounting.md) functionality in
-its core.  In Elektra a [contract](/doc/CONTRACT.ini) specifies the
+its core. In Elektra a [contract](/doc/CONTRACT.ini) specifies the
 obligations between plugins.
 
 Sometimes, it is even useful to have multiple file systems at
-the same mountpoint, so called `stacked` file systems. They allow
+the same mount point, so called `stacked` file systems. They allow
 you to combine features of different file systems. For example,
 [eCryptfs](https://wiki.archlinux.org/index.php/ECryptfs) allows you
 to encrypt directories or files. In Elektra, stacking plugins is a core
-feature and heavily used to avoid feature-bloated plugins.  For example,
+feature and heavily used to avoid feature-bloated plugins. For example,
 the [crypto plugin](/src/plugins/crypto/README.md) allows you to encrypt
 individual keys or the [iconv plugin](/src/plugins/iconv/README.md)
 to change the character encoding.
@@ -76,23 +75,23 @@ in many [plugins](/src/plugins/README.md).
 Implementations of file systems is not an easy task. The idea of
 FUSE (Filesystem in Userspace) is to make file system development
 easier by having the conveniences of userspace together with a
-helper library `libfuse`.  In particular this allowed developers to
+helper library `libfuse`. In particular this allowed developers to
 use any programming language and easier abstractions. Elektra also
-tries hard to make plugin development simple.  For example, special
+tries hard to make plugin development simple. For example, special
 [interpreter plugins](/src/plugins/README.md) enable developers
 to also write plugins in different languages. Furthermore,
 [other libraries](/src/libs/README.md) also assist in creating plugins.
 
 Of course not every feature of virtual file systems or Elektra has
 an analogy in the other system. If they would solve the same problem,
-one of them would be useless.  Main differences are:
+one of them would be useless. Main differences are:
 
 - API (get/set vs. read/write)
 - commit semantics: one `kdbSet` can change many configuration files atomically.
   This is important if you want, e.g., a new host in `/etc/hosts` and use this
   host in some other configuration files.
 - [namespaces](/doc/help/elektra-namespaces.md) there are many places
-  where the same configuration is stored.  All of these configuration
+  where the same configuration is stored. All of these configuration
   files have the same semantics and they override each other (think of
   command-line arguments, `/etc`, `$HOME/.config`, ...)
 - Elektra interacts closely with the program execution environment
@@ -106,13 +105,11 @@ one of them would be useless.  Main differences are:
   look like and reject invalid configuration.
 - and much more...
 
+## Further Readings
 
-
-## Further pointers
-
-- Continue reading the [tutorials](/doc/tutorials)
+- [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra
+- Then continue reading the [tutorials](/doc/tutorials)
 - Read about [bindings](/src/bindings/)
 - Read about [tools](/src/tools/README.md)
 - Look into [the glossary](/doc/help/elektra-glossary.md).
-- Start reading about [command-line tools](/doc/help/kdb-introduction.md)
-- [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra
+- Start reading about [command-line tools](/doc/help/kdb.md)

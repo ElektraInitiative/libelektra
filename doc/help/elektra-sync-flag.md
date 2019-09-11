@@ -1,5 +1,4 @@
-elektra-sync-flag(7) -- detection for writing
-=============================================
+# elektra-sync-flag(7) -- detection for writing
 
 Elektra keeps track of changes the user makes on data structures.
 Because the `KeySet` can be composed in the way the user wants it, the

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-CP" "1" "May 2018" "" ""
+.TH "KDB\-CP" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-cp\fR \- Copy keys within the key database
@@ -57,29 +57,65 @@ Recursively copy keys\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Force overwriting the keys\.
 .
 .SH "EXAMPLES"
-To copy multiple keys:
 .
-.br
-\fBkdb cp \-r user/example1 user/example2\fR
+.nf
+
+# Backup\-and\-Restore: user/tests/cp/examples
+
+# Create the keys we use for the examples
+kdb set user/tests/cp/examples/kdb\-cp/key key1
+kdb set user/tests/cp/examples/kdb\-cp/key/first key
+kdb set user/tests/cp/examples/kdb\-cp/key/second key
+kdb set user/tests/cp/examples/kdb\-cp/cpkey key1
+kdb set user/tests/cp/examples/kdb\-cp/cpkey/first key
+kdb set user/tests/cp/examples/kdb\-cp/cpkey/second key
+kdb set user/tests/cp/examples/kdb\-cp/cpkeyerror/first key
+kdb set user/tests/cp/examples/kdb\-cp/cpkeyerror/second anotherValue
+kdb set user/tests/cp/examples/kdb\-cp/another/key one
+kdb set user/tests/cp/examples/kdb\-cp/another/value two
+
+# To copy a single key:
+kdb cp user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/key2
+#>
+
+# To copy multiple keys:
+kdb cp \-r user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/copied
+#>
+
+# If the target\-key already exists and has a different value, cp fails:
+kdb cp \-r user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/cpkeyerror
+# RET: 11
+
+# If the target\-key already exists and has the same value as the source, everything is fine:
+kdb cp \-r user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/cpkey
+#>
+
+# To force the copy of keys:
+kdb cp \-rf user/tests/cp/examples/kdb\-cp/key user/tests/cp/examples/kdb\-cp/cpkeyerror
+#>
+
+# Now the key\-values of /cpkeyerror are overwritten:
+kdb export user/tests/cp/examples/kdb\-cp/cpkeyerror mini
+#> =key1
+#> first=key
+#> second=key
+
+# To copy keys below an existing key:
+kdb cp \-r user/tests/cp/examples/kdb\-cp/another user/tests/cp/examples/kdb\-cp/another/key
+#>
+
+kdb rm \-r user/tests/cp/examples/kdb\-cp/
 .
-.P
-To copy a single key:
-.
-.br
-\fBkdb cp user/example/key1 user/example/key2\fR
-.
-.P
-To copy keys below an existing key:
-.
-.br
-\fBkdb cp \-r user/example user/example/key1\fR
-.
-.br
-Note that in this example, all keys in the example directory will be copied below \fBkey1\fR \fBexcept\fR \fBkey1\fR\.
+.fi
+

@@ -119,7 +119,7 @@ int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ni)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("ni",

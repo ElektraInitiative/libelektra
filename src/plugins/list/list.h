@@ -21,9 +21,10 @@ int elektraListSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
 int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig);
-void elektraListSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
-void elektraListOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context);
-void elektraListCloseNotification (Plugin * handle);
-Plugin * ELEKTRA_PLUGIN_EXPORT (list);
+int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey);
+int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * errorKey);
+Plugin * elektraListFindPlugin (Plugin * handle, const char * pluginName);
+
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

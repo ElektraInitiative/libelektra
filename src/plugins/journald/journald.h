@@ -16,6 +16,6 @@ int elektraJournaldGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraJournaldSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraJournaldError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (journald);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

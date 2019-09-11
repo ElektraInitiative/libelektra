@@ -1,5 +1,5 @@
 ---
-title: 'Elektra: universal framework to access configuration parameters'
+title: "Elektra: universal framework to access configuration parameters"
 tags:
   - configuration
   - context awareness
@@ -7,12 +7,12 @@ tags:
   - interception
   - integration
 authors:
- - name: Markus Raab
-   orcid: 0000-0002-1493-9065
-   affiliation: 1
+  - name: Markus Raab
+    orcid: 0000-0002-1493-9065
+    affiliation: 1
 affiliations:
- - name: TU Wien (TUW)
-   index: 1
+  - name: TU Wien (TUW)
+    index: 1
 date: 23 July 2016
 bibliography: paper.bib
 ---
@@ -30,21 +30,19 @@ The obvious cases, how developers and administrators should use Elektra to avoid
 But it is ongoing research to find further use cases where these abstractions are useful.
 In this paper, we will give three concrete examples where Elektra has value to the research community.
 
-
 ## Context Awareness
 
 Currently, applications sometimes modify configuration values before using them.
 The reasons for such modifications can be called context, e.g., the number of CPUs, the current operating system, or the battery status [raab2016persistent].
 The modifications within applications are problematic because it is not transparent for the user which configuration values the application actually will use.
 
-We propose to move the logic that is responsible for determining configuration values into Elektra’s specification language [@raab2015kps] [@raab2016improving] [@raab2016unanticipated].
+We propose to move the logic that is responsible for determining configuration values into Elektra’s specification language [@raab2015kps][@raab2016improving] [@raab2016unanticipated].
 This way, the user can query the up-to-date configuration values and get identical results to what the application will see.
 But even better, users can change the way context is taken into account easily.
 
-Elektra allows us to intercept unmodified applications (by ''hijacking'' calls to their configuration system)  [@raab2016unanticipated].
+Elektra allows us to intercept unmodified applications (by ''hijacking'' calls to their configuration system) [@raab2016unanticipated].
 For example, an application calls the C-function getenv() but actually retrieves a value from Elektra and not from an environment variable.
 This way we can make applications context aware that previously were not.
-
 
 ## Validation
 
@@ -58,7 +56,6 @@ This can be via an editor, a graphical user interface, or a web interface.
 Furthermore, based on the specification language, we can generate valid and invalid configuration files.
 Such configuration files can be used to test the behavior of applications, e.g., injecting faulty configuration files to see if applications crash.
 
-
 ## Code Generator
 
 Applications today often have hand-written glue code to transform the strings received from configuration files to the variables used in the application.
@@ -67,6 +64,5 @@ Based on the configuration specification, Elektra provides methods with type-saf
 
 This simplifies writing new applications [@raab2014program] because we can also generate documentation and code to parse command-line options.
 But this technique can also be used to replace existing hand-written code.
-
 
 # References

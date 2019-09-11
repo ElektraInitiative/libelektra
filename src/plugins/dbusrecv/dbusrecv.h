@@ -19,7 +19,7 @@
 #include <string.h>
 
 // elektraIoDbus*()
-#include <kdbio_adapter_dbus.h>
+#include <kdbio/adapters/dbus.h>
 
 /**
  * @internal
@@ -59,6 +59,6 @@ int elektraDbusRecvOpen (Plugin * handle, Key * errorKey);
 int elektraDbusRecvClose (Plugin * handle, Key * errorKey);
 int elektraDbusRecvGet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dbus);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

@@ -11,10 +11,12 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <kdbconfig.h>
+#include <kdbmacros.h>
 #include <kdbproposal.h> // for some options
 
 #include <iostream>
+
+#include <kdbmacros.h>
 
 using namespace std;
 using namespace kdb;
@@ -88,9 +90,13 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 		std::cout << " ";
 
 	std::cout << "searching " << (k.getName ()[0] == '/' ? "default of spec" : "") << k.getName ()
-		  << ", found: " << (found ? f.getName () : "<nothing>") << ", options: ";
+		  << ", found: " << (found ? f.getName () : "<nothing>");
 
-	printOptions (options);
+	if (options)
+	{
+		std::cout << ", options: ";
+		printOptions (options);
+	}
 	std::cout << std::endl;
 
 	if (k.getName ().substr (0, 5) == "spec/" && (options & ckdb::KDB_O_CALLBACK))
@@ -157,6 +163,10 @@ int GetCommand::execute (Cmdline const & cl)
 	{
 		if (cl.verbose)
 		{
+			if (k.getName ()[0] == '/')
+			{
+				cout << "The key was not found in any other namespace, taking the default from the metadata" << std::endl;
+			}
 			cout << "The resulting keyname is " << k.getName () << std::endl;
 			cout << "The resulting value size is " << k.getStringSize () << std::endl;
 		}
@@ -198,8 +208,8 @@ int GetCommand::execute (Cmdline const & cl)
 		cout << endl;
 	}
 
-	printWarnings (cerr, root);
-	printError (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
+	printError (cerr, root, cl.verbose, cl.debug);
 
 	return ret;
 }

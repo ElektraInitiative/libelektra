@@ -13,11 +13,9 @@ For the latter problem different workarounds exist, such as
 
 - None
 
-
 ## Assumptions
 
 - None
-
 
 ## Considered Alternatives
 
@@ -25,7 +23,6 @@ For the latter problem different workarounds exist, such as
 - store length (and not last element), problem: needs prepending of `#_...`
 - store element after last element (C++-Style), problem: very unusual style
 - use value and not metadata array, problem: is ambiguous
-
 
 ## Decision
 
@@ -43,7 +40,6 @@ myarray/#5 = value5
   array = #5
 ```
 
-
 ## Rationale
 
 - Is very similar to `binary` metadata.
@@ -56,10 +52,9 @@ myarray/#5 = value5
 - metadata library needs to be adapted
 - spec plugin needs to be fixed
 
-## Related decisions
+## Related Decisions
 
 - [Global Validation](global_validation.md)
-
 
 ## Notes
 

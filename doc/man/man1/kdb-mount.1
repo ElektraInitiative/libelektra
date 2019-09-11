@@ -1,13 +1,13 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-MOUNT" "1" "December 2017" "" ""
+.TH "KDB\-MOUNT" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-mount\fR \- Mount a file to the key database
 .
 .SH "SYNOPSIS"
-\fBkdb mount [<path> <mountpoint>] [<plugin> [<config>] [\.\.]]\fR
+\fBkdb mount [<path> <mount point>] [<plugin> [<config>] [\.\.]]\fR
 .
 .br
 .
@@ -15,7 +15,7 @@
 Where \fBpath\fR is the path to the file the user wants to mount\. See \fBkdb info resolver\fR for details what an absolute and relative path means\. See also IMPORTANT below\.
 .
 .IP "\(bu" 4
-\fBmountpoint\fR is where in the key database the new backend should be mounted\. For a cascading mountpoint, \fBmountpoint\fR should start with \fB/\fR\. See also IMPORTANT below\.
+\fBmountpoint\fR is where in the key database the new backend should be mounted\. For a cascading mount point, \fBmountpoint\fR should start with \fB/\fR\. See also IMPORTANT below\.
 .
 .IP "\(bu" 4
 A list of such plugins with a configuration for each of them can be given:
@@ -25,6 +25,9 @@ A list of such plugins with a configuration for each of them can be given:
 .
 .IP "\(bu" 4
 Plugins may be followed by a \fB,\fR separated list of \fBkeys=values\fR pairs which will be used as plugin configuration\.
+.
+.IP "" 0
+
 .
 .IP "" 0
 .
@@ -38,10 +41,10 @@ Mounting in Elektra allows the user to mount a file into the current key databas
 This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system/elektra/mountpoints\fR to find out where exactly it will write to\.
 .
 .P
-Absolute paths are still relative to their namespace (see \fBkdb info resolver\fR)\. Only system+spec mountpoints are actually absolute\. Read elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR for further information\.
+Absolute paths are still relative to their namespace (see \fBkdb info resolver\fR)\. Only system+spec mount points are actually absolute\. Read elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR for further information\.
 .
 .P
-For cascading mountpoints (starting with \fB/\fR) a mountpoint for the namespace \fBdir\fR, \fBuser\fR and \fBsystem\fR is created\. Each of this mountpoint uses a different configuration file, either below current directory, below home directory or anywhere in the system\. Use \fBkdb file <path>\fR to determine where the file(s) are\.
+For cascading mount points (starting with \fB/\fR) a mount point for the namespace \fBdir\fR, \fBuser\fR and \fBsystem\fR is created\. Each of this mount point uses a different configuration file, either below current directory, below home directory or anywhere in the system\. Use \fBkdb file <path>\fR to determine where the file(s) are\.
 .
 .SH "OPTIONS"
 .
@@ -58,13 +61,19 @@ For cascading mountpoints (starting with \fB/\fR) a mountpoint for the namespace
 \fB\-C\fR, \fB\-\-color <when>\fR: Print never/auto(default)/always colored output\.
 .
 .IP "\(bu" 4
-\fB\-d\fR, \fB\-\-debug\fR: Give debug information or ask debug questions (in interactive mode)\.
+\fB\-v\fR, \fB\-\-verbose\fR: Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.IP "\(bu" 4
+\fB\-d\fR, \fB\-\-debug\fR: Give debug information or ask debug questions (in interactive mode)\. Prints additional information in case of errors/warnings\.
 .
 .IP "\(bu" 4
 \fB\-q\fR, \fB\-\-quiet\fR: Suppress non\-error messages\.
 .
 .IP "\(bu" 4
 \fB\-i\fR, \fB\-\-interactive\fR: Instead of passing all mounting information by parameters ask the user interactively\.
+.
+.IP "\(bu" 4
+\fB\-s\fR, \fB\-\-strategy\fR: (experimental, use with care) By default mounting is rejected if the mountpoint already exists\. With the strategy \fIunchanged\fR you can change the behavior to be successful if \fIexactly\fR the same config would be written (see #1306 why this does not always work correctly)\.
 .
 .IP "\(bu" 4
 \fB\-R\fR, \fB\-\-resolver <resolver>\fR Specify the resolver plugin to use if no resolver is given, the default resolver is used\. See also \fIbelow in KDB\fR\.
@@ -88,7 +97,7 @@ For cascading mountpoints (starting with \fB/\fR) a mountpoint for the namespace
 \fB\-W\fR, \fB\-\-with\-recommends\fR: Also add recommended plugins and warn if they are not available\.
 .
 .IP "\(bu" 4
-\fB\-f\fR, \fB\-\-force\fR: Unmount before mounting: Does not fail on already existing mountpoints\.
+\fB\-f\fR, \fB\-\-force\fR: Unmount before mounting: Does not fail on already existing mount points\.
 .
 .IP "" 0
 .
@@ -148,10 +157,10 @@ To recode and rename a configuration file using Elektra:
 elektra\-glossary(7) \fIelektra\-glossary\.md\fR\.
 .
 .IP "\(bu" 4
-kdb\-spec\-mount(7) \fIkdb\-spec\-mount\.md\fR\.
+kdb\-spec\-mount(1) \fIkdb\-spec\-mount\.md\fR\.
 .
 .IP "\(bu" 4
-kdb\-umount(7) \fIkdb\-umount\.md\fR\.
+kdb\-umount(1) \fIkdb\-umount\.md\fR\.
 .
 .IP "\(bu" 4
 elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.

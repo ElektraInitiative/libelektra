@@ -21,13 +21,12 @@
 #define KDB_DB_USER              "@KDB_DB_USER@"
 
 /** Prefix to search specification configuration (spec/). */
-#define KDB_DB_SPEC              "@BUILTIN_SPEC_FOLDER@"
+#define KDB_DB_SPEC              "@KDB_DB_SPEC@"
 
-#define KDB_DB_SPEC_REAL              "@BUILTIN_SPEC_REAL_FOLDER@"
 /** The folder to add for directory namespace */
 #define KDB_DB_DIR               "@KDB_DB_DIR@"
 
-/** Depending on the resolver this might be the root 
+/** Depending on the resolver this might be the root
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"
 
@@ -48,28 +47,20 @@
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
 
 /** To be used if you want the currently
-  * build-in default storage, whatever it is. */
+  * built-in default storage, whatever it is. */
 #define KDB_STORAGE              "storage"
 
 /** To be used if you want the currently
-  * build-in default resolver, whatever it is. */
+  * built-in default resolver, whatever it is. */
 #define KDB_RESOLVER             "resolver"
 
 #define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
 
 #define ELEKTRA_TOOLS            "@TOOLS@"
 
-/** Declares a parameter as unused. */
-#define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
-
-/** Declares a switch fallthrough case. */
-#define ELEKTRA_FALLTHROUGH      @ELEKTRA_FALLTHROUGH@
-
-/** Declares an API as deprecated. */
-#define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
-
 /** Declares non sanitize for asan. */
 #define ELEKTRA_NO_SANITIZE_INTEGER	@ELEKTRA_NO_SANITIZE_INTEGER@
+#define ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW	@ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW@
 #define ELEKTRA_NO_SANITIZE_UNDEFINED	@ELEKTRA_NO_SANITIZE_UNDEFINED@
 
 /** Where plugins are installed */
@@ -85,6 +76,9 @@
 #define SIZEOF_LONG              @SIZEOF_LONG@
 #define SIZEOF_MODE_T            @SIZEOF_MODE_T@
 #define SIZEOF_TV_USEC           @SIZEOF_TV_USEC@
+#define SIZEOF_STAT_ST_SIZE      @SIZEOF_STAT_ST_SIZE@
+#define SIZEOF_FLOAT             @SIZEOF_FLOAT@
+#define SIZEOF_DOUBLE            @SIZEOF_DOUBLE@
 
 #cmakedefine HAVE_SIZEOF_LONG_LONG
 #ifdef HAVE_SIZEOF_LONG_LONG
@@ -96,11 +90,11 @@
 # define SIZEOF_LONG_DOUBLE       @SIZEOF_LONG_DOUBLE@
 #endif
 
-/* ENABLE_OPTIMIZATIONS */
-#cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
-
 /* ENDIANNESS */
 #cmakedefine ELEKTRA_BIG_ENDIAN
+
+/* ASAN */
+#cmakedefine ENABLE_ASAN
 
 /* debug mode */
 #define DEBUG @DEBUG@
@@ -135,6 +129,9 @@
 #ifndef HAVE_ERRNO_H
 #cmakedefine HAVE_ERRNO_H
 #endif
+
+/* Define the macro `HAVE_FEATURES_H` if the `features.h` header file was found. */
+#cmakedefine HAVE_FEATURES_H
 
 /* define if your system has the <locale.h> header file. */
 #ifndef HAVE_LOCALE_H
@@ -192,9 +189,6 @@
 #cmakedefine HAVE_HSEARCHR
 #endif
 
-
-
-
-
+#define ELEKTRA_SYMVER_COMMAND(arg1, arg2) @ELEKTRA_SYMVER_COMMAND@
 
 #endif

@@ -97,15 +97,8 @@ static Key * elektraKeyMalloc (void)
  *
  * @snippet keyNew.c Simple
  *
- * If you want the key object to contain a name, value, comment and other
- * meta info read on.
- *
- * @note When you already have a key with similar properties its
- * easier to keyDup() the key.
- *
- * You can call it in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as #keyswitch_t values, and
- * tell keyNew() which Key attribute comes next.
+ * keyNew() allocates memory for a key object and keyDel() cleans
+ * everything up.
  *
  * We can also give an empty key name and a KEY_END tag with the same
  * effect as before:
@@ -116,10 +109,15 @@ static Key * elektraKeyMalloc (void)
  *
  * @snippet keyNew.c With Name
  *
- * So, keyNew() allocates memory for a key object and keyDel() cleans
- * everything up.
+ * If you want the key object to contain a name, value, comment and other
+ * meta info read on.
  *
- * keyNew() processes the given argument list even further.
+ * @note When you already have a key with similar properties its
+ * easier to keyDup() the key.
+ *
+ * You can call keyNew() in many different ways depending on the attribute tags you
+ * pass as parameters. Tags are represented as #keyswitch_t values, and
+ * tell keyNew() which Key attribute comes next.
  * The Key attribute tags are the following:
  * - ::KEY_VALUE \n
  *   Next parameter is a pointer to the value that will be used.
@@ -156,7 +154,7 @@ static Key * elektraKeyMalloc (void)
  * @deprecated The flags below are deprecated and ::KEY_META should be
  * preferred. They remain some time, however, for compatibility:
  * - ::KEY_DIR \n
- *   Define that the key is a directory rather than a ordinary key.
+ *   Define that the key is a directory rather than an ordinary key.
  *   This means its executable bits in its mode are set.
  *   But even without this option the key can have subkeys.
  *   See keySetDir().
@@ -404,8 +402,8 @@ int keyCopy (Key * dest, const Key * source)
 	dest->dataSize = source->dataSize;
 
 	// free old resources of destination
-	elektraFree (destKey);
-	elektraFree (destData);
+	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destKey);
+	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (destData);
 	ksDel (destMeta);
 
 	return 1;
@@ -428,7 +426,7 @@ memerror:
  * Every key created by keyNew() must be
  * deleted with keyDel().
  *
- * It is save to delete keys which are
+ * It is safe to delete keys which are
  * in a keyset, the number of references
  * will be returned then.
  *
@@ -460,8 +458,14 @@ int keyDel (Key * key)
 		return key->ksReference;
 	}
 
+	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+
 	rc = keyClear (key);
-	elektraFree (key);
+
+	if (!keyInMmap)
+	{
+		elektraFree (key);
+	}
 
 	return rc;
 }
@@ -505,12 +509,16 @@ int keyClear (Key * key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key) elektraFree (key->key);
-	if (key->data.v) elektraFree (key->data.v);
+
+	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+
+	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 	if (key->meta) ksDel (key->meta);
 
 	keyInit (key);
 
+	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 
 	/* Set reference properties */
 	key->ksReference = ref;

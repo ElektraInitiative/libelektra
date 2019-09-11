@@ -12,7 +12,77 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+#include <ctype.h>
 #include <stdio.h>
+
+static const char * toEscape = "\"'\\?\n\r\t";
+static const char * escapes = "\"'\\?nrt";
+
+static const char * hex = "0123456789abcdef";
+
+static char * escapeString (char ** str)
+{
+	size_t size = 0;
+	for (char * cur = *str; *cur != '\0'; ++cur)
+	{
+		unsigned char c = *cur;
+
+		if (strchr (toEscape, c) != NULL)
+		{
+			size += 2;
+		}
+		else if (isprint (c))
+		{
+			++size;
+		}
+		else
+		{
+			size += 4;
+		}
+	}
+
+	if (size == 0)
+	{
+		return *str;
+	}
+
+	char * newStr = elektraMalloc (size + 1);
+	char * newCur = newStr;
+	for (char * cur = *str; *cur != '\0'; ++cur)
+	{
+		unsigned char c = *cur;
+		char * e = strchr (toEscape, c);
+
+		if (e != NULL)
+		{
+			char escaped = escapes[e - toEscape];
+			*newCur = '\\';
+			++newCur;
+			*newCur = escaped;
+			++newCur;
+		}
+		else if (isprint (c))
+		{
+			*newCur = c;
+			++newCur;
+		}
+		else
+		{
+			*newCur = '\\';
+			++newCur;
+			*newCur = 'x';
+			++newCur;
+			*newCur = hex[c >> 4u];
+			++newCur;
+			*newCur = hex[c & 0xFu];
+			++newCur;
+		}
+	}
+	*newCur = '\0';
+	elektraFree (*str);
+	*str = newStr;
+	return newStr;
+}
 
 /**
  * Generate a C-Style key and stream it.
@@ -34,8 +104,12 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 		char * nam = (char *) elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
-		fprintf (stream, "\tkeyNew (\"%s\"", nam);
+		fprintf (stream, "\tkeyNew (\"%s\"", escapeString (&nam));
 		elektraFree (nam);
+	}
+	else if (n == 1)
+	{
+		fprintf (stream, "\tkeyNew(\"\"");
 	}
 
 	size_t s = keyGetValueSize (key);
@@ -52,7 +126,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 		{
 			keyGetString (key, str, s);
 		}
-		fprintf (stream, ", KEY_VALUE, \"%s\"", str);
+		fprintf (stream, ", KEY_VALUE, \"%s\"", escapeString (&str));
 		elektraFree (str);
 	}
 
@@ -61,7 +135,11 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	keyRewindMeta (dup);
 	while ((meta = keyNextMeta (dup)))
 	{
-		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", keyName (meta), keyString (meta));
+		char * metaNam = elektraStrDup (keyName (meta));
+		char * metaStr = elektraStrDup (keyString (meta));
+		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaNam), escapeString (&metaStr));
+		elektraFree (metaNam);
+		elektraFree (metaStr);
 	}
 	keyDel (dup);
 
@@ -118,7 +196,7 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 					   keyNew ("system/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
 					   keyNew ("system/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
 					   keyNew ("system/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConfig, KEY_END),
-#include ELEKTRA_README (c)
+#include ELEKTRA_README
 					   keyNew ("system/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -158,7 +236,7 @@ int elektraCCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UN
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (c)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("c",

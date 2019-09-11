@@ -102,11 +102,12 @@ static int validateKey (Key * key, Key * parentKey)
 
 	if (!rc)
 	{
-		ELEKTRA_SET_ERRORF (51, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of key %s with value %s failed", keyName (key),
+							keyString (key));
 	}
 	else if (rc == -1)
 	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
 		rc = 0;
 	}
 
@@ -122,7 +123,7 @@ int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 			       keyNew ("system/elektra/modules/ipaddr/exports", KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports/get", KEY_FUNC, elektraIpaddrGet, KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports/set", KEY_FUNC, elektraIpaddrSet, KEY_END),
-#include ELEKTRA_README (ipaddr)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/ipaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -147,7 +148,7 @@ int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ipaddr)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("ipaddr",

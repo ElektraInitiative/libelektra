@@ -4,8 +4,8 @@
 
 The crypto plugin applies cryptographic operations to Keys and KeySets.
 In order to do that it needs keys and initialization vectors (IV).
-The problem is how to retrieve or derivate those keys in a safe way and how 
-to pass them on to the underlying crypto libraries (OpenSSL and libgcrypt 
+The problem is how to retrieve or derivate those keys in a safe way and how
+to pass them on to the underlying crypto libraries (OpenSSL and libgcrypt
 at the time of writing).
 
 ## Constraints
@@ -68,6 +68,6 @@ The constraints considering the key handling are met.
 To manipulate the plugin configuration during the **mount phase** a hook is required within the `BackendBuilder`.
 See pull request [#733](https://github.com/ElektraInitiative/libelektra/pull/733) for full discussion.
 
-## Related decisions
+## Related Decisions
 
 ## Notes

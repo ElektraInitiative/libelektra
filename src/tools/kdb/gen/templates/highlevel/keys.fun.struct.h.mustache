@@ -1,0 +1,88 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+/*%# alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ *
+ * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ type_name }}}).
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& macro_name %*/) (Elektra * elektra /*%# args? %*/,
+									/*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/,
+									/*%/ last? %*/ /*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	/*%& native_type %*/ *result = ELEKTRA_GET (/*%& type_name %*/) (elektra, name);
+	elektraFree (name);
+	return result;
+	/*%/ args? %*/
+	/*%^ args? %*/
+	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
+	/*%/ args? %*/
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param result  The value will be stored in the referenced variable.
+ *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
+ *   is modified. All calls to elektraSet* modify this state.
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_GET (/*%& macro_name %*/) (Elektra * elektra, /*%& native_type %*/ *result /*%# args? %*/,
+						      /*%# args %*/ /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+						      /*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, name, result);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/", result);
+	/*%/ args? %*/
+}
+/*%/ alloc? %*/
+
+/*%# generate_setters? %*/
+/*%={{ }}=%*/
+/**
+ * Set the value of key '{{{ name }}}' (tag #{{{ macro_name }}}).
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param value   The value of '{{{ name }}}'.
+{{# args? }}{{# args }} * @param {{{ name }}} {{{ description }}}
+{{/ args }}{{/ args? }}
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET (/*%& macro_name %*/) (Elektra * elektra, const /*%& native_type %*/ * value, /*%# args? %*/ /*%# args %*/
+						      /*%& native_type %*/ /*%& name %*/,
+						      /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%& code %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, name, value, error);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
+	/*%/ args? %*/
+}
+/*%/ generate_setters? %*/

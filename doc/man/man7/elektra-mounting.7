@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-MOUNTING" "7" "December 2017" "" ""
+.TH "ELEKTRA\-MOUNTING" "7" "June 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-mounting\fR \- mounting
@@ -33,7 +33,7 @@ everything else plugins \fI/src/plugins/README\.md\fR can do\.
 Mounting in Elektra specifically allows us to map a part of the global key database to be handled by a different storage\. A difference to file systems is that key names express what file names express in a file system\. And instead of file systems writing to block devices, backends writing to key databases are mounted into the global key database\. Mounting allows multiple backends to deal with configuration at the same time\. Each of them is responsible for its own subtree of the global key database\.
 .
 .P
-Mounting works for file systems only if the file system below is accessible and a directory exists at the mountpoint\. Elektra does not enforce such restrictions\.
+Mounting works for file systems only if the file system below is accessible and a directory exists at the mount point\. Elektra does not enforce such restrictions\.
 .
 .P
 Note, that you cannot mount the same configuration file multiple times\. You can, however, use the specification to link between configuration items which gives an impression of a \fIbind mount\fR, i\.e\. having the same configuration values on multiple places\.

@@ -6,9 +6,7 @@ if (DEPENDENCY_PHASE)
 
 	if (LIBAUGEAS_FOUND)
 		if (LIBXML2_FOUND)
-			try_compile (HAS_LIBAUGEAS16
-				     "${CMAKE_BINARY_DIR}"
-				     "${PROJECT_SOURCE_DIR}/src/plugins/augeas/testaugeas.c"
+			try_compile (HAS_LIBAUGEAS16 "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/augeas/testaugeas.c"
 				     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${LIBAUGEAS_INCLUDE_DIR}\;${LIBXML2_INCLUDE_DIR}
 						 -DLINK_LIBRARIES:PATH=${LIBAUGEAS_LIBRARIES}\;${LIBXML2_LIBRARIES})
 
@@ -29,17 +27,18 @@ if (DEPENDENCY_PHASE)
 	set (AUGEAS_PLUGIN_LIBRARIES ${LIBAUGEAS_LIBRARIES} ${LIBXML2_LIBRARIES})
 endif ()
 
+# ~~~
+# The unit test for the plugin fails on an ASAN enabled macOS build, if we do not disable container overflow detection.
+# Reference: https://travis-ci.org/sanssecours/elektra/jobs/418554628
+# ~~~
 add_plugin (augeas
-	    SOURCES aug.h
-		    augeas.c
-	    ADD_TEST
-	    INSTALL_TEST_DATA
+	    SOURCES aug.h augeas.c
+	    ADD_TEST INSTALL_TEST_DATA
 	    INCLUDE_DIRECTORIES ${AUGEAS_PLUGIN_INCLUDE_DIRS}
 	    COMPILE_DEFINITIONS "${LIBAUGEAS_COMPILE_DEFINITIONS}"
-	    LINK_ELEKTRA elektra-meta
-			 elektra-proposal
-	    LINK_LIBRARIES ${AUGEAS_PLUGIN_LIBRARIES})
-
+	    LINK_ELEKTRA elektra-meta elektra-proposal
+	    LINK_LIBRARIES ${AUGEAS_PLUGIN_LIBRARIES}
+	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0")
 if (ADDTESTING_PHASE)
 	include (LibAddMacros)
 endif ()

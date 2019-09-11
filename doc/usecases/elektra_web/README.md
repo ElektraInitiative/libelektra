@@ -1,4 +1,4 @@
-# elektra-web use cases
+# elektra-web Use Cases
 
 The path through the use cases is as follows:
 

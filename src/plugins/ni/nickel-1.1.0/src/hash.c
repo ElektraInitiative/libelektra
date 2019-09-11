@@ -58,6 +58,8 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 #include <endian.h> /* attempt to define endianness */
 #endif
 
+#include <kdbconfig.h> // for no sanitize macros
+
 /*
  * My best guess at if you are big-endian or little-endian.  This may
  * need adjustment.
@@ -111,7 +113,7 @@ satisfy this are
     9 15  3 18 27 15
    14  9  3  7 17  3
 Well, "9 15 3 18 27 15" didn't quite get 32 bits diffing
-for "differ" defined as + with a one-bit base and a two-bit delta.  I
+for "differ" defined as + with an one-bit base and a two-bit delta.  I
 used http://burtleburtle.net/bob/hash/avalanche.html to choose
 the operations, constants, and arrangements of the variables.
 
@@ -324,6 +326,8 @@ acceptable.  Do NOT use for cryptographic purposes.
 -------------------------------------------------------------------------------
 */
 #if (!HASH_BIG_ENDIAN) // only if not big-endian
+ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW
+ELEKTRA_NO_SANITIZE_UNDEFINED
 static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c; /* internal state */
@@ -881,6 +885,8 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
  * big-endian byte ordering.
  */
 #if (HASH_BIG_ENDIAN) // only if big-endian
+ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW
+ELEKTRA_NO_SANITIZE_UNDEFINED
 static uint32_t hashbig (const void * restrict key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;

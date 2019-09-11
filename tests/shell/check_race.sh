@@ -14,34 +14,31 @@ exit 0
 RACE="@RACE_COMMAND@"
 RACEKEYS=user/test/race/keys
 
-if [ "x`"$KDB" ls $RACEKEYS | wc -l 2> /dev/null`" != "x0" ]
-then
+if [ "x$("$KDB" ls $RACEKEYS | wc -l 2> /dev/null)" != "x0" ]; then
 	echo "There are already keys in $RACEKEYS"
 	exit 1
 fi
 
-if $RACE | grep "This program tests race condition in Elektra"
-then
+if $RACE | grep "This program tests race condition in Elektra"; then
 	echo "Doing race tests"
 else
 	echo "No $RACE tool installed"
 	exit 0
 fi
 
-do_race_test()
-{
-	RES=`$RACE $*`
+do_race_test() {
+	RES=$($RACE $*)
 	succeed_if "$RACE $* did not run successfully with error $?"
 
 	WHERE=user/test/race/keys
 
-	KEYS=`"$KDB" ls "$WHERE"`
+	KEYS=$("$KDB" ls "$WHERE")
 	succeed_if "could not run $KDB ls $WHERE successfully"
 
-	WON=`echo "$RES" | grep won`
-	SHOULD=`echo "$WON" | wc -l`
-	IS=`echo "$KEYS" | wc -l`
-	RUNNING=`ps aux | grep race | grep -v grep | grep -v check`
+	WON=$(echo "$RES" | grep won)
+	SHOULD=$(echo "$WON" | wc -l)
+	IS=$(echo "$KEYS" | wc -l)
+	RUNNING=$(ps aux | grep race | grep -v grep | grep -v check)
 	OUTPUT="\nFOR $*\nwith KEYS: $KEYS\nWON: $WON\nIS: $IS and RUNNING: $RUNNING\n\n"
 
 	echo "test $*: $SHOULD - $IS"

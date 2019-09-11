@@ -19,14 +19,18 @@ implemented. The python plugin is especially useful to write filter and logging 
 The python plugin requires the configuration parameter **script** holding the file path to a
 python script. The mount command would look like
 
-    kdb mount file.ini /python python script=/path/to/filter_script.py
+```sh
+kdb mount file.ini /python python script=/path/to/filter_script.py
+```
 
 if the **ini** plugin should be used for storage and the python plugin only serves to invoke the
 filter script.
 
 For a Python script that serves as INI storage plugin itself, one uses
 
-    kdb mount file.json /python python script=python_configparser.py
+```sh
+kdb mount file.json /python python script=python_configparser.py
+```
 
 ### Plugin Configuration
 
@@ -50,7 +54,7 @@ The class itself can implement the following functions
 - error(self, returned, parentKey)
 - close(self, errorKey)
 
-where *config* & *returned* are KeySets and *errorKey* & *parentKey* are Keys.
+where _config_ & _returned_ are KeySets and _errorKey_ & _parentKey_ are Keys.
 For the return codes of the functions, the same rules as for normal plugins apply.
 
 If a function is not available, it simply is not called. A script does not have to
@@ -58,7 +62,9 @@ implement all functions therefore.
 
 Access to **kdb** can be retrieved using the Python import
 
-    import kdb
+```py
+import kdb
+```
 
 ## Example
 
@@ -93,4 +99,3 @@ Further examples can be found in the [python](python/) directory.
 
 Be aware that a Python script will never be as performant as a native C/C++ plugin.
 Spinning up the interpreter takes additional time and resources.
-

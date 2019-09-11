@@ -11,7 +11,6 @@ RUN apt-get update && apt-get -y install \
     automake \
     cmake \
     pkg-config \
-    bison \
     ruby \
     ruby-dev \
     python-dev \
@@ -22,6 +21,7 @@ RUN apt-get update && apt-get -y install \
     tclcl-dev \
     libaugeas-dev \
     libbotan1.10-dev \
+    libgpgme11-dev \
     libyajl-dev \
     git \
     libgit2-dev \
@@ -32,9 +32,10 @@ RUN apt-get update && apt-get -y install \
     libpcre++-dev \
     libglib2.0-dev \
     libxerces-c-dev \
-    libyaml-cpp-dev \
     swig3.0 \
     libuv0.10-dev \
+    libev-dev \
+    libzmq3-dev \
     checkinstall \
     gobject-introspection \
     libgirepository1.0-dev \
@@ -47,7 +48,7 @@ RUN apt-get update && apt-get -y install \
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+ARG GTEST_VER=release-1.8.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -61,6 +62,7 @@ RUN mkdir -p ${GTEST_ROOT} \
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
+    -f \
     jenkins
 
 ARG JENKINS_USERID

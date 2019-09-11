@@ -32,7 +32,7 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/sync/exports", KEY_END),
 			       keyNew ("system/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
 			       keyNew ("system/elektra/modules/sync/exports/set", KEY_FUNC, elektraSyncSet, KEY_END),
-#include ELEKTRA_README (sync)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/sync/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -52,12 +52,12 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (89, parentKey, "Could not open config file %s because \"%s\"", configFile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open config file %s. Reason: %s", configFile, strerror (errno));
 		return -1;
 	}
 	if (fsync (fd) == -1)
 	{
-		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because \"%s\"", configFile, strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync config file %s. Reason: %s", configFile, strerror (errno));
 		close (fd);
 		return -1;
 	}
@@ -66,7 +66,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (sync)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("sync",

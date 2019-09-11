@@ -19,7 +19,7 @@ representation?
 - plugins write minimal, syntactical-valid configuration file
 - plugins do whatever they think is correct
 - remember initial situation at mounting time and restore it when empty
-    key is passed (seems inefficient and complicated?)
+  key is passed (seems inefficient and complicated?)
 
 ## Decision
 
@@ -27,15 +27,15 @@ Remove files on empty KeySet.
 
 ## Rationale
 
-+ allows user to undo what a previous kdbSet() did
-+ easy to understand semantics
-+ makes storage plugins easier (do not need to remove files)
+- allows user to undo what a previous kdbSet() did
+- easy to understand semantics
+- makes storage plugins easier (do not need to remove files)
 
 ## Implications
 
 - less empty files are left
 - no invalid empty files (yajl bugs)
 
-## Related decisions
+## Related Decisions
 
 ## Notes

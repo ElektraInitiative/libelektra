@@ -7,40 +7,42 @@ echo
 # high level test to check whether keys are distributed to correct
 # backend
 
-is_plugin_available sync || { echo "Test requires sync plugin, aborting" >&2; exit 0; }
+is_plugin_available sync || {
+	echo "Test requires sync plugin, aborting" >&2
+	exit 0
+}
 check_version
 
 #method that does all the checking
-check_distribution()
-{
+check_distribution() {
 	echo "  Check distribution of $1 and $2"
 	MOUNTPOINT1="$1"
 	MOUNTPOINT2="$2"
-	FILE1=`mktemp /tmp/file1XXXXXX`
-	FILE2=`mktemp /tmp/file2XXXXXX`
+	FILE1=$(mktemp /tmp/file1XXXXXX)
+	FILE2=$(mktemp /tmp/file2XXXXXX)
 	VALUE1="value111111"
 	VALUE2="value222222"
 
-	"$KDB" mount $FILE1 $MOUNTPOINT1 $KDB_DEFAULT_STORAGE 1>/dev/null
+	"$KDB" mount $FILE1 $MOUNTPOINT1 $KDB_DEFAULT_STORAGE 1> /dev/null
 	succeed_if "could not mount 1: $FILE1 at $MOUNTPOINT1"
 
-	"$KDB" mount $FILE2 $MOUNTPOINT2 $KDB_DEFAULT_STORAGE 1>/dev/null
+	"$KDB" mount $FILE2 $MOUNTPOINT2 $KDB_DEFAULT_STORAGE 1> /dev/null
 	succeed_if "could not mount 2: $FILE2 at $MOUNTPOINT2"
 
-	FILE=`"$KDB" file -N system -n $MOUNTPOINT1`
-	[ "x$FILE"  = "x$FILE1" ]
+	FILE=$("$KDB" file -N system -n $MOUNTPOINT1)
+	[ "x$FILE" = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1 did not yield $FILE1 but $FILE"
 
-	FILE=`"$KDB" file -N system -n $MOUNTPOINT1/xxx`
-	[ "x$FILE"  = "x$FILE1" ]
+	FILE=$("$KDB" file -N system -n $MOUNTPOINT1/xxx)
+	[ "x$FILE" = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1/xxx did not yield $FILE1 but $FILE"
 
-	FILE=`"$KDB" file -N system -n $MOUNTPOINT2`
-	[ "x$FILE"  = "x$FILE2" ]
+	FILE=$("$KDB" file -N system -n $MOUNTPOINT2)
+	[ "x$FILE" = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2 did not yield $FILE2 but $FILE"
 
-	FILE=`"$KDB" file -N system -n $MOUNTPOINT2/xxx`
-	[ "x$FILE"  = "x$FILE2" ]
+	FILE=$("$KDB" file -N system -n $MOUNTPOINT2/xxx)
+	[ "x$FILE" = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2/xxx did not yield $FILE2 but $FILE"
 
 	KEY1=$MOUNTPOINT1/key
@@ -51,16 +53,16 @@ check_distribution()
 	"$KDB" set -N system $KEY2 $VALUE2 > /dev/null
 	succeed_if "could not set $KEY2"
 
-	[ "x`"$KDB" sget $KEY1 defvalue 2> /dev/null`" = "x$VALUE1" ]
+	[ "x$("$KDB" sget $KEY1 defvalue 2> /dev/null)" = "x$VALUE1" ]
 	succeed_if "Did not get value $VALUE1 for $KEY1"
 
-	[ "x`"$KDB" sget $KEY2 defvalue 2> /dev/null`" = "x$VALUE2" ]
+	[ "x$("$KDB" sget $KEY2 defvalue 2> /dev/null)" = "x$VALUE2" ]
 	succeed_if "Did not get value $VALUE2 for $KEY2"
 
-	grep $VALUE1 $FILE1 >/dev/null
+	grep $VALUE1 $FILE1 > /dev/null
 	succeed_if "did not find $VALUE1 within $FILE1"
 
-	grep $VALUE2 $FILE2 >/dev/null
+	grep $VALUE2 $FILE2 > /dev/null
 	succeed_if "did not find $VALUE2 within $FILE2"
 
 	"$KDB" rm $KEY1
@@ -69,10 +71,10 @@ check_distribution()
 	"$KDB" rm $KEY2
 	succeed_if "Could not remove $KEY2"
 
-	"$KDB" umount $MOUNTPOINT1 >/dev/null
+	"$KDB" umount $MOUNTPOINT1 > /dev/null
 	succeed_if "could not umount $MOUNTPOINT1"
 
-	"$KDB" umount $MOUNTPOINT2 >/dev/null
+	"$KDB" umount $MOUNTPOINT2 > /dev/null
 	succeed_if "could not umount $MOUNTPOINT2"
 
 	rm -f $FILE1

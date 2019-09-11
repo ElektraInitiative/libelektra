@@ -1,48 +1,50 @@
-elektra-key-names(7) -- the names of keys
-=========================================
+# elektra-key-names(7) -- the names of keys
 
 Every `Key` object with the same name will receive the very same
-information from the global key database.  The name locates a
-**unique key** in the key database.  Key names are always absolute; so no parent
+information from the global key database. The name locates a
+**unique key** in the key database. Key names are always absolute; so no parent
 or other information is needed. That makes a `Key` self-contained and
 independent both in memory and storage.
 
 Every key name starts with a [namespace](elektra-namespaces.md), for
-example `user` or `system`.  These prefixes spawn key hierarchies each.
+example `user` or `system`. These prefixes spawn key hierarchies each.
 
-The shared *system configuration* is identical for every user.
+The shared _system configuration_ is identical for every user.
 It contains, for example, information about system daemons, network
-related preferences and default settings for software.  These keys are
+related preferences and default settings for software. These keys are
 created when software is installed, and removed when software is purged.
 Only the administrator can change system configuration.
 
 Examples of valid system key names:
 
-	system
-	system/hosts/hostname
-	system/sw/apache/httpd/#0/current/num_processes
-	system/sw/apps/abc/#0/current/default-setting
+```
+system
+system/hosts/hostname
+system/sw/apache/httpd/#0/current/num_processes
+system/sw/apps/abc/#0/current/default-setting
+```
 
 user configuration is empty until the user changes some preferences.
-User configuration affects only a single user.  The user's settings can
+User configuration affects only a single user. The user's settings can
 contain information about the user's environment, preferred applications
 and anything not useful for the rest of the system.
 
 Examples of valid user key names:
 
-	user
-	user/env/#1/LD_LIBRARY_PATH
-	user/sw/apps/abc/#0/current/default-setting
-	user/sw/kde/kicker/#0/current/preferred_applications/#0
+```
+user
+user/env/#1/LD_LIBRARY_PATH
+user/sw/apps/abc/#0/current/default-setting
+user/sw/kde/kicker/#0/current/preferred_applications/#0
+```
 
 The slash (`/`) separates key names and structures them hierarchically.
 If two keys start with the same key names, but one key name continues
 after a slash, this key is **below** the other and is called a
-*subkey*.  For example `user/sw/apps/abc/current` is a subkey of the
-key `user/sw/apps`.  The key is not directly below but, for example,
-`user/sw/apps/abc` is.  `keyRel()` implements a way to decide the relation
+_subkey_. For example `user/sw/apps/abc/current` is a subkey of the
+key `user/sw/apps`. The key is not directly below but, for example,
+`user/sw/apps/abc` is. `keyRel()` implements a way to decide the relation
 between two keys.
-
 
 ## Conventions
 
@@ -62,14 +64,16 @@ results and the names are still very compact.
 As decided [here](https://github.com/ElektraInitiative/libelektra/issues/302),
 the key names of software-applications should always start with:
 
-	/sw/org/myapp/#0/current/name/full
+```
+/sw/org/myapp/#0/current/name/full
+```
 
 - `sw` is for software, `hw` for hardware, `elektra` for internals
 - `org` is a URL/organization name to avoid name clashes with other
-    application names. Use only one part of the URL/organization,
-    so e.g. `kde` is enough.
+  application names. Use only one part of the URL/organization,
+  so e.g. `kde` is enough.
 - `myapp` is the name of the most specific component that has its own
-    configuration
+  configuration
 - `#0` is the major version number of the configuration (to be incremented
   if you need to introduce incompatible changes).
   (Rationale: it is possible to start the old version of the app,
@@ -98,7 +102,6 @@ the key names of software-applications should always start with:
   a sysadmin perspective, it will be possible to copy the
   `system/sw/myapp/#3/%/` tree to something like
   `system/sw/myapp/#3/old/` and keep system clean and organized.
-
 
 ## SEE ALSO
 

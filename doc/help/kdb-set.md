@@ -1,5 +1,4 @@
-kdb-set(1) -- Set the value of a key
-====================================
+# kdb-set(1) -- Set the value of a key
 
 ## SYNOPSIS
 
@@ -30,8 +29,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
-- `-v`, `--verbose`:
-  Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-N`, `--namespace=NS`:
@@ -39,6 +36,10 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   See [below in KDB](#KDB).
 - `--`:
   Do not process any following arguments starting with `-` as options.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## KDB
 
@@ -53,33 +54,25 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   By default the namespace is user, except `kdb` is used as root, then `system`
   is the default.
 
-
 ## EXAMPLES
 
-To set a Key to the value `Hello World!`:
-
+To set a Key to the value `Hello World!`:<br>
 `kdb set user/example/key "Hello World!"`
 
-To create a new key with a null value:
-
+To create a new key with a null value:<br>
 `kdb set user/example/key`
 
-To set a key to an empty value:
-
+To set a key to an empty value:<br>
 `kdb set user/example/key ""`
 
-To set a key to a negative value:
-
+To set a key to a negative value:<br>
 `kdb set -- /tests/neg -3`
 
-To create bookmarks:
-
+To create bookmarks:<br>
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks`
 
-followed by:
-
+Followed by:<br>
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
-
 
 ## SEE ALSO
 

@@ -1,13 +1,14 @@
 #!/bin/sh
 #
 # @author: Sebastian Bachmann
+# @tags: build
 #
 
 set -e
 set -x
 
-VERSION="0.8.23"
-BUILD_NUMBER="1337"
+VERSION="0.9.0"
+BUILD_NUMBER="1"
 
 [ -d tmpbuilddir ] && rm -rf tmpbuilddir
 mkdir tmpbuilddir

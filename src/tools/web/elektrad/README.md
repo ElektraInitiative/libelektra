@@ -3,12 +3,10 @@
 A server that provides an [HTTP API](http://docs.elektrad.apiary.io/) to access
 Elektra remotely, built using [express](https://expressjs.com/).
 
-
 ## Installation
 
- * first, install [libelektra](https://libelektra.org/)
- * now run `npm install`
-
+- first, install [libelektra](https://libelektra.org/)
+- now run `npm install`
 
 ## Running
 
@@ -28,10 +26,9 @@ to run in development mode (full logs & running from source):
 npm run start:dev
 ```
 
-
 ## API
 
 By default, `elektrad` runs on [http://localhost:33333](http://localhost:33333)
 
- - API documentation: https://elektrad.docs.apiary.io/
- - API blueprint: [elektrad.apib](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)
+- API documentation: https://elektrad.docs.apiary.io/
+- API blueprint: [elektrad.apib](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)

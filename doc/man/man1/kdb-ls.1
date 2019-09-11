@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-LS" "1" "June 2018" "" ""
+.TH "KDB\-LS" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-ls\fR \- List keys in the key database
@@ -43,32 +43,32 @@ Specify the maximum path depth of the output (unlimited by default, 1 to show on
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .TP
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination\.
 .
-.TP
-\fB\-d\fR, \fB\-\-debug\fR
-Give debug information\.
-.
 .SH "EXAMPLES"
 .
 .nf
 
-# Backup\-and\-Restore: /tests/examples
+# Backup\-and\-Restore: user/tests/examples
 
 # We use `dump` as storage format here, since storage plugins such as INI
-# automatically add keys between levels (e\.g\. `/tests/examples/kdb\-ls/test/foo`)\.
-sudo kdb mount ls\.ecf /tests/examples dump
+# automatically add keys between levels (e\.g\. `user/tests/examples/kdb\-ls/test/foo`)\.
+sudo kdb mount ls\.ecf user/tests/examples dump
 
 # Create the keys we use for the examples
-kdb set /tests/examples/kdb\-ls/test val1
-kdb set /tests/examples/kdb\-ls/test/foo/bar val2
-kdb set /tests/examples/kdb\-ls/test/fizz/buzz fizzbuzz
-kdb set /tests/examples/kdb\-ls/tost val3
-kdb set /tests/examples/kdb\-ls/tost/level lvl
+kdb set user/tests/examples/kdb\-ls/test val1
+kdb set user/tests/examples/kdb\-ls/test/foo/bar val2
+kdb set user/tests/examples/kdb\-ls/test/fizz/buzz fizzbuzz
+kdb set user/tests/examples/kdb\-ls/tost val3
+kdb set user/tests/examples/kdb\-ls/tost/level lvl
 
 # list all keys below /tests/examples/kdb\-ls
 kdb ls /tests/examples/kdb\-ls
@@ -103,7 +103,7 @@ kdb ls /tests/examples/kdb\-ls/test
 
 # list all keys under /tests/examples/kdb\-ls in verbose mode
 kdb ls /tests/examples/kdb\-ls/ \-v
-#> size of all keys in mountpoint: 5
+#> size of all keys in mount point: 5
 #> size of requested keys: 5
 #> user/tests/examples/kdb\-ls/test
 #> user/tests/examples/kdb\-ls/test/fizz/buzz
@@ -111,8 +111,8 @@ kdb ls /tests/examples/kdb\-ls/ \-v
 #> user/tests/examples/kdb\-ls/tost
 #> user/tests/examples/kdb\-ls/tost/level
 
-kdb rm \-r /tests/examples
-sudo kdb umount /tests/examples
+kdb rm \-r user/tests/examples
+sudo kdb umount user/tests/examples
 .
 .fi
 .

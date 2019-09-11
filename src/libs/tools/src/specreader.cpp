@@ -65,7 +65,7 @@ bool isToBeIgnored (std::string const & name)
 	       startsWith (name, "exports") ||
 
 	       // spec-plugin
-	       startsWith (name, "conflict") || startsWith (name, "require") || startsWith (name, "array/") ||
+	       startsWith (name, "conflict") || startsWith (name, "require") || startsWith (name, "array") ||
 
 	       startsWith (name, "fallback") || startsWith (name, "override") || startsWith (name, "namespace") || name == "default" ||
 	       name == "context" ||
@@ -78,7 +78,7 @@ bool isToBeIgnored (std::string const & name)
 	       startsWith (name, "binary") ||
 
 	       // code generator
-	       startsWith (name, "type") || startsWith (name, "opt") || startsWith (name, "env") ||
+	       startsWith (name, "opt") || startsWith (name, "env") || startsWith (name, "gen") ||
 
 	       // docu
 	       startsWith (name, "comment") || startsWith (name, "description") || startsWith (name, "see") ||

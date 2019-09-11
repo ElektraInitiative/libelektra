@@ -17,13 +17,17 @@ It operates on a temporary copy of the latest version of your file fetched from 
 ## Options
 
 `branch` defines the branch to work on. Default: master
-`tracking` can be either `object` or `head` (default). if set to `object` a conflict will only occur if the file in the git repository has been updated while you were working on it. `head` will cause a conflict if the `HEAD` commit has been updated. 
+`tracking` can be either `object` or `head` (default). if set to `object` a conflict will only occur if the file in the git repository has been updated while you were working on it. `head` will cause a conflict if the `HEAD` commit has been updated.
 `pull` when present: tells the plugin to fast-forward pull the repository, fails if FF isn't possible.
 `checkout` when present: tells the plugin to checkout the file.
+
 ## Limitations
 
-Currently it only works inside existing git repositories. 
+Currently it only works inside existing git repositories.
 
 ## Examples
 
-    kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
+```sh
+kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell \
+    execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
+```

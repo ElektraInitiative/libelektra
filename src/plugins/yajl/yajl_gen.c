@@ -133,7 +133,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
  */
 static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 {
-	if (!elektraGenOpenValue (g, cur))
+	if (strcmp (keyName (parentKey), keyName (cur)) && !elektraGenOpenValue (g, cur))
 	{
 		ELEKTRA_LOG_DEBUG ("Do not yield value");
 		return;
@@ -163,7 +163,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNING (78, parentKey, "got boolean which is neither true nor false");
+			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (parentKey, "Got boolean which is neither true nor false");
 			yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 		}
 	}
@@ -173,7 +173,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	}
 	else
 	{ // unknown or unsupported type, render it as string but add warning
-		ELEKTRA_ADD_WARNINGF (78, parentKey, "the key %s has unknown type: %s", keyName (cur), keyString (type));
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "The key %s has unknown type: %s", keyName (cur), keyString (type));
 		yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 	}
 }
@@ -202,6 +202,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	else if (ksGetSize (returned) == 2) // maybe just parent+specialkey
 	{
 		Key * toCheck = keyDup (parentKey);
+
 		keyAddBaseName (toCheck, "###empty_array");
 		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
 		{
@@ -249,6 +250,32 @@ int elektraGenWriteFile (yajl_gen g, Key * parentKey)
 	return 1; /* success */
 }
 
+static void elektraCheckForEmptyArray (KeySet * ks)
+{
+	Key * curr = 0;
+	ksRewind (ks);
+
+	while ((curr = ksNext (ks)) != 0)
+	{
+		ELEKTRA_LOG_DEBUG ("WALK: %s", keyName (curr));
+		const char * meta = keyString (keyGetMeta (curr, "array"));
+		if (*meta == '\0')
+		{
+			cursor_t cursor = ksGetCursor (ks);
+
+			Key * k = keyNew (keyName (curr), KEY_END);
+			keyAddBaseName (k, "###empty_array");
+
+			ELEKTRA_LOG_DEBUG ("Add empty array: %s", keyName (k));
+
+			ksAppendKey (ks, k);
+			keyDel (k);
+
+			ksSetCursor (ks, cursor);
+		}
+	}
+}
+
 int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -258,6 +285,17 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	yajl_gen g = yajl_gen_alloc (NULL);
 	yajl_gen_config (g, yajl_gen_beautify, 1);
 #endif
+
+	elektraCheckForEmptyArray (returned);
+
+	if (ksGetSize (returned) == 1 && !strcmp (keyName (parentKey), keyName (ksHead (returned))) &&
+	    keyGetValueSize (ksHead (returned)) > 1)
+	{
+		elektraGenValue (g, parentKey, ksHead (returned));
+		int ret = elektraGenWriteFile (g, parentKey);
+		yajl_gen_free (g);
+		return ret;
+	}
 
 	if (elektraGenEmpty (g, returned, parentKey))
 	{

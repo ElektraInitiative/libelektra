@@ -79,7 +79,7 @@ int elektraSyslogSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 		}
 	}
 
-	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zd changed)", keyName (parentKey), ksGetSize (returned), changed);
+	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zu changed)", keyName (parentKey), ksGetSize (returned), changed);
 
 	return 1;
 }
@@ -91,7 +91,7 @@ int elektraSyslogError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (syslog)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("syslog",

@@ -104,14 +104,14 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 		strncpy (newName, afterParentString, (ptr - afterParentString));
 		if (replaceWith)
 		{
-			strncpy (newName + strlen (newName), replaceWith, strlen (replaceWith));
+			strncpy (newName + strlen (newName), replaceWith, elektraStrLen (replaceWith));
 		}
 		strncat (newName, ptr + (strlen (cutPath)), strlen (afterParentString) - strlen (cutPath));
 		replace = 1;
 	}
 	else
 	{
-		strncpy (newName, afterParentString, strlen (afterParentString));
+		strncpy (newName, afterParentString, elektraStrLen (afterParentString));
 	}
 	int toLower = toLowerPath ? atoi (toLowerPath) : 0;
 	int toUpper = toUpperPath ? atoi (toUpperPath) : 0;
@@ -422,7 +422,7 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (rename)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("rename",

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+#Note: If you are looking for the script run_all that is installed
+#      (and can be executed using `kdb run_all`)
+#      you will find it in tests/shell/run_all.sh
+
+if [ $# -ne 1 ]; then
+	echo 'No build config. This script is supposed to run by using `@CMAKE_MAKE_PROGRAM_BASENAME@ run_all`'
+	exit 1
+fi
+
+# run all tests
+#
+# also use `run_memcheck` to check for memory issues (tests are complementary)
+
+ctest -j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure -E testscr_check_external --build-config $1

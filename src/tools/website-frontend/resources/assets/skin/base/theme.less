@@ -1,0 +1,301 @@
+/**
+ * Website theme
+ *
+ * @copyright Elektra Initiative (see AUTHORS.md or https://www.libelektra.org)
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+// Imports
+// ----------------------------
+
+@import "colors.less";
+@import "../bootstrap/variables.less";
+
+// Markup
+// ----------------------------
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	margin-bottom: 60px;
+	font-family: Helvetica;
+}
+
+nav.navbar img.navbar-brand.navbar-brand-logo {
+	margin: 0;
+	padding: 8px;
+}
+
+nav.navbar-second {
+	min-height: 40px;
+	border: none;
+	border-bottom: 2px solid @logo-yellow;
+	border-radius: 0;
+}
+
+nav.navbar-second > div.container-fluid > ul > li > a {
+	padding-top: 8px;
+	padding-bottom: 10px;
+}
+
+.breadcrumb li {
+	padding-left: 5px;
+}
+.breadcrumb li a, .breadcrumb li span {
+	margin-left: -4px;
+}
+
+ul.nav li.section-title {
+	margin-bottom: 15px;
+	border-bottom: 2px solid #999;
+	padding-bottom: 5px;
+	padding-left: 15px;
+}
+
+ul.nav li.section-title:not(:first-child) {
+	margin-top: 10px;
+}
+
+ul.nav li a.listfiles.file-link {
+	padding: 3px 15px;
+	word-wrap: break-word;
+	cursor: pointer;
+}
+
+#main-section {
+	margin-bottom: 60px;
+}
+
+span.entry.config.output {
+	white-space: pre-wrap;
+}
+
+span.entry.config.utils {
+	margin-top: 5px;
+}
+
+span.entry.config.utils > span.util {
+	cursor: pointer;
+	margin-right: 15px;
+}
+
+span.entry.config.utils > span.util:last-child {
+	margin-right: 0px;
+}
+
+div.entry.details span.description {
+	white-space: pre-line;
+}
+
+i.form-hint {
+	cursor: pointer;
+}
+
+div.ui-notification {
+	background: none;
+}
+
+div.ui-notification div.alert {
+	border-radius: 0px;
+}
+
+div.ui-notification div.alert.alert-success {
+	border: 1px solid #6bce6d;
+}
+
+div.ui-notification div.alert div.ui-notification-icon {
+	display: inline;
+	font-size: 1.4em;
+}
+div.ui-notification div.alert h4.ui-notification-title {
+	display: inline-block;
+}
+
+div.ui-notification.error {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+div.error {
+	margin-top: 100px;
+	margin-bottom: 50px;
+}
+
+div.error h1.error-title {
+	font-size: 7em;
+	padding-bottom: 20px;
+	line-height: 0.5em;
+}
+
+div.error h1.error-title small {
+	font-size: 40%;
+}
+
+div.error h2.error-msg {
+	font-size: 1.8em;
+	margin-top: 0px;
+	padding-bottom: 25px;
+}
+
+div.error h3.error-help {
+	font-size: 1.2em;
+	color: #999;
+	line-height: 1.5em;
+}
+
+div.home {
+	margin-bottom: 20px;
+}
+
+div.home h1.slogan-master {
+	margin-bottom: 5px;
+}
+
+div.home h2.slogan-slave {
+	border: none;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-bottom: 10px;
+}
+
+div.home h3 {
+	padding-bottom: 0px;
+}
+
+div.home hr {
+	border-top: 2px solid @logo-green;
+
+	&.hr-blue {
+		border-color: @logo-blue;
+	}
+
+	&.hr-yellow {
+		border-color: @logo-yellow;
+	}
+
+	&.hr-mt-0 {
+		margin-top: 0;
+	}
+	&.hr-mb-0 {
+		margin-bottom: 0;
+	}
+}
+
+div.home .key-container {
+	background-color: #f0f0f0;
+}
+
+div.home div.media {
+	margin-top: 0px;
+}
+
+div.home div.media div.media-left i.media-icon {
+	font-size: 35px;
+	padding: 3px 0;
+}
+
+div.home span.key-fact-details {
+	display: table-cell;
+	padding-top: 10px;
+}
+
+ul.pagination > li {
+	cursor: pointer;
+}
+
+div.docu.markdown {
+	line-height: 1.5em;
+	font-size: 1em;
+}
+
+div.docu.markdown h1 {
+	margin-top: 0px;
+	font-size: 2em;
+}
+
+div.docu.markdown h2 {
+	margin-top: 24px;
+	font-size: 1.5em;
+}
+
+div.docu.markdown h3 {
+	margin-top: 24px;
+	font-size: 1.25em;
+}
+
+div.docu.markdown h4 {
+	margin-top: 24px;
+	font-size: 1em;
+}
+
+div.docu.markdown h1, h2 {
+	border-bottom: 1px solid #eee;
+}
+
+div.docu.markdown h1, h2, h3 {
+	padding-bottom: 0.3em;
+}
+
+div.docu.markdown h1, h2, h3, h4 {
+	margin-bottom: 15px;
+	font-weight: 600;
+	line-height: 1.25;
+	word-wrap: break-word;
+}
+
+div.docu.markdown p {
+	margin-top: 0px;
+	margin-bottom: 15px;
+}
+
+div.docu.markdown img {
+	max-width: 100%;
+}
+
+div.docu.markdown pre {
+	width: 100%;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 60px;
+	background-color: @background-footer;
+
+	ol.breadcrumb {
+		margin-top: 14px;
+		margin-bottom: 0px;
+	}
+
+	p.copyright {
+		color: @text-footer-copyright;
+		margin-top: 20px;
+	}
+
+	.rss-icon {
+		padding-left: .5em;
+		padding-right: .3em;
+	}
+}
+
+.footer a.scroll-to-top {
+	margin-left: 15px;
+	font-size: 1.4em;
+	line-height: 1em;
+	cursor: pointer;
+}
+
+.btn-util.show-hover .show-hover-target {
+	display: none;
+}
+
+.btn-util.show-hover:hover .show-hover-target {
+	display: inline;
+}
+
+.algolia-autocomplete{
+	width: 100% !important;
+}

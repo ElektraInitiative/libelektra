@@ -56,7 +56,7 @@ keyOwner(key); // you would expect "" here
  *
  * @param key the key object to work with
  * @return a pointer to internal owner
- * @retval "" when there is no (a empty) owner
+ * @retval "" when there is no (an empty) owner
  * @retval 0 iff key is a NULL pointer
  * @see keyGetOwnerSize() for the size of the string with concluding 0
  * @see keyGetOwner(), keySetOwner()
@@ -125,7 +125,7 @@ ssize_t keyGetOwnerSize (const Key * key)
  * - Given @p user:some.user/.... return @p some.user
  * - Given @p user/.... return the current user
  *
- * Only @p user/... keys have a owner.
+ * Only @p user/... keys have an owner.
  * For @p system/... keys (that doesn't have a key owner) an empty
  * string ("") is returned.
  *
@@ -175,7 +175,7 @@ ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
 /**
  * Set the owner of a key.
  *
- * A owner is a name of a system user related to a UID.
+ * an owner is a name of a system user related to a UID.
  * The owner decides on which location on the disc the key
  * goes.
  *

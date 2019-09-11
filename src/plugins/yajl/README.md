@@ -55,11 +55,15 @@ data loss.
 In JSON it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
 
-    ###empty_array
+```
+###empty_array
+```
 
 and
 
-    ___empty_map
+```
+___empty_map
+```
 
 Arrays are mapped to Elektra’s array convention #0, #1,..
 
@@ -103,39 +107,31 @@ kdb getmeta /tests/yajl/number type
 
 # Add another key-value pair
 kdb set /tests/yajl/key value
-#> Using name user/tests/yajl/key
-#> Create a new key user/tests/yajl/key with string "value"
+# STDOUT-REGEX: .*Create a new key (user|system)/tests/yajl/key with string "value"
 
 # Retrieve the new value
 kdb get /tests/yajl/key
 #> value
 
 # Check the format of the configuration file
-# The Directory Value plugin creates the entry
-#     "___dirdata": "",
-# , since the plugin added an empty root key
-# (`user/tests/yajl/`).
-# See also: http://issues.libelektra.org/2132
-kdb file user/tests/yajl/ | xargs cat
+kdb file /tests/yajl/ | xargs cat
 #> {
-#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337
 #> }
 
 # Add an array
-kdb set user/tests/yajl/piggy/#0 straw
-kdb set user/tests/yajl/piggy/#1 sticks
-kdb set user/tests/yajl/piggy/#2 bricks
+kdb set /tests/yajl/piggy/#0 straw
+kdb set /tests/yajl/piggy/#1 sticks
+kdb set /tests/yajl/piggy/#2 bricks
 
 # Retrieve an array key
-kdb get user/tests/yajl/piggy/#2
+kdb get /tests/yajl/piggy/#2
 #> bricks
 
 # Check the format of the configuration file
-kdb file user/tests/yajl | xargs cat
+kdb file /tests/yajl | xargs cat
 #> {
-#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337,
 #>     "piggy": [
@@ -155,21 +151,20 @@ sudo kdb umount /tests/yajl
 The YAJL plugin support values in directory keys via the [Directory Value](../directoryvalue/) plugin.
 
 ```sh
-# Mount the plugin to the cascading namespace `/tests/yajl`
-sudo kdb mount config.json /tests/yajl yajl
+# Mount the plugin to `user/tests/yajl`
+sudo kdb mount config.json user/tests/yajl yajl
 
 # Add two directory keys and one leaf key
-kdb set /tests/yajl/roots 'Things Fall Apart'
-kdb set /tests/yajl/roots/bloody 'Radical Face'
-kdb set /tests/yajl/roots/bloody/roots 'No Roots'
+kdb set user/tests/yajl/roots 'Things Fall Apart'
+kdb set user/tests/yajl/roots/bloody 'Radical Face'
+kdb set user/tests/yajl/roots/bloody/roots 'No Roots'
 
 # Add an array containing two elements
-kdb set /tests/yajl/now ', Now'
-kdb set /tests/yajl/now/#0 'Neighbors'
-kdb set /tests/yajl/now/#1 'Threads'
+kdb set user/tests/yajl/now ', Now'
+kdb set user/tests/yajl/now/#0 'Neighbors'
+kdb set user/tests/yajl/now/#1 'Threads'
 
-kdb ls /tests/yajl
-#> user/tests/yajl
+kdb ls user/tests/yajl
 #> user/tests/yajl/now
 #> user/tests/yajl/now/#0
 #> user/tests/yajl/now/#1
@@ -178,28 +173,28 @@ kdb ls /tests/yajl
 #> user/tests/yajl/roots/bloody/roots
 
 # Retrieve directory values
-kdb get /tests/yajl/roots
+kdb get user/tests/yajl/roots
 #> Things Fall Apart
-kdb get /tests/yajl/roots/bloody
+kdb get user/tests/yajl/roots/bloody
 #> Radical Face
 
 # Retrieve leaf value
-kdb get /tests/yajl/roots/bloody/roots
+kdb get user/tests/yajl/roots/bloody/roots
 #> No Roots
 
 # Check array
-kdb get /tests/yajl/now
+kdb get user/tests/yajl/now
 #> , Now
-kdb getmeta /tests/yajl/now array
+kdb getmeta user/tests/yajl/now array
 #> #1
-kdb get /tests/yajl/now/#0
+kdb get user/tests/yajl/now/#0
 #> Neighbors
-kdb get /tests/yajl/now/#1
+kdb get user/tests/yajl/now/#1
 #> Threads
 
 # Undo modifications to the database
-kdb rm -r /tests/yajl
-sudo kdb umount /tests/yajl
+kdb rm -r user/tests/yajl
+sudo kdb umount user/tests/yajl
 ```
 
 ## OpenICC Device Config

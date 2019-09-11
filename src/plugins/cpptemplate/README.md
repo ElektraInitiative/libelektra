@@ -5,7 +5,7 @@
 - infos/provides = storage/info
 - infos/recommends =
 - infos/placements = getstorage
-- infos/status = experimental maintained unittest nodep nodoc concept
+- infos/status = maintained unittest nodep experimental nodoc concept
 - infos/metadata =
 - infos/description = A template for C++ based plugins
 
@@ -26,7 +26,7 @@ scripts/copy-template -p pluginname
 ```sh
 sudo kdb mount -R noresolver none user/tests/cpptemplate cpptemplate some=thing config=value
 
-# This example plugin adds configuration values at the mountpoint
+# This example plugin adds configuration values at the mount point
 kdb ls user/tests/cpptemplate
 #> user/tests/cpptemplate/config
 #> user/tests/cpptemplate/path

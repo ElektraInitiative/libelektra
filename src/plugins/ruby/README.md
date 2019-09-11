@@ -19,7 +19,6 @@ The plugin has the following configuration options:
 
 - `script`: path to the Ruby plugin to use (mandatory)
 
-
 ## Usage
 
 Mount a configuration file using this plugin, which specifying the concrete Ruby Elektra plugin:
@@ -53,7 +52,8 @@ Kdb::Plugin.define :somename do
   #  - -1      : error during initialization
   def open(errorKey)
 
-    # generally it is save to simply throw an exception. This has the same
+    # perform plugin initialization
+    # if an error occurs it is save to simply throw an exception. This has the same
     # semantic as returning -1
   end
 
@@ -123,7 +123,7 @@ Kdb::Plugin.define :somename do
   #  - nil or 1 : on success
   #           0 : on success with no action
   #          -1 : failure
-  def set(returned, parentKey)
+  def error(returned, parentKey)
 
   end
 
@@ -137,4 +137,3 @@ end
   is still needed or not (libelektra might be used by an Ruby application).
 - The plugin does not work correctly with Ruby version managers like `rbenv` or `rvm` and is
   intended to be used with the Ruby ecosystem installed in system context.
-- Automated test cases are missing

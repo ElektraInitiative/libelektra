@@ -23,62 +23,60 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 ## Examples
 
 `check/math = "== + ../testval1 + ../testval2 ../testval3"` compares the keyvalue to the sum of testval1-3 and yields an error if the values are not equal.
-`check/math = "<= - @/testval1 * @/testval2 @/testval3"` tests if the keyvalue is less than or equal to testval1 - (testval2 * testval3) and yields an error if not.
+`check/math = "<= - @/testval1 * @/testval2 @/testval3"` tests if the keyvalue is less than or equal to `testval1 - (testval2 * testval3)` and yields an error if not.
 
 Full example:
+
 ```sh
-# Backup-and-Restore:/tests/mathcheck
+# Backup-and-Restore:user/tests/mathcheck
 
-sudo kdb mount mathcheck.dump /tests/mathcheck mathcheck
+sudo kdb mount mathcheck.dump user/tests/mathcheck mathcheck
 
-kdb set /tests/mathcheck/a 3.1
-kdb set /tests/mathcheck/b 4.5
-kdb set /tests/mathcheck/k 7.6
+kdb set user/tests/mathcheck/a 3.1
+kdb set user/tests/mathcheck/b 4.5
+kdb set user/tests/mathcheck/k 7.6
 kdb setmeta user/tests/mathcheck/k check/math "== + ../a ../b"
 
 # should fail
-kdb set /tests/mathcheck/k 7.7
+kdb set user/tests/mathcheck/k 7.7
 # RET:5
-# ERROR:123
+# ERROR:C03200
 # Set string to "7.7"
-# The command set failed while accessing the key database with the info:
-# Error (#123) occurred!
-# Description: invalid value
-# Ingroup: plugin
-# Module: mathcheck
-# At: /home/thomas/Dev/Elektra/libelektra/src/plugins/mathcheck/mathcheck.c:399
-# Reason: 7.7 != 7.6
-# Mountpoint: /tests/mathcheck
-# Configfile: /home/thomas/.config/mathcheck.dump.25680:1478749409.938013.tmp
+# Sorry, module mathcheck issued the error C03200:
+# invalid value: 7.7 != 7.6
 ```
+
 To calculate values on-demand you can use:
+
 ```sh
 kdb setmeta user/tests/mathcheck/k check/math ":= + @/a @/b"
-kdb set /tests/mathcheck/a 8.0
-kdb set /tests/mathcheck/b 4.5
+kdb set user/tests/mathcheck/a 8.0
+kdb set user/tests/mathcheck/b 4.5
 
-kdb get /tests/mathcheck/k
+kdb get user/tests/mathcheck/k
 #> 12.5
 
-kdb set /tests/mathcheck/a 5.5
+kdb set user/tests/mathcheck/a 5.5
 
-kdb get /tests/mathcheck/k
+kdb get user/tests/mathcheck/k
 #> 10
 ```
+
 It also works with constants:
+
 ```sh
 kdb setmeta user/tests/mathcheck/k check/math ":= + ../a '5'"
-kdb set /tests/mathcheck/a 5.5
+kdb set user/tests/mathcheck/a 5.5
 
-kdb get /tests/mathcheck/k
+kdb get user/tests/mathcheck/k
 #> 10.5
 
-kdb set /tests/mathcheck/a 8.0
+kdb set user/tests/mathcheck/a 8.0
 
-kdb get /tests/mathcheck/k
+kdb get user/tests/mathcheck/k
 #> 13
 
 #cleanup
-kdb rm -r /tests/mathcheck
-sudo kdb umount /tests/mathcheck
+kdb rm -r user/tests/mathcheck
+sudo kdb umount user/tests/mathcheck
 ```

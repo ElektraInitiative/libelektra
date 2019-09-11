@@ -19,11 +19,8 @@
 ##
 ########################################################################
 
-
 [ -z "$KDB" ] && KDB="kdb"
 [ -z "$ROOT" ] && ROOT="system/sw/xorg"
-
-
 
 echo "$KDB set $ROOT"
 echo "$KDB set $ROOT/Device"
@@ -78,4 +75,3 @@ echo "$KDB set $ROOT/ServerLayout/Default/InputDevice/CorePointer     'Mouse0'"
 echo
 echo
 echo
-

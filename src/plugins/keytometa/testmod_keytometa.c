@@ -31,9 +31,12 @@ static Key * createMergingKey (int i)
 	char * name;
 	char * value;
 	char * order;
-	asprintf (&name, "user/convertkey%d", i);
-	asprintf (&value, "meta line %d", i);
-	asprintf (&order, "%i", i);
+	if (asprintf (&name, "user/convertkey%d", i) == -1 || asprintf (&value, "meta line %d", i) == -1 ||
+	    asprintf (&order, "%i", i) == -1)
+	{
+		fprintf (stderr, "Unable to create key attributes");
+		exit (EXIT_FAILURE);
+	}
 	Key * key = keyNew (name, KEY_VALUE, value, KEY_META, "order", order, KEY_END);
 	elektraFree (name);
 	elektraFree (value);

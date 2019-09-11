@@ -15,6 +15,6 @@
 int elektraIniGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraIniSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ini);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

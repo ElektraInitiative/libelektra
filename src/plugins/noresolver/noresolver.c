@@ -37,7 +37,7 @@ static KeySet * elektraNoresolverModules (void)
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraNoresolverSet, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", KEY_FUNC, elektraNoresolverError, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", KEY_FUNC, elektraNoresolverCheckFile, KEY_END),
-#include ELEKTRA_README (noresolver)
+#include ELEKTRA_README
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
@@ -75,8 +75,12 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return 1; /* success */
 }
 
-int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
+	if (pathKey) keySetString (parentKey, keyString (pathKey));
+
 	return 1; /* success */
 }
 
@@ -87,7 +91,7 @@ int elektraNoresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (noresolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("noresolver",

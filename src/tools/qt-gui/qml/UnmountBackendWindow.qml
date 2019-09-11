@@ -65,7 +65,7 @@ BasicWindow {
 		Button {
 			id: unmountButton
 
-			anchors.horizontalCenter: parent.horizontalCenter
+                        Layout.alignment : Qt.AlignHCenter
 			action: Action {
 				text: qsTr("&Unmount")
 				onTriggered: {

@@ -12,10 +12,15 @@ In Elektra different forms of application integrations are possible:
    - [Intercept File System](/src/bindings/intercept/fs/README.md)
 3. Integration where applications directly use Elektra to read and
    store settings.
+   1. Using the low-level API.
+   2. Using the high-level API.
 
-In this tutorial we will discuss (3), i.e., how to
+In this tutorial we will discuss (3.1), i.e., how to
 extend an application to directly access Elektra’s
-key database.
+key database. If you are new to Elektra, we recommend you familiarize
+yourself with the basic concepts using this guide, but when it comes
+to elektrifying your application (3.2) is mostly likely the better option.
+So take a look at [how to use the high-level API](highlevel.md).
 
 When the application is fully integrated in Elektra’s ecosystem
 following benefits arise:
@@ -23,10 +28,10 @@ following benefits arise:
 - Benefits that shared libraries have, e.g.
   - All applications profit from fixes, optimization and new features
   - Less memory consumption, because the libraries executable
-      instructions are only loaded once
+    instructions are only loaded once
   - Faster development time, because many non-trivial problems (e.g.
-      OS-dependent resolving of configuration file names with atomic
-      updates) are already solved and tested properly
+    OS-dependent resolving of configuration file names with atomic
+    updates) are already solved and tested properly
 - The administrator can choose:
   - the configuration file syntax (e.g. XML or JSON)
   - notification and logging on configuration changes
@@ -35,7 +40,7 @@ following benefits arise:
 - The parsing result is guaranteed to be the same because the same
   parser will be used.
 - Other applications can use your configuration as override or as
-    fallback (see below)
+  fallback (see below)
 
 ## Elektrify
 
@@ -45,7 +50,7 @@ We call the process of making applications aware of other's configuration
 As first step, locate places where configuration is parsed or generated.
 Afterwards, use Elektra’s data structures instead at these locations.
 Before we are going to describe how to do this, we will describe
-some possibilities to keep all advantages your previous configuration 
+some possibilities to keep all advantages your previous configuration
 system had.
 
 You can keep code you want within Elektra as plugins. This allows your
@@ -76,7 +81,6 @@ world it is a matter of time until other software also wants to
 access the configuration, and with elektrified software it is possible
 for every application to do so.
 
-
 ## Get Started
 
 As first step in a C-application you need to create an in-memory `Key`. Such a
@@ -91,33 +95,32 @@ as arguments in the API to transport some information.
 
 Thus a key is in-memory and does not need any of the other Elektra objects.
 We always can create one (the tutorial will use the C-API, but it describes
- general concepts useful for other languages in the same way):
+general concepts useful for other languages in the same way):
 
 ```c
 Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 ```
 
 - The first argument of `keyNew` is the name of the key.
- It consists of different parts, `/` is the hierarchy-separator:
+  It consists of different parts, `/` is the hierarchy-separator:
   - `sw` is for software
   - `org` is a URL/organization name to avoid name clashes with other
-      application names. Use only one part of the URL/organization,
-      so e.g. `kde` is enough.
+    application names. Use only one part of the URL/organization,
+    so e.g. `kde` is enough.
   - `myapp` is the name of the most specific component that has its own
-      configuration
+    configuration
   - `#0` is the major version number of the configuration (increment
     if you need to introduce incompatible changes).
   - `current` is the [profile](/src/plugins/profile/README.md)
-      to use. Administrators need it
-      if they want to start up applications with different configurations.
+    to use. Administrators need it
+    if they want to start up applications with different configurations.
 - `KEY_END` as C needs a proper termination of variable
-    length arguments.
+  length arguments.
 
 The key name is standardized to make it easier to locate configuration.
 
 - [Read more about key-functions in API doc.](https://doc.libelektra.org/api/current/html/group__key.html)
 - [Read more about key names here.](/doc/help/elektra-key-names.md)
-
 
 Now we have the `Key` we will use to pass as argument.
 First we open our key database (KDB):
@@ -138,8 +141,8 @@ KeySet *conf = ksNew(200, KS_END);
 ```
 
 - 200 is an approximation for how many `Key`s we think we will have in
-    the `KeySet` `conf`, intended for optimization purposes.
-- After the first argument we can list build-in keys that should be
+  the `KeySet` `conf`, intended for optimization purposes.
+- After the first argument we can list built-in keys that should be
   available in any case.
 - The last argument needs to be `KS_END`.
 
@@ -184,7 +187,7 @@ char *val = keyString(k);
 ```
 
 We need to convert the configuration value to the data type we
-need. 
+need.
 
 To do this manually has severe drawbacks:
 
@@ -197,9 +200,7 @@ So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe frontend.
 
 For more information about that, continue reading
-[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
-
-
+[here](https://master.libelektra.org/src/tools/pythongen).
 
 ## Specification
 
@@ -210,21 +211,25 @@ the goal of Elektra.
 
 Elektra 0.8.11 introduces the so called specification for the
 application's configuration, located below its own [namespace](/doc/help/elektra-namespaces.md)
-`spec` (next to user and system).
+`spec`. The specification itself also consists of (meta) key-value pairs.
 
 Keys in `spec` allow us to specify which keys the application reads,
 which fallback they might have and which is the default value using
-metadata. The implementation of these features happened in `ksLookup`.
+metadata.
+
+### Links
+
+The implementation of links are in `ksLookup`.
 When using cascading keys (those starting with `/`), the following features
 are now available (in the metadata of respective `spec`-keys):
 
-- `override/#`: use these keys *in favor* of the key itself (note that
-    `#` is the syntax for arrays, e.g. `#0` for the first element,
-    `#_10` for the 11th and so on)
+- `override/#`: use these keys _in favor_ of the key itself (note that
+  `#` is the syntax for arrays, e.g. `#0` for the first element,
+  `#_10` for the 11th and so on)
 - `namespace/#`: instead of using all namespaces in the predefined order,
-    one can specify namespaces to search in a given order
+  one can specify namespaces to search in a given order
 - `fallback/#`: when no key was found in any of the (specified) namespaces
-    the `fallback`-keys will be searched
+  the `fallback`-keys will be searched
 - `default`: the value to use if nothing else was found
 
 You can use those features like following:
@@ -241,13 +246,11 @@ configuration value. In practice that means that:
 kdb get "/sw/org/myapp/#0/current/section/subsection/key"
 ```
 
-, will give you the *exact same value* as the application gets when it uses the
+, will give you the _exact same value_ as the application gets when it uses the
 above lookup C code.
 
 What we do not see in the program above are the default values and
-fallbacks. They are present in the so-called specification (namespace `spec`).
-The specification consists of (meta) key-value pairs, too. So we do not have
-to learn something new.
+fallbacks. They are also present in the specification (namespace `spec`).
 
 So lets say, that another application `otherapp` has the
 value we actually want. We want to improve the integration. In the case that we
@@ -263,18 +266,60 @@ kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key \
 
 Voila, we have done a system integration between `myapp` and `otherapp`!
 
-Note that the fallback, override and cascading works on *key level*,
-and not like most other systems have implemented, on configuration *file level*.
+Note that the fallback, override and cascading works on _key level_,
+and not like most other systems have implemented, on configuration _file level_.
 
 To make this work within your application make sure to always call
 `ksLookup` before using a value from Elektra.
 
+### Specfiles
+
+We call the files, that contain a complete schema for configuration
+below a specific path in form of metadata, _Specfiles_.
+
+Particularly a _Specfile_ contains metadata that defines
+
+- the mount points of paths,
+- the plugins to load and
+- the behavior of these plugins.
+
+```sh
+sudo kdb mount tutorial.ecf spec/sw/org/myapp/#0/current"
+cat << HERE | kdb import spec/sw/org/myapp/#0/current ni  \
+[]                                         \
+ mountpoint = my-config-file.ini           \
+ infos/plugins = ini validation            \
+                                           \
+[section/subsection/key]                   \
+fallback/#0=/sw/otherorg/otherapp/#0/current/section/subsection/key  \
+description = A description of the key     \
+HERE
+kdb lsmeta spec/sw/org/myapp/#0/current # verify if specification is present now
+#> infos/plugins
+#> mountpoint
+```
+
+Now we apply this _Specfile_ to the key database to all keys below
+`/sw/org/myapp/#0/current`:
+
+```sh
+kdb spec-mount /sw/org/myapp/#0/current
+```
+
+Then the configuration of our application will be in my-config-file.ini
+(because of `mountpoint` in the specification) and it will use the INI
+format (because of `infos/plugins` in the specification).
+`section/subsection/key` contains the specification of what we
+already specified imperatively before.
+
+For a description which metadata is available, have a look in
+[METADATA.ini](/doc/METADATA.ini).
 
 ## Conclusion
 
 Elektra does not hard code any configuration data in your application.
 Using the `default` specification, we even can startup applications without
-any configuration file *at all* and still do not have anything hard coded
+any configuration file _at all_ and still do not have anything hard coded
 in the applications binary.
 Furthermore, by using cascading keys for `kdbGet()` and `ksLookup()`
 Elektra gives you the possibility to specify how to retrieve configuration data.
@@ -282,6 +327,6 @@ In this specification you can define to consider or prefer configuration data
 from other applications or shared places. Doing so, we can achieve configuration
 integration.
 
-## SEE ALSO
+## See Also
 
-- [for advanced techniques e.g. transformations](https://www.libelektra.org/ftp/elektra/publications/raab2015sharing.pdf)
+- [how to validate configuration with the specification](validation.md)

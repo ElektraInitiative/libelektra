@@ -1,7 +1,5 @@
 FROM ubuntu:artful
 
-ARG SWIGVERSION="3.0.11"
-
 RUN apt-get -qq update && apt-get -qq -y install \
 	curl \
 	build-essential \
@@ -12,7 +10,6 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	pkg-config \
 	doxygen \
 	graphviz \
-	bison \
 	ruby-dev \
 	python-dev \
 	python3-dev \
@@ -24,6 +21,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libgit2-dev \
 	libboost-all-dev \
 	libssl-dev \
+	libgpgme-dev \
 	libdbus-1-dev \
 	libpcre3-dev \
 	libpcre++-dev \
@@ -31,6 +29,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	swig3.0 \
 	libuv1-dev \
 	libev-dev \
+	libzmq3-dev \
 	checkinstall \
 	valgrind \
 && gem install ronn \

@@ -43,10 +43,10 @@
  */
 
 #ifndef KDBOS_H
+#define KDBOS_H
 #ifndef KDB_H
 #error you attempted to include kdbos.h outside from kdb.h, please include kdb.h instead
 #endif
-#define KDBOS_H
 
 #ifdef __cplusplus
 #define KS_END (static_cast<ckdb::Key *> (0))
@@ -81,14 +81,14 @@
 /** The buffer size needed for an array name
  *
  * The size of the buffer so that the buffer can contain:
- * - a # in the beginning
- * - up to 9 underscores are needed as prefix
- * - a 32bit number has a maximum of 10 digits
- * - one byte for null termination
+ * - (1) a # in the beginning
+ * - (9) up to 19 underscores are needed as prefix
+ * - (20) a 64bit number has a maximum of 20 digits
+ * - (1) one byte for null termination
  *
- * E.g. \#_________4000000000\\0
+ * E.g. \#___________________18446744073709551615\\0
  */
-#define ELEKTRA_MAX_ARRAY_SIZE (21)
+#define ELEKTRA_MAX_ARRAY_SIZE (1 + 19 + 20 + 1)
 
 /**Default Mode.
  * This mode will be used for new files*/

@@ -15,22 +15,28 @@ None.
 
 ## Considered Alternatives
 
-* pythonpaste
- + easy to work with
- - can only trace a single directory (would not work with /etc + ~)
- - extra dependency not in any distro
+- pythonpaste
 
-* robotframework
- - additional (fat) dependency
- - integration with cmake?
- - does not allow one to capture stdout, stderr + return code
+  - Pros:
+    - easy to work with
+  - Cons:
+    - can only trace a single directory (would not work with /etc + ~)
+    - extra dependency not in any distro
 
-* expect
- + interactive testing (e.g. for kdb mount)
- - quite long for simple things (e.g. check /bin/true needs 4 lines)
- - new syntax for Elektra (TCL)
- - additional dependency
+- robotframework
 
+  - Cons:
+    - additional (fat) dependency
+    - integration with cmake?
+    - does not allow one to capture stdout, stderr + return code
+
+- expect
+  - Pros:
+    - interactive testing (e.g. for kdb mount)
+  - Cons:
+    - quite long for simple things (e.g. check /bin/true needs 4 lines)
+    - new syntax for Elektra (TCL)
+    - additional dependency
 
 ## Decision
 
@@ -40,7 +46,7 @@ Develop shell recorder and tutorial wrapper.
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 

@@ -91,4 +91,3 @@ cat << EOF > "${FFLibDir}/defaults/pref/${AutoConfigLauncher}"
 pref("general.config.filename", "${AutoConfigScript}");
 pref("general.config.obscure_value", 0);
 EOF
-

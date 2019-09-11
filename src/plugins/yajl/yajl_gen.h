@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbconfig.h>
 #include <kdberrors.h>
+#include <kdbmacros.h>
 #include <kdbobsolete.h>
 
 #include <yajl/yajl_gen.h>
@@ -24,7 +24,8 @@
 #include "iterator.h"
 #include "name.h"
 
-typedef enum {
+typedef enum
+{
 	/**
 	 * We are at end of string, so no lookahead.
 	 */

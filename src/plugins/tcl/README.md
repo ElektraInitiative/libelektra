@@ -9,26 +9,28 @@
 
 ## Introduction
 
-This plugin is a storage plugin which writes keys to lists *in the style of*
+This plugin is a storage plugin which writes keys to lists _in the style of_
 the Tcl programming language.
 
 ## Format
 
-The format does not have significant spaces.  The advantage of TCL style
+The format does not have significant spaces. The advantage of TCL style
 lists is that also arbitrary metadata can be embedded in a natural and
 distinguish-able style. It looks like:
 
+```
+{
     {
+        key=val
         {
-            key=val
-            {
-                metakey = b
-            }
-            {
-                comment = huhu
-            }
+            metakey = b
+        }
+        {
+            comment = huhu
         }
     }
+}
+```
 
 ## Basic Usage
 
@@ -104,5 +106,3 @@ sudo kdb umount user/tests
 ## Dependencies
 
 - `libboost-dev`
-
-

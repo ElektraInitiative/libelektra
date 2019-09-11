@@ -6,6 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#ifndef ELEKTRA_PLUGIN_ICONV_CONV_H
+#define ELEKTRA_PLUGIN_ICONV_CONV_H
+
 #include <kdberrors.h>
 #include <kdbplugin.h>
 
@@ -28,4 +31,6 @@ int kdbbUTF8Engine (Plugin * handle, int direction, char ** string, size_t * inp
 
 int elektraIconvGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraIconvSet (Plugin * handle, KeySet * ks, Key * parentKey);
-Plugin * ELEKTRA_PLUGIN_EXPORT (iconv);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
+
+#endif

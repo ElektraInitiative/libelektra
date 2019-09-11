@@ -1,0 +1,117 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+// -------------------------
+// Enum conversion functions
+// -------------------------
+
+/*%# enums %*/
+ELEKTRA_KEY_TO_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	const char * string;
+	if (!elektraKeyToString (key, &string) || strlen (string) == 0)
+	{
+		return 0;
+	}
+
+	/*%# switch_from_string? %*/
+	/*%& from_string_code %*/
+	/*%/ switch_from_string? %*/
+	/*%^ switch_from_string? %*/
+	/*%# values %*/
+	if (strcmp (string, "/*% string_value %*/") == 0)
+	{
+		*variable = /*%& name %*/;
+		return 1;
+	}
+	/*%/ values %*/
+	/*%/ switch_from_string? %*/
+
+	return 0;
+}
+
+ELEKTRA_TO_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	switch (value)
+	{
+	/*%# values %*/
+	case /*%& name %*/:
+		return elektraStrDup ("/*% string_value %*/");
+		/*%/ values %*/
+	}
+
+	// should be unreachable
+	return elektraStrDup ("");
+}
+
+ELEKTRA_TO_CONST_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	switch (value)
+	{
+	/*%# values %*/
+	case /*%& name %*/:
+		return "/*% string_value %*/";
+		/*%/ values %*/
+	}
+
+	// should be unreachable
+	return "";
+}
+/*%/ enums %*/
+
+// -------------------------
+// Enum accessor functions
+// -------------------------
+
+/*%# enums %*/
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	/*%& native_type %*/ result;
+	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
+	if (!ELEKTRA_KEY_TO (/*%& type_name %*/) (key, &result))
+	{
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		return (/*%& native_type %*/) 0;
+	}
+	return result;
+}
+
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	/*%& native_type %*/ result;
+	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
+	if (!ELEKTRA_KEY_TO (/*%& type_name %*/) (key, &result))
+	{
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		return (/*%& native_type %*/) 0;
+	}
+	return result;
+}
+
+/*%# generate_setters? %*/
+ELEKTRA_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	char * string = ELEKTRA_TO_STRING (/*%& type_name %*/) (value);
+	if (string == 0)
+	{
+		*error = elektraErrorConversionToString (KDB_TYPE_ENUM, keyname);
+		return;
+	}
+	elektraSetRawString (elektra, keyname, string, KDB_TYPE_ENUM, error);
+	elektraFree (string);
+}
+
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	char * string = ELEKTRA_TO_STRING (/*%& type_name %*/) (value);
+	if (string == 0)
+	{
+		*error = elektraErrorConversionToString (KDB_TYPE_ENUM, keyname);
+		return;
+	}
+	elektraSetRawStringArrayElement (elektra, keyname, index, string, KDB_TYPE_ENUM, error);
+	elektraFree (string);
+}
+/*%/ generate_setters? %*/
+/*%/ enums %*/

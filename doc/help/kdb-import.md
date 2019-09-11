@@ -1,5 +1,4 @@
-kdb-import(1) -- Import an existing configuration into the key database
-=======================================================================
+# kdb-import(1) -- Import an existing configuration into the key database
 
 ## SYNOPSIS
 
@@ -26,7 +25,7 @@ Conflicts when importing can be resolved using a strategy with the `-s` argument
 
 Specific to `kdb import` the following strategy exists:
 
-- `validate`: 
+- `validate`:
   apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
@@ -47,7 +46,9 @@ The other strategies are implemented by the merge framework and are documented i
 - `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
 - `-N`, `--namespace <namespace>`:
@@ -67,19 +68,18 @@ The other strategies are implemented by the merge framework and are documented i
   By default the namespace is user, except `kdb` is used as root, then `system`
   is the default (`validate` strategy only).
 
-
 ## EXAMPLES
 
-To import a configuration stored in the XML format in a file called `example.xml` below `user/keyset`:
+To import a configuration stored in the XML format in a file called `example.xml` below `user/keyset`:<br>
 `kdb import user/keyset xmltool < example.xml`
 
-To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` replacing any previous keys stored there:
+To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` replacing any previous keys stored there:<br>
 `cat example.ini | kdb import -s cut user/keyset ini`
 
-To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` keeping any previous keys stored there that aren't present in the newly imported configuration:
+To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` keeping any previous keys stored there that aren't present in the newly imported configuration:<br>
 `cat example.ini | kdb import -s import user/keyset ini`
 
-To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:
+To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:<br>
 `cat sw.ecf | kdb import system/sw`
 
 ## SEE ALSO

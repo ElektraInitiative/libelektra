@@ -1,8 +1,9 @@
+always_wrap:
+  - add_plugin
 bullet_char: '-'
 command_case: lower
 line_ending: unix
 line_width: 140
-max_subargs_per_line: 1
 separate_ctrl_name_with_space: True
 separate_fn_name_with_space: True
 tab_size: 8
@@ -57,9 +58,24 @@ additional_commands:
       TEST_LINK_ELEKTRA: +
       LINK_PLUGIN: +
       WORKING_DIRECTORY: +
+      TIMEOUT: 1
+
+  add_msr_test:
+    kwargs:
+      REQUIRED_PLUGINS: +
 
   download_project:
     kwargs:
       PROJ: 1
       GIT_REPOSITORY: 1
       GIT_TAG: 1
+
+  elektra_kdb_gen:
+    kwargs:
+      pargs: 3
+      OUTPUT_DIR: 1
+      KDB: 1
+      INPUT: 2
+      PARTS: +
+      PARAMS: +
+      OPTIONS: +

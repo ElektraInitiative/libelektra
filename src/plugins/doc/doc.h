@@ -102,6 +102,23 @@
  * Note that you also need to return -1 in the case of error.
  * See individual description of entry points to implement below.
  *
+ * @par Global KeySet Handle
+ *
+ * This keyset allows plugins to exchange information with other plugins.
+ *
+ * The keyset is initialized by the KDB for all plugins, except for manually
+ * created plugins with `elektraPluginOpen()`. The global keyset is
+ * tied to a KDB handle, initialized on `kdbOpen()` and deleted on `kdbClose()`.
+ *
+ * Obtain a handle to the global keyset and work with it:
+ *
+ * @snippet doc.c get global keyset
+ *
+ * Clean up keys which you do not need any more,
+ * to keep the global keyset compact:
+ *
+ * @snippet doc.c get global keyset cleanup
+ *
  * @par Further help
  * Do not hesitate to open an issue if anything
  * is unclear.
@@ -114,7 +131,8 @@
 /**
  * @brief Sets the error in the keys metadata.
  *
- * Include kdberrors.h to make it work:
+ * Include kdberrors.h to make it work.
+ * Only a single error can be written to the key.
  *
  * @snippet doc.c plugin errors include
  *
@@ -129,7 +147,8 @@
 /**
  * @brief Sets the error in the keys metadata.
  *
- * Include kdberrors.h to make it work:
+ * Include kdberrors.h to make it work.
+ * Only a single error can be written to the key.
  *
  * @snippet doc.c plugin errors include
  *
@@ -514,6 +533,40 @@ int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
  */
 int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
+/**
+ * @brief Make changes to storage final.
+ *
+ * Once the content of @p returned has been stored, the changes need
+ * to be made final and visible to other users, which is done by this function. After this function
+ * has been called, no further changes can be made by elektraPluginSet() functions within this invocation of kdbSet().
+ *
+ * The function is called by kdbSet() if the plugin implementing it fulfills the `commit` role.
+ *
+ * @pre The keyset @p returned holds all stored keys which must be made final for this keyset.
+ * The keyset is sorted and rewinded.
+ *
+ * @pre The @p parentKey is the key which is the ancestor for all other keys in the
+ * keyset. The first key of the keyset @p returned has the same keyname.
+ * The name of the parentKey marks the mountpoint.
+ *
+ * @post the storage changes made by the plugins previously called by kdbSet() will be made final.
+ *
+ * @see kdbSet() for caller.
+ *
+ * @param handle contains internal information of the plugin
+ * @param returned contains a keyset with relevant keys
+ * @param parentKey contains the location of the relevant keys within the key database.
+ *
+ * @retval 1 on success
+ * @retval 0 on success without any changes
+ * @retval -1 on failure. The cause of the error needs to be entered into parentKey,
+ * ksGetCursor() needs to point to the position where the error appeared. The error
+ * can be specified using #ELEKTRA_SET_ERROR. #ELEKTRA_ADD_WARNING can be used to
+ * add warnings for the user.
+ *
+ * @ingroup plugin
+ */
+int elektraDocCommit (Plugin * handle, KeySet * returned, Key * parentKey);
 
 /**
  * @brief Rollback in case of errors.

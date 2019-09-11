@@ -1,5 +1,4 @@
 include (LibAddMacros)
 
 add_plugin (dpkg
-	    SOURCES dpkg.h
-		    dpkg.c)
+	    SOURCES dpkg.h dpkg.c)

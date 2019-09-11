@@ -17,7 +17,10 @@
 class Cmdline;
 
 /**
- * Base class for any exceptions thrown in a command.
+ * Base class for some of the exceptions thrown in a command, except
+ * (see main.cpp for handling):
+ * - KDBException for KDB errors
+ * - invalid_argument is thrown for argument errors
  */
 class CommandException : public std::exception
 {
@@ -36,20 +39,21 @@ public:
 class CommandAbortException : public CommandException
 {
 	int m_errorCode;
-	const char * m_msg;
+	std::string m_msg;
 
 public:
-	CommandAbortException () : m_errorCode (3), m_msg (0)
+	CommandAbortException () : m_errorCode (3), m_msg ()
 	{
 	}
 
-	explicit CommandAbortException (const char * msg, int errorCode_ = 3) : m_errorCode (errorCode_), m_msg (msg)
+	explicit CommandAbortException (std::string msg, int errorCode = 3) : m_errorCode (errorCode), m_msg (msg)
 	{
 	}
 
 	virtual const char * what () const throw () override
 	{
-		return m_msg ? m_msg : "A situation had a appeared where the command had to abort, but no message is available.";
+		return !m_msg.empty () ? m_msg.c_str () :
+					 "A situation had occurred where the command had to abort, but no message is available.";
 	}
 
 	virtual int errorCode () const throw () override

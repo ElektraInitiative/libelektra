@@ -39,23 +39,23 @@ set (ADDITIONAL_TEST_LIBRARIES "m")
 
 set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
 add_headers (TEST_SOURCES)
-file (GLOB IO_TEST_SRC_FILES
-	   "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
-list (APPEND TEST_SOURCES
-	     ${IO_TEST_SRC_FILES})
-list (APPEND TEST_SOURCES
-	     "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
+file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
+list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
+list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 add_executable (${testexename} ${TEST_SOURCES})
-add_dependencies (${testexename} kdberrors_generated)
+add_dependencies (${testexename} kdberrors_generated elektra_error_codes_generated)
 
 target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 
-target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} ${ADDITIONAL_TEST_LIBRARIES})
+target_link_elektra (${testexename}
+		     elektra-kdb
+		     elektra-plugin
+		     elektra-io
+		     ${IO_VARIANT_LIBRARY}
+		     ${ADDITIONAL_TEST_LIBRARIES})
 
 add_test (NAME ${testexename}
 	  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 	  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-set_property (TEST ${testexename}
-	      PROPERTY ENVIRONMENT
-		       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")

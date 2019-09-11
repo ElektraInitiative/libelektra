@@ -87,7 +87,7 @@ int MvCommand::execute (Cmdline const & cl)
 	}
 
 	kdb.set (newConf, root);
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	return 0;
 }

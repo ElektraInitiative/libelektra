@@ -96,7 +96,7 @@ int elektraKeyAppendMetaLine (Key * target, const char * metaName, const char * 
 
 	keyGetString (existingMeta, buffer, keyGetValueSize (existingMeta));
 	strcat (buffer, "\n");
-	strncat (buffer, line, strlen (line));
+	strncat (buffer, line, elektraStrLen (line));
 
 	keySetMeta (target, metaName, buffer);
 	elektraFree (buffer);
@@ -253,7 +253,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (ret < 0)
 	{
 		elektraFree (keyArray);
-		ELEKTRA_SET_ERROR (87, parentKey, strerror (errno));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
 		errno = errnosave;
 		return 0;
 	}
@@ -356,7 +356,7 @@ int elektraKeyToMetaClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (keytometa)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("keytometa",

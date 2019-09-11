@@ -1,5 +1,4 @@
-kdb-complete(1) -- Show suggestions how to complete a given path
-================================
+# kdb-complete(1) -- Show suggestions how to complete a given path
 
 ## SYNOPSIS
 
@@ -13,7 +12,7 @@ to calling `kdb complete ""`.
 
 Show suggestions how the current name could be completed.
 Suggestions will include existing key names, path segments of existing key names,
-namespaces and mountpoints.
+namespaces and mount points.
 Additionally, the output will indicate whether the given path is a node or a leaf
 in the hierarchy of keys, nodes end with '/' as opposed to leaves.
 It will also work for cascading keys, and will additionally display a cascading
@@ -37,24 +36,24 @@ originates from.
   Specify the maximum depth of completion suggestions (unlimited by default, 1
   to show only the next level), inclusive and relative to the name to complete.
 - `-v`, `--verbose`:
-  Give a more detailed output, showing the number of child nodes and the depth level.
+  Give a more detailed output, showing the number of child nodes and the depth level. Prints additional information in case of errors/warnings.
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-d`, `--debug`:
-  Give debug information.
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: /tests/complete/examples
+# Backup-and-Restore: user/tests/complete/examples
 
 # Create the keys we use for the examples
-kdb set /tests/complete/examples/kdb-complete/level1 foo
-kdb set /tests/complete/examples/kdb-complete/lvl1/lvl2 bar
-kdb set /tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
-kdb set /tests/complete/examples/kdb-complete/buzz fizzBuzz
-kdb set /tests/complete/examples/kdb-complete/#array_1 asdf
-kdb set /tests/complete/examples/kdb-complete/% nothing
+kdb set user/tests/complete/examples/kdb-complete/level1 foo
+kdb set user/tests/complete/examples/kdb-complete/lvl1/lvl2 bar
+kdb set user/tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+kdb set user/tests/complete/examples/kdb-complete/buzz fizzBuzz
+kdb set user/tests/complete/examples/kdb-complete/#array_1 asdf
+kdb set user/tests/complete/examples/kdb-complete/% nothing
 
 # list suggestions for namespaces starting with us, only the current level
 kdb complete us --max-depth=1
@@ -69,7 +68,7 @@ kdb complete user --max-depth=1
 kdb complete user/ --max-depth=1
 # STDOUT-REGEX: .+
 
-# list all possible namespaces or mountpoints, only the current level
+# list all possible namespaces or mount points, only the current level
 kdb complete --max-depth=1
 # STDOUT-REGEX: .+
 

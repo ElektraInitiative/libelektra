@@ -3,8 +3,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-if [ "$#" -ne 1 ] || ! [ -d "$1" ]
-then
+if [ "$#" -ne 1 ] || ! [ -d "$1" ]; then
 	echo "Usage: $SELF build-dir"
 	exit 1
 fi
@@ -31,5 +30,3 @@ cbmc --function elektraYajlSet $ARG $YINC $EINC yajl_gen.c
 
 cd $EDIR/src/libs/elektra
 cbmc -D HAVE_KDBCONFIG_H --function kdbSet $ARG $EINC kdb.c
-
-

@@ -3,7 +3,7 @@
 ## Problem
 
 - Plugin names and plugin folders not always exactly
-  match (resolver_*, crypto_*)
+  match (`resolver_*`, `crypto_*`)
 - plugin should be able to register new variants
 - there should be only one place to define a new plugin
 - Multiple categories should be possible per plugin,
@@ -53,21 +53,19 @@ Following cmake variables are used for the phases:
 - `DEPENDENCY_PHASE` .. resolve all dependencies, do `add_plugins` again
 - `ADDTESTING_PHASE` .. (reserve for potential 3rd phase)
 
-
-
-1.) Collection phase (`COLLECTION_PHASE` is `ON`),
-  add_plugin internally builds up:
-  - `ADDED_PLUGINS`
-  - `REMOVED_PLUGINS`
-  - `ADDED_DIRECTORIES`
-2.) assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
-  with:
-  - find_libraries, actually search for libraries on the system
-    (only relevant libraries of plugins that are considered for inclusion)
-  - add_plugin, with *actually adding* the plugins
-3.) assemble all unit tests (`ADDTESTING_PHASE` is `ON`), either
-  - with `ADD_TEST` in `add_plugin`, or
-  - with `add_plugintest` (for unittests that have dependencies to bindings)
+1. Collection phase (`COLLECTION_PHASE` is `ON`),
+   add_plugin internally builds up:
+   - `ADDED_PLUGINS`
+   - `REMOVED_PLUGINS`
+   - `ADDED_DIRECTORIES`
+2. assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
+   with:
+   - `find_libraries`, actually search for libraries on the system
+     (only relevant libraries of plugins that are considered for inclusion)
+   - `add_plugin`, with _actually adding_ the plugins
+3. assemble all unit tests (`ADDTESTING_PHASE` is `ON`), either
+   - with `ADD_TEST` in `add_plugin`, or
+   - with `add_plugintest` (for unittests that have dependencies to bindings)
 
 ## Rationale
 
@@ -82,12 +80,11 @@ It would:
 - maybe even find libraries in wrong versions which are incompatible to what other
   plugins need
 
-
 ## Implications
 
 - need to adopt all CMakeLists.txt
 
-## Related decisions
+## Related Decisions
 
 ## Notes
 
@@ -96,4 +93,3 @@ It would:
 - `ADDED_DIRECTORIES` of variants will be kept
 - Typos in plugin names are currently not checked,
   strings that are not plugin names are simply ignored.
-

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-EDITOR" "1" "December 2017" "" ""
+.TH "KDB\-EDITOR" "1" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-editor\fR \- Use your editor for editing KDB
@@ -65,7 +65,11 @@ Specify which strategy should be used to resolve conflicts\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Explain what is happening\.
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .TP
 \fB\-e\fR, \fB\-\-editor <editor>\fR
@@ -99,10 +103,16 @@ The default editor, if no \fB\-e\fR option is given\. Defaults to \fB/usr/bin/se
 Specifies which default namespace should be used when setting a cascading name\. By default the namespace is user, except \fBkdb\fR is used as root, then \fBsystem\fR is the default (\fBvalidate\fR strategy only)\.
 .
 .SH "EXAMPLES"
-To change the configuration in KDB below \fBuser/ini\fR with \fB/usr/bin/vim\fR, you would use: \fBkdb editor \-e /usr/bin/vim user/ini\fR
+To change the configuration in KDB below \fBuser/ini\fR with \fB/usr/bin/vim\fR, you would use:
+.
+.br
+\fBkdb editor \-e /usr/bin/vim user/ini\fR
 .
 .P
-Or set a new editor as default using: \fBkdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano\fR
+Or set a new editor as default using:
+.
+.br
+\fBkdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano\fR
 .
 .SH "SEE ALSO"
 .

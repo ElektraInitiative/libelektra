@@ -7,8 +7,7 @@ echo
 check_version
 
 FILE="$(mktempfile_elektra)"
-cleanup()
-{
+cleanup() {
 	rm -f "$FILE"
 }
 
@@ -23,8 +22,8 @@ fi
 
 printf "Checking %s\n" "$ACTUAL_PLUGINS"
 
-for PLUGIN in $ACTUAL_PLUGINS
-do
+for PLUGIN in $ACTUAL_PLUGINS; do
+	ARGS=""
 	case "$PLUGIN" in
 	'jni')
 		# References:
@@ -45,38 +44,32 @@ do
 		# output on open/close
 		continue
 		;;
-	"semlock")
-		# exclude due to issue 1781
+	"specload")
+		ARGS="-c app=$(dirname "$KDB")/elektra-specload-testapp"
+		# exclude; cannot open on travis?
+		# https://travis-ci.com/kodebach/libelektra/jobs/179018147#L2180
 		continue
 		;;
 	esac
 
-	# The following checks fail on an ASAN enabled build
-	# See also: https://github.com/ElektraInitiative/libelektra/pull/1963
 	ASAN='@ENABLE_ASAN@'
 	if [ "$ASAN" = 'ON' ]; then
+		# Do not check plugins with known memory leaks in ASAN enabled build
+		"$KDB" info "$PLUGIN" status 2> /dev/null | egrep -q 'memleak' && continue
+
 		case "$PLUGIN" in
-		'crypto_gcrypt')
-			continue
-			;;
-		'crypto_botan')
-			continue
-			;;
-		'xerces')
-			continue
-			;;
-		'ruby')
+		'augeas') # Reference: https://travis-ci.org/sanssecours/elektra/jobs/418524229
 			continue
 			;;
 		esac
 	fi
 
 	> $FILE
-	"$KDB" check "$PLUGIN" 1> "$FILE" 2> "$FILE"
-	succeed_if "check of plugin $PLUGIN failed"
+	"$KDB" check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	succeed_if "check of plugin $PLUGIN with args $ARGS failed"
 
 	test ! -s $FILE
-	succeed_if "check of plugin $PLUGIN produced: \"`cat $FILE`\""
+	succeed_if "check of plugin $PLUGIN produced: \"$(cat $FILE)\""
 done
 
 end_script basic commands

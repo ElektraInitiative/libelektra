@@ -1,6 +1,6 @@
 project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 
 if (NOT PKG_CONFIG_FOUND)
 	exclude_binding (gsettings "Need PkgConfig needed to find dependencies for gsettings backend")
@@ -33,29 +33,29 @@ add_binding (gsettings)
 
 include_directories (${GLIB_INCLUDE_DIRS})
 add_library (elektrasettings SHARED elektrasettingsbackend.c ${ELEKTRA_HEADERS})
-set (GSETTINGS_MODULE_PRIORITY
-     200
-     CACHE STRING
-	   "GIO Module Priority. Lower than 100 means dconf backend will be default.")
+set (GSETTINGS_MODULE_PRIORITY 50 CACHE STRING "GIO Module Priority. Higher than 100 means the Elektra gsettings backend will be default.")
 target_compile_definitions (elektrasettings PRIVATE G_ELEKTRA_SETTINGS_MODULE_PRIORITY=${GSETTINGS_MODULE_PRIORITY})
 if (GELEKTRA_LIBRARY)
 	include (LibFindMacros)
 	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
 	add_dependencies (elektrasettings elektra_config_headers)
 	file (MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/elektra/)
-	file (GLOB GS_ELEKTRA_HEADERS
-		   ../glib/*.h)
+	file (GLOB GS_ELEKTRA_HEADERS ../glib/*.h)
 	foreach (filename ${GS_ELEKTRA_HEADERS})
 		configure_file (${filename} ${CMAKE_BINARY_DIR}/include/elektra/ COPYONLY)
 	endforeach ()
-	file (GLOB GS_KDB_HEADERS
-		   ${CMAKE_SOURCE_DIR}/src/include/*.h)
+	file (GLOB GS_KDB_HEADERS ${CMAKE_SOURCE_DIR}/src/include/*.h)
 	foreach (filename ${GS_KDB_HEADERS})
 		configure_file (${filename} ${CMAKE_BINARY_DIR}/include/ COPYONLY)
 	endforeach ()
 	include_directories (${CMAKE_BINARY_DIR}/include/)
 	include_directories (${CMAKE_BINARY_DIR}/src/include/)
-	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARY} elektra-core)
+	target_link_libraries (elektrasettings
+			       ${GLIB_LIBRARIES}
+			       ${GMODULE_LIBRARIES}
+			       ${GIO_LIBRARIES}
+			       ${GELEKTRA_LIBRARY}
+			       elektra-core)
 	if (INSTALL_SYSTEM_FILES)
 		install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
 	endif ()
@@ -69,7 +69,11 @@ else ()
 		remove_binding (gsettings "elektra glib bindings needed for gsettings backend")
 	endif ()
 	include_directories (${GELEKTRA_INCLUDE_DIRS})
-	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
+	target_link_libraries (elektrasettings
+			       ${GLIB_LIBRARIES}
+			       ${GMODULE_LIBRARIES}
+			       ${GIO_LIBRARIES}
+			       ${GELEKTRA_LIBRARIES})
 	install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
 endif ()
 

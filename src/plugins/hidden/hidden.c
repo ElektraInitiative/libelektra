@@ -73,7 +73,7 @@ int elektraHiddenSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTR
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (hidden)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("hidden",

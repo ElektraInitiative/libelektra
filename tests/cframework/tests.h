@@ -32,6 +32,10 @@
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int nbError;
 extern int nbTest;
 
@@ -42,6 +46,8 @@ extern char * tempHome;
 extern int tempHomeLen;
 
 int init (int argc, char ** argv);
+
+#ifndef __cplusplus
 
 #define print_result(name)                                                                                                                 \
 	{                                                                                                                                  \
@@ -88,7 +94,7 @@ int init (int argc, char ** argv);
 		Key * nmmk1 = pk1;                                                                                                         \
 		Key * nmmk2 = pk2;                                                                                                         \
 		nbTest++;                                                                                                                  \
-		if (strcmp (keyName (nmmk1), keyName (nmmk2)))                                                                             \
+		if (strcmp (keyName (nmmk1), keyName (nmmk2)) != 0)                                                                        \
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
@@ -102,12 +108,41 @@ int init (int argc, char ** argv);
 		}                                                                                                                          \
 	}
 
+#define compare_key_value(pk1, pk2)                                                                                                        \
+	{                                                                                                                                  \
+		Key * vmmk1 = pk1;                                                                                                         \
+		Key * vmmk2 = pk2;                                                                                                         \
+		nbTest++;                                                                                                                  \
+		int vmmk1binary = keyIsBinary (vmmk1);                                                                                     \
+		int vmmk2binary = keyIsBinary (vmmk2);                                                                                     \
+		if (vmmk1binary && vmmk2binary)                                                                                            \
+		{                                                                                                                          \
+			compare_key_binary (vmmk1, vmmk2);                                                                                 \
+		}                                                                                                                          \
+		else if (!vmmk1binary && !vmmk2binary)                                                                                     \
+		{                                                                                                                          \
+			compare_key_string (vmmk1, vmmk2);                                                                                 \
+		}                                                                                                                          \
+		else                                                                                                                       \
+		{                                                                                                                          \
+			char errorMsg[BUFFER_LENGTH];                                                                                      \
+                                                                                                                                           \
+			strcpy (errorMsg, "key \"");                                                                                       \
+			strcat (errorMsg, keyName (vmmk1binary ? vmmk1 : vmmk2));                                                          \
+			strcat (errorMsg, "\" is binary, but key \"");                                                                     \
+			strcat (errorMsg, keyName (vmmk1binary ? vmmk2 : vmmk1));                                                          \
+			strcat (errorMsg, "\" is not");                                                                                    \
+                                                                                                                                           \
+			yield_error (errorMsg);                                                                                            \
+		}                                                                                                                          \
+	}
+
 #define compare_key_string(pk1, pk2)                                                                                                       \
 	{                                                                                                                                  \
 		Key * smmk1 = pk1;                                                                                                         \
 		Key * smmk2 = pk2;                                                                                                         \
 		nbTest++;                                                                                                                  \
-		if (strcmp (keyString (smmk1), keyString (smmk2)))                                                                         \
+		if (strcmp (keyString (smmk1), keyString (smmk2)) != 0)                                                                    \
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
@@ -121,21 +156,69 @@ int init (int argc, char ** argv);
 		}                                                                                                                          \
 	}
 
+#define compare_key_binary(pk1, pk2)                                                                                                       \
+	{                                                                                                                                  \
+		Key * bmmk1 = pk1;                                                                                                         \
+		Key * bmmk2 = pk2;                                                                                                         \
+		nbTest++;                                                                                                                  \
+		size_t bmmk1size = keyGetValueSize (pk1);                                                                                  \
+		size_t bmmk2size = keyGetValueSize (pk2);                                                                                  \
+		if (bmmk1size != bmmk2size)                                                                                                \
+		{                                                                                                                          \
+			char errorMsg[BUFFER_LENGTH];                                                                                      \
+                                                                                                                                           \
+			strcpy (errorMsg, "key value sizes of \"");                                                                        \
+			strcat (errorMsg, keyName (bmmk1));                                                                                \
+			strcat (errorMsg, "\" and \"");                                                                                    \
+			strcat (errorMsg, keyName (bmmk2));                                                                                \
+			strcat (errorMsg, "\" don't match");                                                                               \
+                                                                                                                                           \
+			yield_error (errorMsg);                                                                                            \
+		}                                                                                                                          \
+		else if (bmmk1size != 0)                                                                                                   \
+		{                                                                                                                          \
+			void * bmmk1buf = elektraMalloc (bmmk1size);                                                                       \
+			void * bmmk2buf = elektraMalloc (bmmk2size);                                                                       \
+                                                                                                                                           \
+			keyGetBinary (bmmk1, bmmk1buf, bmmk1size);                                                                         \
+			keyGetBinary (bmmk2, bmmk2buf, bmmk2size);                                                                         \
+                                                                                                                                           \
+			if (memcmp (bmmk1buf, bmmk2buf, bmmk1size) != 0)                                                                   \
+			{                                                                                                                  \
+				char errorMsg[BUFFER_LENGTH];                                                                              \
+                                                                                                                                           \
+				strcpy (errorMsg, "binary values of key \"");                                                              \
+				strcat (errorMsg, keyName (bmmk1));                                                                        \
+				strcat (errorMsg, "\" and \"");                                                                            \
+				strcat (errorMsg, keyName (bmmk2));                                                                        \
+				strcat (errorMsg, "\" don't match");                                                                       \
+                                                                                                                                           \
+				yield_error (errorMsg);                                                                                    \
+			}                                                                                                                  \
+			elektraFree (bmmk1buf);                                                                                            \
+			elektraFree (bmmk2buf);                                                                                            \
+		}                                                                                                                          \
+	}
+
 // GCC diagnostic not allowed inside functions
 // does not work with 4.4
 // 4.6 and 4.7 as in debian work with it, that are:
 // 4.6.3
 // 4.7.2
 //(https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52116)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 2))) ||                         \
-	(__GNUC__ == 4 && (__GNUC_MINOR__ > 7 || (__GNUC_MINOR__ == 7 && __GNUC_PATCHLEVEL__ > 1)))
+#if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 2))) ||   \
+			  (__GNUC__ == 4 && (__GNUC_MINOR__ > 7 || (__GNUC_MINOR__ == 7 && __GNUC_PATCHLEVEL__ > 1))))
+#define ELEKTRA_PRAGMA(x) _Pragma (ELEKTRA_PRAGMA_STR (x))
+#elif defined(__clang_major__) && (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3)))
+// might also be supported in earlier versions of clang, but no documentation was found
 #define ELEKTRA_PRAGMA(x) _Pragma (ELEKTRA_PRAGMA_STR (x))
 #else
 #define ELEKTRA_PRAGMA(x)
 #endif
 #define ELEKTRA_PRAGMA_STR(x) #x
 #define ELEKTRA_DIAG_STORE ELEKTRA_PRAGMA (GCC diagnostic push)
-#define ELEKTRA_DIAG_OFF(x) ELEKTRA_PRAGMA (GCC diagnostic ignored ELEKTRA_PRAGMA_STR (x))
+#define ELEKTRA_DIAG_OFF_STR(x) ELEKTRA_PRAGMA (GCC diagnostic ignored x)
+#define ELEKTRA_DIAG_OFF(x) ELEKTRA_DIAG_OFF_STR (ELEKTRA_PRAGMA_STR (x))
 #define ELEKTRA_DIAG_RESTORE ELEKTRA_PRAGMA (GCC diagnostic pop)
 
 #define succeed_if_same_string(ps1, ps2)                                                                                                   \
@@ -158,6 +241,7 @@ int init (int argc, char ** argv);
 				strcat (errorMsg, "\"");                                                                                   \
                                                                                                                                            \
 				yield_error (errorMsg);                                                                                    \
+				printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                      \
 			}                                                                                                                  \
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
@@ -194,7 +278,7 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			compare_key_name (mmk1, mmk2);                                                                                     \
                                                                                                                                            \
-			compare_key_string (mmk1, mmk2);                                                                                   \
+			compare_key_value (mmk1, mmk2);                                                                                    \
                                                                                                                                            \
 			const Key * meta;                                                                                                  \
 			keyRewindMeta (mmk1);                                                                                              \
@@ -208,6 +292,22 @@ int init (int argc, char ** argv);
 					printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding "   \
 						"metakey %s (k1 > k2)\n",                                                                  \
 						__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2), keyName (meta)); \
+					break;                                                                                             \
+				}                                                                                                          \
+				if (strcmp (keyName (meta), keyName (metaCmp)) != 0)                                                       \
+				{                                                                                                          \
+					nbError++;                                                                                         \
+					printf ("%s:%d: error in %s: Name of meta key \"%s\" ≠ \"%s\"\n", __FILE__, __LINE__, __func__,    \
+						keyName (meta), keyName (metaCmp));                                                        \
+					break;                                                                                             \
+				}                                                                                                          \
+				if (strcmp (keyString (meta), keyString (metaCmp)) != 0)                                                   \
+				{                                                                                                          \
+					nbError++;                                                                                         \
+					printf ("%s:%d: error in %s: Comparison of the keys with name \"%s\" failed. The value of the "    \
+						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"\n",                                          \
+						__FILE__, __LINE__, __func__, keyName (mmk1), keyName (meta), keyString (meta),            \
+						keyString (metaCmp));                                                                      \
 					break;                                                                                             \
 				}                                                                                                          \
 			}                                                                                                                  \
@@ -275,6 +375,8 @@ int init (int argc, char ** argv);
 		}                                                                                                                          \
 	}
 
+#endif // __cplusplus
+
 int compare_files (const char * filename);
 int compare_line_files (const char * filename, const char * genfilename);
 int compare_regex_to_line_files (const char * filename, const char * genfilename);
@@ -292,5 +394,11 @@ void output_keyset (KeySet * ks);
 
 int output_warnings (Key * errorKey);
 int output_error (Key * errorKey);
+
+void clean_temp_home (void);
+
+#ifdef __cplusplus
+} // end extern "C"
+#endif
 
 #endif

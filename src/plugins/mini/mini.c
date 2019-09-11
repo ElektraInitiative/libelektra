@@ -16,6 +16,8 @@
 #include <kdberrors.h>
 #include <kdblogger.h>
 #include <kdbutility.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
@@ -35,7 +37,7 @@ static inline KeySet * elektraMiniContract (void)
 		      keyNew ("system/elektra/modules/mini/exports", KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
-#include ELEKTRA_README (mini)
+#include ELEKTRA_README
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
@@ -136,8 +138,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	if (*equals == '\0' || equals == pair)
 	{
 		ELEKTRA_LOG_WARNING ("Ignored line %zu since “%s” does not contain a valid key value pair", lineNumber, pair);
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOT_VALID_KEY_VALUE_PAIR, parentKey, "Line %zu: “%s” is not a valid key value pair",
-				      lineNumber, pair);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Line %zu: '%s' is not a valid key value pair", lineNumber, pair);
 		return;
 	}
 
@@ -191,7 +192,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	if (!feof (file))
 	{
 		ELEKTRA_LOG_WARNING ("%s:%zu: Unable to read line", keyString (parentKey), lineNumber);
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "Unable to read line %zu: %s", lineNumber, strerror (errno));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unable to read line %zu: %s", lineNumber, strerror (errno));
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -331,7 +332,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mini)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("mini",

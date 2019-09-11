@@ -10,8 +10,10 @@
 #define KDBLOGGER_H
 
 #include "kdbconfig.h"
+#include "kdbmacros.h"
 
-enum ElektraLogLevel {
+enum ElektraLogLevel
+{
 	/**
 	 * @brief assertion failed, will abort
 	 *
@@ -62,21 +64,42 @@ enum ElektraLogLevel {
 	 */
 	ELEKTRA_LOG_LEVEL_DEBUG = 1,
 
-	/**
-	 * @brief Alias for the standard log level.
-	 */
-	ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_INFO,
 };
+
+#if DEBUG
+/**
+ * @brief Sets the global minimum log level
+ */
+static const int ELEKTRA_LOG_LEVEL_GLOBAL = ELEKTRA_LOG_LEVEL_DEBUG;
+#else
+/**
+ * @brief Sets the global minimum log level
+ */
+static const int ELEKTRA_LOG_LEVEL_GLOBAL = ELEKTRA_LOG_LEVEL_INFO;
+#endif
+
+/**
+ * @brief Sets the minimum log level for the syslog sink
+ */
+static const int ELEKTRA_LOG_LEVEL_SYSLOG = ELEKTRA_LOG_LEVEL_DEBUG;
+
+/**
+ * @brief Sets the minimum log level for the stderr sink
+ */
+static const int ELEKTRA_LOG_LEVEL_STDERR = ELEKTRA_LOG_LEVEL_WARNING;
+
+/**
+ * @brief Sets the minimum log level for the file sink
+ */
+static const int ELEKTRA_LOG_LEVEL_FILE = ELEKTRA_LOG_LEVEL_DEBUG;
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int elektraLog (int level, const char * function, const char * file, const int line, const char * msg, ...)
-#ifdef __GNUC__
-	__attribute__ ((format (printf, 5, 6)))
-#endif
-	;
+int elektraLog (int level, const char * function, const char * file, int line, const char * msg, ...)
+	ELEKTRA_ATTRIBUTE_FORMAT (printf, 5, 6);
 
 #ifdef __cplusplus
 }
@@ -87,7 +110,7 @@ int elektraLog (int level, const char * function, const char * file, const int l
 
 #define ELEKTRA_LOG_WARNING(...) elektraLog (ELEKTRA_LOG_LEVEL_WARNING, __func__, __FILE__, __LINE__, __VA_ARGS__)
 #define ELEKTRA_LOG_NOTICE(...) elektraLog (ELEKTRA_LOG_LEVEL_NOTICE, __func__, __FILE__, __LINE__, __VA_ARGS__)
-#define ELEKTRA_LOG(...) elektraLog (ELEKTRA_LOG_LEVEL, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG(...) elektraLog (ELEKTRA_LOG_LEVEL_INFO, __func__, __FILE__, __LINE__, __VA_ARGS__)
 #define ELEKTRA_LOG_DEBUG(...) elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, __func__, __FILE__, __LINE__, __VA_ARGS__)
 
 #else

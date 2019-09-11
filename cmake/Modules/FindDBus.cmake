@@ -25,7 +25,7 @@ if (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 
 	if (NOT WIN32)
-		find_package (PkgConfig)
+		find_package (PkgConfig QUIET)
 		if (PKG_CONFIG_FOUND)
 
 			# use pkg-config to get the directories and then use these values in the FIND_PATH() and FIND_LIBRARY() calls
@@ -33,7 +33,12 @@ else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 		endif (PKG_CONFIG_FOUND)
 	endif (NOT WIN32)
 
-	find_path (DBUS_INCLUDE_DIR dbus/dbus.h ${_DBUS_PC_INCLUDE_DIRS} /usr/include /usr/include/dbus-1.0 /usr/local/include)
+	find_path (DBUS_INCLUDE_DIR
+		   dbus/dbus.h
+		   ${_DBUS_PC_INCLUDE_DIRS}
+		   /usr/include
+		   /usr/include/dbus-1.0
+		   /usr/local/include)
 
 	find_path (DBUS_ARCH_INCLUDE_DIR
 		   dbus/dbus-arch-deps.h
@@ -45,10 +50,7 @@ else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 		   /usr/lib/include
 		   /usr/lib/dbus-1.0/include)
 
-	find_library (DBUS_LIBRARIES
-		      NAMES dbus-1
-			    dbus
-		      PATHS ${_DBUS_PC_LIBDIR})
+	find_library (DBUS_LIBRARIES NAMES dbus-1 dbus PATHS ${_DBUS_PC_LIBDIR})
 
 	if (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 		set (DBUS_FOUND TRUE)

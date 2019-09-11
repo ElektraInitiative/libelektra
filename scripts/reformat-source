@@ -6,19 +6,46 @@
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")
+# shellcheck disable=SC1091 source=include-common
 . "${SCRIPTS_DIR}/include-common"
 
-CLANG_FORMAT=$(which clang-format-5.0 2> /dev/null)
+MIN_VERSION=6
+MAX_VERSION=7
+CLANG_FORMAT=$(command -v clang-format-$MIN_VERSION.0 || command -v clang-format-$MAX_VERSION || command -v clang-format)
 
-if [ -z "${CLANG_FORMAT}" ]; then
-	CLANG_FORMAT=$(which clang-format)
+if [ -n "$CLANG_FORMAT" ]; then
+	LOCATION="$CLANG_FORMAT"
+	VERSION=$("$CLANG_FORMAT" --version 2> /dev/null)
+	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -].*/\1/')
+	if [ "${MAJOR_VERSION:-0}" -lt $MIN_VERSION ] || [ "${MAJOR_VERSION:-0}" -gt $MAX_VERSION ]; then
+		unset CLANG_FORMAT
+	fi
 fi
 
 if [ -z "${CLANG_FORMAT}" ]; then
-	echo "Please install clang-format 5, 6, or 7"
-	exit 0
+	printf >&2 'ClangFormat:   %s\n' "$LOCATION"
+	printf >&2 'Version Info:  %s\n' "$VERSION"
+	printf >&2 'Major Version: %s\n' "$MAJOR_VERSION"
+	printf >&2 'Please install clang-format %s or clang-format %s' "$MIN_VERSION" "$MAX_VERSION"
+	exit 1
 fi
 
-cd "$SOURCE"
+cd "$SOURCE" || {
+	printf >&2 'Unable to change into source directory'
+	exit 1
+}
 
-$($CLANG_FORMAT -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^./src/tools/gen"`)
+if [ $# -gt 0 ]; then
+	source_files=$(printf "%s\n" "$@" |
+		grep -x -E '.*\.(c|h|cpp|hpp|c\.in|h\.in)' |
+		grep -v '^src/tools/pythongen.*' |
+		grep -v '^tests/shell/gen.*')
+	if [ -z "$source_files" ]; then
+		exit 0
+	fi
+else
+	source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' |
+		grep -v '^src/tools/pythongen.*' |
+		grep -v '^tests/shell/gen.*')
+fi
+printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i

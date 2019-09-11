@@ -16,7 +16,7 @@
 int elektraDateGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDateSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (date);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 
 /*
@@ -55,7 +55,8 @@ const char * rfc2822strings[] = { "%a, %d %b %Y %T %z", "%d %b %Y %T %z", "%a, %
  *
  */
 
-typedef enum {
+typedef enum
+{
 	END = 0,
 	COMPLETE = (1 << 4),
 	REDUCED = (2 << 4),
@@ -123,7 +124,8 @@ const RepStruct iso8601UTC[] = {
 	{ .rep = END, .basic = NULL, .extended = NULL },
 };
 
-typedef enum {
+typedef enum
+{
 	NA = 0,
 	CALENDAR = 1,
 	ORDINAL = 2,

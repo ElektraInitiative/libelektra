@@ -18,6 +18,6 @@ int elektraWresolverGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraWresolverSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraWresolverError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (wresolver);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

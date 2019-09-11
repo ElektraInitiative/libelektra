@@ -1,108 +1,116 @@
-# ~~~
-#  Copyright (c) 2006, Peter Kümmel, <syntheticpp@gmx.net>
-#
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions
-#  are met:
-#
-#  1. Redistributions of source code must retain the copyright
-#     notice, this list of conditions and the following disclaimer.
-#  2. Redistributions in binary form must reproduce the copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
-#  3. The name of the author may not be used to endorse or promote products
-#     derived from this software without specific prior written permission.
-#
-#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-#  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-#  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-#  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-#  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-#  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-#  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-#  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ~~~
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying file Copyright.txt or https://cmake.org/licensing for details.
+# TODO: Remove this file after we require CMake 3.11
 
-include (CheckFunctionExists)
+#[=======================================================================[.rst:
+FindIconv
+---------
 
-if (ICONV_INCLUDE_DIR)
-	set (ICONV_FIND_QUIETLY TRUE)
-endif ()
+This module finds the ``iconv()`` POSIX.1 functions on the system.
+These functions might be provided in the regular C library or externally
+in the form of an additional library.
 
-find_path (ICONV_INCLUDE_DIR
-	   iconv.h
-	   PATHS /usr/include
-		 /usr/local/include
-		 /opt/local/include
-		 /sw/include)
+The following variables are provided to indicate iconv support:
 
-set (POTENTIAL_ICONV_LIBS iconv libiconv libiconv2)
+.. variable:: Iconv_FOUND
 
-find_library (ICONV_LIBRARY
-	      NAMES ${POTENTIAL_ICONV_LIBS}
-	      PATHS /usr/lib
-		    /usr/local/lib
-		    /opt/local/lib
-		    /sw/lib)
+  Variable indicating if the iconv support was found.
 
-if (WIN32)
-	set (ICONV_DLL_NAMES iconv.dll libiconv.dll libiconv2.dll)
-	find_file (ICONV_DLL
-		   NAMES ${ICONV_DLL_NAMES}
-		   PATHS ENV
-			 PATH
-		   NO_DEFAULT_PATH)
-	find_file (ICONV_DLL_HELP
-		   NAMES ${ICONV_DLL_NAMES}
-		   PATHS ENV
-			 PATH
-			 ${ICONV_INCLUDE_DIR}/../bin)
-	if (ICONV_FIND_REQUIRED)
-		if (NOT ICONV_DLL AND NOT ICONV_DLL_HELP)
-			message (FATAL_ERROR "Could not find iconv.dll, please add correct your PATH environment variable")
+.. variable:: Iconv_INCLUDE_DIRS
+
+  The directories containing the iconv headers.
+
+.. variable:: Iconv_LIBRARIES
+
+  The iconv libraries to be linked.
+
+.. variable:: Iconv_IS_BUILT_IN
+
+  A variable indicating whether iconv support is stemming from the
+  C library or not. Even if the C library provides `iconv()`, the presence of
+  an external `libiconv` implementation might lead to this being false.
+
+Additionally, the following :prop_tgt:`IMPORTED` target is being provided:
+
+.. variable:: Iconv::Iconv
+
+  Imported target for using iconv.
+
+The following cache variables may also be set:
+
+.. variable:: Iconv_INCLUDE_DIR
+
+  The directory containing the iconv headers.
+
+.. variable:: Iconv_LIBRARY
+
+  The iconv library (if not implicitly given in the C library).
+
+.. note::
+  On POSIX platforms, iconv might be part of the C library and the cache
+  variables ``Iconv_INCLUDE_DIR`` and ``Iconv_LIBRARY`` might be empty.
+
+#]=======================================================================]
+
+# iconv can only be provided in libc on a POSIX system. If any cache variable is already set, we'll skip this test.
+if (NOT DEFINED Iconv_IS_BUILT_IN)
+	if (UNIX AND NOT DEFINED Iconv_INCLUDE_DIR AND NOT DEFINED Iconv_LIBRARY)
+		cmake_push_check_state (RESET)
+		# We always suppress the message here: Otherwise on supported systems not having iconv in their C library (e.g. those using
+		# libiconv) would always display a confusing "Looking for iconv - not found" message
+		set (CMAKE_FIND_QUIETLY TRUE)
+		# The following code will not work, but it's sufficient to see if it compiles. Note: libiconv will define the iconv
+		# functions as macros, so CheckSymbolExists will not yield correct results.
+		set (Iconv_IMPLICIT_TEST_CODE "
+      #include <stddef.h>
+      #include <iconv.h>
+      int main() {
+	char *a, *b;
+	size_t i, j;
+	iconv_t ic;
+	ic = iconv_open(\"to\", \"from\");
+	iconv(ic, &a, &i, &b, &j);
+	iconv_close(ic);
+      }
+      ")
+		if (CMAKE_C_COMPILER_LOADED)
+			check_c_source_compiles ("${Iconv_IMPLICIT_TEST_CODE}" Iconv_IS_BUILT_IN)
+		else ()
+			check_cxx_source_compiles ("${Iconv_IMPLICIT_TEST_CODE}" Iconv_IS_BUILT_IN)
 		endif ()
-		if (NOT ICONV_DLL AND ICONV_DLL_HELP)
-			get_filename_component (ICONV_DLL_HELP ${ICONV_DLL_HELP} PATH)
-			message (STATUS)
-			message (STATUS "Could not find iconv.dll in standard search path, please add ")
-			message (STATUS "${ICONV_DLL_HELP}")
-			message (STATUS "to your PATH environment variable.")
-			message (STATUS)
-			message (FATAL_ERROR "exit cmake")
-		endif ()
-	endif ()
-	if (ICONV_INCLUDE_DIR AND ICONV_LIBRARY AND ICONV_DLL)
-		set (ICONV_FOUND TRUE)
-	endif ()
-else ()
-	check_function_exists (iconv HAVE_ICONV_IN_LIBC)
-	if (ICONV_INCLUDE_DIR AND HAVE_ICONV_IN_LIBC)
-		set (ICONV_FOUND TRUE)
-		set (ICONV_LIBRARY
-		     CACHE TYPE
-			   STRING
-		     FORCE)
-	endif ()
-	if (ICONV_INCLUDE_DIR AND ICONV_LIBRARY)
-		set (ICONV_FOUND TRUE)
-		set (ICONV_LIBRARIES ${ICONV_LIBRARY})
+		cmake_pop_check_state ()
+	else ()
+		set (Iconv_IS_BUILT_IN FALSE)
 	endif ()
 endif ()
 
-if (ICONV_FOUND)
-	if (NOT ICONV_FIND_QUIETLY)
-		message (STATUS "Found iconv library: ${ICONV_LIBRARY}") # message(STATUS "Found iconv   dll  : ${ICONV_DLL}")
-	endif ()
+if (NOT Iconv_IS_BUILT_IN)
+	find_path (Iconv_INCLUDE_DIR NAMES "iconv.h" DOC "iconv include directory")
+	set (Iconv_LIBRARY_NAMES "iconv" "libiconv")
 else ()
-	if (ICONV_FIND_REQUIRED)
-		message (STATUS "Looked for iconv library named ${POTENTIAL_ICONV_LIBS}.")
-		message (STATUS "Found no acceptable iconv library. This is fatal.")
-		message (STATUS "iconv header: ${ICONV_INCLUDE_DIR}")
-		message (STATUS "iconv lib   : ${ICONV_LIBRARY}")
-		message (FATAL_ERROR "Could NOT find iconv library")
-	endif ()
+	set (Iconv_INCLUDE_DIR "" CACHE FILEPATH "iconv include directory")
+	set (Iconv_LIBRARY_NAMES "c")
 endif ()
 
-mark_as_advanced (ICONV_LIBRARY ICONV_INCLUDE_DIR)
+find_library (Iconv_LIBRARY NAMES ${Iconv_LIBRARY_NAMES} DOC "iconv library (potentially the C library)")
+
+mark_as_advanced (Iconv_INCLUDE_DIR)
+mark_as_advanced (Iconv_LIBRARY)
+
+if (NOT Iconv_IS_BUILT_IN)
+	find_package_handle_standard_args (Iconv
+					   REQUIRED_VARS
+					   Iconv_LIBRARY
+					   Iconv_INCLUDE_DIR)
+else ()
+	find_package_handle_standard_args (Iconv REQUIRED_VARS Iconv_LIBRARY)
+endif ()
+
+if (Iconv_FOUND)
+	set (Iconv_INCLUDE_DIRS "${Iconv_INCLUDE_DIR}")
+	set (Iconv_LIBRARIES "${Iconv_LIBRARY}")
+	if (NOT TARGET Iconv::Iconv)
+		add_library (Iconv::Iconv INTERFACE IMPORTED)
+	endif ()
+	set_property (TARGET Iconv::Iconv PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${Iconv_INCLUDE_DIRS}")
+	set_property (TARGET Iconv::Iconv PROPERTY INTERFACE_LINK_LIBRARIES "${Iconv_LIBRARIES}")
+endif ()

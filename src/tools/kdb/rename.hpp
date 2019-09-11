@@ -6,6 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#ifndef ELEKTRA_KDBRENAME_HPP
+#define ELEKTRA_KDBRENAME_HPP
+
 #include <key.hpp>
 
 #include <iostream>
@@ -23,3 +26,5 @@ inline kdb::Key rename_key (kdb::Key & k, std::string const & sourceName, std::s
 	newKey.setName (newDirName + baseName);
 	return newKey;
 }
+
+#endif

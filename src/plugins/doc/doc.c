@@ -85,13 +85,12 @@ static void doAction (Key * k ELEKTRA_UNUSED)
 number:60
 description:Invalid Line encountered
 severity:error
-ingroup:plugin
 macro:NOEOF
 module:simpleini
 //! [plugin errors spec]
 
 //! [plugin errors usage]
-ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
+ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "Not at the end of file");
 //! [plugin errors usage]
 */
 
@@ -107,9 +106,10 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 			       keyNew ("system/elektra/modules/doc/exports/close", KEY_FUNC, elektraDocClose, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/get", KEY_FUNC, elektraDocGet, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/commit", KEY_FUNC, elektraDocCommit, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/checkconf", KEY_FUNC, elektraDocCheckConf, KEY_END),
-#include ELEKTRA_README (doc)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/doc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -128,7 +128,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 		Key * read = keyNew (keyName (parentKey), KEY_END);
 		if (keyAddName (read, key) == -1)
 		{
-			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, key);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", key);
 			keyDel (read);
 			continue;
 		}
@@ -140,13 +140,27 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 	if (feof (fp) == 0)
 	{
 		fclose (fp);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Invalid line encountered: not at the end of file");
 		return -1;
 	}
 
 	fclose (fp);
 	//![get storage]
 
+	//![get global keyset]
+	KeySet * globalKS = elektraPluginGetGlobalKeySet (plugin);
+	// now we can read something from the global keyset
+	// or add something for us or others to read
+	Key * important = keyNew ("user/global/myDocKey", KEY_VALUE, "global plugins can see me", KEY_END);
+	ksAppendKey (globalKS, important);
+	//![get global keyset]
+
+	//![get global keyset cleanup]
+	// clean up parts of the global keyset which we do not need
+	Key * cutKey = keyNew ("user/global/myDocKey", KEY_END);
+	KeySet * notNeeded = ksCut (globalKS, cutKey);
+	ksDel (notNeeded);
+	//![get global keyset cleanup]
 
 	//![get filter]
 	Key * k;
@@ -180,6 +194,11 @@ int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNU
 }
 
 int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return 0;
+}
+
+int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }
@@ -250,7 +269,7 @@ void elektraUsercodeUselessSymbol (void)
 }
 
 //![export]
-Plugin * ELEKTRA_PLUGIN_EXPORT (doc)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(DOC_PLUGIN_NAME,
@@ -259,6 +278,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (doc)
 		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
 		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraDocCommit,
 		ELEKTRA_PLUGIN_END);
 }
 //![export]

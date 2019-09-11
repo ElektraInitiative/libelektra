@@ -13,8 +13,7 @@ include (CheckCCompilerFlag)
 include (CheckCXXCompilerFlag)
 
 #
-# The mode (standard) to be used by the compiler
-#
+# The mode (standard) to be used by the compiler -
 if (C_STD)
 	message (STATUS "use C_STD as given by user: ${C_STD}")
 else ()
@@ -37,12 +36,30 @@ endif (NOT HAS_CXX_STD)
 # check if -Wl,--version-script linker option is supported TODO: darwin ld only supports -Wl,-exported_symbols_list + the file syntax is
 # different
 #
-set (__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
-file (WRITE ${__symbols_file}
-	    "{ local: *; };\n")
-set (CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
-check_cxx_compiler_flag ("" LD_ACCEPTS_VERSION_SCRIPT)
-unset (CMAKE_REQUIRED_FLAGS)
+try_compile (ELEKTRA_SYMVER_SUPPORTED
+	     ${CMAKE_BINARY_DIR}/src/symvertest/build
+	     ${CMAKE_SOURCE_DIR}/src/symvertest
+	     symvertest)
+if (ELEKTRA_SYMVER_SUPPORTED)
+	set (ELEKTRA_SYMVER_COMMAND "__asm__(\".symver \" arg1 \", \" arg2);")
+	set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
+else (ELEKTRA_SYMVER_SUPPORTED)
+	set (ELEKTRA_SYMVER_COMMAND "")
+
+	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED
+		     ${CMAKE_BINARY_DIR}/src/symvertest/build
+		     ${CMAKE_SOURCE_DIR}/src/symvertest
+		     symvertest
+		     basic)
+	if (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+		set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
+	else (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+		set (LD_ACCEPTS_VERSION_SCRIPT FALSE)
+	endif (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
+endif (ELEKTRA_SYMVER_SUPPORTED)
+
+message (STATUS "compiler/linker accepts version script? ${LD_ACCEPTS_VERSION_SCRIPT}")
+message (STATUS "compiler/linker supports symbol versioning? ${ELEKTRA_SYMVER_SUPPORTED}")
 
 #
 # Extra handling/flags for specific compilers/OS
@@ -64,8 +81,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion
-			 OUTPUT_VARIABLE GCC_VERSION)
+	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
 
@@ -136,8 +152,8 @@ if (ENABLE_ASAN)
 		# Work around error “unrecognized option '--push-state'”
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fuse-ld=gold")
 
-		find_package (Threads) # this is needed because of wrong pthread detection
-				       # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
+		find_package (Threads QUIET) # this is needed because of wrong pthread detection
+					     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
 		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
@@ -148,7 +164,7 @@ endif ()
 # Common flags can be used by both C and C++ and by all supported compilers (gcc, mingw, icc, clang)
 #
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-long-long") # allow long long in C++ code
-set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wpedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
@@ -168,7 +184,10 @@ endif (HAS_CFLAG_MAYBE_UNINITIALIZED)
 
 if (ENABLE_COVERAGE)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -fprofile-arcs -ftest-coverage")
-	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+	if (NOT APPLE)
+		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lgcov")
+	endif (NOT APPLE)
 endif (ENABLE_COVERAGE)
 
 set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wno-missing-field-initializers")

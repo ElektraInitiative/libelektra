@@ -16,23 +16,30 @@ if (LIBAUGEAS_INCLUDE_DIR AND LIBAUGEAS_LIBRARIES AND LIBAUGEAS_PREFIX) # in cac
 else (LIBAUGEAS_INCLUDE_DIR)
 
 	# try to find libaugeas via pkg-config
-	find_package (PkgConfig)
+	find_package (PkgConfig QUIET)
 
 	if (PKG_CONFIG_FOUND)
 		pkg_check_modules (_LIBAUGEAS_PC QUIET "libaugeas")
 	endif (PKG_CONFIG_FOUND)
 
-	find_path (LIBAUGEAS_INCLUDE_DIR augeas.h ${_LIBAUGEAS_PC_INCLUDE_DIRS} /usr/include /usr/local/include)
+	find_path (LIBAUGEAS_INCLUDE_DIR
+		   augeas.h
+		   ${_LIBAUGEAS_PC_INCLUDE_DIRS}
+		   /usr/include
+		   /usr/local/include)
 
-	pkg_get_variable (_LIBAUGEAS_PREFIX augeas prefix)
+	if (_LIBAUGEAS_PC_FOUND)
+		pkg_get_variable (_LIBAUGEAS_PREFIX augeas prefix)
+	endif (_LIBAUGEAS_PC_FOUND)
+
 	if (NOT _LIBAUGEAS_PREFIX)
-		set (_LIBAUGEAS_PREFIX "/usr")
+		if (APPLE)
+			set (_LIBAUGEAS_PREFIX "/usr/local")
+		else (APPLE)
+			set (_LIBAUGEAS_PREFIX "/usr")
+		endif (APPLE)
 	endif ()
-	set (LIBAUGEAS_PREFIX
-	     "${_LIBAUGEAS_PREFIX}"
-	     CACHE INTERNAL
-		   "prefix path of libaugeas"
-	     FORCE)
+	set (LIBAUGEAS_PREFIX "${_LIBAUGEAS_PREFIX}" CACHE INTERNAL "prefix path of libaugeas" FORCE)
 
 	find_library (LIBAUGEAS_LIBRARIES NAMES augeas PATHS ${_LIBAUGEAS_PC_LIBDIR})
 
@@ -41,9 +48,9 @@ else (LIBAUGEAS_INCLUDE_DIR)
 	endif (LIBAUGEAS_INCLUDE_DIR AND LIBAUGEAS_LIBRARIES)
 
 	if (LIBAUGEAS_FOUND)
-		if (NOT LIBAUGEAS_FIND_QUIETLY)
+		if (NOT Augeas_FIND_QUIETLY)
 			message (STATUS "Found augeas: ${LIBAUGEAS_LIBRARIES}")
-		endif (NOT LIBAUGEAS_FIND_QUIETLY)
+		endif (NOT Augeas_FIND_QUIETLY)
 	else (LIBAUGEAS_FOUND)
 		if (LIBAUGEAS_FIND_REQUIRED)
 			message (FATAL_ERROR "Could NOT find augeas")

@@ -27,7 +27,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/file/exports", KEY_END),
 			       keyNew ("system/elektra/modules/file/exports/get", KEY_FUNC, elektraFileGet, KEY_END),
 			       keyNew ("system/elektra/modules/file/exports/set", KEY_FUNC, elektraFileSet, KEY_END),
-#include ELEKTRA_README (file)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/file/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -48,8 +48,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	struct stat sb;
 	if (stat (fileName, &sb) == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_STAT_FAILED, parentKey, "failed to stat file %s, aborting. Reason: %s", fileName,
-				    strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to stat file %s, aborting. Reason: %s", fileName, strerror (errno));
 		return -1;
 	}
 
@@ -63,7 +62,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (!buffer)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize, fileName);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "Failed to allocate buffer of %lld bytes for %s", fileSize, fileName);
 		return -1;
 	}
 
@@ -71,7 +70,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	fp = fopen (fileName, "rb");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR (110, parentKey, "Failed to open file");
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open file %s. Reason: %s", fileName, strerror (errno));
 		elektraFree (buffer);
 		return -1;
 	}
@@ -88,8 +87,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (bytesRead < fileSize)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_READ_FAILED, parentKey, "failed to read %s completely. got %lld of %lld bytes", fileName,
-				    bytesRead, fileSize);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to read %s completely. Got %lld of %lld bytes", fileName,
+							 bytesRead, fileSize);
 		elektraFree (buffer);
 		fclose (fp);
 		return -1;
@@ -143,7 +142,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	fp = fopen (fileName, "wb");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERRORF (75, parentKey, "failed to open %s for writing", fileName);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing. Reason: %s", fileName, strerror (errno));
 		return -1;
 	}
 	ssize_t svalueSize = keyGetValueSize (key);
@@ -187,7 +186,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (file)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("file",

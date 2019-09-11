@@ -31,8 +31,25 @@
  */
 int elektraArrayValidateName (const Key * key)
 {
-	const char * current;
-	if (!key || !(current = keyBaseName (key)) || *current != '#') return -1;
+	if (!key) return -1;
+	int offsetIndex = elektraArrayValidateBaseNameString (keyBaseName (key));
+	return offsetIndex >= 1 ? 1 : offsetIndex;
+}
+
+/**
+ * @brief validate array syntax
+ *
+ * @param baseName the supposed array element basename
+ *
+ * @retval -1 if no array element/syntax error/no key
+ * @retval 0 if start
+ * @retval offsetIndex otherwise, where `offsetIndex` stores the offset
+ *                     to the first digit of the array index of `baseName`
+ */
+int elektraArrayValidateBaseNameString (const char * baseName)
+{
+	const char * current = baseName;
+	if (!current || *current != '#') return -1;
 	if (!strcmp (current, "#")) return 0;
 
 	current++;
@@ -57,7 +74,7 @@ int elektraArrayValidateName (const Key * key)
 		return -1;
 	}
 
-	return 1;
+	return underscores + 1;
 }
 
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
@@ -115,17 +132,15 @@ int elektraArrayIncName (Key * key)
 {
 	const char * baseName = keyBaseName (key);
 
-	int arrayElement = elektraArrayValidateName (key);
-	if (arrayElement == -1) return -1;
+	int offsetIndex = elektraArrayValidateBaseNameString (baseName);
+	if (offsetIndex == -1) return -1;
 
-	// jump over initial `#` and all `_`
-	while (*(++baseName) == '_') //! \internal
-		;		     //! OCLint
-	//! \endinternal
+	// Jump to array index
+	baseName += offsetIndex;
 
 	kdb_long_long_t oldIndex = 0;
-	if (arrayElement && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
-	kdb_long_long_t newIndex = arrayElement ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
+	if (offsetIndex && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
+	kdb_long_long_t newIndex = offsetIndex ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
@@ -150,13 +165,11 @@ int elektraArrayDecName (Key * key)
 {
 	const char * baseName = keyBaseName (key);
 
-	int arrayElement = elektraArrayValidateName (key);
-	if (arrayElement == -1) return -1;
+	int offsetIndex = elektraArrayValidateBaseNameString (baseName);
+	if (offsetIndex == -1) return -1;
 
-	// jump over initial `#` and all `_`
-	while (*(++baseName) == '_') //! \internal
-		;		     //! OCLint
-	//! \endinternal
+	// Jump to array index
+	baseName += offsetIndex;
 
 	kdb_long_long_t oldIndex = 0;
 	if (elektraReadArrayNumber (baseName, &oldIndex) == -1 || oldIndex == 0) return -1;
@@ -249,7 +262,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);
-	keySetString (newKey, "");
+	keySetBinary (newKey, 0, 0);
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)

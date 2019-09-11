@@ -13,13 +13,13 @@
 ## Introduction
 
 The glob plugin provides coping metadata given by the plugin's configuration
-to keys identified using *glob expressions*.
+to keys identified using _glob expressions_.
 Globbing resembles regular expressions.
 They do not have the same expressive power, but are easier to use.
 The semantics are more suitable to match path names:
 
 - `*` matches any key name of just one hierarchy. This means it
-complies with any character except slash or null.
+  complies with any character except slash or null.
 - `?` satisfies single characters with the same exclusions.
 - Additionally, there are ranges and character classes. They can also be inverted.
 
@@ -57,6 +57,7 @@ globbing function (currently fnmatch) as a comma separated list. Unknown flag na
 
 If the flag key does not exist, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
 An empty string disables all flags (i.e. also the default flag).
+
 ## Contracts
 
 Glob statements are very useful together with contracts.
@@ -65,29 +66,33 @@ they receive the keys in `elektraPluginSet()`.
 In `config/needs`, the plugin declares which keys should obtain which
 metadata.
 If the glob expression starts
-with a slash, the contract checker will automatically prepend the mountpoint.
+with a slash, the contract checker will automatically prepend the mount point.
 
-For example, the hosts plugin contract contains:
+For example, the hosts plugin contract contained:
 
-```C
-keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
-    KEY_VALUE, "/*",
-    KEY_META, "check/ipaddr", "", /* Preferred way to check */
-        /* Can be checked additionally */
-    KEY_META, "check/validation", "^[0-9.:]+$",
-    KEY_META, "check/validation/message",
-        "Character present not suitable for ip address",
-    KEY_END),
-keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
-    KEY_VALUE, "/*/*",
-        /* Strict character validation */
-    KEY_META, "check/validation", "^[0-9a-zA-Z.:]+$",
-    KEY_META, "check/validation/message",
-        "Character present not suitable for host address",
-    KEY_END),
+```c
+ksNew (30,
+  // …
+  keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+      KEY_VALUE, "/*",
+      KEY_META, "check/ipaddr", "", /* Preferred way to check */
+          /* Can be checked additionally */
+      KEY_META, "check/validation", "^[0-9.:]+$",
+      KEY_META, "check/validation/message",
+          "Character present not suitable for ip address",
+      KEY_END),
+  keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+      KEY_VALUE, "/*/*",
+          /* Strict character validation */
+      KEY_META, "check/validation", "^[0-9a-zA-Z.:]+$",
+      KEY_META, "check/validation/message",
+          "Character present not suitable for host address",
+      KEY_END),
+  // …
+);
 ```
 
-We see that the `hosts` plugin adds two glob statements with the clause
+We see that the `hosts` plugin added two glob statements with the clause
 `config/needs`.
 The first one matches with hostnames, the second with aliases.
 

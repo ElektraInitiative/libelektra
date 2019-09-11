@@ -28,37 +28,41 @@ The value of each key hold the content of the actual file line-by-line.
 For example, consider the following content of the file `~/.config/line` where the
 numbers on the left represent the line numbers:
 
-    1  setting1 true
-    2  setting2 false
-    3  setting3 1000
-    4  #comment
-    5
-    6
-    7  //some other comment
-    8
-    9  setting4 -1
+```
+1  setting1 true
+2  setting2 false
+3  setting3 1000
+4  #comment
+5
+6
+7  //some other comment
+8
+9  setting4 -1
+```
 
 We mount that file by:
 
-    > sudo kdb mount line user/line line
+```bash
+sudo kdb mount line user/line line
+```
 
 This file would result in the following keyset which is being displayed as
 `key: value`, e.g. with:
 
-    > kdb export -c "format=%s: %s" user/line simpleini
-
-    #0: setting1 true
-    #1: setting2 false
-    #2: setting3 1000
-    #3: #comment
-    #4:
-    #5:
-    #6: //some other comment
-    #7:
-    #8: setting4 -l
+```bash
+kdb export -c "format=%s: %s" user/line simpleini
+#> 0: setting1 true
+#> 1: setting2 false
+#> 2: setting3 1000
+#> 3: #comment
+#> 4:
+#> 5:
+#> 6: //some other comment
+#> 7:
+#> 8: setting4 -l
+```
 
 ### Creating Files
-
 
 ```sh
 # Backup-and-Restore:/tests/line
@@ -76,14 +80,10 @@ cat `kdb file /tests/line`
 #> here
 
 kdb ls /tests/line
-#> user/tests/line
-#> user/tests/line/#0
-#> user/tests/line/#1
-#> user/tests/line/#2
+# STDOUT-REGEX: line.+line/#0.+line/#1.+line/#2
 
 kdb set /tests/line/#1 huhu
-#> Using name user/tests/line/#1
-#> Set string to "huhu"
+# STDOUT-REGEX: .+Set string to "huhu"
 
 kdb export /tests/line line
 #> something
@@ -92,7 +92,6 @@ kdb export /tests/line line
 
 sudo kdb umount /tests/line
 ```
-
 
 ### Other Tests
 

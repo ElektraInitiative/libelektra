@@ -61,7 +61,7 @@ int MetaLsCommand::execute (Cmdline const & cl)
 		ret = 1;
 	}
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	return ret;
 }

@@ -14,20 +14,10 @@
 
 #include "YAMLBaseListener.h"
 
-using std::stack;
-using std::string;
-using std::to_string;
-
-using antlr::YAMLBaseListener;
-using ValueContext = antlr::YAML::ValueContext;
-using PairContext = antlr::YAML::PairContext;
-using SequenceContext = antlr::YAML::SequenceContext;
-using ElementContext = antlr::YAML::ElementContext;
-
-using CppKey = kdb::Key;
-using CppKeySet = kdb::KeySet;
-
 // -- Class --------------------------------------------------------------------
+
+namespace yanlr
+{
 
 /**
  * @brief This class creates a key set by listening to matches of grammar rules
@@ -36,18 +26,18 @@ using CppKeySet = kdb::KeySet;
 class KeyListener : public YAMLBaseListener
 {
 	/** This variable stores a key set representing the textual input. */
-	CppKeySet keys;
+	kdb::KeySet keys;
 
 	/**
 	 * This stack stores a key for each level of the current key name below
 	 * parent.
 	 */
-	stack<CppKey> parents;
+	std::stack<kdb::Key> parents;
 
 	/**
 	 * This stack stores indices for the next array elements.
 	 */
-	stack<uintmax_t> indices;
+	std::stack<uintmax_t> indices;
 
 public:
 	/**
@@ -57,21 +47,28 @@ public:
 	 * @param parent This key specifies the parent of all keys stored in the
 	 *               object.
 	 */
-	KeyListener (CppKey parent);
+	KeyListener (kdb::Key parent);
 
 	/**
 	 * @brief This function returns the data read by the parser.
 	 *
 	 * @return The key set representing the data from the textual input
 	 */
-	CppKeySet keySet ();
+	kdb::KeySet keySet ();
+
+	/**
+	 * @brief This function will be called when the listener enters an empty file (that might contain comments).
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
+	void enterEmpty (YAML::EmptyContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser exits a value.
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	void exitValue (ValueContext * context) override;
+	void exitValue (YAML::ValueContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser enters a key-value
@@ -79,7 +76,7 @@ public:
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void enterPair (PairContext * context) override;
+	virtual void enterPair (YAML::PairContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser exits a key-value
@@ -87,21 +84,21 @@ public:
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void exitPair (PairContext * context) override;
+	virtual void exitPair (YAML::PairContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser enters a sequence.
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void enterSequence (SequenceContext * context) override;
+	virtual void enterSequence (YAML::SequenceContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser exits a sequence.
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void exitSequence (SequenceContext * context) override;
+	virtual void exitSequence (YAML::SequenceContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser recognizes an element
@@ -109,7 +106,7 @@ public:
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void enterElement (ElementContext * context) override;
+	virtual void enterElement (YAML::ElementContext * context) override;
 
 	/**
 	 * @brief This function will be called after the parser read an element of a
@@ -117,5 +114,6 @@ public:
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void exitElement (ElementContext * context) override;
+	virtual void exitElement (YAML::ElementContext * context) override;
 };
+}

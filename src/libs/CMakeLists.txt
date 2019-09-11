@@ -1,27 +1,56 @@
 include (LibAddLib)
 
-add_subdirectory (loader)
+set (SUBDIRS
+     loader
+     ease
+     globbing
+     proposal
+     meta
+     plugin
+     pluginprocess
+     utility
+     io
+     invoke
+     notification
+     highlevel
+     merge
+     opts)
 
-add_subdirectory (tools)
+# The subdirectory for LibElektra must be the last entry!
+list (APPEND SUBDIRS elektra)
 
-add_subdirectory (ease)
+set (SYM_MAPS "")
+foreach (subdir ${SUBDIRS})
+	list (APPEND SYM_MAPS "${subdir}/symbols.map")
+endforeach (subdir)
 
-add_subdirectory (proposal)
+# tools has special symbol handling
+list (INSERT SUBDIRS 0 tools)
 
-add_subdirectory (meta)
+add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/symbols.map"
+		    COMMAND awk
+			    1
+			    ${SYM_MAPS}
+			    |
+			    awk
+			    -v
+			    vfile=versions.def
+			    -f
+			    version_gen.awk
+			    >
+			    "${CMAKE_CURRENT_BINARY_DIR}/symbols.map"
+		    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		    DEPENDS version_gen.awk versions.def ${SYM_MAPS}
+		    COMMENT "Creating version script"
+		    VERBATIM)
+add_custom_target (generate_version_script DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/symbols.map")
 
-add_subdirectory (plugin)
+foreach (subdir ${SUBDIRS})
+	add_subdirectory ("${subdir}")
+endforeach (subdir)
 
-add_subdirectory (pluginprocess)
-
-add_subdirectory (utility)
-
-add_subdirectory (io)
-
-add_subdirectory (invoke)
-
-add_subdirectory (notification)
-
-add_subdirectory (elektra)
-
-generate_manpage (elektra-libs FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
+generate_manpage (elektra-libs
+		  FILENAME
+		  "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+		  SECTION
+		  7)

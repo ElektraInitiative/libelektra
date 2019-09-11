@@ -6,5 +6,6 @@ Rendered images and logos can be found in https://github.com/ElektraInitiative/b
 
 https://github.com/shakiba/svgexport
 
-	svgexport circle_with_shadows_and_background.svg circle.png 400:400
-
+```sh
+svgexport circle_with_shadows_and_background.svg circle.png 400:400
+```

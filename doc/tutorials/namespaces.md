@@ -31,13 +31,13 @@ Note how the name of the key determines the path to its value.
 You can use the file system analogy as a mnemonic to remember these commands (like the file system commands in your favorite operating system):
 
 - `kdb ls <path>`
-	lists keys below _path_
+  lists keys below _path_
 - `kdb rm <key>`
-	removes a _key_
+  removes a _key_
 - `kdb cp <source> <dest>`
-	copies a key to another path
+  copies a key to another path
 - `kdb get <key>`
-	gets the value of _key_
+  gets the value of _key_
 
 For example `kdb get /b/c` should return `Value 2` now, if you set the values before.
 
@@ -93,8 +93,6 @@ If a key is found in a namespace, it masks the key in all subsequent namespaces,
 Because of the way a key without a namespace is retrieved, we call keys, that start with '**/**' **cascading keys**.
 You can find out more about cascading lookups in the [cascading tutorial](cascading.md).
 
-
-
 Having namespaces enables both admins and users to set specific parts of the application's configuration, as you will see in the following example.
 
 ## How it Works on the Command Line (kdb)
@@ -112,18 +110,20 @@ Our exemplary application will be the key database access tool `kdb` as this sho
 **X** is a placeholder for the _major version number_ and **PROFILE** stands for the name of a _profile_ to which this configuration applies. If we want to set configuration for the default profile we can set **PROFILE** to %. The name of the key follows the convention described [here](/doc/help/elektra-key-names.md).
 
 Say we want to set `kdb` to be more verbose when it is used in the current directory. In this case we have to set _verbose_ to 1 in the _dir_ namespace of the current directory.
+
 ```sh
 kdb set "dir/sw/elektra/kdb/#0/%/verbose" 1
 #> Create a new key dir/sw/elektra/kdb/#0/%/verbose with string "1"
 ```
+
 > The configuration for a directory is actually stored in this directory.
 > By default the configuration is contained in a folder named `.dir`, as you can verify with `kdb file dir` (_kdb file_ tells you the file where a key is stored in).
 >
 > For the purpose of demonstration we chose to only manipulate the verbosity of kdb.
 > Note that setting `dir/sw/elektra/kdb/#0/%/namespace` to `dir` can be handy if you want to work with configuration of an application in a certain directory.
 
-
 If we now search for some key, `kdb` will behave just as if we have called it with the `-v` option.
+
 ```sh
 kdb get /some/key
 # STDOUT-REGEX: got \d+ keys
@@ -139,6 +139,7 @@ kdb get /some/key
 Verbosity is not always useful because it distracts from the essential.
 So we may decide that we want `kdb` to be only verbose if we are debugging it.
 So let us move the default configuration to another profile:
+
 ```sh
 kdb mv -r "dir/sw/elektra/kdb/#0/%" "dir/sw/elektra/kdb/#0/debug"
 #> using common basename: dir/sw/elektra/kdb/#0
@@ -150,6 +151,7 @@ kdb mv -r "dir/sw/elektra/kdb/#0/%" "dir/sw/elektra/kdb/#0/debug"
 If we now call `kdb get /some/key` it will behave non-verbose, but if we call it with the _debug_ profile `kdb get -p debug /some/key` the configuration under **/sw/elektra/kdb/#0/debug** applies.
 
 We configured kdb only for the current directory. If we like this configuration we could move it to the system namespace, so that every user can enjoy a preconfigured _debug_ profile.
+
 ```sh
 sudo kdb mv -r "dir/sw/elektra/kdb" "system/sw/elektra/kdb"
 #> using common basename: /sw/elektra/kdb

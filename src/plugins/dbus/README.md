@@ -20,26 +20,26 @@ the key database (KDB) has been modified.
 ## Dbus
 
 A preferred way to interconnect desktop applications and even embedded
-system applications on mobile devices running Linux is D-Bus.  The idea
+system applications on mobile devices running Linux is D-Bus. The idea
 of D-Bus accords to that of Elektra: to provide standards to let software
-work together more tightly.  D-Bus provides a simple and lightweight IPC
+work together more tightly. D-Bus provides a simple and lightweight IPC
 (Inter-Process Communication) system to be used within desktop systems.
 Next to RPC (Remote Procedure Call), which is not used in this plugin,
 it supports signals which can notify an arbitrary number of other
-applications about changes.  Given software like a D-Bus library,
+applications about changes. Given software like a D-Bus library,
 notification itself is a rather easy task, but it involves additional
-library dependences.  So it is the perfect task to be implemented as
-a plugin.  The information about the channels to be used can be stored
+library dependences. So it is the perfect task to be implemented as
+a plugin. The information about the channels to be used can be stored
 in the global key database.
 
 D-Bus supports a **system-wide bus** and a **session bus**.
 The system configuration can be accessed by each user and the user
 configuration is limited to a single user. Both buses can immediately
 be used for the system and user configuration notification updates to
-get pleasing results.  But, there is a problem with the session bus:
+get pleasing results. But, there is a problem with the session bus:
 It is possible within D-Bus that a user starts several sessions. The
 user configuration should be global to the user and is not aware of
-these sessions.  So if several sessions are started, some of the user's
+these sessions. So if several sessions are started, some of the user's
 processes will miss notification updates.
 
 The namespaces are mapped to the buses the following way:
@@ -61,40 +61,56 @@ Alternatively, (with the option announce=once) only a single message is send:
 
 The recommended way is to globally mount the plugin:
 
-	kdb global-mount dbus
+```sh
+kdb global-mount dbus
+```
 
 Alternatively one can mount the plugin additionally to a storage plugin, e.g.:
 
-	kdb mount file.dump / dump dbus
+```sh
+kdb mount file.dump / dump dbus
+```
 
 For openicc one would use (mounts with announce=once):
 
-	kdb mount-openicc
+```sh
+kdb mount-openicc
+```
 
 ### Shell
 
 Then we can receive the notification events using:
 
-	dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```sh
+dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```
 
 Or via the supplied test program:
 
-	kdb testmod_dbus receive_session
+```sh
+kdb testmod_dbus receive_session
+```
 
 We can trigger a message with:
 
-	kdb set user/dbus/x b
+```sh
+kdb set user/dbus/x b
+```
 
 Note that changes in `user` fire on the dbus `session`,
 and changes in namespace `system` in the dbus `system` bus.
 To receive `system` changes we will use:
 
-	kdb testmod_dbus receive_system
-	dbus-monitor --system type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```sh
+kdb testmod_dbus receive_system
+dbus-monitor --system type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+```
 
 And then fire it with:
 
-	kdb set system/dbus/y a
+```sh
+kdb set system/dbus/y a
+```
 
 ### C
 
@@ -104,29 +120,33 @@ dbus_bus_add_match (connection, "type='signal',interface='org.libelektra',path='
 
 See the full example [here](/src/plugins/dbus/receivemessage.c).
 
-
 ### Qt
 
 Here a small example for QDBusConnection:
 
 Place this in your Qt class header:
 
-    public slots:
-      void configChanged( QString msg );
+```cpp
+public slots:
+  void configChanged( QString msg );
+```
 
 Put this in your Qt class, e.g. the constructor:
 
-    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
-                                           this, SLOT( configChanged( QString ) )) )
-        fprintf(stderr, "=================== Done connect\n" );
+```cpp
+if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                       this, SLOT( configChanged( QString ) )) )
+    fprintf(stderr, "=================== Done connect\n" );
+```
 
 Here comes the org.libelektra signals:
 
-    void SynnefoApp::configChanged( QString msg )
-    {
-      fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
-    };
-
+```cpp
+void SynnefoApp::configChanged( QString msg )
+{
+  fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
+};
+```
 
 ### Python
 
@@ -162,35 +182,35 @@ except KeyboardInterrupt:
 
 Today, programs are often interconnected in a dense way.
 Such applications should always be informed when something in their
-environment changes.  For user interactive software, notification about
-configuration changes is expected.  The only alternative is polling, which
-wastes resources.  It additionally is no option for interactive software,
-where the latency needs to be low.  Instead, the software which changes
+environment changes. For user interactive software, notification about
+configuration changes is expected. The only alternative is polling, which
+wastes resources. It additionally is no option for interactive software,
+where the latency needs to be low. Instead, the software which changes
 the configuration has to notify all other interested applications that
-can reread their configuration without significant delay.  In Elektra,
+can reread their configuration without significant delay. In Elektra,
 a notification plugin ensures that a notification is actually sent on
 each change.
 
 Applications can wait for such a notification with hand-written code.
-Bindings, however, allow for better integration.  It is a common approach
-for toolkits to provide a main loop.  Applications using such toolkits
+Bindings, however, allow for better integration. It is a common approach
+for toolkits to provide a main loop. Applications using such toolkits
 can integrate notification services into this main loop.
 
 The actions that occur in such events are application or toolkit specific
-because of the non-invasive nature of Elektra.  Software reacts in many
-different ways to update events.  Hence, the frequency of update events
-should be kept at a minimum.  Changes are kept atomic with a single
-attempt to write out configuration.  Notification callbacks shall
+because of the non-invasive nature of Elektra. Software reacts in many
+different ways to update events. Hence, the frequency of update events
+should be kept at a minimum. Changes are kept atomic with a single
+attempt to write out configuration. Notification callbacks shall
 not change configuration because this can lead to a longer chain of
-unwanted modifications.  That might not be true, however, if a programmer
+unwanted modifications. That might not be true, however, if a programmer
 of the whole system knows that a chain of reactions will terminate.
 When doing such event-driven programming, care is needed to avoid
-infinite loops.  Elektra guarantees consistency of the key database even
+infinite loops. Elektra guarantees consistency of the key database even
 in such cases.
 
 # Transport Plugin
 
-Mount this plugin globally with default settings to use it as *sending*
+Mount this plugin globally with default settings to use it as _sending_
 transport plugin for Elektra's notification feature:
 
 > kdb global-mount dbus announce=once
@@ -215,4 +235,13 @@ Example output from `dbus-monitor`:
 ```
 signal time=1520805003.227723 sender=:1.8 -> destination=(null destination) serial=15 path=/org/libelektra/configuration; interface=org.libelektra; member=Commit
    string "system/tests/foo"
+```
+
+## Problems
+
+Key names that are not valid utf-8 cause a warning within the D-Bus library:
+
+```
+This is normally a bug in some application using the D-Bus library.
+Couldn't add message argumentprocess 6139: arguments to dbus_message_iter_append_basic() were incorrect, assertion "_dbus_check_is_valid_utf8 (*string_p)" failed in file ../../dbus/dbus-message.c line 2676.
 ```

@@ -6,6 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#ifndef ELEKTRA_KDBTIMER_HPP
+#define ELEKTRA_KDBTIMER_HPP
+
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -23,7 +26,8 @@ class Timer
 {
 public:
 	// options what to do at cleanup
-	enum option_t {
+	enum option_t
+	{
 		raw_data_cerr, ///< print name,data\n (default!)
 		median_cerr,   ///< print name,median\n
 		quiet,	 ///< print nothing
@@ -155,3 +159,5 @@ inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 	// clang-format on
 	return os;
 }
+
+#endif

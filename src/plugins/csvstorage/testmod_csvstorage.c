@@ -170,6 +170,26 @@ static void testreadunescapedDQuote (const char * file)
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
+
+static void testexportmissing (const char * file)
+{
+	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/delimiter", KEY_VALUE, ";", KEY_END), keyNew ("system/export", KEY_VALUE, "", KEY_END),
+			       keyNew ("system/export/a", KEY_VALUE, "", KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user/tests/csvstorage/#0", KEY_VALUE, "", KEY_END),
+			     keyNew ("user/tests/csvstorage/#0/a", KEY_VALUE, "a1", KEY_END),
+			     keyNew ("user/tests/csvstorage/#0/b", KEY_VALUE, "b", KEY_END),
+			     keyNew ("user/tests/csvstorage/#1", KEY_VALUE, "", KEY_END),
+			     keyNew ("user/tests/csvstorage/#1/a", KEY_VALUE, "a2", KEY_END), KS_END);
+	PLUGIN_OPEN ("csvstorage");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "call to kdbSet was not successful");
+	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("CSVSTORAGE     TESTS\n");
@@ -179,6 +199,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	testread ("csvstorage/valid.csv");
+	testread ("csvstorage/validDos.csv");
 	testreadfixcolcount ("csvstorage/valid.csv");
 	testreadwriteinvalid ("csvstorage/invalid_columns.csv");
 	testwriteinvalidheader ("csvstorage/invalid_columns_header2.csv");
@@ -186,6 +207,7 @@ int main (int argc, char ** argv)
 	testSetColnames ("csvstorage/valid.csv");
 	testreadwritecomplicated ("csvstorage/complicated.csv");
 	testreadunescapedDQuote ("csvstorage/unescapedQuote.csv");
+	testexportmissing ("csvstorage/exporttest.csv");
 	print_result ("testmod_csvstorage");
 
 	return nbError;

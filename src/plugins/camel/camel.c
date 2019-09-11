@@ -13,6 +13,8 @@
 
 #include <assert.h>
 #include <stdbool.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,7 +32,8 @@
 /* -- Data Structures ------------------------------------------------------------------------------------------------------------------- */
 
 /** This enum specifies the possible states of the recursive descent parser. */
-typedef enum {
+typedef enum
+{
 	/** Unable to open file */
 	ERROR_FILE_OPEN,
 	/** Unable to close file */
@@ -84,8 +87,8 @@ typedef struct
 	ELEKTRA_LOG_DEBUG ("%s:%zu:%zu: " message, strrchr (keyString (data->parentKey), '/') + 1, data->line, data->column, __VA_ARGS__);
 
 #define SET_ERROR_PARSE(data, message, ...)                                                                                                \
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%zu:%zu: " message, keyString (data->parentKey), data->line,         \
-			    data->column, __VA_ARGS__);
+	ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (data->parentKey, "General parse error: %s:%zu:%zu: " message,                             \
+						 keyString (data->parentKey), data->line, data->column, __VA_ARGS__);
 
 #define RET_NOK(function)                                                                                                                  \
 	if (function->status != OK)                                                                                                        \
@@ -311,12 +314,12 @@ static parserType * expect (parserType * const parser, char const * const charac
 	{
 		if (parser->bufferCharsAvailable > 0)
 		{
-			SET_ERROR_PARSE (parser, "Expected “%s” but found “%c”", characters, *parser->buffer);
+			SET_ERROR_PARSE (parser, "Expected '%s' but found '%c'", characters, *parser->buffer);
 		}
 		else
 		{
 
-			SET_ERROR_PARSE (parser, "Expected “%s” but found end of file instead", characters);
+			SET_ERROR_PARSE (parser, "Expected '%s' but found end of file instead", characters);
 		}
 		parser->status = ERROR_PARSE;
 	}
@@ -688,7 +691,7 @@ static KeySet * contractCamel (void)
 		      keyNew ("system/elektra/modules/camel/exports", KEY_END),
 		      keyNew ("system/elektra/modules/camel/exports/get", KEY_FUNC, elektraCamelGet, KEY_END),
 		      keyNew ("system/elektra/modules/camel/exports/set", KEY_FUNC, elektraCamelSet, KEY_END),
-#include ELEKTRA_README (camel)
+#include ELEKTRA_README
 		      keyNew ("system/elektra/modules/camel/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
@@ -760,7 +763,7 @@ int elektraCamelSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (camel)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("camel", ELEKTRA_PLUGIN_GET, &elektraCamelGet, ELEKTRA_PLUGIN_SET, &elektraCamelSet,
 				    ELEKTRA_PLUGIN_END);

@@ -9,7 +9,14 @@
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 
+#include <kdbmacros.h>
+
+#ifdef HAVE_KDBCONFIG_H
 #include <kdbconfig.h>
+#else
+#define DEBUG 0
+#define VERBOSE 0
+#endif
 
 #include <algorithm>
 #include <cassert>
@@ -431,6 +438,8 @@ public:
 	typedef T type;
 
 	typedef PolicySelector<PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> Policies;
+
+	Value (const Value &) = default;
 
 	// not to be constructed yourself
 	Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> (

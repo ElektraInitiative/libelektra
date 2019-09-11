@@ -80,7 +80,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!foundMountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF (14, errorKey, "Could not find mountpoint within root %s", keyName (root));
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not find mountpoint within root %s", keyName (root));
 		return -1;
 	}
 
@@ -91,8 +91,8 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 
 	if (!backend->mountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF (14, errorKey, "Could not create mountpoint with name %s and value %s", keyString (foundMountpoint),
-				      keyBaseName (root));
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not create mountpoint with name '%s' and value %s",
+						   keyString (foundMountpoint), keyBaseName (root));
 		return -1;
 	}
 
@@ -104,9 +104,11 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
  * Opens the internal backend that indicates that a backend
  * is missing at that place.
  *
+ * @param global the global keyset of the KDB instance
+ *
  * @return the fresh allocated backend or 0 if no memory
  */
-static Backend * backendOpenMissing (Key * mp)
+static Backend * backendOpenMissing (KeySet * global, Key * mp)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -117,6 +119,7 @@ static Backend * backendOpenMissing (Key * mp)
 		elektraFree (backend);
 		return 0;
 	}
+	plugin->global = global;
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;
@@ -155,6 +158,7 @@ system/elektra/mountpoints/<name>
  *        It is used to build up this backend.
  * @param modules used to load new modules or get references
  *        to existing one
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key where an error and warnings are added
  *
  * @return a pointer to a freshly allocated backend
@@ -163,7 +167,7 @@ system/elektra/mountpoints/<name>
  * @retval 0 if out of memory
  * @ingroup backend
  */
-Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
+Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Key * cur;
 	KeySet * referencePlugins = 0;
@@ -194,19 +198,23 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
 			{
-				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
-				    -1)
+				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global,
+							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for error failed");
 					failure = 1;
 				}
 			}
 			else if (!strcmp (keyBaseName (cur), "getplugins"))
 			{
-				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
-				    -1)
+				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global,
+							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for get failed");
 					failure = 1;
 				}
 			}
@@ -217,17 +225,24 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 			}
 			else if (!strcmp (keyBaseName (cur), "setplugins"))
 			{
-				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
-				    -1)
+				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global,
+							   errorKey) == -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");
+					if (!failure)
+						ELEKTRA_ADD_INSTALLATION_WARNING (errorKey,
+										  "Method 'elektraProcessPlugins' for set failed");
 					failure = 1;
 				}
 			}
 			else
 			{
 				// no one cares about that config
-				if (!failure) ELEKTRA_ADD_WARNING (16, errorKey, keyBaseName (cur));
+				if (!failure)
+					ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (
+						errorKey,
+						"Found garbage within the backend configuration. found: %s but expected config, "
+						"setplugins, getplugins, errorplugins or mountpoint",
+						keyBaseName (cur));
 				ksDel (cut);
 			}
 		}
@@ -235,7 +250,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 
 	if (failure)
 	{
-		Backend * tmpBackend = backendOpenMissing (backend->mountpoint);
+		Backend * tmpBackend = backendOpenMissing (global, backend->mountpoint);
 		backendClose (backend, errorKey);
 		backend = tmpBackend;
 	}
@@ -252,10 +267,11 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
  * and KDB_STORAGE.
  *
  * @param modules the modules to work with
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
+Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -270,6 +286,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
+	resolver->global = global;
 
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
@@ -283,6 +300,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
 		backend->setplugins[RESOLVER_PLUGIN + 1] = tracer;
 		backend->errorplugins[RESOLVER_PLUGIN + 1] = tracer;
 		tracer->refcounter = 3;
+		tracer->global = global;
 	}
 #endif
 
@@ -302,6 +320,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
+	storage->global = global;
 
 	backend->getplugins[STORAGE_PLUGIN] = storage;
 	backend->setplugins[STORAGE_PLUGIN] = storage;
@@ -318,9 +337,10 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
  * which is currently point to.
  *
  * @param modules the modules to work with
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  */
-Backend * backendOpenModules (KeySet * modules, Key * errorKey)
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -338,6 +358,7 @@ Backend * backendOpenModules (KeySet * modules, Key * errorKey)
 		elektraFree (backend);
 		return 0;
 	}
+	plugin->global = global;
 
 
 	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
@@ -361,10 +382,11 @@ Backend * backendOpenModules (KeySet * modules, Key * errorKey)
 /**
  * Opens the internal version backend.
  *
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * backendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
+Backend * backendOpenVersion (KeySet * global, Key * errorKey ELEKTRA_UNUSED)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -375,6 +397,7 @@ Backend * backendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
 		elektraFree (backend);
 		return 0;
 	}
+	plugin->global = global;
 
 	Key * mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
 
@@ -426,6 +449,8 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		return -1;
 	}
 
+	ELEKTRA_LOG_DEBUG ("spec: %zd", backend->specsize);
+	ELEKTRA_LOG_DEBUG ("dir: %zd", backend->dirsize);
 	ELEKTRA_LOG_DEBUG ("user: %zd", backend->usersize);
 	ELEKTRA_LOG_DEBUG ("system: %zd", backend->systemsize);
 

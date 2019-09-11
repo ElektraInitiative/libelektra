@@ -28,6 +28,9 @@ section here.
 - [API Documentation](api_documentation.md)
 - [Definition of Bool](bool.md)
 - [Plugin Variants](plugin_variants.md)
+- [Ingroup Removal](ingroup_removal.md)
+- [Error Message Format](error_message_format.md)
+- [Commit Function](commit_function.md)
 
 ## In Discussion
 
@@ -37,6 +40,8 @@ section here.
 - [Array](array.md)
 - [Vendor Spec](vendor_spec.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
+- [Error codes](error_codes.md)
+- [Array for Warnings](warning-array.md)
 
 ## Drafts
 
@@ -46,3 +51,4 @@ section here.
 - [Global Validation](global_validation.md)
 - [Default Values](default_values.md)
 - [High Level API](high_level_api.md)
+- [Global KeySet](global_keyset.md)

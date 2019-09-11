@@ -30,6 +30,7 @@
 #endif
 
 #include "../src/libs/elektra/opmphm.c"
+#include "../src/libs/elektra/opmphmpredictor.c"
 #include "../src/libs/elektra/rand.c"
 #include <sys/time.h>
 
@@ -38,7 +39,7 @@ int32_t elektraRandBenchmarkInitSeed;
 // benchmarks helpers
 static int32_t * getRandomSeed (int32_t * seed);
 static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r);
-static const char * elektraGetString (void * data);
+static const char * getString (void * data);
 static size_t getPower (size_t p, size_t q);
 static int cmpInteger (const void * a, const void * b);
 // generate KeySets
@@ -313,7 +314,7 @@ static void benchmarkMapping (char * name)
 					size_t threadI = 0;
 					// OPMPHM
 					OpmphmInit init;
-					init.getName = elektraGetString;
+					init.getName = getString;
 					init.data = (void **) (ks->array);
 // OPMPHM
 #ifdef USE_OPENMP
@@ -599,7 +600,7 @@ static void benchmarkMappingOpt (char * name)
 				size_t threadI = 0;
 				// OPMPHM
 				OpmphmInit init;
-				init.getName = elektraGetString;
+				init.getName = getString;
 				init.data = (void **) (ks->array);
 // OPMPHM
 #ifdef USE_OPENMP
@@ -862,7 +863,7 @@ static void benchmarkMappingAllSeeds (char * name)
 			size_t threadI = 0;
 			// OPMPHM
 			OpmphmInit init;
-			init.getName = elektraGetString;
+			init.getName = getString;
 			init.data = (void **) (ks->array);
 			// OPMPHM
 
@@ -1541,8 +1542,6 @@ static void benchmarkBinarySearchTime (char * name)
  * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN
  */
 
-// where does hsearch stores the strings??? no out of mem but speed loosing
-
 // clang-format off
 // format bug
 #ifdef HAVE_HSEARCHR
@@ -1791,6 +1790,279 @@ void benchmarkHsearchBuildTime (char * name)
  */
 
 /**
+ * START =================================================== Prediction Time ========================================================= START
+ *
+ * This benchmark measures the time from `numberOfSequences` lookup sequences, with the modified branch predictor and the binary search.
+ * All KeySet shapes except 6 where used.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
+ * For all `n` `patternsPerN` lookup patterns are created. With a length of `numberOfSequences`.
+ * The KeySet shapes rotate through the lookup patterns.
+ * Two entries of the pattern entries use one seed (31 bit), this works because max n  is 10000.
+ * log_2 (opmphmPredictorWorthOpmphm(10000)) * 2) < 15 bit
+ * log_2 (15000) * 2) < 15 bit
+ *
+ * n;predictiontime;binarysearchtime
+ *
+ * The number of needed seeds for this benchmarks is: nCount * patternsPerN * ( numberOfSequences/2 + 1 + numberOfSequences )
+ */
+
+static void benchmarkPredictionTime (char * name)
+{
+	const size_t numberOfRepeats = 5;
+	const size_t numberOfSequences = 66;
+	const size_t patternsPerN = 999;
+	// create the n array
+	const size_t nCount = 35;
+	size_t * n = elektraMalloc (nCount * sizeof (size_t));
+	if (!n)
+	{
+		printExit ("malloc");
+	}
+	size_t controlCount = 0;
+	for (size_t i = 100; i < 1000; i += 100)
+	{
+		n[controlCount] = i;
+		++controlCount;
+	}
+	for (size_t i = 1000; i < 5000; i += 200)
+	{
+		n[controlCount] = i;
+		++controlCount;
+	}
+	for (size_t i = 5000; i <= 10000; i += 1000)
+	{
+		n[controlCount] = i;
+		++controlCount;
+	}
+
+	// check config
+	if (controlCount != nCount)
+	{
+		printExit ("controlCount != nCount");
+	}
+	if (numberOfRepeats % 2 == 0)
+	{
+		printExit ("numberOfRepeats is even");
+	}
+	if (patternsPerN % (numberOfShapes - 1) == 0)
+	{
+		printExit ("not all shapes used equally");
+	}
+
+	// memory allocation and initialization
+	// init results
+	size_t * results = elektraMalloc (nCount * patternsPerN * 2 * sizeof (size_t)); // 2 prediction and binary search
+	if (!results)
+	{
+		printExit ("malloc");
+	}
+	// init repeats
+	size_t * repeats = elektraMalloc (numberOfRepeats * sizeof (size_t));
+	if (!repeats)
+	{
+		printExit ("malloc");
+	}
+	// init seeds
+	int32_t * seeds = elektraMalloc (numberOfSequences * sizeof (int32_t));
+	if (!seeds)
+	{
+		printExit ("malloc");
+	}
+	// init pattern
+	size_t * pattern = elektraMalloc (numberOfSequences * sizeof (size_t));
+	if (!pattern)
+	{
+		printExit ("malloc");
+	}
+
+	// get KeySet shapes
+	KeySetShape * keySetShapes = getKeySetShapes ();
+
+	printf ("Run Benchmark %s:\n", name);
+
+	// for all n
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		// for all pattern per n
+		for (size_t pI = 0; pI < patternsPerN; ++pI)
+		{
+			printf ("now at: n = %zu/%zu pattern = %zu/%zu \r", nI + 1, nCount, pI + 1, patternsPerN);
+			fflush (stdout);
+			// create pattern, always two entries with one seed
+			for (size_t s = 0; s < numberOfSequences; s += 2)
+			{
+				int32_t genSeed = 0;
+				if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+				// 15 bit each of the 31 bit seed
+				size_t sequnceLength1 = (genSeed >> 15) & 0x7FFF;
+				size_t sequnceLength0 = genSeed & 0x7FFF;
+				sequnceLength1 = sequnceLength1 % (opmphmPredictorWorthOpmphm (n[nI]) * 2 - 1);
+				sequnceLength0 = sequnceLength0 % (opmphmPredictorWorthOpmphm (n[nI]) * 2 - 1);
+				pattern[s + 1] = sequnceLength1 + 1;
+				pattern[s] = sequnceLength0 + 1;
+			}
+			// rotate through all KeySet shapes, except 6
+			size_t shapeI = patternsPerN % (numberOfShapes - 1);
+			if (shapeI == 6)
+			{
+				++shapeI;
+			}
+			KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
+
+			// generate KeySet
+			int32_t genSeed = 0;
+			if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+			KeySet * ks = generateKeySet (n[nI], &genSeed, usedKeySetShape);
+
+			// get seeds for OPMPHM
+			for (size_t s = 0; s < numberOfSequences; ++s)
+			{
+				if (getRandomSeed (&seeds[s]) != &seeds[s]) printExit ("Seed Parsing Error or feed me more seeds");
+			}
+
+			size_t resultPredition;
+			size_t resultBinarySearch;
+
+			// benchmark prediction
+
+			// repeat measurement numberOfRepeats time
+			for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
+			{
+				// preparation for measurement
+				struct timeval start;
+				struct timeval end;
+				Key * keyFound;
+
+				// START MEASUREMENT
+				__asm__("");
+				gettimeofday (&start, 0);
+				__asm__("");
+
+				// for all sequences
+				for (size_t s = 0; s < numberOfSequences; ++s)
+				{
+					// seed used for key to lookup and OPMPHM
+					int32_t searchHashSeed = seeds[s];
+					// set seed to return by elektraRandGetInitSeed () in the lookup, in case of hashing
+					elektraRandBenchmarkInitSeed = searchHashSeed;
+
+					// do the lookups
+					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
+					{
+						keyFound = ksLookup (ks, ks->array[searchHashSeed % ks->size], KDB_O_NOCASCADING);
+						if (!keyFound || keyFound != ks->array[searchHashSeed % ks->size])
+						{
+							printExit ("Sanity Check Failed: found wrong Key");
+						}
+						elektraRand (&searchHashSeed);
+					}
+					if (!ks->opmphmPredictor)
+					{
+						printExit ("Sanity Check Failed: no predictor used");
+					}
+					// simulate data change
+					ks->flags |= KS_FLAG_NAME_CHANGE;
+					if (ks->opmphm) opmphmClear (ks->opmphm);
+				}
+
+				__asm__("");
+				gettimeofday (&end, 0);
+				__asm__("");
+				// END MEASUREMENT
+
+				// save result
+				repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+			}
+			// sort repeats
+			qsort (repeats, numberOfRepeats, sizeof (size_t), cmpInteger);
+			resultPredition = repeats[numberOfRepeats / 2];
+
+			// benchmark binary search
+
+			// repeat measurement numberOfRepeats time
+			for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
+			{
+				// preparation for measurement
+				struct timeval start;
+				struct timeval end;
+				Key * keyFound;
+
+				// START MEASUREMENT
+				__asm__("");
+				gettimeofday (&start, 0);
+				__asm__("");
+
+				// for all sequences
+				for (size_t s = 0; s < numberOfSequences; ++s)
+				{
+					// seed used for key to lookup and OPMPHM
+					int32_t searchHashSeed = seeds[s];
+
+					// do the lookups
+					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
+					{
+						keyFound = ksLookup (ks, ks->array[searchHashSeed % ks->size],
+								     KDB_O_NOCASCADING | KDB_O_BINSEARCH);
+						if (!keyFound || keyFound != ks->array[searchHashSeed % ks->size])
+						{
+							printExit ("Sanity Check Failed: found wrong Key");
+						}
+						elektraRand (&searchHashSeed);
+					}
+				}
+
+				__asm__("");
+				gettimeofday (&end, 0);
+				__asm__("");
+				// END MEASUREMENT
+
+				// save result
+				repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+			}
+			// sort repeats
+			qsort (repeats, numberOfRepeats, sizeof (size_t), cmpInteger);
+			resultBinarySearch = repeats[numberOfRepeats / 2];
+
+			results[nI * patternsPerN * 2 + pI * 2] = resultPredition;
+			results[nI * patternsPerN * 2 + pI * 2 + 1] = resultBinarySearch;
+
+			ksDel (ks);
+		}
+	}
+	printf ("\n");
+	// write out
+	FILE * out = openOutFileWithRPartitePostfix ("benchmark_prediction_time", opmphmPredictorHistoryMask >> 4); // shift 16 to 8 bit
+	if (!out)
+	{
+		printExit ("open out file");
+	}
+	// print header
+	fprintf (out, "n;predictiontime;binarysearchtime\n");
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		for (size_t pI = 0; pI < patternsPerN; ++pI)
+		{
+			size_t predictiontime = results[nI * patternsPerN * 2 + pI * 2];
+			size_t binarysearchtime = results[nI * patternsPerN * 2 + pI * 2 + 1];
+			fprintf (out, "%zu;%zu;%zu\n", n[nI], predictiontime, binarysearchtime);
+		}
+	}
+	fclose (out);
+
+	elektraFree (n);
+	elektraFree (keySetShapes);
+	elektraFree (results);
+	elektraFree (repeats);
+	elektraFree (pattern);
+	elektraFree (seeds);
+}
+
+/**
+ * END ===================================================== Prediction Time =========================================================== END
+ */
+
+/**
  * START ================================================= Prints all KeySetShapes =================================================== START
  */
 
@@ -1830,7 +2102,7 @@ static void benchmarkPrintAllKeySetShapes (char * name)
 int main (int argc, char ** argv)
 {
 	// define all benchmarks
-	size_t benchmarksCount = 8;
+	size_t benchmarksCount = 9;
 #ifdef HAVE_HSEARCHR
 	// hsearchbuildtime
 	++benchmarksCount;
@@ -1881,6 +2153,11 @@ int main (int argc, char ** argv)
 	benchmarks[7].name = benchmarkNameBinarySearchTime;
 	benchmarks[7].benchmarkF = benchmarkBinarySearchTime;
 	benchmarks[7].numberOfSeedsNeeded = 54600;
+	// predictiontime
+	char * benchmarkNamePredictionTime = "predictiontime";
+	benchmarks[8].name = benchmarkNamePredictionTime;
+	benchmarks[8].benchmarkF = benchmarkPredictionTime;
+	benchmarks[8].numberOfSeedsNeeded = 3496500;
 #ifdef HAVE_HSEARCHR
 	// hsearchbuildtime
 	char * benchmarkNameHsearchBuildTime = "hsearchbuildtime";
@@ -1987,7 +2264,7 @@ static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r)
 	return out;
 }
 
-static const char * elektraGetString (void * data)
+static const char * getString (void * data)
 {
 	return keyName ((Key *) data);
 }
@@ -2418,7 +2695,7 @@ static KeySetShape * getKeySetShapes (void)
 	out[shapeCount].parent = 0;
 	out[shapeCount].shapeInit = shapeCommonStartEndInit;
 	out[shapeCount].shapef = shapefCommonStartEnd;
-	out[shapeCount].shapeDel = shapeCommonStartEndDel; // remove f
+	out[shapeCount].shapeDel = shapeCommonStartEndDel;
 	++shapeCount;
 
 	// shapefModules

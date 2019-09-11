@@ -1,5 +1,4 @@
-elektra-glossary(7) -- glossary of Elektra
-==========================================
+# elektra-glossary(7) -- glossary of Elektra
 
 ## Introduction
 
@@ -42,6 +41,10 @@ elektra-glossary(7) -- glossary of Elektra
   is a community that develops LibElektra, expands SpecElektra,
   improves Elektra's tooling and helps to elektrify applications.
 
+- **Option**, more specifically **Command-line option**:
+  is a special argument passed on the command-line. **Short options**
+  are single characters prefixed with '-'; **Long options** are
+  arbitrarily long and start with '--'.
 
 ## Technical Concepts
 
@@ -60,6 +63,8 @@ elektra-glossary(7) -- glossary of Elektra
 
 - [Mounting](elektra-mounting.md):
   To persistently and permanently include a **backend** in the **global key database**.
+  The **mountpoint** is the key where the backend is mounted to.
+  All keys of the backend are below that key.
 
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.
@@ -69,7 +74,6 @@ elektra-glossary(7) -- glossary of Elektra
 
 - [Metadata](elektra-metadata.md):
   Allows us to describe configuration settings.
-
 
 ## Details
 

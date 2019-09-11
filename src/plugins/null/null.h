@@ -18,6 +18,6 @@ int elektraNullGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraNullSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraNullError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (null);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

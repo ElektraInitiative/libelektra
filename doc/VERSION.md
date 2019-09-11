@@ -1,6 +1,6 @@
 # Version
 
-The version of Elektra is handeled with the kdb.h macros
+The version of Elektra is handled with the kdb.h macros
 `KDB_VERSION` which is a string and `KDB_VERSION_MAJOR`,
 `KDB_VERSION_MINOR` and `KDB_VERSION_MICRO` which are
 numbers. They represent the public announced version
@@ -8,10 +8,12 @@ information.
 
 The same information can be retrieved at run-time using
 
-	system/elektra/version/constants/KDB_VERSION
-	system/elektra/version/constants/KDB_VERSION_MAJOR
-	system/elektra/version/constants/KDB_VERSION_MICRO
-	system/elektra/version/constants/KDB_VERSION_MINOR
+```
+system/elektra/version/constants/KDB_VERSION
+system/elektra/version/constants/KDB_VERSION_MAJOR
+system/elektra/version/constants/KDB_VERSION_MICRO
+system/elektra/version/constants/KDB_VERSION_MINOR
+```
 
 This is the API to programs using Elektra. Its interface
 is defined in [src/include/kdb.h](/src/include/kdb.h.in).
@@ -24,16 +26,16 @@ and is described in [src/plugins/doc/doc.c](/src/plugins/doc/doc.c).
 ## Compatibility
 
 This section describes under which circumstances API
-and ABI incompatiblities may occur. As developer from
+and ABI incompatibilities may occur. As developer from
 Elektra your mission is to avoid that.
 The tool icheck against the interfaces mentioned
 above may help you too.
 
-In 0.8.* the API and ABI must be always forward-compatible,
+In `0.8.*` the API and ABI must be always forward-compatible,
 but not backwards-compatible.
 That means that a program written and compiled against 0.8.0
 compiles and links against 0.8.1. But because it is
-not necessarily backendwards-compatible a program written
+not necessarily backwards-compatible a program written
 for 0.8.1 may not link or compile against elektra 0.8.0
 (but it may do when you use the compatible subset, maybe
 with #ifdefs).
@@ -43,9 +45,9 @@ When you add a new function you break ABI and API backward-
 compatibility, but not forward, so you are allowed to do so.
 
 In the signature you are only allowed to add const to
-any parameter. You are *not* allowed to use subtypes to
+any parameter. You are _not_ allowed to use subtypes to
 the objects, in C means you are not allowed to call any
-functions of an object which appear new. C does *not*
+functions of an object which appear new. C does _not_
 type check that, it's your responsibility.
 
 What C also does not check are the pre and postconditions.
@@ -67,7 +69,7 @@ This section describes how to increment the `KDB_VERSION`.
 It consists of a triplet integer `current:revision:age`.
 
 `revision` is something which will always incremented when there
-is a new bugfix release.
+is a new bug fix release.
 
 `current` and `age` will be incremented by one when you release
 a compatible but changed API. The revision is set back to zero then.

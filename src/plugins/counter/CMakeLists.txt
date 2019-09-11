@@ -1,5 +1,4 @@
 include (LibAddMacros)
 
 add_plugin (counter
-	    SOURCES counter.h
-		    counter.c)
+	    SOURCES counter.h counter.c)

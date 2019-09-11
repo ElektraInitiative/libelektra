@@ -6,9 +6,7 @@ add_plugin (hosts
 		    hosts-set.c
 		    keymetaformatting.h
 		    keymetaformatting.c
-	    LINK_ELEKTRA elektra-ease
-			 elektra-proposal
-			 elektra-meta
-	    ADD_TEST
-	    TEST_README
+	    LINK_ELEKTRA elektra-ease elektra-proposal elektra-meta
+	    ADD_TEST TEST_README
+	    TEST_REQUIRED_PLUGINS network
 	    INSTALL_TEST_DATA)

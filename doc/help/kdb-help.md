@@ -1,11 +1,12 @@
-kdb-help(1) -- Show man page for elektra tools
-==============================================
+# kdb-help(1) -- Show man page for elektra tools
 
 ## SYNOPSIS
 
-	kdb help <tool>
-	kdb --help <tool>
-	kdb -H <tool>
+```sh
+kdb help <tool>
+kdb --help <tool>
+kdb -H <tool>
+```
 
 ## DESCRIPTION
 

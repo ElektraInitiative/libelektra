@@ -38,7 +38,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
   noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
-  null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"),
+  inputFile (""), null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins (""),
   globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
@@ -56,7 +56,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	helpText += "\n";
 
 	string allOptions = command->getShortOptions ();
-	allOptions += "HVCp";
+	allOptions += "HVCpvd";
 
 	// Make sure to use the unsorted allOptions for getopt to preserve argument chars : and ::
 	std::set<string::value_type> unique_sorted_chars (allOptions.begin (), allOptions.end ());
@@ -187,6 +187,14 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "without-elektra", no_argument, nullptr, 'E' };
 		long_options.push_back (o);
 		helpText += "-E --without-elektra     Omit the `/elektra` directory.\n";
+	}
+	optionPos = acceptedOptions.find ('F');
+	if (optionPos != string::npos)
+	{
+		acceptedOptions.insert (optionPos + 1, ":");
+		option o = { "input-file", required_argument, nullptr, 'F' };
+		long_options.push_back (o);
+		helpText += "-F --input-file <plugin>=<file>       Load the given file with the given plugin instead of using the KDB.\n";
 	}
 	optionPos = acceptedOptions.find ('e');
 	if (optionPos != string::npos)
@@ -378,6 +386,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 'f':
 			force = true;
+			break;
+		case 'F':
+			inputFile = optarg;
 			break;
 		case 'h':
 			humanReadable = true;

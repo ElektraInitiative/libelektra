@@ -2,14 +2,15 @@
 
 ## Introduction
 
-When programming in Java it is possible to access the kdb database, changing values of existing keys or adding new ones and a few other things. It is also possible to write plugins for elektra in Java but we will focus on using the java
- binding in this tutorial.
+When programming in Java it is possible to access the key database, changing values of existing keys or adding new ones and a few other things. It is also possible to write plugins for Elektra in Java but we will focus on using the Java
+binding in this tutorial.
 
 ## First Steps
 
-In order to use `kdb` you will need include the dependency in your project. [Here](../../src/bindings/jna/README.md) you can find a detailed tutorial on how to do that.
+In order to use `kdb` you need to include the dependency in your project. [Here](../../src/bindings/jna/README.md) you can find a detailed tutorial on how to do that.
 
-After that you can start loading an `KDB` object as follows:
+After that you can start loading a `KDB` object as follows:
+
 ```java
 Key key = Key.create("user/kdbsession/javabinding");
 try (KDB kdb = KDB.open(key)) {
@@ -19,32 +20,36 @@ try (KDB kdb = KDB.open(key)) {
 }
 ```
 
-Note that KDB implements `AutoClosable` which allows [try-with-resouces](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
+Note that `KDB` implements `AutoClosable` which allows [try-with-resouces](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
-
-You can also pass a `Key` object with an empty string on the first line. The passed key (`user/kdbsession/javabinding` in this case) is being used for the session and stores warnings and error informations.
+You can also pass a `Key` object with an empty string on the first line. The passed key (`user/kdbsession/javabinding` in this case) is being used for the session and stores warnings and error information.
 
 ## Fetching keys
 
-First I will show how to get a key which was already saved in the database. The first thing we need to do is to create a `KeySet` in which our key(s) will be loaded.
+First I will show you how you can retrieve a key which is already part of the database. The first thing we need to do is to create a `KeySet` in which our keys will be stored.
+
 ```java
 KeySet set = KeySet.create();
 ```
 
 Now we load all keys and provide a parent key from which all keys below will be loaded
+
 ```java
 kdb.get(set, Key.create("user"));
 ```
+
 Now we can simply fetch the desired key's value as follows:
+
 ```java
 String str = set.lookup("user/my/presaved/key").getString()
 ```
+
 So for example if you have executed before the application starts `kdb set user/my/test it_works!`,
 the method call `set.lookup("user/my/test").getString()` would return `it_works!`.
 
 ## Saving Keys
 
-Next I will show how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
+Next I will show you how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
 
 ```java
 KeySet set = KeySet.create();
@@ -56,8 +61,8 @@ kdb.set(set, key);
 
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
-The *user* namespace is accessible without special rights, but if you try to write to *system* you will need to have root
-privileges. Check [this](../TESTING.md) to see how to run as non-root user. This should only be done in testing
+The _user_ namespace is accessible without special rights, but if you try to write to _system_ you will need to have root
+privileges. Take a look at [TESTING.md](/doc/TESTING.md) to see how to access the system namespace as non-root user. This should only be done in testing
 environments though as it is not intended for productive systems.
 
 ## Examples
@@ -84,3 +89,23 @@ try (KDB kdb = KDB.open(key)) {
 First we create a new `KDB` object and fetch all keys for the desired namespace, in this example the `user` namespace. Since it saves all
 keys in our passed `set` variable we can then iterate through it by a simple for loop.
 The `at(int)` method gives us the key on the corresponding position which we will print out in this example.
+
+### Read Multiple Keys From KDB
+
+[This](../../examples/external/java/read-keys-example) example shows how to read multiple keys. It provides comments for further clarification.
+Before building and running this example, add first your jar file like described [here](../../examples/external/java/read-keys-example/README.md).
+Then build the project with this command from the root directory:
+
+```sh
+mvn clean package
+```
+
+Afterwards run it with (change VERSION in the command below!):
+
+```sh
+java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra4j-VERSION.jar org.libelektra.app.App
+```
+
+## Java Plugin Tutorial
+
+For the tutorial on how to write java plugins, please check out [this](/doc/tutorials/java-plugins.md) page.

@@ -3,11 +3,11 @@
 # @author René Schwaiger <sanssecours@me.com>
 # @brief Checkout man pages produced by ronn, where only the date was changed
 # @date 19.06.2018
-# @tags helper, development
+# @tags helper, development, release
 
 for file in $(git ls-files -m); do
-	if echo "$file" | egrep -q '\.[17]$' && \
-		test $(git diff --numstat "$file" | cut -f1) -le 1 && \
+	if echo "$file" | egrep -q '\.[17]$' &&
+		test $(git diff --numstat "$file" | cut -f1) -le 1 &&
 		git diff "$file" | grep -q '^-.TH'; then
 		git checkout "$file"
 	fi

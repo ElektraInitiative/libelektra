@@ -80,14 +80,14 @@
  * `elektraIoIdle*`.
  * All `elektraIo*` utility functions are provided by the `elektra-io` library.
  *
- * File desciptor watch operations have the following additional properties:
+ * File descriptor watch operations have the following additional properties:
  * - fd (elektraIoFdGetFd();set by elektraIoNewFdOperation()) file descriptor
  * number to be watched
  * - flags (elektraIoFdGetFlags();elektraIoFdSetFlags()) flags bitmask
  *
  * Timer operations have the following additional properties:
  * - interval (elektraIoTimerGetInterval();elektraIoTimerSetInterval()) minimum
- *   interval in miliseconds after the user callback shall be fired
+ *   interval in milliseconds after the user callback shall be fired
  *
  * Idle operations have no additional properties.
  *
@@ -236,7 +236,8 @@ typedef struct SomeIoLibHandle
 /**
  * Example I/O mangement library bitmask flags
  */
-typedef enum {
+typedef enum
+{
 
 	/** indicates that the file descriptor is readable */
 	SOME_IOLIB_READABLE = 1 << 0,

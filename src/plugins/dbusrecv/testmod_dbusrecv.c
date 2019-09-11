@@ -10,7 +10,7 @@
 
 #include <stdio.h> // printf() & co
 
-#include <kdbio_uv.h>
+#include <kdbio/uv.h>
 #include <kdbioplugin.h>
 
 #include <uv.h>
@@ -18,7 +18,7 @@
 #include <tests.h>
 #include <tests_plugin.h>
 
-#define TEST_TIMEOUT 500
+#define TEST_TIMEOUT 1000
 
 Key * test_callbackKey;
 uv_loop_t * test_callbackLoop;

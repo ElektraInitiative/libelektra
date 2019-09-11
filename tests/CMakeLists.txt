@@ -25,39 +25,18 @@ if (ENABLE_TESTING)
 			set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 		endif ()
 
-		# Since the last released version of Google Test (`release-1.8.0`) is quite old, we download a more recent commit of the
-		# repository instead.
 		download_project (PROJ googletest
 				  GIT_REPOSITORY https://github.com/google/googletest.git
-				  GIT_TAG 4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
-				  ${UPDATE_DISCONNECTED_IF_AVAILABLE})
+				  GIT_TAG release-1.8.1
+				  QUIET ${UPDATE_DISCONNECTED_IF_AVAILABLE})
 	endif (DEFINED GOOGLETEST_ROOT)
 
 	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
-	set (gtest_force_shared_crt
-	     ON
-	     CACHE BOOL
-		   ""
-	     FORCE)
+	set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
-	# Old versions of Google Test do not include Google Mock
-	if (TARGET gmock)
-		set_property (TARGET gmock
-			      PROPERTY COMPILE_FLAGS
-				       "-Wno-undef -Wno-missing-field-initializers")
-		set_property (TARGET gmock_main
-			      PROPERTY COMPILE_FLAGS
-				       "-Wno-undef")
-	endif (TARGET gmock)
-
-	set_property (TARGET gtest
-		      PROPERTY COMPILE_FLAGS
-			       "-Wno-undef -Wno-missing-field-initializers")
-	set_property (TARGET gtest_main
-		      PROPERTY COMPILE_FLAGS
-			       "-Wno-undef")
+	set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-Wno-undef")
 endif (ENABLE_TESTING)
 
 # don't call add_headers in a loop
@@ -69,7 +48,7 @@ macro (do_test source)
 	add_headers (SOURCES)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated)
+	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -77,16 +56,10 @@ macro (do_test source)
 
 	target_link_elektra (${source})
 
-	set_target_properties (${source}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  HAVE_KDBCONFIG_H)
-	set_target_properties (${source}
-			       PROPERTIES LINKER_LANGUAGE
-					  CXX)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES LINKER_LANGUAGE CXX)
 	add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}")
-	set_property (TEST ${source}
-		      PROPERTY ENVIRONMENT
-			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 endmacro (do_test)
 
 if (NOT CMAKE_VERSION VERSION_LESS 3.2)
@@ -94,16 +67,26 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.2)
 endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
 
 add_custom_target (run_all
-		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_all" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_all" "$<CONFIGURATION>"
+		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+		   ${USES_TERMINAL})
+
+add_custom_target (run_checkshell
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_checkshell" "$<CONFIGURATION>"
+		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+		   ${USES_TERMINAL})
+
+add_custom_target (run_nocheckshell
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nocheckshell" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		   ${USES_TERMINAL})
 
 add_custom_target (run_nokdbtests
-		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 add_custom_target (run_memcheck
-		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_memcheck" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_memcheck" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 include_directories (data)

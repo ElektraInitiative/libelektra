@@ -29,6 +29,7 @@ arrayValidateName = fmap parseResult . elektraArrayValidateName
     parseResult 1 = Element
     parseResult _ = Invalid
 {#fun unsafe elektraArrayValidateName {`Key'} -> `Int' #}
+{#fun unsafe elektraArrayValidateBaseNameString {`String'} -> `Int' #}
 {#fun unsafe elektraArrayIncName as arrayIncName {`Key'} -> `Int' #}
 {#fun unsafe elektraArrayGet as arrayGet {`Key', `KeySet'} -> `KeySet' #}
 {#fun unsafe elektraArrayGetNextKey as arrayGetNextKey {`KeySet'} -> `Key' #}

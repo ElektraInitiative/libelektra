@@ -25,10 +25,16 @@
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 
-using antlr::YAML;
+using yanlr::ErrorListener;
+using yanlr::KeyListener;
+using yanlr::YAML;
+using yanlr::YAMLLexer;
 
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;
+using antlr4::DiagnosticErrorListener;
+using ParserATNSimulator = antlr4::atn::ParserATNSimulator;
+using PredictionMode = antlr4::atn::PredictionMode;
 using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
 
@@ -43,13 +49,15 @@ namespace
  *
  * @return A contract describing the functionality of this plugin.
  */
-KeySet * contractYanlr (void)
+CppKeySet getContract ()
 {
-	return ksNew (30, keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
-		      keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
-#include ELEKTRA_README (yanlr)
-		      keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+	return CppKeySet{ 30,
+			  keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
+			  keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
+			  keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
+#include ELEKTRA_README
+			  keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  KS_END };
 }
 
 /**
@@ -72,14 +80,19 @@ int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
 	ParseTreeWalker walker{};
 	KeyListener listener{ parent };
 
-	ErrorListener errorListener{};
+	ErrorListener errorListener{ parent.getString () };
 	parser.removeErrorListeners ();
 	parser.addErrorListener (&errorListener);
+#if DEBUG
+	DiagnosticErrorListener diagErrorListener;
+	parser.addErrorListener (&diagErrorListener);
+	parser.getInterpreter<ParserATNSimulator> ()->setPredictionMode (PredictionMode::LL_EXACT_AMBIG_DETECTION);
+#endif
 
 	ParseTree * tree = parser.yaml ();
 	if (parser.getNumberOfSyntaxErrors () > 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), errorListener.message ());
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parent.getKey (), errorListener.message ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	walker.walk (&listener, tree);
@@ -99,13 +112,13 @@ extern "C" {
 /** @see elektraDocGet */
 int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	auto parent = CppKey (parentKey);
+	CppKey parent{ parentKey };
+	CppKeySet keys{ returned };
 
 	if (parent.getName () == "system/elektra/modules/yanlr")
 	{
-		KeySet * contract = contractYanlr ();
-		ksAppend (returned, contract);
-		ksDel (contract);
+		keys.append (getContract ());
+		keys.release ();
 		parent.release ();
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -114,12 +127,9 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ifstream file (parent.getString ());
 	if (!file.is_open ())
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
-				    parent.getString ().c_str ());
+		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to open file '%s'", parent.getString ().c_str ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	auto keys = CppKeySet{ returned };
 
 	int status = parseYAML (file, keys, parent);
 
@@ -129,7 +139,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yanlr", ELEKTRA_PLUGIN_GET, &elektraYanlrGet, ELEKTRA_PLUGIN_END);
 }

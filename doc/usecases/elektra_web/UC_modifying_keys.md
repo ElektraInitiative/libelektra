@@ -17,7 +17,7 @@
   lists of fields under a key. A description of the key is also shown.
 - **Alternative scenario:** User enters data that fails the field validation,
   the input field is marked as invalid (e.g. with a red color and some
-  information text) and the data is *not* sent to the backend.
+  information text) and the data is _not_ sent to the backend.
 - **Error scenario:** Technical problems while persisting to the key database.
   The user is informed about the problem.
 - **Postcondition:** The updated key is persisted to the database.

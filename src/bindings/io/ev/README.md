@@ -20,15 +20,15 @@ Use the `elektraIoEvNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-ev`, `elektra-io` and `ev` or
 simply use `pkg-config --cflags --libs elektra-io-ev`.
 
-### ElektraIoInterface * elektraIoEvNew (struct ev_loop * loop)
+### ElektraIoInterface _ elektraIoEvNew (struct ev_loop _ loop)
 
 Create and initialize a new I/O binding.
 
-*Parameters*
+_Parameters_
 
 - loop: Loop to use for I/O operations
 
-*Returns*
+_Returns_
 
 Populated I/O interface
 
@@ -37,7 +37,7 @@ Populated I/O interface
 ```C
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_ev.h>
+#include <elektra/kdbio/ev.h>
 
 #include <ev.h>
 

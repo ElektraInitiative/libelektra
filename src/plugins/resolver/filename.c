@@ -5,8 +5,6 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#define _POSIX_SOURCE
-#define _POSIX_C_SOURCE 200409L
 
 #include "resolver.h"
 
@@ -36,7 +34,7 @@
  * @retval 0 on success (Absolute path)
  * @retval -1 on a non-valid file
  */
-int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename)
+int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 {
 	if (!filename) return -1;
 	if (filename[0] == '0') return -1;
@@ -146,7 +144,8 @@ static char * elektraResolvePasswd (Key * warningsKey)
 		elektraFree (buf);
 		if (s != 0)
 		{
-			ELEKTRA_ADD_WARNING (90, warningsKey, strerror (s));
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r. Reason: %s",
+							   strerror (s));
 		}
 		return NULL;
 	}
@@ -187,11 +186,11 @@ static int elektraResolveUserXDGHome (ElektraResolved * handle, Key * warningsKe
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_WARNINGF (100, warningsKey,
-				      "XDG_CONFIG_HOME contains a path that is "
-				      "not absolute (violates XDG specification) and thus "
-				      "it was skipped: %s",
-				      home);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (warningsKey,
+							   "XDG_CONFIG_HOME contains a path that is "
+							   "not absolute (violates XDG specification) and thus "
+							   "it was skipped: %s",
+							   home);
 		return 0;
 	}
 	elektraResolveUsingHome (handle, home, 0);
@@ -209,11 +208,11 @@ static int elektraResolveEnvHome (ElektraResolved * handle, Key * warningsKey)
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_WARNINGF (100, warningsKey,
-				      "HOME contains a path that is "
-				      "not absolute and thus "
-				      "it was skipped: %s",
-				      home);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (warningsKey,
+							   "HOME contains a path that is "
+							   "not absolute and thus "
+							   "it was skipped: %s",
+							   home);
 		return 0;
 	}
 	elektraResolveUsingHome (handle, home, 1);
@@ -302,14 +301,15 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (83, warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
-				      ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (warningsKey, "User resolver failed at step %zu, the configuration is: %s", i,
+							 ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (!(handle->dirname))
 	{
-		ELEKTRA_ADD_WARNINGF (83, warningsKey, "no resolver set the user dirname, the configuration is: %s", ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "No resolver set the user dirname, the configuration is: %s",
+						   ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
@@ -381,11 +381,11 @@ static int elektraResolveSystemXDG (ElektraResolved * handle, ElektraResolveTemp
 	{
 		if (result[0] != '/')
 		{
-			ELEKTRA_ADD_WARNINGF (100, warningsKey,
-					      "XDG_CONFIG_DIRS contains a path that is "
-					      "not absolute (violates XDG specification) and thus "
-					      "it was skipped: %s",
-					      result);
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (warningsKey,
+								   "XDG_CONFIG_DIRS contains a path that is "
+								   "not absolute (violates XDG specification) and thus "
+								   "it was skipped: %s",
+								   result);
 
 			result = strtok_r (0, ":", &saveptr);
 			continue;
@@ -458,14 +458,15 @@ static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveT
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (83, warningsKey, "no resolver set the user dirname, the configuration is: %s", ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "No resolver set the user dirname, the configuration is: %s",
+						   ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (!(handle->fullPath))
 	{
-		ELEKTRA_ADD_WARNINGF (83, warningsKey, "no resolver set the system dirname, the configuration is: %s",
-				      ELEKTRA_VARIANT_SYSTEM);
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "No resolver set the system dirname, the configuration is: %s",
+						   ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 
@@ -483,7 +484,7 @@ static char * elektraGetCwd (Key * warningsKey)
 	char * cwd = elektraMalloc (size);
 	if (cwd == NULL)
 	{
-		ELEKTRA_ADD_WARNING (83, warningsKey, "could not alloc for getcwd, defaulting to /");
+		ELEKTRA_ADD_OUT_OF_MEMORY_WARNING (warningsKey, "Could not alloc for getcwd, defaulting to /");
 		return 0;
 	}
 
@@ -498,8 +499,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey,
-						      "getcwd failed with errno %d \"%s\", defaulting to /", errno, strerror (errno));
+				ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Method 'getcwd()' failed. Defaulting to /. Reason: %s",
+							       strerror (errno));
 				return 0;
 			}
 
@@ -508,7 +509,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_WARNINGF (83, warningsKey, "could not realloc for getcwd size %d, defaulting to /", size);
+				ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF (warningsKey,
+								    "Could not realloc for `getcwd()` size %d, defaulting to /", size);
 				return 0;
 			}
 		}
@@ -535,29 +537,27 @@ static int elektraResolveSpec (ElektraResolved * handle, ElektraResolveTempfile 
 			return -1;
 		}
 	}
+	else if (KDB_DB_SPEC[0] == '~')
+	{
+		char * oldPath = handle->relPath;
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SPEC);
+		strcat (path, "/");
+		strcat (path, handle->relPath);
+		handle->relPath = path;
+		elektraResolveSystemPasswd (handle, warningsKey);
+		elektraFree (path);
+		handle->relPath = oldPath;
+	}
 	else
 	{
-		if (KDB_DB_SPEC_REAL[0] == '~')
-		{
-			char * oldPath = handle->relPath;
-			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC_REAL);
-			strcat (path, "/");
-			strcat (path, handle->relPath);
-			handle->relPath = path;
-			elektraResolveSystemPasswd (handle, warningsKey);
-			elektraFree (path);
-			handle->relPath = oldPath;
-		}
-		else
-		{
-			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC);
-			strcat (path, "/");
-			strcat (path, handle->relPath);
-			handle->fullPath = path;
-		}
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SPEC);
+		strcat (path, "/");
+		strcat (path, handle->relPath);
+		handle->fullPath = path;
 	}
+
 	elektraResolveFinishByFilename (handle, tmpDir);
 	return 1;
 }
@@ -613,7 +613,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 	return 1;
 }
 
-void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved * handle)
+void ELEKTRA_PLUGIN_FUNCTION (freeHandle) (ElektraResolved * handle)
 {
 	if (!handle) return;
 	if (handle->relPath != NULL) elektraFree (handle->relPath);
@@ -624,8 +624,8 @@ void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved * handle)
 	handle = NULL;
 }
 
-ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace namespace, const char * path,
-								ElektraResolveTempfile tmpDir, Key * warningsKey)
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace, const char * path, ElektraResolveTempfile tmpDir,
+						      Key * warningsKey)
 {
 
 	ElektraResolved * handle = elektraCalloc (sizeof (ElektraResolved));
@@ -648,29 +648,29 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace
 		rc = elektraResolveMapperSystem (handle, tmpDir, warningsKey);
 		break;
 	case KEY_NS_PROC:
-		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve proc");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve proc");
 		rc = -1;
 		break;
 	case KEY_NS_EMPTY:
-		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve empty");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve empty");
 		rc = -1;
 		break;
 	case KEY_NS_NONE:
-		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve none");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve none");
 		rc = -1;
 		break;
 	case KEY_NS_META:
-		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve meta");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve meta");
 		rc = -1;
 		break;
 	case KEY_NS_CASCADING:
-		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve cascading");
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve cascading");
 		rc = -1;
 		break;
 	}
 	if (rc == -1)
 	{
-		ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (handle);
+		ELEKTRA_PLUGIN_FUNCTION (freeHandle) (handle);
 		return NULL;
 	}
 	return handle;

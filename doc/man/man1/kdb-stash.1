@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-STASH" "" "December 2017" "" ""
+.TH "KDB\-STASH" "" "August 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-stash\fR \- Stash away KDB to be restored later
@@ -10,7 +10,7 @@
 \fBkdb stash\fR
 .
 .SH "DESCRIPTION"
-This command will stash away the \fBsystem\fR, \fBuser\fR and \fBspec\fR configuration, i\.e\. it releases all mountpoints and reset Elektra to a clean state\. Afterwards a timestamp which can be used to restore everything will be printed\.
+This command will stash away the \fBsystem\fR, \fBuser\fR and \fBspec\fR configuration, i\.e\. it releases all mount points and reset Elektra to a clean state\. Afterwards a timestamp which can be used to restore everything will be printed\.
 .
 .P
 The backup will be done in the \fB/var/tmp\fR directory, so make sure the backup is not deleted\.
@@ -33,7 +33,7 @@ kdb mount
 #> none on system/info/elektra/uname with name system/info/elektra/uname
 
 kdb backup
-#> restore with "kdb restore 1500000000"
+#> kdb restore 1500000000
 
 kdb get user/x
 #> Did not find key
@@ -58,10 +58,10 @@ kdb mount
 .SH "SEE ALSO"
 .
 .IP "\(bu" 4
-kdb\-restore(7) \fIkdb\-restore\.md\fR
+kdb\-restore(1) \fIkdb\-restore\.md\fR
 .
 .IP "\(bu" 4
-kdb\-backup(7) \fIkdb\-backup\.md\fR
+kdb\-backup(1) \fIkdb\-backup\.md\fR
 .
 .IP "" 0
 

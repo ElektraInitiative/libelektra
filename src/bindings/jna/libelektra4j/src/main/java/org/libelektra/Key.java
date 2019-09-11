@@ -30,7 +30,7 @@ public class Key implements Iterable<String> {
 	public static final int KEY_META_NAME = 1 << 21;
 
 	/**
-	 * Indicates a generic key exception occured.
+	 * Indicates a generic key exception occurred.
 	 */
 	public static class KeyException extends java.lang.RuntimeException {
 
@@ -345,10 +345,9 @@ public class Key implements Iterable<String> {
 	 */
 	public void setError(final String text, final Object... args) {
 		final StackTraceElement[] e = Thread.currentThread().getStackTrace();
-		setMeta("error", "number description ingroup module file line function reason");
+		setMeta("error", "number description module file line function reason");
 		setMeta("error/number", "102");
 		setMeta("error/description", "jni/java error");
-		setMeta("error/ingroup", "plugin");
 		setMeta("error/module", e[1].getClassName() + " " + e[1].getMethodName());
 		setMeta("error/file", e[1].getFileName());
 		setMeta("error/line", Integer.toString(e[1].getLineNumber()));
@@ -384,10 +383,9 @@ public class Key implements Iterable<String> {
 			builder.append("00");
 			setMeta(Key.WARNINGS, "00");
 		}
-		setMeta(builder + "", "number description ingroup module file line function reason");
+		setMeta(builder + "", "number description module file line function reason");
 		setMeta(builder + "/number", "103");
 		setMeta(builder + "/description", "jni/java warning");
-		setMeta(builder + "/ingroup", "plugin");
 		setMeta(builder + "/module", e[1].getClassName() + " " + e[1].getMethodName());
 		setMeta(builder + "/file", e[1].getFileName());
 		setMeta(builder + "/line", Integer.toString(e[1].getLineNumber()));

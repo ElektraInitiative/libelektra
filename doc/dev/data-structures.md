@@ -5,7 +5,6 @@ For an introduction, please
 You might want to read
 [about architecture first](architecture.md).
 
-
 ## Introduction
 
 Data structures define the common layer in Elektra. They are used to
@@ -48,20 +47,18 @@ structures of an application or library directly allocated or accessed
 by the user.
 
 Special care has been taken in Elektra to support all changes within the
-data structures without any ABI changes.  ABI changes would entail the
-recompilation of applications and plugins using Elektra.  The functions
+data structures without any ABI changes. ABI changes would entail the
+recompilation of applications and plugins using Elektra. The functions
 `keyNew()`, `ksNew()` and `kdbOpen()` allocate the data structures for the
-applications.  The user only gets pointers to them.  It is not possible
+applications. The user only gets pointers to them. It is not possible
 for the user to allocate or access these data structures directly when
-only using the public header file `<kdb.h>`.  The functions `keyDel()`,
-`ksDel()` and `kdbClose()` free the resources after use.  Using the C++
+only using the public header file `<kdb.h>`. The functions `keyDel()`,
+`ksDel()` and `kdbClose()` free the resources after use. Using the C++
 binding deallocation is done automatically.
-
 
 ## Meta Data
 
 Read [here](metadata.md).
-
 
 ## KeySet
 
@@ -123,9 +120,11 @@ every parent key must exist before the user
 can append a key to a key set.
 For example, the key set with the keys
 
-	system
-	system/elektra
-	system/elektra/mountpoints
+```
+system
+system/elektra
+system/elektra/mountpoints
+```
 
 would allow the
 key `system/elektra/mountpoints/tcl` to be added,
@@ -151,15 +150,17 @@ With the current implementation of `KeySet`, however,
 it is not possible to decide this constraint in constant time.
 Instead its worst-case complexity would
 be $log(n) * x$ where $n$ is the number
-of keys currently in the key set and $x$ is the *depth* of the
+of keys currently in the key set and $x$ is the _depth_ of the
 key. The depth is the number of `/` in the key name.
 The worst-case of the complexity applies when the inserting works
 without a parent key.
 For example, with the keys
 
-	user/sw/apps/abc/current/bindings
-	user/sw/apps/abc/current/bindings/key1
-	user/sw/apps/abc/current/bindings/key2
+```
+user/sw/apps/abc/current/bindings
+user/sw/apps/abc/current/bindings/key1
+user/sw/apps/abc/current/bindings/key2
+```
 
 the weak consistency would allow inserting
 `user/sw/apps/abc/current/bindings/key3`
@@ -195,15 +196,13 @@ indicating where the new value should be inserted when the key
 is not found.
 Elektra now also uses this trick internally.
 
-
 ### Internal Cursor
-
 
 `KeySet` supports an
 **external iterator**
 with the two functions
 `ksRewind()` to go to the beginning and `ksNext()` to
-advance the *internal cursor* to the next key.
+advance the _internal cursor_ to the next key.
 This side effect is used to indicate a position for
 operations on a `KeySet` without any additional parameter.
 This technique is comfortable to see which
@@ -231,12 +230,11 @@ uses the more efficient binary search
 because the array inside the `KeySet`
 is ordered by name.
 
-
 ### External Cursor
 
 External cursor is an alternative to the approach explained above.
 Elektra provides a limited
-*external cursor*
+_external cursor_
 through the interface
 `ksGetCursor()` and `ksSetCursor()`.
 It is not possible to advance this cursor.
@@ -279,14 +277,12 @@ Only for trivial
 actions such as just changing a variable, counter or marker for every key
 the iteration costs become the lion's share.
 In such situations
-an *internal iterator*
+an _internal iterator_
 yields better results.
 For example,
 `ksForEach()` applies a user defined function
 for every key in a `KeySet` without having null pointer or
 out of range problems.
-
-
 
 ## Trie vs. Split
 
@@ -303,7 +299,7 @@ the user needs to understand them as well.
 
 ### Trie
 
-A *Trie* or prefix tree is an ordered tree
+A _Trie_ or prefix tree is an ordered tree
 data structure.
 In Elektra,
 it provides the information
@@ -315,7 +311,7 @@ The initial approach was to iterate over the `Trie`
 to get a list of all backends.
 But the transformation of a `Trie` to a list of backends, contained
 many bugs caused by corner cases in connection with the default backend
-and cascading mountpoints.
+and cascading mount points.
 
 ### Split
 
@@ -326,16 +322,18 @@ an initial key set is split into many key sets.
 These key sets are stored in the `Split` object.
 `Split` advanced to the central data structure for the algorithm:
 
-	typedef struct _Split	Split;
+```c
+typedef struct _Split	Split;
 
-	struct _Split {
-		size_t size;
-		size_t alloc;
-		KeySet **keysets;
-		Backend **handles;
-		Key **parents;
-		int *syncbits;
-	};
+struct _Split {
+	size_t size;
+	size_t alloc;
+	KeySet **keysets;
+	Backend **handles;
+	Key **parents;
+	int *syncbits;
+};
+```
 
 The data structure `Split` contains the following fields:
 
@@ -344,21 +342,21 @@ The data structure `Split` contains the following fields:
 - **alloc**: allows us to allocate more items than currently in use.
 
 - **keysets** represents a list of key sets.
-The keys in one of the key sets are known to belong to a specific
-backend.
+  The keys in one of the key sets are known to belong to a specific
+  backend.
 
 - **handles**: contains a list of handles to backends.
 
 - **parents**: represents a list of keys.
-Each `parentKey` contains the
-root key of a backend. No key of the respective key set is above the
-`parentKey`.
-The key name of `parentKey` contains the mountpoint of a backend.
-The resolver writes the file name into the value of the `parentKey`.
+  Each `parentKey` contains the
+  root key of a backend. No key of the respective key set is above the
+  `parentKey`.
+  The key name of `parentKey` contains the mount point of a backend.
+  The resolver writes the file name into the value of the `parentKey`.
 
 - **syncbits**: are some bits that can be set for every backend.
-The algorithm uses the `syncbits` to decide if the key set needs to be
-synchronized.
+  The algorithm uses the `syncbits` to decide if the key set needs to be
+  synchronized.
 
 Continue reading [with the error handling](error-handling.md).
 
@@ -380,9 +378,9 @@ should be set before the assignment step.
 Because the OPMPHM is non-dynamic, there are no insert and delete operations. The OPMPHM gets build for a static set of
 elements, once the OPMPHM is build, every:
 
- * change of at least one indexed element name
- * addition of a new element
- * deletion of a indexed element
+- change of at least one indexed element name
+- addition of a new element
+- deletion of an indexed element
 
 leads to an invalid OPMPHM and forces a rebuild. A build consists of two steps the mapping step and the assignment step.
 
@@ -390,18 +388,18 @@ During the mapping step the OPMPHM maps each element to an edge in an random acy
 In a r-uniform r-partite hypergraph each edge connects `r` vertices, each vertex in a different component.
 The probability of being acyclic and the number of mapping step invocations depends on the the following variables:
 
-* `r`: The `r` variable defines the number of components in the random r-uniform r-partite hypergraph.
-       Use the `opmphmOptR (n)` function to get an optimal value for your number of elements (`n`).
+- `r`: The `r` variable defines the number of components in the random r-uniform r-partite hypergraph.
+  Use the `opmphmOptR (n)` function to get an optimal value for your number of elements (`n`).
 
-* `c`: The `c` variable defines the number of vertices in each component of the random r-uniform r-partite hypergraph.
-       The number of vertices in one component is defined as `(c * n / r) + 1`, where `n` is the number of elements
-       and `r` is the variable from above.
-       The `c` variable must have a minimal value to ensure a success probability, use the `opmphmMinC (r)` function,
-       with your `r` from above.
-       The ensure a optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
-       function, where `n` is the number of elements.
+- `c`: The `c` variable defines the number of vertices in each component of the random r-uniform r-partite hypergraph.
+  The number of vertices in one component is defined as `(c * n / r) + 1`, where `n` is the number of elements
+  and `r` is the variable from above.
+  The `c` variable must have a minimal value to ensure a success probability, use the `opmphmMinC (r)` function,
+  with your `r` from above.
+  The ensure an optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
+  function, where `n` is the number of elements.
 
-* `initSeed`: The initial seed set in `OpmphmInit->initSeed`.
+- `initSeed`: The initial seed set in `OpmphmInit->initSeed`.
 
 `opmphmOptR (n)` and `opmphmOptC (n)` are heuristic functions constructed through benchmarks. Optimal is only one
 mapping step invocation in 99.5% of the observed cases. The benchmarks took arbitrary uniform distributed initial seeds

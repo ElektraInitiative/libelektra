@@ -86,7 +86,7 @@ int elektraNullSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (null)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("null",

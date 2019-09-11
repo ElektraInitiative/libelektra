@@ -39,11 +39,11 @@ Window {
 			height: 2*defaultMargins
 		}
 		RowLayout {
-			anchors.bottom: parent.bottom
+                        Layout.alignment : Qt.AlignBottom
 
 			Button {
 				id: detailsButton
-				anchors.left: parent.left
+                                Layout.alignment : Qt.AlignLeft
 				visible: false
 				action: Action {
 					text: qsTr("&Show Details")

@@ -16,6 +16,6 @@
 int elektraMozprefsGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMozprefsSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mozprefs);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

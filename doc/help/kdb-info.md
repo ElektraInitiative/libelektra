@@ -1,5 +1,4 @@
-kdb-info(1) -- Print information about an Elektra plugin
-========================================================
+# kdb-info(1) -- Print information about an Elektra plugin
 
 ## SYNOPSIS
 
@@ -19,10 +18,10 @@ If a user wishes to load the information directly from the plugin, they can forc
 
 This command returns the following exit statuses:<br>
 
-* 0:<br>
+- 0:<br>
   The command was successful.<br>
 
-* 1:<br>
+- 1:<br>
   A `clause name` was specified but not found.<br>
 
 ## OPTIONS
@@ -50,4 +49,3 @@ To print out the license of the `resolver` plugin directly by forcing it to load
 
 To print out the author of the `line` plugin:<br>
 `kdb info line author`<br>
-

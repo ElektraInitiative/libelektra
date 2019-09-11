@@ -1,3 +1,5 @@
+// lgtm [cpp/missing-header-guard]
+
 /******************************************************************************
  * Darmstadtium - a library of data structures
  * Ds_vector - a vector (growable array) library

@@ -4,17 +4,28 @@ if (DEPENDENCY_PHASE)
 	set (LUA_REQUIRED_VERSION 5.1)
 	find_package (Lua ${LUA_REQUIRED_VERSION} QUIET)
 	find_swig ()
-	check_binding_included ("swig_lua" BINDING_WAS_ADDED SUBDIRECTORY "swig/lua" SILENT)
+	check_binding_included ("swig_lua"
+				BINDING_WAS_ADDED
+				SUBDIRECTORY
+				"swig/lua"
+				SILENT)
 
 	if (LUA_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED)
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h
-				    COMMAND ${SWIG_EXECUTABLE} -c++ -lua -external-runtime runtime.h)
+				    COMMAND ${SWIG_EXECUTABLE}
+					    -c++
+					    -lua
+					    -external-runtime
+					    runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
-		set_source_files_properties (lua.cpp PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+		set_source_files_properties (lua.cpp
+					     PROPERTIES
+					     COMPILE_FLAGS
+					     "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT LUA_FOUND)
 		remove_plugin (lua "Lua libs (>= liblua${LUA_REQUIRED_VERSION}-dev) not found")
 	elseif (NOT BINDING_WAS_ADDED)
@@ -24,11 +35,8 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (lua
-	    CPP
-	    SOURCES lua.hpp
-		    lua.cpp
-		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
+add_plugin (lua CPP
+	    SOURCES lua.hpp lua.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
 	    INCLUDE_DIRECTORIES ${LUA_INCLUDE_DIR}
 	    LINK_LIBRARIES ${LUA_LIBRARIES}
 	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb

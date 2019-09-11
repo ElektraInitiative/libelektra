@@ -6,7 +6,7 @@ We assume that you know what [ucf](https://packages.debian.org/sid/ucf) is and h
 This guide explains how to use ucf's new `--three-way-merge-command` functionality in
 conjunction with Elektra in order to utilize Elektra’s powerful tools in order to allow
 automatic three-way merges of your package's configuration during upgrades in a way
-that is more reliable than a diff3 merge.  This guide assumes that you are familiar with
+that is more reliable than a diff3 merge. This guide assumes that you are familiar with
 ucf already and are just trying to implement the `--three-way-merge-command` option
 using Elektra.
 
@@ -14,7 +14,10 @@ using Elektra.
 
 The addition of the `--three-way-merge-command` option was a part of my Google
 Summer of Code Project. This option takes the form:
-	--three-way-merge-command command  <New File> <Destination>
+
+```
+--three-way-merge-command command <New File> <Destination>
+```
 
 Where `command` is the command you would like to use for the merge. `New File` and
 `Destination` are the same as always.
@@ -46,7 +49,7 @@ script friendly.
 
 The full command to use `elektra-merge` to perform a three-way merge on a file managed
 by ucf is:
-	ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
+ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 
 That's it! As described above, `elektra-merge` is smart enough to run the whole merge off
 of the information from that command and utilizes the new `kdb remount` command to
@@ -56,20 +59,23 @@ do so.
 
 Integrating `elektra-merge` into a package that already uses ucf is very easy! In `postinst` you
 should have a line similar to:
-	ucf <New File> <Destination>
+ucf <New File> <Destination>
 
 or perhaps:
-	ucf --three-way <New File> <Destination>
+ucf --three-way <New File> <Destination>
 
 All you must do is in `postinst`, when run with the `configure` option you must mount the
 config file to Elektra:
-	kdb elektra-mount <New File> <Mounting Destination> <Backend>
+kdb elektra-mount <New File> <Mounting Destination> <Backend>
 
 Next, you must update the line containing `ucf` with the options `--three-way` and `--threeway-merge-command` like so:
-	ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
+ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 
 Then, in your `postrm` script, during a purge, you must unmount the config file before deleting it:
-	kdb elektra-umount <name>
+
+```sh
+kdb elektra-umount <name>
+```
 
 That's it! With those small changes you can use Elektra to perform automatic three-way merges on any files
 that your package uses ucf to handle!

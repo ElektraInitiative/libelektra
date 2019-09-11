@@ -5,66 +5,69 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-        curl \
-        build-essential \
-        clang-5.0 \
-        clang-format-5.0 \
-        autotools-dev \
+        antlr4 \
         automake \
-        cmake \
-        pkg-config \
+        autotools-dev \
         bison \
-        ruby-dev \
+        build-essential \
+        checkinstall \
+        clang-6.0 \
+        clang-format-6.0 \
+        cmake \
+        curl \
+        default-jdk \
+        dh-lua \
+        ed \
+        gawk \
+        git \
+        gobject-introspection \
+        icheck \
+        lcov \
+        libantlr4-runtime-dev \
+        libaugeas-dev \
+        libboost-all-dev \
+        libbotan-2-dev \
+        libdbus-1-dev \
+        libev-dev \
+        libgirepository1.0-dev \
+        libgit2-dev \
+        libglib2.0-dev \
+        liblua5.3-dev \
+        libpcre++-dev \
+        libpcre3-dev \
+        libpython3-dev \
+        libssl-dev \
+        libsystemd-dev \
+        libuv1-dev \
+        libxerces-c-dev \
+        libyajl-dev \
+        libyaml-cpp-dev \
+        libzmq3-dev \
+        llvm \
+        maven \
+        moreutils \
+        ninja-build \
+        npm \
+        pkg-config \
         python-dev \
         python-pip \
         python3-dev \
-        libpython3-dev \
-        dh-lua \
-        liblua5.3-dev \
-        tclcl-dev \
-        libaugeas-dev \
-        libbotan1.10-dev \
-        libyajl-dev \
-        git \
-        libgit2-dev \
-        libboost-all-dev \
-        libssl-dev \
-        libdbus-1-dev \
-        libpcre3-dev \
-        libpcre++-dev \
-        libglib2.0-dev \
-        libxerces-c-dev \
-        libyaml-cpp-dev \
-        swig3.0 \
-        libuv1-dev \
-        ghc \
-        ghc-dynamic \
-        cabal-install \
-        alex \
-        happy \
-        c2hs \
-        checkinstall \
-        openjdk-8-jdk \
-        maven \
-        gobject-introspection \
-        libgirepository1.0-dev \
-        systemd \
-        libsystemd-dev \
-        llvm \
+        ruby-dev \
         sloccount \
-        gawk \
-        lcov \
-        icheck \
+        swig3.0 \
+        systemd \
+        tclcl-dev \
         valgrind \
-        moreutils \
     && rm -rf /var/lib/apt/lists/*
 
-RUN cabal update && cabal install hspec QuickCheck
-RUN pip install --upgrade cmake_format==0.4.1 pyyaml
+# Update cache for shared libraries
+RUN ldconfig
+
+RUN pip install cmake-format[yaml]==0.5.4
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+ARG GTEST_VER=release-1.8.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -72,12 +75,16 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
-# Handle Java
-RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
-RUN echo '\
-/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
-/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
-RUN ldconfig
+# Prettier
+RUN npm install --global prettier@1.16.4
+
+# hyperfine
+ARG HYPERFINE_VERSION=1.5.0
+RUN cd /tmp \
+    && curl -o hyperfine.deb \
+       -L https://github.com/sharkdp/hyperfine/releases/download/v${HYPERFINE_VERSION}/hyperfine_${HYPERFINE_VERSION}_amd64.deb \
+    && dpkg -i hyperfine.deb \
+    && rm hyperfine.deb
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
@@ -85,6 +92,7 @@ RUN ldconfig
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
+    -f \
     jenkins
 
 ARG JENKINS_USERID
@@ -97,14 +105,11 @@ RUN useradd \
 
 USER ${JENKINS_USERID}
 
-# Handle Haskell dependencies
-ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
-RUN mkdir -p $HASKELL_SHARED_SANDBOX \
-    && cd $HASKELL_SHARED_SANDBOX \
-    && cabal update \
-    && cabal sandbox init \
-    && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
-        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
-        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls
+# shfmt
+ENV SHFMT_PATH=/home/jenkins/bin
+ENV SHFMT_VERSION=v2.6.3
+ENV PATH="${SHFMT_PATH}:${PATH}"
+RUN mkdir -p "${SHFMT_PATH}" \
+    && cd "${SHFMT_PATH}" \
+    && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
+    && chmod a+x shfmt

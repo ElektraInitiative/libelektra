@@ -13,7 +13,7 @@ changes in the Elektra state.
 - We need to be able to synchronize all changes in Elektra with the Web UI.
 - This needs to be done via a network socket due to limitations of the Web.
 - That means we need to run an Elektra daemon (`elektrad`) to be able to
- connect to Elektra at any time.
+  connect to Elektra at any time.
 
 ## Assumptions
 
@@ -36,6 +36,6 @@ used for the Web UI).
 
 ## Implications
 
-## Related decisions
+## Related Decisions
 
 ## Notes

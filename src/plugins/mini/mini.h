@@ -16,6 +16,6 @@
 int elektraMiniGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMiniSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mini);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

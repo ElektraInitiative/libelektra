@@ -22,7 +22,12 @@ namespace tools
 namespace merging
 {
 
-enum ConflictResolutionSide { BASE, OURS, THEIRS };
+enum ConflictResolutionSide
+{
+	BASE,
+	OURS,
+	THEIRS
+};
 
 class MergeConflictStrategy
 {

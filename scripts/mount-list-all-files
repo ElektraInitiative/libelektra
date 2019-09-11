@@ -1,8 +1,9 @@
 #!/bin/sh
+#
+# @tags mount
 
-if [ -z "$KDB" ];
-then
-    KDB=kdb
+if [ -z "$KDB" ]; then
+	KDB=kdb
 fi
 
 MOUNTPOINTS=$(kdb complete system/elektra/mountpoints/ --max-depth=1)
@@ -10,11 +11,10 @@ MOUNTPOINTS=$(echo "$MOUNTPOINTS" | sed 's:system/elektra/mountpoints/::' | sed 
 FILES=
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"
-for mp in $MOUNTPOINTS;
-do
-    FILES="$FILES`$KDB file \"$mp\"`\n"
+for mp in $MOUNTPOINTS; do
+	FILES="$FILES$($KDB file "$mp")\n"
 done
 FILES="${FILES%??}"
-FILES=$(echo "$FILES"|sort|uniq)
+FILES=$(echo "$FILES" | sort | uniq)
 echo "$FILES"
 IFS="$OLD_IFS"

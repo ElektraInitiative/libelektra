@@ -46,7 +46,7 @@ can also serve the client, further simplifying the whole structure, because we
 don't need to host the client on a separate web server.
 
 Another advantage of this solution is that both clusterd and elektrad are using
-nodejs, which means that a wrapper script can set up and  start both daemons
+nodejs, which means that a wrapper script can set up and start both daemons
 easily.
 
 There are still some other issues, like possible conflicts when adding an
@@ -60,7 +60,7 @@ that are set in the cluster cannot be modified.
 
 - There needs to be a single point of entry for the web client to connect to.
 
-## Related decisions
+## Related Decisions
 
 - [Elektra Web Recursive Structure decision](elektra_web_recursive.md)
 

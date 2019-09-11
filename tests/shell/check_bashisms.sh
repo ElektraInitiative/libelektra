@@ -4,19 +4,37 @@ echo
 echo ELEKTRA SCRIPTS BASHISMS TEST
 echo
 
-command -v checkbashisms >/dev/null 2>&1 || { echo "checkbashisms command needed for this test, aborting" >&2; exit 0; }
+command -v checkbashisms > /dev/null 2>&1 || {
+	echo "checkbashisms command needed for this test, aborting" >&2
+	exit 0
+}
 
 cd "@CMAKE_SOURCE_DIR@"
 
 # Use (non-emacs) extended regex for GNU find or BSD find
 find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'
 
-# this way we also check subdirectories
-# The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
-# See also: https://unix.stackexchange.com/questions/151925
-scripts=$($FIND -type f -not -regex \
-	  '.+(check-env-dep|gitignore|kdb_zsh_completion|run_dev_env|sed|(Docker|Jenkins|Vagrant)file.*|\.(cmake|fish|in|md|txt|hs))$' | \
-	  xargs)
+# - The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
+#   See also: https://unix.stackexchange.com/questions/151925
+# - The script `reformat-source` uses `command -v`, which is optional in POSIX. However, since `which` is not part of POSIX at all
+#   `command -v` is probably the most portable solution to detect the location of a command.
+#   See also: https://stackoverflow.com/questions/592620
+scripts=$(
+	$FIND -type f -not \( \
+		-path '*check-env-dep' -or \
+		-path '*find-tools' -or \
+		-path '*gitignore' -or \
+		-path '*kdb_zsh_completion' -or \
+		-path '*kdb-zsh-noglob' -or \
+		-path '*reformat-source' -or \
+		-path '*run_dev_env' -or \
+		-path '*sed' -or \
+		-path '*update-infos-status' -or \
+		-path '*zsh' -or \
+		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
+		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|hs|rb)$' \
+		\) | xargs
+)
 exit_if_fail 'Unable to locate shell scripts via `find`'
 checkbashisms $scripts
 ret=$?

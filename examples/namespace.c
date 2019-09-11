@@ -9,6 +9,7 @@
 #include <kdbproposal.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void printNamespace (Key const * k)
 {
@@ -61,7 +62,10 @@ for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 int main (void)
 {
 	char s[100];
-	fgets (s, 100, stdin);
+	if (!fgets (s, 100, stdin)) {
+		fprintf(stderr, "Unable to read from standard input");
+		return EXIT_FAILURE;
+	}
 
 	Key * k = keyNew (s, KEY_CASCADING_NAME, KEY_META_NAME, KEY_END);
 	printNamespace (k);

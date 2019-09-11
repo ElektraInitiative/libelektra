@@ -16,7 +16,6 @@ If validation of a key fails, each plugin decides on its own
 how to handle the issue and proceed in ways that might be
 different than what is expected or desired.
 
-
 ## Constraints
 
 ## Assumptions
@@ -44,14 +43,12 @@ for what should happen on kdbGet and handle problems e.g.
   we only want to read valid configurations, and fail with
   an error if the configuration is invalid
 
-
 ## Considered Alternatives
 
 - Extend validation plugins to allow us to specify what should happen
   if a key fails to validate
 - Export a validation function that allows us to use an additional plugin
   to decide what should be done
-
 
 ## Decision
 
@@ -72,6 +69,6 @@ validation plugins have to export their validation routine
 
 returning 1 if validation succeeded, 0 on failure
 
-## Related decisions
+## Related Decisions
 
 ## Notes

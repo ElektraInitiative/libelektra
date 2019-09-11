@@ -45,7 +45,7 @@ myplugin_varianta;myplugin_variantb
 
 In the CMakeLists.txt of your plugin, you have two options.
 Option (A): When you can easily enlist every variant you
-simply list all plugins one after the other (*outside of* `if (DEPENDENCY_PHASE)`):
+simply list all plugins one after the other (_outside of_ `if (DEPENDENCY_PHASE)`):
 
 ```cmake
 add_plugin(myplugin_varianta
@@ -104,7 +104,6 @@ that, you can use:
 - Including a readme for every variant (with `#ifdef` for different text)
   using the macro `#include ELEKTRA_README(myplugin)`
 
-
 As a summary, you can have many plugins build out of the same source.
 Using `pluginname_variantnames` many plugins will be compiled, each
 with other `SOURCES` or `COMPILE_DEFINITIONS` and even `LINK_LIBRARIES`:
@@ -121,4 +120,4 @@ compiled included the `#ifdef` the other (base variant called
 `myplugin`) without.
 
 Currently compilation variants are used in
-[the resolver plugin](https://libelektra.org/tree/master/src/plugins/resolver/resolver.c).
+[the resolver plugin](https://master.libelektra.org/src/plugins/resolver/resolver.c).

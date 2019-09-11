@@ -37,7 +37,7 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey)
 	Key * warning = ksLookupByName (conf, "/on_open/warnings", 0);
 	if (warning)
 	{
-		elektraTriggerWarnings (atoi (keyString (warning)), parentKey, "from error plugin in kdbOpen");
+		elektraTriggerWarnings (keyString (warning), parentKey, "from error plugin in kdbOpen");
 	}
 
 	Key * error = ksLookupByName (conf, "/on_open/error", 0);
@@ -45,7 +45,7 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey)
 	{
 		if (parentKey)
 		{
-			elektraTriggerError (atoi (keyString (error)), parentKey, "from error plugin in kdbOpen");
+			elektraTriggerError (keyString (error), parentKey, "from error plugin in kdbOpen");
 		}
 		return -1;
 	}
@@ -83,26 +83,26 @@ int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		meta = keyGetMeta (cur, "trigger/warnings");
 		if (meta)
 		{
-			elektraTriggerWarnings (atoi (keyString (meta)), parentKey, "from error plugin in kdbSet");
+			elektraTriggerWarnings (keyString (meta), parentKey, "from error plugin in kdbSet");
 		}
 
 		meta = keyGetMeta (cur, "trigger/error");
 		if (meta)
 		{
-			elektraTriggerError (atoi (keyString (meta)), parentKey, "from error plugin in kdbSet");
+			elektraTriggerError (keyString (meta), parentKey, "from error plugin in kdbSet");
 			return -1; /* error */
 		}
 		meta = keyGetMeta (cur, "trigger/error/nofail");
 		if (meta)
 		{
-			elektraTriggerError (atoi (keyString (meta)), parentKey, "from error plugin in kdbSet");
+			elektraTriggerError (keyString (meta), parentKey, "from error plugin in kdbSet");
 		}
 	}
 
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (error)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("error",

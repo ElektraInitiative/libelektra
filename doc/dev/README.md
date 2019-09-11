@@ -12,7 +12,10 @@ It complements the man pages found [here](/doc/help).
 
 - [Logging](logging.md)
 - [Error Handling](error-handling.md)
+- [Error Message](error-message.md)
+- [Error Categorization](error-categorization.md)
 - [Metadata](metadata.md)
+- [Symbol Versioning](symbol-versioning.md)
 
 ## Internals
 

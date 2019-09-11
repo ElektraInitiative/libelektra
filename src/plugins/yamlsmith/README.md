@@ -2,7 +2,7 @@
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
 - infos/needs = directoryvalue
-- infos/provides = conv
+- infos/provides =
 - infos/recommends =
 - infos/placements = setstorage
 - infos/status = maintained specific unittest nodep preview experimental unfinished nodoc concept discouraged
@@ -17,11 +17,16 @@
 
 ```sh
 # Save a single key-value pair
-kdb set user/tests/yamlsmith 'Pattern Against User'
+kdb set user/tests/yamlsmith/text 'Pattern Against User'
 
 # Only export the value
-kdb export user/tests/yamlsmith yamlsmith
-#> Pattern Against User
+kdb export user/tests/yamlsmith/text yamlsmith
+#> "Pattern Against User"
+
+# Check that the plugin supports boolean values correctly
+kdb set user/tests/yamlsmith/boolean 0
+kdb export user/tests/yamlsmith/boolean yamlsmith
+#> false
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
@@ -39,20 +44,22 @@ kdb set user/tests/yamlsmith/level1/two 'II'
 # Export data using YAML Smith
 kdb export user/tests/yamlsmith yamlsmith
 #> key:
-#>   value
+#>   "value"
 #> level1:
 #>   one:
-#>     I
+#>     "I"
 #>   two:
-#>     II
+#>     "II"
 #> time:
-#>   will die and love will burrow it
+#>   "will die and love will burrow it"
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
 ```
 
 ## Arrays
+
+### Simple Array
 
 ```sh
 kdb set user/tests/yamlsmith/low
@@ -63,11 +70,35 @@ kdb set user/tests/yamlsmith/low/#2 'To the night'
 kdb export user/tests/yamlsmith yamlsmith
 #> low:
 #>   -
-#>     You bought some sweet, sweet, sweet, sweet sunflowers
+#>     "You bought some sweet, sweet, sweet, sweet sunflowers"
 #>   -
-#>     And gave them
+#>     "And gave them"
 #>   -
-#>     To the night
+#>     "To the night"
+
+# Undo modifications
+kdb rm -r user/tests/yamlsmith
+```
+
+### Multiple Arrays
+
+```sh
+kdb set user/tests/yamlsmith/arrays/Elliott/Smith/#0 XO
+kdb set user/tests/yamlsmith/arrays/Elliott/Smith/#1 'Figure 8'
+kdb set user/tests/yamlsmith/arrays/The/Smiths/#0 'The Queen Is Dead'
+
+kdb export user/tests/yamlsmith yamlsmith
+#> arrays:
+#>   Elliott:
+#>     Smith:
+#>       -
+#>         "XO"
+#>       -
+#>         "Figure 8"
+#>   The:
+#>     Smiths:
+#>       -
+#>         "The Queen Is Dead"
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith

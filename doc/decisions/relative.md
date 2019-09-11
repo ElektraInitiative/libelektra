@@ -7,7 +7,7 @@ absolute or relative, including:
 
 1. mounting the same file somewhere else does not work
 2. importing somewhere else (other than from where it was exported) does not work
-    (See [here](https://github.com/ElektraInitiative/libelektra/issues/51))
+   (See [here](https://github.com/ElektraInitiative/libelektra/issues/51))
 
 ## Constraints
 
@@ -45,7 +45,7 @@ plugins should use relative paths so that import/export/remount works
 - xmltool (also supports relative)
 - tcl
 
-## Related decisions
+## Related Decisions
 
 None
 

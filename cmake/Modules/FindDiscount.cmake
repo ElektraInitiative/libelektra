@@ -26,7 +26,7 @@
 # ~~~
 
 # ~~~
-# DISCOUNT is a implementation of John Gruber's Markdown markup language.
+# DISCOUNT is an implementation of John Gruber's Markdown markup language.
 #
 # DISCOUNT is free software written by David Parsons <orc@pell.chi.il.us>;
 # it is released under a BSD-style license that allows you to do
@@ -48,31 +48,23 @@ if (NOT DISCOUNT_FOUND)
 
 	# ____________________________________________________________________________ Check for the header files
 
-	find_path (DISCOUNT_INCLUDES
-		   NAMES mkdio.h
-		   HINTS ${DISCOUNT_ROOT_DIR}
-			 ${CMAKE_INSTALL_PREFIX}
-		   PATH_SUFFIXES include)
+	find_path (DISCOUNT_INCLUDES NAMES mkdio.h HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
 
 	# ____________________________________________________________________________ Check for the library
 
-	find_library (DISCOUNT_LIBRARIES
-		      markdown
-		      HINTS ${DISCOUNT_ROOT_DIR}
-			    ${CMAKE_INSTALL_PREFIX}
-		      PATH_SUFFIXES lib)
+	find_library (DISCOUNT_LIBRARIES markdown HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
 
 	# ____________________________________________________________________________ Check for the executable
 
-	find_program (MARKDOWN_EXECUTABLE
-		      markdown
-		      HINTS ${DISCOUNT_ROOT_DIR}
-			    ${CMAKE_INSTALL_PREFIX}
-		      PATH_SUFFIXES bin)
+	find_program (MARKDOWN_EXECUTABLE markdown HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES bin)
 
 	# ____________________________________________________________________________ Actions taken when all components have been found
 
-	find_package_handle_standard_args (DISCOUNT DEFAULT_MSG DISCOUNT_LIBRARIES DISCOUNT_INCLUDES MARKDOWN_EXECUTABLE)
+	find_package_handle_standard_args (DISCOUNT
+					   DEFAULT_MSG
+					   DISCOUNT_LIBRARIES
+					   DISCOUNT_INCLUDES
+					   MARKDOWN_EXECUTABLE)
 
 	if (DISCOUNT_FOUND)
 
@@ -98,6 +90,9 @@ if (NOT DISCOUNT_FOUND)
 
 	# ____________________________________________________________________________ Mark advanced variables
 
-	mark_as_advanced (DISCOUNT_ROOT_DIR DISCOUNT_INCLUDES DISCOUNT_LIBRARIES MARKDOWN_EXECUTABLE)
+	mark_as_advanced (DISCOUNT_ROOT_DIR
+			  DISCOUNT_INCLUDES
+			  DISCOUNT_LIBRARIES
+			  MARKDOWN_EXECUTABLE)
 
 endif (NOT DISCOUNT_FOUND)

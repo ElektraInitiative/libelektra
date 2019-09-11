@@ -21,7 +21,7 @@ extern "C" {
 int elektraYamlsmithGet (Plugin *, KeySet *, Key *);
 int elektraYamlsmithSet (Plugin *, KeySet *, Key *);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yamlsmith);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 } // end extern "C"
 

@@ -43,7 +43,7 @@ static int executeCommand (const char * cmdline)
 	}
 }
 
-int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/shell"))
 	{
@@ -53,7 +53,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 			       keyNew ("system/elektra/modules/shell/exports/get", KEY_FUNC, elektraShellGet, KEY_END),
 			       keyNew ("system/elektra/modules/shell/exports/set", KEY_FUNC, elektraShellSet, KEY_END),
 			       keyNew ("system/elektra/modules/shell/exports/error", KEY_FUNC, elektraShellError, KEY_END),
-#include ELEKTRA_README (shell)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/shell/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -70,15 +70,16 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_ERRORF (144, parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_ERRORF (144, parentKey, "return value of %s doesn't match expected exit %s\n",
-						    keyString (cmdKey), keyString (expectedReturnKey));
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+								       "Return value of '%s' doesn't match expected exit. Reason: %s",
+								       keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
 		}
@@ -86,7 +87,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * cmdKey = ksLookupByName (config, "/execute/set", KDB_O_NONE);
@@ -98,15 +99,16 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_ERRORF (144, parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_ERRORF (144, parentKey, "return value of %s doesn't match expected exit %s\n",
-						    keyString (cmdKey), keyString (expectedReturnKey));
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+								       "Return value of '%s' doesn't match expected exit. Reason: %s",
+								       keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
 		}
@@ -114,7 +116,7 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * cmdKey = ksLookupByName (config, "/execute/error", KDB_O_NONE);
@@ -126,15 +128,16 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		int retVal = executeCommand (keyString (cmdKey));
 		if (retVal == -1)
 		{
-			ELEKTRA_SET_ERRORF (144, parentKey, "launching childprocess failed with %s\n", strerror (errno));
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Launching childprocess failed. Reason: %s", strerror (errno));
 			return -1;
 		}
 		else if (expectedReturnKey)
 		{
 			if (atoi (keyString (expectedReturnKey)) != retVal)
 			{
-				ELEKTRA_SET_ERRORF (144, parentKey, "return value of %s doesn't match expected exit %s\n",
-						    keyString (cmdKey), keyString (expectedReturnKey));
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+								       "Return value of '%s' doesn't match expected exit. Reason: %s",
+								       keyString (cmdKey), keyString (expectedReturnKey));
 				return -1;
 			}
 		}
@@ -142,7 +145,7 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (shell)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("shell", ELEKTRA_PLUGIN_GET, &elektraShellGet, ELEKTRA_PLUGIN_SET, &elektraShellSet,
 				    ELEKTRA_PLUGIN_ERROR, &elektraShellError, ELEKTRA_PLUGIN_END);

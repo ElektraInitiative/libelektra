@@ -185,8 +185,8 @@ static int validateEncoding (const uint8_t * line, iconv_t conv, size_t bytesRea
 	char * outPtr = outBuffer;
 	size_t inBytes = bytesRead;
 	size_t outSize = sizeof (outBuffer);
-	int ret = iconv (conv, &ptr, &inBytes, &outPtr, &outSize);
-	if (ret == -1 && errno == EILSEQ)
+	size_t ret = iconv (conv, &ptr, &inBytes, &outPtr, &outSize);
+	if (ret == (size_t) -1 && errno == EILSEQ)
 	{
 		return ((uint8_t *) ptr - line);
 	}
@@ -206,7 +206,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	FILE * fp = fopen (filename, "rb");
 	if (fp == NULL)
 	{
-		ELEKTRA_SET_ERRORF (138, parentKey, "Couldn't open file %s", filename);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s. Reason: %s", filename, strerror (errno));
 		return -1;
 	}
 	iconv_t conv = NULL;
@@ -222,7 +222,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 		}
 		if (conv == (iconv_t) (-1))
 		{
-			ELEKTRA_SET_ERRORF (138, parentKey, "Couldn't initialize iconv with encoding %s\n", checkConf->encoding);
+			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Couldn't initialize iconv with encoding %s\n", checkConf->encoding);
 			fclose (fp);
 			return -2;
 		}
@@ -246,7 +246,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			le_ret = validateLineEnding (line, &(checkConf->validLE), 0);
 			if (le_ret)
 			{
-				ELEKTRA_SET_ERRORF (137, parentKey, "invalid lineending at position %zd", bytesRead + le_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid lineending at position %zd in file %s",
+									 bytesRead + le_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -256,7 +257,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			null_ret = checkNull (line, bytesRead);
 			if (null_ret)
 			{
-				ELEKTRA_SET_ERRORF (137, parentKey, "found null-byte at position %zd", bytesRead + null_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Found null-byte at position %zd in file %s",
+									 bytesRead + null_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -266,7 +268,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			iconv_ret = validateEncoding (line, conv, bytesRead);
 			if (iconv_ret)
 			{
-				ELEKTRA_SET_ERRORF (137, parentKey, "invalid encoding at position %zd", bytesRead + iconv_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid encoding at position %zd in file %s",
+									 bytesRead + iconv_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -276,7 +279,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			bom_ret = checkBom (line);
 			if (bom_ret)
 			{
-				ELEKTRA_SET_ERROR (137, parentKey, "found BOM");
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Found no Byte Order Mark (BOM) in file %s", filename);
 				retVal = -1;
 				break;
 			}
@@ -287,7 +290,8 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 			unprintable_ret = checkUnprintable (line);
 			if (unprintable_ret)
 			{
-				ELEKTRA_SET_ERRORF (137, parentKey, "unprintable character at position %zd", bytesRead + unprintable_ret);
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unprintable character at position %zd in file %s",
+									 bytesRead + unprintable_ret, filename);
 				retVal = -1;
 				break;
 			}
@@ -313,7 +317,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 			keyNew ("system/elektra/modules/filecheck/exports/close", KEY_FUNC, elektraFilecheckClose, KEY_END),
 			keyNew ("system/elektra/modules/filecheck/exports/get", KEY_FUNC, elektraFilecheckGet, KEY_END),
 			keyNew ("system/elektra/modules/filecheck/exports/set", KEY_FUNC, elektraFilecheckSet, KEY_END),
-#include ELEKTRA_README (filecheck)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/filecheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -338,7 +342,7 @@ int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (filecheck)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("filecheck",

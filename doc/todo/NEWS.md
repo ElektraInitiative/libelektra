@@ -1,22 +1,19 @@
-# 0.8.<<VERSION>> Release
+# 0.9.<<VERSION>> Release
 
 This release did not happen yet.
 
 Please update this file within PRs accordingly.
 For non-trivial changes, you can choose to be
 part of the highlighted changes. Please make
-sure to add some short tutorial, asciinema,
-or how-to-use for highlighted items.
+sure to add some short tutorial (checked by
+shell recorder) or asciinema for highlighted items.
 
-Please add your name to every contribution
-syntax: ", thanks to <myname>".
-
+Please add your name at the end of every contribution.
+**Syntax:** _(your name)_
 
 <<`scripts/generate-news-entry`>>
 
-We are proud to release Elektra 0.8.<<VERSION>>.
-
-<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
+We are proud to release Elektra 0.9.<<VERSION>>.
 
 ## What is Elektra?
 
@@ -24,13 +21,7 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-For a small demo see here:
-
-[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
-
-You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
-
-
+You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
 ## Highlights
 
@@ -38,15 +29,11 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-
 ### <<HIGHLIGHT1>>
 
-
 ### <<HIGHLIGHT2>>
 
-
 ### <<HIGHLIGHT2>>
-
 
 ## Plugins
 
@@ -58,15 +45,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-
-
 ### <<Plugin2>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
-
 
 ### <<Plugin3>>
 
@@ -74,17 +57,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-
 ### Compatibility
-
-As always, the ABI and API of kdb.h is fully compatible, i.e. programs
-compiled against an older 0.8 version of Elektra will continue to work
-(ABI) and you will be able to recompile programs without errors (API).
 
 - <<TODO>>
 - <<TODO>>
@@ -102,20 +79,17 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 
-
 ### <<Library2>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-
 ### <<Library3>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
 
 ## Bindings
 
@@ -124,12 +98,9 @@ you up to date with the multi-language support provided by Elektra.
 
 ### <<Binding1>>
 
-
 ### <<Binding2>>
 
-
 ### <<Binding3>>
-
 
 ## Tools
 
@@ -137,13 +108,11 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
-
 ## Scripts
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
 
 ## Documentation
 
@@ -156,7 +125,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
 
 ## Build
 
@@ -172,8 +140,13 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
-
 ## Infrastructure
+
+### Cirrus
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Jenkins
 
@@ -187,7 +160,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
-
 ## Website
 
 The website is generated from the repository, so all information about
@@ -197,7 +169,6 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - <<TODO>>
 - <<TODO>>
 
-
 ## Outlook
 
 We are currently working on following topics:
@@ -206,24 +177,33 @@ We are currently working on following topics:
 - <<TODO>>
 - <<TODO>>
 
+## Statistics
 
-## Get It!
+<<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz?raw=true)
+## Join the Initiative!
 
+We welcome new contributors!
+Read [here](https://www.libelektra.org/devgettingstarted/ideas) about how to get started.
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz.hashsum?raw=true)
+As first step, you could give us feedback about these release notes.
+Contact us via our [issue tracker](https://issues.libelektra.org).
 
-<<`scripts/generate-hashsums`>>
+## Get the Release!
+
+You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz)
+or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
+
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
+
+<<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
 The release tarball is also available signed by Markus Raab using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
-Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
-or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
-
+Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/)
+or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
 
 ## Stay tuned!
 
@@ -231,15 +211,12 @@ Subscribe to the
 [RSS feed](https://www.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
-For any questions and comments, please contact the
-issue tracker [on GitHub](http://issues.libelektra.org)
-or Markus Raab by email using elektra@markus-raab.org.
+If you also want to participate, or for any questions and comments
+please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-

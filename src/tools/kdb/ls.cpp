@@ -26,13 +26,13 @@ int LsCommand::execute (Cmdline const & cl)
 {
 	checkArguments (cl);
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	root = cl.createKey (0);
 
 	kdb.get (ks, root);
 
-	if (cl.verbose) cout << "size of all keys in mountpoint: " << ks.size () << endl;
+	if (cl.verbose) cout << "size of all keys in mount point: " << ks.size () << endl;
 
 	KeySet part (ks.cut (root));
 
@@ -45,7 +45,7 @@ int LsCommand::execute (Cmdline const & cl)
 
 	printResults (part, getDepth (root), cl);
 
-	printWarnings (cerr, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
 	return 0;
 }

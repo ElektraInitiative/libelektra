@@ -39,7 +39,8 @@
  * @see ksToStream()
  * @see keyToStream()
  */
-enum KDBStream {
+enum KDBStream
+{
 	// clang-format off
 	KDB_O_SHOWMETA = 0xF0,       /*!< Show all metadata (type, uid, gid, mode) */
 	KDB_O_SHOWFLAGS = 1 << 14,   /*!< Show all flags */

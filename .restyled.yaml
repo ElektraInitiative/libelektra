@@ -1,0 +1,10 @@
+restylers_version: '20190904'
+auto: true
+restylers:
+  - prettier
+  - prettier-markdown:
+      arguments: []
+  - shfmt:
+      arguments:
+        - -s
+        - -sr

@@ -6,8 +6,22 @@ src/plugins/python/CMakeLists.txt
 src/plugins/python2/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
-src/plugins/semlock/CMakeLists.txt   disable due to /dev/shm problems, see #1122 and #1260
+doc/help/kdb-get.md   for INI
 
+### Jenkins
+
+We disabled the tests
+
+- `testmod_crypto_botan`,
+- `testmod_crypto_openssl`,
+- `testmod_dbus`,
+- `testmod_dbusrecv`,
+- `testmod_fcrypt`,
+- `testmod_gpgme`, and
+- `testmod_zeromqsend`
+
+in the function `ctest` in the file `scripts/jenkins/Jenkinsfile`, since they are known to
+[cause problems in high load scenarios](https://issues.libelektra.org/2439).
 
 ## error
 
@@ -154,11 +168,11 @@ most plugins (especially storage) do only basic or no tests
 	fstab
 	hosts
 
-= Missing Testcases =
+= Missing test cases =
 
 test cases for locking file
 
-more testcases for kdb interface
+more test cases for kdb interface
 	also mount! and check for functionality regressions
 	ls over multiple mountpoints
 
@@ -219,7 +233,7 @@ import/export:
 	with all plugins
 	with automated kdb tests
 
-kdb testcases:
+kdb test cases:
 	for mount/umount
 	for import/export/convert
 	using chroot

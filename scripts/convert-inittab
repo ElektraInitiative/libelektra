@@ -20,7 +20,6 @@
 ##
 ########################################################################
 
-
 [ -z "$RG" ] && RG="kdb"
 [ -z "$ROOT" ] && ROOT="system"
 
@@ -28,7 +27,7 @@ echo "<keyset parent=\"$ROOT/init\">"
 echo
 
 cat /etc/inittab | sed -e "s/\#.*\$//g; s/\"/\'/g;" | grep -v '^$' |
-		awk -F : '{
+	awk -F : '{
 			if (seq) seq=seq","$1;
 			else seq=$1;
 			

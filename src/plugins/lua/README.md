@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest configurable global memleak
+- infos/status = unittest configurable global memleak
 - infos/description = proxy that calls other plugins (scripts) written in lua
 
 ## Introduction
@@ -19,14 +19,18 @@ implemented. The lua plugin is especially useful to write filter and logging scr
 The lua plugin accepts only the **script** configuration parameter holding the path to a Lua
 script. The mount command would look like
 
-    kdb mount file.ini /lua ini lua script=/path/to/filter_script.lua
+```sh
+kdb mount file.ini /lua ini lua script=/path/to/filter_script.lua
+```
 
 if the **ini** plugin should be used for storage and the lua plugin only serves to invoke the
 filter script.
 
 For a Lua script that serves as (JSON) storage plugin itself, one could also use
 
-    kdb mount file.json /lua lua script=/path/to/json_plugin.lua
+```sh
+kdb mount file.json /lua lua script=/path/to/json_plugin.lua
+```
 
 ### Lua Scripts
 
@@ -38,7 +42,7 @@ Lua scripts can implement the following functions
 - elektraError(returned, parentKey)
 - elektraClose(errorKey)
 
-where *config* & *returned* are KeySets and *errorKey* & *parentKey* are Keys.
+where _config_ & _returned_ are KeySets and _errorKey_ & _parentKey_ are Keys.
 For the return codes of the functions, the same rules as for normal plugins apply.
 
 If a function is not available, it simply is not called. A script does not have to
@@ -46,7 +50,9 @@ implement all functions therefore.
 
 Access to **kdb** can be retrieved using the Lua import
 
-    require("kdb")
+```lua
+require("kdb")
+```
 
 ## Example
 
@@ -88,4 +94,3 @@ and the API might change in the future.
 
 Be also aware that a Lua script will never be as performant as a native C/C++ plugin.
 Spinning up the interpreter takes additional time and resources.
-

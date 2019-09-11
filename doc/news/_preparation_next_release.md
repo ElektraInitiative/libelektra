@@ -1,25 +1,19 @@
-# 0.8.<<VERSION>> Release
+# 0.9.<<VERSION>> Release
 
 This release did not happen yet.
 
-Please update this file within every PR:
+Please update this file within PRs accordingly.
+For non-trivial changes, you can choose to be
+part of the highlighted changes. Please make
+sure to add some short tutorial (checked by
+shell recorder) or asciinema for highlighted items.
 
-- For non-trivial changes, you can choose to be
-  part of the highlighted changes.
-- Please make sure to add some short tutorial, asciinema,
-  or how-to-use for highlighted items.
-- Please add your name in parentheses and italics
-  to every contribution,
-  i.e., syntax: "*(<myname>)*".
-  Note: No change is irrelevant but similar contributions might
-  be summarized shortly before the release.
-
+Please add your name at the end of every contribution.
+**Syntax:** _(your name)_
 
 <<`scripts/generate-news-entry`>>
 
-We are proud to release Elektra 0.8.<<VERSION>>.
-
-<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
+We are proud to release Elektra 0.9.<<VERSION>>.
 
 ## What is Elektra?
 
@@ -27,537 +21,192 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-For a small demo see here:
-
-[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
-
-You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
-
-
+You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
 ## Highlights
 
-- Type system preview
-- Chef Cookbook
-- Elektra Web 1.6
-- Make tests fail *(Markus Raab)*
+- Code generation
+- <<HIGHLIGHT2>>
+- <<HIGHLIGHT3>>
 
+### Code Generation
 
-### Type system preview
+While the new `kdb gen` was already included in the last release, it is now fully functional and ready for productive use. To get started take a look
+at the new man-page for [`kdb-gen(1)`](https://www.libelektra.org/manpages/kdb-gen).
 
-Elektra supports specifying the semantics of keys via metakeys in the `spec`
-namespace. An example is the metakey `check/range` which can be used to specify
-that a key only holds numbers in a given range. Another metakey is `check/enum`
-which only allows specific keywords to be the content of a key. Up to now these
-semantics are being checked at runtime. Therefore a type system was developed to
-be able to check configuration specifications statically. As an example, it
-would detect when one accidentally adds both a range and an enum check if their
-possible contents are not compatible with each other.
+If you specifically want to use it with the High-Level API take a look at [this tutorial](https://www.libelektra.org/tutorials/high-level-api).
 
-The type system is available as a plugin that gets mounted along with a
-configuration specification into the spec namespace. Furthermore we include a
-set of type definitions for commonly used metakeys such as `check/range`,
-`check/long`, `fallback` or `override`.
+We also created a new CMake function that will be available, if you include Elektra via CMake's
+`find_package`. The function is called `elektra_kdb_gen` and can be used to tell CMake about files
+that are generated with `kdb gen`. _(Klemens Böswirth)_
 
-For more details see the
-[typechecker readme](https://www.libelektra.org/plugins/typechecker)
+### <<HIGHLIGHT2>>
 
-Thanks to Armin Wurzinger.
-
-
-### Chef Cookbook
-
-Next to the [Puppet Resource Type](http://puppet.libelektra.org/)
-we now also prepared a [Chef Cookbook](https://supermarket.chef.io/cookbooks/kdb)
-which allows us to use Elektra from within chef.
-
-For example, to set mount a configuration file, you can use:
-
-```
-kdbmount 'system/hosts' do
-	file '/etc/hosts'
-	plugins 'hosts'
-	action :create
-end
-```
-
-And to add an hosts entry, you can use:
-
-```
-kdbset '/hosts/ipv4/showthatitworks' do
-	namespace 'system'
-	value '127.0.0.33'
-	action :create
-end
-```
-
-> Note that currently `kdb` is invoked
-> and Elektra needs to be installed for
-> managed systems.
-
-Thanks to Michael Zronek and Vanessa Kos.
-
-
-### Elektra Web 1.6
-
-The new release of Elektra Web features many UX improvements from the usability test!
-
-[![Elektra Web 1.6 video](https://img.youtube.com/vi/lLg9sk6Hx-E/0.jpg)](https://www.youtube.com/watch?v=lLg9sk6Hx-E)
-
-Try it out now on: http://webdemo.libelektra.org/
-
-1.5 changelog:
-
-- search completely reworked - it does not act as a filter on already opened keys anymore, and instead searches the whole key database - feedback from the search was also greatly improved (pulsating while searching, glowing blue when done)
-- added "abort" buttons to dialogs to revert actions
-- added "create array" button to easily create arrays
-- removed confirmation dialog before deletion (undo can be used instead)
-- created a docker image: `elektra/web`
-- implemented auto-deployment of webdemo.libelektra.org
-- small fixes:
-  - updated visibility levels
-  - removed "done" button in main view
-  - fixed issues with the opener click area
-  - remove metakeys when they are set to the default value or empty/0
-  - improved keyboard support
-  - fixed many small issues (#2037)
-
-1.6 changelog:
-
-- fixed bugs related to arrays (#2103)
-- improved performance of search for many results
-- added 404 page for invalid instance ids
-- implement drag & copy by holding the Ctrl or Alt key
-- add button to show error details
-- allow deleting all keys in a namespace
-
-Thanks to Daniel Bugl.
-
+### <<HIGHLIGHT2>>
 
 ## Plugins
 
-### CCode
+The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-- We fixed various warnings in the source code reported by [OCLint](http://oclint.org). *(René Schwaiger)*
-- The plugin now also encodes and decodes key names in addition to key values. *(René Schwaiger)*
+- We removed 9 obsolete or unfinished plugins: boolean cachefilter cpptype dini enum regexstore required simplespeclang struct. _(Markus Raab)_
 
-### CPP Template
+### GOpts
 
-- We added a new [template for C++ based plugins](https://www.libelektra.org/plugins/cpptemplate). To create a plugin based on this
-  template, please use the command
-
-  ```sh
-  scripts/copy-template -p pluginname
-  ```
-
-  , where `pluginname` specifies the name of your new plugin. *(René Schwaiger)*
-
-### Crypto
-
-- The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
-
-### Directory Value
-
-- The plugin now also adds leafs for a key, if its value is null or the empty string. *(René Schwaiger)*
-
-### fcrypt
-
-- The `fcrypt` plugin will consider the environment variable `TMPDIR` in order to detect its temporary directory. See [#1973] *(Peter Nirschl)*
-
-### fstab
-
-- The `fstab` plugin now passes tests on musl builds. *(Lukas Winkler)*
-
-### Haskell
-
-- An issue when building Haskell plugins with a cached sandbox is fixed in case
-  a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
-
-### Interpreter Plugins
-
-- The plugins Ruby, Python and Jni can now also be mounted as global plugin.
-- Fix crashes in global Python plugin by using pluginprocess. *(Markus Raab and Armin Wurzinger)*
-- Python plugin can now shutdown properly again *(Markus Raab)*
-
-### JNI
-
-- We now disable the plugin if  `BUILD_STATIC` or `BUILD_FULL` are enabled, since otherwise the plugin breaks the `kdb` tool.
-  *(René Schwaiger)*
-- We disabled the internal check (`testscr_check_kdb_internal_check`) for the plugin, since it always fails. *(René Schwaiger)*
-
-### HexNumber
-
-- The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
-  to convert hexadecimal values into decimal when read, and back to hexadecimal when written. *(Klemens Böswirth)*
-
-### List
-
-- The [`list` plugin](http://libelektra.org/plugins/list) now allows us to pass
-  common configuration for all plugins by using keys below the "config/" setting.
-  The updated plugin documentation contains more information and an example. *(Thomas Wahringer)*
-- The [`list` plugin](http://libelektra.org/plugins/list) which is responsible
-  for global mounting had a bug which prevented globally mounted plugins from
-  being configurable. *(Thomas Wahringer)*
-
-### mINI
-
-- We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
-  [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`. *(René Schwaiger)*
-- Removed unused header files. *(René Schwaiger)*
-
-### network
-
-- Fixed an error in network plugin that prevented it from working on non glibc
-    platforms. *(Lukas Winkler)*
-
-### Regex Dispatcher
-
-- The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added.
-  It calculates regex representations for commonly used specification keywords to be used with the
-  [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the keywords `check/range`,
-  `check/enum` and `default` are supported. *(Armin Wurzinger)*
-
-### Typechecker
-
-- The plugin [typechecker](https://www.libelektra.org/plugins/typechecker), used to validate
-  configuration specifications for Elektra statically, has been improved under the hood. It now
-  supports a more concise and efficient typechecking process including a greatly
-  improved type inference scheme that should make generated specification files and thus
-  generated errors to be easier to understand. An example of such error message is shown in the
-  [readme](https://www.libelektra.org/plugins/typechecker) *(Armin Wurzinger)*
+- The error message, if non of the gopts variants can be compiled, was improved. _(Klemens Böswirth)_
+- A better error, if the plugin fails to load `argv` from the system, was added. _(Klemens Böswirth)_
 
 ### Tcl
 
-- The [`tcl`](http://libelektra.org/plugins/tcl) plugin does not fail anymore, if its configuration file does not exist and you try to
-  retrieve the plugin contract. *(René Schwaiger)*
-- The plugin now uses relative key names. This update addresses issue [#51](https://issues.libelektra.org/51). *(René Schwaiger)*
+- We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
 
-### YAJL
+### YAwn
 
-- The [YAJL Plugin](http://libelektra.org/plugins/yajl) now uses the internal logger functionality instead of `printf` statements.
-  *(René Schwaiger)*
-- We fixed a problem with negative values reported by the
-  [UndefinedBehaviorSanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html). *(René Schwaiger)*
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
 
-### YAML CPP
+### YAy PEG
 
-- The plugin does not save empty intermediate keys anymore. The example below shows the old and the new behavior of the plugin:
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
 
-   ```sh
-   # Mount plugin
-   kdb mount config.yaml /tests/yamlcpp yamlcpp
-   # Store single key-value pair
-   kdb set /tests/yamlcpp/level1/level2/level3 value
+### Type
 
-   # Old behavior
-   kdb ls /tests/yamlcpp
-   #> user/tests/yamlcpp/level1
-   #> user/tests/yamlcpp/level1/level2
-   #> user/tests/yamlcpp/level1/level2/level3
+- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
+  native boolean types. _(Klemens Böswirth)_
 
-   # New behavior
-   kdb ls /tests/yamlcpp
-   user/tests/yamlcpp/level1/level2/level3
-   ```
-   . *(René Schwaiger)*
+### Noresolver
 
-- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now requires at least `yaml-cpp 0.6`, since the current
-  [MSR test for the plugin](https://master.libelektra.org/src/plugins/yamlcpp/README.md) triggers two bugs:
+- The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
 
-  - https://github.com/jbeder/yaml-cpp/issues/247
-  - https://github.com/jbeder/yaml-cpp/issues/289
+### Specload
 
-  in earlier versions of the [yaml-cpp library](https://github.com/jbeder/yaml-cpp). *(René Schwaiger)*
-
-- The plugin does now support [arrays](https://www.libelektra.org/tutorials/arrays) containing empty fields. *(René Schwaiger)*
-- YAML CPP now also adds `array` meta data for arrays containing arrays. *(René Schwaiger)*
-
-### YAML Smith
-
-- [YAML Smith](http://libelektra.org/plugins/yamlsmith) is a plugin that converts Elektra’s `KeySet` data structure to a textual
-  representation in the [YAML][] serialization format. The plugin is currently in a **very early stage of development**. Please be advised,
-  that it is quite likely that the plugin will produce incorrect or even invalid YAML data, especially if your `KeySet` contains special
-  characters.
-
-### Yan LR
-
-- The experimental [Yan LR plugin](http://libelektra.org/plugins/yanlr) uses a parser, generated by [ANTLR](http://www.antlr.org) to read
-  basic [YAML][] data. The plugin only converts YAML data to Elektra’s `KeySet` data structure. If you want to write data in the YAML
-  format please take a look at the [YAML Smith plugin](http://libelektra.org/plugins/yamlsmith). *(René Schwaiger)*
-
-### Misc
-
-- The logging plugins ["syslog"](https://www.libelektra.org/plugins/syslog),
-  ["journald"](https://www.libelektra.org/plugins/journald) and
-  ["logchange"](https://www.libelektra.org/plugins/logchange) now have a new
-  option called "get" which can be enabled to log which configuration settings
-  are loaded by applications.
-  The new option can be used for logging application behavior when using
-  [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
-- Do not exclude `simpleini` silently on non-glibc systems but output a message
-  like for other plugins *(Markus Raab)*
-
-[YAML]: http://yaml.org
+- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
 
 ## Libraries
 
+The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
+
+### Compatibility
+
+- The conversion functions `elektraKeyTo*` and `elektra*ToString` are now part of the `elektra-ease` library instead of
+  the `elektra-highlevel` library. This should not cause any breaking changes since `elektra-highlevel` already depends
+  on `elektra-ease`. In addition the header `elektra/conversion.h` is kept for compatibility. _(Klemens Böswirth)_
+
 ### Core
 
-- We updated the `infos/status` clause of the following plugins:
+- A new plugin function, `kdbCommit`, was implemented. The function is carried out in the `commit` phase of `kdbSet` and separates the commit functionality from the `kdbSet()` function. _(Vid Leskovar)_
+- `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
+  `config.h`-type headers from applications. _(Klemens Böswirth)_
 
-  - [`boolean`](http://libelektra.org/plugins/boolean),
-  - [`constants`](http://libelektra.org/plugins/constants),
-  - [`csvstorage`](http://libelektra.org/plugins/csvstorage),
-  - [`hexnumber`](http://libelektra.org/plugins/hexnumber),
-  - [`internalnotification`](http://libelektra.org/plugins/internalnotification),
-  - [`ruby`](http://libelektra.org/plugins/ruby),
-  - [`simpleini`](http://libelektra.org/plugins/simpleini),
-  - [`uname`](http://libelektra.org/plugins/uname), and
-  - [`xerces`](http://libelektra.org/plugins/xerces)
-
-  . *(René Schwaiger)*
-
-### General
-
-- replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
+### <<Library1>>
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### pluginprocess
+### <<Library2>>
 
-- The library [`pluginprocess`](http://master.libelektra.org/src/libs/pluginprocess) that is used to
-  execute plugins run inside own processes has been improved. This is useful as some plugins like
-  haskell-based plugins or [`python`](http://libelektra.org/plugins/python) can only be started once
-  inside a single process, while libelektra may call a plugin several times. The library now uses an
-  improved communication protocol that separates between pluginprocess-related data and keysets
-  passed to plugins. This avoids any possible name clashes between keys used by a plugin and keys
-  used by pluginprocess.
-  The documentation of the plugin has been improved as well, some mistakes were corrected and it
-  should be more clear how to store plugin data besides pluginprocess's data structure.
-  Tests have been added to the library to ensure its correct functionality. *(Armin Wurzinger)*
-- Anonymous pipes are now used instead of named pipes for the communication as anonymous pipes get
-  terminated by the OS in case a child process dies before writing back data to the parent. 
-  Currently the parent process will freeze otherwise attempting to read from the child. *(Armin Wurzinger)*
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library3>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Bindings
 
-- A new I/O binding for [ev](https://www.libelektra.org/bindings/io_ev) has been
-  added.
-  It can be used to integrate the notification feature with applications based
-  on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
+Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
+you up to date with the multi-language support provided by Elektra.
 
+- Warnings about cmake policies are avoided. _(Markus Raab)_
+
+### Java
+
+- Upgraded maven dependencies for java binding _(Michael Zronek)_
+- <<TODO>>
+
+### Rust
+
+- Add the `elektra-sys` crate which contains raw bindings to libelektra for Rust. _(Philipp Gackstatter)_
+
+### <<Binding3>>
 
 ## Tools
 
-- The new tool `kdb find` lists keys of the database matching a certain regular expression. *(Markus Raab)*
-- You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
+- kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
+- Checks for `kdbCommit` have been added to [kdb check](../help/kdb-check.md). _(Vid Leskovar)_
+- <<TODO>>
+- <<TODO>>
 
 ## Scripts
 
-- The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
-  code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
-- The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now no longer writes to stdout if clang-format5.0
-    can not be found. *(Lukas Winkler)*
-- The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
-  system uses the GNU version `find`. *(René Schwaiger)*
-- The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
-- `scripts/run_icheck` now no longer leaves the base directory of the project
-  when checking if the ABI changed. *(Lukas Winkler)*
-- The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
-  [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
-
-### Copy Template
-
-- The script [`copy-template`](https://master.libelektra.org/scripts/copy-template) is now location independent. It will always create a
-  new plugin in `src/plugins`. *(René Schwaiger)*
-- The command now also supports the new [template for C++ based plugins](https://www.libelektra.org/plugins/cpptemplate). Please use the
-  command line switch `-p` to create a new plugin based on `cpptemplate`.
-
-[`cmake-format`]: https://github.com/cheshirekow/cmake_format
+- The script [run_icheck](../../scripts/run_icheck) now also work correctly, if the last entry of [`icheck.suppression`](../../tests/icheck.suppression) does not end with a newline character. _(René Schwaiger)_
+- The script [`draw-all-plugins`](../../scripts/draw-all-plugins) now also works properly, if the repository path contains space characters. _(René Schwaiger)_
+- The script [`link-checker`](../../scripts/link-checker) now deduplicates the list of links before checking them. The timeout and amount of retries was also reduced.
+  Lastly the script now supports a whitelist. Any link stored in [`tests/linkchecker.whitelist`](../../tests/linkchecker.whitelist) will not be checked. _(Klemens Böswirth)_
 
 ## Documentation
 
-- We improved the formatting of our [compilation guide](/doc/COMPILE.md). *(René Schwaiger)*
-- We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
-- The man pages for [`kdb change-resolver-symlink`](https://www.libelektra.org/manpages/kdb-change-resolver-symlink) and
-   [`kdb change-storage-symlink`](https://www.libelektra.org/manpages/kdb-change-storage-symlink) referenced the wrong command.
-   *(Lukas Winkler, René Schwaiger)*
-- We added documentation for our build system in
-    [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
-    *(Lukas Winkler)*
-- The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
-  for setting negative values among other things. *(Klemens Böswirth)*
-- We added a new tutorial about the jna binding. The tutorial shows how to use the java library to interact with kdb *(Michael Zronek)*
-- GitHub now detects the license of the repository correctly again. *(René Schwaiger)*
-- We added a tutorial describing Elektra’s [array data type](https://www.libelektra.org/tutorials/arrays). *(René Schwaiger)*
-
+- Added decision for array concept of warnings. _(Michael Zronek)_
+- We updated our [Doxygen configuration file](../../doc/Doxyfile), removing the outdated `PERL_PATH` and `MSCGEN_PATH` options. _(René Schwaiger)_
+- Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md).
+  _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
+- A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth)_
+- <<TODO>>
 
 ## Tests
 
-- We added new [Markdown Shell Recorder][] tests for the
-  - [`ccode`](https://www.libelektra.org/plugins/ccode),
-  - [`file`](https://www.libelektra.org/plugins/file),
-  - [`iconv`](https://www.libelektra.org/plugins/iconv),
-  - [`ni`](https://www.libelektra.org/plugins/ni),
-  - [`rename`](https://www.libelektra.org/plugins/rename), and
-  - [`uname`](https://www.libelektra.org/plugins/uname)
-  plugin. *(René Schwaiger)*
-- (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
-- The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
-- The Markdown Shell Recorder now supports indented code blocks. *(René Schwaiger)*
-- The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
-- We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
-  of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
-- The `add_plugin` helper now respects `ENABLE_KDB_TESTING` when adding
-    Markdown Shell Recorder tests. *(Lukas Winkler)*
-- The Markdown Shell Recorder test for [`kdb find`](https://master.libelektra.org/doc/help/kdb-find.md) now removes the configuration file
-  at the end of the test. *(René Schwaiger)*
-- The [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) now properly unmounts any additional mountpoints created
-    during a test. *(René Schwaiger)*
-- We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
-- Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
-- Add `compare_regex_to_line_files` which allows to compare a file made of
-    regex patterns to be compared with a text file line by line.
-    *(Lukas Winkler)*
-- The OPMPHM has a new test case *(Kurt Micheli)*
-- Do not execute `fcrypt` and `crypto` unit tests if the `gpg` binary is not available. *(Peter Nirschl)*
-- Resolved an issue where tests did not cleanup properly after they ran.
-    This was especially noticeable for `gpg` tests as the `gpg-agents` that were
-    spawned did not get cleaned up afterwards. *(Lukas Winkler)*
-- We disabled the general plugin test (`testkdb_allplugins`) for the [`semlock` plugin](https://libelektra.org/plugins/mini), since the
-  test reported [memory leaks](https://issues.libelektra.org/2113) on the latest version of Debian Unstable. *(René Schwaiger)*
-- The [CFramework](https://master.libelektra.org/tests/cframework) macro `compare_keyset` now supports the comparison of two empty key sets. *(René Schwaiger)*
-- The C++ version of the macro `exit_if_fail` now really exits the test progamm if the test fails. *(René Schwaiger)*
-
-[#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
-[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+- We changed how the [formatting test](../../tests/shell/check_formatting.sh) detects code differences. This update should get rid of transient errors as [reported here](https://issues.libelektra.org/2927#issuecomment-528058641). _(René Schwaiger)_
+- <<TODO>>
+- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- The build system no longer installs Haskell dependencies from hackage by itself, instead
-  this has to be done beforehand like it is the case with all other dependencies. The main
-  reason is that the build servers shouldn't compile the dependencies over and over again,
-  only if something changes. See the [readme](https://www.libelektra.org/bindings/haskell). *(Armin Wurzinger)*
-- Plugins can be specified to be only built for `BUILD_SHARED` builds, but to be excluded
-  from any `BUILD_FULL` or `BUILD_STATIC` builds using the new optional argument `ONLY_SHARED`
-  for our cmake macro `add_plugin`. This way `BUILD_SHARED` can be combined with the other
-  options without excluding such plugins. The cmake messages about plugin inclusion have
-  been updated to indicate this behavior. This behavior has been applied for the Haskell
-  plugins- and bindings as they currently don't support full or static builds. *(Armin Wurzinger)*
-- We now import the current version of [Google Test][] as external project at configuration time using
-   [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
-   [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
-   [Google Test][] framework. *(René Schwaiger)*
-- The cmake variable `GTEST_ROOT` now respects the environment variable
-  `GTEST_ROOT` if it is set. *(Lukas Winkler)*
-- The build system does not install [Google Test][] anymore if you install Elektra. *(René Schwaiger)*
-- We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
-- Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
-  It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
-- Haskell plugins and bindings are now correctly excluded when using `BUILD_FULL` or `BUILD_STATIC`
-  as this is currently unsupported. Another issue when building Haskell plugins with a cached sandbox
-  is fixed as well. *(Armin Wurzinger)*
-- Fix compilation with `BUILD_TESTING=OFF` when `spec` or `list` plugins are not selected.
-- Set coverage prefix to `PROJECT_SOURCE_DIR`, resulting in easier readable
-    coverage reports. *(Lukas Winkler)*
-- The functions `add_plugintest` and `add_plugin` now also support adding a C++ test instead of a C test. *(René Schwaiger)*
-- The function `add_plugintest` now also supports setting environment variables for C/C++ based tests. *(René Schwaiger)*
-- The build system now automatically detects Homebrew’s OpenSSL version on macOS. *(René Schwaiger)*
-- We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
-- Resolved an issue where cmake did not properly set test feature macros to detect and use libc functionality. *(Lukas Winkler)*
-- Improve the detection of `ftw.h`, if the current build use the compiler switch `-Werror`. *(René Schwaiger)*
-- We now ignore warnings about
+- `kdbtypes.h` is now generated directly via a CMake `configure_file` call. _(Klemens Böswirth)_
+- The variable `ELEKTRA_STAT_ST_SIZE_F` now contains the correct format specifier for the `st_size` member of the `stat` struct on macOS. _(René Schwaiger)_
+- <<TODO>>
 
-  - zero size arrays (Clang),
-  - variadic macros (Clang, GCC),
-  - conversions to non-pointer type (GCC), and
-  - attribute warnings (GCC),
+### Compilation
 
-  in the Ruby binding and plugin. *(René Schwaiger)*
-
-[Google Test]: https://github.com/google/googletest
+- We now have a [setup for proper symbol versioning](../dev/symbol-versioning.md). _(Klemens Böswirth)_
+- We do not use implicit typing in the code of the `conditionals` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
 
 ### Docker
 
-- `clang-5.0` is now used for clang tests by the build system *(Lukas Winkler)*
-- An additional build job on Ubuntu:xenial has been added *(Lukas Winkler)*
-- `withDockerEnv` Jenkinsfile helper now no longer provides stages automatically. *(Lukas Winkler)*
-- [Google Test][] is installed in Docker images used by the build system. *(Lukas Winkler)*
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Other
+
+- The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
 
 ## Infrastructure
 
+### Cirrus
+
+- The `🔗 Check` build job now merges PRs before checking links. _(Klemens Böswirth)_
+- We enabled logging in the build job `🍎 Clang`. This update makes sure that Elektra’s logging code compiles without warnings on macOS. _(René Schwaiger)_
+- <<TODO>>
+
 ### Jenkins
 
-- A build job checks if PRs modify the release notes. *(Markus Raab)*
-- Several improvements to the build system have been implemented *(Lukas Winkler)*:
-  - Better Docker image handling.
-  - Abort of previously queued but unfinished runs on new commits.
-  - Document how to locally replicate the Docker environment used for tests.
-- The Jenkins build server now also compiles and tests Elektra with enabled address sanitizer. *(Lukas Winkler)*
-- Add `STATIC` and `FULL` linked builds. *(Lukas Winkler)*
-- Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)*
-- Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
-- `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
-- `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-configure-debian-optimizations` to new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-configure-mingw-w64` to new build system. *(Lukas Winkler)*
-- Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
-- Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-configure-xdg`to new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-i386` to new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-configure-debian-musl` to new build system. *(Lukas Winkler)*
-- Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
-- Remove `elektra-gcc-configure-debian-nokdbtest` test. Instead we are now
-    removing write permissions of Elektra's paths to detect if we write to the
-    filesystem even though tests are not tagged as such. *(Lukas Winkler)*
-- Remove `elektra-gcc-configure-debian-withspace` test. We now test for
-    compatibility of spaced build paths during normal tests. *(Lukas Winkler)*
-- Check for source formatting during early test stages. *(Lukas Winkler)*
-- Remove the amount of spawned tests via not running a full multiconfig setup for
-  the `PLUGINS=NODEP` config. They did not provide any additional coverage.
-  Instead we added a new test checking if `PLUGINS=NODEP` builds in an minimal
-  Docker image. *(Lukas Winkler)*
-- Speed up coverage data upload. *(Lukas Winkler)*
-- Fix an issue where file archiving did not happen because of suppressed shell
-    expansion *(Lukas Winkler)*
-- Setup mailing for jenkins *(Lukas Winkler)*
-  - send mail to build@libelektra.org when `master` fails *(Lukas Winkler)*
-  - parse change list into mail *(Lukas Winkler)*
-  - do not send mails if pipeline run was aborted *(Lukas Winkler)*
+- We upgraded all servers to buster so that debian buster docker image work. _(Markus Raab)_
+- We now also build Debian buster packages. _(Markus Raab)_
+- Enable WebUI build job again. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+
+### Restyled
+
+- [Restyled](https://restyled.io) now also formats Markdown files with [`prettier`](https://prettier.io). _(René Schwaiger)_
 
 ### Travis
 
-- Travis now uses the latest version of GCC and Clang to translate Elektra on Linux. *(René Schwaiger)*
-- Our Travis build job now
-  - builds all (applicable) bindings by default again, and
-  - checks the formatting of CMake code via [`cmake-format`][]
-  . *(René Schwaiger)*
-- Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
-- Travis caches downloaded Homebrew packages to improve the reliability of macOS build jobs. *(René Schwaiger)*
-- Travis is now using Xcode 9.4.1 on macOS 10.13 for most macOS build jobs. *(Mihael Pranjić)*
-- We added a unique name to each build job, so you can see quickly which configuration caused problems. *(René Schwaiger)*
-- We now specify custom binding, plugin and tool configuration for jobs via the environment variables:
-
-  - `BINDINGS`,
-  - `PLUGINS`, and
-  - `TOOLS`
-
-  . We also added environment variables for the build configuration options `BUILD_FULL`, `COMMON_FLAGS`, `ENABLE_ASAN` and the command
-  used to test the build (`TEST_COMMAND`). *(René Schwaiger)*
-- The ASAN build jobs `🍏 Clang ASAN` and `🐧 GCC ASAN` now only build the `kdb` tool and the `cpp` binding. This update ensures, that we
-  do not hit the [job timeout for public repositories](https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts) that often.
-  *(René Schwaiger)*
-- We now use the latest version of Ruby (`2.5.1`) to build and test the Ruby binding/plugin. *(René Schwaiger)*
-
-## Compatibility
-
-As always, the ABI and API of kdb.h is fully compatible, i.e. programs
-compiled against an older 0.8 version of Elektra will continue to work
-(ABI) and you will be able to recompile programs without errors (API).
-
+- The build job `🍏 GCC` now uses the [Travis Homebrew addon](https://docs.travis-ci.com/user/installing-dependencies/#installing-packages-on-macos) to install dependencies. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -567,7 +216,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
+- The Website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
@@ -575,31 +224,38 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 We are currently working on following topics:
 
-- The hybrid search algorithm for the Key search `ksLookup (...)` is now in preparation.
-  The preparation includes a new KeySet flag `KS_FLAG_NAME_CHANGE`, this flag will be used by the hybrid search.
-  The hybrid search combines the best properties of the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
-  The hybrid search uses a modified branch predictor to predicts KeySet changes and decides if binary search or OPMPHM would be faster. *(Kurt Micheli)*
+- Merge tool in C99 (the same language as the core of Elektra). This is planned to supersede the existing merge tool. The goal is to reduce the number of merge conflicts in contrast to regular merge tools using the specific semantics of configuration files. _(Dominic Jäger)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
+## Statistics
 
-## Get It!
+<<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz?raw=true)
+## Join the Initiative!
 
+We welcome new contributors!
+Read [here](https://www.libelektra.org/devgettingstarted/ideas) about how to get started.
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz.hashsum?raw=true)
+As first step, you could give us feedback about these release notes.
+Contact us via our [issue tracker](https://issues.libelektra.org).
 
-<<`scripts/generate-hashsums`>>
+## Get the Release!
 
-The release tarball is also available signed by me using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
+You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz)
+or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
 
-Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
-or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
 
+<<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
+
+The release tarball is also available signed by Markus Raab using GnuPG from
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
+
+Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/)
+or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
 
 ## Stay tuned!
 
@@ -607,11 +263,10 @@ Subscribe to the
 [RSS feed](https://www.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
-For any questions and comments, please contact the
-issue tracker [on GitHub](http://issues.libelektra.org)
-or Markus Raab by email using elektra@markus-raab.org.
+If you also want to participate, or for any questions and comments
+please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 

@@ -16,8 +16,9 @@ with the required names or case.
 If keys are renamed, their original name is stored in the `origname` MetaKey.
 
 There are 2 types of transformations:
-* basic
-* advanced
+
+- basic
+- advanced
 
 ## Basic Transformations
 
@@ -28,9 +29,10 @@ are applied before and after the advanced transformations.
 first transformation to be applied to all keys on kdbGet.
 
 `get/case`
-* toupper
-* tolower
-* unchanged    // this is the default value if no configuration is given
+
+- toupper
+- tolower
+- unchanged // this is the default value if no configuration is given
 
 converts the whole keyname below the parentKey to upper- or lowercase. if no configuration or `unchanged` is used no transformation is done here.
 
@@ -39,10 +41,11 @@ converts the whole keyname below the parentKey to upper- or lowercase. if no con
 last transformation to be applied to all keys on kdbSet.
 
 `set/case`
-* toupper
-* tolower
-* keyname
-* unchanged   // this is the default value if no configuration is given
+
+- toupper
+- tolower
+- keyname
+- unchanged // this is the default value if no configuration is given
 
 `toupper` or `tolower` tells the rename plugin to convert the whole keyname below the parentKey to lower or uppercase.
 
@@ -61,10 +64,10 @@ of the parent key. A renamed key may even replace the parent key. For example co
 parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
 
-* with
-* with/long
-* with/long/path
-* with/long/path/key1
+- with
+- with/long
+- with/long/path
+- with/long/path/key1
 
 #### Configuration
 
@@ -72,20 +75,24 @@ The cut operation takes as its only configuration parameter the key name part to
 different ways. First, the global configuration key `cut` can be used. Second, keys to be stripped can be tagged with the MetaKey `rename/cut`.
 If both options are given, the MetaKey takes precedence. For example, consider the following setup:
 
-    config/cut = will/be
-    parent key = user/config
+```
+config/cut = will/be
+parent key = user/config
 
-    user/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
-    user/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
-    user/config/will/be/stripped/key3
-    user/config/will/not/be/stripped/key4
+user/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
+user/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
+user/config/will/be/stripped/key3
+user/config/will/not/be/stripped/key4
+```
 
 The result of the cut operation would be the following KeySet:
 
-    user/config/key1
-    user/config/key2
-    user/config/stripped/key3
-    user/config/will/not/be/stripped/key4
+```
+user/config/key1
+user/config/key2
+user/config/stripped/key3
+user/config/will/not/be/stripped/key4
+```
 
 The cut operation is agnostic to a single trailing slash in the configuration. This means that it makes no difference whether `cut = will/be/stripped`
 or `cut = will/be/stripped/`. However, the cut operation refuses cut paths with leading slash. This is to clarify that key name parts can only be stripped
@@ -95,7 +102,7 @@ If an invalid configuration is given or the cut operation would cause a parent k
 
 ### Replace
 
-Using the `/replacewith` global key or `rename/to`  MetaKey the rename plugin will replace the part removed by `cut` with the supplied String
+Using the `/replacewith` global key or `rename/to` MetaKey the rename plugin will replace the part removed by `cut` with the supplied String
 
 #### To upper/lower
 
@@ -108,8 +115,10 @@ The toupper/tolower conversions are applied after cut/replace.
 
 Note that the names refer to the representation as KeySet. For example, if you have a configuration file where every name is uppercase:
 
-    KEY=value
-    OTHER/KEY=otherval
+```ini
+KEY=value
+OTHER/KEY=otherval
+```
 
 you can use `tolower=0` to get the keys `key` and `other/key`.
 
@@ -146,7 +155,6 @@ kdb rm -r user/tests/rename
 sudo kdb umount user/tests/rename
 ```
 
-
 ```sh
 # If you always want the keys in the configuration file upper case,
 # but for your application lower case you would use:
@@ -167,7 +175,7 @@ sudo kdb umount user/tests/rename
 ## Planned Operations
 
 Additional rename operations are planned for future versions of the rename plugin:
-* trim: remove spaces in the name (that are not part of parentKey)
-* ranges for toupper, tolower
-* allow one to specify the case in configuration files (#485)
 
+- trim: remove spaces in the name (that are not part of parentKey)
+- ranges for toupper, tolower
+- allow one to specify the case in configuration files (#485)

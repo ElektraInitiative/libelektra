@@ -10,48 +10,42 @@
 ##
 ###########################################################################
 
-_kdb()
-{
+_kdb() {
 	COMPREPLY=()
 
 	# assign the currently active word
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	local prev="${COMP_WORDS[COMP_CWORD-1]}"
+	local prev="${COMP_WORDS[COMP_CWORD - 1]}"
 
 	# initialize
 	local kdbpath=$(which kdb)
 
 	# only kdb was entered yet, print a list of available commands
-	if [[ $COMP_CWORD -eq 1 ]]
-	then
+	if [[ $COMP_CWORD -eq 1 ]]; then
 		local IFS=$'\n'
-		local commands=( $( ${kdbpath} 2>/dev/null | sed -e '0,/^Known commands are/d' | awk '{print $1}' ) )
-		COMPREPLY=( $( compgen -W '${commands[@]}' -- "${cur}" ) )
+		local commands=($(${kdbpath} list-commands))
+		COMPREPLY=($(compgen -W '${commands[@]}' -- "${cur}"))
 		return
 	fi
 
 	# commands which expects a path as next parameter
 	local pathcommands="export file get getmeta cp ls lsmeta mv rm set setmeta sget vset"
-	if [[ $pathcommands =~ $prev ]]
-	then
+	if [[ $pathcommands =~ $prev ]]; then
 		local IFS=$'\n'
-		local paths=( $( ( ${kdbpath} ls system && ${kdbpath} ls user ) 2>/dev/null ) )
-		COMPREPLY=( $( compgen -W '${paths[@]}' -- "${cur}" ) )
+		local paths=($( (${kdbpath} ls system && ${kdbpath} ls user) 2> /dev/null))
+		COMPREPLY=($(compgen -W '${paths[@]}' -- "${cur}"))
 
 		# Now escape special characters (spaces, single and double quotes),
 		# so that the argument is really regarded a single argument by bash.
 		# See http://stackoverflow.com/questions/1146098/properly-handling-spaces-and-quotes-in-bash-completion
 		local i=0
-		for entry in ${COMPREPLY[*]}
-		do
-			if [[ "${cur:0:1}" == "'" ]]
-			then
+		for entry in ${COMPREPLY[*]}; do
+			if [[ ${cur:0:1} == "'" ]]; then
 				# started with single quote, escaping only other single quotes
 				# [']bla'bla"bla\bla bla --> [']bla'\''bla"bla\bla bla
 				local escaped_single_quote="'\''"
 				COMPREPLY[$i]="${entry//\'/${escaped_single_quote}}"
-			elif [[ "${cur:0:1}" == "\"" ]]
-			then
+			elif [[ ${cur:0:1} == '"' ]]; then
 				# started with double quote, escaping all double quotes and all backslashes
 				# ["]bla'bla"bla\bla bla --> ["]bla'bla\"bla\\bla bla
 				entry="${entry//\\/\\\\}"
@@ -64,7 +58,7 @@ _kdb()
 				entry="${entry//\"/\\\"}"
 				COMPREPLY[$i]="${entry// /\\ }"
 			fi
-			(( i++ ))
+			((i++))
 		done
 
 		return

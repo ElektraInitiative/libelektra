@@ -1,25 +1,29 @@
+include (SafeCheckSymbolExists)
 include (LibAddMacros)
 
-if (DEPENDENCY_PHASE)
-	try_compile (TEST_FGETPWENT "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/passwd/hasfgetpwent.c")
-	try_compile (TEST_PUTPWENT "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/passwd/hasputpwent.c")
+set (plugin passwd)
 
-	if (TEST_PUTPWENT)
-		set (PUTPWENT 1)
-	else ()
-		set (PUTPWENT 0)
-	endif ()
+if (DEPENDENCY_PHASE)
+	add_definitions (-D_GNU_SOURCE -D_DARWIN_C_SOURCE)
+	safe_check_symbol_exists (fgetpwent "stdio.h;sys/types.h;pwd.h" TEST_FGETPWENT)
+	safe_check_symbol_exists (getline "stdio.h" TEST_GETLINE)
+	safe_check_symbol_exists (putpwent "stdio.h;sys/types.h;pwd.h" TEST_PUTPWENT)
+
 	if (TEST_FGETPWENT)
-		set (FGETPWENT 1)
+		add_definitions (-DUSE_FGETPWENT)
+	elseif (TEST_GETLINE)
+		add_definitions (-DUSE_FGETPWENT_LOCAL)
 	else ()
-		set (FGETPWENT 0)
+		remove_plugin (${plugin} "could not find fgetpwent nor getline.")
 	endif ()
-	set (PASSWD_COMPILE_DEFS "HAS_PUTPWENT=${PUTPWENT};HAS_FGETPWENT=${FGETPWENT}")
+
+	# no need to remove the plugin as our fallbacks have no deps
+	if (TEST_PUTPWENT)
+		add_definitions (-DUSE_PUTPWENT)
+	endif (TEST_PUTPWENT)
 endif ()
 
 add_plugin (passwd
-	    SOURCES passwd.h
-		    passwd.c
+	    SOURCES passwd.h passwd.c
 	    COMPILE_DEFINITIONS ${PASSWD_COMPILE_DEFS}
-	    ADD_TEST
-	    INSTALL_TEST_DATA)
+	    ADD_TEST INSTALL_TEST_DATA)

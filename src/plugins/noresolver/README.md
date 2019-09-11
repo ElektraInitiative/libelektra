@@ -13,3 +13,8 @@ Returns success on every call and can be used as resolver.
 
 It also exports a function checks if a filename is valid. It returns 1
 for a relative path and 0 for an absolute path (always successfully).
+
+The path passed to the storage plugin via the parent key is exactly the value
+that was set during mounting. This plugin _does not_ resolve any paths. If a
+relative path was set while mounting, storage plugins may treat it as relative
+to the current working directory.

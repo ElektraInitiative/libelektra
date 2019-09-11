@@ -1,7 +1,5 @@
 // clang-format off
 
-#define PREFIX "user/examples/yamlcpp/"
-
 ksNew (10,
        keyNew (PREFIX "longish key", KEY_VALUE, "10-9-8-7 everybody’s coming to burn this city", KEY_END),
        keyNew (PREFIX "double quoted", KEY_VALUE, "single quoted", KEY_END),

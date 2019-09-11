@@ -11,8 +11,7 @@ fi
 
 cd ~
 
-for file in `find .kde/share/config -name '*rc' -type f`
-do
-	f=`basename $file rc`
+for file in $(find .kde/share/config -name '*rc' -type f); do
+	f=$(basename $file rc)
 	$KDB mount /$file user/org/kde/$f ni
 done

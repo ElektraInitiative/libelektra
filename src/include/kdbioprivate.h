@@ -197,7 +197,7 @@ typedef struct _ElektraIoInterface
 	/**
 	 * Free memory used by I/O binding.
 	 *
-	 * All added file descriptors and timers have to be removed before calling this function.
+	 * All added operations have to be removed before calling this function.
 	 *
 	 * @param  binding     I/O binding
 	 * @return             0 on success, any other value on error

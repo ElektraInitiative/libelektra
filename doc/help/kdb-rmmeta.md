@@ -1,5 +1,4 @@
-kdb-rmmeta(1) -- Remove metakey of a key from the key database
-==============================================================
+# kdb-rmmeta(1) -- Remove metakey of a key from the key database
 
 ## SYNOPSIS
 
@@ -21,10 +20,14 @@ This command removes a metakey of a key from the Key database.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-v`, `--verbose`:
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 
 ## EXAMPLES
 
-To remove metakey `metakey` of a key:
+To remove metakey `metakey` of a key:<br>
 `kdb rmmeta user/example metakey`
 
 ## SEE ALSO

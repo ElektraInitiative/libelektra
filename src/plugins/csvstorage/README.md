@@ -6,14 +6,14 @@
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep libc configurable limited
-- infos/description = parses csv files
+- infos/description = parses CSV files
 
 ## Introduction
 
-This plugin allows you to read and write CSV files within Elektra.
+This plugin allows you to read and write CSV files using Elektra.
 It aims to be compatible with RFC 4180.
-Rows and columns are written in Elektra arrays (`#0`, `#1`,..).
-Using configuration you can give columns a name.
+Rows and columns are written using Elektra's arrays (`#0`, `#1`,..).
+By configuring the plugin you can give columns a name.
 
 ## Configuration
 
@@ -22,9 +22,10 @@ Tells the plugin what delimiter is used in the file.
 The default delimiter is `,` and will be used if `delimiter` is not set.
 
 `header`
-Tells the plugin to use the first line as a header if it's set to "colname". The columns will get the corresponding names.
-Skip the first line if it's set to "skip" or treat the first line as a record if it's set to "record".
-If `header` is not set, or set to "record", the columns get named #0,#1,... (array key naming)
+Tells the plugin to use the first line as a header if it is set to `colname`.
+The columns will get the corresponding names.
+Skip the first line if it is set to `skip` or treat the first line as a record if it is set to `record`.
+If `header` is not set, or set to `record`, the columns get named #0,#1,... (array key naming)
 
 `columns`
 If this key is set the plugin will yield an error for every file that doesn't have exactly the amount of columns as specified in `columns`.
@@ -34,34 +35,44 @@ Sets the column names. Only usable in combination with the `columns` key. The nu
 Conflicts with usage of `header`.
 
 `columns/index`
-specify which column should be used to index records instead of the record number.
+Specifies which column should be used to index records instead of the record number.
 
-`/export/<column name>`
-only export column `column name`. Configuration can be give multiple times for different columns to export.
+`export=,export/<column name>=`
+Export column `column name`:
+
+- The key `export` must be present, additionally to `export/<column name>`
+- Also multiple column names can be given for different columns to export.
+  - Then `delimiter` will be used as delimiter (`,` as default).
+  - The order depends on the alphabetic order of the column names.
+    Use `awk -F',' 'BEGIN{OFS=","} {print $2, $1, $3}'` or similar to reorder.
+  - Unknown column names are ignored.
 
 ## Examples
 
 First line should determine the headers:
 
-    kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
+```bash
+kdb mount test.csv /csv csvstorage \
+  "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
+```
 
 ### Usage
 
 The example below shows how you can use this plugin to read and write CSV files.
 
 ```sh
-# Mount plugin to cascading namespace `/tests/csv`
+# Mount plugin to `user/tests/csv`
 # We use the column names from the first line of the
 # config file as key names
-sudo kdb mount config.csv /tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
+sudo kdb mount config.csv user/tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
 # Add some data
-printf 'band,album\n'                           >> `kdb file /tests/csv`
-printf 'Converge,All We Love We Leave Behind\n' >> `kdb file /tests/csv`
-printf 'mewithoutYou,Pale Horses\n'             >> `kdb file /tests/csv`
-printf 'Kate Tempest,Everybody Down\n'          >> `kdb file /tests/csv`
+printf 'band,album\n'                           >> `kdb file user/tests/csv`
+printf 'Converge,All We Love We Leave Behind\n' >> `kdb file user/tests/csv`
+printf 'mewithoutYou,Pale Horses\n'             >> `kdb file user/tests/csv`
+printf 'Kate Tempest,Everybody Down\n'          >> `kdb file user/tests/csv`
 
-kdb ls /tests/csv
+kdb ls user/tests/csv
 #> user/tests/csv/#0
 #> user/tests/csv/#0/album
 #> user/tests/csv/#0/band
@@ -76,21 +87,21 @@ kdb ls /tests/csv
 #> user/tests/csv/#3/band
 
 # The first array element contains the column names
-kdb get /tests/csv/#0/band
+kdb get user/tests/csv/#0/band
 #> band
-kdb get /tests/csv/#0/album
+kdb get user/tests/csv/#0/album
 #> album
 
 # Retrieve data from the last entry
-kdb get /tests/csv/#3/album
+kdb get user/tests/csv/#3/album
 #> Everybody Down
-kdb get /tests/csv/#3/band
+kdb get user/tests/csv/#3/band
 #> Kate Tempest
 
 # Change an existing item
-kdb set /tests/csv/#1/album 'You Fail Me'
+kdb set user/tests/csv/#1/album 'You Fail Me'
 # Retrieve the new item
-kdb get /tests/csv/#1/album
+kdb get user/tests/csv/#1/album
 #> You Fail Me
 
 # The plugin stores the index of the last column
@@ -105,15 +116,15 @@ kdb get user/tests/csv/#3
 #> #1
 
 # The configuration file reflects the changes
-kdb file /tests/csv | xargs cat
+kdb file user/tests/csv | xargs cat
 #> album,band
 #> You Fail Me,Converge
 #> Pale Horses,mewithoutYou
 #> Everybody Down,Kate Tempest
 
 # Undo changes to the key database
-kdb rm -r /tests/csv
-sudo kdb umount /tests/csv
+kdb rm -r user/tests/csv
+sudo kdb umount user/tests/csv
 ```
 
 # Directory Values
@@ -122,15 +133,15 @@ By default the `csvstorage` plugin saves the name of the last column in each par
 so using the [Directory Value](../directoryvalue/) plugin.
 
 ```sh
-# Mount plugin together with `directoryvalue` to cascading namespace `/tests/csv`
-kdb mount config.csv /tests/csv csvstorage directoryvalue
+# Mount plugin together with `directoryvalue` to `user/tests/csv`
+kdb mount config.csv user/tests/csv csvstorage directoryvalue
 
 # Add some data
-printf 'Schindler’s List,1993,8.9\n'       >> `kdb file /tests/csv`
-printf 'Léon: The Professional,1994,8.5\n' >> `kdb file /tests/csv`
+printf 'Schindler’s List,1993,8.9\n'       >> `kdb file user/tests/csv`
+printf 'Léon: The Professional,1994,8.5\n' >> `kdb file user/tests/csv`
 
 # Retrieve data
-kdb ls /tests/csv
+kdb ls user/tests/csv
 #> user/tests/csv/#0
 #> user/tests/csv/#0/#0
 #> user/tests/csv/#0/#1
@@ -162,8 +173,8 @@ kdb get user/tests/csv/#1
 #> It’s a Me.
 
 # Undo changes to the key database
-kdb rm -r /tests/csv
-sudo kdb umount /tests/csv
+kdb rm -r user/tests/csv
+sudo kdb umount user/tests/csv
 ```
 
 # Column as index

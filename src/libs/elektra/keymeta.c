@@ -306,7 +306,7 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 	{
 		Key * r;
 		r = ksLookup (dest->meta, ret, KDB_O_POP);
-		if (r)
+		if (r && r != ret)
 		{
 			/*It was already there, so lets drop that one*/
 			keyDel (r);
@@ -439,7 +439,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * Will add a new Pair for meta-information if metaName was
  * not added up to now.
  *
- * It will modify a existing Pair of meta-information if the
+ * It will modify an existing Pair of meta-information if the
  * the metaName was inserted already.
  *
  * It will remove a meta information if newMetaString is 0.
@@ -503,7 +503,8 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 			return -1;
 		}
 
-		if (toSet->data.v) elektraFree (toSet->data.v);
+		if (toSet->data.v && !test_bit (toSet->flags, KEY_FLAG_MMAP_DATA)) elektraFree (toSet->data.v);
+		clear_bit (toSet->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
 		toSet->data.c = metaStringDup;
 		toSet->dataSize = metaStringSize;
 	}

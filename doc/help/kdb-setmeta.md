@@ -1,5 +1,4 @@
-kdb-setmeta(1) -- Set the value of a metakey
-=============================================
+# kdb-setmeta(1) -- Set the value of a metakey
 
 ## SYNOPSIS
 
@@ -30,7 +29,9 @@ that is the place where you usually want to set metadata.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Explain what is happening. Prints additional information in case of errors/warnings.
+- `-d`, `--debug`:
+  Give debug information. Prints additional debug information in case of errors/warnings.
 - `-q`, `--quiet`:
   Suppress non-error messages.
 
@@ -47,24 +48,27 @@ that is the place where you usually want to set metadata.
   By default the namespace is `user`, except `kdb` is used as root, then `system`
   is the default.
 
-
 ## EXAMPLES
 
-To set a metakey called `description` associated with the key `user/example/key` to the value `Hello World!`:
+To set a metakey called `description` associated with the key `user/example/key` to the value `Hello World!`:<br>
 `kdb setmeta spec/example/key description "Hello World!"`
 
 To create a new key `spec/example/newkey` with a null value (if it did not exist before)
-and a metakey `namespace/#0` associated with it to the value `system`:
+and a metakey `namespace/#0` associated with it to the value `system`:<br>
 `kdb setmeta /example/newkey "namespace/#0" system`
 
 To create an override link for a `/test` key:
 
-	kdb set /overrides/test "example override"
-	sudo kdb setmeta spec/test override/#0 /overrides/test
+```sh
+kdb set /overrides/test "example override"
+sudo kdb setmeta spec/test override/#0 /overrides/test
+```
 
 To remove it:
 
-	sudo kdb setmeta spec/test override/#0
+```sh
+sudo kdb setmeta spec/test override/#0
+```
 
 ## SEE ALSO
 

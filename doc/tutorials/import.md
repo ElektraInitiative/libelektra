@@ -54,30 +54,32 @@ kdb export system/backup > backup.ecf
 `backup.ecf` contains all the information about the keys below `system/backup`:
 
 ```sh
-$ cat backup.ecf
-kdbOpen 1
-ksNew 3
-keyNew 19 0
-system/backup/key1
-keyMeta 7 1
-binary
-keyEnd
-keyNew 19 0
-system/backup/key2
-keyMeta 7 1
-binary
-keyEnd
-keyNew 19 0
-system/backup/key3
-keyMeta 7 1
-binary
-keyEnd
-ksEnd
+cat backup.ecf
+#> kdbOpen 1
+#> ksNew 3
+#> keyNew 19 0
+#> system/backup/key1
+#> keyMeta 7 1
+#> binary
+#> keyEnd
+#> keyNew 19 0
+#> system/backup/key2
+#> keyMeta 7 1
+#> binary
+#> keyEnd
+#> keyNew 19 0
+#> system/backup/key3
+#> keyMeta 7 1
+#> binary
+#> keyEnd
+#> ksEnd
 ```
 
 Before the import command, `system/backup` does not exists and no keys are contained there.
 After the import command, running the command `kdb ls system/backup` prints:
 
-	system/backup/key1
-	system/backup/key2
-	system/backup/key3
+```
+system/backup/key1
+system/backup/key2
+system/backup/key3
+```

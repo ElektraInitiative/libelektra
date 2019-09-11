@@ -1,0 +1,44 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "ELEKTRA\-CMERGE\-STRATEGIES" "7" "September 2019" "" ""
+.
+.SH "NAME"
+\fBelektra\-cmerge\-strategies\fR \- how to merge key sets
+.
+.P
+Elektra\'s cmerge tool tries to avoid conflicts using semantic aspects of configuration files\. Those configuration files are represented as key sets in Elektra\. Those are collections of name\-value pairs\. The three\-way merge works by comparing the \fBour\fR key set and the \fBtheir\fR key set to the \fBbase\fR key set\. By looking for differences in these key sets, a new key set called \fBresult\fR is created\. This result represents a merge of these key sets\. In case a conflict is unavoidable, different predefined merge strategies can be used to resolve them without user interaction\.
+.
+.P
+These strategies will supersede the old merge strategies \fIelektra\-merge\-strategy\.md\fR once \fBkdb cmerge\fR supersedes \fBkdb merge\fR\.
+.
+.SH "3\-WAY"
+A common scenario to use Elektra\'s cmerge is a package upgrade\. Terminology is oriented to this scenario\.
+.
+.TP
+\fBbase\fR
+The \fBbase\fR key set is the original version of the key set before the package upgrade\.
+.
+.TP
+\fBour\fR
+The \fBour\fR key set represents the user\'s current version of the key set\. This key set differs from \fBbase\fR for every key you changed\.
+.
+.TP
+\fBtheir\fR
+The \fBtheir\fR key set is the original version of the key set after the package upgrade\. In a broader context, this version key set differs from \fBbase\fR for every key somebody else changed\.
+.
+.SH "STRATEGIES"
+The following strategies exist:
+.
+.TP
+abort
+Abort if any conflict occurs\. This is the default strategy\.
+.
+.TP
+our
+This option forces conflicting hunks to be auto\-resolved cleanly by favoring our version\. Changes from base or their that do not conflict with our side are reflected to the merge result\.
+.
+.TP
+their
+This option forces conflicting hunks to be auto\-resolved cleanly by favoring their version\. Changes from our or base that do not conflict with their side are reflected to the merge result\.
+

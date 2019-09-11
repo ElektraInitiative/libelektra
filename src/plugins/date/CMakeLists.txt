@@ -9,6 +9,5 @@ if (DEPENDENCY_PHASE)
 endif (DEPENDENCY_PHASE)
 
 add_plugin (date
-	    SOURCES date.h
-		    date.c
+	    SOURCES date.h date.c
 	    ADD_TEST)

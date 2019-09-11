@@ -1,4 +1,4 @@
-# Elektra Web docker images
+# Elektra Web Docker Images
 
 - `elektra/web-base` - base image for elektra web, all other images build upon this (builds elektra with `yajl` and `kdb`)
 - `elektra/elektrad` - image that only starts elektrad
@@ -7,8 +7,7 @@
 - `elektra/webd-demo` - same as `webd`, but with 2 instances already created, they both connect to http://elektrad-demo.libelektra.org with different visibility levels (for demo, should run on http://webui.libelektra.org)
 - `elektra/web` - image that starts elektrad & webd (for those who just want to try out Elektra Web locally, also mentioned in quickstart in README of #2099)
 
-
-## manually building docker images
+## Manually Building Docker Images
 
 Make sure to change `1.6` to a new version if it was updated. Base image (bold)
 has to be built first, others can be ran in parallel:

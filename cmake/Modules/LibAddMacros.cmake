@@ -4,7 +4,11 @@
 # copy_file or directory
 # ~~~
 macro (copy_file src dest)
-	execute_process (COMMAND ${CMAKE_COMMAND} -E copy "${src}" "${dest}")
+	execute_process (COMMAND ${CMAKE_COMMAND}
+				 -E
+				 copy
+				 "${src}"
+				 "${dest}")
 endmacro (copy_file)
 
 # ~~~
@@ -22,12 +26,15 @@ macro (create_lib_symlink src dest)
 			       "" # multi value keywords
 			       ${ARGN})
 
-	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink "${src}" "${dest}"
+	execute_process (COMMAND ${CMAKE_COMMAND}
+				 -E
+				 create_symlink
+				 "${src}"
+				 "${dest}"
 			 WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
-		file (WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}"
-			    "to be overwritten, file needs to exists for some IDEs.")
+		file (WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}" "to be overwritten, file needs to exists for some IDEs.")
 	endif ()
 
 	if (ARG_PLUGIN)
@@ -63,15 +70,16 @@ endmacro (create_lib_symlink src dest)
 # mkdir dir
 # ~~~
 macro (mkdir dir)
-	execute_process (COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}")
+	execute_process (COMMAND ${CMAKE_COMMAND}
+				 -E
+				 make_directory
+				 "${dir}")
 endmacro (mkdir)
 
 macro (add_testheaders HDR_FILES)
 	include_directories ("${PROJECT_SOURCE_DIR}/tests/cframework")
-	file (GLOB BIN_HDR_FILES
-		   "${PROJECT_SOURCE_DIR}/tests/cframework/*.h")
-	list (APPEND ${HDR_FILES}
-		     ${BIN_HDR_FILES})
+	file (GLOB BIN_HDR_FILES "${PROJECT_SOURCE_DIR}/tests/cframework/*.h")
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 endmacro (add_testheaders HDR_FILES)
 
 # for generic targets (not tools) use this function to link against elektra
@@ -90,7 +98,11 @@ endfunction ()
 
 function (target_link_elektratools TARGET)
 	if (BUILD_SHARED)
-		target_link_libraries (${TARGET} elektratools elektra-kdb elektra-core ${ARGN})
+		target_link_libraries (${TARGET}
+				       elektratools
+				       elektra-kdb
+				       elektra-core
+				       ${ARGN})
 	elseif (BUILD_FULL)
 		target_link_libraries (${TARGET} elektratools-full)
 	elseif (BUILD_STATIC)
@@ -104,7 +116,10 @@ endfunction ()
 # for tools (not tests) use this function to link against elektra
 macro (tool_link_elektra TARGET)
 	if (BUILD_SHARED)
-		target_link_libraries (${TARGET} elektra-core elektra-kdb ${ARGN})
+		target_link_libraries (${TARGET}
+				       elektra-core
+				       elektra-kdb
+				       ${ARGN})
 	elseif (BUILD_FULL)
 		target_link_libraries (${TARGET} elektra-full)
 	elseif (BUILD_STATIC)
@@ -128,11 +143,24 @@ endmacro ()
 
 macro (find_swig)
 	if (NOT SWIG_FOUND)
-		find_package (SWIG 3)
+		# ~~~
+		# Disable warnings about unset CMake policy.
+		# TODO: Remove the calls to `cmake_policy` after we have upgraded to new behavior.
+		# ~~~
+		if (POLICY CMP0078)
+			cmake_policy (PUSH)
+			cmake_policy (SET CMP0078 OLD)
+		endif (POLICY CMP0078)
+
+		find_package (SWIG 3 QUIET)
 		if (NOT SWIG_FOUND)
 			message (STATUS "Search for swig2 instead")
-			find_package (SWIG 2)
+			find_package (SWIG 2 QUIET)
 		endif ()
+
+		if (POLICY CMP0078)
+			cmake_policy (POP)
+		endif (POLICY CMP0078)
 	endif (NOT SWIG_FOUND)
 endmacro (find_swig)
 
@@ -161,16 +189,17 @@ endmacro (find_swig)
 # 		ARGS ${EXE_SYM_ARG} ... other arguments
 # 		)
 # ~~~
-function (find_util util output_loc output_arg)
+function (find_util
+	  util
+	  output_loc
+	  output_arg)
 	if (CMAKE_CROSSCOMPILING)
 		if (WIN32)
 			find_program (${util}_EXE_LOC wine)
 			if (${util}_EXE_LOC)
 				set (ARG_LOC "${CMAKE_BINARY_DIR}/bin/${util}.exe")
 			else ()
-				find_program (${util}_EXE_LOC
-					      HINTS ${CMAKE_BINARY_DIR}
-						    ${util}.exe)
+				find_program (${util}_EXE_LOC HINTS ${CMAKE_BINARY_DIR} ${util}.exe)
 			endif ()
 		else ()
 			find_program (${util}_EXE_LOC ${util})
@@ -202,20 +231,26 @@ macro (add_headers HDR_FILES)
 	set (SOURCE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src/include")
 
 	include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
-	file (GLOB BIN_HDR_FILES
-		   ${BINARY_INCLUDE_DIR}/*.h)
-	list (APPEND ${HDR_FILES}
-		     ${BIN_HDR_FILES})
+	file (GLOB BIN_HDR_FILES ${BINARY_INCLUDE_DIR}/*.h)
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories (AFTER ${SOURCE_INCLUDE_DIR})
-	file (GLOB SRC_HDR_FILES
-		   ${SOURCE_INCLUDE_DIR}/*.h)
-	list (APPEND ${HDR_FILES}
-		     ${SRC_HDR_FILES})
+	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
-	list (APPEND ${HDR_FILES}
-		     "${BINARY_INCLUDE_DIR}/kdberrors.h")
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h
+				     PROPERTIES
+				     GENERATED
+				     ON
+				     SKIP_AUTOMOC
+				     ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra/errors.h
+				     PROPERTIES
+				     GENERATED
+				     ON
+				     SKIP_AUTOMOC
+				     ON)
+	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
 # ~~~
@@ -223,30 +258,22 @@ endmacro (add_headers)
 # ~~~
 macro (add_cppheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/bindings/cpp/include")
-	file (GLOB BIN_HDR_FILES
-		   ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*.hpp)
-	list (APPEND ${HDR_FILES}
-		     ${BIN_HDR_FILES})
+	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*.hpp)
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/include")
-	file (GLOB SRC_HDR_FILES
-		   ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*.hpp)
-	list (APPEND ${HDR_FILES}
-		     ${SRC_HDR_FILES})
+	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*.hpp)
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
 
 macro (add_toolheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/libs/tools/include")
-	file (GLOB_RECURSE BIN_HDR_FILES
-			   ${PROJECT_BINARY_DIR}/src/libtools/include/*)
-	list (APPEND ${HDR_FILES}
-		     ${BIN_HDR_FILES})
+	file (GLOB_RECURSE BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/libs/tools/include")
-	file (GLOB_RECURSE SRC_HDR_FILES
-			   ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
-	list (APPEND ${HDR_FILES}
-		     ${SRC_HDR_FILES})
+	file (GLOB_RECURSE SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_toolheaders)
 
 # ~~~
@@ -265,51 +292,35 @@ macro (remove_plugin name reason)
 
 	if (ADDED_PLUGINS)
 		set (TMP ${ADDED_PLUGINS})
-		list (REMOVE_ITEM TMP
-				  ${name})
-		set (ADDED_PLUGINS
-		     ${TMP}
-		     CACHE STRING
-			   "${ADDED_PLUGINS_DOC}"
-		     FORCE)
+		list (REMOVE_ITEM TMP ${name})
+		set (ADDED_PLUGINS ${TMP} CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
 	endif (ADDED_PLUGINS)
 
 	if (ADDED_DIRECTORIES)
 		set (TMP ${ADDED_DIRECTORIES})
-		list (REMOVE_ITEM TMP
-				  ${name})
-		set (ADDED_DIRECTORIES
-		     ${TMP}
-		     CACHE STRING
-			   "${ADDED_DIRECTORIES_DOC}"
-		     FORCE)
+		list (REMOVE_ITEM TMP ${name})
+		set (ADDED_DIRECTORIES ${TMP} CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
 	endif (ADDED_DIRECTORIES)
 
 	if (REMOVED_PLUGINS)
-		set (REMOVED_PLUGINS
-		     "${REMOVED_PLUGINS};${name}"
-		     CACHE STRING
-			   "${REMOVED_PLUGINS_DOC}"
-		     FORCE)
+		set (REMOVED_PLUGINS "${REMOVED_PLUGINS};${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
 	else ()
-		set (REMOVED_PLUGINS
-		     "${name}"
-		     CACHE STRING
-			   "${REMOVED_PLUGINS_DOC}"
-		     FORCE)
+		set (REMOVED_PLUGINS "${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
 	endif ()
 endmacro (remove_plugin)
 
 macro (remove_tool name reason)
 	set (TMP ${TOOLS})
 	message (STATUS "Exclude tool ${name} because ${reason}")
-	list (REMOVE_ITEM TMP
-			  ${name})
-	set (TOOLS
-	     ${TMP}
-	     CACHE STRING
-		   ${TOOLS_DOC}
-	     FORCE)
+	list (REMOVE_ITEM TMP ${name})
+	set (TOOLS ${TMP} CACHE STRING ${TOOLS_DOC} FORCE)
+
+	# save removed tools for dependency resolving later on
+	if (REMOVED_TOOLS)
+		set (REMOVED_TOOLS "${REMOVED_TOOLS};${name}" CACHE STRING "${REMOVED_TOOLS_DOC}" FORCE)
+	else ()
+		set (REMOVED_TOOLS "${name}" CACHE STRING "${REMOVED_TOOLS_DOC}" FORCE)
+	endif ()
 endmacro (remove_tool)
 
 # ~~~
@@ -333,8 +344,7 @@ function (list_filter result regex)
 		if (r MATCHES ${${regex}})
 
 		else ()
-			list (APPEND newlist
-				     ${r})
+			list (APPEND newlist ${r})
 		endif ()
 	endforeach ()
 	set (${result} ${newlist} PARENT_SCOPE)
@@ -343,7 +353,10 @@ endfunction ()
 # ~~~
 # find string in list with regex
 # ~~~
-function (list_find input_list regexp_var output) # Reset output variable  Extract input list from arguments
+function (list_find
+	  input_list
+	  regexp_var
+	  output) # Reset output variable  Extract input list from arguments
 	set (${output} "0" PARENT_SCOPE)
 	foreach (LIST_FILTER_item ${${input_list}})
 		foreach (LIST_FILTER_regexp ${${regexp_var}}) # message("try to match ${LIST_FILTER_regexp} with ${LIST_FILTER_item}")
@@ -412,13 +425,9 @@ function (add_sources target) # define the <target>_SRCS properties if necessary
 		if (NOT IS_ABSOLUTE "${src}")
 			get_filename_component (src "${src}" ABSOLUTE)
 		endif (NOT IS_ABSOLUTE "${src}")
-		list (APPEND SRCS
-			     "${src}")
+		list (APPEND SRCS "${src}")
 	endforeach (src ${ARGN}) # append to global property
-	set_property (GLOBAL
-		      APPEND
-		      PROPERTY "${target}_SRCS"
-			       "${SRCS}")
+	set_property (GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
 endfunction (add_sources)
 
 # ~~~
@@ -441,13 +450,9 @@ function (add_includes target) # define the <target>_INCLUDES properties if nece
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (INCLUDES)
 	foreach (src ${ARGN})
-		list (APPEND INCLUDES
-			     "${src}")
+		list (APPEND INCLUDES "${src}")
 	endforeach (src ${ARGN}) # append to global property
-	set_property (GLOBAL
-		      APPEND
-		      PROPERTY "${target}_INCLUDES"
-			       "${INCLUDES}")
+	set_property (GLOBAL APPEND PROPERTY "${target}_INCLUDES" "${INCLUDES}")
 endfunction (add_includes)
 
 # ~~~
@@ -471,13 +476,9 @@ function (add_libraries target) # define the <target>_LIBRARIES properties if ne
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (LIBRARIES)
 	foreach (src ${ARGN})
-		list (APPEND LIBRARIES
-			     "${src}")
+		list (APPEND LIBRARIES "${src}")
 	endforeach (src ${ARGN}) # append to global property
-	set_property (GLOBAL
-		      APPEND
-		      PROPERTY "${target}_LIBRARIES"
-			       "${LIBRARIES}")
+	set_property (GLOBAL APPEND PROPERTY "${target}_LIBRARIES" "${LIBRARIES}")
 endfunction (add_libraries)
 
 # ~~~
@@ -505,17 +506,14 @@ macro (remember_for_removal ELEMENTS TO_REMOVE_ELEMENTS)
 	set (MY_REMOVE_ELEMENTS "")
 	foreach (B ${MY_ELEMENTS})
 		if (B MATCHES "^-.*") # remove pseudo "-element"
-			list (REMOVE_ITEM MY_ELEMENTS
-					  ${B})
-			string (LENGTH ${B}
-				       B_LENGTH)
+			list (REMOVE_ITEM MY_ELEMENTS ${B})
+			string (LENGTH ${B} B_LENGTH)
 			math (EXPR L ${B_LENGTH}-1)
 			string (SUBSTRING ${B}
 					  1
 					  ${L}
 					  B_OUT)
-			list (APPEND MY_REMOVE_ELEMENTS
-				     ${B_OUT})
+			list (APPEND MY_REMOVE_ELEMENTS ${B_OUT})
 		endif ()
 	endforeach (B)
 	set (${TO_REMOVE_ELEMENTS} ${MY_REMOVE_ELEMENTS})
@@ -527,8 +525,7 @@ macro (removal ELEMENTS TO_REMOVE_ELEMENTS)
 		set (MY_ELEMENTS ${${ELEMENTS}})
 		list (REMOVE_DUPLICATES MY_ELEMENTS)
 		foreach (B ${${TO_REMOVE_ELEMENTS}})
-			list (REMOVE_ITEM MY_ELEMENTS
-					  ${B})
+			list (REMOVE_ITEM MY_ELEMENTS ${B})
 		endforeach (B)
 		set (${ELEMENTS} ${MY_ELEMENTS})
 	endif ()
@@ -559,9 +556,16 @@ function (generate_manpage NAME)
 		if (RONN_LOC)
 			add_custom_command (OUTPUT ${OUTFILE}
 					    DEPENDS ${MDFILE}
-					    COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC}
-						    ARGS -r
-						    --pipe ${MDFILE} > ${OUTFILE})
+					    COMMAND export
+						    RUBYOPT="-Eutf-8"
+						    &&
+						    ${RONN_LOC}
+						    ARGS
+						    -r
+						    --pipe
+						    ${MDFILE}
+						    >
+						    ${OUTFILE})
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)
@@ -578,16 +582,14 @@ macro (split_plugin_providers PROVIDES)
 			      "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)"
 			      PROVIDER_PARTS
 			      "${PROVIDER}")
-		string (LENGTH "${PROVIDER_PARTS}"
-			       PROVIDER_PARTS_LENGTH)
+		string (LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
 		if (PROVIDER_PARTS_LENGTH GREATER 0)
 			string (REGEX
 				REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)"
 					"\\1;\\2"
 					PROVIDER_PARTS
 					"${PROVIDER_PARTS}")
-			list (APPEND ${PROVIDES}
-				     "${PROVIDER_PARTS}")
+			list (APPEND ${PROVIDES} "${PROVIDER_PARTS}")
 		endif ()
 	endforeach ()
 endmacro ()
@@ -609,8 +611,7 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	configure_file (${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_BINARY_DIR}/README.out)
 
 	# read
-	file (READ ${CMAKE_CURRENT_BINARY_DIR}/README.out
-		   contents)
+	file (READ ${CMAKE_CURRENT_BINARY_DIR}/README.out contents)
 	string (REGEX
 		REPLACE "\\\\"
 			"\\\\\\\\"
@@ -741,6 +742,5 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			"#endif"
 			contents
 			"${contents}")
-	file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c
-		    "${contents}\n")
+	file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c "${contents}\n")
 endfunction ()
