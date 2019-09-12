@@ -201,6 +201,7 @@ you up to date with the multi-language support provided by Elektra.
 - We upgraded all servers to buster so that debian buster docker image work. _(Markus Raab)_
 - We now also build Debian buster packages. _(Markus Raab)_
 - Enable WebUI build job again. _(Markus Raab)_
+- Improve docu. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
