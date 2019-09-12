@@ -9,6 +9,7 @@ endforeach (file ${IN_FILES})
 
 file (GLOB ALL_FILES *)
 list (REMOVE_ITEM ALL_FILES ${IN_FILES})
+list (REMOVE_ITEM ALL_FILES "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
 foreach (file ${ALL_FILES})
 	install (PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/${file}" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 endforeach (file ${ALL_FILES})
