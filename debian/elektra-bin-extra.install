@@ -12,9 +12,6 @@ usr/lib/*/elektra/tool_exec/convert-hosts
 usr/lib/*/elektra/tool_exec/convert-inittab
 usr/lib/*/elektra/tool_exec/convert-users
 usr/lib/*/elektra/tool_exec/example-xorg
-usr/lib/*/elektra/tool_exec/elektra-merge
-usr/lib/*/elektra/tool_exec/elektra-mount
-usr/lib/*/elektra/tool_exec/elektra-umount
 usr/lib/*/elektra/tool_exec/update-snippet-repository
 usr/lib/*/elektra/tool_exec/upgrade-bootstrap
 usr/lib/*/elektra/tool_exec/generate_data
