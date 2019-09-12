@@ -162,8 +162,6 @@ impl<'a> KDBErrorWrapper<'a> {
         KDBErrorWrapper { error_key }
     }
 
-    // TODO: For which of these error/* can we be sure that they exist?
-
     /// Returns the error number.
     pub fn number(&self) -> String {
         self.error_key
