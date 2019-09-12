@@ -311,6 +311,13 @@
                 "dev-comment": "The readme does already contain nicely formatted titles."
             },
             {
+                "name": "Build Server Docu",
+                "type": "staticref",
+                "options": {
+                    "path": "doc/BUILDSERVER.md"
+                }
+            },
+            {
                 "name": "Authors",
                 "type": "staticlist",
                 "ref": "developers",
