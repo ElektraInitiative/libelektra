@@ -874,7 +874,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  *
  * @return the size of the KeySet after insertion
  * @retval -1 on NULL pointers
- * @retval -1 if insertion failed, the key will be deleted then.
+ * @retval -1 if insertion failed (only on memory problems), the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
@@ -927,6 +927,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		{
 			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
 			{
+				keyDel (toAppend);
 				--ks->size;
 				return -1;
 			}
