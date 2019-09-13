@@ -168,6 +168,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - `kdbtypes.h` is now generated directly via a CMake `configure_file` call. _(Klemens Böswirth)_
 - The variable `ELEKTRA_STAT_ST_SIZE_F` now contains the correct format specifier for the `st_size` member of the `stat` struct on macOS. _(René Schwaiger)_
+- We simplified and unified the CMake code for the [Shell Tests](../../tests/shell) and the [Shell Recorder](../../tests/shell/shell_recorder). _(René Schwaiger)_
 - <<TODO>>
 
 ### Compilation
