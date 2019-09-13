@@ -59,7 +59,8 @@ static int validateKey (Key * key, Key * parentKey)
 	}
 	else if (keyString (key)[0] != '/')
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path '%s' is not absolute", keyString (key));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path '%s' should be absolute for key %s", keyString (key),
+							 keyName (key));
 		return 0;
 	}
 	int errnosave = errno;
@@ -76,7 +77,7 @@ static int validateKey (Key * key, Key * parentKey)
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
 		strcat (errmsg, keyValue (key));
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not stat file, message: %s", errmsg);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not find file, message: %s", errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
 		return -1;
