@@ -957,7 +957,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		/*TODO: Solution ("Please use the cascading key / instead")*/
 		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "Empty namespace passed to kdbGet");
 	}
 
@@ -1564,7 +1563,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		else if (syncstate < -1)
 		{
-			/*TODO: Solution (Execute kdbGet before kdbSet)*/
 			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
 				parentKey, "Sync state is wrong, maybe 'kdbSet()' is executed without prior 'kdbGet()' on %s",
 				keyName (split->parents[-syncstate - 2]));

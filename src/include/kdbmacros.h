@@ -36,7 +36,7 @@
 #define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES) /*TODO: Solution*/                                                                                    \
+		if (errno == EACCES)                                                                                                       \
 			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
 				parentKey,                                                                                                 \
 				"Insufficient permissions to open configuration file %s for reading. Reason: %s. You might want "          \
@@ -50,7 +50,7 @@
 #define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES) /*TODO: Solution*/                                                                                    \
+		if (errno == EACCES)                                                                                                       \
 			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
 				parentKey,                                                                                                 \
 				"Insufficient permissions to open configuration file %s for writing. You might want to retry as "          \

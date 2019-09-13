@@ -188,7 +188,6 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else
 		{
-			// TODO: Solution
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 				errorKey,
 				"Unknown command detected in dumpfile: %s.\nMaybe you use a different file format? "
