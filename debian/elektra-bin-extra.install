@@ -7,10 +7,6 @@ usr/lib/*/elektra/tool_exec/ffconfig/setupConfig
 usr/lib/*/elektra/tool_exec/ffconfig/setupHomepage
 usr/lib/*/elektra/tool_exec/ffconfig/setupProxy
 usr/lib/*/elektra/tool_exec/ffconfig/writeConfigFiles
-usr/lib/*/elektra/tool_exec/convert-fstab
-usr/lib/*/elektra/tool_exec/convert-hosts
-usr/lib/*/elektra/tool_exec/convert-inittab
-usr/lib/*/elektra/tool_exec/convert-users
 usr/lib/*/elektra/tool_exec/example-xorg
 usr/lib/*/elektra/tool_exec/update-snippet-repository
 usr/lib/*/elektra/tool_exec/upgrade-bootstrap
