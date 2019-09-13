@@ -130,7 +130,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Rust
 
 - Add the `elektra-sys` crate which contains raw bindings to libelektra for Rust. _(Philipp Gackstatter)_
-- Add the `elektra` crate which contains safe wrapper methods for the raw bindings. The crate contains bindings for the low-level API, which means that the data types `Key` and `KeySet` can now safely be used from Rust. The Rust version of the API has been designed to take advantage of Rust's type system and to be in accordance with the memory safety of Rust. For instance, the Key has been divided into `StringKey` and `BinaryKey`, to prevent type mismatches at compile time. Finally, with the binding for `KDB` one can take advantage of the elektra ecosystem from Rust. See the [Readme](../../src/bindings/rust/README.md) for more. _(Philipp Gackstatter)_
+- Add the `elektra` crate which contains safe wrapper methods for the raw bindings. The crate contains bindings for the low-level API, which means that the data types `Key` and `KeySet` can now safely be used from Rust. The Rust version of the API has been designed to take advantage of Rust's type system and to be in accordance with the memory safety of Rust. For instance, the Key has been divided into `StringKey` and `BinaryKey`, to prevent type mismatches at compile time. With the binding for `KDB`, one can take advantage of the elektra ecosystem from Rust. See the [Readme](../../src/bindings/rust/README.md) for more. _(Philipp Gackstatter)_
 
 ### <<Binding3>>
 
