@@ -160,9 +160,9 @@ below `system/elektra/modules/plugin` is requested:
 ```c
 if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 {
-	KeySet *moduleConfig = elektraPluginContract();
-	ksAppend(returned, moduleConfig);
-	ksDel(moduleConfig);
+	KeySet *moduleConf = elektraPluginContract();
+	ksAppend(returned, moduleConf);
+	ksDel(moduleConf);
 	return 1;
 }
 ```
@@ -381,7 +381,7 @@ hand `elektraPluginClose` is run after other functions of the plugin and can be 
 The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount-time. The signature of the function is:
 
 ```c
-int elektraLineCheckConfig (Key * errorKey, KeySet * conf);
+int elektraLineCheckConf (Key * errorKey, KeySet * conf);
 ```
 
 The configuration of the plugin is provided as `conf`. The function may report an error or warnings using the `errorKey` and the return value.
@@ -395,7 +395,7 @@ The following convention was established for the return value of `elektraPluginC
 The following example demonstrates how to limit the length of the values within the plugin configuration to 3 characters.
 
 ```c
-int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+int elektraLineCheckConf (Key * errorKey, KeySet * conf)
 {
 	Key * cur;
 	ksRewind (conf);
@@ -417,7 +417,7 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 The `elektraPluginCheckConf` function is exported via the plugin's contract. The following example demonstrates how to export the `checkconf` function (see section [Contract](#contract) for further details):
 
 ```c
-keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConfig, KEY_END),
+keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConf, KEY_END),
 ```
 
 Within the `checkconf` function all of the plugin configuration values should be validated.
