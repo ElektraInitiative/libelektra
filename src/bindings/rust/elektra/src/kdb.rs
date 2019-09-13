@@ -354,8 +354,8 @@ mod test {
             let mut kdb = KDB::open().unwrap();
             let mut ks = KeySet::with_capacity(10);
             kdb.get(&mut ks, &mut parent_key).unwrap();
-            ks.append_key(key1).unwrap();
-            ks.append_key(key2).unwrap();
+            ks.append_key(key1);
+            ks.append_key(key2);
             kdb.set(&mut ks, &mut parent_key).unwrap();
         }
         {
