@@ -1,10 +1,12 @@
 use crate::ReadableKey;
 use crate::{KeySet, StringKey, WriteableKey};
-use std::ptr::NonNull;
-use std::fmt::{Display, Formatter, self};
 use std::error::Error;
+use std::fmt::{self, Display, Formatter};
+use std::ptr::NonNull;
 use {KDBError::*, LogicalError::*, PermanentError::*, ResourceError::*, ValidationError::*};
 
+/// General methods to access the Key database.
+/// For example usage see [the Readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/rust).
 #[derive(Debug)]
 pub struct KDB {
     ptr: NonNull<elektra_sys::KDB>,
@@ -38,6 +40,7 @@ impl KDB {
 
     /// Retrieve keys in an atomic and universal way.
     /// Note that the provided keyset is modified and contains the result.
+    /// The provided `key` is used to give a hint about which keys should be retrieved.
     /// The return value is true, if the keys were successfully retrieved
     /// and false if there were no changes to the keyset.
     pub fn get<'a>(
@@ -57,6 +60,7 @@ impl KDB {
     }
 
     /// Set keys in an atomic and universal way.
+    /// The provided `key` is used to give a hint about which keys should be stored.
     /// The return value is true on success,
     /// and false if there were no changes to the KDB.
     /// # Notes
@@ -96,7 +100,11 @@ impl KDB {
             Err(map_kdb_error(key))
         }
     }
-
+    /// Returns the raw pointer of the KDB object.
+    /// Should be used with caution. In particular,
+    /// the pointer should only be modified with
+    /// `elektra_sys::kdb*` functions, but `kdbClose`
+    /// should not be called.
     pub fn as_ptr(&mut self) -> *mut elektra_sys::KDB {
         self.ptr.as_ptr()
     }
@@ -108,9 +116,7 @@ impl AsRef<elektra_sys::KDB> for KDB {
     }
 }
 
-// const ELEKTRA_ERROR_RESOURCE: &str = "C01100";
 const ELEKTRA_ERROR_OUT_OF_MEMORY: &str = "C01110";
-// const ELEKTRA_ERROR_INSTALLATION: &str = "C01200";
 const ELEKTRA_ERROR_INTERNAL: &str = "C01310";
 const ELEKTRA_ERROR_INTERFACE: &str = "C01320";
 const ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR: &str = "C01330";
@@ -150,6 +156,7 @@ pub enum ValidationError<'a> {
     Semantic(KDBErrorWrapper<'a>),
 }
 
+/// Wraps a key that contains error metakeys
 #[derive(Debug)]
 pub struct KDBErrorWrapper<'a> {
     error_key: StringKey<'a>,
@@ -162,72 +169,53 @@ impl<'a> KDBErrorWrapper<'a> {
         KDBErrorWrapper { error_key }
     }
 
-    /// Returns the error number.
+    /// Returns the error number or an empty string if unavailable.
     pub fn number(&self) -> String {
-        self.error_key
-            .meta("error/number")
-            .unwrap()
-            .value()
-            .to_owned()
-            .to_string()
+        self.error_key_or_empty_string("error/number")
     }
 
-    /// Returns the error reason.
+    /// Returns the error reason or an empty string if unavailable.
     pub fn reason(&self) -> String {
-        self.error_key
-            .meta("error/reason")
-            .unwrap()
-            .value()
-            .to_owned()
-            .to_string()
+        self.error_key_or_empty_string("error/reason")
     }
 
-    /// Returns the module where the error occured.
+    /// Returns the module where the error occured or an empty string if unavailable.
     pub fn module(&self) -> String {
-        self.error_key
-            .meta("error/module")
-            .unwrap()
-            .value()
-            .to_owned()
-            .to_string()
+        self.error_key_or_empty_string("error/module")
     }
 
-    /// Returns a description of the error.
+    /// Returns a description of the error or an empty string if unavailable.
     pub fn description(&self) -> String {
-        self.error_key
-            .meta("error/description")
-            .unwrap()
-            .value()
-            .to_owned()
-            .to_string()
+        self.error_key_or_empty_string("error/description")
     }
 
-    /// Returns the source file from where the error information comes.
+    /// Returns the source file from where the error information comes or an empty string if unavailable.
     pub fn file(&self) -> String {
-        self.error_key
-            .meta("error/file")
-            .unwrap()
-            .value()
-            .to_owned()
-            .to_string()
+        self.error_key_or_empty_string("error/file")
     }
 
-    /// Returns the exact line of that source file.
+    /// Returns the exact line of that source file or an empty string if unavailable.
     pub fn line(&self) -> String {
-        self.error_key
-            .meta("error/line")
-            .unwrap()
-            .value()
-            .to_owned()
-            .to_string()
+        self.error_key_or_empty_string("error/line")
     }
 
+    fn error_key_or_empty_string(&self, error_key: &str) -> String {
+        if let Ok(meta) = self.error_key.meta(error_key) {
+            meta.value().to_owned().to_string()
+        } else {
+            "".into()
+        }
+    }
+
+    /// Returns a formatted error message
     pub fn to_error_message(&self) -> String {
-        format!("Sorry, module {module} issued error {error_number}:\n{description}: {reason}", 
+        format!(
+            "Sorry, module {module} issued error {error_number}:\n{description}: {reason}",
             module = self.module(),
             error_number = self.number(),
             description = self.description(),
-            reason = self.reason())
+            reason = self.reason()
+        )
     }
 }
 
@@ -261,7 +249,7 @@ impl<'a> Error for PermanentError<'a> {}
 impl<'a> Display for ResourceError<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
-            ResourceError::OutOfMemory(err) => write!(f, "{}", err)
+            ResourceError::OutOfMemory(err) => write!(f, "{}", err),
         }
     }
 }
@@ -284,7 +272,7 @@ impl<'a> Display for ValidationError<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
             ValidationError::Semantic(err) => write!(f, "{}", err),
-            ValidationError::Syntactic(err) => write!(f, "{}", err)
+            ValidationError::Syntactic(err) => write!(f, "{}", err),
         }
     }
 }

@@ -131,7 +131,7 @@ let string_key = StringKey::from(binary_key);
 With the `KDB` struct you can access the key database.
 See the [full example](example/src/bin/kdb.rs) for more. Run it from the `example` directory using `cargo run --bin kdb`.
 
-The KDB error types are nested, so you can match on a high-level or a specific one.
+The KDB error types are nested, so you can match on a high-level or a specific one. For a deeper explanation of the error types, see the [error guideline](https://github.com/ElektraInitiative/libelektra/blob/master/doc/dev/error-categorization.md).
 
 ````rust
 extern crate elektra;
