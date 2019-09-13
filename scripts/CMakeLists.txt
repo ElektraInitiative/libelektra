@@ -27,9 +27,6 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nocheckshell.in" "${CMAKE_CURRE
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in" "${CMAKE_CURRENT_BINARY_DIR}/make-source-package")
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/list-tools.in" "${CMAKE_CURRENT_BINARY_DIR}/list-tools")
-install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/list-tools" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/configure-firefox.in" "${CMAKE_CURRENT_BINARY_DIR}/configure-firefox" @ONLY)
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/configure-firefox" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 add_subdirectory (ffconfig)
