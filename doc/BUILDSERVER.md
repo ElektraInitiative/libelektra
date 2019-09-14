@@ -25,8 +25,8 @@ provided by the
 [Pipeline Multibranch Plugin](https://wiki.jenkins.io/display/JENKINS/Pipeline+Multibranch+Plugin)
 for our CI tests called `libelektra`.
 
-Simplified a Multibranch Pipeline Job acts as an umbrella job that spawns
-child jobs depending on branch (hence multibranch).
+Simplified a multibranch pipeline job acts as an umbrella job that spawns
+child jobs for different branches (hence multibranch).
 The main purpose of the libelektra job is to scan the repository for
 changes to existing branches or to find new ones (for example branches
 that are used in PR's).
@@ -41,19 +41,20 @@ with a how (pointing to the Jenkinsfile + configuration).
 
 ### Jenkinsfiles
 
-Jenkinsfiles describe what actions the build system should execute on what
+Jenkinsfiles describe what actions the build system should execute on which
 build slave.
 Currently Elektra uses two different files.
 
 #### Jenkinsfile.daily
 
-- Jenkinsfile.daily is for daily maintenance tasks, like cleaning up build servers.
+- [Jenkinsfile.daily](/scripts/jenkins/Jenkinsfile.daily) contains daily maintenance tasks, like cleaning up build servers.
 - [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
 - [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
 
 #### Jenkinsfile
 
 - Triggered on code changes and is for testing changes to the codebase.
+- [Jenkinsfile](/scripts/jenkins/Jenkinsfile) contains descriptions how to build, test and deploy Elektra.
 - [Buildjob: libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
 - [Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile)
 
@@ -106,8 +107,6 @@ credentials some restrictions are introduced.
 Only PR authors that have the right to push to libelektra can modify the
 Jenkinsfile and have those changes be respected for the respective branch.
 
-This setting can be modified on the respective build job configuration site.
-
 ### Test Environments
 
 We use Docker containers to provide the various test environments.
@@ -119,8 +118,8 @@ If a rebuild of the images is needed is determined by the hash of the
 Dockerfile used to describe it.
 If it has not changed the build step will be skipped.
 In the case that an image needed a build it will afterwards be uploaded into a
-private Docker image registry (currently on a7) and thus is shared between all
-Docker capable build slaves.
+private Docker image registry (on a7) and thus is shared between all Docker
+capable build slaves.
 
 ### Tests
 
@@ -131,7 +130,7 @@ environment is portable).
 
 The Jenkinsfile describes the steps used to run tests.
 Helper functions for easily adding new tests are available
-(buildAndTest, BuildAndTestAsan, ...).
+(`buildAndTest`, `BuildAndTestAsan`, ...).
 
 The `withDockerEnv` helper makes sure to print the following information at the
 start of a test branch:
@@ -140,19 +139,19 @@ start of a test branch:
 - build machine
 - docker image id
 
-Coverage reports are generated automatically when using the buildAndTest helper
-and the appropriate Cmake flags for coverage generation have been set. They are
+Coverage reports are generated automatically when using the `buildAndTest` helper
+and the appropriate CMake flags for coverage generation have been set. They are
 uploaded to https://doc.libelektra.org/coverage/.
 
 Artifacts from `ctest` are also preserved automatically when using
-buildAndTest.
+`buildAndTest`.
 The function also takes care of providing a stage name based path so multiple tests
 can not overwrite files that share the same name.
 
 Tests are executed in order dictated by the Jenkinsfile.
 In general new tests should be added to the 'full build stage' that will only
 run after a standard full test run succeeded.
-This saves execution time on the build server for most common errors.
+This saves execution time on the build server for the most common errors.
 
 Since there is no strict way to enforce the way tests are added we encourage
 you to read the existing configuration and modify existing tests so they suite
@@ -162,8 +161,9 @@ your needs.
 
 For runs of the build job that are run in the master branch we also execute
 deployment steps after all tests pass.
-We use it to build debian packages and move it into the repository on the a7
+We use it to build Debian packages and move it into the repository on the a7
 node.
+
 Additionally we recompile the homepage and deploy it on the a7 node.
 
 ## Jenkins Setup
@@ -180,8 +180,8 @@ verified or added to build Elektra correctly:
 
 - In Branch Sources under Behaviors `Filter by name` should be
   added to exclude the `debian` branch from being build.
-  The reason for this is that the `debian` branch is not providing a
-  Jenkinsfile.
+  The reason for this is that the `debian` branch only differs that it contains
+  build instructions for Debian packages (the `debian` folder).
 - `Advanced clone behaviors` should be added and the path to the git mirror
   needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
   This reference repository is created and maintained by our
@@ -197,7 +197,7 @@ verified or added to build Elektra correctly:
 
 A node needs to have a JRE (Java Runtime Environment) installed.
 Further it should run an SSH (Secure SHell) server.
-If you want to provide environments via Docker you need to install that as well.
+Docker need to be installed as well.
 
 A `jenkins` user with 47000:47000 ids should be created as this is what is
 expected in Docker images.
@@ -214,7 +214,7 @@ If Docker is available the `docker` label should be set.
 
 ## Understanding Jenkins Output
 
-Our jenkins build uses parallel steps inside a single build job to do most of
+Our Jenkins build uses parallel steps inside a single build job to do most of
 the work.
 To reliable determine which stages failed it is best to look over the build
 results in the Jenkins Blue Ocean view.
@@ -257,6 +257,8 @@ Now you can build the image as described in
 
 You can find more information on how to use our images in
 [scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#testing-elektra-via-docker-images).
+
+Alternatively, you can follow the [tutorial](/doc/tutorials/run_all_tests_with_docker.md).
 
 ## Modify Test Environments
 
