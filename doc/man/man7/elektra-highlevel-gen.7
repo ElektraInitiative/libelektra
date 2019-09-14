@@ -13,18 +13,15 @@ This document focuses on the advanced features of the high\-level API code\-gene
 The parameters that are relevant to the concepts described here are (for the rest see `kdb\-gen\-highlevel(1) \fIkdb\-gen\-highlevel\.md\fR):
 .
 .IP "\(bu" 4
-\fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBauto\fR (default)
-.
-.IP "\(bu" 4
 \fBembeddedSpec\fR: allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR
 .
 .IP "\(bu" 4
 \fBspecValidation\fR: allowed values: \fBnone\fR (default), \fBminimal\fR
 .
-.IP "" 0
+.IP "\(bu" 4
+\fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBauto\fR (default)
 .
-.P
-The \fBenumConv\fR option is described \fIbelow\fR\.
+.IP "" 0
 .
 .P
 Using \fBembeddedSpec\fR you can configure how much of the specification is embedded into your application\. By default we use \fBfull\fR\. This means the full specification is embedded into your application\'s binary\. Since this can drastically increase the size of the binary, you can also choose \fBdefaults\fR or \fBnone\fR\. The \fBdefaults\fR setting embeds a reduced version of the specification, which only contains the metadata required by \fBelektraOpen\fR\. By setting \fBembeddedSpec=none\fR you can also remove this reduced specification\.
