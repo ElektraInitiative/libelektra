@@ -34,6 +34,35 @@ static void cleanupEnvp (char ** envp);
 #error "No implementation available"
 #endif
 
+/**
+ * Detects whether we are in help mode or not.
+ * DOES NOT set 'proc/elektra/gopts/help' for use with elektraGetOptsHelpMessage().
+ *
+ * @retval 1 if the -h or --help is part of argv
+ * @retval 0 otherwise
+ * @retval -1 on error (could not load argv)
+ */
+int elektraGOptsIsHelpMode (void)
+{
+	char ** argv = NULL;
+	int argc = loadArgs (&argv);
+
+	if (argv == NULL)
+	{
+		return -1;
+	}
+
+	for (int i = 0; i < argc; ++i)
+	{
+		if (strcmp (argv[i], "-h") == 0 || strcmp (argv[i], "--help") == 0)
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 
 int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -43,6 +72,7 @@ int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			ksNew (30, keyNew ("system/elektra/modules/gopts", KEY_VALUE, "gopts plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/gopts/exports", KEY_END),
 			       keyNew ("system/elektra/modules/gopts/exports/get", KEY_FUNC, elektraGOptsGet, KEY_END),
+			       keyNew ("system/elektra/modules/gopts/exports/ishelpmode", KEY_FUNC, elektraGOptsIsHelpMode, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system/elektra/modules/gopts/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
