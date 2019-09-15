@@ -10,13 +10,24 @@ set -x
 # remember the build directory
 ROOT_DIR=$PWD
 
-# build the applications
-rm -rf build && mkdir -p build && cd build
-
 # concrete install location is configurable
 if [ -z "${INSTALL_PATH}" ]; then
-	INSTALL_PATH="/usr/local/elektra_backend"
+	INSTALL_PATH="/srv"
 fi
+
+# rotate backup of previous website
+rm -rf ${INSTALL_PATH}/share/elektra/tool_data_backup
+cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup || /bin/true
+
+# restore the previous page if something went wrong
+restore() {
+	rm -rf ${INSTALL_PATH}/share/elektra/tool_data
+	mv ${INSTALL_PATH}/share/elektra/tool_data_backup ${INSTALL_PATH}/share/elektra/tool_data || /bin/true
+}
+trap restore EXIT INT QUIT TERM
+
+# build the applications from scratch
+rm -rf build && mkdir -p build && cd build
 
 C_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie'
 LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
@@ -35,10 +46,6 @@ make -j 3
 # run tests (exclude tests which write in system paths)
 make run_nokdbtests
 
-# rotate backup of previous website
-rm -rf ${INSTALL_PATH}/share/elektra/tool_data_backup
-cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup
-
 # cleanup old installed libraries (might have plugin we do not want any more or cause problems)
 rm -rf ${INSTALL_PATH}/lib/*
 
@@ -52,8 +59,11 @@ export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${INSTALL_PATH}/lib/elektra
 # now lets first output some version information for the build log
 kdb --version
 
+# who executed this?
+whoami
+
 # print key database for debugging
-#kdb export / simpleini
+kdb export /sw/elektra ni
 
 # prevent jenkins from killing daemons
 BUILD_ID=dontKillMe
@@ -93,7 +103,7 @@ done
 kdb set '/sw/elektra/restbackend/#0/current/cppcms/daemon/enable' '1'
 
 # now start again
-kdb run-website-backend
+kdb run-website-backend || /bin/true
 
 printf "New PID is: "
 cat ${PID_FILE} || /bin/true

@@ -46,13 +46,6 @@ already somehow integrated with Elektra.
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
 
-## Package Maintainers
-
-For these tutorials we assume that you maintain
-upstream packages.
-
-- [Merge Configuration Files](elektra-merge-integration.md)
-
 ## Elektra Developers
 
 These tutorials are for persons that want to contribute to

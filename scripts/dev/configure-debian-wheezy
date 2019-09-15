@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # @author Markus Raab <elektra@markus-raab.org>
-# @brief Configure a debian build
+# @brief Configure a debian build with optimizations
 # @date 02.09.2014
 # @tags configure, debian
 
@@ -9,10 +9,8 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
-cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
-	-DPLUGINS="ALL" \
+cmake -DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL;-swig_ruby" \
-	-DENABLE_DEBUG="ON" \
-	-DENABLE_LOGGER="ON" \
+	-DBINDINGS="cpp;swig_python2;swig_python;jna" \
+	-DGTEST_ROOT="/usr/src/googletest/googletest" \
 	$*

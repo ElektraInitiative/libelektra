@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # @author Markus Raab <elektra@markus-raab.org>
-# @brief Configure a debian build
+# @brief Configure a debian build with optimizations
 # @date 02.09.2014
 # @tags configure, debian
 
@@ -10,9 +10,12 @@ SCRIPTS_DIR=$(dirname "$0")
 
 cd $BUILD
 cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+	-DENABLE_OPTIMIZATIONS="OFF" \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-swig_ruby" \
-	-DENABLE_DEBUG="OFF" \
+	-DENABLE_DEBUG="ON" \
 	-DENABLE_LOGGER="ON" \
+	-DBUILD_DOCUMENTATION="OFF" \
+	-DGTEST_ROOT="/usr/src/googletest/googletest" \
 	$*

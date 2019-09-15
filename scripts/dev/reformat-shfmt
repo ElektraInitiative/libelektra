@@ -20,10 +20,11 @@ additional_files=$(
 	for filepath in 'scripts/change-resolver-symlink.in' \
 		'scripts/change-storage-symlink.in' \
 		'scripts/configure-firefox.in' \
-		'scripts/elektrify-getenv.in' \
-		'scripts/elektrify-open.in' \
-		'scripts/install-sh-completion.in' \
-		'scripts/list-tools.in' \
+		'scripts/kdb/backup.in' \
+		'scripts/kdb/elektrify-getenv.in' \
+		'scripts/kdb/elektrify-open.in' \
+		'scripts/completion/install-sh-completion.in' \
+		'scripts/completion/list-tools.in' \
 		'scripts/make-source-package.in' \
 		'scripts/run_all.in' \
 		'scripts/run_memcheck.in' \

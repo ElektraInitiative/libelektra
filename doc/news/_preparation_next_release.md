@@ -143,11 +143,15 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- The script [run_icheck](../../scripts/run_icheck) now also work correctly, if the last entry of [`icheck.suppression`](../../tests/icheck.suppression) does not end with a newline character. _(René Schwaiger)_
-- The script [`draw-all-plugins`](../../scripts/draw-all-plugins) now also works properly, if the repository path contains space characters. _(René Schwaiger)_
+- Removed the scripts 'scripts/elektra-merge', 'scripts/elektra-mount', 'scripts/elektra-umount', 'convert-fstab', 'convert-hosts', 'convert-inittab', 'convert-users', 'scripts/benchmark_libsplit.sh', 'scripts/zsh' and 'example-xorg'.
+- The script [run_icheck](../../scripts/build/run_icheck) now also work correctly, if the last entry of [`icheck.suppression`](../../tests/icheck.suppression) does not end with a newline character. _(René Schwaiger)_
+- The script [`draw-all-plugins`](../../scripts/dev/draw-all-plugins) now also works properly, if the repository path contains space characters. _(René Schwaiger)_
 - The script [`link-checker`](../../scripts/link-checker) now deduplicates the list of links before checking them. The timeout and amount of retries was also reduced.
   Lastly the script now supports a whitelist. Any link stored in [`tests/linkchecker.whitelist`](../../tests/linkchecker.whitelist) will not be checked. _(Klemens Böswirth)_
 - We removed a script used to compare the runtime performance of YAML plugins. _(René Schwaiger)_
+- Cleanup: separation of dev, admin and completion scripts. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
 
