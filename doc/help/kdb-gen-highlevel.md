@@ -60,6 +60,10 @@ For detailed information about the contents of the header file see [elektra-high
   Changes the name of the function that checks for "specload mode" (default: `exitForSpecload`)
 - `tagPrefix`:
   Changes the prefix of the generated tags (default: `ELEKTRA_TAG_`)
+- `embedHelpFallback`:
+  Switches whether a fallback help message should be embedded; allowed values: `1` (default), `0`
+  If enabled (`1`), a help message will be generated from the specification passed to the code-generator and embedded
+  into the application. This message will be used, if the normal help message could not be generated at runtime.
 - `enumConv`:
   Switches how enum conversion should be done; allowed values: `default` (default), `switch`, `strcmp`
   - `strcmp`: uses a simple series of `if (strcmp(*, *) == 0)` to convert strings into enums
@@ -69,7 +73,7 @@ For detailed information about the contents of the header file see [elektra-high
   Comma-separated (`,`) list of additional header files to include. For each of the listed headers we will generate an `#include "*"`
   statement
 - `genSetters`:
-  Switches whether setters should be generated at all; allowed values: `true` (default), `false`
+  Switches whether setters should be generated at all; allowed values: `1` (default), `0`
 - `embeddedSpec`:
   Changes how much of the specification is embedded into the application; allowed values: `full` (default), `defaults`, `none`.
   see [elektra-highlevel-gen(7)](elektra-highlevel-gen.md)

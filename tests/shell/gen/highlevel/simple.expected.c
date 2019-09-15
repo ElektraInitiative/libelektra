@@ -46,9 +46,24 @@ static KeySet * embeddedSpec (void)
 	keyNew ("/myfloatarray/#", KEY_META, "default", "2.5", KEY_META, "type", "float", KEY_END),
 	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
 	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
+	keyNew ("/print", KEY_META, "default", "0", KEY_META, "description", "enable/disable printing", KEY_META, "opt", "p", KEY_META, "opt/arg", "none", KEY_META, "opt/help", "enable printing", KEY_META, "type", "boolean", KEY_END),
 	KS_END);
 ;
+}
+
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_simple [OPTION]...\nOPTIONS\n  -p                          enable printing\n";
+
+static int isHelpMode (void)
+{
+	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+
+	typedef int (*func) (void);
+	func goptsIsHelpMode = *(func *) elektraInvokeGetFunction (gopts, "ishelpmode");
+	
+	int ret = goptsIsHelpMode ();
+
+	elektraInvokeClose (gopts, NULL);
+	return ret == 1;
 }
 
 
@@ -92,6 +107,13 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 
 	if (e == NULL)
 	{
+		*elektra = NULL;
+		if (isHelpMode ())
+		{
+			elektraErrorReset (error);
+			return 1;
+		}
+
 		return -1;
 	}
 
@@ -145,6 +167,12 @@ void exitForSpecload (int argc, const char ** argv)
  */// 
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
+	if (elektra == NULL)
+	{
+		printf ("%s", helpFallback);
+		return;
+	}
+
 	Key * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{

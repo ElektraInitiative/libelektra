@@ -46,6 +46,21 @@ static KeySet * embeddedSpec (void)
 ;
 }
 
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_empty\n";
+
+static int isHelpMode (void)
+{
+	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+
+	typedef int (*func) (void);
+	func goptsIsHelpMode = *(func *) elektraInvokeGetFunction (gopts, "ishelpmode");
+	
+	int ret = goptsIsHelpMode ();
+
+	elektraInvokeClose (gopts, NULL);
+	return ret == 1;
+}
+
 
 /**
  * Initializes an instance of Elektra for the application '/tests/script/gen/highlevel/empty'.
@@ -87,6 +102,13 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 
 	if (e == NULL)
 	{
+		*elektra = NULL;
+		if (isHelpMode ())
+		{
+			elektraErrorReset (error);
+			return 1;
+		}
+
 		return -1;
 	}
 
@@ -140,6 +162,12 @@ void exitForSpecload (int argc, const char ** argv)
  */// 
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
+	if (elektra == NULL)
+	{
+		printf ("%s", helpFallback);
+		return;
+	}
+
 	Key * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{

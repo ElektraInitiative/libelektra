@@ -80,6 +80,9 @@ For detailed information about the contents of the header file see elektra\-high
 \fBtagPrefix\fR: Changes the prefix of the generated tags (default: \fBELEKTRA_TAG_\fR)
 .
 .IP "\(bu" 4
+\fBembedHelpFallback\fR: Switches whether a fallback help message should be embedded; allowed values: \fB1\fR (default), \fB0\fR If enabled (\fB1\fR), a help message will be generated from the specification passed to the code\-generator and embedded into the application\. This message will be used, if the normal help message could not be generated at runtime\.
+.
+.IP "\(bu" 4
 .
 .IP "\(bu" 4
 \fBstrcmp\fR: uses a simple series of \fBif (strcmp(*, *) == 0)\fR to convert strings into enums
@@ -97,7 +100,7 @@ For detailed information about the contents of the header file see elektra\-high
 \fBheaders\fR: Comma\-separated (\fB,\fR) list of additional header files to include\. For each of the listed headers we will generate an \fB#include "*"\fR statement
 .
 .IP "\(bu" 4
-\fBgenSetters\fR: Switches whether setters should be generated at all; allowed values: \fBtrue\fR (default), \fBfalse\fR
+\fBgenSetters\fR: Switches whether setters should be generated at all; allowed values: \fB1\fR (default), \fB0\fR
 .
 .IP "\(bu" 4
 \fBembeddedSpec\fR: Changes how much of the specification is embedded into the application; allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR

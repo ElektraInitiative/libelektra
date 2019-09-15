@@ -50,6 +50,23 @@ static KeySet * embeddedSpec (void)
 }
 /*%/ embed_spec? %*/
 
+/*%# embed_help_fallback? %*/
+static const char * helpFallback = "/*% help_fallback %*/";
+
+static int isHelpMode (void)
+{
+	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+
+	typedef int (*func) (void);
+	func goptsIsHelpMode = *(func *) elektraInvokeGetFunction (gopts, "ishelpmode");
+	
+	int ret = goptsIsHelpMode ();
+
+	elektraInvokeClose (gopts, NULL);
+	return ret == 1;
+}
+/*%/ embed_help_fallback? %*/
+
 /*%={{ }}=%*/
 /**
  * Initializes an instance of Elektra for the application '{{{ parent_key }}}'.
@@ -96,6 +113,15 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 
 	if (e == NULL)
 	{
+		*elektra = NULL;
+		/*%# embed_help_fallback? %*/
+		if (isHelpMode ())
+		{
+			elektraErrorReset (error);
+			return 1;
+		}
+		/*%/ embed_help_fallback? %*/
+
 		return -1;
 	}
 
@@ -151,6 +177,14 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv)
  */// {{=/*% %*/=}}
 void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const char * prefix)
 {
+	if (elektra == NULL)
+	{
+		/*%# embed_help_fallback? %*/
+		printf ("%s", helpFallback);
+		/*%/ embed_help_fallback? %*/
+		return;
+	}
+
 	Key * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{
