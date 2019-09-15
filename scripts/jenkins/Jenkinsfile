@@ -331,7 +331,7 @@ def dockerInit() {
       "./scripts/docker/alpine/3.9/Dockerfile"
     )
 
-    /* Bionic image*/
+    /* Ubuntu bionic image*/
     DOCKER_IMAGES.bionic = createDockerImageDesc(
       "bionic", this.&idTesting,
       "./scripts/docker/ubuntu/bionic",
