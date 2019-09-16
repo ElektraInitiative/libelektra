@@ -4,7 +4,7 @@
 
 - Backends store plugins in arrays which have a fixed number of slots for each plugin role. The number of plugins which can be assigned is limited,
   making it easy to reach the limit if many plugins are in use.
-- As structs, backends are separate from the plugin interface and integrated into the core of Elektra. This makes it difficult to perform operations 
+- As structs, backends are separate from the plugin interface and integrated into the core of Elektra. This makes it difficult to perform operations
   such as nesting plugins, or to develop other implementations for backends.
 
 ## Constraints
@@ -21,9 +21,9 @@
 ## Decision
 
 - The current backend implementation will be redeveloped into a backend plugin. That way, the core of Elektra will only access backends through
-the standard plugin interface. 
+  the standard plugin interface.
 - The `getplugins`, `setplugins` and `errorplugins` arrays will be changed into arrays of linked lists. Each time a plugin is added to a specific
-slot, it will be added at the end of the linked list.
+  slot, it will be added at the end of the linked list.
 
 ## Rationale
 
