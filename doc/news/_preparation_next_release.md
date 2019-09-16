@@ -150,7 +150,7 @@ you up to date with the multi-language support provided by Elektra.
   Lastly the script now supports a whitelist. Any link stored in [`tests/linkchecker.whitelist`](../../tests/linkchecker.whitelist) will not be checked. _(Klemens Böswirth)_
 - We removed a script used to compare the runtime performance of YAML plugins. _(René Schwaiger)_
 - Cleanup: separation of dev, admin and completion scripts. _(Markus Raab)_
-- <<TODO>>
+- Pre-commit hook `pre-commit-check-formatting` now lives in [`scripts/dev/pre-commit-check-formatting`](../../scripts/dev/pre-commit-check-formatting). _(Klemens Böswirth)_
 - <<TODO>>
 
 ## Documentation

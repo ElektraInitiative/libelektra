@@ -42,7 +42,7 @@ fi
 STAGED_FILES="$(git diff --cached --name-only --diff-filter=ACMR)"
 
 # run reformat script
-echo "$STAGED_FILES" | xargs "$SRC_ROOT/scripts/reformat-all" > /dev/null
+echo "$STAGED_FILES" | xargs "$SRC_ROOT/scripts/dev/reformat-all" > /dev/null
 
 # get files changed by reformatting
 UNFORMATTED_FILES="$(git diff --name-only)"
