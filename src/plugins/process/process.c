@@ -188,7 +188,7 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
 			       keyNew ("system/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
 			       keyNew ("system/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConfig, KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConf, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -250,7 +250,7 @@ int elektraProcessError (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ret;
 }
 
-int elektraProcessCheckConfig (Key * errorKey, KeySet * conf)
+int elektraProcessCheckConf (Key * errorKey, KeySet * conf)
 {
 	// We need the plugin key to know which plugin we should proxy
 	Key * pluginNameKey = ksLookupByName (conf, "/plugin", KDB_O_NONE);

@@ -188,7 +188,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/specload/exports/close", KEY_FUNC, elektraSpecloadClose, KEY_END),
 			       keyNew ("system/elektra/modules/specload/exports/get", KEY_FUNC, elektraSpecloadGet, KEY_END),
 			       keyNew ("system/elektra/modules/specload/exports/set", KEY_FUNC, elektraSpecloadSet, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConfig, KEY_END),
+			       keyNew ("system/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConf, KEY_END),
 			       keyNew ("system/elektra/modules/specload/exports/sendspec", KEY_FUNC, elektraSpecloadSendSpec, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system/elektra/modules/specload/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -332,7 +332,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return result;
 }
 
-int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
+int elektraSpecloadCheckConf (Key * errorKey, KeySet * conf)
 {
 	char * directFile;
 	char * app;

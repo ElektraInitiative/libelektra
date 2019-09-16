@@ -33,7 +33,7 @@ All plugins implement the same interface:
   their chance for necessary cleanups.
 - `kdbClose()` makes sure that plugins can finally free their
   own resources in `elektraPluginClose()`.
-- `kdbCheckConfig()` can be called manually to ensure a plugin is
+- `kdbCheckConf()` can be called manually to ensure a plugin is
   configured properly.
 - `kdbGenConfig()` can be called to produce all valid configurations
   of a plugin.

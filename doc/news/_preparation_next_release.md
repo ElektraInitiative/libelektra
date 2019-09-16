@@ -48,7 +48,10 @@ that are generated via `kdb gen`. _(Klemens Böswirth)_
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### General
+
 - We removed 9 obsolete or unfinished plugins: boolean cachefilter cpptype dini enum regexstore required simplespeclang struct. _(Markus Raab)_
+- We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 
 ### Camel
 

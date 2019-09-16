@@ -41,7 +41,7 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 			       keyNew ("system/elektra/modules/template/exports/set", KEY_FUNC, elektraTemplateSet, KEY_END),
 			       keyNew ("system/elektra/modules/template/exports/commit", KEY_FUNC, elektraTemplateCommit, KEY_END),
 			       keyNew ("system/elektra/modules/template/exports/error", KEY_FUNC, elektraTemplateError, KEY_END),
-			       keyNew ("system/elektra/modules/template/exports/checkconf", KEY_FUNC, elektraTemplateCheckConfig, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/checkconf", KEY_FUNC, elektraTemplateCheckConf, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system/elektra/modules/template/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -78,7 +78,7 @@ int elektraTemplateCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraTemplateCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional
