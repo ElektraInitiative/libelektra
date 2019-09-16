@@ -11,10 +11,6 @@ strict digraph G {
 	c [shape=Mdiamond];
 	c -> c;
 	cache [shape=Mdiamond];
-	storage [shape=Mdiamond];
-	camel -> storage;
-	camel [shape=Mdiamond];
-	camel -> camel;
 	code [shape=Mdiamond];
 	ccode -> code;
 	conditionals [shape=Mdiamond];

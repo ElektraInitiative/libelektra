@@ -34,7 +34,6 @@ matrix:
           -boolean;\
           -c;\
           -cachefilter;\
-          -camel;\
           -ccode;\
           -conditionals;\
           -constants;\

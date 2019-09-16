@@ -50,6 +50,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We removed 9 obsolete or unfinished plugins: boolean cachefilter cpptype dini enum regexstore required simplespeclang struct. _(Markus Raab)_
 
+### Camel
+
+We removed the experimental plugin. For a plugin that is able to parse similar syntax, please take a look at the
+
+- [YAJL](../../src/plugins/yajl) , and
+- [YAML CPP](../../src/plugins/yamlcpp)
+
+plugins. _(René Schwaiger)_
+
 ### GOpts
 
 - The error message, if non of the gopts variants can be compiled, was improved. _(Klemens Böswirth)_
