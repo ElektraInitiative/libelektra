@@ -25,6 +25,7 @@ class HighlevelGenTemplate : public GenTemplate
 		static const char * EmbeddedSpec;
 		static const char * SpecValidation;
 		static const char * InstallPrefix;
+		static const char * EmbedHelpFallback;
 	};
 
 public:

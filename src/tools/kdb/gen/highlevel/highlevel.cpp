@@ -18,6 +18,7 @@
 #include <kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
+#include <kdbopts.h>
 #include <kdbplugin.h>
 #include <kdbtypes.h>
 
@@ -38,6 +39,7 @@ const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
 const char * HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
 const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
+const char * HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
 
 enum class EmbeddedSpec
 {
@@ -205,6 +207,25 @@ static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 	return result;
 }
 
+static std::string generateHelpMessage (const std::string & appName, const std::string & specParent, kdb::KeySet spec)
+{
+	std::vector<const char *> argv = { appName.c_str (), "-h" };
+
+	kdb::Key parentKey (specParent.c_str (), KEY_END);
+	int ret = ckdb::elektraGetOpts (spec.getKeySet (), argv.size (), argv.data (), NULL, parentKey.getKey ());
+
+	if (ret != 1)
+	{
+		throw CommandAbortException ("could not generate fallback help message");
+	}
+
+	char * help = ckdb::elektraGetOptsHelpMessage (parentKey.getKey (), NULL, NULL);
+	std::string result (help);
+	ckdb::elektraFree (help);
+
+	return result;
+}
+
 kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string & outputName, const std::string & part,
 							       const kdb::KeySet & keySet, const std::string & parentKey) const
 {
@@ -220,6 +241,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
 	auto enumConversionString = getParameter (Params::EnumConversion, "auto");
 	auto generateSetters = getBoolParameter (Params::GenerateSetters, true);
+	auto embedHelpFallback = getBoolParameter (Params::EmbedHelpFallback, true);
 	auto specHandling = getParameter<EmbeddedSpec> (Params::EmbeddedSpec, { { "", EmbeddedSpec::Full },
 										{ "full", EmbeddedSpec::Full },
 										{ "defaults", EmbeddedSpec::Defaults },
@@ -263,6 +285,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 			    { "help_function_name", helpFunctionName },
 			    { "specload_function_name", specloadFunctionName },
 			    { "generate_setters?", generateSetters },
+			    { "embed_help_fallback?", embedHelpFallback },
 			    { "embed_spec?", specHandling == EmbeddedSpec::Full },
 			    { "embed_defaults?", specHandling == EmbeddedSpec::Defaults },
 			    { "spec_as_defaults?", specHandling == EmbeddedSpec::Full },
@@ -281,6 +304,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	auto parentLength = specParentName.length ();
 
 	kdb::KeySet spec;
+	kdb::KeySet specWithParent;
 	kdb::KeySet defaults;
 
 	kdb::Key parent = ks.lookup (specParent).dup ();
@@ -332,6 +356,8 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		kdb::Key specKey = key.dup ();
 		specKey.setName (specKey.getName ().substr (parentLength));
 		spec.append (specKey);
+
+		specWithParent.append (key);
 
 		if (!hasType (key))
 		{
@@ -532,6 +558,9 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	kdb::KeySet contract;
 	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
+	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
+	contract.append (kdb::Key ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+
 	if (specValidation == SpecValidation::Minimal)
 	{
 		contract.append (kdb::Key ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
@@ -546,6 +575,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	data["defaults"] = keySetToCCode (defaults);
 	data["contract"] = keySetToCCode (contract);
 	data["specload_arg"] = "--elektra-spec";
+	data["help_fallback"] = generateHelpMessage (appName, specParentName, specWithParent);
 
 	if (part == ".spec.eqd")
 	{

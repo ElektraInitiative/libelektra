@@ -133,6 +133,10 @@ The allowed values for the conflict keys are always the same:
   `logs/spec/info` is an array, each element is one conflict.
 - any other value ignores the conflict, this includes if the conflict key is not given (i.e. the default)
 
+There is also the special key `missing/log`. If it is set to `1`, the plugin will create the meta array `logs/spec/missing/#`.
+This array will contain a list of the missing keys. The key `missing/log` can only be part of the main plugin configuration,
+not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
+
 ## Examples
 
 Ini files can be found in [/examples/spec](/examples/spec) which should be PWD

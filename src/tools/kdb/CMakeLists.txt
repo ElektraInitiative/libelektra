@@ -36,6 +36,7 @@ if (BUILD_SHARED)
 			       elektra-core
 			       elektra-kdb
 			       elektratools
+			       elektra-opts
 			       elektra-merge)
 
 	install (TARGETS kdb DESTINATION bin)

@@ -21,6 +21,7 @@ section here.
 - [Elektra Web Structure](elektra_web.md)
 - [Elektra Web Recursive Structure](elektra_web_recursive.md)
 - [Cryptographic Key Handling](cryptograhic_key_handling.md)
+- [High-level API Help Message](highlevel_help_message.md)
 
 ## Decided
 
