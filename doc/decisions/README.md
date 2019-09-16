@@ -40,6 +40,7 @@ section here.
 - [Definition of Boolean](boolean.md)
 - [Plugin Variants](plugin_variants.md)
 - [Error code implementation](error_code_implementation.md)
+- [Backend Plugin](backend_plugin.md)
 
 ## In Discussion
 
