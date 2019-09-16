@@ -23,7 +23,7 @@ else ()
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}")
 
 		# install files to destination
-		install (DIRECTORY elektrad webd client
+		install (DIRECTORY webd client
 			 DESTINATION ${install_directory}
 			 PATTERN "node_modules" EXCLUDE
 			 PATTERN "build" EXCLUDE)
@@ -32,12 +32,19 @@ else ()
 				  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+					COMMAND GO111MODULE=on go
+						ARGS
+						build
+						-o
+						"${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
+					DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go")
+		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
+	
 		# build elektra-web
 		install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
-		install (
-			CODE
-				"execute_process (COMMAND go build WORKING_DIRECTORY -o ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad)"
-			)
+		install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad" DESTINATION "${install_directory}")
 		install (CODE "message (\"-- Installing: elektra-web > webd\")")
 		install (
 			CODE
@@ -65,9 +72,9 @@ else ()
 				"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
 			)
 
-		# generate manpages
-		generate_manpage (kdb-run-elektrad FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
-		generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
+	# generate manpages
+	generate_manpage (kdb-run-elektrad FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
+	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 
 		# test apis
 		find_program (DREDD_EXECUTABLE "dredd")
