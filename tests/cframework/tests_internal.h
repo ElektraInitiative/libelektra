@@ -19,7 +19,7 @@
 
 void clear_sync (KeySet * ks);
 void output_plugin (Plugin * plugin);
-void output_backend (Backend * backend);
+void output_backend (Plugin * backend);
 
 void output_trie (Trie * trie);
 

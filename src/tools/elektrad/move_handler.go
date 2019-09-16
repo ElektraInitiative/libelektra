@@ -16,7 +16,7 @@ import (
 //		204 No Content if succesfull.
 //		400 Bad Request if either the source or target keys are invalid.
 //
-// Example: `curl -X POST -d '"user/test/world"' localhost:33333/kdbMv/user/test/hello`
+// Example: `curl -X POST -d '"user:/test/world"' localhost:33333/kdbMv/user/test/hello`
 func (s *server) postMoveHandler(w http.ResponseWriter, r *http.Request) {
 	from := parseKeyNameFromURL(r)
 	to, err := stringBody(r)
