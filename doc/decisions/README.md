@@ -31,6 +31,7 @@ section here.
 - [Ingroup Removal](ingroup_removal.md)
 - [Error Message Format](error_message_format.md)
 - [Commit Function](commit_function.md)
+- [Backend Plugin](backend_plugin.md)
 
 ## In Discussion
 
