@@ -45,6 +45,8 @@ else () # Build library
 
 	add_executable (${testexename} ${TEST_SOURCES})
 
+
+
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (${testexename} PUBLIC SYSTEM ${LIBEV_INCLUDE_DIRS})
 

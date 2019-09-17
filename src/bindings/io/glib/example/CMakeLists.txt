@@ -15,6 +15,8 @@ set (example exampleio_glib)
 
 add_executable (${example} ${SOURCES})
 
+
+
 target_include_directories (${example} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
 
 target_link_elektra (${example}

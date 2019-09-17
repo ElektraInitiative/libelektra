@@ -24,6 +24,8 @@ if (ADDTESTING_PHASE)
 
 	add_executable (${example} ${SOURCES})
 
+
+
 	target_include_directories (${example} SYSTEM PUBLIC ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
 
 	target_link_libraries (${example} ${DBUS_LIBRARIES})

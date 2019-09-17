@@ -12,6 +12,8 @@ macro (do_benchmark source)
 	     ${source}.c)
 	add_executable (benchmark_${source} ${SOURCES})
 
+
+
 	target_link_elektra (benchmark_${source} elektra-kdb elektra-meta)
 
 	set_target_properties (benchmark_${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)

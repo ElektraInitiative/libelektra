@@ -27,6 +27,8 @@ macro (add_gtest source)
 		set (SOURCES ${HDR_FILES} ${source}.cpp ${ARG_SOURCES})
 		add_executable (${source} ${SOURCES})
 
+
+
 		if (ARG_LINK_TOOLS)
 			target_link_elektratools (${source} ${ARG_LINK_ELEKTRA})
 		else (ARG_LINK_TOOLS)

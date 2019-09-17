@@ -17,6 +17,7 @@ else () # find installation path
 
 	add_executable (${HUB} ${SOURCES})
 
+
 	target_link_libraries (${HUB} ${ZeroMQ_LIBRARIES})
 	target_link_elektra (${HUB} elektra-kdb)
 	target_include_directories (${HUB} SYSTEM PUBLIC ${ZeroMQ_INCLUDE_DIRS})

@@ -50,6 +50,8 @@ else ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
 
+
+
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (${testexename} PUBLIC SYSTEM ${GLib_INCLUDE_DIRS})
 

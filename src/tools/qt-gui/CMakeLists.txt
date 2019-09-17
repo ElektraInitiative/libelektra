@@ -74,6 +74,8 @@ else ()
 			${RSCS}
 			${TRS})
 
+
+
 	target_link_libraries (qt-gui
 			       Qt5::Quick
 			       Qt5::Gui

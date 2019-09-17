@@ -13,6 +13,8 @@ macro (do_benchmark source)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
+
+
 	target_link_elektra (${source})
 
 	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
