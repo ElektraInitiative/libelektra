@@ -26,7 +26,8 @@ macro (add_gtest source)
 	if (BUILD_TESTING)
 		set (SOURCES ${HDR_FILES} ${source}.cpp ${ARG_SOURCES})
 		add_executable (${source} ${SOURCES})
-		add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
+
+
 
 		if (ARG_LINK_TOOLS)
 			target_link_elektratools (${source} ${ARG_LINK_ELEKTRA})

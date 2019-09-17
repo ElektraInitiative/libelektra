@@ -71,8 +71,8 @@ if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra-core SHARED ${CORE_FILES} ${elektra-shared_SRCS})
 	add_dependencies (elektra-core
-			  kdberrors_generated
-			  elektra_error_codes_generated
+
+
 			  generate_version_script)
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
@@ -83,8 +83,8 @@ if (BUILD_SHARED)
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
 	add_dependencies (elektra-kdb
-			  kdberrors_generated
-			  elektra_error_codes_generated
+
+
 			  generate_version_script)
 	target_link_libraries (elektra-kdb elektra-core)
 
@@ -148,8 +148,8 @@ if (BUILD_FULL)
 				     ON)
 	add_library (elektra-full SHARED ${SOURCES})
 	add_dependencies (elektra-full
-			  kdberrors_generated
-			  elektra_error_codes_generated
+
+
 			  generate_version_script)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
@@ -183,8 +183,8 @@ if (BUILD_STATIC)
 				     ON)
 	add_library (elektra-static STATIC ${SOURCES})
 	add_dependencies (elektra-static
-			  kdberrors_generated
-			  elektra_error_codes_generated
+
+
 			  generate_version_script)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})

@@ -48,7 +48,8 @@ macro (do_test source)
 	add_headers (SOURCES)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
+
+
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})

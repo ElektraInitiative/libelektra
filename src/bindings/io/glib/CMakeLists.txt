@@ -49,7 +49,8 @@ else ()
 	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
-	add_dependencies (${testexename} kdberrors_generated elektra_error_codes_generated)
+
+
 
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (${testexename} PUBLIC SYSTEM ${GLib_INCLUDE_DIRS})
