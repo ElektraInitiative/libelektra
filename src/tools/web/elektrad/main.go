@@ -9,6 +9,7 @@ import (
 
 func main() {
 	r := mux.NewRouter()
+	r.Use(handleMiddleware)
 
 	r.HandleFunc("/version", GetVersionHandler).Methods("GET")
 
