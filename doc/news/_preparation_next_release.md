@@ -231,6 +231,7 @@ you up to date with the multi-language support provided by Elektra.
 - We now also build Debian buster packages. _(Markus Raab)_
 - Enable WebUI build job again. _(Markus Raab)_
 - Improve docu. _(Markus Raab)_
+- Jenkins does not auto cancel build jobs of the `master` branch anymore. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
