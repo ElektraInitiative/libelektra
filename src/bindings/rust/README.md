@@ -33,7 +33,7 @@ If you run `cargo run` and everything builds correctly and prints `Hello, world!
 
 ### Key
 
-An example for using a `StringKey`. See the [full example](example/src/bin/key.rs) for more.
+An example for using a `StringKey`. See the [full example](example/src/bin/key.rs) for more. Run it from the `example` directory using `cargo run --bin key`.
 
 ```rust
 extern crate elektra;
@@ -83,7 +83,7 @@ A KeySet is a set of StringKeys.
 - You can create an empty keyset with `new` or preallocate space for a number of keys with `with_capacity`.
 - It has two implementations of the `Iterator` trait, so you can iterate immutably or mutably.
 
-See the [full example](example/src/bin/keyset.rs) for more.
+See the [full example](example/src/bin/keyset.rs) for more. Run it from the `example` directory using `cargo run --bin keyset`.
 
 ```rust
 extern crate elektra;
@@ -126,6 +126,36 @@ let binary_key = BinaryKey::from(key);
 let string_key = StringKey::from(binary_key);
 ```
 
+### KDB
+
+With the `KDB` struct you can access the key database.
+See the [full example](example/src/bin/kdb.rs) for more. Run it from the `example` directory using `cargo run --bin kdb`.
+
+The KDB error types are nested, so you can match on a high-level or a specific one. For a deeper explanation of the error types, see the [error guideline](https://master.libelektra.org/doc/dev/error-categorization.md).
+
+````rust
+extern crate elektra;
+
+use elektra::{KDB, KDBError, LogicalError, PermanentError, ValidationError};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let kdb = KDB::open?;
+    let mut ks = KeySet::with_capacity(10);
+    let mut parent_key = StringKey::new("user/test")?;
+    let res = kdb.get(&mut ks, &mut parent_key);
+
+    if let KDBError::Permanent(PermanentError::Logical(LogicalError::Internal(err))) = res {
+        // Handle Assertion error
+        println!("{:?}", err);
+    } else if let KDBError::Validation(ValidationError::Semantic(err)) = res {
+        // Handle Semantic error
+        println!("{:?}", err);
+    } else {
+        // Ignore Conflicting State errors
+    }
+    Ok(())
+}
+
 ### Raw Bindings
 
 Safe wrappers are provided in the `elektra` crate, however you can also use the raw bindings from `elektra_sys` directly. Rust for instance does not allow the definition of variadic functions, but allows calling them. So you can call `keyNew` as you would in C.
@@ -144,7 +174,7 @@ fn main() {
     println!("Key with name {:?} has value {:?}", name_str, val_str);
     assert_eq!(unsafe { keyDel(key) }, 0);
 }
-```
+````
 
 ## Documentation
 
@@ -164,34 +194,4 @@ Rust-bindgen needs clang to generate the bindings, so if you encounter the follo
 /usr/include/limits.h:123:16: fatal error: 'limits.h' file not found, err: true
 thread 'main' panicked at 'Unable to generate bindings: ()', src/libcore/result.rs:999:5
 note: Run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
-```
-
-## Usage
-
-### Error Handling
-
-#### KDB
-
-For improved readability, import all the enum variants directly. Through error nesting, you can catch specific errors and ignore other ones.
-TODO: Complete example
-
-```rust
-use KDBError::*;
-use LogicalError::*;
-use PermanentError::*;
-use ResourceError::*;
-use ValidationError::*;
-
-fn call_kdb_function() {
-    let res = kdbGet().unwrap_err();
-    if let KDBError::Permanent(PermanentError::Logical(LogicalError::Internal(err))) = res {
-        // Handle Assertion error
-        println!("{:?}", err);
-    } else if let KDBError::Validation(ValidationError::Semantic(err)) = res {
-        // Handle Semantic error
-        println!("{:?}", err);
-    } else {
-        // Ignore Conflicting State errors
-    }
-}
 ```
