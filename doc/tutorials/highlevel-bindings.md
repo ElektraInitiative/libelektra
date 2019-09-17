@@ -54,6 +54,29 @@ sufficient to write (or generate) a one-to-one mirror of the C API and use that 
 The generated code should still be understandable. So if writing a more idiomatic API on top of the
 direct mapping, significantly simplifies the generated code (and maybe also the template), you should write such an API.
 
+### Bindings for the `lowlevel` Library
+
+If you decide on mapping the functionality of kdb.h 1:1 it is pretty straight-forward.
+
+Your programming language of choice must provide a way to call into C code, e.g.: 
+* [cgo](https://golang.org/cmd/cgo/) for the Go programming language
+* [jni](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/) for JAVA
+* [n-api](https://nodejs.org/api/n-api.html) for javascript
+
+Make sure you have a good understanding of these libraries because some of them can have unexpected downsides.
+CGO for example cannot call variadic C functions because in C the amount of parameters has to be known at compile-time. This is not the case with Go
+since it supports variable length arguments at runtime with the `...` operator. 
+
+This is unfortunate because the low-level bindings rely heavily on variadic functions. It is possible to work around this problem by writing helper functions in C that call these variadic functions with a fixed amount of parameters.
+
+What you will also need is to set up the Compiler + Linker flags, for this I can recommend [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/), because Elektra already provides `.pc` files.
+
+For garbage collected (GC) languages freeing memory by hand is not something you usually do and since the GC has no knowledge of memory allocated in C we have two options:
+* Forcing the user to call the appropriate functions like `keyDel()` themselves, which is very developer unfriendly and error prone or
+* Using language featurse like Java / C++ Destructors or Go's `runtime.SetFinalizer()` function to automatically and reliably release the memory as soon as the native objects are garbage collected
+
+If you want to adapt or enhance some API's to leverage language features like iterators or operator overloading feel free to do so. The less 'alien' the binding feels to its users the better.
+
 ### Creating the Code-Generator Template
 
 How to create a template for `kdb gen` is detailed in [this tutorial](code-generator.md).
