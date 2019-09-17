@@ -19,7 +19,7 @@ type ElektraVersion struct {
 }
 
 func GetVersionHandler(w http.ResponseWriter, r *http.Request) {
-	kdb := kdbHandle()
+	kdb := getHandle(r)
 
 	version, _ := kdb.Version()
 

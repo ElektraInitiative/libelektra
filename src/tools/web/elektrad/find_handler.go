@@ -23,7 +23,8 @@ func GetFindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ks, err := getKeySet(root)
+	handle := getHandle(r)
+	ks, err := getKeySet(handle, root)
 
 	if err != nil {
 		writeError(w, err)

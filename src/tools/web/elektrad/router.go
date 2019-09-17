@@ -30,25 +30,14 @@ func stringBody(r *http.Request) (string, error) {
 	return string(value), nil
 }
 
-func kdbHandle() elektra.KDB {
-	kdb := elektra.New()
-
-	key, _ := elektra.CreateKey("")
-	_ = kdb.Open(key)
-
-	return kdb
-}
-
-func getKeySet(key elektra.Key) (elektra.KeySet, error) {
-	kdb := kdbHandle()
-
+func getKeySet(handle elektra.KDB, key elektra.Key) (elektra.KeySet, error) {
 	ks, err := elektra.CreateKeySet()
 
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = kdb.Get(ks, key)
+	_, err = handle.Get(ks, key)
 
 	if err != nil {
 		return nil, err
