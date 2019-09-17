@@ -29,17 +29,26 @@ func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 	kdb := getHandle(r)
 
-	ks, err := elektra.CreateKeySet()
+	parentKey, err := elektra.CreateKey(keyName)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	parentKey, _ := elektra.CreateKey(keyName)
-	_, err = kdb.Get(ks, parentKey)
+	ks, err := getKeySet(kdb, parentKey)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	k, err := ks.Lookup(parentKey)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	if k == nil {
 		err = ks.AppendKey(parentKey)
@@ -54,8 +63,14 @@ func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
 		err = k.DeleteMeta(meta.Key)
 	} else {
 		err = k.SetMeta(meta.Key, *meta.Value)
-
 	}
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	_, err = kdb.Set(ks, parentKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -66,19 +81,45 @@ func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteMetaHandler(w http.ResponseWriter, r *http.Request) {
-	// kdb := kdbHandle()
+	kdb := getHandle(r)
 
-	// ks, err := elektra.CreateKeySet()
+	var meta KeyValueBody
 
-	// if err != nil {
-	// 	writeError(w, err)
-	// 	return
-	// }
+	keyName := parseKeyNameFromURL(r)
 
-	// keyName := parseKeyNameFromURL(r)
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&meta); err != nil {
+		writeError(w, err)
+		return
+	}
 
-	// key, _ := elektra.CreateKey(keyName)
-	// _, err = kdb.Get(ks, key)
+	key, err := elektra.CreateKey(keyName)
 
-	// writeResponse(w, response)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	keySet, err := getKeySet(kdb, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = key.DeleteMeta(meta.Key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	_, err = kdb.Set(keySet, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	noContent(w)
 }
