@@ -45,7 +45,7 @@ func PostMoveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kdb := kdbHandle()
+	kdb := getHandle(r)
 	_, err = kdb.Get(conf, rootKey)
 
 	if err != nil {
