@@ -27,7 +27,7 @@ func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
 		badRequest(w)
 	}
 
-	kdb := kdbHandle()
+	kdb := getHandle(r)
 
 	ks, err := elektra.CreateKeySet()
 

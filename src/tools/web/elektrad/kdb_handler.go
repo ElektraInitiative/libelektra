@@ -39,7 +39,8 @@ func GetKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ks, err := getKeySet(key)
+	handle := getHandle(r)
+	ks, err := getKeySet(handle, key)
 
 	if err != nil {
 		writeError(w, err)
@@ -118,7 +119,7 @@ func PutKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kdb := kdbHandle()
+	kdb := getHandle(r)
 
 	keyName := parseKeyNameFromURL(r)
 
@@ -144,7 +145,7 @@ func PutKdbHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteKdbHandler(w http.ResponseWriter, r *http.Request) {
-	kdb := kdbHandle()
+	kdb := getHandle(r)
 
 	keyName := parseKeyNameFromURL(r)
 
