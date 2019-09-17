@@ -209,7 +209,7 @@ static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 
 static std::string generateHelpMessage (const std::string & appName, const std::string & specParent, kdb::KeySet spec)
 {
-	std::vector<const char *> argv = { appName.c_str (), "-h" };
+	std::vector<const char *> argv = { appName.c_str (), "--help" };
 
 	kdb::Key parentKey (specParent.c_str (), KEY_END);
 	int ret = ckdb::elektraGetOpts (spec.getKeySet (), argv.size (), argv.data (), NULL, parentKey.getKey ());

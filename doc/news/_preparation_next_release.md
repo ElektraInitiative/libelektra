@@ -63,6 +63,8 @@ plugins. _(René Schwaiger)_
 
 - The error message, if non of the gopts variants can be compiled, was improved. _(Klemens Böswirth)_
 - A better error, if the plugin fails to load `argv` from the system, was added. _(Klemens Böswirth)_
+- A function to detect help mode, without invoking `elektraGetOpts` was added. It simply checks, whether `--help` is one
+  of the string in `argv`. _(Klemens Böswirth)_
 
 ### Tcl
 
@@ -109,6 +111,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
   `config.h`-type headers from applications. _(Klemens Böswirth)_
 - `ksAppendKey`: state that it only fail on memory problems. _(Markus Raab)_
+
+### Opts
+
+- The option `-h` is no longer used to indicate help mode. Only `--help`, will invoke help mode. _(Klemens Böswirth)_
 
 ### <<Library1>>
 
