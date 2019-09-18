@@ -10,6 +10,26 @@ Rust bindings for libelektra.
 
 ## Build
 
+Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with your package manager, you should use the crates from [crates.io](https://crates.io/). If you want to built libelektra locally, you should use the bindings that are built in the `build` directory.
+
+### Package Manager
+
+If you installed elektra via your package manager, you should use the [elektra](https://crates.io/crate/elektra) crate or [elektra-sys](https://crates.io/crate/elektra-sys) if you need the raw bindings directly. In this case you will need `libelektra` itself, as well as the development headers (often called `libelektra-dev`) for bindings generation.
+The `elektra-sys`, as well as the `elektra` crate have a feature called `pkg-config` that you can enable to find the installation of elektra and its headers. It is not enabled by default, but recommended and you can do so by adding `features = ["pkg-config"]` to the dependency section as seen below. The `pkg-config` utility has to be installed then. Your Cargo.toml dependencies might thus look like this
+
+```toml
+[dependencies]
+elektra = { version = "0.9.0", features = ["pkg-config"] }
+# Directly depending on elektra-sys is only needed if you need to use the raw bindings
+elektra-sys = { version = "0.9.0", features = ["pkg-config"] }
+```
+
+If you don't use the `pkg-config` feature, the build script will look for the elektra installation in `/usr/local/include/elektra` and `/usr/include/elektra`.
+
+With this in place, the bindings should be built when you run `cargo build`.
+
+### Local Build
+
 To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](../../../doc/COMPILE.md) and the bindings will be built as part of this process.
 
 ## Example
