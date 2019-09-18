@@ -71,8 +71,8 @@ if `--` is encountered in `argv`.
 
 ## Help Message
 
-When one of the help options `-h` and `--help` is encountered in `argv`, `elektraGetOpts` only reads the specification, but
-does not create any keys in the `proc` namespace. It will however, generate a help message that can be accessed with
+When the help option `--help` is encountered in `argv`, `elektraGetOpts` only reads the specification, but does not
+create any keys in the `proc` namespace. It will however, generate a help message that can be accessed with
 `elektraGetOptsHelpMessage`.
 
 The help message consists of a usage line and an options list. The program name for the usage line is taken from `argv[0]`.
@@ -108,8 +108,8 @@ The order of precedence is simple:
 
 - Both options and environment variables can only be specified on a single key. If you need to have the
   value of one option/environment variable in multiple keys, you may use `fallback`s.
-- `-` and `h` cannot be used as short options, because they would collide with, the "option end marker" and the help option
-  respectively. `help` cannot be used as a long option, because it would collide with the help option.
+- `-` cannot be used as short options, because it would collide with, the "option end marker".
+- `help` cannot be used as a long option, because it would collide with the help option.
 
 ## Examples
 

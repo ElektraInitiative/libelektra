@@ -565,23 +565,6 @@ static void test_illegal_spec (void)
 	ksDel (ks);
 
 	// ---
-	// 'h' option
-	// ---
-
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
-	keySetMeta (k, "opt", "h");
-	ks = ksNew (1, k, KS_END);
-
-	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
-				"Character 'h' cannot be used as a short option. It would collide with the "
-				"help option '-h'. Offending key: " SPEC_BASE_KEY "/apple"),
-		    "'h' option should be illegal");
-	clearValues (ks);
-
-	ksDel (ks);
-
-	// ---
 	// 'help' option
 	// ---
 
@@ -706,21 +689,12 @@ static void test_help (void)
 
 	Key * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
-	succeed_if (elektraGetOpts (ks, ARGS ("-h"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, "Usage: prog\n");
-	succeed_if (elektraGetOpts (ks, ARGS ("-h", "short"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, "Usage: prog\n");
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
 	checkHelpMessage (errorKey, "Usage: prog\n");
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
 	checkHelpMessage (errorKey, "Usage: prog\n");
 
 	keyDel (errorKey);
-
-	RUN_TEST_ERROR (ks, errorKey, ARGS ("-hshort"), NO_ENVP);
-	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
-		    "short help with value (with arg, combined) should have failed");
-	clearValues (ks);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--help=long"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot have an argument: --help"),
@@ -761,10 +735,6 @@ static void test_help (void)
 		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/hidden", "1", KEY_END), KS_END);
 	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
-	succeed_if (elektraGetOpts (ks, ARGS ("-h"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, expectedHelp);
-	succeed_if (elektraGetOpts (ks, ARGS ("-h", "short"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, expectedHelp);
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
 	checkHelpMessage (errorKey, expectedHelp);
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");

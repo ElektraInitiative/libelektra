@@ -38,7 +38,7 @@ static void cleanupEnvp (char ** envp);
  * Detects whether we are in help mode or not.
  * DOES NOT set 'proc/elektra/gopts/help' for use with elektraGetOptsHelpMessage().
  *
- * @retval 1 if the -h or --help is part of argv
+ * @retval 1 if --help is part of argv
  * @retval 0 otherwise
  * @retval -1 on error (could not load argv)
  */
@@ -54,7 +54,7 @@ int elektraGOptsIsHelpMode (void)
 
 	for (int i = 0; i < argc; ++i)
 	{
-		if (strcmp (argv[i], "-h") == 0 || strcmp (argv[i], "--help") == 0)
+		if (strcmp (argv[i], "--help") == 0)
 		{
 			return 1;
 		}
