@@ -153,7 +153,7 @@ Releases can be downloaded from [here](https://www.libelektra.org/ftp/elektra/re
 
 The [build server](https://build.libelektra.org/) builds
 Elektra for every pull request and on every commit in various ways and also produces [LCOV code
-coverage report](https://doc.libelektra.org/coverage/master/debian-stable-full/).
+coverage report](https://doc.libelektra.org/coverage/master/debian-buster-full/).
 
 ## Contributing
 
