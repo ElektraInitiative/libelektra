@@ -439,7 +439,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * Will add a new Pair for meta-information if metaName was
  * not added up to now.
  *
- * It will modify an existing Pair of meta-information if the
+ * It will modify an existing Pair of meta-information if
  * the metaName was inserted already.
  *
  * It will remove a meta information if newMetaString is 0.

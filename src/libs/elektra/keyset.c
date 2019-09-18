@@ -281,7 +281,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
  * so you need to ksDel() the returned pointer.
  *
  * A flat copy is made, so the keys will not be duplicated,
- * but there reference counter is updated, so both keysets
+ * but their reference counter is updated, so both keysets
  * need ksDel().
  *
  * @param source has to be an initialized source KeySet
@@ -358,7 +358,7 @@ KeySet * ksDeepDup (const KeySet * source)
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
  * But in some situations you need to copy a
- * keyset to an existing keyset, for that this function
+ * keyset to an existing keyset, for which this function
  * exists.
  *
  * @note You can also use it to clear a keyset when you pass
@@ -1586,7 +1586,7 @@ Key * ksAtCursor (KeySet * ks, cursor_t pos)
  * Set the KeySet internal cursor.
  *
  * Use it to set the cursor to a stored position.
- * ksCurrent() will then be the position which you got with.
+ * ksCurrent() will then return the key at the position of the supplied cursor.
  *
  * @warning Cursors may get invalid when the key
  * was ksPop()ed or ksLookup() was used together

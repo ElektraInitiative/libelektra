@@ -236,8 +236,8 @@ int f (const Key * source)
 }
  * @endcode
  *
- * Like for a new key after keyNew() a subsequent ksAppend()
- * makes a KeySet to take care of the lifecycle of the key.
+ * Like for a new key after keyNew() a subsequent ksAppendKey()
+ * makes a KeySet take care of the lifecycle of the key.
  *
  * @code
 int g (const Key * source, KeySet * ks)
@@ -259,7 +259,7 @@ int g (const Key * source, KeySet * ks)
  * @param source has to be an initialized source Key
  * @retval 0 failure or on NULL pointer
  * @return a fully copy of source on success
- * @see ksAppend(), keyDel(), keyNew()
+ * @see ksAppendKey(), keyDel(), keyNew()
  * @ingroup key
  */
 Key * keyDup (const Key * source)
