@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -35,17 +34,22 @@ func parseKeyNameFromURL(r *http.Request) string {
 	vars := mux.Vars(r)
 	keyName := vars["path"]
 
-	return "/" + keyName
+	if len(keyName) == 0 {
+		return "/"
+	}
+
+	return keyName
 }
 
 func stringBody(r *http.Request) (string, error) {
-	value, err := ioutil.ReadAll(r.Body)
+	value := ""
 
-	if err != nil {
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&value); err != nil {
 		return "", err
 	}
 
-	return string(value), nil
+	return value, nil
 }
 
 func getKeySet(handle elektra.KDB, key elektra.Key) (elektra.KeySet, error) {

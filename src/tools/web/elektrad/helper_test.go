@@ -29,6 +29,59 @@ func testPost(t *testing.T, path string, body interface{}) *httptest.ResponseRec
 	return testRequest(t, "POST", path, body)
 }
 
+func setupKey(t *testing.T, keyName string) {
+	t.Helper()
+
+	rootKey, _ := elektra.CreateKey("/")
+	parentKey, err := elektra.CreateKey(keyName)
+	Checkf(t, err, "could not create key %s: %v", keyName, err)
+
+	kdb := elektra.New()
+	err = kdb.Open(rootKey)
+	Checkf(t, err, "could not open kdb: %v", err)
+
+	ks, err := getKeySet(kdb, rootKey)
+	Checkf(t, err, "could not get KeySet: %v", err)
+
+	k, err := ks.Lookup(parentKey)
+	Checkf(t, err, "could not get key %s: %v", keyName, err)
+
+	if k == nil {
+		err = ks.AppendKey(parentKey)
+		Checkf(t, err, "could not append key: %v", err)
+	}
+
+	_, err = kdb.Set(ks, rootKey)
+	Checkf(t, err, "could not save key %s: %v", keyName, err)
+}
+
+func removeKey(t *testing.T, keyName string) {
+	t.Helper()
+
+	parentKey, err := elektra.CreateKey(keyName)
+	Checkf(t, err, "could not create key %s: %v", keyName, err)
+
+	kdb := elektra.New()
+	err = kdb.Open(parentKey)
+	Checkf(t, err, "could not open kdb: %v", err)
+
+	ks, err := getKeySet(kdb, parentKey)
+	Checkf(t, err, "could not get KeySet: %v", err)
+
+	k, err := ks.Lookup(parentKey)
+	Checkf(t, err, "could not get key %s: %v", keyName, err)
+
+	if k == nil {
+		return
+	}
+
+	err = ks.Remove(k)
+	Checkf(t, err, "could not remove key %s: %v", keyName, err)
+
+	_, err = kdb.Set(ks, parentKey)
+	Checkf(t, err, "could not save removal of key %s: %v", keyName, err)
+}
+
 func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 	t.Helper()
 
@@ -54,6 +107,9 @@ func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 		err = k.SetMeta(m.Key, *m.Value)
 		Checkf(t, err, "could not append key: %v", err)
 	}
+
+	_, err = kdb.Set(ks, parentKey)
+	Checkf(t, err, "could not save key %s: %v", keyName, err)
 }
 
 func testRequest(t *testing.T, verb, path string, body interface{}) *httptest.ResponseRecorder {
