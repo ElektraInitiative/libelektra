@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-type VersionResult struct {
-	Api     int            `json:"api"`
-	Elektra ElektraVersion `json:"elektra"`
+type versionResult struct {
+	API     int            `json:"api"`
+	Elektra elektraVersion `json:"elektra"`
 }
 
-type ElektraVersion struct {
+type elektraVersion struct {
 	Version string `json:"version"`
 	Major   int    `json:"major"`
 	Minor   int    `json:"minor"`
@@ -25,9 +25,9 @@ func getVersionHandler(w http.ResponseWriter, r *http.Request) {
 
 	major, minor, micro := parseSemVer(version)
 
-	response := VersionResult{
-		Api: 1,
-		Elektra: ElektraVersion{
+	response := versionResult{
+		API: 1,
+		Elektra: elektraVersion{
 			Version: version,
 			Major:   major,
 			Minor:   minor,
