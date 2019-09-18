@@ -7,7 +7,7 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-func GetFindHandler(w http.ResponseWriter, r *http.Request) {
+func getFindHandler(w http.ResponseWriter, r *http.Request) {
 	query := parseKeyNameFromURL(r)
 	regex, err := regexp.Compile(query)
 

@@ -18,7 +18,7 @@ type ElektraVersion struct {
 	Micro   int    `json:"micro"`
 }
 
-func GetVersionHandler(w http.ResponseWriter, r *http.Request) {
+func getVersionHandler(w http.ResponseWriter, r *http.Request) {
 	kdb := getHandle(r)
 
 	version, _ := kdb.Version()
