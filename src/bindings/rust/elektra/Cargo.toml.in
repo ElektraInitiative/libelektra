@@ -3,6 +3,11 @@ name = "elektra"
 version = "@KDB_VERSION@"
 authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
 edition = "2018"
+description = "Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database."
+license = "BSD-3-Clause"
+homepage = "https://www.libelektra.org/"
+repository = "https://master.libelektra.org/src/bindings/rust"
+documentation = "https://docs.rs/elektra"
 
 [dependencies]
 elektra-sys = { version = "@KDB_VERSION@", path = "../elektra-sys" }
