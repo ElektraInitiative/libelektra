@@ -6,7 +6,7 @@ import (
 )
 
 func TestPostMeta(t *testing.T) {
-	keyName := "/elektrad/test"
+	keyName := "user/elektrad/test"
 	value := "i'm a test value"
 	meta := keyValueBody{
 		Key:   "postmeta",
@@ -15,7 +15,7 @@ func TestPostMeta(t *testing.T) {
 
 	setupKeyWithMeta(t, keyName, meta)
 
-	w := testPost(t, "/kdbMeta"+keyName, keyValueBody{
+	w := testPost(t, "/kdbMeta/"+keyName, keyValueBody{
 		Key:   "postmeta",
 		Value: &value,
 	})
@@ -28,7 +28,7 @@ func TestPostMeta(t *testing.T) {
 }
 
 func TestDeleteMetaHandler(t *testing.T) {
-	keyName := "/elektrad/test"
+	keyName := "user/elektrad/test"
 	value := "value"
 	meta := keyValueBody{
 		Key:   "postmeta",
@@ -37,7 +37,7 @@ func TestDeleteMetaHandler(t *testing.T) {
 
 	setupKeyWithMeta(t, keyName, meta)
 
-	w := testDelete(t, "/kdbMeta"+keyName, meta)
+	w := testDelete(t, "/kdbMeta/"+keyName, meta)
 
 	code := w.Result().StatusCode
 	Assertf(t, code == http.StatusNoContent, "wrong status code: %v", code)
