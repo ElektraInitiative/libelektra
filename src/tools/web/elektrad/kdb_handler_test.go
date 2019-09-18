@@ -39,3 +39,17 @@ func TestPutKdb(t *testing.T) {
 	Assert(t, key != nil, "key was not created")
 	Assertf(t, retrievedValue == value, "wrong key value %s, expected %s", retrievedValue, value)
 }
+
+func TestDeleteKdb(t *testing.T) {
+	keyName := "user/elektrad/test/deleteKdb"
+
+	setupKey(t, keyName)
+
+	w := testDelete(t, "/kdb/"+keyName, nil)
+
+	code := w.Result().StatusCode
+	Assertf(t, code == http.StatusOK, "wrong status code: %v", code)
+
+	key := getKey(t, keyName)
+	Assert(t, key == nil, "key was not deleted")
+}

@@ -171,7 +171,6 @@ func getKey(t *testing.T, keyName string) elektra.Key {
 
 	k, err := ks.Lookup(parentKey)
 	Checkf(t, err, "could not get key %s: %v", keyName, err)
-	Assertf(t, k != nil, "key %q does not exist", keyName)
 
 	return k
 }
