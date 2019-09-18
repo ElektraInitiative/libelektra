@@ -7,14 +7,14 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-type LookupResult struct {
+type lookupResult struct {
 	Exists   bool              `json:"exists"`
 	Name     string            `json:"name"`
 	Path     string            `json:"path"`
 	Ls       []string          `json:"ls"`
 	Value    string            `json:"value,omitempty"`
 	Meta     map[string]string `json:"meta,omitempty"`
-	Children []LookupResult    `json:"children,omitempty"`
+	Children []lookupResult    `json:"children,omitempty"`
 }
 
 func getKdbHandler(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +56,7 @@ func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*LookupResult, error) {
+func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*lookupResult, error) {
 	ks = ks.Cut(key)
 	foundKey, err := ks.Lookup(key)
 
@@ -77,7 +77,7 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*LookupResult, error
 
 	ls := ks.KeyNames()
 
-	result := &LookupResult{
+	result := &lookupResult{
 		Exists: exists,
 		Name:   name,
 		Path:   path,
@@ -123,14 +123,35 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	keyName := parseKeyNameFromURL(r)
 
-	key, err := elektra.CreateKey(keyName, value)
+	key, err := elektra.CreateKey(keyName)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	keySet, err := elektra.CreateKeySet(key)
+	keySet, err := elektra.CreateKeySet()
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	_, err = kdb.Get(keySet, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = key.SetString(value)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = keySet.AppendKey(key)
 
 	if err != nil {
 		writeError(w, err)
