@@ -7,13 +7,13 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-type KeyValueBody struct {
+type keyValueBody struct {
 	Key   string  `json:"key"`
 	Value *string `json:"value"`
 }
 
-func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
-	var meta KeyValueBody
+func postMetaHandler(w http.ResponseWriter, r *http.Request) {
+	var meta keyValueBody
 
 	keyName := parseKeyNameFromURL(r)
 
@@ -51,6 +51,7 @@ func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if k == nil {
+		k = parentKey
 		err = ks.AppendKey(parentKey)
 	}
 
@@ -80,10 +81,10 @@ func PostMetaHandler(w http.ResponseWriter, r *http.Request) {
 	noContent(w)
 }
 
-func DeleteMetaHandler(w http.ResponseWriter, r *http.Request) {
+func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 	kdb := getHandle(r)
 
-	var meta KeyValueBody
+	var meta keyValueBody
 
 	keyName := parseKeyNameFromURL(r)
 
@@ -100,21 +101,33 @@ func DeleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keySet, err := getKeySet(kdb, key)
+	ks, err := getKeySet(kdb, key)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	err = key.DeleteMeta(meta.Key)
+	k, err := ks.Lookup(key)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	_, err = kdb.Set(keySet, key)
+	if k == nil {
+		notFound(w)
+		return
+	}
+
+	err = k.DeleteMeta(meta.Key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	_, err = kdb.Set(ks, key)
 
 	if err != nil {
 		writeError(w, err)
