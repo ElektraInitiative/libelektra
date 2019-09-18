@@ -64,7 +64,7 @@ In general we prefer (in this order):
 1. Manually written bindings that directly call to library without any statically build part (like JNI and GI). They are a bit slower but can directly access libelektra.so.
 1. Manually written bindings that are built statically.
 
-If you want to manually write a binding make sure you have a good understanding of the possible limitations the interop layer can have (e.g. variadic functions).
+If you want to manually write a binding make sure you have a good understanding of the possible limitations the interop layer can have (e.g. variadic functions, freeing of resources, ...).
 
 What you will also need is to set up the Compiler + Linker flags, for this I can recommend [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/), because Elektra already provides `.pc` (and `cmake`) files.
 
@@ -77,7 +77,7 @@ If you decide on mapping the functionality of kdb.h 1:1 it is pretty straight-fo
 
 Remember that Elektra has internal iterators (for metadata+keysets) but in general we prefer external iterators by either copying the KeySet per iterator or using `ksAtCursor`.
 
-### Variadic functions
+### Variadic Functions
 
 Some langauges for example cannot call variadic functions because in C the amount of parameters has to be known at compile-time. In Go for example this is not the case since it supports variable length arguments at runtime with the `...` operator.
 
