@@ -23,36 +23,54 @@ func testDelete(t *testing.T, path string, body interface{}) *httptest.ResponseR
 	return testRequest(t, "DELETE", path, body)
 }
 
+func testPut(t *testing.T, path string, body interface{}) *httptest.ResponseRecorder {
+	t.Helper()
+
+	return testRequest(t, "PUT", path, body)
+}
+
 func testPost(t *testing.T, path string, body interface{}) *httptest.ResponseRecorder {
 	t.Helper()
 
 	return testRequest(t, "POST", path, body)
 }
 
-func setupKey(t *testing.T, keyName string) {
+func parseBody(t *testing.T, w *httptest.ResponseRecorder, result interface{}) {
+	t.Helper()
+
+	decoder := json.NewDecoder(w.Body)
+
+	err := decoder.Decode(&result)
+	Checkf(t, err, "unable to unmarshal the response body")
+}
+
+func setupKey(t *testing.T, keyNames ...string) {
 	t.Helper()
 
 	rootKey, _ := elektra.CreateKey("/")
-	parentKey, err := elektra.CreateKey(keyName)
-	Checkf(t, err, "could not create key %s: %v", keyName, err)
 
 	kdb := elektra.New()
-	err = kdb.Open(rootKey)
+	err := kdb.Open(rootKey)
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks, err := getKeySet(kdb, rootKey)
 	Checkf(t, err, "could not get KeySet: %v", err)
 
-	k, err := ks.Lookup(parentKey)
-	Checkf(t, err, "could not get key %s: %v", keyName, err)
+	for _, k := range keyNames {
+		parentKey, err := elektra.CreateKey(k)
+		Checkf(t, err, "could not create key %s: %v", k, err)
 
-	if k == nil {
-		err = ks.AppendKey(parentKey)
-		Checkf(t, err, "could not append key: %v", err)
+		k, err := ks.Lookup(parentKey)
+		Checkf(t, err, "could not get key %s: %v", k, err)
+
+		if k == nil {
+			err = ks.AppendKey(parentKey)
+			Checkf(t, err, "could not append key: %v", err)
+		}
 	}
 
 	_, err = kdb.Set(ks, rootKey)
-	Checkf(t, err, "could not save key %s: %v", keyName, err)
+	Checkf(t, err, "could not save keys %+v: %v", keyNames, err)
 }
 
 func removeKey(t *testing.T, keyName string) {
