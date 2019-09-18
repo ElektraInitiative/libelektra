@@ -67,7 +67,7 @@ static void test_basics (bool directFile)
 		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 	}
 
-	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
+	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
 		    "call to checkConfig was not successful");
 
 	PLUGIN_OPEN ("specload");
@@ -105,7 +105,7 @@ static void test_newfile (bool directFile)
 		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 	}
 
-	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
+	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
 		    "call to checkConfig was not successful");
 
 	PLUGIN_OPEN ("specload");
@@ -143,7 +143,7 @@ static void test_add (bool directFile)
 		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 	}
 
-	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
+	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
 		    "call to checkConfig was not successful");
 
 
@@ -218,7 +218,7 @@ static void test_edit (bool directFile)
 		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 	}
 
-	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
+	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
 		    "call to checkConfig was not successful");
 
 
@@ -287,7 +287,7 @@ static void test_remove (bool directFile)
 		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
 	}
 
-	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
+	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
 		    "call to checkConfig was not successful");
 
 

@@ -617,7 +617,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 			keyNew ("system/elektra/modules/multifile/exports/set", KEY_FUNC, elektraMultifileSet, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/commit", KEY_FUNC, elektraMultifileCommit, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/error", KEY_FUNC, elektraMultifileError, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConfig, KEY_END),
+			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConf, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/checkfile", KEY_FUNC, elektraMultifileCheckFile, KEY_END),
 
 #include ELEKTRA_README
@@ -924,7 +924,7 @@ int elektraMultifileCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	return elektraMultifileSet (handle, returned, parentKey);
 }
 
-int elektraMultifileCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraMultifileCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional
