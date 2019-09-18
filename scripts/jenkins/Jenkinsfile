@@ -36,8 +36,9 @@ properties([
   )
 ])
 
-// If previous run is still running, cancel it
-abortPreviousRun()
+// If previous run is still running, cancel it unless we are building
+// code from the `master` branch.
+abortPreviousRunUnlessMaster()
 
 // Globals
 DOCKER_NODE_LABEL = 'docker'
@@ -1486,7 +1487,9 @@ def apiary(input, output) {
   sh "apiary preview --path=${input} --output=${output}"
 }
 
-def abortPreviousRun() {
+def abortPreviousRunUnlessMaster() {
+  // We never want to abort builds of the master branch
+  if (isMaster()) return;
   def exec = currentBuild
              ?.rawBuild
              ?.getPreviousBuildInProgress()
