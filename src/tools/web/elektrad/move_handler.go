@@ -6,7 +6,7 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-func PostMoveHandler(w http.ResponseWriter, r *http.Request) {
+func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 	from := parseKeyNameFromURL(r)
 	to, err := stringBody(r)
 

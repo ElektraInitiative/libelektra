@@ -5,19 +5,37 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 	"github.com/gorilla/mux"
+
+	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
+
+func setupRouter() http.Handler {
+	r := mux.NewRouter()
+	r.Use(handleMiddleware)
+
+	r.HandleFunc("/version", getVersionHandler).Methods("GET")
+
+	r.HandleFunc("/kdbFind/{path:.*}", getFindHandler).Methods("GET")
+
+	r.HandleFunc("/kdbMv/{path:.*}", postMoveHandler).Methods("POST")
+
+	r.HandleFunc("/kdbMeta/{path:.*}", postMetaHandler).Methods("POST")
+	r.HandleFunc("/kdbMeta/{path:.*}", deleteMetaHandler).Methods("DELETE")
+
+	r.HandleFunc("/kdb", getKdbHandler).Methods("GET")
+	r.HandleFunc("/kdb/{path:.*}", getKdbHandler).Methods("GET")
+	r.HandleFunc("/kdb/{path:.*}", putKdbHandler).Methods("PUT")
+	r.HandleFunc("/kdb/{path:.*}", deleteKdbHandler).Methods("DELETE")
+
+	return r
+}
 
 func parseKeyNameFromURL(r *http.Request) string {
 	vars := mux.Vars(r)
 	keyName := vars["path"]
 
-	if len(keyName) == 0 {
-		keyName = "/"
-	}
-
-	return keyName
+	return "/" + keyName
 }
 
 func stringBody(r *http.Request) (string, error) {
@@ -44,6 +62,10 @@ func getKeySet(handle elektra.KDB, key elektra.Key) (elektra.KeySet, error) {
 	}
 
 	return ks, nil
+}
+
+func notFound(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
 }
 
 func noContent(w http.ResponseWriter) {

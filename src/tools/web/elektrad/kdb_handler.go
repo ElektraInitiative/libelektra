@@ -17,7 +17,7 @@ type LookupResult struct {
 	Children []LookupResult    `json:"children,omitempty"`
 }
 
-func GetKdbHandler(w http.ResponseWriter, r *http.Request) {
+func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	preload := 0
 
@@ -111,7 +111,7 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*LookupResult, error
 	return result, nil
 }
 
-func PutKdbHandler(w http.ResponseWriter, r *http.Request) {
+func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 	value, err := stringBody(r)
 
 	if err != nil {
@@ -144,7 +144,7 @@ func PutKdbHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteKdbHandler(w http.ResponseWriter, r *http.Request) {
+func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 	kdb := getHandle(r)
 
 	keyName := parseKeyNameFromURL(r)
