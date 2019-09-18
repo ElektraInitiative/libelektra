@@ -124,12 +124,21 @@ name = "elektra"
 version = "0.9.0"
 dependencies = [
  "bitflags 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "elektra-sys 0.9.0",
+ "elektra-sys 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "elektra-sys"
 version = "0.9.0"
+dependencies = [
+ "bindgen 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "elektra-sys"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bindgen 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pkg-config 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -382,6 +391,7 @@ dependencies = [
 "checksum cfg-if 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "b486ce3ccf7ffd79fdeb678eac06a9e6c09fc88d33836340becb8fffe87c5e33"
 "checksum clang-sys 0.28.1 (registry+https://github.com/rust-lang/crates.io-index)" = "81de550971c976f176130da4b2978d3b524eaa0fd9ac31f3ceb5ae1231fb4853"
 "checksum clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5067f5bb2d80ef5d68b4c87db81601f0b75bca627bc2ef76b141d7b846a3c6d9"
+"checksum elektra-sys 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "739e4c98211b1844e7ae1b72b8f603cdad6aa4ca6f7a7f4a37995051f2fdd51c"
 "checksum env_logger 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "aafcde04e90a5226a6443b7aabdb016ba2f8307c847d524724bd9b346dd1a2d3"
 "checksum failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "795bd83d3abeb9220f257e597aa0080a508b27533824adf336529648f6abf7e2"
 "checksum fxhash 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
