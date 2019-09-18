@@ -1,101 +1,92 @@
 package main_test
 
-import (
-	"io/ioutil"
-	"net/http"
-	"strings"
-	"testing"
+// func TestKdbGet(t *testing.T) {
+// 	compareGet(t, "/kdb/system/elektra/modules/dump")
+// }
 
-	"github.com/google/go-cmp/cmp"
-)
+// func TestVersion(t *testing.T) {
+// 	compareGet(t, "/version")
+// }
 
-func TestKdbGet(t *testing.T) {
-	compareGet(t, "/kdb/system/elektra/modules/dump")
-}
+// func TestKdbPut(t *testing.T) {
+// 	comparePut(t, "/kdb/user/hello", "Testvalue")
+// }
 
-func TestVersion(t *testing.T) {
-	compareGet(t, "/version")
-}
+// func TestKdbFind(t *testing.T) {
+// 	compareGet(t, "/kdbFind/dump/exports")
+// }
 
-func TestKdbPut(t *testing.T) {
-	comparePut(t, "/kdb/user/hello", "Testvalue")
-}
+// func comparePut(t *testing.T, path string, body string) {
+// 	req, err := http.NewRequest("PUT", "http://localhost:33333"+path, strings.NewReader(body))
+// 	req.Header.Add("Content-Type", "text/plain")
 
-func TestKdbFind(t *testing.T) {
-	compareGet(t, "/kdbFind/dump/exports")
-}
+// 	if err != nil {
+// 		t.Fatalf("new request failed: %v", err)
+// 	}
 
-func comparePut(t *testing.T, path string, body string) {
-	req, err := http.NewRequest("PUT", "http://localhost:33333"+path, strings.NewReader(body))
-	req.Header.Add("Content-Type", "text/plain")
+// 	theirResponse, err := http.DefaultClient.Do(req)
 
-	if err != nil {
-		t.Fatalf("new request failed: %v", err)
-	}
+// 	if err != nil {
+// 		t.Fatalf("their http request failed: %v", err)
+// 	}
 
-	theirResponse, err := http.DefaultClient.Do(req)
+// 	req, err = http.NewRequest("PUT", "http://localhost:8080"+path, strings.NewReader(body))
 
-	if err != nil {
-		t.Fatalf("their http request failed: %v", err)
-	}
+// 	ourResponse, err := http.DefaultClient.Do(req)
 
-	req, err = http.NewRequest("PUT", "http://localhost:8080"+path, strings.NewReader(body))
+// 	if err != nil {
+// 		t.Fatalf("our http request failed: %v", err)
+// 	}
 
-	ourResponse, err := http.DefaultClient.Do(req)
+// 	if theirResponse.StatusCode != ourResponse.StatusCode {
+// 		t.Errorf(
+// 			"different status codes: theirs: %d, ours: %d",
+// 			theirResponse.StatusCode,
+// 			ourResponse.StatusCode,
+// 		)
+// 	}
 
-	if err != nil {
-		t.Fatalf("our http request failed: %v", err)
-	}
+// 	theirBody, _ := ioutil.ReadAll(theirResponse.Body)
 
-	if theirResponse.StatusCode != ourResponse.StatusCode {
-		t.Errorf(
-			"different status codes: theirs: %d, ours: %d",
-			theirResponse.StatusCode,
-			ourResponse.StatusCode,
-		)
-	}
+// 	t.Log(string(theirBody))
 
-	theirBody, _ := ioutil.ReadAll(theirResponse.Body)
+// 	ourBody, _ := ioutil.ReadAll(ourResponse.Body)
 
-	t.Log(string(theirBody))
+// 	diff := cmp.Diff(theirBody, ourBody)
 
-	ourBody, _ := ioutil.ReadAll(ourResponse.Body)
+// 	if diff != "" {
+// 		t.Errorf("different body:\n%s", diff)
+// 	}
+// }
 
-	diff := cmp.Diff(theirBody, ourBody)
+// func compareGet(t *testing.T, path string) {
+// 	theirResponse, err := http.Get("http://localhost:33333" + path)
 
-	if diff != "" {
-		t.Errorf("different body:\n%s", diff)
-	}
-}
+// 	if err != nil {
+// 		t.Fatalf("their http request failed: %v", err)
+// 	}
 
-func compareGet(t *testing.T, path string) {
-	theirResponse, err := http.Get("http://localhost:33333" + path)
+// 	ourResponse, err := http.Get("http://localhost:8080" + path)
 
-	if err != nil {
-		t.Fatalf("their http request failed: %v", err)
-	}
+// 	if err != nil {
+// 		t.Fatalf("our http request failed: %v", err)
+// 	}
 
-	ourResponse, err := http.Get("http://localhost:8080" + path)
+// 	if theirResponse.StatusCode != ourResponse.StatusCode {
+// 		t.Fatalf(
+// 			"different status codes: theirs: %d, ours: %d",
+// 			theirResponse.StatusCode,
+// 			ourResponse.StatusCode,
+// 		)
+// 	}
 
-	if err != nil {
-		t.Fatalf("our http request failed: %v", err)
-	}
+// 	theirBody, _ := ioutil.ReadAll(theirResponse.Body)
+// 	ourBody, _ := ioutil.ReadAll(ourResponse.Body)
 
-	if theirResponse.StatusCode != ourResponse.StatusCode {
-		t.Fatalf(
-			"different status codes: theirs: %d, ours: %d",
-			theirResponse.StatusCode,
-			ourResponse.StatusCode,
-		)
-	}
+// 	diff := cmp.Diff(theirBody, ourBody)
 
-	theirBody, _ := ioutil.ReadAll(theirResponse.Body)
-	ourBody, _ := ioutil.ReadAll(ourResponse.Body)
+// 	if diff != "" {
+// 		t.Fatalf("different body:\n%s", diff)
+// 	}
 
-	diff := cmp.Diff(theirBody, ourBody)
-
-	if diff != "" {
-		t.Fatalf("different body:\n%s", diff)
-	}
-
-}
+// }
