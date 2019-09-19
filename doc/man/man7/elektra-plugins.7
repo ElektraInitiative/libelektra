@@ -35,11 +35,16 @@ All plugins implement the same interface:
 .IP "\(bu" 4
 \fBkdbClose()\fR makes sure that plugins can finally free their own resources in \fBelektraPluginClose()\fR\.
 .
-.IP "\(bu" 4
-\fBkdbCheckConf()\fR can be called manually to ensure a plugin is configured properly\.
+.IP "" 0
+.
+.P
+Furthermore, plugins might export symbols:
 .
 .IP "\(bu" 4
-\fBkdbGenConfig()\fR can be called to produce all valid configurations of a plugin\.
+\fBcheckconf\fR can be called during mounting to ensure a plugin has valid configuration\.
+.
+.IP "\(bu" 4
+\fBgenconf\fR can be called to produce all valid configurations of a plugin\.
 .
 .IP "" 0
 .
