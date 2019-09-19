@@ -55,7 +55,6 @@ endif (BUILD_SHARED)
 if (BUILD_FULL)
 	add_library (elektratools-full SHARED ${SOURCES})
 
-
 	target_link_libraries (elektratools-full elektra-full)
 
 	set_target_properties (elektratools-full
@@ -79,7 +78,6 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_library (elektratools-static STATIC ${SOURCES})
-
 
 	target_link_libraries (elektratools-static elektra-static)
 

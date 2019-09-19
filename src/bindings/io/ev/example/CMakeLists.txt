@@ -15,8 +15,6 @@ set (example exampleio_ev)
 
 add_executable (${example} ${SOURCES})
 
-
-
 target_include_directories (${example} SYSTEM PUBLIC ${LIBEV_INCLUDE_DIRS})
 
 target_link_elektra (${example}

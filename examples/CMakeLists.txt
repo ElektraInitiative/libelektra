@@ -9,8 +9,6 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
 
-
-
 	target_link_elektra (${source} elektra-kdb)
 
 	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
@@ -53,8 +51,6 @@ if (FOUND_NAME GREATER -1)
 
 	add_executable (${EXAMPLE} ${SOURCES})
 
-
-
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
 	check_binding_was_added ("io_uv" IS_INCLUDED)
@@ -71,8 +67,6 @@ if (FOUND_NAME GREATER -1)
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
-
-
 
 		target_link_elektra (${EXAMPLE}
 				     elektra-kdb
@@ -108,8 +102,6 @@ if (FOUND_NAME GREATER -1)
 		list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-glib-objects>)
 
 		add_executable (${EXAMPLE} ${SOURCES})
-
-
 
 		target_link_elektra (${EXAMPLE}
 				     elektra-kdb
