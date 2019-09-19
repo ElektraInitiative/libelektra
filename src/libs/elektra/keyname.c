@@ -955,7 +955,7 @@ static void elektraRemoveOneLevel (Key * key, int * avoidSlash)
  * @since 0.8.11
  *
  * @retval size of the new key
- * @retval -1 if key is a null pointer or did not have a valid name before
+ * @retval -1 if key is a null pointer or the key has an empty name
  * @retval -1 if newName is not a valid escaped name
  * @retval -1 on allocation errors
  * @retval -1 if key was inserted to a keyset before
