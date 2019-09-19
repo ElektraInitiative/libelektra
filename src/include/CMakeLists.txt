@@ -170,7 +170,6 @@ install (FILES kdbextension.h
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
 	       kdbhelper.h
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdberrors.h"
 	       kdbmodule.h
 	       kdbos.h
 	       kdbopts.h
@@ -191,7 +190,7 @@ install (FILES kdbextension.h
 
 add_custom_target (elektra_config_headers ALL
 		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
-			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h ${CMAKE_CURRENT_BINARY_DIR}/kdberrors.h)
+			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
 
 add_subdirectory (kdbio)
 add_subdirectory (elektra)
