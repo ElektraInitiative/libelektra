@@ -1546,6 +1546,26 @@ int f (KeySet *ks)
  * ksRewind(). When you set an invalid cursor ksCurrent()
  * is 0 and ksNext() == ksHead().
  *
+ * @section cursor_directly Using Cursor directly
+ *
+ * You can also use the cursor directly
+ * by initializing it to some index in the Keyset
+ * and then incrementing or decrementing it, to
+ * iterate over the keyset.
+ *
+ * @code
+void iterate(KeySet *ks)
+{
+	cursor_t cursor = 0;
+	Key * cursor_key;
+
+	while((cursor_key = ksAtCursor(ks, cursor)) != 0) {
+		printf("%s\n", keyString(cursor_key));
+		cursor++;
+	}
+}
+ * @endcode
+ *
  * @note Only use a cursor for the same keyset which it was
  * made for.
  *
