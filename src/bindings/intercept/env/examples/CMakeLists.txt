@@ -9,7 +9,6 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
 
-
 	install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)

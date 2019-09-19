@@ -156,8 +156,6 @@ function (add_plugintest testname)
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
 
-
-
 		if (BUILD_SHARED)
 			if (ARG_LINK_PLUGIN)
 				add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
@@ -549,7 +547,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
-
 	if (ARG_DEPENDS)
 		add_dependencies (${PLUGIN_OBJS} ${ARG_DEPENDS})
 	endif ()
@@ -592,7 +589,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
-
 
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})

@@ -45,8 +45,6 @@ list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}
 
 add_executable (${testexename} ${TEST_SOURCES})
 
-
-
 target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 target_link_elektra (${testexename}

@@ -21,7 +21,6 @@ else ()
 		set (SOURCES ${HDR_FILES} ${other_sources} ${source}.cpp)
 		add_executable (${source} ${SOURCES})
 
-
 		target_link_libraries (${source} ${libraries})
 	endmacro (do_benchmark)
 

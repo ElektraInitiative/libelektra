@@ -49,8 +49,6 @@ macro (do_test source)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
 
-
-
 	if (INSTALL_TESTING)
 		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 	endif (INSTALL_TESTING)

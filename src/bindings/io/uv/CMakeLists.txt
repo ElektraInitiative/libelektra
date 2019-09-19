@@ -59,8 +59,6 @@ else ()
 
 	add_executable (${TESTEXENAME} ${TEST_SOURCES})
 
-
-
 	target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
 
 	target_link_elektra (${TESTEXENAME}
