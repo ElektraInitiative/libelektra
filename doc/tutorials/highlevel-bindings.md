@@ -23,7 +23,7 @@ The goals of any high-level API (or binding to the C high-level API) for Elektra
   user to handle arising errors, but also does so in a simple and concise way. An example of this is Rust. Its `Result`
   type forces the user to handle errors and the `?` operator allows to do this in a concise way. <br/>
   However, we still recommend to avoid errors as far as possible.
-- **Idiomatic Code:** If the targt language has a concept of "idiomatic code", the API should fall into that category.
+- **Idiomatic Code:** If the target language has a concept of "idiomatic code", the API should fall into that category.
 
 ## When to write Bindings
 
@@ -61,19 +61,19 @@ Your programming language of choice must provide a way to call into C code (like
 In general we prefer (in this order):
 
 1. Automatically and statically generated bindings (like [swig](http://www.swig.org/)).
-1. Manually written bindings that directly call to library without any statically build part (like JNI and GI). They are a bit slower but can directly access libelektra.so.
-1. Manually written bindings that are built statically.
+2. Manually written bindings that directly call to library without any statically build part (like JNI and GI). They are a bit slower but can directly access libelektra.so.
+3. Manually written bindings that are built statically.
 
 If you want to manually write a binding make sure you have a good understanding of the possible limitations the interop layer can have (e.g. variadic functions, freeing of resources, ...).
 
-What you will also need is to set up the Compiler + Linker flags, for this I can recommend [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/), because Elektra already provides `.pc` (and `cmake`) files.
+What you will also need is to set up the compiler + linker flags. For this we recommend [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/), because Elektra already provides `.pc` (and `cmake`) files.
 
 For garbage collected (GC) languages freeing memory by hand is not something you usually do and since the GC has no knowledge of memory allocated in C we have two options:
 
 - Forcing the user to call the appropriate functions like `keyDel()` themselves, which is very developer unfriendly and error prone or
-- Using language featurse like Java / C++ Destructors or Go's `runtime.SetFinalizer()` function to automatically and reliably release the memory as soon as the native objects are garbage collected.
+- Using language features like Java / C++ Destructors or Go's `runtime.SetFinalizer()` function to automatically and reliably release the memory as soon as the native objects are garbage collected.
 
-If you decide on mapping the functionality of kdb.h 1:1 it is pretty straight-forward - whereas if you want to adapt or enhance some API's to leverage language features like iterators or operator overloading feel free to do so. The less 'alien' the binding feels to its users the better.
+If you decide on mapping the functionality of [kdb.h](../../src/include/kdb.h.in) 1:1 it is pretty straightforward - whereas if you want to adapt or enhance some API's to leverage language features like iterators or operator overloading feel free to do so. The less “alien” the binding feels to its users the better.
 
 Remember that Elektra has internal iterators (for metadata+keysets) but in general we prefer external iterators by either copying the KeySet per iterator or using `ksAtCursor`.
 
@@ -84,7 +84,7 @@ Some langauges for example cannot call variadic functions because in C the amoun
 This is unfortunate because the low-level bindings rely heavily on variadic functions. It is possible to work around this problem by either
 
 1. Writing helper functions in C that call these variadic functions with a fixed amount of parameters or
-1. Imitating the behavior of a function e.g. `keyNew()` by calling multiple functions: `keyNew()` and `keySetMeta()` for every meta key/value that was passed.
+2. Imitating the behavior of a function e.g. `keyNew()` by calling multiple functions: `keyNew()` and `keySetMeta()` for every metakey/value that was passed.
 
 ### Creating the Code-Generator Template
 
