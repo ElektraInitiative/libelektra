@@ -8,7 +8,6 @@
 
 #include "elektra.h"
 #include "elektra/conversion.h"
-#include "elektra/errors.h"
 #include "elektra/types.h"
 #include "kdberrors.h"
 #include "kdbhelper.h"
