@@ -837,11 +837,10 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 /**
  * Appends a Key to the end of @p ks.
  *
- * Will take ownership of the key @p toAppend.
+ * Hands the ownership of the key @p toAppend to the KeySet @p ks.
  * That means ksDel(ks) will remove the key unless
  * the key:
- * - was duplicated before inserting
- * - got its refcount incremented by keyIncRef() before inserting
+ * - got its refcount incremented by keyIncRef() before appending
  * - was also inserted into another keyset with ksAppendKey()
  *
  * The reference counter of the key will be incremented
@@ -860,7 +859,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  *
  * The KeySet internal cursor will be set to the new key.
  *
- * It is save to directly append newly created keys:
+ * It is safe to directly append newly created keys:
  * @snippet keyset.c simple append
  *
  * If you want the key to outlive the keyset, make sure to
@@ -872,9 +871,9 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * @snippet keyset.c dup append
  *
  *
- * @return the size of the KeySet after insertion
+ * @return the size of the KeySet after appending
  * @retval -1 on NULL pointers
- * @retval -1 if insertion failed (only on memory problems), the key will be deleted then.
+ * @retval -1 if appending failed (only on memory problems), the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
