@@ -14,6 +14,7 @@
 
 using ckdb::keyNew;
 using elektra::Coder;
+using ckdb::keyNew;
 
 using CppKeySet = kdb::KeySet;
 
