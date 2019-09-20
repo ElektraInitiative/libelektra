@@ -202,7 +202,7 @@ int elektraArrayDecName (Key * key)
 static int arrayFilter (const Key * key, void * argument)
 {
 	const Key * arrayParent = (const Key *) argument;
-	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
+	return keyIsDirectlyBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
 }
 
 

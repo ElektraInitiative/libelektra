@@ -157,7 +157,7 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		Key * key = keyArray[i];
 
 		/* only process canonical name keys */
-		if (!keyIsDirectBelow (ipv4Base, key) && !keyIsDirectBelow (ipv6Base, key)) continue;
+		if (!keyIsDirectlyBelow (ipv4Base, key) && !keyIsDirectlyBelow (ipv6Base, key)) continue;
 
 		writeLineComments (key, fp);
 		writeHostsEntry (key, returned, fp);

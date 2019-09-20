@@ -71,7 +71,7 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyNeedSync
 - keyIsBelow
 - keyIsBelowOrSame
-- keyIsDirectBelow
+- keyIsDirectlyBelow
 - keyIsInactive
 - keyIsBinary
 - keyIsString

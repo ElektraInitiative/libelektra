@@ -164,7 +164,7 @@ int keyNeedSync(const Key *key);
 
 int keyIsBelow(const Key *key, const Key *check);
 int keyIsBelowOrSame(const Key *key, const Key *check);
-int keyIsDirectBelow(const Key *key, const Key *check);
+int keyIsDirectlyBelow(const Key *key, const Key *check);
 
 int keyIsInactive(const Key *key);
 

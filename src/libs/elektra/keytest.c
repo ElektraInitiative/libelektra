@@ -208,7 +208,7 @@ int keyIsUser (const Key * key)
  * @retval 1 if check is below key
  * @retval 0 if it is not below or if it is the same key
  * @retval -1 if key or check is null
- * @see keySetName(), keyGetName(), keyIsDirectBelow()
+ * @see keySetName(), keyGetName(), keyIsDirectlyBelow()
  * @ingroup keytest
  *
  */
@@ -309,7 +309,7 @@ does not return true, because there is only an indirect relation
  * @ingroup keytest
  *
  */
-int keyIsDirectBelow (const Key * key, const Key * check)
+int keyIsDirectlyBelow (const Key * key, const Key * check)
 {
 	if (key == NULL || check == NULL)
 	{
@@ -480,7 +480,7 @@ int keyRel (const Key * key, const Key * check)
 	if (!key->key || !check->key) return -1;
 
 	if (!keyCmp (key, check)) return 0;
-	if (keyIsDirectBelow (key, check)) return 1;
+	if (keyIsDirectlyBelow (key, check)) return 1;
 	if (keyIsBelow (key, check)) return 2;
 	if (keyIsUser (key) && keyIsUser (check)) return -3;
 	if (keyIsSystem (key) && keyIsSystem (check)) return -3;

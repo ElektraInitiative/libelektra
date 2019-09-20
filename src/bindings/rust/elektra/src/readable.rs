@@ -228,7 +228,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     where
         Self: Sized,
     {
-        unsafe { elektra_sys::keyIsDirectBelow(other.as_ref(), self.as_ref()) == 1 }
+        unsafe { elektra_sys::keyIsDirectlyBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
     /// Returns true if the key is inactive.

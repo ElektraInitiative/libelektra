@@ -103,8 +103,8 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 	while ((k = ksNext (keys)) != 0)
 	{
 		/* use only glob keys for the current direction */
-		if (keyIsDirectBelow (userGlobConfig, k) || keyIsDirectBelow (systemGlobConfig, k) ||
-		    keyIsDirectBelow (userDirGlobConfig, k) || keyIsDirectBelow (systemDirGlobConfig, k))
+		if (keyIsDirectlyBelow (userGlobConfig, k) || keyIsDirectlyBelow (systemGlobConfig, k) ||
+		    keyIsDirectlyBelow (userDirGlobConfig, k) || keyIsDirectlyBelow (systemDirGlobConfig, k))
 		{
 			keySetMeta (k, "glob/flags", getGlobFlags (keys, k));
 

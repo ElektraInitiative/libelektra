@@ -1265,9 +1265,9 @@ static void test_keyBelow (void)
 	succeed_if (keyIsBelow (0, 0) == -1, "NULL pointer");
 	succeed_if (keyIsBelow (0, key1) == -1, "NULL pointer");
 
-	succeed_if (keyIsDirectBelow (key1, 0) == -1, "NULL pointer");
-	succeed_if (keyIsDirectBelow (0, 0) == -1, "NULL pointer");
-	succeed_if (keyIsDirectBelow (0, key1) == -1, "NULL pointer");
+	succeed_if (keyIsDirectlyBelow (key1, 0) == -1, "NULL pointer");
+	succeed_if (keyIsDirectlyBelow (0, 0) == -1, "NULL pointer");
+	succeed_if (keyIsDirectlyBelow (0, key1) == -1, "NULL pointer");
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "user/valid");
@@ -1432,94 +1432,94 @@ static void test_keyBelow (void)
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "user/valid/valide");
-	succeed_if (keyIsDirectBelow (key1, key2), "Key should be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (keyIsDirectlyBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "user/valid/non/valid");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid/a");
 	keySetName (key2, "user/valid/b");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\/");
 	keySetName (key2, "user/valid\\a");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\/");
 	keySetName (key2, "user/valid\\/a");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\/");
 	keySetName (key2, "user/valid\\/");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\/");
 	keySetName (key2, "user/valid\\/a");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\"); // this is an invalid name, so this situation cannot happen!
 	succeed_if_same_string (keyName (key1), "");
 	keySetName (key2, "user/valid\\/a");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\/");
 	keySetName (key2, "user/valid\\/\\/");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid\\/");
 	keySetName (key2, "user/valid\\/ab");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "user/valid");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid/a/b");
 	keySetName (key2, "user/valid");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid/a");
 	keySetName (key2, "user/valid");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (keyIsDirectBelow (key2, key1), "Key should be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (keyIsDirectlyBelow (key2, key1), "Key should be below");
 
 	keySetName (key1, "user/tests/ini-section-write");
 	keySetName (key2, "user/tests/ini-section-write/akey\\/looking\\/like\\/sections");
-	succeed_if (keyIsDirectBelow (key1, key2), "looking like sections not recognised");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (keyIsDirectlyBelow (key1, key2), "looking like sections not recognised");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "/valid/valide");
-	succeed_if (keyIsDirectBelow (key1, key2), "Key should be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (keyIsDirectlyBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "/valid/non/valid");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "/valid");
 	keySetName (key2, "user/valid/valide");
-	succeed_if (keyIsDirectBelow (key1, key2), "Key should be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (keyIsDirectlyBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 	keySetName (key1, "/valid");
 	keySetName (key2, "user/valid/non/valid");
-	succeed_if (!keyIsDirectBelow (key1, key2), "Key should not be below");
-	succeed_if (!keyIsDirectBelow (key2, key1), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
 
 	keyDel (key1);
@@ -2378,47 +2378,47 @@ static void test_keyDirectBelow (void)
 
 	Key * k1 = keyNew ("/dir", KEY_CASCADING_NAME, KEY_END);
 	Key * k2 = keyNew ("/dir/directbelow", KEY_CASCADING_NAME, KEY_END);
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/directbelow");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\/below");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\/");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	succeed_if (keySetName (k2, "user/dir/direct\\\\") > -1, "could not set correct name");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	succeed_if (keySetName (k2, "user/dir/direct\\") == -1, "could set incorrect name");
-	succeed_if (keyIsDirectBelow (k1, k2) == 0, "invalid name: should not be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 0, "invalid name: should not be direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\\\\\/below");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\\\below");
 	succeed_if (keyIsBelow (k1, k2) == 1, "below");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "not direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\\\/b");
 	succeed_if_same_string (keyName (k2), "user/dir/direct\\\\/b");
 	succeed_if (keyIsBelow (k1, k2) == 1, "below");
-	succeed_if (keyIsDirectBelow (k1, k2) == 0, "direct below, but shouldnt be");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 0, "direct below, but shouldnt be");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\\\/below");
 	succeed_if (keyIsBelow (k1, k2) == 1, "below");
-	succeed_if (keyIsDirectBelow (k1, k2) == 0, "direct below, but shouldnt be");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 0, "direct below, but shouldnt be");
 
 	keyDel (k1);
 	keyDel (k2);
