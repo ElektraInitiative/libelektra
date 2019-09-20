@@ -176,12 +176,19 @@ impl<'a> StringKey<'a> {
 impl<'a> BinaryKey<'a> {
     /// Sets the key's binary content to the supplied data.
     fn set_binary(&mut self, data: &[u8]) {
-        unsafe {
-            elektra_sys::keySetBinary(
-                self.as_ptr(),
-                data.as_ptr() as *const std::os::raw::c_void,
-                data.len(),
-            );
+        // Make sure the binary flag is set even if data is empty
+        if data.is_empty() {
+            unsafe {
+                elektra_sys::keySetBinary(self.as_ptr(), std::ptr::null(), 0);
+            }
+        } else {
+            unsafe {
+                elektra_sys::keySetBinary(
+                    self.as_ptr(),
+                    data.as_ptr() as *const std::os::raw::c_void,
+                    data.len(),
+                );
+            }
         }
     }
 
@@ -414,10 +421,8 @@ mod tests {
         let mut key = BinaryKey::new("user/test/binary").unwrap();
         let binary_content: [u8; 0] = [];
         key.set_binary(&binary_content);
-        // set_binary does not set binary flag, size is 0
-        // so get_binary should return empty vec
-        let err = key.binary();
-        assert_eq!(err, binary_content);
+        let vec = key.binary();
+        assert_eq!(vec, binary_content);
     }
 
     #[allow(clippy::eq_op)]
