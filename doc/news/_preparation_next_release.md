@@ -202,7 +202,7 @@ you up to date with the multi-language support provided by Elektra.
 - We updated our [Doxygen configuration file](../../doc/Doxyfile), removing the outdated `PERL_PATH` and `MSCGEN_PATH` options. _(René Schwaiger)_
 - Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md).
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
-- A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth)_
+- A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
 - <<TODO>>
 
 ## Tests
