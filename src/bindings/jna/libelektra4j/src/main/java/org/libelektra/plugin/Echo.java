@@ -7,6 +7,7 @@ import org.libelektra.Plugin;
 public class Echo implements Plugin {
 
 	private KeySet conf;
+	public static final String PLUGIN_NAME = "Echo";
 
 	public Echo() {
 		System.out.println("construct plugin");
@@ -68,6 +69,6 @@ public class Echo implements Plugin {
 
 	@Override
 	public String getName() {
-		return "Echo";
+		return PLUGIN_NAME;
 	}
 }

@@ -12,7 +12,7 @@ import java.util.Collection;
  */
 public abstract class KDBException extends Exception {
 
-	final transient Key errorKey;
+	private final transient Key errorKey;
 	private Collection<WarningEntry> warnings;
 
 	public KDBException(final Key k) {
@@ -54,10 +54,10 @@ public abstract class KDBException extends Exception {
 	 */
 	public String getConfigFile() {
 		Key configKey = errorKey.getMeta("error/configfile");
-		if (configKey.isNull()) {
-			return errorKey.getString();
+		if (!configKey.isNull() && !configKey.getString().isEmpty()) {
+			return configKey.getString();
 		}
-		return configKey.getString();
+		return errorKey.getName();
 	}
 
 	/**
@@ -88,23 +88,32 @@ public abstract class KDBException extends Exception {
 		return errorKey.getMeta("error/module").getString();
 	}
 
+	/**
+	 * @see this.getMessage()
+	 */
 	@Override
 	public String getLocalizedMessage() {
 		return getMessage();
 	}
 
+	/**
+	 * Returns the error reason which is written to the `error/reason` metakey of the errorkey
+	 * @return The reason for the error
+	 */
 	public String getReason() {
 		return errorKey.getMeta("error/reason").getString();
 	}
 
+	/**
+	 * getMessage() returns the thrown Elektra error in the same format as it would be printed in the terminal
+	 * @return The complete error information in a String with configfile, moutpoint and debuginformation
+	 */
 	@Override
 	public String getMessage() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("Sorry, module %s issued error %s:", getModule(), getErrorNumber())).append("\n");
 		builder.append(getReason()).append("\n");
-		if (!errorKey.getMeta("error/configfile").isNull()) {
-			builder.append("Configfile: ").append(getConfigFile()).append("\n");
-		}
+		builder.append("Configfile: ").append(getConfigFile()).append("\n");
 		if (!errorKey.getMeta("error/mountpoint").isNull()) {
 			builder.append("Mountpoint: ").append(getMountpoint()).append("\n");
 		}

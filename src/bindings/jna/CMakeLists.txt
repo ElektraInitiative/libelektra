@@ -81,7 +81,7 @@ if (Java_JAVAC_EXECUTABLE)
 			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/model/WarningEntry.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/mapper/ExceptionMapperService.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/AllTests.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ErrorCodeTest.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ErrorNumberTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeySetTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeyTest.java)

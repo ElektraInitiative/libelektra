@@ -116,17 +116,13 @@ Most likely, you have to include this dependency as well:
 ### Using Elektra Plugins
 
 The `NativeElektraPlugin` can be used to load a native Elektra plugin which is written in C/C++.
-It will behave exactly like a normal Elektra plugin. The main
-advantage is the isolation from the rest of Elektra as well as
-the circumvention of the "too many plugins" [error](https://github.com/ElektraInitiative/libelektra/issues/2133).
 You can load a Plugin like the following:
 
 ```java
 Key parentKey = Key.create("user/tests/javabinding");
-String errorPluginName = "error";
 NativeElektraPlugin yourPlugin = null;
 		try {
-			yourPlugin = new NativeElektraPlugin(errorPluginName, parentKey);
+			yourPlugin = new NativeElektraPlugin("error", parentKey);
 		} catch (InstallationException e) {
 			// Most likely the desired plugin is not installed or you had a typo in the pluginName
 		}
@@ -136,7 +132,7 @@ Now you can pass a KeySet and let the Plugin do its work. E.g., the code below t
 
 ```java
 Key errorKey = Key.create("user/tests/myError");
-errorKey.setMeta(errorMeta, OutOfMemoryException.errorCode());
+errorKey.setMeta(errorMeta, OutOfMemoryException.errorNumber());
 final KeySet ks = KeySet.create(10, KeySet.KS_END);
 ks.append(errorKey);
 errorPlugin.kdbSet(ks, parentKey);
@@ -160,14 +156,17 @@ ks.append(rangeKey);
 rangePlugin.kdbSet(ks, parentKey);
 //org.libelektra.exception.SemanticValidationException: Sorry, module range issued error C03200:
 //Value '30' not within range 1-20
-//Configfile:
+//Configfile: user/tests/javabinding
 //Mountpoint: user/tests/javabinding
 //At: .../elektra/src/plugins/range/range.c:447
 ```
 
-Note that `Configfile` is empty since we access the plugin directly and not via a kdb tool.
+### Implementing Plugins
 
 The `Plugin` interface can be used to develop your _own_ Elektra plugins but written in Java.
+You basically have to implement the necessary methods which are of interest to you such as
+`set(KeySet ks, Key parentKey)` for plugins which should change the key database.
+We added a tutorial with more details for you [here](../../../doc/tutorials/java-plugins.md).
 You can see various examples in the [plugin folder](src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin
 which can be used to save and load `.properties` files into Elektra.
 

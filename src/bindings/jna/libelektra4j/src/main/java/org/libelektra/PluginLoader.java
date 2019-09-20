@@ -14,27 +14,52 @@ public class PluginLoader {
 
 	private Key errorKey;
 
+	/**
+	 * Instantiates a new PluginLoader with the possibility to add a custom error key
+	 * @param errorKey The custom error key
+	 */
 	public PluginLoader(Key errorKey) {
 		this.errorKey = errorKey;
 	}
 
 	/**
-	 * This plugin loads a Java/Native Elektra Plugin.
+	 * Instantiates a new PluginLoader with a default error key which is empty
+	 */
+	public PluginLoader() {
+		this.errorKey = Key.create("");
+	}
+
+	/**
+	 * This plugin loads a Java Plugin.
 	 *
 	 * @param name the plugin name
 	 * @return the Plugin
 	 * @throws InstallationException if the plugin does not exist
 	 */
-	public Plugin loadPlugin(String name) throws InstallationException {
-		if (name.equals(new Echo().getName())) {
+	public Plugin loadJavaPlugin(String name) throws InstallationException {
+		if (name.equals(Echo.PLUGIN_NAME)) {
 			return new Echo();
 		}
-		if (name.equals(new PropertiesStorage().getName())) {
+		if (name.equals(PropertiesStorage.PLUGIN_NAME)) {
 			return new PropertiesStorage();
 		}
-		if (name.equals(new Return().getName())) {
+		if (name.equals(Return.PLUGIN_NAME)) {
 			return new Return();
 		}
+		Key error = Key.create("");
+		error.setMeta("error/number", InstallationException.errorNumber());
+		error.setMeta("error/reason", String.format("I could not find java plugin '%s'", name));
+		throw new InstallationException(error);
+	}
+
+	/**
+	 * This plugin loads a Native Elektra Plugin.
+	 *
+	 * @param name the plugin name
+	 * @return the Plugin
+	 * @throws InstallationException if the plugin does not exist
+	 */
+	public Plugin loadElektraPlugin(String name) throws InstallationException {
 		return new NativePlugin(name, errorKey);
 	}
 }

@@ -10,6 +10,8 @@ import java.util.Properties;
 
 public class PropertiesStorage implements Plugin {
 
+	public static final String PLUGIN_NAME = "PropertiesStorage";
+
 	@Override
 	public KeySet getConfig() {
 		return KeySet.create();
@@ -75,7 +77,7 @@ public class PropertiesStorage implements Plugin {
 
 	@Override
 	public String getName() {
-		return "PropertiesStorage";
+		return PLUGIN_NAME;
 	}
 
 }
