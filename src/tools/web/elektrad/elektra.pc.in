@@ -1,0 +1,10 @@
+prefix=@CMAKE_BINARY_DIR@
+libdir=${prefix}/lib
+includedir=${prefix}/src/include
+includedir2=@CMAKE_SOURCE_DIR@/src/include
+
+Name: @PACKAGE_NAME@
+Description: @PACKAGE_DESCRIPTION@
+Version: @KDB_VERSION@
+Libs: -L${libdir}
+Cflags: -I${includedir2} -I${includedir}
