@@ -22,6 +22,9 @@ else ()
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run.sh" "${CMAKE_CURRENT_BINARY_DIR}/run-${tool}")
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}")
 
+		# create temporary elektra.pc file
+		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc" @ONLY)
+
 		# install files to destination
 		install (DIRECTORY webd client
 			 DESTINATION ${install_directory}
@@ -33,13 +36,16 @@ else ()
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-					COMMAND GO111MODULE=on go
+					COMMAND PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad GO111MODULE=on go
 						ARGS
 						build
 						-o
 						"${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
-					DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go")
+					DEPENDS
+						"${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go"
+						"elektra;elektra-kdb;elektra-ease;elektra-invoke;elektra-pluginprocess"
+			)
 		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
 	
 		# build elektra-web
