@@ -59,7 +59,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `regexstore`,
   - `required`,
   - `simplespeclang`,
-  - `struct`. _(Markus Raab)_
+  - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 
 ### Camel
