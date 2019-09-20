@@ -13,6 +13,7 @@
 
 using std::exception;
 using std::range_error;
+using ckdb::keyNew;
 
 using elektra::DirectoryValueDelegate;
 

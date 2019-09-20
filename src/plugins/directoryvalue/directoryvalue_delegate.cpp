@@ -22,6 +22,7 @@ using std::pair;
 using std::range_error;
 using std::string;
 using std::tie;
+using ckdb::elektraArrayValidateBaseNameString;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

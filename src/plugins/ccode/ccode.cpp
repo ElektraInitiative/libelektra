@@ -13,6 +13,7 @@
 #include <kdbplugin.hpp>
 
 using elektra::Coder;
+using ckdb::keyNew;
 
 using CppKeySet = kdb::KeySet;
 

@@ -14,6 +14,7 @@
 #include <kdbhelper.h>
 
 using std::exception;
+using ckdb::keyNew;
 
 using elektra::CppTemplateDelegate;
 
