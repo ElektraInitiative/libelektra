@@ -174,7 +174,7 @@ gets ignored.
 
 ## Related Decisions
 
-- [Global Plugins](global_plugins.md)
+- [CMake Plugins](cmake_plugins.md)
 
 ## Notes
 

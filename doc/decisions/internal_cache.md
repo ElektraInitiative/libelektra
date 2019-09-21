@@ -35,6 +35,8 @@ Semantics can be provided without additional code or overhead in the core.
 
 ## Related Decisions
 
+- [Global Validation](global_validation.md)
+
 ## Notes
 
 internal caches lead to duplication of memory consumption

@@ -24,11 +24,15 @@ with the respective `kdbGet`.
 
 ## Decision
 
+- always load everything (with mmap)
+
 ## Rationale
 
 ## Implications
 
 ## Related Decisions
+
+- [Internal Cache](internal_cache.md)
 
 ## Notes
 

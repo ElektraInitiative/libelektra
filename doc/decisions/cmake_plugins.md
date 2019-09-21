@@ -86,6 +86,8 @@ It would:
 
 ## Related Decisions
 
+- [Plugin Variants](plugin_variants.md)
+
 ## Notes
 
 ## Limitations
