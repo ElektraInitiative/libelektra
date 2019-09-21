@@ -6,5 +6,5 @@ includedir2=@CMAKE_SOURCE_DIR@/src/include
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @KDB_VERSION@
-Libs: -L${libdir}
+Libs: -L${libdir} -lelektra-kdb -lelektra-core
 Cflags: -I${includedir2} -I${includedir}
