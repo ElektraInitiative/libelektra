@@ -24,6 +24,8 @@ section here.
 - [Web API Documentation](api_documentation.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
 - [High Level API](high_level_api.md)
+- [High-level API Help Message](highlevel_help_message.md)
+- [Global KeySet](global_keyset.md)
 
 ## Decided
 
@@ -55,4 +57,4 @@ section here.
 - [Global Validation](global_validation.md)
 - [Default Values](default_values.md)
 - [High Level API](high_level_api.md)
-- [Global KeySet](global_keyset.md)
+- [Internal Cache](internal_cache.md)
