@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -18,21 +19,32 @@ var (
 type session struct {
 	handle elektra.KDB
 	expiry time.Time
+	mut    sync.Mutex
 }
 
 func handleMiddleware(next http.Handler) http.Handler {
 	go freeHandles()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var s *session
+
 		if cookie, err := r.Cookie("session"); err != nil {
-			newSession(w, r)
+			s = newSession(w, r)
 		} else {
 			uuid := cookie.Value
 
-			if _, ok := sessions.Load(uuid); !ok {
-				newSessionWithUUID(w, r, uuid)
+			now := time.Now()
+
+			ses, ok := sessions.Load(uuid)
+
+			if s, ok = ses.(*session); !ok && now.After(s.expiry) {
+				s = newSessionWithUUID(w, r, uuid)
 			}
 		}
+
+		// prevent the handle from being used in parallel
+		s.mut.Lock()
+		defer s.mut.Unlock()
 
 		next.ServeHTTP(w, r)
 	})
@@ -47,6 +59,12 @@ func freeHandles() {
 			s := value.(*session)
 
 			if now.After(s.expiry) {
+				err := s.handle.Close()
+
+				if err != nil {
+					log.Printf("error closing handle: %v", err)
+				}
+
 				sessions.Delete(key)
 			}
 
@@ -55,13 +73,13 @@ func freeHandles() {
 	}
 }
 
-func newSession(w http.ResponseWriter, r *http.Request) {
+func newSession(w http.ResponseWriter, r *http.Request) *session {
 	uuid := uuid.New().String()
 
-	newSessionWithUUID(w, r, uuid)
+	return newSessionWithUUID(w, r, uuid)
 }
 
-func newSessionWithUUID(w http.ResponseWriter, r *http.Request, uuid string) {
+func newSessionWithUUID(w http.ResponseWriter, r *http.Request, uuid string) *session {
 	cookie := cookieFromUUID(uuid)
 
 	http.SetCookie(w, cookie)
@@ -69,10 +87,14 @@ func newSessionWithUUID(w http.ResponseWriter, r *http.Request, uuid string) {
 
 	h := newHandle()
 
-	sessions.Store(uuid, &session{
+	s := &session{
 		handle: h,
 		expiry: time.Now().Add(1 * time.Hour),
-	})
+	}
+
+	sessions.Store(uuid, s)
+
+	return s
 }
 
 func cookieFromUUID(uuid string) *http.Cookie {
@@ -87,8 +109,7 @@ func cookieFromUUID(uuid string) *http.Cookie {
 func newHandle() elektra.KDB {
 	kdb := elektra.New()
 
-	key, _ := elektra.CreateKey("")
-	err := kdb.Open(key)
+	err := kdb.Open()
 
 	if err != nil {
 		panic(err)
