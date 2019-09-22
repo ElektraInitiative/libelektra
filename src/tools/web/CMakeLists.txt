@@ -23,31 +23,29 @@ else ()
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}")
 
 		# create temporary elektra.pc file
-		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc" @ONLY)
+		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc"
+				@ONLY)
 
 		# install files to destination
-		install (DIRECTORY webd client
-			 DESTINATION ${install_directory}
-			 PATTERN "node_modules" EXCLUDE
-			 PATTERN "build" EXCLUDE)
+		install (DIRECTORY webd client DESTINATION ${install_directory} PATTERN "node_modules" EXCLUDE PATTERN "build" EXCLUDE)
 		install (FILES README.md kdb.js DESTINATION ${install_directory})
 		install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
 				  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-					COMMAND PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad GO111MODULE=on go
-						ARGS
-						build
-						-o
-						"${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
-					DEPENDS
-						"${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go"
-						"elektra;elektra-kdb;elektra-ease;elektra-invoke;elektra-pluginprocess"
-			)
+				    COMMAND PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad
+					    GO111MODULE=on
+					    go
+					    ARGS
+					    build
+					    -o
+					    "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+				    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
+				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go"
+					    "elektra;elektra-kdb;elektra-ease;elektra-invoke;elektra-pluginprocess")
 		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
-	
+
 		# build elektra-web
 		install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
 		install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad" DESTINATION "${install_directory}")
@@ -78,9 +76,9 @@ else ()
 				"execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)"
 			)
 
-	# generate manpages
-	generate_manpage (kdb-run-elektrad FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
-	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
+		# generate manpages
+		generate_manpage (kdb-run-elektrad FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
+		generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 
 		# test apis
 		find_program (DREDD_EXECUTABLE "dredd")
