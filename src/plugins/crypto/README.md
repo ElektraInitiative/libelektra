@@ -157,8 +157,8 @@ In the error description you should see something like:
 The command ./bin/kdb mount terminated unsuccessfully with the info:
 The provided plugin configuration is not valid!
 Errors/Warnings during the check were:
-Sorry, module crypto issued the error 130:
-the configuration is invalid or incomplete: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
+Sorry, module crypto issued the error C01310:
+Failed to create handle. Reason: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
 Please report the issue at https://issues.libelektra.org/
 ```
 

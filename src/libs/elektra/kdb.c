@@ -84,7 +84,7 @@
  * have a state for:
  *
  * - a two phase-commit
- * - a conflict detection (error 30) and
+ * - a conflict detection (error C02000) and
  * - optimizations that avoid redoing already done operations.
  *
  * @image html state.png "State"
@@ -96,12 +96,12 @@
  * For every handle you got from kdbOpen(), for every parentKey with a
  * different name, *only* the shown state transitions
  * are valid. From a freshly opened KDB, only kdbGet() and kdbClose()
- * are allowed, because otherwise conflicts (error 30) would not be detected.
+ * are allowed, because otherwise conflicts (error C02000) would not be detected.
  *
  * Once kdbGet() was called (for a specific handle+parentKey),
  * any number of kdbGet() and kdbSet() can be
  * used with this handle respective parentKey, unless kdbSet() had
- * a conflict (error 30) with another application.
+ * a conflict (error C02000) with another application.
  * Every affair with KDB needs to be finished with kdbClose().
  *
  * The name of the parentKey in kdbOpen() and kdbClose() does not matter.
@@ -1439,7 +1439,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  * to do. Possible solutions are:
  * - remove the problematic key and use kdbSet() again (for validation or type errors)
  * - change the value of the problematic key and use kdbSet() again (for validation errors)
- * - do a kdbGet() (for conflicts, i.e. error 30) and then
+ * - do a kdbGet() (for conflicts, i.e. error C02000) and then
  *   - set the same keyset again (in favour of what was set by this user)
  *   - drop the old keyset (in favour of what was set from another application)
  *   - merge the original, your own and the other keyset
@@ -1467,8 +1467,8 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *         should be committed (it is possible that more are changed).
  *           - cascading keys (starting with /) will set the path in all namespaces
  *           - / will commit all keys
- *           - metanames will be rejected (error 104)
- *           - empty/invalid (error 105)
+ *           - metanames will be rejected (error C01320)
+ *           - empty/invalid (error C01320)
  * @retval 1 on success
  * @retval 0 if nothing had to be done, no changes in KDB
  * @retval -1 on failure, no changes in KDB
