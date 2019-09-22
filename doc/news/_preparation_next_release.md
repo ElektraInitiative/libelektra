@@ -92,6 +92,7 @@ plugins. _(René Schwaiger)_
 ### Spec
 
 - There is now the config key `missing/log` that allows logging of all missing `require`d keys. _(Klemens Böswirth)_
+- `spec` now internally handles errors differently. There should be no external impact apart from better performance. _(Klemens Böswirth)_
 
 ## Libraries
 
