@@ -6,7 +6,7 @@
         "dev-comment": "Top-level menu button, children are buttons of dropdown.",
         "children": [
             {
-                "name": "Getting started",
+                "name": "About Elektra",
                 "type": "staticlist",
                 "ref": "docgettingstarted",
                 "dev-comment": "A list of documentation files that are important for new users. Could be replaced by 'parsereadme' type in future.",
@@ -54,31 +54,10 @@
                         }
                     },
                     {
-                        "name": "Compiling",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/COMPILE.md"
-                        }
-                    },
-                    {
-                        "name": "Installation",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/INSTALL.md"
-                        }
-                    },
-                    {
                         "name": "Meta-Specification",
                         "type": "staticfile",
                         "options": {
                             "path": "doc/METADATA.ini"
-                        }
-                    },
-                    {
-                        "name": "Tutorials",
-                        "type": "staticref",
-                        "options": {
-                            "path": "tutorials"
                         }
                     },
                     {
@@ -89,6 +68,64 @@
                         }
                     }
                 ]
+            },
+			{
+				"name": "Get Started",
+				"type": "staticlist",
+				"ref": "getstarted",
+				"dev-comment": "",
+				"children": [{
+					"name": "guide",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/GETSTARTED.md"
+				  }
+				}]
+			},
+			{
+                "name": "Compiling",
+                "type": "staticlist",
+                "ref": "compiling",
+				"children": [{
+					"name": "compile",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/COMPILE.md"
+				  }
+				 }],
+              
+                "dev-comment": ""
+            },
+			{
+                "name": "Installation",
+                "type": "staticlist",
+                "ref": "installation",
+				"children": [{
+					"name": "Installation",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/INSTALL.md"
+				  }
+                
+                }],
+                "dev-comment": ""
+            },
+			{
+                "name": "Testing",
+                "type": "parsereadme",
+                "ref": "testing",
+                "options": {
+                    "path": "doc/TESTING.md",
+                    "target_file": [],
+                    "parsing": {
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": ""
             },
             {
                 "name": "Tutorials",
@@ -155,7 +192,7 @@
         "dev-comment": "This is another top-level menu point.",
         "children": [
             {
-                "name": "Getting started",
+                "name": "Contribute to Elektra",
                 "type": "staticlist",
                 "ref": "devgettingstarted",
                 "dev-comment": "Here we have some important documentation files for users that want start to develop with Elektra.",
