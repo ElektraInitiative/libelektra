@@ -128,6 +128,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
+- The library `libelektra`, which is a collection of different elektra libraries, is now removed.
+  Users of CMake or pkg-config should not be affected. Otherwise change `-lelektra` to `-lelektra-core -lelektra-kdb`
+  or whatever parts of Elektra your application uses. _(Markus Raab)_
 - The conversion functions `elektraKeyTo*` and `elektra*ToString` are now part of the `elektra-ease` library instead of
   the `elektra-highlevel` library. This should not cause any breaking changes since `elektra-highlevel` already depends
   on `elektra-ease`. In addition the header `elektra/conversion.h` is kept for compatibility. _(Klemens Böswirth)_
