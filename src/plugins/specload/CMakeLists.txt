@@ -2,7 +2,10 @@ include (LibAddMacros)
 
 add_plugin (specload
 	    SOURCES specload.h specload.c
-	    LINK_ELEKTRA elektra-ease elektra-invoke elektra-proposal
+	    LINK_ELEKTRA elektra-ease
+			 elektra-invoke
+			 elektra-proposal
+			 elektra-plugin
 	    TEST_README)
 
 if (DEPENDENCY_PHASE AND BUILD_SHARED)
@@ -41,7 +44,13 @@ if (ADDTESTING_PHASE)
 					 ENVIRONMENT
 					 "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-	add_plugintest (specload INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 120)
+	add_plugintest (specload INSTALL_TEST_DATA
+			INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
+			TIMEOUT 120
+			LINK_ELEKTRA elektra-ease
+				     elektra-invoke
+				     elektra-proposal
+				     elektra-plugin)
 
 	if (BUILD_SHARED)
 		add_dependencies (elektra-specload-testapp elektra-quickdump)
