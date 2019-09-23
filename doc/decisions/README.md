@@ -22,7 +22,6 @@ section here.
 - [Elektra Web Recursive Structure](elektra_web_recursive.md)
 - [Cryptographic Key Handling](cryptograhic_key_handling.md)
 - [Relative Storages](relative.md)
-- [Web API Documentation](api_documentation.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
 - [High Level API](high_level_api.md)
 - [High-level API Help Message](highlevel_help_message.md)
@@ -37,23 +36,14 @@ section here.
 ## Decided
 
 - [Array](array.md)
-- [Definition of Bool](bool.md)
 - [Relative Storages](relative.md)
 - [Definition of Boolean](boolean.md)
 - [Plugin Variants](plugin_variants.md)
 
 ## In Discussion
 
-- [Internal Cache](internal_cache.md)
 - [Global Plugins](global_plugins.md)
-- [Global Validation](global_validation.md)
-- [Default Values](default_values.md)
-- [CMake spec](cmake_spec.md)
-- [Script Testing](script_testing.md)
-- [Global Plugins](global_plugins.md)
-- [Array](array.md)
 - [Vendor Spec](vendor_spec.md)
-- [Deferred Plugin Calls](deferred_plugin_calls.md)
 - [Error codes](error_codes.md)
 - [Array for Warnings](warning-array.md)
 

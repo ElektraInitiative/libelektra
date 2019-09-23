@@ -26,7 +26,7 @@ For the latter problem different workarounds exist, such as
 
 ## Decision
 
-Store length in metadata `array` of key, or keep empty if empty array.
+Store length in metadata `array` of key, or keep metadata `array` empty if empty array.
 For example (`ni syntax`, sections used for metadata):
 
 ```
