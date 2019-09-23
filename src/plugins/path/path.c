@@ -77,7 +77,7 @@ static int validateKey (Key * key, Key * parentKey)
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
 		strcat (errmsg, keyValue (key));
-		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not find file, message: %s", errmsg);
+		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not find file, Reason: %s", errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
 		return -1;

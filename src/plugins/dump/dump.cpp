@@ -190,7 +190,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 				errorKey,
-				"Unknown command detected in dumpfile: %s.\nMaybe you use a different file format? "
+				"Unknown command detected in dumpfile: %s.\nMaybe the file is not in dump configuration file format? "
 				"Try to remount with another plugin (eg. ini, ni, etc.)",
 				command.c_str ());
 			return -1;
