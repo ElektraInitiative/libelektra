@@ -90,10 +90,7 @@ if (BUILD_SHARED)
 
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 
-	set (elektra-all_LIBRARIES
-	     elektra-core
-	     elektra-kdb
-	     ${elektra-extension_LIBRARIES})
+	set (elektra-all_LIBRARIES elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
 	set_target_properties (${elektra-all_LIBRARIES}
 			       PROPERTIES COMPILE_DEFINITIONS
 					  "HAVE_KDBCONFIG_H"
