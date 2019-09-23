@@ -7,7 +7,7 @@ import org.libelektra.plugin.NativePlugin;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ErrorNumberTest {
+public class ExceptionMapperIT {
 
 	private Key parentKey = Key.create("user/tests/javabinding");
 	private final String errorMeta = "trigger/error";

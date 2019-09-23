@@ -16,7 +16,7 @@ public class WarningEntry {
 		warningNumber = key.getMeta(warningKeyName + "/number").getString();
 		reason = key.getMeta(warningKeyName + "/reason").getString();
 		module = key.getMeta(warningKeyName + "/module").getString();
-		debugInformation = String.format("\tAt: %s:%s%n", key.getMeta(warningKeyName + "/file").getString(),
+		debugInformation = String.format("At: %s:%s", key.getMeta(warningKeyName + "/file").getString(),
 				key.getMeta(warningKeyName + "/line").getString());
 		mountpoint = key.getMeta(warningKeyName + "/mountpoint").getString();
 		configFile = key.getMeta(warningKeyName + "/configfile").getString();

@@ -75,7 +75,7 @@ public abstract class KDBException extends Exception {
 	 * @return Elektra specific debug information in the form of "At: file:line"
 	 */
 	public String getDebugInformation() {
-		return String.format("At: %s:%s%n", errorKey.getMeta("error/file").getString(),
+		return String.format("At: %s:%s", errorKey.getMeta("error/file").getString(),
 				errorKey.getMeta("error/line").getString());
 	}
 
