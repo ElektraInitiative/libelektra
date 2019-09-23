@@ -769,9 +769,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 	if (isArraySpec (specKey))
 	{
 		validateArrayMembers (ks, specKey);
-		// only process possible conflicts (e.g. from empty arrays)
-		// then skip uninstantiated array specs
-		return processAllConflicts (specKey, ks, parentKey, ch, isKdbGet);
+		return 0;
 	}
 
 	int found = 0;
@@ -849,11 +847,6 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 		}
 	}
 
-	if (processAllConflicts (specKey, ks, parentKey, ch, isKdbGet) != 0)
-	{
-		ret = -1;
-	}
-
 	return ret;
 }
 
@@ -923,6 +916,11 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+	}
+
+	if (processAllConflicts (specKey, ks, parentKey, &ch, true) != 0)
+	{
+		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	// reconstruct KeySet
@@ -996,6 +994,11 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			ksAppendKey (returned, specKey);
 		}
+	}
+
+	if (processAllConflicts (specKey, ks, parentKey, &ch, false) != 0)
+	{
+		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	// reconstruct KeySet
