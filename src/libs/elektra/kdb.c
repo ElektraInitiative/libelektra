@@ -957,7 +957,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (ns == KEY_NS_EMPTY)
 	{
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, "Empty namespace passed to kdbGet");
+		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Empty namespace passed to kdbGet. Please use the cascading key / instead");
 	}
 
 	int errnosave = errno;
