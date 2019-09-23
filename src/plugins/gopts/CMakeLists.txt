@@ -39,7 +39,8 @@ if (gopts_source)
 
 		add_executable (elektra-gopts-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c" ${TEST_SOURCES})
 		target_link_elektra (elektra-gopts-testapp
-				     elektra-core
+				     elektra-plugin
+				     elektra-kdb
 				     elektra-invoke
 				     elektra-opts)
 

@@ -11,7 +11,10 @@ endif ()
 
 if (ADDTESTING_PHASE)
 	add_executable (elektra-specload-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c")
-	target_link_elektra (elektra-specload-testapp elektra-core elektra-invoke)
+	target_link_elektra (elektra-specload-testapp
+			     elektra-kdb
+			     elektra-plugin
+			     elektra-invoke)
 
 	set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-specload-testapp")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
@@ -22,7 +25,10 @@ if (ADDTESTING_PHASE)
 	add_testheaders (TEST_SOURCES)
 
 	add_executable (test_elektra-specload-testapp ${TEST_SOURCES})
-	target_link_elektra (test_elektra-specload-testapp elektra-core elektra-invoke)
+	target_link_elektra (test_elektra-specload-testapp
+			     elektra-kdb
+			     elektra-plugin
+			     elektra-invoke)
 	target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
