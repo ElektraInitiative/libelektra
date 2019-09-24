@@ -286,6 +286,8 @@ struct _KeySet
 	 */
 	OpmphmPredictor * opmphmPredictor;
 #endif
+
+	struct _Key * lookup; /**< Used in ksLookupByName */
 };
 
 

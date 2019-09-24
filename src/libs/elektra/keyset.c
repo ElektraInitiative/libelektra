@@ -428,6 +428,7 @@ int ksDel (KeySet * ks)
 	if (!ks) return -1;
 
 	rc = ksClose (ks);
+	if (ks->lookup) keyDel (ks->lookup);
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
@@ -2472,22 +2473,21 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
  */
 Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 {
-	Key * found = 0;
-
+	// Note: function MUST NOT be recursive !!
 	if (!ks) return 0;
 	if (!name) return 0;
 
 	if (!ks->size) return 0;
 
-	struct _Key key;
+	if (!ks->lookup)
+	{
+		ks->lookup = keyNew (0);
+		keyInit (ks->lookup);
+	}
 
-	keyInit (&key);
-	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
+	elektraKeySetName (ks->lookup, name, KEY_META_NAME | KEY_CASCADING_NAME);
 
-	found = ksLookup (ks, &key, options);
-	elektraFree (key.key);
-	ksDel (key.meta); // sometimes owner is set
-	return found;
+	return ksLookup (ks, ks->lookup, options & ~KDB_O_DEL);
 }
 
 
@@ -2745,6 +2745,7 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
+	ks->lookup = 0;
 
 	ksRewind (ks);
 
