@@ -230,7 +230,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: ["public/assets/js/application.js"],
-        tasks: [] // do nothing, the watcher only triggers browserify implicitely
+        tasks: [] // do nothing, the watcher only triggers browserify implicitly
       }
     },
     browserify: {

@@ -47,7 +47,7 @@ Elektra. The only additional challenge is that the binding should still meet the
 fulfill the same guarantees as the C API.
 
 Some languages like to split bindings into two parts. One version that maps the C API one-to-one and another part
-that builds on the first one. The second part then uses the languages additional features. Since our API isn't inteded
+that builds on the first one. The second part then uses the languages additional features. Since our API isn't intended
 to be used directly, but through generated code, it might not be necessary to write the second part. It may be
 sufficient to write (or generate) a one-to-one mirror of the C API and use that in the code-generator template.
 
@@ -79,7 +79,7 @@ Remember that Elektra has internal iterators (for metadata+keysets) but in gener
 
 ### Variadic Functions
 
-Some langauges for example cannot call variadic functions because in C the amount of parameters has to be known at compile-time. In Go for example this is not the case since it supports variable length arguments at runtime with the `...` operator.
+Some languages for example cannot call variadic functions because in C the amount of parameters has to be known at compile-time. In Go for example this is not the case since it supports variable length arguments at runtime with the `...` operator.
 
 This is unfortunate because the low-level bindings rely heavily on variadic functions. It is possible to work around this problem by either
 
