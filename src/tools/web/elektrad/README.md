@@ -6,8 +6,9 @@ Elektra remotely, built using [go](https://golang.org).
 ## Installation
 
 - make sure you have go (>1.11) installed.
-- install [libelektra](https://libelektra.org/), make sure the package-config env variable is set correctly.
+- install [libelektra](https://libelektra.org/).
 - now run `go build` in the elektrad folder with go module enabled (GO111MODULE=on).
+- if [go-elektra](https://github.com/ElektraInitiative/go-elektra) fails to compile checkout the [README.md](https://github.com/ElektraInitiative/go-elektra/blob/master/README.md) for troubleshooting.
 
 ## Running
 
