@@ -153,7 +153,7 @@ See the [full example](example/src/bin/kdb.rs) for more. Run it from the `exampl
 
 The KDB error types are nested, so you can match on a high-level or a specific one. For a deeper explanation of the error types, see the [error guideline](https://master.libelektra.org/doc/dev/error-categorization.md).
 
-````rust
+```rust
 extern crate elektra;
 
 use elektra::{KDB, KDBError, LogicalError, PermanentError, ValidationError};
@@ -175,6 +175,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     Ok(())
 }
+```
 
 ### Raw Bindings
 
@@ -194,11 +195,13 @@ fn main() {
     println!("Key with name {:?} has value {:?}", name_str, val_str);
     assert_eq!(unsafe { keyDel(key) }, 0);
 }
-````
+```
 
 ## Documentation
 
-Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
+Can be accessed for [elektra](https://docs.rs/elektra/0.9.0/elektra/) and [elektra-sys](https://docs.rs/elektra/0.9.0/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
+
+Documentation can also be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 
 ## Generation
 
