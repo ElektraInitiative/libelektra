@@ -50,7 +50,7 @@ func setupKey(t *testing.T, keyNames ...string) {
 	rootKey, _ := elektra.CreateKey("/")
 
 	kdb := elektra.New()
-	err := kdb.Open(rootKey)
+	err := kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks, err := getKeySet(kdb, rootKey)
@@ -80,7 +80,7 @@ func removeKey(t *testing.T, keyName string) {
 	Checkf(t, err, "could not create key %s: %v", keyName, err)
 
 	kdb := elektra.New()
-	err = kdb.Open(parentKey)
+	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks, err := getKeySet(kdb, parentKey)
@@ -101,13 +101,13 @@ func removeKey(t *testing.T, keyName string) {
 }
 
 func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
-	t.Helper()
+	// t.Helper()
 
 	parentKey, err := elektra.CreateKey(keyName)
 	Checkf(t, err, "could not create key %s: %v", keyName, err)
 
 	kdb := elektra.New()
-	err = kdb.Open(parentKey)
+	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks, err := getKeySet(kdb, parentKey)
@@ -117,13 +117,14 @@ func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 	Checkf(t, err, "could not get key %s: %v", keyName, err)
 
 	if k == nil {
-		err = ks.AppendKey(k)
+		err = ks.AppendKey(parentKey)
 		Checkf(t, err, "could not append key: %v", err)
+		k = parentKey
 	}
 
 	for _, m := range meta {
 		err = k.SetMeta(m.Key, *m.Value)
-		Checkf(t, err, "could not append key: %v", err)
+		Checkf(t, err, "could not set meta %s = %s: %v", m.Key, *m.Value, err)
 	}
 
 	_, err = kdb.Set(ks, parentKey)
@@ -163,7 +164,7 @@ func getKey(t *testing.T, keyName string) elektra.Key {
 	Checkf(t, err, "could not create key %s: %v", keyName, err)
 
 	kdb := elektra.New()
-	err = kdb.Open(parentKey)
+	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks, err := getKeySet(kdb, parentKey)
