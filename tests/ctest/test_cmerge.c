@@ -170,11 +170,13 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 		char * resultValue = elektraMalloc (default_result_size);
 		keyGetString (metaKey, resultValue, default_result_size);
 		char msg[200];
-		if(resultValue == NULL) {
-			yield_error("resultValue must not be null");
+		if (resultValue == NULL)
+		{
+			yield_error ("resultValue must not be null");
 		}
-		if(expected_result == NULL) {
-			yield_error("expectedResult must not be null");
+		if (expected_result == NULL)
+		{
+			yield_error ("expectedResult must not be null");
 		}
 		snprintf (msg, 200,
 			  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
@@ -222,25 +224,26 @@ static void array_conflict_number_test (void)
 		       keyNew ("user/their/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/their/#3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * base = ksNew (4, keyNew ("user/base/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/base/#1", KEY_VALUE, "1", KEY_END),
 			       keyNew ("user/base/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/base/#3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
-	//Key * resultKey = ksLookupByName (result, "user/result/#0", 0);
-	//if (resultKey == NULL)
+	KeySet * result =
+		elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
+	// Key * resultKey = ksLookupByName (result, "user/result/#0", 0);
+	// if (resultKey == NULL)
 	//{
 	//	yield_error ("Result must exist");
 	//}
-	//else
+	// else
 	//{
 	//	char * resultValue = elektraMalloc (default_result_size);
 	//	keyGetString (resultKey, resultValue, default_result_size);
 	//	succeed_if_same_string (resultValue, "a");
 	//	elektraFree (resultValue);
 	//}
-	//resultKey = ksLookupByName (result, "user/result/#4", 0);
-	//if (resultKey == NULL)
+	// resultKey = ksLookupByName (result, "user/result/#4", 0);
+	// if (resultKey == NULL)
 	//{
 	//	yield_error ("Result must exist");
 	//}
-	//else
+	// else
 	//{
 	//	char * resultValue = elektraMalloc (default_result_size);
 	//	keyGetString (resultKey, resultValue, default_result_size);
@@ -248,11 +251,11 @@ static void array_conflict_number_test (void)
 	//	elektraFree (resultValue);
 	//}
 
-	//int expectedConflicts = 4;
-	//int actualConflicts = 4; //getTotalConflicts (informationKey);
-	//char msg[200];
-	//snprintf (msg, 200, "Number of conflicts was %d but should have been %d.\n", actualConflicts, expectedConflicts);
-	//succeed_if (expectedConflicts == actualConflicts, msg);
+	// int expectedConflicts = 4;
+	// int actualConflicts = 4; //getTotalConflicts (informationKey);
+	// char msg[200];
+	// snprintf (msg, 200, "Number of conflicts was %d but should have been %d.\n", actualConflicts, expectedConflicts);
+	// succeed_if (expectedConflicts == actualConflicts, msg);
 
 	ksDel (our);
 	ksDel (their);
