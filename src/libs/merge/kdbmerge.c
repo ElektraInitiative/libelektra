@@ -50,14 +50,23 @@ static void setStatisticalValue (Key * informationKey, char * metaName, int valu
 {
 	char stringy[INT_BUF_SIZE];
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
-	if (printsize < INT_BUF_SIZE)
+	if (printsize == INT_BUF_SIZE || printsize < 0)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Statistical value was too large for its buffer.");
+		char msg[300];
+		if (printsize < 0) {
+			snprintf(msg, 300, "Encoding error with value %d and meta name %s.", value, metaName);
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
+		} else {
+			snprintf(msg, 300, "Statistical value %d was too large for its buffer. This happened with meta name %s.", value, metaName);
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
+		}
+		return;
 	}
 	ssize_t size = keySetMeta (informationKey, metaName, stringy);
 	if (size <= 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set statistical value.");
+		return;
 	}
 }
 
