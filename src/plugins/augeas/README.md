@@ -55,8 +55,8 @@ will print an error message on the first usage:
 
 ```sh
 kdb ls system/hosts
-#> Sorry, module storage issued the error 85:
-#> an Augeas error occurred: Lens not found
+#> Sorry, module storage issued the error C03100:
+#> Validation Syntactic: Lens not found
 ```
 
 This happens because the plugin does not know which lens it should use to read and write the configuration.
@@ -103,7 +103,7 @@ kdbSet system/hosts
 This fails with an error similar to this
 
 ```
-Sorry, module storage issued the error 85:
+Sorry, module storage issued the error C03100:
 an Augeas error occurred: Failed to match
 some augeas match expression
 with tree

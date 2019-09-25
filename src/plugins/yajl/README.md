@@ -47,7 +47,7 @@ If no metadata `type` is given, the type is either:
 - `string` otherwise
 
 Any other type/value will still be treated as string, but
-the warning `#78` will be added because of the potential
+the warning `C03200` will be added because of the potential
 data loss.
 
 ## Special values
@@ -71,7 +71,7 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
 
 - Only UTF-8 is supported. Use the `iconv` plugin if your locale are
   not UTF-8. When using non-UTF-8 the plugin will be able to write
-  the file, but cannot parse it back again. You will error #77,
+  the file, but cannot parse it back again. You will error C03100,
   invalid bytes in UTF8 string.
 - Everything is string if not tagged by metakey "type"
   Only valid JSON types can be used in type, otherwise there are some

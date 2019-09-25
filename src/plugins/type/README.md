@@ -225,7 +225,7 @@ kdb setmeta user/tests/type/value type enum
 # should succeed
 kdb set user/tests/type/value low
 
-# should fail with error 52
+# should fail with error C03200
 kdb set user/tests/type/value no
 # RET:5
 # ERROR:C03200
@@ -247,7 +247,7 @@ kdb setmeta user/tests/type/multivalue type enum
 # should succeed
 kdb set user/tests/type/multivalue small_middle
 
-# should fail with error 52
+# should fail with error C03200
 kdb set user/tests/type/multivalue all_small
 # RET:5
 # ERROR:C03200

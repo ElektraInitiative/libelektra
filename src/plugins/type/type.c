@@ -114,7 +114,7 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 
 	if (type->normalize != NULL && !type->normalize (handle, key))
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value '%s' of key '%s' could not be normalized (type is '%s')",
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value '%s' of key '%s' could not be converted into a %s",
 							 keyString (key), keyName (key), typeName);
 		return false;
 	}
@@ -336,7 +336,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			if (!type->normalize (handle, cur))
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-									"The value '%s' of key '%s' could not be normalized (type is '%s')",
+									"The value '%s' of key '%s' could not be converted into a %s",
 									keyString (cur), keyName (cur), typeName);
 				ksSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -386,7 +386,7 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			if (orig == NULL && !type->normalize (handle, cur))
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-									"The value '%s' of key '%s' could not be normalized (type is '%s')",
+									"The value '%s' of key '%s' could not be converted into a %s",
 									keyString (cur), keyName (cur), typeName);
 				ksSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
