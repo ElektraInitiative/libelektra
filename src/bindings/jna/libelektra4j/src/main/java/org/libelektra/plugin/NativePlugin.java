@@ -21,6 +21,12 @@ public class NativePlugin implements Plugin {
 
 	private ElektraPlugin elektraPlugin;
 
+	/**
+	 * Constructor for loading an elektra plugin
+	 * @param pluginName The plugin name
+	 * @param errorKey The errorKey
+	 * @throws InstallationException if the plugin does not exist
+	 */
 	public NativePlugin(String pluginName, Key errorKey) throws InstallationException {
 		KeySet modules = KeySet.create();
 		KeySet config = KeySet.create();

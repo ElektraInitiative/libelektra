@@ -11,6 +11,11 @@ public class WarningEntry {
 	private final String debugInformation;
 	private final String module;
 
+	/**
+	 * Extracts warning information from the errorKey
+	 * @param key the errorkey containing the warnings/* metakeys
+	 * @param current The current entry you want to parse, e.g., (key, 0) will search for entries with "warnings/#00"
+	 */
 	public WarningEntry(Key key, int current) {
 		final String warningKeyName = String.format("warnings/#%02d", current);
 		warningNumber = key.getMeta(warningKeyName + "/number").getString();

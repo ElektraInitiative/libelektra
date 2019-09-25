@@ -61,7 +61,7 @@ if (Java_JAVAC_EXECUTABLE)
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/KeySetIterator.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY}/PluginLoader.java
-			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/NativeElektraPlugin.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/NativePlugin.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/PropertiesStorage.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Return.java

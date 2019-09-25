@@ -5,6 +5,11 @@ import org.libelektra.exception.*;
 
 public class ExceptionMapperService {
 
+	/**
+	 * This method extracts error and warning information and returns is as an exception
+	 * @param k The key containing error/* and warnings/* metakeys
+	 * @return The corresponding mapped exception
+	 */
 	public static KDBException getMappedException(Key k) {
 		String errorNumber = k.getMeta("error/number").getString();
 

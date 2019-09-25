@@ -15,6 +15,10 @@ public abstract class KDBException extends Exception {
 	private final transient Key errorKey;
 	private Collection<WarningEntry> warnings;
 
+	/**
+	 * KDBException which holds the errorKey
+	 * @param k The errorKey
+	 */
 	public KDBException(final Key k) {
 		errorKey = k;
 		Key warningsKey = k.getMeta("warnings");
