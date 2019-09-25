@@ -273,26 +273,27 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * keyCopy = keyDup (currentKey);
+			Key * duplicateKey = keyDup (currentKey); // TODO delete?
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
 				currentKeyNameString = strremove (currentKeyNameString, rootKeyNameString);
-				retVal = keySetName (keyCopy, currentKeyNameString);
+				retVal = keySetName (duplicateKey, currentKeyNameString);
 			}
 			else
 			{
 				// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
-				retVal = keySetName (keyCopy, "/root");
+				retVal = keySetName (duplicateKey, "/root");
 			}
 			if (retVal < 0)
 			{
 				elektraFree (currentKeyNameString);
 				ksDel (result);
+				keyDel(duplicateKey);
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
 				return NULL;
 			}
-			ksAppendKey (result, keyCopy);
+			ksAppendKey (result, duplicateKey);
 			elektraFree (currentKeyNameString);
 		}
 		else
