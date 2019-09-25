@@ -83,6 +83,7 @@ if (Java_JAVAC_EXECUTABLE)
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/AllTests.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ExceptionMapperIT.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/PluginLoaderIT.java
+			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/exception/model/WarningEntryTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ExceptionMapperTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBExceptionTest.java
 			     ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBTest.java
