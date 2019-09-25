@@ -14,6 +14,7 @@ RUN apt-get update && apt-get -y install \
         discount \
         doxygen \
         git \
+		git-buildpackage \
         graphviz \
         libaugeas-dev \
         libboost-dev \
