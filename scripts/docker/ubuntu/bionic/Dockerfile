@@ -71,3 +71,7 @@ RUN useradd \
     jenkins
 
 USER ${JENKINS_USERID}
+
+# Set git config
+RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
+    && git config --global user.name 'Jenkins'
