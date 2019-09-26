@@ -45,7 +45,6 @@
 #include <memory>
 #include <merge.hpp>
 #include <metaget.hpp>
-#include <showmeta.hpp>
 #include <metals.hpp>
 #include <metaremove.hpp>
 #include <metaset.hpp>
@@ -56,6 +55,7 @@
 #include <set.hpp>
 #include <sget.hpp>
 #include <shell.hpp>
+#include <showmeta.hpp>
 #include <specmount.hpp>
 #include <test.hpp>
 #include <umount.hpp>

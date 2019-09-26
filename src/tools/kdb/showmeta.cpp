@@ -11,12 +11,7 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <kdbmacros.h>
-#include <kdbproposal.h> // for some options
-
 #include <iostream>
-
-#include <kdbmacros.h>
 
 using namespace std;
 using namespace kdb;
@@ -25,33 +20,29 @@ ShowMetaCommand::ShowMetaCommand ()
 {
 }
 
-namespace
-{
-
-
-std::string getCascadingName (std::string name)
-{
-	if (name[0] == '/') return name;
-	if (name.find ('/') == std::string::npos) return "/";
-	return name.substr (name.find ('/'));
-}
-} // namespace
-
-
 int ShowMetaCommand::execute (Cmdline const & cl)
 {
 	if (cl.arguments.size () != 1) throw invalid_argument ("Need one argument");
 
+	Key root = cl.createKey (0);
 	KeySet conf;
+	kdb.get (conf, root);
+	printWarnings (cerr, root, cl.verbose, cl.debug);
 
-	kdb::Key root = cl.createKey (0);
-	kdb::KDB kdb (root);
+	Key k = conf.lookup (root);
 
-	std::string n;
-	if (cl.all)
+	if (!k)
 	{
-		n = root.getName ();
-		root.setName ("/");
+		cerr << "Key not found" << endl;
+		return 1;
+	}
+
+	k.rewindMeta ();
+	Key metaKey = k.nextMeta ();
+	while (!metaKey.isNull ())
+	{
+		cout << metaKey.getName () << ": " << metaKey.getString () << endl;
+		metaKey = k.nextMeta ();
 	}
 	return 0;
 }

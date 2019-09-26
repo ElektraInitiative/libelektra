@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef GET_HPP
-#define GET_HPP
+#ifndef SHOWMETA_HPP
+#define SHOWMETA_HPP
 
 #include "coloredkdbio.hpp"
 #include <command.hpp>
@@ -15,6 +15,8 @@
 
 class ShowMetaCommand : public Command
 {
+	kdb::KDB kdb;
+
 public:
 	ShowMetaCommand ();
 	~ShowMetaCommand ();
