@@ -551,7 +551,8 @@ function (generate_manpage NAME)
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 		endif ()
 
-		set (OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/man${SECTION}/${NAME}.${SECTION})
+		set (MAN_PAGE_LOCATION "doc/man/man${SECTION}/${NAME}.${SECTION}")
+		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
 		if (RONN_LOC)
 			add_custom_command (OUTPUT ${OUTFILE}
@@ -571,6 +572,15 @@ function (generate_manpage NAME)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)
+
+		if (NOT EXISTS "${OUTFILE}")
+			message (WARNING "\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
+If you have not done so already, please install `ronn`. \
+Afterwards make sure you set the CMake option `BUILD_DOCUMENTATION` to ON, \
+and generate “${NAME}.${SECTION}” using the current build system (${CMAKE_GENERATOR}). \
+After that please commit the file ${MAN_PAGE_LOCATION}. \
+If you do not add this file, then installing Elektra will fail!\n")
+		endif (NOT EXISTS "${OUTFILE}")
 
 		if (INSTALL_DOCUMENTATION)
 			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION})
