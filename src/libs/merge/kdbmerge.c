@@ -5,11 +5,14 @@
 #include "kdblogger.h"
 #include "kdbprivate.h"
 #include <ctype.h>
-#include <git2.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef LIBGITFOUND
+#include <git2.h>
+#endif
 
 #define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
@@ -641,6 +644,8 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 	return 0;
 }
 
+#ifdef LIBGITFOUND
+
 /**
  * Iterates over all keys that belong to an key array started by arrayStart and puts their values into a newly allocated string
  * Each value is separated by a newline.
@@ -774,6 +779,7 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
 	return result;
 }
 
+
 /**
  * Removes all the arrays from our, their, base and result and puts the result of the merge into resultSet
  * @param ourSet our
@@ -845,6 +851,8 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 	return 0;
 }
 
+#endif // LIBGITFOUND
+
 
 /**
  *
@@ -904,7 +912,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		break;
 	}
 
+#ifdef LIBGITFOUND
+	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
 	handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey);
+#else
+	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
+#endif
+
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
