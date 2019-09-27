@@ -14,7 +14,7 @@ sudo apt-get install cmake git build-essential
 Or on RPM based systems (CentOS):
 
 ```sh
-sudo yum install -y cmake3 git gcc-c++
+sudo yum install -y cmake git gcc-c++
 ```
 
 Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
@@ -30,15 +30,13 @@ parts where your system happens to fulfil the dependences (continue
 reading the rest of the document for details about these steps):
 
 ```sh
-git clone https://github.com/ElektraInitiative/libelektra.git
-cd libelektra
-mkdir build
-cd build
-cmake ..  # watch output to see if everything needed is included
-ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
-make -j 5
-make run_nokdbtests  # optional: run tests
-```
+   cd libelektra  #navigate to libelektra
+   mkdir build  && cd build  #create and navigate to the build directory
+   cmake ..  # watch output to see if everything needed is included
+   ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
+   make -j 5  # running makefile (compiling, linking etc.), -j specifies the number of jobs to run simultaneously
+   make run_nokdbtests  # optional: run tests
+ ```
 
 The last line only runs tests not writing into your system.
 See [TESTING](/doc/TESTING.md) for how to run more tests.
