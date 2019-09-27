@@ -249,7 +249,7 @@ before_install:
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
-# Build directory will be TRAVIS_BUILD_DIR/../build
+# Build directory will be "$TRAVIS_BUILD_DIR/build"
 #
 before_script:
   - |
