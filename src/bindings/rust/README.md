@@ -10,6 +10,26 @@ Rust bindings for libelektra.
 
 ## Build
 
+Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with your package manager, you should use the crates from [crates.io](https://crates.io/). If you want to built libelektra locally, you should use the bindings that are built in the `build` directory.
+
+### Package Manager
+
+If you installed elektra via your package manager, you should use the [elektra](https://crates.io/crate/elektra) crate or [elektra-sys](https://crates.io/crate/elektra-sys) if you need the raw bindings directly. In this case you will need `libelektra` itself, as well as the development headers (often called `libelektra-dev`) for bindings generation.
+The `elektra-sys`, as well as the `elektra` crate have a feature called `pkg-config` that you can enable to find the installation of elektra and its headers. It is not enabled by default, but recommended and you can do so by adding `features = ["pkg-config"]` to the dependency section as seen below. The `pkg-config` utility has to be installed then. Your Cargo.toml dependencies might thus look like this
+
+```toml
+[dependencies]
+elektra = { version = "0.9.0", features = ["pkg-config"] }
+# Directly depending on elektra-sys is only needed if you need to use the raw bindings
+elektra-sys = { version = "0.9.0", features = ["pkg-config"] }
+```
+
+If you don't use the `pkg-config` feature, the build script will look for the elektra installation in `/usr/local/include/elektra` and `/usr/include/elektra`.
+
+With this in place, the bindings should be built when you run `cargo build`.
+
+### Local Build
+
 To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](../../../doc/COMPILE.md) and the bindings will be built as part of this process.
 
 ## Example
@@ -133,7 +153,7 @@ See the [full example](example/src/bin/kdb.rs) for more. Run it from the `exampl
 
 The KDB error types are nested, so you can match on a high-level or a specific one. For a deeper explanation of the error types, see the [error guideline](https://master.libelektra.org/doc/dev/error-categorization.md).
 
-````rust
+```rust
 extern crate elektra;
 
 use elektra::{KDB, KDBError, LogicalError, PermanentError, ValidationError};
@@ -155,6 +175,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     Ok(())
 }
+```
 
 ### Raw Bindings
 
@@ -174,11 +195,13 @@ fn main() {
     println!("Key with name {:?} has value {:?}", name_str, val_str);
     assert_eq!(unsafe { keyDel(key) }, 0);
 }
-````
+```
 
 ## Documentation
 
-Documentation can be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
+Can be accessed for [elektra](https://docs.rs/elektra/0.9.0/elektra/) and [elektra-sys](https://docs.rs/elektra/0.9.0/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
+
+Documentation can also be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 
 ## Generation
 

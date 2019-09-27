@@ -1,6 +1,6 @@
 [package]
 name = "elektra"
-version = "@KDB_VERSION@"
+version = "0.9.0"
 authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
 edition = "2018"
 description = "Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database."
@@ -9,6 +9,11 @@ homepage = "https://www.libelektra.org/"
 repository = "https://master.libelektra.org/src/bindings/rust"
 documentation = "https://docs.rs/elektra"
 
+[features]
+default = []
+# Re-export the pkg-config feature from elektra-sys
+pkg-config = ["elektra-sys/pkg-config"]
+
 [dependencies]
-elektra-sys = { version = "@KDB_VERSION@", path = "../elektra-sys" }
+elektra-sys = { version = "0.9.0" }
 bitflags = "1.1.0"

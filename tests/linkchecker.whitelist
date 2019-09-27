@@ -10,3 +10,5 @@ https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax
 # see https://github.com/ElektraInitiative/libelektra/issues/2913
 http://webdemo.libelektra.org
 https://webdemo.libelektra.org
+https://crates.io/crates/elektra
+https://crates.io/crates/elektra-sys

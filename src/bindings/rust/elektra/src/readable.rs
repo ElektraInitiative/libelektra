@@ -165,7 +165,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = BinaryKey::new("user/sw/app")?;
-    /// key.set_value(b"0");
+    /// key.set_value(b"");
     /// assert!(key.is_binary());
     /// #
     /// #     Ok(())

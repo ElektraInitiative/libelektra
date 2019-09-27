@@ -1,6 +1,6 @@
 [package]
 name = "elektra-sys"
-version = "@KDB_VERSION@"
+version = "0.9.0"
 authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
 edition = "2018"
 build = "build.rs"
@@ -10,7 +10,11 @@ homepage = "https://www.libelektra.org/"
 repository = "https://master.libelektra.org/src/bindings/rust"
 documentation = "https://docs.rs/elektra-sys"
 
+[features]
+default = []
+
 [dependencies]
 
 [build-dependencies]
 bindgen = "0.50.0"
+pkg-config = { version = "0.3.16", optional = true }
