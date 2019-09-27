@@ -197,6 +197,54 @@ kdb rm -r user/tests/yajl
 sudo kdb umount user/tests/yajl
 ```
 
+### Booleans
+
+The YAJL plugin maps "1" and "true" to its true bool type, and "0" and "false" to its false bool type.
+However, it always returns 1 and 0.
+
+You can take advantage of the [type](../type/README.md) plugin to map arbitrary values to true and false.
+
+```sh
+kdb mount conf.json user/tests/yajl yajl type
+kdb set user/tests/yajl 1
+kdb get user/tests/yajl
+#> 1
+kdb setmeta user/tests/yajl type boolean
+kdb set user/tests/yajl on
+kdb get user/tests/yajl
+#> 1
+kdb set user/tests/yajl/subkey disable
+kdb setmeta user/tests/yajl/subkey type boolean
+kdb get user/tests/yajl/subkey
+#> 0
+
+# Undo modifications to the database
+kdb rm -r user/tests/yajl
+sudo kdb umount user/tests/yajl
+```
+
+Without the type plugin
+
+```sh
+kdb mount conf.json user/tests/yajl yajl
+kdb set user/tests/yajl 1
+kdb getmeta user/tests/yajl type
+#> boolean
+kdb set user/tests/yajl false
+kdb getmeta user/tests/yajl type
+#> boolean
+kdb get user/tests/yajl
+#> 0
+
+# Without the type plugin, 'on' is mapped to a string and a warning is emitted.
+kdb set user/tests/yajl on
+#> RET: 2
+
+# Undo modifications to the database
+kdb rm -r user/tests/yajl
+sudo kdb umount user/tests/yajl
+```
+
 ## OpenICC Device Config
 
 This plugin was specifically designed and tested for the
