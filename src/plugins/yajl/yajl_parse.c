@@ -92,11 +92,11 @@ static int elektraYajlParseBoolean (void * ctx, int boolean)
 
 	if (boolean == 1)
 	{
-		keySetString (current, "true");
+		keySetString (current, "1");
 	}
 	else
 	{
-		keySetString (current, "false");
+		keySetString (current, "0");
 	}
 	keySetMeta (current, "type", "boolean");
 
@@ -341,7 +341,8 @@ static inline KeySet * elektraGetModuleConfig (void)
 		      keyNew ("system/elektra/modules/yajl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/yajl/config", KEY_END),
 		      keyNew ("system/elektra/modules/yajl/config/", KEY_VALUE, "system", KEY_END),
-		      keyNew ("system/elektra/modules/yajl/config/below", KEY_VALUE, "user", KEY_END), KS_END);
+		      keyNew ("system/elektra/modules/yajl/config/below", KEY_VALUE, "user", KEY_END),
+		      keyNew ("system/elektra/modules/yajl/config/needs/boolean/restoreas", KEY_VALUE, "none", KEY_END), KS_END);
 }
 
 int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
