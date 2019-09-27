@@ -108,6 +108,10 @@ plugins. _(René Schwaiger)_
 - There is now the config key `missing/log` that allows logging of all missing `require`d keys. _(Klemens Böswirth)_
 - `spec` now internally handles errors differently. There should be no external impact apart from better performance. _(Klemens Böswirth)_
 
+### Yajl
+
+- Yajl now correctly supports Elektras boolean types using the `type` plugin. For example, setting `on`, `enable` or `true` all map to JSONs native `true` value. See the [type](../../src/plugins/type/README.md) plugin for more details about boolean types. _(Philipp Gackstatter)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
