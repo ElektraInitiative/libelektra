@@ -6,6 +6,8 @@ import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.libelektra.Key;
+import org.libelektra.KeySet;
 
 public class KeySetTest {
 
@@ -94,7 +96,8 @@ public class KeySetTest {
 	@Test
 	public void test_keySetToString_shouldPass() {
 		final KeySet ks = KeySet.create(6, key, key2, key3, key4, key5, key6);
-		final String expected_result = key.toString() + "\n" + key2.toString() + "\n" + key3.toString() + "\n" + key4.toString() + "\n"
+		final String expected_result =
+				key.toString() + "\n" + key2.toString() + "\n" + key3.toString() + "\n" + key4.toString() + "\n"
 				+ key5.toString() + "\n" + key6.toString();
 		assertEquals(expected_result, ks.toString());
 	}

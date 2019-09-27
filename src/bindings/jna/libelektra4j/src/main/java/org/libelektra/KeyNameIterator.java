@@ -8,7 +8,7 @@ import com.sun.jna.Pointer;
 /**
  * An {@link Iterator} over a {@link Key}'s name parts, separated by /.
  */
-public class KeyNameIterator implements java.util.Iterator<String> {
+public class KeyNameIterator implements Iterator<String> {
 
 	private int pos = 0;
 	private int size = 0;
@@ -17,8 +17,7 @@ public class KeyNameIterator implements java.util.Iterator<String> {
 	/**
 	 * Basic constructor for key name iterator
 	 *
-	 * @param key
-	 *            Key which name is used in iterator
+	 * @param key Key which name is used in iterator
 	 */
 	KeyNameIterator(final Key key) {
 		con = Elektra.INSTANCE.keyUnescapedName(key.get());

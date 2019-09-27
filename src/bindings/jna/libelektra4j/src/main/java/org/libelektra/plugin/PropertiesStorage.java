@@ -1,18 +1,21 @@
 package org.libelektra.plugin;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
 
+import java.io.*;
+import java.util.Map;
+import java.util.Properties;
+
 public class PropertiesStorage implements Plugin {
+
+	public static final String PLUGIN_NAME = "PropertiesStorage";
+
+	@Override
+	public KeySet getConfig() {
+		return KeySet.create();
+	}
 
 	@Override
 	public int open(final KeySet conf, final Key errorKey) {
@@ -52,7 +55,8 @@ public class PropertiesStorage implements Plugin {
 			final String newName = k.getName().substring(parentKey.getNameSize());
 			properties.setProperty(newName, k.getString());
 		}
-		try (final BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
+		try (final BufferedOutputStream stream =
+					 new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
 			properties.store(stream, "written by elektra using Java Properties");
 		} catch (final IOException e) {
 			parentKey.setError("Could not write file");
@@ -69,6 +73,11 @@ public class PropertiesStorage implements Plugin {
 	@Override
 	public int close(final Key parentKey) {
 		return 0;
+	}
+
+	@Override
+	public String getName() {
+		return PLUGIN_NAME;
 	}
 
 }

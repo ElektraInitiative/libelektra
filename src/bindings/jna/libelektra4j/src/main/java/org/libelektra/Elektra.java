@@ -3,6 +3,7 @@ package org.libelektra;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import org.libelektra.plugin.NativePlugin;
 
 /**
  * The JNA interface to libelektra.
@@ -172,4 +173,5 @@ public interface Elektra extends Library {
 
 	Pointer ksLookupByName(Pointer ks, String name, int options);
 
+	NativePlugin.ElektraPlugin elektraPluginOpen(String pluginName, Pointer modules, Pointer config, Pointer errorKey);
 }

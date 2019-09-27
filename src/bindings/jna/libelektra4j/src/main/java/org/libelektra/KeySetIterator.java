@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 /**
  * An {@link Iterator} over a {@link KeySet} resulting in {@link Key}s.
  */
-public class KeySetIterator implements java.util.Iterator<Key> {
+public class KeySetIterator implements Iterator<Key> {
 
 	private int pos = 0;
 	private final KeySet con;
@@ -15,8 +15,7 @@ public class KeySetIterator implements java.util.Iterator<Key> {
 	/**
 	 * Basic constructor for key set iterator
 	 *
-	 * @param container
-	 *            KeySet which is used in iterator
+	 * @param container KeySet which is used in iterator
 	 */
 	KeySetIterator(final KeySet container) {
 		con = container;

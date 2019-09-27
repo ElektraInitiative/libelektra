@@ -6,6 +6,13 @@ import org.libelektra.Plugin;
 
 public class Return implements Plugin {
 
+	public static final String PLUGIN_NAME = "Return";
+
+	@Override
+	public KeySet getConfig() {
+		return KeySet.create();
+	}
+
 	@Override
 	public int open(final KeySet conf, final Key errorKey) {
 		return 0;
@@ -29,6 +36,11 @@ public class Return implements Plugin {
 	@Override
 	public int close(final Key parentKey) {
 		return 0;
+	}
+
+	@Override
+	public String getName() {
+		return PLUGIN_NAME;
 	}
 
 }

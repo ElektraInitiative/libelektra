@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.Iterator;
 
 import org.junit.Test;
+import org.libelektra.Key;
 import org.libelektra.Key.KeyInvalidName;
 
 public class KeyTest {
@@ -87,7 +88,7 @@ public class KeyTest {
 
 	@Test
 	public void test_createKeyFromPointer_shouldPass() {
-		final Key key = Key.create(KEY_1_NAME,KEY_1_VALUE);
+		final Key key = Key.create(KEY_1_NAME, KEY_1_VALUE);
 		final Key key2 = new Key(key.get());
 		assertEquals(key.toString(), key2.toString()); // equal key name
 		assertEquals(key.getString(), key2.getString()); // equal key value
