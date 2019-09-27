@@ -290,6 +290,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	/* init reference counting */
 	handle->refcounter = 1;
 	handle->config = config;
+	handle->modules = modules; //to enable the modules keyset to be used within plugins as well
 	config = 0; // for err_clup case
 
 	/* let the plugin initialize itself */
