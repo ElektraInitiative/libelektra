@@ -80,8 +80,12 @@ RUN apt-get update \
         clang-6.0 \
         libbotan-2-dev \
         libcurl4-gnutls-dev \
+        nodejs \
+        npm \
     && rm -rf /var/lib/apt/lists/*
 
+# Dredd
+RUN npm install --global dredd
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
