@@ -10,11 +10,6 @@ if (IS_INCLUDED)
 	add_subdirectory (jna)
 endif ()
 
-check_binding_included ("haskell" IS_INCLUDED)
-if (IS_INCLUDED)
-	add_subdirectory (haskell)
-endif ()
-
 check_binding_included ("rust" IS_INCLUDED)
 if (IS_INCLUDED)
 	add_subdirectory (rust)

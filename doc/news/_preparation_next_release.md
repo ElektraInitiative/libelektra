@@ -50,7 +50,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### General
 
-- We removed 9 obsolete or unfinished plugins:
+- We removed 11 obsolete or unfinished plugins:
   - `boolean`,
   - `cachefilter`,
   - `cpptype`,
@@ -59,6 +59,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `regexstore`,
   - `required`,
   - `simplespeclang`,
+  - `regexdispatcher`,
+  - `typechecker`,
   - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 
@@ -153,6 +155,7 @@ Bindings allow you to utilize Elektra using [various programming languages](http
 you up to date with the multi-language support provided by Elektra.
 
 - Warnings about cmake policies are avoided. _(Markus Raab)_
+- We removed the haskell binding. _(Markus Raab)_
 
 ### Java
 
