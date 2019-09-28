@@ -1554,6 +1554,10 @@ int f (KeySet *ks)
  *
  * @snippet ksIterate.c iterate for
  *
+ * You can also use a while loop if you need access to the last cursor position.
+ *
+ * @snippet ksIterate.c iterate while
+ *
  * @note Only use a cursor for the same keyset which it was
  * made for.
  *

@@ -10,30 +10,31 @@
 #include <stddef.h>
 #include <stdio.h>
 
-//! [iterate for]
 void iterate_for (KeySet * ks)
 {
+	//! [iterate for]
 	Key * cur;
 	for (cursor_t cursor = 0; (cur = ksAtCursor (ks, cursor)) != NULL; ++cursor)
 	{
 		printf ("%s\n", keyName (cur));
 	}
+	//! [iterate for]
 }
-//! [iterate for]
 
-//! [iterate while]
+
 void iterate_while (KeySet * ks)
 {
+	//! [iterate while]
 	cursor_t cursor = 0;
-	Key * cursor_key;
+	Key * cur;
 
-	while ((cursor_key = ksAtCursor (ks, cursor)) != 0)
+	while ((cur = ksAtCursor (ks, cursor)) != 0)
 	{
-		printf ("%s\n", keyName (cursor_key));
-		cursor++;
+		printf ("%s\n", keyName (cur));
+		++cursor;
 	}
+	//! [iterate while]
 }
-//! [iterate while]
 
 int main (void)
 {
