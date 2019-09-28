@@ -116,9 +116,6 @@ matrix:
         - ninja run_nocheckshell
 
     - os: linux
-      # The DBus library on Ubuntu Xenial Xerus seems to leak memory
-      # See: https://travis-ci.org/sanssecours/elektra/jobs/457428713
-      dist: trusty
       name: 🐧 Clang ASAN
       compiler: clang
       addons:
