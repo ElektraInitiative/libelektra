@@ -38,9 +38,11 @@ using PredictionMode = antlr4::atn::PredictionMode;
 using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
 
+using ckdb::keyNew;
 using std::ifstream;
 
-// -- Functions ----------------------------------------------------------------------------------------------------------------------------
+// -- Functions
+// ----------------------------------------------------------------------------------------------------------------------------
 
 namespace
 {
