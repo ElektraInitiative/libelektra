@@ -121,8 +121,7 @@ public abstract class PermanentException extends Exception {...}
 ...
 ```
 
-You can see a list of all errors that can be used in the [specification file](../../src/error/specification).
-The hierarchy itself is depicted in the [design decision](../decisions/error_codes.md).
+All error codes as well as the hierarchy itself is depicted in the [design decision](../decisions/error_codes.md).
 
 If you have a language which does not support inheritance this way like GoLang, you can still use the
 error code itself since the hierarchy is integrated in it. For example you can check if the code starts with
