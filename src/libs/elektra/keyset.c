@@ -1552,18 +1552,7 @@ int f (KeySet *ks)
  * and then incrementing or decrementing it, to
  * iterate over the keyset.
  *
- * @code
-void iterate(KeySet *ks)
-{
-	cursor_t cursor = 0;
-	Key * cursor_key;
-
-	while((cursor_key = ksAtCursor(ks, cursor)) != 0) {
-		printf("%s\n", keyString(cursor_key));
-		cursor++;
-	}
-}
- * @endcode
+ * @snippet ksIterate.c iterate for
  *
  * @note Only use a cursor for the same keyset which it was
  * made for.
