@@ -23,10 +23,11 @@ changes in the Elektra state.
 - [nanomsg](http://nanomsg.org/): from the same author as ZeroMQ, even smaller - http://nanomsg.org/documentation-zeromq.html
 - [redis](http://redis.io/topics/pubsub): requires a running redis server
 - [kafka](http://kafka.apache.org/): seems too big for Elektra
+- ZeroMQ with [JSMQ](https://github.com/zeromq/JSMQ).
 
 ## Decision
 
-Use ZeroMQ with [JSMQ](https://github.com/zeromq/JSMQ).
+REST Api is used.
 
 ## Rationale
 

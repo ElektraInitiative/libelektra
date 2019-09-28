@@ -352,7 +352,7 @@ sudo kdb umount user/tests/yamlcpp
 
 ## Binary Values
 
-Elektra [saves binary data as either `0` or `1`](../../../doc/decisions/bool.md). The YAML CPP plugin supports this design decision by converting between YAML’s and Elektra’s boolean type.
+Elektra [saves binary data as either `0` or `1`](../../../doc/decisions/boolean.md). The YAML CPP plugin supports this design decision by converting between YAML’s and Elektra’s boolean type.
 
 ```sh
 # Mount YAML CPP plugin at `user/tests/yamlcpp`

@@ -17,7 +17,7 @@ performance.
 
 ## Decision
 
-Delayed to 1.0.0
+Rejected (keep checks) due to time constraints
 
 ## Rationale
 
