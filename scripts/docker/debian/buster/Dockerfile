@@ -87,6 +87,11 @@ RUN apt-get update \
 # Dredd
 RUN npm install --global dredd
 
+# Go
+RUN wget https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz \
+    && tar -xvf go1.13.1.linux-amd64.tar.gz \
+    && mv go /usr/local
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.8.1
