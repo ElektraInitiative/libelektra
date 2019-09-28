@@ -40,8 +40,29 @@ This command will return the following values as an exit status:<br>
 
 ## EXAMPLES
 
-To get all metadata key and value information of the key `spec/example/key`:<br>
-`kdb showmeta spec/example/key`
+```sh
+# Backup-and-Restore: user/tests/examples
+
+# We use `dump` as storage format here, since storage plugins such as INI
+sudo kdb mount ls.ecf user/tests/examples dump
+
+# Create the keys we use for the examples
+kdb set user/tests/examples/kdb-showmeta test
+kdb setmeta user/tests/examples/kdb-showmeta meta1 val1
+kdb setmeta user/tests/examples/kdb-showmeta meta2 val2
+kdb setmeta user/tests/examples/kdb-showmeta meta3 val3
+kdb setmeta user/tests/examples/kdb-showmeta meta4 val4
+
+# list all meta keys for /tests/examples/kdb-showmeta
+kdb showmeta /tests/examples/kdb-showmeta
+#> meta1: val1
+#> meta2: val2
+#> meta3: val3
+#> meta4: val4
+
+kdb rm -r user/tests/examples
+sudo kdb umount user/tests/examples
+```
 
 ## SEE ALSO
 
