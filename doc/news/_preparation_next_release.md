@@ -50,7 +50,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### General
 
-- We removed 11 obsolete or unfinished plugins:
+- We removed 12 obsolete or unfinished plugins:
   - `boolean`,
   - `cachefilter`,
   - `cpptype`,
@@ -58,6 +58,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `enum`,
   - `regexstore`,
   - `required`,
+  - `haskell`,
   - `simplespeclang`,
   - `regexdispatcher`,
   - `typechecker`,
