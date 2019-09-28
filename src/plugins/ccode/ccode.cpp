@@ -12,8 +12,8 @@
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
 
-using elektra::Coder;
 using ckdb::keyNew;
+using elektra::Coder;
 
 using CppKeySet = kdb::KeySet;
 

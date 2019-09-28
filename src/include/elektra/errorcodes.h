@@ -19,8 +19,10 @@ typedef enum
 
 #ifdef __cplusplus
 }
-namespace elektra {
-enum class ElektraErrorCode {
+namespace elektra
+{
+enum class ElektraErrorCode
+{
 	LOW_LEVEL = ELEKTRA_ERROR_CODE_LOW_LEVEL,
 	KEY_NOT_FOUND = ELEKTRA_ERROR_CODE_KEY_NOT_FOUND,
 	WRONG_TYPE = ELEKTRA_ERROR_CODE_WRONG_TYPE,
@@ -32,4 +34,3 @@ enum class ElektraErrorCode {
 }
 #endif
 #endif // ELEKTRA_ERROR_CODES_H
-

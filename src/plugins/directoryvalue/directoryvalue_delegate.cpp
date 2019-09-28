@@ -15,6 +15,7 @@
 
 #include "directoryvalue_delegate.hpp"
 
+using ckdb::elektraArrayValidateBaseNameString;
 using std::accumulate;
 using std::ignore;
 using std::make_pair;
@@ -22,7 +23,6 @@ using std::pair;
 using std::range_error;
 using std::string;
 using std::tie;
-using ckdb::elektraArrayValidateBaseNameString;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

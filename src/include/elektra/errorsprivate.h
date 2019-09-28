@@ -3,21 +3,21 @@
 #ifndef ELEKTRA_ERRORS_PRIVATE_H
 #define ELEKTRA_ERRORS_PRIVATE_H
 
-#include <elektra/types.h>
 #include <elektra/error.h>
+#include <elektra/types.h>
 #include <kdbprivate.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-ElektraError * elektraErrorLowLevel(ElektraErrorSeverity severity, kdb_long_t code, const char * description, const char * group, const char * module);
-ElektraError * elektraErrorKeyNotFound(const char * keyname);
-ElektraError * elektraErrorWrongType(const char * keyname, KDBType expectedType, KDBType actualType);
-ElektraError * elektraErrorNullError(const char * function);
-ElektraError * elektraErrorEnsureFailed(const char * reason);
+ElektraError * elektraErrorLowLevel (ElektraErrorSeverity severity, kdb_long_t code, const char * description, const char * group,
+				     const char * module);
+ElektraError * elektraErrorKeyNotFound (const char * keyname);
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
+ElektraError * elektraErrorNullError (const char * function);
+ElektraError * elektraErrorEnsureFailed (const char * reason);
 
 #ifdef __cplusplus
 }
 #endif
 #endif // ELEKTRA_ERRORS_PRIVATE_H
-
