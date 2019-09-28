@@ -8,7 +8,9 @@ fn main() {
     println!("cargo:rustc-link-search=@CMAKE_BINARY_DIR@/lib");
 
     // Tell cargo to tell rustc to link the dynamic elektra library.
-    println!("cargo:rustc-link-lib=dylib=elektra");
+    println!("cargo:rustc-link-lib=dylib=elektra-core");
+    println!("cargo:rustc-link-lib=dylib=elektra-meta");
+    println!("cargo:rustc-link-lib=dylib=elektra-kdb");
     
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
