@@ -85,7 +85,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Dredd
-RUN npm install --global dredd
+RUN npm install --global dredd --unsafe-perm=true --allow-root
 
 # Go
 RUN wget https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz \
