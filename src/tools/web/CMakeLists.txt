@@ -1,12 +1,12 @@
+find_program (GO_EXECUTABLE "go")
 find_program (NPM_EXECUTABLE "npm")
 
 list (FIND REMOVED_PLUGINS "yajl" yajl_index)
 if (NOT yajl_index EQUAL -1)
 	remove_tool (${tool} "yajl plugin not available")
 else ()
-
-	if (NOT NPM_EXECUTABLE)
-		remove_tool (${tool} "dependency manager 'npm' not found")
+	if (NOT NPM_EXECUTABLE OR NOT GO_EXECUTABLE)
+		remove_tool (${tool} "make sure 'npm' and 'go' is installed")
 	else ()
 
 		# define configuration path
@@ -36,7 +36,7 @@ else ()
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 				    COMMAND PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad
 					    GO111MODULE=on
-					    go
+					    ${GO_EXECUTABLE}
 					    ARGS
 					    build
 					    -o
@@ -83,10 +83,10 @@ else ()
 		# test apis
 		find_program (DREDD_EXECUTABLE "dredd")
 		if (DREDD_EXECUTABLE)
-
 			# testing is possible
-			add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-			set_property (TEST elektra-web PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			add_test (NAME test_elektra_web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+			set_property (TEST test_elektra_web PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property (TEST test_elektra_web PROPERTY ENVIRONMENT "PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad")
 		endif ()
 
 	endif ()
