@@ -992,14 +992,13 @@ coveralls -b '${buildDir}' \
           -t '${REPO_TOKEN}' \
           -e .idea -e benchmarks -e doc -e examples -e install -e libelektra -e system -e tests \
           -E '.*${buildDir}/(CMakeFiles|include)/.*' \
-          -E '.*${buildDir}/src/bindings/(glib|haskell|intercept)/.*' \
+          -E '.*${buildDir}/src/bindings/(glib|intercept)/.*' \
           -E '.*${buildDir}/src/include/elektra/.*' \
           -E '.*${buildDir}/src/include/(kdb|kdbconfig|kdbversion)\\.h' \
           -E '.*${buildDir}/src/(libs|tools)/.*' \
           -E '.*${buildDir}/src/plugins/\
 (?!\
 constants/constants\\.c|\
-(haskell|regexdispatcher|typechecker)/haskell\\.c|\
 (lua|ruby)/runtime\\.h|\
 yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\

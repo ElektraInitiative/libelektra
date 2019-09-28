@@ -98,7 +98,7 @@ Build it with
 
 ```sh
  cmake /home/jenkins/workspace \
--DBINDINGS="ALL;-DEPRECATED;-haskell" \
+-DBINDINGS="ALL;-DEPRECATED" \
 -DPLUGINS="ALL;-DEPRECATED" \
 -DTOOLS="ALL" \
 -DENABLE_DEBUG="ON" \
