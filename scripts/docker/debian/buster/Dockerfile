@@ -91,6 +91,7 @@ RUN npm install --global dredd --unsafe-perm=true --allow-root
 RUN wget https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz \
     && tar -xvf go1.13.1.linux-amd64.tar.gz \
     && mv go /usr/local
+ENV PATH="${PATH}:/usr/local/go/bin"
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
