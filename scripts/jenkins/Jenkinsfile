@@ -66,6 +66,8 @@ CMAKE_FLAGS_BUILD_ALL = [
   'TOOLS': 'ALL'
 ]
 
+CMAKE_FLAGS_BUILD_ALL_WEB = CMAKE_FLAGS_BUILD_ALL + ['TOOLS': 'ALL;web']
+
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
@@ -484,7 +486,7 @@ def generateMainBuildStages() {
   tasks << buildAndTest(
     "debian-buster-full",
     DOCKER_IMAGES.buster,
-    CMAKE_FLAGS_BUILD_ALL +
+    CMAKE_FLAGS_BUILD_ALL_WEB +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC +
