@@ -74,7 +74,6 @@ strict digraph G {
 	gopts [shape=Mdiamond];
 	crypto [shape=Mdiamond];
 	gpgme -> crypto;
-	haskell [shape=Mdiamond];
 	code [shape=Mdiamond];
 	hexcode -> code;
 	conv [shape=Mdiamond];
@@ -154,7 +153,6 @@ strict digraph G {
 	quickdump -> quickdump;
 	range [shape=Mdiamond];
 	reference [shape=Mdiamond];
-	regexdispatcher [shape=Mdiamond];
 	filter [shape=Mdiamond];
 	rename -> filter;
 	resolver [shape=Mdiamond];
@@ -190,8 +188,6 @@ strict digraph G {
 	tracer -> tracing;
 	check [shape=Mdiamond];
 	type -> check;
-	typechecker [shape=Mdiamond];
-	typechecker -> typechecker;
 	storage [shape=Mdiamond];
 	uname -> storage;
 	info [shape=Mdiamond];

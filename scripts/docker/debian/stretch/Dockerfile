@@ -182,16 +182,3 @@ RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
 
-# Handle Haskell dependencies
-ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
-RUN mkdir -p $HASKELL_SHARED_SANDBOX \
-    && cd $HASKELL_SHARED_SANDBOX \
-    && cabal update \
-    && cabal sandbox init \
-    && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
-        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
-        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls
-# Workaround for issue [#2139](http://issues.libelektra.org/2139)
-RUN mkdir -p /home/jenkins/.cabal/lib

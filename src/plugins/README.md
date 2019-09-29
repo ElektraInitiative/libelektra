@@ -111,8 +111,6 @@ Only suited for import/export:
 Plugins that just show some functionality, (currently) not intended for
 productive use:
 
-- [typechecker](typechecker/) type checks a configuration specification
-- [regexdispatcher](regexdispatcher/) generates regex representations of specification keywords
 - [fstab](fstab/) for fstab files.
 - [csvstorage](csvstorage/) for csv files
 - [passwd](passwd/) for passwd files
@@ -248,7 +246,6 @@ binding during run-time.
 - [ruby](ruby/) Ruby plugins
 - [lua](lua/) Lua plugins
 - [shell](shell/) executes shell commandos
-- [haskell](haskell/) used for linking haskell plugins and is a small example for such plugins itself
 
 ### Others
 

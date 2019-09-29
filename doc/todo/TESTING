@@ -96,7 +96,6 @@ ASAN disables the following parts during cmake as they throw errors:
 - bindings:
   - SWIG
   - GLIB
-  - HASKELL
   - IO (+async notification example)
 - plugins:
   - crypto_botan

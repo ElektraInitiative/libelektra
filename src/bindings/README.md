@@ -24,7 +24,6 @@ List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
 Experimental bindings (included in `EXPERIMENTAL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
-- [haskell](haskell/) Haskell bindings (experimental)
 - [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
 - [io_uv](io/uv/) I/O binding for uv (experimental)
 - [io_ev](io/ev/) I/O binding for ev (experimental)
