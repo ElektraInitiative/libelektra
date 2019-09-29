@@ -5,8 +5,10 @@ list (FIND REMOVED_PLUGINS "yajl" yajl_index)
 if (NOT yajl_index EQUAL -1)
 	remove_tool (${tool} "yajl plugin not available")
 else ()
-	if (NOT NPM_EXECUTABLE OR NOT GO_EXECUTABLE)
-		remove_tool (${tool} "make sure 'npm' and 'go' is installed")
+	if (NOT NPM_EXECUTABLE)
+		remove_tool (${tool} "`npm` executable was not found")
+	elseif (NOT GO_EXECUTABLE)
+		remove_tool (${tool} "`go` executable was not found")
 	else ()
 
 		# define configuration path
