@@ -281,7 +281,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
  * so you need to ksDel() the returned pointer.
  *
  * A flat copy is made, so the keys will not be duplicated,
- * but there reference counter is updated, so both keysets
+ * but their reference counter is updated, so both keysets
  * need ksDel().
  *
  * @param source has to be an initialized source KeySet
@@ -358,7 +358,7 @@ KeySet * ksDeepDup (const KeySet * source)
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
  * But in some situations you need to copy a
- * keyset to an existing keyset, for that this function
+ * keyset to an existing keyset, for which this function
  * exists.
  *
  * @note You can also use it to clear a keyset when you pass
@@ -837,11 +837,10 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 /**
  * Appends a Key to the end of @p ks.
  *
- * Will take ownership of the key @p toAppend.
+ * Hands the ownership of the key @p toAppend to the KeySet @p ks.
  * That means ksDel(ks) will remove the key unless
  * the key:
- * - was duplicated before inserting
- * - got its refcount incremented by keyIncRef() before inserting
+ * - got its refcount incremented by keyIncRef() before appending
  * - was also inserted into another keyset with ksAppendKey()
  *
  * The reference counter of the key will be incremented
@@ -860,7 +859,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  *
  * The KeySet internal cursor will be set to the new key.
  *
- * It is save to directly append newly created keys:
+ * It is safe to directly append newly created keys:
  * @snippet keyset.c simple append
  *
  * If you want the key to outlive the keyset, make sure to
@@ -872,9 +871,9 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * @snippet keyset.c dup append
  *
  *
- * @return the size of the KeySet after insertion
+ * @return the size of the KeySet after appending
  * @retval -1 on NULL pointers
- * @retval -1 if insertion failed (only on memory problems), the key will be deleted then.
+ * @retval -1 if appending failed (only on memory problems), the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
@@ -1546,6 +1545,19 @@ int f (KeySet *ks)
  * ksRewind(). When you set an invalid cursor ksCurrent()
  * is 0 and ksNext() == ksHead().
  *
+ * @section cursor_directly Using Cursor directly
+ *
+ * You can also use the cursor directly
+ * by initializing it to some index in the Keyset
+ * and then incrementing or decrementing it, to
+ * iterate over the keyset.
+ *
+ * @snippet ksIterate.c iterate for
+ *
+ * You can also use a while loop if you need access to the last cursor position.
+ *
+ * @snippet ksIterate.c iterate while
+ *
  * @note Only use a cursor for the same keyset which it was
  * made for.
  *
@@ -1588,7 +1600,7 @@ Key * ksAtCursor (KeySet * ks, cursor_t pos)
  * Set the KeySet internal cursor.
  *
  * Use it to set the cursor to a stored position.
- * ksCurrent() will then be the position which you got with.
+ * ksCurrent() will then return the key at the position of the supplied cursor.
  *
  * @warning Cursors may get invalid when the key
  * was ksPop()ed or ksLookup() was used together
