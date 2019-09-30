@@ -183,7 +183,7 @@ you up to date with the multi-language support provided by Elektra.
 - kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
 - Checks for `kdbCommit` have been added to [kdb check](../help/kdb-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
-- <<TODO>>
+- Added `kdb showmeta` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
 - <<TODO>>
 
 ## Scripts

@@ -55,6 +55,7 @@
 #include <set.hpp>
 #include <sget.hpp>
 #include <shell.hpp>
+#include <showmeta.hpp>
 #include <specmount.hpp>
 #include <test.hpp>
 #include <umount.hpp>
@@ -99,6 +100,7 @@ public:
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
 		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
 		m_factory.insert (std::make_pair ("getmeta", std::make_shared<Cnstancer<MetaGetCommand>> ()));
+		m_factory.insert (std::make_pair ("showmeta", std::make_shared<Cnstancer<ShowMetaCommand>> ()));
 		m_factory.insert (std::make_pair ("rmmeta", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("setmeta", std::make_shared<Cnstancer<MetaSetCommand>> ()));
 		m_factory.insert (std::make_pair ("lsmeta", std::make_shared<Cnstancer<MetaLsCommand>> ()));
