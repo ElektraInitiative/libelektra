@@ -2,8 +2,8 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
-- infos/needs = directoryvalue
-- infos/recommends = rebase comment type
+- infos/needs = directoryvalue type
+- infos/recommends = rebase comment
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
 - infos/description = JSON using YAJL
@@ -200,12 +200,13 @@ sudo kdb umount user/tests/yajl
 ### Booleans
 
 The YAJL plugin maps "1" and "true" to its true bool type, and "0" and "false" to its false bool type.
-However, it always returns 1 and 0.
+However, it always returns 1 or 0.
 
 You can take advantage of the [type](../type/README.md) plugin to map arbitrary values to true and false.
 
 ```sh
-kdb mount conf.json user/tests/yajl yajl type
+# Type plugin is automatically mounted since yajl depends on it
+kdb mount conf.json user/tests/yajl yajl
 kdb set user/tests/yajl 1
 kdb get user/tests/yajl
 #> 1
@@ -217,28 +218,6 @@ kdb set user/tests/yajl/subkey disable
 kdb setmeta user/tests/yajl/subkey type boolean
 kdb get user/tests/yajl/subkey
 #> 0
-
-# Undo modifications to the database
-kdb rm -r user/tests/yajl
-sudo kdb umount user/tests/yajl
-```
-
-Without the type plugin
-
-```sh
-kdb mount conf.json user/tests/yajl yajl
-kdb set user/tests/yajl 1
-kdb getmeta user/tests/yajl type
-#> boolean
-kdb set user/tests/yajl false
-kdb getmeta user/tests/yajl type
-#> boolean
-kdb get user/tests/yajl
-#> 0
-
-# Without the type plugin, 'on' is mapped to a string and a warning is emitted.
-kdb set user/tests/yajl on
-#> RET: 2
 
 # Undo modifications to the database
 kdb rm -r user/tests/yajl
