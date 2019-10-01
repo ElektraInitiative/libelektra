@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-SHOWMETA" "1" "September 2019" "" ""
+.TH "KDB\-SHOWMETA" "1" "October 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-showmeta\fR \- Print all metakeys along with their value
@@ -60,10 +60,32 @@ Explain what is happening\. Prints additional information in case of errors/warn
 Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .SH "EXAMPLES"
-To get all metadata key and value information of the key \fBspec/example/key\fR:
 .
-.br
-\fBkdb showmeta spec/example/key\fR
+.nf
+
+# Backup\-and\-Restore: user/tests/examples
+
+# We use `dump` as storage format here, since storage plugins such as INI
+sudo kdb mount ls\.ecf user/tests/examples dump
+
+# Create the keys we use for the examples
+kdb set user/tests/examples/kdb\-showmeta test
+kdb setmeta user/tests/examples/kdb\-showmeta meta1 val1
+kdb setmeta user/tests/examples/kdb\-showmeta meta2 val2
+kdb setmeta user/tests/examples/kdb\-showmeta meta3 val3
+kdb setmeta user/tests/examples/kdb\-showmeta meta4 val4
+
+# list all meta keys for /tests/examples/kdb\-showmeta
+kdb showmeta /tests/examples/kdb\-showmeta
+#> meta1: val1
+#> meta2: val2
+#> meta3: val3
+#> meta4: val4
+
+kdb rm \-r user/tests/examples
+sudo kdb umount user/tests/examples
+.
+.fi
 .
 .SH "SEE ALSO"
 .
