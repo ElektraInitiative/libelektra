@@ -1,4 +1,4 @@
-# Contributung
+# Contributing
 
 We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this project. First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
 
