@@ -31,7 +31,6 @@
 #include <export.hpp>
 #include <file.hpp>
 #include <find.hpp>
-#include <fstab.hpp>
 #include <gen.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
@@ -108,7 +107,6 @@ public:
 		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-check", std::make_shared<Cnstancer<PluginCheckCommand>> ()));
 		m_factory.insert (std::make_pair ("vset", std::make_shared<Cnstancer<ValidationCommand>> ()));
-		m_factory.insert (std::make_pair ("fstab", std::make_shared<Cnstancer<FstabCommand>> ()));
 		m_factory.insert (std::make_pair ("export", std::make_shared<Cnstancer<ExportCommand>> ()));
 		m_factory.insert (std::make_pair ("import", std::make_shared<Cnstancer<ImportCommand>> ()));
 		m_factory.insert (std::make_pair ("convert", std::make_shared<Cnstancer<ConvertCommand>> ()));
