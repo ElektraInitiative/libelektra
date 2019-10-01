@@ -1,20 +1,43 @@
-# Documentation
+# Contributung
 
-We use a fork and pull model, you can read about
-[forking repos at github help](https://help.github.com/articles/fork-a-repo/).
+We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this project. First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
 
-Any typo fixes, spelling fixes, fixes in documentation,
-or README.md can be done without any further considerations!
-Simply do the fixes in your cloned repo and create a pull request.
+## Configure Git
 
-# Issues
+```sh
+$ git config --global user.name "Your Name"
+$ git config --global user.email "your_email@example.com"
+```
 
-If you have any questions you can ask them using
-[github issue](https://github.com/ElektraInitiative/libelektra/issues/new).
-Simply ignore the template in this case.
+## Fork & Sync 
 
-See also [FAQ](/doc/help/elektra-faq.md) for some details
-about creating issues.
+We use a fork/sync and pull-request (see below) model at GitHub, follow this short [tutorial](https://help.github.com/articles/fork-a-repo/) to get familiar with forking and syncing.
+
+Sync the fork of the repository to keep it up-to-date with the upstream repository by using the following git commands in your local repository. Important: Using these commands will avoid unnecessary merge commits while you are working on a pull-request (see below):
+
+```sh
+$ git fetch upstream
+$ git rebase upstream/master
+$ git push origin master --force
+```
+
+## Issues
+
+Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues). Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
+
+## Creating a Pull-Request
+
+If you want to publish your local changes to this project you have to create a new pull-request.
+
+1. Open your GitHub repository/fork
+2. In the tab *Codes* press the *New Pull-Request* button and choose a title and description
+3. Select the correct branches 
+4. Commit and push your local changes in git (keep in mind to sync your fork - fetch, rebase & push) 
+5. Wait for the code-review
+
+## Code-Review
+
+After the pull-request your code will be reviewed and tested with some tests. If your pull-request passes the review , your changes will be merged to the branch.
 
 # General
 
