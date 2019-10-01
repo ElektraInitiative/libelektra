@@ -148,7 +148,7 @@ static int test_prerequisites (void)
 	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
 
 	// Set bus type for tests
-	// NOTE brew dbus on MacOs supports session by out of the box while session
+	// NOTE brew dbus on MacOs supports session out of the box while session
 	// bus is not available without further configuration on Linux
 
 	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
