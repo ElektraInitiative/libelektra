@@ -88,7 +88,7 @@ RUN apt-get update \
 RUN npm install --global dredd --unsafe-perm=true --allow-root
 
 # Go
-RUN wget https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz \
+RUN wget https://dl.google.com/go/go1.12.10.linux-amd64.tar.gz \
     && tar -xf go1.13.1.linux-amd64.tar.gz \
     && mv go /usr/local
 ENV PATH="${PATH}:/usr/local/go/bin"
