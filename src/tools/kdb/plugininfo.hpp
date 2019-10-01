@@ -14,11 +14,11 @@
 
 #include <kdb.hpp>
 
-class InfoCommand : public Command
+class PluginInfoCommand : public Command
 {
 public:
-	InfoCommand ();
-	~InfoCommand ();
+	PluginInfoCommand ();
+	~PluginInfoCommand ();
 
 	virtual std::string getShortOptions () override
 	{

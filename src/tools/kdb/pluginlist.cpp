@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <list.hpp>
+#include <pluginlist.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -17,11 +17,11 @@
 using namespace kdb;
 using namespace std;
 
-ListCommand::ListCommand ()
+PluginListCommand::PluginListCommand ()
 {
 }
 
-int ListCommand::execute (Cmdline const & cl)
+int PluginListCommand::execute (Cmdline const & cl)
 {
 	using namespace kdb::tools;
 
@@ -91,6 +91,6 @@ int ListCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-ListCommand::~ListCommand ()
+PluginListCommand::~PluginListCommand ()
 {
 }

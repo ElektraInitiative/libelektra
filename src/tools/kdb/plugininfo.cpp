@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <info.hpp>
+#include <plugininfo.hpp>
 
 #include <cmdline.hpp>
 #include <kdb.hpp>
@@ -20,11 +20,11 @@ using namespace kdb;
 using namespace kdb::tools;
 
 
-InfoCommand::InfoCommand ()
+PluginInfoCommand::PluginInfoCommand ()
 {
 }
 
-int InfoCommand::execute (Cmdline const & cl)
+int PluginInfoCommand::execute (Cmdline const & cl)
 {
 	std::string subkey;
 	if (cl.arguments.size () < 1 || cl.arguments.size () > 2)
@@ -126,6 +126,6 @@ int InfoCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-InfoCommand::~InfoCommand ()
+PluginInfoCommand::~PluginInfoCommand ()
 {
 }
