@@ -192,7 +192,7 @@ Depending on the setup you use, these parameters might be used.
 For more information see:
 
 ```sh
-kdb info resolver
+kdb plugin-info resolver
 ```
 
 For these parameters, `/elektra/intercept/getenv/override/` or `/elektra/intercept/getenv/fallback` will _not_ be used internally, but

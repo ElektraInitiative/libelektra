@@ -361,7 +361,7 @@ static VALUE load_ruby_plugin (VALUE config ELEKTRA_UNUSED)
 
 
 	/* check if user supplied a plugin script,
-	 * do not issue an error here, otherwise a 'kdb info ruby' will print a lot of error messages
+	 * do not issue an error here, otherwise a 'kdb plugin-info ruby' will print a lot of error messages
 	 */
 	kdb::Key script_key = conf->lookup (CONFIG_KEY_SCRIPT);
 	if (!script_key)
@@ -405,7 +405,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 	if (!ksLookupByName (conf, CONFIG_KEY_SCRIPT, 0))
 	{
 		/* no script specified
-		 * do not issue an error or 'kdb info ruby' causes problems */
+		 * do not issue an error or 'kdb plugin-info ruby' causes problems */
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "No 'script' config value specified");
 		return -1;
 	}
@@ -482,7 +482,7 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 	if (!ksLookupByName (conf_ks, CONFIG_KEY_SCRIPT, 0))
 	{
 		/* no script specified
-		 * do not issue an error or 'kdb info ruby' causes problems */
+		 * do not issue an error or 'kdb plugin-info ruby' causes problems */
 		global_context_mutex.unlock ();
 		ELEKTRA_LOG_DEBUG ("no 'script' config option specified");
 		return 0;

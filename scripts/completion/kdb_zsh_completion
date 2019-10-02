@@ -81,7 +81,7 @@ _kdb-import () {
     _kdb_paths
 }
 
-_kdb-info () {
+_kdb-plugin-info () {
     # TODO plugin [clause name]
 }
 

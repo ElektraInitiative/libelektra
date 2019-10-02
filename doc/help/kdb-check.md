@@ -113,4 +113,4 @@ To check the `line` plugin:<br>
 
 - For an introductions into plugins, read [elektra-plugins](/src/plugins).
 - To list all plugins use [kdb-list(1)](kdb-list.md).
-- For information on a plugin use [kdb-info(1)](kdb-info.md).
+- For information on a plugin use [kdb-plugin-info(1)](kdb-plugin-info.md).

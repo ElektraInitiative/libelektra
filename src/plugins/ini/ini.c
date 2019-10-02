@@ -1420,7 +1420,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 							ELEKTRA_SET_INSTALLATION_ERROR (
 								parentKey,
 								"Encountered a multiline value but multiline support is not enabled. "
-								"Have a look at kdb info ini for more details");
+								"Have a look at kdb plugin-info ini for more details");
 							ret = -1;
 						}
 					}

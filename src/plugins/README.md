@@ -44,7 +44,7 @@ Furthermore, plugins might export symbols:
 
 - To list all plugins use [kdb-list(1)](/doc/help/kdb-list.md).
 - To check a plugin use [kdb-check(1)](/doc/help/kdb-check.md).
-- For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
+- For information on a plugin use [kdb-plugin-info(1)](/doc/help/kdb-plugin-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 ## See Also

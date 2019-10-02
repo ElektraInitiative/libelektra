@@ -9,7 +9,7 @@ If the `format` argument is not passed, then the default format will be used as 
 By default, that key contains `storage`.
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
 The `format` attribute relies on Elektra’s plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command.
-To learn about any plugin, the user can simply use the kdb-info(1) command.
+To learn about any plugin, the user can simply use the kdb-plugin-info(1) command.
 
 ## DESCRIPTION
 
