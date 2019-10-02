@@ -23,7 +23,7 @@ testFFRunning() {
 }
 
 initialize() {
-	kdb check mozprefs &> /dev/null
+	kdb plugin-check mozprefs &> /dev/null
 
 	hasPrefsPlugin=$?
 

@@ -50,5 +50,5 @@ shows the time from invocation to invocation.
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 
 ```sh
-kdb check -c "logmodule=" timeofday
+kdb plugin-check -c "logmodule=" timeofday
 ```
