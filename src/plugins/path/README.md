@@ -63,8 +63,8 @@ sudo kdb setmeta user/tests/path check/path/user ""
 sudo kdb setmeta user/tests/path check/path/mode "rw"
 
 # Standard users should not be able to read/write the root folder
-kdb set user/tests/path "/root"
-# ERROR:C03200
+[ $(id -u) = 0 ] && printf >&2 'User is root\n' || kdb set user/tests/path "/root"
+# STDERR: User is root|.*C03200.*
 
 # Set something which the current user can access for sure
 kdb set user/tests/path "$HOME"

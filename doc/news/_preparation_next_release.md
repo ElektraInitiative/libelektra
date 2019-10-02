@@ -82,6 +82,12 @@ plugins. _(René Schwaiger)_
 - A function to detect help mode, without invoking `elektraGetOpts` was added. It simply checks, whether `--help` is one
   of the string in `argv`. _(Klemens Böswirth)_
 
+### Path
+
+- The [Markdown Shell Recorder][] test of the plugin now also works, if you execute it as root user. _(René Schwaiger)_
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
 ### Tcl
 
 - We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
