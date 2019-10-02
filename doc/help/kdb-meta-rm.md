@@ -1,8 +1,8 @@
-# kdb-rmmeta(1) -- Remove metakey of a key from the key database
+# kdb-meta-rm(1) -- Remove metakey of a key from the key database
 
 ## SYNOPSIS
 
-`kdb rmmeta <key name> <metaname>`
+`kdb meta-rm <key name> <metaname>`
 
 Where `key name` is the name of the key and `metaname` is the name of the metakey you want to remove.
 
@@ -28,7 +28,7 @@ This command removes a metakey of a key from the Key database.
 ## EXAMPLES
 
 To remove metakey `metakey` of a key:<br>
-`kdb rmmeta user/example metakey`
+`kdb meta-rm user/example metakey`
 
 ## SEE ALSO
 
