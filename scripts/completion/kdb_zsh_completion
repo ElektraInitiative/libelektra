@@ -127,7 +127,7 @@ _kdb-set () {
     _kdb_paths
 }
 
-_kdb-setmeta () {
+_kdb-meta-set () {
     # TODO key-name metaname metavalue
     _kdb_paths
 }

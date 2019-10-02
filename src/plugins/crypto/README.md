@@ -111,7 +111,7 @@ Now you can specify a key `user/t/a` and protect its content by using:
 
 ```sh
 kdb set user/t/a
-kdb setmeta user/t/a crypto/encrypt 1
+kdb meta-set user/t/a crypto/encrypt 1
 kdb set user/t/a "secret"
 ```
 

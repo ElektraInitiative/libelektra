@@ -48,10 +48,10 @@ sudo kdb mount ls.ecf user/tests/examples dump
 
 # Create the keys we use for the examples
 kdb set user/tests/examples/kdb-showmeta test
-kdb setmeta user/tests/examples/kdb-showmeta meta1 val1
-kdb setmeta user/tests/examples/kdb-showmeta meta2 val2
-kdb setmeta user/tests/examples/kdb-showmeta meta3 val3
-kdb setmeta user/tests/examples/kdb-showmeta meta4 val4
+kdb meta-set user/tests/examples/kdb-showmeta meta1 val1
+kdb meta-set user/tests/examples/kdb-showmeta meta2 val2
+kdb meta-set user/tests/examples/kdb-showmeta meta3 val3
+kdb meta-set user/tests/examples/kdb-showmeta meta4 val4
 
 # list all meta keys for /tests/examples/kdb-showmeta
 kdb showmeta /tests/examples/kdb-showmeta
@@ -66,7 +66,7 @@ sudo kdb umount user/tests/examples
 
 ## SEE ALSO
 
-- How to set metadata: [kdb-setmeta(1)](kdb-setmeta.md)
+- How to set metadata: [kdb-meta-set(1)](kdb-meta-set.md)
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
 - [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

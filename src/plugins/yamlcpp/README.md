@@ -113,7 +113,7 @@ kdb get user/tests/yamlcpp/sunny/$(kdb getmeta user/tests/yamlcpp/sunny array)
 #> The Waitress
 
 # The plugin also supports empty arrays (arrays without any elements)
-kdb setmeta user/tests/yamlcpp/empty array ''
+kdb meta-set user/tests/yamlcpp/empty array ''
 kdb export user/tests/yamlcpp/empty yamlcpp
 #> []
 
@@ -251,8 +251,8 @@ kdb getmeta user/tests/yamlcpp/🔑 comment
 
 # Add a new key and add some metadata to the new key
 kdb set user/tests/yamlcpp/brand new
-kdb setmeta user/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
-kdb setmeta user/tests/yamlcpp/brand rationale "Because I Love It"
+kdb meta-set user/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb meta-set user/tests/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
 kdb lsmeta user/tests/yamlcpp/brand
@@ -271,7 +271,7 @@ We can also invoke additional plugins that use metadata like `type`.
 ```sh
 sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp type
 kdb set user/tests/yamlcpp/typetest/number 21
-kdb setmeta user/tests/yamlcpp/typetest/number check/type short
+kdb meta-set user/tests/yamlcpp/typetest/number check/type short
 
 kdb set user/tests/yamlcpp/typetest/number "One"
 # RET: 5
@@ -328,7 +328,7 @@ sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 # Check if the plugin saves null keys correctly
 kdb set user/tests/yamlcpp/null
 kdb set user/tests/yamlcpp/null/level1/level2
-kdb setmeta user/tests/yamlcpp/null/level1/level2 comment 'Null key'
+kdb meta-set user/tests/yamlcpp/null/level1/level2 comment 'Null key'
 
 kdb ls user/tests/yamlcpp/null
 #> user/tests/yamlcpp/null
@@ -465,7 +465,7 @@ directory: ___dirdata = Directory Data
 sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 
 kdb set user/tests/yamlcpp/directory 'Directory Data'
-kdb setmeta user/tests/yamlcpp/directory comment 'Directory Metadata'
+kdb meta-set user/tests/yamlcpp/directory comment 'Directory Metadata'
 kdb set user/tests/yamlcpp/directory/file 'Leaf Data'
 
 kdb ls user/tests/yamlcpp/directory

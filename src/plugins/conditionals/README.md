@@ -75,10 +75,10 @@ kdb set user/tests/conditionals/fkey 3.0
 kdb set user/tests/conditionals/hkey hello
 
 # will succeed
-kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
 
 # will fail
-kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERROR:C03200
 ```
@@ -87,7 +87,7 @@ Assignment example:
 
 ```sh
 kdb set user/tests/conditionals/hkey Hello
-kdb setmeta user/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+kdb meta-set user/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
 
 kdb get user/tests/conditionals/hkey

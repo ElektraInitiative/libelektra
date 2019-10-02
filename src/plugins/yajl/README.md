@@ -210,12 +210,12 @@ kdb mount conf.json user/tests/yajl yajl
 kdb set user/tests/yajl 1
 kdb get user/tests/yajl
 #> 1
-kdb setmeta user/tests/yajl type boolean
+kdb meta-set user/tests/yajl type boolean
 kdb set user/tests/yajl on
 kdb get user/tests/yajl
 #> 1
 kdb set user/tests/yajl/subkey disable
-kdb setmeta user/tests/yajl/subkey type boolean
+kdb meta-set user/tests/yajl/subkey type boolean
 kdb get user/tests/yajl/subkey
 #> 0
 

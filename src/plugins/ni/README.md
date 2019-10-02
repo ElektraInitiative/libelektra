@@ -69,8 +69,8 @@ For in-detail explanation of the syntax
 sudo kdb mount file.ini spec/tests/ni ni
 
 # Add some metadata
-kdb setmeta spec/tests/ni/key metakey metavalue
-kdb setmeta spec/tests/ni/key check/type char
+kdb meta-set spec/tests/ni/key metakey metavalue
+kdb meta-set spec/tests/ni/key check/type char
 
 # Retrieve metadata
 kdb lsmeta spec/tests/ni/key

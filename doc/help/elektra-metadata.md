@@ -65,7 +65,7 @@ Every key-value pair can have an arbitrary number of metakeys
 with metavalues attached. Identical to keys, metakeys are
 unique, but only within its key they are attached to.
 
-To create a metakey, use [kdb-setmeta(1)](kdb-setmeta.md),
+To create a metakey, use [kdb-meta-set(1)](kdb-meta-set.md),
 to get metadata [kdb-getmeta(1)](kdb-getmeta.md).
 
 The preferred way to use metadata is to set all metadata

@@ -22,7 +22,7 @@ This plugin validates IP addresses using regular expressions.
 kdb mount config.dump /tests/ipaddr dump ipaddr
 
 # Check the validity of the IP stored in `/tests/ipaddr/ipv4`
-kdb setmeta /tests/ipaddr/ipv4 check/ipaddr ipv4
+kdb meta-set /tests/ipaddr/ipv4 check/ipaddr ipv4
 
 # Try to set an incorrect IP address
 kdb set /tests/ipaddr/ipv4 127.0.0.1337
@@ -36,7 +36,7 @@ kdb get /tests/ipaddr/ipv4
 #> 127.0.0.1
 
 # By default the plugin allows both IPv4 and IPv6 addresses
-kdb setmeta /tests/ipaddr/address check/ipaddr ""
+kdb meta-set /tests/ipaddr/address check/ipaddr ""
 
 # Set correct IP addresses
 kdb set /tests/ipaddr/address 1.2.3.4
