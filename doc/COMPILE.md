@@ -368,8 +368,6 @@ you can use:
 -DBINDINGS=MAINTAINED;-EXPERIMENTAL
 ```
 
-Note that the same languages are sometimes available over GI and SWIG.
-In this case, the SWIG bindings are preferred.
 The SWIG executable may be specified with:
 
 ```sh
@@ -378,11 +376,6 @@ The SWIG executable may be specified with:
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-To build GI bindings (deprecated) and gsettings (experimental) use:
-
-```sh
--DBINDINGS="GI;gsettings"
-```
 
 Some bindings provide different APIs (and not a different language), e.g:
 
