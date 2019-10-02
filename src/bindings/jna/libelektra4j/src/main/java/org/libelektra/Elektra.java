@@ -13,7 +13,7 @@ public interface Elektra extends Library {
 	/**
 	 * Overall native binding to the elektra library
 	 */
-	Elektra INSTANCE = (Elektra) Native.loadLibrary("elektra", Elektra.class);
+	Elektra INSTANCE = (Elektra) Native.loadLibrary("elektra-kdb", Elektra.class);
 
 	/**************************************
 	 *
