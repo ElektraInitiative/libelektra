@@ -142,7 +142,7 @@ sudo kdb mount config.yaml user/tests/yanlr yanlr
 printf '"null":' > `kdb file user/tests/yanlr`
 
 # Elektra adds the metakey `binary` for empty keys
-kdb lsmeta user/tests/yanlr/null
+kdb meta-ls user/tests/yanlr/null
 #> binary
 
 # Undo modifications to the key database

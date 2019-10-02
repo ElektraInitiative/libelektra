@@ -95,7 +95,7 @@ _kdb-ls () {
     _kdb_paths
 }
 
-_kdb-lsmeta () {
+_kdb-meta-ls () {
     _kdb_paths
 }
 

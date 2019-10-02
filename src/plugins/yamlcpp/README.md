@@ -244,7 +244,7 @@ sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
 echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user/tests/yamlcpp`
-kdb lsmeta user/tests/yamlcpp/🔑
+kdb meta-ls user/tests/yamlcpp/🔑
 #> comment
 kdb getmeta user/tests/yamlcpp/🔑 comment
 #> Unicorn
@@ -255,7 +255,7 @@ kdb meta-set user/tests/yamlcpp/brand comment "The Devil And God Are Raging Insi
 kdb meta-set user/tests/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
-kdb lsmeta user/tests/yamlcpp/brand
+kdb meta-ls user/tests/yamlcpp/brand
 #> comment
 #> rationale
 kdb getmeta user/tests/yamlcpp/brand rationale

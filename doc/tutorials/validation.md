@@ -54,7 +54,7 @@ For all other plugins (except `validation`) the convenience tool `kdb vset`
 is missing. Let us see what `kdb vset` actually did:
 
 ```sh
-kdb lsmeta user/tests/together/test
+kdb meta-ls user/tests/together/test
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -124,9 +124,9 @@ We write metadata to the namespace `spec` and the plugin `spec` applies it to ev
 kdb meta-set spec/tests/spec/test hello world
 kdb set /tests/spec/test value
 # STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Create a new key (user|system)/tests/spec/test with string "value"
-kdb lsmeta spec/tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls spec/tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb getmeta /tests/spec/test hello
 #> world
@@ -143,7 +143,7 @@ But it also supports globbing (`_` for any key, `?` for any char, `[]` for chara
 kdb meta-set "spec/tests/spec/_" new metaval
 kdb set /tests/spec/test value
 # STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Set string to "value"
-kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
@@ -171,7 +171,7 @@ kdb set /tests/spec/test "not a number"
 this key has adopted all metadata from the spec namespace:
 
 ```sh
-kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -235,7 +235,7 @@ check/validation/match=LINE              \
 check/validation/message=not a valid URL \
 description=A link to some website       \
 HERE
-kdb lsmeta spec/tests/tutorial
+kdb meta-ls spec/tests/tutorial
 #> infos/plugins
 #> mountpoint
 ```

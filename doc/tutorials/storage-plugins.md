@@ -57,14 +57,14 @@ kdb set user/tests/storage/null
 #> Create a new key user/tests/storage/null with null value
 kdb get user/tests/storage/null
 #>
-kdb lsmeta user/tests/storage/null
+kdb meta-ls user/tests/storage/null
 #> binary
 
 kdb set user/tests/storage/empty ''
 #> Create a new key user/tests/storage/empty with string ""
 kdb get user/tests/storage/empty
 #>
-kdb lsmeta user/tests/storage/empty
+kdb meta-ls user/tests/storage/empty
 #>
 
 # Undo modifications to the key database

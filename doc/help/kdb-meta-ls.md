@@ -1,8 +1,8 @@
-# kdb-lsmeta(1) - Print metakeys associated with a key
+# kdb-meta-ls(1) - Print metakeys associated with a key
 
 ## SYNOPSIS
 
-`kdb lsmeta <key name>`
+`kdb meta-ls <key name>`
 
 Where `key name` is the name of the key.
 
@@ -31,7 +31,7 @@ If no metakeys are associated with the given key, nothing will be printed.<br>
 ## EXAMPLE
 
 To see which metakeys are associated with a key:<br>
-`kdb lsmeta /example/key`
+`kdb meta-ls /example/key`
 
 ## SEE ALSO
 
