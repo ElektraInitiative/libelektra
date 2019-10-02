@@ -18,7 +18,7 @@ if [ "$RESOLVER" = "resolver" ]; then
 	exit 1
 fi
 
-INFO="$($KDB info "$RESOLVER" 2> /dev/null)"
+INFO="$($KDB plugin-info "$RESOLVER" 2> /dev/null)"
 
 if [ "$?" -ne 0 ]; then
 	echo "$RESOLVER is not a valid plugin"
