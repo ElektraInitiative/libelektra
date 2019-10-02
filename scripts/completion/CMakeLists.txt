@@ -47,7 +47,4 @@ if (INSTALL_SYSTEM_FILES)
 		# This Folder is at least the valid folder for Debian
 		install (FILES kdb_zsh_completion DESTINATION /usr/share/zsh/vendor-completions RENAME _kdb)
 	endif ()
-
-	configure_file (list-tools.in list-tools)
-	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/list-tools" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 endif ()
