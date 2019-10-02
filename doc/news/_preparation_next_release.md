@@ -194,6 +194,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
+- We structured the [scripts](/scripts). _(Markus Raab)_
 - Removed the scripts
 
   - `scripts/elektra-merge`,
