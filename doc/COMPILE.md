@@ -36,7 +36,7 @@ reading the rest of the document for details about these steps):
    ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
    make -j 5  # running makefile (compiling, linking etc.), -j specifies the number of jobs to run simultaneously
    make run_nokdbtests  # optional: run tests
- ```
+```
 
 The last line only runs tests not writing into your system.
 See [TESTING](/doc/TESTING.md) for how to run more tests.
