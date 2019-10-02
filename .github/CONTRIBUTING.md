@@ -9,9 +9,9 @@ $ git config --global user.name "Your Name"
 $ git config --global user.email "your_email@example.com"
 ```
 
-When you connect to a GitHub repository from Git, you have to set up the [authentication](https://help.github.com/en/articles/set-up-git#next-steps-authenticating-with-github-from-git) settings. 
+When you connect to a GitHub repository from Git, you have to set up the [authentication](https://help.github.com/en/articles/set-up-git#next-steps-authenticating-with-github-from-git) settings.
 
-## Fork & Sync 
+## Fork & Sync
 
 We use a fork/sync and pull-request (see below) model at GitHub, follow this short [tutorial](https://help.github.com/articles/fork-a-repo/) to get familiar with forking and syncing.
 
@@ -31,11 +31,11 @@ Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to s
 
 If you want to publish your local changes to this project you have to create a new pull-request.
 
-1. Open GitHub and navigate to *your* libeketra-fork
-2. In the tab *Codes* press the *New Pull-Request* button and choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
-3. Now you should be able to set up the *Comparing changes* settings.  Choose the head repository and base repository. E.g.: if you have some changes in the master branch of your forked repository, select *head repository: yournickname/libelektra and *compare: master* and *base repositroy: ElektraInitiative/libelektra* and *base: master*
-4. Add some information about the changes in the release notes (path of the file: /libelektra/doc/news/_preparation_next_release.md), skipping this step may cause a rejected pull-request
-5. Commit and push your local changes in git (keep in mind to sync your fork - fetch, rebase & push) 
+1. Open GitHub and navigate to _your_ libeketra-fork
+2. In the tab _Codes_ press the _New Pull-Request_ button and choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
+3. Now you should be able to set up the _Comparing changes_ settings. Choose the head repository and base repository. E.g.: if you have some changes in the master branch of your forked repository, select *head repository: yournickname/libelektra and *compare: master* and *base repositroy: ElektraInitiative/libelektra* and *base: master\*
+4. Add some information about the changes in the release notes (path of the file: /libelektra/doc/news/\_preparation_next_release.md), skipping this step may cause a rejected pull-request
+5. Commit and push your local changes in git (keep in mind to sync your fork - fetch, rebase & push)
 6. Wait for the code-review
 
 ## Code-Review
