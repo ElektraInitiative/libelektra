@@ -1,8 +1,8 @@
-# kdb-list(1) -- List plugins available to Elektra
+# kdb-plugin-list(1) -- List plugins available to Elektra
 
 ## SYNOPSIS
 
-`kdb list [provider]`
+`kdb plugin-list [provider]`
 
 ## DESCRIPTION
 
@@ -33,13 +33,13 @@ The best plugins will be the last in the list.
 ## EXAMPLES
 
 To get a sorted list of all available plugins with their status:<br>
-`kdb list -v`
+`kdb plugin-list -v`
 
 To get a sorted list of all storage plugins:<br>
-`kdb list storage`
+`kdb plugin-list storage`
 
 To get a sorted list of all plugins that provide `ini` with their status:<br>
-`kdb list -v ini`
+`kdb plugin-list -v ini`
 
 ## SEE ALSO
 

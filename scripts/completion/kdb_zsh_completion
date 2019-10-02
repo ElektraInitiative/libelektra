@@ -85,7 +85,7 @@ _kdb-plugin-info () {
     # TODO plugin [clause name]
 }
 
-_kdb-list () {
+_kdb-plugin-list () {
     _message -e "No Arguments for list"
     return
 }

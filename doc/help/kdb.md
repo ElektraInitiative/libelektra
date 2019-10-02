@@ -43,8 +43,8 @@ Documentation of plugins is available using the
 [kdb-plugin-info(1)](kdb-plugin-info.md) tool:<br>
 `kdb plugin-info`
 
-Run `kdb list` for a list of plugins:<br>
-`kdb list`
+Run `kdb plugin-list` for a list of plugins:<br>
+`kdb plugin-list`
 
 Each of these commands has its own man page for
 further details.

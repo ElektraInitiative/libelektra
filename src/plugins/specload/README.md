@@ -31,7 +31,7 @@ The plugin relies heavily on the `quickdump` plugin. It is used for storing the 
 To check whether `quickdump` is available you can use:
 
 ```
-kdb list quickdump
+kdb plugin-list quickdump
 #> quickdump
 ```
 

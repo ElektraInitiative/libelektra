@@ -221,19 +221,19 @@ function __fish_kdb_print_namespaces -d 'Print a list of possible namespace comp
 end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
-    kdb list
+    kdb plugin-list
 end
 
 function __fish_kdb_print_non_resolver_plugins -d 'Print a list of non-resolver plugins'
-    kdb list | string match -vr '.*resolver.*' | string match -vr (kdb list resolver | string join '|')
+    kdb plugin-list | string match -vr '.*resolver.*' | string match -vr (kdb plugin-list resolver | string join '|')
 end
 
 function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
-    kdb list resolver
+    kdb plugin-list resolver
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
-    kdb list storage
+    kdb plugin-list storage
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
