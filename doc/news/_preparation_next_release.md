@@ -304,6 +304,9 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
 - Corrected buildserver documentation. _(Djordje Bulatovic)_
 - Add merge library into kdbset example. _(Dominic Jäger)_
+- We updated links for the INI parsing library Nickel. _(René Schwaiger)_
+- Added a new [Get Started](../../doc/GETSTARTED.md). _(Hani Torabi)_
+- Added some informations about [contributing](../../.github/CONTRIBUTING.md) to Elektra. _(Hani Torabi)_
 
 ## Tests
 
@@ -402,6 +405,8 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - The website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
 - Improve mainpage of website, restructure getting started. _(Markus Raab)_
 - <<TODO>>
+- The Website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- Renamed the sub menu *Getting Started* in the menu *Documentation* to *About Elektra* and removed the sub-sub-menus *Compiling*, *Installation* and *Tutorials*. These sub-sub-menus are now sub-menus of *Documentation*. A new sub menu labeled *Get Started* added to the menu *Documentation* with some newcomer-friendly informations. Renamed the *Getting Started* sub menu in *Development* to *Contribute to Elektra*. The green button on the main page is routed to the new *Get Started* page. _(Hani Torabi)_
 - <<TODO>>
 
 ## Outlook
