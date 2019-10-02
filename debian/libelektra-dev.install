@@ -72,7 +72,6 @@ usr/lib/*/cmake/Elektra/ElektraConfig.cmake
 usr/lib/*/cmake/Elektra/ElektraConfigVersion.cmake
 usr/lib/*/cmake/Elektra/ElektraTargetsLibelektra-*.cmake
 usr/lib/*/cmake/Elektra/ElektraTargetsLibelektra.cmake
-usr/lib/*/libelektra.so
 usr/lib/*/pkgconfig/elektra.pc
 usr/lib/*/pkgconfig/elektra-notification.pc
 usr/lib/*/pkgconfig/elektra-io.pc
