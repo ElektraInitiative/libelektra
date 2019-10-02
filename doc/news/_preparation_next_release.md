@@ -276,7 +276,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - The `🔗 Check` build job now merges PRs before checking links. _(Klemens Böswirth)_
 - We enabled logging in the build job `🍎 Clang`. This update makes sure that Elektra’s logging code compiles without warnings on macOS. _(René Schwaiger)_
-- <<TODO>>
+- All macOS build jobs now use Xcode `11` instead of Xcode `10.1`. _(René Schwaiger)_
 
 ### Jenkins
 
