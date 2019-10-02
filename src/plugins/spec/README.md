@@ -159,7 +159,7 @@ cp battery.ini $(dirname $(kdb file spec))
 kdb mount battery.ini spec/example/battery ni
 kdb spec-mount /example/battery
 kdb meta-ls /example/battery/level    # we see it has a check/enum
-kdb getmeta /example/battery/level check/enum    # now we know allowed values
+kdb meta-get /example/battery/level check/enum    # now we know allowed values
 kdb set /example/battery/level low   # success, low is ok!
 kdb set /example/battery/level x     # fails, not one of the allowed values!
 

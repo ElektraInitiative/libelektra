@@ -48,7 +48,7 @@ kdb get user/test/file
 #> foo
 kdb get user/test/file/bar
 #> bar
-kdb getmeta user/test/file/bar meta
+kdb meta-get user/test/file/bar meta
 #> da_ta
 ```
 
@@ -101,7 +101,7 @@ kdb meta-set user/tests/xercesfile xerces/rootname xerces
 kdb set user/tests/xercesfile/bar bar
 kdb meta-set user/tests/xercesfile/bar meta "da_ta"
 
-kdb getmeta user/tests/xercesfile xerces/rootname
+kdb meta-get user/tests/xercesfile xerces/rootname
 #> xerces
 
 kdb get user/tests/xercesfile/bar

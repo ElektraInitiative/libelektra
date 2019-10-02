@@ -127,13 +127,13 @@ rm b.tmp
 kdb get user/tests/quickdump/key
 #> other value
 
-kdb getmeta user/tests/quickdump/key meta
+kdb meta-get user/tests/quickdump/key meta
 #> metavalue
 
 kdb get user/tests/quickdump/otherkey
 #> other value
 
-kdb getmeta user/tests/quickdump/otherkey meta
+kdb meta-get user/tests/quickdump/otherkey meta
 #> metavalue
 
 # Cleanup

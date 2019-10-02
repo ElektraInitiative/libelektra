@@ -38,7 +38,7 @@ meta=foo
 specify that `key` has a metadata key `meta` containing the metavalue `foo`:
 
 ```bash
-kdb getmeta user/ni/key meta
+kdb meta-get user/ni/key meta
 #> foo
 ```
 
@@ -76,7 +76,7 @@ kdb meta-set spec/tests/ni/key check/type char
 kdb meta-ls spec/tests/ni/key
 #> check/type
 #> metakey
-kdb getmeta spec/tests/ni/key metakey
+kdb meta-get spec/tests/ni/key metakey
 #> metavalue
 
 # Add and retrieve key values

@@ -198,14 +198,14 @@ kdb meta-ls user/tests/ini/brand | grep -v 'internal'
 # rationale
 # description
 
-kdb getmeta user/tests/ini/brand description
+kdb meta-get user/tests/ini/brand description
 #> The Devil And God Are Raging Inside Me
-kdb getmeta user/tests/ini/brand rationale
+kdb meta-get user/tests/ini/brand rationale
 #> Because I Love It
 
 # The plugin ignores some metadata such as `comment`!
 kdb meta-set user/tests/ini/brand comment "Where Art Thou?"
-kdb getmeta user/tests/ini/brand comment
+kdb meta-get user/tests/ini/brand comment
 # STDERR: Metakey not found
 # RET: 2
 

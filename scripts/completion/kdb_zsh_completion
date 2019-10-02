@@ -71,7 +71,7 @@ _kdb-get () {
     _kdb_paths
 }
 
-_kdb-getmeta () {
+_kdb-meta-get () {
     # TODO key-name metaname
     _kdb_paths
 }

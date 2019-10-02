@@ -72,6 +72,6 @@ sudo kdb meta-set spec/test override/#0
 
 ## SEE ALSO
 
-- How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
+- How to get metadata: [kdb-meta-get(1)](kdb-meta-get.md)
 - [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

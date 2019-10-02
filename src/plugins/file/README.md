@@ -62,7 +62,7 @@ kdb meta-ls system/tests/file
 #> info/uid
 
 # Check out the file’s permissions
-kdb getmeta system/tests/file info/mode
+kdb meta-get system/tests/file info/mode
 # STDOUT-REGEX: 1006[46]4
 
 # Unmount the file

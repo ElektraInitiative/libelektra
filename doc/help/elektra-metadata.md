@@ -66,7 +66,7 @@ with metavalues attached. Identical to keys, metakeys are
 unique, but only within its key they are attached to.
 
 To create a metakey, use [kdb-meta-set(1)](kdb-meta-set.md),
-to get metadata [kdb-getmeta(1)](kdb-getmeta.md).
+to get metadata [kdb-meta-get(1)](kdb-meta-get.md).
 
 The preferred way to use metadata is to set all metadata
 in the `spec` namespace and let the `spec` plugin copy

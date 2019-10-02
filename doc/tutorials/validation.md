@@ -128,12 +128,12 @@ kdb meta-ls spec/tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb getmeta /tests/spec/test hello
+kdb meta-get /tests/spec/test hello
 #> world
 
 # The default namespace for a non-root user is `user`, while
 # for root users a cascading key usually refers to the `system` namespace.
-kdb getmeta user/tests/spec/test hello || kdb getmeta system/tests/spec/test hello
+kdb meta-get user/tests/spec/test hello || kdb meta-get system/tests/spec/test hello
 #> world
 ```
 
