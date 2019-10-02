@@ -710,7 +710,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		if (m[1].rm_so == -1)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", conditionString);
+				parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information",
+				conditionString);
 			regfree (&regex1);
 			regfree (&regex2);
 			regfree (&regex3);
@@ -792,7 +793,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 				else if (ret == ERROR)
 				{
 					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-						parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information",
+						parentKey,
+						"Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information",
 						elseexpr);
 				}
 			}
