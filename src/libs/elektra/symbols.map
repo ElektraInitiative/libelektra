@@ -4,6 +4,11 @@ libelektra_0.8 {
 	elektraModulesInit;
 	elektraModulesLoad;
 
+	# plugin loading:
+	elektraPluginOpen;
+	elektraPluginClose;
+	elektraPluginGetFunction;
+
 	# kdbhelper.h
 	elektraCalloc;
 	elektraFormat;
@@ -156,11 +161,8 @@ libelektraprivate_1.0 {
 	keyNameIsUser;
 	keySetRaw;
 	keyVInit;
-	elektraPluginClose;
 	elektraPluginFindGlobal;
-	elektraPluginGetFunction;
 	elektraPluginMissing;
-	elektraPluginOpen;
 	elektraPluginVersion;
 	elektraProcessPlugin;
 	elektraProcessPlugins;
