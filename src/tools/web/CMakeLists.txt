@@ -36,9 +36,9 @@ else ()
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-				    COMMAND "PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad"
-				    	    GO111MODULE=on
-				    	    ${GO_EXECUTABLE}
+				    COMMAND PKG_CONFIG_PATH="${CMAKE_CURRENT_BINARY_DIR}/elektrad"
+					    GO111MODULE=on
+					    ${GO_EXECUTABLE}
 					    ARGS
 					    build
 					    -o
