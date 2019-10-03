@@ -199,7 +199,8 @@ static void test_baseName (void)
 	succeed_if (elektraArrayValidateBaseNameString ("monkey") == -1, "monkey should not be valid");
 }
 
-static void test_multiArrayKeys (void) {
+static void test_multiArrayKeys (void)
+{
 	printf ("Test arrays with multiple indices\n");
 
 	/*
@@ -265,7 +266,7 @@ static void test_multiArrayKeys (void) {
 	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
 	succeed_if_same_string (keyName (key), "user/array/#/subarray/#3");
 
-	keyDel(key);
+	keyDel (key);
 }
 
 int main (int argc, char ** argv)
