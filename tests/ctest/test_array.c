@@ -202,6 +202,12 @@ static void test_baseName (void)
 static void test_multiArrayKeys (void) {
 	printf ("Test arrays with multiple indices\n");
 
+	/*
+	 * Test with "valid" array indices in two places.
+	 *
+	 * Currently behaviour is not documented, but only the last key is increased
+	 */
+
 	Key * key = keyNew ("user/array/#0/subarray/#", KEY_END);
 
 	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
@@ -216,12 +222,50 @@ static void test_multiArrayKeys (void) {
 	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
 	succeed_if_same_string (keyName (key), "user/array/#0/subarray/#3");
 
-	keyDel (key);
 
-	key = keyNew ("user/array/#/subarray");
+	/*
+	 * Try to increase an array index in a not "leaf" position
+	 */
+
+	keySetName (key, "user/array/#/subarray");
 	succeed_if (elektraArrayIncName (key), "Incrementing parent array index should not work");
 
-	keyDel (key);
+	/*
+	 * Test with new keys in two positions. Only the last one should be expanded to an array key.
+	 *
+	 */
+
+	keySetName (key, "user/array/#/subarray/#");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#0");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#1");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#2");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#3");
+
+	/*
+	 * Test with an empty key in a non-leaf position, only the last component should be increased, expanded
+	 *
+	 */
+
+	keySetName (key, "user/array/#/subarray/#0");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#1");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#2");
+
+	succeed_if (!elektraArrayIncName (key), "Could not increment array key name");
+	succeed_if_same_string (keyName (key), "user/array/#/subarray/#3");
+
+	keyDel(key);
 }
 
 int main (int argc, char ** argv)
