@@ -64,9 +64,11 @@ the mount point, then it uses the mount point's name instead.
 
 ## Dependencies
 
-- `Xerces-C++ 3.0.0` or newer (`apt-get install libxerces-c-dev`)
+- `Xerces-C++ 3.0.0` or newer (`apt-get install libxerces-c-dev` or `brew install xerces-c` on macOS)
 - CMake 3.6 or a copy of `FindXercesC.cmake` in
   `/usr/share/cmake-3.0/Modules/`
+
+To include this plugin in a homebrew installation run `brew install elektra --with-dep-plugins`
 
 ## Limitations
 
