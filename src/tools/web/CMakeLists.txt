@@ -36,14 +36,14 @@ else ()
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-				    COMMAND PKG_CONFIG_PATH="${CMAKE_CURRENT_BINARY_DIR}/elektrad"
-					    GO111MODULE=on
-					    ${GO_EXECUTABLE}
+				    COMMAND ${GO_EXECUTABLE}
 					    ARGS
 					    build
 					    -o
 					    "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 				    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
+				    ENVIRONMENT "PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad"
+						GO111MODULE=on
 				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go"
 					    "elektra;elektra-kdb;elektra-ease;elektra-invoke;elektra-pluginprocess")
 		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
