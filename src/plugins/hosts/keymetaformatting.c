@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
+#include <kdbinternal.h>
 #include <string.h>
 
 static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t spaces, const char * commentStart, const char * comment)

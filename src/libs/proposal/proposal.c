@@ -11,8 +11,8 @@
 #include <string.h>
 
 #include <kdbassert.h>
+#include <kdbinternal.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
 
 /**
  * @defgroup proposal Proposals for Elektra

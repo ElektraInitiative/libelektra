@@ -20,25 +20,10 @@ extern "C" {
 #endif
 
 
-// can be made simply without elektra's internals, so better keep it as
-// extension.
-ssize_t keySetStringF (Key * key, const char * format, ...);
-
 int elektraKsToMemArray (KeySet * ks, Key ** buffer);
 
 KeySet * ksRenameKeys (KeySet * config, const Key * name);
 
-/**
- * @brief Lock options
- *
- * @ingroup proposal
- */
-enum elektraLockOptions
-{
-	KEY_LOCK_NAME = 1 << 17, ///< lock the name of a key
-	KEY_LOCK_VALUE = 1 << 18,
-	KEY_LOCK_META = 1 << 19
-};
 
 /**
  * @brief More lookup options
@@ -56,9 +41,6 @@ enum elektraLookupOptions
 	KDB_O_OPMPHM = 1 << 21,   ///< Overrule ksLookup search predictor to use OPMPHM, make sure to set ENABLE_OPTIMIZATIONS=ON at cmake
 	KDB_O_BINSEARCH = 1 << 22 ///< Overrule ksLookup search predictor to use Binary search for lookup
 };
-
-// locks a key, is this needed externally?
-int keyLock (Key * key, option_t what);
 
 // this might become the new keySetName
 ssize_t elektraKeySetName (Key * key, const char * newName, option_t options);
