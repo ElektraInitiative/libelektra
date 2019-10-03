@@ -16,7 +16,7 @@ install (PROGRAMS benchmark-createtree DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS kdb/mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_all.in" "${CMAKE_CURRENT_BINARY_DIR}/run_all" @ONLY)
