@@ -931,6 +931,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
           artifacts.add("\"${buildDir}\"/src/tools/web/elektrad/elektra.pc")
+          artifacts.add("\"${buildDir}\"/src/tools/web/CMakeFiles/elektrad.dir/build.make")
         }
 
         try {
