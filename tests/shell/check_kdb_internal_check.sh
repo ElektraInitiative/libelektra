@@ -65,7 +65,7 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	fi
 
 	> $FILE
-	"$KDB" check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	"$KDB" plugin-check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
 	succeed_if "check of plugin $PLUGIN with args $ARGS failed"
 
 	test ! -s $FILE
