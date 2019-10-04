@@ -17,7 +17,7 @@ elektra_export_plugin_symbols (SOURCE
 			       PLUGINS
 			       ${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
 
-# Include the shared header files of the elektra project
+# Include the shared header files of the Elektra project
 include (LibAddMacros)
 add_headers (HDR_FILES)
 
@@ -88,30 +88,9 @@ if (BUILD_SHARED)
 			  generate_version_script)
 	target_link_libraries (elektra-kdb elektra-core)
 
-	# ~~~
-	# message(STATUS "ignore the following ADD_LIBRARY warning")
-	# add_library (elektra INTERFACE) # no SOVERSION?
-	# ~~~
-	add_library (elektra SHARED ${KDB_FILES} ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra
-			  kdberrors_generated
-			  elektra_error_codes_generated
-			  generate_version_script)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
-	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
 
-	# ~~~
-	# target_link_libraries (elektra ${elektra-extension_LIBRARIES})
-	# target_link_libraries (elektra elektra-core elektra-kdb)
-	# set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "--copy-dt-needed-entries")
-	# ~~~
-	set_target_properties (elektra PROPERTIES LINKER_LANGUAGE C)
-
-	set (elektra-all_LIBRARIES
-	     elektra-core
-	     elektra-kdb
-	     elektra
-	     ${elektra-extension_LIBRARIES})
+	set (elektra-all_LIBRARIES elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
 	set_target_properties (${elektra-all_LIBRARIES}
 			       PROPERTIES COMPILE_DEFINITIONS
 					  "HAVE_KDBCONFIG_H"
@@ -139,7 +118,6 @@ if (BUILD_SHARED)
 
 	install (TARGETS elektra-core
 			 elektra-kdb
-			 elektra
 			 DESTINATION
 			 lib${LIB_SUFFIX}
 		 EXPORT ElektraTargetsLibelektra)

@@ -34,7 +34,7 @@ To build the bindings explicitly as part of the elektra build process, we add th
 
 ## Example
 
-Note that your dynamic linker must be able to find `libelektra`. If you just compiled it, you can run `source ../scripts/run_dev_env` from the `build` directory to modify your `PATH` appropriately.
+Note that your dynamic linker must be able to find `libelektra-{core,meta,kdb}`. If you just compiled it, you can run `source ../scripts/run_dev_env` from the `build` directory to modify your `PATH` appropriately.
 
 See the `example` directory for a fully setup project. To run it, change directories into `build/src/bindings/rust/example/` and run `cargo run --bin key`.
 
