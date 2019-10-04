@@ -115,17 +115,12 @@ Most likely, you have to include this dependency as well:
 
 ### Using Elektra Plugins
 
-The `NativeElektraPlugin` can be used to load a native Elektra plugin which is written in C/C++.
-You can load a Plugin like the following:
+The `PluginLoader` can be used to load a native Elektra plugin which is written in C/C++.
+You can load a native Elektra Plugin like the following:
 
 ```java
-Key parentKey = Key.create("user/tests/javabinding");
-NativeElektraPlugin yourPlugin = null;
-		try {
-			yourPlugin = new NativeElektraPlugin("error", parentKey);
-		} catch (InstallationException e) {
-			// Most likely the desired plugin is not installed or you had a typo in the pluginName
-		}
+PluginLoader pluginLoader = new PluginLoader();
+Plugin errorPlugin = pluginLoader.loadElektraPlugin("error");
 ```
 
 Now you can pass a KeySet and let the Plugin do its work. E.g., the code below tests if the `error` plugin.
@@ -142,13 +137,8 @@ errorPlugin.kdbSet(ks, parentKey);
 Another example is the `range` plugin which throws the equivalent Java exception:
 
 ```java
-NativeElektraPlugin rangePlugin = null;
-try {
-    rangePlugin = new NativeElektraPlugin("range", Key.create("user/tests/javabinding"));
-} catch (InstallationException e) {
-    // Handle plugin not available
-    return;
-}
+PluginLoader pluginLoader = new PluginLoader();
+Plugin rangePlugin = pluginLoader.loadElektraPlugin("range");
 Key rangeKey = Key.create("user/tests/myError", "30");
 rangeKey.setMeta("check/range", "1-20");
 final KeySet ks = KeySet.create(10, KeySet.KS_END);
@@ -161,10 +151,17 @@ rangePlugin.kdbSet(ks, parentKey);
 //At: .../elektra/src/plugins/range/range.c:447
 ```
 
+Note that the `PluginLoader` can also load Plugins written in Java such as the `PropertiesStorage` plugin:
+
+```java
+PluginLoader pluginLoader = new PluginLoader();
+Plugin propertiesStoragePlugin = pluginLoader.loadJavaPlugin(PropertiesStorage.PLUGIN_NAME);
+```
+
 ### Implementing Plugins
 
-The `Plugin` interface can be used to develop your _own_ Elektra plugins but written in Java.
-You basically have to implement the necessary methods which are of interest to you such as
+The `Plugin` interface can be used to develop your _own_ Elektra plugins written in Java.
+You have to implement the necessary methods which are of interest to you such as
 `set(KeySet ks, Key parentKey)` for plugins which should change the key database.
 We added a tutorial with more details for you [here](../../../doc/tutorials/java-plugins.md).
 You can see various examples in the [plugin folder](src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin

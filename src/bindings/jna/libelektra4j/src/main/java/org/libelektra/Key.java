@@ -496,7 +496,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @param metaName      Key name of meta information to be set
 	 * @param newMetaString Meta value to be set
-	 * @return -1 in case of an error, 0 if no meta with given name is available for the key and value > 0
+	 * @return -1 in case of an error, 0 if no meta with given name is available for the key and value &gt; 0
 	 * representing the size of
 	 * newMetaString if update successful
 	 */
@@ -693,7 +693,7 @@ public class Key implements Iterable<String> {
 	 * Helper function to set new key value
 	 *
 	 * @param newString New key value to set
-	 * @return value > 0 representing saved bytes (+null byte), -1 in case of an error (null key)
+	 * @return value &gt; 0 representing saved bytes (+null byte), -1 in case of an error (null key)
 	 */
 	public int setString(final String newString) {
 		return Elektra.INSTANCE.keySetString(get(), newString);

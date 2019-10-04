@@ -271,7 +271,7 @@ public class KeySet implements Iterable<Key> {
 	/**
 	 * Helper function that rewinds the current key set
 	 *
-	 * @return
+	 * @return 0 on success, -1 on NullPointer
 	 */
 	public int rewind() {
 		return Elektra.INSTANCE.ksRewind(get());
