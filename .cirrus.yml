@@ -106,7 +106,6 @@ mac_task:
       libgcrypt
       libgit2
       libuv
-      llvm
       lua
       maven
       moreutils
@@ -137,8 +136,6 @@ mac_task:
       gem install ronn test-unit --user-install --no-document
 
   script:
-    - > # Use latest version of LLVM to translate Elektra
-      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
     - SYSTEM_DIR="$PWD/kdbsystem"
     - INSTALL_DIR="$PWD/install"
     - *create_and_chage_to_build_dir
