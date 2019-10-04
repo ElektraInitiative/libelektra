@@ -100,6 +100,7 @@ mac_task:
       doxygen
       glib
       gpgme
+      go
       graphviz
       libev
       libgcrypt
@@ -157,7 +158,7 @@ mac_task:
         -DKDB_DB_SYSTEM="$SYSTEM_DIR"
         -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
         -DPLUGINS="${PLUGINS:-ALL}"
-        -DTOOLS="${TOOLS:-ALL}"
+        -DTOOLS="${TOOLS:-ALL;web}"
         -GNinja
         ..
       )
