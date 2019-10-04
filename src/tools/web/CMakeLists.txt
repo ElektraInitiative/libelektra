@@ -46,6 +46,7 @@ else ()
 					    build
 					    -o
 					    "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+				    VERBATIM
 				    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
 				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go"
 					    "elektra;elektra-kdb;elektra-ease;elektra-invoke;elektra-pluginprocess")
