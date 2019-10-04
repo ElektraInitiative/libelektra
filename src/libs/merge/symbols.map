@@ -1,13 +1,5 @@
 libelektra_0.8 {
         # kdbmerge.h
 	elektraMerge;
-	getNonOverlapOnlyBaseConflicts;
-	getNonOverlapAllExistConflicts;
-	getNonOverlapBaseEmptyConflicts;
-	getOverlap3different;
-	getOverlap1empty;
-	getTotalOverlaps;
-	getTotalNonOverlaps;
-	getTotalConflicts;
 };
 
