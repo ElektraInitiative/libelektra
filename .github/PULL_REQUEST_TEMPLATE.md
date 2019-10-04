@@ -3,8 +3,8 @@
 These points need to be fulfilled for every PR:
 
 - [ ] Short descriptions of your changes are in the release notes
-       (added as entry in `doc/news/_preparation_next_release.md` which
-       contains `_(my name)_`)
+      (added as entry in `doc/news/_preparation_next_release.md` which
+      contains `_(my name)_`)
       **Please always add something to the release notes.**
 - [ ] Details of what you changed are in commit messages
       (first line should have `module: short statement` syntax)
