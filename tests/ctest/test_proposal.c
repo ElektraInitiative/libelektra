@@ -62,7 +62,6 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_ksPopAtCursor ();
-	test_ksToArray ();
 
 	printf ("\ntest_proposal RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 }

@@ -19,9 +19,6 @@ namespace ckdb
 extern "C" {
 #endif
 
-
-int elektraKsToMemArray (KeySet * ks, Key ** buffer);
-
 KeySet * ksRenameKeys (KeySet * config, const Key * name);
 
 
