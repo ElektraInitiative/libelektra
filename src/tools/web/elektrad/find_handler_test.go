@@ -7,15 +7,15 @@ import (
 
 func TestGetFind(t *testing.T) {
 	keyNames := []string{
-		"user/elektrad/find/result1",
-		"user/elektrad/find/result2",
+		"user/tests/elektrad/kdbfind/get/result1",
+		"user/tests/elektrad/kdbfind/get/result2",
 	}
 
 	for _, keyName := range keyNames {
 		setupKey(t, keyName)
 	}
 
-	w := testGet(t, "/kdbFind/user/elektrad/find")
+	w := testGet(t, "/kdbFind/user/tests/elektrad/kdbfind/get")
 
 	code := w.Result().StatusCode
 	Assertf(t, code == http.StatusOK, "wrong status code: %v", code)

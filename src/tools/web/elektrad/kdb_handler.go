@@ -58,10 +58,10 @@ func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*lookupResult, error) {
 	ks = ks.Cut(key)
-	foundKey, err := ks.Lookup(key)
+	foundKey := ks.Lookup(key)
 
-	if err != nil {
-		return nil, err
+	if foundKey == nil {
+		return nil, nil
 	}
 
 	var meta map[string]string
@@ -130,14 +130,7 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keySet, err := elektra.CreateKeySet()
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	_, err = kdb.Get(keySet, key)
+	keySet, err := getKeySet(kdb, key)
 
 	if err != nil {
 		writeError(w, err)
@@ -151,7 +144,7 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = keySet.AppendKey(key)
+	keySet.AppendKey(key)
 
 	if err != nil {
 		writeError(w, err)
@@ -177,24 +170,14 @@ func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keySet, err := elektra.CreateKeySet()
+	keySet, err := getKeySet(kdb, key)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	_, err = kdb.Get(keySet, key)
-
-	if err != nil {
-		writeError(w, err)
-	}
-
-	err = keySet.Remove(key)
-
-	if err != nil {
-		writeError(w, err)
-	}
+	keySet.Remove(key)
 
 	_, err = kdb.Set(keySet, key)
 
