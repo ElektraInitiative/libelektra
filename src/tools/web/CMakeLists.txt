@@ -101,10 +101,7 @@ else ()
 		find_program (DREDD_EXECUTABLE "dredd")
 		if (DREDD_EXECUTABLE)
 			# testing is possible
-			configure_file (test.sh test.sh @ONLY)
-			add_test (NAME test_elektra_web
-				  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/test.sh"
-				  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+			add_test (NAME test_elektra_web COMMAND test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 			set_property (TEST test_elektra_web
 				      PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
 					       "PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad")
