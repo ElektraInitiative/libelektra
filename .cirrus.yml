@@ -76,6 +76,8 @@ mac_task:
         image: mojave-xcode-11.1
       env:
         ENABLE_LOGGER: ON
+        USE_LLVM: OFF
+        TOOLS: ALL;web
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -118,6 +120,7 @@ mac_task:
       doxygen
       glib
       gpgme
+      go
       graphviz
       libev
       libgcrypt
@@ -128,6 +131,7 @@ mac_task:
       maven
       moreutils
       ninja
+      npm
       openssl
       pkg-config
       prettier
@@ -153,10 +157,12 @@ mac_task:
       export PATH="/usr/local/opt/ruby@2.6/bin:/usr/local/lib/ruby/gems/2.6.0/bin:$PATH"
     - | # Install Ruby gems
       gem install ronn test-unit --user-install --no-document
+    - | # Install JavaScript packages
+      npm install dredd --global
 
   script:
     - > # Use latest version of LLVM to translate Elektra
-      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
+      if [ "$USE_LLVM" != OFF ] ; then export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++; fi
     - *create_build_dir
     - >
       set --
