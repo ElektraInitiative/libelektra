@@ -110,6 +110,7 @@ mac_task:
       maven
       moreutils
       ninja
+      npm
       openssl
       pkg-config
       prettier
@@ -134,6 +135,8 @@ mac_task:
       brew install ruby@2.5
     - | # Install Ruby gems
       gem install ronn test-unit --user-install --no-document
+    - | # Install JavaScript packages
+      npm install dredd --global
 
   script:
     - SYSTEM_DIR="$PWD/kdbsystem"
