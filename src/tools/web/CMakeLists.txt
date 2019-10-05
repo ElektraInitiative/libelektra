@@ -35,6 +35,18 @@ else ()
 				  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+		if (BUILD_SHARED)
+			set (ELEKTRA_LIBS_ELEKTRAD
+			     elektra-core
+			     elektra-kdb
+			     elektra-plugin
+			     elektra-ease
+			     elektra-meta)
+		elseif (BUILD_FULL)
+			set (ELEKTRA_LIBS_ELEKTRAD elektra-full)
+		elseif (BUILD_STATIC)
+			set (ELEKTRA_LIBS_ELEKTRAD elektra-static)
+		endif (BUILD_SHARED)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 				    COMMAND ${CMAKE_COMMAND}
 					    ARGS
@@ -48,8 +60,7 @@ else ()
 					    "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 				    VERBATIM
 				    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
-				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go"
-					    "elektra;elektra-kdb;elektra-ease;elektra-invoke;elektra-pluginprocess")
+				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go" ${ELEKTRA_LIBS_ELEKTRAD})
 		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
 
 		# build elektra-web
