@@ -59,6 +59,7 @@ mac_task:
       env:
         ENABLE_LOGGER: ON
         USE_LLVM: OFF
+        TOOLS: ALL;web
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -162,7 +163,7 @@ mac_task:
         -DKDB_DB_SYSTEM="$SYSTEM_DIR"
         -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
         -DPLUGINS="${PLUGINS:-ALL}"
-        -DTOOLS="${TOOLS:-ALL;web}"
+        -DTOOLS="${TOOLS:-ALL}"
         -GNinja
         ..
       )
