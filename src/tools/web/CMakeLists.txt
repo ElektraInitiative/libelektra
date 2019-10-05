@@ -105,8 +105,9 @@ else ()
 			add_test (NAME test_elektra_web
 				  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/test.sh"
 				  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-			set_property (TEST test_elektra_web PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-			set_property (TEST test_elektra_web PROPERTY ENVIRONMENT "PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad")
+			set_property (TEST test_elektra_web
+				      PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+					       "PKG_CONFIG_PATH=${CMAKE_CURRENT_SOURCE_DIR}/elektrad")
 		else (DREDD_EXECUTABLE)
 			message (WARNING "Exclude tests for `elektrad`, since `dredd` was not found.")
 		endif (DREDD_EXECUTABLE)
