@@ -58,6 +58,7 @@ mac_task:
         image: mojave-xcode-10.1
       env:
         ENABLE_LOGGER: ON
+        USE_LLVM: OFF
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -106,6 +107,7 @@ mac_task:
       libgcrypt
       libgit2
       libuv
+      llvm
       lua
       maven
       moreutils
@@ -139,6 +141,8 @@ mac_task:
       npm install dredd --global
 
   script:
+    - > # Use latest version of LLVM to translate Elektra
+      if [ "$USE_LLVM" != OFF ] ; then export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++; fi
     - SYSTEM_DIR="$PWD/kdbsystem"
     - INSTALL_DIR="$PWD/install"
     - *create_and_chage_to_build_dir
