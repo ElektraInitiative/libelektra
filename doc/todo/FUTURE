@@ -67,7 +67,6 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyNextMeta
 - keyCurrentMeta
 - keyCmp
-- keyRel
 - keyNeedSync
 - keyIsBelow
 - keyIsBelowOrSame

@@ -43,8 +43,8 @@ If two keys start with the same key names, but one key name continues
 after a slash, this key is **below** the other and is called a
 _subkey_. For example `user/sw/apps/abc/current` is a subkey of the
 key `user/sw/apps`. The key is not directly below but, for example,
-`user/sw/apps/abc` is. `keyRel()` implements a way to decide the relation
-between two keys.
+`user/sw/apps/abc` is. Various functions in `keytest` implement
+ways to determine the relationship between two keys.
 
 ## Conventions
 

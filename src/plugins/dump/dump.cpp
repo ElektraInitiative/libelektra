@@ -232,7 +232,7 @@ extern "C" {
 int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	Key * root = ckdb::keyNew ("system/elektra/modules/dump", KEY_END);
-	if (keyRel (root, parentKey) >= 0)
+	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
 		KeySet * n = ksNew (50, keyNew ("system/elektra/modules/dump", KEY_VALUE, "dump plugin waits for your orders", KEY_END),
