@@ -43,21 +43,11 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	k, err := ks.Lookup(parentKey)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
+	k := ks.Lookup(parentKey)
 
 	if k == nil {
 		k = parentKey
-		err = ks.AppendKey(parentKey)
-	}
-
-	if err != nil {
-		writeError(w, err)
-		return
+		ks.AppendKey(parentKey)
 	}
 
 	if meta.Value == nil {
@@ -108,12 +98,7 @@ func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	k, err := ks.Lookup(key)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
+	k := ks.Lookup(key)
 
 	if k == nil {
 		notFound(w)

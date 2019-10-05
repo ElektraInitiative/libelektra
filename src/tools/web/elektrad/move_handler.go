@@ -38,15 +38,9 @@ func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conf, err := elektra.CreateKeySet()
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
 	kdb := getHandle(r)
-	_, err = kdb.Get(conf, rootKey)
+
+	conf, err := getKeySet(kdb, rootKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -60,12 +54,7 @@ func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newConf, err := elektra.CreateKeySet()
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
+	newConf := elektra.CreateKeySet()
 
 	oldConf.Rewind()
 
