@@ -240,7 +240,7 @@ you up to date with the multi-language support provided by Elektra.
 - Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
 - `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
 - `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
-- elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings.
+- elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings. _(Raphael Gruber)_
 - <<TODO>>
 
 ## Scripts
