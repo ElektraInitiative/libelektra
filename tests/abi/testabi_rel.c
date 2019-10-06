@@ -8,11 +8,6 @@
 
 #include <tests.h>
 
-static int keyHasNoRelation (Key * key, Key * check)
-{
-	return !(keyCmp (key, check) == 1 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0 &&
-		 keyGetNamespace (key) != keyGetNamespace (check));
-}
 
 static void test_keyCmp (void)
 {
@@ -229,7 +224,8 @@ static void test_examples (void)
 
 	keySetName (key, "user/key/folder");
 	keySetName (check, "system/notsame/folder");
-	succeed_if (keyHasNoRelation (key, check) == 1, "not in the same namespace");
+	int has_no_rel = !(keyCmp (key, check) == 1 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0);
+	succeed_if (has_no_rel == 1, "not in the same namespace");
 
 	keyDel (key);
 	keyDel (check);
@@ -251,12 +247,15 @@ static void test_hierarchy (void)
 
 	keySetName (key, "user/key/folder/key");
 	keySetName (check, "system/other/folder/key");
-	succeed_if (keyHasNoRelation (key, check) == 1, "should be different");
+
+	int has_no_rel = !(keyCmp (key, check) == 1 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0);
+	succeed_if (has_no_rel == 1, "should be different (1)");
 
 	keySetName (key, "system/key/folder/key");
 	keySetName (check, "user/other/folder/key");
-	succeed_if (keyHasNoRelation (key, check) == 1, "should be different");
 
+	has_no_rel = !(keyCmp (key, check) == 1 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0);
+	succeed_if (has_no_rel == 1, "should be different (2)");
 	keyDel (key);
 	keyDel (check);
 }
