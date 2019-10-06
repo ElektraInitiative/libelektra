@@ -102,7 +102,7 @@ kdb get /tests/yajl/number
 #> 1337
 
 # Determine the data type of the value
-kdb getmeta /tests/yajl/number type
+kdb meta-get /tests/yajl/number type
 #> double
 
 # Add another key-value pair
@@ -185,7 +185,7 @@ kdb get user/tests/yajl/roots/bloody/roots
 # Check array
 kdb get user/tests/yajl/now
 #> , Now
-kdb getmeta user/tests/yajl/now array
+kdb meta-get user/tests/yajl/now array
 #> #1
 kdb get user/tests/yajl/now/#0
 #> Neighbors
@@ -210,12 +210,12 @@ kdb mount conf.json user/tests/yajl yajl
 kdb set user/tests/yajl 1
 kdb get user/tests/yajl
 #> 1
-kdb setmeta user/tests/yajl type boolean
+kdb meta-set user/tests/yajl type boolean
 kdb set user/tests/yajl on
 kdb get user/tests/yajl
 #> 1
 kdb set user/tests/yajl/subkey disable
-kdb setmeta user/tests/yajl/subkey type boolean
+kdb meta-set user/tests/yajl/subkey type boolean
 kdb get user/tests/yajl/subkey
 #> 0
 

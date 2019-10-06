@@ -1,0 +1,110 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KDB\-PLUGIN\-INFO" "1" "June 2019" "" ""
+.
+.SH "NAME"
+\fBkdb\-plugin\-info\fR \- Print information about an Elektra plugin
+.
+.SH "SYNOPSIS"
+\fBkdb plugin-info <plugin> [<clause name>]\fR
+.
+.br
+.
+.P
+Where \fBplugin\fR is the plugin in which the user would like to know information about\.
+.
+.br
+The optional \fBclause name\fR argument can be used to just print information from a certain clause\.
+.
+.br
+.
+.SH "DESCRIPTION"
+This command will print out all the information about an Elektra plugin except it\'s configuration\.
+.
+.br
+This command will also print out any functions that are exported by the plugin\.
+.
+.br
+Information about a plugin will be read from \fBsystem/elektra/modules/\fR\. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin\.
+.
+.br
+If a user wishes to load the information directly from the plugin, they can force that by using the \fB\-l\fR option\.
+.
+.br
+.
+.SH "RETURN VALUES"
+This command returns the following exit statuses:
+.
+.br
+.
+.TP
+0:
+.
+.br
+The command was successful\.
+.
+.br
+
+
+.
+.TP
+1:
+.
+.br
+A \fBclause name\fR was specified but not found\.
+.
+.br
+
+
+.
+.SH "OPTIONS"
+.
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.
+.TP
+\fB\-p\fR, \fB\-\-profile <profile>\fR
+Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.
+.TP
+\fB\-l\fR, \fB\-\-load\fR
+Load plugin even if system/elektra is available\.
+.
+.TP
+\fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR
+Add a plugin configuration\.
+.
+.SH "EXAMPLES"
+To print all the information about the \fBdump\fR plugin:
+.
+.br
+\fBkdb plugin-info dump\fR
+.
+.br
+.
+.P
+To print out the license of the \fBresolver\fR plugin directly by forcing it to load:
+.
+.br
+\fBkdb plugin-info \-l resolver licence\fR
+.
+.br
+.
+.P
+To print out the author of the \fBline\fR plugin:
+.
+.br
+\fBkdb plugin-info line author\fR
+.
+.br
+

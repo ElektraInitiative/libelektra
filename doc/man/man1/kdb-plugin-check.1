@@ -1,0 +1,164 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KDB\-PLUGIN\-CHECK" "1" "August 2019" "" ""
+.
+.SH "NAME"
+\fBkdb\-plugin\-check\fR \- Perform internal checks
+.
+.SH "SYNOPSIS"
+\fBkdb plugin-check [<plugin>]\fR
+.
+.SH "DESCRIPTION"
+This command is used to perform checks on the key database or an Elektra plugin\.
+.
+.P
+Where the option argument, \fBplugin\fR is the plugin that a user wants to check\. Use \fB\-c\fR to pass options to that plugin\. If no \fBplugin\fR argument is provided a check will be performed on the key database itself\. Special values are returned upon exit to represent the outcome of a check\.
+.
+.SH "OPTIONS"
+.
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.
+.TP
+\fB\-p\fR, \fB\-\-profile <profile>\fR
+Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+The user can also use this tool to perform write tests\. Please note that this can result in configuration files being changed!
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR
+Add a plugin configuration in addition to \fB/module\fR\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
+.
+.SH "RETURN VALUES"
+There are two different types of checks, a check on a plugin (by specifying the name of a plugin as an argument) or a check on the key database itself\.
+.
+.P
+The outcome of a check on the key database is returned as an exit status\. This integer represents an 8\-bit pattern\. Each bit represents a specific outcome as described below:
+.
+.TP
+0
+No errors (no output)
+.
+.TP
+Bit 1
+Warning on opening the key database\.
+.
+.TP
+Bit 2
+Error on opening the key database\.
+.
+.TP
+Bit 3
+Warning on getting the value of a key\.
+.
+.TP
+Bit 4
+Error on getting the value of a key\.
+.
+.TP
+Bit 5
+Warning on setting the value of a key\. (only checked when \fB\-f\fR is used)
+.
+.TP
+Bit 6
+Error on setting the value of a key (only checked when \fB\-f\fR is used)
+.
+.TP
+Bit 7
+Warning on closing the key database\.
+.
+.TP
+Bit 8
+Error on closing the key database\.
+.
+.P
+So if the following number was returned \fB9\fR the user could figure out more detail by considering the bits: \fB00001001\fR The user would know that there was a warning on open and an error on get\.
+.
+.P
+If a plugin name is given, checks will only be done on the given plugin\. The returned values for a check on a plugin are returned as much simpler numbers\.
+.
+.P
+Return values on plugin checking:
+.
+.TP
+0
+Everything ok\. (no output)
+.
+.TP
+1
+No such plugin found or plugin could not be opened\.
+.
+.TP
+2
+Plugin did not pass checks\.
+.
+.TP
+3
+Plugin has warnings\.
+.
+.P
+Please report any output caused by official plugins to \fIhttps://git\.libelektra\.org/issues\fR\.
+.
+.P
+Since the error code is a return value, it is not automatically displayed to the shell\. If the user wants to have the value printed, they must do so manually (by running a command such as \fBecho $?\fR)\.
+.
+.SH "EXAMPLES"
+To check the Key Database:
+.
+.br
+\fBkdb plugin-check\fR
+.
+.P
+To check the Key Database and then print the result:
+.
+.br
+\fBkdb plugin-check\fR followed by:
+.
+.br
+\fBecho $?\fR
+.
+.P
+To check the Key Database including write checks:
+.
+.br
+\fBkdb plugin-check \-f\fR Note that this type of check may change configuration files\.
+.
+.P
+To check the \fBline\fR plugin:
+.
+.br
+\fBkdb plugin-check line\fR
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+For an introductions into plugins, read elektra\-plugins \fI/src/plugins\fR\.
+.
+.IP "\(bu" 4
+To list all plugins use kdb\-list(1) \fIkdb\-list\.md\fR\.
+.
+.IP "\(bu" 4
+For information on a plugin use kdb\-info(1) \fIkdb\-info\.md\fR\.
+.
+.IP "" 0
+

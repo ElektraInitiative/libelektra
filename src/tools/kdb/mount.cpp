@@ -143,7 +143,8 @@ void MountCommand::buildBackend (Cmdline const & cl)
 
 	if (!cl.quiet && path[0] == '/' && !(mpk.isSystem () || mpk.isSpec () || mpk.isCascading ()))
 	{
-		std::cout << "Note that absolute paths are still relative to their namespace (see `kdb info resolver`)." << std::endl;
+		std::cout << "Note that absolute paths are still relative to their namespace (see `kdb plugin-info resolver`)."
+			  << std::endl;
 		std::cout << "Only system+spec mountpoints are actually absolute." << std::endl;
 		std::cout << "Use `kdb file " << mp << "` to determine where the file(s) are." << std::endl;
 		std::cout << "Use `-q` or use `kdb set /sw/elektra/kdb/#0/current/quiet 1` to suppress infos." << std::endl;

@@ -1,0 +1,72 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KDB\-PLUGIN\-LIST" "1" "August 2019" "" ""
+.
+.SH "NAME"
+\fBkdb\-plugin\-list\fR \- List plugins available to Elektra
+.
+.SH "SYNOPSIS"
+\fBkdb plugin-list [provider]\fR
+.
+.SH "DESCRIPTION"
+This command will either list all available Elektra plugins or all plugins that provide a specific functionality\.
+.
+.P
+The output will be sorted by their status\. The best plugins will be the last in the list\.
+.
+.SH "OPTIONS"
+.
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.
+.TP
+\fB\-p\fR, \fB\-\-profile <profile>\fR
+Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Also output the number calculated by their \fBinfos/status\fR clause in the contract\. Prints additional information in case of errors/warnings\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
+.
+.TP
+\fB\-0\fR, \fB\-\-null\fR
+Use binary 0 termination
+.
+.SH "EXAMPLES"
+To get a sorted list of all available plugins with their status:
+.
+.br
+\fBkdb plugin-list \-v\fR
+.
+.P
+To get a sorted list of all storage plugins:
+.
+.br
+\fBkdb plugin-list storage\fR
+.
+.P
+To get a sorted list of all plugins that provide \fBini\fR with their status:
+.
+.br
+\fBkdb plugin-list \-v ini\fR
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+\fBinfos/status\fR is part of the elektra\-contracts\.md (7) \fIelektra\-contracts\.md\fR
+.
+.IP "" 0
+

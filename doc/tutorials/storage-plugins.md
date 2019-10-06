@@ -57,14 +57,14 @@ kdb set user/tests/storage/null
 #> Create a new key user/tests/storage/null with null value
 kdb get user/tests/storage/null
 #>
-kdb lsmeta user/tests/storage/null
+kdb meta-ls user/tests/storage/null
 #> binary
 
 kdb set user/tests/storage/empty ''
 #> Create a new key user/tests/storage/empty with string ""
 kdb get user/tests/storage/empty
 #>
-kdb lsmeta user/tests/storage/empty
+kdb meta-ls user/tests/storage/empty
 #>
 
 # Undo modifications to the key database
@@ -83,7 +83,7 @@ kdb set user/tests/storage/bool/value true
 kdb get user/tests/storage/bool/value
 #> 1
 
-kdb setmeta user/tests/storage/bool/value type boolean
+kdb meta-set user/tests/storage/bool/value type boolean
 kdb set user/tests/storage/bool/value 1
 kdb get user/tests/storage/bool/value
 #> 1
@@ -195,24 +195,24 @@ kdb set user/tests/storage/array/#1 two
 
 # The plugin creates an array parent key
 # that stores the basename of the last element
-kdb getmeta user/tests/storage/array array
+kdb meta-get user/tests/storage/array array
 #> #1
 
 # Add an array that contains a single element
 kdb set user/tests/storage/map/#0
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 #> #0
 
 # After we add `user/tests/storage/map/key`,
 # `user/tests/storage/map` is not an array any more.
 kdb set user/tests/storage/map/key three
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 # RET: 1
 
 # Adding a another key that uses array syntax below
 # `user/tests/storage/map` does not change this.
 kdb set user/tests/storage/map/#1 four
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 # RET: 1
 
 # If we remove the key `user/tests/storage/map/key`, then
@@ -222,7 +222,7 @@ kdb ls user/tests/storage/map
 #> user/tests/storage/map
 #> user/tests/storage/map/#0
 #> user/tests/storage/map/#1
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 #> #1
 
 # Undo modifications to the key database

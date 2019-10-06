@@ -1,0 +1,68 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KDB\-META\-LS" "1" "August 2019" "" ""
+.
+.SH "NAME"
+\fBkdb\-meta\-ls\fR \- Print metakeys associated with a key
+.
+.SH "SYNOPSIS"
+\fBkdb meta-ls <key name>\fR
+.
+.P
+Where \fBkey name\fR is the name of the key\.
+.
+.SH "DESCRIPTION"
+This command prints the names of all metakeys associated with the key named \fBkey name\fR\.
+.
+.br
+If no metakeys are associated with the given key, nothing will be printed\.
+.
+.br
+.
+.SH "OPTIONS"
+.
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.
+.TP
+\fB\-p\fR, \fB\-\-profile <profile>\fR
+Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.
+.TP
+\fB\-0\fR, \fB\-\-null\fR
+Use binary 0 termination\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\. Prints additional information in case of errors/warnings\. Show which key will be used\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
+.
+.SH "EXAMPLE"
+To see which metakeys are associated with a key:
+.
+.br
+\fBkdb meta-ls /example/key\fR
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+elektra\-metadata(7) \fIelektra\-metadata\.md\fR for an explanation of the metadata concepts\.
+.
+.IP "\(bu" 4
+elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
+.
+.IP "" 0
+

@@ -218,7 +218,7 @@ We want to protect the password, that is stored under `user/test/password`.
 So we set the metakey as follows:
 
 ```bash
-kdb setmeta user/tests/password crypto/encrypt 1
+kdb meta-set user/tests/password crypto/encrypt 1
 ```
 
 Now we are safe to set the actual password:
@@ -247,7 +247,7 @@ As a result you get "1234".
 You can disable the encryption by setting `crypto/encrypt` to a value other than `1`, for example:
 
 ```bash
-kdb setmeta user/tests/password crypto/encrypt 0
+kdb meta-set user/tests/password crypto/encrypt 0
 ```
 
 ### Complete Example
@@ -256,7 +256,7 @@ The complete example looks like this:
 
 ```sh
 kdb mount test.ini user/tests crypto_gcrypt "crypto/key=$(kdb gen-gpg-testkey)" base64 ini
-kdb setmeta user/tests/password crypto/encrypt 1
+kdb meta-set user/tests/password crypto/encrypt 1
 kdb set user/tests/password 1234
 kdb set user/tests/unencrypted "I am not encrypted"
 kdb file user/tests/password | xargs cat
@@ -265,7 +265,7 @@ kdb file user/tests/password | xargs cat
 To disable encryption on `user/tests/password`, we can run:
 
 ```sh
-kdb setmeta user/tests/password crypto/encrypt 0
+kdb meta-set user/tests/password crypto/encrypt 0
 kdb file user/tests/password | xargs cat
 ```
 

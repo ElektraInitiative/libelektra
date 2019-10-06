@@ -170,7 +170,7 @@ Bindings allow you to utilize Elektra using [various programming languages](http
 you up to date with the multi-language support provided by Elektra.
 
 - Warnings about cmake policies are avoided. _(Markus Raab)_
-- We removed the haskell binding. _(Markus Raab)_
+- We removed the haskell and GI bindings. _(Markus Raab)_
 
 ### Java
 
@@ -190,10 +190,17 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
-- Checks for `kdbCommit` have been added to [kdb check](../help/kdb-check.md). _(Vid Leskovar)_
+- Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
-- Added `kdb showmeta` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
 - elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings. _(Raphael Gruber)_
+- Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
+- Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab` functionality. _(Philipp Gackstatter)_
+- Renamed kdb meta commands:
+  - `kdb getmeta` is now `kdb meta-get`
+  - `kdb lsmeta` is now `kdb meta-ls`
+  - `kdb showmeta` is now `kdb meta-show`
+  - `kdb rmmeta` is now `kdb meta-rm`
+  - `kdb setmeta` is now `kdb meta-set` _(Philipp Gackstatter)_
 - <<TODO>>
 
 ## Scripts

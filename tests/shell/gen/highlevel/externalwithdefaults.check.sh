@@ -105,7 +105,7 @@ cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
 
 if [ "$res" = "0" ]; then
-	"$KDB" setmeta "user$MOUNTPOINT/myfloatarray" "array" "#0"
+	"$KDB" meta-set "user$MOUNTPOINT/myfloatarray" "array" "#0"
 
 	./dummy
 	res=$?

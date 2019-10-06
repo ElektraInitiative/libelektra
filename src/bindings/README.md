@@ -29,11 +29,6 @@ Experimental bindings (included in `EXPERIMENTAL`):
 - [io_ev](io/ev/) I/O binding for ev (experimental)
 - [io_glib](io/glib/) I/O binding for glib (experimental)
 
-Deprecated bindings (included in `DEPRECATED`):
-
-- [gi_lua](gi/lua/) GObject Introspection binding with Lua specific overrides (deprecated)
-- [gi_python](gi/python/) GObject Introspection binding with Python specific overrides (deprecated)
-
 # I/O Bindings
 
 These bindings allow Elektra to integrate into different main loop APIs using a

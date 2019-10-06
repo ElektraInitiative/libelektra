@@ -51,7 +51,7 @@ For an **empty array** (`[]`) we just add the [metakey](../help/elektra-metadata
 
 ```sh
 # Create an empty array with the name `user/tests/sequence`
-kdb setmeta user/tests/sequence array ''
+kdb meta-set user/tests/sequence array ''
 ```
 
 .
@@ -103,7 +103,7 @@ ruby -e 'print("#", "_" * (ARGV[0].length - 1), ARGV[0])' 42
 
 ### Metadata
 
-To make life easier for users, Elektra’s [storage plugins](plugins.md) should save the [basename of the last key in the array parent](../decisions/array.md). Some plugins do not support this feature. In that case you can add this value manually via `kdb setmeta`:
+To make life easier for users, Elektra’s [storage plugins](plugins.md) should save the [basename of the last key in the array parent](../decisions/array.md). Some plugins do not support this feature. In that case you can add this value manually via `kdb meta-set`:
 
 ```sh
 # Add array elements
@@ -112,13 +112,13 @@ kdb set user/tests/favorites/superheros/#1 'Mermaid Man and Barnacle Boy'
 kdb set user/tests/favorites/superheros/#____99999 'The guy with the bow and arrow'
 
 # The metakey `array` should save the basename of the last element.
-kdb setmeta user/tests/favorites/superheros array '#____99999'
+kdb meta-set user/tests/favorites/superheros array '#____99999'
 ```
 
 . This way you can always retrieve the last element of an array easily:
 
 ```sh
-kdb get user/tests/favorites/superheros/`kdb getmeta user/tests/favorites/superheros array`
+kdb get user/tests/favorites/superheros/`kdb meta-get user/tests/favorites/superheros array`
 #> The guy with the bow and arrow
 ```
 

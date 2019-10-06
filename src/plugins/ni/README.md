@@ -38,7 +38,7 @@ meta=foo
 specify that `key` has a metadata key `meta` containing the metavalue `foo`:
 
 ```bash
-kdb getmeta user/ni/key meta
+kdb meta-get user/ni/key meta
 #> foo
 ```
 
@@ -69,14 +69,14 @@ For in-detail explanation of the syntax
 sudo kdb mount file.ini spec/tests/ni ni
 
 # Add some metadata
-kdb setmeta spec/tests/ni/key metakey metavalue
-kdb setmeta spec/tests/ni/key check/type char
+kdb meta-set spec/tests/ni/key metakey metavalue
+kdb meta-set spec/tests/ni/key check/type char
 
 # Retrieve metadata
-kdb lsmeta spec/tests/ni/key
+kdb meta-ls spec/tests/ni/key
 #> check/type
 #> metakey
-kdb getmeta spec/tests/ni/key metakey
+kdb meta-get spec/tests/ni/key metakey
 #> metavalue
 
 # Add and retrieve key values

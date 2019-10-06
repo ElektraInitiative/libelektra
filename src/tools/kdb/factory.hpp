@@ -23,7 +23,6 @@
 
 // TODO: to add a new command, 1.) include your header here
 #include <cache.hpp>
-#include <check.hpp>
 #include <cmerge.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
@@ -32,14 +31,11 @@
 #include <export.hpp>
 #include <file.hpp>
 #include <find.hpp>
-#include <fstab.hpp>
 #include <gen.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
 #include <globalumount.hpp>
 #include <import.hpp>
-#include <info.hpp>
-#include <list.hpp>
 #include <listcommands.hpp>
 #include <ls.hpp>
 #include <memory>
@@ -50,6 +46,9 @@
 #include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
+#include <plugincheck.hpp>
+#include <plugininfo.hpp>
+#include <pluginlist.hpp>
 #include <remount.hpp>
 #include <rm.hpp>
 #include <set.hpp>
@@ -99,16 +98,15 @@ public:
 		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
 		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
-		m_factory.insert (std::make_pair ("getmeta", std::make_shared<Cnstancer<MetaGetCommand>> ()));
-		m_factory.insert (std::make_pair ("showmeta", std::make_shared<Cnstancer<ShowMetaCommand>> ()));
-		m_factory.insert (std::make_pair ("rmmeta", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
-		m_factory.insert (std::make_pair ("setmeta", std::make_shared<Cnstancer<MetaSetCommand>> ()));
-		m_factory.insert (std::make_pair ("lsmeta", std::make_shared<Cnstancer<MetaLsCommand>> ()));
-		m_factory.insert (std::make_pair ("info", std::make_shared<Cnstancer<InfoCommand>> ()));
+		m_factory.insert (std::make_pair ("meta-get", std::make_shared<Cnstancer<MetaGetCommand>> ()));
+		m_factory.insert (std::make_pair ("meta-show", std::make_shared<Cnstancer<ShowMetaCommand>> ()));
+		m_factory.insert (std::make_pair ("meta-rm", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
+		m_factory.insert (std::make_pair ("meta-set", std::make_shared<Cnstancer<MetaSetCommand>> ()));
+		m_factory.insert (std::make_pair ("meta-ls", std::make_shared<Cnstancer<MetaLsCommand>> ()));
+		m_factory.insert (std::make_pair ("plugin-info", std::make_shared<Cnstancer<PluginInfoCommand>> ()));
 		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));
-		m_factory.insert (std::make_pair ("check", std::make_shared<Cnstancer<CheckCommand>> ()));
+		m_factory.insert (std::make_pair ("plugin-check", std::make_shared<Cnstancer<PluginCheckCommand>> ()));
 		m_factory.insert (std::make_pair ("vset", std::make_shared<Cnstancer<ValidationCommand>> ()));
-		m_factory.insert (std::make_pair ("fstab", std::make_shared<Cnstancer<FstabCommand>> ()));
 		m_factory.insert (std::make_pair ("export", std::make_shared<Cnstancer<ExportCommand>> ()));
 		m_factory.insert (std::make_pair ("import", std::make_shared<Cnstancer<ImportCommand>> ()));
 		m_factory.insert (std::make_pair ("convert", std::make_shared<Cnstancer<ConvertCommand>> ()));
@@ -117,7 +115,7 @@ public:
 		m_factory.insert (std::make_pair ("sget", std::make_shared<Cnstancer<ShellGetCommand>> ()));
 		m_factory.insert (std::make_pair ("merge", std::make_shared<Cnstancer<MergeCommand>> ()));
 		m_factory.insert (std::make_pair ("cmerge", std::make_shared<Cnstancer<CMergeCommand>> ()));
-		m_factory.insert (std::make_pair ("list", std::make_shared<Cnstancer<ListCommand>> ()));
+		m_factory.insert (std::make_pair ("plugin-list", std::make_shared<Cnstancer<PluginListCommand>> ()));
 		m_factory.insert (std::make_pair ("editor", std::make_shared<Cnstancer<EditorCommand>> ()));
 		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
 		m_factory.insert (std::make_pair ("smount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
