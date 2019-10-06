@@ -63,6 +63,12 @@ else ()
 				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go" ${ELEKTRA_LIBS_ELEKTRAD})
 		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
 
+		execute_process (COMMAND ${CMAKE_COMMAND}
+					 -E
+					 create_symlink
+					 "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+					 "${CMAKE_BINARY_DIR}/bin/elektrad")
+
 		# build elektra-web
 		install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
 		install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad" DESTINATION "${install_directory}")
