@@ -1,24 +1,47 @@
-# elektra-web/elektrad
+# Elektrad
+
+## Introduction
 
 A server that provides an [HTTP API](http://docs.elektrad.apiary.io) to access
-Elektra remotely, built using [go](https://golang.org).
+Elektra remotely, built using [Go](https://golang.org).
 
-## Installation
+## Compiling
+
+You can compile `elektrad` manually or via CMake.
+
+If [go-elektra](https://github.com/ElektraInitiative/go-elektra) fails to compile checkout the [README.md](https://github.com/ElektraInitiative/go-elektra/blob/master/README.md) for troubleshooting.
+
+### Manually
 
 - make sure you have go (>1.11) installed.
 - install [libelektra](https://libelektra.org/).
-- now run `go build` in the elektrad folder with go module enabled (GO111MODULE=on).
-- if [go-elektra](https://github.com/ElektraInitiative/go-elektra) fails to compile checkout the [README.md](https://github.com/ElektraInitiative/go-elektra/blob/master/README.md) for troubleshooting.
-
-## Running
+- now run `go build` in the elektrad folder with Go modules enabled (GO111MODULE=on).
 
 The output of `go build` is a binary, you can simply run it with:
 
-```
+```sh
 ./elektrad
 ```
 
-## Flags
+### With CMake
+
+Compile Elektra as described in the [COMPILE document](/doc/COMPILE.md), make sure to include the `web` and `kdb` tool using the `-DTOOLS` flag, e.g. `-DTOOLS="kdb;web"`.
+
+The binary is located at `build-dir/src/tools/web/elektrad` and symlinked to `build-dir/bin/elektrad`.
+
+### Installing
+
+You can install Elektra as described in the [install documentation](/doc/INSTALL.md).
+
+## To Run
+
+To launch elektrad run the command
+
+```sh
+kdb run-elektrad
+```
+
+### Flags
 
 `-port 33333` - change the port the server uses.
 
