@@ -75,7 +75,7 @@ libelektra_0.8 {
 	keyIsBelow;
 	keyIsBelowOrSame;
 	keyIsBinary;
-	keyIsDirectBelow;
+	keyIsDirectlyBelow;
 	keyIsInactive;
 	keyIsString;
 	keyName;

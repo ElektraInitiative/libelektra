@@ -577,7 +577,7 @@ public class Key implements Iterable<String> {
 		if (other == null) {
 			throw new IllegalArgumentException("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsDirectBelow(other.get(), get()) == 1;
+		return Elektra.INSTANCE.keyIsDirectlyBelow(other.get(), get()) == 1;
 	}
 
 	/**

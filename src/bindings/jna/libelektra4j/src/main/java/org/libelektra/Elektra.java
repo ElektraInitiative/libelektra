@@ -77,7 +77,7 @@ public interface Elektra extends Library {
 
 	int keyIsBelowOrSame(Pointer key, Pointer check);
 
-	int keyIsDirectBelow(Pointer key, Pointer check);
+	int keyIsDirectlyBelow(Pointer key, Pointer check);
 
 	int keyIsInactive(Pointer key);
 

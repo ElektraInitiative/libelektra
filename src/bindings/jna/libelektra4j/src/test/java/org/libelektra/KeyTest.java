@@ -260,7 +260,7 @@ public class KeyTest {
 	}
 
 	@Test
-	public void test_keyIsDirectBelow_shouldPass() {
+	public void test_keyIsDirectlyBelow_shouldPass() {
 		final Key key = Key.create(KEY_10_NAME, KEY_10_VALUE);
 		final Key key2 = Key.create(KEY_11_NAME, KEY_11_VALUE);
 		final Key key3 = Key.create(KEY_12_NAME, KEY_12_VALUE);

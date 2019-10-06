@@ -219,16 +219,16 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let key = StringKey::new("user/sw/app")?;
     /// let key2 = StringKey::new("user/sw/app/key")?;
-    /// assert!(key2.is_direct_below(&key));
+    /// assert!(key2.is_directly_below(&key));
     /// #
     /// #     Ok(())
     /// # }
     /// ```
-    fn is_direct_below(&self, other: &Self) -> bool
+    fn is_directly_below(&self, other: &Self) -> bool
     where
         Self: Sized,
     {
-        unsafe { elektra_sys::keyIsDirectBelow(other.as_ref(), self.as_ref()) == 1 }
+        unsafe { elektra_sys::keyIsDirectlyBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
     /// Returns true if the key is inactive.
