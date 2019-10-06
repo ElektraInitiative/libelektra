@@ -54,56 +54,6 @@ static void test_ksToArray (void)
 	ksDel (ks);
 }
 
-static void test_keyAsCascading (void)
-{
-	printf ("test keyAsCascading\n");
-	Key * system = keyNew ("system", KEY_END);
-	Key * user = keyNew ("user/", KEY_END);
-	Key * sysKey = keyNew ("system/test", KEY_END);
-	Key * cascadingKey = keyNew ("/test", KEY_END);
-	Key * ret;
-	ret = keyAsCascading (system);
-	succeed_if (!strcmp (keyName (ret), "/"), "Failed turning \"system\" into a cascading Key");
-	keyDel (ret);
-	ret = keyAsCascading (user);
-	succeed_if (!strcmp (keyName (ret), "/"), "Failed turning \"user/\" into a cascading Key");
-	keyDel (ret);
-	ret = keyAsCascading (sysKey);
-	succeed_if (!strcmp (keyName (ret), "/test"), "Failed turning \"system/test\" into a cascading Key");
-	keyDel (ret);
-	ret = keyAsCascading (cascadingKey);
-	succeed_if (!strcmp (keyName (ret), "/test"), "Failed turning \"/test\" into a cascading Key");
-	keyDel (ret);
-	keyDel (system);
-	keyDel (user);
-	keyDel (sysKey);
-	keyDel (cascadingKey);
-}
-
-static void test_keyGetLevelsBelow (void)
-{
-	printf ("test keyGetLevelsBelow\n");
-	Key * grandparent = keyNew ("system/grandparent", KEY_END);
-	Key * parent = keyNew ("system/grandparent/parent", KEY_END);
-	Key * user = keyNew ("user/grandparent/parent", KEY_END);
-	Key * oneLvl = keyNew ("system/grandparent/parent/child", KEY_END);
-	Key * threeLvl = keyNew ("system/grandparent/parent/child1/child2/child3", KEY_END);
-	succeed_if (keyGetLevelsBelow (parent, oneLvl) == 1, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (parent, threeLvl) == 3, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (parent, parent) == 0, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (parent, user) == 0, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (parent, grandparent) == 0, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (grandparent, parent) == 1, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (grandparent, oneLvl) == 2, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (grandparent, threeLvl) == 4, "getLevelsBelow returned wrong value");
-	succeed_if (keyGetLevelsBelow (threeLvl, grandparent) == 0, "getLevelsBelow returned wrong value");
-	keyDel (grandparent);
-	keyDel (parent);
-	keyDel (user);
-	keyDel (oneLvl);
-	keyDel (threeLvl);
-}
-
 int main (int argc, char ** argv)
 {
 	printf ("KEY PROPOSAL TESTS\n");
@@ -113,9 +63,6 @@ int main (int argc, char ** argv)
 
 	test_ksPopAtCursor ();
 	test_ksToArray ();
-
-	test_keyAsCascading ();
-	test_keyGetLevelsBelow ();
 
 	printf ("\ntest_proposal RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 }

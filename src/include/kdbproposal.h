@@ -68,9 +68,6 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key);
 Key * ksPrev (KeySet * ks);
 Key * ksPopAtCursor (KeySet * ks, cursor_t c);
 
-Key * keyAsCascading (const Key * key);
-int keyGetLevelsBelow (const Key * k1, const Key * k2);
-
 #ifdef __cplusplus
 }
 }
