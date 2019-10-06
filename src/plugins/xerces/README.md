@@ -68,7 +68,7 @@ the mount point, then it uses the mount point's name instead.
 - CMake 3.6 or a copy of `FindXercesC.cmake` in
   `/usr/share/cmake-3.0/Modules/`
 
-To include this plugin in a homebrew installation run `brew install elektra --with-dep-plugins`
+To include this plugin in a homebrew installation run `brew tap elektrainitiative/elektra` followed by `brew install elektrainitiative/elektra/elektra --with-xerces`
 
 ## Limitations
 
