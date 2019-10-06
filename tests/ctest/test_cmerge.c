@@ -178,11 +178,14 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 		{
 			yield_error ("expectedResult must not be null");
 		}
-		snprintf (msg, 200,
-			  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
-			  "%s.\n",
-			  __func__, our_order, their_order, base_order, strategy, expected_result, resultValue);
-		succeed_if (strcmp (resultValue, expected_result) == 0, msg);
+		if (resultValue != NULL && expected_result != NULL)
+		{
+			snprintf (msg, 200,
+				  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
+				  "%s.\n",
+				  __func__, our_order, their_order, base_order, strategy, expected_result, resultValue);
+			succeed_if (strcmp (resultValue, expected_result) == 0, msg);
+		}
 		elektraFree (resultValue);
 	}
 
