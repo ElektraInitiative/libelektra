@@ -1,15 +1,14 @@
-# kdb-getmeta(1) -- Get the value of a metakey stored in the key database
+# kdb-meta-show(1) -- Print all metakeys along with their value
 
 ## SYNOPSIS
 
-`kdb getmeta <key name> <metaname>`<br>
+`kdb meta-show <key name>`<br>
 
-Where `key name` is the name of the key and
-`metaname` is the name of the metakey the user would like to access.
+Where `key name` is the name of the key the user would like to access.
 
 ## DESCRIPTION
 
-This command is used to print the value of a metakey.
+This command is used to print all metakeys and its values for a given key.
 A metakey is information stored in a key which describes that key.
 
 The handling of cascading `key name` does not differ to `kdb get`.
@@ -23,8 +22,6 @@ This command will return the following values as an exit status:<br>
   No errors.
 - 1:
   Key not found. (Invalid `path`)
-- 2:
-  Meta key not found. (Invalid `metaname`).
 
 ## OPTIONS
 
@@ -36,8 +33,6 @@ This command will return the following values as an exit status:<br>
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
-- `-n`, `--no-newline`:
-  Suppress the newline at the end of the output.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
@@ -45,15 +40,33 @@ This command will return the following values as an exit status:<br>
 
 ## EXAMPLES
 
-To get the value of a metakey called `description` stored in the key `spec/example/key`:<br>
-`kdb getmeta spec/example/key description`
+```sh
+# Backup-and-Restore: user/tests/examples
 
-To get the value of metakey called `override/#0` stored in the key `spec/example/dir/key`:<br>
-`kdb getmeta spec/example/dir/key "override/#0"`
+# We use `dump` as storage format here, since storage plugins such as INI
+sudo kdb mount ls.ecf user/tests/examples dump
+
+# Create the keys we use for the examples
+kdb set user/tests/examples/kdb-meta-show test
+kdb meta-set user/tests/examples/kdb-meta-show meta1 val1
+kdb meta-set user/tests/examples/kdb-meta-show meta2 val2
+kdb meta-set user/tests/examples/kdb-meta-show meta3 val3
+kdb meta-set user/tests/examples/kdb-meta-show meta4 val4
+
+# list all meta keys for /tests/examples/kdb-meta-show
+kdb meta-show /tests/examples/kdb-meta-show
+#> meta1: val1
+#> meta2: val2
+#> meta3: val3
+#> meta4: val4
+
+kdb rm -r user/tests/examples
+sudo kdb umount user/tests/examples
+```
 
 ## SEE ALSO
 
-- How to set metadata: [kdb-setmeta(1)](kdb-setmeta.md)
+- How to set metadata: [kdb-meta-set(1)](kdb-meta-set.md)
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
 - [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

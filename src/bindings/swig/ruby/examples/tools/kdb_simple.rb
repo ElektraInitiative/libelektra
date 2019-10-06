@@ -47,7 +47,7 @@ end
 #
 # print info about a specific plugin
 #
-# similar to $> kdb info <plugin>
+# similar to $> kdb plugin-info <plugin>
 #
 # fetches plugin info from system/elektra/modules path
 # if plugin is not loaded yet, load it and fetch info

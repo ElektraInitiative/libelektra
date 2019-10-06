@@ -19,5 +19,5 @@ Only useful for debugging the plugin framework.
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 
 ```sh
-kdb check -c "logmodule=" counter
+kdb plugin-check -c "logmodule=" counter
 ```

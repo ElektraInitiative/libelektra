@@ -14,11 +14,11 @@
 #include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
-class CheckCommand : public Command
+class PluginCheckCommand : public Command
 {
 public:
-	CheckCommand ();
-	~CheckCommand ();
+	PluginCheckCommand ();
+	~PluginCheckCommand ();
 
 	virtual std::string getShortOptions () override
 	{

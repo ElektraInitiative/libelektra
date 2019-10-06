@@ -1,14 +1,15 @@
-# kdb-rmmeta(1) -- Remove metakey of a key from the key database
+# kdb-meta-ls(1) - Print metakeys associated with a key
 
 ## SYNOPSIS
 
-`kdb rmmeta <key name> <metaname>`
+`kdb meta-ls <key name>`
 
-Where `key name` is the name of the key and `metaname` is the name of the metakey you want to remove.
+Where `key name` is the name of the key.
 
 ## DESCRIPTION
 
-This command removes a metakey of a key from the Key database.
+This command prints the names of all metakeys associated with the key named `key name`.<br>
+If no metakeys are associated with the given key, nothing will be printed.<br>
 
 ## OPTIONS
 
@@ -20,15 +21,17 @@ This command removes a metakey of a key from the Key database.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-0`, `--null`:
+  Use binary 0 termination.
 - `-v`, `--verbose`:
-  Explain what is happening. Prints additional information in case of errors/warnings.
+  Explain what is happening. Prints additional information in case of errors/warnings. Show which key will be used.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
-## EXAMPLES
+## EXAMPLE
 
-To remove metakey `metakey` of a key:<br>
-`kdb rmmeta user/example metakey`
+To see which metakeys are associated with a key:<br>
+`kdb meta-ls /example/key`
 
 ## SEE ALSO
 

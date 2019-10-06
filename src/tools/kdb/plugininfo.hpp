@@ -14,11 +14,11 @@
 
 #include <kdb.hpp>
 
-class InfoCommand : public Command
+class PluginInfoCommand : public Command
 {
 public:
-	InfoCommand ();
-	~InfoCommand ();
+	PluginInfoCommand ();
+	~PluginInfoCommand ();
 
 	virtual std::string getShortOptions () override
 	{
@@ -41,10 +41,10 @@ public:
 		       "\n"
 		       "E.g.\n"
 		       "Print out all information about dump plugin:\n"
-		       " kdb info dump\n"
+		       " kdb plugin-info dump\n"
 		       "\n"
 		       "Print out the licence of the resolver plugin:\n"
-		       " kdb info resolver licence\n";
+		       " kdb plugin-info resolver licence\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

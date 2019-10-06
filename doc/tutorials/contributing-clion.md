@@ -166,7 +166,7 @@ If you want to test various _kdb_ methods separately, you can create your
 own run configurations. Add a new one by clicking on the "+"-sign on the
 top left of the "Edit Configurations..." dialog and name it. Here both
 _Executable_ and _Target_ should have "kdb" selected. If you for example
-want to test `kdb info dump`, write "info dump" next to _Program arguments_.
+want to test `kdb plugin-info dump`, write "info dump" next to _Program arguments_.
 That's it, now you can just test this part of _kdb_.
 
 For further information please read [this](/doc/TESTING.md).

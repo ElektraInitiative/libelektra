@@ -121,7 +121,7 @@ cat stderr.txt | grep -oE 'Line [[:digit:]]+.*' | sed 's/^[[:space:]]*//'
 #> Line 3: 'line"' is not a valid key value pair
 
 # Unlike the `ini` and `ni` plugin, mINI does not support metadata.
-kdb lsmeta user/tests/mini
+kdb meta-ls user/tests/mini
 # RET: 1
 
 # The value of `key` also contains the double quote symbol, since mINI does

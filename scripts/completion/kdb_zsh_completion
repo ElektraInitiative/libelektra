@@ -38,7 +38,7 @@ _kdb_paths () {
 }
 
 # These are the functions for each command
-_kdb-check () {
+_kdb-plugin-check () {
     # TODO [plugin]
 }
 
@@ -71,7 +71,7 @@ _kdb-get () {
     _kdb_paths
 }
 
-_kdb-getmeta () {
+_kdb-meta-get () {
     # TODO key-name metaname
     _kdb_paths
 }
@@ -81,11 +81,11 @@ _kdb-import () {
     _kdb_paths
 }
 
-_kdb-info () {
+_kdb-plugin-info () {
     # TODO plugin [clause name]
 }
 
-_kdb-list () {
+_kdb-plugin-list () {
     _message -e "No Arguments for list"
     return
 }
@@ -95,7 +95,7 @@ _kdb-ls () {
     _kdb_paths
 }
 
-_kdb-lsmeta () {
+_kdb-meta-ls () {
     _kdb_paths
 }
 
@@ -127,7 +127,7 @@ _kdb-set () {
     _kdb_paths
 }
 
-_kdb-setmeta () {
+_kdb-meta-set () {
     # TODO key-name metaname metavalue
     _kdb_paths
 }

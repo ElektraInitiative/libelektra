@@ -46,8 +46,8 @@ elektraClose (elektra);
 To run the application, the configuration should be specified:
 
 ```
-sudo kdb setmeta /sw/org/myapp/#0/current/mylong type long
-sudo kdb setmeta /sw/org/myapp/#0/current/mylong default 5
+sudo kdb meta-set /sw/org/myapp/#0/current/mylong type long
+sudo kdb meta-set /sw/org/myapp/#0/current/mylong default 5
 ```
 
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a

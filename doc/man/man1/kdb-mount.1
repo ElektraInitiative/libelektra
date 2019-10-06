@@ -12,7 +12,7 @@
 .br
 .
 .IP "\(bu" 4
-Where \fBpath\fR is the path to the file the user wants to mount\. See \fBkdb info resolver\fR for details what an absolute and relative path means\. See also IMPORTANT below\.
+Where \fBpath\fR is the path to the file the user wants to mount\. See \fBkdb plugin-info resolver\fR for details what an absolute and relative path means\. See also IMPORTANT below\.
 .
 .IP "\(bu" 4
 \fBmountpoint\fR is where in the key database the new backend should be mounted\. For a cascading mount point, \fBmountpoint\fR should start with \fB/\fR\. See also IMPORTANT below\.
@@ -41,7 +41,7 @@ Mounting in Elektra allows the user to mount a file into the current key databas
 This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system/elektra/mountpoints\fR to find out where exactly it will write to\.
 .
 .P
-Absolute paths are still relative to their namespace (see \fBkdb info resolver\fR)\. Only system+spec mount points are actually absolute\. Read elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR for further information\.
+Absolute paths are still relative to their namespace (see \fBkdb plugin-info resolver\fR)\. Only system+spec mount points are actually absolute\. Read elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR for further information\.
 .
 .P
 For cascading mount points (starting with \fB/\fR) a mount point for the namespace \fBdir\fR, \fBuser\fR and \fBsystem\fR is created\. Each of this mount point uses a different configuration file, either below current directory, below home directory or anywhere in the system\. Use \fBkdb file <path>\fR to determine where the file(s) are\.

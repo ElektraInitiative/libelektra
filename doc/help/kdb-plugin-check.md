@@ -1,8 +1,8 @@
-# kdb-check(1) -- Perform internal checks
+# kdb-plugin-check(1) -- Perform internal checks
 
 ## SYNOPSIS
 
-`kdb check [<plugin>]`
+`kdb plugin-check [<plugin>]`
 
 ## DESCRIPTION
 
@@ -95,22 +95,22 @@ If the user wants to have the value printed, they must do so manually (by runnin
 ## EXAMPLES
 
 To check the Key Database:<br>
-`kdb check`
+`kdb plugin-check`
 
 To check the Key Database and then print the result:<br>
-`kdb check`
+`kdb plugin-check`
 followed by:<br>
 `echo $?`
 
 To check the Key Database including write checks:<br>
-`kdb check -f`
+`kdb plugin-check -f`
 Note that this type of check may change configuration files.
 
 To check the `line` plugin:<br>
-`kdb check line`
+`kdb plugin-check line`
 
 ## SEE ALSO
 
 - For an introductions into plugins, read [elektra-plugins](/src/plugins).
-- To list all plugins use [kdb-list(1)](kdb-list.md).
-- For information on a plugin use [kdb-info(1)](kdb-info.md).
+- To list all plugins use [kdb-plugin-list(1)](kdb-plugin-list.md).
+- For information on a plugin use [kdb-plugin-info(1)](kdb-plugin-info.md).

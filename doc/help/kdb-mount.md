@@ -5,7 +5,7 @@
 `kdb mount [<path> <mount point>] [<plugin> [<config>] [..]]`<br>
 
 - Where `path` is the path to the file the user wants to mount.
-  See `kdb info resolver` for details what an absolute and relative path means.
+  See `kdb plugin-info resolver` for details what an absolute and relative path means.
   See also IMPORTANT below.
 
 - `mountpoint` is where in the key database the new backend should be mounted.
@@ -31,7 +31,7 @@ Additionally, the user can use this command to list the currently mounted backen
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
-Absolute paths are still relative to their namespace (see `kdb info resolver`).
+Absolute paths are still relative to their namespace (see `kdb plugin-info resolver`).
 Only system+spec mount points are actually absolute.
 Read [elektra-namespaces(7)](elektra-namespaces.md) for further information.
 

@@ -1,8 +1,8 @@
-# kdb-info(1) -- Print information about an Elektra plugin
+# kdb-plugin-info(1) -- Print information about an Elektra plugin
 
 ## SYNOPSIS
 
-`kdb info <plugin> [<clause name>]`<br>
+`kdb plugin-info <plugin> [<clause name>]`<br>
 
 Where `plugin` is the plugin in which the user would like to know information about.<br>
 The optional `clause name` argument can be used to just print information from a certain clause.<br>
@@ -42,10 +42,10 @@ This command returns the following exit statuses:<br>
 ## EXAMPLES
 
 To print all the information about the `dump` plugin:<br>
-`kdb info dump`<br>
+`kdb plugin-info dump`<br>
 
 To print out the license of the `resolver` plugin directly by forcing it to load:<br>
-`kdb info -l resolver licence`<br>
+`kdb plugin-info -l resolver licence`<br>
 
 To print out the author of the `line` plugin:<br>
-`kdb info line author`<br>
+`kdb plugin-info line author`<br>

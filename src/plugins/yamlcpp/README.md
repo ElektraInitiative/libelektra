@@ -93,7 +93,7 @@ kdb get user/tests/yamlcpp/sunny/#1
 #> Dee
 
 # You can retrieve the last index of an array by reading the metakey `array`
-kdb getmeta user/tests/yamlcpp/sunny array
+kdb meta-get user/tests/yamlcpp/sunny array
 # 1
 
 # Extend the array
@@ -103,24 +103,24 @@ kdb set user/tests/yamlcpp/sunny/#4 Mac
 
 # The plugin supports empty array fields
 kdb set user/tests/yamlcpp/sunny/#_10 'The Waitress'
-kdb getmeta user/tests/yamlcpp/sunny array
+kdb meta-get user/tests/yamlcpp/sunny array
 #> #_10
 kdb get user/tests/yamlcpp/sunny/#_9
 # RET: 11
 
 # Retrieve the last array entry
-kdb get user/tests/yamlcpp/sunny/$(kdb getmeta user/tests/yamlcpp/sunny array)
+kdb get user/tests/yamlcpp/sunny/$(kdb meta-get user/tests/yamlcpp/sunny array)
 #> The Waitress
 
 # The plugin also supports empty arrays (arrays without any elements)
-kdb setmeta user/tests/yamlcpp/empty array ''
+kdb meta-set user/tests/yamlcpp/empty array ''
 kdb export user/tests/yamlcpp/empty yamlcpp
 #> []
 
 # For arrays with at least one value we do not need to set the type `array`
 kdb set user/tests/yamlcpp/movies
 kdb set user/tests/yamlcpp/movies/#0 'A Silent Voice'
-kdb getmeta user/tests/yamlcpp/movies array
+kdb meta-get user/tests/yamlcpp/movies array
 #> #0
 kdb export user/tests/yamlcpp/movies yamlcpp
 #> - A Silent Voice
@@ -244,21 +244,21 @@ sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
 echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user/tests/yamlcpp`
-kdb lsmeta user/tests/yamlcpp/🔑
+kdb meta-ls user/tests/yamlcpp/🔑
 #> comment
-kdb getmeta user/tests/yamlcpp/🔑 comment
+kdb meta-get user/tests/yamlcpp/🔑 comment
 #> Unicorn
 
 # Add a new key and add some metadata to the new key
 kdb set user/tests/yamlcpp/brand new
-kdb setmeta user/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
-kdb setmeta user/tests/yamlcpp/brand rationale "Because I Love It"
+kdb meta-set user/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb meta-set user/tests/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
-kdb lsmeta user/tests/yamlcpp/brand
+kdb meta-ls user/tests/yamlcpp/brand
 #> comment
 #> rationale
-kdb getmeta user/tests/yamlcpp/brand rationale
+kdb meta-get user/tests/yamlcpp/brand rationale
 #> Because I Love It
 
 # Undo modifications to the key database
@@ -271,7 +271,7 @@ We can also invoke additional plugins that use metadata like `type`.
 ```sh
 sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp type
 kdb set user/tests/yamlcpp/typetest/number 21
-kdb setmeta user/tests/yamlcpp/typetest/number check/type short
+kdb meta-set user/tests/yamlcpp/typetest/number check/type short
 
 kdb set user/tests/yamlcpp/typetest/number "One"
 # RET: 5
@@ -328,7 +328,7 @@ sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 # Check if the plugin saves null keys correctly
 kdb set user/tests/yamlcpp/null
 kdb set user/tests/yamlcpp/null/level1/level2
-kdb setmeta user/tests/yamlcpp/null/level1/level2 comment 'Null key'
+kdb meta-set user/tests/yamlcpp/null/level1/level2 comment 'Null key'
 
 kdb ls user/tests/yamlcpp/null
 #> user/tests/yamlcpp/null
@@ -465,7 +465,7 @@ directory: ___dirdata = Directory Data
 sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 
 kdb set user/tests/yamlcpp/directory 'Directory Data'
-kdb setmeta user/tests/yamlcpp/directory comment 'Directory Metadata'
+kdb meta-set user/tests/yamlcpp/directory comment 'Directory Metadata'
 kdb set user/tests/yamlcpp/directory/file 'Leaf Data'
 
 kdb ls user/tests/yamlcpp/directory
@@ -474,7 +474,7 @@ kdb ls user/tests/yamlcpp/directory
 
 kdb get user/tests/yamlcpp/directory
 #> Directory Data
-kdb getmeta user/tests/yamlcpp/directory comment
+kdb meta-get user/tests/yamlcpp/directory comment
 #> Directory Metadata
 kdb get user/tests/yamlcpp/directory/file
 #> Leaf Data

@@ -41,5 +41,5 @@ To set the `user/validation/key` key to the value `a` and validate that any futu
 
 ## SEE ALSO
 
-- Use `kdb info validation` to get information about the validation plugin.
+- Use `kdb plugin-info validation` to get information about the validation plugin.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

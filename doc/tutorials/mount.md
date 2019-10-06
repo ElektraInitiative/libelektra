@@ -25,7 +25,7 @@ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 3. `hosts` is the _storage plugin_ that can read and write this configuration format.
 
 > Consider using mount with the option `--with-recommends`, which loads all plugins recommended by the _hosts_ plugin.
-> You can see the recommended plugins of _hosts_ if you look at the output of `kdb info hosts`.
+> You can see the recommended plugins of _hosts_ if you look at the output of `kdb plugin-info hosts`.
 > Hosts recommends the _glob_, _network_ and _error_ plugins.
 > Using `--with-recommends`, more validation is done when modifying keys in `system/hosts`.
 
@@ -121,7 +121,7 @@ If you supplied a relative path (e.g. `example.ini`) it gets resolved to this:
 | `system`  | `/etc/kdb/example.ini`                         |
 
 If this differs on your system, the resolver has a different configuration.
-Type `kdb info resolver` for more information about the resolvers.
+Type `kdb plugin-info resolver` for more information about the resolvers.
 
 There are different resolvers. For instance on non-POSIX systems paths must be resolved differently.
 In this case one might want to use the [wresolver](/src/plugins/wresolver/README.md) plugin.
@@ -139,7 +139,7 @@ Elektra accomplishes this task with _storage plugins_.
 > In Elektra [Plugins](/doc/tutorials/plugins.md) are the units that encapsulate functionality.
 > There are not only plugins that handle storage of data, but also plugins that modify your values ([iconv](/src/plugins/iconv/README.md)).
 > Furthermore there are plugins that validate your values ([validation](/src/plugins/validation/README.md), [mathcheck](/src/plugins/mathcheck/README.md), ...), log changes in the key set ([logchange](/src/plugins/logchange/README.md)) or do things like executing commands on the shell ([shell](/src/plugins/shell/README.md)).
-> You can get a complete list of all available plugins with `kdb list`.
+> You can get a complete list of all available plugins with `kdb plugin-list`.
 > Although an individual plugin does not provide much functionality, plugins are powerful because they are designed to be used together.
 
 When you mount a file you can tell Elektra which plugins it should use for reading and
@@ -204,15 +204,15 @@ kdb set user/example/enumtest/fruit apple
 #> Create a new key user/example/enumtest/fruit with string "apple"
 ```
 
-By entering `kdb info type` in the commandline, we can find out how to use this plugin.
+By entering `kdb plugin-info type` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the metavalue `check/enum`.
 
 ```sh
-kdb setmeta user/example/enumtest/fruit check/type enum
-kdb setmeta user/example/enumtest/fruit check/enum "#2"
-kdb setmeta user/example/enumtest/fruit check/enum/#0 apple
-kdb setmeta user/example/enumtest/fruit check/enum/#1 banana
-kdb setmeta user/example/enumtest/fruit check/enum/#2 grape
+kdb meta-set user/example/enumtest/fruit check/type enum
+kdb meta-set user/example/enumtest/fruit check/enum "#2"
+kdb meta-set user/example/enumtest/fruit check/enum/#0 apple
+kdb meta-set user/example/enumtest/fruit check/enum/#1 banana
+kdb meta-set user/example/enumtest/fruit check/enum/#2 grape
 kdb set user/example/enumtest/fruit tomato
 # RET:5
 # this fails because tomato is not in the list of valid values

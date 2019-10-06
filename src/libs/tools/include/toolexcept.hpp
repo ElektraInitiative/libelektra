@@ -97,7 +97,7 @@ struct FileNotValidException : public BackendCheckException
 		       "resolver) not allowed to contain '..'.\n"
 		       "\n"
 		       "For more information see:\n"
-		       " kdb info <your resolver>";
+		       " kdb plugin-info <your resolver>";
 	}
 };
 

@@ -9,7 +9,7 @@ add_msr_test (kdb_complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
 add_msr_test (kdb_cp "${CMAKE_SOURCE_DIR}/doc/help/kdb-cp.md" REQUIRED_PLUGINS mini)
 add_msr_test (kdb_global_umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md" REQUIRED_PLUGINS spec tracer)
 add_msr_test (kdb_ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md" REQUIRED_PLUGINS sync)
-add_msr_test (kdb_showmeta "${CMAKE_SOURCE_DIR}/doc/help/kdb-showmeta.md" REQUIRED_PLUGINS dump)
+add_msr_test (kdb_meta_show "${CMAKE_SOURCE_DIR}/doc/help/kdb-meta-show.md" REQUIRED_PLUGINS dump)
 
 if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 	message (STATUS "Excluding Markdown Shell Recorder test for `kdb find`, since GCC ${CMAKE_CXX_COMPILER_VERSION} "

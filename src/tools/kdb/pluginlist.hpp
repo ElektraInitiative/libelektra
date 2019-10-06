@@ -12,11 +12,11 @@
 #include <command.hpp>
 #include <kdb.hpp>
 
-class ListCommand : public Command
+class PluginListCommand : public Command
 {
 public:
-	ListCommand ();
-	~ListCommand ();
+	PluginListCommand ();
+	~PluginListCommand ();
 
 	virtual std::string getShortOptions () override
 	{

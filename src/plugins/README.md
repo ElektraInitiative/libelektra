@@ -42,9 +42,9 @@ Furthermore, plugins might export symbols:
 
 ### KDB-Interface
 
-- To list all plugins use [kdb-list(1)](/doc/help/kdb-list.md).
-- To check a plugin use [kdb-check(1)](/doc/help/kdb-check.md).
-- For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
+- To list all plugins use [kdb-plugin-list(1)](/doc/help/kdb-plugin-list.md).
+- To check a plugin use [kdb-plugin-check(1)](/doc/help/kdb-plugin-check.md).
+- For information on a plugin use [kdb-plugin-info(1)](/doc/help/kdb-plugin-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 ## See Also

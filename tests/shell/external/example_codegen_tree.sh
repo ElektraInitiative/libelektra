@@ -69,19 +69,19 @@ do_tests() {
 	"$KDB" set "$UKEY/tree/leafB" ""
 	"$KDB" set "$UKEY/tree/leafB/text" "leafB"
 
-	"$KDB" setmeta "$UKEY/tree/root/children" "array" "#3"
+	"$KDB" meta-set "$UKEY/tree/root/children" "array" "#3"
 	"$KDB" set "$UKEY/tree/root/children/#0" "../../../child1"
 	"$KDB" set "$UKEY/tree/root/children/#1" "../../../child2"
 	"$KDB" set "$UKEY/tree/root/children/#3" "../../../child4"
 
-	"$KDB" setmeta "$UKEY/tree/child4/children" "array" "#1"
+	"$KDB" meta-set "$UKEY/tree/child4/children" "array" "#1"
 	"$KDB" set "$UKEY/tree/child4/children/#0" "../../../grandchildA"
 	"$KDB" set "$UKEY/tree/child4/children/#1" "../../../grandchildB"
 
-	"$KDB" setmeta "$UKEY/tree/grandchildA/children" "array" "#0"
+	"$KDB" meta-set "$UKEY/tree/grandchildA/children" "array" "#0"
 	"$KDB" set "$UKEY/tree/grandchildA/children/#0" "../../../leafA"
 
-	"$KDB" setmeta "$UKEY/tree/grandchildB/children" "array" "#0"
+	"$KDB" meta-set "$UKEY/tree/grandchildB/children" "array" "#0"
 	"$KDB" set "$UKEY/tree/grandchildB/children/#0" "../../../leafB"
 
 	"$KDB" set "$UKEY/root" "../tree/root"

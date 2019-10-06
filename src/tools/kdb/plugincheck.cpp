@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <check.hpp>
+#include <plugincheck.hpp>
 
 #include <cmdline.hpp>
 #include <kdb.hpp>
@@ -20,7 +20,7 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-CheckCommand::CheckCommand ()
+PluginCheckCommand::PluginCheckCommand ()
 {
 }
 
@@ -79,7 +79,7 @@ int doKDBcheck (bool force)
 	}
 }
 
-int CheckCommand::execute (Cmdline const & cl)
+int PluginCheckCommand::execute (Cmdline const & cl)
 {
 	if (cl.arguments.size () == 0)
 	{
@@ -127,6 +127,6 @@ int CheckCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-CheckCommand::~CheckCommand ()
+PluginCheckCommand::~PluginCheckCommand ()
 {
 }

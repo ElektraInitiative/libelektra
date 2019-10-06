@@ -164,15 +164,15 @@ E.g. to have a different home directory for any user and application:
 ```sh
 kdb set user/elektra/intercept/getenv/layer/user markus
 kdb set user/users/markus/konqueror/HOME /home/download
-kdb setmeta spec/elektra/intercept/getenv/override/HOME context  /users/%user%/%name%/HOME
+kdb meta-set spec/elektra/intercept/getenv/override/HOME context  /users/%user%/%name%/HOME
 ```
 
 Or to have a different lock/suspend program per computer (that all have the same config):
 
 ```sh
 kdb mount-info system/elektra/intercept/getenv/info            # must be below /elektra/intercept/getenv to be available
-kdb setmeta spec/elektra/intercept/getenv/layer/hostname override/#0 system/elektra/intercept/getenv/info/uname/nodename
-kdb setmeta spec/elektra/intercept/getenv/override/lock context /elektra/intercept/getenv/info/lock/%hostname%
+kdb meta-set spec/elektra/intercept/getenv/layer/hostname override/#0 system/elektra/intercept/getenv/info/uname/nodename
+kdb meta-set spec/elektra/intercept/getenv/override/lock context /elektra/intercept/getenv/info/lock/%hostname%
 kdb set user/elektra/intercept/getenv/info/lock/computer1 "systemctl suspend -i"
 kdb set user/elektra/intercept/getenv/info/lock/computer2 "xset dpms force off && xtrlock"
 `kdb getenv lock`  # call the appropriate lock method for the current computer
@@ -192,7 +192,7 @@ Depending on the setup you use, these parameters might be used.
 For more information see:
 
 ```sh
-kdb info resolver
+kdb plugin-info resolver
 ```
 
 For these parameters, `/elektra/intercept/getenv/override/` or `/elektra/intercept/getenv/fallback` will _not_ be used internally, but
@@ -256,6 +256,6 @@ that honor HTTP_PROXY, e.g. w3m.
 We can also link `http_proxy` to the value of `HTTP_PROXY`:
 
 ```sh
-kdb setmeta spec/elektra/intercept/getenv/override/http_proxy "override/#0" /elektra/intercept/getenv/override/HTTP_PROXY
+kdb meta-set spec/elektra/intercept/getenv/override/http_proxy "override/#0" /elektra/intercept/getenv/override/HTTP_PROXY
 kdb get /elektra/intercept/getenv/override/http_proxy
 ```
