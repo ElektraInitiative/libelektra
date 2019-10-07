@@ -58,7 +58,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	}
 	else
 	{
-		throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: abort, our, their, base");
+		throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: abort, our, their");
 	}
 
 	kdb::KeySet ours;
@@ -100,8 +100,9 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 		}
 		else
 		{
-			std::cerr << discard.size () << " keys exist in merge resultpath, will quit. Use -f to override the keys there."
+			std::cerr << "ERROR: " << discard.size () << " keys exist in resultpath. Use -f to override the keys there."
 				  << std::endl;
+			return 1;
 		}
 	}
 	ckdb::KeySet * c_ours = ours.getKeySet ();
