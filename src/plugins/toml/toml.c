@@ -14,7 +14,7 @@
 
 #include "toml.h"
 
-KeySet * getContract ()
+KeySet * getContract (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/toml", KEY_VALUE, "toml plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/toml/exports", KEY_END),
@@ -25,7 +25,7 @@ KeySet * getContract ()
 }
 
 
-int elektraTomlGet (Plugin * handle, ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 
 	if (strcmp (keyName (parentKey), "system/elektra/modules/toml") == 0)
