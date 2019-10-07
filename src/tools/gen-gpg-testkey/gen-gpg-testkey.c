@@ -10,6 +10,8 @@
 #include <gpgme.h>
 #include <stdio.h>
 
+#define ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION "elektra testkey (gen-gpg-testkey)"
+
 int main (void)
 {
 	gpgme_error_t err;
@@ -34,7 +36,7 @@ int main (void)
 	}
 
 	// look for the elektra key
-	err = gpgme_op_keylist_start (ctx, "elektra", 1 /* secret keys only! */);
+	err = gpgme_op_keylist_start (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, 1 /* secret keys only! */);
 	if (err)
 	{
 		fprintf (stderr, "gpgme error: %s\n", gpgme_strerror (err));
@@ -58,10 +60,10 @@ int main (void)
 		//
 		//      See https://lists.gnupg.org/pipermail/gnupg-commits/2017-February/013351.html
 #ifdef GPGME_CREATE_NOEXPIRE
-		err = gpgme_op_createkey (ctx, "elektra testkey", "default", 0, 0, NULL,
+		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, "default", 0, 0, NULL,
 					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOEXPIRE | GPGME_CREATE_NOPASSWD);
 #else
-		err = gpgme_op_createkey (ctx, "elektra testkey", "default", 0, 0, NULL,
+		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, "default", 0, 0, NULL,
 					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOPASSWD);
 #endif
 		res = gpgme_op_genkey_result (ctx);

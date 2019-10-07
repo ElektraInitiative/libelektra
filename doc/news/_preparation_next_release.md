@@ -201,6 +201,7 @@ you up to date with the multi-language support provided by Elektra.
   - `kdb showmeta` is now `kdb meta-show`
   - `kdb rmmeta` is now `kdb meta-rm`
   - `kdb setmeta` is now `kdb meta-set` _(Philipp Gackstatter)_
+- Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
 - <<TODO>>
 
 ## Scripts
