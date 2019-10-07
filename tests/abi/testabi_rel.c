@@ -119,39 +119,39 @@ static void test_directbelow (void)
 
 	keySetName (k1, "user");
 	keySetName (k2, "user/a");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "system");
 	keySetName (k2, "system/a");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "user");
 	keySetName (k2, "user/longer_name");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "system");
 	keySetName (k2, "system/longer_name");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "user/a");
 	keySetName (k2, "user/a/a");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "system/a");
 	keySetName (k2, "system/a/a");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "system/a\\/a");
 	keySetName (k2, "system/a\\/a/a");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "system/a\\/a\\/a");
 	keySetName (k2, "system/a\\/a\\/a/b");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 	keySetName (k1, "system/a\\/a\\/a");
 	keySetName (k2, "system/a\\/a\\/a/b");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 
 	keyDel (k1);
@@ -167,7 +167,7 @@ static void test_below (void)
 	keySetName (k1, "user/tests/simple");
 	keySetName (k2, "user/tests/simple/below");
 	succeed_if (keyCmp (k1, k2) == 0 || keyIsBelow (k1, k2) == 1, "should be below");
-	succeed_if (keyIsDirectBelow (k1, k2) == 1, "should be below");
+	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be below");
 
 	keySetName (k1, "user");
 	keySetName (k2, "user/a/a");
@@ -210,21 +210,21 @@ static void test_examples (void)
 
 	keySetName (key, "user/key/folder");
 	keySetName (check, "user/key/folder/child");
-	succeed_if (keyIsDirectBelow (key, check) == 1, "should be direct below");
+	succeed_if (keyIsDirectlyBelow (key, check) == 1, "should be direct below");
 
 	keySetName (key, "user/key/folder");
 	keySetName (check, "user/key/folder/any/depth/deeper/grand-child");
-	succeed_if (keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 1, "should be below (but not direct)");
+	succeed_if (keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 1, "should be below (but not direct)");
 	succeed_if (keyIsBelow (key, check) == 1, "should be below");
 	succeed_if (keyCmp (key, check) == 0 || keyIsBelow (key, check) == 1, "should be the same or below");
 
 	keySetName (key, "user/key/folder");
 	keySetName (check, "user/notsame/folder");
-	succeed_if (keyCmp (key, check) != 0 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "key is not below");
+	succeed_if (keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "key is not below");
 
 	keySetName (key, "user/key/folder");
 	keySetName (check, "system/notsame/folder");
-	int has_no_rel = keyCmp (key, check) != 0 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
+	int has_no_rel = keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
 	succeed_if (has_no_rel == 1, "not in the same namespace");
 
 	keyDel (key);
@@ -239,22 +239,22 @@ static void test_hierarchy (void)
 
 	keySetName (key, "user/key/folder/key");
 	keySetName (check, "user/other/folder/key");
-	succeed_if (keyCmp (key, check) != 0 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "should be same");
+	succeed_if (keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "should be same");
 
 	keySetName (key, "system/key/folder/key");
 	keySetName (check, "system/other/folder/key");
-	succeed_if (keyCmp (key, check) != 0 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "should be same");
+	succeed_if (keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "should be same");
 
 	keySetName (key, "user/key/folder/key");
 	keySetName (check, "system/other/folder/key");
 
-	int has_no_rel = keyCmp (key, check) != 0 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
+	int has_no_rel = keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
 	succeed_if (has_no_rel == 1, "should be different (1)");
 
 	keySetName (key, "system/key/folder/key");
 	keySetName (check, "user/other/folder/key");
 
-	has_no_rel = keyCmp (key, check) != 0 && keyIsDirectBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
+	has_no_rel = keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
 	succeed_if (has_no_rel == 1, "should be different (2)");
 	keyDel (key);
 	keyDel (check);
