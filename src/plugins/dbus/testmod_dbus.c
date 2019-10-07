@@ -147,33 +147,29 @@ static int test_prerequisites (void)
 	printf ("testing prerequisites\n");
 	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
 
+	// Set bus type for tests
+	// NOTE brew dbus on MacOs supports session out of the box while session
+	// bus is not available without further configuration on Linux
+
 	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
-	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
-
-	int success = 0;
-	if (systemBus != NULL || sessionBus != NULL)
+	if (systemBus)
 	{
-		// Set bus type for tests
-		// NOTE brew dbus on MacOs supports session by out of the box while session
-		// bus is not available without further configuration on Linux
-		if (systemBus)
-		{
-			testBusType = DBUS_BUS_SYSTEM;
-			testKeyNamespace = "system";
-		}
-		else if (sessionBus)
-		{
-			testBusType = DBUS_BUS_SESSION;
-			testKeyNamespace = "user";
-		}
-
-		success = 1;
+		testBusType = DBUS_BUS_SYSTEM;
+		testKeyNamespace = "system";
+		dbus_connection_unref (systemBus);
+		return 1; // success
 	}
 
-	if (systemBus) dbus_connection_unref (systemBus);
-	if (sessionBus) dbus_connection_unref (sessionBus);
+	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
+	if (sessionBus)
+	{
+		testBusType = DBUS_BUS_SESSION;
+		testKeyNamespace = "user";
+		dbus_connection_unref (sessionBus);
+		return 1; // success
+	}
 
-	return success;
+	return 0;
 }
 
 static void test_keyAdded (void)

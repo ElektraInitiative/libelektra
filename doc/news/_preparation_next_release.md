@@ -294,7 +294,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Travis
 
 - The build job `🍏 GCC` now uses the [Travis Homebrew addon](https://docs.travis-ci.com/user/installing-dependencies/#installing-packages-on-macos) to install dependencies. _(René Schwaiger)_
-- <<TODO>>
+- We now build and test Elektra on Ubuntu `18.04` (Bionic Beaver) instead of Ubuntu `16.04` (Xenial Xerus). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
