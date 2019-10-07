@@ -235,6 +235,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md).
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
 - A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
+- Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
 - <<TODO>>
 
 ## Tests
