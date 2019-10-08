@@ -148,6 +148,15 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - The option `-h` is no longer used to indicate help mode. Only `--help`, will invoke help mode. _(Klemens Böswirth)_
 
+### Proposal
+
+- Removed or moved several functions of `kdbproposal.h`:
+  - `elektraKsToMemArray` was moved to `kdbease.h`,
+  - `elektraLookupOptions` was moved to `kdbprivate.h`,
+  - `keySetStringF` was moved to `kdbinternal.h`,
+  - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
+  - Removed `ksPrev` and `elektraKsPrev`. _(Philipp Gackstatter)_
+
 ### <<Library1>>
 
 - <<TODO>>
