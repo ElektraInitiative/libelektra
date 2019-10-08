@@ -790,6 +790,7 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
  */
 static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey)
 {
+	ELEKTRA_LOG ("cmerge now handles arrays");
 	Key * checkedKey;
 	KeySet * toAppend = NULL;
 	while ((checkedKey = ksNext (baseSet)) != NULL)
@@ -833,6 +834,13 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			if (ret == 0)
 			{
 				toAppend = ksFromArray (out.ptr, out.len, informationKey);
+				ELEKTRA_LOG ("cmerge successfully handled an array");
+			}
+			else
+			{
+				char msg[300];
+				snprintf (msg, 300, "libgit returned error code %d", ret);
+				ELEKTRA_LOG (msg);
 			}
 			git_merge_file_result_free (&out);
 			elektraFree (ourArray);
@@ -874,7 +882,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
 		       int strategy, Key * informationKey)
 {
-	ELEKTRA_LOG ("cmerge starts with strategy %d", strategy);
+	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
 
 	// git_libgit2_init (); // calling git_libgit2_shutdown before returning gives a memory leak
 
