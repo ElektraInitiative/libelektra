@@ -55,13 +55,13 @@ mac_task:
 
     - name: 🍎 Clang
       osx_instance:
-        image: mojave-xcode-11
+        image: mojave-xcode-11.1
       env:
         ENABLE_LOGGER: ON
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: mojave-xcode-11
+        image: mojave-xcode-11.1
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -70,14 +70,14 @@ mac_task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: mojave-xcode-11
+        image: mojave-xcode-11.1
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
 
     - name: 🍎 MMap
       osx_instance:
-        image: mojave-xcode-11
+        image: mojave-xcode-11.1
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
