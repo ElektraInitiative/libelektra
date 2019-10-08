@@ -559,7 +559,6 @@ int ksResize (KeySet * ks, size_t size);
 size_t ksGetAlloc (const KeySet * ks);
 KeySet * ksDeepDup (const KeySet * source);
 
-Key * elektraKsPrev (KeySet * ks);
 Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos);
 
 

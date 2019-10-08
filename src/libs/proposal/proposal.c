@@ -135,26 +135,6 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
 
 
 /**
- * Returns the previous Key in a KeySet.
- *
- * KeySets have an internal cursor that can be reset with ksRewind(). Every
- * time ksPrev() is called the cursor is decremented and the new current Key
- * is returned.
- *
- * You'll get a NULL pointer if the key before begin of the KeySet was reached.
- *
- * Don't delete the key, use ksPop() if you want to delete it.
- *
- * @return the new current Key
- * @see ksRewind(), ksCurrent()
- *
- */
-Key * ksPrev (KeySet * ks)
-{
-	return elektraKsPrev (ks);
-}
-
-/**
  * @brief Pop key at given cursor position
  *
  * @param ks the keyset to pop key from
