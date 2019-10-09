@@ -32,7 +32,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <kdbprivate.h> // for elektraLookupOptions
+#include <kdbhelper.h> // for elektraLookupOptions
 #include <keyset.hpp>
 
 // #include <kdbprivate.h> // for debugging (to see values of internal structures)
