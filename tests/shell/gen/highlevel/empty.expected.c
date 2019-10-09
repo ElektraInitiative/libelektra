@@ -55,7 +55,7 @@ static int isHelpMode (void)
 	typedef int (*func) (void);
 	func goptsIsHelpMode = *(func *) elektraInvokeGetFunction (gopts, "ishelpmode");
 	
-	int ret = goptsIsHelpMode ();
+	int ret = goptsIsHelpMode == NULL ? 0 : goptsIsHelpMode ();
 
 	elektraInvokeClose (gopts, NULL);
 	return ret == 1;
