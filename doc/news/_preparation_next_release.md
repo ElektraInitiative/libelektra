@@ -65,6 +65,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
+- We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 
 ### Camel
 

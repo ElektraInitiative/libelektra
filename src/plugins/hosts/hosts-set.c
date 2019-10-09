@@ -109,7 +109,7 @@ static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 	Key * alias;
 	while ((alias = ksNext (returned)) != 0)
 	{
-		if (keyRel (key, alias) < 1) break;
+		if (keyIsBelow (key, alias) != 1) break;
 
 		fprintf (fp, " %s", (char *) keyBaseName (alias));
 	}

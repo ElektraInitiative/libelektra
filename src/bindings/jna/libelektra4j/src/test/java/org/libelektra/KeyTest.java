@@ -225,17 +225,6 @@ public class KeyTest {
 	}
 
 	@Test
-	public void test_keyRelation_shouldPass() {
-		final Key key = Key.create(KEY_10_NAME, KEY_10_VALUE);
-		final Key key2 = Key.create(KEY_11_NAME, KEY_11_VALUE);
-		final Key key3 = Key.create(KEY_12_NAME, KEY_12_VALUE);
-		assertEquals(0, key.rel(key));
-		assertEquals(1, key.rel(key2));
-		assertEquals(2, key.rel(key3));
-		assertEquals(1, key2.rel(key3));
-	}
-
-	@Test
 	public void test_keyIsBelow_shouldPass() {
 		final Key key = Key.create(KEY_10_NAME, KEY_10_VALUE);
 		final Key key2 = Key.create(KEY_11_NAME, KEY_11_VALUE);

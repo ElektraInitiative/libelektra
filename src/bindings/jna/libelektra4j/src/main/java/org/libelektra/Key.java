@@ -520,19 +520,6 @@ public class Key implements Iterable<String> {
 	}
 
 	/**
-	 * Helper function to check for relation between keys
-	 *
-	 * @param other Other Key object that is used in relation check
-	 * @return 0 if other is equal to this; > 0 if other is sub-key of this key; < 0 otherwise or in case of an error
-	 */
-	public int rel(final Key other) {
-		if (other == null) {
-			throw new IllegalArgumentException("other should be a key, not null");
-		}
-		return Elektra.INSTANCE.keyRel(get(), other.get());
-	}
-
-	/**
 	 * Helper function to check if synchronization is necessary
 	 *
 	 * @return 1 if needs sync, 0 if no change done and -1 in case of a null pointer

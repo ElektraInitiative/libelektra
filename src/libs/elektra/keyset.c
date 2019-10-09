@@ -653,11 +653,6 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  *
  * @note the owner will only be used if the names are equal.
  *
- * Often is enough to know if the other key is
- * less then or greater than the other one.
- * But Sometimes you need more precise information,
- * see keyRel().
- *
  * Given any Keys k1 and k2 constructed with keyNew(), following
  * equation hold true:
  *

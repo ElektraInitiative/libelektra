@@ -46,7 +46,7 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 
 	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
-	if (keyRel (root, parentKey) >= 0)
+	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
 		KeySet * info = elektraNoresolverModules ();
