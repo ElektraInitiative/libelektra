@@ -1,11 +1,11 @@
 /**
-  1  * @file
-  2  *
-  3  * @brief Source for the toml plugin
-  4  *
-  5  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-  6  *
-  7  */
+ * @file
+ *
+ * @brief Source for the toml plugin
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
 
 
 #include <kdb.h>
@@ -13,6 +13,7 @@
 #include <kdbmacros.h>
 
 #include "toml.h"
+#include "driver.h"
 
 KeySet * getContract (void)
 {
@@ -27,7 +28,6 @@ KeySet * getContract (void)
 
 int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-
 	if (strcmp (keyName (parentKey), "system/elektra/modules/toml") == 0)
 	{
 		KeySet * contract = getContract ();
@@ -35,18 +35,17 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
-
-	// TODO Read from toml file (filename = parent key as string?)
-	status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
-
-	return status;
+	else
+	{
+		Driver * driver = createDriver (parentKey);
+		int status = driverParse (driver);
+		return -1;
+		return status == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 }
 
 int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	// TODO Write to toml file (filename = parent key as string?)
-
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
