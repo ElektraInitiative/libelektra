@@ -41,8 +41,6 @@ struct change
 // TODO: allow more changes
 static struct change allowedChanges[] = { { "description", true, true, true },
 					  { "opt/help", true, true, true },
-					  { "default", true, true, false },
-					  { "type", true, false, false },
 					  { NULL, false, false, false } };
 
 static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, Key * errorKey);
