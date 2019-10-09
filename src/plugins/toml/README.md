@@ -2,7 +2,7 @@
 - infos/author = Jakob Fischer <jakobfischer93@gmail.com>
 - infos/licence = BSD
 - infos/provides = storage/toml
-- infos/needs = 
+- infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
 - infos/metadata =
