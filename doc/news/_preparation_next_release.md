@@ -113,6 +113,8 @@ plugins. _(René Schwaiger)_
 ### Specload
 
 - We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
+- Changes to `default` or `type` metadata are no longer supported, since they are not safe in every case. _(Klemens Böswirth)_
+- The plugin no longer has the `experimental` status. _(Klemens Böswirth)_
 
 ### Spec
 
@@ -321,6 +323,10 @@ We are currently working on following topics:
 ## Statistics
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+
+## Finished Thesis
+
+- [Klemens Böswirth](https://www.libelektra.org/ftp/elektra/publications/boeswirth2019highlevel.pdf)
 
 ## Join the Initiative!
 
