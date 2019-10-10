@@ -9,6 +9,9 @@
 #define NR_OF_SET_PLUGINS 6
 #define NR_OF_ERROR_PLUGINS 3
 
+#define GETRESOLVER 0
+#define GETSTORAGE 2
+
 typedef struct _BackendHandle BackendHandle;
 typedef struct _Slot Slot;
 
@@ -719,11 +722,58 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 
 int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
+	BackendHandle * bh = elektraPluginGetData (handle);
+
+	Slot * resolver = bh->getplugins[RESOLVER_PLUGIN];
+
+	if (!resolver || !resolver->value || !resolver->value->kdbGet)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The resolver is not defined properly, the backend was not initialized correctly!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	int returnValue = resolver->value->kdbGet (handle, ks, parentKey);
+
+	switch (returnValue) {
+	case ELEKTRA_PLUGIN_STATUS_CACHE_HIT:
+		return returnValue;
+	case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+		return returnValue;
+	case ELEKTRA_PLUGIN_STATUS_ERROR:
+		return returnValue;
+	}
+
+	for (int a = 1; a < NR_OF_GET_PLUGINS; a++){
+
+		Slot * cur = bh->getplugins[a];
+
+		while (cur != 0)
+		{
+			if (cur->value && cur->value->kdbGet)
+			{
+				if (cur->value->kdbGet (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+				{
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				if (a == GETRESOLVER || a == GETSTORAGE)
+				{
+					cur = 0;
+				}
+				else
+				{
+					cur = cur->next;
+				}
+			}
+		}
+	}
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
