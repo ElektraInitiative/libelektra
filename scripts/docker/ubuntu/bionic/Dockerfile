@@ -5,6 +5,7 @@ RUN apt-get update && apt-get -y install \
         automake \
         autotools-dev \
         build-essential \
+        clang \
         cmake \
         curl \
         debhelper \
