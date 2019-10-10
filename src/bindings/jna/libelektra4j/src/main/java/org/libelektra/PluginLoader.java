@@ -18,6 +18,7 @@ public class PluginLoader {
 	private Key errorKey;
 	private final Map<String, Plugin> loadedJavaPlugins;
 	private final Map<String, Plugin> loadedElektraPlugins;
+	private KeySet modules;
 
 	/**
 	 * Instantiates a new PluginLoader with the possibility to add a custom error key
@@ -36,6 +37,7 @@ public class PluginLoader {
 		this.loadedElektraPlugins = new ConcurrentHashMap<>();
 		this.loadedJavaPlugins = new ConcurrentHashMap<>();
 		this.errorKey = Key.create("");
+		modules = KeySet.create();
 	}
 
 	/**
@@ -81,7 +83,7 @@ public class PluginLoader {
 		if (loadedElektraPlugins.containsKey(name)) {
 			return loadedElektraPlugins.get(name);
 		}
-		Plugin plugin = new NativePlugin(name, errorKey);
+		Plugin plugin = new NativePlugin(name, errorKey, modules);
 		loadedElektraPlugins.put(name, plugin);
 		return plugin;
 	}

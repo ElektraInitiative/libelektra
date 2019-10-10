@@ -27,8 +27,7 @@ public class NativePlugin implements Plugin {
 	 * @param errorKey The errorKey
 	 * @throws InstallationException if the plugin does not exist
 	 */
-	public NativePlugin(String pluginName, Key errorKey) throws InstallationException {
-		KeySet modules = KeySet.create();
+	public NativePlugin(String pluginName, Key errorKey, KeySet modules) throws InstallationException {
 		KeySet config = KeySet.create();
 		elektraPlugin = Elektra.INSTANCE.elektraPluginOpen(pluginName, modules.get(), config.get(), errorKey.get());
 		if (elektraPlugin == null) {

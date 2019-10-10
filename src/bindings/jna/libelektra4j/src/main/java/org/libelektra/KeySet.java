@@ -46,7 +46,7 @@ public class KeySet implements Iterable<Key> {
 	 */
 	public KeySet(final Pointer p) {
 		if (p == null) {
-			throw new IllegalArgumentException("Passed pointer may not be null");
+			throw new IllegalArgumentException("Passed pointer should not be null");
 		}
 		ks = p;
 	}
