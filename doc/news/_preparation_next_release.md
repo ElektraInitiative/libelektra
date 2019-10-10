@@ -238,7 +238,7 @@ you up to date with the multi-language support provided by Elektra.
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
 - A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
 - Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
-- <<TODO>>
+- We updated links for the INI parsing library Nickel. _(René Schwaiger)_
 
 ## Tests
 
