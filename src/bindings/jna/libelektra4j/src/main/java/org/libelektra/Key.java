@@ -426,7 +426,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Tries to rewind the meta information for this key
 	 *
-	 * @return 0 in case of no errors; 1 if key is not found; 2 if metakey is not found
+	 * @RetVal 0 in case of no errors; 1 if key is not found; 2 if metakey is not found
 	 */
 	public int rewindMeta() {
 		return Elektra.INSTANCE.keyRewindMeta(get());
@@ -455,7 +455,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @param source   Key object that is used as source
 	 * @param metaName Key name of the meta to be copied
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be
+	 * @RetVal 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be
 	 * done, -1 in case of an
 	 * error or if the source parameter was null
 	 */
@@ -470,7 +470,7 @@ public class Key implements Iterable<String> {
 	 * Helper function to copy all meta information from a source key to this key
 	 *
 	 * @param source Key object that is used as source
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1
+	 * @RetVal 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1
 	 * in case of an error or
 	 * if the source parameter was null
 	 */
@@ -508,7 +508,7 @@ public class Key implements Iterable<String> {
 	 * Helper function to compare two keys. Compares the key name with normal String comparison.
 	 *
 	 * @param other Other Key object that is used in comparison
-	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical order than the other key; 1 if this
+	 * @RetVal 0 if key name is equal; -1 if this key name has lower alphabetical order than the other key; 1 if this
 	 * key has higher
 	 * alphabetical order
 	 */
@@ -522,7 +522,7 @@ public class Key implements Iterable<String> {
 	/**
 	 * Helper function to check if synchronization is necessary
 	 *
-	 * @return 1 if needs sync, 0 if no change done and -1 in case of a null pointer
+	 * @RetVal 1 if needs sync, 0 if no change done and -1 in case of a null pointer
 	 */
 	public int needsSync() {
 		return Elektra.INSTANCE.keyNeedSync(get());
