@@ -11,7 +11,7 @@
 
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
 
-static void test_elektraRenameKeys (void)
+static void test_ksRenameKeys (void)
 {
 	printf ("test rename keys\n");
 	KeySet * ks = ksNew (20, keyNew ("system/some/common/prefix", KEY_END), keyNew ("system/some/common/prefix/dir", KEY_END),
@@ -194,7 +194,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_ksToArray ();
-	test_elektraRenameKeys ();
+	test_ksRenameKeys ();
 	test_elektraEmptyKeys ();
 	test_cascadingLookup ();
 	test_creatingLookup ();
