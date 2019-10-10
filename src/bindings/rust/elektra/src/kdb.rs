@@ -118,6 +118,7 @@ impl AsRef<elektra_sys::KDB> for KDB {
 
 const ELEKTRA_ERROR_OUT_OF_MEMORY: &str = "C01110";
 const ELEKTRA_ERROR_INTERNAL: &str = "C01310";
+const ELEKTRA_ERROR_INSTALLATION: &str = "C01200";
 const ELEKTRA_ERROR_INTERFACE: &str = "C01320";
 const ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR: &str = "C01330";
 const ELEKTRA_ERROR_CONFLICTING_STATE: &str = "C02000";
@@ -296,6 +297,9 @@ fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
                 return Permanent(Resource(OutOfMemory(err_wrapper)));
             }
+            ELEKTRA_ERROR_INSTALLATION => {
+                return Permanent(Installation(err_wrapper));
+            }
             ELEKTRA_ERROR_INTERNAL => {
                 return Permanent(Logical(Internal(err_wrapper)));
             }
@@ -315,11 +319,11 @@ fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
                 return Validation(Semantic(err_wrapper));
             }
             _ => {
-                unreachable!();
+                panic!("Unknown error code {}", err_num_key.value());
             }
         }
     }
-    unreachable!()
+    panic!("No error/number metakey is available.")
 }
 
 #[cfg(test)]
