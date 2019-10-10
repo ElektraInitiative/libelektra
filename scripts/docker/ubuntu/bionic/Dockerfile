@@ -14,31 +14,31 @@ RUN apt-get update && apt-get -y install \
         discount \
         doxygen \
         git \
-		git-buildpackage \
+        git-buildpackage \
         graphviz \
         libaugeas-dev \
         libboost-dev \
-        libbotan-2-dev \ 
+        libbotan-2-dev \
         libdbus-1-dev \
         libgit2-dev \
         libgpgme-dev \
         libgtest-dev \
         liblua5.2-dev \
-        libmarkdown2-dev \ 
+        libmarkdown2-dev \
         libssl-dev \
-        libsystemd-dev \ 
+        libsystemd-dev \
         libxerces-c-dev \
         libxml2-dev \
         libyajl-dev \
         libzmq3-dev \
         locales \
         pkg-config \
-        python-all \ 
+        python-all \
         python-dev \
         python3-all \
         python3-dev \
         qtbase5-dev \
-        qtdeclarative5-dev \ 
+        qtdeclarative5-dev \
         ruby-dev \
         swig \
     && rm -rf /var/lib/apt/lists/*
