@@ -598,6 +598,9 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 int elektraValidateKeyName (const char * name, size_t size);
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
+
+KeySet * ksRenameKeys (KeySet * config, const Key * name);
+
 KeySet * elektraRenameKeys (KeySet * config, const char * name);
 
 
