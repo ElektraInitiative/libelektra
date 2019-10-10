@@ -155,7 +155,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   - `elektraLookupOptions` was moved to `kdbprivate.h`,
   - `keySetStringF` was moved to `kdbinternal.h`,
   - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
-  - Removed `ksPrev` and `elektraKsPrev`. _(Philipp Gackstatter)_
+  - Removed `ksPrev` and `elektraKsPrev`,
+  - Removed `elektraRenameKeys` and replaced it with `ksRenameKeys`. _(Philipp Gackstatter)_
 
 ### <<Library1>>
 
