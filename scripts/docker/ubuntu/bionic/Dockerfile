@@ -38,6 +38,7 @@ RUN apt-get update && apt-get -y install \
         python-dev \
         python3-all \
         python3-dev \
+        ninja-build \
         qtbase5-dev \
         qtdeclarative5-dev \
         ruby-dev \
