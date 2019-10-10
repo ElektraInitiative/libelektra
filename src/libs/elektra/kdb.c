@@ -153,20 +153,7 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
  *
  * The first key is removed in the resulting keyset.
  */
-KeySet * ksRenameKeys (KeySet * config, const Key * name)
-{
-	return elektraRenameKeys (config, keyName (name));
-}
-
-/**
- * @brief Takes the first key and cuts off this common part
- * for all other keys, instead name will be prepended
- *
- * @return a new allocated keyset with keys in user namespace.
- *
- * The first key is removed in the resulting keyset.
- */
-KeySet * elektraRenameKeys (KeySet * config, const char * name)
+KeySet * ksRenameKeys (KeySet * config, const char * name)
 {
 	Key * root;
 	Key * cur;
@@ -2116,7 +2103,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
 		ksAppendKey (pluginConfig, pluginCutpoint);
 		{
-			KeySet * newPluginConfig = elektraRenameKeys (pluginConfig, "user");
+			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user");
 			ksDel (pluginConfig);
 			pluginConfig = newPluginConfig;
 		}

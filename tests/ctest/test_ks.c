@@ -21,7 +21,7 @@ static void test_elektraRenameKeys (void)
 	KeySet * cmp = ksNew (20, keyNew ("user/x/dir", KEY_END), keyNew ("user/x/dir/keya", KEY_END),
 			      keyNew ("user/x/some", KEY_VALUE, "huhu", KEY_END), keyNew ("user/x/other", KEY_END), KS_END);
 
-	KeySet * result = elektraRenameKeys (ks, "user/x");
+	KeySet * result = ksRenameKeys (ks, "user/x");
 	compare_keyset (result, cmp);
 	// output_keyset(result);
 	ksDel (cmp);
@@ -29,7 +29,7 @@ static void test_elektraRenameKeys (void)
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	result = elektraRenameKeys (ks, "user");
+	result = ksRenameKeys (ks, "user");
 	output_keyset (result);
 
 	ksDel (result);
