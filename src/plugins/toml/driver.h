@@ -4,6 +4,8 @@
 #include <kdb.h>
 #include <stdio.h>
 
+#include "scalar.h"
+
 typedef struct _ParentList
 {
 	Key * key;
@@ -20,6 +22,7 @@ typedef struct
 {
 	KeySet * keys;
 	ParentList * parentStack;
+	IndexList * keyDepthStack;
 	IndexList * indexStack;
 	const char * filename;
 	FILE * file;
@@ -30,6 +33,11 @@ Driver * createDriver (const Key * parent);
 int driverParse (Driver * driver);
 void driverError (Driver * driver, int lineno, const char * msg);
 
-void driverExitKey (Driver * driver, const char * text);
+void driverEnterKeyValue (Driver * driver);
+void driverExitKeyValue (Driver * driver);
+void driverExitSimpleKey (Driver * driver, const char * text);
+void driverExitScalar (Driver * driver, Scalar * scalar);
+void driverEnterArray (Driver * driver);
+void driverExitArray (Driver * driver);
 
 #endif // ELEKTRA_PLUGIN_TOML_DRIVER_H
