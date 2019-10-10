@@ -64,52 +64,60 @@ extern int yylex(void);
 %%
 
 Toml	: 	Nodes
-	|	{}
-	;
+	    |	{}
+	    ;
 	
 
-Nodes   :	Node { }
-        | 	NEWLINE Node { }
-        |	Nodes NEWLINE Node {  }
+Nodes   : 	Node { }	
+	    |	Newlines Node { }
+        |	Nodes Newlines Node { }
         ;
 
 Node	:	COMMENT { }
-	| 	Table OptComment { }
-	| 	KeyPair OptComment { }
-	;
+        | 	Table OptComment { }
+        | 	KeyPair OptComment { }
+        ;
 
-OptComment	:	COMMENT {}
-		;
+OptComment	:
+            |	COMMENT {}
+            ;
+
+Newlines	:	NEWLINE {}
+            |	Newlines NEWLINE {}
+            ;	
 
 Table	:	TableSimple {}
         |	TableArray {}	
         ;
 
 TableSimple	:	BRACKETS_OPEN Key BRACKETS_CLOSE {}
-		;
+            ;
 
 TableArray	:	BRACKETS_OPEN BRACKETS_OPEN Key BRACKETS_CLOSE BRACKETS_CLOSE {}
-		;
-KeyPair	:	Key EQUAL Value {}
+            ;
+KeyPair	:	{ driverEnterKeyValue (driver); } Key EQUAL Value { driverExitKeyValue (driver); }
 
-Key     :   	SimpleKey { driverExitKey (driver, $1->str); }
-	|	DOT SimpleKey { driverExitKey (driver, $2->str); }
-        |   	Key DOT SimpleKey { driverExitKey (driver, $3->str); }
+Key     :	SimpleKey { driverExitSimpleKey (driver, $1->str); }
+        |	SimpleKey DottedKeys { driverExitSimpleKey (driver, $1->str); }
         ;
 
-SimpleKey	:	BARE_STRING { $$ = $1; }
-		|	LITERAL_STRING { $$ = $1; }
-		|	BASIC_STRING { $$ = $1; }
-		;
+DottedKeys	:	DOT SimpleKey { driverExitSimpleKey (driver, $2->str); }
+            |	DottedKeys DOT SimpleKey { driverExitSimpleKey (driver, $3->str); }
+            ;
 
-Value   :	Scalar {}
+SimpleKey	:	BARE_STRING { $$ = $1; }
+            |	LITERAL_STRING { $$ = $1; }
+            |	BASIC_STRING { $$ = $1; }
+            ;
+
+Value   :	Scalar { driverExitScalar (driver, $1); }
         |	InlineTable {}
         |	Array {}
         ;
 
 InlineTable	:	CURLY_OPEN InlineTableList CURLY_CLOSE {}
             |	CURLY_OPEN CURLY_CLOSE {}	
-		;
+            ;
 
 InlineTableList	:	KeyPair {}
                 |	COMMA KeyPair {}
