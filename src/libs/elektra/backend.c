@@ -193,7 +193,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			KeySet * cut = ksCut (elektraConfig, cur);
 			if (!strcmp (keyBaseName (cur), "config"))
 			{
-				systemConfig = elektraRenameKeys (cut, "system");
+				systemConfig = ksRenameKeys (cut, "system");
 				ksDel (cut);
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
