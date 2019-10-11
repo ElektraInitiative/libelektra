@@ -65,6 +65,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
+- We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 
 ### Camel
 
@@ -141,10 +142,20 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
   `config.h`-type headers from applications. _(Klemens Böswirth)_
 - `ksAppendKey`: state that it only fail on memory problems. _(Markus Raab)_
+- `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
 
 ### Opts
 
 - The option `-h` is no longer used to indicate help mode. Only `--help`, will invoke help mode. _(Klemens Böswirth)_
+
+### Proposal
+
+- Removed or moved several functions of `kdbproposal.h`:
+  - `elektraKsToMemArray` was moved to `kdbease.h`,
+  - `elektraLookupOptions` was moved to `kdbprivate.h`,
+  - `keySetStringF` was moved to `kdbinternal.h`,
+  - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
+  - Removed `ksPrev` and `elektraKsPrev`. _(Philipp Gackstatter)_
 
 ### <<Library1>>
 
@@ -201,6 +212,7 @@ you up to date with the multi-language support provided by Elektra.
   - `kdb showmeta` is now `kdb meta-show`
   - `kdb rmmeta` is now `kdb meta-rm`
   - `kdb setmeta` is now `kdb meta-set` _(Philipp Gackstatter)_
+- Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
 - <<TODO>>
 
 ## Scripts
@@ -235,7 +247,8 @@ you up to date with the multi-language support provided by Elektra.
 - Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md).
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
 - A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
-- <<TODO>>
+- Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
+- We updated links for the INI parsing library Nickel. _(René Schwaiger)_
 
 ## Tests
 
@@ -293,7 +306,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Travis
 
 - The build job `🍏 GCC` now uses the [Travis Homebrew addon](https://docs.travis-ci.com/user/installing-dependencies/#installing-packages-on-macos) to install dependencies. _(René Schwaiger)_
-- <<TODO>>
+- We now build and test Elektra on Ubuntu `18.04` (Bionic Beaver) instead of Ubuntu `16.04` (Xenial Xerus). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 

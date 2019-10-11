@@ -129,4 +129,4 @@ rewrote first ) line ini file with 1.1MB size is 16.88 MB.
 The sort order is not stable, even not with the same file
 rewritten again.
 
-[bohr libraries](https://github.com/chazomaticus/bohr)
+[bohr libraries](https://lab.burn.capital/chaz-attic/bohr)

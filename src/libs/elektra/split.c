@@ -329,7 +329,8 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			/* Catch all: add all mountpoints */
 			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
-		else if (backend == kdb->split->handles[i] && keyRel (kdb->split->parents[i], parentKey) >= 0)
+		else if (backend == kdb->split->handles[i] &&
+			 (keyCmp (kdb->split->parents[i], parentKey) == 0 || keyIsBelow (kdb->split->parents[i], parentKey) == 1))
 		{
 #if DEBUG && VERBOSE
 			printf ("   exa add %s\n", keyName (kdb->split->parents[i]));
@@ -337,7 +338,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			/* parentKey is exactly in this backend, so add it! */
 			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
-		else if (keyRel (parentKey, kdb->split->parents[i]) >= 0)
+		else if (keyCmp (parentKey, kdb->split->parents[i]) == 0 || keyIsBelow (parentKey, kdb->split->parents[i]) == 1)
 		{
 #if DEBUG && VERBOSE
 			printf ("   rel add %s\n", keyName (kdb->split->parents[i]));
@@ -505,8 +506,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	elektraFree (warningMsg);
 	cursor_t c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
-	ksSetCursor (ks, c);
-	elektraKsPrev (ks); // next ksNext() will point correctly again
+	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again
 }
 
 

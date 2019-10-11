@@ -514,5 +514,5 @@ gboolean gelektra_key_isbeloworsame (const GElektraKey * key, const GElektraKey 
 
 gboolean gelektra_key_isdirectbelow (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyIsDirectBelow (other->key, key->key);
+	return keyIsDirectlyBelow (other->key, key->key);
 }

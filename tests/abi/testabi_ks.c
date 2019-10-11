@@ -1760,7 +1760,7 @@ static void test_ksAppend (void)
 		Key * current;
 		while ((current = ksPop (returned)) != 0)
 		{
-			if (keyIsDirectBelow (parentKey[i], current))
+			if (keyIsDirectlyBelow (parentKey[i], current))
 			{
 				ksAppendKey (keys, current);
 			}
@@ -1911,7 +1911,7 @@ int below_a (Key * check)
 }
 int direct_below_a (Key * check)
 {
-	return keyIsDirectBelow (global_a, check);
+	return keyIsDirectlyBelow (global_a, check);
 }
 
 int sum_helper (Key * check)

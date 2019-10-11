@@ -101,7 +101,7 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	int rc = 0;
 	while ((cur = ksNext (cutKS)) != NULL)
 	{
-		if (keyRel (key, cur) != 1)
+		if (keyIsDirectlyBelow (key, cur) != 1)
 		{
 			continue;
 		}

@@ -75,14 +75,13 @@ libelektra_0.8 {
 	keyIsBelow;
 	keyIsBelowOrSame;
 	keyIsBinary;
-	keyIsDirectBelow;
+	keyIsDirectlyBelow;
 	keyIsInactive;
 	keyIsString;
 	keyName;
 	keyNeedSync;
 	keyNew;
 	keyNextMeta;
-	keyRel;
 	keyRewindMeta;
 	keySetBaseName;
 	keySetBinary;
@@ -143,7 +142,6 @@ libelektraprivate_1.0 {
 	elektraGlobalSet;
 	elektraKeyLock;
 	elektraKsPopAtCursor;
-	elektraKsPrev;
 	elektraRenameKeys;
 	elektraUnescapeKeyName;
 	elektraUnescapeKeyNamePart;

@@ -305,7 +305,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (!keyIsDirectBelow (parentKey, cur)) continue;
+		if (!keyIsDirectlyBelow (parentKey, cur)) continue;
 		KeySet * cutKS = ksCut (returned, cur);
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)

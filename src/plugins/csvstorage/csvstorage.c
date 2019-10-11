@@ -635,7 +635,7 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyRel (parentKey, cur) != 1) continue;
+		if (keyIsDirectlyBelow (parentKey, cur) != 1) continue;
 		colCounter = 0;
 		if (useHeader)
 		{

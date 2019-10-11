@@ -109,7 +109,7 @@ int below_a (Key * check)
 }
 int direct_below_a (Key * check)
 {
-	return keyIsDirectBelow (global_a, check);
+	return keyIsDirectlyBelow (global_a, check);
 }
 
 int sum_helper (Key * check)

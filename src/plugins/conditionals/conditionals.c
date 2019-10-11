@@ -17,7 +17,6 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbmeta.h>
-#include <kdbproposal.h> //keyRel2
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>

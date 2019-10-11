@@ -126,7 +126,7 @@ void init (void)
 	ksNext (ks); // skip head
 	while ((key = ksNext (ks)) != NULL)
 	{
-		if (!keyIsDirectBelow (parentKey, key)) continue;
+		if (!keyIsDirectlyBelow (parentKey, key)) continue;
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
 		if (!strcmp (keyString (key), ""))

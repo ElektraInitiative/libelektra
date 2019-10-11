@@ -11,22 +11,6 @@
 
 #include <kdbprivate.h>
 
-
-/**
- * @copydoc ksPrev
- */
-Key * elektraKsPrev (KeySet * ks)
-{
-	if (ks->size == 0) return 0;
-	if (ks->current == 0)
-	{
-		ksRewind (ks);
-		return 0;
-	}
-	ks->current--;
-	return ks->cursor = ks->array[ks->current];
-}
-
 /**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended

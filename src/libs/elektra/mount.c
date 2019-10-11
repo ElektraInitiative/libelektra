@@ -61,7 +61,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 	int ret = 0;
 	while ((cur = ksNext (config)) != 0)
 	{
-		if (keyRel (root, cur) == 1)
+		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
 			Backend * backend = backendOpen (cut, modules, kdb->global, errorKey);
@@ -398,7 +398,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	while ((cur = ksNext (global)) != NULL)
 	{
 		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
-		if (keyRel (root, cur) != 1) continue;
+		if (keyIsDirectlyBelow (root, cur) != 1) continue;
 
 		char * placement = elektraStrDup (keyBaseName (cur));
 
@@ -432,7 +432,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				Key * curSubPosition;
 				while ((curSubPosition = ksNext (subPositions)) != NULL)
 				{
-					if (keyRel (placementKey, curSubPosition) != 1) continue;
+					if (keyIsDirectlyBelow (placementKey, curSubPosition) != 1) continue;
 					const char * subPlacement = keyBaseName (curSubPosition);
 
 					for (GlobalpluginSubPositions j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)

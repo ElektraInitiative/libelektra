@@ -187,7 +187,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 
 	while ((cur = ksNext (elektraConfig)) != 0)
 	{
-		if (keyRel (root, cur) == 1)
+		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
 			// direct below root key
 			KeySet * cut = ksCut (elektraConfig, cur);

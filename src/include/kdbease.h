@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key * k, void * argument), void * argument);
+int elektraKsToMemArray (KeySet * ks, Key ** buffer);
 
 int elektraArrayIncName (Key * key);
 int elektraArrayDecName (Key * key);

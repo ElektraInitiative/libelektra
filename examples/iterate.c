@@ -65,7 +65,7 @@ int main (void)
 	printf ("Found key %s\n", keyName (found));
 	while ((cur = ksNext (ks)) != 0)
 	{ /* Iterates over all keys direct below and prints their name */
-		if (keyIsDirectBelow (found, cur) == 0) break;
+		if (keyIsDirectlyBelow (found, cur) == 0) break;
 		printf ("%s\n", keyName (cur));
 	}
 

@@ -69,15 +69,13 @@ public interface Elektra extends Library {
 	/* Methods for Making Tests */
 	int keyCmp(Pointer k1, Pointer k2);
 
-	int keyRel(Pointer k1, Pointer k2);
-
 	int keyNeedSync(Pointer key);
 
 	int keyIsBelow(Pointer key, Pointer check);
 
 	int keyIsBelowOrSame(Pointer key, Pointer check);
 
-	int keyIsDirectBelow(Pointer key, Pointer check);
+	int keyIsDirectlyBelow(Pointer key, Pointer check);
 
 	int keyIsInactive(Pointer key);
 
