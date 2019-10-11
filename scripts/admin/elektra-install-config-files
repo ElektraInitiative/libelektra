@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# @author Dominic Jäger <e1634025@student.tuwien.ac.at>
+# @brief Installs or merges a configuration file in Elektra
+# @date 2019-08-20
+# @tags creator
+
+# This script installs or merges configuration files from the file system into
+# Elektra.
+#
+# <elektra path> is a path in Elektra
+# <config file> is some file on the filesystem
+
+# If <elektra path> is empty then the script
+# 	a) Copies <config file> into a special path to preserve origin version.
+# 	b) Mounts <config file> into <elektra path> as our version.
+#
+# If <elektra path> already contains data then the script performs a 3-way
+# merge between the file at <config file>, the our version at <elektra path>
+# and the preserved origin version from a).
+
+
+
+# This is a part of the preserved base path
+specialPathStart="user/elektra-cmerge-preserve/"
+# This is the path where a config file is loaded temporarily for merging
+tempPath="user/elektra-cmerge-temp"
+
+if [ "$#" -ne 3 ]; then
+	echo "Usage is $0 <elektra path> <config file> <format>"
+	exit 1
+fi
+our=$1
+their=$2
+format=$3
+
+# use the file name (without path) of <config file> as special path
+# in Elektra
+specialPathEnd=$(basename $their)
+if [ -z "$specialPathEnd" ]; then
+specialPathEnd=$their
+fi
+base="${specialPathStart}${specialPathEnd}"
+
+# check if something is in <elektra path>
+if [ $(kdb ls $our | wc -c) = 0 ]; then
+	cat $their | kdb import $base $format
+	sudo kdb mount --with-recommends $their $our $format
+else
+	cat $their | kdb import $tempPath $format
+	kdb cmerge -v -f $our $tempPath $base $our
+	kdb rm -rf $tempPath
+fi

@@ -144,3 +144,13 @@ kdb meta-get user/tests/hosts/result/ipv6/ip6-localhost comment/#1
 ```
 
 See how for the comments the `our`version was preserved.
+
+
+
+## elektra-install-config-files
+use the same file base name, but from a different folder!
+pay attention when mounting that mounting into user/ is strange
+use sudo for mounting
+example call is
+elektra-install-config-files system/lines ~/programming/elektra_initiative/stuff/data/artificial/exampletext/new/test line
+elektra-install-config-files system/lines ~/programming/elektra_initiative/stuff/data/artificial/exampletext/test line
