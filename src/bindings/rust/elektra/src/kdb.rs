@@ -115,7 +115,7 @@ impl AsRef<elektra_sys::KDB> for KDB {
         unsafe { self.ptr.as_ref() }
     }
 }
-
+const ELEKTRA_ERROR_RESOURCE: &str = "C01100";
 const ELEKTRA_ERROR_OUT_OF_MEMORY: &str = "C01110";
 const ELEKTRA_ERROR_INTERNAL: &str = "C01310";
 const ELEKTRA_ERROR_INSTALLATION: &str = "C01200";
@@ -148,6 +148,7 @@ pub enum LogicalError<'a> {
 
 #[derive(Debug)]
 pub enum ResourceError<'a> {
+    GeneralResourceError(KDBErrorWrapper<'a>),
     OutOfMemory(KDBErrorWrapper<'a>),
 }
 
@@ -250,6 +251,7 @@ impl<'a> Error for PermanentError<'a> {}
 impl<'a> Display for ResourceError<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
+            ResourceError::GeneralResourceError(err) => write!(f, "{}", err),
             ResourceError::OutOfMemory(err) => write!(f, "{}", err),
         }
     }
@@ -294,6 +296,9 @@ fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
         let err_wrapper = KDBErrorWrapper::new(error_key.duplicate());
 
         match err_num_key.value().to_owned().to_string().as_str() {
+            ELEKTRA_ERROR_RESOURCE => {
+                return Permanent(Resource(GeneralResourceError(err_wrapper)));
+            }
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
                 return Permanent(Resource(OutOfMemory(err_wrapper)));
             }
@@ -319,7 +324,7 @@ fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
                 return Validation(Semantic(err_wrapper));
             }
             _ => {
-                panic!("Unknown error code {}", err_num_key.value());
+                panic!("Unknown error code {}. Error Message: {}", err_num_key.value(), err_wrapper.to_error_message());
             }
         }
     }
