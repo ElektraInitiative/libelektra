@@ -19,9 +19,6 @@ namespace ckdb
 extern "C" {
 #endif
 
-KeySet * ksRenameKeys (KeySet * config, const Key * name);
-
-
 // this might become the new keySetName
 ssize_t elektraKeySetName (Key * key, const char * newName, option_t options);
 
