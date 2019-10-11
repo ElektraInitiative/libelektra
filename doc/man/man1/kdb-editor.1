@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-EDITOR" "1" "August 2019" "" ""
+.TH "KDB\-EDITOR" "1" "October 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-editor\fR \- Use your editor for editing KDB
@@ -10,7 +10,7 @@
 \fBkdb editor <path> [<format>]\fR
 .
 .P
-Where \fBpath\fR is the destination where the user wants to edit keys and \fBformat\fR is the format in which the keys should be edited\. If the \fBformat\fR argument is not passed, then the default format will be used as determined by the value of the \fBsw/kdb/current/format\fR key\. By default, that key contains \fBstorage\fR\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\. The \fBformat\fR attribute relies on Elektra’s plugin system to properly import the configuration\. The user can view all plugins available for use by running the kdb\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-info(1) command\.
+Where \fBpath\fR is the destination where the user wants to edit keys and \fBformat\fR is the format in which the keys should be edited\. If the \fBformat\fR argument is not passed, then the default format will be used as determined by the value of the \fBsw/kdb/current/format\fR key\. By default, that key contains \fBstorage\fR\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\. The \fBformat\fR attribute relies on Elektra’s plugin system to properly import the configuration\. The user can view all plugins available for use by running the kdb\-plugin\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-plugin\-info(1) command\.
 .
 .SH "DESCRIPTION"
 This command allows a user to edit configuration of the key database using a text editor\. The user should specify the format that the current configuration or keys are in, otherwise the default format will be used\.

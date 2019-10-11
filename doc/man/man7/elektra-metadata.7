@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-METADATA" "7" "June 2019" "" ""
+.TH "ELEKTRA\-METADATA" "7" "October 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-metadata\fR \- metadata
@@ -54,7 +54,7 @@ A more advanced idea is to use metadata to generate forms in a programmatic way\
 Every key\-value pair can have an arbitrary number of metakeys with metavalues attached\. Identical to keys, metakeys are unique, but only within its key they are attached to\.
 .
 .P
-To create a metakey, use kdb\-setmeta(1) \fIkdb\-setmeta\.md\fR, to get metadata kdb\-getmeta(1) \fIkdb\-getmeta\.md\fR\.
+To create a metakey, use kdb\-meta\-set(1) \fIkdb\-meta\-set\.md\fR, to get metadata kdb\-meta\-get(1) \fIkdb\-meta\-get\.md\fR\.
 .
 .P
 The preferred way to use metadata is to set all metadata in the \fBspec\fR namespace and let the \fBspec\fR plugin copy the metadata to all other namespaces\.
