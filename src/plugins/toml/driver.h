@@ -26,6 +26,7 @@ typedef struct
 	IndexList * indexStack;
 	const char * filename;
 	FILE * file;
+    int tableActive;
 } Driver;
 
 
@@ -35,8 +36,9 @@ void driverError (Driver * driver, int lineno, const char * msg);
 
 void driverEnterKeyValue (Driver * driver);
 void driverExitKeyValue (Driver * driver);
-void driverExitSimpleKey (Driver * driver, const char * text);
+void driverExitSimpleKey (Driver * driver, const Scalar * name);
 void driverExitScalar (Driver * driver, Scalar * scalar);
+void driverEnterSimpleTable (Driver * driver);
 void driverEnterArray (Driver * driver);
 void driverExitArray (Driver * driver);
 

@@ -25,16 +25,17 @@ void testRead (const char * filename, KeySet * expected)
 	PLUGIN_CLOSE ();
 }
 
-void testOnlyRead (void)
+void testBasic (void)
 {
 	testRead ("toml/basic.toml", NULL);
+    testRead ("toml/table.toml", NULL);
 }
 
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	testOnlyRead ();
+	testBasic ();
 
 	print_result ("testmod_toml");
 	return nbError;

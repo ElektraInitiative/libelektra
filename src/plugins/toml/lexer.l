@@ -277,7 +277,8 @@ static char* readLiteral(void) {
 			readNonAsciiChar(&buffer, &index, &size);
 		}
 	}
-	buffer = realloc(buffer, index);
+	buffer = realloc(buffer, index + 1);
+    buffer[index] = 0;
 	return buffer;
 }
 
@@ -320,7 +321,8 @@ static char* readBasic(void) {
 			readNonAsciiChar(&buffer, &index, &size);
 		}
 	}
-	buffer = realloc(buffer, index);
+	buffer = realloc(buffer, index + 1);
+    buffer[index] = 0;
 	return buffer;
 }
 
@@ -330,7 +332,7 @@ static char* readMultilineLiteral(void) {
 	size_t index = 0;
 	char c;
 	int terminatorCount = 0;
-
+    
 	while(terminatorCount < 3) {
 		c = input();
 		if (c == 0x27) {
@@ -348,7 +350,8 @@ static char* readMultilineLiteral(void) {
 			}
 		}
 	}
-	buffer = realloc(buffer, index);
+	buffer = realloc(buffer, index + 1);
+    buffer[index] = 0;
 	return buffer;
 }
 
@@ -402,7 +405,8 @@ static char* readMultilineBasic(void) {
 			}
 		}
 	}
-	buffer = realloc(buffer, index);
+	buffer = realloc(buffer, index + 1);
+    buffer[index] = 0;
 	return buffer;
 }
 
@@ -420,7 +424,8 @@ static char* readComment(void) {
 			readNonAsciiChar(&buffer, &index, &size);
 		}
 	}
-	buffer = realloc(buffer, index);
+	buffer = realloc(buffer, index + 1);
+    buffer[index] = 0;
 	return buffer;
 }
 
