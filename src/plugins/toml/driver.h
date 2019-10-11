@@ -14,7 +14,7 @@ typedef struct _ParentList
 
 typedef struct _IndexList
 {
-	int value;
+	size_t value;
 	struct _IndexList * next;
 } IndexList;
 
@@ -41,5 +41,7 @@ void driverExitScalar (Driver * driver, Scalar * scalar);
 void driverEnterSimpleTable (Driver * driver);
 void driverEnterArray (Driver * driver);
 void driverExitArray (Driver * driver);
+void driverEnterArrayElement (Driver * driver);
+void driverExitArrayElement (Driver * driver);
 
 #endif // ELEKTRA_PLUGIN_TOML_DRIVER_H
