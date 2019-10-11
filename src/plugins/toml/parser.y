@@ -63,7 +63,7 @@ extern int yylex(void);
 
 %%
 
-Toml	: 	Nodes AnyNewlines {}
+Toml	: 	AnyNewlines Nodes AnyNewlines {}
 	    |	{}
 	    ;
 	
@@ -95,7 +95,7 @@ Table	:	TableSimple {}
 TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExitSimpleTable(driver); } BRACKETS_CLOSE {}
             ;
 
-TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverEnterTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE {}
+TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE {}
             ;
 KeyPair	:	{ driverEnterKeyValue (driver); } Key EQUAL Value { driverExitKeyValue (driver); }
 

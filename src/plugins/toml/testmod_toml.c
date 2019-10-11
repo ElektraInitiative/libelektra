@@ -25,18 +25,15 @@ void testRead (const char * filename, KeySet * expected)
 	PLUGIN_CLOSE ();
 }
 
-void testBasic (void)
-{
-	testRead ("toml/basic.toml", NULL);
-    testRead ("toml/table.toml", NULL);
-    testRead ("toml/array.toml", NULL);
-}
-
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	testBasic ();
+    // TODO: proper testing with expectations
+	// testRead ("toml/basic.toml", NULL);
+    // testRead ("toml/table.toml", NULL);
+    // testRead ("toml/array.toml", NULL);
+    testRead ("toml/table_array_basic.toml", NULL);
 
 	print_result ("testmod_toml");
 	return nbError;
