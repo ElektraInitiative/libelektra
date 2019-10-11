@@ -125,19 +125,19 @@ InlineTableList	:	KeyPair {}
                 |	COMMA KeyPair {}
                 |	InlineTableList COMMA KeyPair {}
                 ;
-Array	:	BRACKETS_OPEN ArrayList CommentNewline BRACKETS_CLOSE {}
-        |	BRACKETS_OPEN ArrayList COMMA CommentNewline BRACKETS_CLOSE {}
-        |	BRACKETS_OPEN BRACKETS_CLOSE {}
+Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList { driverExitArray (driver); } CommentNewline BRACKETS_CLOSE {}
+        |	BRACKETS_OPEN { driverEnterArray (driver); driverExitArray (driver);  } BRACKETS_CLOSE {}
         ;
-
-ArrayList	:	CommentNewline Value {}
-            |	COMMA CommentNewline Value {}
-            |	ArrayList COMMA CommentNewline Value  {}
+// TODO: trailing comma
+ArrayList	:	CommentNewline { driverEnterArrayElement (driver); } Value { driverExitArrayElement (driver); }
+            |	ArrayList COMMA CommentNewline { driverEnterArrayElement (driver); } Value  { driverExitArrayElement (driver); }
+            ;
 
 CommentNewline	:	CommentNewline NEWLINE {}
                 |	CommentNewline COMMENT NEWLINE {}
-                |	{}
+                |	%empty {}
                 ;
+OptComma    :   COMMA | %empty ;
 
 Scalar  :   IntegerScalar { $$ = $1; }
         |   BooleanScalar { $$ = $1; }

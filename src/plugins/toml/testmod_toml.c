@@ -29,6 +29,7 @@ void testBasic (void)
 {
 	testRead ("toml/basic.toml", NULL);
     testRead ("toml/table.toml", NULL);
+    testRead ("toml/array.toml", NULL);
 }
 
 int main (int argc, char ** argv)
