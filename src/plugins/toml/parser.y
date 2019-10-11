@@ -63,14 +63,13 @@ extern int yylex(void);
 
 %%
 
-Toml	: 	Nodes
+Toml	: 	Nodes AnyNewlines {}
 	    |	{}
 	    ;
 	
 
-Nodes   : 	Node { }	
-	    |	Newlines Node { }
-        |	Nodes Newlines Node { }
+Nodes   : 	Node
+        |	Nodes Newlines Node
         ;
 
 Node	:	COMMENT { }
@@ -82,27 +81,30 @@ OptComment	:
             |	COMMENT {}
             ;
 
+
 Newlines	:	NEWLINE {}
             |	Newlines NEWLINE {}
             ;	
+
+AnyNewlines :   Newlines | %empty;
 
 Table	:	TableSimple {}
         |	TableArray {}	
         ;
 
-TableSimple	:	BRACKETS_OPEN Key BRACKETS_CLOSE {}
+TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key BRACKETS_CLOSE {}
             ;
 
 TableArray	:	BRACKETS_OPEN BRACKETS_OPEN Key BRACKETS_CLOSE BRACKETS_CLOSE {}
             ;
 KeyPair	:	{ driverEnterKeyValue (driver); } Key EQUAL Value { driverExitKeyValue (driver); }
 
-Key     :	SimpleKey { driverExitSimpleKey (driver, $1->str); }
-        |	SimpleKey DottedKeys { driverExitSimpleKey (driver, $1->str); }
+Key     :	SimpleKey { driverExitSimpleKey (driver, $1); }
+        |	SimpleKey { driverExitSimpleKey(driver, $1); } DottedKeys
         ;
 
-DottedKeys	:	DOT SimpleKey { driverExitSimpleKey (driver, $2->str); }
-            |	DottedKeys DOT SimpleKey { driverExitSimpleKey (driver, $3->str); }
+DottedKeys	:	DOT SimpleKey { driverExitSimpleKey (driver, $2); }
+            |	DottedKeys DOT SimpleKey { driverExitSimpleKey (driver, $3); }
             ;
 
 SimpleKey	:	BARE_STRING { $$ = $1; }

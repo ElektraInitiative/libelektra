@@ -1,0 +1,7 @@
+x = 1
+[table_1]
+y = 2
+z = 3
+[table_2.sub_1.sub_2]
+pi = 3.14
+a.b.c.d."fg" = "test"
