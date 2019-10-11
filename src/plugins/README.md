@@ -257,4 +257,7 @@ binding during run-time.
 - [list](list/) loads other plugins
 - [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
+- [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
+- [cache](cache/) caches keysets from previous `kdbGet()` calls
+- [backend](backend/) is the default plugin implementing backend functionality
 - [template](template/) to be copied for new plugins
