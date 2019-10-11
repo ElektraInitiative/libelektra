@@ -18,15 +18,22 @@ typedef struct _IndexList
 	struct _IndexList * next;
 } IndexList;
 
+typedef struct _TableArrayList {
+    Key * key;
+    size_t index;
+    struct _TableArrayList * next;
+} TableArrayList;
+
 typedef struct
 {
 	KeySet * keys;
 	ParentList * parentStack;
 	IndexList * keyDepthStack;
 	IndexList * indexStack;
+    TableArrayList * tableArrayStack;
 	const char * filename;
 	FILE * file;
-    int tableActive;
+	int tableActive;
 } Driver;
 
 
@@ -36,9 +43,16 @@ void driverError (Driver * driver, int lineno, const char * msg);
 
 void driverEnterKeyValue (Driver * driver);
 void driverExitKeyValue (Driver * driver);
+
 void driverExitSimpleKey (Driver * driver, const Scalar * name);
+
 void driverExitScalar (Driver * driver, Scalar * scalar);
+
 void driverEnterSimpleTable (Driver * driver);
+void driverExitSimpleTable (Driver * driver);
+void driverEnterTableArray (Driver * driver);
+void driverExitTableArray (Driver * driver);
+
 void driverEnterArray (Driver * driver);
 void driverExitArray (Driver * driver);
 void driverEnterArrayElement (Driver * driver);

@@ -12,10 +12,14 @@ extern FILE * yyin;
 
 static void popParentStack (Driver * driver);
 static void topParentToKeySet (Driver * driver);
+static void newTableArray (Driver * driver, Key * key);
+static void nextTableArrayElement (TableArrayList * tableArray);
 static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
+static TableArrayList * pushTableArray (TableArrayList * top, Key * key);
+static TableArrayList * popTableArray (TableArrayList * top);
 static char * indexToArrayString (size_t index);
 
 Driver * createDriver (const Key * parent)
@@ -75,7 +79,7 @@ void driverExitSimpleKey (Driver * driver, const Scalar * name)
 void driverExitScalar (Driver * driver, Scalar * scalar)
 {
 	keySetString (driver->parentStack->key, scalar->str);
-    printf("ExitScalar: %s -> %s\n", keyName(driver->parentStack->key), keyString(driver->parentStack->key));
+	printf ("ExitScalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
 }
 
 void driverEnterSimpleTable (Driver * driver)
@@ -94,6 +98,51 @@ void driverEnterSimpleTable (Driver * driver)
 	}
 }
 
+void driverExitSimpleTable (Driver * driver)
+{
+	keySetMeta (driver->parentStack->key, "simpletable", "");
+	printf ("Setting metakey for %s: 'simpletable'\n", keyName (driver->parentStack->key));
+}
+
+void driverEnterTableArray (Driver * driver)
+{
+	if (driver->tableActive != 0)
+	{
+		popParentStack (driver);
+		driver->tableActive = 0;
+		printf ("Clearing simple table state before entering table array element\n");
+	}
+}
+
+void driverExitTableArray (Driver * driver)
+{
+	if (driver->tableArrayStack == NULL)
+	{
+		newTableArray (driver, driver->parentStack->key);
+		popParentStack (driver);
+	}
+	else
+	{
+		int rel = keyRel (driver->tableArrayStack->key, driver->parentStack->key);
+		if (rel == 0) // same table array name -> next element
+		{
+			popParentStack (driver);
+			nextTableArrayElement (driver->tableArrayStack);
+		}
+		else if (rel > 0) // below top name -> push new sub table array
+		{
+			newTableArray (driver, driver->parentStack->key);
+			popParentStack (driver);
+		}
+		else if (rel < -1) // not below top name -> pop old table array, push new table array
+		{
+            driver->tableArrayStack = popTableArray(driver->tableArrayStack);
+            newTableArray(driver, driver->parentStack->key);
+            popParentStack(driver);
+		}
+	}
+}
+
 void driverEnterArray (Driver * driver)
 {
 	printf ("entering array\n");
@@ -103,7 +152,8 @@ void driverEnterArray (Driver * driver)
 
 void driverExitArray (Driver * driver)
 {
-	printf ("exiting array: %s,  max_index = %s\n", keyName(driver->parentStack->key), keyString(keyGetMeta (driver->parentStack->key, "array")));
+	printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
+		keyString (keyGetMeta (driver->parentStack->key, "array")));
 	driver->indexStack = popIndex (driver->indexStack);
 	topParentToKeySet (driver);
 }
@@ -134,6 +184,22 @@ void driverExitArrayElement (Driver * driver)
 	driver->parentStack = popParent (driver->parentStack);
 }
 
+static void newTableArray (Driver * driver, Key * key)
+{
+	driver->tableArrayStack = pushTableArray (driver->tableArrayStack, key);
+	nextTableArrayElement (driver->tableArrayStack);
+}
+
+static void nextTableArrayElement (TableArrayList * tableArray)
+{
+	Key * key = keyNew (keyName (tableArray->key), KEY_END);
+	char * indexStr = indexToArrayString (tableArray->index);
+	keyAddBaseName (key, indexStr);
+	elektraFree (indexStr);
+	keySetMeta (tableArray->key, "array", keyBaseName (key));
+	tableArray->index++;
+}
+
 static void topParentToKeySet (Driver * driver)
 {
 	ksAppendKey (driver->keys, driver->parentStack->key);
@@ -151,6 +217,7 @@ static ParentList * pushParent (ParentList * top, Key * key)
 {
 	ParentList * parent = elektraCalloc (sizeof (ParentList));
 	parent->key = key;
+	keyIncRef (key);
 	parent->next = top;
 	return parent;
 }
@@ -158,6 +225,7 @@ static ParentList * pushParent (ParentList * top, Key * key)
 static ParentList * popParent (ParentList * top)
 {
 	ParentList * newTop = top->next;
+	keyDecRef (top->key);
 	keyDel (top->key);
 	elektraFree (top);
 	return newTop;
@@ -178,6 +246,24 @@ static IndexList * popIndex (IndexList * top)
 	return newTop;
 }
 
+static TableArrayList * pushTableArray (TableArrayList * top, Key * key)
+{
+	TableArrayList * newTop = elektraCalloc (sizeof (TableArrayList));
+	newTop->key = key;
+	keyIncRef (key);
+	newTop->index = 0;
+	newTop->next = top;
+	return newTop;
+}
+static TableArrayList * popTableArray (TableArrayList * top)
+{
+	TableArrayList * newTop = top->next;
+	keyDecRef (top->key);
+	keyDel (top->key);
+	elektraFree (top);
+	return newTop;
+}
+
 static char * indexToArrayString (size_t index)
 {
 	size_t digits = 1;
@@ -192,7 +278,7 @@ static char * indexToArrayString (size_t index)
 	char * str = elektraCalloc (sizeof (char) * strLen);
 	memset (str, '_', sizeof (char) * strLen);
 	str[0] = '#';
-    str[strLen - 1] = 0;
+	str[strLen - 1] = 0;
 	snprintf (str + 1 + (digits - 1), strLen, "%lu", index);
 	return str;
 }

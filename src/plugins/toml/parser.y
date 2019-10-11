@@ -92,10 +92,10 @@ Table	:	TableSimple {}
         |	TableArray {}	
         ;
 
-TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key BRACKETS_CLOSE {}
+TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExitSimpleTable(driver); } BRACKETS_CLOSE {}
             ;
 
-TableArray	:	BRACKETS_OPEN BRACKETS_OPEN Key BRACKETS_CLOSE BRACKETS_CLOSE {}
+TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverEnterTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE {}
             ;
 KeyPair	:	{ driverEnterKeyValue (driver); } Key EQUAL Value { driverExitKeyValue (driver); }
 
@@ -137,7 +137,6 @@ CommentNewline	:	CommentNewline NEWLINE {}
                 |	CommentNewline COMMENT NEWLINE {}
                 |	%empty {}
                 ;
-OptComma    :   COMMA | %empty ;
 
 Scalar  :   IntegerScalar { $$ = $1; }
         |   BooleanScalar { $$ = $1; }
