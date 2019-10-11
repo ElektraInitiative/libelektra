@@ -64,3 +64,45 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 	ksSetCursor (input, cursor);
 	return ret;
 }
+
+/**
+ * Builds an array of pointers to the keys in the supplied keyset.
+ * The keys are not copied, calling keyDel may remove them from
+ * the keyset.
+ *
+ * The size of the buffer can be easily allocated via ksGetSize. Example:
+ * @code
+ * KeySet *ks = somekeyset;
+ * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
+ * elektraKsToMemArray (ks, keyArray);
+ * ... work with the array ...
+ * elektraFree (keyArray);
+ * @endcode
+ *
+ * @param ks the keyset object to work with
+ * @param buffer the buffer to put the result into
+ * @return the number of elements in the array if successful
+ * @return a negative number on null pointers or if an error occurred
+ */
+int elektraKsToMemArray (KeySet * ks, Key ** buffer)
+{
+	if (!ks) return -1;
+	if (!buffer) return -1;
+
+	/* clear the received buffer */
+	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
+
+	cursor_t cursor = ksGetCursor (ks);
+	ksRewind (ks);
+	size_t idx = 0;
+
+	Key * key;
+	while ((key = ksNext (ks)) != 0)
+	{
+		buffer[idx] = key;
+		++idx;
+	}
+	ksSetCursor (ks, cursor);
+
+	return idx;
+}

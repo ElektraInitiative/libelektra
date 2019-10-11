@@ -50,7 +50,8 @@ static Key * findNearestParent (Key * key, KeySet * ks)
 {
 	Key * current;
 	ksSetCursor (ks, ksGetSize (ks) - 1);
-	while ((current = ksPrev (ks)) != 0)
+
+	for (cursor_t cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
 	{
 		if (keyIsBelow (current, key))
 		{

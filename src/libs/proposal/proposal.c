@@ -11,8 +11,8 @@
 #include <string.h>
 
 #include <kdbassert.h>
+#include <kdbinternal.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
 
 /**
  * @defgroup proposal Proposals for Elektra
@@ -77,48 +77,6 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 
 
 /**
- * Builds an array of pointers to the keys in the supplied keyset.
- * The keys are not copied, calling keyDel may remove them from
- * the keyset.
- *
- * The size of the buffer can be easily allocated via ksGetSize. Example:
- * @code
- * KeySet *ks = somekeyset;
- * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
- * elektraKsToMemArray (ks, keyArray);
- * ... work with the array ...
- * elektraFree (keyArray);
- * @endcode
- *
- * @param ks the keyset object to work with
- * @param buffer the buffer to put the result into
- * @return the number of elements in the array if successful
- * @return a negative number on null pointers or if an error occurred
- */
-int elektraKsToMemArray (KeySet * ks, Key ** buffer)
-{
-	if (!ks) return -1;
-	if (!buffer) return -1;
-
-	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
-
-	cursor_t cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	size_t idx = 0;
-
-	Key * key;
-	while ((key = ksNext (ks)) != 0)
-	{
-		buffer[idx] = key;
-		++idx;
-	}
-	ksSetCursor (ks, cursor);
-
-	return idx;
-}
-
-/**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended
  *
@@ -175,26 +133,6 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
 	return ksDup (key->meta);
 }
 
-
-/**
- * Returns the previous Key in a KeySet.
- *
- * KeySets have an internal cursor that can be reset with ksRewind(). Every
- * time ksPrev() is called the cursor is decremented and the new current Key
- * is returned.
- *
- * You'll get a NULL pointer if the key before begin of the KeySet was reached.
- *
- * Don't delete the key, use ksPop() if you want to delete it.
- *
- * @return the new current Key
- * @see ksRewind(), ksCurrent()
- *
- */
-Key * ksPrev (KeySet * ks)
-{
-	return elektraKsPrev (ks);
-}
 
 /**
  * @brief Pop key at given cursor position

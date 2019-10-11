@@ -12,7 +12,7 @@
 #include <kdb.hpp>
 
 #include <kdbmacros.h>
-#include <kdbproposal.h> // for some options
+#include <kdbprivate.h>
 
 #include <iostream>
 

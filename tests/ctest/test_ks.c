@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <kdbease.h>
 #include <tests_internal.h>
 
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
@@ -156,6 +157,35 @@ static void test_creatingLookup (void)
 	ksDel (ks);
 }
 
+
+static void test_ksToArray (void)
+{
+	KeySet * ks = ksNew (5, keyNew ("user/test1", KEY_END), keyNew ("user/test2", KEY_END), keyNew ("user/test3", KEY_END), KS_END);
+
+	Key ** keyArray = calloc (ksGetSize (ks), sizeof (Key *));
+	elektraKsToMemArray (ks, keyArray);
+
+	succeed_if_same_string ("user/test1", keyName (keyArray[0]));
+	succeed_if_same_string ("user/test2", keyName (keyArray[1]));
+	succeed_if_same_string ("user/test3", keyName (keyArray[2]));
+
+	/* test if cursor is restored */
+	ksNext (ks);
+	cursor_t cursor = ksGetCursor (ks);
+	elektraKsToMemArray (ks, keyArray);
+
+	succeed_if (ksGetCursor (ks) == cursor, "cursor was not restored");
+
+	succeed_if (elektraKsToMemArray (0, keyArray) < 0, "wrong result on null pointer");
+	succeed_if (elektraKsToMemArray (ks, 0) < 0, "wrong result on null buffer");
+	KeySet * empty = ksNew (0, KS_END);
+	succeed_if (elektraKsToMemArray (empty, keyArray) == 0, "wrong result on empty keyset");
+	ksDel (empty);
+
+	elektraFree (keyArray);
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KS         TESTS\n");
@@ -163,6 +193,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_ksToArray ();
 	test_elektraRenameKeys ();
 	test_elektraEmptyKeys ();
 	test_cascadingLookup ();

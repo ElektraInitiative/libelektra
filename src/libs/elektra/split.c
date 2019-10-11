@@ -506,8 +506,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	elektraFree (warningMsg);
 	cursor_t c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
-	ksSetCursor (ks, c);
-	elektraKsPrev (ks); // next ksNext() will point correctly again
+	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again
 }
 
 

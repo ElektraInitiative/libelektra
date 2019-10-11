@@ -7,7 +7,7 @@
  */
 
 #include <kdbglobal.h>
-#include <kdbprivate.h>
+#include <kdbinternal.h>
 
 /**
  * @internal
