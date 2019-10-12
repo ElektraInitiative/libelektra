@@ -135,6 +135,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - The conversion functions `elektraKeyTo*` and `elektra*ToString` are now part of the `elektra-ease` library instead of
   the `elektra-highlevel` library. This should not cause any breaking changes since `elektra-highlevel` already depends
   on `elektra-ease`. In addition the header `elektra/conversion.h` is kept for compatibility. _(Klemens Böswirth)_
+- Fixes in documentation that might disallow some code operating in grey areas before. _(Markus Raab)_
 
 ### Core
 
