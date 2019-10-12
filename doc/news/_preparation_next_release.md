@@ -204,7 +204,7 @@ you up to date with the multi-language support provided by Elektra.
 - Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
-- Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab` functionality. _(Philipp Gackstatter)_
+- Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab`. _(Philipp Gackstatter)_
 - Renamed kdb meta commands:
   - `kdb getmeta` is now `kdb meta-get`
   - `kdb lsmeta` is now `kdb meta-ls`
