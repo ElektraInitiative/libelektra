@@ -29,7 +29,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 	kdb := getHandle(r)
 
-	parentKey, err := elektra.CreateKey(keyName)
+	parentKey, err := elektra.NewKey(keyName)
 
 	if err != nil {
 		writeError(w, err)
@@ -51,7 +51,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if meta.Value == nil {
-		err = k.DeleteMeta(meta.Key)
+		err = k.RemoveMeta(meta.Key)
 	} else {
 		err = k.SetMeta(meta.Key, *meta.Value)
 	}
@@ -84,7 +84,7 @@ func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key, err := elektra.CreateKey(keyName)
+	key, err := elektra.NewKey(keyName)
 
 	if err != nil {
 		writeError(w, err)
@@ -105,7 +105,7 @@ func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = k.DeleteMeta(meta.Key)
+	err = k.RemoveMeta(meta.Key)
 
 	if err != nil {
 		writeError(w, err)

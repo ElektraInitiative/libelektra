@@ -53,7 +53,7 @@ func stringBody(r *http.Request) (string, error) {
 }
 
 func getKeySet(handle elektra.KDB, key elektra.Key) (elektra.KeySet, error) {
-	ks := elektra.CreateKeySet()
+	ks := elektra.NewKeySet()
 
 	_, err := handle.Get(ks, key)
 

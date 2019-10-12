@@ -16,7 +16,7 @@ func getFindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	root, err := elektra.CreateKey("/")
+	root, err := elektra.NewKey("/")
 
 	if err != nil {
 		writeError(w, err)

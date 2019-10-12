@@ -32,7 +32,7 @@ func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	keyName := parseKeyNameFromURL(r)
 
-	key, err := elektra.CreateKey(keyName)
+	key, err := elektra.NewKey(keyName)
 
 	if err != nil {
 		badRequest(w)
@@ -71,7 +71,7 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*lookupResult, error
 	path := key.Name()
 
 	if exists {
-		value = foundKey.Value()
+		value = foundKey.String()
 		meta = foundKey.MetaMap()
 	}
 
@@ -88,13 +88,13 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*lookupResult, error
 
 	if depth > 0 {
 		for _, subKeyName := range result.Ls {
-			subKey, err := elektra.CreateKey(subKeyName)
+			subKey, err := elektra.NewKey(subKeyName)
 
 			if err != nil {
 				return nil, err
 			}
 
-			if subKeyName == key.Name() || !key.IsDirectBelow(subKey) {
+			if subKeyName == key.Name() || !key.IsDirectlyBelow(subKey) {
 				continue
 			}
 
@@ -123,7 +123,7 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	keyName := parseKeyNameFromURL(r)
 
-	key, err := elektra.CreateKey(keyName)
+	key, err := elektra.NewKey(keyName)
 
 	if err != nil {
 		writeError(w, err)
@@ -163,7 +163,7 @@ func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	keyName := parseKeyNameFromURL(r)
 
-	key, err := elektra.CreateKey(keyName)
+	key, err := elektra.NewKey(keyName)
 
 	if err != nil {
 		writeError(w, err)
