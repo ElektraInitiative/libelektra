@@ -34,6 +34,7 @@ int main (int argc, char ** argv)
     // testRead ("toml/table.toml", NULL);
     // testRead ("toml/array.toml", NULL);
     testRead ("toml/table_array_basic.toml", NULL);
+    testRead ("toml/table_array_sub.toml", NULL);
 
 	print_result ("testmod_toml");
 	return nbError;
