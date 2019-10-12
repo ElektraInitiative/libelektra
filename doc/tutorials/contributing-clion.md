@@ -153,21 +153,21 @@ as follows:
 The most thorough way to test your changes is to run all tests. Therefore
 navigate to your run-configurations (Run -> Edit Configurations...) and look
 for the entry `run_all`. There, `run_all` should be selected as `Executable`,
-`kdb` as `Target`. Now you can execute this run configuration which will run
-all enabled tests! Alternatively you can also run all tests using the terminal
+`all` as `Target`. Now you can execute this run configuration which will run
+all enabled tests. Alternatively you can also run all tests using the terminal
 by executing `make run_all` inside your build folder (e.g. /cmake-build-debug).
 
-You can also run other specific tests by setting`Target` and `Executable` to
+You can also run other specific tests by setting `Executable` to
 any of the `testmod_*` or `testkdb_*`targets. Additionally all tests using
 _Google Test_ (e.g. tests/kdb/\*) can be run directly using CLion by opening
 their source code and clicking on the green icon next to the class name.
 
 If you want to test various _kdb_ methods separately, you can create your
 own run configurations. Add a new one by clicking on the "+"-sign on the
-top left of the "Edit Configurations..." dialog and name it. Here both
-_Executable_ and _Target_ should have "kdb" selected. If you for example
-want to test `kdb plugin-info dump`, write "info dump" next to _Program arguments_.
-That's it, now you can just test this part of _kdb_.
+top left of the "Edit Configurations..." dialog and name it. Here _Target_
+should be `all` and _Executable_ should have "kdb" selected. If you for example
+want to test `kdb plugin-info dump`, write "plugin-info dump" next to
+_Program arguments_. That's it, now you can just test this part of _kdb_.
 
 For further information please read [this](/doc/TESTING.md).
 
