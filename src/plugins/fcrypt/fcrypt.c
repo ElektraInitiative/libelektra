@@ -284,7 +284,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 			parentKey,
 			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration",
 			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
