@@ -97,7 +97,7 @@ TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExit
 
 TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE {}
             ;
-KeyPair	:	{ driverEnterKeyValue (driver); } Key EQUAL Value { driverExitKeyValue (driver); }
+KeyPair	:	{ driverEnterKey (driver); } Key { driverExitKey (driver); } EQUAL Value { driverExitKeyValue (driver); }
 
 Key     :	SimpleKey { driverExitSimpleKey (driver, $1); }
         |	SimpleKey { driverExitSimpleKey(driver, $1); } DottedKeys
