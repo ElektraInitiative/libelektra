@@ -9,8 +9,21 @@
 #define NR_OF_SET_PLUGINS 6
 #define NR_OF_ERROR_PLUGINS 3
 
-#define GETRESOLVER 0
-#define GETSTORAGE 2
+#define GET_RESOLVER 0
+#define GET_PRESTORAGE 1
+#define GET_STORAGE 2
+#define GET_POSTSTORAGE 3
+
+#define SET_RESOLVER 0
+#define SET_PRESTORAGE 1
+#define SET_STORAGE 2
+#define SET_PRECOMMIT 3
+#define SET_COMMIT 4
+#define SET_POSTCOMMIT 5
+
+#define ERROR_PREROLLBACK 0
+#define ERROR_ROLLBACK 1
+#define ERROR_POSTROLLBACK 2
 
 typedef struct _BackendHandle BackendHandle;
 typedef struct _Slot Slot;
@@ -722,9 +735,17 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 
 int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
+	//TODO implement global plugins
+
 	BackendHandle * bh = elektraPluginGetData (handle);
 
-	Slot * resolver = bh->getplugins[RESOLVER_PLUGIN];
+	if (!bh)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	Slot * resolver = bh->getplugins[GET_RESOLVER];
 
 	if (!resolver || !resolver->value || !resolver->value->kdbGet)
 	{
@@ -756,7 +777,7 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				if (a == GETRESOLVER || a == GETSTORAGE)
+				if (a == GET_RESOLVER || a == GET_STORAGE)
 				{
 					cur = 0;
 				}
@@ -773,12 +794,140 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 
 int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
+	//TODO implement global plugins
+	BackendHandle * bh = elektraPluginGetData (handle);
+	if (!bh || !bh->setplugins)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	Slot * resolver = bh->setplugins[SET_RESOLVER];
+	if (!resolver || !resolver->value)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The resolver plugin is not defined!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!resolver->value->kdbSet)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The set function of the resolver plugin is not defined!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	int ret = resolver->value->kdbSet (handle, ks, parentKey);
+
+	switch (ret)
+	{
+	case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	case ELEKTRA_PLUGIN_STATUS_ERROR:
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+
+	for (int a = SET_RESOLVER + 1; a < SET_COMMIT; a++)
+	{
+		if (bh->setplugins[a])
+		{
+			Slot * cur = bh->setplugins[a];
+			while (cur != 0)
+			{
+				if (cur->value && cur->value->kdbSet)
+				{
+					if (cur->value->kdbSet (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+					{
+						ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Error while carrying out kdbSet before the commit: %s", keyName (bh->mountpoint));
+						status = ELEKTRA_PLUGIN_STATUS_ERROR;
+					}
+
+				}
+				cur = cur->next;
+			}
+		}
+	}
+
+	if (status == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		elektraBackendError (handle, ks, parentKey);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (elektraBackendCommit (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	for (int a = SET_COMMIT + 1; a <= SET_POSTCOMMIT; a++)
+	{
+		if (bh->setplugins[a])
+		{
+			Slot * cur = bh->setplugins[a];
+			while (cur != 0)
+			{
+				if (cur->value && cur->value->kdbSet)
+				{
+					if (cur->value->kdbSet (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+					{
+						status = ELEKTRA_PLUGIN_STATUS_ERROR;
+						ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Error while carrying out kdbSet after the commit: %s", ks);
+					}
+
+				}
+				cur = cur->next;
+			}
+		}
+	}
+
+	return status;
 }
 
 int elektraBackendCommit (Plugin * handle, KeySet * ks, Key * parentKey)
 {
+	BackendHandle * bh = elektraPluginGetData (handle);
+	if (!bh || !bh->setplugins)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (bh->setplugins[SET_COMMIT] && bh->setplugins[SET_COMMIT]->value && bh->setplugins[SET_COMMIT]->value->kdbCommit)
+	{
+		if (bh->setplugins[SET_COMMIT]->value->kdbCommit (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Error during the commit phase: %s", ks);
+		}
+
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int elektraBackendError (Plugin * handle, KeySet * ks, Key * parentKey)
+{
+	BackendHandle * bh = elektraPluginGetData (handle);
+	if (!bh || !bh->errorplugins)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	for (int a = ERROR_PREROLLBACK; a <= ERROR_POSTROLLBACK; a++)
+	{
+		Slot * cur = bh->errorplugins[a];
+		while (cur != 0)
+		{
+			if (cur->value && cur->value->kdbError)
+			{
+				if (cur->value->kdbError (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+				{
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Error while carrying out kdbError(oh the irony): %s", ks);
+				}
+			}
+			cur = cur->next;
+		}
+	}
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -790,5 +939,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraBackendGet,
 		ELEKTRA_PLUGIN_SET,	&elektraBackendSet,
 		ELEKTRA_PLUGIN_COMMIT,	&elektraBackendCommit,
+		ELEKTRA_PLUGIN_ERROR,   &elektraBackendError,
 		ELEKTRA_PLUGIN_END);
 }

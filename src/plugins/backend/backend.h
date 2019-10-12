@@ -16,6 +16,7 @@ int elektraBackendClose (Plugin * handle, Key * errorKey);
 int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraBackendCommit (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraBackendError (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
