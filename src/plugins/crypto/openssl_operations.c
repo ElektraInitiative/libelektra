@@ -199,7 +199,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid key length");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Invalid key length was provided by the configuration");
 		return -1;
 	}
 
@@ -208,7 +208,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		keyDel (key);
 		keyDel (iv);
 
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Failed to create handle! Invalid IV length");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Invalid IV length was prodived by the configuration");
 		return -1;
 	}
 
@@ -240,8 +240,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 
 	if (ERR_peek_error ())
 	{
-		// TODO: Correct??
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error ());
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to setup OpenSSL! libcrypto error code was: %lu", ERR_get_error ());
 		elektraFree (*handle);
 		*handle = NULL;
 		pthread_mutex_unlock (&mutex_ssl);
@@ -505,7 +504,6 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	// TODO: Correct??
 	ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
 	BIO_free_all (decrypted);
 	pthread_mutex_unlock (&mutex_ssl);
@@ -525,7 +523,6 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (buffer, length))
 	{
-		// TODO: Correct??
 		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to generate random string. libcrypto error code was: %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		return NULL;
