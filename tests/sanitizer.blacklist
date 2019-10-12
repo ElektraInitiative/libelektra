@@ -14,3 +14,5 @@ src:*botan/*.h
 src:*4.*/bits/stl_tree.h
 # Ignore undefined behavior caused by implicit conversion in `stringstream`’s `>>` operator
 src:*llvm/7.*/include/c\+\+/v1/sstream*
+# Ignore undefined behavior caused by implicit conversion from size type of `basic_string` to `streamsize`
+src:*include/c\+\+/v1/istream*

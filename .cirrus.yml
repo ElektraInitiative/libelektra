@@ -55,13 +55,13 @@ mac_task:
 
     - name: 🍎 Clang
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.1
       env:
         ENABLE_LOGGER: ON
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.1
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -70,14 +70,14 @@ mac_task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.1
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
 
     - name: 🍎 MMap
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.1
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
@@ -130,8 +130,9 @@ mac_task:
       brew install python || brew upgrade python
     - | # Install Python packages
       pip install cmake-format[yaml]==0.5.4
-    - | # Install Ruby
+    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
       brew install ruby@2.5
+      export PATH="/usr/local/opt/ruby@2.5/bin:/usr/local/lib/ruby/gems/2.5.0/bin:$PATH"
     - | # Install Ruby gems
       gem install ronn test-unit --user-install --no-document
 
