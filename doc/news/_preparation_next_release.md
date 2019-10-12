@@ -67,6 +67,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 - We improved the error messages in `gpgme`. _(Peter Nirschl)_
+- We improved the error messages in `fcrypt`. _(Peter Nirschl)_
 
 ### Camel
 
