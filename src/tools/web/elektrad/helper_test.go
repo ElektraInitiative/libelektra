@@ -47,7 +47,7 @@ func parseBody(t *testing.T, w *httptest.ResponseRecorder, result interface{}) {
 func setupKey(t *testing.T, keyNames ...string) {
 	t.Helper()
 
-	rootKey, err := elektra.CreateKey("/")
+	rootKey, err := elektra.NewKey("/")
 	Checkf(t, err, "could not create key: %v", err)
 
 	kdb := elektra.New()
@@ -58,7 +58,7 @@ func setupKey(t *testing.T, keyNames ...string) {
 	Checkf(t, err, "could not get KeySet: %v", err)
 
 	for _, k := range keyNames {
-		parentKey, err := elektra.CreateKey(k)
+		parentKey, err := elektra.NewKey(k)
 		Checkf(t, err, "could not create key %s: %v", k, err)
 
 		key := ks.Lookup(parentKey)
@@ -77,7 +77,7 @@ func setupKey(t *testing.T, keyNames ...string) {
 func removeKey(t *testing.T, keyName string) {
 	t.Helper()
 
-	parentKey, err := elektra.CreateKey(keyName)
+	parentKey, err := elektra.NewKey(keyName)
 	Checkf(t, err, "could not create key: %v", err)
 
 	kdb := elektra.New()
@@ -104,7 +104,7 @@ func removeKey(t *testing.T, keyName string) {
 func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 	t.Helper()
 
-	parentKey, err := elektra.CreateKey(keyName)
+	parentKey, err := elektra.NewKey(keyName)
 	Checkf(t, err, "could not create key: %v", err)
 
 	kdb := elektra.New()
@@ -161,7 +161,7 @@ func testRequest(t *testing.T, verb, path string, body interface{}) *httptest.Re
 func getKey(t *testing.T, keyName string) elektra.Key {
 	t.Helper()
 
-	parentKey, err := elektra.CreateKey(keyName)
+	parentKey, err := elektra.NewKey(keyName)
 	Checkf(t, err, "could not create key %s: %v", keyName, err)
 
 	kdb := elektra.New()

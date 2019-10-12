@@ -35,7 +35,7 @@ func TestPutKdb(t *testing.T) {
 	Assertf(t, code == http.StatusOK, "wrong status code: %v", code)
 
 	key := getKey(t, keyName)
-	retrievedValue := key.Value()
+	retrievedValue := key.String()
 	Assert(t, key != nil, "key was not created")
 	Assertf(t, retrievedValue == value, "wrong key value %s, expected %s", retrievedValue, value)
 }

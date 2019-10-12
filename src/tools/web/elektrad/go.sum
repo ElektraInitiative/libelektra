@@ -1,7 +1,9 @@
-github.com/ElektraInitiative/go-elektra v0.0.0-20191002204549-bfa620e7296a h1:iim+wFR9ewTOE2Lc+Krbs/kf+zZ4N/J+JVehHIikC98=
-github.com/ElektraInitiative/go-elektra v0.0.0-20191002204549-bfa620e7296a/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
-github.com/google/go-cmp v0.3.0 h1:crn/baboCvb5fXaQ0IJ1SGTsTVrWpDsCWC8EGETZijY=
-github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
+github.com/ElektraInitiative/go-elektra v0.0.0-20191006173542-d6844189cda9 h1:kr4Szew34IkZoodqDFyi3klZiBb9bAKoZssxMYT58/c=
+github.com/ElektraInitiative/go-elektra v0.0.0-20191006173542-d6844189cda9/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
+github.com/ElektraInitiative/go-elektra v0.0.0-20191012075512-119efcba621c h1:K5x0iuQJfzmngbgzJcze58f1shSh5BiINOb1bq31Ge8=
+github.com/ElektraInitiative/go-elektra v0.0.0-20191012075512-119efcba621c/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
+github.com/ElektraInitiative/go-elektra v0.0.0-20191012084733-8ebe935f866c h1:Q6r35JMVZdZ+E27l5vJ3y3uugPOlgwfVyTsnNaF9KPM=
+github.com/ElektraInitiative/go-elektra v0.0.0-20191012084733-8ebe935f866c/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
 github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
