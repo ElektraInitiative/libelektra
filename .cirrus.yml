@@ -1,3 +1,6 @@
+env:
+  BUILD_DIR: build
+
 bsd_task:
   matrix:
 
@@ -21,7 +24,7 @@ bsd_task:
       yaml-cpp
 
   script:
-    - &create_and_chage_to_build_dir mkdir build && cd build
+    - &create_build_dir mkdir "$BUILD_DIR"
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       cmake
       -DBINDINGS='ALL;-io_glib'
@@ -32,23 +35,22 @@ bsd_task:
       -DPLUGINS=ALL
       -DTARGET_PLUGIN_FOLDER=''
       -GNinja
-      ..
-    - &build cmake --build .
-    - &install output="$(cmake --build . --target install 2>&1)" || printf '%s' "$output"
+      -B"$BUILD_DIR"
+    - &build cmake --build "$BUILD_DIR"
+    - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
 
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
     - &run_tests | # Run tests
-      cd build
       if [ "$ENABLE_ASAN" == 'ON' ]; then
-        cmake --build . --target run_nocheckshell
+        cmake --build "$BUILD_DIR" --target run_nocheckshell
       elif [ "$BUILD_FULL" == 'ON' ]; then
         # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
         # if we do not add the alternative `false`.
-        cmake --build . --target run_all && kdb-full run_all || false
+        cmake --build "$BUILD_DIR" --target run_all && kdb-full run_all || false
       else
-        cmake --build . --target run_all && kdb run_all || false
+        cmake --build "$BUILD_DIR" --target run_all && kdb run_all || false
       fi
 
 mac_task:
@@ -142,7 +144,7 @@ mac_task:
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
     - SYSTEM_DIR="$PWD/kdbsystem"
     - INSTALL_DIR="$PWD/install"
-    - *create_and_chage_to_build_dir
+    - *create_build_dir
     - |
       CMAKE_OPTIONS=(
         -DBINDINGS="${BINDINGS:-ALL}"
@@ -161,7 +163,7 @@ mac_task:
         -DPLUGINS="${PLUGINS:-ALL}"
         -DTOOLS="${TOOLS:-ALL}"
         -GNinja
-        ..
+        -B"$BUILD_DIR"
       )
     - |
       printf '—— CMake Config ——\n'
@@ -176,12 +178,11 @@ mac_task:
     - export PATH=$PATH:"$PWD/install/bin:/usr/local/opt/llvm/bin"
     - *run_tests
     - | # Uninstall Elektra
-      output="$(cmake --build . --target uninstall 2>&1)" || printf '%s' "$output"
+      output="$(cmake --build "$BUILD_DIR" --target uninstall 2>&1)" || printf '%s' "$output"
     - | # Make sure uninstalling removes all files
-      cd ../install
-      if find . -name '*' | grep -Eqv '^.$'; then
-        printf 'The command `cmake --build . --target uninstall` did not uninstall all files:\n'
-        tree .
+      if find install -name '*' -not -name install | grep -Eqv '^.$'; then
+        printf 'The command `cmake --build "%s" --target uninstall` did not uninstall all files:\n' "$BUILD_DIR"
+        tree install
         printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
         false
       fi
