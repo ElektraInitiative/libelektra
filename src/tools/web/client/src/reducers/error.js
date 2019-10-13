@@ -9,20 +9,25 @@
  */
 
 import {
-  INSTANCES_FAILURE, INSTANCE_UPDATE_FAILURE, INSTANCE_DELETE_FAILURE,
+  INSTANCES_FAILURE,
+  INSTANCE_UPDATE_FAILURE,
+  INSTANCE_DELETE_FAILURE,
   CREATE_INSTANCE_FAILURE,
-  GET_KEY_FAILURE, SET_KEY_FAILURE, CREATE_KEY_FAILURE,
+  GET_KEY_FAILURE,
+  SET_KEY_FAILURE,
+  CREATE_KEY_FAILURE,
   DISMISS_ERROR,
-  GET_KDB_FAILURE, GET_KDB_SUCCESS,
-} from '../actions'
+  GET_KDB_FAILURE,
+  GET_KDB_SUCCESS
+} from "../actions";
 
-export default function errorReducer (state = false, action) {
+export default function errorReducer(state = false, action) {
   switch (action.type) {
     case GET_KDB_FAILURE:
-      return { ...action.error, instanceError: true }
+      return { ...action.error, instanceError: true };
 
     case GET_KDB_SUCCESS:
-      return false
+      return false;
 
     case INSTANCES_FAILURE:
     case INSTANCE_UPDATE_FAILURE:
@@ -31,16 +36,17 @@ export default function errorReducer (state = false, action) {
     case GET_KEY_FAILURE:
     case SET_KEY_FAILURE:
     case CREATE_KEY_FAILURE:
-      const { message } = action.error
-      if (message.includes('ECONNREFUSED')) { // elektrad was shut down -> instance error
-        return { ...action.error, instanceError: true }
+      const { message } = action.error;
+      if (message.includes("ECONNREFUSED")) {
+        // elektrad was shut down -> instance error
+        return { ...action.error, instanceError: true };
       }
-      return action.error
+      return action.error;
 
     case DISMISS_ERROR:
-      return false
+      return false;
 
     default:
-      return state
+      return state;
   }
 }

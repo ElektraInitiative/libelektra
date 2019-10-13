@@ -10,12 +10,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import dude from 'debug-dude'
+import dude from "debug-dude";
 
-import { name } from '../package.json'
-export const namespace = name.split('/').pop()
+import { name } from "../package.json";
+export const namespace = name.split("/").pop();
 
-export default function makeLog (name) {
-  const appendName = name ? (':' + name) : ''
-  return dude(namespace + appendName)
+export default function makeLog(name) {
+  const appendName = name ? ":" + name : "";
+  return dude(namespace + appendName);
 }
