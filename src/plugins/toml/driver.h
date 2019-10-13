@@ -40,7 +40,7 @@ typedef struct
 
 
 Driver * createDriver (const Key * parent);
-int driverParse (Driver * driver);
+int driverParse (Driver * driver, KeySet * returned);
 void driverError (Driver * driver, int lineno, const char * msg);
 
 void driverEnterKey (Driver * driver);

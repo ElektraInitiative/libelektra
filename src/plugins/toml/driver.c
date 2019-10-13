@@ -15,7 +15,6 @@ static void setCurrKey (Driver * driver, const Key * parent);
 static void resetCurrKey (Driver * driver);
 static void extendCurrKey (Driver * driver, const char * name);
 static char * getChildFraction (const Key * parent, const Key * child);
-static void topParentToKeySet (Driver * driver);
 static Key * buildTableArrayKeyName (const TableArray * ta);
 static TableArray * pushTableArray (TableArray * top, Key * key);
 static TableArray * popTableArray (TableArray * top);
@@ -29,19 +28,16 @@ static char * indexToArrayString (size_t index);
 Driver * createDriver (const Key * parent)
 {
 	Driver * driver = elektraCalloc (sizeof (Driver));
-	driver->keys = ksNew (0, KS_END);
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
-	driver->tableArrayStack = NULL;
-	driver->currKey = NULL;
 	driver->filename = keyString (parent);
-	driver->file = NULL;
 	driver->tableActive = 0;
 	return driver;
 }
 
-int driverParse (Driver * driver)
+int driverParse (Driver * driver, KeySet * returned)
 {
+	driver->keys = returned;
 	driver->file = fopen (driver->filename, "rb");
 	if (driver->file == NULL)
 	{
@@ -49,6 +45,7 @@ int driverParse (Driver * driver)
 		return 1;
 	}
 	yyin = driver->file;
+	ksAppendKey (driver->keys, driver->root);
 	return yyparse (driver);
 }
 
@@ -77,7 +74,6 @@ void driverExitKey (Driver * driver)
 
 void driverExitKeyValue (Driver * driver)
 {
-	topParentToKeySet (driver);
 	driver->parentStack = popParent (driver->parentStack);
 }
 
@@ -89,7 +85,8 @@ void driverExitSimpleKey (Driver * driver, const Scalar * name)
 void driverExitScalar (Driver * driver, Scalar * scalar)
 {
 	keySetString (driver->parentStack->key, scalar->str);
-	// printf ("ExitScalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
+	ksAppendKey (driver->keys, driver->parentStack->key);
+	printf ("Added Scalar: %s -> %s (%s)\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key), scalar->str);
 }
 
 void driverEnterSimpleTable (Driver * driver)
@@ -105,6 +102,7 @@ void driverExitSimpleTable (Driver * driver)
 {
 	pushCurrKey (driver);
 	keySetMeta (driver->parentStack->key, "simpletable", "");
+	ksAppendKey (driver->keys, driver->parentStack->key);
 	printf ("Setting metakey for %s: 'simpletable'\n", keyName (driver->parentStack->key));
 }
 
@@ -118,7 +116,7 @@ void driverEnterTableArray (Driver * driver)
 	}
 	if (driver->tableArrayStack != NULL)
 	{
-		driver->parentStack = popParent (driver->parentStack); // pop old table array indexed key
+		driver->parentStack = popParent (driver->parentStack); // pop old table array key
 	}
 	setCurrKey (driver, driver->root);
 }
@@ -130,7 +128,7 @@ void driverExitTableArray (Driver * driver)
 		driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
 
 		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-		keySetMeta (driver->currKey, "array", indexStr);
+		keySetMeta (driver->tableArrayStack->key, "array", indexStr);
 		elektraFree (indexStr);
 
 		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
@@ -156,21 +154,27 @@ void driverExitTableArray (Driver * driver)
 			{
 				driver->tableArrayStack = popTableArray (driver->tableArrayStack);
 			}
-            if (driver->tableArrayStack == NULL) {
-                driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
-            }
+			if (driver->tableArrayStack == NULL)
+			{
+				driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
+			}
 			else
 			{
 				driver->tableArrayStack->currIndex++;
 			}
 		}
-		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-		keySetMeta (driver->currKey, "array", indexStr);
-		elektraFree (indexStr);
 
 		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
+		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
+        Key * arrayRoot = keyDup(key);
+        keyAddName (arrayRoot, "..");
+        keySetMeta (arrayRoot, "array", indexStr);
+		elektraFree (indexStr);
+        ksAppendKey (driver->keys, arrayRoot);
+
 		driver->parentStack = pushParent (driver->parentStack, key);
+		// ksAppendKey (driver->keys, key);
 	}
 }
 
@@ -186,7 +190,7 @@ void driverExitArray (Driver * driver)
 	printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
 		keyString (keyGetMeta (driver->parentStack->key, "array")));
 	driver->indexStack = popIndex (driver->indexStack);
-	topParentToKeySet (driver);
+	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverEnterArrayElement (Driver * driver)
@@ -225,7 +229,8 @@ static void setCurrKey (Driver * driver, const Key * parent)
 	{
 		keyDel (driver->currKey);
 	}
-	driver->currKey = keyDup (parent);
+	driver->currKey = keyNew (keyName (parent));
+	// keyClear (driver->currKey);
 }
 
 static void resetCurrKey (Driver * driver)
@@ -270,11 +275,6 @@ static char * getChildFraction (const Key * parent, const Key * child)
 		printf ("got fraction: %s\n", fraction);
 		return fraction;
 	}
-}
-
-static void topParentToKeySet (Driver * driver)
-{
-	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
 static TableArray * pushTableArray (TableArray * top, Key * key)
@@ -361,6 +361,8 @@ static IndexList * popIndex (IndexList * top)
 static Key * indexToKey (size_t index, const Key * parent)
 {
 	Key * indexKey = keyDup (parent);
+	// Key * indexKey = keyNew (keyName (parent), KEY_END);
+
 	char * indexStr = indexToArrayString (index);
 	keyAddBaseName (indexKey, indexStr);
 	elektraFree (indexStr);
