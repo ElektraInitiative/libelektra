@@ -361,6 +361,50 @@ Most notably use:
 - Variable and function names in lowerCamelCase
 - K & R style brackets
 
+### JavaScript Guidelines
+
+#### Prettier
+
+We use [`prettier`][] to format JavaScript files.
+
+##### Installation
+
+###### macOS
+
+On macOS you can install [`prettier`][] using [Homebrew][]:
+
+```sh
+brew install prettier
+```
+
+.
+
+###### General
+
+To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
+
+```sh
+npm install --global prettier@1.17.1
+```
+
+.
+
+##### Usage
+
+To format all JavaScript files in the repository you can use the script [`reformat-javascript`](../scripts/dev/reformat-javascript):
+
+```sh
+scripts/dev/reformat-javascript
+```
+
+. To format only some files, please specify a list of filenames after the command:
+
+```sh
+scripts/dev/reformat-markdown src/tools/qt-gui/qml/ErrorDialogCreator.js # Reformat this file
+```
+
+.
+
 ### Markdown Guidelines
 
 - File Ending is `.md` or integrated within Doxygen comments
@@ -389,25 +433,7 @@ that you can
 
 ##### Installation
 
-###### macOS
-
-On macOS you can install [`prettier`][] using [Homebrew][]:
-
-```sh
-brew install prettier
-```
-
-.
-
-###### General
-
-To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
-
-```sh
-npm install --global prettier@1.17.1
-```
-
-.
+For information on how to install the tool, please take a look at “JavaScript Guidelines” → “Prettier” → “Installation”.
 
 ##### Usage
 
