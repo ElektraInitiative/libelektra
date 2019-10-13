@@ -32,8 +32,8 @@ bsd_task:
       -DTARGET_PLUGIN_FOLDER=''
       -GNinja
       ..
-    - &build ninja
-    - &install output="$(ninja install 2>&1)" || printf '%s' "$output"
+    - &build cmake --build .
+    - &install output="$(cmake --build . --target install 2>&1)" || printf '%s' "$output"
 
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
@@ -41,13 +41,13 @@ bsd_task:
     - &run_tests | # Run tests
       cd build
       if [ "$ENABLE_ASAN" == 'ON' ]; then
-        ninja run_nocheckshell
+        cmake --build . --target run_nocheckshell
       elif [ "$BUILD_FULL" == 'ON' ]; then
         # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
         # if we do not add the alternative `false`.
-        ninja run_all && kdb-full run_all || false
+        cmake --build . --target run_all && kdb-full run_all || false
       else
-        ninja run_all && kdb run_all || false
+        cmake --build . --target run_all && kdb run_all || false
       fi
 
 mac_task:
@@ -175,11 +175,11 @@ mac_task:
     - export PATH=$PATH:"$PWD/install/bin:/usr/local/opt/llvm/bin"
     - *run_tests
     - | # Uninstall Elektra
-      output="$(ninja uninstall 2>&1)" || printf '%s' "$output"
+      output="$(cmake --build . --target uninstall 2>&1)" || printf '%s' "$output"
     - | # Make sure uninstalling removes all files
       cd ../install
       if find . -name '*' | grep -Eqv '^.$'; then
-        printf 'The command `ninja uninstall` did not uninstall all files:\n'
+        printf 'The command `cmake --build . --target uninstall` did not uninstall all files:\n'
         tree .
         printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
         false
@@ -213,7 +213,7 @@ linux_task:
       -DBUILD_STATIC=OFF
       -DBUILD_TESTING=OFF
     - cd ..
-    - ninja -C build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+    - cmake --build build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
     - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
 
   tests_script:
