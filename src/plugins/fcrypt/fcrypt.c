@@ -127,10 +127,10 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 	if (fstat (fd, &tmpStat))
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (
-			errorKey,
-			"Failed to overwrite the temporary data. Cannot retrieve file status. Unencrypted data may leak. Errno: %s",
-			strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey,
+					     "Failed to overwrite the temporary data. Cannot retrieve file status. WARNING: Unencrypted "
+					     "data may leak. Errno: %s",
+					     strerror (errno));
 		return -1;
 	}
 
@@ -149,7 +149,7 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 	return 1;
 
 error:
-	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. Unencrypted data may leak. Reason: %s",
+	ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Failed to overwrite the temporary data. WARNING: Unencrypted data may leak! Reason: %s",
 				     strerror (errno));
 	return -1;
 }
@@ -251,7 +251,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		{
 			ELEKTRA_ADD_RESOURCE_WARNINGF (
 				parentKey,
-				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
+				"Failed to unlink a temporary file. WARNING: Unencrypted data may leak! Please try to delete "
 				"the file manually. Affected file: %s. Reason: %s",
 				tmpFile, strerror (errno));
 		}
@@ -284,7 +284,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 			parentKey,
 			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration",
 			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
@@ -490,7 +490,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 		{
 			ELEKTRA_ADD_RESOURCE_WARNINGF (
 				parentKey,
-				"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete "
+				"Failed to unlink a temporary file. WARNING: Unencrypted data may leak! Please try to delete "
 				"the file manually. Affected file: %s, error description: %s",
 				tmpFile, strerror (errno));
 		}
@@ -607,7 +607,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 			{
 				ELEKTRA_ADD_RESOURCE_WARNINGF (
 					parentKey,
-					"Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try "
+					"Failed to unlink a temporary file. WARNING: Unencrypted data may leak! Please try "
 					"to delete the file manually. Affected file: %s, error description: %s",
 					s->tmpFilePath, strerror (errno));
 			}
@@ -674,7 +674,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, errorDescription);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}

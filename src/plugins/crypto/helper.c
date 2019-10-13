@@ -155,8 +155,8 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate payload length
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
-		// TODO: Correct??
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Payload is too small to contain a salt (payload length is: %zu)", payloadLen);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Payload is too small to contain a salt (payload length is: %zu)",
+							payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -172,9 +172,8 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate restored salt length
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
-		// TODO: Correct??
-		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen,
-					     payloadLen);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Restored salt has invalid length of %u (payload length is: %zu)",
+							restoredSaltLen, payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
@@ -226,7 +225,6 @@ kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey,
 		}
 		else
 		{
-			// TODO: Correct?
 			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
 								    " is invalid. Using default value instead.");
 		}
@@ -274,7 +272,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	if (recipientCount == 0)
 	{
 		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, errorDescription);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}
