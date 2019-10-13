@@ -43,7 +43,8 @@ RUN apt-get update && apt-get -y install \
     libsystemd-dev \
     gawk \
     lcov \
-    valgrind && \
+    valgrind \
+    ninja-build && \
     rm -rf /var/lib/apt/lists/*
 
 # Google Test
