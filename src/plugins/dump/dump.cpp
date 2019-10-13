@@ -21,6 +21,8 @@ using namespace ckdb;
 #include <kdberrors.h>
 #include <kdblogger.h>
 
+using namespace ckdb;
+
 namespace dump
 {
 

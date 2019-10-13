@@ -22,6 +22,7 @@
 using namespace ckdb;
 using namespace Botan;
 using std::unique_ptr;
+using namespace ckdb;
 
 extern "C" {
 
