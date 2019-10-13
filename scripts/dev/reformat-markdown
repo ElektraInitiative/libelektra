@@ -2,7 +2,7 @@
 #
 # @author René Schwaiger <sanssecours@me.com>
 # @brief Reformat Markdown files
-# @date 13.02.20189
+# @date 13.02.2019
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")
