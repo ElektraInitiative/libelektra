@@ -26,7 +26,7 @@ bsd_task:
   script:
     - &create_build_dir mkdir "$BUILD_DIR"
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
-      cmake
+      set --
       -DBINDINGS='ALL;-io_glib'
       -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
@@ -36,6 +36,10 @@ bsd_task:
       -DTARGET_PLUGIN_FOLDER=''
       -GNinja
       -B"$BUILD_DIR"
+    - &print_cmake_options |
+      printf '—— CMake Config ——\n'
+      for option; do printf '%s\n' "$option"; done
+    - &generate cmake "$@"
     - &build cmake --build "$BUILD_DIR"
     - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
 
@@ -145,30 +149,27 @@ mac_task:
     - SYSTEM_DIR="$PWD/kdbsystem"
     - INSTALL_DIR="$PWD/install"
     - *create_build_dir
-    - |
-      CMAKE_OPTIONS=(
-        -DBINDINGS="${BINDINGS:-ALL}"
-        -DBUILD_FULL="${BUILD_FULL:-OFF}"
-        -DBUILD_SHARED="${BUILD_SHARED:-ON}"
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
-        -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
-        -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-        -DENABLE_LOGGER="${ENABLE_LOGGER:-OFF}"
-        -DENABLE_DEBUG=ON
-        -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
-        -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
-        -DKDB_DB_SYSTEM="$SYSTEM_DIR"
-        -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
-        -DPLUGINS="${PLUGINS:-ALL}"
-        -DTOOLS="${TOOLS:-ALL}"
-        -GNinja
-        -B"$BUILD_DIR"
-      )
-    - |
-      printf '—— CMake Config ——\n'
-      for option in "${CMAKE_OPTIONS[@]}"; do printf '%s\n' "$option"; done
-    - cmake ${CMAKE_OPTIONS[@]}
+    - >
+      set --
+      -DBINDINGS="${BINDINGS:-ALL}"
+      -DBUILD_FULL="${BUILD_FULL:-OFF}"
+      -DBUILD_SHARED="${BUILD_SHARED:-ON}"
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+      -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+      -DENABLE_LOGGER="${ENABLE_LOGGER:-OFF}"
+      -DENABLE_DEBUG=ON
+      -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+      -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
+      -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+      -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+      -DPLUGINS="${PLUGINS:-ALL}"
+      -DTOOLS="${TOOLS:-ALL}"
+      -GNinja
+      -B"$BUILD_DIR"
+    - *print_cmake_options
+    - *generate
     - *build
     - *install
 
