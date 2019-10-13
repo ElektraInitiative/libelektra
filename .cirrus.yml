@@ -49,12 +49,11 @@ bsd_task:
     - &run_tests | # Run tests
       if [ "$ENABLE_ASAN" == 'ON' ]; then
         cmake --build "$BUILD_DIR" --target run_nocheckshell
-      elif [ "$BUILD_FULL" == 'ON' ]; then
+      else
+        [ "$BUILD_FULL" = 'ON' ] && KDB=kdb-full || KDB=kdb
         # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
         # if we do not add the alternative `false`.
-        cmake --build "$BUILD_DIR" --target run_all && kdb-full run_all || false
-      else
-        cmake --build "$BUILD_DIR" --target run_all && kdb run_all || false
+        cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
       fi
 
 mac_task:
