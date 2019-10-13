@@ -20,7 +20,8 @@ typedef struct _IndexList
 
 typedef struct _TableArray {
     Key * key;
-    size_t nextIndex;
+    char *keyStr;
+    size_t currIndex;
     struct _TableArray * next;
 } TableArray;
 
@@ -31,7 +32,7 @@ typedef struct
 	ParentList * parentStack;
     Key * currKey;
 	IndexList * indexStack;
-    Key * tableArrayRoot;
+    TableArray * tableArrayStack;
 	const char * filename;
 	FILE * file;
 	int tableActive;

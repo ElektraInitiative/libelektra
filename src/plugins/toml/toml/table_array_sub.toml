@@ -7,9 +7,15 @@ a = 5
     [[table_array_hi.sub1.sub2.sub3]]
     b = 666
     c = 1337
+    [[table_array_hi.sub1.sub2.sub3]]
+    b = 1234
+    c = 5678
 
 [[table_array_hi]]
 a = 8
     [[table_array_hi.sub1.sub2.sub3]]
     b = 3
     c = 9
+    [[table_array_hi.sub1.sub2.sub3]]
+    b = 1111
+    c = 2222
