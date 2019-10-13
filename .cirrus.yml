@@ -207,15 +207,17 @@ linux_task:
     fi
 
   script:
-    - mkdir build && cd build
+    - *create_build_dir
     - >
-      cmake -GNinja ..
+      set --
       -DBUILD_FULL=OFF
       -DBUILD_SHARED=OFF
       -DBUILD_STATIC=OFF
       -DBUILD_TESTING=OFF
-    - cd ..
-    - cmake --build build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+      -GNinja
+      -B"$BUILD_DIR"
+    - *generate
+    - cmake --build "$BUILD_DIR" 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
     - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
 
   tests_script:
