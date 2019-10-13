@@ -15,6 +15,7 @@ bsd_task:
       bison
       cmake
       git
+      libgit2
       ninja
       yajl
       yaml-cpp
