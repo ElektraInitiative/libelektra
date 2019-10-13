@@ -27,6 +27,8 @@ The output of `go build` is a binary, you can simply run it with:
 
 Compile Elektra as described in the [COMPILE document](/doc/COMPILE.md), make sure to include the `web` and `kdb` tool using the `-DTOOLS` flag, e.g. `-DTOOLS="kdb;web"`.
 
+Since this package is leveraging pkg-config files we need an intermediate `elektra.pc` file, which is generated from `temp-elektra.pc.in` in the building phase of Elektra to locate the header files and symbols while Elektra is not installed this machine. 
+
 The binary is located at `build-dir/src/tools/web/elektrad` and symlinked to `build-dir/bin/elektrad`.
 
 ### Installing
