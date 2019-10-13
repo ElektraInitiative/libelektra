@@ -37,7 +37,7 @@ func handleMiddleware(next http.Handler) http.Handler {
 
 			ses, ok := sessions.Load(uuid)
 
-			if s, ok = ses.(*session); !ok && now.After(s.expiry) {
+			if s, ok = ses.(*session); !ok || now.After(s.expiry) {
 				s = newSessionWithUUID(w, r, uuid)
 			}
 		}
