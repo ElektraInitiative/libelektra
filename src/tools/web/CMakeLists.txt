@@ -25,7 +25,7 @@ else ()
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}")
 
 		# create temporary elektra.pc file
-		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrad/elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektra.pc"
+		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektrad/temp-elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektra.pc"
 				@ONLY)
 
 		# install files to destination
