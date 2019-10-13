@@ -107,7 +107,21 @@ Key createLeafKey (YAML::Node const & node, string const & name)
 	if (!node.IsNull ())
 	{
 		auto value = node.as<string> ();
-		key.set<string> (value);
+		if (value == "true" || value == "false")
+		{
+			try
+			{
+				key.set<bool> (node.as<bool> ());
+			}
+			catch (YAML::BadConversion const &)
+			{
+				key.set<string> (value); // Save value as string, if `node` is a quoted scalar
+			}
+		}
+		else
+		{
+			key.set<string> (value);
+		}
 	}
 	if (node.Tag () == "tag:yaml.org,2002:binary")
 	{
