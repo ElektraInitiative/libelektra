@@ -326,7 +326,12 @@ We are currently working on following topics:
 
 ## Finished Thesis
 
-- [Klemens Böswirth](https://www.libelektra.org/ftp/elektra/publications/boeswirth2019highlevel.pdf)
+- [Klemens Böswirth](https://www.libelektra.org/ftp/elektra/publications/boeswirth2019highlevel.pdf):
+  We explore the feasibility of using Elektra in a real-world project. We focused especially on using
+  the high-level API with code-generation. In the thesis, we implemented new versions of LCDproc, one
+  with the low-level API and one with the high-level API. Then we did some benchmarks to compare them.
+  Our results indicate, that Elektra is very much usable in real-world projects. However, we also found
+  that there is still potential for further optimizations.
 
 ## Join the Initiative!
 
