@@ -47,7 +47,7 @@ bsd_task:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
     - &run_tests | # Run tests
-      if [ "$ENABLE_ASAN" == 'ON' ]; then
+      if [ "$ENABLE_ASAN" = 'ON' ]; then
         cmake --build "$BUILD_DIR" --target run_nocheckshell
       else
         [ "$BUILD_FULL" = 'ON' ] && KDB=kdb-full || KDB=kdb
