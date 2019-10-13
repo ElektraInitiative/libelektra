@@ -12,6 +12,13 @@ type keyValueBody struct {
 	Value *string `json:"value"`
 }
 
+// postMetaHandler sets a Meta value on a key if a value was passed,
+// and deletes the existing Meta value if not. The key name is passed
+// through the URL param. The meta key and value are passed via the POST
+// body in JSON.
+// Returns 201 No Content if the request is successfull.
+// Returns 401 Bad Request if no key name was passed - or the key name is invalid.
+// Example: `curl -X POST -d '{ "key": "hello", "value": "world" }' localhost:33333/kdbMeta/user/test/hello`
 func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	var meta keyValueBody
 
@@ -25,6 +32,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 	if meta.Key == "" {
 		badRequest(w)
+		return
 	}
 
 	kdb := getHandle(r)
@@ -32,7 +40,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	parentKey, err := elektra.NewKey(keyName)
 
 	if err != nil {
-		writeError(w, err)
+		badRequest(w)
 		return
 	}
 
@@ -71,6 +79,11 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	noContent(w)
 }
 
+// deleteMetaHandler deletes a Meta key. The key name is passed
+// through the URL param and the meta key via the POST body in JSON.
+// Returns 201 No Content if the request is successfull.
+// Returns 401 Bad Request if no key name was passed - or the key name is invalid.
+// Example: `curl -X DELETE -d '{ "key": "hello" }' localhost:33333/kdbMeta/user/test/hello`
 func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 	kdb := getHandle(r)
 
@@ -80,14 +93,14 @@ func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&meta); err != nil {
-		writeError(w, err)
+		badRequest(w)
 		return
 	}
 
 	key, err := elektra.NewKey(keyName)
 
 	if err != nil {
-		writeError(w, err)
+		badRequest(w)
 		return
 	}
 

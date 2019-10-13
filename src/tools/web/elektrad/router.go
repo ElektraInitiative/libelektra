@@ -76,6 +76,10 @@ func badRequest(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusBadRequest)
 }
 
+func created(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusCreated)
+}
+
 func writeError(w http.ResponseWriter, err error) {
 	badRequest(w)
 
