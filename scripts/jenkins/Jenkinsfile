@@ -1029,8 +1029,7 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildDebianPackage("buildPackage/debian/stretch", DOCKER_IMAGES.stretch)
-  // tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
   // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   tasks << buildWebUI()
