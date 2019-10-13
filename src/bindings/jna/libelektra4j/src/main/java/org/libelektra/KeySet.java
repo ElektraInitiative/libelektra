@@ -170,7 +170,7 @@ public class KeySet implements Iterable<Key> {
 	 * Copies key references from other key set
 	 *
 	 * @param other Key set that is used as source
-	 * @RetVal 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
+	 * @retval 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
 	 * error (null pointer)
 	 */
 	public int copy(final KeySet other) {
@@ -182,7 +182,7 @@ public class KeySet implements Iterable<Key> {
 	/**
 	 * Helper function to check if synchronization is necessary
 	 *
-	 * @RetVal 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
+	 * @retval 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
 	 */
 	public int needsSync() {
 		return Elektra.INSTANCE.ksNeedSync(get());
@@ -271,7 +271,7 @@ public class KeySet implements Iterable<Key> {
 	/**
 	 * Helper function that rewinds the current key set
 	 *
-	 * @RetVal 0 on success, -1 on NullPointer
+	 * @retval 0 on success, -1 on NullPointer
 	 */
 	public int rewind() {
 		return Elektra.INSTANCE.ksRewind(get());
@@ -308,7 +308,7 @@ public class KeySet implements Iterable<Key> {
 	 * Helper function that sets the current cursor of the key set
 	 *
 	 * @param cursor Cursor position as integer
-	 * @RetVal 1 in case of success
+	 * @retval 1 in case of success
 	 */
 	public int setCursor(final int cursor) {
 		return Elektra.INSTANCE.ksSetCursor(get(), cursor);

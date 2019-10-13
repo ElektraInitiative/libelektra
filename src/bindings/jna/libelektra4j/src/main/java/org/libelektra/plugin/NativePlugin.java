@@ -60,7 +60,7 @@ public class NativePlugin implements Plugin {
 	 * Opens the session with the KeyDatabase
 	 *
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @RetVal 0 if success or -1 otherwise
+	 * @retval 0 if success or -1 otherwise
 	 */
 	public int kdbOpen(Key errorKey) {
 		return elektraPlugin.kdbOpen.invoke(elektraPlugin, errorKey.get());
@@ -70,7 +70,7 @@ public class NativePlugin implements Plugin {
 	 * Closes the session with the Key database.
 	 *
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @RetVal 0 if success or -1 otherwise
+	 * @retval 0 if success or -1 otherwise
 	 */
 	public int close(Key errorKey) {
 		return elektraPlugin.kdbClose.invoke(elektraPlugin, errorKey.get());
@@ -81,7 +81,7 @@ public class NativePlugin implements Plugin {
 	 *
 	 * @param keySet   The KeySet to transform
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @RetVal 0 if success or -1 otherwise
+	 * @retval 0 if success or -1 otherwise
 	 * @throws KDBException if return value was -1
 	 */
 	public int set(KeySet keySet, Key errorKey) throws KDBException {
@@ -98,7 +98,7 @@ public class NativePlugin implements Plugin {
 	 *
 	 * @param keySet   The KeySet you want returned
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @RetVal 0 if success or -1 otherwise
+	 * @retval 0 if success or -1 otherwise
 	 * @throws KDBException if return value was -1
 	 */
 	public int get(KeySet keySet, Key errorKey) throws KDBException {
@@ -115,7 +115,7 @@ public class NativePlugin implements Plugin {
 	 *
 	 * @param keySet   The affected KeySet
 	 * @param errorKey ust be a valid key, e.g. created with Key.create() and contains error information
-	 * @RetVal 0 if success or -1 otherwise
+	 * @retval 0 if success or -1 otherwise
 	 */
 	public int error(KeySet keySet, Key errorKey) {
 		keySet.rewind();
