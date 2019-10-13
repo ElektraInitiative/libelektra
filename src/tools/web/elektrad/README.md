@@ -12,7 +12,7 @@ Elektra remotely, built using [Go](https://golang.org).
 `temp-elektra.pc.in` that CMAKE leverages to create an intermediate pkg-config file that tells the GO compiler where it can find the Elektra header files and symbols during the build step.
 `middleware.go` contains the HTTP middleware - such as user session (and caching of Elektra handles) management.  
 `router.go` is responsible for setting up the API routes.  
-`main.go` is the entry point of the server.  
+`main.go` is the entry point of the server.
 
 ## Compiling
 
@@ -35,7 +35,6 @@ The output of `go build` is a binary, you can simply run it with:
 ### With CMake
 
 Compile Elektra as described in the [COMPILE document](/doc/COMPILE.md), make sure to include the `web` and `kdb` tool using the `-DTOOLS` flag, e.g. `-DTOOLS="kdb;web"`.
-
 
 The binary is located at `build-dir/src/tools/web/elektrad` and symlinked to `build-dir/bin/elektrad`.
 
