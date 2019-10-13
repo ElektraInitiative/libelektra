@@ -60,10 +60,6 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (*lookupResult, error
 	ks = ks.Cut(key)
 	foundKey := ks.Lookup(key)
 
-	if foundKey == nil {
-		return nil, nil
-	}
-
 	var meta map[string]string
 	exists := foundKey != nil
 	name := key.BaseName()
