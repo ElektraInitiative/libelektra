@@ -38,7 +38,11 @@ func handleMiddleware(next http.Handler) http.Handler {
 			ses, ok := sessions.Load(uuid)
 
 			if s, ok = ses.(*session); !ok || now.After(s.expiry) {
+				// the session expired or does not exist, create a new one
 				s = newSessionWithUUID(w, r, uuid)
+			} else {
+				// extend lifetime of session after every request
+				s.expiry = sessionExpiry()
 			}
 		}
 
@@ -89,12 +93,16 @@ func newSessionWithUUID(w http.ResponseWriter, r *http.Request, uuid string) *se
 
 	s := &session{
 		handle: h,
-		expiry: time.Now().Add(1 * time.Hour),
+		expiry: sessionExpiry(),
 	}
 
 	sessions.Store(uuid, s)
 
 	return s
+}
+
+func sessionExpiry() time.Time {
+	return time.Now().Add(1 * time.Hour)
 }
 
 func cookieFromUUID(uuid string) *http.Cookie {
