@@ -21,9 +21,9 @@ if [ -z "${PRETTIER}" ]; then
 fi
 
 if [ $# -gt 0 ]; then
-	javascript_files=$(printf "%s\n" "$@" | grep -x '.*\.js')
+	javascript_files=$(printf "%s\n" "$@" | grep -Ex '.*\.jsx?')
 	[ -z "$javascript_files" ] && exit
 else
-	javascript_files=$(git ls-files '*.js')
+	javascript_files=$(git ls-files '*.js' '*.jsx')
 fi
 printf "%s\n" "$javascript_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${PRETTIER}" --write --
