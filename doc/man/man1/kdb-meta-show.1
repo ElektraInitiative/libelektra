@@ -7,7 +7,7 @@
 \fBkdb\-meta\-show\fR \- Print all metakeys along with their value
 .
 .SH "SYNOPSIS"
-\fBkdb meta-show <key name>\fR
+\fBkdb meta\-show <key name>\fR
 .
 .br
 .
@@ -69,14 +69,14 @@ Give debug information\. Prints additional debug information in case of errors/w
 sudo kdb mount ls\.ecf user/tests/examples dump
 
 # Create the keys we use for the examples
-kdb set user/tests/examples/kdb\-showmeta test
-kdb meta-set user/tests/examples/kdb\-showmeta meta1 val1
-kdb meta-set user/tests/examples/kdb\-showmeta meta2 val2
-kdb meta-set user/tests/examples/kdb\-showmeta meta3 val3
-kdb meta-set user/tests/examples/kdb\-showmeta meta4 val4
+kdb set user/tests/examples/kdb\-meta\-show test
+kdb meta\-set user/tests/examples/kdb\-meta\-show meta1 val1
+kdb meta\-set user/tests/examples/kdb\-meta\-show meta2 val2
+kdb meta\-set user/tests/examples/kdb\-meta\-show meta3 val3
+kdb meta\-set user/tests/examples/kdb\-meta\-show meta4 val4
 
-# list all meta keys for /tests/examples/kdb\-showmeta
-kdb meta-show /tests/examples/kdb\-showmeta
+# list all meta keys for /tests/examples/kdb\-meta\-show
+kdb meta\-show /tests/examples/kdb\-meta\-show
 #> meta1: val1
 #> meta2: val2
 #> meta3: val3
@@ -90,7 +90,7 @@ sudo kdb umount user/tests/examples
 .SH "SEE ALSO"
 .
 .IP "\(bu" 4
-How to set metadata: kdb\-setmeta(1) \fIkdb\-setmeta\.md\fR
+How to set metadata: kdb\-meta\-set(1) \fIkdb\-meta\-set\.md\fR
 .
 .IP "\(bu" 4
 For more about cascading keys see elektra\-cascading(7) \fIelektra\-cascading\.md\fR

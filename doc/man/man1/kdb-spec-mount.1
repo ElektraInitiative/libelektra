@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-SPEC\-MOUNT" "1" "August 2019" "" ""
+.TH "KDB\-SPEC\-MOUNT" "1" "October 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-spec\-mount\fR \- Mount a spec file to the key database
@@ -60,7 +60,7 @@ For example:
 .
 .nf
 
-kdb meta-get spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+kdb meta\-get spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
 sudo kdb spec\-mount /example/mountpoint  # mounts /example/mountpoint according to
                                          # the specification as found at
                                          # spec/example/mountpoint
