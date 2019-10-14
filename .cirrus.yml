@@ -37,7 +37,8 @@ bsd_task:
     - &print_cmake_options |
       printf '—— CMake Config ——\n'
       for option; do printf '%s\n' "$option"; done
-    - &generate cmake "$@" -G Ninja -B "$BUILD_DIR"
+    - &generate | # We need to specify the source directory (`.`) explicitly for Alpine linux (`🔗 Check`).
+      cmake "$@" -G Ninja -B "$BUILD_DIR" .
     - &build cmake --build "$BUILD_DIR"
     - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
 
