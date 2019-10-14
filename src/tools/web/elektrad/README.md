@@ -5,6 +5,10 @@
 A server that provides an [HTTP API](http://docs.elektrad.apiary.io) to access
 Elektra remotely, built using [Go](https://golang.org).
 
+## Lifetime of KDB handles
+
+Instantiating a KDB Handle for every request is expensive, espescially for big KDB databases, and prevents handling of conflicts. To mitigate this issue sessions with an associated handle are created. One hour after the last request these sessions are destroyed and the KDB handle is closed.
+
 ## Source structure
 
 `*_handler.go` files contain the HTTP handler functions.  
