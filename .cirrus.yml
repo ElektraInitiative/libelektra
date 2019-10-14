@@ -34,12 +34,10 @@ bsd_task:
       -DC_STD=-std=c11
       -DPLUGINS=ALL
       -DTARGET_PLUGIN_FOLDER=''
-      -GNinja
-      -B"$BUILD_DIR"
     - &print_cmake_options |
       printf '—— CMake Config ——\n'
       for option; do printf '%s\n' "$option"; done
-    - &generate cmake "$@"
+    - &generate cmake "$@" -G Ninja -B "$BUILD_DIR"
     - &build cmake --build "$BUILD_DIR"
     - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
 
@@ -165,8 +163,6 @@ mac_task:
       -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
       -DPLUGINS="${PLUGINS:-ALL}"
       -DTOOLS="${TOOLS:-ALL}"
-      -GNinja
-      -B"$BUILD_DIR"
     - *print_cmake_options
     - *generate
     - *build
@@ -215,8 +211,6 @@ linux_task:
       -DBUILD_SHARED=OFF
       -DBUILD_STATIC=OFF
       -DBUILD_TESTING=OFF
-      -GNinja
-      -B"$BUILD_DIR"
     - *generate
     - cmake --build "$BUILD_DIR" 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
     - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
