@@ -228,7 +228,7 @@ int keyIsBelow (const Key * key, const Key * check)
 
 
 /**
- * Check if a key is below or same or not.
+ * Check if a key is below or same.
  *
  * @param key the key object to work with
  * @see keyIsBelow()
