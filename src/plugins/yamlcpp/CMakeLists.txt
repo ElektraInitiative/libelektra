@@ -30,6 +30,21 @@ if (BUILD_SHARED AND APPLE AND DEFINED ENV{CIRRUS_CI})
 	set (TEST_ARGUMENTS "")
 endif (BUILD_SHARED AND APPLE AND DEFINED ENV{CIRRUS_CI})
 
+# ——————————————————————————————————————————————————————————
+# TODO: Remove this after we enabled `-Wconversion` globally
+set_source_files_properties (yamlcpp.hpp
+			     yamlcpp.cpp
+			     read.hpp
+			     read.cpp
+			     write.hpp
+			     write.cpp
+			     log.hpp
+			     log.cpp
+			     PROPERTIES
+			     COMPILE_FLAGS
+			     "-Wconversion")
+# ——————————————————————————————————————————————————————————
+
 add_plugin (yamlcpp
 	    CPP
 	    ${TEST_ARGUMENTS}
