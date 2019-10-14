@@ -295,6 +295,9 @@ you up to date with the multi-language support provided by Elektra.
 - The `🔗 Check` build job now merges PRs before checking links. _(Klemens Böswirth)_
 - We enabled logging in the build job `🍎 Clang`. This update makes sure that Elektra’s logging code compiles without warnings on macOS. _(René Schwaiger)_
 - All macOS build jobs now use Xcode `11.1` instead of Xcode `10.1`. _(René Schwaiger)_
+- We removed all non-POSIX shell code from the [Cirrus configuration file](../../.cirrus.yml). _(René Schwaiger)_
+- The macOS build jobs now use Ruby `2.6`. _(René Schwaiger)_
+- We do not call `ninja` directly anymore. Instead we use `cmake --build`. This has the advantage that we do not have to care about the Generator used by CMake. _(René Schwaiger)_
 
 ### Jenkins
 
