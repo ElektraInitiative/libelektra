@@ -82,7 +82,7 @@ int PluginListCommand::execute (Cmdline const & cl)
 		sortedPlugins.push_back (elem);
 	}
 
-	sort (sortedPlugins.begin (), sortedPlugins.end ());
+	std::sort (sortedPlugins.begin (), sortedPlugins.end ());
 
 	for (auto & elem : sortedPlugins)
 	{

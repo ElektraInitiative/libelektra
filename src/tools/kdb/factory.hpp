@@ -9,6 +9,7 @@
 #ifndef FACTORY_HPP
 #define FACTORY_HPP
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -144,7 +145,7 @@ public:
 			       "View the man page of a tool");
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "list-tools" + getStdColor (ANSI_COLOR::RESET) + "\t" +
 			       "List all external tools");
-		sort (ret.begin (), ret.end ());
+		std::sort (ret.begin (), ret.end ());
 		return ret;
 	}
 
@@ -159,7 +160,7 @@ public:
 		ret.push_back ("help");
 		ret.push_back ("list-tools");
 
-		sort (ret.begin (), ret.end ());
+		std::sort (ret.begin (), ret.end ());
 		return ret;
 	}
 
