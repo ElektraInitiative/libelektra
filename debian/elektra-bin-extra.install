@@ -10,6 +10,3 @@ usr/lib/*/elektra/tool_exec/ffconfig/writeConfigFiles
 usr/lib/*/elektra/tool_exec/update-snippet-repository
 usr/lib/*/elektra/tool_exec/upgrade-bootstrap
 usr/lib/*/elektra/tool_exec/generate_data
-usr/share/man/man1/kdb-find-tools.1
-usr/share/man/man1/kdb-mount-list-all-files.1
-usr/share/man/man1/kdb-mountpoint-info.1
