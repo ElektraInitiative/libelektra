@@ -24,6 +24,7 @@ if [ $# -gt 0 ]; then
 	javascript_files=$(printf "%s\n" "$@" | grep -Ex '.*\.jsx?')
 	[ -z "$javascript_files" ] && exit
 else
-	javascript_files=$(git ls-files '*.js' '*.jsx')
+	# The file `TooltipCreator.js` contains the text `.pragma library`, which is not valid JavaScript code.
+	javascript_files=$(git ls-files '*.js' '*.jsx' | grep -v 'src/tools/qt-gui/qml/TooltipCreator.js')
 fi
 printf "%s\n" "$javascript_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${PRETTIER}" --write --
