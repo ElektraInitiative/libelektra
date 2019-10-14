@@ -1,8 +1,8 @@
 if (DEPENDENCY_PHASE)
 	find_package (yaml-cpp QUIET 0.6)
-	if (NOT YAML-CPP_FOUND)
+	if (NOT yaml-cpp_FOUND)
 		remove_plugin (yamlcpp "yaml-cpp (libyaml-cpp-dev >= 0.6) not found")
-	endif (NOT YAML-CPP_FOUND)
+	endif (NOT yaml-cpp_FOUND)
 
 	# AdressSanitizer enabled builds of the plugin report runtime errors about member calls, which do not point to an object of type
 	# `_Sp_counted_base` inside the system header file `shared_ptr_base.h`. In Clang builds of the plugin we ignore this error in our
@@ -60,6 +60,6 @@ add_plugin (yamlcpp
 		    write.cpp
 		    log.hpp
 		    log.cpp
-	    INCLUDE_SYSTEM_DIRECTORIES ${YAML-CPP_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${YAML-CPP_LIBRARIES}
+	    INCLUDE_SYSTEM_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${yaml-cpp_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease)
