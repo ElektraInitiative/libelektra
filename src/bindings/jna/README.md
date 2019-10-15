@@ -155,7 +155,7 @@ final KeySet ks = KeySet.create(10, KeySet.KS_END);
 ks.append(rangeKey);
 rangePlugin.kdbSet(ks, parentKey);
 //org.libelektra.exception.SemanticValidationException: Sorry, module range issued error C03200:
-//Value '30' not within range 1-20
+//Value '30' of key 'user/tests/myError' not within range 1-20
 //Configfile: user/tests/javabinding
 //Mountpoint: user/tests/javabinding
 //At: .../elektra/src/plugins/range/range.c:447
