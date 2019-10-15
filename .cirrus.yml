@@ -12,6 +12,12 @@ bsd_task:
       freebsd_instance:
         image: freebsd-12-0-release-amd64
 
+    - name: 😈 ASAN
+      freebsd_instance:
+        image: freebsd-12-0-release-amd64
+      env:
+        ENABLE_ASAN: ON
+
   install_script:
     - >
       pkg install -y
@@ -32,6 +38,7 @@ bsd_task:
       -DCMAKE_SKIP_INSTALL_RPATH=ON
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
+      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
       -DPLUGINS=ALL
       -DTARGET_PLUGIN_FOLDER=''
     - &print_cmake_options |
