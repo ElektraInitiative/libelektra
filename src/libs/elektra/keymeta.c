@@ -535,3 +535,19 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;
 }
+
+/**
+ * @brief Return metadata as keyset
+ *
+ * @param key the key object to work with
+ *
+ * @return the keyset representing the metadata
+ *
+ **/
+KeySet * keyMeta (Key * key)
+{
+	if (!key) return 0;
+	if (!key->meta) return 0;
+
+	return key->meta;
+}
