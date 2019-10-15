@@ -298,6 +298,7 @@ you up to date with the multi-language support provided by Elektra.
 - We removed all non-POSIX shell code from the [Cirrus configuration file](../../.cirrus.yml). _(René Schwaiger)_
 - The macOS build jobs now use Ruby `2.6`. _(René Schwaiger)_
 - We do not call `ninja` directly anymore. Instead we use `cmake --build`. This has the advantage that we do not have to care about the Generator used by CMake. _(René Schwaiger)_
+- We added the build job `😈 ASAN`, which builds and executes Elektra on FreeBSD with enabled [AddressSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizer). _(René Schwaiger)_
 
 ### Jenkins
 
