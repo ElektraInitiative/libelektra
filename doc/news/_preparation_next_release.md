@@ -114,6 +114,8 @@ plugins. _(René Schwaiger)_
 ### Specload
 
 - We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
+- Changes to `default` or `type` metadata are no longer supported, since they are not safe in every case. _(Klemens Böswirth)_
+- The plugin no longer has the `experimental` status. _(Klemens Böswirth)_
 
 ### Spec
 
@@ -333,6 +335,15 @@ We are currently working on following topics:
 ## Statistics
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+
+## Finished Thesis
+
+- [Klemens Böswirth](https://www.libelektra.org/ftp/elektra/publications/boeswirth2019highlevel.pdf):
+  We explore the feasibility of using Elektra in a real-world project. We focused especially on using
+  the high-level API with code-generation. In the thesis, we implemented new versions of LCDproc, one
+  with the low-level API and one with the high-level API. Then we did some benchmarks to compare them.
+  Our results indicate, that Elektra is very much usable in real-world projects. However, we also found
+  that there is still potential for further optimizations.
 
 ## Join the Initiative!
 

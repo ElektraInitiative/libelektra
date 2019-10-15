@@ -14,9 +14,7 @@ mkdir "$PWD/cmake/build" && cd "$PWD/cmake/build"
 cmake ..
 cmake --build .
 
-cd "$PWD"
-
-sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$PWD/cmake/build/application"
+sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/econf/#0/current"
 ```
 
@@ -28,9 +26,7 @@ cd "$PWD/pkgconfig"
 
 make
 
-cd "$PWD"
-
-sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$PWD/pkgconfig/application"
+sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/econf/#0/current"
 ```
 
