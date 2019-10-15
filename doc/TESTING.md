@@ -112,8 +112,8 @@ After sourcing `run_dev_env`, you can directly execute `kdb` and other
 binaries built with Elektra (such as the examples).
 
 Pay attention that sourcing depends on the operating system or rather the
-shell.  For example on standard FreeBSD 11.3 you have to execute `sh` in the
-root of the repository first. Then do *not* use the `source` command but the
+shell. For example on standard FreeBSD 11.3 you have to execute `sh` in the
+root of the repository first. Then do _not_ use the `source` command but the
 point `.` as explained above.
 
 ## Recommended Environment
