@@ -113,8 +113,10 @@ Thus please use following techniques (in order of preference):
   - Use space after `,` of every function argument.
 
 The [reformat script](/scripts/dev/reformat-source) can ensure most code style rules,
-but it is obviously not capable of ensuring everything (e.g. naming conventions).
-So do not give this responsibility out of hands entirely.
+but it is obviously not capable of ensuring everything (e.g. naming
+conventions). So do not give this responsibility out of hands entirely. You
+can [use docker](/doc/tutorials/run_reformatting_script_with_docker.md) to
+ensure that you have the correct version of all our reformatting tools at hand.
 
 ### C Guidelines
 
