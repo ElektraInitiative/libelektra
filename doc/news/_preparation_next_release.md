@@ -255,6 +255,8 @@ you up to date with the multi-language support provided by Elektra.
 - We updated links for the INI parsing library Nickel. _(René Schwaiger)_
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` to build Elektra anymore. _(René Schwaiger)_
+- Add hints about reformatting with docker. _(Dominic Jäger)_
+- Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
 
 ## Tests
 
