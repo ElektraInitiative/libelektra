@@ -1,0 +1,25 @@
+# FreeBSD Vagrant VM
+
+The [Vagrantfile](Vagrantfile) in this directory provides a virtual machine environment that lets you build and run Elektra on FreeBSD.
+
+## Usage
+
+1. Download and install [Vagrant](https://www.vagrantup.com)
+2. Download and install [VirtualBox](https://www.virtualbox.org)
+3. Change into the directory of the Vagrantfile:
+
+   ```sh
+   cd scripts/vagrant/freebsd
+   ```
+
+4. Create and configure the guest machine:
+
+   ```sh
+   vagrant up
+   ```
+
+5. Log into the virtual machine with SSH:
+
+   ```sh
+   vagrant ssh
+   ```
