@@ -45,7 +45,7 @@ int PluginListCommand::execute (Cmdline const & cl)
 		plugins = db.listAllPlugins ();
 	}
 
-	std::multimap<int, std::string> sortedPlugins;
+	std::multimap<int, std::string> statusPlugins;
 	for (const auto & plugin : plugins)
 	{
 		try
@@ -56,11 +56,11 @@ int PluginListCommand::execute (Cmdline const & cl)
 						    *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
 						    KS_END)),
 				"status"));
-			sortedPlugins.insert (std::make_pair (s, plugin));
+			statusPlugins.insert (std::make_pair (s, plugin));
 		}
 		catch (std::exception const & e)
 		{
-			sortedPlugins.insert (std::make_pair (-1000000, plugin));
+			statusPlugins.insert (std::make_pair (-1000000, plugin));
 			if (cl.verbose)
 			{
 				std::cerr << "No status found for " << plugin << std::endl;
@@ -70,21 +70,30 @@ int PluginListCommand::execute (Cmdline const & cl)
 
 	if (cl.verbose) cout << "number of all plugins: " << plugins.size () << endl;
 
-	for (auto & plugin : sortedPlugins)
+	std::vector<std::string> sortedPlugins;
+
+	for (auto & plugin : statusPlugins)
 	{
-		std::cout << plugin.second;
+		std::string elem = plugin.second;
 		if (cl.verbose)
 		{
-			std::cout << " " << plugin.first;
+			elem += " " + std::to_string (plugin.first);
 		}
+		sortedPlugins.push_back (elem);
+	}
 
+	std::sort (sortedPlugins.begin (), sortedPlugins.end ());
+
+	for (auto & elem : sortedPlugins)
+	{
+		std::cout << elem;
 		if (cl.null)
 		{
-			cout << '\0';
+			std::cout << '\0';
 		}
 		else
 		{
-			cout << endl;
+			std::cout << endl;
 		}
 	}
 
