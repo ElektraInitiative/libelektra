@@ -344,7 +344,7 @@ mod test {
     const KEY_2_VALUE: &str = "key_value_2";
 
     fn create_test_keys<'a>() -> (StringKey<'a>, StringKey<'a>, StringKey<'a>) {
-        let parent_key = StringKey::new(PARENT_KEY).unwrap();
+        let parent_key = StringKey::new(PARENT_KEY).unwrap_or_else(|e| panic!("{}", e));
         let key1: StringKey = KeyBuilder::new(KEY_1_NAME)
             .unwrap()
             .value(KEY_1_VALUE)
@@ -360,17 +360,17 @@ mod test {
     fn can_use_kdb() {
         let (mut parent_key, key1, key2) = create_test_keys();
         {
-            let mut kdb = KDB::open().unwrap();
+            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
             let mut ks = KeySet::with_capacity(10);
-            kdb.get(&mut ks, &mut parent_key).unwrap();
+            kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
             ks.append_key(key1);
             ks.append_key(key2);
-            kdb.set(&mut ks, &mut parent_key).unwrap();
+            kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
         }
         {
-            let mut kdb = KDB::open().unwrap();
+            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
             let mut ks = KeySet::with_capacity(2);
-            kdb.get(&mut ks, &mut parent_key).unwrap();
+            kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
             let key1_lookup = ks
                 .lookup_by_name(KEY_1_NAME, Default::default())
                 .unwrap()
@@ -388,13 +388,13 @@ mod test {
 
     fn remove_test_keys() {
         let (mut parent_key, _, _) = create_test_keys();
-        let mut kdb = KDB::open().unwrap();
+        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
-        kdb.get(&mut ks, &mut parent_key).unwrap();
+        kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
         ks.lookup_by_name(KEY_1_NAME, LookupOption::KDB_O_POP)
             .unwrap();
         ks.lookup_by_name(KEY_2_NAME, LookupOption::KDB_O_POP)
             .unwrap();
-        kdb.set(&mut ks, &mut parent_key).unwrap();
+        kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
     }
 }
