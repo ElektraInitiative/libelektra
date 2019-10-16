@@ -243,6 +243,13 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 	ksInit (keyset);
 
+	if (alloc == 0)
+	{
+		keyset->alloc = alloc;
+		keyset->array = 0;
+		return keyset;
+	}
+
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
 		keyset->alloc = KEYSET_SIZE;
@@ -257,7 +264,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 	keyset->array[0] = 0;
 
-	if (alloc != 1) // is >0 because of increment earlier
+	if (alloc != 0)
 	{
 		Key * key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key)
@@ -919,11 +926,25 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		++ks->size;
 		if (ks->size >= ks->alloc)
 		{
-			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+			size_t newSize = ks->alloc * 2 - 1;
+
+			// If array was not allocated before
+			if (newSize == -1)
+			{
+				newSize = KEYSET_SIZE;
+			}
+
+			if (ksResize (ks, newSize) == -1)
 			{
 				keyDel (toAppend);
 				--ks->size;
 				return -1;
+			}
+
+			// If array was allocated in ksResize, size is 0
+			if (ks->size == 0)
+			{
+				++ks->size;
 			}
 		}
 		keyIncRef (toAppend);
