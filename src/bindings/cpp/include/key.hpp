@@ -1093,58 +1093,6 @@ inline T Key::get () const
 	return x;
 }
 
-/*
-// TODO: are locale dependent
-//   + throw wrong exception (easy to fix though)
-template <>
-inline int Key::get<int>() const
-{
-	return stoi(getString());
-}
-
-template <>
-inline long Key::get<long>() const
-{
-	return stol(getString());
-}
-
-template <>
-inline long long Key::get<long long>() const
-{
-	return stoll(getString());
-}
-
-template <>
-inline unsigned long Key::get<unsigned long>() const
-{
-	return stoul(getString());
-}
-
-template <>
-inline unsigned long long Key::get<unsigned long long>() const
-{
-	return stoull(getString());
-}
-
-template <>
-inline float Key::get<float>() const
-{
-	return stof(getString());
-}
-
-template <>
-inline double Key::get<double>() const
-{
-	return stod(getString());
-}
-
-template <>
-inline long double Key::get<long double>() const
-{
-	return stold(getString());
-}
-*/
-
 
 template <>
 inline std::string Key::get () const
@@ -1172,62 +1120,6 @@ inline void Key::set (T x)
 	setString (ost.str ());
 }
 
-/*
-// TODO: are locale dependent
-template <>
-inline void Key::set(int val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(long long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(unsigned val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(unsigned long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(unsigned long long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(float val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(double val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(long double val)
-{
-	setString(std::to_string(val));
-}
-*/
 
 
 /**

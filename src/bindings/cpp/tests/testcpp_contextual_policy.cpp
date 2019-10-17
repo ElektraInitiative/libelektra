@@ -122,7 +122,6 @@ TEST (test_contextual_policy, setPolicy)
 	EXPECT_EQ (cv, 40);
 	cv.syncKeySet ();
 	EXPECT_EQ (cv, 40);
-	// TODO: setPolicy not working correctly
 	EXPECT_TRUE (ks.lookup ("/test")) << "did not find /test";
 	EXPECT_TRUE (ks.lookup ("dir/test")) << "could not find dir/test";
 }

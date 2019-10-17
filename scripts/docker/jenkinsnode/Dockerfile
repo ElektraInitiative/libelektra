@@ -49,7 +49,7 @@ RUN apt-get -y install \
 RUN apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# TODO use elektra for the configuration steps below
+# TODO use Elektra for the configuration steps below
 
 # setup the ssh server
 RUN sed --in-place 's/^\(PermitRootLogin\|UsePAM\|UseDNS\)/#\1/' /etc/ssh/sshd_config && \

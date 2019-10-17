@@ -55,7 +55,6 @@ if (FOUND_NAME GREATER -1)
 
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
-	# TODO resolve https://issues.libelektra.org/2007
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (IS_INCLUDED)
 

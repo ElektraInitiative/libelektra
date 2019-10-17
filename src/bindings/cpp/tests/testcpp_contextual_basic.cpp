@@ -442,7 +442,7 @@ TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
 		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
 		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
 	});
-	// restore deactivation of layer (TODO: good idea in multi-thread setups if layer activation is pulled in? rather not..)
+	// restore deactivation of layer
 
 	ASSERT_EQ (i, 5);
 	ASSERT_EQ (i.getName (), "user/%/%/%/test");
