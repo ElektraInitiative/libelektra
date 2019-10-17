@@ -321,7 +321,7 @@ To enable sanitize checks use `ENABLE_ASAN` via cmake.
 Then, to use ASAN, run `run_asan` in the build directory, which simply does:
 
 ```sh
-ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
+ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) make run_all
 ```
 
 It could also happen that you need to preload ASAN library, e.g.:
