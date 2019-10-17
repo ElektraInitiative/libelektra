@@ -534,51 +534,6 @@ static int keyCompareByName (const void * p1, const void * p2)
 }
 
 /**
- * @brief Compare by unescaped name only, ignoring case
- *
- * @internal
- *
- * @param p1
- * @param p2
- *
- * @return
- */
-static int keyCompareByNameCase (const void * p1, const void * p2)
-{
-	Key * key1 = *(Key **) p1;
-	Key * key2 = *(Key **) p2;
-	const void * name1 = key1->key + key1->keySize;
-	const void * name2 = key2->key + key2->keySize;
-	size_t const nameSize1 = key1->keyUSize;
-	size_t const nameSize2 = key2->keyUSize;
-	int ret = 0;
-	if (nameSize1 == nameSize2)
-	{
-		ret = elektraMemCaseCmp (name1, name2, nameSize2);
-	}
-	else
-	{
-		if (nameSize1 < nameSize2)
-		{
-			ret = elektraMemCaseCmp (name1, name2, nameSize1);
-			if (ret == 0)
-			{
-				ret = -1;
-			}
-		}
-		else
-		{
-			ret = elektraMemCaseCmp (name1, name2, nameSize2);
-			if (ret == 0)
-			{
-				ret = 1;
-			}
-		}
-	}
-	return ret;
-}
-
-/**
  * @brief Compare only the owner of two keys (not the name)
  *
  * @return comparison result
