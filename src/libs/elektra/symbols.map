@@ -113,9 +113,7 @@ libelektra_0.8 {
 	ksHead;
 	ksInit;
 	ksLookup;
-	ksLookupByBinary;
 	ksLookupByName;
-	ksLookupByString;
 	ksNeedSync;
 	ksNew;
 	ksNext;
