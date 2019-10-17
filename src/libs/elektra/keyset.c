@@ -926,13 +926,13 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		++ks->size;
 		if (ks->size >= ks->alloc)
 		{
-			size_t newSize = ks->alloc * 2 - 1;
+			size_t newSize = ks->alloc * 2;
 
 			// If array was not allocated before
-			if (newSize == -1)
-			{
+			if (newSize == 0)
 				newSize = KEYSET_SIZE;
-			}
+			else
+				newSize = newSize - 1;
 
 			if (ksResize (ks, newSize) == -1)
 			{
