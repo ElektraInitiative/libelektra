@@ -32,13 +32,13 @@ Plugins may be followed by a \fB,\fR separated list of \fBkeys=values\fR pairs w
 .IP "" 0
 .
 .SH "DESCRIPTION"
-This command allows a user to mount a new \fIbackend\fR\. The idea of mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
+This command allows a user to persistently mount a new \fIbackend\fR\. Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a partition into the current file system\. This functionality is key to Elektra as it allows users to build a global key database comprised of many different configuration files\.
 .
 .P
-Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a partition into the current file system\. This functionality is key to Elektra as it allows users to build a global key database comprised of many different configuration files\. A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa\. Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments\.
+A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa\. Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments\. More about mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
 .
 .SH "IMPORTANT"
-This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system/elektra/mountpoints\fR to find out where exactly it will write to\.
+This command writes into the \fB/etc\fR directory to make the mounting persistent\. As such it requires root permissions\. Use \fBkdb file system/elektra/mountpoints\fR to find out where exactly it will write to\.
 .
 .P
 Absolute paths are still relative to their namespace (see \fBkdb plugin\-info resolver\fR)\. Only system+spec mount points are actually absolute\. Read elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR for further information\.
