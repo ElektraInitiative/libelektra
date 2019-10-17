@@ -618,18 +618,6 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
 }
 
 
-static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
-{
-	int result = keyCompareByNameCase (p1, p2);
-
-	if (result == 0)
-	{
-		return keyCompareByOwner (p1, p2);
-	}
-	return result;
-}
-
-
 /**
  * Compare the name of two keys.
  *
