@@ -1588,89 +1588,6 @@ static void test_ksLookupNameAll (void)
 	ksDel (ks);
 }
 
-/*
-static void test_ksLookupValue(void)
-{
-	KeySet *ks = ksNew(0, KS_END);
-	Key *found;
-	printf ("test lookups for values\n");
-
-	ksAppendKey(ks, keyNew("user/1",  KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey(ks, keyNew("user/2",   KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey(ks, keyNew("user/3", KEY_VALUE, "syskey",  KEY_END));
-
-	ksAppendKey(ks, keyNew("user/b1", KEY_BINARY, KEY_SIZE, 10,
-		KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey(ks, keyNew("user/b2", KEY_BINARY, KEY_SIZE, 10,
-		KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey(ks, keyNew("user/b3", KEY_BINARY, KEY_SIZE, 10,
-		KEY_VALUE, "sy\1\33\12\32skey", KEY_END));
-	succeed_if(ksGetSize(ks) == 6, "could not append keys");
-
-	succeed_if (ksLookupByString (ks, "value", 0) == 0, "found part of value");
-	succeed_if (ksLookupByString (ks, " singlevalue", 0) == 0, "prefix of value");
-	succeed_if (ksLookupByString (ks, "/singlevalue", 0) == 0, "prefix of value");
-	succeed_if (ksLookupByString (ks, "singlevalue ", 0) == 0, "postfix of value");
-
-	found = ksLookupByString(ks, "singlevalue", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	found = ksLookupByString(ks, "singlevalue", 0);
-	succeed_if (found != 0, "could not find value again");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	found = ksLookupByString(ks, "myvalue", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/2");
-
-	found = ksLookupByString(ks, "syskey", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	ksRewind(ks);
-	found = ksLookupByString(ks, "singlevalue", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	found = ksLookupByString(ks, "singlevalue", 0);
-	succeed_if (found != 0, "could not find value again");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	ksRewind(ks);
-	found = ksLookupByString(ks, "myvalue", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/2");
-
-	found = ksLookupByString(ks, "syskey", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	// TODO: BUG found = ksLookupByString(ks, "singlevalue", KDB_O_NOALL);
-	// succeed_if (found == 0, "could find value");
-
-	// found = ksLookupByString(ks, "singlevalue", KDB_O_NOALL);
-	// succeed_if (found == 0, "found value again");
-
-	ksRewind(ks);
-	found = ksLookupByString(ks, "myvalue", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/2");
-
-	found = ksLookupByString(ks, "syskey", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	found = ksLookupByString(ks, "syskey", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	found = ksLookupByString(ks, "syskey", KDB_O_NOALL);
-	succeed_if (found == 0, "found value");
-
-	ksDel(ks);
-}
-*/
 
 static void test_ksExample (void)
 {
@@ -3263,9 +3180,6 @@ int main (int argc, char ** argv)
 	test_nsLookup ();
 	test_ksAppend2 ();
 	test_ksAppend3 ();
-
-	// BUGS:
-	// test_ksLookupValue();
 
 	printf ("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
