@@ -1997,37 +1997,6 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	return found;
 }
 
-static Key * elektraLookupLinearSearch (KeySet * ks, Key * key, option_t options)
-{
-	cursor_t cursor = 0;
-	cursor = ksGetCursor (ks);
-	Key * current;
-	if (!(options & KDB_O_NOALL)) ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
-	{
-		if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-		{
-			if (!keyCompareByNameOwnerCase (&key, &current)) break;
-		}
-		else if (options & KDB_O_WITHOWNER)
-		{
-			if (!keyCompareByNameOwner (&key, &current)) break;
-		}
-		else if (options & KDB_O_NOCASE)
-		{
-			if (!keyCompareByNameCase (&key, &current)) break;
-		}
-		else if (!keyCompareByName (&key, &current))
-			break;
-	}
-	if (current == 0)
-	{
-		/*Reset Cursor to old position*/
-		ksSetCursor (ks, cursor);
-	}
-	return current;
-}
-
 static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t options)
 {
 	cursor_t cursor = 0;
@@ -2035,14 +2004,8 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 	Key ** found;
 	size_t jump = 0;
 	/*If there is a known offset in the beginning jump could be set*/
-	if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameOwnerCase);
-	else if (options & KDB_O_WITHOWNER)
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameOwner);
-	else if (options & KDB_O_NOCASE)
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameCase);
-	else
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByName);
+	found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByName);
+
 	if (found)
 	{
 		cursor = found - ks->array;
@@ -2215,14 +2178,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// flags incompatible with OPMPHM
-	if (test_bit (options, (KDB_O_WITHOWNER | KDB_O_NOCASE)))
-	{
-		// remove KDB_O_OPMPHM and set KDB_O_BINSEARCH
-		clear_bit (options, KDB_O_OPMPHM);
-		set_bit (options, KDB_O_BINSEARCH);
-	}
-
 	if (!ks->opmphmPredictor && ks->size > opmphmPredictorActionLimit)
 	{
 		// lazy loading of predictor when over action limit
@@ -2406,21 +2361,6 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  * @par KDB_O_DEL
  * Passing ::KDB_O_DEL will cause the deletion of the parameter @p key using keyDel().
  *
- * @par KDB_O_NOALL (deprecated)
- * When ::KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
- * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
- * always set properly after searching a key, so you can go on searching
- * another key after the found key.
- * \n
- * When ::KDB_O_NOALL is not set the cursor will stay untouched and all keys
- * are considered. A much more efficient binary search will be used then.
- *
- * @par KDB_O_WITHOWNER (deprecated)
- * Also consider correct owner (needs ::KDB_O_NOALL).
- *
- * @par KDB_O_NOCASE (deprecated)
- * Lookup ignoring case (needs ::KDB_O_NOALL).
- *
  *
  * @par Hybrid search
  * When Elektra is compiled with `ENABLE_OPTIMIZATIONS=ON` a hybrid search decides
@@ -2470,13 +2410,6 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
 			keyDel (lookupKey);
 		}
 	}
-	else if ((options & KDB_O_NOALL)
-		 // || (options & KDB_O_NOCASE)
-		 // || (options & KDB_O_WITHOWNER)
-		 ) // TODO binary search with nocase won't work
-	{
-		ret = elektraLookupLinearSearch (ks, key, options & mask);
-	}
 	else
 	{
 		ret = elektraLookupSearch (ks, key, options & mask);
@@ -2525,140 +2458,6 @@ Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }
-
-
-/*
- * Lookup for a Key contained in @p ks KeySet that matches @p value,
- * starting from ks' ksNext() position.
- *
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor won't move, and a NULL pointer is
- * returned.
- *
- * This method skips binary keys.
- *
- * @par Example:
- * @code
-ksRewind(ks);
-while (key=ksLookupByString(ks,"my value",0))
-{
-	// show all keys which value="my value"
-	keyToStream(key,stdout,0);
-}
- * @endcode
- *
- * @param ks where to look for
- * @param value the value which owner key you want to find
- * @param options some @p KDB_O_* option bits. Currently supported:
- * 	- @p KDB_O_NOALL @n
- * 		Only search from ksCurrent() to end of keyset, see ksLookup().
- * 	- @p KDB_O_NOCASE @n
- * 	  Lookup ignoring case.
- * @return the Key found, 0 otherwise
- * @see ksLookupByBinary()
- * @see keyCompare() for very powerful Key lookups in KeySets
- * @see ksCurrent(), ksRewind(), ksNext()
- */
-Key * ksLookupByString (KeySet * ks, const char * value, option_t options)
-{
-	cursor_t init = 0;
-	Key * current = 0;
-
-	if (!ks) return 0;
-
-	if (!(options & KDB_O_NOALL))
-	{
-		ksRewind (ks);
-		init = ksGetCursor (ks);
-	}
-
-	if (!value) return 0;
-
-	while ((current = ksNext (ks)) != 0)
-	{
-		if (!keyIsString (current)) continue;
-
-		/*fprintf (stderr, "Compare %s with %s\n", keyValue(current), value);*/
-
-		if ((options & KDB_O_NOCASE) && !elektraStrCaseCmp (keyValue (current), value))
-			break;
-		else if (!strcmp (keyValue (current), value))
-			break;
-	}
-
-	/* reached end of KeySet */
-	if (!(options & KDB_O_NOALL))
-	{
-		ksSetCursor (ks, init);
-	}
-
-	return current;
-}
-
-
-/*
- * Lookup for a Key contained in @p ks KeySet that matches the binary @p value,
- * starting from ks' ksNext() position.
- *
- * If found, @p ks internal cursor will be positioned in the matched key.
- * That means it is also accessible by ksCurrent(). A pointer to the Key
- * is returned. If not found, @p ks internal cursor won't move, and a
- * NULL pointer is returned.
- *
- * This method skips string keys.
- *
- * @param ks where to look for
- * @param value the value which owner key you want to find
- * @param size the size of @p value
- * @param options some @p KDB_O_* option bits:
- * 	- @p KDB_O_NOALL @n
- * 		Only search from ksCurrent() to end of keyset, see above text.
- * @return the Key found, NULL otherwise
- * @retval 0 on NULL pointer
- * @see ksLookupByString()
- * @see keyCompare() for very powerful Key lookups in KeySets
- * @see ksCurrent(), ksRewind(), ksNext()
- */
-Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t options)
-{
-	cursor_t init = 0;
-	Key * current = 0;
-
-	if (!ks) return 0;
-
-	if (!(options & KDB_O_NOALL))
-	{
-		ksRewind (ks);
-		init = ksGetCursor (ks);
-	}
-
-	while ((current = ksNext (ks)))
-	{
-		if (!keyIsBinary (current)) continue;
-
-		if (size != current->dataSize) continue;
-
-		if (!value)
-		{
-			if (!current->data.v)
-				break;
-			else
-				continue;
-		}
-
-		if (current->data.v && !memcmp (current->data.v, value, size)) break;
-	}
-
-	/* reached end of KeySet */
-	if (!(options & KDB_O_NOALL))
-	{
-		ksSetCursor (ks, init);
-	}
-
-	return 0;
-}
-
 
 /*********************************************************************
  *                Data constructors (protected)                      *
