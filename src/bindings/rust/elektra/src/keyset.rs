@@ -531,19 +531,6 @@ mod tests {
     }
 
     #[test]
-    fn can_lookup_key_with_nocase_and_pop_option() {
-        let mut ks = setup_keyset();
-        let lookup_key = StringKey::new("/TEST/key").unwrap();
-        let key = ks.lookup(
-            lookup_key,
-            LookupOption::KDB_O_NOCASE | LookupOption::KDB_O_POP,
-        );
-        assert_eq!(key.unwrap().name(), "user/test/key");
-        assert_eq!(ks.size(), 1);
-        assert_eq!(ks.head().unwrap().name(), "system/test/key");
-    }
-
-    #[test]
     fn can_lookup_key_with_pop_option() {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
