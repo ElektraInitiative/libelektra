@@ -21,11 +21,17 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (yamlcpp "ASan enabled GCC builds of the plugin report member calls on addresses, "
 			       "which do not point to an object of type `_Sp_counted_base`")
 	endif (${DISABLE_PLUGIN_ASAN})
+
+	# Ignore warnings about container overflows on FreeBSD.
+	if (CMAKE_SYSTEM_NAME MATCHES FreeBSD)
+		set (ASAN_DISABLE_CONTAINER_OVERFLOW_CHECK TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0")
+	endif (CMAKE_SYSTEM_NAME MATCHES FreeBSD)
 endif (DEPENDENCY_PHASE)
 
 add_plugin (yamlcpp
 	    CPP
 	    ADD_TEST
+	    ${ASAN_DISABLE_CONTAINER_OVERFLOW_CHECK}
 	    CPP_TEST
 	    TEST_README
 	    INSTALL_TEST_DATA
