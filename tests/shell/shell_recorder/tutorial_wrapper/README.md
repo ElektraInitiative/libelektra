@@ -140,7 +140,7 @@ This feature requires you to use either use
 
   ```bash
   cd build
-  . ~e/scripts/run_dev_env
+  . ~e/scripts/dev/run_env
   tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh path/to/file.md
   ```
 

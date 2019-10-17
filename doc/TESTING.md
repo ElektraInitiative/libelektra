@@ -111,10 +111,10 @@ top-level of Elektra's source code:
 
 ```
 cd build
-. ../scripts/run_dev_env
+. ../scripts/dev/run_env
 ```
 
-After sourcing `run_dev_env`, you can directly execute `kdb` and other
+After sourcing `run_env`, you can directly execute `kdb` and other
 binaries built with Elektra (such as the examples).
 
 ## Recommended Environment
