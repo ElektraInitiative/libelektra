@@ -175,9 +175,6 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
 	while ((key = ksNext (cks)) != 0)
 	{
-		if (options & KDB_O_INACTIVE)
-			if (key && keyIsInactive (key)) continue;
-
 		keyGenerate (key, stream, options);
 		fprintf (stream, ",\n");
 	}
