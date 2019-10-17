@@ -41,9 +41,6 @@ void printOptions (option_t options)
 	if (options & KDB_O_SYNC) std::cout << "KDB_O_SYNC ";
 	if (options & KDB_O_SORT) std::cout << "KDB_O_SORT ";
 	if (options & KDB_O_NORECURSIVE) std::cout << "KDB_O_NORECURSIVE ";
-	if (options & KDB_O_NOCASE) std::cout << "KDB_O_NOCASE ";
-	if (options & KDB_O_WITHOWNER) std::cout << "KDB_O_WITHOWNER ";
-	if (options & KDB_O_NOALL) std::cout << "KDB_O_NOALL ";
 
 	if (options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
 	if (options & ckdb::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
