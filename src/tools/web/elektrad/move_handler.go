@@ -6,11 +6,16 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-// postMoveHandler moves all keys below one key to another.
-// The source key is passed via the URL param and the target key
-// via the JSON string body.
-// Returns 204 No Content if succesfull.
-// Returns 400 Bad Request if either the source or target keys are invalid.
+// postMoveHandler moves all keys below the `source` key to the target key.
+//
+// Arguments:
+// 		source	the source key. URL path param.
+//		target	the target key. JSON string POST body.
+//
+// Response Code:
+//		204 No Content if succesfull.
+//		400 Bad Request if either the source or target keys are invalid.
+//
 // Example: `curl -X POST -d '"user/test/world"' localhost:33333/kdbMv/user/test/hello`
 func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 	from := parseKeyNameFromURL(r)

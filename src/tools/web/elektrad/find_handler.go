@@ -7,10 +7,17 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-// getFindHandler searches for Keys via a Regex passed through the
-// URL param.
-// Returns 400 Bad Request if the REGEX is invalid.
-// Returns 200 OK if the request was successfull.
+// getFindHandler searches for Keys via a Regex expression.
+//
+// Arguments:
+// 		regex	the regex expression to find keys, URL path param.
+//
+// Response Code:
+//		200 OK if the request was successfull.
+// 		400 Bad Request if the REGEX is invalid.
+//
+// Returns: String array with found keys.
+//
 // Example: `curl localhost:33333/kdbFind/versi*`
 func getFindHandler(w http.ResponseWriter, r *http.Request) {
 	query := parseKeyNameFromURL(r)

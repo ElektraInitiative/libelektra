@@ -13,11 +13,17 @@ type keyValueBody struct {
 }
 
 // postMetaHandler sets a Meta value on a key if a value was passed,
-// and deletes the existing Meta value if not. The key name is passed
-// through the URL param. The meta key and value are passed via the POST
-// body in JSON.
-// Returns 201 No Content if the request is successfull.
-// Returns 401 Bad Request if no key name was passed - or the key name is invalid.
+// and deletes the existing Meta value if not.
+//
+// Arguments:
+//		keyName the name of the key. URL path param.
+//		key		the name of the metaKey. Passed through the key field of the JSON body.
+//		value	the value of the metaKey. Passed through the `value` field of the JSON body.
+//
+// Response Code:
+//		201 No Content if the request is successfull.
+//		401 Bad Request if no key name was passed - or the key name is invalid.
+//
 // Example: `curl -X POST -d '{ "key": "hello", "value": "world" }' localhost:33333/kdbMeta/user/test/hello`
 func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	var meta keyValueBody
@@ -79,10 +85,16 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	noContent(w)
 }
 
-// deleteMetaHandler deletes a Meta key. The key name is passed
-// through the URL param and the meta key via the POST body in JSON.
-// Returns 201 No Content if the request is successfull.
-// Returns 401 Bad Request if no key name was passed - or the key name is invalid.
+// deleteMetaHandler deletes a Meta key.
+//
+// Arguments:
+//		keyName the name of the Key.
+//		key		the name of the metaKey. Passed through the key field of the JSON body.
+//
+// Response Code:
+//		201 No Content if the request is successfull.
+//		401 Bad Request if no key name was passed - or the key name is invalid.
+//
 // Example: `curl -X DELETE -d '{ "key": "hello" }' localhost:33333/kdbMeta/user/test/hello`
 func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 	kdb := getHandle(r)

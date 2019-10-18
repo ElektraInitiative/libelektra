@@ -20,7 +20,10 @@ type elektraVersion struct {
 
 // getVersionHandler returns the current version of Elektra via
 // JSON (see the `versionResult` struct).
-// Returns 200 OK.
+//
+// Response Code:
+//		200 OK
+//
 // Example: `curl localhost:33333/version`
 func getVersionHandler(w http.ResponseWriter, r *http.Request) {
 	kdb := getHandle(r)

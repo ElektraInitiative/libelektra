@@ -8,13 +8,21 @@ import (
 	elektra "github.com/ElektraInitiative/go-elektra/kdb"
 )
 
-// getKdbHandler loads returns various information (see `lookupResult` struct)
-// about the Key passed through the URL param.
-// The optional `preload` query parameter (int) - default is 0 - determines
-// how many levels of Children are recursively loaded.
-// Returns 200 OK if the request is successfull.
-// Returns 400 Bad Request if the key name or preload (not an integer or
-// less than 0 / greater than 9) is invalid.
+// getKdbHandler loads returns various information about a key.
+// about the Key.
+//
+// Arguments:
+//		keyName		the name of the key to lookup, URL path param.
+// 		preload 	determines how many levels of Children are
+// 					loaded. Optional query parameter (int).
+//					Value must be 0-9. Default is 0.
+//
+// Response Code:
+//		200 OK if the request is successfull
+// 		400 Bad Request if the key name or preload is invalid.
+//
+// Returns: JSON marshaled `lookupResult` struct.
+//
 // Example: `curl localhost:33333/kdb/user/test/hello`
 func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -49,6 +57,107 @@ func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 	} else {
 		writeResponse(w, response)
+	}
+}
+
+// putKdbHandler creates a new Key.
+//
+// Arguments:
+//		keyName		the name of the new Key. URL path param.
+//		value		the (optional) value of the Key. JSON string POST body.
+//
+// Response Code:
+//		201 Created if the operation was succesfull.
+// 		400 Bad Request if the key name is invalid or the body is not a JSON
+// string.
+//
+// Example: `curl -X PUT -d '"world"' localhost:33333/kdb/user/test/hello`
+func putKdbHandler(w http.ResponseWriter, r *http.Request) {
+	value, err := stringBody(r)
+
+	if err != nil {
+		badRequest(w)
+		return
+	}
+
+	kdb := getHandle(r)
+
+	keyName := parseKeyNameFromURL(r)
+
+	key, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		badRequest(w)
+		return
+	}
+
+	keySet, err := getKeySet(kdb, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = key.SetString(value)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	keySet.AppendKey(key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	_, err = kdb.Set(keySet, key)
+
+	if err != nil {
+		writeError(w, err)
+	} else {
+		created(w)
+	}
+}
+
+// deleteKdbHandler deletes a Key.
+//
+// Arguments:
+// 		keyName		the name of the key to be deleted. URL path param.
+//
+// Response Code:
+//		204 No Content if the key was deleted.
+// 		400 Bad Request if the key name is invalid.
+//
+// Example: `curl -X DELETE localhost:33333/kdb/user/test/hello`
+func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
+	kdb := getHandle(r)
+
+	keyName := parseKeyNameFromURL(r)
+
+	key, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		badRequest(w)
+		return
+	}
+
+	keySet, err := getKeySet(kdb, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	keySet.Remove(key)
+
+	_, err = kdb.Set(keySet, key)
+
+	if err != nil {
+		writeError(w, err)
+	} else {
+		noContent(w)
 	}
 }
 
@@ -136,94 +245,4 @@ func parsePreload(r *http.Request) (preload int, err error) {
 	}
 
 	return
-}
-
-// putKdbHandler creates a new Key, The name of the Key is passed through an
-// URL param and the JSON string value via the POST body.
-// Returns 201 Created if the operation was succesfull.
-// Returns 400 Bad Request if the key name is invalid or the body is not a JSON
-// string.
-// Example: `curl -X PUT -d '"world"' localhost:33333/kdb/user/test/hello`
-func putKdbHandler(w http.ResponseWriter, r *http.Request) {
-	value, err := stringBody(r)
-
-	if err != nil {
-		badRequest(w)
-		return
-	}
-
-	kdb := getHandle(r)
-
-	keyName := parseKeyNameFromURL(r)
-
-	key, err := elektra.NewKey(keyName)
-
-	if err != nil {
-		badRequest(w)
-		return
-	}
-
-	keySet, err := getKeySet(kdb, key)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	err = key.SetString(value)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	keySet.AppendKey(key)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	_, err = kdb.Set(keySet, key)
-
-	if err != nil {
-		writeError(w, err)
-	} else {
-		created(w)
-	}
-}
-
-// deleteKdbHandler deletes a Key. The name of the Key is passed through the
-// URL param.
-// Returns 204 No Content if the key was deleted.
-// Returns 400 Bad Request if the key name is invalid.
-// Example: `curl -X DELETE localhost:33333/kdb/user/test/hello`
-func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
-	kdb := getHandle(r)
-
-	keyName := parseKeyNameFromURL(r)
-
-	key, err := elektra.NewKey(keyName)
-
-	if err != nil {
-		badRequest(w)
-		return
-	}
-
-	keySet, err := getKeySet(kdb, key)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	keySet.Remove(key)
-
-	_, err = kdb.Set(keySet, key)
-
-	if err != nil {
-		writeError(w, err)
-	} else {
-		noContent(w)
-	}
 }
