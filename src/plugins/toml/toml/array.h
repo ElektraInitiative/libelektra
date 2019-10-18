@@ -1,5 +1,5 @@
 // clang-format off
-KeySet * expected = ksNew (16,
+ksNew (16,
     keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
 
     keyNew (PREFIX "/array_1", KEY_META, "array", "#4", KEY_END),
@@ -24,4 +24,4 @@ KeySet * expected = ksNew (16,
     keyNew (PREFIX "/array_empty", KEY_META, "array", "", KEY_END),
 
     KS_END
-);
+)

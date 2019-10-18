@@ -17,6 +17,9 @@
 
 void testRead (const char * filename, KeySet * expected)
 {
+	printf ("################################################\n");
+	printf ("############ testRead (%s)\n", filename);
+	printf ("################################################\n");
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
@@ -34,6 +37,7 @@ void testRead (const char * filename, KeySet * expected)
 	compare_keyset (expected, ks);
 
 	PLUGIN_CLOSE ();
+	ksDel (expected);
 }
 
 
@@ -41,22 +45,25 @@ int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	{
+	testRead ("toml/basic.toml",
 #include "toml/basic.h"
-		testRead ("toml/basic.toml", expected);
-		ksDel (expected);
-	}
+	);
 
-	{
+	testRead ("toml/array.toml",
 #include "toml/array.h"
-		testRead ("toml/array.toml", expected);
-		ksDel (expected);
-	}
-	{
-#include "toml/table_array_basic.h"
-		testRead ("toml/table_array_basic.toml", expected);
-		ksDel (expected);
-    }
+	);
+
+	testRead ("toml/table_array.toml",
+#include "toml/table_array.h"
+	);
+
+	testRead ("toml/table_array_nested.toml",
+#include "toml/table_array_nested.h"
+	);
+
+	testRead ("toml/inline_table.toml",
+#include "toml/inline_table.h"
+	);
 
 	print_result ("testmod_toml");
 	return nbError;
