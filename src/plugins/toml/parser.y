@@ -66,7 +66,6 @@ extern int yylex(void);
 Toml	: 	AnyNewlines Nodes AnyNewlines {}
 	    |	{}
 	    ;
-	
 
 Nodes   : 	Node
         |	Nodes Newlines Node

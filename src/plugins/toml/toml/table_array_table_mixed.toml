@@ -1,0 +1,10 @@
+
+[[table_array]]
+a = 0
+    [table]
+    b = 1
+
+[[table_array]]
+a = 10
+    [table]
+    b = 20
