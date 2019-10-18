@@ -50,6 +50,7 @@ translate() {
 	MOUNTPOINT=$(printf '%s' "$BUF" | head -n 1)
 	if printf '%s' "$MOUNTPOINT" | grep -Eq 'Backup-and-Restore:'; then
 		printf 'Mountpoint: %s\n' "$(printf '%s' "$MOUNTPOINT" | cut -d ':' -f2 | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
+		BUF=$(printf '%s\n' "$BUF" | sed '1d')
 	else
 		printf 'Mountpoint: /tests\n' >> "$TMPFILE"
 	fi
