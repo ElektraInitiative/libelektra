@@ -35,11 +35,11 @@ void callAll (Elektra * elektra)
 	ElektraStructMystruct mystruct;
 	elektraFillStruct (elektra, &mystruct, ELEKTRA_TAG_MYSTRUCT);
 
-	// FIXME: bugs in spec plugin
+	// TODO: bugs in spec plugin
 	// Person * adam = elektraGetV (elektra, ELEKTRA_TAG_PERSON, "adam");
 	Person * p0 = elektraGetV (elektra, ELEKTRA_TAG_PEOPLE, 0);
 
-	// FIXME: bugs in spec plugin
+	// TODO: bugs in spec plugin
 	// ELEKTRA_STRUCT_FREE (StructPerson) (&adam);
 	ELEKTRA_STRUCT_FREE (StructPerson) (&p0);
 }
@@ -95,7 +95,7 @@ cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
 
 if [ "$res" = "0" ]; then
-	# FIXME: bugs in spec plugin; globbing wrong
+	# TODO: bugs in spec plugin; globbing wrong
 
 	./dummy
 	res=$?

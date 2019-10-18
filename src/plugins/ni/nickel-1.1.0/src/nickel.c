@@ -646,7 +646,7 @@ elektraNi_PUBLIC int elektraNi_ReadStream (elektraNi_node restrict n, FILE * res
 
 			if (fold_case)
 			{
-				// FIXME: this breaks valid UTF-8 and is locale-dependent...
+				// TODO: this breaks valid UTF-8 and is locale-dependent...
 
 				for (i = 0; i < key_len; ++i)
 					key[i] = tolower (key[i]);

@@ -182,7 +182,7 @@
 		var ymin = parseFloat(attr.y.value);
 		var ratio = (svg.width.baseVal.value - 2 * 10) / width;
 
-		// XXX: Workaround for JavaScript float issues (fix me)
+		// TODO: Workaround for JavaScript float issues
 		var fudge = 0.0001;
 
 		unzoombtn.classList.remove("hide");

@@ -1121,7 +1121,6 @@ inline void Key::set (T x)
 }
 
 
-
 /**
  * @return the string directly from the key.
  *

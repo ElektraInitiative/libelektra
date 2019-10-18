@@ -15,8 +15,8 @@
 .ExplorerView ul > li {
   min-height: 48px;
   /* opacity: 0.8;
-     FIXME: this looks really cool as it provides a visual hierarchy.
-            unfortunately, it can cause flickering for deeply nested keys.
+     TODO: this looks really cool as it provides a visual hierarchy.
+           unfortunately, it can cause flickering for deeply nested keys.
   */
   transition: opacity 0.2s;
   cursor: pointer;

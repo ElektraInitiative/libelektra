@@ -73,7 +73,9 @@ Thus please use following techniques (in order of preference):
    Read [HERE](/doc/dev/logging.md) for how to enable the logger.
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
-   comments.
+   comments. Use `TODO` to indicate that something is not yet done.
+   Before merging, relevant `TODO`s should be fixed or
+   [issues](https://issues.libelektra.org) created for left-overs.
 
 ### Coding Style
 
