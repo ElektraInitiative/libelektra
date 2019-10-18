@@ -28,7 +28,7 @@ static char * indexToArrayString (size_t index);
 Driver * createDriver (const Key * parent)
 {
 	Driver * driver = elektraCalloc (sizeof (Driver));
-    memset (driver, 0, sizeof(Driver));
+	memset (driver, 0, sizeof (Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
@@ -168,11 +168,11 @@ void driverExitTableArray (Driver * driver)
 		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
 		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-        Key * arrayRoot = keyDup(key);
-        keyAddName (arrayRoot, "..");
-        keySetMeta (arrayRoot, "array", indexStr);
+		Key * arrayRoot = keyDup (key);
+		keyAddName (arrayRoot, "..");
+		keySetMeta (arrayRoot, "array", indexStr);
 		elektraFree (indexStr);
-        ksAppendKey (driver->keys, arrayRoot);
+		ksAppendKey (driver->keys, arrayRoot);
 
 		driver->parentStack = pushParent (driver->parentStack, key);
 		// ksAppendKey (driver->keys, key);
@@ -219,6 +219,13 @@ void driverExitArrayElement (Driver * driver)
 	driver->parentStack = popParent (driver->parentStack);
 }
 
+void driverEnterInlineTable (Driver * driver)
+{
+    printf("SETTING %s to INLINE_TABLE\n", keyName (driver->parentStack->key));
+	keySetMeta (driver->parentStack->key, "inlinetable", "");
+    ksAppendKey (driver->keys, driver->parentStack->key);
+}
+
 static void pushCurrKey (Driver * driver)
 {
 	driver->parentStack = pushParent (driver->parentStack, driver->currKey);
@@ -226,14 +233,14 @@ static void pushCurrKey (Driver * driver)
 
 static void setCurrKey (Driver * driver, const Key * parent)
 {
-    assert (parent != NULL);
+	assert (parent != NULL);
 	if (driver->currKey != NULL)
 	{
-        keyDecRef (driver->currKey);
+		keyDecRef (driver->currKey);
 		keyDel (driver->currKey);
 	}
 	driver->currKey = keyNew (keyName (parent), KEY_END);
-    keyIncRef(driver->currKey);
+	keyIncRef (driver->currKey);
 	// keyClear (driver->currKey);
 }
 
@@ -259,7 +266,8 @@ static char * getChildFraction (const Key * parent, const Key * child)
 	{
 		Key * childDup = keyDup (child);
 		size_t fracSize = 256;
-		char * fraction = elektraCalloc (sizeof (char) * fracSize);
+		char * fraction = elektraMalloc (sizeof (char) * fracSize);
+		memset (fraction, 0, sizeof (char) * fracSize);
 		do
 		{
 			const char * baseName = keyBaseName (childDup);
@@ -339,7 +347,7 @@ static ParentList * pushParent (ParentList * top, Key * key)
 
 static ParentList * popParent (ParentList * top)
 {
-	printf ("POP %s\n", keyName (top->key));
+	printf ("POP %s -> %s\n", keyName (top->key), top->next == NULL ? "NULL" : keyName (top->next->key));
 	ParentList * newTop = top->next;
 	keyDecRef (top->key);
 	keyDel (top->key);
@@ -382,7 +390,7 @@ static char * indexToArrayString (size_t index)
 	}
 	int strLen = 1 +	    //  '#'
 		     (digits - 1) + // underscores
-		     digits +       // actual digits
+		     digits +	    // actual digits
 		     1;		    // '\0'
 	char * str = elektraCalloc (sizeof (char) * strLen);
 	memset (str, '_', sizeof (char) * strLen);
