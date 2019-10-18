@@ -789,10 +789,8 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * Appends a Key to the end of @p ks.
  *
  * Hands the ownership of the key @p toAppend to the KeySet @p ks.
- * That means ksDel(ks) will remove the key unless
- * the key:
- * - got its refcount incremented by keyIncRef() before appending
- * - was also inserted into another keyset with ksAppendKey()
+ * ksDel(ks) uses keyDel(k) to delete every key unless it got its refcount
+ * incremented by keyIncRef(), e.g. by another keyset that contains this key.
  *
  * The reference counter of the key will be incremented
  * to show this ownership, and thus @p toAppend is not const.
