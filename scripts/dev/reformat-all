@@ -10,12 +10,24 @@ DEV_SCRIPTS_DIR=$(dirname "$0")
 
 cd "$SOURCE"
 
+reformat() {
+	reformat=$1
+	shift
+	echo "starting $reformat ..."
+	"$reformat" "$@"
+	echo "finished $reformat"
+}
+
 OLD_IFS="$IFS"
 IFS='
 '
 for reformat in $(ls "$DEV_SCRIPTS_DIR"/reformat-*); do
 	[ "$(basename "$reformat")" = "reformat-all" ] && continue
-	echo "running $reformat..."
-	"$reformat" "$@"
+	reformat "$reformat" "$@" &
+	PIDS="$PIDS $!"
 done
 IFS="$OLD_IFS"
+
+for pid in $PIDS; do
+	wait "$pid"
+done
