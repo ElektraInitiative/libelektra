@@ -58,12 +58,12 @@ translate() {
 	BUFFILE=$(mktempfile_elektra)
 	printf '%s\n' "$BUF" > "$BUFFILE"
 	while read -r line; do
-		if printf '%s' "$line" | grep -Eq '^\s*#>'; then
+		if printf '%s' "$line" | grep -Eq '^[[:space:]]*#>'; then
 			output=$(printf '%s' "$line" | sed -E -e 's/([ ]*#>$)/\1 /' -e 's/[ ]*#> (.*)/\1/')
 			[ -z "$STDOUT" ] && STDOUT="$output" || STDOUT="${STDOUT}⏎$output"
 		fi
 
-		if printf '%s' "$line" | grep -Eq "^(\s*)#"; then
+		if printf '%s' "$line" | grep -Eq '^([[:space:]]*)#'; then
 			directive=$(printf '%s' "$line" | sed -E 's/[ ]*# (.*)/\1/')
 			cmd=$(printf '%s' "$directive" | cut -d ':' -f1)
 			arg=$(printf '%s' "$directive" | cut -d ':' -f2- | sed 's/[[:space:]]*//')
@@ -125,11 +125,11 @@ IFS=''
 BLOCKSFILE=$(mktempfile_elektra)
 printf '%s\n' "$BLOCKS" > "$BLOCKSFILE"
 while read -r line; do
-	printf '%s' "$line" | grep -Eq '\s*```sh$' && {
+	printf '%s' "$line" | grep -Eq '[[:space:]]*```sh$' && {
 		INBLOCK=1
 		continue
 	}
-	printf '%s' "$line" | grep -Eq '\s*```$' && INBLOCK=0
+	printf '%s' "$line" | grep -Eq '[[:space:]]*```$' && INBLOCK=0
 	[ $INBLOCK -eq 0 ] && continue
 	[ -z "$BUF" ] && BUF="$line" || BUF=$(printf '%s\n%s' "$BUF" "$line")
 done < "$BLOCKSFILE"
