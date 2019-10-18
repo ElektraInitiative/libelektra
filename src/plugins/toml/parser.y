@@ -118,7 +118,7 @@ Value   :	Scalar { driverExitScalar (driver, $1); }
         ;
 
 InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE {}
-            |	CURLY_OPEN CURLY_CLOSE {}	
+            |	CURLY_OPEN { driverEnterInlineTable(driver); }  CURLY_CLOSE {}	
             ;
 
 InlineTableList	:	KeyPair {}
