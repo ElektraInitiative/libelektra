@@ -286,6 +286,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Other
 
 - The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
+- The reformatting scripts now run in parallel. _(Markus Raab)_
 - Improved various error messages and synchronized documentations. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
 
