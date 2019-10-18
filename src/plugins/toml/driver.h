@@ -63,4 +63,6 @@ void driverExitArrayElement (Driver * driver);
 
 void driverEnterInlineTable (Driver * driver);
 
+void driverExitComment (Driver * driver, const Scalar * comment);
+
 #endif // ELEKTRA_PLUGIN_TOML_DRIVER_H

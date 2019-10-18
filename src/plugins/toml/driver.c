@@ -221,9 +221,15 @@ void driverExitArrayElement (Driver * driver)
 
 void driverEnterInlineTable (Driver * driver)
 {
-    printf("SETTING %s to INLINE_TABLE\n", keyName (driver->parentStack->key));
+	printf ("SETTING %s to INLINE_TABLE\n", keyName (driver->parentStack->key));
 	keySetMeta (driver->parentStack->key, "inlinetable", "");
-    ksAppendKey (driver->keys, driver->parentStack->key);
+	ksAppendKey (driver->keys, driver->parentStack->key);
+}
+
+void driverExitComment (Driver * driver, const Scalar * comment)
+{
+    printf("COMMENT @ %s (%s)\n", keyName (driver->parentStack->key), comment->str);
+
 }
 
 static void pushCurrKey (Driver * driver)

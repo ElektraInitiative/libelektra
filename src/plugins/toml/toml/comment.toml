@@ -1,0 +1,20 @@
+# Comment on first line
+
+a = 3   # Inline comment after keypair
+
+# Comment #1 on full line
+# Comment #2 on full line
+
+array = [   # Comment directly after array opening brackets, before first value
+1,  # Comment after first value of array
+2,  # Comment after second value of array
+3   # Comment after last value of array
+]   # Inline comment after array
+
+[table] # Comment after table
+
+[[table_array]] # Comment after table array
+
+# Comment on second-to-last line
+# Comment on last line
+
