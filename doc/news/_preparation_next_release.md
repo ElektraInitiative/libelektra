@@ -248,7 +248,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Cleanup
 
 - Fix TODOs. _(Markus Raab)_
-- <<TODO>>
+- The [Markdown Shell Recorder][] now also works correctly on FreeBSD. _(René Schwaiger)_
 
 ## Documentation
 
