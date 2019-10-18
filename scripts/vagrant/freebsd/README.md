@@ -27,5 +27,19 @@ The [Vagrantfile](Vagrantfile) in this directory provides a virtual machine envi
 6. The root of the repository is accessible via `/elektra` in the guest machine:
 
    ```sh
-   cd /elektra
+   ls /elektra
+   ```
+
+7. To keep the folder `/elektra` in the virtual machine and the repository on the host computer in sync you can use the following command:
+
+   ```sh
+   vagrant rsync-auto
+   ```
+
+8. After you logged into the virtual machine you can configure and build Elektra:
+
+   ```sh
+   mkdir build
+   cmake -GNinja -Bbuild /elektra
+   cmake --build build
    ```
