@@ -61,6 +61,10 @@ int main (int argc, char ** argv)
 #include "toml/table_array_nested.h"
 	);
 
+    testRead ("toml/table_array_table_mixed.toml",
+#include "toml/table_array_table_mixed.h"
+    );
+
 	testRead ("toml/inline_table.toml",
 #include "toml/inline_table.h"
 	);
