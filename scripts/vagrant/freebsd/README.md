@@ -23,3 +23,9 @@ The [Vagrantfile](Vagrantfile) in this directory provides a virtual machine envi
    ```sh
    vagrant ssh
    ```
+
+6. The root of the repository is accessible via `/elektra` in the guest machine:
+
+   ```sh
+   cd /elektra
+   ```
