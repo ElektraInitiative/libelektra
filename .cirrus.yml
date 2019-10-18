@@ -20,7 +20,7 @@ bsd_task:
         # The tests for the `filecheck` and `iconv` plugin fail on FreeBSD if we enable AdressSanitizer.
         # See also: https://cirrus-ci.com/task/4796764443377664
         # Unfortunately we can not use the variable `PLUGINS` here, since it is already used by the `pkg` tool.
-        ELEKTRA_PLUGINS: ALL;-filecheck;-iconv
+        ELEKTRA_PLUGINS: ALL;-iconv
 
   install_script:
     - >
