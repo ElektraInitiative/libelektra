@@ -1,0 +1,13 @@
+inline_table = { multiline_string_basic = """
+Basic
+Multi
+Line
+String
+""", multiline_string_literal = '''
+Literal
+Multi
+Line
+String''', array = [1, 2, 3,
+4,
+5] }
+
