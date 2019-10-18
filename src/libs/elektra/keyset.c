@@ -930,7 +930,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 
 			// If array was not allocated before
 			if (newSize == 0)
-				newSize = KEYSET_SIZE;
+				newSize = KEYSET_SIZE - 1;
 			else
 				newSize = newSize - 1;
 
@@ -1001,9 +1001,15 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!toAppend) return -1;
 
 	if (toAppend->size == 0) return ks->size;
+	if (toAppend->array == NULL) return ks->size;
+
+	if (ks->array == NULL)
+		toAlloc = KEYSET_SIZE;
+	else
+		toAlloc = ks->alloc;
 
 	/* Do only one resize in advance */
-	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
+	for (; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
 	ksResize (ks, toAlloc - 1);
 
@@ -1189,6 +1195,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	int set_cursor = 0;
 
 	if (!ks) return 0;
+	if (!ks->array) return 0;
 	if (!cutpoint) return 0;
 
 	char * name = cutpoint->key;
@@ -1282,7 +1289,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	returned = ksNew (newsize, KS_END);
 	elektraMemcpy (returned->array, ks->array + found, newsize);
 	returned->size = newsize;
-	returned->array[returned->size] = 0;
+	if (returned->size > 0) returned->array[returned->size] = 0;
 
 	ksCopyInternal (ks, found, it);
 
