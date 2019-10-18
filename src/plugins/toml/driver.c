@@ -28,6 +28,7 @@ static char * indexToArrayString (size_t index);
 Driver * createDriver (const Key * parent)
 {
 	Driver * driver = elektraCalloc (sizeof (Driver));
+    memset (driver, 0, sizeof(Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
@@ -225,11 +226,14 @@ static void pushCurrKey (Driver * driver)
 
 static void setCurrKey (Driver * driver, const Key * parent)
 {
+    assert (parent != NULL);
 	if (driver->currKey != NULL)
 	{
+        keyDecRef (driver->currKey);
 		keyDel (driver->currKey);
 	}
-	driver->currKey = keyNew (keyName (parent));
+	driver->currKey = keyNew (keyName (parent), KEY_END);
+    keyIncRef(driver->currKey);
 	// keyClear (driver->currKey);
 }
 
