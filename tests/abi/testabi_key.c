@@ -2060,6 +2060,18 @@ static void test_keyBaseName (void)
 	succeed_if_same_string (keyName (k), "user/\\\\%");
 	succeed_if_same_string (keyBaseName (k), "\\%");
 
+	keySetName (k, "system/\\\\valid/\\\\base");
+	succeed_if_same_string (keyName (k), "system/\\\\valid/\\\\base");
+	succeed_if_same_string (keyBaseName (k), "\\\\base");
+
+	keySetName (k, "system/\\/valid/\\/base");
+	succeed_if_same_string (keyName (k), "system/\\/valid/\\/base");
+	succeed_if_same_string (keyBaseName (k), "/base"); // wanted?
+
+	keySetName (k, "system/valid\\\\/base");
+	succeed_if_same_string (keyName (k), "system/valid\\\\/base");
+	succeed_if_same_string (keyBaseName (k), "base");
+
 	keySetName (k, "user//////\\\\\\%");
 	succeed_if_same_string (keyName (k), "user/\\\\\\%");
 	succeed_if_same_string (keyBaseName (k), "\\\\%");
