@@ -50,6 +50,12 @@ The alternative to `make run_nokdbtests`:
 ctest -T Test --output-on-failure -LE kdbtests -j 6
 ```
 
+To only run tests whose names match a regular expression, you can use:
+
+```sh
+ctest -V -R <regex>
+```
+
 ## Required Environment
 
 To run the tests successfully, the environment
