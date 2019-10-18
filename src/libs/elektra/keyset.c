@@ -2544,7 +2544,7 @@ int ksInit (KeySet * ks)
 /**
  * @internal
  *
- * KeySet object initializer.
+ * KeySet object destructor.
  *
  * @see ksDel(), ksNew(), keyInit()
  * @retval 0 on success
