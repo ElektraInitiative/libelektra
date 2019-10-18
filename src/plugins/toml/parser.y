@@ -8,17 +8,17 @@
 #include "scalar.h"
 #include "driver.h"
 
-extern int yylex(void);
+    extern int yylex(void);
 
-%}
+    %}
 
-%code requires {
-	#include "scalar.h"
-	#include "driver.h"
-}
+    %code requires {
+#include "scalar.h"
+#include "driver.h"
+    }
 
 %union {
-	Scalar*     	scalar;
+    Scalar*     	scalar;
 }
 
 %token <scalar> COMMENT
@@ -63,40 +63,42 @@ extern int yylex(void);
 
 %%
 
-Toml	: 	AnyNewlines Nodes AnyNewlines {}
-	    |	{}
-	    ;
+Toml	: 	AnyNewlines Nodes AnyNewlines
+        |   %empty
+        ;
 
 Nodes   : 	Node
         |	Nodes Newlines Node
         ;
 
-Node	:	COMMENT { }
-        | 	Table OptComment { }
-        | 	KeyPair OptComment { }
+Node	:	COMMENT { driverExitComment (driver, $1); }
+        | 	Table OptComment
+        | 	KeyPair OptComment
         ;
 
-OptComment	:
-            |	COMMENT {}
+OptComment	:   COMMENT { driverExitComment (driver, $1); }
+            |   %empty
             ;
 
 
-Newlines	:	NEWLINE {}
-            |	Newlines NEWLINE {}
+Newlines	:	NEWLINE
+            |	Newlines NEWLINE
             ;	
 
 AnyNewlines :   Newlines | %empty;
 
-Table	:	TableSimple {}
-        |	TableArray {}	
+Table	:	TableSimple
+        |	TableArray
         ;
 
-TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExitSimpleTable(driver); } BRACKETS_CLOSE {}
+TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExitSimpleTable(driver); } BRACKETS_CLOSE
             ;
 
-TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE {}
+TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
             ;
+
 KeyPair	:	{ driverEnterKey (driver); } Key { driverExitKey (driver); } EQUAL Value { driverExitKeyValue (driver); }
+            ;
 
 Key     :	SimpleKey { driverExitSimpleKey (driver, $1); }
         |	SimpleKey { driverExitSimpleKey(driver, $1); } DottedKeys
@@ -133,7 +135,7 @@ ArrayList	:	CommentNewline { driverEnterArrayElement (driver); } Value { driverE
             ;
 
 CommentNewline	:	CommentNewline NEWLINE {}
-                |	CommentNewline COMMENT NEWLINE {}
+                |	CommentNewline COMMENT { driverExitComment (driver, $2); } NEWLINE {}
                 |	%empty {}
                 ;
 
@@ -145,10 +147,10 @@ Scalar  :   IntegerScalar { $$ = $1; }
         ;
 
 IntegerScalar   :   DECIMAL { $$ = $1; }
-                |   HEXADECIMAL { $$ = $1; }
-                |   OCTAL { $$ = $1; }
-                |   BINARY { $$ = $1; }
-                ;
+        |   HEXADECIMAL { $$ = $1; }
+        |   OCTAL { $$ = $1; }
+        |   BINARY { $$ = $1; }
+        ;
 
 BooleanScalar   :   BOOLEAN { $$ = $1; }
                 ;
