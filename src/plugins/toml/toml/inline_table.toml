@@ -6,4 +6,3 @@ inl_with_array = { int = [1], str = ["test1", "test2"], bool = [true, false, tru
 
 inl_nested = { nest_1 = { a = 1, b = 2, c = 3 }, nest_2 = { x = 4, y = 5, z = 6} }
 inl_nested_nested = { nest_1 = { nest_2_1 = { inner_1 = 666, inner_2 = 667 }, nest_2_2 = { inner_1 = 1, inner_2 = 2 } } }
-

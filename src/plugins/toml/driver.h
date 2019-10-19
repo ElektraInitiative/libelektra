@@ -25,6 +25,12 @@ typedef struct _TableArray {
     struct _TableArray * next;
 } TableArray;
 
+typedef struct _CommentList {
+    char * comment;
+    int spaces;
+    struct _CommentList * next;
+} CommentList;
+
 typedef struct
 {
 	KeySet * keys;
@@ -33,6 +39,10 @@ typedef struct
     Key * currKey;
 	IndexList * indexStack;
     TableArray * tableArrayStack;
+    CommentList * commentRoot;
+    CommentList * commentBack;
+    int spaceCount;
+    int newlineCount;
 	const char * filename;
 	FILE * file;
 	int tableActive;
@@ -46,6 +56,9 @@ void driverError (Driver * driver, int lineno, const char * msg);
 void driverEnterKey (Driver * driver);
 void driverExitKey (Driver * driver);
 void driverExitKeyValue (Driver * driver);
+
+void driverExitOptCommentKeyPair (Driver * driver);
+void driverExitOptCommentTable (Driver * driver);
 
 void driverExitSimpleKey (Driver * driver, const Scalar * name);
 
@@ -64,5 +77,7 @@ void driverExitArrayElement (Driver * driver);
 void driverEnterInlineTable (Driver * driver);
 
 void driverExitComment (Driver * driver, const Scalar * comment);
+void driverExitSpace (Driver * driver);
+void driverExitNewline (Driver * driver);
 
 #endif // ELEKTRA_PLUGIN_TOML_DRIVER_H

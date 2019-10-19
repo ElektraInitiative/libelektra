@@ -28,11 +28,11 @@ ksNew (32,
 
 
     keyNew (PREFIX "/array", KEY_META, "array", "#2",
-        KEY_META, "comment/#0", " Inline comment after array"
+        KEY_META, "comment/#0", " Inline comment after array",
         KEY_META, "comment/#0/start", "#",
         KEY_META, "comment/#0/space", "3",
         KEY_META, "comment/#1/start", "",
-        KEY_META, "comment/#1/space", "0"
+        KEY_META, "comment/#1/space", "0",
         KEY_META, "comment/#2", " Comment #1 on full line",
         KEY_META, "comment/#2/start", "#",
         KEY_META, "comment/#2/space", "0",
@@ -83,6 +83,9 @@ ksNew (32,
         KEY_META, "comment/#1/space", "0",
         KEY_END
     ),
+
+    KS_END
+)
 
 
         

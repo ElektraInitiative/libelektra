@@ -76,6 +76,10 @@ int main (int argc, char ** argv)
     testRead ("toml/inline_table_multiline_values.toml",
 #include "toml/inline_table_multiline_values.h"
     );
+    
+    testRead ("toml/comment.toml",
+#include "toml/comment.h"
+    );
 
 	print_result ("testmod_toml");
 	return nbError;

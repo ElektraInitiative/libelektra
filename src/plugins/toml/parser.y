@@ -72,8 +72,8 @@ Nodes   : 	Node
         ;
 
 Node	:	COMMENT { driverExitComment (driver, $1); }
-        | 	Table OptComment
-        | 	KeyPair OptComment
+        | 	Table OptComment { driverExitOptCommentTable (driver); }
+        | 	KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
         ;
 
 OptComment	:   COMMENT { driverExitComment (driver, $1); }
@@ -81,8 +81,8 @@ OptComment	:   COMMENT { driverExitComment (driver, $1); }
             ;
 
 
-Newlines	:	NEWLINE
-            |	Newlines NEWLINE
+Newlines	:	NEWLINE { driverExitNewline (driver); }
+            |	Newlines NEWLINE { driverExitNewline (driver); }
             ;	
 
 AnyNewlines :   Newlines | %empty;
