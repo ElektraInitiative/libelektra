@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_RANGE_H
 #define ELEKTRA_PLUGIN_RANGE_H
 
+#define RANGE_ERROR_MESSAGE "Value '%s' of key '%s' not within range %s"
 #include <kdbplugin.h>
 
 
