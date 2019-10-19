@@ -21,7 +21,6 @@
 
 using namespace Botan;
 using std::unique_ptr;
-using namespace ckdb;
 
 extern "C" {
 
@@ -32,6 +31,7 @@ extern "C" {
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <string.h>
+using namespace ckdb;
 
 
 /**
