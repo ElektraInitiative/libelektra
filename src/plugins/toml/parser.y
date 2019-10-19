@@ -126,18 +126,19 @@ InlineTableList	:	KeyPair {}
                 |	COMMA KeyPair {}
                 |	InlineTableList COMMA KeyPair {}
                 ;
-Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList { driverExitArray (driver); } CommentNewline BRACKETS_CLOSE {}
+Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList CommentNewline { driverExitArray (driver); } BRACKETS_CLOSE {}
         |	BRACKETS_OPEN { driverEnterArray (driver); driverExitArray (driver);  } BRACKETS_CLOSE {}
         ;
 // TODO: trailing comma
-ArrayList	:	CommentNewline { driverEnterArrayElement (driver); } Value { driverExitArrayElement (driver); }
+ArrayList	:   CommentNewline	{ driverEnterArrayElement (driver); } Value { driverExitArrayElement (driver); }
             |	ArrayList COMMA CommentNewline { driverEnterArrayElement (driver); } Value  { driverExitArrayElement (driver); }
             ;
 
-CommentNewline	:	CommentNewline NEWLINE {}
-                |	CommentNewline COMMENT { driverExitComment (driver, $2); } NEWLINE {}
+CommentNewline	:	CommentNewline NEWLINE { driverExitNewline (driver); }
+                |	CommentNewline COMMENT { driverExitComment (driver, $2); } NEWLINE
                 |	%empty {}
                 ;
+OptComma        :   COMMA | %empty ;
 
 Scalar  :   IntegerScalar { $$ = $1; }
         |   BooleanScalar { $$ = $1; }

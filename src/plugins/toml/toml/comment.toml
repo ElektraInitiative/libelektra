@@ -9,6 +9,7 @@ array = [   # Comment directly after array opening brackets, before first value
 1,  # Comment after first value of array
 2,  # Comment after second value of array
 3   # Comment after last value of array
+    # Additional comment after last value of array
 ]   # Inline comment after array
 
 [table] # Comment after table
