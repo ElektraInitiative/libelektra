@@ -80,6 +80,7 @@ void driverEnterKey (Driver * driver)
 	resetCurrKey (driver);
 }
 
+// TODO: make this function called really on every key exit in parser.y
 void driverExitKey (Driver * driver)
 {
 	pushCurrKey (driver);
@@ -117,10 +118,6 @@ void driverExitOptCommentTable (Driver * driver)
 {
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
-        if (driver->commentRoot->next != NULL) {
-            printf("TOO MUCH COMMENT: '%s'\n", driver->commentRoot->next->comment);
-            exit(1);
-        }
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
@@ -185,10 +182,10 @@ void driverExitTableArray (Driver * driver)
 		keySetMeta (driver->tableArrayStack->key, "array", indexStr);
 		elektraFree (indexStr);
 
-		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
+        ksAppendKey (driver->keys, driver->tableArrayStack->key);
 
+		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 		driver->parentStack = pushParent (driver->parentStack, key);
-        ksAppendKey (driver->keys, key);
 	}
 	else
 	{

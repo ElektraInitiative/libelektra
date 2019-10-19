@@ -1,22 +1,2 @@
 array_1 = [1, 2, 3, 4, 5]
-
-array_multiline_1 = [
-"a",
-"b",
-"c",
-"d"]
-
-array_multiline_2 = [
-    'test',
-    'test2',
-    'test3', 'test4'
-]
-
 array_empty = []
-
-# array_trailing_comma = [1,2,3,]
-# array_trailing_comma_multiline = [
-# 1,
-# 2,
-# 3,
-# ]
