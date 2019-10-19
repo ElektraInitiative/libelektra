@@ -8,8 +8,6 @@
 
 #include "dump.hpp"
 
-using namespace ckdb;
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
