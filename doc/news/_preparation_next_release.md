@@ -281,6 +281,7 @@ you up to date with the multi-language support provided by Elektra.
 - We renamed
   - the script `reformat-source` to `reformat-c`, and
   - the script `reformat-shfmt` to `reformat-shell`. _(René Schwaiger)_
+- The script [cmake-format](../../scripts/dev/reformat-cmake) now requires `cmake-format` 0.6. _(René Schwaiger)_
 
 ## Cleanup
 
