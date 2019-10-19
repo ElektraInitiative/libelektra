@@ -1,5 +1,5 @@
 // clang-format off
-ksNew (32,
+ksNew (128,
     keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@",
         KEY_META, "comment/#1/start", "",
         KEY_META, "comment/#1/space", "0",
