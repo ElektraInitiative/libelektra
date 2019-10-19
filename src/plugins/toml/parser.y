@@ -8,9 +8,9 @@
 #include "scalar.h"
 #include "driver.h"
 
-    extern int yylex(void);
+extern int yylex(void);
 
-    %}
+%}
 
     %code requires {
 #include "scalar.h"
@@ -63,7 +63,7 @@
 
 %%
 
-Toml	: 	AnyNewlines Nodes AnyNewlines
+Toml	: 	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
         |   %empty
         ;
 
