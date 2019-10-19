@@ -1,12 +1,8 @@
-github.com/ElektraInitiative/go-elektra v0.0.0-20191006173542-d6844189cda9 h1:kr4Szew34IkZoodqDFyi3klZiBb9bAKoZssxMYT58/c=
-github.com/ElektraInitiative/go-elektra v0.0.0-20191006173542-d6844189cda9/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
-github.com/ElektraInitiative/go-elektra v0.0.0-20191012075512-119efcba621c h1:K5x0iuQJfzmngbgzJcze58f1shSh5BiINOb1bq31Ge8=
-github.com/ElektraInitiative/go-elektra v0.0.0-20191012075512-119efcba621c/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
-github.com/ElektraInitiative/go-elektra v0.0.0-20191012084733-8ebe935f866c h1:Q6r35JMVZdZ+E27l5vJ3y3uugPOlgwfVyTsnNaF9KPM=
-github.com/ElektraInitiative/go-elektra v0.0.0-20191012084733-8ebe935f866c/go.mod h1:/rxRQLbtBjZj1e8Nd/BzGK3VwDkPRKDYv9oD8J9cc94=
 github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
 github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+go.libelektra.org v0.0.0-20191019104352-db8d0e76785f h1:8/xhx14piLsUgGG/+9/jBr5oW2cZrd1V7aH3leKlFv8=
+go.libelektra.org v0.0.0-20191019104352-db8d0e76785f/go.mod h1:a+TqQTLGXtojfKxsn2AYMJIEUPAm6dtJivxer4Er7Qw=

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	elektra "github.com/ElektraInitiative/go-elektra/kdb"
+	elektra "go.libelektra.org/kdb"
 )
 
 // getKdbHandler loads returns various information about a key.

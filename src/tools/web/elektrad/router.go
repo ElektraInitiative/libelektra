@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	elektra "github.com/ElektraInitiative/go-elektra/kdb"
+	elektra "go.libelektra.org/kdb"
 )
 
 func setupRouter() http.Handler {

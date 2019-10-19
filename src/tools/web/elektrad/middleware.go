@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	elektra "github.com/ElektraInitiative/go-elektra/kdb"
+	elektra "go.libelektra.org/kdb"
 )
 
 var (
