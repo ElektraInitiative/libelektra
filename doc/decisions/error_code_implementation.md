@@ -29,6 +29,8 @@ Since error codes and crucial parts Elektra's core implementation will not chang
 
 The existing code will be refactored so that error macros directly call macros.
 
+When adding a new error code, language bindings have to be adapted accordingly such as the Rust or Java Binding.
+
 ## Rationale
 
 - Updates to error codes will imply syncing every binding. This though should happen in very rare circumstances.
