@@ -22,7 +22,7 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
-static void drainCommentsTokey (Driver * driver, Key * key);
+static void drainCommentsToKey (Driver * driver, Key * key);
 static void newlinesToCommentList (Driver * driver);
 static void addCommentListToKey (Key * key, CommentList * root);
 static void addInlineCommentToKey (Key * key, CommentList * root);
@@ -79,7 +79,7 @@ void driverEnterKey (Driver * driver)
 void driverExitKey (Driver * driver)
 {
 	pushCurrKey (driver);
-    drainCommentsToKey (driver, driver->parentStack->key);
+	drainCommentsToKey (driver, driver->parentStack->key);
 }
 
 void driverExitKeyValue (Driver * driver)
@@ -92,10 +92,11 @@ void driverExitOptCommentKeyPair (Driver * driver)
 {
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
-        if (driver->commentRoot->next != NULL) {
-            printf ("inline second?!: '%s'\n", driver->commentRoot->next->comment);
-            exit(1);
-        }
+		if (driver->commentRoot->next != NULL)
+		{
+			printf ("inline second?!: '%s'\n", driver->commentRoot->next->comment);
+			exit (1);
+		}
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
 		Key * key = ksTail (driver->keys);	    // get previously added key
 		addInlineCommentToKey (key, driver->commentRoot);
@@ -108,10 +109,11 @@ void driverExitOptCommentTable (Driver * driver)
 {
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
-        if (driver->commentRoot->next != NULL) {
-            printf ("inline second?!: '%s'\n", driver->commentRoot->next->comment);
-            exit(1);
-        }
+		if (driver->commentRoot->next != NULL)
+		{
+			printf ("inline second?!: '%s'\n", driver->commentRoot->next->comment);
+			exit (1);
+		}
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
@@ -232,6 +234,12 @@ void driverExitArray (Driver * driver)
 {
 	printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
 		keyString (keyGetMeta (driver->parentStack->key, "array")));
+
+	// TODO: Handle comments after last element in array (and inside array brackets)
+	// Must check on how (and where) the trailing comments should be stored
+	// Afterwards, the next line can be removed
+	drainCommentsToKey (driver, NULL);
+
 	driver->indexStack = popIndex (driver->indexStack);
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
@@ -244,6 +252,8 @@ void driverEnterArrayElement (Driver * driver)
 		return;
 	}
 
+	// TODO: if inline comment should be added to prev element, this should happen here
+
 	Key * key = keyNew (keyName (driver->parentStack->key), KEY_END);
 
 	char * indexStr = indexToArrayString (driver->indexStack->value);
@@ -252,13 +262,11 @@ void driverEnterArrayElement (Driver * driver)
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);
-	
-    driver->indexStack->value++;
-   
-    // handle comments
-    addCommentListToKey (driver->parentStack->key, driver->commentRoot);
-    freeCommentList (driver->commentRoot);
-    driver->commentRoot = NULL;
+
+	driver->indexStack->value++;
+
+	// handle comments
+	drainCommentsToKey (driver, driver->parentStack->key);
 }
 
 void driverExitArrayElement (Driver * driver)
@@ -275,7 +283,7 @@ void driverEnterInlineTable (Driver * driver)
 
 void driverExitComment (Driver * driver, const Scalar * comment)
 {
-    newlinesToCommentList (driver);
+	newlinesToCommentList (driver);
 	addComment (driver, comment->str);
 }
 
@@ -293,18 +301,24 @@ void driverExitNewline (Driver * driver)
 	driver->newlineCount++;
 }
 
-static void drainCommentsTokey (Driver * driver, Key * key) {
-    newlinesToCommentList (driver);
-    addCommentListToKey (key, driver->commentRoot);
-    freeCommentList (driver->commentRoot);
-    driver->commentRoot = NULL;
+static void drainCommentsToKey (Driver * driver, Key * key)
+{
+	if (key != NULL)
+	{
+		newlinesToCommentList (driver);
+		addCommentListToKey (key, driver->commentRoot);
+	}
+	freeCommentList (driver->commentRoot);
+	driver->commentRoot = NULL;
 }
 
-static void newlinesToCommentList (Driver * driver) {
-    while (driver->newlineCount > 0) {
-        addComment (driver, NULL);
-        driver->newlineCount--;
-    }
+static void newlinesToCommentList (Driver * driver)
+{
+	while (driver->newlineCount > 0)
+	{
+		addComment (driver, NULL);
+		driver->newlineCount--;
+	}
 }
 
 static void addInlineCommentToKey (Key * key, CommentList * root)
