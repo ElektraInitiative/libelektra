@@ -71,6 +71,10 @@ void driverError (Driver * driver, int lineno, const char * msg)
 	}
 }
 
+void driverExitToml (Driver * driver) {
+    drainCommentsToKey(driver, driver->root);
+}
+
 void driverEnterKey (Driver * driver)
 {
 	resetCurrKey (driver);
@@ -84,6 +88,15 @@ void driverExitKey (Driver * driver)
 
 void driverExitKeyValue (Driver * driver)
 {
+	if (driver->prevKey != NULL)
+	{
+		keyDecRef (driver->prevKey);
+		keyDel (driver->prevKey);
+		driver->prevKey = NULL;
+	}
+	driver->prevKey = driver->parentStack->key;
+	keyIncRef (driver->prevKey);
+
 	driver->parentStack = popParent (driver->parentStack);
 }
 
@@ -92,14 +105,9 @@ void driverExitOptCommentKeyPair (Driver * driver)
 {
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
-		if (driver->commentRoot->next != NULL)
-		{
-			printf ("inline second?!: '%s'\n", driver->commentRoot->next->comment);
-			exit (1);
-		}
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
-		Key * key = ksTail (driver->keys);	    // get previously added key
-		addInlineCommentToKey (key, driver->commentRoot);
+		if (driver->prevKey == NULL) exit (1);
+		addInlineCommentToKey (driver->prevKey, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
 	}
@@ -109,18 +117,16 @@ void driverExitOptCommentTable (Driver * driver)
 {
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
-		if (driver->commentRoot->next != NULL)
-		{
-			printf ("inline second?!: '%s'\n", driver->commentRoot->next->comment);
-			exit (1);
-		}
+        if (driver->commentRoot->next != NULL) {
+            printf("TOO MUCH COMMENT: '%s'\n", driver->commentRoot->next->comment);
+            exit(1);
+        }
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
 	}
 }
-
 
 void driverExitSimpleKey (Driver * driver, const Scalar * name)
 {
@@ -146,6 +152,9 @@ void driverEnterSimpleTable (Driver * driver)
 void driverExitSimpleTable (Driver * driver)
 {
 	pushCurrKey (driver);
+    
+    drainCommentsToKey (driver, driver->parentStack->key);
+
 	keySetMeta (driver->parentStack->key, "simpletable", "");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 	printf ("Setting metakey for %s: 'simpletable'\n", keyName (driver->parentStack->key));
@@ -179,6 +188,7 @@ void driverExitTableArray (Driver * driver)
 		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
 		driver->parentStack = pushParent (driver->parentStack, key);
+        ksAppendKey (driver->keys, key);
 	}
 	else
 	{
@@ -219,8 +229,8 @@ void driverExitTableArray (Driver * driver)
 		ksAppendKey (driver->keys, arrayRoot);
 
 		driver->parentStack = pushParent (driver->parentStack, key);
-		// ksAppendKey (driver->keys, key);
 	}
+    drainCommentsToKey (driver, driver->parentStack->key);
 }
 
 void driverEnterArray (Driver * driver)
@@ -287,17 +297,25 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 	addComment (driver, comment->str);
 }
 
-void driverExitInlineComment (Driver * driver, const Scalar * comment)
-{
-}
 
+// TODO: handle spaces
 void driverExitSpace (Driver * driver)
 {
+	if (driver->spaceCount == SIZE_MAX)
+	{
+		driverError (driver, 0, "Space counter at maximum range of size_t: SIZE_MAX");
+		return;
+	}
 	driver->spaceCount++;
 }
 
 void driverExitNewline (Driver * driver)
 {
+	if (driver->newlineCount == SIZE_MAX)
+	{
+		driverError (driver, 0, "Newline counter at maximum range of size_t: SIZE_MAX");
+		return;
+	}
 	driver->newlineCount++;
 }
 
@@ -307,6 +325,10 @@ static void drainCommentsToKey (Driver * driver, Key * key)
 	{
 		newlinesToCommentList (driver);
 		addCommentListToKey (key, driver->commentRoot);
+	}
+	else
+	{
+		printf ("WARNING: Draining comments to NULL\n");
 	}
 	freeCommentList (driver->commentRoot);
 	driver->commentRoot = NULL;

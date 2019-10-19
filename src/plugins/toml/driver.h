@@ -27,7 +27,7 @@ typedef struct _TableArray {
 
 typedef struct _CommentList {
     char * comment;
-    int spaces;
+    size_t spaces;
     struct _CommentList * next;
 } CommentList;
 
@@ -37,12 +37,13 @@ typedef struct
     Key * root;
 	ParentList * parentStack;
     Key * currKey;
+    Key * prevKey;
 	IndexList * indexStack;
     TableArray * tableArrayStack;
     CommentList * commentRoot;
     CommentList * commentBack;
-    int spaceCount;
-    int newlineCount;
+    size_t spaceCount;
+    size_t newlineCount;
 	const char * filename;
 	FILE * file;
 	int tableActive;
@@ -53,6 +54,7 @@ Driver * createDriver (const Key * parent);
 int driverParse (Driver * driver, KeySet * returned);
 void driverError (Driver * driver, int lineno, const char * msg);
 
+void driverExitToml (Driver * driver);
 void driverEnterKey (Driver * driver);
 void driverExitKey (Driver * driver);
 void driverExitKeyValue (Driver * driver);
