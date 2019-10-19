@@ -16,5 +16,5 @@ array = [   # Comment directly after array opening brackets, before first value
 [[table_array]] # Comment after table array
 
 # Comment on second-to-last line
-# Comment on last line
+# Comment on last (non-empty) line
 

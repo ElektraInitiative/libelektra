@@ -22,6 +22,7 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
+static void drainCommentsTokey (Driver * driver, Key * key);
 static void newlinesToCommentList (Driver * driver);
 static void addCommentListToKey (Key * key, CommentList * root);
 static void addInlineCommentToKey (Key * key, CommentList * root);
@@ -78,17 +79,14 @@ void driverEnterKey (Driver * driver)
 void driverExitKey (Driver * driver)
 {
 	pushCurrKey (driver);
+    drainCommentsToKey (driver, driver->parentStack->key);
 }
 
 void driverExitKeyValue (Driver * driver)
 {
-    newlinesToCommentList (driver);
-	addCommentListToKey (driver->parentStack->key, driver->commentRoot);
-	freeCommentList (driver->commentRoot);
-	driver->commentRoot = NULL;
-
 	driver->parentStack = popParent (driver->parentStack);
 }
+
 
 void driverExitOptCommentKeyPair (Driver * driver)
 {
@@ -254,15 +252,17 @@ void driverEnterArrayElement (Driver * driver)
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);
-
-	driver->indexStack->value++;
+	
+    driver->indexStack->value++;
+   
+    // handle comments
+    addCommentListToKey (driver->parentStack->key, driver->commentRoot);
+    freeCommentList (driver->commentRoot);
+    driver->commentRoot = NULL;
 }
 
 void driverExitArrayElement (Driver * driver)
 {
-    addCommentListToKey (driver->parentStack->key, driver->commentRoot);
-    freeCommentList (driver->commentRoot);
-    driver->commentRoot = NULL;
 	driver->parentStack = popParent (driver->parentStack);
 }
 
@@ -291,6 +291,13 @@ void driverExitSpace (Driver * driver)
 void driverExitNewline (Driver * driver)
 {
 	driver->newlineCount++;
+}
+
+static void drainCommentsTokey (Driver * driver, Key * key) {
+    newlinesToCommentList (driver);
+    addCommentListToKey (key, driver->commentRoot);
+    freeCommentList (driver->commentRoot);
+    driver->commentRoot = NULL;
 }
 
 static void newlinesToCommentList (Driver * driver) {

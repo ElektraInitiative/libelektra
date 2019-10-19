@@ -81,7 +81,7 @@ OptComment	:   COMMENT { driverExitComment (driver, $1); }
             ;
 
 
-Newlines	:	NEWLINE { driverExitNewline (driver); }
+Newlines	:	NEWLINE { /*driverExitNewline (driver);*/ }
             |	Newlines NEWLINE { driverExitNewline (driver); }
             ;	
 
