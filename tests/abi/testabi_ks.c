@@ -2534,6 +2534,15 @@ static void test_cut (void)
 	KeySet * result;
 	KeySet * real_orig;
 
+	orig = ksNew (0, KS_END);
+	cutpoint = keyNew ("user/b", KEY_END);
+	result = ksCut (orig, cutpoint);
+	succeed_if (orig, "orig is null");
+	succeed_if (ksGetSize (orig) == 0, "orig not empty");
+	ksDel (orig);
+	ksDel (result);
+	keyDel (cutpoint);
+
 	orig = set_oa ();
 	cutpoint = keyNew ("user/a", KEY_END);
 	result = ksCut (orig, cutpoint);
