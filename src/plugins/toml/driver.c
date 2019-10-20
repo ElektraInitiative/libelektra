@@ -43,7 +43,8 @@ Driver * createDriver (const Key * parent)
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
-	driver->tableActive = 0;
+	driver->tableActive = false;
+    driver->drainCommentsOnKeyExit = true;
 	return driver;
 }
 
@@ -79,15 +80,18 @@ void driverExitToml (Driver * driver)
 	drainCommentsToKey (driver, driver->root);
 }
 
-void driverEnterKeyOfPair (Driver * driver)
+void driverEnterKey (Driver * driver)
 {
 	resetCurrKey (driver);
 }
 
-void driverExitKeyOfPair (Driver * driver)
+void driverExitKey (Driver * driver)
 {
+    // TODO lookup if already in keyset, emit error if
 	pushCurrKey (driver);
-	drainCommentsToKey (driver, driver->parentStack->key);
+    if (driver->drainCommentsOnKeyExit) {
+	    drainCommentsToKey (driver, driver->parentStack->key);
+    }
 }
 
 void driverExitKeyValue (Driver * driver)
@@ -107,10 +111,10 @@ void driverExitKeyValue (Driver * driver)
 
 void driverExitOptCommentKeyPair (Driver * driver)
 {
-	if (driver->commentRoot != NULL) // there is an inline comment
+	if (driver->commentRoot != NULL)
 	{
         assert (driver->prevKey != NULL);
-		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
+		assert (driver->commentRoot->next == NULL);
 		addInlineCommentToKey (driver->prevKey, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
@@ -119,9 +123,9 @@ void driverExitOptCommentKeyPair (Driver * driver)
 
 void driverExitOptCommentTable (Driver * driver)
 {
-	if (driver->commentRoot != NULL) // there is an inline comment
+	if (driver->commentRoot != NULL)
 	{
-		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
+		assert (driver->commentRoot->next == NULL);
         assert (driver->prevKey != NULL);
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
@@ -156,54 +160,53 @@ void driverEnterSimpleTable (Driver * driver)
 
 void driverExitSimpleTable (Driver * driver)
 {
-	pushCurrKey (driver);
-
-	drainCommentsToKey (driver, driver->parentStack->key);
 	keySetMeta (driver->parentStack->key, "type", "simpletable");
-	ksAppendKey (driver->keys, driver->parentStack->key);
+    ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
 
 void driverEnterTableArray (Driver * driver)
 {
-	if (driver->tableActive != 0)
+	if (driver->tableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
-		driver->tableActive = 0;
+		driver->tableActive = true;
 	}
 	if (driver->tableArrayStack != NULL)
 	{
 		driver->parentStack = popParent (driver->parentStack); // pop old table array key
 	}
 	setCurrKey (driver, driver->root);
+    driver->drainCommentsOnKeyExit = false; // don't assign comments on unindexed table array keys
 }
 
 void driverExitTableArray (Driver * driver)
 {
-    int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->currKey);
+    int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->parentStack->key);
     if (rel == 0) // same table array name -> next element
     {
         driver->tableArrayStack->currIndex++;
     }
     else if (rel > 0) // below top name -> push new sub table array
     {
-        driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
+        driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
     }
     else if (rel < 0) // no relation, pop table array stack until some relation exists (or NULL)
     {
-        while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->currKey) < 0)
+        while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->parentStack->key) < 0)
         {
             driver->tableArrayStack = popTableArray (driver->tableArrayStack);
         }
         if (driver->tableArrayStack == NULL)
         {
-            driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
+            driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
         }
         else
         {
             driver->tableArrayStack->currIndex++;
         }
     }
+    driver->parentStack = popParent (driver->parentStack);  // pop key name without any indices (was pushed after exiting key)
 
     Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
@@ -219,6 +222,7 @@ void driverExitTableArray (Driver * driver)
     ksAppendKey (driver->keys, arrayRoot);
 
 	drainCommentsToKey (driver, driver->parentStack->key);
+    driver->drainCommentsOnKeyExit = true;  // only set to false while table array unindexed key is generated
 }
 
 void driverEnterArray (Driver * driver)
@@ -248,7 +252,7 @@ void driverEnterArrayElement (Driver * driver)
 	}
 
 	if (driver->indexStack->value > 0 && driver->commentRoot != NULL)
-	{ // first comment of non-first array elements in inline comment of previous element
+	{ // first comment of non-first array elements is inline comment of previous element
 		firstCommentAsInlineToPrevKey (driver);
 	}
 
@@ -371,8 +375,6 @@ static void addCommentListToKey (Key * key, CommentList * root)
 
 static void addCommentToKey (Key * key, const char * commentStr, size_t index, size_t spaces)
 {
-	assert (index >= 0);
-	assert (spaces >= 0);
 	// printf ("ADD COMMENT TO KEY: key = '%s', comment = '%s', index = %d, spaces = %d\n", keyName (key), commentStr, index, spaces);
 
 	// add comment str

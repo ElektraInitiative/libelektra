@@ -91,14 +91,17 @@ Table	:	TableSimple
         |	TableArray
         ;
 
-TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExitSimpleTable(driver); } BRACKETS_CLOSE
+TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } TopKey { driverExitSimpleTable(driver); } BRACKETS_CLOSE
             ;
 
-TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
+TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } TopKey { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
             ;
 
-KeyPair	:	{ driverEnterKeyOfPair (driver); } Key { driverExitKeyOfPair (driver); } EQUAL Value { driverExitKeyValue (driver); }
-            ;
+KeyPair :	TopKey EQUAL Value { driverExitKeyValue (driver); }
+        ;
+
+TopKey  :   { driverEnterKey (driver); } Key { driverExitKey (driver); }
+        ;
 
 Key     :	SimpleKey { driverExitSimpleKey (driver, $1); }
         |	SimpleKey { driverExitSimpleKey(driver, $1); } DottedKeys
