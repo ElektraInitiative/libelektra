@@ -536,17 +536,25 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	return metaStringSize;
 }
 
-/**
- * @brief Return metadata as keyset
+/** Returns the keyset holding the given key's metadata
+ *
+ * @snippet keyMetaKeySet.c Basic keyMeta
+ *
+ * You are not allowed to modify the resulting key.
+ *
+ * @note You must not delete the returned KeySet.
+ * @note Adding a key with metakeys to the KeySet is an error.
  *
  * @param key the key object to work with
- *
- * @return the keyset representing the metadata
- *
+ * @retval 0 if the key is 0
+ * @return the keyset holding the metakeys
+ * @see keySetMeta(), keyGetMeta()
+ * @ingroup keymeta
  **/
 KeySet * keyMeta (Key * key)
 {
 	if (!key) return 0;
+	// TODO: Remove
 	if (!key->meta) return 0;
 
 	return key->meta;
