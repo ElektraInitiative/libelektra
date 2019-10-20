@@ -176,64 +176,43 @@ void driverEnterTableArray (Driver * driver)
 
 void driverExitTableArray (Driver * driver)
 {
-	if (driver->tableArrayStack == NULL)
-	{
-		driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
-
-		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-		keySetMeta (driver->tableArrayStack->key, "array", indexStr);
-		keySetMeta (driver->tableArrayStack->key, "type", "tablearray");
-		elektraFree (indexStr);
-
-		ksAppendKey (driver->keys, driver->tableArrayStack->key);
-
-		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
-		driver->parentStack = pushParent (driver->parentStack, key);
-        if (driver->commentRoot != NULL) {
-            ksAppendKey (driver->keys, key);
+    int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->currKey);
+    if (rel == 0) // same table array name -> next element
+    {
+        driver->tableArrayStack->currIndex++;
+    }
+    else if (rel > 0) // below top name -> push new sub table array
+    {
+        driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
+    }
+    else if (rel < 0) // no relation, pop table array stack until some relation exists (or NULL)
+    {
+        while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->currKey) < 0)
+        {
+            driver->tableArrayStack = popTableArray (driver->tableArrayStack);
         }
-	}
-	else
-	{
-		int rel = keyRel (driver->tableArrayStack->key, driver->currKey);
-		// printf ("Table array existing, relation:\n\t%s\n\t%s\n\trel = %d\n", keyName (driver->tableArrayStack->key),
-	    // keyName (driver->currKey), rel);
-		if (rel == 0) // same table array name -> next element
-		{
-			driver->tableArrayStack->currIndex++;
-		}
-		else if (rel > 0) // below top name -> push new sub table array
-		{
-			driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
-		}
-		else if (rel < 0) // no relation, pop table array stack until some relation exists (or NULL)
-		{
-			while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->currKey) < 0)
-			{
-				driver->tableArrayStack = popTableArray (driver->tableArrayStack);
-			}
-			if (driver->tableArrayStack == NULL)
-			{
-				driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
-			}
-			else
-			{
-				driver->tableArrayStack->currIndex++;
-			}
-		}
+        if (driver->tableArrayStack == NULL)
+        {
+            driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->currKey);
+        }
+        else
+        {
+            driver->tableArrayStack->currIndex++;
+        }
+    }
 
-		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
+    Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
-		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-		Key * arrayRoot = keyDup (key);
-		keyAddName (arrayRoot, "..");
-		keySetMeta (arrayRoot, "array", indexStr);
-        keySetMeta (arrayRoot, "type", "tablearray");
-		elektraFree (indexStr);
-		ksAppendKey (driver->keys, arrayRoot);
+    char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
+    Key * arrayRoot = keyDup (key);
+    keyAddName (arrayRoot, "..");
+    keySetMeta (arrayRoot, "array", indexStr);
+    keySetMeta (arrayRoot, "type", "tablearray");
+    elektraFree (indexStr);
+    ksAppendKey (driver->keys, arrayRoot);
 
-		driver->parentStack = pushParent (driver->parentStack, key);
-	}
+    driver->parentStack = pushParent (driver->parentStack, key);
+
 	drainCommentsToKey (driver, driver->parentStack->key);
 }
 

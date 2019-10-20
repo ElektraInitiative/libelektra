@@ -9,8 +9,12 @@ ksNew (16,
     ),
     
     keyNew (PREFIX "/table_array_top/#0/a", KEY_VALUE, "5", KEY_END),
-    keyNew (PREFIX "/table_array_top/#0/sub1/sub2/sub3", KEY_META, "array", "#2", KEY_END),
-    
+    keyNew (PREFIX "/table_array_top/#0/sub1/sub2/sub3",
+        KEY_META, "array", "#2",
+        KEY_META, "type", "tablearray",
+        KEY_END
+    ),
+        
     keyNew (PREFIX "/table_array_top/#0/sub1/sub2/sub3/#0/b", KEY_VALUE, "1", KEY_END),
     keyNew (PREFIX "/table_array_top/#0/sub1/sub2/sub3/#0/c", KEY_VALUE, "2", KEY_END),
    
