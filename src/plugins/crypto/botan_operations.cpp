@@ -19,7 +19,6 @@
 #include <kdbplugin.h>
 #include <memory>
 
-using namespace ckdb;
 using namespace Botan;
 using std::unique_ptr;
 
@@ -33,6 +32,7 @@ extern "C" {
 #include <kdberrors.h>
 #include <string.h>
 using namespace ckdb;
+
 
 /**
  * @brief derive the cryptographic key and IV for a given (Elektra) Key k
