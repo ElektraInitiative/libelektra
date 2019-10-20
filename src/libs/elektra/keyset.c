@@ -1195,7 +1195,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	int set_cursor = 0;
 
 	if (!ks) return 0;
-	if (!ks->array) return 0;
+	if (!ks->array) return ksNew (0, KS_END);
 	if (!cutpoint) return 0;
 
 	char * name = cutpoint->key;
