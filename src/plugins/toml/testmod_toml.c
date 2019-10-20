@@ -64,6 +64,9 @@ int main (int argc, char ** argv)
 	testRead ("toml/basic.toml",
 #include "toml/basic.h"
 	);
+	testRead ("toml/date.toml",
+#include "toml/date.h"
+	);
 
 	testRead ("toml/array.toml",
 #include "toml/array.h"
