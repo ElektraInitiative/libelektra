@@ -2,6 +2,7 @@
 #define ELEKTRA_PLUGIN_TOML_DRIVER_H
 
 #include <kdb.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "scalar.h"
@@ -46,7 +47,8 @@ typedef struct
     size_t newlineCount;
 	const char * filename;
 	FILE * file;
-	int tableActive;
+	bool tableActive;
+    bool drainCommentsOnKeyExit;
 } Driver;
 
 
@@ -55,8 +57,8 @@ int driverParse (Driver * driver, KeySet * returned);
 void driverError (Driver * driver, int lineno, const char * msg);
 
 void driverExitToml (Driver * driver);
-void driverEnterKeyOfPair (Driver * driver);
-void driverExitKeyOfPair (Driver * driver);
+void driverEnterKey (Driver * driver);
+void driverExitKey (Driver * driver);
 void driverExitKeyValue (Driver * driver);
 
 void driverExitOptCommentKeyPair (Driver * driver);
