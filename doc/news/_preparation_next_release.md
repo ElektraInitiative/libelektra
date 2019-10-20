@@ -259,7 +259,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Tests
 
 - We changed how the [formatting test](../../tests/shell/check_formatting.sh) detects code differences. This update should get rid of transient errors as [reported here](https://issues.libelektra.org/2927#issuecomment-528058641). _(René Schwaiger)_
-- <<TODO>>
+- We disabled the test for the conversion engine. For more information, please take a look at [issue #3086](https://issues.libelektra.org/3086). _(René Schwaiger)_
 - <<TODO>>
 
 ## Build
