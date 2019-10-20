@@ -2,7 +2,11 @@
 ksNew (16,
     keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
 
-    keyNew (PREFIX "/table_array_basic", KEY_META, "array", "#2", KEY_END),
+    keyNew (PREFIX "/table_array_basic",
+        KEY_META, "array", "#2",
+        KEY_META, "type", "tablearray",
+        KEY_END
+    ),
 
     keyNew (PREFIX "/table_array_basic/#0/x", KEY_VALUE, "1", KEY_END),
     keyNew (PREFIX "/table_array_basic/#0/y", KEY_VALUE, "2", KEY_END),

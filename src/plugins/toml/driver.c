@@ -28,11 +28,13 @@ static void newlinesToCommentList (Driver * driver);
 static void addCommentListToKey (Key * key, CommentList * root);
 static void addInlineCommentToKey (Key * key, CommentList * root);
 static void freeCommentList (CommentList * root);
-static void addCommentToKey (Key * key, const char * commentStr, int index, int spaces);
-static void addComment (Driver * driver, const char * comment);
+static void addCommentToKey (Key * key, const char * commentStr, size_t index, size_t spaces);
+static void addComment (Driver * driver, const char * comment, size_t spaceCount);
 static CommentList * appendComment (CommentList * back, const char * comment, int spaces);
 static Key * indexToKey (size_t index, const Key * parent);
 static char * indexToArrayString (size_t index);
+static char * intToStr (size_t i);
+static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 
 Driver * createDriver (const Key * parent)
 {
@@ -77,13 +79,12 @@ void driverExitToml (Driver * driver)
 	drainCommentsToKey (driver, driver->root);
 }
 
-void driverEnterKey (Driver * driver)
+void driverEnterKeyOfPair (Driver * driver)
 {
 	resetCurrKey (driver);
 }
 
-// TODO: make this function called really on every key exit in parser.y
-void driverExitKey (Driver * driver)
+void driverExitKeyOfPair (Driver * driver)
 {
 	pushCurrKey (driver);
 	drainCommentsToKey (driver, driver->parentStack->key);
@@ -108,8 +109,8 @@ void driverExitOptCommentKeyPair (Driver * driver)
 {
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
+        assert (driver->prevKey != NULL);
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
-		if (driver->prevKey == NULL) exit (1);
 		addInlineCommentToKey (driver->prevKey, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
@@ -121,6 +122,7 @@ void driverExitOptCommentTable (Driver * driver)
 	if (driver->commentRoot != NULL) // there is an inline comment
 	{
 		assert (driver->commentRoot->next == NULL); // there is only 1 inline comment possible
+        assert (driver->prevKey != NULL);
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
@@ -136,7 +138,7 @@ void driverExitScalar (Driver * driver, Scalar * scalar)
 {
 	keySetString (driver->parentStack->key, scalar->str);
 	ksAppendKey (driver->keys, driver->parentStack->key);
-	printf ("Added Scalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
+	// printf ("Added Scalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
 }
 
 void driverEnterSimpleTable (Driver * driver)
@@ -153,10 +155,8 @@ void driverExitSimpleTable (Driver * driver)
 	pushCurrKey (driver);
 
 	drainCommentsToKey (driver, driver->parentStack->key);
-
-	keySetMeta (driver->parentStack->key, "simpletable", "");
+	keySetMeta (driver->parentStack->key, "type", "simpletable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
-	printf ("Setting metakey for %s: 'simpletable'\n", keyName (driver->parentStack->key));
 }
 
 
@@ -182,18 +182,22 @@ void driverExitTableArray (Driver * driver)
 
 		char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
 		keySetMeta (driver->tableArrayStack->key, "array", indexStr);
+		keySetMeta (driver->tableArrayStack->key, "type", "tablearray");
 		elektraFree (indexStr);
 
 		ksAppendKey (driver->keys, driver->tableArrayStack->key);
 
 		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 		driver->parentStack = pushParent (driver->parentStack, key);
+        if (driver->commentRoot != NULL) {
+            ksAppendKey (driver->keys, key);
+        }
 	}
 	else
 	{
 		int rel = keyRel (driver->tableArrayStack->key, driver->currKey);
-		printf ("Table array existing, relation:\n\t%s\n\t%s\n\trel = %d\n", keyName (driver->tableArrayStack->key),
-			keyName (driver->currKey), rel);
+		// printf ("Table array existing, relation:\n\t%s\n\t%s\n\trel = %d\n", keyName (driver->tableArrayStack->key),
+	    // keyName (driver->currKey), rel);
 		if (rel == 0) // same table array name -> next element
 		{
 			driver->tableArrayStack->currIndex++;
@@ -224,6 +228,7 @@ void driverExitTableArray (Driver * driver)
 		Key * arrayRoot = keyDup (key);
 		keyAddName (arrayRoot, "..");
 		keySetMeta (arrayRoot, "array", indexStr);
+        keySetMeta (arrayRoot, "type", "tablearray");
 		elektraFree (indexStr);
 		ksAppendKey (driver->keys, arrayRoot);
 
@@ -234,15 +239,15 @@ void driverExitTableArray (Driver * driver)
 
 void driverEnterArray (Driver * driver)
 {
-	printf ("entering array\n");
+	// printf ("entering array\n");
 	driver->indexStack = pushIndex (driver->indexStack, 0);
 	keySetMeta (driver->parentStack->key, "array", "");
 }
 
 void driverExitArray (Driver * driver)
 {
-	printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
-		keyString (keyGetMeta (driver->parentStack->key, "array")));
+	// printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
+	// keyString (keyGetMeta (driver->parentStack->key, "array")));
 
 	firstCommentAsInlineToPrevKey (driver);
 	// TODO: Handle comments after last element in array (and inside array brackets)
@@ -292,15 +297,16 @@ void driverExitArrayElement (Driver * driver)
 
 void driverEnterInlineTable (Driver * driver)
 {
-	printf ("SETTING %s to INLINE_TABLE\n", keyName (driver->parentStack->key));
-	keySetMeta (driver->parentStack->key, "inlinetable", "");
+	// printf ("SETTING %s to INLINE_TABLE\n", keyName (driver->parentStack->key));
+	keySetMeta (driver->parentStack->key, "type", "inlinetable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverExitComment (Driver * driver, const Scalar * comment)
 {
 	newlinesToCommentList (driver);
-	addComment (driver, comment->str);
+	addComment (driver, comment->str, driver->spaceCount);
+    driver->spaceCount = 0;
 }
 
 
@@ -334,7 +340,7 @@ static void drainCommentsToKey (Driver * driver, Key * key)
 	}
 	else
 	{
-		printf ("WARNING: Draining comments to NULL\n");
+		// printf ("WARNING: Draining comments to NULL\n");
 	}
 	freeCommentList (driver->commentRoot);
 	driver->commentRoot = NULL;
@@ -365,7 +371,7 @@ static void newlinesToCommentList (Driver * driver)
 {
 	while (driver->newlineCount > 0)
 	{
-		addComment (driver, NULL);
+		addComment (driver, NULL, 0);
 		driver->newlineCount--;
 	}
 }
@@ -386,11 +392,11 @@ static void addCommentListToKey (Key * key, CommentList * root)
 	}
 }
 
-static void addCommentToKey (Key * key, const char * commentStr, int index, int spaces)
+static void addCommentToKey (Key * key, const char * commentStr, size_t index, size_t spaces)
 {
 	assert (index >= 0);
 	assert (spaces >= 0);
-	printf ("ADD COMMENT TO KEY: key = '%s', comment = '%s', index = %d, spaces = %d\n", keyName (key), commentStr, index, spaces);
+	// printf ("ADD COMMENT TO KEY: key = '%s', comment = '%s', index = %d, spaces = %d\n", keyName (key), commentStr, index, spaces);
 
 	// add comment str
 	char * indexStr = indexToArrayString ((size_t) index);
@@ -418,9 +424,7 @@ static void addCommentToKey (Key * key, const char * commentStr, int index, int 
 
 	// add space count
 	snprintf (metaInfoName, metaInfoLen, "%s/space", metaName);
-	char spaceStr[40];
-	snprintf (spaceStr, 40, "%d", spaces);
-	keySetMeta (key, metaInfoName, spaceStr);
+    setPlainIntMeta (key, metaInfoName, spaces);
 
 	elektraFree (metaInfoName);
 	elektraFree (metaName);
@@ -457,7 +461,7 @@ static void extendCurrKey (Driver * driver, const char * name)
 
 static char * getChildFraction (const Key * parent, const Key * child)
 {
-	printf ("Determining child fraction of:\n\t%s\n\t%s\n", keyName (parent), keyName (child));
+	// printf ("Determining child fraction of:\n\t%s\n\t%s\n", keyName (parent), keyName (child));
 	if (!keyIsBelow (parent, child))
 	{
 		return NULL;
@@ -484,7 +488,7 @@ static char * getChildFraction (const Key * parent, const Key * child)
 		fraction[strlen (fraction) - 1] = 0;
 		elektraRealloc ((void **) &fraction, strlen (fraction) + 1);
 		keyDel (childDup);
-		printf ("got fraction: %s\n", fraction);
+		// printf ("got fraction: %s\n", fraction);
 		return fraction;
 	}
 }
@@ -537,7 +541,7 @@ static Key * buildTableArrayKeyName (const TableArray * ta)
 
 static ParentList * pushParent (ParentList * top, Key * key)
 {
-	printf ("PUSH %s\n", keyName (key));
+	// printf ("PUSH %s\n", keyName (key));
 	ParentList * parent = elektraCalloc (sizeof (ParentList));
 	parent->key = key;
 	keyIncRef (key);
@@ -547,7 +551,7 @@ static ParentList * pushParent (ParentList * top, Key * key)
 
 static ParentList * popParent (ParentList * top)
 {
-	printf ("POP %s -> %s\n", keyName (top->key), top->next == NULL ? "NULL" : keyName (top->next->key));
+	// printf ("POP %s -> %s\n", keyName (top->key), top->next == NULL ? "NULL" : keyName (top->next->key));
 	ParentList * newTop = top->next;
 	keyDecRef (top->key);
 	keyDel (top->key);
@@ -571,9 +575,9 @@ static IndexList * popIndex (IndexList * top)
 }
 
 
-static void addComment (Driver * driver, const char * comment)
+static void addComment (Driver * driver, const char * comment, size_t spaceCount)
 {
-	printf ("STORING comment: '%s'\n", comment);
+	// printf ("STORING comment: '%s'\n", comment);
 	if (driver->commentRoot == NULL)
 	{
 		driver->commentRoot = elektraCalloc (sizeof (CommentList));
@@ -587,9 +591,8 @@ static void addComment (Driver * driver, const char * comment)
 	}
 	else
 	{
-		driver->commentBack = appendComment (driver->commentBack, comment, driver->spaceCount);
+		driver->commentBack = appendComment (driver->commentBack, comment, spaceCount);
 	}
-	driver->spaceCount = 0;
 }
 
 static CommentList * appendComment (CommentList * back, const char * comment, int spaces)
@@ -617,8 +620,8 @@ static void freeCommentList (CommentList * root)
 
 static Key * indexToKey (size_t index, const Key * parent)
 {
-	Key * indexKey = keyDup (parent);
-	// Key * indexKey = keyNew (keyName (parent), KEY_END);
+	//Key * indexKey = keyDup (parent);
+	Key * indexKey = keyNew (keyName (parent), KEY_END);
 
 	char * indexStr = indexToArrayString (index);
 	keyAddBaseName (indexKey, indexStr);
@@ -643,4 +646,17 @@ static char * indexToArrayString (size_t index)
 	str[strLen - 1] = 0;
 	snprintf (str + 1 + (digits - 1), strLen, "%lu", index);
 	return str;
+}
+
+static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value) {
+    char * str = intToStr (value);
+    keySetMeta (key, metaKeyName, str);
+    elektraFree (str);
+}
+
+static char * intToStr (size_t i) {
+    char * str = (char*) elektraMalloc (sizeof(char) * 40);
+    snprintf(str, 40, "%lu", i);
+    elektraRealloc ((void**)&str, strlen(str) + 1);
+    return str;
 }

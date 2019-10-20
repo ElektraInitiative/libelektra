@@ -55,8 +55,8 @@ int driverParse (Driver * driver, KeySet * returned);
 void driverError (Driver * driver, int lineno, const char * msg);
 
 void driverExitToml (Driver * driver);
-void driverEnterKey (Driver * driver);
-void driverExitKey (Driver * driver);
+void driverEnterKeyOfPair (Driver * driver);
+void driverExitKeyOfPair (Driver * driver);
 void driverExitKeyValue (Driver * driver);
 
 void driverExitOptCommentKeyPair (Driver * driver);

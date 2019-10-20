@@ -17,9 +17,9 @@
 
 void testRead (const char * filename, KeySet * expected)
 {
-	printf ("################################################\n");
-	printf ("############ testRead (%s)\n", filename);
-	printf ("################################################\n");
+	// printf ("################################################\n");
+	// printf ("############ testRead (%s)\n", filename);
+	// printf ("################################################\n");
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
@@ -36,6 +36,21 @@ void testRead (const char * filename, KeySet * expected)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	compare_keyset (expected, ks);
 
+    /*ksRewind (ks);
+    Key * key = ksNext(ks);
+    while (key != NULL) {
+        printf("Key: '%s'\t->\t'%s'", keyName(key), keyString(key));
+
+        keyRewindMeta (key);
+        Key * meta = keyNextMeta (key);
+        while (meta != NULL) {
+            printf("\n\tMeta: '%s'\t->\t'%s'", keyName(meta), keyString(meta));
+            meta = keyNextMeta (key);
+        }
+        key = ksNext(ks);
+        printf("\n");
+    }*/
+
 	PLUGIN_CLOSE ();
 	ksDel (expected);
 }
@@ -51,6 +66,10 @@ int main (int argc, char ** argv)
 
 	testRead ("toml/array.toml",
 #include "toml/array.h"
+	);
+	
+    testRead ("toml/simple_table.toml",
+#include "toml/simple_table.h"
 	);
 
 	testRead ("toml/table_array.toml",
