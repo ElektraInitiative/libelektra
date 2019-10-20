@@ -23,6 +23,7 @@ static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
 static void drainCommentsToKey (Driver * driver, Key * key);
+static void firstCommentAsInlineToPrevKey (Driver * driver);
 static void newlinesToCommentList (Driver * driver);
 static void addCommentListToKey (Key * key, CommentList * root);
 static void addInlineCommentToKey (Key * key, CommentList * root);
@@ -71,8 +72,9 @@ void driverError (Driver * driver, int lineno, const char * msg)
 	}
 }
 
-void driverExitToml (Driver * driver) {
-    drainCommentsToKey(driver, driver->root);
+void driverExitToml (Driver * driver)
+{
+	drainCommentsToKey (driver, driver->root);
 }
 
 void driverEnterKey (Driver * driver)
@@ -149,8 +151,8 @@ void driverEnterSimpleTable (Driver * driver)
 void driverExitSimpleTable (Driver * driver)
 {
 	pushCurrKey (driver);
-    
-    drainCommentsToKey (driver, driver->parentStack->key);
+
+	drainCommentsToKey (driver, driver->parentStack->key);
 
 	keySetMeta (driver->parentStack->key, "simpletable", "");
 	ksAppendKey (driver->keys, driver->parentStack->key);
@@ -182,7 +184,7 @@ void driverExitTableArray (Driver * driver)
 		keySetMeta (driver->tableArrayStack->key, "array", indexStr);
 		elektraFree (indexStr);
 
-        ksAppendKey (driver->keys, driver->tableArrayStack->key);
+		ksAppendKey (driver->keys, driver->tableArrayStack->key);
 
 		Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 		driver->parentStack = pushParent (driver->parentStack, key);
@@ -227,7 +229,7 @@ void driverExitTableArray (Driver * driver)
 
 		driver->parentStack = pushParent (driver->parentStack, key);
 	}
-    drainCommentsToKey (driver, driver->parentStack->key);
+	drainCommentsToKey (driver, driver->parentStack->key);
 }
 
 void driverEnterArray (Driver * driver)
@@ -242,6 +244,7 @@ void driverExitArray (Driver * driver)
 	printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
 		keyString (keyGetMeta (driver->parentStack->key, "array")));
 
+	firstCommentAsInlineToPrevKey (driver);
 	// TODO: Handle comments after last element in array (and inside array brackets)
 	// Must check on how (and where) the trailing comments should be stored
 	// Afterwards, the next line can be removed
@@ -259,7 +262,11 @@ void driverEnterArrayElement (Driver * driver)
 		return;
 	}
 
-	// TODO: if inline comment should be added to prev element, this should happen here
+	if (driver->indexStack->value > 0 && driver->commentRoot != NULL)
+	{ // first comment of non-first array elements in inline comment of previous element
+		firstCommentAsInlineToPrevKey (driver);
+	}
+
 
 	Key * key = keyNew (keyName (driver->parentStack->key), KEY_END);
 
@@ -278,6 +285,8 @@ void driverEnterArrayElement (Driver * driver)
 
 void driverExitArrayElement (Driver * driver)
 {
+	driver->prevKey = driver->parentStack->key;
+	keyIncRef (driver->prevKey);
 	driver->parentStack = popParent (driver->parentStack);
 }
 
@@ -329,6 +338,27 @@ static void drainCommentsToKey (Driver * driver, Key * key)
 	}
 	freeCommentList (driver->commentRoot);
 	driver->commentRoot = NULL;
+}
+
+static void firstCommentAsInlineToPrevKey (Driver * driver)
+{
+	if (driver->commentRoot != NULL)
+	{
+		CommentList * comment = driver->commentRoot;
+		if (driver->commentRoot->next == NULL)
+		{
+			assert (driver->commentBack == driver->commentRoot);
+			driver->commentRoot = NULL;
+			driver->commentBack = NULL;
+		}
+		else
+		{
+			driver->commentRoot = driver->commentRoot->next;
+			comment->next = NULL;
+		}
+		addInlineCommentToKey (driver->prevKey, comment);
+		freeCommentList (comment);
+	}
 }
 
 static void newlinesToCommentList (Driver * driver)
