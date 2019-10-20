@@ -20,6 +20,7 @@ void testRead (const char * filename, KeySet * expected)
 	// printf ("################################################\n");
 	// printf ("############ testRead (%s)\n", filename);
 	// printf ("################################################\n");
+    printf("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
