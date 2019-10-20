@@ -2,6 +2,7 @@
 #define ELEKTRA_PLUGIN_TOML_DRIVER_H
 
 #include <kdb.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -19,42 +20,45 @@ typedef struct _IndexList
 	struct _IndexList * next;
 } IndexList;
 
-typedef struct _TableArray {
-    Key * key;
-    char *keyStr;
-    size_t currIndex;
-    struct _TableArray * next;
+typedef struct _TableArray
+{
+	Key * key;
+	char * keyStr;
+	size_t currIndex;
+	struct _TableArray * next;
 } TableArray;
 
-typedef struct _CommentList {
-    char * comment;
-    size_t spaces;
-    struct _CommentList * next;
+typedef struct _CommentList
+{
+	char * comment;
+	size_t spaces;
+	struct _CommentList * next;
 } CommentList;
 
 typedef struct
 {
 	KeySet * keys;
-    Key * root;
+	Key * root;
 	ParentList * parentStack;
-    Key * currKey;
-    Key * prevKey;
+	Key * currKey;
+	Key * prevKey;
 	IndexList * indexStack;
-    TableArray * tableArrayStack;
-    CommentList * commentRoot;
-    CommentList * commentBack;
-    size_t spaceCount;
-    size_t newlineCount;
+	TableArray * tableArrayStack;
+	CommentList * commentRoot;
+	CommentList * commentBack;
+	size_t spaceCount;
+	size_t newlineCount;
 	const char * filename;
 	FILE * file;
 	bool tableActive;
-    bool drainCommentsOnKeyExit;
+	bool drainCommentsOnKeyExit;
+	int currLine;
 } Driver;
 
 
 Driver * createDriver (const Key * parent);
 int driverParse (Driver * driver, KeySet * returned);
-void driverError (Driver * driver, int lineno, const char * msg);
+void driverError (Driver * driver, int lineno, const char * format, ...);
 
 void driverExitToml (Driver * driver);
 void driverEnterKey (Driver * driver);

@@ -8,14 +8,24 @@
 #include "scalar.h"
 #include "driver.h"
 
-extern int yylex(void);
+
+extern int yylex(Driver * driver);
 
 %}
 
-    %code requires {
+%lex-param { Driver * driver }
+%parse-param { Driver * driver }
+%define parse.error verbose
+
+%code requires {
 #include "scalar.h"
 #include "driver.h"
-    }
+}
+
+%code provides {
+#define YY_DECL int yylex (Driver * driver)
+YY_DECL;
+}
 
 %union {
     Scalar*     	scalar;
@@ -57,9 +67,6 @@ extern int yylex(void);
 
 %start Toml
 
-%parse-param { Driver* driver  }
-
-%define parse.error verbose
 
 %%
 

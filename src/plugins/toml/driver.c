@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include <kdb.h>
 #include <kdbhelper.h>
@@ -38,7 +39,7 @@ static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 
 Driver * createDriver (const Key * parent)
 {
-	Driver * driver = elektraCalloc (sizeof (Driver));
+	Driver * driver = elektraMalloc (sizeof (Driver));
 	memset (driver, 0, sizeof (Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
@@ -62,17 +63,24 @@ int driverParse (Driver * driver, KeySet * returned)
 	return yyparse (driver);
 }
 
-void driverError (Driver * driver, int lineno, const char * msg)
+void driverError (Driver * driver, int lineno, const char * format, ...)
 {
+    va_list args;
+    va_start(args, format);
 	// TODO: proper error handling
 	if (lineno > 0)
 	{
-		printf ("[ERROR] @ %d: %s\n", lineno, msg);
+        printf("[ERROR] Line ~%d: ", lineno);
+        vprintf(format, args);
+        printf("\n");
 	}
 	else
 	{
-		printf ("[ERROR] %s\n", msg);
+		printf ("[ERROR] ");
+        vprintf(format, args);
+        printf("\n");
 	}
+    va_end(args);
 }
 
 void driverExitToml (Driver * driver)
@@ -91,7 +99,7 @@ void driverExitKey (Driver * driver)
     if (existing != NULL) {
         keyRewindMeta (existing);
         bool isTableArray = false;
-        for (Key * meta = keyNextMeta(existing); meta != NULL; meta = keyNextMeta (existing)) {
+        for (const Key * meta = keyNextMeta(existing); meta != NULL; meta = keyNextMeta (existing)) {
             if (strcmp(keyName(meta), "type") == 0 &&
                 strcmp(keyString(meta), "tablearray") == 0) {
                 isTableArray = true;
@@ -102,7 +110,7 @@ void driverExitKey (Driver * driver)
             // Only allow table array keys to be read multiple times
             char msg[256];
             snprintf(msg, 256, "Multiple occurences of keyname: '%s'", keyName(existing));
-            driverError (driver, 0, msg);
+            driverError (driver, driver->currLine, msg);
         }
     }
 
@@ -158,12 +166,14 @@ void driverExitOptCommentTable (Driver * driver)
 void driverExitSimpleKey (Driver * driver, const Scalar * name)
 {
 	extendCurrKey (driver, name->str);
+    driver->currLine = name->line;
 }
 
 void driverExitScalar (Driver * driver, Scalar * scalar)
 {
 	keySetString (driver->parentStack->key, scalar->str);
 	ksAppendKey (driver->keys, driver->parentStack->key);
+    driver->currLine = scalar->line;
 	// printf ("Added Scalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
 }
 
@@ -306,6 +316,7 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 	newlinesToCommentList (driver);
 	addComment (driver, comment->str, driver->spaceCount);
     driver->spaceCount = 0;
+    driver->currLine = comment->line;
 }
 
 
