@@ -2516,7 +2516,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 	if (!ks->size) return 0;
 
 	struct _Key key;
-
+	key.meta = NULL;
 	keyInit (&key);
 	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
 

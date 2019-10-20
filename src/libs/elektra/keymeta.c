@@ -369,7 +369,7 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
-	if (source->meta)
+	if (ksGetSize (source->meta) > 0)
 	{
 		/*Make sure that dest also does not have metaName*/
 		if (dest->meta)
@@ -554,8 +554,6 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 KeySet * keyMeta (Key * key)
 {
 	if (!key) return 0;
-	// TODO: Remove
-	if (!key->meta) return 0;
 
 	return key->meta;
 }
