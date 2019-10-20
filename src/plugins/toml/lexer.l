@@ -20,6 +20,9 @@ static void appendChar(char**, size_t*, size_t*, char);
 static void readNonAsciiChar(char**, size_t*, size_t*, Driver * driver);
 static void readHex(char**, size_t*, size_t*, size_t, Driver * driver);
 static int isHex(char);
+static bool isValidfullDate(const char * fullDate);
+static bool isValidDate(int year, int month, int day);
+static bool isLeapYear(int year);
 
 typedef struct _ConditionStack {
 	int condition;
@@ -60,11 +63,11 @@ local_datetime  {full_date}[T ]{partial_time}
 local_date {full_date}
 local_time {partial_time}
 
-full_date {digit}{4,4}"-"{digit}{2,2}"-"{digit}{2,2}
+full_date {digit}{4}"-"{digit}{2}"-"{digit}{2}
 full_time {partial_time}{time_offset}
-partial_time {digit}{2,2}":"{digit}{2,2}":"{digit}{2,2}("."{digit}+)?
+partial_time {digit}{2}":"{digit}{2}":"{digit}{2}("."{digit}+)?
 time_offset "Z"|{time_num_offset}
-time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
+time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %s RHS
 %s IN_BRACKETS
@@ -141,6 +144,32 @@ time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
 	return MULTI_BASIC_STRING;
 }
 
+<RHS,IN_BRACKETS>{offset_datetime} {
+    if (!isValidfullDate (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid date: '%s'", yytext);
+    }
+	yylval.scalar = createScalarDup(SCALAR_DATE_OFFSET_DATETIME, yytext, yylineno);
+	return OFFSET_DATETIME;
+}
+<RHS,IN_BRACKETS>{local_datetime} {
+    if (!isValidfullDate (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid date: '%s'", yytext);
+    }
+	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
+	return LOCAL_DATETIME;
+}
+<RHS,IN_BRACKETS>{local_date} {
+    if (!isValidfullDate (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid date: '%s'", yytext);
+    }
+	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATE, yytext, yylineno);
+	return LOCAL_DATE;
+}
+<RHS,IN_BRACKETS>{local_time} {
+	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_TIME, yytext, yylineno);
+	return LOCAL_TIME;
+}
+
 <RHS,IN_BRACKETS>{decimal_pm} {
 	yylval.scalar = createScalarDup(SCALAR_INTEGER_DEC, yytext, yylineno);
 	return DECIMAL;
@@ -189,22 +218,6 @@ time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
 	return FLOAT;
 }
 
-<RHS,IN_BRACKETS>{offset_datetime} {
-	yylval.scalar = createScalarDup(SCALAR_DATE_OFFSET_DATETIME, yytext, yylineno);
-	return OFFSET_DATETIME;
-}
-<RHS,IN_BRACKETS>{local_datetime} {
-	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
-	return LOCAL_DATETIME;
-}
-<RHS,IN_BRACKETS>{local_date} {
-	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATE, yytext, yylineno);
-	return LOCAL_DATE;
-}
-<RHS,IN_BRACKETS>{local_time} {
-	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_TIME, yytext, yylineno);
-	return LOCAL_TIME;
-}
 
 <RHS,IN_BRACKETS>"true"|"false" {
 	yylval.scalar = createScalarDup(SCALAR_BOOLEAN, yytext, yylineno);
@@ -227,6 +240,64 @@ time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
 }
 
 %%
+
+
+// scanned date must already have correct rfc 3339 shape
+// functions checks only, if day is valid for their month/leapyear
+static bool isValidfullDate(const char * fullDate) {
+    int y, m, d;
+    sscanf(fullDate, "%4d-%2d-%2d", &y, &m, &d);
+    return isValidDate (y, m, d);
+}
+
+static bool isValidDate(int year, int month, int day) {
+    if (year > 9999 ||
+        month < 1 ||
+        month > 12) {
+        return false;
+}
+    if (day >= 1) {
+        if (day <= 28) {
+            return true;
+        } else  {
+            switch (month) {
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    return day <= 31;
+                case 4:
+                case 6:
+                case 9:
+                case 11:
+                    return day <= 30;
+                case 2:
+                    return day <= isLeapYear(year) ? 29 : 28;
+                default:
+                    assert(0);
+            }
+        }
+    }
+    return false;
+}
+
+static bool isLeapYear(int year) {
+    if (year % 4 == 0) {
+        if (year % 100 == 0) {
+            if (year % 400 == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+    return false;
+}
 
 static void pushCondition(int condition) {
 	if (stackRoot == NULL) {
