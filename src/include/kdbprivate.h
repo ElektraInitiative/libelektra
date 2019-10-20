@@ -45,6 +45,26 @@
 /** The index of the resolver plugin */
 #define RESOLVER_PLUGIN 0
 
+#define NR_OF_GET_PLUGINS 4
+#define NR_OF_SET_PLUGINS 6
+#define NR_OF_ERROR_PLUGINS 3
+
+#define GET_RESOLVER 0
+#define GET_PRESTORAGE 1
+#define GET_STORAGE 2
+#define GET_POSTSTORAGE 3
+
+#define SET_RESOLVER 0
+#define SET_PRESTORAGE 1
+#define SET_STORAGE 2
+#define SET_PRECOMMIT 3
+#define SET_COMMIT 4
+#define SET_POSTCOMMIT 5
+
+#define ERROR_PREROLLBACK 0
+#define ERROR_ROLLBACK 1
+#define ERROR_POSTROLLBACK 2
+
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
