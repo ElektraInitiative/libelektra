@@ -87,7 +87,25 @@ void driverEnterKey (Driver * driver)
 
 void driverExitKey (Driver * driver)
 {
-    // TODO lookup if already in keyset, emit error if
+    Key * existing = ksLookup (driver->keys, driver->currKey, 0);
+    if (existing != NULL) {
+        keyRewindMeta (existing);
+        bool isTableArray = false;
+        for (Key * meta = keyNextMeta(existing); meta != NULL; meta = keyNextMeta (existing)) {
+            if (strcmp(keyName(meta), "type") == 0 &&
+                strcmp(keyString(meta), "tablearray") == 0) {
+                isTableArray = true;
+                break;
+            }
+        }
+        if (!isTableArray) {
+            // Only allow table array keys to be read multiple times
+            char msg[256];
+            snprintf(msg, 256, "Multiple occurences of keyname: '%s'", keyName(existing));
+            driverError (driver, 0, msg);
+        }
+    }
+
 	pushCurrKey (driver);
     if (driver->drainCommentsOnKeyExit) {
 	    drainCommentsToKey (driver, driver->parentStack->key);
