@@ -97,7 +97,7 @@ TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } Key { driverExit
 TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } Key { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
             ;
 
-KeyPair	:	{ driverEnterKey (driver); } Key { driverExitKey (driver); } EQUAL Value { driverExitKeyValue (driver); }
+KeyPair	:	{ driverEnterKeyOfPair (driver); } Key { driverExitKeyOfPair (driver); } EQUAL Value { driverExitKeyValue (driver); }
             ;
 
 Key     :	SimpleKey { driverExitSimpleKey (driver, $1); }
@@ -122,6 +122,7 @@ InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CUR
             |	CURLY_OPEN { driverEnterInlineTable(driver); }  CURLY_CLOSE {}	
             ;
 
+// TODO: dont allow leading comma
 InlineTableList	:	KeyPair {}
                 |	COMMA KeyPair {}
                 |	InlineTableList COMMA KeyPair {}

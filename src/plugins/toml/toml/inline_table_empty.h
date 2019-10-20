@@ -2,7 +2,7 @@
 ksNew (8,
     keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
 
-    keyNew (PREFIX "/empty_inline", KEY_META, "inlinetable", "", KEY_END),
+    keyNew (PREFIX "/empty_inline", KEY_META, "type", "inlinetable", KEY_END),
 
     KS_END
 )

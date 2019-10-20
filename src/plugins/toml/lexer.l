@@ -221,7 +221,7 @@ time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
 {whitespace} ;
 
 . {
-	printf("[LEX_ERROR] Unexpected sequence: %s\n", yytext);
+	printf("[LEX_ERROR] Unexpected sequence: '%s'\n", yytext);
 	exit(1);
 }
 

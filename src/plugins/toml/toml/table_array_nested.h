@@ -2,7 +2,11 @@
 ksNew (16,
     keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
 
-    keyNew (PREFIX "/table_array_top", KEY_META, "array", "#1", KEY_END),
+    keyNew (PREFIX "/table_array_top",
+        KEY_META, "array", "#1",
+        KEY_META, "type", "tablearray",
+        KEY_END
+    ),
     
     keyNew (PREFIX "/table_array_top/#0/a", KEY_VALUE, "5", KEY_END),
     keyNew (PREFIX "/table_array_top/#0/sub1/sub2/sub3", KEY_META, "array", "#2", KEY_END),
@@ -18,7 +22,11 @@ ksNew (16,
    
 
     keyNew (PREFIX "/table_array_top/#1/a", KEY_VALUE, "8", KEY_END),
-    keyNew (PREFIX "/table_array_top/#1/sub1/sub2/sub3", KEY_META, "array", "#1", KEY_END),
+    keyNew (PREFIX "/table_array_top/#1/sub1/sub2/sub3",
+        KEY_META, "array", "#1",
+        KEY_META, "type", "tablearray",
+        KEY_END
+    ),
 
     keyNew (PREFIX "/table_array_top/#1/sub1/sub2/sub3/#0/b", KEY_VALUE, "3", KEY_END),
     keyNew (PREFIX "/table_array_top/#1/sub1/sub2/sub3/#0/c", KEY_VALUE, "9", KEY_END),
