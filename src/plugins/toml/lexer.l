@@ -2,20 +2,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "parser.h"
 #include "scalar.h"
+#include "driver.h"
 
-static char* readLiteral(void);
-static char* readBasic(void);
-static char* readMultilineLiteral(void);
-static char* readMultilineBasic(void);
-static char* readComment(void);
+static char* readLiteral(Driver * driver);
+static char* readBasic(Driver * driver);
+static char* readMultilineLiteral(Driver * driver);
+static char* readMultilineBasic(Driver * driver);
+static char* readComment(Driver * driver);
 
 static void appendChar(char**, size_t*, size_t*, char);
-static void readNonAsciiChar(char**, size_t*, size_t*);
-static void readHex(char**, size_t*, size_t*, size_t);
+static void readNonAsciiChar(char**, size_t*, size_t*, Driver * driver);
+static void readHex(char**, size_t*, size_t*, size_t, Driver * driver);
 static int isHex(char);
 
 typedef struct _ConditionStack {
@@ -105,35 +108,35 @@ time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
 }
 
 "#" {
-	char* str = readComment();
+	char* str = readComment(driver);
 	unput('\n');
 	yylval.scalar = createScalar(SCALAR_STRING_COMMENT, str, yylineno);
 	return COMMENT;
 }
 
 "'" {
-	char* str = readLiteral();
+	char* str = readLiteral(driver);
 	yylval.scalar = createScalar(SCALAR_STRING_LITERAL, str, yylineno);
 	return LITERAL_STRING;
 }
 
 "'''" {
 	int lineStart = yylineno;
-	char* str = readMultilineLiteral();
+	char* str = readMultilineLiteral(driver);
 	yylval.scalar = createScalar(SCALAR_STRING_ML_LITERAL, str, lineStart);
 	return MULTI_LITERAL_STRING;
 }
 
 "\"" {
 	int lineStart = yylineno;
-	char* str = readBasic();
+	char* str = readBasic(driver);
 	yylval.scalar = createScalar(SCALAR_STRING_BASIC, str, lineStart);
 	return BASIC_STRING;
 }
 
 "\"\"\"" {
 	int lineStart = yylineno;
-	char* str = readMultilineBasic();
+	char* str = readMultilineBasic(driver);
 	yylval.scalar = createScalar(SCALAR_STRING_ML_BASIC, str, lineStart);
 	return MULTI_BASIC_STRING;
 }
@@ -214,15 +217,13 @@ time_num_offset [+-]{digit}{2,2}":"{digit}{2,2}
 }
 
 <IN_CURLY>{newline} {
-	printf("[LEX_ERROR] No newline in inline table allowed, but found newline\n");
-	exit(1);
+    driverError (driver, yylineno, "Malformed input: Unexpected newline in inline table");
 }
 
 {whitespace} ;
 
 . {
-	printf("[LEX_ERROR] Unexpected sequence: '%s'\n", yytext);
-	exit(1);
+    driverError (driver, yylineno, "Malformed input: Unexpected sequence: '%s'", yytext);
 }
 
 %%
@@ -239,22 +240,16 @@ static void pushCondition(int condition) {
 		stackRoot = newRoot;
 	}
 	BEGIN(condition);
-	// printf("[LEX] push @ '%s' -> %d\n", yytext, YY_START);
 }
 
 static void popCondition(void) {
-	if (stackRoot == NULL) {
-		printf("[LEX_ERROR] Wanted to pop start condition, but stack is empty\n");
-		exit(1);
-	} else {
-		stackRoot = stackRoot->next;
-		if (stackRoot == NULL) {
-			BEGIN(INITIAL);
-		} else {
-			BEGIN(stackRoot->condition);
-		}
-	}
-	// printf("[LEX] pop @ '%s' -> %d\n", yytext, YY_START);
+    assert (stackRoot != NULL);
+    stackRoot = stackRoot->next;
+    if (stackRoot == NULL) {
+        BEGIN(INITIAL);
+    } else {
+        BEGIN(stackRoot->condition);
+    }
 }
 
 static void popConditionIf(int condition) {
@@ -263,7 +258,7 @@ static void popConditionIf(int condition) {
 	}
 }
 
-static char* readLiteral(void) {
+static char* readLiteral(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));
 	size_t size = 64;
 	size_t index = 0;
@@ -274,7 +269,7 @@ static char* readLiteral(void) {
 			appendChar(&buffer, &index, &size, c);
 		} else { // read valid non-ascii (utf8 chars)
 			unput(c);
-			readNonAsciiChar(&buffer, &index, &size);
+			readNonAsciiChar(&buffer, &index, &size, driver);
 		}
 	}
 	buffer = realloc(buffer, index + 1);
@@ -282,7 +277,7 @@ static char* readLiteral(void) {
 	return buffer;
 }
 
-static char* readBasic(void) {
+static char* readBasic(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));
 	size_t size = 64;
 	size_t index = 0;
@@ -305,20 +300,19 @@ static char* readBasic(void) {
 						break;
 					case 0x75:
 						appendChar(&buffer, &index, &size, c);
-						readHex(&buffer, &index, &size, 4);
+						readHex(&buffer, &index, &size, 4, driver);
 						break;
 					case 0x55:
 						appendChar(&buffer, &index, &size, c);
-						readHex(&buffer, &index, &size, 8);
+						readHex(&buffer, &index, &size, 8, driver);
 						break;
 					default:
-						printf("[LEX ERROR] invalid escape char: %c\n", c);
-						exit(1);
+                        driverError (driver, yylineno, "Malformed Input: Basic String with invalid escape char: \'%c'", c);
 				}
 			}
 		} else { // read valid non-ascii (utf8 chars)
 			unput(c);
-			readNonAsciiChar(&buffer, &index, &size);
+			readNonAsciiChar(&buffer, &index, &size, driver);
 		}
 	}
 	buffer = realloc(buffer, index + 1);
@@ -326,7 +320,7 @@ static char* readBasic(void) {
 	return buffer;
 }
 
-static char* readMultilineLiteral(void) {
+static char* readMultilineLiteral(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));
 	size_t size = 64;
 	size_t index = 0;
@@ -346,7 +340,7 @@ static char* readMultilineLiteral(void) {
 				appendChar(&buffer, &index, &size, c);
 			} else { // read valid non-ascii (utf8 chars)
 				unput(c);
-				readNonAsciiChar(&buffer, &index, &size);
+				readNonAsciiChar(&buffer, &index, &size, driver);
 			}
 		}
 	}
@@ -355,7 +349,7 @@ static char* readMultilineLiteral(void) {
 	return buffer;
 }
 
-static char* readMultilineBasic(void) {
+static char* readMultilineBasic(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));
 	size_t size = 64;
 	size_t index = 0;
@@ -388,20 +382,19 @@ static char* readMultilineBasic(void) {
 							break;
 						case 0x75:
 							appendChar(&buffer, &index, &size, c);
-							readHex(&buffer, &index, &size, 4);
+							readHex(&buffer, &index, &size, 4, driver);
 							break;
 						case 0x55:
 							appendChar(&buffer, &index, &size, c);
-							readHex(&buffer, &index, &size, 8);
+							readHex(&buffer, &index, &size, 8, driver);
 							break;
 						default:
-							printf("[LEX ERROR] invalid escape char: 0x%02X\n", c);
-							exit(1);
+                            driverError (driver, yylineno, "Malformed Input: Invalid escape sequence: \\'%c'", c);
 					}
 				}
 			} else { // read valid non-ascii (utf8 chars)
 				unput(c);
-				readNonAsciiChar(&buffer, &index, &size);
+				readNonAsciiChar(&buffer, &index, &size, driver);
 			}
 		}
 	}
@@ -410,7 +403,7 @@ static char* readMultilineBasic(void) {
 	return buffer;
 }
 
-static char* readComment(void) {
+static char* readComment(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));
 	size_t size = 64;
 	size_t index = 0;
@@ -421,7 +414,7 @@ static char* readComment(void) {
 			appendChar(&buffer, &index, &size, c);
 		} else { // read valid non-ascii (utf8 chars)
 			unput(c);
-			readNonAsciiChar(&buffer, &index, &size);
+			readNonAsciiChar(&buffer, &index, &size, driver);
 		}
 	}
 	buffer = realloc(buffer, index + 1);
@@ -444,19 +437,18 @@ static int isHex(char c) {
 		(c >= 'A' && c <= 'F');
 }
 
-static void readHex(char** buffer, size_t* index, size_t* len, size_t count) {
+static void readHex(char** buffer, size_t* index, size_t* len, size_t count, Driver * driver) {
 	for (size_t i = 0; i < count; i++) {
 		char c = input();
 		if (!isHex(c)) {
-			printf("[LEX ERROR] invalid unicode escape: expected hex character, got %c\n", c);
-			exit(1);
+            driverError (driver, yylineno, "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
 		}
 		appendChar(buffer, index, len, c);
 	}
 }
 
 
-static void readNonAsciiChar(char** buffer, size_t* index, size_t* len) {
+static void readNonAsciiChar(char** buffer, size_t* index, size_t* len, Driver * driver) {
 	unsigned char c = (unsigned char) input();
 	size_t utfLen;
 
@@ -467,19 +459,15 @@ static void readNonAsciiChar(char** buffer, size_t* index, size_t* len) {
 	} else if (c >= 0xC0 && c < 0xE0) { // 110xxxxx
 		utfLen = 2;
 	} else if (c < 0x80) {                        // 0xxxxxxx
-		// is ascii char
-		printf("[LEX ERROR] utf8: unexpected char: ascii: %c, 0x%02X\n", c, c & 0xFF);
-		exit(1);
+        assert (0); // Unexpected ascii char
 	} else {
-		printf("[LEX ERROR] utf8: invalid first byte: 0x%X", c);
-		exit(1);
+        driverError (driver, yylineno, "Malformed Input: Invalid utf-8 sequence");
 	}
 	appendChar(buffer, index, len, c);
 	for (size_t i = 1; i < utfLen; i++) {
 		c = input();
 		if (c < 0x80 || c >= 0xC0) {
-			printf("[LEX ERROR] utf8: invalid byte #%lu: 0x%X\n", i, c);
-			exit(1);
+            driverError (driver, yylineno, "Malformed Input: Invalid utf-8 sequence");
 		}
 		appendChar(buffer, index, len, c);
 	}
