@@ -193,15 +193,14 @@ int keyNameIsSystem (const char * name)
  * @pre key->meta must be NULL or a valid keyset
  *
  * clears key (all data members are set to zero)
- * Frees the internal keyset if not null and initializes an empty one.
+ * Initializes an empty metadata keyset if null or clears it.
  */
 int keyInit (Key * key)
 {
-	if (key->meta) ksDel (key->meta);
+	if (key->meta) ksClear (key->meta);
+	memset (key, 0, sizeof (struct _Key) - sizeof (KeySet *));
 
-	memset (key, 0, sizeof (struct _Key));
-
-	key->meta = ksNew (0, KS_END);
+	if (!key->meta) key->meta = ksNew (0, KS_END);
 	return 0;
 }
 

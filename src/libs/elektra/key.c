@@ -272,6 +272,9 @@ Key * keyDup (const Key * source)
 	dest = elektraKeyMalloc ();
 	if (!dest) return 0;
 
+	// Will be overwritten by keyCopy
+	ksDel (dest->meta);
+
 	/* Copy the struct data */
 	*dest = *source;
 
