@@ -74,7 +74,11 @@ ksNew (128,
         KEY_END
     ),
     keyNew (PREFIX "/table_array",
+        KEY_META, "array", "#0",
         KEY_META, "type", "tablearray",
+        KEY_END
+    ),
+    keyNew (PREFIX "/table_array/#0",
         KEY_META, "comment/#0", " Comment after table array",
         KEY_META, "comment/#0/start", "#",
         KEY_META, "comment/#0/space", "0",

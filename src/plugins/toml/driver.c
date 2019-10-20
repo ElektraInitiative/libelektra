@@ -126,6 +126,10 @@ void driverExitOptCommentTable (Driver * driver)
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
+
+        // We need to emit the table array key ending with /#n, no sub keys
+        // Otherwise, inline comments on empty table arrays will get ignored
+        ksAppendKey (driver->keys, driver->parentStack->key);
 	}
 }
 
@@ -209,25 +213,22 @@ void driverExitTableArray (Driver * driver)
     keySetMeta (arrayRoot, "array", indexStr);
     keySetMeta (arrayRoot, "type", "tablearray");
     elektraFree (indexStr);
-    ksAppendKey (driver->keys, arrayRoot);
 
     driver->parentStack = pushParent (driver->parentStack, key);
+    
+    ksAppendKey (driver->keys, arrayRoot);
 
 	drainCommentsToKey (driver, driver->parentStack->key);
 }
 
 void driverEnterArray (Driver * driver)
 {
-	// printf ("entering array\n");
 	driver->indexStack = pushIndex (driver->indexStack, 0);
 	keySetMeta (driver->parentStack->key, "array", "");
 }
 
 void driverExitArray (Driver * driver)
 {
-	// printf ("exiting array: %s,  max_index = %s\n", keyName (driver->parentStack->key),
-	// keyString (keyGetMeta (driver->parentStack->key, "array")));
-
 	firstCommentAsInlineToPrevKey (driver);
 	// TODO: Handle comments after last element in array (and inside array brackets)
 	// Must check on how (and where) the trailing comments should be stored
@@ -251,7 +252,6 @@ void driverEnterArrayElement (Driver * driver)
 		firstCommentAsInlineToPrevKey (driver);
 	}
 
-
 	Key * key = keyNew (keyName (driver->parentStack->key), KEY_END);
 
 	char * indexStr = indexToArrayString (driver->indexStack->value);
@@ -263,7 +263,6 @@ void driverEnterArrayElement (Driver * driver)
 
 	driver->indexStack->value++;
 
-	// handle comments
 	drainCommentsToKey (driver, driver->parentStack->key);
 }
 
@@ -276,7 +275,6 @@ void driverExitArrayElement (Driver * driver)
 
 void driverEnterInlineTable (Driver * driver)
 {
-	// printf ("SETTING %s to INLINE_TABLE\n", keyName (driver->parentStack->key));
 	keySetMeta (driver->parentStack->key, "type", "inlinetable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
