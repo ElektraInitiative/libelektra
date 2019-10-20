@@ -5,26 +5,6 @@
 #include <kdberrors.h>
 #include <kdbprivate.h>
 
-#define NR_OF_GET_PLUGINS 4
-#define NR_OF_SET_PLUGINS 6
-#define NR_OF_ERROR_PLUGINS 3
-
-#define GET_RESOLVER 0
-#define GET_PRESTORAGE 1
-#define GET_STORAGE 2
-#define GET_POSTSTORAGE 3
-
-#define SET_RESOLVER 0
-#define SET_PRESTORAGE 1
-#define SET_STORAGE 2
-#define SET_PRECOMMIT 3
-#define SET_COMMIT 4
-#define SET_POSTCOMMIT 5
-
-#define ERROR_PREROLLBACK 0
-#define ERROR_ROLLBACK 1
-#define ERROR_POSTROLLBACK 2
-
 typedef struct _BackendHandle BackendHandle;
 typedef struct _Slot Slot;
 
@@ -128,7 +108,7 @@ KeySet * processConfig(BackendHandle * bh, KeySet * config, Key * errorKey)
 	}
 
 	KeySet * systemConfig = elektraRenameKeys (config, "system");
-	keyDel (config);
+	ksDel (config);
 
 	return systemConfig;
 }
@@ -136,7 +116,6 @@ KeySet * processConfig(BackendHandle * bh, KeySet * config, Key * errorKey)
 int linkedListPosition (Key * cur, Key * errorKey)
 {
 	const char * name = keyBaseName (cur);
-	size_t size = keyGetBaseNameSize (cur);
 
 	if (name[0] != '#')
 	{
@@ -589,7 +568,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 
 				if (slot == 0)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not build up slots with the configuration: %s", cut);
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up prerollback slots");
 					return 0;
 				}
 
@@ -601,7 +580,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 
 				if (slot == 0)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not build up slots with the configuration: %s", cut);
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up rollback slots");
 					return 0;
 				}
 
@@ -613,7 +592,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 
 				if (slot == 0)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not build up slots with the configuration: %s", cut);
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up postrollback slots");
 					return 0;
 				}
 
@@ -621,7 +600,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 			}
 			else
 			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", cur);
+				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
 				return 0;
 			}
 		}
@@ -650,13 +629,13 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	if(systemConfig == 0)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (
-			errorKey, "Could not generate system config from config: %s", configSet);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (
+			errorKey, "Could not generate system config");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	Key * getPluginsKey = keyDup (root);
-	keyAddBaseName (getPluginsKey, "getplugins");
+	keyAddBaseName (getPluginsKey, "get");
 	KeySet * getPluginsSet = ksCut (handle->config, getPluginsKey);
 	ksDel (getPluginsKey);
 
@@ -664,7 +643,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	if (!getPlugins)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not build up getplugins array from config: %s", getPluginsSet);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up get array");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -676,7 +655,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	ksDel (getPluginsSet);
 
 	Key * setPluginsKey = keyDup (root);
-	keyAddBaseName (setPluginsKey, "setplugins");
+	keyAddBaseName (setPluginsKey, "set");
 	KeySet * setPluginsSet = ksCut (handle->config, setPluginsKey);
 	ksDel (setPluginsKey);
 
@@ -684,7 +663,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	if (!setPlugins)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not build up setplugins array from config: %s", setPluginsSet);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up set array");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -696,7 +675,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	ksDel (setPluginsSet);
 
 	Key * errorPluginsKey = keyDup (root);
-	keyAddBaseName (errorPluginsKey, "errorplugins");
+	keyAddBaseName (errorPluginsKey, "error");
 	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
 	ksDel (errorPluginsKey);
 
@@ -704,7 +683,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	if (!errorPlugins)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not build up errorplugins array from config: %s", errorPluginsSet);
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
