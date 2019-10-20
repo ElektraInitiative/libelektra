@@ -544,6 +544,47 @@ static void test_type (void)
 	keyDel (key);
 }
 
+static void test_keyMeta (void)
+{
+	Key * key = keyNew (0, KEY_END);
+
+	KeySet * meta = keyMeta (key);
+
+	succeed_if (meta, "meta keyset is null");
+	succeed_if (ksGetSize (meta) == 0, "meta keyset is not empty");
+	keyDel (key);
+
+	// clang-format off
+	key = keyNew ("user/test",
+		KEY_META, "hello", "hello_world",
+		KEY_META, "mode", "0644",
+		KEY_META, "time", "1271234264",
+		KEY_META, "empty", "",
+		KEY_META, "", "empty",
+		KEY_END);
+	// clang-format on
+
+	meta = keyMeta (key);
+
+	const char * value = keyString (ksLookupByName (meta, "hello", 0));
+	succeed_if (!strcmp (value, "hello_world"), "unexpected value");
+
+	value = keyString (ksLookupByName (meta, "mode", 0));
+	succeed_if (!strcmp (value, "0644"), "unexpected value");
+
+	value = keyString (ksLookupByName (meta, "time", 0));
+	succeed_if (!strcmp (value, "1271234264"), "unexpected value");
+
+	value = keyString (ksLookupByName (meta, "empty", 0));
+	succeed_if (!strcmp (value, ""), "unexpected value");
+
+	value = keyString (ksLookupByName (meta, "", 0));
+	succeed_if (!strcmp (value, "empty"), "unexpected value");
+
+	succeed_if (ksGetSize (meta) == 5, "unexpected meta keyset size");
+
+	keyDel (key);
+}
 
 int main (int argc, char ** argv)
 {
@@ -551,6 +592,7 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
+
 	test_basic ();
 	test_iterate ();
 	test_size ();
@@ -560,6 +602,7 @@ int main (int argc, char ** argv)
 	test_copy ();
 	test_new ();
 	test_copyall ();
+	test_keyMeta ();
 
 
 	printf ("\ntestabi_meta RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
