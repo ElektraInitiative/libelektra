@@ -20,9 +20,18 @@ static void appendChar(char**, size_t*, size_t*, char);
 static void readNonAsciiChar(char**, size_t*, size_t*, Driver * driver);
 static void readHex(char**, size_t*, size_t*, size_t, Driver * driver);
 static int isHex(char);
-static bool isValidfullDate(const char * fullDate);
+
+static bool isValidOffsetDateTime (const char * dateTime);
+static bool isValidLocalDateTime (const char * dateTime);
+static bool isValidLocalDate (const char * localDate);
+static bool isValidLocalTime (const char * localTime);
+static bool isValidFullDate(const char * fullDate);
 static bool isValidDate(int year, int month, int day);
 static bool isLeapYear(int year);
+static bool isValidFullTime (const char * fullTime);
+static bool isValidPartialTime(const char * partialTime);
+static bool isValidTimeOffset (const char * timeOffset);
+static bool isValidTime(int hour, int minute, int second);
 
 typedef struct _ConditionStack {
 	int condition;
@@ -145,27 +154,30 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 <RHS,IN_BRACKETS>{offset_datetime} {
-    if (!isValidfullDate (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid date: '%s'", yytext);
+    if (!isValidOffsetDateTime (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid offset datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_OFFSET_DATETIME, yytext, yylineno);
 	return OFFSET_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_datetime} {
-    if (!isValidfullDate (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid date: '%s'", yytext);
+    if (!isValidLocalTime (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
 	return LOCAL_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_date} {
-    if (!isValidfullDate (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid date: '%s'", yytext);
+    if (!isValidLocalDate (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid local date: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATE, yytext, yylineno);
 	return LOCAL_DATE;
 }
 <RHS,IN_BRACKETS>{local_time} {
+    if (!isValidLocalTime (yytext)) {
+        driverError (driver, yylineno, "Malformed input: Invalid local time: '%s'", yytext);
+    }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_TIME, yytext, yylineno);
 	return LOCAL_TIME;
 }
@@ -241,13 +253,60 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
+static bool isValidOffsetDateTime (const char * dateTime) {
+    const char * time = strpbrk (dateTime, "T ");
+    assert (time != NULL);
+    return isValidFullDate (dateTime) &&
+           isValidFullTime (time + 1);
+}
 
-// scanned date must already have correct rfc 3339 shape
-// functions checks only, if day is valid for their month/leapyear
-static bool isValidfullDate(const char * fullDate) {
+static bool isValidLocalDateTime (const char * dateTime) {
+    const char * time = strpbrk (dateTime, "T ");
+    assert (time != NULL);
+    return isValidFullDate (dateTime) &&
+           isValidPartialTime (time + 1);
+}
+
+static bool isValidLocalDate (const char * localDate) {
+    return isValidFullDate (localDate);
+}
+static bool isValidLocalTime (const char * localTime) {
+    return isValidPartialTime (localTime);
+}
+
+static bool isValidFullDate(const char * fullDate) {
     int y, m, d;
-    sscanf(fullDate, "%4d-%2d-%2d", &y, &m, &d);
+    sscanf(fullDate, "%4d-%2d-%2d*%s", &y, &m, &d);
     return isValidDate (y, m, d);
+}
+
+static bool isValidFullTime (const char * fullTime) {
+    const char * offset = strpbrk (fullTime, "Z+-");
+    assert (offset != NULL);
+    return  isValidPartialTime (fullTime) &&
+            isValidTimeOffset (offset);
+}
+
+static bool isValidPartialTime (const char * partialTime) {
+    int h, m, s;
+    sscanf (partialTime, "%2d:%2d:%2d*%s", &h, &m, &s);
+    return isValidTime (h, m, s); 
+}
+
+static bool isValidTimeOffset (const char * timeOffset) {
+    if (timeOffset[0] == 'Z') {
+        return true;
+    } else {
+        int h, m;
+        sscanf(timeOffset + 1, "%2d:%2d", &h, &m);
+        return isValidTime (h, m, 0);
+    }
+}
+
+static bool isValidTime(int hour, int minute, int second) {
+    return hour >= 0 && hour <= 23 &&
+           minute >= 0 && minute <= 59 &&
+           second >= 0 && second <= 60; // 60 to allow positive leap seconds, (also ignores negative leap seconds)
 }
 
 static bool isValidDate(int year, int month, int day) {
