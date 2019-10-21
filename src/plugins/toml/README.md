@@ -11,5 +11,16 @@
 # TODO: Documentation
 
 ## Limitations:
-    - (TODO: fix) For now, Hours/Minutes/Seconds in date times can have arbitrary values consisting of 2 digits (eg. 99:99:99 is a perfectly fine time) 
-    - Leap seconds for RFC3339 date times are not checked. As a result a value for second of 60 is always valid.
+    - Leap seconds for RFC3339 date times are not checked. For seconds, a value of 60 is always valid.
+      As a result of this decision, no valid RFC3339 date is determined invalid, but invalid RFC3339 dates may be determined valid.
+      Leap seconds can occur on the ends of June/Dec, where a time of 23:59:60 (positive leap second) or 23:59:58 (negative leap second) is the highest valid value for a second.
+
+## TODOs
+    - Order metakeys for file recreation
+    - Type metakeys
+    - Hours/Minutes/Seconds in date times can have arbitrary values consisting of 2 digits (eg. 99:99:99 is a perfectly fine time) 
+    - Handle leading newlines in multiline strings (Remove them, save as metakey?)
+    - How to handle escaped chars in basic strings, especially in context of file recreation?
+        * Apply the escape chars, save string result as the key value, also save original string as meta key?
+        * But then, how handle modification of value ? Dump original key on change? (Also how to detect change?)
+        * On write to file, 

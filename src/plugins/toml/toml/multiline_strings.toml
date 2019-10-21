@@ -1,0 +1,24 @@
+multiline_basic_leading_newline = """
+This string should be a single line."""
+multiline_basic_lineending_newlines = """
+This \
+string \
+should \
+also \
+be \
+in \
+a \
+single \
+line."""
+multiline_literal_leading_newline = '''
+Single line string'''
+multiline_literal_linending_newlines = '''
+Single \
+line \
+string.'''
+another_single_ling_string = """
+The quick brown \
+
+
+  fox jumps over \
+      the lazy dog."""
