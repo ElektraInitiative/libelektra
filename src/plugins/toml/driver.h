@@ -53,6 +53,7 @@ typedef struct
 	bool tableActive;
 	bool drainCommentsOnKeyExit;
 	int currLine;
+    char * lastError;
 } Driver;
 
 
