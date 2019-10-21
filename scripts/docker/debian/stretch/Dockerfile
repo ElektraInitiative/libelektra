@@ -44,12 +44,6 @@ RUN apt-get update \
         libuv1-dev \
         libev-dev \
         libzmq3-dev \
-        ghc \
-        ghc-dynamic \
-        cabal-install \
-        alex \
-        happy \
-        c2hs \
         checkinstall \
         openjdk-8-jdk \
         maven \
@@ -80,8 +74,6 @@ RUN apt-get update \
         uuid-dev \
         ninja-build \
     && rm -rf /var/lib/apt/lists/*
-
-RUN cabal update && cabal install hspec QuickCheck
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
