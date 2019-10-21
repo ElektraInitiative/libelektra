@@ -131,9 +131,7 @@ InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CUR
             |	CURLY_OPEN { driverEnterInlineTable(driver); }  CURLY_CLOSE {}	
             ;
 
-// TODO: dont allow leading comma
 InlineTableList	:	KeyPair {}
-                |	COMMA KeyPair {}
                 |	InlineTableList COMMA KeyPair {}
                 ;
 Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList CommentNewline { driverExitArray (driver); } BRACKETS_CLOSE {}

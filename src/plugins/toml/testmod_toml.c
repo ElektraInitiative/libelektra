@@ -164,9 +164,9 @@ int main (int argc, char ** argv)
 #include "toml/utf8.h"
 	);
 
-    testRead ("toml/multiline_strings.toml",
+/*    testRead ("toml/multiline_strings.toml",
 #include "toml/multiline_strings.h"
-    );
+    );*/
 
 	testRead ("toml/date.toml",
 #include "toml/date.h"
