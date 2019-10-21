@@ -530,7 +530,8 @@ static void readNonAsciiChar(char** buffer, size_t* index, size_t* len, Driver *
 	} else if (c >= 0xC0 && c < 0xE0) { // 110xxxxx
 		utfLen = 2;
 	} else if (c < 0x80) {                        // 0xxxxxxx
-        assert (0); // Unexpected ascii char
+        driverError(driver, yylineno, "Malformed Input: Expected non-ascii char, but found ascii char: '%c' (0x%02X)", c, c);
+        // assert (0); // Unexpected ascii char (can happen on malformed user input)
 	} else {
         driverError (driver, yylineno, "Malformed Input: Invalid utf-8 sequence");
 	}
