@@ -67,7 +67,6 @@ YY_DECL;
 
 %start Toml
 
-
 %%
 
 Toml	: 	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }

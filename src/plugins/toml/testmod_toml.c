@@ -39,16 +39,21 @@ static void printKs (KeySet * ks, const char * name)
 
 static void showDiff (KeySet * expected, KeySet * is, const char * name, bool stopOnFirstDiff)
 {
-	printf ("###### Diffs in '%s'\n", name);
+	bool headerPrinted = false;
 	ksRewind (expected);
 	ksRewind (is);
 	Key * kExp = ksNext (expected);
 	Key * kIs = ksNext (is);
 	while (kExp != NULL && kIs != NULL)
 	{
-		if (keyCmp (kExp, kIs) != 0)
+		if (keyCmp (kExp, kIs) != 0 || strcmp (keyString (kExp), keyString (kIs)) != 0)
 		{
-			printf ("KeyName diff:\n\texpected\t= '%s'\n\tfound\t\t= '%s'\n", keyName (kExp), keyName (kIs));
+			if (!headerPrinted)
+			{
+				printf ("###### Diffs in '%s'\n", name);
+				headerPrinted = true;
+			}
+			printf ("Key diff:\n\texpected\t= '%s'\n\tcontent:\t'%s'\n\tfound\t\t= '%s'\n\tcontent:\t: '%s'\n", keyName (kExp), keyString (kExp), keyName (kIs), keyString (kIs));
 			if (stopOnFirstDiff)
 			{
 				return;
@@ -62,8 +67,15 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 		{
 			if (keyCmp (metaExp, metaIs) != 0 || strcmp (keyString (metaExp), keyString (metaIs)) != 0)
 			{
-				printf ("MetaKey diff:\n\texpected\t= '%s'\n\tcontent:\t'%s' = '%s'\n\tfound\t\t= '%s'\n\tcontent:\t'%s' = '%s'\n", keyName (kExp),
-					keyName (metaExp), keyString (metaExp), keyName (kIs), keyName (metaIs), keyString (metaIs));
+				if (!headerPrinted)
+				{
+					printf ("###### Diffs in '%s'\n", name);
+					headerPrinted = true;
+				}
+				printf ("MetaKey diff:\n\texpected\t= '%s'\n\tcontent:\t'%s' = '%s'\n\tfound\t\t= '%s'\n\tcontent:\t'%s' = "
+					"'%s'\n",
+					keyName (kExp), keyName (metaExp), keyString (metaExp), keyName (kIs), keyName (metaIs),
+					keyString (metaIs));
 				if (stopOnFirstDiff)
 				{
 					return;
@@ -74,6 +86,11 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 		}
 		if (metaExp != NULL || metaIs != NULL)
 		{
+			if (!headerPrinted)
+			{
+				printf ("###### Diffs in '%s'\n", name);
+				headerPrinted = true;
+			}
 			printf ("Mismatching metakeys count, there are %s metakeys generated than expected\n",
 				metaIs == NULL ? "less" : "too much");
 			printf ("Affected keys:\n\texpected\t= '%s'\n\tfound\t\t= '%s'\n", keyName (kExp), keyName (kIs));
@@ -82,7 +99,7 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 			do
 			{
 				printf ("%s Metakeys: '%s': '%s'\n", metaIs == NULL ? "Missing" : "Overhead", keyName (meta),
-					keyValue (meta));
+					keyString (meta));
 				meta = keyNextMeta (overhead);
 			} while (meta != NULL);
 			if (stopOnFirstDiff)
@@ -95,10 +112,14 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 	}
 	if (kExp != NULL || kIs != NULL)
 	{
+		if (!headerPrinted)
+		{
+			printf ("###### Diffs in '%s'\n", name);
+			headerPrinted = true;
+		}
 		printf ("Mismatching keyset size, there are %s keys generated than expected\n", kIs == NULL ? "less" : "too much");
 		return;
 	}
-	printf ("No diffs found!\n");
 }
 
 static void testRead (const char * filename, KeySet * expected)
@@ -123,9 +144,9 @@ static void testRead (const char * filename, KeySet * expected)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	compare_keyset (expected, ks);
 
+	showDiff (expected, ks, filename, true);
 	// printKs (expected, "expected");
 	// printKs (ks, "parsed");
-	showDiff (expected, ks, filename, true);
 
 	PLUGIN_CLOSE ();
 	ksDel (expected);
@@ -142,6 +163,11 @@ int main (int argc, char ** argv)
 	testRead ("toml/utf8.toml",
 #include "toml/utf8.h"
 	);
+
+    testRead ("toml/multiline_strings.toml",
+#include "toml/multiline_strings.h"
+    );
+
 	testRead ("toml/date.toml",
 #include "toml/date.h"
 	);
