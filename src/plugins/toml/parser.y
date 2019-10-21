@@ -123,19 +123,19 @@ SimpleKey	:	BARE_STRING { $$ = $1; }
             ;
 
 Value   :	Scalar { driverExitScalar (driver, $1); }
-        |	InlineTable {}
-        |	Array {}
+        |	InlineTable
+        |	Array
         ;
 
-InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE {}
-            |	CURLY_OPEN { driverEnterInlineTable(driver); }  CURLY_CLOSE {}	
+InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE
+            |	CURLY_OPEN { driverEnterInlineTable(driver); }  CURLY_CLOSE
             ;
 
 InlineTableList	:	KeyPair {}
-                |	InlineTableList COMMA KeyPair {}
+                |	InlineTableList COMMA KeyPair
                 ;
-Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList CommentNewline { driverExitArray (driver); } BRACKETS_CLOSE {}
-        |	BRACKETS_OPEN { driverEnterArray (driver); driverExitArray (driver);  } BRACKETS_CLOSE {}
+Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList OptComma CommentNewline { driverExitArray (driver); } BRACKETS_CLOSE
+        |	BRACKETS_OPEN { driverEnterArray (driver); driverExitArray (driver);  } BRACKETS_CLOSE
         ;
 // TODO: trailing comma
 ArrayList	:   CommentNewline	{ driverEnterArrayElement (driver); } Value { driverExitArrayElement (driver); }
@@ -144,7 +144,7 @@ ArrayList	:   CommentNewline	{ driverEnterArrayElement (driver); } Value { drive
 
 CommentNewline	:	CommentNewline NEWLINE { driverExitNewline (driver); }
                 |	CommentNewline COMMENT { driverExitComment (driver, $2); } NEWLINE
-                |	%empty {}
+                |	%empty
                 ;
 OptComma        :   COMMA | %empty ;
 
@@ -156,10 +156,10 @@ Scalar  :   IntegerScalar { $$ = $1; }
         ;
 
 IntegerScalar   :   DECIMAL { $$ = $1; }
-        |   HEXADECIMAL { $$ = $1; }
-        |   OCTAL { $$ = $1; }
-        |   BINARY { $$ = $1; }
-        ;
+                |   HEXADECIMAL { $$ = $1; }
+                |   OCTAL { $$ = $1; }
+                |   BINARY { $$ = $1; }
+                ;
 
 BooleanScalar   :   BOOLEAN { $$ = $1; }
                 ;
