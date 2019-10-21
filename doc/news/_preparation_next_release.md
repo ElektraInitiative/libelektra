@@ -185,7 +185,7 @@ Bindings allow you to utilize Elektra using [various programming languages](http
 you up to date with the multi-language support provided by Elektra.
 
 - Warnings about cmake policies are avoided. _(Markus Raab)_
-- We removed the haskell and GI bindings. _(Markus Raab)_
+- We removed the Haskell and GI bindings. _(Markus Raab)_
 
 ### Java
 
