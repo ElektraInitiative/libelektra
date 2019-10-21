@@ -161,7 +161,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	return OFFSET_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_datetime} {
-    if (!isValidLocalTime (yytext)) {
+    if (!isValidLocalDateTime (yytext)) {
         driverError (driver, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
@@ -276,7 +276,7 @@ static bool isValidLocalTime (const char * localTime) {
 
 static bool isValidFullDate(const char * fullDate) {
     int y, m, d;
-    sscanf(fullDate, "%4d-%2d-%2d*%s", &y, &m, &d);
+    sscanf(fullDate, "%4d-%2d-%2d", &y, &m, &d);
     return isValidDate (y, m, d);
 }
 
@@ -289,7 +289,7 @@ static bool isValidFullTime (const char * fullTime) {
 
 static bool isValidPartialTime (const char * partialTime) {
     int h, m, s;
-    sscanf (partialTime, "%2d:%2d:%2d*%s", &h, &m, &s);
+    sscanf (partialTime, "%2d:%2d:%2d", &h, &m, &s);
     return isValidTime (h, m, s); 
 }
 
@@ -334,7 +334,7 @@ static bool isValidDate(int year, int month, int day) {
                 case 11:
                     return day <= 30;
                 case 2:
-                    return day <= isLeapYear(year) ? 29 : 28;
+                    return day <= (isLeapYear(year) ? 29 : 28);
                 default:
                     assert(0);
             }
