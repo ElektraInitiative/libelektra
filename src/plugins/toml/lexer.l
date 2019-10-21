@@ -106,6 +106,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 "]" {
 	popCondition();
+    popConditionIf(RHS); // Maybe needed ?!
 	return BRACKETS_CLOSE;
 }
 
