@@ -1,6 +1,6 @@
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdarg.h>
 
 #include <kdb.h>
 #include <kdbhelper.h>
@@ -11,6 +11,7 @@
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
 
+// Function declarations
 static void pushCurrKey (Driver * driver);
 static void setCurrKey (Driver * driver, const Key * parent);
 static void resetCurrKey (Driver * driver);
@@ -45,7 +46,7 @@ Driver * createDriver (const Key * parent)
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
 	driver->tableActive = false;
-    driver->drainCommentsOnKeyExit = true;
+	driver->drainCommentsOnKeyExit = true;
 	return driver;
 }
 
@@ -65,22 +66,22 @@ int driverParse (Driver * driver, KeySet * returned)
 
 void driverError (Driver * driver, int lineno, const char * format, ...)
 {
-    va_list args;
-    va_start(args, format);
+	va_list args;
+	va_start (args, format);
 	// TODO: proper error handling
 	if (lineno > 0)
 	{
-        printf("[ERROR] Line ~%d: ", lineno);
-        vprintf(format, args);
-        printf("\n");
+		printf ("[ERROR] Line ~%d: ", lineno);
+		vprintf (format, args);
+		printf ("\n");
 	}
 	else
 	{
 		printf ("[ERROR] ");
-        vprintf(format, args);
-        printf("\n");
+		vprintf (format, args);
+		printf ("\n");
 	}
-    va_end(args);
+	va_end (args);
 }
 
 void driverExitToml (Driver * driver)
@@ -95,29 +96,33 @@ void driverEnterKey (Driver * driver)
 
 void driverExitKey (Driver * driver)
 {
-    Key * existing = ksLookup (driver->keys, driver->currKey, 0);
-    if (existing != NULL) {
-        keyRewindMeta (existing);
-        bool isTableArray = false;
-        for (const Key * meta = keyNextMeta(existing); meta != NULL; meta = keyNextMeta (existing)) {
-            if (strcmp(keyName(meta), "type") == 0 &&
-                strcmp(keyString(meta), "tablearray") == 0) {
-                isTableArray = true;
-                break;
-            }
-        }
-        if (!isTableArray) {
-            // Only allow table array keys to be read multiple times
-            char msg[256];
-            snprintf(msg, 256, "Multiple occurences of keyname: '%s'", keyName(existing));
-            driverError (driver, driver->currLine, msg);
-        }
-    }
+	Key * existing = ksLookup (driver->keys, driver->currKey, 0);
+	if (existing != NULL)
+	{
+		keyRewindMeta (existing);
+		bool isTableArray = false;
+		for (const Key * meta = keyNextMeta (existing); meta != NULL; meta = keyNextMeta (existing))
+		{
+			if (strcmp (keyName (meta), "type") == 0 && strcmp (keyString (meta), "tablearray") == 0)
+			{
+				isTableArray = true;
+				break;
+			}
+		}
+		if (!isTableArray)
+		{
+			// Only allow table array keys to be read multiple times
+			char msg[256];
+			snprintf (msg, 256, "Multiple occurences of keyname: '%s'", keyName (existing));
+			driverError (driver, driver->currLine, msg);
+		}
+	}
 
 	pushCurrKey (driver);
-    if (driver->drainCommentsOnKeyExit) {
-	    drainCommentsToKey (driver, driver->parentStack->key);
-    }
+	if (driver->drainCommentsOnKeyExit)
+	{
+		drainCommentsToKey (driver, driver->parentStack->key);
+	}
 }
 
 void driverExitKeyValue (Driver * driver)
@@ -134,12 +139,11 @@ void driverExitKeyValue (Driver * driver)
 	driver->parentStack = popParent (driver->parentStack);
 }
 
-
 void driverExitOptCommentKeyPair (Driver * driver)
 {
 	if (driver->commentRoot != NULL)
 	{
-        assert (driver->prevKey != NULL);
+		assert (driver->prevKey != NULL);
 		assert (driver->commentRoot->next == NULL);
 		addInlineCommentToKey (driver->prevKey, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
@@ -152,105 +156,108 @@ void driverExitOptCommentTable (Driver * driver)
 	if (driver->commentRoot != NULL)
 	{
 		assert (driver->commentRoot->next == NULL);
-        assert (driver->prevKey != NULL);
+		assert (driver->prevKey != NULL);
 		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
 		freeCommentList (driver->commentRoot);
 		driver->commentRoot = NULL;
 
-        // We need to emit the table array key ending with /#n, no sub keys
-        // Otherwise, inline comments on empty table arrays will get ignored
-        ksAppendKey (driver->keys, driver->parentStack->key);
+		// We need to emit the table array key ending with /#n, no sub keys
+		// Otherwise, inline comments on empty table arrays will get ignored
+		ksAppendKey (driver->keys, driver->parentStack->key);
 	}
 }
 
 void driverExitSimpleKey (Driver * driver, const Scalar * name)
 {
 	extendCurrKey (driver, name->str);
-    driver->currLine = name->line;
+	driver->currLine = name->line;
 }
 
 void driverExitScalar (Driver * driver, Scalar * scalar)
 {
 	keySetString (driver->parentStack->key, scalar->str);
 	ksAppendKey (driver->keys, driver->parentStack->key);
-    driver->currLine = scalar->line;
+	driver->currLine = scalar->line;
 	// printf ("Added Scalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
 }
 
 void driverEnterSimpleTable (Driver * driver)
 {
-	resetCurrKey (driver);
-	if (driver->tableActive == 0)
+	if (driver->tableActive)
 	{
-		driver->tableActive = 1;
+		driver->parentStack = popParent (driver->parentStack);
 	}
+	else
+	{
+		driver->tableActive = true;
+	}
+	resetCurrKey (driver);
 }
 
 void driverExitSimpleTable (Driver * driver)
 {
 	keySetMeta (driver->parentStack->key, "type", "simpletable");
-    ksAppendKey (driver->keys, driver->parentStack->key);
+	ksAppendKey (driver->keys, driver->parentStack->key);
 }
-
 
 void driverEnterTableArray (Driver * driver)
 {
 	if (driver->tableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
-		driver->tableActive = true;
+		driver->tableActive = false;
 	}
 	if (driver->tableArrayStack != NULL)
 	{
 		driver->parentStack = popParent (driver->parentStack); // pop old table array key
 	}
 	setCurrKey (driver, driver->root);
-    driver->drainCommentsOnKeyExit = false; // don't assign comments on unindexed table array keys
+	driver->drainCommentsOnKeyExit = false; // don't assign comments on unindexed table array keys
 }
 
 void driverExitTableArray (Driver * driver)
 {
-    int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->parentStack->key);
-    if (rel == 0) // same table array name -> next element
-    {
-        driver->tableArrayStack->currIndex++;
-    }
-    else if (rel > 0) // below top name -> push new sub table array
-    {
-        driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
-    }
-    else if (rel < 0) // no relation, pop table array stack until some relation exists (or NULL)
-    {
-        while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->parentStack->key) < 0)
-        {
-            driver->tableArrayStack = popTableArray (driver->tableArrayStack);
-        }
-        if (driver->tableArrayStack == NULL)
-        {
-            driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
-        }
-        else
-        {
-            driver->tableArrayStack->currIndex++;
-        }
-    }
-    driver->parentStack = popParent (driver->parentStack);  // pop key name without any indices (was pushed after exiting key)
+	int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->parentStack->key);
+	if (rel == 0) // same table array name -> next element
+	{
+		driver->tableArrayStack->currIndex++;
+	}
+	else if (rel > 0) // below top name -> push new sub table array
+	{
+		driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
+	}
+	else if (rel < 0) // no relation, pop table array stack until some relation exists (or NULL)
+	{
+		while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->parentStack->key) < 0)
+		{
+			driver->tableArrayStack = popTableArray (driver->tableArrayStack);
+		}
+		if (driver->tableArrayStack == NULL)
+		{
+			driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
+		}
+		else
+		{
+			driver->tableArrayStack->currIndex++;
+		}
+	}
+	driver->parentStack = popParent (driver->parentStack); // pop key name without any indices (was pushed after exiting key)
 
-    Key * key = buildTableArrayKeyName (driver->tableArrayStack);
+	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
-    char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-    Key * arrayRoot = keyDup (key);
-    keyAddName (arrayRoot, "..");
-    keySetMeta (arrayRoot, "array", indexStr);
-    keySetMeta (arrayRoot, "type", "tablearray");
-    elektraFree (indexStr);
+	char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
+	Key * arrayRoot = keyDup (key);
+	keyAddName (arrayRoot, "..");
+	keySetMeta (arrayRoot, "array", indexStr);
+	keySetMeta (arrayRoot, "type", "tablearray");
+	elektraFree (indexStr);
 
-    driver->parentStack = pushParent (driver->parentStack, key);
-    
-    ksAppendKey (driver->keys, arrayRoot);
+	driver->parentStack = pushParent (driver->parentStack, key);
+
+	ksAppendKey (driver->keys, arrayRoot);
 
 	drainCommentsToKey (driver, driver->parentStack->key);
-    driver->drainCommentsOnKeyExit = true;  // only set to false while table array unindexed key is generated
+	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
 }
 
 void driverEnterArray (Driver * driver)
@@ -315,10 +322,9 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 {
 	newlinesToCommentList (driver);
 	addComment (driver, comment->str, driver->spaceCount);
-    driver->spaceCount = 0;
-    driver->currLine = comment->line;
+	driver->spaceCount = 0;
+	driver->currLine = comment->line;
 }
-
 
 // TODO: handle spaces
 void driverExitSpace (Driver * driver)
@@ -432,7 +438,7 @@ static void addCommentToKey (Key * key, const char * commentStr, size_t index, s
 
 	// add space count
 	snprintf (metaInfoName, metaInfoLen, "%s/space", metaName);
-    setPlainIntMeta (key, metaInfoName, spaces);
+	setPlainIntMeta (key, metaInfoName, spaces);
 
 	elektraFree (metaInfoName);
 	elektraFree (metaName);
@@ -582,7 +588,6 @@ static IndexList * popIndex (IndexList * top)
 	return newTop;
 }
 
-
 static void addComment (Driver * driver, const char * comment, size_t spaceCount)
 {
 	// printf ("STORING comment: '%s'\n", comment);
@@ -628,7 +633,7 @@ static void freeCommentList (CommentList * root)
 
 static Key * indexToKey (size_t index, const Key * parent)
 {
-	//Key * indexKey = keyDup (parent);
+	// Key * indexKey = keyDup (parent);
 	Key * indexKey = keyNew (keyName (parent), KEY_END);
 
 	char * indexStr = indexToArrayString (index);
@@ -656,15 +661,17 @@ static char * indexToArrayString (size_t index)
 	return str;
 }
 
-static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value) {
-    char * str = intToStr (value);
-    keySetMeta (key, metaKeyName, str);
-    elektraFree (str);
+static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value)
+{
+	char * str = intToStr (value);
+	keySetMeta (key, metaKeyName, str);
+	elektraFree (str);
 }
 
-static char * intToStr (size_t i) {
-    char * str = (char*) elektraMalloc (sizeof(char) * 40);
-    snprintf(str, 40, "%lu", i);
-    elektraRealloc ((void**)&str, strlen(str) + 1);
-    return str;
+static char * intToStr (size_t i)
+{
+	char * str = (char *) elektraMalloc (sizeof (char) * 40);
+	snprintf (str, 40, "%lu", i);
+	elektraRealloc ((void **) &str, strlen (str) + 1);
+	return str;
 }

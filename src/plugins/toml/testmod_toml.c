@@ -15,6 +15,25 @@
 
 #define PREFIX "user/tests/toml-read"
 
+
+static void printKs (KeySet * ks, const char * name) {
+    printf("######KEYSET: %s\n", name);
+    ksRewind (ks);
+    Key * key = ksNext(ks);
+    while (key != NULL) {
+        printf("Key: '%s'\t->\t'%s'", keyName(key), keyString(key));
+
+        keyRewindMeta (key);
+        Key * meta = keyNextMeta (key);
+        while (meta != NULL) {
+            printf("\n\tMeta: '%s'\t->\t'%s'", keyName(meta), keyString(meta));
+            meta = keyNextMeta (key);
+        }
+        key = ksNext(ks);
+        printf("\n");
+    }
+}
+
 void testRead (const char * filename, KeySet * expected)
 {
 	// printf ("################################################\n");
@@ -37,20 +56,8 @@ void testRead (const char * filename, KeySet * expected)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	compare_keyset (expected, ks);
 
-    /*ksRewind (ks);
-    Key * key = ksNext(ks);
-    while (key != NULL) {
-        printf("Key: '%s'\t->\t'%s'", keyName(key), keyString(key));
-
-        keyRewindMeta (key);
-        Key * meta = keyNextMeta (key);
-        while (meta != NULL) {
-            printf("\n\tMeta: '%s'\t->\t'%s'", keyName(meta), keyString(meta));
-            meta = keyNextMeta (key);
-        }
-        key = ksNext(ks);
-        printf("\n");
-    }*/
+    // printKs (expected, "expected");
+    // printKs (ks, "parsed");
 
 	PLUGIN_CLOSE ();
 	ksDel (expected);
