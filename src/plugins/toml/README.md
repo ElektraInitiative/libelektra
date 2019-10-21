@@ -18,7 +18,6 @@
 ## TODOs
     - Order metakeys for file recreation
     - Type metakeys
-    - Hours/Minutes/Seconds in date times can have arbitrary values consisting of 2 digits (eg. 99:99:99 is a perfectly fine time) 
     - Handle leading newlines in multiline strings (Remove them, save as metakey?)
     - How to handle escaped chars in basic strings, especially in context of file recreation?
         * Apply the escape chars, save string result as the key value, also save original string as meta key?

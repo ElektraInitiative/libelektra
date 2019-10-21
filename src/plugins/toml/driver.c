@@ -87,7 +87,7 @@ void driverError (Driver * driver, int lineno, const char * format, ...)
         elektraFree (driver->lastError);
     }
     driver->lastError = msg;
-    printf("[ERROR] %s", msg);
+    printf("[ERROR] %s\n", msg);
 }
 
 void driverExitToml (Driver * driver)
