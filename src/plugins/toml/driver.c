@@ -56,32 +56,38 @@ int driverParse (Driver * driver, KeySet * returned)
 	driver->file = fopen (driver->filename, "rb");
 	if (driver->file == NULL)
 	{
-		driverError (driver, 0, "Could not open file");
+		driverError (driver, 0, "Could not open file: '%s'", driver->filename);
 		return 1;
 	}
 	yyin = driver->file;
 	ksAppendKey (driver->keys, driver->root);
-	return yyparse (driver);
+    int yyResult = yyparse (driver);
+	return yyResult || driver->lastError != NULL;
 }
 
 void driverError (Driver * driver, int lineno, const char * format, ...)
 {
 	va_list args;
 	va_start (args, format);
+    char *  msg = elektraMalloc (256);
 	// TODO: proper error handling
 	if (lineno > 0)
 	{
-		printf ("[ERROR] Line ~%d: ", lineno);
-		vprintf (format, args);
-		printf ("\n");
+		snprintf (msg, 256, "Line ~%d: ", lineno);
+        size_t len = strlen(msg);
+        assert (len <= 256);
+		vsnprintf (msg + len, 256 - len, format, args);
 	}
 	else
 	{
-		printf ("[ERROR] ");
-		vprintf (format, args);
-		printf ("\n");
+		vsnprintf (msg, 256, format, args);
 	}
 	va_end (args);
+    if (driver->lastError != NULL) {
+        elektraFree (driver->lastError);
+    }
+    driver->lastError = msg;
+    printf("[ERROR] %s", msg);
 }
 
 void driverExitToml (Driver * driver)
@@ -112,9 +118,7 @@ void driverExitKey (Driver * driver)
 		if (!isTableArray)
 		{
 			// Only allow table array keys to be read multiple times
-			char msg[256];
-			snprintf (msg, 256, "Multiple occurences of keyname: '%s'", keyName (existing));
-			driverError (driver, driver->currLine, msg);
+			driverError (driver, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'", keyName (existing));
 		}
 	}
 

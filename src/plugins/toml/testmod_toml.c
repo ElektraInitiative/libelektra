@@ -24,7 +24,7 @@ static void printKs (KeySet * ks, const char * name) {
         printf("Key: '%s'\t->\t'%s'", keyName(key), keyString(key));
 
         keyRewindMeta (key);
-        Key * meta = keyNextMeta (key);
+        const Key * meta = keyNextMeta (key);
         while (meta != NULL) {
             printf("\n\tMeta: '%s'\t->\t'%s'", keyName(meta), keyString(meta));
             meta = keyNextMeta (key);
