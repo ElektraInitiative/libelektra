@@ -2160,8 +2160,8 @@ static void test_cut (void)
 	orig = ksNew (0, KS_END);
 	cutpoint = keyNew ("user/b", KEY_END);
 	result = ksCut (orig, cutpoint);
-	succeed_if (orig, "orig is null");
-	succeed_if (ksGetSize (orig) == 0, "orig not empty");
+	succeed_if (result, "result is null");
+	succeed_if (ksGetSize (result) == 0, "result not empty");
 	ksDel (orig);
 	ksDel (result);
 	keyDel (cutpoint);
