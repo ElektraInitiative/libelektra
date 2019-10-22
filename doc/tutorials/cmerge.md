@@ -79,7 +79,8 @@ The option `--force` can be used to override.
 kdb cmerge user/tests/our user/tests/their user/tests/base user/tests/result
 # RET: 1
 # STDERR: ERROR: 1 keys exist in resultpath. Use -f to override the keys there.
-kdb cmerge -f user/tests/our user/tests/their user/tests/base user/tests/result kdb get user/tests/result
+kdb cmerge -f user/tests/our user/tests/their user/tests/base user/tests/result
+kdb get user/tests/result
 #> b
 ```
 
@@ -98,52 +99,69 @@ kdb get user/tests/result
 
 We import three different (see the comment) versions of a hosts file.
 ```sh
-echo "\
-127.0.0.1	localhost\
-127.0.1.1	computer\
+echo "127.0.0.1       localhost\
+127.0.1.1       computer\
 \
-# The following lines are desirable for IPv6 capable hosts\
-::1	ip6-localhost ip6-loopback\
-fe00::0	ip6-localnet\
-ff00::0	ip6-mcastprefix\
-ff02::1	ip6-allnodes\
-ff02::2	ip6-allrouters\
-" | kdb import user/tests/hosts/base hosts
+# BASE The following lines are desirable for IPv6 capable hosts\
+::1     ip6-localhost ip6-loopback\
+fe00::0 ip6-localnet\
+ff00::0 ip6-mcastprefix\
+ff02::1 ip6-allnodes\
+ff02::2 ip6-allrouters" | kdb import user/tests/hosts/base hosts
 
-echo "\
-127.0.0.1	localhost\
-127.0.1.1	computer\
+echo "127.0.0.1       localhost\
+127.0.1.1       computer\
 \
 # OUR The following lines are desirable for IPv6 capable hosts\
-::1	ip6-localhost ip6-loopback\
-fe00::0	ip6-localnet\
-ff00::0	ip6-mcastprefix\
-ff02::1	ip6-allnodes\
-ff02::2	ip6-allrouters\
-" | kdb import user/tests/hosts/our hosts
+::1     ip6-localhost ip6-loopback\
+fe00::0 ip6-localnet\
+ff00::0 ip6-mcastprefix\
+ff02::1 ip6-allnodes\
+ff02::2 ip6-allrouters" | kdb import user/tests/hosts/our hosts
 
-echo -e "\
-127.0.0.1	localhost\
-127.0.1.1	computer\
+echo "127.0.0.1       localhost\
+127.0.1.1       computer\
 \
 # THEIR The following lines are desirable for IPv6 capable hosts\
-::1	ip6-localhost ip6-loopback\
-fe00::0	ip6-localnet\
-ff00::0	ip6-mcastprefix\
-ff02::1	ip6-allnodes\
-ff02::2	ip6-allrouters\
-" | kdb import user/tests/hosts/their hosts
+::1     ip6-localhost ip6-loopback\
+fe00::0 ip6-localnet\
+ff00::0 ip6-mcastprefix\
+ff02::1 ip6-allnodes\
+ff02::2 ip6-allrouters" | kdb import user/tests/hosts/their hosts
 
 kdb cmerge user/tests/hosts/our user/tests/hosts/their user/tests/hosts/base user/tests/hosts/result
-
-
-kdb meta-ls user/tests/hosts/result/ipv6/ip6-localhost
 
 kdb meta-get user/tests/hosts/result/ipv6/ip6-localhost comment/#1
 #>  OUR The following lines are desirable for IPv6 capable hosts
 ```
 
 See how for the comments the `our`version was preserved.
+
+
+### Arrays
+
+cmerge uses LibGit2 to handle arrays in an efficient manner. Without it 
+
+
+```sh
+echo "one\
+two\
+three\
+four\
+five" | kdb import user/tests/arrays/original line
+
+echo "previous\
+one\
+two\
+three\
+four\
+five" | kdb import user/tests/arrays/changed line
+
+kdb cmerge -f user/tests/arrays/changed user/tests/arrays/original user/tests/arrays/original user/tests/arrays/result
+
+kdb get user/tests/arrays/result/#0
+#> previous
+```
 
 
 
