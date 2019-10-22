@@ -387,9 +387,9 @@ void driverExitNewline (Driver * driver)
 
 static void drainCommentsToKey (Driver * driver, Key * key)
 {
+    newlinesToCommentList (driver);
 	if (key != NULL)
 	{
-		newlinesToCommentList (driver);
 		addCommentListToKey (key, driver->commentRoot);
 	}
 	else
