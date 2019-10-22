@@ -673,11 +673,6 @@ static void lastScalarToParentKey (Driver * driver)
 {
 	if (driver->lastScalar != NULL)
 	{
-		if (driver->parentStack == NULL)
-		{
-            printf("WANTED TO COMMIT: %s\n", driver->lastScalar->str);
-			exit (666);
-		}
 		assert (driver->parentStack != NULL);
 		// printf ("COMMIT %s -> %s\n", keyName (driver->parentStack->key), driver->lastScalar->str);
 		keySetString (driver->parentStack->key, driver->lastScalar->str);
