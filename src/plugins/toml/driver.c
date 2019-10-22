@@ -33,6 +33,7 @@ static void freeCommentList (CommentList * root);
 static void addCommentToKey (Key * key, const char * commentStr, size_t index, size_t spaces);
 static void addComment (Driver * driver, const char * comment, size_t spaceCount);
 static CommentList * appendComment (CommentList * back, const char * comment, int spaces);
+static void lastScalarToParentKey (Driver * driver);
 static Key * indexToKey (size_t index, const Key * parent);
 static char * indexToArrayString (size_t index);
 static char * intToStr (size_t i);
@@ -61,7 +62,7 @@ int driverParse (Driver * driver, KeySet * returned)
 	}
 	yyin = driver->file;
 	ksAppendKey (driver->keys, driver->root);
-    int yyResult = yyparse (driver);
+	int yyResult = yyparse (driver);
 	return yyResult || driver->lastError != NULL;
 }
 
@@ -69,13 +70,13 @@ void driverError (Driver * driver, int lineno, const char * format, ...)
 {
 	va_list args;
 	va_start (args, format);
-    char *  msg = elektraMalloc (256);
+	char * msg = elektraMalloc (256);
 	// TODO: proper error handling
 	if (lineno > 0)
 	{
 		snprintf (msg, 256, "Line ~%d: ", lineno);
-        size_t len = strlen(msg);
-        assert (len <= 256);
+		size_t len = strlen (msg);
+		assert (len <= 256);
 		vsnprintf (msg + len, 256 - len, format, args);
 	}
 	else
@@ -83,11 +84,12 @@ void driverError (Driver * driver, int lineno, const char * format, ...)
 		vsnprintf (msg, 256, format, args);
 	}
 	va_end (args);
-    if (driver->lastError != NULL) {
-        elektraFree (driver->lastError);
-    }
-    driver->lastError = msg;
-    printf("[ERROR] %s\n", msg);
+	if (driver->lastError != NULL)
+	{
+		elektraFree (driver->lastError);
+	}
+	driver->lastError = msg;
+	printf ("[ERROR] %s\n", msg);
 }
 
 void driverExitToml (Driver * driver)
@@ -131,6 +133,8 @@ void driverExitKey (Driver * driver)
 
 void driverExitKeyValue (Driver * driver)
 {
+	lastScalarToParentKey (driver);
+
 	if (driver->prevKey != NULL)
 	{
 		keyDecRef (driver->prevKey);
@@ -179,8 +183,14 @@ void driverExitSimpleKey (Driver * driver, const Scalar * name)
 
 void driverExitScalar (Driver * driver, Scalar * scalar)
 {
-	keySetString (driver->parentStack->key, scalar->str);
-	ksAppendKey (driver->keys, driver->parentStack->key);
+	if (driver->lastScalar != NULL)
+	{
+		elektraFree (driver->lastScalar->str);
+		elektraFree (driver->lastScalar);
+	}
+	driver->lastScalar = scalar;
+	// keySetString (driver->parentStack->key, scalar->str);
+	// ksAppendKey (driver->keys, driver->parentStack->key);
 	driver->currLine = scalar->line;
 	// printf ("Added Scalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
 }
@@ -282,6 +292,11 @@ void driverExitArray (Driver * driver)
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
+void driverEmptyArray (Driver * driver) {
+    driverEnterArray (driver);
+    driverExitArray (driver);
+}
+
 void driverEnterArrayElement (Driver * driver)
 {
 	if (driver->indexStack->value == SIZE_MAX)
@@ -311,6 +326,10 @@ void driverEnterArrayElement (Driver * driver)
 
 void driverExitArrayElement (Driver * driver)
 {
+	assert (driver->lastScalar != NULL);
+    driverEnterArrayElement (driver);
+	lastScalarToParentKey (driver);
+
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
 	driver->parentStack = popParent (driver->parentStack);
@@ -320,6 +339,21 @@ void driverEnterInlineTable (Driver * driver)
 {
 	keySetMeta (driver->parentStack->key, "type", "inlinetable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
+}
+
+void driverExitInlineTable (Driver * driver)
+{
+	if (driver->lastScalar != NULL)
+	{
+		elektraFree (driver->lastScalar->str);
+		elektraFree (driver->lastScalar);
+		driver->lastScalar = NULL;
+	}
+}
+
+void driverEmptyInlineTable (Driver * driver) {
+    driverEnterInlineTable (driver);
+    //Don't need to call exit, because no scalar value emission possible in empty inline table
 }
 
 void driverExitComment (Driver * driver, const Scalar * comment)
@@ -632,6 +666,25 @@ static void freeCommentList (CommentList * root)
 		elektraFree (root->comment);
 		elektraFree (root);
 		root = nextComment;
+	}
+}
+
+static void lastScalarToParentKey (Driver * driver)
+{
+	if (driver->lastScalar != NULL)
+	{
+		if (driver->parentStack == NULL)
+		{
+            printf("WANTED TO COMMIT: %s\n", driver->lastScalar->str);
+			exit (666);
+		}
+		assert (driver->parentStack != NULL);
+		// printf ("COMMIT %s -> %s\n", keyName (driver->parentStack->key), driver->lastScalar->str);
+		keySetString (driver->parentStack->key, driver->lastScalar->str);
+		ksAppendKey (driver->keys, driver->parentStack->key);
+		elektraFree (driver->lastScalar->str);
+		elektraFree (driver->lastScalar);
+		driver->lastScalar = NULL;
 	}
 }
 
