@@ -109,17 +109,17 @@ KeyPair :	TopKey EQUAL Value { driverExitKeyValue (driver); }
 TopKey  :   { driverEnterKey (driver); } Key { driverExitKey (driver); }
         ;
 
-Key     :	SimpleKey { driverExitSimpleKey (driver, $1); }
-        |	SimpleKey { driverExitSimpleKey(driver, $1); } DottedKeys
+Key     :	SimpleKey
+        |	SimpleKey DottedKeys
         ;
 
-DottedKeys	:	DOT SimpleKey { driverExitSimpleKey (driver, $2); }
-            |	DottedKeys DOT SimpleKey { driverExitSimpleKey (driver, $3); }
+DottedKeys	:	DOT SimpleKey
+            |	DottedKeys DOT SimpleKey
             ;
 
-SimpleKey	:	BARE_STRING { $$ = $1; }
-            |	LITERAL_STRING { $$ = $1; }
-            |	BASIC_STRING { $$ = $1; }
+SimpleKey	:	BARE_STRING { driverExitSimpleKey (driver, $1); }
+            |	LITERAL_STRING { driverExitSimpleKey (driver, $1); }
+            |	BASIC_STRING { driverExitSimpleKey (driver, $1); }
             ;
 
 Value   :	Scalar { driverExitScalar (driver, $1); }
@@ -127,26 +127,35 @@ Value   :	Scalar { driverExitScalar (driver, $1); }
         |	Array
         ;
 
-InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE
-            |	CURLY_OPEN { driverEnterInlineTable(driver); }  CURLY_CLOSE
+InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
+            |	CURLY_OPEN CURLY_CLOSE { driverEmptyInlineTable(driver); }
             ;
 
 InlineTableList	:	KeyPair {}
                 |	InlineTableList COMMA KeyPair
                 ;
-Array	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList OptComma CommentNewline { driverExitArray (driver); } BRACKETS_CLOSE
-        |	BRACKETS_OPEN { driverEnterArray (driver); driverExitArray (driver);  } BRACKETS_CLOSE
-        ;
+
+Array	:	ArrayEmpty | ArrayNonEmpty;
+
+ArrayNonEmpty   :   BRACKETS_OPEN { driverEnterArray (driver); } ArrayList OptComma CommentNewline BRACKETS_CLOSE { driverExitArray (driver); };
+ArrayEmpty      :   BRACKETS_OPEN BRACKETS_CLOSE { driverEmptyArray (driver); };
+
+
 // TODO: trailing comma
-ArrayList	:   CommentNewline	{ driverEnterArrayElement (driver); } Value { driverExitArrayElement (driver); }
-            |	ArrayList COMMA CommentNewline { driverEnterArrayElement (driver); } Value  { driverExitArrayElement (driver); }
+ArrayList	:   CommentNewline	ArrayElement
+            |	ArrayList COMMA CommentNewline ArrayElement
             ;
 
+ArrayElement    :   Value { driverExitArrayElement (driver); };
+
 CommentNewline	:	CommentNewline NEWLINE { driverExitNewline (driver); }
-                |	CommentNewline COMMENT { driverExitComment (driver, $2); } NEWLINE
-                |	%empty
+                |	CommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
+                |	%empty 
                 ;
-OptComma        :   COMMA | %empty ;
+
+OptComma        :   COMMA | %empty
+                ;
+
 
 Scalar  :   IntegerScalar { $$ = $1; }
         |   BooleanScalar { $$ = $1; }

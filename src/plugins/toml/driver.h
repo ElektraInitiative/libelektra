@@ -54,6 +54,7 @@ typedef struct
 	bool drainCommentsOnKeyExit;
 	int currLine;
     char * lastError;
+    Scalar * lastScalar;
 } Driver;
 
 
@@ -80,10 +81,13 @@ void driverExitTableArray (Driver * driver);
 
 void driverEnterArray (Driver * driver);
 void driverExitArray (Driver * driver);
+void driverEmptyArray (Driver * driver);
 void driverEnterArrayElement (Driver * driver);
 void driverExitArrayElement (Driver * driver);
 
 void driverEnterInlineTable (Driver * driver);
+void driverExitInlineTable (Driver * driver);
+void driverEmptyInlineTable (Driver * driver);
 
 void driverExitComment (Driver * driver, const Scalar * comment);
 void driverExitSpace (Driver * driver);

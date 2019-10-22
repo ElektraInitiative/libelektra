@@ -89,7 +89,9 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	return EQUAL;
 }
 
-"." return DOT;
+"." {
+    return DOT;
+}
 "," {
 	popConditionIf(RHS);
 	return COMMA;
