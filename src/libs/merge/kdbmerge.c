@@ -239,7 +239,11 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 	{
 		bool isRoot = strcmp (keyName (key), "/root") == 0;
 		size_t size = strlen (string);
-		if (!isRoot)
+		if (isRoot)
+		{
+			size += 1;
+		}
+		else
 		{
 			size += keyGetNameSize (key);
 		}
