@@ -17,8 +17,12 @@ and tells the user to grant it.
 
 Categories are hierarchically structured. In some categories you cannot put an
 error such as `Permanent errors` (see below) because they are too general and
-developers should choose a more specific category. Please choose the most
-specific category as possible when trying to assign an error to a category.
+developers should choose a more specific category. Even though most categories
+which allow to put errors into are at the end of the hierarchy (leafs), it
+may also be the case that a more general category also allows errors to be put in
+(e.g., `Resource Errors`). The categories below are marked as `concrete` or `abstract`,
+meaning that you either can or cannot create errors for the category. Please
+choose the most specific category as possible when trying to assign an error to a category.
 
 If you feel for a new category, please forge a design decision document and make
 a PR to Elektra's repo.
@@ -31,7 +35,7 @@ error/warning in there.
 For a complete structural overview please visit the corresponding [design
 decision document](../decisions/error_codes.md)
 
-### Permanent errors ("C01000")
+### Permanent errors ("C01000", abstract)
 
 The branch category `Permanent Errors` refer to such errors which cannot be
 fixed by retry at all. `Permanent Errors` are subdivided into
@@ -40,7 +44,7 @@ fixed by retry at all. `Permanent Errors` are subdivided into
 - Installation
 - Logical
 
-#### Resource ("C01100")
+#### Resource ("C01100", concrete)
 
 `Resource Errors` are all kind of permission, existence and resource errors
 which are essential for Elektra to operate. Resource errors is a branch category
@@ -52,15 +56,15 @@ permissions). Reactions are fixing the permissions, remount, creating the
 file/directory and retry the operation. Compared to validation errors,
 administrators would change the specification or retry with a different value.
 
-##### Memory Allocation ("C01110")
+##### Out of Memory ("C01110", concrete)
 
-`Memory Allocation Errors` are special resource errors which come from failed
+`Out of Memory Errors` are special resource errors which come from failed
 `elektraMalloc` calls primarily as no more memory could be allocated for the
 application. Errors with not enough hard disc space do not belong here but into
 `Resource`. Such errors will gain special handling in future releases and users
 cannot deal with such errors as of now.
 
-#### Installation ("C01200")
+#### Installation ("C01200", concrete)
 
 `Installation Errors` are errors that are related to a wrong installation such
 as wrong plugin names, missing backends, initialization errors, misconfiguration
@@ -71,7 +75,7 @@ will have to reconfigure, reinstall, recompile (with other settings) Elektra in
 order to get rid of this error or fix the installation of the corresponding
 library/application.
 
-#### Logical ("C01300")
+#### Logical ("C01300", abstract)
 
 `Logical Errors` is a branch category in which you indicate a logical flaw in
 the code such as internal errors, not implemented features, passing illegal
@@ -81,7 +85,7 @@ a `default` branch when you are assured that all cases are covered. Usually such
 errors come with a message to report such failures to Elektra's bugtracker.
 Applications cannot handle such errors themselves.
 
-##### Internal ("C01310")
+##### Internal ("C01310", concrete)
 
 `Internal Errors` are such errors which indicate a flaw or bug in the internal
 logic of Elektra. Examples are going into a `default` branch which you do never
@@ -90,7 +94,7 @@ catch a generic exception. If you can however, catch the most specific
 exceptions and convert them into the appropriate category. If you have to use
 this error please add a message indicating that this bug should be reported.
 
-##### Interface ("C01320")
+##### Interface ("C01320", concrete)
 
 `Interface Errors` indicate a wrong usage of Elektra's API. Compared to
 `internal` errors this category does not indicate a bug but a misuse. An example
@@ -102,7 +106,7 @@ configurations whereas this category tries to handle specifications for APIs.
 Users should investigate the concrete reason and might use a different, more
 appropriate method or change their passed values before retrying.
 
-##### Plugin Misbehavior ("C01330")
+##### Plugin Misbehavior ("C01330", concrete)
 
 `Plugin Misbehavior Errors` indicate that a plugin does not behave in an
 intended way. Unrecognized commands, unknown return codes, plugin creation
@@ -112,7 +116,7 @@ please use `Installation` errors. Users can try to remount, recompile the plugin
 under different options or use a different plugin (e.g., switching to `mini`
 instead of `ini`).
 
-### Conflicting State ("C02000")
+### Conflicting State ("C02000", concrete)
 
 `Conflicting State Errors` are errors where the current state is incompatible
 with the attempted operation. These kind of errors are usually in resolver
@@ -122,7 +126,7 @@ remote branch has already changed. Try to synchronize your internal state and
 retry to get rid of this error. Examples are the need for calling `kdbGet`
 before `kdbSet`.
 
-### Validation ("C03000")
+### Validation ("C03000", abstract)
 
 `Validation Errors` are heavily used for Elektra's `configuration specification`
 feature and should tell users that their given input does not match a certain
@@ -130,7 +134,7 @@ pattern/type/expected semantic etc.
 
 Validation errors can either be syntactic or semantic.
 
-#### Syntactic ("C03100")
+#### Syntactic ("C03100", concrete)
 
 `Syntactic Errors` are errors which tell users or applications that the current
 format is not valid. Examples are wrong date formats or missing closing brackets
@@ -143,7 +147,7 @@ such actions. Since syntactic errors demand a specific format and structure,
 also structural validation errors belong here. Users should try a different
 value/format and retry setting it with Elektra.
 
-#### Semantic ("C03200")
+#### Semantic ("C03200", concrete)
 
 `Semantic Errors` are errors which indicate a misunderstanding of the intended
 meaning between a user's/developer's/administrator's way of seeing a setting and
