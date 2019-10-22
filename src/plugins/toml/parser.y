@@ -156,9 +156,6 @@ AnyCommentNewline	:	AnyCommentNewline NEWLINE { driverExitNewline (driver); }
                     |	AnyCommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
                     |	%empty 
                     ;
-
-
-
 Scalar  :   IntegerScalar { $$ = $1; }
         |   BooleanScalar { $$ = $1; }
         |   FloatScalar { $$ = $1; }
