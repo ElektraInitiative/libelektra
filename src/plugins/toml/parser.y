@@ -131,30 +131,32 @@ InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CUR
             |	CURLY_OPEN CURLY_CLOSE { driverEmptyInlineTable(driver); }
             ;
 
-InlineTableList	:	KeyPair {}
+InlineTableList	:	KeyPair
                 |	InlineTableList COMMA KeyPair
                 ;
 
 Array	:	ArrayEmpty | ArrayNonEmpty;
 
-ArrayNonEmpty   :   BRACKETS_OPEN { driverEnterArray (driver); } ArrayList OptComma CommentNewline BRACKETS_CLOSE { driverExitArray (driver); };
+ArrayNonEmpty   :   BRACKETS_OPEN { driverEnterArray (driver); } ArrayList ArrayEpilogue BRACKETS_CLOSE { driverExitArray (driver); };
 ArrayEmpty      :   BRACKETS_OPEN BRACKETS_CLOSE { driverEmptyArray (driver); };
 
 
-// TODO: trailing comma
-ArrayList	:   CommentNewline	ArrayElement
-            |	ArrayList COMMA CommentNewline ArrayElement
+ArrayList	:   AnyCommentNewline ArrayElement
+            |	ArrayList COMMA AnyCommentNewline ArrayElement
             ;
 
 ArrayElement    :   Value { driverExitArrayElement (driver); };
 
-CommentNewline	:	CommentNewline NEWLINE { driverExitNewline (driver); }
-                |	CommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
-                |	%empty 
+ArrayEpilogue   :   %empty
+                |   AnyCommentNewline
+                |   COMMA AnyCommentNewline
                 ;
 
-OptComma        :   COMMA | %empty
-                ;
+AnyCommentNewline	:	AnyCommentNewline NEWLINE { driverExitNewline (driver); }
+                    |	AnyCommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
+                    |	%empty 
+                    ;
+
 
 
 Scalar  :   IntegerScalar { $$ = $1; }
