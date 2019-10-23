@@ -180,7 +180,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				ksDel (cutConfig);
 				if (!pluginConfig) return -1;
 				ksAppend (pluginConfig, systemConfig);
-				ksRewind (pluginConfig); /* TODO: bug ksAppend invalidates cursor */
+				ksRewind (pluginConfig);
 
 				/* case 1, we create a new plugin,
 				   note that errorKey is not passed here, because it would set error information

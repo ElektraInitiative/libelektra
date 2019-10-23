@@ -244,6 +244,11 @@ you up to date with the multi-language support provided by Elektra.
 - Pre-commit hook `pre-commit-check-formatting` now lives in [`scripts/dev/pre-commit-check-formatting`](../../scripts/dev/pre-commit-check-formatting). _(Klemens Böswirth)_
 - <<TODO>>
 
+## Cleanup
+
+- Fix TODOs. _(Markus Raab)_
+- <<TODO>>
+
 ## Documentation
 
 - Added decision for array concept of warnings. _(Michael Zronek)_

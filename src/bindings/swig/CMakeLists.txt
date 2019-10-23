@@ -25,20 +25,6 @@ check_binding_included ("swig_python"
 			"swig/python")
 if (IS_INCLUDED)
 	add_subdirectory (python)
-else ()
-
-	# TODO rename swig_python3 to swig_python
-	check_binding_included ("swig_python3"
-				IS_INCLUDED
-				SUBDIRECTORY
-				"swig/python"
-				SILENT)
-
-	# remove sometime in the future
-	if (IS_INCLUDED)
-		exclude_binding ("swig_python3" "swig_python3 has been renamed to swig_python")
-		add_subdirectory (python)
-	endif ()
 endif ()
 
 check_binding_included ("swig_lua"

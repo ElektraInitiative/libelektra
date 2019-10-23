@@ -715,8 +715,6 @@ def buildTodo() {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         openTasks pattern: openTaskPatterns,
-                  high: 'XXX',
-                  normal: 'FIXME',
                   low: 'TODO'
         archive(["sloccount.sc"])
         deleteDir()
