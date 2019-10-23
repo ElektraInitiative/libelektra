@@ -19,8 +19,6 @@
 # merge between the file at <config file>, the our version at <elektra path>
 # and the preserved origin version from a).
 
-
-
 # This is a part of the preserved base path
 specialPathStart="user/elektra-cmerge-preserve/"
 # This is the path where a config file is loaded temporarily for merging
@@ -38,7 +36,7 @@ format=$3
 # in Elektra
 specialPathEnd=$(basename $their)
 if [ -z "$specialPathEnd" ]; then
-specialPathEnd=$their
+	specialPathEnd=$their
 fi
 base="${specialPathStart}${specialPathEnd}"
 
