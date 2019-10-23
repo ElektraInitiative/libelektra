@@ -25,4 +25,4 @@ add_lib (merge
 	 elektra-ease
 	 LINK_LIBRARIES
 	 ${CMERGE_LIBRARY_DIRS})
-add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md")
+add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line)
