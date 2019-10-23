@@ -844,7 +844,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			{
 				char msg[300];
 				snprintf (msg, 300, "libgit returned error code %d", ret);
-				ELEKTRA_LOG (msg);
+				ELEKTRA_LOG ("%s", msg);
 			}
 			git_merge_file_result_free (&out);
 			elektraFree (ourArray);
