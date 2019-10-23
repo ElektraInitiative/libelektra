@@ -7,7 +7,6 @@
  */
 
 #include "yajl_gen.h"
-
 #include <errno.h>
 
 
@@ -153,17 +152,17 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	}
 	else if (!strcmp (keyString (type), "boolean"))
 	{
-		if (!strcmp (keyString (cur), "true"))
+		if (!strcmp (keyString (cur), "1") || !strcmp (keyString (cur), "true"))
 		{
 			yajl_gen_bool (g, 1);
 		}
-		else if (!strcmp (keyString (cur), "false"))
+		else if (!strcmp (keyString (cur), "0") || !strcmp (keyString (cur), "false"))
 		{
 			yajl_gen_bool (g, 0);
 		}
 		else
 		{
-			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (parentKey, "Got boolean which is neither true nor false");
+			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (parentKey, "Got boolean which is neither 1 or true nor 0 or false");
 			yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 		}
 	}

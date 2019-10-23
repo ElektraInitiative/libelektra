@@ -201,7 +201,15 @@ void elektraAbort (const char * expression, const char * function, const char * 
 		va_list args;
 		va_start (args, mmsg);
 		char * msg;
-		asprintf (&msg, "Assertion `%s' failed: %s", expression, mmsg);
+		int exitCode = asprintf (&msg, "Assertion `%s' failed: %s", expression, mmsg);
+		if (exitCode == -1 && msg == NULL)
+		{
+			fprintf (stderr, "Function `asprintf` was unable to allocate enough memory");
+		}
+		else if (exitCode < 0)
+		{
+			fprintf (stderr, "Call of function `asprintf` failed with error code %d", exitCode);
+		}
 		elektraVLog (ELEKTRA_LOG_LEVEL_ERROR, function, file, line, msg, args);
 		va_end (args);
 	}

@@ -40,11 +40,11 @@ We list all available keys arranged below a key by:<br>
 `kdb ls user/key`
 
 Documentation of plugins is available using the
-[kdb-info(1)](kdb-info.md) tool:<br>
-`kdb info`
+[kdb-plugin-info(1)](kdb-plugin-info.md) tool:<br>
+`kdb plugin-info`
 
-Run `kdb list` for a list of plugins:<br>
-`kdb list`
+Run `kdb plugin-list` for a list of plugins:<br>
+`kdb plugin-list`
 
 Each of these commands has its own man page for
 further details.

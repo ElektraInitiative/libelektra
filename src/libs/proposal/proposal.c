@@ -11,8 +11,8 @@
 #include <string.h>
 
 #include <kdbassert.h>
+#include <kdbinternal.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
 
 /**
  * @defgroup proposal Proposals for Elektra
@@ -77,48 +77,6 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 
 
 /**
- * Builds an array of pointers to the keys in the supplied keyset.
- * The keys are not copied, calling keyDel may remove them from
- * the keyset.
- *
- * The size of the buffer can be easily allocated via ksGetSize. Example:
- * @code
- * KeySet *ks = somekeyset;
- * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
- * elektraKsToMemArray (ks, keyArray);
- * ... work with the array ...
- * elektraFree (keyArray);
- * @endcode
- *
- * @param ks the keyset object to work with
- * @param buffer the buffer to put the result into
- * @return the number of elements in the array if successful
- * @return a negative number on null pointers or if an error occurred
- */
-int elektraKsToMemArray (KeySet * ks, Key ** buffer)
-{
-	if (!ks) return -1;
-	if (!buffer) return -1;
-
-	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
-
-	cursor_t cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	size_t idx = 0;
-
-	Key * key;
-	while ((key = ksNext (ks)) != 0)
-	{
-		buffer[idx] = key;
-		++idx;
-	}
-	ksSetCursor (ks, cursor);
-
-	return idx;
-}
-
-/**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended
  *
@@ -177,26 +135,6 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
 
 
 /**
- * Returns the previous Key in a KeySet.
- *
- * KeySets have an internal cursor that can be reset with ksRewind(). Every
- * time ksPrev() is called the cursor is decremented and the new current Key
- * is returned.
- *
- * You'll get a NULL pointer if the key before begin of the KeySet was reached.
- *
- * Don't delete the key, use ksPop() if you want to delete it.
- *
- * @return the new current Key
- * @see ksRewind(), ksCurrent()
- *
- */
-Key * ksPrev (KeySet * ks)
-{
-	return elektraKsPrev (ks);
-}
-
-/**
  * @brief Pop key at given cursor position
  *
  * @param ks the keyset to pop key from
@@ -221,176 +159,3 @@ Key * ksPopAtCursor (KeySet * ks, cursor_t pos)
 {
 	return elektraKsPopAtCursor (ks, pos);
 }
-
-
-/**
- * keyRel replacement
- */
-
-// keyRel2 helper, turns key into a cascading key ( removes namespace)
-Key * keyAsCascading (const Key * key)
-{
-	if (keyName (key)[0] == '/')
-	{
-		return keyDup (key);
-	}
-	else
-	{
-		elektraNamespace ns = keyGetNamespace (key);
-		if (ns == KEY_NS_META || ns == KEY_NS_EMPTY || ns == KEY_NS_NONE)
-		{
-			// For metakeys or keys without namespace just prefix the keyname with a "/"
-			Key * cKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-			keyAddName (cKey, keyName (key));
-			return cKey;
-		}
-		else
-		{
-			// Skip namespace
-			const char * name = keyName (key);
-			const char * ptr = strchr (name, '/');
-			if (!ptr)
-			{
-				return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-			}
-			else
-			{
-				ssize_t length = keyGetNameSize (key);
-				if ((ptr - name) == (length - 1))
-				{
-					return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-				}
-				else
-				{
-					return keyNew (ptr, KEY_CASCADING_NAME, KEY_END);
-				}
-			}
-		}
-	}
-}
-
-// keyRel2 helper, returns how many levels check is below key, or 0 if check isn't below
-int keyGetLevelsBelow (const Key * key, const Key * check)
-{
-	const char * keyUName = keyUnescapedName (key);
-	size_t keyUSize = keyGetUnescapedNameSize (key);
-	const char * keyUNameEnd = keyUName + keyUSize;
-
-	const char * checkUName = keyUnescapedName (check);
-	size_t checkUSize = keyGetUnescapedNameSize (check);
-	const char * checkUNameEnd = checkUName + checkUSize;
-
-	while (strcmp (keyUName, checkUName) == 0)
-	{
-		keyUName = strchr (keyUName, '\0') + 1;
-		checkUName = strchr (checkUName, '\0') + 1;
-
-		if (keyUName >= keyUNameEnd)
-		{
-			int levels = 0;
-			while (checkUName < checkUNameEnd)
-			{
-				checkUName = strchr (checkUName, '\0') + 1;
-				++levels;
-			}
-
-			return levels;
-		}
-
-		if (checkUName >= checkUNameEnd)
-		{
-			break;
-		}
-	}
-
-	return 0;
-}
-
-/**
- * @brief Replacement proposal for keyRel
- * @return depending on relation type
- * @retval -1 usage error
- * @retval 0 test failed
- * @retval >1 true for binary tests, number of levels below for other relation tests
- *
- * @param key the key object to work with
- * @param check the second key object to check the relation with
- * @param which what kind of relationship test should be done
- */
-
-
-int keyRel2 (const Key * key, const Key * check, KeyRelType which)
-{
-	if (!key || !check) return -1;
-	if (!key->key || !check->key) return -1;
-
-	Key * cKey = keyAsCascading (key);
-	Key * cCheck = keyAsCascading (check);
-	Key * cKeyParent = keyDup (cKey);
-	keySetBaseName (cKeyParent, 0);
-	if (keyName (cKeyParent)[0] == '\0') keySetName (cKeyParent, "/");
-	int isBelow = 0;
-	int isSilblingNephew = 0;
-	isBelow = keyGetLevelsBelow (cKey, cCheck);
-	if (!isBelow) isSilblingNephew = keyGetLevelsBelow (cKeyParent, cCheck);
-	elektraNamespace keyNamespace = keyGetNamespace (key);
-	elektraNamespace checkNamespace = keyGetNamespace (check);
-	int retVal = 0;
-	int bits = 0;
-	for (KeyRelType type = 1; type != 0; type <<= 1)
-	{
-		if (type & which) ++bits;
-	}
-	if (bits != 1) return -1;
-	switch (which)
-	{
-	case ELEKTRA_REL_BELOW_SAME_NS:
-		if (isBelow && (keyNamespace == checkNamespace)) retVal = isBelow;
-		break;
-	case ELEKTRA_REL_BELOW_IGNORE_NS:
-		if (isBelow) retVal = isBelow;
-		break;
-	case ELEKTRA_REL_BELOW_CASCADING_NS:
-		if (isBelow && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = isBelow;
-		break;
-	case ELEKTRA_REL_DIRECT_BELOW_SAME_NS:
-		if ((isBelow == 1) && (keyNamespace == checkNamespace)) retVal = 1;
-		break;
-	case ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS:
-		if (isBelow == 1) retVal = 1;
-		break;
-	case ELEKTRA_REL_DIRECT_BELOW_CASCADING_NS:
-		if ((isBelow == 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = 1;
-		break;
-	case ELEKTRA_REL_SILBLING_SAME_NS:
-		if ((isSilblingNephew == 1) && (keyNamespace == checkNamespace)) retVal = 1;
-		break;
-	case ELEKTRA_REL_SILBLING_IGNORE_NS:
-		if (isSilblingNephew == 1) retVal = 1;
-		break;
-	case ELEKTRA_REL_SILBLING_CASCADING_NS:
-		if ((isSilblingNephew == 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = 1;
-		break;
-	case ELEKTRA_REL_NEPHEW_SAME_NS:
-		if ((isSilblingNephew > 1) && (keyNamespace == checkNamespace)) retVal = isSilblingNephew - 1;
-		break;
-	case ELEKTRA_REL_NEPHEW_IGNORE_NS:
-		if (isSilblingNephew > 1) retVal = isSilblingNephew - 1;
-		break;
-	case ELEKTRA_REL_NEPHEW_CASCADING_NS:
-		if ((isSilblingNephew > 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING)))
-			retVal = isSilblingNephew - 1;
-		break;
-	default:
-		retVal = -1;
-		break;
-	}
-	keyDel (cKey);
-	keyDel (cCheck);
-	keyDel (cKeyParent);
-	return retVal;
-}
-
-/**
- * @}
- */

@@ -44,6 +44,8 @@ WHITELIST=$(mktemp)
 grep -v '^#' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
 
 NUMTHREADS=10
+TIMEOUT=20
+TRIES=5
 
 check() {
 	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
@@ -58,9 +60,9 @@ check() {
 		echo "check the link format of $1"
 		return
 	fi
-	wget --spider --quiet --timeout=5 --tries=3 "$link"
+	wget --spider --quiet --timeout=$TIMEOUT --tries=$TRIES "$link"
 	if [ "$?" -ne "0" ]; then
-		wget -O - --quiet --timeout=5 --tries=3 "$link" > /dev/null
+		wget -O - --quiet --timeout=$TIMEOUT --tries=$TRIES "$link" > /dev/null
 		if [ "$?" -ne "0" ]; then
 			for file in $files; do
 				echo >&2 "$file $link"

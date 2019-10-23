@@ -1938,7 +1938,7 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
 }
 
 /**
- * This function can be used the given KDB @p handle meets certain clauses,
+ * This function can be used to ensure the given KDB @p handle meets certain clauses,
  * specified in @p contract. Currently the following clauses are supported:
  *
  * - `system/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
@@ -1951,7 +1951,7 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * 	  This can be used to ensure the plugin is mounted with a certain configuration.
  * - Keys below `system/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
  *   as the plugins config KeySet during mounting. `system/elektra/ensure/plugins/<mountpoint>/<pluginname>`
- *   will be repleced by `user` in the keynames. If no keys are given, an empty KeySet is used.
+ *   will be replaced by `user` in the keynames. If no keys are given, an empty KeySet is used.
  *
  * There are a few special values for `<mountpoint>`:
  * - `global` is used to indicate the plugin should (un)mounted as a global plugin.

@@ -4,6 +4,11 @@ libelektra_0.8 {
 	elektraModulesInit;
 	elektraModulesLoad;
 
+	# plugin loading:
+	elektraPluginOpen;
+	elektraPluginClose;
+	elektraPluginGetFunction;
+
 	# kdbhelper.h
 	elektraCalloc;
 	elektraFormat;
@@ -70,14 +75,13 @@ libelektra_0.8 {
 	keyIsBelow;
 	keyIsBelowOrSame;
 	keyIsBinary;
-	keyIsDirectBelow;
+	keyIsDirectlyBelow;
 	keyIsInactive;
 	keyIsString;
 	keyName;
 	keyNeedSync;
 	keyNew;
 	keyNextMeta;
-	keyRel;
 	keyRewindMeta;
 	keySetBaseName;
 	keySetBinary;
@@ -138,7 +142,6 @@ libelektraprivate_1.0 {
 	elektraGlobalSet;
 	elektraKeyLock;
 	elektraKsPopAtCursor;
-	elektraKsPrev;
 	elektraRenameKeys;
 	elektraUnescapeKeyName;
 	elektraUnescapeKeyNamePart;
@@ -156,11 +159,8 @@ libelektraprivate_1.0 {
 	keyNameIsUser;
 	keySetRaw;
 	keyVInit;
-	elektraPluginClose;
 	elektraPluginFindGlobal;
-	elektraPluginGetFunction;
 	elektraPluginMissing;
-	elektraPluginOpen;
 	elektraPluginVersion;
 	elektraProcessPlugin;
 	elektraProcessPlugins;

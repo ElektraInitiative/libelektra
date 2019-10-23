@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-PLUGINS" "7" "September 2019" "" ""
+.TH "ELEKTRA\-PLUGINS" "7" "October 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
@@ -51,13 +51,13 @@ Furthermore, plugins might export symbols:
 .SS "KDB\-Interface"
 .
 .IP "\(bu" 4
-To list all plugins use kdb\-list(1) \fI/doc/help/kdb\-list\.md\fR\.
+To list all plugins use kdb\-plugin\-list(1) \fI/doc/help/kdb\-plugin\-list\.md\fR\.
 .
 .IP "\(bu" 4
-To check a plugin use kdb\-check(1) \fI/doc/help/kdb\-check\.md\fR\.
+To check a plugin use kdb\-plugin\-check(1) \fI/doc/help/kdb\-plugin\-check\.md\fR\.
 .
 .IP "\(bu" 4
-For information on a plugin use kdb\-info(1) \fI/doc/help/kdb\-info\.md\fR\.
+For information on a plugin use kdb\-plugin\-info(1) \fI/doc/help/kdb\-plugin\-info\.md\fR\.
 .
 .IP "\(bu" 4
 For mount plugin(s) use kdb\-mount(1) \fI/doc/help/kdb\-mount\.md\fR\.
@@ -136,7 +136,7 @@ yajl \fIyajl/\fR reads/writes JSON\.
 Using semi\-structured data for config files, mainly suitable for spec\-namespace (put a focus on having nice syntax for metadata):
 .
 .IP "\(bu" 4
-ni \fIni/\fR parses INI files based on (including metadata) ni \fIhttps://github\.com/chazomaticus/bohr/blob/master/include/bohr/ni\.h\fR\.
+ni \fIni/\fR parses INI files based on (including metadata) ni \fIhttps://lab\.burn\.capital/chaz\-attic/bohr/tree/master/include/bohr/ni\.h\fR\.
 .
 .IP "\(bu" 4
 tcl \fItcl/\fR\-like config files (including metadata)\.
@@ -165,12 +165,6 @@ yamlsmith \fIyamlsmith/\fR exports key sets in the YAML format
 .
 .P
 Plugins that just show some functionality, (currently) not intended for productive use:
-.
-.IP "\(bu" 4
-typechecker \fItypechecker/\fR type checks a configuration specification
-.
-.IP "\(bu" 4
-regexdispatcher \fIregexdispatcher/\fR generates regex representations of specification keywords
 .
 .IP "\(bu" 4
 fstab \fIfstab/\fR for fstab files\.
@@ -420,9 +414,6 @@ lua \fIlua/\fR Lua plugins
 .
 .IP "\(bu" 4
 shell \fIshell/\fR executes shell commandos
-.
-.IP "\(bu" 4
-haskell \fIhaskell/\fR used for linking haskell plugins and is a small example for such plugins itself
 .
 .IP "" 0
 .

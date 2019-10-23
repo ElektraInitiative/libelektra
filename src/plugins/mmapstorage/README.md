@@ -60,7 +60,7 @@ sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
 kdb set user/tests/mmapstorage 'Some root key'
 kdb set user/tests/mmapstorage/dir 'Directory within the hierarchy.'
 kdb set user/tests/mmapstorage/dir/leaf 'A leaf node holding some valuable data.'
-kdb setmeta  user/tests/mmapstorage/dir/leaf superMetaKey 'Metadata is supported too.'
+kdb meta-set  user/tests/mmapstorage/dir/leaf superMetaKey 'Metadata is supported too.'
 
 # List the configuration tree below `user/tests/mmapstorage`
 kdb ls user/tests/mmapstorage
@@ -75,7 +75,7 @@ kdb get user/tests/mmapstorage/dir
 #> Directory within the hierarchy.
 kdb get user/tests/mmapstorage/dir/leaf
 #> A leaf node holding some valuable data.
-kdb getmeta  user/tests/mmapstorage/dir/leaf superMetaKey
+kdb meta-get  user/tests/mmapstorage/dir/leaf superMetaKey
 #> Metadata is supported too.
 
 # Undo modifications to the database

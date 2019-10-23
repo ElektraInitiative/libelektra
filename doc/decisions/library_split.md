@@ -2,21 +2,15 @@
 
 ## Problem
 
-Various source files of different:
-
-- users
-- version evolution
-
-are all linked together to libelektra.org.
+libelektra.so contains KDB and Key(Set) but plugins only need Key(Set) but not KDB.
 
 ## Constraints
 
-- have a legacy libelektra that is identical to current behavior
 - full and static libraries remain unchanged
 
 ## Assumptions
 
-- linker overhead of a dozen libraries is not measurable
+- linker overhead of less than a dozen libraries is not measurable
 
 ## Considered Alternatives
 
@@ -24,7 +18,7 @@ are all linked together to libelektra.org.
 
 ## Decision
 
-- split libraries
+- [split library](/src/libs)
 
 ## Rationale
 
@@ -33,12 +27,13 @@ are all linked together to libelektra.org.
 - allows alternative implementation of parts of Elektra, e.g. a new libkdb which still uses libcore
 - easier to navigate in source tree
 - facilitates code reuse between plugins
-- easier entrance to create commonly used libs (no fear of "changes in the core" for some helper functionality)
+- easier entrance to create commonly used libs (less fear of "changes in the core" for some helper functionality)
 
 ## Implications
 
-- maybe to bindings?
-- plugins and applications need changes in order to profit from less dependencies
+- bindings need to decide which parts to link against
+- plugins and applications need changes
+- we need to get rid of the legacy library
 
 ## Related Decisions
 

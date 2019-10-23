@@ -155,7 +155,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 
 	while ((cur = ksNext (config)) != 0)
 	{
-		if (keyRel (root, cur) == 1)
+		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
 			char * pluginName = 0;
 			char * referenceName = 0;

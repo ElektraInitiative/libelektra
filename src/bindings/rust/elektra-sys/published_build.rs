@@ -8,7 +8,9 @@ use std::path::PathBuf;
 fn main() {
 
     print_libdir();
-    println!("cargo:rustc-link-lib=dylib=elektra");
+    println!("cargo:rustc-link-lib=dylib=elektra-core");
+    println!("cargo:rustc-link-lib=dylib=elektra-meta");
+    println!("cargo:rustc-link-lib=dylib=elektra-kdb");
 
     let elektra_include_dir = get_include_dir();
 

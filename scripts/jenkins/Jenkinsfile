@@ -160,7 +160,7 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  maybeStage("Deploy Website", isMaster()) {
+  stage("Deploy Website") {
     deployWebsite()
   }
 
@@ -330,6 +330,13 @@ def dockerInit() {
       "alpine", this.&idTesting,
       "./scripts/docker/alpine/3.9",
       "./scripts/docker/alpine/3.9/Dockerfile"
+    )
+
+    /* Ubuntu bionic image*/
+    DOCKER_IMAGES.bionic = createDockerImageDesc(
+      "bionic", this.&idTesting,
+      "./scripts/docker/ubuntu/bionic",
+      "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
     /* Image building the libelektra.org frontend */
@@ -992,14 +999,13 @@ coveralls -b '${buildDir}' \
           -t '${REPO_TOKEN}' \
           -e .idea -e benchmarks -e doc -e examples -e install -e libelektra -e system -e tests \
           -E '.*${buildDir}/(CMakeFiles|include)/.*' \
-          -E '.*${buildDir}/src/bindings/(glib|haskell|intercept)/.*' \
+          -E '.*${buildDir}/src/bindings/(glib|intercept)/.*' \
           -E '.*${buildDir}/src/include/elektra/.*' \
           -E '.*${buildDir}/src/include/(kdb|kdbconfig|kdbversion)\\.h' \
           -E '.*${buildDir}/src/(libs|tools)/.*' \
           -E '.*${buildDir}/src/plugins/\
 (?!\
 constants/constants\\.c|\
-(haskell|regexdispatcher|typechecker)/haskell\\.c|\
 (lua|ruby)/runtime\\.h|\
 yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
@@ -1023,8 +1029,8 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildDebianPackage("buildPackage/debian/stretch", DOCKER_IMAGES.stretch)
-  // tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   tasks << buildWebUI()
   return tasks
@@ -1058,6 +1064,9 @@ def buildDebianPackage(stageName, image) {
               userRemoteConfigs: scm.userRemoteConfigs
             ]
             dir(targetDir) {
+              sh "git config --global user.name jenkins-builder"
+              sh "git config --global user.email jenkins@libelektra.org"
+
               sh "git checkout -B temp"
               sh "git tag -f $VERSION"
 

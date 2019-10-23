@@ -115,9 +115,10 @@ impl AsRef<elektra_sys::KDB> for KDB {
         unsafe { self.ptr.as_ref() }
     }
 }
-
+const ELEKTRA_ERROR_RESOURCE: &str = "C01100";
 const ELEKTRA_ERROR_OUT_OF_MEMORY: &str = "C01110";
 const ELEKTRA_ERROR_INTERNAL: &str = "C01310";
+const ELEKTRA_ERROR_INSTALLATION: &str = "C01200";
 const ELEKTRA_ERROR_INTERFACE: &str = "C01320";
 const ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR: &str = "C01330";
 const ELEKTRA_ERROR_CONFLICTING_STATE: &str = "C02000";
@@ -147,6 +148,7 @@ pub enum LogicalError<'a> {
 
 #[derive(Debug)]
 pub enum ResourceError<'a> {
+    GeneralResourceError(KDBErrorWrapper<'a>),
     OutOfMemory(KDBErrorWrapper<'a>),
 }
 
@@ -249,6 +251,7 @@ impl<'a> Error for PermanentError<'a> {}
 impl<'a> Display for ResourceError<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
+            ResourceError::GeneralResourceError(err) => write!(f, "{}", err),
             ResourceError::OutOfMemory(err) => write!(f, "{}", err),
         }
     }
@@ -293,8 +296,14 @@ fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
         let err_wrapper = KDBErrorWrapper::new(error_key.duplicate());
 
         match err_num_key.value().to_owned().to_string().as_str() {
+            ELEKTRA_ERROR_RESOURCE => {
+                return Permanent(Resource(GeneralResourceError(err_wrapper)));
+            }
             ELEKTRA_ERROR_OUT_OF_MEMORY => {
                 return Permanent(Resource(OutOfMemory(err_wrapper)));
+            }
+            ELEKTRA_ERROR_INSTALLATION => {
+                return Permanent(Installation(err_wrapper));
             }
             ELEKTRA_ERROR_INTERNAL => {
                 return Permanent(Logical(Internal(err_wrapper)));
@@ -315,11 +324,11 @@ fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
                 return Validation(Semantic(err_wrapper));
             }
             _ => {
-                unreachable!();
+                panic!("Unknown error code {}. Error Message: {}", err_num_key.value(), err_wrapper.to_error_message());
             }
         }
     }
-    unreachable!()
+    panic!("No error/number metakey is available.")
 }
 
 #[cfg(test)]
@@ -335,7 +344,7 @@ mod test {
     const KEY_2_VALUE: &str = "key_value_2";
 
     fn create_test_keys<'a>() -> (StringKey<'a>, StringKey<'a>, StringKey<'a>) {
-        let parent_key = StringKey::new(PARENT_KEY).unwrap();
+        let parent_key = StringKey::new(PARENT_KEY).unwrap_or_else(|e| panic!("{}", e));
         let key1: StringKey = KeyBuilder::new(KEY_1_NAME)
             .unwrap()
             .value(KEY_1_VALUE)
@@ -351,17 +360,17 @@ mod test {
     fn can_use_kdb() {
         let (mut parent_key, key1, key2) = create_test_keys();
         {
-            let mut kdb = KDB::open().unwrap();
+            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
             let mut ks = KeySet::with_capacity(10);
-            kdb.get(&mut ks, &mut parent_key).unwrap();
+            kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
             ks.append_key(key1);
             ks.append_key(key2);
-            kdb.set(&mut ks, &mut parent_key).unwrap();
+            kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
         }
         {
-            let mut kdb = KDB::open().unwrap();
+            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
             let mut ks = KeySet::with_capacity(2);
-            kdb.get(&mut ks, &mut parent_key).unwrap();
+            kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
             let key1_lookup = ks
                 .lookup_by_name(KEY_1_NAME, Default::default())
                 .unwrap()
@@ -379,13 +388,13 @@ mod test {
 
     fn remove_test_keys() {
         let (mut parent_key, _, _) = create_test_keys();
-        let mut kdb = KDB::open().unwrap();
+        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
-        kdb.get(&mut ks, &mut parent_key).unwrap();
+        kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
         ks.lookup_by_name(KEY_1_NAME, LookupOption::KDB_O_POP)
             .unwrap();
         ks.lookup_by_name(KEY_2_NAME, LookupOption::KDB_O_POP)
             .unwrap();
-        kdb.set(&mut ks, &mut parent_key).unwrap();
+        kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
     }
 }

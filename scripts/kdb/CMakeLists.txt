@@ -3,7 +3,7 @@
 file (GLOB IN_FILES *.in)
 foreach (file ${IN_FILES})
 	get_filename_component (file_we "${file}" NAME_WE)
-	configure_file ("${file}" "${file_we}")
+	configure_file ("${file}" "${file_we}" @ONLY)
 	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${file_we}" DESTINATION "${TARGET_TOOL_EXEC_FOLDER}")
 endforeach (file ${IN_FILES})
 

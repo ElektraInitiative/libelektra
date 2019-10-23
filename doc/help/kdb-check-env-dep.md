@@ -1,4 +1,4 @@
-# kdb-check-env-dep -- Checks which mount points are influenced by environment variables
+# kdb-plugin-check-env-dep -- Checks which mount points are influenced by environment variables
 
 ## SYNOPSIS
 

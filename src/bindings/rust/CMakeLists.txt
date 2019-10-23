@@ -39,8 +39,8 @@ if (CARGO_EXECUTABLE)
 	if ((NOT ENABLE_ASAN) AND BUILD_SHARED)
 		add_test (NAME test_rust_elektra COMMAND ${CARGO_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
-		# The test executables need to know where they can find libelektra.so
-		set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		# The test executables need to know where they can find the dynamic libraries
+		set_property (TEST test_rust_elektra PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "RUST_BACKTRACE=1")
 		set_property (TEST test_rust_elektra
 			      PROPERTY LABELS
 				       kdbtests

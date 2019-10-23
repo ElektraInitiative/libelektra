@@ -1,5 +1,5 @@
 language: cpp
-dist: xenial
+dist: bionic
 osx_image: xcode10.2
 
 #
@@ -116,9 +116,6 @@ matrix:
         - ninja run_nocheckshell
 
     - os: linux
-      # The DBus library on Ubuntu Xenial Xerus seems to leak memory
-      # See: https://travis-ci.org/sanssecours/elektra/jobs/457428713
-      dist: trusty
       name: 🐧 Clang ASAN
       compiler: clang
       addons:
@@ -242,14 +239,11 @@ before_install:
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install cmake-format[yaml]==0.5.4
-      mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-        curl -L "https://github.com/mvdan/sh/releases/download/v2.6.3/shfmt_v2.6.3_linux_amd64" -o shfmt && \
-        chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
     fi
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
-# Build directory will be TRAVIS_BUILD_DIR/../build
+# Build directory will be "$TRAVIS_BUILD_DIR/build"
 #
 before_script:
   - |
@@ -257,6 +251,7 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
+      export LD_LIBRARY_PATH="$PWD/install/lib"
     fi
     SYSTEM_DIR="$PWD/kdbsystem"
     mkdir build && cd build

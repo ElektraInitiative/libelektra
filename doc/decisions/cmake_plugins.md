@@ -13,7 +13,7 @@
 
 ## Constraints
 
-- should work with supported cmake
+- should work with supported CMake
 - It should be easy to add trivial plugins
   (without dependency and variants)
 - It should be possible to add complex plugins
@@ -46,8 +46,8 @@ Names for flag:
 
 ## Decision
 
-Introduce a cmake process where all plugins are processed three times.
-Following cmake variables are used for the phases:
+Introduce a CMake process where all plugins are processed three times.
+Following CMake variables are used for the phases:
 
 - `COLLECTION_PHASE` .. collect all `add_plugins`
 - `DEPENDENCY_PHASE` .. resolve all dependencies, do `add_plugins` again
@@ -85,6 +85,8 @@ It would:
 - need to adopt all CMakeLists.txt
 
 ## Related Decisions
+
+- [Plugin Variants](plugin_variants.md)
 
 ## Notes
 

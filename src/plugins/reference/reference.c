@@ -227,7 +227,7 @@ static int filterAlternatives (const Key * key, void * argument)
 	const char * metaValue = metaKey != NULL ? keyString (metaKey) : NULL;
 
 	const Key * referenceParent = (const Key *) argument;
-	return metaValue != NULL && keyIsDirectBelow (referenceParent, key) && strcmp (metaValue, CHECK_REFERNCE_VALUE_ALTERNATIVE) == 0;
+	return metaValue != NULL && keyIsDirectlyBelow (referenceParent, key) && strcmp (metaValue, CHECK_REFERNCE_VALUE_ALTERNATIVE) == 0;
 }
 
 static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key * parentKey)

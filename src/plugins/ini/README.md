@@ -58,7 +58,7 @@ sudo kdb umount user/tests/ini
 The ini plugin supports the use of comments. Comment lines start with
 a ';' or a '#'. Comments are put into the comment metadata of the key
 following the comment. This can be either a section key or a normal key.
-When creating new comments (e.g. via `kdb setmeta`) you can prefix
+When creating new comments (e.g. via `kdb meta-set`) you can prefix
 your comment with the comment indicator of your choice (';' or '#')
 which will be used when writing the comment to the file. If the comment
 is not prefixed with a comment indicator, the ini plugin will use the
@@ -184,8 +184,8 @@ sudo kdb mount config.ini user/tests/ini ini
 
 # Add a new key and some metadata
 kdb set user/tests/ini/brand new
-kdb setmeta user/tests/ini/brand description "The Devil And God Are Raging Inside Me"
-kdb setmeta user/tests/ini/brand rationale "Because I Love It"
+kdb meta-set user/tests/ini/brand description "The Devil And God Are Raging Inside Me"
+kdb meta-set user/tests/ini/brand rationale "Because I Love It"
 
 # The plugin stores metadata as comments inside the INI file
 kdb file user/tests/ini | xargs cat
@@ -194,18 +194,18 @@ kdb file user/tests/ini | xargs cat
 #> brand=new
 
 # Retrieve metadata
-kdb lsmeta user/tests/ini/brand | grep -v 'internal'
+kdb meta-ls user/tests/ini/brand | grep -v 'internal'
 # rationale
 # description
 
-kdb getmeta user/tests/ini/brand description
+kdb meta-get user/tests/ini/brand description
 #> The Devil And God Are Raging Inside Me
-kdb getmeta user/tests/ini/brand rationale
+kdb meta-get user/tests/ini/brand rationale
 #> Because I Love It
 
 # The plugin ignores some metadata such as `comment`!
-kdb setmeta user/tests/ini/brand comment "Where Art Thou?"
-kdb getmeta user/tests/ini/brand comment
+kdb meta-set user/tests/ini/brand comment "Where Art Thou?"
+kdb meta-get user/tests/ini/brand comment
 # STDERR: Metakey not found
 # RET: 2
 

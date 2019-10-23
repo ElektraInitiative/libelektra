@@ -142,7 +142,7 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
   - python
   - python2
 - `PluginDatabase` needs an extension to list all plugin variants
-- `kdb list` should be able to list all variants, e.g. like:
+- `kdb plugin-list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`
   so that a user can copy and paste this for the `kdb mount` command.
 
@@ -174,7 +174,7 @@ gets ignored.
 
 ## Related Decisions
 
-- [Global Plugins](global_plugins.md)
+- [CMake Plugins](cmake_plugins.md)
 
 ## Notes
 

@@ -58,13 +58,13 @@ An example on which the user should have no permission at all for the root direc
 ```sh
 sudo kdb mount test.dump user/tests path dump
 sudo kdb set user/tests/path "$HOME"
-sudo kdb setmeta user/tests/path check/path ""
-sudo kdb setmeta user/tests/path check/path/user ""
-sudo kdb setmeta user/tests/path check/path/mode "rw"
+sudo kdb meta-set user/tests/path check/path ""
+sudo kdb meta-set user/tests/path check/path/user ""
+sudo kdb meta-set user/tests/path check/path/mode "rw"
 
 # Standard users should not be able to read/write the root folder
-kdb set user/tests/path "/root"
-# ERROR:C03200
+[ $(id -u) = 0 ] && printf >&2 'User is root\n' || kdb set user/tests/path "/root"
+# STDERR: User is root|.*C03200.*
 
 # Set something which the current user can access for sure
 kdb set user/tests/path "$HOME"
@@ -80,9 +80,9 @@ An example where part of the permissions are missing for a tmp file
 ```sh
 sudo kdb mount test.dump user/tests path dump
 sudo kdb set user/tests/path "$HOME"
-sudo kdb setmeta user/tests/path check/path ""
-sudo kdb setmeta user/tests/path check/path/user ""
-sudo kdb setmeta user/tests/path check/path/mode "rwx"
+sudo kdb meta-set user/tests/path check/path ""
+sudo kdb meta-set user/tests/path check/path/user ""
+sudo kdb meta-set user/tests/path check/path/mode "rwx"
 
 # Standard users should not be able to read/write the root folder
 kdb set user/tests/path/tempfile $(mktemp)

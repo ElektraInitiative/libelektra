@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-KEY\-NAMES" "7" "August 2019" "" ""
+.TH "ELEKTRA\-KEY\-NAMES" "7" "October 2019" "" ""
 .
 .SH "NAME"
 \fBelektra\-key\-names\fR \- the names of keys
@@ -51,7 +51,7 @@ user/sw/kde/kicker/#0/current/preferred_applications/#0
 .IP "" 0
 .
 .P
-The slash (\fB/\fR) separates key names and structures them hierarchically\. If two keys start with the same key names, but one key name continues after a slash, this key is \fBbelow\fR the other and is called a \fIsubkey\fR\. For example \fBuser/sw/apps/abc/current\fR is a subkey of the key \fBuser/sw/apps\fR\. The key is not directly below but, for example, \fBuser/sw/apps/abc\fR is\. \fBkeyRel()\fR implements a way to decide the relation between two keys\.
+The slash (\fB/\fR) separates key names and structures them hierarchically\. If two keys start with the same key names, but one key name continues after a slash, this key is \fBbelow\fR the other and is called a \fIsubkey\fR\. For example \fBuser/sw/apps/abc/current\fR is a subkey of the key \fBuser/sw/apps\fR\. The key is not directly below but, for example, \fBuser/sw/apps/abc\fR is\. Various functions in \fBkeytest\fR implement ways to determine the relationship between two keys\.
 .
 .SH "Conventions"
 For computers Elektra would work without any conventions, because it is possible to rename keys with plugins and link and transform any key\-value to any other key\-value\. Obviously, for humans such chaos would be confusing and harder to use, thus we encourage everyone to use the following conventions:

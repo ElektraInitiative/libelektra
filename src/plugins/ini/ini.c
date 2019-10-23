@@ -1028,7 +1028,7 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 		keySetMeta (newKey, "internal/ini/key/last", 0);
 		keySetMeta (newKey, "internal/ini/key/number", 0);
 	}
-	else if (keyIsDirectBelow (parentKey, newKey))
+	else if (keyIsDirectlyBelow (parentKey, newKey))
 	{
 		if (!hasGlobalRoot (parentKey, newKS))
 		{
@@ -1056,7 +1056,7 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 	if (!keyGetMeta (cur, "internal/ini/section") && !keyIsBinary (cur))
 	{
 		keyAddName (sectionKey, "..");
-		if (keyIsDirectBelow (parentKey, cur))
+		if (keyIsDirectlyBelow (parentKey, cur))
 		{
 			if (!hasGlobalRoot (parentKey, newKS))
 			{
@@ -1420,7 +1420,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 							ELEKTRA_SET_INSTALLATION_ERROR (
 								parentKey,
 								"Encountered a multiline value but multiline support is not enabled. "
-								"Have a look at kdb info ini for more details");
+								"Have a look at kdb plugin-info ini for more details");
 							ret = -1;
 						}
 					}

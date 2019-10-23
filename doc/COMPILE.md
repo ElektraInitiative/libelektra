@@ -36,8 +36,8 @@ mkdir build
 cd build
 cmake ..  # watch output to see if everything needed is included
 ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
-make -j 5
-make run_nokdbtests  # optional: run tests
+cmake --build build -- -j5
+cmake --build build --target run_nokdbtests # optional: run tests
 ```
 
 The last line only runs tests not writing into your system.
@@ -368,8 +368,6 @@ you can use:
 -DBINDINGS=MAINTAINED;-EXPERIMENTAL
 ```
 
-Note that the same languages are sometimes available over GI and SWIG.
-In this case, the SWIG bindings are preferred.
 The SWIG executable may be specified with:
 
 ```sh
@@ -378,11 +376,6 @@ The SWIG executable may be specified with:
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-To build GI bindings (deprecated) and gsettings (experimental) use:
-
-```sh
--DBINDINGS="GI;gsettings"
-```
 
 Some bindings provide different APIs (and not a different language), e.g:
 
@@ -694,8 +687,8 @@ and install the build tools:
 cmake -DINSTALL_BUILD_TOOLS=ON \
       -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
       ..
-make -j 5
-make install -j 5
+cmake --build . -- -j5
+cmake --build . --target install
 ```
 
 Where `$(STAGING_DIR_HOST)` must be a directory to be found in the later

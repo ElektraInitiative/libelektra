@@ -700,7 +700,7 @@ static void validateWildcardSubs (KeySet * ks, Key * key)
 	Key * cur;
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (keyIsDirectBelow (parent, cur))
+		if (keyIsDirectlyBelow (parent, cur))
 		{
 			if (elektraArrayValidateBaseNameString (keyBaseName (cur)) > 0)
 			{

@@ -6,7 +6,7 @@ echo
 
 check_version
 
-if "$KDB" info storage provides 2> /dev/null | grep -q 'storage/ini'; then
+if "$KDB" plugin-info storage provides 2> /dev/null | grep -q 'storage/ini'; then
 	echo "This test does not work if Elektra uses the INI plugin as default storage"
 	exit 0
 fi
@@ -76,7 +76,7 @@ echo "Testing binary data handling"
 "$KDB" set $OURS_ROOT/nullbinary > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" getmeta $OURS_ROOT/nullbinary "binary" > /dev/null
+"$KDB" meta-get $OURS_ROOT/nullbinary "binary" > /dev/null
 exit_if_fail "created key is not binary"
 
 "$KDB" merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
@@ -85,7 +85,7 @@ exit_if_fail "could not merge"
 [ "x$("$KDB" ls $MERGED_ROOT/nullbinary 2> /dev/null)" = "x$MERGED_ROOT/nullbinary" ]
 exit_if_fail "not exactly one result"
 
-"$KDB" getmeta $MERGED_ROOT/nullbinary "binary" > /dev/null
+"$KDB" meta-get $MERGED_ROOT/nullbinary "binary" > /dev/null
 exit_if_fail "merged key is not binary"
 
 "$KDB" rm -r $USER_ROOT/mergetest
@@ -95,19 +95,19 @@ echo "Testing metadata"
 "$KDB" set $OURS_ROOT/key "init" > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" setmeta $OURS_ROOT/key comment "init" > /dev/null
+"$KDB" meta-set $OURS_ROOT/key comment "init" > /dev/null
 exit_if_fail "could not set meta"
 
 "$KDB" set $THEIRS_ROOT/key "init" > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" setmeta $THEIRS_ROOT/key comment "theirs" > /dev/null
+"$KDB" meta-set $THEIRS_ROOT/key comment "theirs" > /dev/null
 exit_if_fail "could not set meta"
 
 "$KDB" set $BASE_ROOT/key "init" > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" setmeta $BASE_ROOT/key comment "base" > /dev/null
+"$KDB" meta-set $BASE_ROOT/key comment "base" > /dev/null
 exit_if_fail "could not set meta"
 
 "$KDB" merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT 2> /dev/null

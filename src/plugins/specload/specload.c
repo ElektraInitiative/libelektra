@@ -39,11 +39,10 @@ struct change
 };
 
 // TODO: allow more changes
-static struct change allowedChanges[] = { { "description", true, true, true },
-					  { "opt/help", true, true, true },
-					  { "default", true, true, false },
-					  { "type", true, false, false },
-					  { NULL, false, false, false } };
+static struct change allowedChanges[] = { { "description", true, true, true }, { "opt/help", true, true, true },
+					  { "comment", true, true, true },     { "order", true, true, true },
+					  { "rationale", true, true, true },   { "requirement", true, true, true },
+					  { "example", true, true, true },     { NULL, false, false, false } };
 
 static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, Key * errorKey);
 static bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,

@@ -33,6 +33,9 @@ To stop the \fBwebsite\-frontend\fR, simply run \fBkdb stop\-website\-frontend\f
 This file does not exist by default\. It needs to be copied from the template \fBapplication\-config\.json\.tpl\fR\. To copy the configuration template and mount it into the key database, execute the command \fBkdb mount\-website\-frontend\-config\fR\. The configuration will then be available below \fB/sw/elektra/websitefrontend/#0//current\fR\.
 .
 .P
+Using /sw/elektra/restfrontend/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-rest\-frontend\.pid
+.
+.P
 The configuration file allows to set the URL to the backend in \fBbackend\.root\fR\. GitHub settings may be done in \fBgithub\fR\.
 .
 .P
