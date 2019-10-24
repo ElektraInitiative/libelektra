@@ -297,7 +297,7 @@ If you want to run built `kdb` outside of CLion, the recommended way is to run t
 Example:
 
 ```sh
-. /PATH/TO/YOUR/PROJECT/scripts/run_dev_env
+. /PATH/TO/YOUR/PROJECT/scripts/dev/run_env
 ```
 
 Please keep in mind it sets the variables only in the currently opened shell window/session.

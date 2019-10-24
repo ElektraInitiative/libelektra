@@ -27,7 +27,7 @@ scripts=$(
 		-path '*kdb_zsh_completion' -or \
 		-path '*kdb-zsh-noglob' -or \
 		-path '*reformat-source' -or \
-		-path '*run_dev_env' -or \
+		-path '*run_env' -or \
 		-path '*sed' -or \
 		-path '*update-infos-status' -or \
 		-path '*zsh' -or \
