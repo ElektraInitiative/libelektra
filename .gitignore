@@ -68,3 +68,6 @@ nbproject/
 modules.xml
 .idea/misc.xml
 *.ipr
+
+# Vagrant directories
+.vagrant/

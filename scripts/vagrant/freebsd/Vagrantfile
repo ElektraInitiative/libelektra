@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+Vagrant.configure('2') do |config|
+  config.vm.box = 'generic/freebsd12'
+  config.vm.provision :shell, path: 'provision.sh'
+  config.vm.synced_folder '../../..', '/elektra', \
+                          type: 'rsync', rsync__exclude: '.git/', create: true
+end

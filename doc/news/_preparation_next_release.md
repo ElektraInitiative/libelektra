@@ -291,6 +291,10 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Vagrant
+
+- We added a [Vagrantfile](../../scripts/vagrant/freebsd/README.md) for a virtual machine based on FreeBSD 12. _(René Schwaiger)_
+
 ### Other
 
 - The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
