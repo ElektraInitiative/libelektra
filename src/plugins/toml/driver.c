@@ -37,6 +37,7 @@ static void lastScalarToParentKey (Driver * driver);
 static Key * indexToKey (size_t index, const Key * parent);
 static char * indexToArrayString (size_t index);
 static char * intToStr (size_t i);
+static void setOrderForKey (Key * key, size_t order);
 static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 
 Driver * createDriver (const Key * parent)
@@ -129,6 +130,7 @@ void driverExitKey (Driver * driver)
 	{
 		drainCommentsToKey (driver, driver->parentStack->key);
 	}
+    setOrderForKey (driver->parentStack->key, driver->order++);
 }
 
 void driverExitKeyValue (Driver * driver)
@@ -256,19 +258,26 @@ void driverExitTableArray (Driver * driver)
 		}
 	}
 	driver->parentStack = popParent (driver->parentStack); // pop key name without any indices (was pushed after exiting key)
+    driver->order--;    // Undo order increment, which is done after each key name exit
 
 	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
 	char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
-	Key * arrayRoot = keyDup (key);
-	keyAddName (arrayRoot, "..");
-	keySetMeta (arrayRoot, "array", indexStr);
-	keySetMeta (arrayRoot, "type", "tablearray");
+	Key * rootNameKey = keyDup (key);
+	keyAddName (rootNameKey, "..");
+    Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
+    if (existingRoot == NULL) {
+        existingRoot = rootNameKey;
+	    keySetMeta (existingRoot, "type", "tablearray");
+        setOrderForKey (existingRoot, driver->order++);
+	    ksAppendKey (driver->keys, existingRoot);
+    } else {
+        keyDel (rootNameKey);
+    }
+	keySetMeta (existingRoot, "array", indexStr);
 	elektraFree (indexStr);
 
 	driver->parentStack = pushParent (driver->parentStack, key);
-
-	ksAppendKey (driver->keys, arrayRoot);
 
 	drainCommentsToKey (driver, driver->parentStack->key);
 	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
@@ -724,6 +733,9 @@ static char * intToStr (size_t i)
 {
 	char * str = (char *) elektraMalloc (sizeof (char) * 40);
 	snprintf (str, 40, "%lu", i);
-	elektraRealloc ((void **) &str, strlen (str) + 1);
 	return str;
+}
+
+static void setOrderForKey (Key * key, size_t order) {
+    setPlainIntMeta (key, "order", order);
 }
