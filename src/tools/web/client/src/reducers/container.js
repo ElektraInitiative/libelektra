@@ -7,24 +7,25 @@
  */
 
 import {
-  ADD_INSTANCE, UNADD_INSTANCE,
-  CREATE_INSTANCE_SUCCESS,
-} from '../actions'
+  ADD_INSTANCE,
+  UNADD_INSTANCE,
+  CREATE_INSTANCE_SUCCESS
+} from "../actions";
 
 // controls the state of the card container (for adding instances)
-export default function containerReducer (
+export default function containerReducer(
   state = { addingInstance: false },
   action
 ) {
   switch (action.type) {
     case ADD_INSTANCE:
-      return { ...state, addingInstance: true }
+      return { ...state, addingInstance: true };
 
     case UNADD_INSTANCE:
     case CREATE_INSTANCE_SUCCESS:
-      return { ...state, addingInstance: false }
+      return { ...state, addingInstance: false };
 
     default:
-      return state
+      return state;
   }
 }

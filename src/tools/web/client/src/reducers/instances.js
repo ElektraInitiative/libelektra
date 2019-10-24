@@ -7,39 +7,39 @@
  */
 
 import {
-  INSTANCES_SUCCESS, INSTANCE_DELETE_SUCCESS, INSTANCE_UPDATE_SUCCESS,
-  CREATE_INSTANCE_SUCCESS,
-} from '../actions'
+  INSTANCES_SUCCESS,
+  INSTANCE_DELETE_SUCCESS,
+  INSTANCE_UPDATE_SUCCESS,
+  CREATE_INSTANCE_SUCCESS
+} from "../actions";
 
-export default function instancesReducer (state = [], action) {
+export default function instancesReducer(state = [], action) {
   switch (action.type) {
     case INSTANCE_DELETE_SUCCESS: // instance deleted, remove from state
-      return state.filter(
-        (instance) => instance.id !== action.result.id
-      )
+      return state.filter(instance => instance.id !== action.result.id);
 
     case INSTANCE_UPDATE_SUCCESS: // instance updated, update in state
-      return state.map((instance) => {
+      return state.map(instance => {
         if (instance.id === action.result.id) {
           const hasDifference = // ignore differences in unfolded
             instance.name !== action.result.name ||
             instance.description !== action.result.description ||
             instance.host !== action.result.host ||
-            instance.visibility !== action.result.visibility
+            instance.visibility !== action.result.visibility;
           if (hasDifference) {
-            return action.result
+            return action.result;
           }
         }
-        return instance
-      })
+        return instance;
+      });
 
     case INSTANCES_SUCCESS: // instance list pulled from webd, update state
-      return action.result
+      return action.result;
 
     case CREATE_INSTANCE_SUCCESS: // instance created, add to state
-      return [ ...state, action.result ]
+      return [...state, action.result];
 
     default:
-      return state
+      return state;
   }
 }

@@ -6,8 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import kdb from '../../../kdb'
-import { path } from './utils'
+import kdb from "../../../kdb";
+import { path } from "./utils";
 
-export const getSingleInstanceOption = () =>
-  kdb.get(path('instance'))
+export const getSingleInstanceOption = () => kdb.get(path("instance"));

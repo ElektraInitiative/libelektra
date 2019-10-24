@@ -5,46 +5,47 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-    curl \
-    build-essential \
-    autotools-dev \
     automake \
+    autotools-dev \
+    build-essential \
+    checkinstall \
     cmake \
+    curl \
+    dh-lua \
+    gawk \
+    git \
+    gobject-introspection \
+    lcov \
+    libaugeas-dev \
+    libboost-all-dev \
+    libbotan1.10-dev \
+    libdbus-1-dev \
+    libev-dev \
+    libgirepository1.0-dev \
+    libgit2-dev \
+    libglib2.0-dev \
+    libgpgme11-dev \
+    liblua5.2-dev \
+    libpcre++-dev \
+    libpcre3-dev \
+    libpython3-dev \
+    libssl-dev \
+    libsystemd-dev \
+    libuv0.10-dev \
+    libxerces-c-dev \
+    libyajl-dev \
+    libzmq3-dev \
+    ninja-build \
     pkg-config \
-    ruby \
-    ruby-dev \
     python-dev \
     python3-dev \
-    libpython3-dev \
-    dh-lua \
-    liblua5.2-dev \
-    tclcl-dev \
-    libaugeas-dev \
-    libbotan1.10-dev \
-    libgpgme11-dev \
-    libyajl-dev \
-    git \
-    libgit2-dev \
-    libboost-all-dev \
-    libssl-dev \
-    libdbus-1-dev \
-    libpcre3-dev \
-    libpcre++-dev \
-    libglib2.0-dev \
-    libxerces-c-dev \
+    ruby \
+    ruby-dev \
     swig3.0 \
-    libuv0.10-dev \
-    libev-dev \
-    libzmq3-dev \
-    checkinstall \
-    gobject-introspection \
-    libgirepository1.0-dev \
     systemd \
-    libsystemd-dev \
-    gawk \
-    lcov \
-    valgrind && \
-    rm -rf /var/lib/apt/lists/*
+    tclcl-dev \
+    valgrind \
+    && rm -rf /var/lib/apt/lists/*
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

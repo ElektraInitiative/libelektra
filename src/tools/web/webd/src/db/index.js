@@ -8,17 +8,25 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-export {
-  getSingleInstanceOption,
-} from './config'
+export { getSingleInstanceOption } from "./config";
 
 export {
-  getInstances, createInstance, getInstance, updateInstance, deleteInstance,
-} from './instances'
+  getInstances,
+  createInstance,
+  getInstance,
+  updateInstance,
+  deleteInstance
+} from "./instances";
 
 export {
-  getClusters, createCluster, getCluster, updateCluster, deleteCluster,
-  getClusterInstances, addInstanceToCluster, removeInstanceFromCluster,
-} from './clusters'
+  getClusters,
+  createCluster,
+  getCluster,
+  updateCluster,
+  deleteCluster,
+  getClusterInstances,
+  addInstanceToCluster,
+  removeInstanceFromCluster
+} from "./clusters";
 
-export { virtualKdb } from './utils'
+export { virtualKdb } from "./utils";
