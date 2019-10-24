@@ -3,9 +3,13 @@
 ksNew (16,
     keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
 
-    keyNew (PREFIX "/emojis", KEY_VALUE, "😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾", KEY_END),
+    keyNew (PREFIX "/emojis",
+        KEY_META, "order", "0", 
+        KEY_VALUE, "😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾",
+    KEY_END),
 
     keyNew (PREFIX "/utf8_basic_multiline",
+        KEY_META, "order", "1",
         KEY_META, "comment/#1", " following samples are taken from http://kermitproject.org/utf8.html",
         KEY_META, "comment/#1/start", "#",
         KEY_META, "comment/#1/space", "0",
@@ -16,6 +20,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/utf8_literal_multiline",
+        KEY_META, "order", "2",
         KEY_VALUE,
         "Middle English: An preost wes on leoden, Laȝamon was ihoten\n"
         "He wes Leovenaðes sone -- liðe him be Drihten.\n"
@@ -25,6 +30,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/utf8_literal",
+        KEY_META, "order", "3",
         KEY_VALUE,
         "Middle High German: Sîne klâwen durh die wolken sint geslagen, "
         "er stîget ûf mit grôzer kraft, ich sih in grâwen tägelîch als er wil tagen, "
@@ -33,6 +39,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/utf8_basic",
+        KEY_META, "order", "4",
         KEY_VALUE,
         "Greek Monotonic: Τη γλώσσα μου έδωσαν ελληνική το σπίτι φτωχικό στις α"
         "μμουδιές του Ομήρου.Μονάχη έγνοια η γλώσσα μου στις αμμουδιές του Ομήρ"
@@ -40,6 +47,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/in_keyname (russian)/На берегу пустынных волн/Стоял он, дум великих полн",
+        KEY_META, "order", "5",
         KEY_META, "comment/#1",
                   " Greek Polytonic: Τὴ γλῶσσα μοῦ ἔδωσαν ἑλληνικὴ τὸ σπίτι φτωχικὸ στὶς "
                   "ἀμμουδιὲς τοῦ Ὁμήρου.  Μονάχη ἔγνοια ἡ γλῶσσα μου στὶς ἀμμουδιὲς τοῦ "
@@ -59,6 +67,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/tamil",
+        KEY_META, "order", "6",
         KEY_VALUE,
         "யாமறிந்த மொழிகளிலே தமிழ்மொழி போல் இனிதாவது எங்கும் காணோம்,\n"
         "பாமரராய் விலங்குகளாய், உலகனைத்தும் இகழ்ச்சிசொலப் பான்மை கெட்டு,\n"
@@ -67,6 +76,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/kannada",
+        KEY_META, "order", "7",
         KEY_VALUE,
         "ಬಾ ಇಲ್ಲಿ ಸಂಭವಿಸು ಇಂದೆನ್ನ ಹೃದಯದಲಿ\n"
         "ನಿತ್ಯವೂ ಅವತರಿಪ ಸತ್ಯಾವತಾರ\n\n"
@@ -76,8 +86,13 @@ ksNew (16,
         "ನಿತ್ಯವೂ ಅವತರಿಪ ಸತ್ಯಾವತಾರ || ಬಾ ಇಲ್ಲಿ || ",
     KEY_END),
 
-    keyNew (PREFIX "/in_table/georgian/ვეპხის", KEY_META, "type", "simpletable", KEY_END),
+    keyNew (PREFIX "/in_table/georgian/ვეპხის",
+        KEY_META, "order", "8",
+        KEY_META, "type", "simpletable",
+    KEY_END),
+
     keyNew (PREFIX "/in_table/georgian/ვეპხის/more_georgian",
+        KEY_META, "order", "9",
         KEY_VALUE,
         "ტყაოსანი შოთა რუსთაველი ღმერთსი შემვედრე, ნუთუ კვლა დამხსნა"
         "ს სოფლისა შრომასა, ცეცხლს, წყალსა და მიწასა, ჰაერთა თანა მრ"
@@ -86,6 +101,7 @@ ksNew (16,
     KEY_END),
 
     keyNew (PREFIX "/in_table_array/sanskrit/ ﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥ ",
+        KEY_META, "order", "10",
         KEY_META, "type" , "tablearray",
         KEY_META, "array", "#0",
         KEY_END),

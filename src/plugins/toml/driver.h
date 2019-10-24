@@ -46,6 +46,7 @@ typedef struct
 	TableArray * tableArrayStack;
 	CommentList * commentRoot;
 	CommentList * commentBack;
+    size_t order;
 	size_t spaceCount;
 	size_t newlineCount;
 	const char * filename;
