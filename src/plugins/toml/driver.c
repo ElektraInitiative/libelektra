@@ -130,7 +130,7 @@ void driverExitKey (Driver * driver)
 	{
 		drainCommentsToKey (driver, driver->parentStack->key);
 	}
-    setOrderForKey (driver->parentStack->key, driver->order++);
+	setOrderForKey (driver->parentStack->key, driver->order++);
 }
 
 void driverExitKeyValue (Driver * driver)
@@ -258,22 +258,25 @@ void driverExitTableArray (Driver * driver)
 		}
 	}
 	driver->parentStack = popParent (driver->parentStack); // pop key name without any indices (was pushed after exiting key)
-    driver->order--;    // Undo order increment, which is done after each key name exit
+	driver->order--;				       // Undo order increment, which is done after each key name exit
 
 	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 
 	char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
 	Key * rootNameKey = keyDup (key);
 	keyAddName (rootNameKey, "..");
-    Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
-    if (existingRoot == NULL) {
-        existingRoot = rootNameKey;
-	    keySetMeta (existingRoot, "type", "tablearray");
-        setOrderForKey (existingRoot, driver->order++);
-	    ksAppendKey (driver->keys, existingRoot);
-    } else {
-        keyDel (rootNameKey);
-    }
+	Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
+	if (existingRoot == NULL)
+	{
+		existingRoot = rootNameKey;
+		keySetMeta (existingRoot, "type", "tablearray");
+		setOrderForKey (existingRoot, driver->order++);
+		ksAppendKey (driver->keys, existingRoot);
+	}
+	else
+	{
+		keyDel (rootNameKey);
+	}
 	keySetMeta (existingRoot, "array", indexStr);
 	elektraFree (indexStr);
 
@@ -301,9 +304,10 @@ void driverExitArray (Driver * driver)
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
-void driverEmptyArray (Driver * driver) {
-    driverEnterArray (driver);
-    driverExitArray (driver);
+void driverEmptyArray (Driver * driver)
+{
+	driverEnterArray (driver);
+	driverExitArray (driver);
 }
 
 void driverEnterArrayElement (Driver * driver)
@@ -336,7 +340,7 @@ void driverEnterArrayElement (Driver * driver)
 void driverExitArrayElement (Driver * driver)
 {
 	assert (driver->lastScalar != NULL);
-    driverEnterArrayElement (driver);
+	driverEnterArrayElement (driver);
 	lastScalarToParentKey (driver);
 
 	driver->prevKey = driver->parentStack->key;
@@ -360,9 +364,10 @@ void driverExitInlineTable (Driver * driver)
 	}
 }
 
-void driverEmptyInlineTable (Driver * driver) {
-    driverEnterInlineTable (driver);
-    //Don't need to call exit, because no scalar value emission possible in empty inline table
+void driverEmptyInlineTable (Driver * driver)
+{
+	driverEnterInlineTable (driver);
+	// Don't need to call exit, because no scalar value emission possible in empty inline table
 }
 
 void driverExitComment (Driver * driver, const Scalar * comment)
@@ -396,7 +401,7 @@ void driverExitNewline (Driver * driver)
 
 static void drainCommentsToKey (Driver * driver, Key * key)
 {
-    newlinesToCommentList (driver);
+	newlinesToCommentList (driver);
 	if (key != NULL)
 	{
 		addCommentListToKey (key, driver->commentRoot);
@@ -712,7 +717,7 @@ static char * indexToArrayString (size_t index)
 	}
 	int strLen = 1 +	    //  '#'
 		     (digits - 1) + // underscores
-		     digits +	    // actual digits
+		     digits +       // actual digits
 		     1;		    // '\0'
 	char * str = elektraCalloc (sizeof (char) * strLen);
 	memset (str, '_', sizeof (char) * strLen);
@@ -736,6 +741,7 @@ static char * intToStr (size_t i)
 	return str;
 }
 
-static void setOrderForKey (Key * key, size_t order) {
-    setPlainIntMeta (key, "order", order);
+static void setOrderForKey (Key * key, size_t order)
+{
+	setPlainIntMeta (key, "order", order);
 }

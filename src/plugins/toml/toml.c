@@ -12,8 +12,8 @@
 #include <kdberrors.h>
 #include <kdbmacros.h>
 
-#include "toml.h"
 #include "driver.h"
+#include "toml.h"
 
 KeySet * getContract (void)
 {
