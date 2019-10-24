@@ -53,7 +53,8 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 				printf ("###### Diffs in '%s'\n", name);
 				headerPrinted = true;
 			}
-			printf ("Key diff:\n\texpected\t= '%s'\n\tcontent:\t'%s'\n\tfound\t\t= '%s'\n\tcontent:\t: '%s'\n", keyName (kExp), keyString (kExp), keyName (kIs), keyString (kIs));
+			printf ("Key diff:\n\texpected\t= '%s'\n\tcontent:\t'%s'\n\tfound\t\t= '%s'\n\tcontent:\t: '%s'\n", keyName (kExp),
+				keyString (kExp), keyName (kIs), keyString (kIs));
 			if (stopOnFirstDiff)
 			{
 				return;
@@ -164,9 +165,9 @@ int main (int argc, char ** argv)
 #include "toml/utf8.h"
 	);
 
-/*    testRead ("toml/multiline_strings.toml",
-#include "toml/multiline_strings.h"
-    );*/
+	/*    testRead ("toml/multiline_strings.toml",
+	#include "toml/multiline_strings.h"
+	    );*/
 
 	testRead ("toml/date.toml",
 #include "toml/date.h"

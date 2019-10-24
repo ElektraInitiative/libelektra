@@ -10,21 +10,23 @@
 
 # TODO: Documentation
 
-
 ## Requirements:
+
     - The plugin needs Flex (TODO: min version) and Bison (TODO: min version).
 
 ## Limitations:
+
     - Leap seconds for RFC3339 date times are not checked. For seconds, a value of 60 is always valid.
       As a result of this decision, no valid RFC3339 date is determined invalid, but invalid RFC3339 dates may be determined valid.
       Leap seconds can occur on the ends of June/Dec, where a time of 23:59:60 (positive leap second) or 23:59:58 (negative leap second) is the highest valid value for a second.
     - Currently, a newline at the beginning of a multiline string is not ignored (which it should be).
 
 ## Questions
+
     - How to handle escaped chars in basic strings, especially in context of file recreation?
         * Apply the escape chars, save string result as the key value, also save original string as meta key?
         * But then, how handle modification of value ? Dump original key on change? (Also how to detect change?)
-		* If this is fixed, fix also leading newlines in multiline strings (see Limitations)
+    	* If this is fixed, fix also leading newlines in multiline strings (see Limitations)
     - Don't know where/how exactly to store trailing array comments/newline info
         * Can't associate those info to array top key in the way like file ending comments are preserved
         * Maybe add own metakey (eg. epilogue/comment/#1)?
@@ -39,8 +41,9 @@
         * Makes grammar very messy
 
 ## TODOs
+
     - Order metakeys for file recreation
     - Type metakeys
-	- Set array index for root table array key (the one who stores "array #n" metakey) only after first key entry in table array
-		* As of now, an empty table array always starts with "array #0", even if there aren't any entries with index #0
-		* Index should instead be "" and only be set after first sub key element is added (so that when we query for element #n, there is an entry with it)
+    - Set array index for root table array key (the one who stores "array #n" metakey) only after first key entry in table array
+    	* As of now, an empty table array always starts with "array #0", even if there aren't any entries with index #0
+    	* Index should instead be "" and only be set after first sub key element is added (so that when we query for element #n, there is an entry with it)
