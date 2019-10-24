@@ -69,6 +69,10 @@ function (add_kdb_test suffix)
 	add_gtest (${name} KDBTESTS LINK_TOOLS LINK_ELEKTRA ${ARG_LINK_ELEKTRA})
 endfunction (add_kdb_test suffix)
 
+if (CMAKE_SYSTEM_NAME MATCHES FreeBSD)
+	add_definitions (-DASAN_NO_LEAK_SANITIZER_SUPPORT)
+endif (CMAKE_SYSTEM_NAME MATCHES FreeBSD)
+
 add_kdb_test (allplugins)
 add_kdb_test (conflict REQUIRED_PLUGINS error)
 add_kdb_test (error

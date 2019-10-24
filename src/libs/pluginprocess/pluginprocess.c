@@ -40,7 +40,7 @@
  * 9)  Child sends the commandKeySet over the childCommandPipe
  * 10) For operations requiring a keyset, Child sends the keyset
  *    over the childPayloadPipe
- * 11) Parent receives the commandKeySet and interpretes /pluginprocess/result
+ * 11) Parent receives the commandKeySet and interprets /pluginprocess/result
  * 12) For operations requiring a keyset, Parent receives the keyset
  *     and copies it back to originalKeySet set
  * 13) Parent returns the result value from the child process
