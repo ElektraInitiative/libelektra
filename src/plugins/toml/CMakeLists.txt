@@ -74,6 +74,7 @@ if (DEPENDENCY_PHASE)
 	     comment_list.c
 	     utility.h
 	     utility.c
+	     error_code.h
 	     error.h
 	     error.c
 	     ${FLEX_OUTPUT_HEADER}

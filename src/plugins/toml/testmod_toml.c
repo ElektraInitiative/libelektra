@@ -123,11 +123,8 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 	}
 }
 
-static void testRead (const char * filename, KeySet * expected)
+static void testReadCompare (const char * filename, KeySet * expected)
 {
-	// printf ("################################################\n");
-	// printf ("############ testRead (%s)\n", filename);
-	// printf ("################################################\n");
 	printf ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -146,68 +143,95 @@ static void testRead (const char * filename, KeySet * expected)
 	compare_keyset (expected, ks);
 
 	showDiff (expected, ks, filename, true);
-	// printKs (expected, "expected");
-	// printKs (ks, "parsed");
 
 	PLUGIN_CLOSE ();
 	ksDel (expected);
 }
 
+/*static void testReadExpectFail(const char * filename) {
+	printf ("Reading '%s'\n", filename);
+	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("toml");
+	Key * root = ksLookupByName (expected, PREFIX, KDB_O_POP);
+	if (root != NULL)
+	{
+		if (strcmp (keyString (root), "@CONFIG_FILEPATH@") == 0)
+		{
+			keySetString (root, srcdir_file (filename));
+			ksAppendKey (expected, root);
+		}
+	}
+	KeySet * ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+
+	showDiff (expected, ks, filename, true);
+	// printKs (expected, "expected");
+	// printKs (ks, "parsed");
+
+	PLUGIN_CLOSE ();
+	ksDel (expected);
+}*/
+
+static void testsCompare(void) {
+	testReadCompare ("toml/basic.toml",
+#include "toml/basic.h"
+	);
+	testReadCompare ("toml/utf8.toml",
+#include "toml/utf8.h"
+	);
+
+	/*    testReadCompare ("toml/multiline_strings.toml",
+	#include "toml/multiline_strings.h"
+	    );*/
+
+	testReadCompare ("toml/date.toml",
+#include "toml/date.h"
+	);
+
+	testReadCompare ("toml/array.toml",
+#include "toml/array.h"
+	);
+
+	testReadCompare ("toml/simple_table.toml",
+#include "toml/simple_table.h"
+	);
+
+	testReadCompare ("toml/table_array.toml",
+#include "toml/table_array.h"
+	);
+
+	testReadCompare ("toml/table_array_nested.toml",
+#include "toml/table_array_nested.h"
+	);
+
+	testReadCompare ("toml/table_array_table_mixed.toml",
+#include "toml/table_array_table_mixed.h"
+	);
+
+	testReadCompare ("toml/inline_table.toml",
+#include "toml/inline_table.h"
+	);
+
+	testReadCompare ("toml/inline_table_empty.toml",
+#include "toml/inline_table_empty.h"
+	);
+
+	testReadCompare ("toml/inline_table_multiline_values.toml",
+#include "toml/inline_table_multiline_values.h"
+	);
+
+	testReadCompare ("toml/comment.toml",
+#include "toml/comment.h"
+	);
+
+}
 
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	testRead ("toml/basic.toml",
-#include "toml/basic.h"
-	);
-	testRead ("toml/utf8.toml",
-#include "toml/utf8.h"
-	);
-
-	/*    testRead ("toml/multiline_strings.toml",
-	#include "toml/multiline_strings.h"
-	    );*/
-
-	testRead ("toml/date.toml",
-#include "toml/date.h"
-	);
-
-	testRead ("toml/array.toml",
-#include "toml/array.h"
-	);
-
-	testRead ("toml/simple_table.toml",
-#include "toml/simple_table.h"
-	);
-
-	testRead ("toml/table_array.toml",
-#include "toml/table_array.h"
-	);
-
-	testRead ("toml/table_array_nested.toml",
-#include "toml/table_array_nested.h"
-	);
-
-	testRead ("toml/table_array_table_mixed.toml",
-#include "toml/table_array_table_mixed.h"
-	);
-
-	testRead ("toml/inline_table.toml",
-#include "toml/inline_table.h"
-	);
-
-	testRead ("toml/inline_table_empty.toml",
-#include "toml/inline_table_empty.h"
-	);
-
-	testRead ("toml/inline_table_multiline_values.toml",
-#include "toml/inline_table_multiline_values.h"
-	);
-
-	testRead ("toml/comment.toml",
-#include "toml/comment.h"
-	);
+	testsCompare();
 
 	print_result ("testmod_toml");
 	return nbError;

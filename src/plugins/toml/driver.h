@@ -42,14 +42,14 @@ typedef struct
 	FILE * file;
 	bool simpleTableActive;
 	bool drainCommentsOnKeyExit;
-	char * lastError;
 	Scalar * lastScalar;
 } Driver;
 
 
 Driver * createDriver (const Key * parent);
 int driverParse (Driver * driver, KeySet * returned);
-void driverError (Driver * driver, int lineno, const char * format, ...);
+void driverError (Driver * driver, int err, int lineno, const char * format, ...);
+void driverErrorGeneric(Driver * driver, int err, const char * caller, const char * callee);
 
 void driverExitToml (Driver * driver);
 void driverEnterKey (Driver * driver);

@@ -9,6 +9,7 @@
 #include "parser.h"
 #include "scalar.h"
 #include "driver.h"
+#include "error_code.h"
 
 static char* readLiteral(Driver * driver);
 static char* readBasic(Driver * driver);
@@ -158,28 +159,28 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 <RHS,IN_BRACKETS>{offset_datetime} {
     if (!isValidOffsetDateTime (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid offset datetime: '%s'", yytext);
+        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid offset datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_OFFSET_DATETIME, yytext, yylineno);
 	return OFFSET_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_datetime} {
     if (!isValidLocalDateTime (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
+        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
 	return LOCAL_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_date} {
     if (!isValidLocalDate (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid local date: '%s'", yytext);
+        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid local date: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATE, yytext, yylineno);
 	return LOCAL_DATE;
 }
 <RHS,IN_BRACKETS>{local_time} {
     if (!isValidLocalTime (yytext)) {
-        driverError (driver, yylineno, "Malformed input: Invalid local time: '%s'", yytext);
+        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid local time: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_TIME, yytext, yylineno);
 	return LOCAL_TIME;
@@ -245,13 +246,13 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 <IN_CURLY>{newline} {
-    driverError (driver, yylineno, "Malformed input: Unexpected newline in inline table");
+    driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected newline in inline table");
 }
 
 {whitespace} ;
 
 . {
-    driverError (driver, yylineno, "Malformed input: Unexpected sequence: '%s'", yytext);
+    driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s'", yytext);
 }
 
 %%
@@ -440,7 +441,7 @@ static char* readBasic(Driver * driver) {
 						readHex(&buffer, &index, &size, 8, driver);
 						break;
 					default:
-                        driverError (driver, yylineno, "Malformed Input: Basic String with invalid escape char: \'%c'", c);
+                        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Basic String with invalid escape char: \'%c'", c);
 				}
 			}
 		} else { // read valid non-ascii (utf8 chars)
@@ -522,7 +523,7 @@ static char* readMultilineBasic(Driver * driver) {
 							readHex(&buffer, &index, &size, 8, driver);
 							break;
 						default:
-                            driverError (driver, yylineno, "Malformed Input: Invalid escape sequence: \\'%c'", c);
+                            driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid escape sequence: \\'%c'", c);
 					}
 				}
 			} else { // read valid non-ascii (utf8 chars)
@@ -574,7 +575,7 @@ static void readHex(char** buffer, size_t* index, size_t* len, size_t count, Dri
 	for (size_t i = 0; i < count; i++) {
 		char c = input();
 		if (!isHex(c)) {
-            driverError (driver, yylineno, "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
+            driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
 		}
 		appendChar(buffer, index, len, c);
 	}
@@ -592,16 +593,16 @@ static void readNonAsciiChar(char** buffer, size_t* index, size_t* len, Driver *
 	} else if (c >= 0xC0 && c < 0xE0) { // 110xxxxx
 		utfLen = 2;
 	} else if (c < 0x80) {                        // 0xxxxxxx
-        driverError(driver, yylineno, "Malformed Input: Expected non-ascii char, but found ascii char: '%c' (0x%02X)", c, c);
+        driverError(driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Expected non-ascii char, but found ascii char: '%c' (0x%02X)", c, c);
         // assert (0); // Unexpected ascii char (can happen on malformed user input)
 	} else {
-        driverError (driver, yylineno, "Malformed Input: Invalid utf-8 sequence");
+        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
 	}
 	appendChar(buffer, index, len, c);
 	for (size_t i = 1; i < utfLen; i++) {
 		c = input();
 		if (c < 0x80 || c >= 0xC0) {
-            driverError (driver, yylineno, "Malformed Input: Invalid utf-8 sequence");
+            driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
 		}
 		appendChar(buffer, index, len, c);
 	}

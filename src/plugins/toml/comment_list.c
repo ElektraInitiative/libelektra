@@ -8,12 +8,16 @@
 #include <string.h>
 
 #include "utility.h"
+#include "error_code.h"
 
-static void keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount);
+static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount);
 
 CommentList * commentListNew (const char * comment, size_t spaceCount)
 {
 	CommentList * newComment = elektraCalloc (sizeof (CommentList));
+	if (newComment == NULL) {
+		return NULL;
+	}
 	if (comment != NULL)
 	{
 		newComment->str = strdup (comment);
@@ -35,43 +39,60 @@ void commentListFree (CommentList * root)
 
 CommentList * commentListAdd (CommentList * back, const char * comment, size_t spaceCount)
 {
+	assert(back != NULL);
+	assert(back->next == NULL);
 	back->next = commentListNew (comment, spaceCount);
 	return back->next;
 }
 
 CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 {
+	assert (back != NULL);
 	CommentList * newBack = back;
 	while (newlineCount > 0)
 	{
 		newBack = commentListAdd (newBack, NULL, 0);
+		if (newBack == NULL) {
+			return NULL;
+		}
 		newlineCount--;
 	}
 	return newBack;
 }
 
-void keyAddCommentList (Key * key, CommentList * root)
+int keyAddCommentList (Key * key, CommentList * root)
 {
+	int errno = 0;
 	size_t index = 1;
-	while (root != NULL)
+	while (root != NULL && errno == 0)
 	{
-		keyAddComment (key, root->str, index++, root->spaceCount);
+		errno = keyAddComment (key, root->str, index++, root->spaceCount);
 		root = root->next;
 	}
+	return errno;
 }
 
-void keyAddInlineComment (Key * key, CommentList * root)
+int keyAddInlineComment (Key * key, CommentList * root)
 {
-	assert (root->next == NULL); // there is only 1 inline comment possible
-	keyAddComment (key, root->str, 0, root->spaceCount);
+	if (root->next != NULL) {
+		return ERROR_LOGICAL;
+	}
+	return keyAddComment (key, root->str, 0, root->spaceCount);
 }
 
-static void keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount)
+static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount)
 {
 	// add comment str
 	char * indexStr = indexToArrayString (index);
+	if (indexStr == NULL) {
+		return ERROR_MEMORY;
+	}
 	size_t metaLen = strlen (indexStr) + 9;
 	char * metaName = (char *) elektraCalloc (sizeof (char) * metaLen);
+	if (metaName == NULL) {
+		elektraFree (indexStr);
+		return ERROR_MEMORY;
+	}
 	snprintf (metaName, metaLen, "comment/%s", indexStr);
 	elektraFree (indexStr);
 	if (commentStr != NULL)
@@ -82,6 +103,10 @@ static void keyAddComment (Key * key, const char * commentStr, size_t index, siz
 	// add start symbol
 	size_t metaInfoLen = metaLen + 6;
 	char * metaInfoName = (char *) elektraCalloc (sizeof (char) * metaInfoLen);
+	if (metaInfoName == NULL) {
+		elektraFree (metaName);
+		return ERROR_MEMORY;
+	}
 	snprintf (metaInfoName, metaInfoLen, "%s/start", metaName);
 	if (commentStr != NULL)
 	{
@@ -98,4 +123,5 @@ static void keyAddComment (Key * key, const char * commentStr, size_t index, siz
 
 	elektraFree (metaInfoName);
 	elektraFree (metaName);
+	return 0;
 }
