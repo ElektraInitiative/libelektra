@@ -101,7 +101,7 @@ kdb get user/tests/result
 ### hosts
 
 Merging is also possible in more complicated situations.
-We import three different (see the comment) versions of a hosts file. Please remove the trailing backslashes from the example code.
+As a real-world example, we import three different (see the comment) versions of a hosts file. Please remove the trailing backslashes from the example code.
 
 ```sh
 echo "127.0.0.1       localhost\
@@ -139,9 +139,15 @@ kdb get user/tests/hosts/result/ipv6/ip6-localhost
 #> ::2
 ```
 
-### Meta data
+### Metadata
 
-In case that the values of some keys are equal, the meta data of the `our` version is used. The goal is to preserve a user's personal notes for a key.
+Metadata gets merged as well.
+We do not follow a complicated approach for this topic.
+When a key-value pair is chosen from the three versions to be present in the result it takes all its metadata with it.
+
+In case that the values of some keys are equal, the `our` version wins and consequently the metadata of the `our` version is used. The goal of this is to preserve a user's personal notes for a key.
+
+We set up some keys:
 
 ```sh
 kdb set user/tests/meta/base equal
@@ -163,7 +169,14 @@ kdb meta-set user/tests/meta/our comment/#1 "This is the first line of your cust
 kdb meta-set user/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
 
 kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/tests/meta/metaFromOur
+```
 
+Now we can check if the metadata has been merged as expected.
+
+<!--- Some ini tests fail with multiline metadata => no sh => no markdown shell
+recorder tests -->
+
+```
 kdb meta-get user/tests/meta/metaFromOur comment/#0
 #> This is your custom inline comment
 kdb meta-get user/tests/meta/metaFromOur comment/#1
@@ -172,13 +185,21 @@ kdb meta-get user/tests/meta/metaFromOur comment/#2
 #> This is the second line of your custom comment above the key
 ```
 
-If a key is part of the result because its value has changed then the result will also contain the meta data of that key.
+If a key is part of the result because its value has changed then the result will also contain the metadata of that key.
 
 ```sh
 kdb set user/tests/meta/their different
+#> Set string to "different"
 
 kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/tests/meta/metaFromChanged
+```
 
+We can test again if the result meets our expectations.
+
+<!--- Some ini tests fail with multiline metadata => no sh => no markdown shell
+recorder tests -->
+
+```
 kdb meta-get user/tests/meta/metaFromChanged comment/#2
 #> This is the second line of their comment above the key
 ```
