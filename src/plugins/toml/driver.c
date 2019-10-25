@@ -17,6 +17,8 @@ static void driverNewCommentList (Driver * driver, const char * comment, size_t 
 static void driverClearCommentList (Driver * driver);
 static void driverDrainCommentsToKey (Key * key, Driver * driver);
 static void firstCommentAsInlineToPrevKey (Driver * driver);
+static void driverCommitLastScalarToParentKey (Driver * driver);
+static void driverClearLastScalar (Driver * driver);
 
 static void pushCurrKey (Driver * driver);
 static void setCurrKey (Driver * driver, const Key * parent);
@@ -26,7 +28,6 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
-static void lastScalarToParentKey (Driver * driver);
 
 Driver * createDriver (const Key * parent)
 {
@@ -122,7 +123,7 @@ void driverExitKey (Driver * driver)
 
 void driverExitKeyValue (Driver * driver)
 {
-	lastScalarToParentKey (driver);
+	driverCommitLastScalarToParentKey (driver);
 
 	if (driver->prevKey != NULL)
 	{
@@ -322,7 +323,7 @@ void driverExitArrayElement (Driver * driver)
 {
 	assert (driver->lastScalar != NULL);
 	driverEnterArrayElement (driver);
-	lastScalarToParentKey (driver);
+	driverCommitLastScalarToParentKey (driver);
 
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
@@ -337,12 +338,7 @@ void driverEnterInlineTable (Driver * driver)
 
 void driverExitInlineTable (Driver * driver)
 {
-	if (driver->lastScalar != NULL)
-	{
-		elektraFree (driver->lastScalar->str);
-		elektraFree (driver->lastScalar);
-		driver->lastScalar = NULL;
-	}
+	driverClearLastScalar (driver);
 }
 
 void driverEmptyInlineTable (Driver * driver)
@@ -519,7 +515,7 @@ static IndexList * popIndex (IndexList * top)
 	return newTop;
 }
 
-static void lastScalarToParentKey (Driver * driver)
+static void driverCommitLastScalarToParentKey (Driver * driver)
 {
 	if (driver->lastScalar != NULL)
 	{
@@ -527,8 +523,13 @@ static void lastScalarToParentKey (Driver * driver)
 		// printf ("COMMIT %s -> %s\n", keyName (driver->parentStack->key), driver->lastScalar->str);
 		keySetString (driver->parentStack->key, driver->lastScalar->str);
 		ksAppendKey (driver->keys, driver->parentStack->key);
-		elektraFree (driver->lastScalar->str);
-		elektraFree (driver->lastScalar);
-		driver->lastScalar = NULL;
+		driverClearLastScalar (driver);
 	}
+}
+
+static void driverClearLastScalar (Driver * driver)
+{
+	if (driver->lastScalar != NULL) elektraFree (driver->lastScalar->str);
+	elektraFree (driver->lastScalar);
+	driver->lastScalar = NULL;
 }
