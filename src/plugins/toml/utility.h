@@ -1,0 +1,12 @@
+#ifndef ELEKTRA_PLUGIN_TOML_UTILITY_H
+#define ELEKTRA_PLUGIN_TOML_UTILTIY_H
+
+#include <stddef.h>
+#include <kdb.h>
+
+char * indexToArrayString (size_t index);
+void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
+char * intToStr (size_t i);
+void setOrderForKey (Key * key, size_t order);
+
+#endif // ELEKTRA_PLUGIN_TOML_UTILITY_H

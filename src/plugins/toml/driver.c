@@ -1,17 +1,23 @@
 #include <stdarg.h>
-#include <stdint.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 #include <kdb.h>
 #include <kdbhelper.h>
 
 #include "driver.h"
+#include "utility.h"
 #include "parser.h"
 
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
 
 // Function declarations
+static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount);
+static void driverClearCommentList (Driver * driver);
+static void driverDrainCommentsToKey (Key * key, Driver * driver);
+static void firstCommentAsInlineToPrevKey (Driver * driver);
+
 static void pushCurrKey (Driver * driver);
 static void setCurrKey (Driver * driver, const Key * parent);
 static void resetCurrKey (Driver * driver);
@@ -24,26 +30,12 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
-static void drainCommentsToKey (Driver * driver, Key * key);
-static void firstCommentAsInlineToPrevKey (Driver * driver);
-static void newlinesToCommentList (Driver * driver);
-static void addCommentListToKey (Key * key, CommentList * root);
-static void addInlineCommentToKey (Key * key, CommentList * root);
-static void freeCommentList (CommentList * root);
-static void addCommentToKey (Key * key, const char * commentStr, size_t index, size_t spaces);
-static void addComment (Driver * driver, const char * comment, size_t spaceCount);
-static CommentList * appendComment (CommentList * back, const char * comment, int spaces);
 static void lastScalarToParentKey (Driver * driver);
 static Key * indexToKey (size_t index, const Key * parent);
-static char * indexToArrayString (size_t index);
-static char * intToStr (size_t i);
-static void setOrderForKey (Key * key, size_t order);
-static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 
 Driver * createDriver (const Key * parent)
 {
-	Driver * driver = elektraMalloc (sizeof (Driver));
-	memset (driver, 0, sizeof (Driver));
+	Driver * driver = (Driver*) elektraCalloc (sizeof (Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
@@ -71,7 +63,7 @@ void driverError (Driver * driver, int lineno, const char * format, ...)
 {
 	va_list args;
 	va_start (args, format);
-	char * msg = elektraMalloc (256);
+	char * msg = elektraCalloc (256);
 	// TODO: proper error handling
 	if (lineno > 0)
 	{
@@ -95,7 +87,7 @@ void driverError (Driver * driver, int lineno, const char * format, ...)
 
 void driverExitToml (Driver * driver)
 {
-	drainCommentsToKey (driver, driver->root);
+	driverDrainCommentsToKey (driver->root, driver);
 }
 
 void driverEnterKey (Driver * driver)
@@ -128,7 +120,7 @@ void driverExitKey (Driver * driver)
 	pushCurrKey (driver);
 	if (driver->drainCommentsOnKeyExit)
 	{
-		drainCommentsToKey (driver, driver->parentStack->key);
+		driverDrainCommentsToKey (driver->parentStack->key, driver);
 	}
 	setOrderForKey (driver->parentStack->key, driver->order++);
 }
@@ -155,9 +147,8 @@ void driverExitOptCommentKeyPair (Driver * driver)
 	{
 		assert (driver->prevKey != NULL);
 		assert (driver->commentRoot->next == NULL);
-		addInlineCommentToKey (driver->prevKey, driver->commentRoot);
-		freeCommentList (driver->commentRoot);
-		driver->commentRoot = NULL;
+		keyAddInlineComment (driver->prevKey, driver->commentRoot);
+		driverClearCommentList(driver);
 	}
 }
 
@@ -167,11 +158,10 @@ void driverExitOptCommentTable (Driver * driver)
 	{
 		assert (driver->commentRoot->next == NULL);
 		assert (driver->prevKey != NULL);
-		addInlineCommentToKey (driver->parentStack->key, driver->commentRoot);
-		freeCommentList (driver->commentRoot);
-		driver->commentRoot = NULL;
+		keyAddInlineComment (driver->parentStack->key, driver->commentRoot);
+		driverClearCommentList(driver);
 
-		// We need to emit the table array key ending with /#n, no sub keys
+		// We need to emit the table array key ending with /#n (having no value)
 		// Otherwise, inline comments on empty table arrays will get ignored
 		ksAppendKey (driver->keys, driver->parentStack->key);
 	}
@@ -282,7 +272,7 @@ void driverExitTableArray (Driver * driver)
 
 	driver->parentStack = pushParent (driver->parentStack, key);
 
-	drainCommentsToKey (driver, driver->parentStack->key);
+	driverDrainCommentsToKey (driver->parentStack->key, driver);
 	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
 }
 
@@ -298,7 +288,7 @@ void driverExitArray (Driver * driver)
 	// TODO: Handle comments after last element in array (and inside array brackets)
 	// Must check on how (and where) the trailing comments should be stored
 	// Afterwards, the next line can be removed
-	drainCommentsToKey (driver, NULL);
+	driverDrainCommentsToKey (NULL, driver);
 
 	driver->indexStack = popIndex (driver->indexStack);
 	ksAppendKey (driver->keys, driver->parentStack->key);
@@ -334,7 +324,7 @@ void driverEnterArrayElement (Driver * driver)
 
 	driver->indexStack->value++;
 
-	drainCommentsToKey (driver, driver->parentStack->key);
+	driverDrainCommentsToKey (driver->parentStack->key, driver);
 }
 
 void driverExitArrayElement (Driver * driver)
@@ -372,9 +362,26 @@ void driverEmptyInlineTable (Driver * driver)
 
 void driverExitComment (Driver * driver, const Scalar * comment)
 {
-	newlinesToCommentList (driver);
-	addComment (driver, comment->str, driver->spaceCount);
+	if (driver->newlineCount > 0)
+	{
+		if (driver->commentRoot == NULL) {
+			driverNewCommentList (driver, NULL, 0);
+			driver->newlineCount--;
+		}
+		driver->commentBack = commentListAddNewlines (driver->commentBack, driver->newlineCount);
+		driver->newlineCount = 0;
+	}
+
+	if (driver->commentRoot == NULL)
+	{
+		driverNewCommentList (driver, comment->str, driver->spaceCount);
+	}
+	else
+	{
+		driver->commentBack = commentListAdd (driver->commentBack, comment->str, driver->spaceCount);
+	}
 	driver->spaceCount = 0;
+
 	driver->currLine = comment->line;
 }
 
@@ -399,19 +406,19 @@ void driverExitNewline (Driver * driver)
 	driver->newlineCount++;
 }
 
-static void drainCommentsToKey (Driver * driver, Key * key)
+
+static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount)
 {
-	newlinesToCommentList (driver);
-	if (key != NULL)
-	{
-		addCommentListToKey (key, driver->commentRoot);
-	}
-	else
-	{
-		// printf ("WARNING: Draining comments to NULL\n");
-	}
-	freeCommentList (driver->commentRoot);
+	assert (driver->commentRoot == NULL);
+	assert (driver->commentBack == NULL);
+	driver->commentRoot = commentListNew (comment, spaceCount);
+	driver->commentBack = driver->commentRoot;
+}
+
+static void driverClearCommentList (Driver * driver) {
+	commentListFree (driver->commentRoot);
 	driver->commentRoot = NULL;
+	driver->commentBack = NULL;
 }
 
 static void firstCommentAsInlineToPrevKey (Driver * driver)
@@ -430,70 +437,27 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 			driver->commentRoot = driver->commentRoot->next;
 			comment->next = NULL;
 		}
-		addInlineCommentToKey (driver->prevKey, comment);
-		freeCommentList (comment);
+		keyAddInlineComment (driver->prevKey, comment);
+		commentListFree (comment);	// only clears the inline comment recently added to the key
 	}
 }
 
-static void newlinesToCommentList (Driver * driver)
+static void driverDrainCommentsToKey (Key * key, Driver * driver)
 {
-	while (driver->newlineCount > 0)
-	{
-		addComment (driver, NULL, 0);
-		driver->newlineCount--;
-	}
-}
-
-static void addInlineCommentToKey (Key * key, CommentList * root)
-{
-	assert (root->next == NULL); // there is only 1 inline comment possible
-	addCommentToKey (key, root->comment, 0, root->spaces);
-}
-
-static void addCommentListToKey (Key * key, CommentList * root)
-{
-	int index = 1;
-	while (root != NULL)
-	{
-		addCommentToKey (key, root->comment, index++, root->spaces);
-		root = root->next;
-	}
-}
-
-static void addCommentToKey (Key * key, const char * commentStr, size_t index, size_t spaces)
-{
-	// printf ("ADD COMMENT TO KEY: key = '%s', comment = '%s', index = %d, spaces = %d\n", keyName (key), commentStr, index, spaces);
-
-	// add comment str
-	char * indexStr = indexToArrayString ((size_t) index);
-	size_t metaLen = strlen (indexStr) + 9;
-	char * metaName = elektraCalloc (sizeof (char) * metaLen);
-	snprintf (metaName, metaLen, "comment/%s", indexStr);
-	elektraFree (indexStr);
-	if (commentStr != NULL)
-	{
-		keySetMeta (key, metaName, commentStr);
+	if (driver->newlineCount > 0) {
+		if (driver->commentRoot == NULL) {
+			driverNewCommentList (driver, NULL, 0);
+			driver->newlineCount--;
+		}
+		commentListAddNewlines (driver->commentBack, driver->newlineCount);
+		driver->newlineCount = 0;
 	}
 
-	// add start symbol
-	size_t metaInfoLen = metaLen + 6;
-	char * metaInfoName = elektraCalloc (sizeof (char) * metaInfoLen);
-	snprintf (metaInfoName, metaInfoLen, "%s/start", metaName);
-	if (commentStr != NULL)
+	if (key != NULL)
 	{
-		keySetMeta (key, metaInfoName, "#");
+		keyAddCommentList (key, driver->commentRoot);
 	}
-	else
-	{
-		keySetMeta (key, metaInfoName, "");
-	}
-
-	// add space count
-	snprintf (metaInfoName, metaInfoLen, "%s/space", metaName);
-	setPlainIntMeta (key, metaInfoName, spaces);
-
-	elektraFree (metaInfoName);
-	elektraFree (metaName);
+	driverClearCommentList (driver);
 }
 
 static void pushCurrKey (Driver * driver)
@@ -536,8 +500,7 @@ static char * getChildFraction (const Key * parent, const Key * child)
 	{
 		Key * childDup = keyDup (child);
 		size_t fracSize = 256;
-		char * fraction = elektraMalloc (sizeof (char) * fracSize);
-		memset (fraction, 0, sizeof (char) * fracSize);
+		char * fraction = elektraCalloc (sizeof (char) * fracSize);
 		do
 		{
 			const char * baseName = keyBaseName (childDup);
@@ -640,49 +603,6 @@ static IndexList * popIndex (IndexList * top)
 	return newTop;
 }
 
-static void addComment (Driver * driver, const char * comment, size_t spaceCount)
-{
-	// printf ("STORING comment: '%s'\n", comment);
-	if (driver->commentRoot == NULL)
-	{
-		driver->commentRoot = elektraCalloc (sizeof (CommentList));
-		if (comment != NULL)
-		{
-			driver->commentRoot->comment = strdup (comment);
-		}
-		driver->commentRoot->spaces = driver->spaceCount;
-		driver->commentRoot->next = NULL;
-		driver->commentBack = driver->commentRoot;
-	}
-	else
-	{
-		driver->commentBack = appendComment (driver->commentBack, comment, spaceCount);
-	}
-}
-
-static CommentList * appendComment (CommentList * back, const char * comment, int spaces)
-{
-	back->next = elektraCalloc (sizeof (CommentList));
-	if (comment != NULL)
-	{
-		back->next->comment = strdup (comment);
-	}
-	back->next->spaces = spaces;
-	back->next->next = NULL;
-	return back->next;
-}
-
-static void freeCommentList (CommentList * root)
-{
-	while (root != NULL)
-	{
-		CommentList * nextComment = root->next;
-		elektraFree (root->comment);
-		elektraFree (root);
-		root = nextComment;
-	}
-}
-
 static void lastScalarToParentKey (Driver * driver)
 {
 	if (driver->lastScalar != NULL)
@@ -706,42 +626,4 @@ static Key * indexToKey (size_t index, const Key * parent)
 	keyAddBaseName (indexKey, indexStr);
 	elektraFree (indexStr);
 	return indexKey;
-}
-
-static char * indexToArrayString (size_t index)
-{
-	size_t digits = 1;
-	for (size_t value = index; value > 9; digits++)
-	{
-		value /= 10;
-	}
-	int strLen = 1 +	    //  '#'
-		     (digits - 1) + // underscores
-		     digits +       // actual digits
-		     1;		    // '\0'
-	char * str = elektraCalloc (sizeof (char) * strLen);
-	memset (str, '_', sizeof (char) * strLen);
-	str[0] = '#';
-	str[strLen - 1] = 0;
-	snprintf (str + 1 + (digits - 1), strLen, "%lu", index);
-	return str;
-}
-
-static void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value)
-{
-	char * str = intToStr (value);
-	keySetMeta (key, metaKeyName, str);
-	elektraFree (str);
-}
-
-static char * intToStr (size_t i)
-{
-	char * str = (char *) elektraMalloc (sizeof (char) * 40);
-	snprintf (str, 40, "%lu", i);
-	return str;
-}
-
-static void setOrderForKey (Key * key, size_t order)
-{
-	setPlainIntMeta (key, "order", order);
 }
