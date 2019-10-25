@@ -283,6 +283,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - We now have a [setup for proper symbol versioning](../dev/symbol-versioning.md). _(Klemens Böswirth)_
 - We do not use implicit typing in the code of the `conditionals` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+- JNA and JNI are not built concurrently anymore to avoid [dependency resolution fails](https://jira.apache.org/jira/browse/MDEP-518). _(Michael Zronek)_
 
 ### Docker
 

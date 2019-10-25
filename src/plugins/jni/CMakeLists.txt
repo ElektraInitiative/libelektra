@@ -73,7 +73,7 @@ if (ADDTESTING_PHASE)
 					    WORKING_DIRECTORY ${LIBELEKTRA4J_PATH}
 					    DEPENDS "${LIBELEKTRA4J_PATH}/pom.xml")
 			add_custom_target (jni_header DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h")
-			add_dependencies (testmod_jni jni_header)
+			add_dependencies (testmod_jni jni_header jna)
 		else ()
 			message (WARNING "jna bindings are required for testing, test deactivated")
 		endif ()
