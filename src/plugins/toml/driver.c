@@ -135,14 +135,6 @@ void driverExitKeyValue (Driver * driver)
 	keyIncRef (driver->prevKey);
 
 	driver->parentStack = popParent (driver->parentStack);
-
-	// if the parent key is a table array with array metakey ""
-	// set the array metakey now to "#0", because we just had the first subkey
-	// of this table array using this index (same happens on entering a SimpleTable)
-	if (driver->parentStack != NULL && hasEmptyArrayIndex (driver->parentStack->key))
-	{
-		keyUpdateArrayMetakey (driver->parentStack->key, 0);
-	}
 }
 
 void driverExitOptCommentKeyPair (Driver * driver)
@@ -170,19 +162,7 @@ void driverExitOptCommentTable (Driver * driver)
 		{
 			// We need to emit the table array key ending with /#n (having no value)
 			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
-
 			ksAppendKey (driver->keys, driver->parentStack->key);
-
-			// Additionally, we must set the array metakey of the ancestor to "#0" if it was "",
-			// because we just added the first subkey with index 0
-			Key * keyNameAncestor = keyDup (driver->parentStack->key);
-			keyAddName (keyNameAncestor, "..");
-			Key * keyAncestor = ksLookup (driver->keys, keyNameAncestor, 0);
-			keyDel (keyNameAncestor);
-			if (keyAncestor != NULL && hasEmptyArrayIndex (keyAncestor))
-			{
-				keyUpdateArrayMetakey (keyAncestor, 0);
-			}
 		}
 	}
 }
@@ -209,11 +189,6 @@ void driverExitScalar (Driver * driver, Scalar * scalar)
 
 void driverEnterSimpleTable (Driver * driver)
 {
-	if (driver->parentStack != NULL && hasEmptyArrayIndex (driver->parentStack->key))
-	{
-		keyUpdateArrayMetakey (driver->parentStack->key, 0);
-	}
-
 	if (driver->simpleTableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
@@ -283,7 +258,7 @@ void driverExitTableArray (Driver * driver)
 	{
 		existingRoot = rootNameKey;
 		keySetMeta (existingRoot, "type", "tablearray");
-		keySetMeta (existingRoot, "array", "");
+		keySetMeta (existingRoot, "array", "#0");
 		setOrderForKey (existingRoot, driver->order++);
 		ksAppendKey (driver->keys, existingRoot);
 	}
@@ -567,10 +542,8 @@ static bool hasEmptyArrayIndex (Key * key)
 	const Key * meta = keyNextMeta (key);
 	while (meta != NULL)
 	{
-		printf (">>name = %s\n", keyName (meta));
 		if (strcmp (keyName (meta), "array") == 0)
 		{
-			printf (">>array = %s\n", keyString (meta));
 			return strcmp (keyString (meta), "") == 0;
 		}
 		meta = keyNextMeta (key);

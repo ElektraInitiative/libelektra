@@ -10,3 +10,11 @@ z = 42
 x = 100
 y = 200
 z = 300
+[[table_array_maybe_empty]]
+[[table_array_maybe_empty]]
+[[table_array_maybe_empty]]
+some_content = 1
+[[table_array_maybe_empty]]
+[[table_array_maybe_empty]]
+some_content = 2
+[[table_array_maybe_empty]]
