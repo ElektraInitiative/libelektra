@@ -2,6 +2,7 @@
 
 #include <kdbhelper.h>
 #include <stdio.h>
+#include <string.h>
 
 Key * keyAppendIndex (size_t index, const Key * parent)
 {

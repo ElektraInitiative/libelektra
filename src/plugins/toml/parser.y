@@ -38,7 +38,6 @@ YY_DECL;
 %token <scalar> BINARY
 %token <scalar> FLOAT
 %token <scalar> BOOLEAN
-%token <scalar> SCALAR
 %token <scalar> BARE_STRING
 %token <scalar> LITERAL_STRING
 %token <scalar> BASIC_STRING
@@ -141,21 +140,20 @@ ArrayNonEmpty   :   BRACKETS_OPEN { driverEnterArray (driver); } ArrayList Array
 ArrayEmpty      :   BRACKETS_OPEN BRACKETS_CLOSE { driverEmptyArray (driver); };
 
 
-ArrayList	:   AnyCommentNewline ArrayElement
-            |	ArrayList COMMA AnyCommentNewline ArrayElement
-            ;
+ArrayList	:	AnyCommentNewline ArrayElement
+            	|	ArrayList COMMA AnyCommentNewline ArrayElement
+            	;
 
 ArrayElement    :   Value { driverExitArrayElement (driver); };
 
-ArrayEpilogue   :   %empty
-                |   AnyCommentNewline
-                |   COMMA AnyCommentNewline
+ArrayEpilogue   :	AnyCommentNewline
+                |	COMMA AnyCommentNewline
                 ;
 
 AnyCommentNewline	:	AnyCommentNewline NEWLINE { driverExitNewline (driver); }
-                    |	AnyCommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
-                    |	%empty 
-                    ;
+			|	AnyCommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
+			|	%empty 
+			;
 Scalar  :   IntegerScalar { $$ = $1; }
         |   BooleanScalar { $$ = $1; }
         |   FloatScalar { $$ = $1; }

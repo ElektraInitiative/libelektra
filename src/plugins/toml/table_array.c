@@ -1,6 +1,8 @@
 #include "table_array.h"
 
 #include <kdbhelper.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "utility.h"
 

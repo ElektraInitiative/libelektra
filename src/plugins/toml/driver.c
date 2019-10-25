@@ -12,7 +12,6 @@
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
 
-// Function declarations
 static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount);
 static void driverClearCommentList (Driver * driver);
 static void driverDrainCommentsToKey (Key * key, Driver * driver);
