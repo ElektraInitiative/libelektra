@@ -4,11 +4,12 @@
 #include <kdb.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 
+#include "comment_list.h"
 #include "scalar.h"
 #include "table_array.h"
-#include "comment_list.h"
 
 typedef struct _ParentList
 {
@@ -36,11 +37,11 @@ typedef struct
 	size_t order;
 	size_t spaceCount;
 	size_t newlineCount;
+	size_t currLine;
 	const char * filename;
 	FILE * file;
 	bool tableActive;
 	bool drainCommentsOnKeyExit;
-	int currLine;
 	char * lastError;
 	Scalar * lastScalar;
 } Driver;

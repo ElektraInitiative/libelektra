@@ -1,6 +1,6 @@
 #include "scalar.h"
 
-Scalar * createScalar (ScalarType type, char * scalarString, int line)
+Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 {
 	Scalar * scalar = malloc (sizeof (Scalar));
 	scalar->type = type;
@@ -9,7 +9,7 @@ Scalar * createScalar (ScalarType type, char * scalarString, int line)
 	return scalar;
 }
 
-Scalar * createScalarDup (ScalarType type, const char * scalarString, int line)
+Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t line)
 {
 	Scalar * scalar = malloc (sizeof (Scalar));
 	scalar->type = type;
