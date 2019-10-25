@@ -11,9 +11,8 @@ ksNew (128,
 		KEY_META, "comment/#3/space", "0",
 		KEY_META, "comment/#4/start", "",
 		KEY_META, "comment/#4/space", "0",
+	KEY_END),
 
-		KEY_END
-	),
 	keyNew (PREFIX "/a", KEY_VALUE, "3",
 		KEY_META, "order", "0",
 		KEY_META, "comment/#0", " Inline comment after keypair",
@@ -24,8 +23,7 @@ ksNew (128,
 		KEY_META, "comment/#1/space", "0",
 		KEY_META, "comment/#2/start", "",		// TODO: this + next line = "empty line"?
 		KEY_META, "comment/#2/space", "0",
-		KEY_END
-	),
+	KEY_END),
 
 	keyNew (PREFIX "/array",
 		KEY_META, "array", "#2",
@@ -43,8 +41,8 @@ ksNew (128,
 		KEY_META, "comment/#3/space", "0",
 		KEY_META, "comment/#4/start", "",
 		KEY_META, "comment/#4/space", "0",
-		KEY_END
-	),
+	KEY_END),
+
 	keyNew (PREFIX "/array/#0", KEY_VALUE, "1",
 		KEY_META, "comment/#0", " Comment after first value of array",
 		KEY_META, "comment/#0/start", "#",
@@ -52,20 +50,20 @@ ksNew (128,
 		KEY_META, "comment/#1", " Comment directly after array opening brackets, before first value",
 		KEY_META, "comment/#1/start", "#",
 		KEY_META, "comment/#1/space", "0",
-		KEY_END
-	),
+	KEY_END),
+
 	keyNew (PREFIX "/array/#1", KEY_VALUE, "2",
 		KEY_META, "comment/#0", " Comment after second value of array",
 		KEY_META, "comment/#0/start", "#",
 		KEY_META, "comment/#0/space", "0",
-		KEY_END
-	),
+	KEY_END),
+
 	keyNew (PREFIX "/array/#2", KEY_VALUE, "3",
 		KEY_META, "comment/#0", " Comment after last value of array",
 		KEY_META, "comment/#0/start", "#",
 		KEY_META, "comment/#0/space", "0",
-		KEY_END
-	),
+	KEY_END),
+
 	keyNew (PREFIX "/table",
 		KEY_META, "type", "simpletable",
 		KEY_META, "order", "2",
@@ -74,25 +72,23 @@ ksNew (128,
 		KEY_META, "comment/#0/space", "0",
 		KEY_META, "comment/#1/start", "",
 		KEY_META, "comment/#1/space", "0",
-		KEY_END
-	),
+	KEY_END),
+
 	keyNew (PREFIX "/table_array",
 		KEY_META, "array", "#0",
 		KEY_META, "type", "tablearray",
 		KEY_META, "order", "3",
-		KEY_END
-	),
+	KEY_END),
+
 	keyNew (PREFIX "/table_array/#0",
 		KEY_META, "comment/#0", " Comment after table array",
 		KEY_META, "comment/#0/start", "#",
 		KEY_META, "comment/#0/space", "0",
 		KEY_META, "comment/#1/start", "",
 		KEY_META, "comment/#1/space", "0",
-		KEY_END
-	),
+	KEY_END),
 
-	KS_END
-)
+KS_END)
 
 
 		

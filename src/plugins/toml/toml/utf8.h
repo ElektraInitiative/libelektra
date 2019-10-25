@@ -103,7 +103,7 @@ ksNew (16,
     keyNew (PREFIX "/in_table_array/sanskrit/ ﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥ ",
         KEY_META, "order", "10",
         KEY_META, "type" , "tablearray",
-        KEY_META, "array", "#0",
+        KEY_META, "array", "",
         KEY_END),
 
     KS_END

@@ -40,7 +40,7 @@ typedef struct
 	size_t currLine;
 	const char * filename;
 	FILE * file;
-	bool tableActive;
+	bool simpleTableActive;
 	bool drainCommentsOnKeyExit;
 	char * lastError;
 	Scalar * lastScalar;

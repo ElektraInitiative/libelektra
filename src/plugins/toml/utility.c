@@ -15,6 +15,12 @@ Key * keyAppendIndex (size_t index, const Key * parent)
 	return indexKey;
 }
 
+void keyUpdateArrayMetakey (Key * key, size_t newIndex) {
+	char * indexStr = indexToArrayString (newIndex);
+	keySetMeta (key, "array", indexStr);
+	elektraFree (indexStr);
+}
+
 char * indexToArrayString (size_t index)
 {
 	size_t digits = 1;
