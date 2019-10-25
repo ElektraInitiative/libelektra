@@ -44,6 +44,3 @@
 
     - Order metakeys for file recreation
     - Type metakeys
-    - Set array index for root table array key (the one who stores "array #n" metakey) only after first key entry in table array
-    	* As of now, an empty table array always starts with "array #0", even if there aren't any entries with index #0
-    	* Index should instead be "" and only be set after first sub key element is added (so that when we query for element #n, there is an entry with it)

@@ -27,6 +27,7 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
+static bool hasEmptyArrayIndex (Key * key);
 
 Driver * createDriver (const Key * parent)
 {
@@ -34,7 +35,7 @@ Driver * createDriver (const Key * parent)
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
-	driver->tableActive = false;
+	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
 	return driver;
 }
@@ -134,6 +135,14 @@ void driverExitKeyValue (Driver * driver)
 	keyIncRef (driver->prevKey);
 
 	driver->parentStack = popParent (driver->parentStack);
+
+	// if the parent key is a table array with array metakey ""
+	// set the array metakey now to "#0", because we just had the first subkey
+	// of this table array using this index (same happens on entering a SimpleTable)
+	if (driver->parentStack != NULL && hasEmptyArrayIndex (driver->parentStack->key))
+	{
+		keyUpdateArrayMetakey (driver->parentStack->key, 0);
+	}
 }
 
 void driverExitOptCommentKeyPair (Driver * driver)
@@ -153,12 +162,28 @@ void driverExitOptCommentTable (Driver * driver)
 	{
 		assert (driver->commentRoot->next == NULL);
 		assert (driver->prevKey != NULL);
+		printf ("Add comment: %s\n", driver->commentRoot->str);
 		keyAddInlineComment (driver->parentStack->key, driver->commentRoot);
 		driverClearCommentList (driver);
 
-		// We need to emit the table array key ending with /#n (having no value)
-		// Otherwise, inline comments on empty table arrays will get ignored
-		ksAppendKey (driver->keys, driver->parentStack->key);
+		if (!driver->simpleTableActive) // if we're here and not in a simple table, we exited an table array
+		{
+			// We need to emit the table array key ending with /#n (having no value)
+			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
+
+			ksAppendKey (driver->keys, driver->parentStack->key);
+
+			// Additionally, we must set the array metakey of the ancestor to "#0" if it was "",
+			// because we just added the first subkey with index 0
+			Key * keyNameAncestor = keyDup (driver->parentStack->key);
+			keyAddName (keyNameAncestor, "..");
+			Key * keyAncestor = ksLookup (driver->keys, keyNameAncestor, 0);
+			keyDel (keyNameAncestor);
+			if (keyAncestor != NULL && hasEmptyArrayIndex (keyAncestor))
+			{
+				keyUpdateArrayMetakey (keyAncestor, 0);
+			}
+		}
 	}
 }
 
@@ -184,13 +209,18 @@ void driverExitScalar (Driver * driver, Scalar * scalar)
 
 void driverEnterSimpleTable (Driver * driver)
 {
-	if (driver->tableActive)
+	if (driver->parentStack != NULL && hasEmptyArrayIndex (driver->parentStack->key))
+	{
+		keyUpdateArrayMetakey (driver->parentStack->key, 0);
+	}
+
+	if (driver->simpleTableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
 	}
 	else
 	{
-		driver->tableActive = true;
+		driver->simpleTableActive = true;
 	}
 	resetCurrKey (driver);
 }
@@ -203,10 +233,10 @@ void driverExitSimpleTable (Driver * driver)
 
 void driverEnterTableArray (Driver * driver)
 {
-	if (driver->tableActive)
+	if (driver->simpleTableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
-		driver->tableActive = false;
+		driver->simpleTableActive = false;
 	}
 	if (driver->tableArrayStack != NULL)
 	{
@@ -243,11 +273,9 @@ void driverExitTableArray (Driver * driver)
 		}
 	}
 	driver->parentStack = popParent (driver->parentStack); // pop key name without any indices (was pushed after exiting key)
-	driver->order--;				       // Undo order increment, which is done after each key name exit
+	driver->order--;				       // Undo order increment, table array entries are ordered by their index
 
 	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
-
-	char * indexStr = indexToArrayString (driver->tableArrayStack->currIndex);
 	Key * rootNameKey = keyDup (key);
 	keyAddName (rootNameKey, "..");
 	Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
@@ -255,15 +283,15 @@ void driverExitTableArray (Driver * driver)
 	{
 		existingRoot = rootNameKey;
 		keySetMeta (existingRoot, "type", "tablearray");
+		keySetMeta (existingRoot, "array", "");
 		setOrderForKey (existingRoot, driver->order++);
 		ksAppendKey (driver->keys, existingRoot);
 	}
 	else
 	{
 		keyDel (rootNameKey);
+		keyUpdateArrayMetakey (existingRoot, driver->tableArrayStack->currIndex);
 	}
-	keySetMeta (existingRoot, "array", indexStr);
-	elektraFree (indexStr);
 
 	driver->parentStack = pushParent (driver->parentStack, key);
 
@@ -531,4 +559,21 @@ static void driverClearLastScalar (Driver * driver)
 	if (driver->lastScalar != NULL) elektraFree (driver->lastScalar->str);
 	elektraFree (driver->lastScalar);
 	driver->lastScalar = NULL;
+}
+
+static bool hasEmptyArrayIndex (Key * key)
+{
+	keyRewindMeta (key);
+	const Key * meta = keyNextMeta (key);
+	while (meta != NULL)
+	{
+		printf (">>name = %s\n", keyName (meta));
+		if (strcmp (keyName (meta), "array") == 0)
+		{
+			printf (">>array = %s\n", keyString (meta));
+			return strcmp (keyString (meta), "") == 0;
+		}
+		meta = keyNextMeta (key);
+	}
+	return false;
 }

@@ -5,6 +5,7 @@
 #include <kdb.h>
 
 Key * keyAppendIndex (size_t index, const Key * parent);
+void keyUpdateArrayMetakey (Key * key, size_t newIndex);
 char * indexToArrayString (size_t index);
 void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 char * intToStr (size_t i);
