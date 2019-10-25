@@ -68,6 +68,10 @@ if (DEPENDENCY_PHASE)
 	     driver.c
 	     scalar.h
 	     scalar.c
+	     comment_list.h
+	     comment_list.c
+	     utility.h
+	     utility.c
 	     error.h
 	     error.c
 	     ${FLEX_OUTPUT_HEADER}

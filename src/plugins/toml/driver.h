@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "scalar.h"
+#include "comment_list.h"
 
 typedef struct _ParentList
 {
@@ -27,13 +28,6 @@ typedef struct _TableArray
 	size_t currIndex;
 	struct _TableArray * next;
 } TableArray;
-
-typedef struct _CommentList
-{
-	char * comment;
-	size_t spaces;
-	struct _CommentList * next;
-} CommentList;
 
 typedef struct
 {
