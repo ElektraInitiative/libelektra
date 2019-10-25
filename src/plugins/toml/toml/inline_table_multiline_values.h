@@ -1,12 +1,22 @@
 // clang-format off
 ksNew (16,
-    keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
+	keyNew (PREFIX,
+		KEY_VALUE, "@CONFIG_FILEPATH@",
+	KEY_END),
 
-    keyNew (PREFIX "/inline_table", KEY_META, "type", "inlinetable"),
-    keyNew (PREFIX "/inline_table/multiline_string_basic", KEY_VALUE, "\nBasic\nMulti\nLine\nString\n", KEY_END),
-    keyNew (PREFIX "/inline_table/multiline_string_literal", KEY_VALUE, "\nLiteral\nMulti\nLine\nString", KEY_END),
+	keyNew (PREFIX "/inline_table",
+		KEY_META, "type", "inlinetable",
+		KEY_META, "order", "0",
+	KEY_END),
+	keyNew (PREFIX "/inline_table/multiline_string_basic",
+		KEY_VALUE, "\nBasic\nMulti\nLine\nString\n",
+		KEY_META, "order", "1",
+	KEY_END),
+	keyNew (PREFIX "/inline_table/multiline_string_literal",
+		KEY_VALUE, "\nLiteral\nMulti\nLine\nString",
+		KEY_META, "order", "2",
+	KEY_END),
 
-    KS_END
-)
+KS_END)
 
 
