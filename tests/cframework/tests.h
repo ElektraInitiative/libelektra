@@ -229,20 +229,26 @@ int init (int argc, char ** argv);
 		ELEKTRA_DIAG_STORE                                                                                                         \
 		ELEKTRA_DIAG_OFF (-Waddress)                                                                                               \
 		if (!s1)                                                                                                                   \
-			yield_error ("left hand side is null pointer") else if (!s2)                                                       \
-				yield_error ("right hand side is null pointer") else if (strcmp (s1, s2) != 0)                             \
-			{                                                                                                                  \
-				char errorMsg[BUFFER_LENGTH];                                                                              \
+		{                                                                                                                          \
+			yield_error ("left hand side is null pointer")                                                                     \
+		}                                                                                                                          \
+		else if (!s2)                                                                                                              \
+		{                                                                                                                          \
+			yield_error ("right hand side is null pointer")                                                                    \
+		}                                                                                                                          \
+		else if (strcmp (s1, s2) != 0)                                                                                             \
+		{                                                                                                                          \
+			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
-				strcpy (errorMsg, "string \"");                                                                            \
-				strcat (errorMsg, s1);                                                                                     \
-				strcat (errorMsg, "\" is not equal to \"");                                                                \
-				strcat (errorMsg, s2);                                                                                     \
-				strcat (errorMsg, "\"");                                                                                   \
+			strcpy (errorMsg, "string \"");                                                                                    \
+			strcat (errorMsg, s1);                                                                                             \
+			strcat (errorMsg, "\" is not equal to \"");                                                                        \
+			strcat (errorMsg, s2);                                                                                             \
+			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
-				yield_error (errorMsg);                                                                                    \
-				printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                      \
-			}                                                                                                                  \
+			yield_error (errorMsg);                                                                                            \
+			printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                              \
+		}                                                                                                                          \
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
 
@@ -274,7 +280,15 @@ int init (int argc, char ** argv);
 		nbTest++;                                                                                                                  \
 		Key * mmk1 = (Key *) pk1;                                                                                                  \
 		Key * mmk2 = (Key *) pk2;                                                                                                  \
-		if (mmk1 != mmk2)                                                                                                          \
+		if (mmk1 == NULL)                                                                                                          \
+		{                                                                                                                          \
+			yield_error ("first key is null")                                                                                  \
+		}                                                                                                                          \
+		else if (mmk2 == NULL)                                                                                                     \
+		{                                                                                                                          \
+			yield_error ("second key is null")                                                                                 \
+		}                                                                                                                          \
+		else if (mmk1 != mmk2)                                                                                                     \
 		{                                                                                                                          \
 			compare_key_name (mmk1, mmk2);                                                                                     \
                                                                                                                                            \

@@ -142,6 +142,7 @@
  */
 
 
+#include "kdbprivate.h"
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -159,6 +160,8 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
+#include <ctype.h>
 
 #include "kdb.h"
 #include "kdbhelper.h"
@@ -214,12 +217,7 @@ const char * keyName (const Key * key)
 {
 	if (!key) return 0;
 
-	if (!key->key)
-	{
-		return "";
-	}
-
-	return key->key;
+	return key->key == NULL ? "" : key->key;
 }
 
 /**
@@ -241,12 +239,8 @@ ssize_t keyGetNameSize (const Key * key)
 {
 	if (!key) return -1;
 
-	if (!key->key)
-	{
-		return 1;
-	}
-	else
-		return key->keySize;
+	// TODO (kodebach): change to return size_t
+	return key->keySize == 0 ? 1 : key->keySize;
 }
 
 
@@ -272,13 +266,7 @@ ssize_t keyGetNameSize (const Key * key)
 const void * keyUnescapedName (const Key * key)
 {
 	if (!key) return 0;
-
-	if (!key->key)
-	{
-		return "";
-	}
-
-	return key->key + key->keySize;
+	return key->ukey == NULL ? "" : key->ukey;
 }
 
 
@@ -296,12 +284,8 @@ ssize_t keyGetUnescapedNameSize (const Key * key)
 {
 	if (!key) return -1;
 
-	if (!key->key)
-	{
-		return 0;
-	}
-	else
-		return key->keyUSize;
+	// TODO (kodebach): change to return size_t
+	return key->keyUSize == 0 ? 1 : key->keyUSize;
 }
 
 
@@ -333,6 +317,7 @@ keyGetName(key, getBack, keyGetNameSize(key));
  */
 ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 {
+	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 
 	if (!returnedName) return -1;
@@ -354,49 +339,35 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 		return -1;
 	}
 
-	strncpy (returnedName, key->key, maxSize);
+	strncpy (returnedName, key->key, maxSize); // TODO (kodebach): memcpy
 
 	return key->keySize;
 }
 
-/**
- * @internal
- *
- * @brief Call this function after every key name changing operation
- *
- * @pre key->key and key->keySize are set accordingly and the size of
- * allocation is twice as what you actually needed.
- *
- * @post we get a unsynced key with a correctly terminated
- * key name suitable for ordering and the name getter methods
- *
- * It will duplicate the key length and put a second name afterwards
- * that is used for sorting keys.
- *
- * @param key
- */
-ssize_t elektraFinalizeName (Key * key)
+// TODO (kodebach): document
+size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize)
 {
-	key->key[key->keySize - 1] = 0; /* finalize string */
+	if (!key) return 0;
+	if (!returnedName) return 0;
 
-	key->keyUSize = elektraUnescapeKeyName (key->key, key->key + key->keySize);
+	if (!key->ukey)
+	{
+		returnedName[0] = 0;
+		return 1;
+	}
 
-	key->flags |= KEY_FLAG_SYNC;
+	if (key->keySize > maxSize)
+	{
+		return -1;
+	}
+
+	memcpy (returnedName, key->ukey, maxSize);
 
 	return key->keySize;
 }
 
-ssize_t elektraFinalizeEmptyName (Key * key)
-{
-	key->key = elektraCalloc (2); // two null pointers
-	key->keySize = 1;
-	key->keyUSize = 1;
-	key->flags |= KEY_FLAG_SYNC;
 
-	return key->keySize;
-}
-
-static void elektraHandleUserName (Key * key, const char * newName)
+/*static void elektraHandleUserName (Key * key, const char * newName) // TODO (kodebach): needed??
 {
 	const size_t userLength = sizeof ("user");
 	key->keyUSize = key->keySize = userLength;
@@ -416,58 +387,7 @@ static void elektraHandleUserName (Key * key, const char * newName)
 	owner[ownerLength] = 0;
 	keySetOwner (key, owner);
 	elektraFree (owner);
-}
-
-static void elektraRemoveKeyName (Key * key)
-{
-	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	key->key = 0;
-	key->keySize = 0;
-	key->keyUSize = 0;
-}
-
-/**
- * @brief Checks if in name is something else other than slashes
- *
- * @param name the name to check
- *
- * @retval 0 if not only slashes
- * @retval 1 if only slashes
- */
-static int elektraOnlySlashes (const char * name)
-{
-	size_t nameLen = strlen (name);
-	for (size_t i = 0; i < nameLen; ++i)
-	{
-		if (name[i] != '/') return 0; // not only slashes
-	}
-	return 1; // only slashes
-}
-
-
-/**
- * @internal
- */
-static int keyGetNameNamespace (const char * name)
-{
-	if (!name) return KEY_NS_EMPTY;
-	if (!strcmp (name, "")) return KEY_NS_EMPTY;
-	if (name[0] == '/')
-		return KEY_NS_CASCADING;
-	else if (keyNameIsSpec (name))
-		return KEY_NS_SPEC;
-	else if (keyNameIsProc (name))
-		return KEY_NS_PROC;
-	else if (keyNameIsDir (name))
-		return KEY_NS_DIR;
-	else if (keyNameIsUser (name))
-		return KEY_NS_USER;
-	else if (keyNameIsSystem (name))
-		return KEY_NS_SYSTEM;
-	return KEY_NS_META;
-}
-
+}*/
 
 /**
  * Set a new name to a key.
@@ -508,73 +428,326 @@ static int keyGetNameNamespace (const char * name)
  */
 ssize_t keySetName (Key * key, const char * newName)
 {
+	// TODO (kodebach): change to return size_t
 	return elektraKeySetName (key, newName, 0);
 }
 
+static int elektraKeyNameValidatePart (const char * name, size_t len)
+{
+	// TODO (kodebach): check and document
+
+	if (len == 0) return 1;
+	if (name[0] == '@') return 0;
+	if (name[0] == '%' && len > 1) return 0;
+
+	if (name[0] == '#')
+	{
+		size_t underscores = 0;
+		while (name[1 + underscores] == '_')
+		{
+			++underscores;
+		}
+
+		size_t digits = 0;
+		while (isdigit (name[1 + underscores + digits]))
+		{
+			++digits;
+		}
+
+		return len == 1 + underscores + digits && (underscores == 0 || underscores + 1 == digits) &&
+		       (digits < 20 || (digits == 20 && strncmp (&name[1 + underscores], "18446744073709551615", 20) <= 0));
+	}
+
+	return 1;
+}
+
+int elektraKeyNameValidate (const char * name, int fullKey)
+{
+	if (!name) return 0;
+
+	// TODO (kodebach): check and document
+	if (fullKey)
+	{
+		const char * slash = strchr (name, '/');
+		if (slash == NULL) return 0;
+
+		// TODO (kodebach): : after namespace
+		size_t len = slash - name;
+		if (slash != name && elektraReadNamespace (name, len) == KEY_NS_NONE)
+		{
+			// wrong namespace
+			return 0;
+		}
+
+		if (slash[1] == '.' && slash[2] == '.' && slash[3] == '/')
+		{
+			// first part is /../
+			return 0;
+		}
+	}
+
+	const char * lastSlash = name;
+	const char * nextSlash;
+	while ((nextSlash = strchr (lastSlash, '/')) != NULL)
+	{
+		if (!elektraKeyNameValidatePart (lastSlash, nextSlash - lastSlash))
+		{
+			return 0;
+		}
+		lastSlash = nextSlash + 1;
+	}
+
+	return elektraKeyNameValidatePart (lastSlash, strlen (lastSlash));
+}
+
+// assume name is validated with elektraKeyNameValidate, otherwise behaviour undef
+// return size including zero terminator -> 0 is error
+size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t offset)
+{
+	if (!name) return 0;
+
+	// TODO (kodebach): check and document
+	// ensure buffer is big enough
+	size_t outLen = strlen (name) + offset + 3;
+	elektraRealloc ((void **) canonicalName, outLen);
+
+	char * cname = *canonicalName + offset;
+	char * outPtr = cname;
+
+	const char * lastSlash = name;
+
+	int slashes = 0;
+
+	const char * nextSlash;
+	while ((nextSlash = strchr (lastSlash, '/')) != NULL)
+	{
+		while (nextSlash != NULL && nextSlash != name && *(nextSlash - 1) == '\\')
+		{
+			// skip escaped slashes
+			nextSlash = strchr (nextSlash + 1, '/');
+		}
+
+		if (nextSlash == NULL)
+		{
+			break;
+		}
+
+		// handle part between lastSlash and nextSlash
+		size_t len = nextSlash - lastSlash;
+		if (len > 0)
+		{
+			++slashes;
+		}
+
+		if (len == 1 && lastSlash[0] == '.')
+		{
+			// /./ -> ignore
+		}
+		else if (len == 2 && lastSlash[0] == '.' && lastSlash[1] == '.')
+		{
+			// /../ -> move outPtr back to previous part
+			do
+			{
+				// find previous slash
+				--outPtr;
+				while (*outPtr != '/' && outPtr > *canonicalName)
+				{
+					--outPtr;
+				}
+				// skip escaped slashes
+			} while (*(outPtr - 1) == '\\' && outPtr > *canonicalName);
+		}
+		/*else if (lastSlash[1] == '.')
+		{
+			// inactive key
+			// TODO: mark inactive with flag?
+		}*/
+		else if (lastSlash[0] == '#')
+		{
+			// array part -> ensure prefix and copy
+			size_t underscores = 0;
+			while (lastSlash[1 + underscores] == '_')
+			{
+				++underscores;
+			}
+
+			size_t digits = 0;
+			while (isdigit (lastSlash[1 + underscores + digits]))
+			{
+				++digits;
+			}
+
+			*outPtr++ = '#';
+			if (underscores == 0)
+			{
+				outLen += digits - 1;
+				elektraRealloc ((void **) canonicalName, outLen);
+				for (size_t i = 0; i < digits - 1; ++i)
+				{
+					*outPtr++ = '_';
+				}
+			}
+			memcpy (outPtr, lastSlash + 1, underscores + digits);
+			outPtr += underscores + digits;
+			*outPtr++ = '/';
+		}
+		else if (len > 0 || lastSlash == name)
+		{
+			// normal part -> just copy
+			memcpy (outPtr, lastSlash, len);
+			outPtr += len;
+			*outPtr++ = '/';
+		}
+
+		lastSlash = nextSlash + 1;
+	}
+
+	size_t lastLen = strlen (lastSlash);
+	if (lastLen > 0)
+	{
+		strncpy (outPtr, lastSlash, lastLen);
+		outPtr += lastLen;
+	}
+
+	// terminate
+	*outPtr++ = '\0';
+
+	return outPtr - *canonicalName;
+}
+
+// assumes name is canonical
+size_t elektraKeyNameUnescape (const char * name, char ** unescapedName, size_t offset)
+{
+	if (!name) return 0;
+
+	// TODO (kodebach): check and document
+	// ensure buffer is big enough
+	elektraRealloc ((void **) unescapedName, strlen (name) + offset + 2);
+
+	char * uname = *unescapedName + offset;
+	char * outPtr = uname;
+
+	const char * lastSpecial = name;
+
+	if (offset == 0)
+	{
+		if (name[0] != '/')
+		{
+			// TODO (kodebach): colon after namespace
+			const char * firstSlash = strchr (name, '/');
+			*outPtr++ = elektraReadNamespace (name, firstSlash - name);
+			lastSpecial = firstSlash;
+		}
+		else
+		{
+			*outPtr++ = KEY_NS_CASCADING;
+		}
+	}
+
+
+	// copy piecewise between special characters
+	const char * nextSpecial;
+	while ((nextSpecial = strpbrk (lastSpecial, "%\\")) != NULL)
+	{
+		// copy stuff before special
+		if (nextSpecial > lastSpecial)
+		{
+			size_t len = nextSpecial - lastSpecial;
+			memcpy (outPtr, lastSpecial, len);
+
+			// replace / with \0
+			for (size_t i = 0; i < len; ++i, ++outPtr)
+			{
+				if (*outPtr == '/')
+				{
+					*outPtr = '\0';
+				}
+			}
+		}
+
+		if (*nextSpecial == '\\')
+		{
+			*outPtr++ = *++nextSpecial;
+		}
+		else if (*nextSpecial == '%' && outPtr != uname && *(outPtr - 1) != '\0')
+		{
+			*outPtr++ = '%';
+		}
+
+		lastSpecial = nextSpecial + 1;
+	}
+
+	// copy rest of name
+	size_t len = strlen (lastSpecial);
+	memcpy (outPtr, lastSpecial, len);
+
+	// replace / with \0
+	for (size_t i = 0; i < len; ++i, ++outPtr)
+	{
+		if (*outPtr == '/')
+		{
+			*outPtr = '\0';
+		}
+	}
+
+	// terminate
+	*outPtr++ = '\0';
+
+	return outPtr - *unescapedName;
+}
+
+// TODO (kodebach): remove options
 ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 {
+	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 
-	elektraRemoveKeyName (key);
+	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	if (!(options & KEY_META_NAME)) keySetOwner (key, NULL);
 
-	switch (keyGetNameNamespace (newName))
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
-	case KEY_NS_NONE:
-		ELEKTRA_ASSERT (0, "non empty key has no namespace?");
-	case KEY_NS_EMPTY:
-		elektraFinalizeEmptyName (key);
-		return 0; // as documented
-	case KEY_NS_CASCADING:
-		key->keyUSize = 1;
-		key->keySize = sizeof ("/");
-		break;
-	case KEY_NS_SPEC:
-		key->keyUSize = key->keySize = sizeof ("spec");
-		break;
-	case KEY_NS_PROC:
-		key->keyUSize = key->keySize = sizeof ("proc");
-		break;
-	case KEY_NS_DIR:
-		key->keyUSize = key->keySize = sizeof ("dir");
-		break;
-	case KEY_NS_USER:
-		elektraHandleUserName (key, newName);
-		break;
-	case KEY_NS_SYSTEM:
-		key->keyUSize = key->keySize = sizeof ("system");
-		break;
-	case KEY_NS_META:
-		if (!(options & KEY_META_NAME)) return -1;
-		keyNameGetOneLevel (newName, &key->keySize);
-		key->keyUSize = ++key->keySize; // for null
-		break;
-	} // Note that we abused keyUSize for cascading and user:owner
-
-	const size_t length = elektraStrLen (newName);
-	key->key = elektraMalloc (key->keySize * 2);
-	memcpy (key->key, newName, key->keySize);
-	if (length == key->keyUSize || length == key->keySize)
-	{ // use || because full length is keyUSize in user, but keySize for /
-		// newName consisted of root only
-		elektraFinalizeName (key);
-		return key->keyUSize;
+		// key was in mmap region, clear flag and set NULL to allow realloc
+		key->key = NULL;
+		key->ukey = NULL;
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 
-	if (elektraOnlySlashes (newName + key->keyUSize - 1))
+	if (!newName)
 	{
-		elektraFinalizeName (key);
-		return key->keySize;
+		key->keySize = 0;
+		key->keyUSize = 0;
+		elektraFree (key->key);
+		key->key = NULL;
+		elektraFree (key->ukey);
+		key->ukey = NULL;
+		return 1;
 	}
 
-	key->key[key->keySize - 1] = '\0';
-	const ssize_t ret = keyAddName (key, newName + key->keyUSize);
-	if (ret == -1)
-		elektraRemoveKeyName (key);
-	else
-		return key->keySize;
-	return ret;
+	if (!elektraKeyNameValidate (newName, 1))
+	{
+		// error invalid name
+		return -1;
+	}
+
+	size_t keySize = elektraKeyNameCanonicalize (newName, &key->key, 0);
+	if (keySize == 0)
+	{
+		// error
+		return -1;
+	}
+	key->keySize = keySize;
+
+	ssize_t keyUSize = elektraKeyNameUnescape (key->key, &key->ukey, 0);
+	if (keyUSize == 0)
+	{
+		// error, MUST be out of memory error
+		return -1;
+	}
+	key->keyUSize = keyUSize;
+
+	return key->keySize;
 }
 
 
@@ -708,18 +881,8 @@ const char * keyBaseName (const Key * key)
 	if (!key) return 0;
 	if (!key->key) return "";
 
-	char * p = key->key + key->keySize + key->keyUSize - 1;
-
-	char * base = p;
-	while (*(--p))
-	{
-		base = p;
-	}
-
-	if (base != (key->key + key->keyUSize))
-		return base;
-	else
-		return "";
+	// TODO (kodebach): update
+	return strrchr (key->ukey + key->keyUSize - 1, '\0');
 }
 
 
@@ -796,10 +959,63 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 		return -1;
 	}
 
-	strncpy (returned, baseName, baseSize);
+	strncpy (returned, baseName, baseSize); // TODO (kodebach): memcpy
 	return baseSize;
 }
 
+size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
+{
+	if (strlen (part) == 0)
+	{
+		elektraRealloc ((void **) escapedPart, 2);
+		**escapedPart = '%';
+		*(*escapedPart + 1) = '\0';
+		return 1;
+	}
+
+	int specialStart = strchr (".#%@/\\", part[0]) != NULL;
+	size_t special = specialStart ? 1 : 0;
+
+	const char * cur = part + 1;
+	while ((cur = strpbrk (cur, "/\\")) != NULL)
+	{
+		++special;
+		++cur;
+	}
+
+	elektraRealloc ((void **) escapedPart, strlen (part) + special + 1);
+
+	char * outPtr = *escapedPart;
+
+	if (specialStart)
+	{
+		*outPtr++ = '\\';
+	}
+
+	const char * last = part;
+	while ((cur = strpbrk (last, "/\\")) != NULL)
+	{
+		size_t len = cur - last;
+		memcpy (outPtr, last, len);
+		outPtr += len;
+
+		if (cur > part)
+		{
+			// start backslash already added above
+			*outPtr++ = '\\';
+		}
+		*outPtr++ = *cur;
+
+		last = cur + 1;
+	}
+
+	size_t len = strlen (last);
+	memcpy (outPtr, last, len);
+	outPtr += len;
+	*outPtr++ = '\0';
+
+	return outPtr - *escapedPart; // TODO (kodebach): + 1 ?
+}
 
 /**
  * Adds @p baseName (that will be escaped) to the current key name.
@@ -839,93 +1055,60 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
  */
 ssize_t keyAddBaseName (Key * key, const char * baseName)
 {
+	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 	if (!baseName) return key->keySize;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
-	char * escaped = elektraMalloc (strlen (baseName) * 2 + 2);
-	elektraEscapeKeyNamePart (baseName, escaped);
-	size_t len = strlen (escaped);
-	if (!strcmp (key->key, "/"))
+	size_t unescapedSize = strlen (baseName);
+	char * escaped = NULL;
+	size_t escapedSize = elektraKeyNameEscapePart (baseName, &escaped);
+	if (escapedSize == 0)
 	{
-		key->keySize += len;
-	}
-	else
-	{
-		key->keySize += len + 1;
+		// error
+		return -1;
 	}
 
-	const size_t newSize = key->keySize * 2;
+	size_t newKeySize = key->keySize + escapedSize + 1;
+	size_t newKeyUSize = key->keyUSize + unescapedSize + 1;
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
-		// key was in mmap region, clear flag and trigger malloc instead of realloc
-		key->key = elektraMalloc (newSize);
+		// key was in mmap region, clear flag and copy to malloced buffer
+		char * tmp = elektraMalloc (newKeySize);
+		memcpy (tmp, key->key, key->keySize);
+		key->key = tmp;
+
+		tmp = elektraMalloc (newKeyUSize);
+		memcpy (tmp, key->ukey, key->keyUSize);
+		key->ukey = tmp;
+
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
-		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
+		elektraRealloc ((void **) &key->key, newKeySize);
+		elektraRealloc ((void **) &key->ukey, newKeyUSize);
 	}
 
-	if (!key->key)
-	{
-		elektraFree (escaped);
-		return -1;
-	}
-
-	if (strcmp (key->key, "/"))
-	{
-		key->key[key->keySize - len - 2] = KDB_PATH_SEPARATOR;
-	}
-	memcpy (key->key + key->keySize - len - 1, escaped, len);
-
+	// add escaped name
+	key->key[key->keySize - 1] = '/';
+	memcpy (&key->key[key->keySize], escaped, escapedSize);
 	elektraFree (escaped);
 
-	elektraFinalizeName (key);
+	// set keySize and terminate escaped name
+	key->keySize += escapedSize + 1;
+	key->key[key->keySize - 1] = '\0';
+
+	// add unescaped name
+	key->ukey[key->keyUSize] = '\0';
+	memcpy (&key->ukey[key->keyUSize], baseName, unescapedSize);
+
+	// set keyUSize and terminate escaped name
+	key->keyUSize += unescapedSize + 1;
+	key->ukey[key->keyUSize - 1] = '\0';
 
 	return key->keySize;
-}
-
-/**
- * @internal
- *
- * @brief Used by keyAddName
- *
- * Will remove one level of key, even if key->key is not null terminated
- * also handles cascading keys and sets avoidSlash properly.
- *
- * @param key to remove one level
- * @param [out] avoidSlash set to 1 if / is already present (cascading)
- */
-static void elektraRemoveOneLevel (Key * key, int * avoidSlash)
-{
-	int levels = 0;
-	char * x = key->key;
-	size_t xsize = 0;
-	size_t sizeOfLastLevel = 0;
-	char * const last = &key->key[key->keySize];
-	const char save = *last;
-	*last = 0;
-
-	while (*(x = keyNameGetOneLevel (x + xsize, &xsize)))
-	{
-		sizeOfLastLevel = xsize;
-		levels++;
-	}
-
-	if (levels > 1)
-	{
-		key->keySize -= sizeOfLastLevel + 1;
-		key->key[key->keySize] = 0;
-	}
-	else if (*key->key == '/') // cascading key
-	{
-		// strip down to root
-		key->keySize = 1;
-		*avoidSlash = 1;
-	}
-	*last = save;
 }
 
 /**
@@ -964,6 +1147,7 @@ static void elektraRemoveOneLevel (Key * key, int * avoidSlash)
  */
 ssize_t keyAddName (Key * key, const char * newName)
 {
+	// TODO (kodebach): error codes
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
@@ -971,69 +1155,71 @@ ssize_t keyAddName (Key * key, const char * newName)
 	if (!newName) return 0;
 	size_t const nameSize = elektraStrLen (newName);
 	if (nameSize < 2) return 0;
-	if (!elektraValidateKeyName (newName, nameSize)) return -1;
-
-	const size_t origSize = key->keySize;
-	const size_t newSize = (origSize + nameSize) * 2;
 
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
-		// key was in mmap region, clear flag and trigger malloc instead of realloc
-		key->key = elektraMalloc (newSize);
+		// key was in mmap region, clear flag and copy to malloced buffer
+		char * tmp = elektraMalloc (key->keySize);
+		memcpy (tmp, key->key, key->keySize);
+		key->key = tmp;
+
+		tmp = elektraMalloc (key->keyUSize);
+		memcpy (tmp, key->ukey, key->keyUSize);
+		key->ukey = tmp;
+
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+	}
+
+	if (!elektraKeyNameValidate (newName, 0))
+	{
+		// error invalid name suffix
+		return -1;
+	}
+
+	if (key->key[key->keySize - 2] == '/')
+	{
+		key->keySize--;
 	}
 	else
 	{
-		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
+		key->key[key->keySize - 1] = '/';
 	}
-
-	if (!key->key) return -1;
-
-	size_t size = 0;
-	const char * p = newName;
-	int avoidSlash = 0;
-
-	if (*key->key == '/') avoidSlash = key->keySize == 2;
-
-	--key->keySize; // loop assumes that key->key[key->keySize] is last character and not NULL
-
-	/* iterate over each single folder name removing repeated '/', .  and .. */
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
+	ssize_t keySize = elektraKeyNameCanonicalize (newName, &key->key, key->keySize);
+	if (keySize == 0)
 	{
-		if (size == 1 && strncmp (p, ".", 1) == 0)
-		{
-			continue; /* just ignore current directory */
-		}
-		else if (size == 2 && strncmp (p, "..", 2) == 0) /* give away one level*/
-		{
-			elektraRemoveOneLevel (key, &avoidSlash);
-			continue;
-		}
-
-		if (!avoidSlash)
-		{
-			/* Add a '/' to the end of key name */
-			key->key[key->keySize] = KDB_PATH_SEPARATOR;
-			key->keySize++;
-		}
-		else
-		{
-			avoidSlash = 0;
-		}
-
-		/* carefully append basenames */
-		char * d = key->key + key->keySize;
-		memcpy (d, p, size);
-		key->keySize += size;
+		// error
+		return -1;
 	}
 
-	++key->keySize; /*for \\0 ending*/
+	key->keySize = keySize;
 
-	elektraFinalizeName (key);
+	ssize_t keyUSize = elektraKeyNameUnescape (key->key, &key->ukey, key->keyUSize);
+	if (keyUSize == 0)
+	{
+		// error, MUST be out of memory error
+		return -1;
+	}
+	key->keyUSize = keyUSize;
 
-	return origSize == key->keySize ? 0 : key->keySize;
+	return key->keySize;
 }
 
+static const char * elektraKeyFindBaseNamePtr (Key * key)
+{
+	// TODO (kodebach): check and document
+	const char * lastPart = key->key;
+	const char * slash = key->key;
+	while ((slash = strchr (slash, '/')) != NULL)
+	{
+		if (slash == key->key || *(slash - 1) != '\\')
+		{
+			lastPart = slash;
+		}
+
+		++slash;
+	}
+	return lastPart;
+}
 
 /**
  * Sets @c baseName as the new basename for @c key.
@@ -1086,68 +1272,72 @@ ssize_t keyAddName (Key * key, const char * newName)
  */
 ssize_t keySetBaseName (Key * key, const char * baseName)
 {
+	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
-	size_t size = 0;
-	char * searchBaseName = 0;
-	size_t searchBaseSize = 0;
-	char * p = key->key;
+	const char * baseNamePtr = elektraKeyFindBaseNamePtr (key);
+	key->keySize = baseNamePtr - key->key + 1;
 
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
+	const char * ubaseNamePtr = key->ukey + key->keyUSize - 2;
+	while (*ubaseNamePtr != '\0')
 	{
-		searchBaseName = p;
-		searchBaseSize = size + 1;
+		--ubaseNamePtr;
 	}
+	key->keyUSize = ubaseNamePtr - key->ukey + 1;
 
-	if (!searchBaseName || searchBaseName == key->key)
+	if (baseName == NULL)
 	{
-		return -1;
-	}
-
-	// truncate the key
-	key->keySize -= searchBaseSize;
-
-	if (!baseName)
-	{
-		// Avoid deleting the last / of a cascading key by increasing the size by one again
-		key->keySize += (1 == key->keySize) && (KEY_NS_CASCADING == keyGetNamespace (key));
-
-		// just remove base name, so we are finished
-		elektraFinalizeName (key);
 		return key->keySize;
 	}
 
-	char * escaped = elektraMalloc (strlen (baseName) * 2 + 2);
-	elektraEscapeKeyNamePart (baseName, escaped);
-	size_t sizeEscaped = elektraStrLen (escaped);
+	size_t unescapedSize = strlen (baseName);
+	char * escaped = NULL;
+	size_t escapedSize = elektraKeyNameEscapePart (baseName, &escaped);
+	if (escapedSize == 0)
+	{
+		// error
+		return -1;
+	}
 
-	const size_t newSize = (key->keySize + sizeEscaped) * 2;
+	size_t newKeySize = key->keySize + escapedSize + 1;
+	size_t newKeyUSize = key->keyUSize + unescapedSize + 1;
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
-		// key was in mmap region, clear flag and trigger malloc instead of realloc
-		key->key = elektraMalloc (newSize);
+		// key was in mmap region, clear flag and copy to malloced buffer
+		char * tmp = elektraMalloc (newKeySize);
+		memcpy (tmp, key->key, key->keySize);
+		key->key = tmp;
+
+		tmp = elektraMalloc (newKeyUSize);
+		memcpy (tmp, key->ukey, key->keyUSize);
+		key->ukey = tmp;
+
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
-		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
+		elektraRealloc ((void **) &key->key, newKeySize);
+		elektraRealloc ((void **) &key->ukey, newKeyUSize);
 	}
 
-	if (!key->key)
-	{
-		elektraFree (escaped);
-		return -1;
-	}
-
-	key->key[key->keySize - 1] = KDB_PATH_SEPARATOR;
-	memcpy (key->key + key->keySize, escaped, sizeEscaped);
-
+	// add escaped name
+	key->key[key->keySize] = KDB_PATH_SEPARATOR;
+	memcpy (&key->key[key->keySize + 1], escaped, escapedSize);
 	elektraFree (escaped);
 
-	key->keySize += sizeEscaped;
-	elektraFinalizeName (key);
+	// set keySize and terminate escaped name
+	key->keySize += escapedSize + 1;
+	key->key[key->keySize - 1] = '\0';
+
+	// add unescaped name
+	key->ukey[key->keyUSize] = '\0';
+	memcpy (&key->ukey[key->keyUSize + 1], baseName, unescapedSize);
+
+	// set keyUSize and terminate escaped name
+	key->keyUSize += unescapedSize + 1;
+	key->ukey[key->keyUSize - 1] = '\0';
 
 	return key->keySize;
 }
@@ -1177,7 +1367,16 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 elektraNamespace keyGetNamespace (const Key * key)
 {
 	if (!key) return KEY_NS_NONE;
-	return keyGetNameNamespace (key->key);
+	return (elektraNamespace) key->ukey[0];
+}
+
+int keySetNamespace (Key * key, elektraNamespace ns)
+{
+	// TODO (kodebach): document
+	if (!key) return -1;
+	if (ns == KEY_NS_NONE || ns == KEY_NS_EMPTY) return -1;
+	key->ukey[0] = ns;
+	return 0;
 }
 
 

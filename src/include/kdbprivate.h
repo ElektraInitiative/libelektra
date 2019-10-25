@@ -212,8 +212,8 @@ struct _Key
 	size_t dataSize;
 
 	/**
-	 * The name of the key.
-	 * @see keySetName(), keySetName()
+	 * The canonical (escaped) name of the key.
+	 * @see keyGetName(), keySetName()
 	 */
 	char * key;
 
@@ -222,6 +222,13 @@ struct _Key
 	 * @see keyGetName(), keyGetNameSize(), keySetName()
 	 */
 	size_t keySize;
+
+	/**
+	 * The unescaped name of the key.
+	 * Note: This is NOT a standard null-terminated string.
+	 * @see keyGetName(), keySetName()
+	 */
+	char * ukey;
 
 	/**
 	 * Size of the unescaped key name in bytes, including all NULL.
@@ -566,18 +573,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
-ssize_t elektraFinalizeName (Key * key);
-ssize_t elektraFinalizeEmptyName (Key * key);
-
-char * elektraEscapeKeyNamePart (const char * source, char * dest);
-
-size_t elektraUnescapeKeyName (const char * source, char * dest);
-int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** dest);
-char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest);
-
-
 /*Internally used for array handling*/
-int elektraValidateKeyName (const char * name, size_t size);
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 
@@ -597,6 +593,15 @@ int keyNameIsProc (const char * keyname);
 int keyNameIsDir (const char * keyname);
 int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
+
+int keySetNamespace (Key * key, elektraNamespace ns);
+
+elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
+
+int elektraKeyNameValidate (const char * name, int fullKey);
+size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t offset);
+size_t elektraKeyNameUnescape (const char * name, char ** unescapedName, size_t offset);
+size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
 /* global plugin calls */
 int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);

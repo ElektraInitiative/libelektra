@@ -85,7 +85,7 @@ Level 4 name: jkl
  * 	NULL when done.
  * @ingroup keyname
  */
-char * keyNameGetOneLevel (const char * name, size_t * size)
+char * keyNameGetOneLevel (const char * name, size_t * size) // TODO (kodebach): remove
 {
 	char * real = (char *) name;
 	size_t cursor = 0;
@@ -128,19 +128,19 @@ char * keyNameGetOneLevel (const char * name, size_t * size)
 	return real;
 }
 
-int keyNameIsSpec (const char * name)
+int keyNameIsSpec (const char * name) // TODO (kodebach): remove
 {
 	if (!strcmp ("spec", name) || !strncmp ("spec/", name, sizeof ("spec/") - 1)) return 1;
 	return 0;
 }
 
-int keyNameIsProc (const char * name)
+int keyNameIsProc (const char * name) // TODO (kodebach): remove
 {
 	if (!strcmp ("proc", name) || !strncmp ("proc/", name, sizeof ("proc/") - 1)) return 1;
 	return 0;
 }
 
-int keyNameIsDir (const char * name)
+int keyNameIsDir (const char * name) // TODO (kodebach): remove
 {
 	if (!strcmp ("dir", name) || !strncmp ("dir/", name, sizeof ("dir/") - 1)) return 1;
 	return 0;
@@ -157,7 +157,7 @@ int keyNameIsDir (const char * name)
  * @ingroup keyname
  *
  */
-int keyNameIsUser (const char * name)
+int keyNameIsUser (const char * name) // TODO (kodebach): remove
 {
 	if (!strcmp ("user", name) || !strncmp ("user/", name, sizeof ("user/") - 1) || !strncmp ("user:", name, sizeof ("user:") - 1))
 	{
@@ -177,7 +177,7 @@ int keyNameIsUser (const char * name)
  * @ingroup keyname
  *
  */
-int keyNameIsSystem (const char * name)
+int keyNameIsSystem (const char * name) // TODO (kodebach): remove
 {
 	if (!strcmp ("system", name) || !strncmp ("system/", name, sizeof ("system/") - 1)) return 1;
 	return 0;

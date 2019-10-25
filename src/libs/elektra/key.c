@@ -397,7 +397,7 @@ Key * keyDup (const Key * source)
 	dest->flags = KEY_FLAG_SYNC;
 
 	/* prepare to set dynamic properties */
-	dest->key = dest->data.v = dest->meta = 0;
+	dest->key = dest->ukey = dest->data.v = dest->meta = 0;
 
 	/* copy dynamic properties */
 	if (keyCopy (dest, source) == -1)
@@ -477,19 +477,31 @@ int keyCopy (Key * dest, const Key * source)
 
 	// remember dynamic memory to be removed
 	char * destKey = dest->key;
+	char * destUKey = dest->ukey;
 	void * destData = dest->data.c;
 	KeySet * destMeta = dest->meta;
 
 	// duplicate dynamic properties
 	if (source->key)
 	{
-		dest->key = elektraStrNDup (source->key, source->keySize + source->keyUSize);
+		dest->key = elektraStrNDup (source->key, source->keySize);
 		if (!dest->key) goto memerror;
 	}
 	else
 	{
 		dest->key = 0;
 	}
+
+	if (source->ukey)
+	{
+		dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
+		if (!dest->ukey) goto memerror;
+	}
+	else
+	{
+		dest->ukey = 0;
+	}
+
 
 	if (source->data.v)
 	{
@@ -521,6 +533,7 @@ int keyCopy (Key * dest, const Key * source)
 
 	// free old resources of destination
 	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destKey);
+	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destUKey);
 	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (destData);
 	ksDel (destMeta);
 
@@ -633,6 +646,7 @@ int keyClear (Key * key)
 	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
 	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
 	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 
 	ksDel (key->meta);

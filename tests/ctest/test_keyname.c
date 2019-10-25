@@ -14,12 +14,23 @@
 
 #define test_relative(expected, child, parent)                                                                                             \
 	{                                                                                                                                  \
-		char error[ERROR_STRING_SIZE];                                                                                             \
-		const char * result = elektraKeyGetRelativeName (child, parent);                                                           \
-		snprintf (error, sizeof (error),                                                                                           \
-			  "Relative name of key was wrong.\nParent:   %s\nChild:    %s\nExpected: %s\nResult:   %s\n", keyName (parent),   \
-			  keyName (child), expected, result);                                                                              \
-		succeed_if (strcmp (result, expected) == 0, error);                                                                        \
+		if (child == NULL)                                                                                                         \
+		{                                                                                                                          \
+			yield_error ("child is null")                                                                                      \
+		}                                                                                                                          \
+		else if (parent == NULL)                                                                                                   \
+		{                                                                                                                          \
+			yield_error ("parent is null")                                                                                     \
+		}                                                                                                                          \
+		else                                                                                                                       \
+		{                                                                                                                          \
+			char error[ERROR_STRING_SIZE];                                                                                     \
+			const char * result = elektraKeyGetRelativeName (child, parent);                                                   \
+			snprintf (error, sizeof (error),                                                                                   \
+				  "Relative name of key was wrong.\nParent:   %s\nChild:    %s\nExpected: %s\nResult:   %s\n",             \
+				  keyName (parent), keyName (child), expected, result);                                                    \
+			succeed_if (strcmp (result, expected) == 0, error);                                                                \
+		}                                                                                                                          \
 	}
 
 static void test_relative_root (void)

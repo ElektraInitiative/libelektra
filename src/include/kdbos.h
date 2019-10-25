@@ -188,7 +188,8 @@ typedef int option_t;
 
 typedef int keyswitch_t;
 
-typedef int elektraNamespace;
+// defined as char to allow ++ for iteration over namespaces
+typedef char elektraNamespace;
 
 /**@brief Separator for key names.
  *

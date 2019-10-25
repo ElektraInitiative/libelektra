@@ -102,33 +102,18 @@ int keyNeedSync (const Key * key)
 
 int keyIsSpec (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsSpec (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_SPEC;
 }
 
 int keyIsProc (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsProc (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_PROC;
 }
 
 
 int keyIsDir (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsDir (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_DIR;
 }
 
 
@@ -139,19 +124,13 @@ int keyIsDir (const Key * key)
  *
  * @param key the key object to work with
  * @retval 1 if key name begins with @p system, 0 otherwise
- * @retval -1 on NULL pointer
  * @see keyIsUser(), keySetName(), keyName()
  * @ingroup keytest
  *
  */
 int keyIsSystem (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsSystem (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_SYSTEM;
 }
 
 
@@ -162,19 +141,13 @@ int keyIsSystem (const Key * key)
  *
  * @param key the key object to work with
  * @retval 1 if key name begins with @p user, 0 otherwise
- * @retval -1 on NULL pointer
  * @see keyIsSystem(), keySetName(), keyName()
  * @ingroup keytest
  *
  */
 int keyIsUser (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsUser (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_USER;
 }
 
 /**

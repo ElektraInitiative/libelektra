@@ -1201,6 +1201,10 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		{
 			key->meta = (KeySet *) ((char *) (key->meta) + destInt);
 		}
+		if (key->ukey)
+		{
+			key->ukey = key->ukey + destInt;
+		}
 	}
 }
 
