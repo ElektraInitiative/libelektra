@@ -141,25 +141,46 @@ kdb get user/tests/hosts/result/ipv6/ip6-localhost
 
 ### Meta data
 
-We continue with the hosts example. During a merge meta data strictly belongs to the key. Note that all the meta data of the changed key is in the result as well.
-
-```sh
-kdb meta-get user/tests/hosts/result/ipv6/ip6-localhost comment/#1
-#>  THEIR The following lines are desirable for IPv6 capable hosts
-```
-
 In case that the values of some keys are equal, the meta data of the `our` version is used. The goal is to preserve a user's personal notes for a key.
 
 ```sh
-kdb set user/tests/meta/original irrelevant
-#> Create a new key user/tests/meta/original with string "irrelevant"
-kdb set user/tests/meta/changed irrelevant
-#> Create a new key user/tests/meta/changed with string "irrelevant"
-kdb meta-set user/tests/meta/original something original
-kdb meta-set user/tests/meta/changed something changed
-kdb cmerge user/tests/meta/changed user/tests/meta/original user/tests/meta/original user/tests/meta/result
-kdb meta-get user/tests/meta/result something
-#> changed
+kdb set user/tests/meta/base equal
+#> Create a new key user/tests/meta/base with string "equal"
+kdb meta-set user/tests/meta/base comment/#0 "This is the original inline comment"
+kdb meta-set user/tests/meta/base comment/#1 "This is the first line of the original comment above the key"
+kdb meta-set user/tests/meta/base comment/#2 "This is the second line of the original comment above the key"
+
+kdb set user/tests/meta/their equal
+#> Create a new key user/tests/meta/their with string "equal"
+kdb meta-set user/tests/meta/their comment/#0 "This is their inline comment"
+kdb meta-set user/tests/meta/their comment/#1 "This is the first line of their comment above the key"
+kdb meta-set user/tests/meta/their comment/#2 "This is the second line of their comment above the key"
+
+kdb set user/tests/meta/our equal
+#> Create a new key user/tests/meta/our with string "equal"
+kdb meta-set user/tests/meta/our comment/#0 "This is your custom inline comment"
+kdb meta-set user/tests/meta/our comment/#1 "This is the first line of your custom comment above the key"
+kdb meta-set user/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
+
+kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/tests/meta/metaFromOur
+
+kdb meta-get user/tests/meta/metaFromOur comment/#0
+#> This is your custom inline comment
+kdb meta-get user/tests/meta/metaFromOur comment/#1
+#> This is the first line of your custom comment above the key
+kdb meta-get user/tests/meta/metaFromOur comment/#2
+#> This is the second line of your custom comment above the key
+```
+
+If a key is part of the result because its value has changed then the result will also contain the meta data of that key.
+
+```sh
+kdb set user/tests/meta/their different
+
+kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/tests/meta/metaFromChanged
+
+kdb meta-get user/tests/meta/metaFromChanged comment/#2
+#> This is the second line of their comment above the key
 ```
 
 ### Arrays
