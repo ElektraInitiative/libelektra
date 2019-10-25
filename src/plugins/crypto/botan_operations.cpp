@@ -31,6 +31,7 @@ extern "C" {
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <string.h>
+using namespace ckdb;
 
 
 /**
