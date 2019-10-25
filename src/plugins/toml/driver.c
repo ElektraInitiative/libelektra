@@ -27,7 +27,6 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
-static bool hasEmptyArrayIndex (Key * key);
 
 Driver * createDriver (const Key * parent)
 {
@@ -534,19 +533,4 @@ static void driverClearLastScalar (Driver * driver)
 	if (driver->lastScalar != NULL) elektraFree (driver->lastScalar->str);
 	elektraFree (driver->lastScalar);
 	driver->lastScalar = NULL;
-}
-
-static bool hasEmptyArrayIndex (Key * key)
-{
-	keyRewindMeta (key);
-	const Key * meta = keyNextMeta (key);
-	while (meta != NULL)
-	{
-		if (strcmp (keyName (meta), "array") == 0)
-		{
-			return strcmp (keyString (meta), "") == 0;
-		}
-		meta = keyNextMeta (key);
-	}
-	return false;
 }
