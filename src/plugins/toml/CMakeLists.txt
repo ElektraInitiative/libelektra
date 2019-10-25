@@ -68,6 +68,8 @@ if (DEPENDENCY_PHASE)
 	     driver.c
 	     scalar.h
 	     scalar.c
+	     table_array.h
+	     table_array.c
 	     comment_list.h
 	     comment_list.c
 	     utility.h
