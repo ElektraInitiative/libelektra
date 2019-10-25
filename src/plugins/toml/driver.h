@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "scalar.h"
+#include "table_array.h"
 #include "comment_list.h"
 
 typedef struct _ParentList
@@ -21,14 +22,6 @@ typedef struct _IndexList
 	struct _IndexList * next;
 } IndexList;
 
-typedef struct _TableArray
-{
-	Key * key;
-	char * keyStr;
-	size_t currIndex;
-	struct _TableArray * next;
-} TableArray;
-
 typedef struct
 {
 	KeySet * keys;
@@ -37,7 +30,7 @@ typedef struct
 	Key * currKey;
 	Key * prevKey;
 	IndexList * indexStack;
-	TableArray * tableArrayStack;
+	TableArrayList * tableArrayStack;
 	CommentList * commentRoot;
 	CommentList * commentBack;
 	size_t order;

@@ -3,6 +3,17 @@
 #include <kdbhelper.h>
 #include <stdio.h>
 
+Key * keyAppendIndex (size_t index, const Key * parent)
+{
+	// Key * indexKey = keyDup (parent);
+	Key * indexKey = keyNew (keyName (parent), KEY_END);
+
+	char * indexStr = indexToArrayString (index);
+	keyAddBaseName (indexKey, indexStr);
+	elektraFree (indexStr);
+	return indexKey;
+}
+
 char * indexToArrayString (size_t index)
 {
 	size_t digits = 1;

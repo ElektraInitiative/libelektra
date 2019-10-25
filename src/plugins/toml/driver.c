@@ -6,8 +6,8 @@
 #include <kdbhelper.h>
 
 #include "driver.h"
-#include "utility.h"
 #include "parser.h"
+#include "utility.h"
 
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
@@ -22,20 +22,15 @@ static void pushCurrKey (Driver * driver);
 static void setCurrKey (Driver * driver, const Key * parent);
 static void resetCurrKey (Driver * driver);
 static void extendCurrKey (Driver * driver, const char * name);
-static char * getChildFraction (const Key * parent, const Key * child);
-static Key * buildTableArrayKeyName (const TableArray * ta);
-static TableArray * pushTableArray (TableArray * top, Key * key);
-static TableArray * popTableArray (TableArray * top);
 static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
 static void lastScalarToParentKey (Driver * driver);
-static Key * indexToKey (size_t index, const Key * parent);
 
 Driver * createDriver (const Key * parent)
 {
-	Driver * driver = (Driver*) elektraCalloc (sizeof (Driver));
+	Driver * driver = (Driver *) elektraCalloc (sizeof (Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = keyString (parent);
@@ -101,16 +96,16 @@ void driverExitKey (Driver * driver)
 	if (existing != NULL)
 	{
 		keyRewindMeta (existing);
-		bool isTableArray = false;
+		bool isTableArrayList = false;
 		for (const Key * meta = keyNextMeta (existing); meta != NULL; meta = keyNextMeta (existing))
 		{
 			if (strcmp (keyName (meta), "type") == 0 && strcmp (keyString (meta), "tablearray") == 0)
 			{
-				isTableArray = true;
+				isTableArrayList = true;
 				break;
 			}
 		}
-		if (!isTableArray)
+		if (!isTableArrayList)
 		{
 			// Only allow table array keys to be read multiple times
 			driverError (driver, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'", keyName (existing));
@@ -148,7 +143,7 @@ void driverExitOptCommentKeyPair (Driver * driver)
 		assert (driver->prevKey != NULL);
 		assert (driver->commentRoot->next == NULL);
 		keyAddInlineComment (driver->prevKey, driver->commentRoot);
-		driverClearCommentList(driver);
+		driverClearCommentList (driver);
 	}
 }
 
@@ -159,7 +154,7 @@ void driverExitOptCommentTable (Driver * driver)
 		assert (driver->commentRoot->next == NULL);
 		assert (driver->prevKey != NULL);
 		keyAddInlineComment (driver->parentStack->key, driver->commentRoot);
-		driverClearCommentList(driver);
+		driverClearCommentList (driver);
 
 		// We need to emit the table array key ending with /#n (having no value)
 		// Otherwise, inline comments on empty table arrays will get ignored
@@ -313,11 +308,7 @@ void driverEnterArrayElement (Driver * driver)
 		firstCommentAsInlineToPrevKey (driver);
 	}
 
-	Key * key = keyNew (keyName (driver->parentStack->key), KEY_END);
-
-	char * indexStr = indexToArrayString (driver->indexStack->value);
-	keyAddBaseName (key, indexStr);
-	elektraFree (indexStr);
+	Key * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);
@@ -364,7 +355,8 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 {
 	if (driver->newlineCount > 0)
 	{
-		if (driver->commentRoot == NULL) {
+		if (driver->commentRoot == NULL)
+		{
 			driverNewCommentList (driver, NULL, 0);
 			driver->newlineCount--;
 		}
@@ -415,7 +407,8 @@ static void driverNewCommentList (Driver * driver, const char * comment, size_t 
 	driver->commentBack = driver->commentRoot;
 }
 
-static void driverClearCommentList (Driver * driver) {
+static void driverClearCommentList (Driver * driver)
+{
 	commentListFree (driver->commentRoot);
 	driver->commentRoot = NULL;
 	driver->commentBack = NULL;
@@ -438,14 +431,16 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 			comment->next = NULL;
 		}
 		keyAddInlineComment (driver->prevKey, comment);
-		commentListFree (comment);	// only clears the inline comment recently added to the key
+		commentListFree (comment); // only clears the inline comment recently added to the key
 	}
 }
 
 static void driverDrainCommentsToKey (Key * key, Driver * driver)
 {
-	if (driver->newlineCount > 0) {
-		if (driver->commentRoot == NULL) {
+	if (driver->newlineCount > 0)
+	{
+		if (driver->commentRoot == NULL)
+		{
 			driverNewCommentList (driver, NULL, 0);
 			driver->newlineCount--;
 		}
@@ -487,85 +482,6 @@ static void extendCurrKey (Driver * driver, const char * name)
 {
 	assert (driver->currKey != NULL);
 	keyAddBaseName (driver->currKey, name);
-}
-
-static char * getChildFraction (const Key * parent, const Key * child)
-{
-	// printf ("Determining child fraction of:\n\t%s\n\t%s\n", keyName (parent), keyName (child));
-	if (!keyIsBelow (parent, child))
-	{
-		return NULL;
-	}
-	else
-	{
-		Key * childDup = keyDup (child);
-		size_t fracSize = 256;
-		char * fraction = elektraCalloc (sizeof (char) * fracSize);
-		do
-		{
-			const char * baseName = keyBaseName (childDup);
-			if (strlen (fraction) + strlen (baseName) >= fracSize)
-			{
-				fracSize *= 2;
-				elektraRealloc ((void **) &fraction, fracSize);
-			}
-			char * fracDup = strdup (fraction); // TODO: avoid allocation
-			snprintf (fraction, fracSize, "%s/%s", baseName, fracDup);
-			elektraFree (fracDup);
-			keyAddName (childDup, "..");
-		} while (keyRel (parent, childDup) != 0);
-		fraction[strlen (fraction) - 1] = 0;
-		elektraRealloc ((void **) &fraction, strlen (fraction) + 1);
-		keyDel (childDup);
-		// printf ("got fraction: %s\n", fraction);
-		return fraction;
-	}
-}
-
-static TableArray * pushTableArray (TableArray * top, Key * key)
-{
-	TableArray * ta = elektraCalloc (sizeof (TableArray));
-	ta->key = key;
-	keyIncRef (key);
-	if (top != NULL)
-	{
-		ta->keyStr = getChildFraction (top->key, key);
-	}
-	if (ta->keyStr == NULL)
-	{
-		ta->keyStr = strdup (keyName (key));
-	}
-	ta->currIndex = 0;
-	ta->next = top;
-
-	return ta;
-}
-
-static TableArray * popTableArray (TableArray * top)
-{
-	TableArray * newTop = top->next;
-	keyDecRef (top->key);
-	keyDel (top->key);
-	elektraFree (top->keyStr);
-	elektraFree (top);
-	return newTop;
-}
-
-static Key * buildTableArrayKeyName (const TableArray * ta)
-{
-	if (ta->next == NULL || !keyIsBelow (ta->next->key, ta->key))
-	{
-		return indexToKey (ta->currIndex, ta->key);
-	}
-	else
-	{
-		Key * key = buildTableArrayKeyName (ta->next);
-		keyAddName (key, ta->keyStr);
-		char * index = indexToArrayString (ta->currIndex);
-		keyAddBaseName (key, index);
-		elektraFree (index);
-		return key;
-	}
 }
 
 static ParentList * pushParent (ParentList * top, Key * key)
@@ -615,15 +531,4 @@ static void lastScalarToParentKey (Driver * driver)
 		elektraFree (driver->lastScalar);
 		driver->lastScalar = NULL;
 	}
-}
-
-static Key * indexToKey (size_t index, const Key * parent)
-{
-	// Key * indexKey = keyDup (parent);
-	Key * indexKey = keyNew (keyName (parent), KEY_END);
-
-	char * indexStr = indexToArrayString (index);
-	keyAddBaseName (indexKey, indexStr);
-	elektraFree (indexStr);
-	return indexKey;
 }
