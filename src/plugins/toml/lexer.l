@@ -22,33 +22,6 @@ static void readNonAsciiChar(char**, size_t*, size_t*, Driver * driver);
 static void readHex(char**, size_t*, size_t*, size_t, Driver * driver);
 static int isHex(char);
 
-static bool isValidOffsetDateTime (const char * dateTime);
-static bool isValidLocalDateTime (const char * dateTime);
-static bool isValidLocalDate (const char * localDate);
-static bool isValidLocalTime (const char * localTime);
-static bool isValidFullDate(const char * fullDate);
-static bool isValidDate(int year, int month, int day);
-static bool isLeapYear(int year);
-static bool isValidFullTime (const char * fullTime);
-static bool isValidPartialTime(const char * partialTime);
-static bool isValidTimeOffset (const char * timeOffset);
-static bool isValidTime(int hour, int minute, int second);
-
-
-// TODO: Maybe this whole condition stuff should be dumped
-// It introduces semantic checks during lexing (eg. don't allows BARE_STRINGS on RHS)
-// Those checks should maybe moved to the parser
-typedef struct _ConditionStack {
-	int condition;
-	struct _ConditionStack* next;
-} ConditionStack;
-
-static ConditionStack* stackRoot = NULL;
-
-static void pushCondition(int);
-static void popCondition(void);
-static void popConditionIf(int);
-
 %}
 
 %option yylineno
@@ -83,49 +56,16 @@ partial_time {digit}{2}":"{digit}{2}":"{digit}{2}("."{digit}+)?
 time_offset "Z"|{time_num_offset}
 time_num_offset [+-]{digit}{2}":"{digit}{2}
 
-%s RHS
-%s IN_BRACKETS
-%s IN_CURLY
-
 %%
 
-"=" {
-	pushCondition(RHS);
-	return EQUAL;
-}
-
-"." {
-    return DOT;
-}
-"," {
-	popConditionIf(RHS);
-	return COMMA;
-}
-
-<INITIAL,RHS,IN_BRACKETS>{newline} {
-	popConditionIf(RHS);
-	return NEWLINE;
-}
-
-"[" {
-	pushCondition(IN_BRACKETS);
-	return BRACKETS_OPEN;
-}
-"]" {
-	popCondition();
-    	popConditionIf(RHS); // Maybe needed ?!
-	return BRACKETS_CLOSE;
-}
-
-"{" {
-	pushCondition(IN_CURLY);
-	return CURLY_OPEN;
-}
-"}" {
-	popConditionIf(RHS);
-	popCondition();
-	return CURLY_CLOSE;
-}
+"=" 	return EQUAL;
+"."	return DOT;
+","	return COMMA;
+"[" 	return BRACKETS_OPEN;
+"]"	return BRACKETS_CLOSE;
+"{"	return CURLY_OPEN;
+"}"	return CURLY_CLOSE;
+{newline}	 return NEWLINE;
 
 "#" {
 	char* str = readComment(driver);
@@ -161,65 +101,53 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	return MULTI_BASIC_STRING;
 }
 
-<RHS,IN_BRACKETS>{offset_datetime} {
-    if (!isValidOffsetDateTime (yytext)) {
-        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid offset datetime: '%s'", yytext);
-    }
+{offset_datetime} {
 	yylval.scalar = createScalarDup(SCALAR_DATE_OFFSET_DATETIME, yytext, yylineno);
 	return OFFSET_DATETIME;
 }
-<RHS,IN_BRACKETS>{local_datetime} {
-    if (!isValidLocalDateTime (yytext)) {
-        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
-    }
+{local_datetime} {
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
 	return LOCAL_DATETIME;
 }
-<RHS,IN_BRACKETS>{local_date} {
-    if (!isValidLocalDate (yytext)) {
-        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid local date: '%s'", yytext);
-    }
+{local_date} {
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATE, yytext, yylineno);
 	return LOCAL_DATE;
 }
-<RHS,IN_BRACKETS>{local_time} {
-    if (!isValidLocalTime (yytext)) {
-        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid local time: '%s'", yytext);
-    }
+{local_time} {
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_TIME, yytext, yylineno);
 	return LOCAL_TIME;
 }
 
-<RHS,IN_BRACKETS>{decimal_pm} {
+{decimal_pm} {
 	yylval.scalar = createScalarDup(SCALAR_INTEGER_DEC, yytext, yylineno);
 	return DECIMAL;
 }
 
-<RHS,IN_BRACKETS>("+"|"-")?"0" {
+("+"|"-")?"0" {
 	yylval.scalar = createScalarDup(SCALAR_INTEGER_DEC, yytext, yylineno);
 	return DECIMAL;
 }
 
-<RHS,IN_BRACKETS>"0x"{hex_char}("_"?{hex_char})* {
+"0x"{hex_char}("_"?{hex_char})* {
 	yylval.scalar = createScalarDup(SCALAR_INTEGER_HEX, yytext, yylineno);
 	return HEXADECIMAL;
 }
 
-<RHS,IN_BRACKETS>"0o"{oct_char}("_"?{oct_char})* {
+"0o"{oct_char}("_"?{oct_char})* {
 	yylval.scalar = createScalarDup(SCALAR_INTEGER_OCT, yytext, yylineno);
 	return OCTAL;
 }
 
-<RHS,IN_BRACKETS>"0b"{bin_char}("_"?{bin_char})* {
+"0b"{bin_char}("_"?{bin_char})* {
 	yylval.scalar = createScalarDup(SCALAR_INTEGER_BIN, yytext, yylineno);
 	return BINARY;
 }
 
-<RHS,IN_BRACKETS>{decimal_pm}("."{decimal})?([eE]{decimal_pm})? {
+{decimal_pm}("."{decimal})?([eE]{decimal_pm})? {
 	yylval.scalar = createScalarDup(SCALAR_FLOAT_NUM, yytext, yylineno);
 	return FLOAT;
 }
-<RHS,IN_BRACKETS>("+"|"-")?"inf" {
+("+"|"-")?"inf" {
 	yylval.scalar = createScalarDup(SCALAR_FLOAT_NUM, yytext, yylineno);
 	switch(yytext[0]) {
 		case '+':   yylval.scalar->type = SCALAR_FLOAT_POS_INF; break;
@@ -228,7 +156,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	}
 	return FLOAT;
 }
-<RHS,IN_BRACKETS>("+"|"-")?"nan" {
+("+"|"-")?"nan" {
 	yylval.scalar = createScalarDup(SCALAR_FLOAT_NUM, yytext, yylineno);
 	switch(yytext[0]) {
 		case '+':   yylval.scalar->type = SCALAR_FLOAT_POS_NAN; break;
@@ -238,19 +166,14 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	return FLOAT;
 }
 
-
-<RHS,IN_BRACKETS>"true"|"false" {
+"true"|"false" {
 	yylval.scalar = createScalarDup(SCALAR_BOOLEAN, yytext, yylineno);
 	return BOOLEAN;
 }
 
-<INITIAL,IN_BRACKETS,IN_CURLY>{bare_char}+ {
+{bare_char}+ {
 	yylval.scalar = createScalarDup(SCALAR_STRING_BARE, yytext, yylineno);
 	return BARE_STRING;
-}
-
-<IN_CURLY>{newline} {
-    driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected newline in inline table");
 }
 
 {whitespace} ;
@@ -261,140 +184,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
-static bool isValidOffsetDateTime (const char * dateTime) {
-    const char * time = strpbrk (dateTime, "T ");
-    assert (time != NULL);
-    return isValidFullDate (dateTime) &&
-           isValidFullTime (time + 1);
-}
 
-static bool isValidLocalDateTime (const char * dateTime) {
-    const char * time = strpbrk (dateTime, "T ");
-    assert (time != NULL);
-    return isValidFullDate (dateTime) &&
-           isValidPartialTime (time + 1);
-}
-
-static bool isValidLocalDate (const char * localDate) {
-    return isValidFullDate (localDate);
-}
-static bool isValidLocalTime (const char * localTime) {
-    return isValidPartialTime (localTime);
-}
-
-static bool isValidFullDate(const char * fullDate) {
-    int y, m, d;
-    sscanf(fullDate, "%4d-%2d-%2d", &y, &m, &d);
-    return isValidDate (y, m, d);
-}
-
-static bool isValidFullTime (const char * fullTime) {
-    const char * offset = strpbrk (fullTime, "Z+-");
-    assert (offset != NULL);
-    return  isValidPartialTime (fullTime) &&
-            isValidTimeOffset (offset);
-}
-
-static bool isValidPartialTime (const char * partialTime) {
-    int h, m, s;
-    sscanf (partialTime, "%2d:%2d:%2d", &h, &m, &s);
-    return isValidTime (h, m, s); 
-}
-
-static bool isValidTimeOffset (const char * timeOffset) {
-    if (timeOffset[0] == 'Z') {
-        return true;
-    } else {
-        int h, m;
-        sscanf(timeOffset + 1, "%2d:%2d", &h, &m);
-        return isValidTime (h, m, 0);
-    }
-}
-
-static bool isValidTime(int hour, int minute, int second) {
-    return hour >= 0 && hour <= 23 &&
-           minute >= 0 && minute <= 59 &&
-           second >= 0 && second <= 60; // 60 to allow positive leap seconds, (also ignores negative leap seconds)
-}
-
-static bool isValidDate(int year, int month, int day) {
-    if (year > 9999 ||
-        month < 1 ||
-        month > 12) {
-        return false;
-}
-    if (day >= 1) {
-        if (day <= 28) {
-            return true;
-        } else  {
-            switch (month) {
-                case 1:
-                case 3:
-                case 5:
-                case 7:
-                case 8:
-                case 10:
-                case 12:
-                    return day <= 31;
-                case 4:
-                case 6:
-                case 9:
-                case 11:
-                    return day <= 30;
-                case 2:
-                    return day <= (isLeapYear(year) ? 29 : 28);
-                default:
-                    assert(0);
-            }
-        }
-    }
-    return false;
-}
-
-static bool isLeapYear(int year) {
-    if (year % 4 == 0) {
-        if (year % 100 == 0) {
-            if (year % 400 == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-    return false;
-}
-
-static void pushCondition(int condition) {
-	if (stackRoot == NULL) {
-		stackRoot = malloc(sizeof(ConditionStack));
-		stackRoot->condition = condition;
-		stackRoot->next = NULL;
-	} else {
-		ConditionStack* newRoot = malloc(sizeof(ConditionStack));
-		newRoot->condition = condition;
-		newRoot->next = stackRoot;
-		stackRoot = newRoot;
-	}
-	BEGIN(condition);
-}
-
-static void popCondition(void) {
-    assert (stackRoot != NULL);
-    stackRoot = stackRoot->next;
-    if (stackRoot == NULL) {
-        BEGIN(INITIAL);
-    } else {
-        BEGIN(stackRoot->condition);
-    }
-}
-
-static void popConditionIf(int condition) {
-	if (YY_START == condition) {
-		popCondition();
-	}
-}
 
 static char* readLiteral(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));

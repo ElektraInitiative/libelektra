@@ -6,9 +6,9 @@
 #include <kdbhelper.h>
 
 #include "driver.h"
+#include "error.h"
 #include "parser.h"
 #include "utility.h"
-#include "error.h"
 
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
@@ -45,7 +45,7 @@ int driverParse (Driver * driver, KeySet * returned)
 {
 	driver->keys = returned;
 	FILE * file = fopen (driver->filename, "rb");
-	if (file== NULL)
+	if (file == NULL)
 	{
 		driverError (driver, ERROR_SYNTACTIC, 0, "Could not open file '%s'", file);
 		return 1;
@@ -53,7 +53,7 @@ int driverParse (Driver * driver, KeySet * returned)
 	yyin = file;
 	ksAppendKey (driver->keys, driver->root);
 	int yyResult = yyparse (driver);
-	fclose(file);
+	fclose (file);
 	return driver->errorSet != 0 || yyResult != 0;
 }
 
@@ -125,7 +125,8 @@ void driverExitOptCommentKeyPair (Driver * driver)
 		}
 		if (driver->commentRoot->next != NULL)
 		{
-			driverError (driver, ERROR_INTERNAL, 0, "More than one comment existing after exiting keypair, expected up to one.");
+			driverError (driver, ERROR_INTERNAL, 0,
+				     "More than one comment existing after exiting keypair, expected up to one.");
 			return;
 		}
 		int err = keyAddInlineComment (driver->prevKey, driver->commentRoot) != 0;
@@ -167,14 +168,56 @@ void driverExitOptCommentTable (Driver * driver)
 	}
 }
 
-void driverExitSimpleKey (Driver * driver, const Scalar * name)
+void driverExitSimpleKey (Driver * driver, Scalar * name)
 {
+	// scalar must be singline line literal/basic string or bare string
+	// if we got int/float/boolean/date, we must check, if it fits the
+	// criteria for a BARE_STRING
+	switch (name->type)
+	{
+	case SCALAR_STRING_LITERAL:
+	case SCALAR_STRING_BASIC:
+	case SCALAR_STRING_BARE: // always valid
+		break;
+	case SCALAR_STRING_ML_LITERAL:
+	case SCALAR_STRING_ML_BASIC: // always invalid
+		driverError (driver, ERROR_SEMANTIC, name->line,
+			     "Malformed input: Invalid simple key: Found multiline string, but is not allowed");
+		return;
+	default: // check validity
+		if (!isValidBareString (name))
+		{
+			driverError (driver, ERROR_SEMANTIC, name->line,
+				     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, underline, "
+				     "hyphen allowed");
+			return;
+		}
+	}
 	extendCurrKey (driver, name->str);
 	driver->currLine = name->line;
+	elektraFree (name->str);
+	elektraFree (name);
 }
 
-void driverExitScalar (Driver * driver, Scalar * scalar)
+void driverExitValue (Driver * driver, Scalar * scalar)
 {
+	switch (scalar->type)
+	{
+	case SCALAR_STRING_BARE: // No bare on rhs
+		driverError (driver, ERROR_SEMANTIC, scalar->line, "Malformed input: Found bare string on rhs, but is not allowed");
+		break;
+	case SCALAR_DATE_OFFSET_DATETIME:
+	case SCALAR_DATE_LOCAL_DATETIME:
+	case SCALAR_DATE_LOCAL_DATE:
+	case SCALAR_DATE_LOCAL_TIME:	// check semantics of datetimes
+		if (!isValidDateTime (scalar))
+		{
+			driverError (driver, ERROR_SEMANTIC, scalar->line, "Malformed input: Invalid datetime: '%s'", scalar->str);
+		}
+		break;
+	default: // all other scalar types allowed and valid
+		break;
+	}
 	if (driver->lastScalar != NULL)
 	{
 		elektraFree (driver->lastScalar->str);
