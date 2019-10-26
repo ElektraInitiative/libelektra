@@ -9,8 +9,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	endif ()
 endif ()
 
-# This is derived from LibAddPlugin LibAddLib has no such functionality yet This is required so that libelektra-full.so has defined
-# references to the functions from libgit2.so I am not sure if the second set_property from LibAddPlugin has to be here as well
+# This is derived from LibAddPlugin. LibAddLib has no such functionality yet. This is required so that libelektra-full.so has defined
+# references to the functions from libgit2.so. I am not sure if the second set_property from LibAddPlugin has to be here as well. It might
+# not always be obvious, that this property has to be set. For example if the gitresolver plugin is included, then it sets the property
+# itself and it appears as if setting it here were unnecessary.
 set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" ${CMERGE_LIBRARY_DIRS})
 
 # elektra-ease is required for elektraArrayIncName and elektraArrayValidateName see add_plugin for how LINK_ELEKTRA etc. work
