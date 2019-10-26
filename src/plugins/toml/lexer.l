@@ -9,7 +9,7 @@
 #include "parser.h"
 #include "scalar.h"
 #include "driver.h"
-#include "error_code.h"
+#include "error.h"
 
 static char* readLiteral(Driver * driver);
 static char* readBasic(Driver * driver);
