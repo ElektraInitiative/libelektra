@@ -20,7 +20,7 @@ Each section is converted into a directory key
 key. If the same section appears multiple times, the keys of all sections
 with the same name are merged together under the section key.
 
-On it one hand the plugin is feature rich and customizable, on the other hand
+On the one hand the ini plugin is feature rich and customizable, on the other hand
 it is quite buggy and shows unexpected behavior in some of its features.
 
 ## Usage
