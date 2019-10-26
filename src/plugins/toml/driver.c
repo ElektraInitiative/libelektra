@@ -203,19 +203,19 @@ void driverExitValue (Driver * driver, Scalar * scalar)
 {
 	switch (scalar->type)
 	{
-	case SCALAR_STRING_BARE: // No bare on rhs
+	case SCALAR_STRING_BARE: // No bare on rhs allowed
 		driverError (driver, ERROR_SEMANTIC, scalar->line, "Malformed input: Found bare string on rhs, but is not allowed");
 		break;
 	case SCALAR_DATE_OFFSET_DATETIME:
 	case SCALAR_DATE_LOCAL_DATETIME:
 	case SCALAR_DATE_LOCAL_DATE:
-	case SCALAR_DATE_LOCAL_TIME:	// check semantics of datetimes
+	case SCALAR_DATE_LOCAL_TIME: // check semantics of datetimes
 		if (!isValidDateTime (scalar))
 		{
 			driverError (driver, ERROR_SEMANTIC, scalar->line, "Malformed input: Invalid datetime: '%s'", scalar->str);
 		}
 		break;
-	default: // all other scalar types allowed and valid
+	default: // all other scalar types allowed and valid, no semantic invalidities
 		break;
 	}
 	if (driver->lastScalar != NULL)
@@ -224,10 +224,7 @@ void driverExitValue (Driver * driver, Scalar * scalar)
 		elektraFree (driver->lastScalar);
 	}
 	driver->lastScalar = scalar;
-	// keySetString (driver->parentStack->key, scalar->str);
-	// ksAppendKey (driver->keys, driver->parentStack->key);
 	driver->currLine = scalar->line;
-	// printf ("Added Scalar: %s -> %s\n", keyName (driver->parentStack->key), keyString (driver->parentStack->key));
 }
 
 void driverEnterSimpleTable (Driver * driver)

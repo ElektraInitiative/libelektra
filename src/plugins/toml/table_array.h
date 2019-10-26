@@ -17,4 +17,3 @@ TableArrayList * popTableArray (TableArrayList * top);
 Key * buildTableArrayKeyName (const TableArrayList * ta);
 
 #endif // ELEKTRA_PLUGIN_TOML_TABLE_ARRAY_LIST_H
-

@@ -24,7 +24,11 @@ function (generate_code)
 	set (GENERATED_CODE FALSE PARENT_SCOPE)
 
 	flex_target (TOMLScanner ${CMAKE_CURRENT_SOURCE_DIR}/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
-	bison_target (TOMLParser ${CMAKE_CURRENT_SOURCE_DIR}/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c VERBOSE bison_verbose.txt)
+	bison_target (TOMLParser
+		      ${CMAKE_CURRENT_SOURCE_DIR}/parser.y
+		      ${CMAKE_CURRENT_BINARY_DIR}/parser.c
+		      VERBOSE
+		      bison_verbose.txt)
 	add_flex_bison_dependency (TOMLScanner TOMLParser)
 
 	if ((NOT FLEX_TOMLScanner_DEFINED) AND (NOT BISON_TOMLParser_DEFINED))

@@ -2,11 +2,11 @@
 #define ELEKTRA_PLUGIN_TOML_SCALAR_H
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 typedef enum
 {
@@ -44,7 +44,7 @@ typedef struct
 Scalar * createScalar (ScalarType type, char * comment, size_t line);
 Scalar * createScalarDup (ScalarType type, const char * comment, size_t line);
 
-bool isValidBareString(const Scalar * scalar);
+bool isValidBareString (const Scalar * scalar);
 bool isValidDateTime (const Scalar * scalar);
 
 #endif // ELEKTRA_PLUGIN_TOML_SCALAR_H
