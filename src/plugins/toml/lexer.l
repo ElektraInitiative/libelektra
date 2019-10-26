@@ -184,8 +184,6 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
-
-
 static char* readLiteral(Driver * driver) {
 	char* buffer = malloc(64 * sizeof(char));
 	size_t size = 64;

@@ -170,6 +170,7 @@ void driverExitOptCommentTable (Driver * driver)
 
 void driverExitSimpleKey (Driver * driver, Scalar * name)
 {
+
 	// scalar must be singline line literal/basic string or bare string
 	// if we got int/float/boolean/date, we must check, if it fits the
 	// criteria for a BARE_STRING
@@ -184,16 +185,46 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 		driverError (driver, ERROR_SEMANTIC, name->line,
 			     "Malformed input: Invalid simple key: Found multiline string, but is not allowed");
 		return;
+	case SCALAR_FLOAT_NUM: // split up floating point numbers (contains a DOT, so we get 2 simple keys instead)
+	{
+		const char * dot = strchr (name->str, '.');
+		if (dot != NULL)
+		{
+			size_t splitPos = dot - name->str;
+			char * first = elektraCalloc (sizeof (char) * (splitPos + 1));
+			char * second = elektraCalloc (sizeof (char) * (strlen (name->str) - splitPos));
+			strncpy (first, name->str, splitPos);
+			strncpy (second, dot + 1, strlen (name->str) - splitPos - 1);
+			if (isValidBareString (first) && isValidBareString (second))
+			{
+				extendCurrKey (driver, first);
+				extendCurrKey (driver, second);
+			}
+			else
+			{
+				driverError (driver, ERROR_SEMANTIC, name->line,
+					     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, "
+					     "underline, "
+					     "hyphen allowed");
+			}
+			elektraFree (first);
+			elektraFree (second);
+			break;
+		}
+	}
 	default: // check validity
 		if (!isValidBareString (name))
 		{
 			driverError (driver, ERROR_SEMANTIC, name->line,
 				     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, underline, "
 				     "hyphen allowed");
-			return;
 		}
+		break;
 	}
-	extendCurrKey (driver, name->str);
+	if (name->type != SCALAR_FLOAT_NUM)
+	{
+		extendCurrKey (driver, name->str);
+	}
 	driver->currLine = name->line;
 	elektraFree (name->str);
 	elektraFree (name);
@@ -551,6 +582,9 @@ static void extendCurrKey (Driver * driver, const char * name)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
+	}
+	if (strlen(name) == 0) {
+		driverError (driver, ERROR_SYNTACTIC, 0, "Wanted to extend current key with empty name, but mustn't be empty.");
 	}
 	keyAddBaseName (driver->currKey, name);
 }
