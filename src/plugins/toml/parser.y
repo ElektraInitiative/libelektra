@@ -113,15 +113,13 @@ Key     :	SimpleKey
         ;
 
 DottedKeys	:	DOT SimpleKey
-            |	DottedKeys DOT SimpleKey
-            ;
+            	|	DottedKeys DOT SimpleKey
+            	;
 
-SimpleKey	:	BARE_STRING { driverExitSimpleKey (driver, $1); }
-            |	LITERAL_STRING { driverExitSimpleKey (driver, $1); }
-            |	BASIC_STRING { driverExitSimpleKey (driver, $1); }
-            ;
+SimpleKey	:	Scalar { driverExitSimpleKey (driver, $1); }
+            	;
 
-Value   :	Scalar { driverExitScalar (driver, $1); }
+Value   :	Scalar { driverExitValue (driver, $1); }
         |	InlineTable
         |	Array
         ;
@@ -177,6 +175,7 @@ StringScalar    :   LITERAL_STRING { $$ = $1; }
                 |   BASIC_STRING { $$ = $1; }
                 |   MULTI_LITERAL_STRING { $$ = $1; }
                 |   MULTI_BASIC_STRING { $$ = $1; }
+		|   BARE_STRING { $$ = $1; }
                 ;
 
 DateScalar      :   OFFSET_DATETIME { $$ = $1; }

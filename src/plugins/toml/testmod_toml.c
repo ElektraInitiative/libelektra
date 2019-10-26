@@ -93,7 +93,7 @@ static void testNegativeCompareErrors (void)
 #include "toml/error/syntax.h"
 	);
 	testReadCompareError ("toml/negative/bare_string_rhs.toml",
-#include "toml/error/syntax.h"
+#include "toml/error/semantic.h"
 	);
 	testReadCompareError ("toml/negative/array_missing_closing_brackets.toml",
 #include "toml/error/syntax.h"
@@ -104,9 +104,8 @@ static void testNegativeCompareErrors (void)
 	testReadCompareError ("toml/negative/date_invalid_month.toml",
 #include "toml/error/semantic.h"
 	);
-	// syntatic error because date not consiting of 4, but 5 digits
 	testReadCompareError ("toml/negative/date_invalid_year.toml",
-#include "toml/error/syntax.h"
+#include "toml/error/semantic.h"
 	);
 	testReadCompareError ("toml/negative/date_invalid_feb.toml",
 #include "toml/error/semantic.h"

@@ -59,9 +59,9 @@ void driverExitKeyValue (Driver * driver);
 void driverExitOptCommentKeyPair (Driver * driver);
 void driverExitOptCommentTable (Driver * driver);
 
-void driverExitSimpleKey (Driver * driver, const Scalar * name);
+void driverExitSimpleKey (Driver * driver, Scalar * name);
 
-void driverExitScalar (Driver * driver, Scalar * scalar);
+void driverExitValue (Driver * driver, Scalar * scalar);
 
 void driverEnterSimpleTable (Driver * driver);
 void driverExitSimpleTable (Driver * driver);
