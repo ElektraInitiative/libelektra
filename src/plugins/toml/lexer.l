@@ -34,6 +34,10 @@ static bool isValidPartialTime(const char * partialTime);
 static bool isValidTimeOffset (const char * timeOffset);
 static bool isValidTime(int hour, int minute, int second);
 
+
+// TODO: Maybe this whole condition stuff should be dumped
+// It introduces semantic checks during lexing (eg. don't allows BARE_STRINGS on RHS)
+// Those checks should maybe moved to the parser
 typedef struct _ConditionStack {
 	int condition;
 	struct _ConditionStack* next;
@@ -109,7 +113,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 "]" {
 	popCondition();
-    popConditionIf(RHS); // Maybe needed ?!
+    	popConditionIf(RHS); // Maybe needed ?!
 	return BRACKETS_CLOSE;
 }
 
@@ -159,28 +163,28 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 <RHS,IN_BRACKETS>{offset_datetime} {
     if (!isValidOffsetDateTime (yytext)) {
-        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid offset datetime: '%s'", yytext);
+        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid offset datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_OFFSET_DATETIME, yytext, yylineno);
 	return OFFSET_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_datetime} {
     if (!isValidLocalDateTime (yytext)) {
-        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
+        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid local datetime: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATETIME, yytext, yylineno);
 	return LOCAL_DATETIME;
 }
 <RHS,IN_BRACKETS>{local_date} {
     if (!isValidLocalDate (yytext)) {
-        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid local date: '%s'", yytext);
+        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid local date: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_DATE, yytext, yylineno);
 	return LOCAL_DATE;
 }
 <RHS,IN_BRACKETS>{local_time} {
     if (!isValidLocalTime (yytext)) {
-        driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid local time: '%s'", yytext);
+        driverError (driver, ERROR_SEMANTIC, yylineno, "Malformed input: Invalid local time: '%s'", yytext);
     }
 	yylval.scalar = createScalarDup(SCALAR_DATE_LOCAL_TIME, yytext, yylineno);
 	return LOCAL_TIME;

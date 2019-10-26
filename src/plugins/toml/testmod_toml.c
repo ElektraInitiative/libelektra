@@ -14,7 +14,7 @@
 
 #include "toml.h"
 
-#define PREFIX "user/tests/toml-read"
+#define PREFIX "user/tests/toml"
 
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadCompareError (const char * filename, KeySet * expected);
@@ -24,63 +24,92 @@ static void printKs (KeySet * ks, const char * name);
 static void showDiff (KeySet * expected, KeySet * is, const char * name, bool stopOnFirstDiff);
 
 
-static void testsPositiveCompareKeySets (void)
+static void testPositiveCompareKeySets (void)
 {
-	testReadCompare ("toml/basic.toml",
-#include "toml/basic.h"
+	testReadCompare ("toml/positive/basic.toml",
+#include "toml/positive/basic.h"
 	);
-	testReadCompare ("toml/utf8.toml",
-#include "toml/utf8.h"
+	testReadCompare ("toml/positive/utf8.toml",
+#include "toml/positive/utf8.h"
 	);
 
-	/*    testReadCompare ("toml/multiline_strings.toml",
-	#include "toml/multiline_strings.h"
+	/*    testReadCompare ("toml/positive/multiline_strings.toml",
+	#include "toml/positive/multiline_strings.h"
 	    );*/
 
-	testReadCompare ("toml/date.toml",
-#include "toml/date.h"
+	testReadCompare ("toml/positive/date.toml",
+#include "toml/positive/date.h"
 	);
 
-	testReadCompare ("toml/array.toml",
-#include "toml/array.h"
+	testReadCompare ("toml/positive/array.toml",
+#include "toml/positive/array.h"
 	);
 
-	testReadCompare ("toml/simple_table.toml",
-#include "toml/simple_table.h"
+	testReadCompare ("toml/positive/simple_table.toml",
+#include "toml/positive/simple_table.h"
 	);
 
-	testReadCompare ("toml/table_array.toml",
-#include "toml/table_array.h"
+	testReadCompare ("toml/positive/table_array.toml",
+#include "toml/positive/table_array.h"
 	);
 
-	testReadCompare ("toml/table_array_nested.toml",
-#include "toml/table_array_nested.h"
+	testReadCompare ("toml/positive/table_array_nested.toml",
+#include "toml/positive/table_array_nested.h"
 	);
 
-	testReadCompare ("toml/table_array_table_mixed.toml",
-#include "toml/table_array_table_mixed.h"
+	testReadCompare ("toml/positive/table_array_table_mixed.toml",
+#include "toml/positive/table_array_table_mixed.h"
 	);
 
-	testReadCompare ("toml/inline_table.toml",
-#include "toml/inline_table.h"
+	testReadCompare ("toml/positive/inline_table.toml",
+#include "toml/positive/inline_table.h"
 	);
 
-	testReadCompare ("toml/inline_table_empty.toml",
-#include "toml/inline_table_empty.h"
+	testReadCompare ("toml/positive/inline_table_empty.toml",
+#include "toml/positive/inline_table_empty.h"
 	);
 
-	testReadCompare ("toml/inline_table_multiline_values.toml",
-#include "toml/inline_table_multiline_values.h"
+	testReadCompare ("toml/positive/inline_table_multiline_values.toml",
+#include "toml/positive/inline_table_multiline_values.h"
 	);
 
-	testReadCompare ("toml/comment.toml",
-#include "toml/comment.h"
+	testReadCompare ("toml/positive/comment.toml",
+#include "toml/positive/comment.h"
 	);
 }
 
-static void testNegativeCompareErrors(void) {
-	testReadCompareError ("toml/duplicate_key.toml",
-#include "toml/duplicate_key.h"
+static void testNegativeCompareErrors (void)
+{
+	testReadCompareError ("toml/negative/duplicate_key_01.toml",
+#include "toml/error/semantic.h"
+	);
+	testReadCompareError ("toml/negative/duplicate_key_02.toml",
+#include "toml/error/semantic.h"
+	);
+	testReadCompareError ("toml/negative/duplicate_key_03.toml",
+#include "toml/error/semantic.h"
+	);
+	testReadCompareError ("toml/negative/empty_assignment.toml",
+#include "toml/error/syntax.h"
+	);
+	testReadCompareError ("toml/negative/bare_string_rhs.toml",
+#include "toml/error/syntax.h"
+	);
+	testReadCompareError ("toml/negative/array_missing_closing_brackets.toml",
+#include "toml/error/syntax.h"
+	);
+	testReadCompareError ("toml/negative/date_invalid_day.toml",
+#include "toml/error/semantic.h"
+	);
+	testReadCompareError ("toml/negative/date_invalid_month.toml",
+#include "toml/error/semantic.h"
+	);
+	// syntatic error because date not consiting of 4, but 5 digits
+	testReadCompareError ("toml/negative/date_invalid_year.toml",
+#include "toml/error/syntax.h"
+	);
+	testReadCompareError ("toml/negative/date_invalid_feb.toml",
+#include "toml/error/semantic.h"
 	);
 }
 
@@ -88,34 +117,12 @@ int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	testsPositiveCompareKeySets ();
+	testPositiveCompareKeySets ();
 	testNegativeCompareErrors ();
 
 	print_result ("testmod_toml");
 	return nbError;
 }
-
-static void printKs (KeySet * ks, const char * name)
-{
-	printf ("######KEYSET: %s\n", name);
-	ksRewind (ks);
-	Key * key = ksNext (ks);
-	while (key != NULL)
-	{
-		printf ("Key: '%s'\t->\t'%s'", keyName (key), keyString (key));
-
-		keyRewindMeta (key);
-		const Key * meta = keyNextMeta (key);
-		while (meta != NULL)
-		{
-			printf ("\n\tMeta: '%s'\t->\t'%s'", keyName (meta), keyString (meta));
-			meta = keyNextMeta (key);
-		}
-		key = ksNext (ks);
-		printf ("\n");
-	}
-}
-
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {
@@ -171,8 +178,8 @@ static void testReadCompareError (const char * filename, KeySet * expected)
 
 static void testCompareErrors (Key * expected, Key * found)
 {
-	assert(expected != NULL);
-	assert(found != NULL);
+	assert (expected != NULL);
+	assert (found != NULL);
 	char * metaNames[] = { "error/module", "error/description", NULL };
 	for (int i = 0; metaNames[i] != NULL; i++)
 	{
@@ -191,7 +198,7 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	{
 		if (strcmp (keyName (metaExpected), metaKeyName) == 0)
 		{
-			printf ("\tExpected = %s\n", keyString (metaFound));
+			printf ("\tExpected\t= %s\n", keyString (metaExpected));
 			break;
 		}
 		metaExpected = keyNextMeta (expected);
@@ -200,13 +207,17 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	{
 		if (strcmp (keyName (metaFound), metaKeyName) == 0)
 		{
-			printf ("\tFound = %s\n", keyString (metaFound));
+			printf ("\tFound\t\t= %s\n", keyString (metaFound));
 			break;
 		}
 		metaFound = keyNextMeta (found);
 	}
 	succeed_if (metaExpected != NULL, "Could not find metakey in expected key");
 	succeed_if (metaFound != NULL, "Could not find metakey in found key");
+	if (metaExpected == NULL || metaFound == NULL)
+	{
+		return;
+	}
 	succeed_if (strcmp (keyString (metaExpected), keyString (metaFound)) == 0, "Different metakey values");
 }
 
@@ -296,3 +307,23 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 	}
 }
 
+static void printKs (KeySet * ks, const char * name)
+{
+	printf ("######KEYSET: %s\n", name);
+	ksRewind (ks);
+	Key * key = ksNext (ks);
+	while (key != NULL)
+	{
+		printf ("Key: '%s'\t->\t'%s'", keyName (key), keyString (key));
+
+		keyRewindMeta (key);
+		const Key * meta = keyNextMeta (key);
+		while (meta != NULL)
+		{
+			printf ("\n\tMeta: '%s'\t->\t'%s'", keyName (meta), keyString (meta));
+			meta = keyNextMeta (key);
+		}
+		key = ksNext (ks);
+		printf ("\n");
+	}
+}
