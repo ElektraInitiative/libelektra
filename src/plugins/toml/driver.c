@@ -4,12 +4,11 @@
 
 #include <kdb.h>
 #include <kdbhelper.h>
-#include <kdberrors.h>
 
 #include "driver.h"
 #include "parser.h"
 #include "utility.h"
-#include "error_code.h"
+#include "error.h"
 
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
@@ -38,58 +37,24 @@ Driver * createDriver (const Key * parent)
 	driver->filename = keyString (parent);
 	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
+	driver->errorSet = false;
 	return driver;
 }
 
 int driverParse (Driver * driver, KeySet * returned)
 {
 	driver->keys = returned;
-	driver->file = fopen (driver->filename, "rb");
-	if (driver->file == NULL)
+	FILE * file = fopen (driver->filename, "rb");
+	if (file== NULL)
 	{
-		driverError (driver, ERROR_SYNTACTIC, 0, "Could not open file '%s'", driver->file);
+		driverError (driver, ERROR_SYNTACTIC, 0, "Could not open file '%s'", file);
 		return 1;
 	}
-	yyin = driver->file;
+	yyin = file;
 	ksAppendKey (driver->keys, driver->root);
 	int yyResult = yyparse (driver);
-	return yyResult;
-}
-
-void driverError (Driver * driver, int err, int lineno, const char * format, ...)
-{
-	va_list args;
-	va_start (args, format);
-	char * msg = elektraCalloc (256);
-	if (lineno > 0)
-	{
-		snprintf (msg, 256, "Line ~%d: ", lineno);
-		size_t len = strlen (msg);
-		assert (len <= 256);
-		vsnprintf (msg + len, 256 - len, format, args);
-	}
-	else
-	{
-		vsnprintf (msg, 256, format, args);
-	}
-	va_end (args);
-	if (true)	// check that no error set for root key
-	{
-		//ELEKTRA_SET_ERROR(err, driver->root, msg);
-		ELEKTRA_LOG_DEBUG ("Error: %s", msg);
-	}
-	else
-	{
-		ELEKTRA_LOG_DEBUG ("Additional Error: %s", msg);
-	}
-	elektraFree (msg);
-}
-
-void driverErrorGeneric(Driver * driver, int err, const char * caller, const char * callee) {
-	if (true) {	// check that no error set for root key
-		ELEKTRA_LOG_DEBUG ("%s: Error during call of %s, code = %d: %s", caller, callee, err);
-		// ELEKTRA_SET_ERROR(err, driver->root, "%s: error during calling %s.", caller, callee);
-	}
+	fclose(file);
+	return driver->errorSet != 0 || yyResult != 0;
 }
 
 void driverExitToml (Driver * driver)
@@ -120,7 +85,8 @@ void driverExitKey (Driver * driver)
 		if (!isTableArrayList)
 		{
 			// Only allow table array keys to be read multiple times
-			driverError (driver, ERROR_SEMANTIC, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'", keyName (existing));
+			driverError (driver, ERROR_SEMANTIC, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'",
+				     keyName (existing));
 		}
 	}
 
@@ -152,17 +118,20 @@ void driverExitOptCommentKeyPair (Driver * driver)
 {
 	if (driver->commentRoot != NULL)
 	{
-		if (driver->prevKey == NULL) {
-			driverError(driver, ERROR_LOGICAL, 0, "Wanted to assign inline comment to keypair, but keypair key is NULL.");
+		if (driver->prevKey == NULL)
+		{
+			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign inline comment to keypair, but keypair key is NULL.");
 			return;
 		}
-		if (driver->commentRoot->next != NULL) {
-			driverError(driver, ERROR_LOGICAL, 0, "More than one comment existing after exiting keypair, expected up to one.");
+		if (driver->commentRoot->next != NULL)
+		{
+			driverError (driver, ERROR_INTERNAL, 0, "More than one comment existing after exiting keypair, expected up to one.");
 			return;
 		}
 		int err = keyAddInlineComment (driver->prevKey, driver->commentRoot) != 0;
-		if (err != 0) {
-			driverErrorGeneric(driver, err, "driverExitOptCommentTable", "keyAddInlineComment");
+		if (err != 0)
+		{
+			driverErrorGeneric (driver, err, "driverExitOptCommentTable", "keyAddInlineComment");
 		}
 		driverClearCommentList (driver);
 	}
@@ -172,17 +141,20 @@ void driverExitOptCommentTable (Driver * driver)
 {
 	if (driver->commentRoot != NULL)
 	{
-		if (driver->prevKey == NULL) {
-			driverError(driver, ERROR_LOGICAL, 0, "Wanted to assign inline comment to table, but table key is NULL.");
+		if (driver->prevKey == NULL)
+		{
+			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign inline comment to table, but table key is NULL.");
 			return;
 		}
-		if (driver->commentRoot->next != NULL) {
-			driverError(driver, ERROR_LOGICAL, 0, "More than one comment existing after exiting table, expected up to one.");
+		if (driver->commentRoot->next != NULL)
+		{
+			driverError (driver, ERROR_INTERNAL, 0, "More than one comment existing after exiting table, expected up to one.");
 			return;
 		}
 		int err = keyAddInlineComment (driver->parentStack->key, driver->commentRoot);
-		if (err != 0) {
-			driverErrorGeneric(driver, err, "driverExitOptCommentTable", "keyAddInlineComment");
+		if (err != 0)
+		{
+			driverErrorGeneric (driver, err, "driverExitOptCommentTable", "keyAddInlineComment");
 		}
 		driverClearCommentList (driver);
 
@@ -389,7 +361,8 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 			driver->newlineCount--;
 		}
 		driver->commentBack = commentListAddNewlines (driver->commentBack, driver->newlineCount);
-		if (driver->commentBack == NULL) {
+		if (driver->commentBack == NULL)
+		{
 			driverErrorGeneric (driver, ERROR_MEMORY, "driverExitComment", "commentListAddNewlines");
 		}
 		driver->newlineCount = 0;
@@ -402,7 +375,8 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 	else
 	{
 		driver->commentBack = commentListAdd (driver->commentBack, comment->str, driver->spaceCount);
-		if (driver->commentBack == NULL) {
+		if (driver->commentBack == NULL)
+		{
 			driverErrorGeneric (driver, ERROR_MEMORY, "driverExitComment", "commentListAdd");
 		}
 	}
@@ -435,9 +409,9 @@ void driverExitNewline (Driver * driver)
 
 static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount)
 {
-	if (driver->commentRoot != NULL ||
-	    driver->commentBack != NULL) {
-		driverError (driver, ERROR_LOGICAL, 0, "Wanted to create new comment list, but comment list already existing.");
+	if (driver->commentRoot != NULL || driver->commentBack != NULL)
+	{
+		driverError (driver, ERROR_INTERNAL, 0, "Wanted to create new comment list, but comment list already existing.");
 	}
 	driver->commentRoot = commentListNew (comment, spaceCount);
 	driver->commentBack = driver->commentRoot;
@@ -467,8 +441,9 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 			comment->next = NULL;
 		}
 		int err = keyAddInlineComment (driver->prevKey, comment);
-		if (err != 0) {
-			driverErrorGeneric(driver, err, "firstCommentAsInlineToPrevKey", "keyAddInlineComment");
+		if (err != 0)
+		{
+			driverErrorGeneric (driver, err, "firstCommentAsInlineToPrevKey", "keyAddInlineComment");
 		}
 		commentListFree (comment); // only clears the inline comment recently added to the key
 	}
@@ -484,8 +459,9 @@ static void driverDrainCommentsToKey (Key * key, Driver * driver)
 			driver->newlineCount--;
 		}
 		driver->commentBack = commentListAddNewlines (driver->commentBack, driver->newlineCount);
-		if (driver->commentBack == NULL) {
-			driverErrorGeneric(driver, ERROR_MEMORY, "driverDrainCommentsToKey", "commentListAddNewlines");
+		if (driver->commentBack == NULL)
+		{
+			driverErrorGeneric (driver, ERROR_MEMORY, "driverDrainCommentsToKey", "commentListAddNewlines");
 		}
 
 		driver->newlineCount = 0;
@@ -494,7 +470,8 @@ static void driverDrainCommentsToKey (Key * key, Driver * driver)
 	if (key != NULL)
 	{
 		int err = keyAddCommentList (key, driver->commentRoot);
-		if (err != 0) {
+		if (err != 0)
+		{
 			driverErrorGeneric (driver, err, "driverDrainCommentsToKey", "keyAddCommentList");
 		}
 	}
@@ -508,8 +485,9 @@ static void pushCurrKey (Driver * driver)
 
 static void setCurrKey (Driver * driver, const Key * parent)
 {
-	if (parent == NULL) {
-		driverError(driver, ERROR_LOGICAL, 0, "Wanted to set current key to NULL.");
+	if (parent == NULL)
+	{
+		driverError (driver, ERROR_INTERNAL, 0, "Wanted to set current key to NULL.");
 		return;
 	}
 	if (driver->currKey != NULL)
@@ -529,8 +507,9 @@ static void resetCurrKey (Driver * driver)
 
 static void extendCurrKey (Driver * driver, const char * name)
 {
-	if (driver->currKey == NULL) {
-		driverError(driver, ERROR_LOGICAL, 0, "Wanted to extend current key, but current key is NULL.");
+	if (driver->currKey == NULL)
+	{
+		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
 	}
 	keyAddBaseName (driver->currKey, name);
@@ -575,8 +554,9 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 {
 	if (driver->lastScalar != NULL)
 	{
-		if (driver->parentStack == 0) {
-			driverError(driver, ERROR_LOGICAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
+		if (driver->parentStack == 0)
+		{
+			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
 			return;
 		}
 		keySetString (driver->parentStack->key, driver->lastScalar->str);

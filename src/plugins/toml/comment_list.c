@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "utility.h"
-#include "error_code.h"
+#include "error.h"
 
 static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount);
 
@@ -75,7 +75,7 @@ int keyAddCommentList (Key * key, CommentList * root)
 int keyAddInlineComment (Key * key, CommentList * root)
 {
 	if (root->next != NULL) {
-		return ERROR_LOGICAL;
+		return ERROR_INTERNAL;
 	}
 	return keyAddComment (key, root->str, 0, root->spaceCount);
 }
