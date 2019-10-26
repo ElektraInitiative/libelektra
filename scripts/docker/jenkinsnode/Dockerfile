@@ -36,12 +36,6 @@ RUN apt-get -y install \
   libuv1-dev \
 	libzmq3-dev \
   openjdk-8-jdk-headless \
-  ghc \
-  ghc-dynamic \
-  cabal-install \
-  alex \
-  happy \
-  c2hs \
   openssh-server \
   maven \
   git \
@@ -67,9 +61,6 @@ RUN echo "\n\n\n\n\nY" | adduser --quiet --disabled-password jenkins && \
   chown -R jenkins:jenkins /home/jenkins/.m2/ && \
   mkdir /home/jenkins/libelektra && \
   echo "[user]\nname = Jenkins Buildbot\nemail = bot@libelektra.org" >> /home/jenkins/.gitconfig
-
-# setup cabal for the jenkins user, then go back to root
-USER jenkins
 
 # setup the run- utilities
 COPY run-make /usr/local/bin/run-make

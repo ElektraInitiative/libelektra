@@ -18,7 +18,7 @@ disable that, change the line `ionice -c 3 nice $*` in `run_ionice` to simply `$
 Now build the image with the following command:
 
 ```sh
-$ docker build -t buildelektra-stretch .
+docker build -t buildelektra-stretch .
 ```
 
 After the build process has completed you can create and run a Docker container
@@ -27,13 +27,13 @@ port to some port you want to use on the container's host so jenkins can connect
 to it. We give this container a name to easily refer to it at runtime.
 
 ```sh
-$ docker run -d -p 22222:22 --name build-v2 buildelektra-stretch
+docker run -d -p 22222:22 --name build-v2 buildelektra-stretch
 ```
 
 Now you should be able to connect to the container locally via the host machine:
 
 ```sh
-$ ssh jenkins@localhost -p 22222
+ssh jenkins@localhost -p 22222
 ```
 
 Afterwards you need to ensure that this ssh port is also accessible from the
