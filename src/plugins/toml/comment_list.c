@@ -7,15 +7,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utility.h"
 #include "error.h"
+#include "utility.h"
 
 static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount);
 
 CommentList * commentListNew (const char * comment, size_t spaceCount)
 {
 	CommentList * newComment = elektraCalloc (sizeof (CommentList));
-	if (newComment == NULL) {
+	if (newComment == NULL)
+	{
 		return NULL;
 	}
 	if (comment != NULL)
@@ -39,8 +40,8 @@ void commentListFree (CommentList * root)
 
 CommentList * commentListAdd (CommentList * back, const char * comment, size_t spaceCount)
 {
-	assert(back != NULL);
-	assert(back->next == NULL);
+	assert (back != NULL);
+	assert (back->next == NULL);
 	back->next = commentListNew (comment, spaceCount);
 	return back->next;
 }
@@ -52,7 +53,8 @@ CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 	while (newlineCount > 0)
 	{
 		newBack = commentListAdd (newBack, NULL, 0);
-		if (newBack == NULL) {
+		if (newBack == NULL)
+		{
 			return NULL;
 		}
 		newlineCount--;
@@ -74,7 +76,8 @@ int keyAddCommentList (Key * key, CommentList * root)
 
 int keyAddInlineComment (Key * key, CommentList * root)
 {
-	if (root->next != NULL) {
+	if (root->next != NULL)
+	{
 		return ERROR_INTERNAL;
 	}
 	return keyAddComment (key, root->str, 0, root->spaceCount);
@@ -84,12 +87,14 @@ static int keyAddComment (Key * key, const char * commentStr, size_t index, size
 {
 	// add comment str
 	char * indexStr = indexToArrayString (index);
-	if (indexStr == NULL) {
+	if (indexStr == NULL)
+	{
 		return ERROR_MEMORY;
 	}
 	size_t metaLen = strlen (indexStr) + 9;
 	char * metaName = (char *) elektraCalloc (sizeof (char) * metaLen);
-	if (metaName == NULL) {
+	if (metaName == NULL)
+	{
 		elektraFree (indexStr);
 		return ERROR_MEMORY;
 	}
@@ -103,7 +108,8 @@ static int keyAddComment (Key * key, const char * commentStr, size_t index, size
 	// add start symbol
 	size_t metaInfoLen = metaLen + 6;
 	char * metaInfoName = (char *) elektraCalloc (sizeof (char) * metaInfoLen);
-	if (metaInfoName == NULL) {
+	if (metaInfoName == NULL)
+	{
 		elektraFree (metaName);
 		return ERROR_MEMORY;
 	}

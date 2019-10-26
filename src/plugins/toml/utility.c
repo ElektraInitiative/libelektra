@@ -15,7 +15,8 @@ Key * keyAppendIndex (size_t index, const Key * parent)
 	return indexKey;
 }
 
-void keyUpdateArrayMetakey (Key * key, size_t newIndex) {
+void keyUpdateArrayMetakey (Key * key, size_t newIndex)
+{
 	char * indexStr = indexToArrayString (newIndex);
 	keySetMeta (key, "array", indexStr);
 	elektraFree (indexStr);
@@ -30,9 +31,9 @@ char * indexToArrayString (size_t index)
 	}
 	int strLen = 1 +	    //  '#'
 		     (digits - 1) + // underscores
-		     digits +	    // actual digits
+		     digits +       // actual digits
 		     1;		    // '\0'
-	char * str = (char*) elektraCalloc (sizeof (char) * strLen);
+	char * str = (char *) elektraCalloc (sizeof (char) * strLen);
 	memset (str, '_', sizeof (char) * strLen);
 	str[0] = '#';
 	str[strLen - 1] = 0;
