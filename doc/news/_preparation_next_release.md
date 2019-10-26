@@ -258,7 +258,7 @@ you up to date with the multi-language support provided by Elektra.
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
 - A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
 - Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
-- We updated links for the INI parsing library Nickel. _(René Schwaiger)_
+- We updated links for the INI parsing library Nickel and the documentation for the ini plugin. _(René Schwaiger)_
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
