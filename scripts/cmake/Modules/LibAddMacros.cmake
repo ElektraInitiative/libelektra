@@ -555,6 +555,13 @@ function (generate_manpage NAME)
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
 		if (RONN_LOC)
+			# The script `ElektraManpage.cmake` uses `git` – if the command is available – to revert date only changes in man
+			# pages. Since `git` needs exclusive access to the repository the build system can not run multiple versions of
+			# `ElektraManpage.cmake` concurrently.
+			if (GIT_COMMAND)
+				set (ADD_CUSTOM_COMMAND_EXTRA_ARG USES_TERMINAL)
+			endif (GIT_COMMAND)
+
 			add_custom_command (OUTPUT ${OUTFILE}
 					    DEPENDS ${MDFILE}
 					    COMMAND ${CMAKE_COMMAND}
@@ -568,7 +575,8 @@ function (generate_manpage NAME)
 						    -D
 						    OUTFILE=${OUTFILE}
 						    -P
-						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManpage.cmake)
+						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManpage.cmake
+						    ${ADD_CUSTOM_COMMAND_EXTRA_ARG})
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)
