@@ -131,7 +131,7 @@ For a list of compilers we test with have a look at:
   by our [Jenkinsfile](/scripts/jenkins/Jenkinsfile) being built
   on [our build server](https://build.libelektra.org/)
 - [Travis](/.travis.yml)
-- [Cirrus](.cirrus.yml)
+- [Cirrus](/.cirrus.yml)
 
 Here is a list of compilers used by developers or build servers:
 
