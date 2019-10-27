@@ -4,6 +4,17 @@ if (BUILD_DOCUMENTATION)
 
 	if (RONN_LOC)
 		add_custom_target (man ALL)
+		if (GIT_COMMAND)
+			add_custom_command (TARGET man POST_BUILD
+					    COMMAND ${CMAKE_COMMAND}
+						    ARGS
+						    -D
+						    MAN_PAGE_DIRECTORY=${CMAKE_SOURCE_DIR}/doc/man
+						    -D
+						    GIT_COMMAND=${GIT_COMMAND}
+						    -P
+						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManpageRevert.cmake)
+		endif (GIT_COMMAND)
 	else (RONN_LOC)
 		message ("Sorry, I cannot find ronn (https://github.com/rtomayko/ronn), thus generating the man pages will not work. "
 			 "I will install the man pages directly from the repository instead.")
