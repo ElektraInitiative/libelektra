@@ -562,6 +562,8 @@ function (generate_manpage NAME)
 						    -D
 						    RONN_COMMAND=${RONN_LOC}
 						    -D
+						    GIT_COMMAND=${GIT_COMMAND}
+						    -D
 						    MDFILE=${MDFILE}
 						    -D
 						    OUTFILE=${OUTFILE}
