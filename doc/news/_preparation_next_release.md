@@ -262,7 +262,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
 - We updated links for the INI parsing library Nickel and the documentation for the ini plugin. _(René Schwaiger)_
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
-- The [compile instructions](../COMPILE.md) do not assume that you use `make` to build Elektra anymore. _(René Schwaiger)_
+- The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
 

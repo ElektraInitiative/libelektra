@@ -3,8 +3,8 @@
 ## Dependencies
 
 For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
-[git](https://git-scm.com/), and essential build tools
-(make, gcc, and some standard Unix tools; alternatively ninja and
+[git](https://git-scm.com/), a C99 compiler and essential build tools
+(make and some standard Unix tools; alternatively ninja and
 clang are also supported but not described here):
 
 ```sh
@@ -124,8 +124,16 @@ Some scripts in the folder of the same name may help you running cmake.
 
 ### Compilers
 
-For supported compilers have a look at the automatic build farm on
-https://build.libelektra.org/
+You should be able to compile Elektra with any C99 compiler.
+For a list of compilers we test with have a look at:
+
+- our [Docker containers](/scripts/docker) orchestrated
+  by our [Jenkinsfile](/scripts/jenkins/Jenkinsfile) being built
+  on [our build server](https://build.libelektra.org/)
+- [Travis](/.travis.yml)
+- [Cirrus](.cirrus.yml)
+
+Here is a list of compilers used by developers or build servers:
 
 | Compiler | Version                     | Target              |
 | -------- | --------------------------- | ------------------- |
@@ -138,6 +146,7 @@ https://build.libelektra.org/
 | clang    | 8.0                         | macOS               |
 | gcc      | 9.1                         | macOS               |
 | gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
+| mingw    | 6.0.0-3                     | amd64               |
 | clang    | 6.0.0                       | freebsd 11          |
 | clang    | 6.0.1                       | freebsd 12          |
 
