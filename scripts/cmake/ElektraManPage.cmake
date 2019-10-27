@@ -21,10 +21,12 @@ if (GIT_COMMAND)
 			"\\1"
 			GIT_ADDED_LINES
 			"${GIT_OUTPUT}")
-	if (GIT_ADDED_LINES STREQUAL 1)
-		execute_process (COMMAND "${GIT_COMMAND}" diff ${OUTFILE} OUTPUT_VARIABLE GIT_DIFF)
-		if (GIT_DIFF MATCHES "\n-.TH")
-			execute_process (COMMAND "${GIT_COMMAND}" checkout ${OUTFILE})
-		endif (GIT_DIFF MATCHES "\n-.TH")
-	endif (GIT_ADDED_LINES STREQUAL 1)
+	if (NOT GIT_ADDED_LINES STREQUAL 1)
+		return ()
+	endif (NOT GIT_ADDED_LINES STREQUAL 1)
+
+	execute_process (COMMAND "${GIT_COMMAND}" diff ${OUTFILE} OUTPUT_VARIABLE GIT_DIFF)
+	if (GIT_DIFF MATCHES "\n-.TH")
+		execute_process (COMMAND "${GIT_COMMAND}" checkout ${OUTFILE})
+	endif (GIT_DIFF MATCHES "\n-.TH")
 endif (GIT_COMMAND)
