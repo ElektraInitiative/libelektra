@@ -507,7 +507,6 @@ int ksClear (KeySet * ks)
  *
  */
 static int keyCompareByName (const void * p1, const void * p2)
-// TODO (kodebach): change signature to static int keyCompareByName (const Key * k1, const Key * k2)
 {
 	Key * k1 = *(Key **) p1;
 	Key * k2 = *(Key **) p2;
@@ -533,7 +532,6 @@ static int keyCompareByName (const void * p1, const void * p2)
  * @return
  */
 static int keyCompareByNameCase (const void * p1, const void * p2)
-// TODO (kodebach): change signature to static int keyCompareByName (const Key * k1, const Key * k2)
 {
 	Key * k1 = *(Key **) p1;
 	Key * k2 = *(Key **) p2;
@@ -554,7 +552,6 @@ static int keyCompareByNameCase (const void * p1, const void * p2)
  * @return comparison result
  */
 static int keyCompareByOwner (const void * p1, const void * p2)
-// TODO (kodebach): change signature to static int keyCompareByName (const Key * k1, const Key * k2)
 {
 	Key * key1 = *(Key **) p1;
 	Key * key2 = *(Key **) p2;
@@ -578,7 +575,6 @@ static int keyCompareByOwner (const void * p1, const void * p2)
  * @see keyCmp, keyCompareByName
  */
 static int keyCompareByNameOwner (const void * p1, const void * p2)
-// TODO (kodebach): change signature to static int keyCompareByNameOWner (const Key * k1, const Key * k2)
 {
 	int ret = keyCompareByName (p1, p2);
 
@@ -591,7 +587,6 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
 
 
 static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
-// TODO (kodebach): change signature to static int keyCompareByName (const Key * k1, const Key * k2)
 {
 	int result = keyCompareByNameCase (p1, p2);
 
@@ -1778,14 +1773,9 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, option_t options)
 {
 	Key * ret = 0;
+	elektraNamespace oldNS = keyGetNamespace (specKey);
 	// strip away beginning of specKey
-	char * name = specKey->key;
-	// stays same if already cascading and
-	// root must not be cascaded, so the usage of strchr is safe.
-	specKey->key = strchr (name, '/');
-	size_t size = specKey->keySize;
-	specKey->keySize = size - (specKey->key - name);
-	specKey->ukey[0] = KEY_NS_CASCADING;
+	keySetNamespace (specKey, KEY_NS_CASCADING);
 
 	// lookup by override
 	char buffer[ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE] = "override/";
@@ -1808,9 +1798,7 @@ static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, option_t options)
 	}
 
 finished:
-	specKey->key = name;
-	specKey->keySize = size;
-	specKey->ukey[0] = KEY_NS_SPEC;
+	keySetNamespace (specKey, oldNS);
 
 	return ret;
 }
@@ -1821,9 +1809,7 @@ finished:
  */
 static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 {
-	char * name = key->key;
-	size_t size = key->keySize;
-	size_t usize = key->keyUSize;
+	elektraNamespace oldNS = keyGetNamespace (key);
 	Key * found = 0;
 	Key * specKey = 0;
 
@@ -1836,9 +1822,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	if (specKey)
 	{
 		// restore old name
-		key->key = name;
-		key->keySize = size;
-		key->keyUSize = usize;
+		keySetNamespace (key, oldNS);
 
 		if (strncmp (keyName (specKey), "spec/", 5))
 		{ // the search was modified in a way that not a spec Key was returned

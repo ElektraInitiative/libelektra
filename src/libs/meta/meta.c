@@ -225,8 +225,7 @@ ssize_t keySetComment (Key * key, const char * newComment)
 		return 1;
 	}
 
-	keySetMeta (key, "comment", newComment);
-	return keyGetCommentSize (key);
+	return keySetMeta (key, "comment", newComment);
 }
 
 
@@ -1167,7 +1166,7 @@ static int isValidKeyName (const char * testName)
 {
 	int retVal = 0;
 	Key * testKey = keyNew (testName, KEY_CASCADING_NAME, KEY_END);
-	if (!strcmp (keyName (testKey), testName)) retVal = 1;
+	if (testKey && !strcmp (keyName (testKey), testName)) retVal = 1;
 	keyDel (testKey);
 	return retVal;
 }

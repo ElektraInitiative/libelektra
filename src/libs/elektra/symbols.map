@@ -187,6 +187,7 @@ libelektraprivate_1.0 {
 	elektraPluginVersion;
 	elektraProcessPlugin;
 	elektraProcessPlugins;
+	keySetNamespace;
 
 	# kdblogger.h
 	elektraLog;

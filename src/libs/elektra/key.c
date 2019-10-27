@@ -166,19 +166,12 @@
  */
 Key * keyNew (const char * name, ...)
 {
-	Key * k;
+	if (!name) return NULL;
 
-	if (!name)
-	{
-		k = elektraCalloc (sizeof (Key));
-	}
-	else
-	{
-		va_list va;
-		va_start (va, name);
-		k = keyVNew (name, va);
-		va_end (va);
-	}
+	va_list va;
+	va_start (va, name);
+	Key * k = keyVNew (name, va);
+	va_end (va);
 
 	return k;
 }

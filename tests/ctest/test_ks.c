@@ -36,22 +36,6 @@ static void test_ksRenameKeys (void)
 	ksDel (ks);
 }
 
-static void test_elektraEmptyKeys (void)
-{
-	printf ("test empty keys\n");
-	Key * key = keyNew ("", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
-
-	elektraKeySetName (key, "", KEY_META_NAME | KEY_CASCADING_NAME);
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (key->key != 0, "null pointer?");
-	ksAppendKey (ks, key);
-
-	succeed_if (ksLookup (ks, key, 0) == key, "could not find empty key");
-
-	ksDel (ks);
-}
-
 static void test_cascadingLookup (void)
 {
 	printf ("test cascading lookup\n");
@@ -214,7 +198,6 @@ int main (int argc, char ** argv)
 
 	test_ksToArray ();
 	test_ksRenameKeys ();
-	test_elektraEmptyKeys ();
 	test_cascadingLookup ();
 	test_creatingLookup ();
 	test_ksNoAlloc ();

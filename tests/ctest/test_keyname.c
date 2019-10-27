@@ -87,10 +87,10 @@ static void test_relative_generic (void)
 	test_relative ("Käfer/K", child, parent);
 	keyDel (child);
 	keyDel (parent);
-	parent = keyNew ("user", KEY_END);
+	parent = keyNew ("user/", KEY_END);
 	child = keyNew ("user/K", KEY_END);
 	test_relative ("K", child, parent);
-	test_relative ("user", parent, child);
+	test_relative ("user/", parent, child);
 	keyDel (child);
 	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);

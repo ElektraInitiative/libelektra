@@ -9,7 +9,7 @@
 // clang-format off
 
 ksNew(102,
-	keyNew ("user", KEY_DIR,0),
+	keyNew ("user/", KEY_DIR,0),
 	keyNew ("user/test", KEY_DIR,0),
 	keyNew ("user/test/keyset", KEY_DIR,0),
 	keyNew ("user/test/keyset/key1", KEY_VALUE, "value1", KEY_COMMENT, "comment1",0),

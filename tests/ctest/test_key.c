@@ -15,7 +15,7 @@
 
 static void test_keyRefcounter (void)
 {
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 	key->ksReference = 5;
 	succeed_if (key->ksReference == 5, "wrong ref");
 	succeed_if (keyGetRef (key) == 5, "wrong ref");
@@ -346,7 +346,7 @@ static void test_keyHelpers (void)
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
 
 	k1 = keyNew ("user/dir1/dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, 0) == 15, "Could not add nothing to basename");
+	succeed_if (keyAddBaseName (k1, 0) == -1, "Could add null basename");
 	succeed_if_same_string (keyName (k1), "user/dir1/dir2");
 	succeed_if (keyAddBaseName (k1, "") == 17, "Could not add nothing to basename");
 	succeed_if_same_string (keyName (k1), "user/dir1/dir2/%");
@@ -388,17 +388,10 @@ static void test_keyHelpers (void)
 		keyDel (k2);
 	}
 
-
-	k2 = keyNew (0);
-	succeed_if (keyAddBaseName (k2, "no") == -1, "Could add basename on empty name");
-	succeed_if_same_string (keyName (k2), "");
-	succeed_if (keyGetNameSize (k2) == 1, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew (0);
-	succeed_if (keyAddBaseName (k2, "user") == -1, "Could add basename on empty name");
-	succeed_if_same_string (keyName (k2), "");
-	succeed_if (keyGetNameSize (k2) == 1, "Name size not correct");
+	k2 = keyNew ("/", KEY_END);
+	succeed_if (keyAddBaseName (k2, "user") == 6, "Could not add basename on /");
+	succeed_if_same_string (keyName (k2), "/user");
+	succeed_if (keyGetNameSize (k2) == 6, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("user/dir1/dir2/mykey/mykey/a", KEY_END);
@@ -445,16 +438,16 @@ static void test_keyHelpers (void)
 		keyDel (k2);
 	}
 
-	k2 = keyNew ("user", KEY_END);
+	k2 = keyNew ("user/", KEY_END);
 	succeed_if (keySetBaseName (k2, "user") == -1, "Could add basename, but there is none");
-	succeed_if_same_string (keyName (k2), "user");
-	succeed_if (keyGetNameSize (k2) == 5, "Name size not correct");
+	succeed_if_same_string (keyName (k2), "user/");
+	succeed_if (keyGetNameSize (k2) == 6, "Name size not correct");
 	keyDel (k2);
 
-	k2 = keyNew ("system", KEY_END);
+	k2 = keyNew ("system/", KEY_END);
 	succeed_if (keySetBaseName (k2, "system") == -1, "Could add basename, but there is none");
-	succeed_if_same_string (keyName (k2), "system");
-	succeed_if (keyGetNameSize (k2) == 7, "Name size not correct");
+	succeed_if_same_string (keyName (k2), "system/");
+	succeed_if (keyGetNameSize (k2) == 8, "Name size not correct");
 	keyDel (k2);
 }
 
@@ -612,8 +605,8 @@ static void test_keyNameUnescape (void)
 static void test_keyCompare (void)
 {
 	printf ("test keyCompare\n");
-	Key * key1 = keyNew (0);
-	Key * key2 = keyNew (0);
+	Key * key1 = keyNew ("/", KEY_END);
+	Key * key2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCompare (key1, key2) == 0, "the keys don't differ of course");
 
@@ -661,11 +654,9 @@ static void test_keyNewExtensions (void)
 {
 	printf ("test keyNewExtensions\n");
 
-	Key * key = 0;
-	succeed_if (keyIsUser (key) == -1, "empty user key");
-	succeed_if (keyIsSystem (key) == -1, "empty user key?");
+	Key * key;
 
-	key = keyNew ("", KEY_END);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyIsUser (key) == 0, "empty user key");
 	succeed_if (keyIsSystem (key) == 0, "empty user key?");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
@@ -686,6 +677,7 @@ static void test_keyNewExtensions (void)
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
 }
 
+#if 0
 static void test_owner (void)
 {
 	printf ("test owner\n");
@@ -788,7 +780,7 @@ static void test_owner (void)
 
 	succeed_if (keyOwner (0) == 0, "null pointer");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyOwner (key), "");
 	succeed_if (keyGetOwner (key, ret, 1000) == 1, "get empty owner");
 	succeed_if_same_string (ret, "");
@@ -797,6 +789,7 @@ static void test_owner (void)
 
 	succeed_if (keySetOwner (0, "") == -1, "null pointer");
 }
+#endif
 
 static void test_keyComment (void)
 {
@@ -807,7 +800,7 @@ static void test_keyComment (void)
 
 	printf ("Test comment of key\n");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keyGetCommentSize (key) == 1, "empty comment size");
 	succeed_if (keySetComment (key, "perfectcomment") == 15, "could not set comment");
 	succeed_if (keyGetCommentSize (key) == 15, "comment size not correct");
@@ -822,7 +815,7 @@ static void test_keyComment (void)
 	succeed_if_same_string (ret, "nearperfectcomment");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if_same_string (keyComment (key), "");
 	succeed_if (keyGetCommentSize (key) == 1, "Empty comment size problem");
 	succeed_if (keySetComment (key, "") == 1, "could not set comment");
@@ -833,7 +826,7 @@ static void test_keyComment (void)
 	succeed_if (ret[0] == 0, "keyGetComment did not return empty comment");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	for (i = 1; i < 256; i++)
 	{
 		ret[0] = i;
@@ -852,7 +845,7 @@ static void test_keyComment (void)
 	succeed_if (keyGetCommentSize (0) == -1, "null pointer");
 	succeed_if (keySetComment (0, "") == -1, "null pointer");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetCommentSize (key) == 1, "empty comment size");
 
 	keySetComment (key, testComment);
@@ -891,13 +884,14 @@ static void test_keyComment (void)
 	keyDel (key);
 }
 
+#if 0
 static void test_keyOwner (void)
 {
 	Key * key;
 	char ret[1000];
 	int i;
 	printf ("Test owner of keys\n");
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keyGetOwnerSize (key) == 1, "empty owner size");
 	succeed_if (keySetOwner (key, "perfectowner") == 13, "could not set owner");
 	succeed_if (keyGetOwnerSize (key) == 13, "owner size not correct");
@@ -911,13 +905,13 @@ static void test_keyOwner (void)
 	succeed_if_same_string (ret, "nearperfectowner");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keySetName (key, "user:perfectowner") == 5, "could not set to user with owner");
 	succeed_if (keyGetOwnerSize (key) == 13, "owner size not correct");
 	succeed_if_same_string (keyOwner (key), "perfectowner");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if_same_string (keyOwner (key), "");
 	succeed_if (keyGetOwnerSize (key) == 1, "Empty owner size problem");
 	succeed_if (keySetOwner (key, "") == 1, "could not set owner");
@@ -928,7 +922,7 @@ static void test_keyOwner (void)
 	succeed_if (ret[0] == 0, "keyGetOwner did not return empty owner");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	for (i = 1; i < 256; i++)
 	{
 		ret[0] = i;
@@ -986,7 +980,7 @@ static void test_keyDir (void)
 
 static void test_keyTime (void)
 {
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 	time_t now = time (0);
 	time_t past = now - 60 * 60 * 24 * 356 * 10;
 	time_t future = now + 60 * 60 * 24 * 356 * 10;
@@ -1061,7 +1055,7 @@ static void test_keyMeta (void)
 
 	key = 0;
 	succeed_if (keyNeedSync (key) == -1, "key needs sync");
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (key) == 0, "fresh key needs sync");
 	keyDel (key);
 
@@ -1071,19 +1065,19 @@ static void test_keyMeta (void)
 
 	succeed_if (keyNeedSync (0) == -1, "keyNeedSync(0)");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (key) == 0, "keyNew(0) should not need sync");
 	succeed_if (keySetName (key, "invalid") == -1, "invalid name should fail");
 	succeed_if (keyNeedSync (key) == 0, "keyNew(0) should not need sync");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (key) == 0, "should not need sync");
 	keySetUID (key, 20);
 	succeed_if (keyNeedSync (key) == 1, "should need sync");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetUID (key) == (uid_t) -1, "uid not set to nobody");
 	succeed_if (keyGetGID (key) == (gid_t) -1, "gid not set to nobody");
 
@@ -1106,7 +1100,7 @@ static void test_keyMeta (void)
 	succeed_if (keyGetGID (key) == 0, "gid not set to 21");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetMode (key) == KDB_FILE_MODE, "new key does not have default mode");
 	succeed_if (keySetDir (key) == 0, "could not set dir");
 	succeed_if (keyGetMode (key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
@@ -1118,136 +1112,96 @@ static void test_keyMeta (void)
 	succeed_if (keyGetMode (key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	keyDel (key);
 }
+#endif
 
 static void test_elektraKeySetName (void)
 {
 	printf ("test elektraKeySetName\n");
 
-	Key * key = keyNew ("", KEY_END);
+	Key * key = keyNew ("/", KEY_END);
 	Key * dup = 0;
 
-	succeed_if (elektraKeySetName (key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if (elektraKeySetName (key, "/", 0) != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/");
 	keyDel (dup);
 
-	elektraKeySetName (key, "/c", KEY_CASCADING_NAME);
+	elektraKeySetName (key, "/c", 0);
 	succeed_if_same_string (keyName (key), "/c");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/c");
 	keyDel (dup);
 
-	succeed_if (elektraKeySetName (key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if (elektraKeySetName (key, "/", 0) != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
-	elektraKeySetName (key, "/cascading", KEY_CASCADING_NAME);
+	elektraKeySetName (key, "/cascading", 0);
 	succeed_if_same_string (keyName (key), "/cascading");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
-	elektraKeySetName (key, "/cascading/s/deep/below", KEY_CASCADING_NAME);
+	elektraKeySetName (key, "/cascading/s/deep/below", 0);
 	succeed_if_same_string (keyName (key), "/cascading/s/deep/below");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/cascading/s/deep/below");
 	keyDel (dup);
 
-	elektraKeySetName (key, "user/cascading/s/deep/below", KEY_CASCADING_NAME);
+	elektraKeySetName (key, "user/cascading/s/deep/below", 0);
 	succeed_if_same_string (keyName (key), "user/cascading/s/deep/below");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "user/cascading/s/deep/below");
 	keyDel (dup);
 
-	elektraKeySetName (key, "system/cascading/s/deep/below", KEY_CASCADING_NAME);
+	elektraKeySetName (key, "system/cascading/s/deep/below", 0);
 	succeed_if_same_string (keyName (key), "system/cascading/s/deep/below");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "system/cascading/s/deep/below");
 	keyDel (dup);
 
-	/* TODO (kodebach)
-	elektraKeySetName (key, "order", KEY_META_NAME);
-	succeed_if_same_string (keyName (key), "order");
+	elektraKeySetName (key, "meta/order", 0);
+	succeed_if_same_string (keyName (key), "meta/order");
 	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "order");
+	succeed_if_same_string (keyName (dup), "meta/order");
 	keyDel (dup);
 
-	elektraKeySetName (key, "check/type", KEY_META_NAME);
-	succeed_if_same_string (keyName (key), "check/type");
+	elektraKeySetName (key, "meta/check/type", 0);
+	succeed_if_same_string (keyName (key), "meta/check/type");
 	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "check/type");
+	succeed_if_same_string (keyName (dup), "meta/check/type");
 	keyDel (dup);
 
-	elektraKeySetName (key, "a", KEY_META_NAME);
-	succeed_if_same_string (keyName (key), "a");
+	elektraKeySetName (key, "meta/a", 0);
+	succeed_if_same_string (keyName (key), "meta/a");
 	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "a");
+	succeed_if_same_string (keyName (dup), "meta/a");
 	keyDel (dup);
 
-	elektraKeySetName (key, "", KEY_EMPTY_NAME);
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "");
-	keyDel (dup);
+	succeed_if (elektraKeySetName (key, "", 0) == -1, "setting emtpy name should fail");
+	succeed_if_same_string (keyName (key), "meta/a");
 
-	elektraKeySetName (key, "", KEY_META_NAME | KEY_EMPTY_NAME);
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "");
-	keyDel (dup);
-	*/
+	succeed_if (keySetName (key, 0) == -1, "setting null name should fail");
+	succeed_if_same_string (keyName (key), "meta/a");
 
-	keySetName (key, 0);
-	succeed_if_same_string (keyName (key), "");
-	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "");
-	keyDel (dup);
-
-	/* TODO (kodebach)
-	elektraKeySetName (key, "", KEY_META_NAME | KEY_CASCADING_NAME);
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "");
-	keyDel (dup);
-	 */
-
-	elektraKeySetName (key, "/cascading", KEY_META_NAME | KEY_CASCADING_NAME);
+	elektraKeySetName (key, "/cascading", 0);
 	succeed_if_same_string (keyName (key), "/cascading");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
-	/* TODO (kodebach)
-	elektraKeySetName (key, "meta", KEY_META_NAME | KEY_CASCADING_NAME);
-	succeed_if_same_string (keyName (key), "meta");
+	elektraKeySetName (key, "meta/", 0);
+	succeed_if_same_string (keyName (key), "meta/");
 	succeed_if (key->key != 0, "null pointer?");
 	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "meta");
+	succeed_if_same_string (keyName (dup), "meta/");
 	keyDel (dup);
 
-	elektraKeySetName (key, "other", KEY_META_NAME | KEY_CASCADING_NAME);
-	succeed_if_same_string (keyName (key), "other");
+	elektraKeySetName (key, "meta/other", 0);
+	succeed_if_same_string (keyName (key), "meta/other");
 	succeed_if (key->key != 0, "null pointer?");
 	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "other");
+	succeed_if_same_string (keyName (dup), "meta/other");
 	keyDel (dup);
-
-	elektraKeySetName (key, "other///meta", KEY_META_NAME | KEY_CASCADING_NAME);
-	succeed_if_same_string (keyName (key), "other/meta");
-	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "other/meta");
-	keyDel (dup);
-
-	elektraKeySetName (key, "user:hello/test", KEY_META_NAME | KEY_CASCADING_NAME);
-	succeed_if_same_string (keyName (key), "user/test");
-	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
-	succeed_if_same_string (keyName (dup), "user/test");
-	keyDel (dup);
-	 */
 
 	for (int i = 0; i < 8; ++i)
 	{
@@ -1297,7 +1251,7 @@ static void test_keyLock (void)
 	Key * key = keyNew ("", KEY_LOCK_NAME, KEY_END);
 	Key * key2 = keyNew ("", KEY_LOCK_NAME, KEY_END);
 
-	succeed_if (keySetName (key, "user") == -1, "read only name, not allowed to set");
+	succeed_if (keySetName (key, "user/") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
 	key = keyNew ("", KEY_LOCK_VALUE, KEY_END);
@@ -1313,19 +1267,19 @@ static void test_keyLock (void)
 	succeed_if (keyCopyAllMeta (key, key2) == -1, "read only meta, not allowed to set");
 
 	keyDel (key);
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 
 	succeed_if (keyIsLocked (key, KEY_LOCK_NAME) == 0, "can lock name");
 	keyLock (key, KEY_LOCK_NAME);
 	succeed_if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME, "name is locked");
 
-	succeed_if (keySetName (key, "user") == -1, "read only name, not allowed to set");
+	succeed_if (keySetName (key, "user/") == -1, "read only name, not allowed to set");
 	succeed_if (keyAddName (key, "a") == -1, "read only name, not allowed to set");
 	succeed_if (keySetBaseName (key, "a") == -1, "read only name, not allowed to set");
 	succeed_if (keyAddBaseName (key, "a") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 
 	succeed_if (keyIsLocked (key, KEY_LOCK_VALUE | KEY_LOCK_META) == 0, "can lock name");
 	keyLock (key, KEY_LOCK_VALUE);
@@ -1335,7 +1289,7 @@ static void test_keyLock (void)
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
 
 	keyDel (key);
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 
 	succeed_if (keyIsLocked (key, KEY_LOCK_META) == 0, "can lock meta");
 	keyLock (key, KEY_LOCK_META);
@@ -1352,7 +1306,7 @@ static void test_keyLock (void)
 
 static void test_keyAddName (void)
 {
-	Key * k = keyNew ("user", KEY_END);
+	Key * k = keyNew ("user/", KEY_END);
 	keyAddName (k, "something");
 	succeed_if_same_string (keyName (k), "user/something");
 
@@ -1363,33 +1317,40 @@ static void test_keyAddName (void)
 #define TEST_ADD_NAME(base, toadd, result)                                                                                                 \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		k = keyNew (base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END);                                                             \
+		k = keyNew (base, KEY_END);                                                                                                \
 		succeed_if (keyAddName (k, toadd) == sizeof (result), "could not add name");                                               \
 		succeed_if_same_string (keyName (k), result);                                                                              \
 		keyDel (k);                                                                                                                \
 	} while (0)
 
-	TEST_ADD_NAME ("spec", "something", "spec/something");
-	TEST_ADD_NAME ("proc", "something", "proc/something");
-	TEST_ADD_NAME ("dir", "something", "dir/something");
-	TEST_ADD_NAME ("user", "something", "user/something");
-	TEST_ADD_NAME ("system", "something", "system/something");
+#define TEST_ADD_NAME_ERROR(base, toadd)                                                                                                   \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		k = keyNew (base, KEY_END);                                                                                                \
+		succeed_if (keyAddName (k, toadd) == -1, "shouldn't be able to add name");                                                 \
+		succeed_if_same_string (keyName (k), base);                                                                                \
+		keyDel (k);                                                                                                                \
+	} while (0)
 
-	TEST_ADD_NAME ("meta", "something", "meta/something");
+	TEST_ADD_NAME ("spec/", "something", "spec/something");
+	TEST_ADD_NAME ("proc/", "something", "proc/something");
+	TEST_ADD_NAME ("dir/", "something", "dir/something");
+	TEST_ADD_NAME ("user/", "something", "user/something");
+	TEST_ADD_NAME ("system/", "something", "system/something");
+
 	TEST_ADD_NAME ("meta/", "something", "meta/something");
 	TEST_ADD_NAME ("meta//", "something", "meta/something");
 
-	TEST_ADD_NAME ("meta", "something/", "meta/something");
-	TEST_ADD_NAME ("meta", "something//", "meta/something");
+	TEST_ADD_NAME ("meta/", "something/", "meta/something");
+	TEST_ADD_NAME ("meta/", "something//", "meta/something");
 
-	TEST_ADD_NAME ("meta", "/something", "meta/something");
-	TEST_ADD_NAME ("meta", "//something", "meta/something");
+	TEST_ADD_NAME ("meta/", "/something", "meta/something");
+	TEST_ADD_NAME ("meta/", "//something", "meta/something");
 
-	TEST_ADD_NAME ("user", "./user", "user/user");
 	TEST_ADD_NAME ("user/", "./user", "user/user");
 	TEST_ADD_NAME ("user/", "/./user", "user/user");
 	TEST_ADD_NAME ("user/", "/////./user", "user/user");
-	TEST_ADD_NAME ("user", "../user", "user/user");
+	TEST_ADD_NAME_ERROR ("user/", "../user");
 
 	TEST_ADD_NAME ("user/verylongstringtoremove", "../x", "user/x");
 	TEST_ADD_NAME ("user/huhu", "../x", "user/x");
@@ -1406,102 +1367,75 @@ static void test_keyAddName (void)
 	TEST_ADD_NAME ("/s", "..//user", "/user");
 	TEST_ADD_NAME ("/more/level", "../..//user", "/user");
 	TEST_ADD_NAME ("/much/more/level/1/2/3", "../../../../../..//user", "/user");
-	/* TODO (kodebach): error?
-	TEST_ADD_NAME ("/much/more/level/1/2/3", "../../../../../../..//user", "/user");
-	TEST_ADD_NAME ("/much/more/level/1/2/3", "..///../../../../../../..//user", "/user");
-	TEST_ADD_NAME ("/much/more/level/1/2/3", "..///../../..////../../../..//user", "/user");
-	TEST_ADD_NAME ("/much/more/level/1/2/3", "../../....///../../..////../../../..//user", "/user");
-	 */
+
+	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "../../../../../../..//user");
+	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "..///../../../../../../..//user");
+	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "..///../../..////../../../..//user");
+	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "../../....///../../..////../../../..//user");
+
 	TEST_ADD_NAME ("/s", ".../user", "/s/.../user");
 	TEST_ADD_NAME ("/s", "..a/user", "/s/..a/user");
 	TEST_ADD_NAME ("/s", "..../user", "/s/..../user");
 
-	// TEST_ADD_NAME("user", "///sw/../sw//././MyApp", "user/sw/MyApp");
-	TEST_ADD_NAME ("user", "sw/../sw", "user/sw");
+	TEST_ADD_NAME ("user/", "///sw/../sw//././MyApp", "user/sw/MyApp");
+	TEST_ADD_NAME ("user/", "sw/../sw", "user/sw");
 
-#undef TEST_ADD_NAME
-#define TEST_ADD_NAME(base, toadd, result)                                                                                                 \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		k = keyNew (base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END);                                                             \
-		succeed_if (keyAddName (k, toadd) == 0, "adding irrelevant wrong return");                                                 \
-		succeed_if_same_string (keyName (k), result);                                                                              \
-		keyDel (k);                                                                                                                \
-	} while (0)
-
-	/* TODO (kodebach)
-		TEST_ADD_NAME ("/", 0, "/");
-		TEST_ADD_NAME ("/", "", "/");
-		TEST_ADD_NAME ("/", "/", "/");
-		TEST_ADD_NAME ("/", "//", "/");
-		TEST_ADD_NAME ("//", "/", "/");
-		TEST_ADD_NAME ("//", "//", "/");
-		TEST_ADD_NAME ("///", "//", "/");
-		TEST_ADD_NAME ("//", "///", "/");
-		TEST_ADD_NAME ("///", "///", "/");
-		TEST_ADD_NAME ("///.", "///", "/");
-		TEST_ADD_NAME ("///.", "///.", "/");
-		TEST_ADD_NAME ("///.", "///./", "/");
-		TEST_ADD_NAME ("///./", "///.", "/");
-		TEST_ADD_NAME ("///./", "///./", "/");
-		TEST_ADD_NAME ("///./..", "///./", "/");
-		TEST_ADD_NAME ("///./..", "///./..", "/");
-		TEST_ADD_NAME ("///./..", "///./../", "/");
-		TEST_ADD_NAME ("///./../", "///./..", "/");
-		TEST_ADD_NAME ("///./../", "///./../", "/");
-		*/
+	TEST_ADD_NAME_ERROR ("/", 0);
+	TEST_ADD_NAME ("/", "", "/");
+	TEST_ADD_NAME ("/", "/", "/");
+	TEST_ADD_NAME ("/", "//", "/");
+	TEST_ADD_NAME ("//", "/", "/");
+	TEST_ADD_NAME ("//", "//", "/");
+	TEST_ADD_NAME ("///", "//", "/");
+	TEST_ADD_NAME ("//", "///", "/");
+	TEST_ADD_NAME ("///", "///", "/");
+	TEST_ADD_NAME ("///.", "///", "/");
+	TEST_ADD_NAME ("///.", "///.", "/");
+	TEST_ADD_NAME ("///.", "///./", "/");
+	TEST_ADD_NAME ("///./", "///.", "/");
+	TEST_ADD_NAME ("///./", "///./", "/");
 
 	k = keyNew ("system/elektra/mountpoints/_t_error/config", KEY_END);
 	keyAddName (k, "on_open/error");
 	succeed_if_same_string (keyName (k), "system/elektra/mountpoints/_t_error/config/on_open/error");
 	keyDel (k);
 
-	k = keyNew ("user", KEY_END);
+	k = keyNew ("user/", KEY_END);
 	succeed_if (keyAddName (k, "bar\\/foo_bar\\/") == sizeof ("user/bar\\/foo_bar\\/"), "could not add name");
 	succeed_if_same_string (keyName (k), "user/bar\\/foo_bar\\/");
 	keyDel (k);
 
-	k = keyNew ("user", KEY_END);
+	k = keyNew ("user/", KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\/") == sizeof ("user/ba\\\\/foo_bar\\/"), "could not add name");
 	succeed_if_same_string (keyName (k), "user/ba\\\\/foo_bar\\/");
 	keyDel (k);
 
-	k = keyNew ("user", KEY_END);
+	k = keyNew ("user/", KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("user/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "user/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("user:yl", KEY_END);
-	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("user/ba\\\\/foo_bar\\//%"), "could not add name");
-	succeed_if_same_string (keyName (k), "user/ba\\\\/foo_bar\\//%");
-	keyDel (k);
-
-	k = keyNew ("user:yl", KEY_END);
-	succeed_if (keyAddName (k, "ba\\\\foo_bar\\//%") == sizeof ("user/ba\\\\foo_bar\\//%"), "could not add name");
-	succeed_if_same_string (keyName (k), "user/ba\\\\foo_bar\\//%");
-	keyDel (k);
-
-	k = keyNew ("system", KEY_END);
+	k = keyNew ("system/", KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("system/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "system/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("meta", KEY_META_NAME, KEY_END);
+	k = keyNew ("meta/", KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("meta/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "meta/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	k = keyNew ("/", KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	k = keyNew ("/", KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	k = keyNew ("/", KEY_END);
 	succeed_if (keyAddName (k, "/\\\\/foo_bar\\//%") == sizeof ("/\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "/\\\\/foo_bar\\//%");
 	keyDel (k);
@@ -1511,12 +1445,7 @@ static void test_keyNeedSync (void)
 {
 	printf ("Test key need sync\n");
 
-	Key * k = keyNew (0);
-	succeed_if (!keyNeedSync (k), "no sync, because written like that in docu prior to 0.8.9");
-	/* TODO (kodebach): empty keyname?
-	keyDel (k);
-
-	k = keyNew ("", KEY_END);
+	Key * k = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (k), "fresh key should need sync");
 
 	set_bit (k->flags, KEY_FLAG_SYNC);
@@ -1524,9 +1453,8 @@ static void test_keyNeedSync (void)
 	clear_bit (k->flags, KEY_FLAG_SYNC);
 	succeed_if (!keyNeedSync (k), "sync bit was cleared");
 
-	keySetName (k, "");
+	keySetName (k, "/");
 	succeed_if (keyNeedSync (k), "nothing done, but synced (impl-dep, could be optimized)");
-	*/
 
 	clear_bit (k->flags, KEY_FLAG_SYNC);
 	keySetName (k, "user/abc");
@@ -1564,8 +1492,8 @@ static void test_keyNeedSync (void)
 	keySetName (k, "");
 	clear_bit (k->flags, KEY_FLAG_SYNC);
 
-	succeed_if (keySetBaseName (k, "") == -1, "could not set base name");
-	succeed_if (!keyNeedSync (k), "nothing done, so still no sync (impl-dep, could be deoptimized)");
+	succeed_if (keySetBaseName (k, "") != -1, "could not set base name");
+	succeed_if (keyNeedSync (k), "name set, sync should be there");
 
 	keySetName (k, "user/abc");
 	succeed_if (keyNeedSync (k), "name set, sync should be there");
@@ -1592,12 +1520,12 @@ static void test_keyNeedSync (void)
 static void test_keyCopy (void)
 {
 	printf ("test copy key\n");
-	Key * k = keyNew ("", KEY_END);
+	Key * k = keyNew ("/", KEY_END);
 	Key * c = keyNew ("user/name", KEY_END);
 
 	succeed_if (keyCopy (c, k) != -1, "could not copy");
-	succeed_if_same_string (keyName (k), "");
-	succeed_if_same_string (keyName (c), "");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyName (c), "/");
 
 	succeed_if (elektraKeySetName (k, "/abc", KEY_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if (keyCopy (c, k) != -1, "could not copy");
@@ -1611,8 +1539,8 @@ static void test_keyCopy (void)
 static void test_keyFixedNew (void)
 {
 	printf ("test fixed new\n");
-	Key * k1 = keyNew (0);
-	Key * k2 = keyNew ("", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	Key * k1 = keyNew ("/", KEY_END);
+	Key * k2 = keyNew ("/", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
 	compare_key (k1, k2);
 	keyDel (k1);
 	keyDel (k2);
@@ -1639,7 +1567,7 @@ static void test_keyFlags (void)
 
 	succeed_if (keyIsBinary (key), "Could not set type to binary");
 
-	succeed_if (keySetName (key, "system") == -1, "read only name, not allowed to set");
+	succeed_if (keySetName (key, "system/") == -1, "read only name, not allowed to set");
 	succeed_if (keyAddName (key, "bar") == -1, "read only name, not allowed to set");
 	succeed_if (keyAddBaseName (key, "bar") == -1, "read only name, not allowed to set");
 
@@ -1672,12 +1600,12 @@ int main (int argc, char ** argv)
 	test_keyCompare ();
 	test_keyNewExtensions ();
 	test_keyComment ();
-	test_keyOwner ();
-	test_keyComment ();
-	test_keyDir ();
-	test_keyTime ();
-	test_keyMeta ();
-	test_owner ();
+	// TODO (kodebach): deprecated vv
+	// test_keyOwner ();
+	// test_keyDir ();
+	// test_keyTime ();
+	// test_keyMeta ();
+	// test_owner ();
 	test_keyLock ();
 	test_keyNeedSync ();
 	test_keyCopy ();
@@ -1686,5 +1614,5 @@ int main (int argc, char ** argv)
 
 	print_result ("test_key")
 
-	return nbError;
+		return nbError;
 }
