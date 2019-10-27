@@ -26,7 +26,7 @@ reformat() {
 	}
 }
 
-reformat reformat-source &
+reformat reformat-c &
 reformat reformat-cmake &
 reformat reformat-javascript &
 reformat reformat-markdown &
@@ -45,7 +45,7 @@ If you see this message on one of the build servers, you can either install one 
 
 . Afterwards you can use the following scripts to fix the formatting problems
 
-- `reformat-source` to format C/C++ source files,
+- `reformat-c` to format C/C++ source files,
 - `reformat-cmake` to format CMake files,
 - `reformat-javascript` to format JavaScript files,
 - `reformat-markdown` to format Markdown files, and

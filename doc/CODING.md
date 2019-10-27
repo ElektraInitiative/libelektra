@@ -114,7 +114,7 @@ Thus please use following techniques (in order of preference):
   - Use space before and after `*` from Pointers.
   - Use space after `,` of every function argument.
 
-The [reformat script](/scripts/dev/reformat-source) can ensure most code style rules,
+The [reformat script](/scripts/dev/reformat-c) can ensure most code style rules,
 but it is obviously not capable of ensuring everything (e.g. naming
 conventions). So do not give this responsibility out of hands entirely. You
 can [use docker](/doc/tutorials/run_reformatting_script_with_docker.md) to
@@ -196,10 +196,10 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
-. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-source`](../scripts/dev/reformat-source) that reformats all C and C++ code in Elektra’s code base
+. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-c`](../scripts/dev/reformat-c) that reformats all C and C++ code in Elektra’s code base
 
 ```sh
-scripts/dev/reformat-source # This script will probably take some seconds to execute
+scripts/dev/reformat-c # This script will probably take some seconds to execute
 ```
 
 .
