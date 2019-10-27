@@ -246,6 +246,9 @@ you up to date with the multi-language support provided by Elektra.
 - Cleanup: separation of dev, admin and completion scripts. _(Markus Raab, Rene Schwaiger)_
 - Pre-commit hook `pre-commit-check-formatting` now lives in [`scripts/dev/pre-commit-check-formatting`](../../scripts/dev/pre-commit-check-formatting). _(Klemens Böswirth)_
 - The new script [reformat-javascript](../../scripts/dev/reformat-javascript) formats the JavaScript code of the repository using the tool [`prettier`](https://prettier.io). _(René Schwaiger)_
+- We renamed
+  - the script `reformat-source` to `reformat-c`, and
+  - the script `reformat-shfmt` to `reformat-shell`. _(René Schwaiger)_
 
 ## Cleanup
 
