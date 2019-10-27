@@ -19,7 +19,9 @@ find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egre
 #   See also: https://stackoverflow.com/questions/592620
 scripts=$(
 	$FIND -type f -not \( \
+		-path '*COPYING-CMAKE-SCRIPTS' -or \
 		-path '*find-tools' -or \
+		-path '*freebsd/provision.sh' -or \
 		-path '*gitignore' -or \
 		-path '*kdb_zsh_completion' -or \
 		-path '*kdb-zsh-noglob' -or \
@@ -29,7 +31,7 @@ scripts=$(
 		-path '*update-infos-status' -or \
 		-path '*zsh' -or \
 		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
-		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|hs|rb)$' \
+		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|rb)$' \
 		\) | xargs
 )
 exit_if_fail 'Unable to locate shell scripts via `find`'
