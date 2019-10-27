@@ -68,7 +68,7 @@ if (ADDTESTING_PHASE)
 						    -D
 						    KDB_VERSION=${KDB_VERSION}
 						    -P
-						    ${CMAKE_SOURCE_DIR}/cmake/ElektraClasspath.cmake
+						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraClasspath.cmake
 					    OUTPUT "${LIBELEKTRA4J_PATH}/classpath.txt" "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h"
 					    WORKING_DIRECTORY ${LIBELEKTRA4J_PATH}
 					    DEPENDS "${LIBELEKTRA4J_PATH}/pom.xml")
