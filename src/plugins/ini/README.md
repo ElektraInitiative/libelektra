@@ -5,13 +5,12 @@
 - infos/provides = storage/ini
 - infos/recommends = binary
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest shelltest nodep libc configurable 1000
+- infos/status = unittest shelltest nodep libc configurable
 - infos/metadata = order
-- infos/description = storage plugin for ini files
+- infos/description = storage plugin for INI files
 
 ## Introduction
 
-[lock/a/lock]
 This plugin allows Elektra's users to read and write INI files.
 INI files consist of simple key value pairs of the form `key=value`.
 Additionally keys can be categorized into different sections.
@@ -21,17 +20,18 @@ Each section is converted into a directory key
 key. If the same section appears multiple times, the keys of all sections
 with the same name are merged together under the section key.
 
-The plugin is feature rich and customizable (+1000 in status)
+On the one hand the ini plugin is feature rich and customizable, on the other hand
+it is quite buggy and shows unexpected behavior in some of its features.
 
 ## Usage
 
-If you want to add an ini file to the global key database, simply use mount:
+If you want to add an INI file to the global key database, simply use mount:
 
 ```sh
 sudo kdb mount file.ini user/tests/ini ini
 ```
 
-Then you can modify the contents of the ini file using set:
+Then you can modify the contents of the INI file using set:
 
 ```sh
 kdb set user/tests/ini/key value
@@ -66,10 +66,10 @@ character defined by the `comment` option, or default to '#'.
 
 ## Multi-Line Support
 
-The ini plugin supports multiline ini values. Continuations of previous values
+The ini plugin supports multiline values. Continuations of previous values
 have to start with whitespace characters.
 
-For example consider the following ini file:
+For example consider the following INI file:
 
 ```ini
 key1=value1
@@ -88,7 +88,7 @@ If you want to use another character, then please specify the configuration opti
 
 The ini plugin handles repeating keys by turning them into an elektra array when the `array` config is set.
 
-For example an ini file looking like:
+For example an INI file looking like:
 
 ```ini
 [sec]
