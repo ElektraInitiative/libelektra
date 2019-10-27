@@ -142,10 +142,10 @@ libelektraprivate_1.0 {
 	elektraGlobalSet;
 	elektraKeyLock;
 	elektraKsPopAtCursor;
-	elektraRenameKeys;
 	elektraUnescapeKeyName;
 	elektraUnescapeKeyNamePart;
 	elektraValidateKeyName;
+	ksRenameKeys;
 	keyClearSync;
 	keyIsDir;
 	keyIsProc;

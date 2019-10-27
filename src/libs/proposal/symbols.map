@@ -8,5 +8,4 @@ libelektra_0.8 {
 	keyRel2;
 	keySetStringF;
 	ksPopAtCursor;
-	ksRenameKeys;
 };

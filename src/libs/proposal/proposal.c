@@ -75,20 +75,6 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 	return key->dataSize;
 }
 
-
-/**
- * @brief Takes the first key and cuts off this common part
- * for all other keys, instead name will be prepended
- *
- * @return a new allocated keyset with keys in user namespace.
- *
- * The first key is removed in the resulting keyset.
- */
-KeySet * ksRenameKeys (KeySet * config, const Key * name)
-{
-	return elektraRenameKeys (config, keyName (name));
-}
-
 /**
  * @brief Permanently locks a part of the key
  *

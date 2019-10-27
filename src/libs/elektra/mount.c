@@ -252,8 +252,8 @@ KeySet * elektraMountGlobalsGetConfig (Key * cur, KeySet * global)
 	keyAddBaseName (usrConfigCutKey, "user");
 	KeySet * sysConfigKS = ksCut (global, sysConfigCutKey);
 	KeySet * usrConfigKS = ksCut (global, usrConfigCutKey);
-	KeySet * renamedSysConfig = elektraRenameKeys (sysConfigKS, "system");
-	KeySet * renamedUsrConfig = elektraRenameKeys (usrConfigKS, "user");
+	KeySet * renamedSysConfig = ksRenameKeys (sysConfigKS, "system");
+	KeySet * renamedUsrConfig = ksRenameKeys (usrConfigKS, "user");
 	ksDel (sysConfigKS);
 	ksDel (usrConfigKS);
 	keyDel (usrConfigCutKey);

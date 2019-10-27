@@ -7,6 +7,6 @@ set_source_files_properties (csvstorage.c
 
 add_plugin (csvstorage
 	    SOURCES csvstorage.h csvstorage.c
-	    LINK_ELEKTRA elektra-ease elektra-proposal
+	    LINK_ELEKTRA elektra-ease elektra-kdb
 	    ADD_TEST INSTALL_TEST_DATA TEST_README
 	    TEST_REQUIRED_PLUGINS directoryvalue)

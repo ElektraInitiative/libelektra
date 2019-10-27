@@ -270,7 +270,7 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 	Key * cutKey = keyNew ("/child", KEY_END);
 	KeySet * childConfig = ksCut (config, cutKey);
 	keyDel (cutKey);
-	mc->childConfig = elektraRenameKeys (childConfig, "system");
+	mc->childConfig = ksRenameKeys (childConfig, "system");
 	ksAppend (config, childConfig);
 	ksDel (childConfig);
 	mc->childBackends = ksNew (0, KS_END);
