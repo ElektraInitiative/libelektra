@@ -533,16 +533,16 @@ export PATH=$PATH:"$HOME/bin"
 
 ##### Usage
 
-We provide the script [`reformat-shfmt`](../scripts/dev/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
+We provide the script [`reformat-shell`](../scripts/dev/reformat-shell) that formats the whole codebase with [`shfmt`][]:
 
 ```sh
-scripts/dev/reformat-shfmt
+scripts/dev/reformat-shell
 ```
 
 . You can also reformat specific files by listing filenames after the script:
 
 ```sh
-scripts/dev/reformat-shfmt scripts/dev/reformat-shfmt # Reformat the source of `reformat-shfmt`
+scripts/dev/reformat-shell scripts/dev/reformat-shell # Reformat the source of `reformat-shell`
 ```
 
 .

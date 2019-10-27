@@ -30,7 +30,7 @@ reformat reformat-source &
 reformat reformat-cmake &
 reformat reformat-javascript &
 reformat reformat-markdown &
-reformat reformat-shfmt &
+reformat reformat-shell &
 wait
 
 error_message="$(
@@ -49,7 +49,7 @@ If you see this message on one of the build servers, you can either install one 
 - `reformat-cmake` to format CMake files,
 - `reformat-javascript` to format JavaScript files,
 - `reformat-markdown` to format Markdown files, and
-- `reformat-shfmt` to format files that contain shell code
+- `reformat-shell` to format files that contain shell code
 
 . If you do not want to install any of the tools listed above you can also use the `patch` command after this message
 to fix the formatting problems. For that please
