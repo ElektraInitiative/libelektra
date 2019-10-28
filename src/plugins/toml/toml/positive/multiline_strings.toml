@@ -1,5 +1,5 @@
 multiline_basic_leading_newline = """
-This string should be a single line."""
+This string should be in a single line."""
 multiline_basic_lineending_newlines = """
 This \
 string \

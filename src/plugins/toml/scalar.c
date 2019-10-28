@@ -1,5 +1,16 @@
 #include "scalar.h"
 
+#include <kdbhelper.h>
+
+static char * convertBinary (const char * binStr);
+static char * convertBoolean (const char * str);
+static char * convertBasicStr (const char * str);
+static char * convertLiteralStr (const char * str);
+static char * stripUnderscores (const char * num);
+static const char * skipLineEndingBackslash (const char * str);
+static const char * skipUntilNonWhitespace (const char * str);
+size_t unicodeCodepointToUtf8 (const char * codepoint, int len, char * utf8);
+
 static bool isValidOffsetDateTime (const char * str);
 static bool isValidLocalDateTime (const char * str);
 static bool isValidLocalDate (const char * str);
@@ -37,11 +48,306 @@ Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t lin
 	return scalar;
 }
 
+char * translateScalar (const Scalar * scalar)
+{
+	switch (scalar->type)
+	{
+	case SCALAR_INTEGER_DEC:
+	case SCALAR_INTEGER_HEX:
+	case SCALAR_INTEGER_OCT:
+	case SCALAR_FLOAT_NUM:
+		return stripUnderscores (scalar->str);
+	case SCALAR_FLOAT_INF:
+	case SCALAR_FLOAT_POS_INF:
+	case SCALAR_FLOAT_NEG_INF:
+	case SCALAR_FLOAT_NAN:
+	case SCALAR_FLOAT_POS_NAN:
+	case SCALAR_FLOAT_NEG_NAN:
+		return strdup (scalar->str);
+	case SCALAR_INTEGER_BIN:
+		return convertBinary (scalar->str);
+	case SCALAR_BOOLEAN:
+		return convertBoolean (scalar->str);
+	case SCALAR_STRING_BASIC:
+	case SCALAR_STRING_ML_BASIC:
+		return convertBasicStr (scalar->str);
+	case SCALAR_STRING_LITERAL:
+		return strdup(scalar->str);
+	case SCALAR_STRING_ML_LITERAL:
+		return convertLiteralStr (scalar->str);
+	case SCALAR_STRING_COMMENT:
+		return strdup (scalar->str);
+	case SCALAR_DATE_OFFSET_DATETIME:
+	case SCALAR_DATE_LOCAL_DATETIME:
+	case SCALAR_DATE_LOCAL_DATE:
+	case SCALAR_DATE_LOCAL_TIME:
+		return strdup (scalar->str);
+	case SCALAR_STRING_BARE:
+		return strdup (scalar->str);
+	default:
+		assert (0); // all possible enums must be handeled
+	}
+}
 
-bool isValidBareString (const Scalar * scalar)
+static char * convertBoolean (const char * str)
+{
+	if (strcmp (str, "true") == 0)
+	{
+		return strdup ("1");
+	}
+	else
+	{
+		return strdup ("0");
+	}
+}
+static char * convertLiteralStr (const char * str)
+{
+	char * outStr = elektraCalloc (strlen (str) + 1);
+	if (outStr == NULL)
+	{
+		return NULL;
+	}
+	char * ptr = outStr;
+	if (str[0] == '\n')
+	{
+		str++;
+	}
+	while (*str != 0)
+	{
+		if (*str == '\\')
+		{ // only possible escape sequence in literal is line ending backslash
+			str = skipLineEndingBackslash (str);
+		}
+		else
+		{
+			*(ptr++) = *(str++);
+		}
+	}
+	return outStr;
+}
+
+static char * convertBasicStr (const char * str)
+{
+	size_t size = strlen (str) + 4 + 1;
+	char * outStr = elektraCalloc (size);
+	if (outStr == NULL)
+	{
+		return NULL;
+	}
+	size_t outPos = 0;
+	while (*str != 0)
+	{
+		if (outPos + 4 >= size)
+		{ // 4 is maximal amount of chars possibly written per loop
+			size *= 2;
+			if (elektraRealloc ((void **) &outStr, size) < 0)
+			{
+				return NULL;
+			}
+		}
+		if (*str == '\\')
+		{
+			switch (*(++str))
+			{
+			case 'b':
+				outStr[outPos++] = 0x08;
+				str++;
+				break;
+			case 't':
+				outStr[outPos++] = 0x09;
+				str++;
+				break;
+			case 'n':
+				outStr[outPos++] = 0x0A;
+				str++;
+				break;
+			case 'f':
+				outStr[outPos++] = 0x0C;
+				str++;
+				break;
+			case 'r':
+				outStr[outPos++] = 0x0D;
+				str++;
+				break;
+			case '"':
+				outStr[outPos++] = 0x22;
+				str++;
+				break;
+			case '\\':
+				outStr[outPos++] = 0x5C;
+				str++;
+				break;
+			case 'u':
+				outPos += unicodeCodepointToUtf8 (str + 1, 4, outStr + outPos);
+				str += 4 + 1;
+				break;
+			case 'U':
+				outPos += unicodeCodepointToUtf8 (str + 1, 8, outStr + outPos);
+				str += 8 + 1;
+				break;
+			// handling of line ending backslashes
+			case ' ':
+			case '\t': // WHITESPACE +  CR? + LF
+			case '\n': // LF
+			case '\r': // CR + LF
+				str = skipLineEndingBackslash (str - 1);
+				break;
+			default:
+				assert (0); // No invalid escape codes allowed at this stage
+			}
+		}
+		else
+		{
+			if (outPos > 0 || (outPos == 0 && *str != '\n'))
+			{
+				outStr[outPos++] = *(str++);
+			}
+			else
+			{
+				str++;
+			}
+		}
+	}
+
+	return outStr;
+}
+
+static const char * skipLineEndingBackslash (const char * str)
+{
+	assert (*str == '\\');
+	switch (*(++str))
+	{
+	case ' ':
+	case '\t': // WHITESPACE* +  CR? + LF + WHITESPACE*
+		printf ("CASE 1\n");
+		str = skipUntilNonWhitespace (str + 1);
+		if (*str == '\r')
+		{
+			str++;
+		}
+		assert (*str == '\n');
+		str = skipUntilNonWhitespace (str + 1);
+		break;
+	case '\n': // LF + WHITESPACE *
+		printf ("CASE 2\n");
+		str = skipUntilNonWhitespace (str + 1);
+		break;
+	case '\r': // CR + LF + WHITESPACE*
+		printf ("CASE 3\n");
+		assert (*(str + 1) == '\n');
+		str = skipUntilNonWhitespace (str + 2);
+		break;
+	default:
+		assert (0);
+	}
+	return str;
+}
+
+static const char * skipUntilNonWhitespace (const char * str)
+{
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
+	{
+		str++;
+	}
+	return str;
+}
+
+size_t unicodeCodepointToUtf8 (const char * codepoint, int len, char * utf8)
+{
+	unsigned long cpValue;
+	if (len == 4)
+	{
+		sscanf (codepoint, "%4lX", &cpValue);
+	}
+	else if (len == 8)
+	{
+		sscanf (codepoint, "%8lX", &cpValue);
+	}
+	else
+	{
+		assert (0); // code point len must be 4 or 8
+	}
+	if (cpValue <= 0x7F)
+	{
+		utf8[0] = (char) cpValue; // extract all 7 bits
+		return 1;
+	}
+	else if (cpValue >= 0x80 && cpValue <= 0x7FF)
+	{
+		utf8[1] = (char) 0x10 | (cpValue & 0x3F);	 // extract first 6 bits;
+		utf8[0] = (char) 0xC0 | ((cpValue >> 6) & 0x1F); // extract next 5 bits
+		return 2;
+	}
+	else if (cpValue >= 0x800 && cpValue <= 0xFFFF)
+	{
+		utf8[2] = (char) 0x10 | (cpValue & 0x3F);	      // extract first 6 bits;
+		utf8[1] = (char) 0xC0 | ((cpValue >> 6) & 0x1F);      // extract next 5 bits
+		utf8[0] = (char) 0xE0 | ((cpValue >> (6 + 5)) & 0xF); // extract next 4 bits
+		return 3;
+	}
+	else if (cpValue >= 0x10000 && cpValue <= 0x1FFFF)
+	{
+		utf8[3] = (char) 0x10 | (cpValue & 0x3F);		  // extract first 6 bits;
+		utf8[2] = (char) 0xC0 | ((cpValue >> 6) & 0x1F);	  // extract next 5 bits
+		utf8[1] = (char) 0xE0 | ((cpValue >> (6 + 5)) & 0xF);	  // extract next 4 bits
+		utf8[0] = (char) 0xF0 | ((cpValue >> (6 + 5 + 4)) & 0x7); // extract next 3 bits
+		return 4;
+	}
+	else
+	{
+		assert (0); // no invalid codepoints allowed at this stage
+	}
+}
+
+static char * convertBinary (const char * binStr)
+{
+	binStr += 2; // skip 0b prefix
+	long long value = 0;
+	long long exp = 1;
+	for (int i = strlen (binStr) - 1; i >= 0; i--)
+	{
+		if (binStr[i] == '1')
+		{
+			value += exp;
+		}
+		if (binStr[i] != '_')
+		{
+			exp <<= 1;
+		}
+	}
+	char * ret = elektraCalloc (40);
+	if (ret == NULL)
+	{
+		return NULL;
+	}
+	snprintf (ret, 40, "%lli", value);
+	return ret;
+}
+
+static char * stripUnderscores (const char * num)
+{
+	char * dup = strdup (num);
+	if (dup == NULL)
+	{
+		return NULL;
+	}
+	char * ptr = dup;
+	while (*num != 0)
+	{
+		if (*num != '_')
+		{
+			*ptr = *num;
+			ptr++;
+		}
+		num++;
+	}
+	return dup;
+}
+
+bool isValidBareString (const char * str)
 {
 	// [a-zA-Z0-9-_]
-	for (const char * c = scalar->str; c != 0; c++)
+	for (const char * c = str; c != 0; c++)
 	{
 		if (!((*c >= 'A' && *c <= 'Z') || (*c >= 'a' && *c <= 'z') || (*c >= '0' && *c <= '9') || *c == '_' || *c == '-'))
 		{

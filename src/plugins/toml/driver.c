@@ -209,11 +209,11 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 			}
 			elektraFree (first);
 			elektraFree (second);
-			break;
 		}
 	}
+	break;
 	default: // check validity
-		if (!isValidBareString (name))
+		if (!isValidBareString (name->str))
 		{
 			driverError (driver, ERROR_SEMANTIC, name->line,
 				     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, underline, "
@@ -583,7 +583,8 @@ static void extendCurrKey (Driver * driver, const char * name)
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
 	}
-	if (strlen(name) == 0) {
+	if (strlen (name) == 0)
+	{
 		driverError (driver, ERROR_SYNTACTIC, 0, "Wanted to extend current key with empty name, but mustn't be empty.");
 	}
 	keyAddBaseName (driver->currKey, name);
@@ -633,7 +634,12 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
 			return;
 		}
-		keySetString (driver->parentStack->key, driver->lastScalar->str);
+		char * elektraStr = translateScalar(driver->lastScalar);
+		if (elektraStr == NULL) {
+			driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
+		}
+		keySetString (driver->parentStack->key, elektraStr);
+		elektraFree(elektraStr);
 		ksAppendKey (driver->keys, driver->parentStack->key);
 		driverClearLastScalar (driver);
 	}
