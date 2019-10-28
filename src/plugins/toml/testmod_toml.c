@@ -33,9 +33,9 @@ static void testPositiveCompareKeySets (void)
 #include "toml/positive/utf8.h"
 	);
 
-	/*    testReadCompare ("toml/positive/multiline_strings.toml",
-	#include "toml/positive/multiline_strings.h"
-	    );*/
+	testReadCompare ("toml/positive/multiline_strings.toml",
+#include "toml/positive/multiline_strings.h"
+    	);
 
 	testReadCompare ("toml/positive/date.toml",
 #include "toml/positive/date.h"
@@ -188,7 +188,7 @@ static void testCompareErrors (Key * expected, Key * found)
 
 static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName)
 {
-	printf ("Comparing metakey '%s'\n", metaKeyName);
+	// printf ("Comparing metakey '%s'\n", metaKeyName);
 	keyRewindMeta (expected);
 	keyRewindMeta (found);
 	const Key * metaExpected = keyNextMeta (expected);
@@ -197,7 +197,7 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	{
 		if (strcmp (keyName (metaExpected), metaKeyName) == 0)
 		{
-			printf ("\tExpected\t= %s\n", keyString (metaExpected));
+			// printf ("\tExpected\t= %s\n", keyString (metaExpected));
 			break;
 		}
 		metaExpected = keyNextMeta (expected);
@@ -206,7 +206,7 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	{
 		if (strcmp (keyName (metaFound), metaKeyName) == 0)
 		{
-			printf ("\tFound\t\t= %s\n", keyString (metaFound));
+			// printf ("\tFound\t\t= %s\n", keyString (metaFound));
 			break;
 		}
 		metaFound = keyNextMeta (found);

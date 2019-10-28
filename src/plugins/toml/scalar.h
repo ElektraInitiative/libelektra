@@ -43,8 +43,9 @@ typedef struct
 
 Scalar * createScalar (ScalarType type, char * comment, size_t line);
 Scalar * createScalarDup (ScalarType type, const char * comment, size_t line);
+char * translateScalar (const Scalar * scalar);
 
-bool isValidBareString (const Scalar * scalar);
+bool isValidBareString (const char * str);
 bool isValidDateTime (const Scalar * scalar);
 
 #endif // ELEKTRA_PLUGIN_TOML_SCALAR_H
