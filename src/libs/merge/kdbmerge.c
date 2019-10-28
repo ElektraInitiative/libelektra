@@ -805,6 +805,23 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
 
 
 /**
+ * Counts how many conflict markers ======= are in the string "text"
+ * @param text The text in which conflict markers occur
+ * @returns the number of ocnflict markers in the text
+ */
+static int numberOfConflictMarkers (const char * text)
+{
+	int result = 0;
+	const char * tmp = text;
+	// conflict markers in LibGit2 are exactly 7 equal signs
+	while ((tmp = strstr (tmp, "=======")))
+	{
+		result++;
+		tmp++;
+	}
+	return result;
+}
+/**
  * Removes all the arrays from our, their, base and result and puts the result of the merge into resultSet
  * @param ourSet our
  * @param theirSet their
@@ -812,7 +829,7 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
  * @param resultSet result
  * @retval 0 on success, -1 on error
  */
-static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey)
+static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
 {
 	ELEKTRA_LOG ("cmerge now handles arrays");
 	Key * checkedKey;
@@ -854,11 +871,41 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			const git_merge_file_input libgit_base = { .ptr = baseArray, .size = strlen (baseArray) };
 			const git_merge_file_input libgit_our = { .ptr = ourArray, .size = strlen (ourArray) };
 			const git_merge_file_input libgit_their = { .ptr = theirArray, .size = strlen (theirArray) };
-			int ret = git_merge_file (&out, &libgit_base, &libgit_our, &libgit_their, 0);
+			// This is the usual way but it throws a compiler error
+			// git_merge_file_options options = GIT_MERGE_FILE_OPTIONS_INIT;
+			git_merge_file_options options = { 0 };
+			switch (strategy)
+			{
+			case MERGE_STRATEGY_OUR:
+				options.favor = GIT_MERGE_FILE_FAVOR_OURS;
+				break;
+			case MERGE_STRATEGY_THEIR:
+				options.favor = GIT_MERGE_FILE_FAVOR_THEIRS;
+				break;
+			}
+			int ret = git_merge_file (&out, &libgit_base, &libgit_our, &libgit_their, &options);
 			if (ret == 0)
 			{
-				toAppend = ksFromArray (out.ptr, out.len, informationKey);
-				ELEKTRA_LOG ("cmerge successfully handled an array");
+				if (out.automergeable)
+				{
+					toAppend = ksFromArray (out.ptr, out.len, informationKey);
+					ELEKTRA_LOG ("libgit successfully handled an array");
+				}
+				else
+				{
+					if (!MERGE_STRATEGY_ABORT)
+					{
+						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Expected merge strategy abort.");
+					}
+					int currentNumberOfConflicts = numberOfConflictMarkers (out.ptr);
+					int previousNumberOfConflicts = getStatisticalValue (informationKey, "libgitConflicts");
+					int newNumberOfConflicts = previousNumberOfConflicts + currentNumberOfConflicts;
+					setStatisticalValue (informationKey, "libgitConflicts", newNumberOfConflicts);
+					char msg[300];
+					snprintf (msg, 300, "libgit could not automerge an array. It contains %d conflict markers.",
+						  currentNumberOfConflicts);
+					ELEKTRA_LOG ("%s", msg);
+				}
 			}
 			else
 			{
@@ -942,7 +989,11 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 
 #ifdef LIBGITFOUND
 	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
-	handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey);
+	if (handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey, strategy) > 0)
+	{
+		ksDel(result);
+		return NULL;
+	}
 #else
 	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
 #endif
