@@ -32,6 +32,10 @@ static void testPositiveCompareKeySets (void)
 	testReadCompare ("toml/positive/utf8.toml",
 #include "toml/positive/utf8.h"
 	);
+	
+	testReadCompare ("toml/positive/string_basic_escape.toml",
+#include "toml/positive/string_basic_escape.h"
+	);
 
 	testReadCompare ("toml/positive/multiline_strings.toml",
 #include "toml/positive/multiline_strings.h"

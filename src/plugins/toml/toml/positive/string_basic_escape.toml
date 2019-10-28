@@ -1,0 +1,28 @@
+basic_escapes = """
+backspace\b
+tab\t
+linefeed\n
+formfeed\f
+carriage return\r
+quote\"
+backslash\\
+"""
+unicode_escape = """
+0030: \u0030
+00C0: \u00C0
+0270: \u0270
+02DF: \u02DF
+0376: \u0376
+0677: \u0677
+0A67: \u0A67
+0EAF: \u0EAF
+11D5: \u11D5
+9ED5: \u9ED5
+b79c: \ub79c
+F7D0: \uF7D0
+106D0: \U000106D0
+1447F: \U0001447F
+15A4A: \U00015A4A
+1da8b: \U0001da8b
+1fffd: \U0001fffd
+"""
