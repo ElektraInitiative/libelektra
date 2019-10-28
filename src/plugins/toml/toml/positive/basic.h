@@ -31,4 +31,8 @@ ksNew (4,
 		KEY_VALUE, "-nan",
 		KEY_META, "order", "6",
 	KEY_END),
+	keyNew (PREFIX "/3/14",
+		KEY_VALUE, "PI",
+		KEY_META, "order", "7",
+	KEY_END),
 KS_END)

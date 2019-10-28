@@ -208,7 +208,7 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 				driverError (driver, ERROR_SEMANTIC, name->line,
 					     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, "
 					     "underline, "
-					     "hyphen allowed");
+					     "hyphen allowed", name->str);
 			}
 			elektraFree (first);
 			elektraFree (second);
