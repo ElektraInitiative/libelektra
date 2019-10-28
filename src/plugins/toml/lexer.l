@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <kdbhelper.h>
 
 #include "parser.h"
 #include "scalar.h"
@@ -17,7 +18,7 @@ static char* readMultilineLiteral(Driver * driver);
 static char* readMultilineBasic(Driver * driver);
 static char* readComment(Driver * driver);
 
-static void appendChar(char**, size_t*, size_t*, char);
+static void appendChar(char**, size_t*, size_t*, char, Driver * driver);
 static void readNonAsciiChar(char**, size_t*, size_t*, Driver * driver);
 static void readHex(char**, size_t*, size_t*, size_t, Driver * driver);
 static int isHex(char);
@@ -185,33 +186,38 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 %%
 
 static char* readLiteral(Driver * driver) {
-	char* buffer = malloc(64 * sizeof(char));
+	char* buffer = (char*) elektraCalloc(64 * sizeof(char));
+	if (buffer == NULL) {
+		return NULL;
+	}
 	size_t size = 64;
 	size_t index = 0;
 	char c;
 
 	while((c = input()) != 0x27) { // terminating ' character
 		if (c == 0x09 || (c >= 0x20 && c <= 0x7E)) { // read valid ascii chars
-			appendChar(&buffer, &index, &size, c);
+			appendChar(&buffer, &index, &size, c, driver);
 		} else { // read valid non-ascii (utf8 chars)
 			unput(c);
 			readNonAsciiChar(&buffer, &index, &size, driver);
 		}
 	}
-	buffer = realloc(buffer, index + 1);
-    buffer[index] = 0;
+	buffer[index] = 0;
 	return buffer;
 }
 
 static char* readBasic(Driver * driver) {
-	char* buffer = malloc(64 * sizeof(char));
+	char* buffer = (char*)elektraCalloc(64 * sizeof(char));
+	if (buffer == NULL) {
+		return NULL;
+	}
 	size_t size = 64;
 	size_t index = 0;
 	char c;
 
 	while((c = input()) != 0x22) { // terminating " character
 		if (c == 0x09 || (c >= 0x20 && c <= 0x7E)) { // read valid ascii chars
-			appendChar(&buffer, &index, &size, c);
+			appendChar(&buffer, &index, &size, c, driver);
 			if (c == 0x5C) {    // backslash for escaping
 				c = input();
 				switch(c) {
@@ -222,14 +228,14 @@ static char* readBasic(Driver * driver) {
 					case 0x6E:
 					case 0x72:
 					case 0x74:
-						appendChar(&buffer, &index, &size, c);
+						appendChar(&buffer, &index, &size, c, driver);
 						break;
 					case 0x75:
-						appendChar(&buffer, &index, &size, c);
+						appendChar(&buffer, &index, &size, c, driver);
 						readHex(&buffer, &index, &size, 4, driver);
 						break;
 					case 0x55:
-						appendChar(&buffer, &index, &size, c);
+						appendChar(&buffer, &index, &size, c, driver);
 						readHex(&buffer, &index, &size, 8, driver);
 						break;
 					default:
@@ -241,13 +247,15 @@ static char* readBasic(Driver * driver) {
 			readNonAsciiChar(&buffer, &index, &size, driver);
 		}
 	}
-	buffer = realloc(buffer, index + 1);
-    buffer[index] = 0;
+	buffer[index] = 0;
 	return buffer;
 }
 
 static char* readMultilineLiteral(Driver * driver) {
-	char* buffer = malloc(64 * sizeof(char));
+	char* buffer = (char*)elektraCalloc(64 * sizeof(char));
+	if (buffer == NULL) {
+		return NULL;
+	}
 	size_t size = 64;
 	size_t index = 0;
 	char c;
@@ -259,24 +267,26 @@ static char* readMultilineLiteral(Driver * driver) {
 			terminatorCount++;
 		} else {
 			while (terminatorCount > 0) {
-				appendChar(&buffer, &index, &size, 0x27);
+				appendChar(&buffer, &index, &size, 0x27, driver);
 				terminatorCount--;
 			}
 			if (c == 0x09 || c == 0x0A || (c >= 0x20 && c <= 0x7E)) { // read valid ascii chars
-				appendChar(&buffer, &index, &size, c);
+				appendChar(&buffer, &index, &size, c, driver);
 			} else { // read valid non-ascii (utf8 chars)
 				unput(c);
 				readNonAsciiChar(&buffer, &index, &size, driver);
 			}
 		}
 	}
-	buffer = realloc(buffer, index + 1);
-    buffer[index] = 0;
+    	buffer[index] = 0;
 	return buffer;
 }
 
 static char* readMultilineBasic(Driver * driver) {
-	char* buffer = malloc(64 * sizeof(char));
+	char* buffer = (char*) elektraCalloc(64 * sizeof(char));
+	if (buffer == NULL) {
+		return NULL;
+	}
 	size_t size = 64;
 	size_t index = 0;
 	char c;
@@ -288,11 +298,11 @@ static char* readMultilineBasic(Driver * driver) {
 			terminatorCount++;
 		} else {
 			while (terminatorCount > 0) {
-				appendChar(&buffer, &index, &size, 0x22);
+				appendChar(&buffer, &index, &size, 0x22, driver);
 				terminatorCount--;
 			}
 			if (c == 0x09 || c == 0x0A || (c >= 0x20 && c <= 0x7E)) { // read valid ascii chars
-				appendChar(&buffer, &index, &size, c);
+				appendChar(&buffer, &index, &size, c, driver);
 				if (c == 0x5C) {    // backslash for escaping
 					c = input();
 					switch(c) {
@@ -304,18 +314,18 @@ static char* readMultilineBasic(Driver * driver) {
 						case 0x6E:
 						case 0x72:
 						case 0x74:
-							appendChar(&buffer, &index, &size, c);
+							appendChar(&buffer, &index, &size, c, driver);
 							break;
 						case 0x75:
-							appendChar(&buffer, &index, &size, c);
+							appendChar(&buffer, &index, &size, c, driver);
 							readHex(&buffer, &index, &size, 4, driver);
 							break;
 						case 0x55:
-							appendChar(&buffer, &index, &size, c);
+							appendChar(&buffer, &index, &size, c, driver);
 							readHex(&buffer, &index, &size, 8, driver);
 							break;
 						default:
-                            driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid escape sequence: \\'%c'", c);
+					    driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid escape sequence: \\'%c'", c);
 					}
 				}
 			} else { // read valid non-ascii (utf8 chars)
@@ -324,36 +334,41 @@ static char* readMultilineBasic(Driver * driver) {
 			}
 		}
 	}
-	buffer = realloc(buffer, index + 1);
-    buffer[index] = 0;
+	buffer[index] = 0;
 	return buffer;
 }
 
 static char* readComment(Driver * driver) {
-	char* buffer = malloc(64 * sizeof(char));
+	char* buffer = (char*) elektraCalloc(64 * sizeof(char));
+	if (buffer == NULL) {
+		return NULL;
+	}
 	size_t size = 64;
 	size_t index = 0;
 	char c;
 
 	while((c = input()) != '\n') { // terminating ' character
 		if (c == 0x09 || (c >= 0x20 && c <= 0x7E)) { // read valid ascii chars
-			appendChar(&buffer, &index, &size, c);
+			appendChar(&buffer, &index, &size, c, driver);
 		} else { // read valid non-ascii (utf8 chars)
 			unput(c);
 			readNonAsciiChar(&buffer, &index, &size, driver);
 		}
 	}
-	buffer = realloc(buffer, index + 1);
-    buffer[index] = 0;
+	buffer[index] = 0;
 	return buffer;
 }
 
-static void appendChar(char** buffer, size_t* index, size_t* len, char c) {
+static void  appendChar(char** buffer, size_t* index, size_t* len, char c, Driver * driver) {
 	(*buffer)[*index] = c;
 	*index = *index + 1;
 	if (*index == *len) {
 		*len *= 2;
-		*buffer = realloc(*buffer, *len);
+		if (elektraRealloc ((void**)buffer, *len) < 0) {
+			driverErrorGeneric(driver, ERROR_MEMORY, "appendChar", "elektraRealloc");
+			*len /= 2;
+			return;
+		}
 	}
 }
 
@@ -367,9 +382,9 @@ static void readHex(char** buffer, size_t* index, size_t* len, size_t count, Dri
 	for (size_t i = 0; i < count; i++) {
 		char c = input();
 		if (!isHex(c)) {
-            driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
+		    driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
 		}
-		appendChar(buffer, index, len, c);
+		appendChar(buffer, index, len, c, driver);
 	}
 }
 
@@ -390,12 +405,12 @@ static void readNonAsciiChar(char** buffer, size_t* index, size_t* len, Driver *
 	} else {
         driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
 	}
-	appendChar(buffer, index, len, c);
+	appendChar(buffer, index, len, c, driver);
 	for (size_t i = 1; i < utfLen; i++) {
 		c = input();
 		if (c < 0x80 || c >= 0xC0) {
-            driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
+		    driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
 		}
-		appendChar(buffer, index, len, c);
+		appendChar(buffer, index, len, c, driver);
 	}
 }
