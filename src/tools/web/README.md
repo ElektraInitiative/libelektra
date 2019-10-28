@@ -86,11 +86,12 @@ browser, the configuration page for the instance will be opened immediately.
 ### Using a Different `kdb` Executable
 
 It is possible to change the `kdb` executable that elektra-web uses by setting
-the `KDB` environment variable.
+the `KDB` environment variable, this is not needed for `elektrad`.
 
 For example:
 
 ```sh
+kdb run-elektrad
 KDB="/usr/local/custom/bin/kdb" kdb run-web
 ```
 
