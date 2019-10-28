@@ -4,28 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	elektra "go.libelektra.org/kdb"
 )
-
-func stringReader(body string) []byte {
-	return []byte(body)
-}
-
-func jsonReader(body interface{}) []byte {
-	b, err := json.Marshal(body)
-
-	if err != nil {
-		panic("could not marshal json")
-	}
-
-	return b
-}
 
 func Benchmark(b *testing.B) {
 	s := testServer(b)
@@ -34,33 +20,28 @@ func Benchmark(b *testing.B) {
 	world := "world"
 
 	benchmarks := []struct {
-		verb   string
-		path   string
-		bodyv1 []byte
-		bodyv2 []byte
+		verb string
+		path string
+		body interface{}
 	}{
 		{verb: "GET", path: "/version"},
 		{verb: "GET", path: "/kdb/user/tests/go/elektrad/benchmark/dataset"},
 		{verb: "GET", path: "/kdbFind/user/tests/go/elektrad/benchmark/dataset/001"},
-		{verb: "POST", path: "/kdbMv/user/tests/go/elektrad/benchmark/temp/from", bodyv1: stringReader("user/tests/go/elektrad/benchmark/temp/to"), bodyv2: jsonReader("user/tests/go/elektrad/benchmark/temp/to")},
-		{verb: "PUT", path: "/kdb/user/tests/go/elektrad/benchmark/temp/to/001", bodyv1: stringReader("value"), bodyv2: jsonReader("value")},
-		{verb: "POST", path: "/kdbMeta/user/tests/go/elektrad/benchmark/temp/from/001", bodyv1: jsonReader(keyValueBody{Key: "hello", Value: &world}), bodyv2: jsonReader(keyValueBody{Key: "hello", Value: &world})},
-		// {verb: "DELETE", path: "/kdb/user/tests/go/elektrad/benchmark/temp/from/001", bodyv1: stringReader("value"), bodyv2: jsonReader("value")},
+		{verb: "POST", path: "/kdbMv/user/tests/go/elektrad/benchmark/temp/from", body: "user/tests/go/elektrad/benchmark/temp/to"},
+		{verb: "PUT", path: "/kdb/user/tests/go/elektrad/benchmark/temp/to/001", body: "value"},
+		{verb: "POST", path: "/kdbMeta/user/tests/go/elektrad/benchmark/temp/from/001", body: keyValueBody{Key: "hello", Value: &world}},
+		{verb: "DELETE", path: "/kdb/user/tests/go/elektrad/benchmark/temp/from/001", body: "value"},
 	}
 
 	resetKdb := prepareBenchmark(b, 1000)
 
 	for _, bt := range benchmarks {
 		run := func(b *testing.B, url string, v2 bool) {
+
+			r := benchRequest(b, bt.verb, url, bt.path, bt.body, v2)
+
 			b.StopTimer()
-
-			body := bt.bodyv1
-
-			if v2 {
-				body = bt.bodyv2
-			}
-
-			r := benchRequest(b, bt.verb, url, bt.path, body)
+			b.ResetTimer()
 
 			for n := 0; n < b.N; n++ {
 				if bt.verb != "GET" {
@@ -77,7 +58,7 @@ func Benchmark(b *testing.B) {
 
 				Check(b, err, "request failed")
 
-				defer resp.Body.Close()
+				resp.Body.Close()
 			}
 		}
 
@@ -91,6 +72,20 @@ func Benchmark(b *testing.B) {
 			})
 		})
 	}
+}
+
+func stringReader(body string) io.Reader {
+	return bytes.NewBuffer([]byte(body))
+}
+
+func jsonReader(body interface{}) io.Reader {
+	b, err := json.Marshal(body)
+
+	if err != nil {
+		panic("could not marshal json")
+	}
+
+	return bytes.NewBuffer(b)
 }
 
 func getTestHandle(t testing.TB) elektra.KDB {
@@ -114,14 +109,30 @@ func testServer(t testing.TB) *httptest.Server {
 	return ts
 }
 
-func benchRequest(b *testing.B, verb, url, path string, body []byte) *http.Request {
+func benchRequest(b *testing.B, verb, url, path string, body interface{}, v2 bool) *http.Request {
 	b.Helper()
 
-	r, err := http.NewRequest(verb, url+path, bytes.NewBuffer(body))
+	contentType := "application/json"
+	var bodyReader io.Reader
 
-	// the old javascript server needs this to work
-	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("Content-Length", strconv.Itoa(len(body)))
+	if body != nil {
+		switch b := body.(type) {
+		case string:
+			if v2 {
+				bodyReader = jsonReader(body)
+			} else {
+				// the old elektra doesn't like JSON strings in the body
+				contentType = "text/plain"
+				bodyReader = stringReader(b)
+			}
+		default:
+			bodyReader = jsonReader(body)
+		}
+	}
+
+	r, err := http.NewRequest(verb, url+path, bodyReader)
+
+	r.Header.Add("Content-Type", contentType)
 
 	Check(b, err, "error creating request")
 
