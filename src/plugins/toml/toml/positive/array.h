@@ -31,5 +31,4 @@ ksNew (16,
         KEY_META, "array", "",
     KEY_END),
 
-    KS_END
-)
+KS_END)
