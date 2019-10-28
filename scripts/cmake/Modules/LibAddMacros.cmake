@@ -562,9 +562,11 @@ function (generate_manpage NAME)
 						    -D
 						    RONN_COMMAND=${RONN_LOC}
 						    -D
+						    DIFF_COMMAND=${DIFF_COMMAND}
+						    -D
 						    MDFILE=${MDFILE}
 						    -D
-						    OUTFILE=${OUTFILE}
+						    MANPAGE=${OUTFILE}
 						    -P
 						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManpage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
