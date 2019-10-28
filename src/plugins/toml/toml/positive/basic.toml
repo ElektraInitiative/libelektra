@@ -5,3 +5,4 @@ c = 'hello2'
 d = 3.1415
 e = +inf
 f = -nan
+3.14 = "PI"

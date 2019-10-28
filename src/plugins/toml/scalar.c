@@ -26,7 +26,8 @@ static bool isValidTime (int hour, int minute, int second);
 Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 {
 	Scalar * scalar = elektraCalloc (sizeof (Scalar));
-	if (scalar == NULL) {
+	if (scalar == NULL)
+	{
 		return NULL;
 	}
 	scalar->type = type;
@@ -38,14 +39,16 @@ Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t line)
 {
 	Scalar * scalar = elektraCalloc (sizeof (Scalar));
-	if (scalar == NULL) {
+	if (scalar == NULL)
+	{
 		return NULL;
 	}
 	scalar->type = type;
 	if (scalarString != NULL)
 	{
 		scalar->str = strdup (scalarString);
-		if (scalar->str == NULL) {
+		if (scalar->str == NULL)
+		{
 			elektraFree (scalar);
 			return NULL;
 		}
@@ -82,7 +85,7 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_STRING_ML_BASIC:
 		return convertBasicStr (scalar->str);
 	case SCALAR_STRING_LITERAL:
-		return strdup(scalar->str);
+		return strdup (scalar->str);
 	case SCALAR_STRING_ML_LITERAL:
 		return convertLiteralStr (scalar->str);
 	case SCALAR_STRING_COMMENT:
@@ -357,7 +360,7 @@ static char * stripUnderscores (const char * num)
 bool isValidBareString (const char * str)
 {
 	// [a-zA-Z0-9-_]
-	for (const char * c = str; c != 0; c++)
+	for (const char * c = str; *c != 0; c++)
 	{
 		if (!((*c >= 'A' && *c <= 'Z') || (*c >= 'a' && *c <= 'z') || (*c >= '0' && *c <= '9') || *c == '_' || *c == '-'))
 		{
