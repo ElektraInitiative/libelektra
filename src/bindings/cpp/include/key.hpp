@@ -175,7 +175,7 @@ public:
 	inline void set (T x);
 
 	inline std::string getString () const;
-	inline void setString (std::string newString);
+	inline void setString (const std::string & newString);
 	inline ssize_t getStringSize () const;
 
 	typedef void (*func_t) ();
@@ -1205,7 +1205,7 @@ inline void Key::setCallback (callback_t fct)
 /**
  * @copydoc keySetString
  */
-inline void Key::setString (std::string newString)
+inline void Key::setString (const std::string & newString)
 {
 	ckdb::keySetString (getKey (), newString.c_str ());
 }
