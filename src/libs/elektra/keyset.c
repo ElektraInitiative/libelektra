@@ -869,13 +869,9 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		++ks->size;
 		if (ks->size >= ks->alloc)
 		{
-			size_t newSize = ks->alloc * 2;
 
-			// If array was not allocated before
-			if (newSize == 0)
-				newSize = KEYSET_SIZE - 1;
-			else
-				newSize = newSize - 1;
+			size_t newSize = ks->alloc == 0 ? KEYSET_SIZE : ks->alloc * 2;
+			--newSize;
 
 			if (ksResize (ks, newSize) == -1)
 			{
@@ -884,7 +880,9 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 				return -1;
 			}
 
-			// If array was allocated in ksResize, size is 0
+			/* If the array was null before ksResize,
+			it was newly allocated and the size is 0.
+			So we redo the increment from earlier */
 			if (ks->size == 0)
 			{
 				++ks->size;
