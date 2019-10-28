@@ -166,22 +166,33 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * You can use an arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
- * your last parameter must be KEY_END.
+ * your last parameter must be KS_END.
  *
  * So, terminate with ksNew(0, KS_END) or ksNew(20, ..., KS_END)
  *
  * @warning Never use ksNew(0, keyNew(...), KS_END).
  * If the first parameter is 0, other arguments are ignored.
  *
+ * The first parameter @p alloc defines how many keys can be added
+ * without reallocation.
+ * If you pass any alloc size greater than 0, but less than 16,
+ * it will default to 16.
+ *
  * For most uses
  *
  * @snippet ksNew.c Simple
  *
- * will be fine, the alloc size will be 16, defined in kdbprivate.h.
- * The alloc size will be doubled whenever size reaches alloc size,
- * so it also performs well with large keysets.
+ * will be fine. The alloc size will be 16 and will double whenever
+ * size reaches alloc size, so it also performs well with large keysets.
  *
- * But if you have any clue how large your keyset may be you should
+ * You can defer the allocation of the internal array that holds
+ * the keys, by passing 0 as the alloc size. This is useful if it is
+ * unclear whether your keyset will actually hold any keys
+ * and you want to avoid a malloc call.
+ *
+ * @snippet ksNew.c No Allocation
+ *
+ * But if you have any clue how large your keyset maybe you should
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
@@ -275,7 +286,6 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 
 	ksRewind (keyset); // ksAppendKey changed the internal cursor
-
 	return keyset;
 }
 
