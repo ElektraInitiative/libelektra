@@ -170,6 +170,9 @@ void driverExitOptCommentTable (Driver * driver)
 
 void driverExitSimpleKey (Driver * driver, Scalar * name)
 {
+	if (name == NULL) {
+		return;
+	}
 
 	// scalar must be singline line literal/basic string or bare string
 	// if we got int/float/boolean/date, we must check, if it fits the
@@ -232,6 +235,9 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 
 void driverExitValue (Driver * driver, Scalar * scalar)
 {
+	if (scalar == NULL) {
+		return;
+	}
 	switch (scalar->type)
 	{
 	case SCALAR_STRING_BARE: // No bare on rhs allowed
@@ -424,6 +430,9 @@ void driverEmptyInlineTable (Driver * driver)
 
 void driverExitComment (Driver * driver, const Scalar * comment)
 {
+	if (comment == NULL) {
+		return;
+	}
 	if (driver->newlineCount > 0)
 	{
 		if (driver->commentRoot == NULL)
