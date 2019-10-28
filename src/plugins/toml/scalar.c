@@ -25,7 +25,10 @@ static bool isValidTime (int hour, int minute, int second);
 
 Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 {
-	Scalar * scalar = malloc (sizeof (Scalar));
+	Scalar * scalar = elektraCalloc (sizeof (Scalar));
+	if (scalar == NULL) {
+		return NULL;
+	}
 	scalar->type = type;
 	scalar->str = scalarString;
 	scalar->line = line;
@@ -34,11 +37,18 @@ Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 
 Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t line)
 {
-	Scalar * scalar = malloc (sizeof (Scalar));
+	Scalar * scalar = elektraCalloc (sizeof (Scalar));
+	if (scalar == NULL) {
+		return NULL;
+	}
 	scalar->type = type;
 	if (scalarString != NULL)
 	{
 		scalar->str = strdup (scalarString);
+		if (scalar->str == NULL) {
+			elektraFree (scalar);
+			return NULL;
+		}
 	}
 	else
 	{
