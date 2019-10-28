@@ -32,7 +32,7 @@ func TestPutKdb(t *testing.T) {
 	w := testPut(t, "/kdb/"+keyName, value)
 
 	code := w.Result().StatusCode
-	Assertf(t, code == http.StatusOK, "wrong status code: %v", code)
+	Assertf(t, code == http.StatusCreated, "wrong status code: %v", code)
 
 	key := getKey(t, keyName)
 	retrievedValue := key.String()
@@ -48,7 +48,7 @@ func TestDeleteKdb(t *testing.T) {
 	w := testDelete(t, "/kdb/"+keyName, nil)
 
 	code := w.Result().StatusCode
-	Assertf(t, code == http.StatusOK, "wrong status code: %v", code)
+	Assertf(t, code == http.StatusNoContent, "wrong status code: %v", code)
 
 	key := getKey(t, keyName)
 	Assert(t, key == nil, "key was not deleted")

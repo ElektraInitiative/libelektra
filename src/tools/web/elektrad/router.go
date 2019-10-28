@@ -15,17 +15,17 @@ func setupRouter() http.Handler {
 
 	r.HandleFunc("/version", getVersionHandler).Methods("GET")
 
+	r.HandleFunc("/kdb", getKdbHandler).Methods("GET")
+	r.HandleFunc("/kdb/{path:.*}", getKdbHandler).Methods("GET")
+	r.HandleFunc("/kdb/{path:.*}", putKdbHandler).Methods("PUT")
+	r.HandleFunc("/kdb/{path:.*}", deleteKdbHandler).Methods("DELETE")
+
 	r.HandleFunc("/kdbFind/{path:.*}", getFindHandler).Methods("GET")
 
 	r.HandleFunc("/kdbMv/{path:.*}", postMoveHandler).Methods("POST")
 
 	r.HandleFunc("/kdbMeta/{path:.*}", postMetaHandler).Methods("POST")
 	r.HandleFunc("/kdbMeta/{path:.*}", deleteMetaHandler).Methods("DELETE")
-
-	r.HandleFunc("/kdb", getKdbHandler).Methods("GET")
-	r.HandleFunc("/kdb/{path:.*}", getKdbHandler).Methods("GET")
-	r.HandleFunc("/kdb/{path:.*}", putKdbHandler).Methods("PUT")
-	r.HandleFunc("/kdb/{path:.*}", deleteKdbHandler).Methods("DELETE")
 
 	return r
 }

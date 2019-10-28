@@ -67,7 +67,7 @@ func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 
 	newConf := elektra.NewKeySet()
 
-	for _, k := range oldConf.Slice() {
+	for _, k := range oldConf.ToSlice() {
 		newConf.AppendKey(renameKey(k, from, to))
 	}
 
