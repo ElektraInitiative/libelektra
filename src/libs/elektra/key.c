@@ -452,7 +452,7 @@ int keyDel (Key * key)
 
 	rc = keyClear (key);
 
-	if (key->meta) ksDel (key->meta);
+	ksDel (key->meta);
 
 	if (!keyInMmap)
 	{
@@ -508,7 +508,6 @@ int keyClear (Key * key)
 	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 
 	ksDel (key->meta);
-	key->meta = NULL;
 
 	keyInit (key);
 
