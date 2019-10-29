@@ -35,7 +35,7 @@
 #define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
 
 /** Mmap format version */
-#define ELEKTRA_MMAP_FORMAT_VERSION (1)
+#define ELEKTRA_MMAP_FORMAT_VERSION (2)
 
 /** Mmap temp file template */
 #define ELEKTRA_MMAP_TMP_NAME "/tmp/elektraMmapTmpXXXXXX"
