@@ -91,7 +91,7 @@ static int keyAddComment (Key * key, const char * commentStr, size_t index, size
 	{
 		return ERROR_MEMORY;
 	}
-	size_t metaLen = strlen (indexStr) + 9;
+	size_t metaLen = elektraStrLen (indexStr) + 8;
 	char * metaName = (char *) elektraCalloc (sizeof (char) * metaLen);
 	if (metaName == NULL)
 	{

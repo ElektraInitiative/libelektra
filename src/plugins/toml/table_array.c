@@ -16,10 +16,13 @@ TableArrayList * pushTableArray (TableArrayList * top, Key * key)
 	if (top != NULL)
 	{
 		ta->keyStr = getChildFraction (top->key, key);
+		if (ta->keyStr == NULL) {
+			return NULL;
+		}
 	}
 	if (ta->keyStr == NULL)
 	{
-		ta->keyStr = strdup (keyName (key));
+		ta->keyStr = elektraStrDup (keyName (key));
 	}
 	ta->currIndex = 0;
 	ta->next = top;
@@ -56,7 +59,6 @@ Key * buildTableArrayKeyName (const TableArrayList * ta)
 
 static char * getChildFraction (const Key * parent, const Key * child)
 {
-	// printf ("Determining child fraction of:\n\t%s\n\t%s\n", keyName (parent), keyName (child));
 	if (!keyIsBelow (parent, child))
 	{
 		return NULL;
@@ -66,23 +68,28 @@ static char * getChildFraction (const Key * parent, const Key * child)
 		Key * childDup = keyDup (child);
 		size_t fracSize = 256;
 		char * fraction = elektraCalloc (sizeof (char) * fracSize);
+		if (fraction == NULL) {
+			return NULL;
+		}
 		do
 		{
 			const char * baseName = keyBaseName (childDup);
-			if (strlen (fraction) + strlen (baseName) >= fracSize)
+			if (elektraStrLen (fraction) + elektraStrLen (baseName) - 1 >= fracSize)
 			{
 				fracSize *= 2;
-				elektraRealloc ((void **) &fraction, fracSize);
+				size_t oldLen = elektraStrLen(fraction);
+				if (elektraRealloc ((void **) &fraction, fracSize) < 0) {
+					return NULL;
+				}
+				memset(fraction + oldLen, 0, fracSize - oldLen);
 			}
-			char * fracDup = strdup (fraction); // TODO: avoid allocation
+			char * fracDup = elektraStrDup (fraction); // TODO: avoid allocation
 			snprintf (fraction, fracSize, "%s/%s", baseName, fracDup);
 			elektraFree (fracDup);
 			keyAddName (childDup, "..");
 		} while (keyRel (parent, childDup) != 0);
-		fraction[strlen (fraction) - 1] = 0;
-		elektraRealloc ((void **) &fraction, strlen (fraction) + 1);
+		fraction[elektraStrLen (fraction) - 2] = 0;
 		keyDel (childDup);
-		// printf ("got fraction: %s\n", fraction);
 		return fraction;
 	}
 }

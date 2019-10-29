@@ -29,8 +29,6 @@
         * Maybe add own metakey (eg. epilogue/comment/#1)?
 
 ## TODOs
-
-    - Type metakeys
     - Use date plugin
     - directory value plugin?
     - empty array with ###empty_array

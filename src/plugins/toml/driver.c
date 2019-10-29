@@ -196,9 +196,9 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 		{
 			size_t splitPos = dot - name->str;
 			char * first = elektraCalloc (sizeof (char) * (splitPos + 1));
-			char * second = elektraCalloc (sizeof (char) * (strlen (name->str) - splitPos));
+			char * second = elektraCalloc (sizeof (char) * (elektraStrLen (name->str) - splitPos - 1));
 			strncpy (first, name->str, splitPos);
-			strncpy (second, dot + 1, strlen (name->str) - splitPos - 1);
+			strncpy (second, dot + 1, elektraStrLen (name->str) - splitPos - 1);
 			if (isValidBareString (first) && isValidBareString (second))
 			{
 				extendCurrKey (driver, first);
@@ -596,7 +596,7 @@ static void extendCurrKey (Driver * driver, const char * name)
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
 	}
-	if (strlen (name) == 0)
+	if (elektraStrLen (name) == 1)
 	{
 		driverError (driver, ERROR_SYNTACTIC, 0, "Wanted to extend current key with empty name, but mustn't be empty.");
 	}

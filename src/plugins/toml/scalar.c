@@ -54,7 +54,7 @@ Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t lin
 	scalar->type = type;
 	if (scalarString != NULL)
 	{
-		scalar->str = strdup (scalarString);
+		scalar->str = elektraStrDup (scalarString);
 		if (scalar->str == NULL)
 		{
 			elektraFree (scalar);
@@ -108,7 +108,7 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_FLOAT_NAN:
 	case SCALAR_FLOAT_POS_NAN:
 	case SCALAR_FLOAT_NEG_NAN:
-		return strdup (scalar->str);
+		return elektraStrDup (scalar->str);
 	case SCALAR_INTEGER_BIN:
 		return convertBinary (scalar->str);
 	case SCALAR_BOOLEAN:
@@ -122,14 +122,14 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_STRING_ML_LITERAL:
 		return convertLiteralStr (scalar->str, 3);
 	case SCALAR_STRING_COMMENT:
-		return strdup (scalar->str);
+		return elektraStrDup (scalar->str);
 	case SCALAR_DATE_OFFSET_DATETIME:
 	case SCALAR_DATE_LOCAL_DATETIME:
 	case SCALAR_DATE_LOCAL_DATE:
 	case SCALAR_DATE_LOCAL_TIME:
-		return strdup (scalar->str);
+		return elektraStrDup (scalar->str);
 	case SCALAR_STRING_BARE:
-		return strdup (scalar->str);
+		return elektraStrDup (scalar->str);
 	default:
 		assert (0); // all possible enums must be handeled
 	}
@@ -137,23 +137,23 @@ char * translateScalar (const Scalar * scalar)
 
 static char * convertBoolean (const char * str)
 {
-	if (strcmp (str, "true") == 0)
+	if (elektraStrCmp (str, "true") == 0)
 	{
-		return strdup ("1");
+		return elektraStrDup ("1");
 	}
 	else
 	{
-		return strdup ("0");
+		return elektraStrDup ("0");
 	}
 }
 static char * convertLiteralStr (const char * str, size_t skipCount)
 {
-	char * outStr = elektraCalloc (strlen (str) + 1);
+	char * outStr = elektraCalloc (elektraStrLen (str));
 	if (outStr == NULL)
 	{
 		return NULL;
 	}
-	const char * stop = str + strlen (str) - skipCount;
+	const char * stop = str + elektraStrLen (str) - skipCount - 1;
 	str += skipCount;
 
 	char * ptr = outStr;
@@ -177,14 +177,14 @@ static char * convertLiteralStr (const char * str, size_t skipCount)
 
 static char * convertBasicStr (const char * str, size_t skipCount)
 {
-	size_t size = strlen (str) + 4 + 1;
+	size_t size = elektraStrLen (str) + 4;
 	char * outStr = elektraCalloc (size);
 	if (outStr == NULL)
 	{
 		return NULL;
 	}
 	size_t outPos = 0;
-	const char * stop = str + strlen (str) - skipCount;
+	const char * stop = str + elektraStrLen (str) - skipCount - 1;
 	str += skipCount;
 
 	while (str < stop)
@@ -352,7 +352,7 @@ static char * convertBinary (const char * binStr)
 	binStr += 2; // skip 0b prefix
 	long long value = 0;
 	long long exp = 1;
-	for (int i = strlen (binStr) - 1; i >= 0; i--)
+	for (int i = elektraStrLen (binStr) - 2; i >= 0; i--)
 	{
 		if (binStr[i] == '1')
 		{
@@ -374,7 +374,7 @@ static char * convertBinary (const char * binStr)
 
 static char * stripUnderscores (const char * num)
 {
-	char * dup = strdup (num);
+	char * dup = elektraStrDup (num);
 	if (dup == NULL)
 	{
 		return NULL;
