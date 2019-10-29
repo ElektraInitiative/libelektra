@@ -40,15 +40,15 @@ void commentListFree (CommentList * root)
 
 CommentList * commentListAdd (CommentList * back, const char * comment, size_t spaceCount)
 {
-	ELEKTRA_ASSERT (back != NULL);
-	ELEKTRA_ASSERT (back->next == NULL);
+	ELEKTRA_ASSERT (back != NULL, "Back expected to be non-NULL, but was NULL");
+	ELEKTRA_ASSERT (back->next == NULL, "Back->next expected to be NULL, but was not NULL");
 	back->next = commentListNew (comment, spaceCount);
 	return back->next;
 }
 
 CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 {
-	ELEKTRA_ASSERT (back != NULL);
+	ELEKTRA_ASSERT (back != NULL, "Back expected to be non-NULL, but was NULL");
 	CommentList * newBack = back;
 	while (newlineCount > 0)
 	{

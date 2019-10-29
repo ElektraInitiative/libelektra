@@ -23,7 +23,8 @@ static void driverCommitLastScalarToParentKey (Driver * driver);
 static void driverClearLastScalar (Driver * driver);
 
 static void pushCurrKey (Driver * driver);
-static void setCurrKey (Driver * driver, const Key * parent);
+static void setCurrKey (Driver * driver, const Key * key);
+static void setPrevKey(Driver * driver, Key * key);
 static void resetCurrKey (Driver * driver);
 static void extendCurrKey (Driver * driver, const char * name);
 static ParentList * pushParent (ParentList * top, Key * key);
@@ -36,11 +37,37 @@ Driver * createDriver (const Key * parent)
 	Driver * driver = (Driver *) elektraCalloc (sizeof (Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
-	driver->filename = keyString (parent);
+	driver->filename = elektraStrDup(keyString (parent));
 	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
 	driver->errorSet = false;
 	return driver;
+}
+
+void destroyDriver(Driver * driver) {
+	if (driver != NULL) {
+		keyDel (driver->root);
+		setCurrKey (driver, NULL);
+		setPrevKey(driver, NULL);
+		driverClearLastScalar(driver);
+		if (driver->filename != NULL) {
+			elektraFree(driver->filename);
+			driver->filename = NULL;
+		}
+		while(driver->parentStack != NULL) {
+			driver->parentStack = popParent (driver->parentStack);
+		}
+		while(driver->indexStack != NULL) {
+			driver->indexStack = popIndex (driver->indexStack);
+		}
+		while (driver->tableArrayStack != NULL) {
+			driver->tableArrayStack = popTableArray (driver->tableArrayStack);
+		}
+		commentListFree (driver->commentRoot);
+		driver->commentRoot = NULL;
+		driver->commentBack = NULL;
+		elektraFree(driver);
+	}
 }
 
 int driverParse (Driver * driver, KeySet * returned)
@@ -109,6 +136,9 @@ void driverExitKeyValue (Driver * driver)
 		keyDecRef (driver->prevKey);
 		keyDel (driver->prevKey);
 		driver->prevKey = NULL;
+	}
+	if (driver->prevKey != NULL) {
+		keyDecRef(driver->prevKey);
 	}
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
@@ -190,7 +220,7 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 	case SCALAR_STRING_ML_BASIC: // always invalid
 		driverError (driver, ERROR_SEMANTIC, name->line,
 			     "Malformed input: Invalid simple key: Found multiline string, but is not allowed");
-		return;
+		break;
 	case SCALAR_FLOAT_NUM: // split up floating point numbers (contains a DOT, so we get 2 simple keys instead)
 	{
 		const char * dot = strchr (name->str, '.');
@@ -230,11 +260,12 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 	}
 	if (name->type != SCALAR_FLOAT_NUM)
 	{
-		extendCurrKey (driver, translateScalar(name));
+		char * translated = translateScalar (name);
+		extendCurrKey (driver, translated);
+		elektraFree(translated);
 	}
 	driver->currLine = name->line;
-	elektraFree (name->str);
-	elektraFree (name);
+	freeScalar(name);
 }
 
 void driverExitValue (Driver * driver, Scalar * scalar)
@@ -260,11 +291,7 @@ void driverExitValue (Driver * driver, Scalar * scalar)
 	default: // all other scalar types allowed and valid, no semantic invalidities
 		break;
 	}
-	if (driver->lastScalar != NULL)
-	{
-		elektraFree (driver->lastScalar->str);
-		elektraFree (driver->lastScalar);
-	}
+	driverClearLastScalar(driver);
 	driver->lastScalar = scalar;
 	driver->currLine = scalar->line;
 }
@@ -410,7 +437,10 @@ void driverExitArrayElement (Driver * driver)
 	{
 		driverCommitLastScalarToParentKey (driver);
 	}
-
+	if (driver->prevKey != NULL) {
+		keyDecRef (driver->prevKey);
+		keyDel(driver->prevKey);
+	}
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
 	driver->parentStack = popParent (driver->parentStack);
@@ -517,7 +547,7 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 		CommentList * comment = driver->commentRoot;
 		if (driver->commentRoot->next == NULL)
 		{
-			ELEKTRA_ASSERT (driver->commentBack == driver->commentRoot);
+			ELEKTRA_ASSERT (driver->commentBack == driver->commentRoot, "Expected comment root to be back, because root has no next");
 			driver->commentRoot = NULL;
 			driver->commentBack = NULL;
 		}
@@ -569,21 +599,30 @@ static void pushCurrKey (Driver * driver)
 	driver->parentStack = pushParent (driver->parentStack, driver->currKey);
 }
 
-static void setCurrKey (Driver * driver, const Key * parent)
+static void setCurrKey (Driver * driver, const Key * key)
 {
-	if (parent == NULL)
-	{
-		driverError (driver, ERROR_INTERNAL, 0, "Wanted to set current key to NULL.");
-		return;
-	}
 	if (driver->currKey != NULL)
 	{
 		keyDecRef (driver->currKey);
 		keyDel (driver->currKey);
 	}
-	driver->currKey = keyNew (keyName (parent), KEY_END);
-	keyIncRef (driver->currKey);
-	// keyClear (driver->currKey);
+	if (key != NULL) {
+		driver->currKey = keyNew(keyName(key), KEY_END);
+		keyIncRef (driver->currKey);
+	} else {
+		driver->currKey = NULL;
+	}
+}
+
+static void setPrevKey(Driver * driver, Key * key) {
+	if (driver->prevKey != NULL) {
+		keyDecRef(driver->prevKey);
+		keyDel(driver->prevKey);
+	}
+	driver->prevKey = key;
+	if (key != NULL) {
+		keyIncRef (key);
+	}
 }
 
 static void resetCurrKey (Driver * driver)
@@ -667,7 +706,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 
 static void driverClearLastScalar (Driver * driver)
 {
-	if (driver->lastScalar != NULL) elektraFree (driver->lastScalar->str);
-	elektraFree (driver->lastScalar);
+	freeScalar(driver->lastScalar);
 	driver->lastScalar = NULL;
 }
+

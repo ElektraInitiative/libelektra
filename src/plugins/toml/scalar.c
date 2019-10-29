@@ -73,6 +73,13 @@ Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t lin
 	return scalar;
 }
 
+void freeScalar(Scalar * scalar) {
+	if (scalar != NULL) {
+		elektraFree(scalar->str);
+		elektraFree(scalar);
+	}
+}
+
 const char * getTypeCheckerType (const Scalar * scalar)
 {
 	switch (scalar->type)
@@ -135,7 +142,7 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_STRING_BARE:
 		return elektraStrDup (scalar->str);
 	default:
-		ELEKTRA_ASSERT (0); // all possible enums must be handeled
+		ELEKTRA_ASSERT (0, "All possible scalar enums must be handeled, but got into default branch");
 		return NULL;
 	}
 }
@@ -250,7 +257,7 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 				str = skipLineEndingBackslash (str - 1);
 				break;
 			default:
-				ELEKTRA_ASSERT (0); // No invalid escape codes allowed at this stage
+				ELEKTRA_ASSERT (0, "No invalid escape codes allowed at this stage");
 			}
 		}
 		else
@@ -270,7 +277,7 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 
 static const char * skipLineEndingBackslash (const char * str)
 {
-	ELEKTRA_ASSERT (*str == '\\');
+	ELEKTRA_ASSERT (*str == '\\', "skipLineEndingBackslash expects str to be at a backslash");
 	switch (*(++str))
 	{
 	case ' ':
@@ -280,18 +287,18 @@ static const char * skipLineEndingBackslash (const char * str)
 		{
 			str++;
 		}
-		ELEKTRA_ASSERT (*str == '\n');
+		ELEKTRA_ASSERT (*str == '\n', "After backslash, \\r only allowed when followed by \\n. This should have already been checked.");
 		str = skipUntilNonWhitespace (str + 1);
 		break;
 	case '\n': // LF + WHITESPACE *
 		str = skipUntilNonWhitespace (str + 1);
 		break;
 	case '\r': // CR + LF + WHITESPACE*
-		ELEKTRA_ASSERT (*(str + 1) == '\n');
+		ELEKTRA_ASSERT (*(str + 1) == '\n', "After backslash, \\r only allowed when followed by \\n. This should have already been checked.");
 		str = skipUntilNonWhitespace (str + 2);
 		break;
 	default:
-		ELEKTRA_ASSERT (0);
+		ELEKTRA_ASSERT (0, "Invalid character after line ending backslash (0x%02X). This should already have been checked.", *str);
 	}
 	return str;
 }
@@ -318,7 +325,7 @@ static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned 
 	}
 	else
 	{
-		ELEKTRA_ASSERT (0); // code point len must be 4 or 8
+		ELEKTRA_ASSERT (0, "Code point len must be 4 or 8, but was %d.", len);
 	}
 	if (cpValue <= 0x7F)
 	{
@@ -348,7 +355,7 @@ static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned 
 	}
 	else
 	{
-		ELEKTRA_ASSERT (0); // no invalid codepoints allowed at this stage
+		ELEKTRA_ASSERT (0, "Invalid unicode codepoints should already have been checked.");
 		return 0;
 	}
 }
@@ -431,14 +438,14 @@ bool isValidDateTime (const Scalar * scalar)
 bool isValidOffsetDateTime (const char * str)
 {
 	const char * time = strpbrk (str, "T ");
-	ELEKTRA_ASSERT (time != NULL);
+	ELEKTRA_ASSERT (time != NULL, "Supplied offset datetime str was not valid, should have been checked before. Str = '%s'", str);
 	return isValidFullDate (str) && isValidFullTime (time + 1);
 }
 
 bool isValidLocalDateTime (const char * str)
 {
 	const char * time = strpbrk (str, "T ");
-	ELEKTRA_ASSERT (time != NULL);
+	ELEKTRA_ASSERT (time != NULL, "Supplied local datetime str was not valid, should have been checked before. Str = '%s'", str);
 	return isValidFullDate (str) && isValidPartialTime (time + 1);
 }
 
@@ -462,7 +469,7 @@ static bool isValidFullDate (const char * fullDate)
 static bool isValidFullTime (const char * fullTime)
 {
 	const char * offset = strpbrk (fullTime, "Z+-");
-	ELEKTRA_ASSERT (offset != NULL);
+	ELEKTRA_ASSERT (offset != NULL, "Supplied fulltime str was not valid, should have been checked before. Str = '%s'", fullTime);
 	return isValidPartialTime (fullTime) && isValidTimeOffset (offset);
 }
 
@@ -525,7 +532,7 @@ static bool isValidDate (int year, int month, int day)
 			case 2:
 				return day <= (isLeapYear (year) ? 29 : 28);
 			default:
-				ELEKTRA_ASSERT (0);
+				ELEKTRA_ASSERT (0, "Invalid month: %d, should have been checked before.", month);
 			}
 		}
 	}
