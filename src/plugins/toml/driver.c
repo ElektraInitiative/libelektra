@@ -54,7 +54,7 @@ int driverParse (Driver * driver, KeySet * returned)
 	ksAppendKey (driver->keys, driver->root);
 	int yyResult = yyparse (driver);
 	fclose (file);
-	return driver->errorSet != 0 || yyResult != 0;
+	return driver->errorSet == true || yyResult != 0;
 }
 
 void driverExitToml (Driver * driver)
@@ -170,7 +170,8 @@ void driverExitOptCommentTable (Driver * driver)
 
 void driverExitSimpleKey (Driver * driver, Scalar * name)
 {
-	if (name == NULL) {
+	if (name == NULL)
+	{
 		return;
 	}
 
@@ -208,7 +209,8 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 				driverError (driver, ERROR_SEMANTIC, name->line,
 					     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, "
 					     "underline, "
-					     "hyphen allowed", name->str);
+					     "hyphen allowed",
+					     name->str);
 			}
 			elektraFree (first);
 			elektraFree (second);
@@ -235,7 +237,8 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 
 void driverExitValue (Driver * driver, Scalar * scalar)
 {
-	if (scalar == NULL) {
+	if (scalar == NULL)
+	{
 		return;
 	}
 	switch (scalar->type)
@@ -430,7 +433,8 @@ void driverEmptyInlineTable (Driver * driver)
 
 void driverExitComment (Driver * driver, const Scalar * comment)
 {
-	if (comment == NULL) {
+	if (comment == NULL)
+	{
 		return;
 	}
 	if (driver->newlineCount > 0)
@@ -643,15 +647,16 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
 			return;
 		}
-		char * elektraStr = translateScalar(driver->lastScalar);
-		if (elektraStr == NULL) {
+		char * elektraStr = translateScalar (driver->lastScalar);
+		if (elektraStr == NULL)
+		{
 			driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
 		}
 		keySetString (driver->parentStack->key, elektraStr);
-		elektraFree(elektraStr);
+		elektraFree (elektraStr);
 
-		keySetMeta(driver->parentStack->key, "origvalue", driver->lastScalar->str);
-		keySetMeta(driver->parentStack->key, "check/type", getTypeCheckerType (driver->lastScalar));
+		keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
+		keySetMeta (driver->parentStack->key, "check/type", getTypeCheckerType (driver->lastScalar));
 
 		ksAppendKey (driver->keys, driver->parentStack->key);
 		driverClearLastScalar (driver);

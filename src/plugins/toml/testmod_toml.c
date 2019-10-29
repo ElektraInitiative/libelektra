@@ -16,67 +16,66 @@
 
 #define PREFIX "user/tests/toml"
 
+static void testPositiveCompareKeySets (void);
+static void testNegativeCompareErrors (void);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadCompareError (const char * filename, KeySet * expected);
 static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName);
 static void testCompareErrors (Key * expected, Key * found);
-static void printKs (KeySet * ks, const char * name);
 static void showDiff (KeySet * expected, KeySet * is, const char * name, bool stopOnFirstDiff);
 
+int main (int argc, char ** argv)
+{
+	init (argc, argv);
+
+	testPositiveCompareKeySets ();
+	testNegativeCompareErrors ();
+
+	print_result ("testmod_toml");
+	return nbError;
+}
 
 static void testPositiveCompareKeySets (void)
 {
 	testReadCompare ("toml/positive/basic.toml",
 #include "toml/positive/basic.h"
 	);
-	testReadCompare ("toml/positive/utf8.toml",
-#include "toml/positive/utf8.h"
+	testReadCompare ("toml/positive/string_utf8.toml",
+#include "toml/positive/string_utf8.h"
 	);
-	
 	testReadCompare ("toml/positive/string_basic_escape.toml",
 #include "toml/positive/string_basic_escape.h"
 	);
-
-	testReadCompare ("toml/positive/multiline_strings.toml",
-#include "toml/positive/multiline_strings.h"
-    	);
-
+	testReadCompare ("toml/positive/string_multiline.toml",
+#include "toml/positive/string_multiline.h"
+	);
 	testReadCompare ("toml/positive/date.toml",
 #include "toml/positive/date.h"
 	);
-
 	testReadCompare ("toml/positive/array.toml",
 #include "toml/positive/array.h"
 	);
-
 	testReadCompare ("toml/positive/simple_table.toml",
 #include "toml/positive/simple_table.h"
 	);
-
 	testReadCompare ("toml/positive/table_array.toml",
 #include "toml/positive/table_array.h"
 	);
-
 	testReadCompare ("toml/positive/table_array_nested.toml",
 #include "toml/positive/table_array_nested.h"
 	);
-
 	testReadCompare ("toml/positive/table_array_table_mixed.toml",
 #include "toml/positive/table_array_table_mixed.h"
 	);
-
 	testReadCompare ("toml/positive/inline_table.toml",
 #include "toml/positive/inline_table.h"
 	);
-
 	testReadCompare ("toml/positive/inline_table_empty.toml",
 #include "toml/positive/inline_table_empty.h"
 	);
-
 	testReadCompare ("toml/positive/inline_table_multiline_values.toml",
 #include "toml/positive/inline_table_multiline_values.h"
 	);
-
 	testReadCompare ("toml/positive/comment.toml",
 #include "toml/positive/comment.h"
 	);
@@ -114,17 +113,6 @@ static void testNegativeCompareErrors (void)
 	testReadCompareError ("toml/negative/date_invalid_feb.toml",
 #include "toml/error/semantic.h"
 	);
-}
-
-int main (int argc, char ** argv)
-{
-	init (argc, argv);
-
-	testPositiveCompareKeySets ();
-	testNegativeCompareErrors ();
-
-	print_result ("testmod_toml");
-	return nbError;
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)
@@ -307,26 +295,5 @@ static void showDiff (KeySet * expected, KeySet * is, const char * name, bool st
 		}
 		printf ("Mismatching keyset size, there are %s keys generated than expected\n", kIs == NULL ? "less" : "too much");
 		return;
-	}
-}
-
-static void printKs (KeySet * ks, const char * name)
-{
-	printf ("######KEYSET: %s\n", name);
-	ksRewind (ks);
-	Key * key = ksNext (ks);
-	while (key != NULL)
-	{
-		printf ("Key: '%s'\t->\t'%s'", keyName (key), keyString (key));
-
-		keyRewindMeta (key);
-		const Key * meta = keyNextMeta (key);
-		while (meta != NULL)
-		{
-			printf ("\n\tMeta: '%s'\t->\t'%s'", keyName (meta), keyString (meta));
-			meta = keyNextMeta (key);
-		}
-		key = ksNext (ks);
-		printf ("\n");
 	}
 }
