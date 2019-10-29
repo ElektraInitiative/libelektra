@@ -1,6 +1,10 @@
 #include "scalar.h"
 
+#include <kdbassert.h>
 #include <kdbhelper.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // for unicode -> utf8 conversion, not sure if needs adaption to work on big endian
 #define TRAIL 0x80
@@ -131,7 +135,8 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_STRING_BARE:
 		return elektraStrDup (scalar->str);
 	default:
-		assert (0); // all possible enums must be handeled
+		ELEKTRA_ASSERT (0); // all possible enums must be handeled
+		return NULL;
 	}
 }
 
@@ -245,7 +250,7 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 				str = skipLineEndingBackslash (str - 1);
 				break;
 			default:
-				assert (0); // No invalid escape codes allowed at this stage
+				ELEKTRA_ASSERT (0); // No invalid escape codes allowed at this stage
 			}
 		}
 		else
@@ -265,7 +270,7 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 
 static const char * skipLineEndingBackslash (const char * str)
 {
-	assert (*str == '\\');
+	ELEKTRA_ASSERT (*str == '\\');
 	switch (*(++str))
 	{
 	case ' ':
@@ -275,18 +280,18 @@ static const char * skipLineEndingBackslash (const char * str)
 		{
 			str++;
 		}
-		assert (*str == '\n');
+		ELEKTRA_ASSERT (*str == '\n');
 		str = skipUntilNonWhitespace (str + 1);
 		break;
 	case '\n': // LF + WHITESPACE *
 		str = skipUntilNonWhitespace (str + 1);
 		break;
 	case '\r': // CR + LF + WHITESPACE*
-		assert (*(str + 1) == '\n');
+		ELEKTRA_ASSERT (*(str + 1) == '\n');
 		str = skipUntilNonWhitespace (str + 2);
 		break;
 	default:
-		assert (0);
+		ELEKTRA_ASSERT (0);
 	}
 	return str;
 }
@@ -313,7 +318,7 @@ static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned 
 	}
 	else
 	{
-		assert (0); // code point len must be 4 or 8
+		ELEKTRA_ASSERT (0); // code point len must be 4 or 8
 	}
 	if (cpValue <= 0x7F)
 	{
@@ -343,7 +348,8 @@ static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned 
 	}
 	else
 	{
-		assert (0); // no invalid codepoints allowed at this stage
+		ELEKTRA_ASSERT (0); // no invalid codepoints allowed at this stage
+		return 0;
 	}
 }
 
@@ -425,14 +431,14 @@ bool isValidDateTime (const Scalar * scalar)
 bool isValidOffsetDateTime (const char * str)
 {
 	const char * time = strpbrk (str, "T ");
-	assert (time != NULL);
+	ELEKTRA_ASSERT (time != NULL);
 	return isValidFullDate (str) && isValidFullTime (time + 1);
 }
 
 bool isValidLocalDateTime (const char * str)
 {
 	const char * time = strpbrk (str, "T ");
-	assert (time != NULL);
+	ELEKTRA_ASSERT (time != NULL);
 	return isValidFullDate (str) && isValidPartialTime (time + 1);
 }
 
@@ -456,7 +462,7 @@ static bool isValidFullDate (const char * fullDate)
 static bool isValidFullTime (const char * fullTime)
 {
 	const char * offset = strpbrk (fullTime, "Z+-");
-	assert (offset != NULL);
+	ELEKTRA_ASSERT (offset != NULL);
 	return isValidPartialTime (fullTime) && isValidTimeOffset (offset);
 }
 
@@ -519,7 +525,7 @@ static bool isValidDate (int year, int month, int day)
 			case 2:
 				return day <= (isLeapYear (year) ? 29 : 28);
 			default:
-				assert (0);
+				ELEKTRA_ASSERT (0);
 			}
 		}
 	}

@@ -1,9 +1,11 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <kdb.h>
 #include <kdbhelper.h>
+#include <kdbassert.h>
 
 #include "driver.h"
 #include "error.h"
@@ -515,7 +517,7 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 		CommentList * comment = driver->commentRoot;
 		if (driver->commentRoot->next == NULL)
 		{
-			assert (driver->commentBack == driver->commentRoot);
+			ELEKTRA_ASSERT (driver->commentBack == driver->commentRoot);
 			driver->commentRoot = NULL;
 			driver->commentBack = NULL;
 		}

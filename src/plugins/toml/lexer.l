@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <assert.h>
+#include <kdbassert.h>
 #include <stdbool.h>
 #include <kdbhelper.h>
 
@@ -321,7 +321,7 @@ static char * bufferConsume (Buffer * buffer)
 
 static void bufferAddChar (Buffer * buffer, char c, Driver * driver)
 {
-	assert (driver != NULL);
+	ELEKTRA_ASSERT (driver != NULL);
 	if (buffer != NULL)
 	{
 		buffer->data[buffer->index++] = c;
