@@ -11,9 +11,9 @@ The command to use this tool is:
 `kdb cmerge [OPTIONS] our their base result`
 
 `our`, `their` and `base` represent the three keys that are used in
-a three-way merge. Compared to the `diff3` tool, this would be
+a three-way merge. As in the `diff3` tool, required are
 the three files MYFILE (our), OLDFILE (base) and YOURFILE (their)
-that are the required for it. The result off the three-way merge
+The result off the three-way merge
 will be stored in `result`.
 
 For configuration files in the context of package upgrades:
