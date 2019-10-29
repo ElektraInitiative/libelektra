@@ -3,6 +3,7 @@
 - infos/licence = BSD
 - infos/provides = storage/toml
 - infos/needs =
+- infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
 - infos/metadata =
@@ -16,9 +17,10 @@
 
 ## Limitations:
 
-    - Leap seconds for RFC3339 date times are not checked. For seconds, a value of 60 is always valid.
-      As a result of this decision, no valid RFC3339 date is determined invalid, but invalid RFC3339 dates may be determined valid.
-      Leap seconds can occur on the ends of June/Dec, where a time of 23:59:60 (positive leap second) or 23:59:58 (negative leap second) is the highest valid value for a second.
+	- Comments and newlines between the last array element and closing brackets are discarded.
+	- Leap seconds for RFC3339 date times are not checked. For seconds, a value of 60 is always valid.
+	As a result of this decision, no valid RFC3339 date is determined invalid, but invalid RFC3339 dates may be determined valid.
+	Leap seconds can occur on the ends of June/Dec, where a time of 23:59:60 (positive leap second) or 23:59:58 (negative leap second) is the highest valid value for a second.
 
 ## Questions
 
@@ -28,6 +30,7 @@
 
 ## TODOs
 
-    - Order metakeys for file recreation
     - Type metakeys
     - Use date plugin
+    - directory value plugin?
+    - empty array with ###empty_array

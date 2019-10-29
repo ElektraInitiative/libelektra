@@ -2,10 +2,10 @@
 
 #include <kdbhelper.h>
 
-// for unicode -> utf8 conversion, assumes little endian, TODO: big endian
+// for unicode -> utf8 conversion, not sure if needs adaption to work on big endian
 #define TRAIL 0x80
 #define MASK(b) (b == 6 ? 0x3F : b == 5 ? 0x1F : b == 4 ? 0x0F : 0x07)
-#define GET_BITS(v, s, b) (((v) >> (s)) & MASK(b))
+#define GET_BITS(v, s, b) (((v) >> (s)) & MASK (b))
 #define LEAD(n) (n == 1 ? 0x00 : n == 2 ? 0xC0 : n == 3 ? 0xE0 : 0xF0)
 #define ZERO(n) (n == 1 ? 0x7F : n == 2 ? 0xDF : n == 3 ? 0xEF : 0xF7)
 #define ZERO_TRAIL 0xBF
@@ -67,6 +67,28 @@ Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t lin
 	}
 	scalar->line = line;
 	return scalar;
+}
+
+const char * getTypeCheckerType (const Scalar * scalar) {
+	switch (scalar->type) {
+		case SCALAR_INTEGER_DEC:
+		case SCALAR_INTEGER_HEX:
+		case SCALAR_INTEGER_OCT:
+		case SCALAR_INTEGER_BIN:
+			return "long_long";
+		case SCALAR_BOOLEAN:
+			return "boolean";
+		case SCALAR_FLOAT_NUM:
+		case SCALAR_FLOAT_INF:
+		case SCALAR_FLOAT_POS_INF:
+		case SCALAR_FLOAT_NEG_INF:
+		case SCALAR_FLOAT_NAN:
+		case SCALAR_FLOAT_POS_NAN:
+		case SCALAR_FLOAT_NEG_NAN:
+			return "double";
+		default:
+			return "string";
+	}
 }
 
 char * translateScalar (const Scalar * scalar)
@@ -199,11 +221,11 @@ static char * convertBasicStr (const char * str)
 				str++;
 				break;
 			case 'u':
-				outPos += unicodeCodepointToUtf8 (str + 1, 4, (unsigned char*)outStr + outPos);
+				outPos += unicodeCodepointToUtf8 (str + 1, 4, (unsigned char *) outStr + outPos);
 				str += 4 + 1;
 				break;
 			case 'U':
-				outPos += unicodeCodepointToUtf8 (str + 1, 8, (unsigned char*)outStr + outPos);
+				outPos += unicodeCodepointToUtf8 (str + 1, 8, (unsigned char *) outStr + outPos);
 				str += 8 + 1;
 				break;
 			// handling of line ending backslashes
@@ -285,7 +307,6 @@ static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned 
 	{
 		assert (0); // code point len must be 4 or 8
 	}
-	printf("GOT CODEPOINT 0x%lX ", cpValue);
 	if (cpValue <= 0x7F)
 	{
 		utf8[0] = (char) cpValue;
@@ -293,23 +314,23 @@ static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned 
 	}
 	else if (cpValue >= 0x80 && cpValue <= 0x7FF)
 	{
-		utf8[0] = (unsigned char) ZERO(2) & (LEAD(2) | GET_BITS(cpValue, 6, 5));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS(cpValue, 0, 6));
+		utf8[0] = (unsigned char) ZERO (2) & (LEAD (2) | GET_BITS (cpValue, 6, 5));
+		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 0, 6));
 		return 2;
 	}
 	else if (cpValue >= 0x800 && cpValue <= 0xFFFF)
 	{
-		utf8[0] = (unsigned char) ZERO(3) & (LEAD(3) | GET_BITS(cpValue, 6 + 6, 4));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS(cpValue, 6, 6));
-		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS(cpValue, 0, 6));
+		utf8[0] = (unsigned char) ZERO (3) & (LEAD (3) | GET_BITS (cpValue, 6 + 6, 4));
+		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 6, 6));
+		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 0, 6));
 		return 3;
 	}
 	else if (cpValue >= 0x10000 && cpValue <= 0x1FFFF)
 	{
-		utf8[0] = (unsigned char) ZERO(4) & (LEAD(4) | GET_BITS(cpValue, 6 + 6 + 6, 3));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS(cpValue, 6 + 6, 6));
-		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS(cpValue, 6, 6));
-		utf8[3] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS(cpValue, 0, 6));
+		utf8[0] = (unsigned char) ZERO (4) & (LEAD (4) | GET_BITS (cpValue, 6 + 6 + 6, 3));
+		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 6 + 6, 6));
+		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 6, 6));
+		utf8[3] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 0, 6));
 		return 4;
 	}
 	else
