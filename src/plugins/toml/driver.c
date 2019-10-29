@@ -649,6 +649,10 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		}
 		keySetString (driver->parentStack->key, elektraStr);
 		elektraFree(elektraStr);
+
+		keySetMeta(driver->parentStack->key, "origvalue", driver->lastScalar->str);
+		keySetMeta(driver->parentStack->key, "check/type", getTypeCheckerType (driver->lastScalar));
+
 		ksAppendKey (driver->keys, driver->parentStack->key);
 		driverClearLastScalar (driver);
 	}

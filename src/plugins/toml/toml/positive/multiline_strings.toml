@@ -1,5 +1,5 @@
 multiline_basic_leading_newline = """
-This string should be in a single line."""
+This string should be in a single line"""
 multiline_basic_lineending_newlines = """
 This \
 string \
@@ -9,13 +9,13 @@ be \
 in \
 a \
 single \
-line."""
+line"""
 multiline_literal_leading_newline = '''
 Single line string'''
 multiline_literal_linending_newlines = '''
 Single \
 line \
-string.'''
+string'''
 another_single_ling_string = """
 The quick brown \
 

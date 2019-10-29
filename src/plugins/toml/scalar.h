@@ -43,6 +43,7 @@ typedef struct
 
 Scalar * createScalar (ScalarType type, char * comment, size_t line);
 Scalar * createScalarDup (ScalarType type, const char * comment, size_t line);
+const char * getTypeCheckerType (const Scalar * scalar);
 char * translateScalar (const Scalar * scalar);
 
 bool isValidBareString (const char * str);
