@@ -321,7 +321,7 @@ static char * bufferConsume (Buffer * buffer)
 
 static void bufferAddChar (Buffer * buffer, char c, Driver * driver)
 {
-	ELEKTRA_ASSERT (driver != NULL);
+	ELEKTRA_ASSERT (driver != NULL, "Driver expected to be non-NULL, but was NULL");
 	if (buffer != NULL)
 	{
 		buffer->data[buffer->index++] = c;

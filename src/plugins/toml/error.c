@@ -25,7 +25,6 @@ void driverError (Driver * driver, int err, int lineno, const char * format, ...
 	{
 		snprintf (msg, 256, "Line ~%d: ", lineno);
 		size_t len = strlen (msg);
-		ELEKTRA_ASSERT (len < 256);
 		vsnprintf (msg + len, 256 - len, format, args);
 	}
 	else

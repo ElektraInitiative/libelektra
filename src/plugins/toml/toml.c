@@ -39,6 +39,7 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		Driver * driver = createDriver (parentKey);
 		int status = driverParse (driver, returned);
+		destroyDriver (driver);
 		return status == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }

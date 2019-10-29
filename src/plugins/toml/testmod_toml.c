@@ -116,7 +116,7 @@ static void testNegativeCompareErrors (void)
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {
-	printf ("Reading '%s'\n", filename);
+	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
@@ -134,13 +134,16 @@ static void testReadCompare (const char * filename, KeySet * expected)
 		    "Expected kdbGet to succeed, but got failure.");
 	compare_keyset (expected, ks);
 
+	ksDel(ks);
+	keyDel(root);
 	PLUGIN_CLOSE ();
+	keyDel(parentKey);
 	ksDel (expected);
 }
 
 static void testReadCompareError (const char * filename, KeySet * expected)
 {
-	printf ("Reading '%s'\n", filename);
+	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
@@ -160,14 +163,17 @@ static void testReadCompareError (const char * filename, KeySet * expected)
 	succeed_if (foundRoot != NULL, "Could not find root key");
 	testCompareErrors (root, foundRoot);
 
+	ksDel(ks);
+	keyDel(root);
 	PLUGIN_CLOSE ();
+	keyDel(parentKey);
 	ksDel (expected);
 }
 
 static void testCompareErrors (Key * expected, Key * found)
 {
-	ELEKTRA_ASSERT (expected != NULL);
-	ELEKTRA_ASSERT (found != NULL);
+	ELEKTRA_ASSERT (expected != NULL, "Expected key is NULL");
+	ELEKTRA_ASSERT (found != NULL, "Found key is NULL");
 	char * metaNames[] = { "error/module", "error/description", NULL };
 	for (int i = 0; metaNames[i] != NULL; i++)
 	{
@@ -177,7 +183,6 @@ static void testCompareErrors (Key * expected, Key * found)
 
 static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName)
 {
-	// printf ("Comparing metakey '%s'\n", metaKeyName);
 	keyRewindMeta (expected);
 	keyRewindMeta (found);
 	const Key * metaExpected = keyNextMeta (expected);
@@ -186,7 +191,6 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	{
 		if (strcmp (keyName (metaExpected), metaKeyName) == 0)
 		{
-			// printf ("\tExpected\t= %s\n", keyString (metaExpected));
 			break;
 		}
 		metaExpected = keyNextMeta (expected);
@@ -195,7 +199,6 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	{
 		if (strcmp (keyName (metaFound), metaKeyName) == 0)
 		{
-			// printf ("\tFound\t\t= %s\n", keyString (metaFound));
 			break;
 		}
 		metaFound = keyNextMeta (found);

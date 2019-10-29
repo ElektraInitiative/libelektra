@@ -39,6 +39,7 @@ typedef struct
 
 Scalar * createScalar (ScalarType type, char * comment, size_t line);
 Scalar * createScalarDup (ScalarType type, const char * comment, size_t line);
+void freeScalar(Scalar * scalar);
 const char * getTypeCheckerType (const Scalar * scalar);
 char * translateScalar (const Scalar * scalar);
 
