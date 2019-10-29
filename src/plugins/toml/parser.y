@@ -28,7 +28,7 @@ YY_DECL;
 }
 
 %union {
-    Scalar*     	scalar;
+	Scalar*			scalar;
 }
 
 %token <scalar> COMMENT
@@ -68,119 +68,124 @@ YY_DECL;
 
 %%
 
-Toml	: 	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
-        |   %empty
-        ;
+Toml		:	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
+		|	%empty
+		;
 
-Nodes   : 	Node
-        |	Nodes Newlines Node
-        ;
+Nodes		:	Node
+		|	Nodes Newlines Node
+		;
 
-Node	:	COMMENT { driverExitComment (driver, $1); }
-        | 	Table OptComment { driverExitOptCommentTable (driver); }
-        | 	KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
-        ;
+Node		:	COMMENT { driverExitComment (driver, $1); }
+		|	Table OptComment { driverExitOptCommentTable (driver); }
+		|	KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
+		;
 
-OptComment	:   COMMENT { driverExitComment (driver, $1); }
-            |   %empty
-            ;
+OptComment	:	COMMENT { driverExitComment (driver, $1); }
+		|	%empty
+		;
 
 
 Newlines	:	NEWLINE { /*driverExitNewline (driver);*/ }
-            |	Newlines NEWLINE { driverExitNewline (driver); }
-            ;	
+		|	Newlines NEWLINE { driverExitNewline (driver); }
+		;	
 
-AnyNewlines :   Newlines | %empty;
+AnyNewlines	:	Newlines
+		|	%empty
+		;
 
-Table	:	TableSimple
-        |	TableArray
-        ;
+Table		:	TableSimple
+		|	TableArray
+		;
 
 TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } TopKey { driverExitSimpleTable(driver); } BRACKETS_CLOSE
-            ;
+		;
 
 TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } TopKey { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
-            ;
+		;
 
-KeyPair :	TopKey EQUAL Value { driverExitKeyValue (driver); }
-        ;
+KeyPair		:	TopKey EQUAL Value { driverExitKeyValue (driver); }
+		;
 
-TopKey  :   { driverEnterKey (driver); } Key { driverExitKey (driver); }
-        ;
+TopKey		:	{ driverEnterKey (driver); } Key { driverExitKey (driver); }
+		;
 
-Key     :	SimpleKey
-        |	SimpleKey DottedKeys
-        ;
+Key		:	SimpleKey
+		|	SimpleKey DottedKeys
+		;
 
 DottedKeys	:	DOT SimpleKey
-            	|	DottedKeys DOT SimpleKey
-            	;
+		|	DottedKeys DOT SimpleKey
+		;
 
 SimpleKey	:	Scalar { driverExitSimpleKey (driver, $1); }
-            	;
+		;
 
-Value   :	Scalar { driverExitValue (driver, $1); }
-        |	InlineTable
-        |	Array
-        ;
+Value		:	Scalar { driverExitValue (driver, $1); }
+		|	InlineTable
+		|	Array
+		;
 
 InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
-            |	CURLY_OPEN CURLY_CLOSE { driverEmptyInlineTable(driver); }
-            ;
+		|	CURLY_OPEN CURLY_CLOSE { driverEmptyInlineTable(driver); }
+		;
 
 InlineTableList	:	KeyPair
-                |	InlineTableList COMMA KeyPair
-                ;
+		|	InlineTableList COMMA KeyPair
+		;
 
-Array	:	ArrayEmpty | ArrayNonEmpty;
+Array		:	ArrayEmpty | ArrayNonEmpty
+		;
 
-ArrayNonEmpty   :   BRACKETS_OPEN { driverEnterArray (driver); } ArrayList ArrayEpilogue BRACKETS_CLOSE { driverExitArray (driver); };
-ArrayEmpty      :   BRACKETS_OPEN BRACKETS_CLOSE { driverEmptyArray (driver); };
+ArrayNonEmpty	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList ArrayEpilogue BRACKETS_CLOSE { driverExitArray (driver); };
+ArrayEmpty	:	BRACKETS_OPEN BRACKETS_CLOSE { driverEmptyArray (driver); };
 
 
-ArrayList	:	AnyCommentNewline ArrayElement
-            	|	ArrayList COMMA AnyCommentNewline ArrayElement
-            	;
+ArrayList	:	AnyCommentNL ArrayElement
+		|	ArrayList COMMA AnyCommentNL ArrayElement
+		;
 
-ArrayElement    :   Value { driverExitArrayElement (driver); };
+ArrayElement	:	Value { driverExitArrayElement (driver); }
+		;
 
-ArrayEpilogue   :	AnyCommentNewline
-                |	COMMA AnyCommentNewline
-                ;
+ArrayEpilogue	:	AnyCommentNL
+		|	COMMA AnyCommentNL
+		;
 
-AnyCommentNewline	:	AnyCommentNewline NEWLINE { driverExitNewline (driver); }
-			|	AnyCommentNewline COMMENT NEWLINE { driverExitComment (driver, $2); /* No exit newline here because comments imply a newline*/  }
-			|	%empty 
-			;
-Scalar  :   IntegerScalar { $$ = $1; }
-        |   BooleanScalar { $$ = $1; }
-        |   FloatScalar { $$ = $1; }
-        |   StringScalar { $$ = $1; }
-        |   DateScalar { $$ = $1; }
-        ;
+AnyCommentNL	:	AnyCommentNL NEWLINE { driverExitNewline (driver); }
+		|	AnyCommentNL COMMENT NEWLINE { driverExitComment (driver, $2); }
+		|	%empty 
+		;
 
-IntegerScalar   :   DECIMAL { $$ = $1; }
-                |   HEXADECIMAL { $$ = $1; }
-                |   OCTAL { $$ = $1; }
-                |   BINARY { $$ = $1; }
-                ;
+Scalar		:	IntegerScalar { $$ = $1; }
+		|	BooleanScalar { $$ = $1; }
+		|	FloatScalar { $$ = $1; }
+		|	StringScalar { $$ = $1; }
+		|	DateScalar { $$ = $1; }
+		;
 
-BooleanScalar   :   BOOLEAN { $$ = $1; }
-                ;
+IntegerScalar	:	DECIMAL { $$ = $1; }
+		|	HEXADECIMAL { $$ = $1; }
+		|	OCTAL { $$ = $1; }
+		|	BINARY { $$ = $1; }
+		;
 
-FloatScalar     :   FLOAT { $$ = $1; }
-                ;
+BooleanScalar	:	BOOLEAN { $$ = $1; }
+		;
 
-StringScalar    :   LITERAL_STRING { $$ = $1; }
-                |   BASIC_STRING { $$ = $1; }
-                |   MULTI_LITERAL_STRING { $$ = $1; }
-                |   MULTI_BASIC_STRING { $$ = $1; }
-		|   BARE_STRING { $$ = $1; }
-                ;
+FloatScalar	:	FLOAT { $$ = $1; }
+		;
 
-DateScalar      :   OFFSET_DATETIME { $$ = $1; }
-                |   LOCAL_DATETIME { $$ = $1; }
-                |   LOCAL_DATE { $$ = $1; }
-                |   LOCAL_TIME { $$ = $1; }
-                ;
+StringScalar	:	LITERAL_STRING { $$ = $1; }
+		|	BASIC_STRING { $$ = $1; }
+		|	MULTI_LITERAL_STRING { $$ = $1; }
+		|	MULTI_BASIC_STRING { $$ = $1; }
+		|	BARE_STRING { $$ = $1; }
+		;
+
+DateScalar	:	OFFSET_DATETIME { $$ = $1; }
+		|	LOCAL_DATETIME { $$ = $1; }
+		|	LOCAL_DATE { $$ = $1; }
+		|	LOCAL_TIME { $$ = $1; }
+		;
 %%
