@@ -5,19 +5,23 @@
 # @date 2019-08-20
 # @tags creator
 
-
 # This is a part of the preserved base path
 specialPathStart="user/elektra/merge/preserve/"
 # This is the path where a config file is loaded temporarily for merging
 tempPath="user/elektra/merge/tmp"
 
-if [ "$#" -ne 3 ]; then
-	echo "Usage is $0 <elektra path> <config file> <format>"
-	exit 1
-fi
 our=$1
 their=$2
-format=$3
+
+if [ "$#" -eq 2 ] ; then
+	format="line"
+elif [ "$#" -eq 3 ] ; then
+	format=$3
+else
+	echo "Usage is $0 <elektra path> <config file> [<format>]"
+	exit 1
+fi
+exit 1
 
 # use the file name (without path) of <config file> as special path
 # in Elektra

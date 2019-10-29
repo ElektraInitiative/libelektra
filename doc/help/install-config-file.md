@@ -7,6 +7,8 @@ install-config-file(1) -- Install configuration files in Elektra
 `<elektra path>` is a path in Elektra
 `<config file>` is some file on the filesystem
 
+`line` will be used if `<format>` is unspecified
+
 ## DESCRIPTION
 
 This script installs or merges configuration files from the file system into
