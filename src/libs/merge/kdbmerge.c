@@ -991,7 +991,7 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
 	if (handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey, strategy) > 0)
 	{
-		ksDel(result);
+		ksDel (result);
 		return NULL;
 	}
 #else
