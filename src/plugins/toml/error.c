@@ -1,6 +1,7 @@
 #include "error.h"
 
 #include <kdb.h>
+#include <kdbassert.h>
 #include <kdberrors.h>
 
 #include "driver.h"
@@ -24,7 +25,7 @@ void driverError (Driver * driver, int err, int lineno, const char * format, ...
 	{
 		snprintf (msg, 256, "Line ~%d: ", lineno);
 		size_t len = strlen (msg);
-		assert (len < 256);
+		ELEKTRA_ASSERT (len < 256);
 		vsnprintf (msg + len, 256 - len, format, args);
 	}
 	else

@@ -1,12 +1,8 @@
 #ifndef ELEKTRA_PLUGIN_TOML_SCALAR_H
 #define ELEKTRA_PLUGIN_TOML_SCALAR_H
 
-#include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 typedef enum
 {

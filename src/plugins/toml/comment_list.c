@@ -1,7 +1,7 @@
 #include "comment_list.h"
 
-#include <assert.h>
 #include <kdb.h>
+#include <kdbassert.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,15 +40,15 @@ void commentListFree (CommentList * root)
 
 CommentList * commentListAdd (CommentList * back, const char * comment, size_t spaceCount)
 {
-	assert (back != NULL);
-	assert (back->next == NULL);
+	ELEKTRA_ASSERT (back != NULL);
+	ELEKTRA_ASSERT (back->next == NULL);
 	back->next = commentListNew (comment, spaceCount);
 	return back->next;
 }
 
 CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 {
-	assert (back != NULL);
+	ELEKTRA_ASSERT (back != NULL);
 	CommentList * newBack = back;
 	while (newlineCount > 0)
 	{

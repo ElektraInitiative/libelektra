@@ -7,7 +7,7 @@
  *
  */
 
-#include <assert.h>
+#include <kdbassert.h>
 #include <kdbprivate.h>
 #include <tests.h>
 #include <tests_plugin.h>
@@ -166,8 +166,8 @@ static void testReadCompareError (const char * filename, KeySet * expected)
 
 static void testCompareErrors (Key * expected, Key * found)
 {
-	assert (expected != NULL);
-	assert (found != NULL);
+	ELEKTRA_ASSERT (expected != NULL);
+	ELEKTRA_ASSERT (found != NULL);
 	char * metaNames[] = { "error/module", "error/description", NULL };
 	for (int i = 0; metaNames[i] != NULL; i++)
 	{
