@@ -89,7 +89,7 @@ public class ExceptionMapperIT {
 	private void passErrorToPluginAndExecute(KDBException exception) throws KDBException {
 		NativePlugin errorPlugin = null;
 		try {
-			errorPlugin = new NativePlugin(errorPluginName, parentKey);
+			errorPlugin = new NativePlugin(errorPluginName, parentKey, KeySet.create());
 		} catch (InstallationException e) {
 			// On some builds are not able to load the native error plugin
 			throw exception;
@@ -105,7 +105,7 @@ public class ExceptionMapperIT {
 	public void kdbSetWithWarning_shouldNotTriggerException() throws Exception {
 		NativePlugin errorPlugin = null;
 		try {
-			errorPlugin = new NativePlugin(errorPluginName, parentKey);
+			errorPlugin = new NativePlugin(errorPluginName, parentKey, KeySet.create());
 		} catch (InstallationException e) {
 			// On some builds are not able to load the native error plugin
 			return;
@@ -121,7 +121,7 @@ public class ExceptionMapperIT {
 	public void kdbSetWithWarningAndError_shouldHaveWarnings() throws Exception {
 		NativePlugin errorPlugin = null;
 		try {
-			errorPlugin = new NativePlugin(errorPluginName, parentKey);
+			errorPlugin = new NativePlugin(errorPluginName, parentKey, KeySet.create());
 		} catch (InstallationException e) {
 			// On some builds are not able to load the native error plugin
 			return;

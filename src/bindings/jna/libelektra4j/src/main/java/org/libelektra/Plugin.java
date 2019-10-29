@@ -28,6 +28,7 @@ public interface Plugin {
 	 *
 	 * @param ks        a keyset
 	 * @param parentKey a key
+	 * @throws KDBException when Elektra could not set the keyset
 	 * @return the plugin's return value for get
 	 */
 	int get(KeySet ks, Key parentKey) throws KDBException;
@@ -37,6 +38,7 @@ public interface Plugin {
 	 *
 	 * @param ks        a keyset
 	 * @param parentKey a key
+	 * @throws KDBException when Elektra could not set the keyset
 	 * @return the plugin's return value for set
 	 */
 	int set(KeySet ks, Key parentKey) throws KDBException;
