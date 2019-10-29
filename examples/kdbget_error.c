@@ -91,7 +91,7 @@ void printWarnings (Key * key)
 	}
 	size_t warn_iter = 0;
 
-	char buffer[sizeof ("warnings/#00/description") + sizeof (ELEKTRA_STRINGIFY (SIZE_MAX))];
+	char buffer[sizeof ("warnings/#0/description") + sizeof (ELEKTRA_STRINGIFY (SIZE_MAX))];
 
 	do
 	{

@@ -43,10 +43,10 @@ static void test_plugin_open_script_not_found (void)
 	Key * errorKey = keyNew ("", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
-	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#0/description")), "Plugin Misbehavior");
 
 	const char * exp_warning_msg = "Ruby Exception: LoadError: cannot load such file -- ";
-	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#00/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
+	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#0/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
 		    "unexpected warning message");
 
 	keyDel (errorKey);
@@ -62,10 +62,10 @@ static void test_plugin_open_invalid_script (void)
 	Key * errorKey = keyNew ("", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
-	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#0/description")), "Plugin Misbehavior");
 
 	const char * exp_warning_msg = "Error in Ruby-plugin, didn't call Kdb::Plugin.define";
-	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#00/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
+	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#0/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
 		    "unexpected warning message");
 
 	keyDel (errorKey);
@@ -80,10 +80,10 @@ static void test_plugin_open_not_a_script (void)
 	Key * errorKey = keyNew ("", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
-	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#0/description")), "Plugin Misbehavior");
 
 	const char * exp_warning_msg = "Ruby Exception: SyntaxError:";
-	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#00/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
+	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#0/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
 		    "unexpected warning message");
 
 	keyDel (errorKey);
