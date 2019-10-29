@@ -888,8 +888,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
 
-	// git_libgit2_init (); // calling git_libgit2_shutdown before returning gives a memory leak
-
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
 	if (ourCropped == NULL)
 	{
@@ -960,6 +958,5 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	KeySet * resultWithRoot = ksNew (0, KS_END);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot), informationKey);
 	ksDel (result);
-	//	git_libgit2_shutdown ();
 	return resultWithRoot;
 }
