@@ -15,13 +15,15 @@ ksNew (16,
 			"backslash\\\n",
 		KEY_META, "check/type", "string",
 		KEY_META, "origvalue",
-			"\nbackspace\\b\n"
+			"\"\"\"\n"
+			"backspace\\b\n"
 		       	"tab\\t\n"
 		      	"linefeed\\n\n"
 		      	"formfeed\\f\n"
 		      	"carriage return\\r\n"
 		      	"quote\\\"\n"
-		      	"backslash\\\\\n",
+		      	"backslash\\\\\n"
+			"\"\"\"",
 		KEY_META, "order", "0",
 	KEY_END),
 	keyNew (PREFIX "/unicode_escape",
@@ -44,8 +46,9 @@ ksNew (16,
 			"1da8b: \xF0\x9D\xAA\x8B\n"
 			"1fffd: \xF0\x9F\xBF\xBD\n",
 		KEY_META, "check/type", "string",
-		KEY_META, "origvalue", 
-			"\n0030: \\u0030\n"
+		KEY_META, "origvalue",
+			"\"\"\"\n"
+			"0030: \\u0030\n"
 			"00C0: \\u00C0\n"
 			"0270: \\u0270\n"
 			"02DF: \\u02DF\n"
@@ -61,7 +64,8 @@ ksNew (16,
 			"1447F: \\U0001447F\n"
 			"15A4A: \\U00015A4A\n"
 			"1da8b: \\U0001da8b\n"
-			"1fffd: \\U0001fffd\n",
+			"1fffd: \\U0001fffd\n"
+			"\"\"\"",
 		KEY_META, "order", "1",
 	KEY_END),
 
