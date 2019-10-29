@@ -18,9 +18,9 @@ will be stored in `result`.
 
 For configuration files in the context of package upgrades:
 
-- `their` is the current version of the maintainer's copy,
-- `base` is the previous version of the maintainer's copy.
-- `our` is the user's copy, derived from `base`
+- `their` is the current version of the maintainer's copy of a configuration file,
+- `base` is the previous version of the maintainer's copy of the configuration file.
+- `our` is the user's copy of the configuration file, derived from `base`
 
 ## Options
 
@@ -69,7 +69,7 @@ kdb get user/tests/result
 #> a
 ```
 
-We change the our version for another example.
+We change the our key for another example.
 
 ```sh
 kdb set user/tests/our b
@@ -77,7 +77,7 @@ kdb set user/tests/our b
 ```
 
 Using a `result` path that is not empty gives an error.
-The option `--force` can be used to override. **Attention!** This deletes existing keys below `result`.
+The option `-f` can be used to override. **Attention!** This deletes existing keys below `result`.
 
 ```sh
 kdb cmerge user/tests/our user/tests/their user/tests/base user/tests/result
@@ -88,7 +88,7 @@ kdb get user/tests/result
 #> b
 ```
 
-We can use the same key for different versions.
+We can use the same key multiple times in a single call to cmerge.
 
 ```sh
 kdb set user/tests/same a
@@ -100,7 +100,6 @@ kdb get user/tests/result
 
 ### hosts
 
-Merging is also possible in more complicated situations.
 As a real-world example, we import three different (see the comment) versions of a hosts file. Please remove the trailing backslashes from the example code.
 
 ```sh
@@ -145,7 +144,7 @@ Metadata gets merged as well.
 We do not follow a complicated approach for this topic.
 When a key-value pair is chosen from the three versions to be present in the result it takes all its metadata with it.
 
-In case that the values of some keys are equal, the `our` version wins and consequently the metadata of the `our` version is used. The goal of this is to preserve a user's personal notes for a key.
+In case that the values of some keys are equal, the `our` version wins and consequently the metadata of the `our` version is used. The reason for this is that users might have used the metadata for personal comments.
 
 We set up some keys:
 
