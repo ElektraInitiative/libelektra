@@ -605,6 +605,21 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	}
 	mmapMetaData->numKeys += returned->size + dynArray->size + 1; // +1 for magic Key
 
+	// the OPMPHM structs are included regardless of existece in KeySet
+	// s.t. the format stays the same for all KeySets
+	size_t opmphmSize = (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2); // *2 for magic opmphm data
+	Opmphm * opmphm = returned->opmphm;
+	if (opmphm)
+	{
+		if (opmphm->rUniPar) dataBlocksSize += opmphm->rUniPar * sizeof (int32_t);
+		dataBlocksSize += opmphm->size;
+	}
+	OpmphmPredictor * opmphmPredictor = returned->opmphmPredictor;
+	if (opmphmPredictor)
+	{
+		dataBlocksSize += opmphmPredictor->size * sizeof (uint8_t);
+	}
+
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
 	mmapHeader->allocSize =
 		(SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
