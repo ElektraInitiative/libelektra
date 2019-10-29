@@ -17,6 +17,7 @@ This script installs or merges configuration files from the file system into
 Elektra.
 
 If `<elektra path>` is empty then the script
+
 1. Copies `<config file>` into a special path to preserve origin version.
 2. Mounts `<config file>` into `<elektra path>` as our version.
 
