@@ -20,9 +20,9 @@
 # and the preserved origin version from a).
 
 # This is a part of the preserved base path
-specialPathStart="user/elektra-cmerge-preserve/"
+specialPathStart="user/elektra/merge/preserve/"
 # This is the path where a config file is loaded temporarily for merging
-tempPath="user/elektra-cmerge-temp"
+tempPath="user/elektra/merge/tmp"
 
 if [ "$#" -ne 3 ]; then
 	echo "Usage is $0 <elektra path> <config file> <format>"
