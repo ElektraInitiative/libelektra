@@ -538,10 +538,19 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 
 /** Returns the keyset holding the given key's metadata
  *
+ * Use keySetMeta() to populate the meta-keyset of a key.
+ *
  * @snippet keyMetaKeySet.c Basic keyMeta
  *
- * You are not allowed to modify the resulting key.
+ * Iterate the meta-keyset like any other KeySet.
  *
+ * @snippet keyMetaKeySet.c Iterate keyMeta
+ *
+ * Use ksLookup() or keyGetMeta() to retrieve a value for a given key.
+ *
+ * @snippet keyMetaKeySet.c Lookup keyMeta
+ *
+ * @note You are not allowed to modify the name of keyset's keys or delete them.
  * @note You must not delete the returned KeySet.
  * @note Adding a key with metakeys to the KeySet is an error.
  *

@@ -10,33 +10,30 @@
 #include <stddef.h>
 #include <stdio.h>
 
-void b (void)
+int main (void)
 {
+
 	//! [Basic keyMeta]
 	Key * key = keyNew ("user/test/key", KEY_END);
 
 	keySetMeta (key, "meta1", "value1");
 	keySetMeta (key, "meta2", "value2");
+	//! [Basic keyMeta]
 
-	// Iterate the metakeyset
+	//! [Iterate keyMeta]
 	Key * cur;
 	ksRewind (keyMeta (key));
 	while ((cur = ksNext (keyMeta (key))) != NULL)
 	{
-		printf ("name: %s, value: %s\n", keyName (cur), keyString (cur));
+		printf ("meta name: %s, meta value: %s\n", keyName (cur), keyString (cur));
 	}
+	//! [Iterate keyMeta]
 
-	// Directly lookup a meta key
-	Key * lookupKey = ksLookupByName (keyMeta (key), "meta1", 0);
-	printf ("name: %s, value: %s\n", keyName (lookupKey), keyString (lookupKey));
+	//! [Lookup keyMeta]
+	Key * lookupKey = ksLookupByName (keyMeta (key), "meta2", 0);
+	printf ("meta name: %s, meta value: %s\n", keyName (lookupKey), keyString (lookupKey));
 	keyDel (key);
-	//! [Basic keyMeta]
-}
-
-int main (void)
-{
-
-	b ();
+	//! [Lookup keyMeta]
 
 	return 0;
 }
