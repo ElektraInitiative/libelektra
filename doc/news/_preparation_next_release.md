@@ -64,8 +64,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `typechecker`,
   - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
-- Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
-- We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 - We improved the error messages in `crypto`, `fcrypt`, and `gpgme` plugins. _(Peter Nirschl)_
 
 ### Camel
@@ -139,6 +137,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   the `elektra-highlevel` library. This should not cause any breaking changes since `elektra-highlevel` already depends
   on `elektra-ease`. In addition the header `elektra/conversion.h` is kept for compatibility. _(Klemens Böswirth)_
 - Fixes in documentation that might disallow some code operating in grey areas before. _(Markus Raab)_
+- We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 
 ### Core
 
@@ -265,6 +264,7 @@ you up to date with the multi-language support provided by Elektra.
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
+- Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 
 ## Tests
 
