@@ -12,8 +12,8 @@
 
 static char * convertBinary (const char * binStr);
 static char * convertBoolean (const char * str);
-static char * convertBasicStr (const char * str);
-static char * convertLiteralStr (const char * str);
+static char * convertBasicStr (const char * str, size_t skipCount);
+static char * convertLiteralStr (const char * str, size_t skipCount);
 static char * stripUnderscores (const char * num);
 static const char * skipLineEndingBackslash (const char * str);
 static const char * skipUntilNonWhitespace (const char * str);
@@ -69,25 +69,27 @@ Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t lin
 	return scalar;
 }
 
-const char * getTypeCheckerType (const Scalar * scalar) {
-	switch (scalar->type) {
-		case SCALAR_INTEGER_DEC:
-		case SCALAR_INTEGER_HEX:
-		case SCALAR_INTEGER_OCT:
-		case SCALAR_INTEGER_BIN:
-			return "long_long";
-		case SCALAR_BOOLEAN:
-			return "boolean";
-		case SCALAR_FLOAT_NUM:
-		case SCALAR_FLOAT_INF:
-		case SCALAR_FLOAT_POS_INF:
-		case SCALAR_FLOAT_NEG_INF:
-		case SCALAR_FLOAT_NAN:
-		case SCALAR_FLOAT_POS_NAN:
-		case SCALAR_FLOAT_NEG_NAN:
-			return "double";
-		default:
-			return "string";
+const char * getTypeCheckerType (const Scalar * scalar)
+{
+	switch (scalar->type)
+	{
+	case SCALAR_INTEGER_DEC:
+	case SCALAR_INTEGER_HEX:
+	case SCALAR_INTEGER_OCT:
+	case SCALAR_INTEGER_BIN:
+		return "long_long";
+	case SCALAR_BOOLEAN:
+		return "boolean";
+	case SCALAR_FLOAT_NUM:
+	case SCALAR_FLOAT_INF:
+	case SCALAR_FLOAT_POS_INF:
+	case SCALAR_FLOAT_NEG_INF:
+	case SCALAR_FLOAT_NAN:
+	case SCALAR_FLOAT_POS_NAN:
+	case SCALAR_FLOAT_NEG_NAN:
+		return "double";
+	default:
+		return "string";
 	}
 }
 
@@ -112,12 +114,13 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_BOOLEAN:
 		return convertBoolean (scalar->str);
 	case SCALAR_STRING_BASIC:
+		return convertBasicStr (scalar->str, 1);
 	case SCALAR_STRING_ML_BASIC:
-		return convertBasicStr (scalar->str);
+		return convertBasicStr (scalar->str, 3);
 	case SCALAR_STRING_LITERAL:
-		return strdup (scalar->str);
+		return convertLiteralStr (scalar->str, 1);
 	case SCALAR_STRING_ML_LITERAL:
-		return convertLiteralStr (scalar->str);
+		return convertLiteralStr (scalar->str, 3);
 	case SCALAR_STRING_COMMENT:
 		return strdup (scalar->str);
 	case SCALAR_DATE_OFFSET_DATETIME:
@@ -143,19 +146,22 @@ static char * convertBoolean (const char * str)
 		return strdup ("0");
 	}
 }
-static char * convertLiteralStr (const char * str)
+static char * convertLiteralStr (const char * str, size_t skipCount)
 {
 	char * outStr = elektraCalloc (strlen (str) + 1);
 	if (outStr == NULL)
 	{
 		return NULL;
 	}
+	const char * stop = str + strlen (str) - skipCount;
+	str += skipCount;
+
 	char * ptr = outStr;
 	if (str[0] == '\n')
 	{
 		str++;
 	}
-	while (*str != 0)
+	while (str < stop)
 	{
 		if (*str == '\\')
 		{ // only possible escape sequence in literal is line ending backslash
@@ -169,7 +175,7 @@ static char * convertLiteralStr (const char * str)
 	return outStr;
 }
 
-static char * convertBasicStr (const char * str)
+static char * convertBasicStr (const char * str, size_t skipCount)
 {
 	size_t size = strlen (str) + 4 + 1;
 	char * outStr = elektraCalloc (size);
@@ -178,7 +184,10 @@ static char * convertBasicStr (const char * str)
 		return NULL;
 	}
 	size_t outPos = 0;
-	while (*str != 0)
+	const char * stop = str + strlen (str) - skipCount;
+	str += skipCount;
+
+	while (str < stop)
 	{
 		if (outPos + 4 >= size)
 		{ // 4 is maximal amount of chars possibly written per loop
@@ -251,7 +260,6 @@ static char * convertBasicStr (const char * str)
 			}
 		}
 	}
-
 	return outStr;
 }
 

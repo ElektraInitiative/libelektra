@@ -22,7 +22,6 @@ static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadCompareError (const char * filename, KeySet * expected);
 static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName);
 static void testCompareErrors (Key * expected, Key * found);
-static void showDiff (KeySet * expected, KeySet * is, const char * name, bool stopOnFirstDiff);
 
 int main (int argc, char ** argv)
 {
@@ -135,8 +134,6 @@ static void testReadCompare (const char * filename, KeySet * expected)
 		    "Expected kdbGet to succeed, but got failure.");
 	compare_keyset (expected, ks);
 
-	showDiff (expected, ks, filename, true);
-
 	PLUGIN_CLOSE ();
 	ksDel (expected);
 }
@@ -212,88 +209,3 @@ static void testCompareMetakey (Key * expected, Key * found, const char * metaKe
 	succeed_if (strcmp (keyString (metaExpected), keyString (metaFound)) == 0, "Different metakey values");
 }
 
-static void showDiff (KeySet * expected, KeySet * is, const char * name, bool stopOnFirstDiff)
-{
-	bool headerPrinted = false;
-	ksRewind (expected);
-	ksRewind (is);
-	Key * kExp = ksNext (expected);
-	Key * kIs = ksNext (is);
-	while (kExp != NULL && kIs != NULL)
-	{
-		if (keyCmp (kExp, kIs) != 0 || strcmp (keyString (kExp), keyString (kIs)) != 0)
-		{
-			if (!headerPrinted)
-			{
-				printf ("###### Diffs in '%s'\n", name);
-				headerPrinted = true;
-			}
-			printf ("Key diff:\n\texpected\t= '%s'\n\tcontent:\t'%s'\n\tfound\t\t= '%s'\n\tcontent:\t: '%s'\n", keyName (kExp),
-				keyString (kExp), keyName (kIs), keyString (kIs));
-			if (stopOnFirstDiff)
-			{
-				return;
-			}
-		}
-		keyRewindMeta (kExp);
-		keyRewindMeta (kIs);
-		const Key * metaExp = keyNextMeta (kExp);
-		const Key * metaIs = keyNextMeta (kIs);
-		while (metaExp != NULL && metaIs != NULL)
-		{
-			if (keyCmp (metaExp, metaIs) != 0 || strcmp (keyString (metaExp), keyString (metaIs)) != 0)
-			{
-				if (!headerPrinted)
-				{
-					printf ("###### Diffs in '%s'\n", name);
-					headerPrinted = true;
-				}
-				printf ("MetaKey diff:\n\texpected\t= '%s'\n\tcontent:\t'%s' = '%s'\n\tfound\t\t= '%s'\n\tcontent:\t'%s' = "
-					"'%s'\n",
-					keyName (kExp), keyName (metaExp), keyString (metaExp), keyName (kIs), keyName (metaIs),
-					keyString (metaIs));
-				if (stopOnFirstDiff)
-				{
-					return;
-				}
-			}
-			metaExp = keyNextMeta (kExp);
-			metaIs = keyNextMeta (kIs);
-		}
-		if (metaExp != NULL || metaIs != NULL)
-		{
-			if (!headerPrinted)
-			{
-				printf ("###### Diffs in '%s'\n", name);
-				headerPrinted = true;
-			}
-			printf ("Mismatching metakeys count, there are %s metakeys generated than expected\n",
-				metaIs == NULL ? "less" : "too much");
-			printf ("Affected keys:\n\texpected\t= '%s'\n\tfound\t\t= '%s'\n", keyName (kExp), keyName (kIs));
-			Key * overhead = metaExp != NULL ? kExp : kIs;
-			const Key * meta = metaExp != NULL ? metaExp : metaIs;
-			do
-			{
-				printf ("%s Metakeys: '%s': '%s'\n", metaIs == NULL ? "Missing" : "Overhead", keyName (meta),
-					keyString (meta));
-				meta = keyNextMeta (overhead);
-			} while (meta != NULL);
-			if (stopOnFirstDiff)
-			{
-				return;
-			}
-		}
-		kExp = ksNext (expected);
-		kIs = ksNext (is);
-	}
-	if (kExp != NULL || kIs != NULL)
-	{
-		if (!headerPrinted)
-		{
-			printf ("###### Diffs in '%s'\n", name);
-			headerPrinted = true;
-		}
-		printf ("Mismatching keyset size, there are %s keys generated than expected\n", kIs == NULL ? "less" : "too much");
-		return;
-	}
-}

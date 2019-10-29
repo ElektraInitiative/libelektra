@@ -228,7 +228,7 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 	}
 	if (name->type != SCALAR_FLOAT_NUM)
 	{
-		extendCurrKey (driver, name->str);
+		extendCurrKey (driver, translateScalar(name));
 	}
 	driver->currLine = name->line;
 	elektraFree (name->str);
