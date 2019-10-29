@@ -5,19 +5,6 @@
 # @date 2019-08-20
 # @tags creator
 
-# This script installs or merges configuration files from the file system into
-# Elektra.
-#
-# <elektra path> is a path in Elektra
-# <config file> is some file on the filesystem
-
-# If <elektra path> is empty then the script
-# 	a) Copies <config file> into a special path to preserve origin version.
-# 	b) Mounts <config file> into <elektra path> as our version.
-#
-# If <elektra path> already contains data then the script performs a 3-way
-# merge between the file at <config file>, the our version at <elektra path>
-# and the preserved origin version from a).
 
 # This is a part of the preserved base path
 specialPathStart="user/elektra/merge/preserve/"

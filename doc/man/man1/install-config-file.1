@@ -1,0 +1,25 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "INSTALL\-CONFIG\-FILE" "" "October 2019" "" ""
+.
+.SH "NAME"
+\fBinstall\-config\-file\fR
+.
+.P
+install\-config\-file(1) \-\- Install configuration files in Elektra
+.
+.SH "SYNOPSIS"
+\fBinstall\-config\-file <elektra path> <config file> [<format>]\fR
+.
+.P
+\fB<elektra path>\fR is a path in Elektra \fB<config file>\fR is some file on the filesystem
+.
+.SH "DESCRIPTION"
+This script installs or merges configuration files from the file system into Elektra\.
+.
+.P
+If \fB<elektra path>\fR is empty then the script 1\. Copies \fB<config file>\fR into a special path to preserve origin version\. 2\. Mounts \fB<config file>\fR into \fB<elektra path>\fR as our version\.
+.
+.P
+If \fB<elektra path>\fR already contains data then the script performs a three\-way merge between the file at \fB<config file>\fR, the our version at \fB<elektra path>\fR and the preserved origin version from 1\.
