@@ -13,6 +13,8 @@ import (
 	elektra "go.libelektra.org/kdb"
 )
 
+type prepareFunc func(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key)
+
 func Benchmark(b *testing.B) {
 	s := testServer(b)
 	defer s.Close()
@@ -20,20 +22,23 @@ func Benchmark(b *testing.B) {
 	world := "world"
 
 	benchmarks := []struct {
-		verb string
-		path string
-		body interface{}
+		verb    string
+		path    string
+		body    interface{}
+		prepare prepareFunc
 	}{
+		{verb: "DELETE", path: "/kdbMeta/user/tests/go/elektrad/benchmark/delete/meta", body: keyValueBody{Key: "hello"}, prepare: prepareDeleteMeta},
+		{verb: "DELETE", path: "/kdb/user/tests/go/elektrad/benchmark/delete/kdb", body: "value", prepare: prepareDeleteKdb},
 		{verb: "GET", path: "/version"},
-		{verb: "GET", path: "/kdb/user/tests/go/elektrad/benchmark/dataset"},
-		{verb: "GET", path: "/kdbFind/user/tests/go/elektrad/benchmark/dataset/001"},
-		{verb: "POST", path: "/kdbMv/user/tests/go/elektrad/benchmark/temp/from", body: "user/tests/go/elektrad/benchmark/temp/to"},
-		{verb: "PUT", path: "/kdb/user/tests/go/elektrad/benchmark/temp/to/001", body: "value"},
-		{verb: "POST", path: "/kdbMeta/user/tests/go/elektrad/benchmark/temp/from/001", body: keyValueBody{Key: "hello", Value: &world}},
-		{verb: "DELETE", path: "/kdb/user/tests/go/elektrad/benchmark/temp/from/001", body: "value"},
+		{verb: "GET", path: "/kdb/user/tests/go/elektrad/benchmark/get"},
+		{verb: "GET", path: "/kdbFind/user/tests/go/elektrad/benchmark/get/001"},
+		{verb: "POST", path: "/kdbMv/user/tests/go/elektrad/benchmark/post/mv/from", body: "user/tests/go/elektrad/benchmark/post/mv/to", prepare: preparePostKdbMv},
+		{verb: "POST", path: "/kdbMeta/user/tests/go/elektrad/benchmark/post/meta", body: keyValueBody{Key: "hello", Value: &world}, prepare: preparePostKdbMeta},
+		{verb: "PUT", path: "/kdb/user/tests/go/elektrad/benchmark/put", body: "value", prepare: preparePutKdb},
 	}
 
-	resetKdb := prepareBenchmark(b, 1000)
+	withHandle := prepareBenchmark(b)
+	defer withHandle(cleanup)
 
 	for _, bt := range benchmarks {
 		run := func(b *testing.B, url string, v2 bool) {
@@ -44,8 +49,8 @@ func Benchmark(b *testing.B) {
 			b.ResetTimer()
 
 			for n := 0; n < b.N; n++ {
-				if bt.verb != "GET" {
-					resetKdb()
+				if bt.prepare != nil {
+					withHandle(bt.prepare)
 				}
 
 				b.StartTimer()
@@ -139,14 +144,51 @@ func benchRequest(b *testing.B, verb, url, path string, body interface{}, v2 boo
 	return r
 }
 
-func prepareBenchmark(b testing.TB, dataSize int) func() {
+func clear(b testing.TB, ks elektra.KeySet, keyName string) {
+	key, err := elektra.NewKey(keyName)
+	Check(b, err, "could not create clear key")
+
+	ks.Cut(key)
+}
+
+func get(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
 	b.Helper()
 
-	namespace := "user/tests/go/elektrad/benchmark"
-	data := namespace + "/dataset"
-	temp := namespace + "/temp"
-	tempFrom := temp + "/from"
-	tempTo := temp + "/to"
+	_, err := handle.Get(ks, parentKey)
+	Check(b, err, "could not get test dataset")
+}
+
+func persist(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	b.Helper()
+
+	_, err := handle.Set(ks, parentKey)
+	Check(b, err, "could not create test dataset")
+}
+
+func create(b testing.TB, ks elektra.KeySet, keyName string) {
+	doesExist := ks.LookupByName(keyName + "/001")
+
+	if doesExist != nil {
+		return
+	}
+
+	for n := 0; n < dataSize; n++ {
+		k, err := elektra.NewKey(fmt.Sprintf(keyName+"/%03d", n))
+
+		Check(b, err, "could not create data key")
+
+		ks.AppendKey(k)
+	}
+}
+
+var (
+	namespace = "user/tests/go/elektrad/benchmark"
+	data      = namespace + "/get"
+	dataSize  = 1000
+)
+
+func prepareBenchmark(b testing.TB) func(prepareFunc) {
+	b.Helper()
 
 	handle := getTestHandle(b)
 
@@ -155,49 +197,91 @@ func prepareBenchmark(b testing.TB, dataSize int) func() {
 	parentKey, err := elektra.NewKey(namespace)
 	Check(b, err, "could not create parent key")
 
-	clear := func(keyName string) {
-		key, err := elektra.NewKey(keyName)
-		Check(b, err, "could not create clear key")
+	get(b, handle, ks, parentKey)
+	clear(b, ks, data)
+	create(b, ks, data)
+	persist(b, handle, ks, parentKey)
 
-		ks.Cut(key)
+	return func(prepare prepareFunc) {
+		prepare(b, handle, ks, parentKey)
+	}
+}
+
+func preparePostKdbMv(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	t.Helper()
+
+	get(t, handle, ks, parentKey)
+	clear(t, ks, namespace+"/post/mv/to")
+	create(t, ks, namespace+"/post/mv/from")
+	persist(t, handle, ks, parentKey)
+}
+
+func preparePutKdb(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	t.Helper()
+
+	get(t, handle, ks, parentKey)
+
+	k := ks.RemoveByName(namespace + "/put")
+
+	if k != nil {
+		persist(t, handle, ks, parentKey)
+	}
+}
+
+func prepareDeleteKdb(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	t.Helper()
+
+	get(t, handle, ks, parentKey)
+
+	k, err := elektra.NewKey(namespace + "/delete/kdb")
+
+	Check(t, err, "could not create data key")
+
+	ks.AppendKey(k)
+
+	persist(t, handle, ks, parentKey)
+}
+
+func preparePostKdbMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	b.Helper()
+
+	k, err := elektra.NewKey(namespace + "/post/meta")
+
+	Check(b, err, "could not create data key")
+
+	get(b, handle, ks, parentKey)
+	ks.AppendKey(k)
+
+	persist(b, handle, ks, parentKey)
+}
+
+func prepareDeleteMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	b.Helper()
+
+	get(b, handle, ks, parentKey)
+
+	keyName := namespace + "/delete/meta"
+
+	key := ks.LookupByName(keyName)
+
+	if key == nil {
+		var err error
+
+		key, err = elektra.NewKey(namespace + "/delete/meta")
+		Check(b, err, "could not create data key")
+
+		ks.AppendKey(key)
 	}
 
-	get := func() {
-		_, err = handle.Get(ks, parentKey)
-		Check(b, err, "could not get test dataset")
-	}
+	key.SetMeta("hello", "world")
 
-	persist := func() {
-		_, err = handle.Set(ks, parentKey)
-		Check(b, err, "could not create test dataset")
-	}
+	persist(b, handle, ks, parentKey)
+}
 
-	create := func(keyName string) {
-		doesExist := ks.LookupByName(keyName + "/001")
+func cleanup(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+	b.Helper()
 
-		if doesExist != nil {
-			return
-		}
-
-		for n := 0; n < dataSize; n++ {
-			k, err := elektra.NewKey(fmt.Sprintf(keyName+"/%03d", n))
-
-			Check(b, err, "could not create data key")
-
-			ks.AppendKey(k)
-		}
-	}
-
-	get()
-	clear(data)
-	create(data)
-	create(tempFrom)
-	persist()
-
-	return func() {
-		get()
-		clear(tempTo)
-		create(tempFrom)
-		persist()
-	}
+	get(b, handle, ks, parentKey)
+	clear(b, ks, namespace)
+	persist(b, handle, ks, parentKey)
 }
