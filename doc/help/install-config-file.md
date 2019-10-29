@@ -9,6 +9,8 @@ install-config-file(1) -- Install configuration files in Elektra
 
 `line` will be used if `<format>` is unspecified
 
+The script has to be called as administrator
+
 ## DESCRIPTION
 
 This script installs or merges configuration files from the file system into
