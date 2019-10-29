@@ -32,7 +32,10 @@ void commentListFree (CommentList * root)
 	while (root != NULL)
 	{
 		CommentList * nextComment = root->next;
-		elektraFree (root->str);
+		if (root->str != NULL)
+		{
+			elektraFree (root->str);
+		}
 		elektraFree (root);
 		root = nextComment;
 	}
@@ -64,14 +67,14 @@ CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 
 int keyAddCommentList (Key * key, CommentList * root)
 {
-	int errno = 0;
 	size_t index = 1;
-	while (root != NULL && errno == 0)
+	int err = NULL;
+	while (root != NULL && err == 0)
 	{
-		errno = keyAddComment (key, root->str, index++, root->spaceCount);
+		err = keyAddComment (key, root->str, index++, root->spaceCount);
 		root = root->next;
 	}
-	return errno;
+	return err;
 }
 
 int keyAddInlineComment (Key * key, CommentList * root)

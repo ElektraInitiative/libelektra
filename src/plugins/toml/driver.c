@@ -463,7 +463,7 @@ void driverEmptyInlineTable (Driver * driver)
 	// Don't need to call exit, because no scalar value emission possible in empty inline table
 }
 
-void driverExitComment (Driver * driver, const Scalar * comment)
+void driverExitComment (Driver * driver, Scalar * comment)
 {
 	if (comment == NULL)
 	{
@@ -499,6 +499,7 @@ void driverExitComment (Driver * driver, const Scalar * comment)
 	driver->spaceCount = 0;
 
 	driver->currLine = comment->line;
+	freeScalar (comment);
 }
 
 // TODO: handle spaces

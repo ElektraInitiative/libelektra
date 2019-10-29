@@ -35,7 +35,7 @@ typedef struct
 	CommentList * commentRoot;
 	CommentList * commentBack;
 	Scalar * lastScalar;
-	const char * filename;
+	char * filename;
 	size_t order;
 	size_t spaceCount;
 	size_t newlineCount;
@@ -47,6 +47,7 @@ typedef struct
 
 
 Driver * createDriver (const Key * parent);
+void destroyDriver (Driver * driver);
 int driverParse (Driver * driver, KeySet * returned);
 void driverError (Driver * driver, int err, int lineno, const char * format, ...);
 void driverErrorGeneric (Driver * driver, int err, const char * caller, const char * callee);
@@ -78,7 +79,7 @@ void driverEnterInlineTable (Driver * driver);
 void driverExitInlineTable (Driver * driver);
 void driverEmptyInlineTable (Driver * driver);
 
-void driverExitComment (Driver * driver, const Scalar * comment);
+void driverExitComment (Driver * driver, Scalar * comment);
 void driverExitSpace (Driver * driver);
 void driverExitNewline (Driver * driver);
 
