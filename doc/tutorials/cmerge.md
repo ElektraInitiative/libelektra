@@ -22,38 +22,7 @@ For configuration files in the context of package upgrades:
 - `base` is the previous version of the maintainer's copy of the configuration file.
 - `our` is the user's copy of the configuration file, derived from `base`
 
-## Options
-
-The options of `kdb cmerge`are:
-
-- `-f`, `--force`: overwrite existing keys in `result`
-- `-v`, `--verbose`: give additional information
-
-Strategies offer fine grained control over conflict handling. The option is:
-
-- `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
-
-## Strategies
-
-The available strategies are:
-
-- `abort`: the merge will abort if any conflict happens and merge the 3 key sets together otherwise.
-- `our`: This option forces conflicting keys to be auto-resolved cleanly by favoring `our`. Changes from the other key sets that do not conflict with the `our` version are reflected to the merge result. This works like the recursive strategy with the `ours` option from git-merge.
-- `their`: This is the opposite of `our`. The merge will use the `their` version when a conflict happens.
-
-If no strategy is specified, the merge will default to the abort strategy.
-
-## Return value
-
-0 on success.
-
-1 if a conflict or any other error could not be resolved automatically.
-
-The result of the merge is stored in `result`.
-
-## Examples
-
-### Simple
+## Simple example
 
 The easiest case is if all three versions contain equal data.
 
@@ -138,7 +107,7 @@ kdb get user/tests/hosts/result/ipv6/ip6-localhost
 #> ::2
 ```
 
-### Metadata
+## Metadata
 
 Metadata gets merged as well.
 We do not follow a complicated approach for this topic.
@@ -203,7 +172,7 @@ kdb meta-get user/tests/meta/metaFromChanged comment/#2
 #> This is the second line of their comment above the key
 ```
 
-### Arrays
+## Arrays
 
 cmerge uses LibGit2 to handle arrays in an efficient manner.
 

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-CMERGE" "1" "September 2019" "" ""
+.TH "KDB\-CMERGE" "1" "October 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-cmerge\fR \- Three\-way merge of KeySets
@@ -10,9 +10,7 @@
 kdb\-cmerge \- Join three key sets together
 .
 .SH "SYNOPSIS"
-\fBkdb cmerge [options] ourpath theirpath basepath resultpath\fR
-.
-.br
+\fBkdb cmerge [OPTIONS] our their base result\fR
 .
 .TP
 ourpath
@@ -53,6 +51,51 @@ On unresolved conflicts nothing will be changed\.
 .
 .br
 This tool currently exists alongside \fBkdb merge\fR until it is completely ready to supersede it\. At this moment, cmerge will be renamed to merge\.
+.
+.SH "Options"
+The options of \fBkdb cmerge\fRare:
+.
+.IP "\(bu" 4
+\fB\-f\fR, \fB\-\-force\fR: overwrite existing keys in \fBresult\fR
+.
+.IP "\(bu" 4
+\fB\-v\fR, \fB\-\-verbose\fR: give additional information
+.
+.IP "" 0
+.
+.P
+Strategies offer fine grained control over conflict handling\. The option is:
+.
+.IP "\(bu" 4
+\fB\-s <name>\fR, \fB\-\-strategy <name>\fR: which is used to specify a strategy to use in case of a conflict
+.
+.IP "" 0
+.
+.SH "Strategies"
+The available strategies are:
+.
+.IP "\(bu" 4
+\fBabort\fR: the merge will abort if any conflict happens and merge the 3 key sets together otherwise\.
+.
+.IP "\(bu" 4
+\fBour\fR: This option forces conflicting keys to be auto\-resolved cleanly by favoring \fBour\fR\. Changes from the other key sets that do not conflict with the \fBour\fR version are reflected to the merge result\. This works like the recursive strategy with the \fBours\fR option from git\-merge\.
+.
+.IP "\(bu" 4
+\fBtheir\fR: This is the opposite of \fBour\fR\. The merge will use the \fBtheir\fR version when a conflict happens\.
+.
+.IP "" 0
+.
+.P
+If no strategy is specified, the merge will default to the abort strategy\.
+.
+.SH "Return value"
+0 on success\.
+.
+.P
+1 if a conflict or any other error could not be resolved automatically\.
+.
+.P
+The result of the merge is stored in \fBresult\fR\.
 .
 .SH "THREE\-WAY MERGE"
 You can think of the three\-way merge as subtracting base from their and adding the result to our, or as merging into our the changes that would turn base into their\. Thus, it behaves exactly as the GNU diff3 tool\. These three versions of the KeySet are:
