@@ -58,7 +58,10 @@ static void setStatisticalValue (Key * informationKey, char * metaName, int valu
 		char msg[300];
 		if (printsize < 0)
 		{
-			snprintf (msg, 300, "Encoding error with value %d and meta name %s.", value, metaName);
+			snprintf (msg, 300,
+				  "Encoding error when setting %s: Could not convert %d into the string that should be used as meta value "
+				  "for the information key.",
+				  metaName, value);
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
 		}
 		else
