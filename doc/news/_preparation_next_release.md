@@ -65,6 +65,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 - We improved the error messages in `crypto`, `fcrypt`, and `gpgme` plugins. _(Peter Nirschl)_
+- Handle return codes (error codes) of `execv` in the GPG module. _(Peter Nirschl)_
 
 ### Camel
 
