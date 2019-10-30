@@ -68,7 +68,7 @@ CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 int keyAddCommentList (Key * key, CommentList * root)
 {
 	size_t index = 1;
-	int err = NULL;
+	int err = 0;
 	while (root != NULL && err == 0)
 	{
 		err = keyAddComment (key, root->str, index++, root->spaceCount);

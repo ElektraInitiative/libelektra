@@ -6,13 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// for unicode -> utf8 conversion, not sure if needs adaption to work on big endian
-#define TRAIL 0x80
-#define MASK(b) (b == 6 ? 0x3F : b == 5 ? 0x1F : b == 4 ? 0x0F : 0x07)
-#define GET_BITS(v, s, b) (((v) >> (s)) & MASK (b))
-#define LEAD(n) (n == 1 ? 0x00 : n == 2 ? 0xC0 : n == 3 ? 0xE0 : 0xF0)
-#define ZERO(n) (n == 1 ? 0x7F : n == 2 ? 0xDF : n == 3 ? 0xEF : 0xF7)
-#define ZERO_TRAIL 0xBF
+#include "codepoint.h"
 
 static char * convertBinary (const char * binStr);
 static char * convertBoolean (const char * str);
@@ -21,7 +15,6 @@ static char * convertLiteralStr (const char * str, size_t skipCount);
 static char * stripUnderscores (const char * num);
 static const char * skipLineEndingBackslash (const char * str);
 static const char * skipUntilNonWhitespace (const char * str);
-static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned char * utf8);
 
 static bool isValidOffsetDateTime (const char * str);
 static bool isValidLocalDateTime (const char * str);
@@ -242,11 +235,11 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 				str++;
 				break;
 			case 'u':
-				outPos += unicodeCodepointToUtf8 (str + 1, 4, (unsigned char *) outStr + outPos);
+				outPos += (size_t)utf8FromUnicode (str + 1, 4, (unsigned char *) outStr + outPos);
 				str += 4 + 1;
 				break;
 			case 'U':
-				outPos += unicodeCodepointToUtf8 (str + 1, 8, (unsigned char *) outStr + outPos);
+				outPos += (size_t)utf8FromUnicode (str + 1, 8, (unsigned char *) outStr + outPos);
 				str += 8 + 1;
 				break;
 			// handling of line ending backslashes
@@ -298,7 +291,7 @@ static const char * skipLineEndingBackslash (const char * str)
 		str = skipUntilNonWhitespace (str + 2);
 		break;
 	default:
-		ELEKTRA_ASSERT (0, "Invalid character after line ending backslash (0x%02X). This should already have been checked.", *str);
+		break;
 	}
 	return str;
 }
@@ -310,54 +303,6 @@ static const char * skipUntilNonWhitespace (const char * str)
 		str++;
 	}
 	return str;
-}
-
-static size_t unicodeCodepointToUtf8 (const char * codepoint, int len, unsigned char * utf8)
-{
-	unsigned long cpValue;
-	if (len == 4)
-	{
-		sscanf (codepoint, "%4lX", &cpValue);
-	}
-	else if (len == 8)
-	{
-		sscanf (codepoint, "%8lX", &cpValue);
-	}
-	else
-	{
-		ELEKTRA_ASSERT (0, "Code point len must be 4 or 8, but was %d.", len);
-	}
-	if (cpValue <= 0x7F)
-	{
-		utf8[0] = (char) cpValue;
-		return 1;
-	}
-	else if (cpValue >= 0x80 && cpValue <= 0x7FF)
-	{
-		utf8[0] = (unsigned char) ZERO (2) & (LEAD (2) | GET_BITS (cpValue, 6, 5));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 0, 6));
-		return 2;
-	}
-	else if (cpValue >= 0x800 && cpValue <= 0xFFFF)
-	{
-		utf8[0] = (unsigned char) ZERO (3) & (LEAD (3) | GET_BITS (cpValue, 6 + 6, 4));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 6, 6));
-		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 0, 6));
-		return 3;
-	}
-	else if (cpValue >= 0x10000 && cpValue <= 0x1FFFF)
-	{
-		utf8[0] = (unsigned char) ZERO (4) & (LEAD (4) | GET_BITS (cpValue, 6 + 6 + 6, 3));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 6 + 6, 6));
-		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 6, 6));
-		utf8[3] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (cpValue, 0, 6));
-		return 4;
-	}
-	else
-	{
-		ELEKTRA_ASSERT (0, "Invalid unicode codepoints should already have been checked.");
-		return 0;
-	}
 }
 
 static char * convertBinary (const char * binStr)

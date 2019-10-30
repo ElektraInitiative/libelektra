@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include <kdb.h>
-#include <kdbhelper.h>
 #include <kdbassert.h>
+#include <kdbhelper.h>
 
 #include "driver.h"
 #include "error.h"
@@ -24,7 +24,7 @@ static void driverClearLastScalar (Driver * driver);
 
 static void pushCurrKey (Driver * driver);
 static void setCurrKey (Driver * driver, const Key * key);
-static void setPrevKey(Driver * driver, Key * key);
+static void setPrevKey (Driver * driver, Key * key);
 static void resetCurrKey (Driver * driver);
 static void extendCurrKey (Driver * driver, const char * name);
 static ParentList * pushParent (ParentList * top, Key * key);
@@ -37,36 +37,42 @@ Driver * createDriver (const Key * parent)
 	Driver * driver = (Driver *) elektraCalloc (sizeof (Driver));
 	driver->root = keyDup (parent);
 	driver->parentStack = pushParent (NULL, keyDup (parent));
-	driver->filename = elektraStrDup(keyString (parent));
+	driver->filename = elektraStrDup (keyString (parent));
 	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
 	driver->errorSet = false;
 	return driver;
 }
 
-void destroyDriver(Driver * driver) {
-	if (driver != NULL) {
+void destroyDriver (Driver * driver)
+{
+	if (driver != NULL)
+	{
 		keyDel (driver->root);
 		setCurrKey (driver, NULL);
-		setPrevKey(driver, NULL);
-		driverClearLastScalar(driver);
-		if (driver->filename != NULL) {
-			elektraFree(driver->filename);
+		setPrevKey (driver, NULL);
+		driverClearLastScalar (driver);
+		if (driver->filename != NULL)
+		{
+			elektraFree (driver->filename);
 			driver->filename = NULL;
 		}
-		while(driver->parentStack != NULL) {
+		while (driver->parentStack != NULL)
+		{
 			driver->parentStack = popParent (driver->parentStack);
 		}
-		while(driver->indexStack != NULL) {
+		while (driver->indexStack != NULL)
+		{
 			driver->indexStack = popIndex (driver->indexStack);
 		}
-		while (driver->tableArrayStack != NULL) {
+		while (driver->tableArrayStack != NULL)
+		{
 			driver->tableArrayStack = popTableArray (driver->tableArrayStack);
 		}
 		commentListFree (driver->commentRoot);
 		driver->commentRoot = NULL;
 		driver->commentBack = NULL;
-		elektraFree(driver);
+		elektraFree (driver);
 	}
 }
 
@@ -88,16 +94,28 @@ int driverParse (Driver * driver, KeySet * returned)
 
 void driverExitToml (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driverDrainCommentsToKey (driver->root, driver);
 }
 
 void driverEnterKey (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	resetCurrKey (driver);
 }
 
 void driverExitKey (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	Key * existing = ksLookup (driver->keys, driver->currKey, 0);
 	if (existing != NULL)
 	{
@@ -129,6 +147,10 @@ void driverExitKey (Driver * driver)
 
 void driverExitKeyValue (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driverCommitLastScalarToParentKey (driver);
 
 	if (driver->prevKey != NULL)
@@ -137,8 +159,9 @@ void driverExitKeyValue (Driver * driver)
 		keyDel (driver->prevKey);
 		driver->prevKey = NULL;
 	}
-	if (driver->prevKey != NULL) {
-		keyDecRef(driver->prevKey);
+	if (driver->prevKey != NULL)
+	{
+		keyDecRef (driver->prevKey);
 	}
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
@@ -148,6 +171,10 @@ void driverExitKeyValue (Driver * driver)
 
 void driverExitOptCommentKeyPair (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->commentRoot != NULL)
 	{
 		if (driver->prevKey == NULL)
@@ -172,6 +199,10 @@ void driverExitOptCommentKeyPair (Driver * driver)
 
 void driverExitOptCommentTable (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->commentRoot != NULL)
 	{
 		if (driver->prevKey == NULL)
@@ -202,6 +233,11 @@ void driverExitOptCommentTable (Driver * driver)
 
 void driverExitSimpleKey (Driver * driver, Scalar * name)
 {
+	if (driver->errorSet)
+	{
+		freeScalar (name);
+		return;
+	}
 	if (name == NULL)
 	{
 		return;
@@ -262,14 +298,19 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 	{
 		char * translated = translateScalar (name);
 		extendCurrKey (driver, translated);
-		elektraFree(translated);
+		elektraFree (translated);
 	}
 	driver->currLine = name->line;
-	freeScalar(name);
+	freeScalar (name);
 }
 
 void driverExitValue (Driver * driver, Scalar * scalar)
 {
+	if (driver->errorSet)
+	{
+		freeScalar (scalar);
+		return;
+	}
 	if (scalar == NULL)
 	{
 		return;
@@ -291,13 +332,17 @@ void driverExitValue (Driver * driver, Scalar * scalar)
 	default: // all other scalar types allowed and valid, no semantic invalidities
 		break;
 	}
-	driverClearLastScalar(driver);
+	driverClearLastScalar (driver);
 	driver->lastScalar = scalar;
 	driver->currLine = scalar->line;
 }
 
 void driverEnterSimpleTable (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->simpleTableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
@@ -311,12 +356,20 @@ void driverEnterSimpleTable (Driver * driver)
 
 void driverExitSimpleTable (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	keySetMeta (driver->parentStack->key, "type", "simpletable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverEnterTableArray (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->simpleTableActive)
 	{
 		driver->parentStack = popParent (driver->parentStack);
@@ -332,6 +385,10 @@ void driverEnterTableArray (Driver * driver)
 
 void driverExitTableArray (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->parentStack->key);
 	if (rel == 0) // same table array name -> next element
 	{
@@ -385,12 +442,20 @@ void driverExitTableArray (Driver * driver)
 
 void driverEnterArray (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driver->indexStack = pushIndex (driver->indexStack, 0);
 	keySetMeta (driver->parentStack->key, "array", "");
 }
 
 void driverExitArray (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	firstCommentAsInlineToPrevKey (driver);
 	// TODO: Handle comments after last element in array (and inside array brackets)
 	// Must check on how (and where) the trailing comments should be stored
@@ -403,12 +468,20 @@ void driverExitArray (Driver * driver)
 
 void driverEmptyArray (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driverEnterArray (driver);
 	driverExitArray (driver);
 }
 
 void driverEnterArrayElement (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->indexStack->value == SIZE_MAX)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Array index at maximum range of size_t: SIZE_MAX");
@@ -432,14 +505,19 @@ void driverEnterArrayElement (Driver * driver)
 
 void driverExitArrayElement (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driverEnterArrayElement (driver);
 	if (driver->lastScalar != NULL) // NULL can happen on eg inline tables as elements
 	{
 		driverCommitLastScalarToParentKey (driver);
 	}
-	if (driver->prevKey != NULL) {
+	if (driver->prevKey != NULL)
+	{
 		keyDecRef (driver->prevKey);
-		keyDel(driver->prevKey);
+		keyDel (driver->prevKey);
 	}
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
@@ -448,23 +526,40 @@ void driverExitArrayElement (Driver * driver)
 
 void driverEnterInlineTable (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	keySetMeta (driver->parentStack->key, "type", "inlinetable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverExitInlineTable (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driverClearLastScalar (driver);
 }
 
 void driverEmptyInlineTable (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	driverEnterInlineTable (driver);
 	// Don't need to call exit, because no scalar value emission possible in empty inline table
 }
 
 void driverExitComment (Driver * driver, Scalar * comment)
 {
+	if (driver->errorSet)
+	{
+		freeScalar (comment);
+		return;
+	}
 	if (comment == NULL)
 	{
 		return;
@@ -505,6 +600,10 @@ void driverExitComment (Driver * driver, Scalar * comment)
 // TODO: handle spaces
 void driverExitSpace (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->spaceCount == SIZE_MAX)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Space counter at maximum range of size_t: SIZE_MAX");
@@ -515,6 +614,10 @@ void driverExitSpace (Driver * driver)
 
 void driverExitNewline (Driver * driver)
 {
+	if (driver->errorSet)
+	{
+		return;
+	}
 	if (driver->newlineCount == SIZE_MAX)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Newline counter at maximum range of size_t: SIZE_MAX");
@@ -548,7 +651,8 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 		CommentList * comment = driver->commentRoot;
 		if (driver->commentRoot->next == NULL)
 		{
-			ELEKTRA_ASSERT (driver->commentBack == driver->commentRoot, "Expected comment root to be back, because root has no next");
+			ELEKTRA_ASSERT (driver->commentBack == driver->commentRoot,
+					"Expected comment root to be back, because root has no next");
 			driver->commentRoot = NULL;
 			driver->commentBack = NULL;
 		}
@@ -607,21 +711,27 @@ static void setCurrKey (Driver * driver, const Key * key)
 		keyDecRef (driver->currKey);
 		keyDel (driver->currKey);
 	}
-	if (key != NULL) {
-		driver->currKey = keyNew(keyName(key), KEY_END);
+	if (key != NULL)
+	{
+		driver->currKey = keyNew (keyName (key), KEY_END);
 		keyIncRef (driver->currKey);
-	} else {
+	}
+	else
+	{
 		driver->currKey = NULL;
 	}
 }
 
-static void setPrevKey(Driver * driver, Key * key) {
-	if (driver->prevKey != NULL) {
-		keyDecRef(driver->prevKey);
-		keyDel(driver->prevKey);
+static void setPrevKey (Driver * driver, Key * key)
+{
+	if (driver->prevKey != NULL)
+	{
+		keyDecRef (driver->prevKey);
+		keyDel (driver->prevKey);
 	}
 	driver->prevKey = key;
-	if (key != NULL) {
+	if (key != NULL)
+	{
 		keyIncRef (key);
 	}
 }
@@ -707,7 +817,6 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 
 static void driverClearLastScalar (Driver * driver)
 {
-	freeScalar(driver->lastScalar);
+	freeScalar (driver->lastScalar);
 	driver->lastScalar = NULL;
 }
-

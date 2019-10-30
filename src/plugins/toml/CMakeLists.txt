@@ -76,6 +76,8 @@ if (DEPENDENCY_PHASE)
 	     table_array.c
 	     comment_list.h
 	     comment_list.c
+	     codepoint.h
+	     codepoint.c
 	     utility.h
 	     utility.c
 	     error.h
