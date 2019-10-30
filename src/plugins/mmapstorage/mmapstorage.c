@@ -952,7 +952,6 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
 	if (keySet->opmphm)
 	{
-		// TODO: need to add/set mmap flag to the struct
 		mmapAddr.ksPtr->opmphm = (Opmphm *) (dest + OFFSET_OPMPHM);
 		memcpy (mmapAddr.ksPtr->opmphm, keySet->opmphm, sizeof (Opmphm));
 		if (keySet->opmphm->rUniPar)
@@ -975,7 +974,6 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	}
 	if (keySet->opmphmPredictor)
 	{
-		// TODO: need to add/set mmap flag to the struct
 		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (dest + OFFSET_OPMPHMPREDICTOR);
 		memcpy (mmapAddr.ksPtr->opmphmPredictor, keySet->opmphmPredictor, sizeof (OpmphmPredictor));
 		mmapAddr.ksPtr->opmphmPredictor->patternTable = (uint8_t *) mmapAddr.dataPtr;
@@ -986,7 +984,6 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 			(uint8_t *) (((char *) mmapAddr.ksPtr->opmphmPredictor->patternTable) - mmapAddr.mmapAddrInt);
 		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (((char *) mmapAddr.ksPtr->opmphmPredictor) - mmapAddr.mmapAddrInt);
 	}
-	// TODO: subtract base addr from pointers!
 #endif
 
 	// first write the meta keys into place
