@@ -65,19 +65,22 @@ typedef struct
 /**
  * Opmphm Flags.
  */
-typedef enum {
+typedef enum
+{
 	OPMPHM_FLAG_MMAP_STRUCT = 1 /*!<
 		 Opmphm struct lies inside a mmap region.
 		 This flag is set for Opmphm structs inside a mapped region.
 		 It prevents erroneous free() calls on these Opmphm structs. */
-	,OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS = 1 << 2 /*!<
-		 Opmphm hashFunctionSeeds lies inside a mmap region.
-		 This flag is set for Opmphm hashFunctionSeeds inside a mapped region.
-		 It prevents erroneous free() calls on these hashFunctionSeeds. */
-	,OPMPHM_FLAG_MMAP_GRAPH = 1 << 3 /*!<
-		 Opmphm graph lies inside a mmap region.
-		 This flag is set for Opmphm graphs inside a mapped region.
-		 It prevents erroneous free() calls on these graphs. */
+	,
+	OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS = 1 << 2 /*!<
+		Opmphm hashFunctionSeeds lies inside a mmap region.
+		This flag is set for Opmphm hashFunctionSeeds inside a mapped region.
+		It prevents erroneous free() calls on these hashFunctionSeeds. */
+	,
+	OPMPHM_FLAG_MMAP_GRAPH = 1 << 3 /*!<
+		Opmphm graph lies inside a mmap region.
+		This flag is set for Opmphm graphs inside a mapped region.
+		It prevents erroneous free() calls on these graphs. */
 } opmphmflag_t;
 
 /**
@@ -90,7 +93,7 @@ typedef struct
 	size_t componentSize;	/*!< the number of vertices in one part of the r-uniform r-partite hypergraph */
 	uint32_t * graph;	    /*!< array containing the final OPMPHM */
 	size_t size;		     /*!< size of g in bytes */
-	opmphmflag_t flags;	/*!< internal flags */
+	opmphmflag_t flags;	  /*!< internal flags */
 } Opmphm;
 
 /**

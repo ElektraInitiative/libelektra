@@ -107,6 +107,10 @@ plugins. _(René Schwaiger)_
 - We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
   native boolean types. _(Klemens Böswirth)_
 
+### Mmapstorage
+
+- We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
+
 ### Noresolver
 
 - The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_

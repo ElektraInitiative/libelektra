@@ -197,6 +197,6 @@ void opmphmPredictorCopy (OpmphmPredictor * dest, OpmphmPredictor * source)
 void opmphmPredictorDel (OpmphmPredictor * op)
 {
 	ELEKTRA_NOT_NULL (op);
-	if (!test_bit(op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE)) elektraFree (op->patternTable);
-	if (!test_bit(op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT)) elektraFree (op);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE)) elektraFree (op->patternTable);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT)) elektraFree (op);
 }

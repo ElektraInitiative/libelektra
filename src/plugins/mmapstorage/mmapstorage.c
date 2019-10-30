@@ -961,7 +961,8 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 			memcpy (mmapAddr.ksPtr->opmphm->hashFunctionSeeds, keySet->opmphm->hashFunctionSeeds,
 				keySet->opmphm->rUniPar * sizeof (int32_t));
 			mmapAddr.dataPtr += keySet->opmphm->rUniPar * sizeof (int32_t);
-			mmapAddr.ksPtr->opmphm->hashFunctionSeeds = (int32_t *) (((char *) mmapAddr.ksPtr->opmphm->hashFunctionSeeds) - mmapAddr.mmapAddrInt);
+			mmapAddr.ksPtr->opmphm->hashFunctionSeeds =
+				(int32_t *) (((char *) mmapAddr.ksPtr->opmphm->hashFunctionSeeds) - mmapAddr.mmapAddrInt);
 		}
 		if (keySet->opmphm->size)
 		{
@@ -981,7 +982,8 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 		memcpy (mmapAddr.ksPtr->opmphmPredictor->patternTable, keySet->opmphmPredictor->patternTable,
 			keySet->opmphmPredictor->size * sizeof (uint8_t));
 		mmapAddr.dataPtr += keySet->opmphmPredictor->size * sizeof (uint8_t);
-		mmapAddr.ksPtr->opmphmPredictor->patternTable = (uint8_t *) (((char *) mmapAddr.ksPtr->opmphmPredictor->patternTable) - mmapAddr.mmapAddrInt);
+		mmapAddr.ksPtr->opmphmPredictor->patternTable =
+			(uint8_t *) (((char *) mmapAddr.ksPtr->opmphmPredictor->patternTable) - mmapAddr.mmapAddrInt);
 		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (((char *) mmapAddr.ksPtr->opmphmPredictor) - mmapAddr.mmapAddrInt);
 	}
 	// TODO: subtract base addr from pointers!
@@ -1137,7 +1139,8 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		returnedKs->opmphmPredictor = (OpmphmPredictor *) (dest + OFFSET_OPMPHMPREDICTOR);
 		if (returnedKs->opmphmPredictor->patternTable)
 		{
-			returnedKs->opmphmPredictor->patternTable = (uint8_t *) (((char *) returnedKs->opmphmPredictor->patternTable) + destInt);
+			returnedKs->opmphmPredictor->patternTable =
+				(uint8_t *) (((char *) returnedKs->opmphmPredictor->patternTable) + destInt);
 		}
 	}
 #endif

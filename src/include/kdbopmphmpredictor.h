@@ -41,15 +41,17 @@ extern const size_t opmphmPredictorActionLimit;
 /**
  * OpmphmPredictor Flags.
  */
-typedef enum {
+typedef enum
+{
 	OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT = 1 /*!<
 		 OpmphmPredictor struct lies inside a mmap region.
 		 This flag is set for OpmphmPredictor structs inside a mapped region.
 		 It prevents erroneous free() calls on these OpmphmPredictors. */
-	,OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE = 1 << 2	/*!<
-		 OpmphmPredictor patternTable lies inside a mmap region.
-		 This flag is set for OpmphmPredictor patternTables inside a mapped region.
-		 It prevents erroneous free() calls on these patternTables. */
+	,
+	OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE = 1 << 2 /*!<
+	  OpmphmPredictor patternTable lies inside a mmap region.
+	  This flag is set for OpmphmPredictor patternTables inside a mapped region.
+	  It prevents erroneous free() calls on these patternTables. */
 } predictorflag_t;
 
 typedef struct
@@ -59,7 +61,7 @@ typedef struct
 	size_t size;		/*!< size of patternTable in bytes */
 	size_t lookupCount;     /*!< number of lookups made without alteration of the KeySet */
 	size_t ksSize;		/*!< number of keys in the KeySet */
-	predictorflag_t flags;	/*!< internal flags */
+	predictorflag_t flags;  /*!< internal flags */
 } OpmphmPredictor;
 
 /**
