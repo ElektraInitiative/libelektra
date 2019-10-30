@@ -27,6 +27,7 @@ enum
 
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
 		       int strategy, Key * informationKey);
+int getConflicts (Key * informationKey);
 
 #ifdef __cplusplus
 }

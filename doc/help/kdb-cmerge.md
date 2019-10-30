@@ -52,7 +52,9 @@ If no strategy is specified, the merge will default to the abort strategy.
 
 0 on success.
 
-1 if a conflict or any other error could not be resolved automatically.
+1 if an error happened
+
+2 if a merge conflict occured and merge strategy abort was set
 
 The result of the merge is stored in `result`.
 
