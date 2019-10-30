@@ -241,6 +241,66 @@ static void array_conflict_number_test (void)
 	keyDel (informationKey);
 }
 
+static void testValuesWithGivenLength (int size)
+{
+	printf ("Executing %s with size %d\n", __func__, size);
+	Key * our_root = keyNew ("user/tests/our", KEY_END);
+	Key * their_root = keyNew ("user/tests/their", KEY_END);
+	Key * base_root = keyNew ("user/tests/base", KEY_END);
+	Key * result_root = keyNew ("user/tests/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
+	char * value = elektraCalloc (size);
+	memset (value, 'a', size - 1); // leave the last element \0
+	// clang-format off
+	KeySet * our = ksNew (3,
+		keyNew ("user/tests/our/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/our/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/our/#2", KEY_VALUE, value, KEY_END),
+		KS_END);
+	KeySet * their = ksNew (3,
+		keyNew ("user/tests/their/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/their/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/their/#2", KEY_VALUE, value, KEY_END),
+		KS_END);
+	KeySet * base = ksNew (3,
+		keyNew ("user/tests/base/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/base/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/base/#2", KEY_VALUE, value, KEY_END),
+		KS_END);
+	// clang-format on
+	elektraFree (value);
+	KeySet * result =
+		elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
+
+	ksDel (our);
+	ksDel (their);
+	ksDel (base);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+	keyDel (informationKey);
+}
+
+/** Tests if the libgit array merge works with various sizes
+ *  This should especially test the memory allocations in getValuesAsArray()
+ */
+static void testArrayWithDifferentLengths (void)
+{
+	// allocationSize is 64 in getValuesAsArray() in kdbmerge.c
+	// 14 already allocates around 1 MB
+	int size = 64;
+	for (int i = 1; i < 14; i++)
+	{
+		testValuesWithGivenLength (size - 5); // avoid errors where we are 1 or 2 off
+		testValuesWithGivenLength (size - 1);
+		testValuesWithGivenLength (size);
+		testValuesWithGivenLength (size + 1);
+		testValuesWithGivenLength (size + 5);
+		size *= 2; // getValuesAsArray() doubles the size, too
+	}
+}
 
 int main (int argc, char ** argv)
 {
@@ -248,6 +308,7 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
+	testArrayWithDifferentLengths ();
 	all_strategies_same_result ("EMPTY", "EMPTY", "EMPTY", "EMPTY");
 	all_strategies_conflict ("EMPTY", "EMPTY", "1");
 	all_strategies_same_result ("EMPTY", "1", "EMPTY", "1");

@@ -662,17 +662,19 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
  * */
 static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * informationKey)
 {
+	ELEKTRA_LOG_DEBUG ("Converting key set to char array");
 	if (ks == NULL || arrayStart == NULL || informationKey == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameters must not be null");
 		return NULL;
 	}
-	int size = 1; // size 1 for final \0
+	int bufferSize = 64;
+	int stringSize = 2; // 1 for final \n and \0
 	/**
 	 * this calloc sets the first character to \0 so that the first invocation of
 	 * strncat has something to append to
 	 */
-	char * result = elektraCalloc (1);
+	char * buffer = elektraCalloc (bufferSize);
 	/** ksLookup does not get a copy of the key but the real key.
 	 *  The elektraArrayIncName would then change the name of the real key.
 	 *  We don't want that as we only increase the name to loop over all keys.
@@ -681,7 +683,7 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 	if (iterator == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");
-		elektraFree (result);
+		elektraFree (buffer);
 		return NULL;
 	}
 	Key * lookup;
@@ -690,16 +692,30 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 	{
 		counter++;
 		int tmpSize = keyGetValueSize (lookup);
-		size += tmpSize; // keyGetValueSize includes size for \0 which we use for \n instead
-		if (elektraRealloc ((void **) &result, size) < 0)
+		stringSize += tmpSize; // keyGetValueSize includes size for \0 which we use for \n instead
+		if (stringSize > bufferSize)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
-			elektraFree (result);
-			keyDel (iterator);
-			return NULL;
+			/** A single key could require more memory than multiplying once gives us
+			 * For example if the first key name is 255
+			 * The = in >= is important so that there is space for the null terminator of \n in strcat later on
+			 */
+			while (stringSize >= bufferSize)
+			{
+				bufferSize *= 2;
+			}
+			if (elektraRealloc ((void **) &buffer, bufferSize) < 0)
+			{
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+				elektraFree (buffer);
+				keyDel (iterator);
+				return NULL;
+			}
 		}
-		strncat (result, keyString (lookup), size); // size of whole buffer
-		strcat (result, "\n");
+		strncat (buffer, keyString (lookup), tmpSize);
+		// LibGit2 later operates on the newlines. This also ensures
+		// that there is a null terminator at the end of all the
+		// concatenated lines
+		strcat (buffer, "\n");
 		if (counter >= 2)
 		{
 			int retval = keyDel (lookup);
@@ -716,7 +732,7 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 						  keyName (lookup), retval);
 				}
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
-				elektraFree (result);
+				elektraFree (buffer);
 				keyDel (iterator);
 				return NULL;
 			}
@@ -724,13 +740,13 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 		if (elektraArrayIncName (iterator) < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
-			elektraFree (result);
+			elektraFree (buffer);
 			keyDel (iterator);
 			return NULL;
 		}
 	}
 	keyDel (iterator);
-	return result;
+	return buffer;
 }
 
 /**
