@@ -190,7 +190,7 @@ you up to date with the multi-language support provided by Elektra.
 - SWIG/Python: Add operator overloadings for len(Key), repr(Key), str(KeySet), repr(KeySet). _(Manuel Mausz)_
 - SWIG/Python: Add alternative Key constructor Key(name, value, [dict]). _(Manuel Mausz)_
 - SWIG/Python: Add KeySet.extend([key1, key2,...]) and KeySet.append(key1, key2, ...). _(Manuel Mausz)_
-- SWIG/Python: Add KeySet.append(key\_name, key\_value, key\_opts) which directly creates and appends a key. _(Manuel Mausz)_
+- SWIG/Python: Add KeySet.append(key_name, key_value, key_opts) which directly creates and appends a key. _(Manuel Mausz)_
 
 ### Java
 
