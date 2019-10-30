@@ -72,34 +72,34 @@ kdb get user/tests/result
 As a real-world example, we import three different (see the comment) versions of a hosts file. Please remove the trailing backslashes from the example code.
 
 ```sh
-echo "127.0.0.1       localhost\
-127.0.1.1       computer\
-\
-# BASE The following lines are desirable for IPv6 capable hosts\
-::1     ip6-localhost ip6-loopback\
-fe00::0 ip6-localnet\
-ff00::0 ip6-mcastprefix\
-ff02::1 ip6-allnodes\
+echo "127.0.0.1       localhost
+127.0.1.1       computer
+
+# BASE The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters" | kdb import user/tests/hosts/base hosts
 
-echo "127.0.0.1       localhost\
-127.0.1.1       computer\
-\
-# OUR The following lines are desirable for IPv6 capable hosts\
-::1     ip6-localhost ip6-loopback\
-fe00::0 ip6-localnet\
-ff00::0 ip6-mcastprefix\
-ff02::1 ip6-allnodes\
+echo "127.0.0.1       localhost
+127.0.1.1       computer
+
+# OUR The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters" | kdb import user/tests/hosts/our hosts
 
-echo "127.0.0.1       localhost\
-127.0.1.1       computer\
-\
-# THEIR The following lines are desirable for IPv6 capable hosts\
-::2     ip6-localhost ip6-loopback\
-fe00::0 ip6-localnet\
-ff00::0 ip6-mcastprefix\
-ff02::1 ip6-allnodes\
+echo "127.0.0.1       localhost
+127.0.1.1       computer
+
+# THEIR The following lines are desirable for IPv6 capable hosts
+::2     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters" | kdb import user/tests/hosts/their hosts
 
 kdb cmerge user/tests/hosts/our user/tests/hosts/their user/tests/hosts/base user/tests/hosts/result
@@ -114,6 +114,16 @@ We do not follow a complicated approach for this topic.
 When a key-value pair is chosen from the three versions to be present in the result it takes all its metadata with it.
 
 In case that the values of some keys are equal, the `our` version wins and consequently the metadata of the `our` version is used. The reason for this is that users might have used the metadata for personal comments.
+
+To demonstrate this, we continue the hosts example:
+
+<!--- Some ini tests fail with multiline metadata => no sh => no markdown shell
+recorder tests -->
+
+```
+kdb meta-get user/tests/hosts/result/ipv6/ip6-localhost comment/#2
+#>  THEIR The following lines are desirable for IPv6 capable hosts
+```
 
 We set up some keys:
 
