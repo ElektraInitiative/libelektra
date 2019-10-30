@@ -267,6 +267,7 @@ you up to date with the multi-language support provided by Elektra.
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
+- Added design decision for error code implementations. _(Michael Zronek)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 
 ## Tests
