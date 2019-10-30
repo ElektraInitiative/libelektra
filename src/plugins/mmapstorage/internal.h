@@ -36,7 +36,9 @@
 
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-#define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
+#define ELEKTRA_MMAP_MINSIZE                                                                                                               \
+	(SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2) +    \
+	 SIZEOF_KEY + SIZEOF_MMAPFOOTER)
 #else
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
 #endif
