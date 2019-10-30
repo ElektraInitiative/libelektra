@@ -55,20 +55,19 @@ static void setStatisticalValue (Key * informationKey, char * metaName, int valu
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
 	if (printsize == INT_BUF_SIZE || printsize < 0)
 	{
-		char msg[300];
 		if (printsize < 0)
 		{
-			snprintf (msg, 300,
-				  "Encoding error when setting %s: Could not convert %d into the string that should be used as meta value "
-				  "for the information key.",
-				  metaName, value);
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
+			ELEKTRA_SET_INTERNAL_ERRORF (
+				informationKey,
+				"Encoding error when setting %s: Could not convert %d into the string that should be used as meta value "
+				"for the information key.",
+				metaName, value);
 		}
 		else
 		{
-			snprintf (msg, 300, "Statistical value %d was too large for its buffer. This happened with meta name %s.", value,
-				  metaName);
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
+			ELEKTRA_SET_INTERNAL_ERRORF (informationKey,
+						     "Statistical value %d was too large for its buffer. This happened with meta name %s.",
+						     value, metaName);
 		}
 		return;
 	}
@@ -726,17 +725,18 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 			int retval = keyDel (lookup);
 			if (retval != 0)
 			{
-				char msg[300];
 				if (retval < 0)
 				{
-					snprintf (msg, 300, "Could not delete key from key set because null pointer.");
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey,
+								    "Could not delete key from key set because null pointer.");
 				}
 				else
 				{
-					snprintf (msg, 300, "Could not delete key with name %s from key set. There are %d references left.",
-						  keyName (lookup), retval);
+					ELEKTRA_SET_INTERNAL_ERRORF (
+						informationKey,
+						"Could not delete key with name %s from key set. There are %d references left.",
+						keyName (lookup), retval);
 				}
-				ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
 				elektraFree (buffer);
 				keyDel (iterator);
 				return NULL;
@@ -863,9 +863,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			}
 			else
 			{
-				char msg[300];
-				snprintf (msg, 300, "libgit returned error code %d", ret);
-				ELEKTRA_LOG ("%s", msg);
+				ELEKTRA_LOG ("libgit returned error code %d", ret);
 			}
 			git_merge_file_result_free (&out);
 			elektraFree (ourArray);
@@ -969,9 +967,8 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			ksDel (result);
-			char msg[300];
-			snprintf (msg, 300, "Abort strategy was set and %d conflicts occured.", getConflicts (informationKey));
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
+			ELEKTRA_SET_INTERNAL_ERRORF (informationKey, "Abort strategy was set and %d conflicts occured.",
+						     getConflicts (informationKey));
 			return NULL;
 		}
 	}
