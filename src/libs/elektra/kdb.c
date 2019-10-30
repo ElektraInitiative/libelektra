@@ -862,6 +862,7 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	}
 
 	keySetName (parentKey, keyName (initialParent));
+	// TODO: there are no error checks here, see kdbGet
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
