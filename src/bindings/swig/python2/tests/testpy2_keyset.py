@@ -62,8 +62,10 @@ class KeySet(unittest.TestCase):
 
 		ks = kdb.KeySet(0)
 		ks.append(kdb.Key("user/foo"))
-		ks.append(kdb.Key("user/bar"))
-		self.assertEqual(len(ks), 2)
+		ks.append(kdb.Key("user/bar"), kdb.Key("user/bar2"))
+		ks.append("user/nice")
+		ks.extend([ kdb.Key("user/baz"), kdb.Key("user/baz2") ])
+		self.assertEqual(len(ks), 6)
 
 		' test clear '
 		ks = kdb.KeySet(0)

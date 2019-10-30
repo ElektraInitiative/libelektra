@@ -114,6 +114,9 @@ class Key(unittest.TestCase):
 		self.assertTrue(k.isBinary())
 		self.assertIsInstance(self.bkey.getMeta("binary"), kdb.Key)
 
+		self.assertEqual(kdb.Key("user/key1", "value").value, "value")
+		self.assertEqual(kdb.Key("user/key1", b"bvalue\0\0").value, b"bvalue\0\0")
+
 		k = kdb.Key("user/key2")
 		with self.assertRaises(kdb.KeyInvalidName):
 			k.name = "foo"
@@ -144,6 +147,10 @@ class Key(unittest.TestCase):
 		k = kdb.Key("user/key1")
 		k.setMeta("foo", "bar")
 		self.assertEqual(k.getMeta("foo").value, "bar")
+
+		k = kdb.Key("user/key1", { "foo2": "bar2", "foo3": "bar3" })
+		self.assertEqual(k.getMeta("foo2").value, "bar2")
+		self.assertEqual(k.getMeta("foo3").value, "bar3")
 
 		self.assertEqual(sum(1 for _ in self.key.getMeta()),  2)
 		self.assertEqual(sum(1 for _ in self.bkey.getMeta()), 1)

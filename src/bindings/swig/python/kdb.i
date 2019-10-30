@@ -57,6 +57,11 @@
   if len(args) and isinstance(args[0], str):
     arg0, args = args[0], args[1:]
 
+    # add support for kdb.Key(name, value, { meta } )
+    if len(args) and isinstance(args[0], (str, bytes)):
+      value = args[0]
+      args = args[1:]
+
     flags = 0
     args = iter(args)
     for arg in args:
@@ -75,6 +80,8 @@
       elif arg == KEY_META:
         k = next(args)
         meta[k] = next(args)
+      elif isinstance(arg, dict):
+        meta.update(arg)
       elif isinstance(arg, int):
         warnings.warn("Deprecated option in keyNew: {0}".format(arg),
           DeprecationWarning)
@@ -272,6 +279,17 @@
       """
       key = self._lookup(name)
       return key if key else None
+
+    def append(self, *args):
+      if isinstance(args[0], (str, bytes)):
+        args = [ Key(*args) ]
+      ret = 0
+      for item in args:
+        ret = _kdb.KeySet_append(self, item)
+      return ret
+
+    def extend(self, list):
+      return self.append(*list)
 
     def __getitem__(self, key):
       """See lookup(...) for details.
