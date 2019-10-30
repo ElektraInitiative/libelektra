@@ -13,6 +13,7 @@
 #include <kdblogger.h>
 #include <kdbmacros.h>
 #include <kdbopmphm.h>
+#include <kdbprivate.h>
 #include <kdbrand.h>
 
 #include <string.h>
@@ -548,7 +549,7 @@ int opmphmCopy (Opmphm * dest, const Opmphm * source)
 	opmphmClear (dest);
 	if (dest->rUniPar)
 	{
-		elektraFree (dest->hashFunctionSeeds);
+		if (!test_bit(dest->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (dest->hashFunctionSeeds);
 		dest->rUniPar = 0;
 	}
 	dest->componentSize = 0;
@@ -614,9 +615,9 @@ void opmphmDel (Opmphm * opmphm)
 	opmphmClear (opmphm);
 	if (opmphm->rUniPar)
 	{
-		elektraFree (opmphm->hashFunctionSeeds);
+		if (!test_bit(opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (opmphm->hashFunctionSeeds);
 	}
-	elektraFree (opmphm);
+	if (!test_bit(opmphm->flags, OPMPHM_FLAG_MMAP_STRUCT)) elektraFree (opmphm);
 }
 
 /**
@@ -632,7 +633,7 @@ void opmphmClear (Opmphm * opmphm)
 	ELEKTRA_NOT_NULL (opmphm);
 	if (opmphmIsBuild (opmphm))
 	{
-		elektraFree (opmphm->graph);
+		if (!test_bit(opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH)) elektraFree (opmphm->graph);
 		opmphm->size = 0;
 	}
 }

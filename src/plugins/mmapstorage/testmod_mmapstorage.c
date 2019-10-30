@@ -718,6 +718,7 @@ static void test_mmap_ks_copy_with_meta (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 static void test_mmap_opmphm (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -758,6 +759,7 @@ static void test_mmap_opmphm (const char * tmpFile)
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
+#endif
 
 static void test_mmap_ksDupFun (const char * tmpFile, KeySet * copyFunction (const KeySet * source))
 {
@@ -1065,8 +1067,10 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	clearStorage (tmpFile);
 	test_mmap_opmphm (tmpFile);
+#endif
 
 	clearStorage (tmpFile);
 	test_mmap_ksDupFun (tmpFile, ksDup);
