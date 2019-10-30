@@ -946,6 +946,36 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	printMmapAddr (&mmapAddr);
 	printMmapMetaData (mmapMetaData);
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// We FIRST write the opmphm data. If this is changed, you'll run into alignment problems.
+	// set OPMPHM flag, so file is not readable by builds without OPMPHM
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
+	if (keySet->opmphm)
+	{
+		// TODO: need to add/set mmap flag to the struct
+		mmapAddr.ksPtr->opmphm = (Opmphm *) (dest + OFFSET_OPMPHM);
+		memcpy (mmapAddr.ksPtr->opmphm, keySet->opmphm, sizeof (Opmphm));
+		if (keySet->opmphm->rUniPar)
+		{
+			memcpy (mmapAddr.ksPtr->opmphm->hashFunctionSeeds, keySet->opmphm->hashFunctionSeeds, keySet->opmphm->rUniPar * sizeof (int32_t));
+		}
+		if (keySet->opmphm->size)
+		{
+			memcpy (mmapAddr.ksPtr->opmphm->graph, keySet->opmphm->graph, keySet->opmphm->size);
+		}
+	}
+	if (keySet->opmphmPredictor)
+	{
+		// TODO: need to add/set mmap flag to the struct
+		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (dest + OFFSET_OPMPHMPREDICTOR);
+		memcpy (mmapAddr.ksPtr->opmphmPredictor, keySet->opmphmPredictor, sizeof (OpmphmPredictor));
+		mmapAddr.ksPtr->opmphmPredictor->patternTable = (uint8_t *) mmapAddr.dataPtr;
+		memcpy (mmapAddr.ksPtr->opmphmPredictor->patternTable, keySet->opmphmPredictor->patternTable, keySet->opmphmPredictor->size * sizeof (uint8_t));
+		mmapAddr.dataPtr += keySet->opmphmPredictor->size * sizeof (uint8_t);
+	}
+	// TODO: subtract base addr from pointers!
+#endif
+
 	// first write the meta keys into place
 	writeMetaKeys (&mmapAddr, dynArray);
 
@@ -975,11 +1005,6 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	mmapAddr.ksPtr->array = (Key **) (mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
 	mmapAddr.ksPtr->alloc = keySet->alloc;
 	mmapAddr.ksPtr->size = keySet->size;
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// set OPMPHM flag, so file is not readable by builds without OPMPHM
-	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
-#endif
 
 	memcpy ((dest + OFFSET_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM
