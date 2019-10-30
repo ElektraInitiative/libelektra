@@ -10,6 +10,7 @@
 
 
 extern int yylex(Driver * driver);
+#define ABORT_ON_ERR(driver) {if(driver->errorSet) YYABORT;}
 
 %}
 

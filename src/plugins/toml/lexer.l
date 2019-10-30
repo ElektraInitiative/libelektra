@@ -10,6 +10,7 @@
 #include "parser.h"
 #include "scalar.h"
 #include "driver.h"
+#include "codepoint.h"
 #include "error.h"
 
 #define BASIC_TERMINATOR '\"'
@@ -40,7 +41,6 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver);
 static inline bool validAscii (char c);
 static inline bool validMultilineAscii (char c);
 static inline bool validHex (char c);
-static inline int getUtfLen (unsigned char c, Driver * driver);
 %}
 
 %option yylineno
@@ -256,7 +256,8 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 		char c = input ();
 		if (c == terminatorChar)
 		{
-			if (terminatorChar == BASIC_TERMINATOR || terminatorChar == LITERAL_TERMINATOR) {
+			if (terminatorChar == BASIC_TERMINATOR || terminatorChar == LITERAL_TERMINATOR)
+			{
 				bufferAddChar (buffer, c, driver);
 			}
 			terminatorCount++;
@@ -332,8 +333,10 @@ static void bufferAddChar (Buffer * buffer, char c, Driver * driver)
 			{
 				driverErrorGeneric (driver, ERROR_MEMORY, "bufferAddChar", "elektraRealloc");
 				buffer->size /= 2;
-			} else {
-				memset(buffer->data + buffer->index, 0, buffer->size - buffer->index);
+			}
+			else
+			{
+				memset (buffer->data + buffer->index, 0, buffer->size - buffer->index);
 			}
 		}
 	}
@@ -372,10 +375,19 @@ static void handleEscapedSequence (Buffer * buffer, bool isMultiline, Driver * d
 	case 'u':
 		bufferAddChar (buffer, c, driver);
 		readHex (buffer, 4, driver);
+		if (!validUtf8FromUnicode (&buffer->data[buffer->index - 4], 4))
+		{
+			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape");
+		}
+
 		break;
 	case 'U':
 		bufferAddChar (buffer, c, driver);
 		readHex (buffer, 8, driver);
+		if (!validUtf8FromUnicode (&buffer->data[buffer->index - 8], 8))
+		{
+			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape");
+		}
 		break;
 	default:
 		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid escape sequence: \\'%c'", c);
@@ -433,7 +445,7 @@ static void readHex (Buffer * buffer, size_t count, Driver * driver)
 static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 {
 	unsigned char c = (unsigned char) input ();
-	int utfLen = getUtfLen (c, driver);
+	int utfLen = utf8LenFromHeadChar (c);
 	if (utfLen > 0)
 	{
 
@@ -443,7 +455,7 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 			c = (unsigned char) input ();
 			if (c < 0x80 || c >= 0xC0)
 			{
-				driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
+				driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf8 sequence");
 			}
 			else
 			{
@@ -451,31 +463,13 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 			}
 		}
 	}
-}
-
-static inline int getUtfLen (unsigned char c, Driver * driver)
-{
-	if (c >= 0xF0 && c < 0xF8)
-	{ // 11110xxx
-		return 4;
-	}
-	else if (c >= 0xE0 && c < 0xF0)
-	{ // 1110xxxx
-		return 3;
-	}
-	else if (c >= 0xC0 && c < 0xE0)
-	{ // 110xxxxx
-		return 2;
-	}
-	else if (c < 0x80)
-	{ // 0xxxxxxx
-		driverError (driver, ERROR_SYNTACTIC, yylineno,
-			     "Malformed Input: Expected non-ascii char, but found ascii char: '%c' (0x%02X)", c, c);
-		return 0;
+	else if (utfLen == 1)
+	{
+		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: No Ascii char allowed at this point, but foun: 0x%02X",
+			     c);
 	}
 	else
 	{
-		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf-8 sequence");
-		return 0;
+		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid utf8 head char: 0x%02X", c);
 	}
 }
