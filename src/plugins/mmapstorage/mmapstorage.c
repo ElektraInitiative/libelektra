@@ -605,6 +605,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	}
 	mmapMetaData->numKeys += returned->size + dynArray->size + 1; // +1 for magic Key
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	// the OPMPHM structs are included regardless of existece in KeySet
 	// s.t. the format stays the same for all KeySets
 	size_t opmphmSize = (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2); // *2 for magic opmphm data
@@ -619,6 +620,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	{
 		dataBlocksSize += opmphmPredictor->size * sizeof (uint8_t);
 	}
+#endif
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
 	mmapHeader->allocSize =
@@ -887,6 +889,11 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	mmapAddr.ksPtr->array = (Key **) (mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
 	mmapAddr.ksPtr->alloc = keySet->alloc;
 	mmapAddr.ksPtr->size = keySet->size;
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// set OPMPHM flag, so file is not readable by builds without OPMPHM
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
+#endif
 
 	memcpy ((dest + OFFSET_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM

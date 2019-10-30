@@ -742,6 +742,11 @@ static void test_mmap_opmphm (const char * tmpFile)
 	// write keyset with OPMPHM structures
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
+	KeySet * returned = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
+	succeed_if (returned->opmphmPredictor != 0, "opmphmPredictor not stored properly");
+
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();

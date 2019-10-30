@@ -31,10 +31,10 @@
 /** Magic byte order marker, as used by UTF. */
 #define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
 
-/** Magic number used in mmap format */
-#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+/** Magic number used in mmap format (8 bytes). Previously used: 0x0A6172746B656C45 */
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A3472746B656C45)
 
-/** Mmap format version */
+/** Mmap format version (1 byte). Increment on breaking changes to invalidate old files. */
 #define ELEKTRA_MMAP_FORMAT_VERSION (2)
 
 /** Mmap temp file template */
@@ -65,6 +65,9 @@
 
 /** Defines whether file was written with config timestamps (global cache mode). */
 #define MMAP_FLAG_TIMESTAMPS (1 << 1)
+
+/** Defines whether file was written with opmphm data structures. */
+#define MMAP_FLAG_OPMPHM (1 << 2)
 
 /**
  * Internal MmapAddr structure.
@@ -99,7 +102,12 @@ typedef struct _mmapFooter MmapFooter;
 /**
  * Mmap information header
  *
- * shall contain only fixed-width types
+ * Changes to this struct can break compatibility
+ * with existing files. If a breaking changed needs
+ * to be introduced, change `ELEKTRA_MAGIC_MMAP_NUMBER`
+ * to avoid undefined behaviour.
+ *
+ * Shall contain only fixed-width types.
  */
 struct _mmapHeader
 {
@@ -111,6 +119,10 @@ struct _mmapHeader
 	uint32_t checksum;		/**<Checksum of the data */
 	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
 	uint8_t formatVersion;		/**<Mmap format version */
+
+	// two bytes which are otherwise padding are reserved for future use
+	uint8_t reservedA;		/**<Reserved byte for future use */
+	uint8_t reservedB;		/**<Reserved byte for future use */
 	// clang-format on
 };
 
