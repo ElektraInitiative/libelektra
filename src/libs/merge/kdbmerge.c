@@ -737,9 +737,9 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
  * Turns an array from getValuesAsArray into a key set again.
  * Frees the array and creates a new key set.
  *
- * @array array to be converted, has no \0 terminator at end
- * @length length of array, does not include size for \0 as this is not there
- * @informationKey for errors
+ * @param array array to be converted, has no \0 terminator at end
+ * @param length length of array, does not include size for \0 as this is not there
+ * @param informationKey for errors
  * @returns the KeySet
  */
 static KeySet * ksFromArray (const char * array, int length, Key * informationKey)
@@ -806,7 +806,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			char * baseArray = getValuesAsArray (baseSet, checkedKey, informationKey);
 			if (baseArray == NULL)
 			{
-				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not get array from base key set.");
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `base` KeySet into char[] for LibGit.");
 				keyDel (checkedKey);
 				ksDel (toAppend);
 				return -1;
@@ -814,7 +814,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			char * ourArray = getValuesAsArray (ourSet, keyInOur, informationKey);
 			if (ourArray == NULL)
 			{
-				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not get array from our key set.");
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `our` KeySet into char[] for LibGit.");
 				elektraFree (baseArray);
 				keyDel (checkedKey);
 				ksDel (toAppend);
@@ -823,7 +823,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			char * theirArray = getValuesAsArray (theirSet, keyInTheir, informationKey);
 			if (theirArray == NULL)
 			{
-				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not get array from their key set.");
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `their` KeySet into char[] for LibGit.");
 				elektraFree (ourArray);
 				elektraFree (baseArray);
 				keyDel (checkedKey);
