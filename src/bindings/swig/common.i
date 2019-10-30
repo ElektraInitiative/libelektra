@@ -52,9 +52,10 @@
 /* handle exceptions */
 %{
   #define KEY_EXCEPTIONS \
+    KDB_CATCH_EX(kdb, KeyNotFoundException) \
     KDB_CATCH_EX(kdb, KeyTypeMismatch) \
-    KDB_CATCH_EX(kdb, KeyInvalidName) \
     KDB_CATCH_EX(kdb, KeyTypeConversion) \
+    KDB_CATCH_EX(kdb, KeyInvalidName) \
     KDB_CATCH_EX(kdb, KeyException) \
     KDB_CATCH_EX(kdb, Exception)
 
