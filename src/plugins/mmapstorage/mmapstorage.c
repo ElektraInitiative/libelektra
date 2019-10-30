@@ -621,6 +621,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	{
 		dataBlocksSize += opmphmPredictor->size * sizeof (uint8_t);
 	}
+	ELEKTRA_LOG_DEBUG ("OPMPHM enabled, size: %zu", opmphmSize);
 #endif
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
@@ -1124,6 +1125,13 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
+	if (verifyMagicData (mappedRegion) != 0)
+	{
+		// magic data could not be read properly, indicating unreadable format or different architecture
+		ELEKTRA_MMAP_LOG_WARNING ("mmap magic data could not be read properly");
+		goto error;
+	}
+
 	MmapHeader * mmapHeader;
 	MmapMetaData * mmapMetaData;
 	if (readHeader (mappedRegion, &mmapHeader, &mmapMetaData) == -1)
@@ -1133,22 +1141,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS) && mode == MODE_GLOBALCACHE)
-	{
-		ELEKTRA_MMAP_LOG_WARNING ("plugin in global cache mode, but file does not contain timestamps");
-	}
-
 	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader->allocSize)
 	{
 		// config file size mismatch
 		ELEKTRA_MMAP_LOG_WARNING ("mmap file size differs from metadata, file was altered");
-		goto error;
-	}
-
-	if (readFooter (mappedRegion, mmapHeader) == -1)
-	{
-		// config file was corrupt/truncated
-		ELEKTRA_MMAP_LOG_WARNING ("could not read mmap information footer: file was altered");
 		goto error;
 	}
 
@@ -1160,10 +1156,15 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	}
 #endif
 
-	if (verifyMagicData (mappedRegion) != 0)
+	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS) && mode == MODE_GLOBALCACHE)
 	{
-		// magic data could not be read properly, indicating unreadable format or different architecture
-		ELEKTRA_MMAP_LOG_WARNING ("mmap magic data could not be read properly");
+		ELEKTRA_MMAP_LOG_WARNING ("plugin in global cache mode, but file does not contain timestamps");
+	}
+
+	if (readFooter (mappedRegion, mmapHeader) == -1)
+	{
+		// config file was corrupt/truncated
+		ELEKTRA_MMAP_LOG_WARNING ("could not read mmap information footer: file was altered");
 		goto error;
 	}
 
