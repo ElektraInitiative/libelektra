@@ -18,7 +18,16 @@
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
 
 #define OFFSET_MAGIC_KEYSET (SIZEOF_MMAPHEADER)
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/** Squeeze OPMPHM structs between other magic data, to automatically trigger verification fail on non-OPMPHM builds. */
+#define OFFSET_MAGIC_OPMPHM (OFFSET_MAGIC_KEYSET + SIZEOF_KEYSET)
+#define OFFSET_MAGIC_OPMPHMPREDICTOR (OFFSET_MAGIC_OPMPHM + sizeof (Opmphm))
+#define OFFSET_MAGIC_KEY (OFFSET_MAGIC_OPMPHMPREDICTOR + sizeof (OpmphmPredictor))
+#else
 #define OFFSET_MAGIC_KEY (OFFSET_MAGIC_KEYSET + SIZEOF_KEYSET)
+#endif
+
 #define OFFSET_MAGIC_MMAPMETADATA (OFFSET_MAGIC_KEY + SIZEOF_KEY)
 
 #define OFFSET_MMAPMETADATA (OFFSET_MAGIC_MMAPMETADATA + SIZEOF_MMAPMETADATA)
@@ -26,7 +35,11 @@
 #define OFFSET_KEYSET (OFFSET_GLOBAL_KEYSET + SIZEOF_KEYSET)
 
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+#define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
+#else
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
+#endif
 
 /** Magic byte order marker, as used by UTF. */
 #define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
