@@ -623,12 +623,11 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 #endif
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
-	mmapHeader->allocSize =
-		(SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
-	mmapHeader->cksumSize = mmapHeader->allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
+	mmapHeader->allocSize = (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
+	mmapHeader->cksumSize = mmapHeader->allocSize; // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (mmapHeader->allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
-	mmapHeader->allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
+	mmapHeader->allocSize += SIZEOF_MMAPHEADER + padding + SIZEOF_MMAPFOOTER;
 
 	mmapMetaData->numKeys--;    // don't include magic Key
 	mmapMetaData->numKeySets--; // don't include magic KeySet
