@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-
+	"github.com/gorilla/mux"
 	elektra "go.libelektra.org/kdb"
 )
 
@@ -17,41 +17,45 @@ var (
 )
 
 type session struct {
-	handle elektra.KDB
-	expiry time.Time
+	handle *handle
 	mut    sync.Mutex
+
+	expiry time.Time
 }
 
-func handleMiddleware(next http.Handler) http.Handler {
+func handleMiddleware(pool *handlePool) mux.MiddlewareFunc {
 	go freeHandles()
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var s *session
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var s *session
 
-		if cookie, err := r.Cookie("session"); err != nil {
-			s = newSession(w, r)
-		} else {
-			uuid := cookie.Value
-
-			now := time.Now()
-
-			ses, ok := sessions.Load(uuid)
-
-			if s, ok = ses.(*session); !ok || now.After(s.expiry) {
-				// the session expired or does not exist, create a new one
-				s = newSessionWithUUID(w, r, uuid)
+			if cookie, err := r.Cookie("session"); err != nil {
+				s = newSession(w, r, pool)
 			} else {
-				// extend lifetime of session after every request
-				s.expiry = sessionExpiry()
+				uuid := cookie.Value
+
+				now := time.Now()
+
+				ses, ok := sessions.Load(uuid)
+
+				if s, ok = ses.(*session); !ok || now.After(s.expiry) {
+					// the session expired or does not exist, create a new one
+					s = newSessionWithUUID(w, r, pool, uuid)
+				} else {
+					// extend lifetime of session after every request
+					s.expiry = sessionExpiry()
+				}
 			}
-		}
 
-		// prevent the handle from being used in parallel
-		s.mut.Lock()
-		defer s.mut.Unlock()
+			// prevent the handle from being used in parallel
+			s.mut.Lock()
+			defer s.mut.Unlock()
 
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
+
 }
 
 func freeHandles() {
@@ -63,7 +67,7 @@ func freeHandles() {
 			s := value.(*session)
 
 			if now.After(s.expiry) {
-				err := s.handle.Close()
+				err := s.handle.kdb.Close()
 
 				if err != nil {
 					log.Printf("error closing handle: %v", err)
@@ -77,19 +81,19 @@ func freeHandles() {
 	}
 }
 
-func newSession(w http.ResponseWriter, r *http.Request) *session {
+func newSession(w http.ResponseWriter, r *http.Request, pool *handlePool) *session {
 	uuid := uuid.New().String()
 
-	return newSessionWithUUID(w, r, uuid)
+	return newSessionWithUUID(w, r, pool, uuid)
 }
 
-func newSessionWithUUID(w http.ResponseWriter, r *http.Request, uuid string) *session {
+func newSessionWithUUID(w http.ResponseWriter, r *http.Request, pool *handlePool, uuid string) *session {
 	cookie := cookieFromUUID(uuid)
 
 	http.SetCookie(w, cookie)
 	r.AddCookie(cookie)
 
-	h := newHandle()
+	h := pool.Get()
 
 	s := &session{
 		handle: h,
@@ -114,19 +118,7 @@ func cookieFromUUID(uuid string) *http.Cookie {
 	}
 }
 
-func newHandle() elektra.KDB {
-	kdb := elektra.New()
-
-	err := kdb.Open()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return kdb
-}
-
-func getHandle(r *http.Request) elektra.KDB {
+func getHandle(r *http.Request) (elektra.KDB, elektra.KeySet) {
 	cookie, err := r.Cookie("session")
 
 	if err != nil {
@@ -139,7 +131,7 @@ func getHandle(r *http.Request) elektra.KDB {
 		panic("handle middleware is not activated (no handle)")
 	}
 
-	handle := s.(*session).handle
+	ses := s.(*session)
 
-	return handle
+	return ses.handle.kdb, ses.handle.keySet
 }

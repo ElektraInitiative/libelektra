@@ -15,11 +15,17 @@ func main() {
 
 	loadVersion()
 
-	r := setupRouter()
+	app := &server{pool: initPool(50)}
+
+	r := setupRouter(app)
 
 	if err := http.ListenAndServe(":"+strconv.Itoa(*port), r); err != nil {
 		log.Print(err)
 	}
+}
+
+type server struct {
+	pool *handlePool
 }
 
 type elektraVersion struct {
@@ -32,10 +38,10 @@ type elektraVersion struct {
 var version elektraVersion
 
 func loadVersion() {
-	kdb := newHandle()
-	defer kdb.Close()
+	kdb, _ := newHandle()
+	defer kdb.kdb.Close()
 
-	versionString, _ := kdb.Version()
+	versionString, _ := kdb.kdb.Version()
 
 	major, minor, micro := parseSemVer(versionString)
 

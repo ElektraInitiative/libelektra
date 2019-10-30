@@ -19,7 +19,7 @@ import (
 // Returns: String array with found keys.
 //
 // Example: `curl localhost:33333/kdbFind/versi*`
-func getFindHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) getFindHandler(w http.ResponseWriter, r *http.Request) {
 	query := parseKeyNameFromURL(r)
 	regex, err := regexp.Compile(query)
 
@@ -35,8 +35,9 @@ func getFindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handle := getHandle(r)
-	ks, err := getKeySet(handle, root)
+	handle, ks := getHandle(r)
+
+	_, err = handle.Get(ks, root)
 
 	if err != nil {
 		writeError(w, err)

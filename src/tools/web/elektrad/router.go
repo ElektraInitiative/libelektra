@@ -5,27 +5,25 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-
-	elektra "go.libelektra.org/kdb"
 )
 
-func setupRouter() http.Handler {
+func setupRouter(app *server) http.Handler {
 	r := mux.NewRouter()
-	r.Use(handleMiddleware)
+	r.Use(handleMiddleware(app.pool))
 
-	r.HandleFunc("/version", getVersionHandler).Methods("GET")
+	r.HandleFunc("/version", app.getVersionHandler).Methods("GET")
 
-	r.HandleFunc("/kdb", getKdbHandler).Methods("GET")
-	r.HandleFunc("/kdb/{path:.*}", getKdbHandler).Methods("GET")
-	r.HandleFunc("/kdb/{path:.*}", putKdbHandler).Methods("PUT")
-	r.HandleFunc("/kdb/{path:.*}", deleteKdbHandler).Methods("DELETE")
+	r.HandleFunc("/kdb", app.getKdbHandler).Methods("GET")
+	r.HandleFunc("/kdb/{path:.*}", app.getKdbHandler).Methods("GET")
+	r.HandleFunc("/kdb/{path:.*}", app.putKdbHandler).Methods("PUT")
+	r.HandleFunc("/kdb/{path:.*}", app.deleteKdbHandler).Methods("DELETE")
 
-	r.HandleFunc("/kdbFind/{path:.*}", getFindHandler).Methods("GET")
+	r.HandleFunc("/kdbFind/{path:.*}", app.getFindHandler).Methods("GET")
 
-	r.HandleFunc("/kdbMv/{path:.*}", postMoveHandler).Methods("POST")
+	r.HandleFunc("/kdbMv/{path:.*}", app.postMoveHandler).Methods("POST")
 
-	r.HandleFunc("/kdbMeta/{path:.*}", postMetaHandler).Methods("POST")
-	r.HandleFunc("/kdbMeta/{path:.*}", deleteMetaHandler).Methods("DELETE")
+	r.HandleFunc("/kdbMeta/{path:.*}", app.postMetaHandler).Methods("POST")
+	r.HandleFunc("/kdbMeta/{path:.*}", app.deleteMetaHandler).Methods("DELETE")
 
 	return r
 }
@@ -50,18 +48,6 @@ func stringBody(r *http.Request) (string, error) {
 	}
 
 	return value, nil
-}
-
-func getKeySet(handle elektra.KDB, key elektra.Key) (elektra.KeySet, error) {
-	ks := elektra.NewKeySet()
-
-	_, err := handle.Get(ks, key)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ks, nil
 }
 
 func notFound(w http.ResponseWriter) {

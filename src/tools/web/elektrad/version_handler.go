@@ -16,7 +16,7 @@ type versionResult struct {
 //		200 OK
 //
 // Example: `curl localhost:33333/version`
-func getVersionHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) getVersionHandler(w http.ResponseWriter, r *http.Request) {
 	response := versionResult{
 		API:     1,
 		Elektra: version,

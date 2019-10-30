@@ -17,7 +17,7 @@ import (
 //		400 Bad Request if either the source or target keys are invalid.
 //
 // Example: `curl -X POST -d '"user/test/world"' localhost:33333/kdbMv/user/test/hello`
-func postMoveHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) postMoveHandler(w http.ResponseWriter, r *http.Request) {
 	from := parseKeyNameFromURL(r)
 	to, err := stringBody(r)
 
@@ -49,9 +49,9 @@ func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kdb := getHandle(r)
+	handle, conf := getHandle(r)
 
-	conf, err := getKeySet(kdb, rootKey)
+	_, err = handle.Get(conf, rootKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -73,13 +73,14 @@ func postMoveHandler(w http.ResponseWriter, r *http.Request) {
 
 	newConf.Append(conf) // these are unrelated keys
 
-	_, err = kdb.Set(newConf, rootKey)
+	err = set(handle, newConf, rootKey)
 
 	if err != nil {
 		writeError(w, err)
-	} else {
-		noContent(w)
+		return
 	}
+
+	noContent(w)
 }
 
 func renameKey(k elektra.Key, from, to string) elektra.Key {

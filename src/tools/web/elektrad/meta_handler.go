@@ -25,7 +25,7 @@ type keyValueBody struct {
 //		401 Bad Request if no key name was passed - or the key name is invalid.
 //
 // Example: `curl -X POST -d '{ "key": "hello", "value": "world" }' localhost:33333/kdbMeta/user/test/hello`
-func postMetaHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	var meta keyValueBody
 
 	keyName := parseKeyNameFromURL(r)
@@ -41,8 +41,6 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kdb := getHandle(r)
-
 	parentKey, err := elektra.NewKey(keyName)
 
 	if err != nil {
@@ -50,12 +48,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ks, err := getKeySet(kdb, parentKey)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
+	handle, ks := getHandle(r)
 
 	k := ks.Lookup(parentKey)
 
@@ -75,7 +68,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = kdb.Set(ks, parentKey)
+	err = set(handle, ks, parentKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -96,9 +89,7 @@ func postMetaHandler(w http.ResponseWriter, r *http.Request) {
 //		401 Bad Request if no key name was passed - or the key name is invalid.
 //
 // Example: `curl -X DELETE -d '{ "key": "hello" }' localhost:33333/kdbMeta/user/test/hello`
-func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
-	kdb := getHandle(r)
-
+func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 	var meta keyValueBody
 
 	keyName := parseKeyNameFromURL(r)
@@ -116,12 +107,7 @@ func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ks, err := getKeySet(kdb, key)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
+	handle, ks := getHandle(r)
 
 	k := ks.Lookup(key)
 
@@ -137,7 +123,7 @@ func deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = kdb.Set(ks, key)
+	err = set(handle, ks, key)
 
 	if err != nil {
 		writeError(w, err)

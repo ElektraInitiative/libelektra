@@ -24,7 +24,7 @@ import (
 // Returns: JSON marshaled `lookupResult` struct.
 //
 // Example: `curl localhost:33333/kdb/user/test/hello`
-func getKdbHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) getKdbHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	preload, err := parsePreload(r)
@@ -43,8 +43,9 @@ func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handle := getHandle(r)
-	ks, err := getKeySet(handle, key)
+	handle, ks := getHandle(r)
+
+	_, err = handle.Get(ks, key)
 
 	if err != nil {
 		writeError(w, err)
@@ -72,15 +73,13 @@ func getKdbHandler(w http.ResponseWriter, r *http.Request) {
 // string.
 //
 // Example: `curl -X PUT -d '"world"' localhost:33333/kdb/user/test/hello`
-func putKdbHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 	value, err := stringBody(r)
 
 	if err != nil {
 		badRequest(w)
 		return
 	}
-
-	kdb := getHandle(r)
 
 	keyName := parseKeyNameFromURL(r)
 
@@ -91,12 +90,7 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keySet, err := getKeySet(kdb, key)
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
+	handle, ks := getHandle(r)
 
 	err = key.SetString(value)
 
@@ -105,14 +99,14 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keySet.AppendKey(key)
+	ks.AppendKey(key)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	_, err = kdb.Set(keySet, key)
+	_, err = handle.Set(ks, key)
 
 	if err != nil {
 		writeError(w, err)
@@ -129,11 +123,10 @@ func putKdbHandler(w http.ResponseWriter, r *http.Request) {
 // Response Code:
 //		204 No Content if the key was deleted.
 // 		400 Bad Request if the key name is invalid.
+//      404 Not Foudn if they key to delete was not found.
 //
 // Example: `curl -X DELETE localhost:33333/kdb/user/test/hello`
-func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
-	kdb := getHandle(r)
-
+func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 	keyName := parseKeyNameFromURL(r)
 
 	key, err := elektra.NewKey(keyName)
@@ -143,16 +136,16 @@ func deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keySet, err := getKeySet(kdb, key)
+	handle, ks := getHandle(r)
 
-	if err != nil {
-		writeError(w, err)
+	removedKey := ks.Remove(key)
+
+	if removedKey == nil {
+		notFound(w)
 		return
 	}
 
-	keySet.Remove(key)
-
-	_, err = kdb.Set(keySet, key)
+	err = set(handle, ks, key)
 
 	if err != nil {
 		writeError(w, err)
