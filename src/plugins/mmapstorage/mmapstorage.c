@@ -1045,7 +1045,31 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	returned->alloc = keySet->alloc;
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
-	// we intentionally do not change the KeySet->opmphm here!
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (keySet->opmphm)
+	{
+		returned->opmphm = keySet->opmphm;
+		returned->opmphm->flags = OPMPHM_FLAG_MMAP_STRUCT;
+		if (returned->opmphm->hashFunctionSeeds)
+		{
+			set_bit (returned->opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS);
+		}
+		if (returned->opmphm->graph)
+		{
+			set_bit (returned->opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH);
+		}
+	}
+	if (keySet->opmphmPredictor)
+	{
+		returned->opmphmPredictor = keySet->opmphmPredictor;
+		returned->opmphmPredictor->flags = OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT;
+		if (returned->opmphmPredictor->patternTable)
+		{
+			set_bit (returned->opmphmPredictor->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE);
+		}
+	}
+#endif
 
 	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
 	{

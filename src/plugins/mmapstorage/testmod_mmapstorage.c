@@ -747,6 +747,13 @@ static void test_mmap_opmphm (const char * tmpFile)
 	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
 	succeed_if (returned->opmphmPredictor != 0, "opmphmPredictor not stored properly");
 
+	Key * foundMapped = ksLookupByName (ks, name, KDB_O_OPMPHM);
+	if (!foundMapped)
+	{
+		yield_error ("Key not found.")
+	}
+
+	ksDel (returned);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
