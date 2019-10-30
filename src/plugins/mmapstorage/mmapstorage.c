@@ -363,6 +363,12 @@ static void writeMagicData (const char * mappedRegion)
 	memcpy (destKeySet, &magicKeySet, SIZEOF_KEYSET);
 	memcpy (keyPtr, &magicKey, SIZEOF_KEY);
 	memcpy (mmapMetaData, &magicMmapMetaData, SIZEOF_MMAPMETADATA);
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	Opmphm * opmphm = (Opmphm *) (mappedRegion + OFFSET_MAGIC_OPMPHM);
+	OpmphmPredictor * opmphmPredictor = (OpmphmPredictor *) (mappedRegion + OFFSET_MAGIC_OPMPHMPREDICTOR);
+	memcpy (opmphm, &magicOpmphm, sizeof (Opmphm));
+	memcpy (opmphmPredictor, &magicOpmphmPredictor, sizeof (OpmphmPredictor));
+#endif
 }
 
 /* -- Verification Functions  ----------------------------------------------------------------------------------------------------------- */
@@ -1051,6 +1057,11 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
 	if (magicKey.data.v == 0) initMagicKey (magicNumber);
 	if (magicMmapMetaData.numKeys == 0) initMagicMmapMetaData ();
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (magicOpmphm.size == 0) initMagicOpmphm (magicNumber);
+	if (magicOpmphmPredictor.ksSize == 0) initMagicOpmphmPredictor (magicNumber);
+#endif
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
