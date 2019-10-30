@@ -71,7 +71,7 @@ kdb get user/tests/result
 
 As a real-world example, we import three different (see the comment) versions of a hosts file. Please remove the trailing backslashes from the example code.
 
-```sh
+```
 echo "127.0.0.1       localhost
 127.0.1.1       computer
 
