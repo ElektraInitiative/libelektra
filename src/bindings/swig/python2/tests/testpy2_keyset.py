@@ -51,6 +51,9 @@ class KeySet(unittest.TestCase):
 		with self.assertRaises(KeyError):
 			self.ks[kdb.Key("user/doesnt_exist")]
 
+		self.assertEqual(str(self.ks), "['system/key1', 'system/key2', 'user/key3', 'user/key4']")
+		self.assertEqual(repr(self.ks), "kdb.KeySet(4, kdb.Key('system/key1'), kdb.Key('system/key2'), kdb.Key('user/key3'), kdb.Key('user/key4'))")
+
 	def test_functions(self):
 		self.assertEqual(self.ks.lookup("user/key3"), kdb.Key("user/key3"))
 		self.assertEqual(self.ks.lookup(kdb.Key("system/key2")), kdb.Key("system/key2"))
