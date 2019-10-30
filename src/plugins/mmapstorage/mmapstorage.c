@@ -515,6 +515,36 @@ static int verifyMagicMmapMetaData (MmapMetaData * mmapMetaData)
 	return memcmp (mmapMetaData, &magicMmapMetaData, SIZEOF_MMAPMETADATA);
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * @brief Verify the magic Opmphm.
+ *
+ * @param opmphm to verify
+ *
+ * @retval 0 if magic Opmphm is consistent
+ * @retval -1 if magic Opmphm is inconsistent
+ */
+static int verifyMagicOpmphm (Opmphm * opmphm)
+{
+	if (!opmphm) return -1;
+	return memcmp (opmphm, &magicOpmphm, sizeof (Opmphm));
+}
+
+/**
+ * @brief Verify the magic OpmphmPredictor.
+ *
+ * @param opmphmPredictor to verify
+ *
+ * @retval 0 if magic OpmphmPredictor is consistent
+ * @retval -1 if magic OpmphmPredictor is inconsistent
+ */
+static int verifyMagicOpmphmPredictor (OpmphmPredictor * opmphmPredictor)
+{
+	if (!opmphmPredictor) return -1;
+	return memcmp (opmphmPredictor, &magicOpmphmPredictor, sizeof (OpmphmPredictor));
+}
+#endif
+
 /**
  * @brief Verify magic data in the mapped region.
  *
@@ -533,6 +563,15 @@ static int verifyMagicData (char * mappedRegion)
 	{
 		return -1;
 	}
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	Opmphm * opmphm = (Opmphm *) (mappedRegion + OFFSET_MAGIC_OPMPHM);
+	OpmphmPredictor * opmphmPredictor = (OpmphmPredictor *) (mappedRegion + OFFSET_MAGIC_OPMPHMPREDICTOR);
+	if ((verifyMagicOpmphm (opmphm) != 0) || (verifyMagicOpmphmPredictor (opmphmPredictor) != 0))
+	{
+		return -1;
+	}
+#endif
 
 	return 0;
 }
