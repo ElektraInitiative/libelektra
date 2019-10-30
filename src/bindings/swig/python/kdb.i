@@ -133,6 +133,11 @@
     return ckdb::keyCmp($self->getKey(), o->getKey());
   }
 
+  // swig doesnt understand kdb::NameIterator::difference_type
+  size_t __len__() {
+    return std::distance($self->begin(), $self->end());
+  }
+
   kdb::Key *__copy__() {
     return new kdb::Key($self->dup());
   }
@@ -183,7 +188,10 @@
 
     def __str__(self):
       return self.name
-  %}
+
+    def __repr__(self):
+      return "kdb.Key(" + repr(self.name) + ")"
+ %}
 };
 
 // define traits needed by SwigPyIterator
@@ -289,6 +297,19 @@
         key = self._lookup(item)
         return True if key else False
       raise TypeError("Invalid argument type")
+
+    def __str__(self):
+      """print the keyset in array style"""
+      items = []
+      for k in self:
+        items.append(str(k))
+      return str(items)
+
+    def __repr__(self):
+      items = []
+      for k in self:
+        items.append(repr(k))
+      return "kdb.KeySet({}, {})".format(len(self), ", ".join(items))
   %}
 }
 

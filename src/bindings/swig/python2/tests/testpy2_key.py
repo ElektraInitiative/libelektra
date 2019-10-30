@@ -86,6 +86,12 @@ class Key(unittest.TestCase):
 		self.assertEqual(str(self.key),  "user/foo/bar")
 		self.assertEqual(str(self.bkey), "system/bkey")
 
+		self.assertEqual(len(self.key),  3)
+		self.assertEqual(len(self.bkey), 2)
+
+		self.assertEqual(repr(self.key),  "kdb.Key('user/foo/bar')")
+		self.assertEqual(repr(self.bkey), "kdb.Key('system/bkey')")
+
 	def test_properties(self):
 		self.assertEqual(self.key.name,      "user/foo/bar")
 		self.assertEqual(self.key.value,     "value")
