@@ -605,10 +605,11 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	}
 	mmapMetaData->numKeys += returned->size + dynArray->size + 1; // +1 for magic Key
 
+	size_t opmphmSize = 0;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	// the OPMPHM structs are included regardless of existece in KeySet
 	// s.t. the format stays the same for all KeySets
-	size_t opmphmSize = (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2); // *2 for magic opmphm data
+	opmphmSize = (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2); // *2 for magic opmphm data
 	Opmphm * opmphm = returned->opmphm;
 	if (opmphm)
 	{
@@ -623,8 +624,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 #endif
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
-	mmapHeader->allocSize = (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize +
-				(mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
+	mmapHeader->allocSize = (SIZEOF_MMAPMETADATA * 2) + opmphmSize + (SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
 	mmapHeader->cksumSize = mmapHeader->allocSize; // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (mmapHeader->allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
