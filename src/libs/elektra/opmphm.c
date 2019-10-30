@@ -519,7 +519,7 @@ void opmphmGraphDel (OpmphmGraph * graph)
  */
 Opmphm * opmphmNew (void)
 {
-	Opmphm * out = elektraMalloc (sizeof (Opmphm));
+	Opmphm * out = elektraCalloc (sizeof (Opmphm));
 	if (!out)
 	{
 		return NULL;
@@ -527,6 +527,7 @@ Opmphm * opmphmNew (void)
 	out->size = 0;
 	out->rUniPar = 0;
 	out->componentSize = 0;
+	out->flags = 0;
 	return out;
 }
 

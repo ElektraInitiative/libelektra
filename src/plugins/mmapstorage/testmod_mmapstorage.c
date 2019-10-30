@@ -746,7 +746,6 @@ static void test_mmap_opmphm (const char * tmpFile)
 	KeySet * returned = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
-	succeed_if (returned->opmphmPredictor != 0, "opmphmPredictor not stored properly");
 
 	Key * foundMapped = ksLookupByName (ks, name, KDB_O_OPMPHM);
 	if (!foundMapped)
