@@ -974,6 +974,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	}
 	if (keySet->opmphmPredictor)
 	{
+		ELEKTRA_LOG_DEBUG ("OPMPHM: will store predictor");
 		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (dest + OFFSET_OPMPHMPREDICTOR);
 		memcpy (mmapAddr.ksPtr->opmphmPredictor, keySet->opmphmPredictor, sizeof (OpmphmPredictor));
 		mmapAddr.ksPtr->opmphmPredictor->patternTable = (uint8_t *) mmapAddr.dataPtr;

@@ -33,7 +33,7 @@
 
 #define KEY_NAME_LENGTH 1000
 #define NUM_DIR 10
-#define NUM_KEY 10
+#define NUM_KEY 100
 
 #define TEST_ROOT_KEY "user/tests/mmapstorage"
 
@@ -553,6 +553,13 @@ static void test_mmap_set_get_large_keyset (const char * tmpFile)
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = largeTestKeySet ();
 	KeySet * expected = ksDeepDup (ks);
+
+	const char * name = "user/tests/mmapstorage/dir7/key3";
+	Key * found = ksLookupByName (ks, name, KDB_O_OPMPHM);
+	if (!found)
+	{
+		yield_error ("Key not found.")
+	}
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
