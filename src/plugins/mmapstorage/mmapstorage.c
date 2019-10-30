@@ -46,6 +46,11 @@ static KeySet magicKeySet;
 static Key magicKey;
 static MmapMetaData magicMmapMetaData;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+static Opmphm magicOpmphm;
+static OpmphmPredictor magicOpmphmPredictor;
+#endif
+
 typedef enum
 {
 	MODE_STORAGE = 1,
@@ -271,8 +276,12 @@ static void initHeader (MmapHeader * mmapHeader)
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	mmapHeader->formatVersion = ELEKTRA_MMAP_FORMAT_VERSION;
+	mmapHeader->formatFlags = 0;
 #ifdef ELEKTRA_MMAP_CHECKSUM
-	mmapHeader->formatFlags = MMAP_FLAG_CHECKSUM;
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_CHECKSUM);
+#endif
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
 #endif
 }
 
@@ -427,6 +436,36 @@ static void initMagicMmapMetaData (void)
 	magicMmapMetaData.ksAlloc = 0;
 	magicMmapMetaData.numKeys = SIZE_MAX / 2;
 }
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * @brief Magic Opmphm initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
+static void initMagicOpmphm (const uintptr_t magicNumber)
+{
+	magicOpmphm.hashFunctionSeeds = (void *) magicNumber;
+	magicOpmphm.rUniPar = INT8_MAX;
+	magicOpmphm.componentSize = SIZE_MAX / 2;
+	magicOpmphm.graph = (void *) ~magicNumber;
+	magicOpmphm.size = SIZE_MAX;
+}
+
+/**
+ * @brief Magic OpmphmPredictor initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
+static void initMagicOpmphmPredictor (const uintptr_t magicNumber)
+{
+	magicOpmphmPredictor.history = UINT16_MAX;
+	magicOpmphmPredictor.patternTable = (void *) magicNumber;
+	magicOpmphmPredictor.size = SIZE_MAX / 2;
+	magicOpmphmPredictor.lookupCount = 0;
+	magicOpmphmPredictor.ksSize = SIZE_MAX;
+}
+#endif
 
 /**
  * @brief Verify the magic KeySet.
