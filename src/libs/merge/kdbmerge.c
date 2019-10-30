@@ -176,10 +176,12 @@ static int getTotalNonOverlaps (Key * informationKey)
 }
 
 /**
+ * This function returns the number of conflicts that is store in the key
+ *
  * @param informationKey contains the statistics in its meta information
- * @retval the number of overlaps and non-overlaps that happened
+ * @returns the number of conflicts stored in the key
  */
-static int getTotalConflicts (Key * informationKey)
+int getConflicts (Key * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
@@ -959,13 +961,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
 		return NULL;
 	}
-	if (getTotalConflicts (informationKey) > 0)
+	if (getConflicts (informationKey) > 0)
 	{
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			ksDel (result);
 			char msg[300];
-			snprintf (msg, 300, "Abort strategy was set and %d conflicts occured.", getTotalConflicts (informationKey));
+			snprintf (msg, 300, "Abort strategy was set and %d conflicts occured.", getConflicts (informationKey));
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, msg);
 			return NULL;
 		}
