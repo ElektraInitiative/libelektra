@@ -1028,6 +1028,42 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 }
 
 /**
+ * @brief Deletes the OPMPHM.
+ *
+ * Clears and frees all memory in Opmphm.
+ *
+ * @param opmphm the OPMPHM
+ */
+void mmapOpmphmDel (Opmphm * opmphm)
+{
+	ELEKTRA_NOT_NULL (opmphm);
+	if (opmphmIsBuild (opmphm))
+	{
+		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH)) elektraFree (opmphm->graph);
+		opmphm->size = 0;
+	}
+	if (opmphm->rUniPar)
+	{
+		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (opmphm->hashFunctionSeeds);
+	}
+	if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_STRUCT)) elektraFree (opmphm);
+}
+
+/**
+ * @brief Deletes the OpmphmPredictor.
+ *
+ * Clears and frees all memory in OpmphmPredictor.
+ *
+ * @param op the OpmphmPredictor
+ */
+static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
+{
+	ELEKTRA_NOT_NULL (op);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE)) elektraFree (op->patternTable);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT)) elektraFree (op);
+}
+
+/**
  * @brief Replaces contents of a keyset with the keyset from the mapped region.
  *
  * The keyset members are replaced with data from a mapped keyset. The keyset
@@ -1049,6 +1085,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (keySet->opmphm)
 	{
+		if (returned->opmphm) mmapOpmphmDel (returned->opmphm);
 		returned->opmphm = keySet->opmphm;
 		returned->opmphm->flags = OPMPHM_FLAG_MMAP_STRUCT;
 		if (returned->opmphm->hashFunctionSeeds)
@@ -1062,6 +1099,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	}
 	if (keySet->opmphmPredictor)
 	{
+		if (returned->opmphmPredictor) mmapOpmphmPredictorDel (returned->opmphmPredictor);
 		returned->opmphmPredictor = keySet->opmphmPredictor;
 		returned->opmphmPredictor->flags = OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT;
 		if (returned->opmphmPredictor->patternTable)
