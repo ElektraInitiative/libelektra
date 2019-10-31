@@ -199,9 +199,9 @@ A node needs to have a JRE (Java Runtime Environment) installed.
 Further it should run an SSH (Secure SHell) server.
 Docker need to be installed as well.
 
-A `jenkins` user with 47000:47000 ids should be created as this is what is
+A `jenkins` user with 47110:47110 ids should be created as this is what is
 expected in Docker images.
-`useradd -u 47000 jenkins`
+`useradd -u 47110 jenkins`
 Additionally a public key authentication should be set up so the jenkins
 master can establish an ssh connection with the node.
 If the node should be able to interact with Docker the jenkins user should be
