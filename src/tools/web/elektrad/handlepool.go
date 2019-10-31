@@ -1,8 +1,6 @@
 package main
 
 import (
-	"sync"
-
 	elektra "go.libelektra.org/kdb"
 )
 
@@ -12,24 +10,21 @@ type handle struct {
 }
 
 type handlePool struct {
-	mut     sync.Mutex
-	handles []*handle
+	handles  chan *handle
+	doRefill chan int
+	size     int
 }
 
-func initPool(initialSize int) *handlePool {
+func initPool(size int) *handlePool {
 	pool := &handlePool{
-		handles: make([]*handle, initialSize+initialSize*1/4),
+		handles:  make(chan *handle, size),
+		doRefill: make(chan int, 1),
+		size:     size,
 	}
 
-	var err error
+	go pool.refillLoop()
 
-	for i := 0; i < initialSize; i++ {
-		pool.handles[i], err = newHandle()
-
-		if err != nil {
-			panic("asd")
-		}
-	}
+	pool.refill()
 
 	return pool
 }
@@ -61,28 +56,31 @@ func newHandle() (*handle, error) {
 	}, nil
 }
 
-func (p *handlePool) pop() *handle {
-	var h *handle
-
-	p.mut.Lock()
-	size := len(p.handles)
-
-	h, p.handles = p.handles[size-1], p.handles[:size-1]
-	p.mut.Unlock()
-
-	return h
+func (p *handlePool) refill() {
+	select {
+	case p.doRefill <- 1:
+	default:
+	}
 }
 
-func (p *handlePool) refill() {
-	h, err := newHandle()
+func (p *handlePool) pop() *handle {
+	return <-p.handles
+}
 
-	if err != nil {
-		panic("could not create new handle")
+func (p *handlePool) refillLoop() {
+	for range p.doRefill {
+		for l := len(p.handles); l < p.size; {
+			// t := time.Now()
+			h, err := newHandle()
+			// log.Printf("time to create new handle: %v", time.Now().Sub(t))
+
+			if err != nil {
+				panic("could not create new handle")
+			}
+
+			p.handles <- h
+		}
 	}
-
-	p.mut.Lock()
-	p.handles = append(p.handles, h)
-	defer p.mut.Unlock()
 }
 
 func (p *handlePool) Get() *handle {
