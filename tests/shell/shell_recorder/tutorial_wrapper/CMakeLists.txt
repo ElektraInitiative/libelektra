@@ -25,6 +25,16 @@ endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 add_msr_test (tutorial_arrays "${CMAKE_SOURCE_DIR}/doc/tutorials/arrays.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line)
+else ()
+	add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md"
+		      REQUIRED_PLUGINS hosts
+				       line
+				       PROPERTY
+				       LABELS
+				       memleak)
+endif ()
 
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")

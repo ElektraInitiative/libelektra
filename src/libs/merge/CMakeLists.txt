@@ -1,10 +1,12 @@
-# Currently using LibGit2 gives memory errors on platforms other than Linux
 include (LibAddMacros)
 find_package (LibGit2 0.24.1 QUIET)
 if (LibGit2_FOUND)
 	set (CMERGE_INCLUDE_DIRS ${LibGit2_INCLUDE_DIRS})
 	set (CMERGE_LIBRARY_DIRS ${LibGit2_LIBRARIES})
 	add_definitions (-DLIBGITFOUND)
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+		add_definitions (-DCMERGE_ON_LINUX)
+	endif ()
 endif ()
 
 # This is derived from LibAddPlugin. LibAddLib has no such functionality yet. This is required so that libelektra-full.so has defined
@@ -25,4 +27,3 @@ add_lib (merge
 	 elektra-ease
 	 LINK_LIBRARIES
 	 ${CMERGE_LIBRARY_DIRS})
-add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line)
