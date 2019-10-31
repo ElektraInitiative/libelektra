@@ -369,7 +369,7 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
-	if (source->meta)
+	if (ksGetSize (source->meta) > 0)
 	{
 		/*Make sure that dest also does not have metaName*/
 		if (dest->meta)
@@ -534,4 +534,26 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	ksAppendKey (key->meta, toSet);
 	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;
+}
+
+/** Returns the keyset holding the given key's metadata
+ *
+ * @snippet keyMetaKeySet.c Basic keyMeta
+ *
+ * You are not allowed to modify the resulting key.
+ *
+ * @note You must not delete the returned KeySet.
+ * @note Adding a key with metakeys to the KeySet is an error.
+ *
+ * @param key the key object to work with
+ * @retval 0 if the key is 0
+ * @return the keyset holding the metakeys
+ * @see keySetMeta(), keyGetMeta()
+ * @ingroup keymeta
+ **/
+KeySet * keyMeta (Key * key)
+{
+	if (!key) return 0;
+
+	return key->meta;
 }

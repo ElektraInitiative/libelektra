@@ -243,6 +243,13 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 	ksInit (keyset);
 
+	if (alloc == 0)
+	{
+		keyset->alloc = alloc;
+		keyset->array = 0;
+		return keyset;
+	}
+
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
 		keyset->alloc = KEYSET_SIZE;
@@ -257,7 +264,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 	keyset->array[0] = 0;
 
-	if (alloc != 1) // is >0 because of increment earlier
+	if (alloc != 0)
 	{
 		Key * key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key)
@@ -919,11 +926,25 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		++ks->size;
 		if (ks->size >= ks->alloc)
 		{
-			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+			size_t newSize = ks->alloc * 2;
+
+			// If array was not allocated before
+			if (newSize == 0)
+				newSize = KEYSET_SIZE - 1;
+			else
+				newSize = newSize - 1;
+
+			if (ksResize (ks, newSize) == -1)
 			{
 				keyDel (toAppend);
 				--ks->size;
 				return -1;
+			}
+
+			// If array was allocated in ksResize, size is 0
+			if (ks->size == 0)
+			{
+				++ks->size;
 			}
 		}
 		keyIncRef (toAppend);
@@ -980,9 +1001,15 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!toAppend) return -1;
 
 	if (toAppend->size == 0) return ks->size;
+	if (toAppend->array == NULL) return ks->size;
+
+	if (ks->array == NULL)
+		toAlloc = KEYSET_SIZE;
+	else
+		toAlloc = ks->alloc;
 
 	/* Do only one resize in advance */
-	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
+	for (; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
 	ksResize (ks, toAlloc - 1);
 
@@ -1170,6 +1197,8 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 
+	if (!ks->array) return ksNew (0, KS_END);
+
 	char * name = cutpoint->key;
 	if (!name) return 0;
 	// if (strcmp(name, "")) return 0;
@@ -1261,7 +1290,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	returned = ksNew (newsize, KS_END);
 	elektraMemcpy (returned->array, ks->array + found, newsize);
 	returned->size = newsize;
-	returned->array[returned->size] = 0;
+	if (returned->size > 0) returned->array[returned->size] = 0;
 
 	ksCopyInternal (ks, found, it);
 
@@ -2487,7 +2516,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 	if (!ks->size) return 0;
 
 	struct _Key key;
-
+	key.meta = NULL;
 	keyInit (&key);
 	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
 

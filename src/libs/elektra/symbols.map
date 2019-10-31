@@ -86,6 +86,7 @@ libelektra_0.8 {
 	keySetBaseName;
 	keySetBinary;
 	keySetMeta;
+	keyMeta;
 	keySetName;
 	keySetString;
 	keyString;
