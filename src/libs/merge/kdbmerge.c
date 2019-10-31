@@ -301,7 +301,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * duplicateKey = keyDup (currentKey); // TODO delete?
+			Key * duplicateKey = keyDup (currentKey);
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
@@ -396,7 +396,7 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 		// overlap  with single empty
 		// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
 		increaseStatisticalValue (informationKey, "overlap1empty");
-		if (checkedIsDominant) // TODO This also happens when there is no conflict
+		if (checkedIsDominant)
 		{
 			if (ksAppendKey (result, checkedKey) < 0)
 			{
@@ -776,7 +776,7 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
 		return NULL;
 	}
-	Key * iterator = keyNew ("/#0", KEY_END); // TODO here
+	Key * iterator = keyNew ("/#0", KEY_END);
 	if (iterator == NULL)
 	{
 		ksDel (result);
@@ -793,7 +793,6 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
 		if (elektraArrayIncName (iterator) < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
-			// TODO more free?
 			elektraFree (result);
 			keyDel (iterator);
 			return NULL;
