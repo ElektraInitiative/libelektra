@@ -148,7 +148,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   `config.h`-type headers from applications. _(Klemens Böswirth)_
 - `ksAppendKey`: state that it only fail on memory problems. _(Markus Raab)_
 - `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
-- `keyMeta` was added to provide access to a key's underlying keyset that holds its metadata keys. _(Philipp Gackstatter)_
+- `keyMeta` was added to provide access to a key's underlying KeySet that holds its metadata keys. _(Philipp Gackstatter)_
 - Removed the obsolete `ksLookupByString` and `ksLookupByBinary`, as well as deprecated `KDB_O_*` options. _(Philipp Gackstatter)_
 
 ### Opts
