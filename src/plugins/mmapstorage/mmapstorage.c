@@ -1034,7 +1034,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
  *
  * @param opmphm the OPMPHM
  */
-void mmapOpmphmDel (Opmphm * opmphm)
+static void mmapOpmphmDel (Opmphm * opmphm)
 {
 	ELEKTRA_NOT_NULL (opmphm);
 	if (opmphmIsBuild (opmphm))
