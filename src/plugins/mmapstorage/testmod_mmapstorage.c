@@ -750,7 +750,17 @@ static void test_mmap_opmphm (const char * tmpFile)
 	// write keyset with OPMPHM structures
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * returned = largeTestKeySet ();
+	// this lookup forces OPMPHM structures into the keyset
+	// to test the OPMPHM cleanup functions inside mmapstorage
+	Key * generateOpmphm = ksLookupByName (ks, name, KDB_O_OPMPHM);
+	if (!generateOpmphm)
+	{
+		yield_error ("Key not found.")
+	}
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	ksClear (returned);
+
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
 
