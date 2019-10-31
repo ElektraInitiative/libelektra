@@ -205,13 +205,3 @@ kdb cmerge -f user/tests/arrays/changed user/tests/arrays/original user/tests/ar
 kdb get user/tests/arrays/result/#0
 #> previous
 ```
-
-## elektra-install-config-files
-
-You can use the script `elektra-install-config-files` to comfortably handle your configuration files with Elektra. This script install or merges configuration files from the file system into Elektra. There are two possible scenarios:
-
-1. You have never used the script for a file. In this case the file is mounted into Elektra and additionally stored in a special path to preserve the original version. You may safely modify your configuration.
-2. You have already used the script for a previous version of the file. In this case a three-way merge will happen. The newly selected file will be regarded as `their` artifact and the currently mounted file is regarded as the `our` version. We use the archived version from step 1 as `base` version.
-   The script uses the file's name is as its unique identifier. It is therefore important that different versions of your file have exactly the same name. You can store it in different folders to perform a merge. You can, for example, mount a file from your home directory. Afterwards, you download a new version of the file from the internet and store it in `~/Downloads`. This already gives you the required structure.
-
-When specifying the parameters for the script, pay attention that it uses the regular `kdb mount`. This that you have to pay attention when mounting into `user/` or to use `sudo`.

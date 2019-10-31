@@ -92,7 +92,10 @@ If no strategy is specified, the merge will default to the abort strategy\.
 0 on success\.
 .
 .P
-1 if a conflict or any other error could not be resolved automatically\.
+1 if an error happened
+.
+.P
+2 if a merge conflict occured and merge strategy abort was set
 .
 .P
 The result of the merge is stored in \fBresult\fR\.
