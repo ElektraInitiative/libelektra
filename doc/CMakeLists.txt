@@ -126,7 +126,7 @@ if (DOXYGEN_FOUND)
 					    -D
 					    ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png
 					    -P
-					    ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
+					    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraDocSet.cmake
 				    DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
 				    WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html)
 		add_custom_target (docset ALL DEPENDS ${DOCSET_PATH})
