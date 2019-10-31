@@ -192,7 +192,7 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * @snippet ksNew.c No Allocation
  *
- * But if you have any clue how large your keyset maybe you should
+ * But if you have any clue how large your keyset may be, you should
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
