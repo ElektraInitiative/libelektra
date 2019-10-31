@@ -87,6 +87,7 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 // Response Code:
 //		201 No Content if the request is successfull.
 //		401 Bad Request if no key name was passed - or the key name is invalid.
+//      404 Not Found if the key was not found.
 //
 // Example: `curl -X DELETE -d '{ "key": "hello" }' localhost:33333/kdbMeta/user/test/hello`
 func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
@@ -108,6 +109,13 @@ func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	handle, ks := getHandle(r)
+
+	_, err = handle.Get(ks, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	k := ks.Lookup(key)
 
