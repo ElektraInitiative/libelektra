@@ -92,6 +92,13 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	handle, ks := getHandle(r)
 
+	_, err = handle.Get(ks, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	err = key.SetString(value)
 
 	if err != nil {
@@ -106,14 +113,15 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = handle.Set(ks, key)
+	err = set(handle, ks, key)
 
 	if err != nil {
 		writeError(w, err)
-	} else {
+		return
+	}
+
 		created(w)
 	}
-}
 
 // deleteKdbHandler deletes a Key.
 //
@@ -138,6 +146,13 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	handle, ks := getHandle(r)
 
+	_, err = handle.Get(ks, key)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	removedKey := ks.Remove(key)
 
 	if removedKey == nil {
@@ -149,10 +164,11 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		writeError(w, err)
-	} else {
+		return
+	}
+
 		noContent(w)
 	}
-}
 
 func lookup(ks elektra.KeySet, key elektra.Key, depth int) (result *lookupResult, err error) {
 	ks = ks.Cut(key)

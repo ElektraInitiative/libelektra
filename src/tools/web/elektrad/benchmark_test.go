@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	elektra "go.libelektra.org/kdb"
 )
 
-type prepareFunc func(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key)
+type prepareFunc func(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, n int)
 
 func Benchmark(b *testing.B) {
 	s := testServer(b)
@@ -22,46 +23,66 @@ func Benchmark(b *testing.B) {
 	world := "world"
 
 	benchmarks := []struct {
-		verb    string
-		path    string
-		body    interface{}
-		prepare prepareFunc
+		verb     string
+		path     string
+		body     interface{}
+		prepare  prepareFunc
+		indexKey bool
 	}{
-		{verb: "DELETE", path: "/kdbMeta/user/tests/go/elektrad/benchmark/delete/meta", body: keyValueBody{Key: "hello"}, prepare: prepareDeleteMeta},
-		{verb: "DELETE", path: "/kdb/user/tests/go/elektrad/benchmark/delete/kdb", body: "value", prepare: prepareDeleteKdb},
+		{verb: "DELETE", path: "/kdbMeta/user/tests/go/elektrad/benchmark/delete/meta", body: keyValueBody{Key: "hello"}, prepare: prepareDeleteMeta, indexKey: true},
+		{verb: "DELETE", path: "/kdb/user/tests/go/elektrad/benchmark/delete/kdb", body: "value", prepare: prepareDeleteKdb, indexKey: true},
 		{verb: "GET", path: "/version"},
 		{verb: "GET", path: "/kdb/user/tests/go/elektrad/benchmark/get"},
 		{verb: "GET", path: "/kdbFind/user/tests/go/elektrad/benchmark/get/001"},
-		{verb: "POST", path: "/kdbMv/user/tests/go/elektrad/benchmark/post/mv/from", body: "user/tests/go/elektrad/benchmark/post/mv/to", prepare: preparePostKdbMv},
+		{verb: "POST", path: "/kdbMv/user/tests/go/elektrad/benchmark/post/mv/from", body: "user/tests/go/elektrad/benchmark/post/mv/to", prepare: preparePostKdbMv, indexKey: true},
 		{verb: "POST", path: "/kdbMeta/user/tests/go/elektrad/benchmark/post/meta", body: keyValueBody{Key: "hello", Value: &world}, prepare: preparePostKdbMeta},
-		{verb: "PUT", path: "/kdb/user/tests/go/elektrad/benchmark/put", body: "value", prepare: preparePutKdb},
+		{verb: "PUT", path: "/kdb/user/tests/go/elektrad/benchmark/put", body: "value", indexKey: true},
 	}
 
 	withHandle := prepareBenchmark(b)
-	defer withHandle(cleanup)
+	defer withHandle(cleanup, 0)
+
+	// wait for server to warmup
+	// t := time.Now()
+	// time.Sleep(5 * time.Second)
+	// b.Logf("resuming tests after waiting for %v", time.Now().Sub(t))
 
 	for _, bt := range benchmarks {
 		run := func(b *testing.B, url string, v2 bool) {
-
-			r := benchRequest(b, bt.verb, url, bt.path, bt.body, v2)
+			path := bt.path
 
 			b.StopTimer()
 			b.ResetTimer()
 
+			cookie := getCookie(b, url)
+
+			if bt.prepare != nil {
+				withHandle(bt.prepare, b.N)
+			}
+
+			b.Logf("N: %d", b.N)
+
 			for n := 0; n < b.N; n++ {
-				if bt.prepare != nil {
-					withHandle(bt.prepare)
+				if bt.indexKey {
+					path = indexedKey(path, n)
 				}
 
+				r := benchRequest(b, bt.verb, url, path, bt.body, v2)
+				if cookie != nil {
+					r.AddCookie(cookie)
+				}
+
+				t := time.Now()
 				b.StartTimer()
 				resp, err := http.DefaultClient.Do(r)
 				b.StopTimer()
+				b.Logf("time to execute request: %v", time.Now().Sub(t))
+
+				Check(b, err, "request failed")
 
 				body, _ := ioutil.ReadAll(resp.Body)
 
-				Assertf(b, resp.StatusCode >= 200 && resp.StatusCode < 300, "unexpected status code: %d, %s", resp.StatusCode, body)
-
-				Check(b, err, "request failed")
+				Assertf(b, resp.StatusCode >= 200 && resp.StatusCode < 300, "unexpected status code for path %s: %d, %s", path, resp.StatusCode, body)
 
 				resp.Body.Close()
 			}
@@ -73,7 +94,8 @@ func Benchmark(b *testing.B) {
 			})
 
 			b.Run("v2", func(b *testing.B) {
-				run(b, s.URL, true)
+				run(b, "http://localhost:8080", true)
+				// run(b, s.URL, true)
 			})
 		})
 	}
@@ -93,6 +115,22 @@ func jsonReader(body interface{}) io.Reader {
 	return bytes.NewBuffer(b)
 }
 
+func getCookie(b testing.TB, url string) *http.Cookie {
+	r, err := http.NewRequest("GET", url+"/version", nil)
+	Check(b, err, "error creating cookie request")
+
+	resp, err := http.DefaultClient.Do(r)
+	Check(b, err, "error getting cookie")
+
+	cookies := resp.Cookies()
+
+	if len(cookies) > 0 {
+		return cookies[0]
+	}
+
+	return nil
+}
+
 func getTestHandle(t testing.TB) elektra.KDB {
 	handle := elektra.New()
 	err := handle.Open()
@@ -107,7 +145,7 @@ func getTestHandle(t testing.TB) elektra.KDB {
 func testServer(t testing.TB) *httptest.Server {
 	t.Helper()
 
-	router := setupRouter()
+	router := setupRouter(&server{pool: initPool(1000)})
 
 	ts := httptest.NewServer(router)
 
@@ -136,7 +174,6 @@ func benchRequest(b *testing.B, verb, url, path string, body interface{}, v2 boo
 	}
 
 	r, err := http.NewRequest(verb, url+path, bodyReader)
-
 	r.Header.Add("Content-Type", contentType)
 
 	Check(b, err, "error creating request")
@@ -166,14 +203,14 @@ func persist(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elek
 }
 
 func create(b testing.TB, ks elektra.KeySet, keyName string) {
-	doesExist := ks.LookupByName(keyName + "/001")
+	doesExist := ks.LookupByName(indexedKeyName(keyName, 1))
 
 	if doesExist != nil {
 		return
 	}
 
 	for n := 0; n < dataSize; n++ {
-		k, err := elektra.NewKey(fmt.Sprintf(keyName+"/%03d", n))
+		k, err := elektra.NewKey(indexedKeyName(keyName, n))
 
 		Check(b, err, "could not create data key")
 
@@ -183,11 +220,19 @@ func create(b testing.TB, ks elektra.KeySet, keyName string) {
 
 var (
 	namespace = "user/tests/go/elektrad/benchmark"
-	data      = namespace + "/get"
+	data      = "/get"
 	dataSize  = 1000
 )
 
-func prepareBenchmark(b testing.TB) func(prepareFunc) {
+func indexedKey(keyName string, i int) string {
+	return fmt.Sprintf(keyName+"/%03d", i)
+}
+
+func indexedKeyName(keyName string, i int) string {
+	return indexedKey(namespace+keyName, i)
+}
+
+func prepareBenchmark(b testing.TB) func(prepareFunc, int) {
 	b.Helper()
 
 	handle := getTestHandle(b)
@@ -202,83 +247,59 @@ func prepareBenchmark(b testing.TB) func(prepareFunc) {
 	create(b, ks, data)
 	persist(b, handle, ks, parentKey)
 
-	return func(prepare prepareFunc) {
-		prepare(b, handle, ks, parentKey)
+	return func(prepare prepareFunc, n int) {
+		b.Helper()
+
+		get(b, handle, ks, parentKey)
+		prepare(b, handle, ks, parentKey, n)
 	}
 }
 
-func preparePostKdbMv(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
-	t.Helper()
-
-	get(t, handle, ks, parentKey)
+func preparePostKdbMv(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, n int) {
 	clear(t, ks, namespace+"/post/mv/to")
-	create(t, ks, namespace+"/post/mv/from")
-	persist(t, handle, ks, parentKey)
-}
 
-func preparePutKdb(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
-	t.Helper()
-
-	get(t, handle, ks, parentKey)
-
-	k := ks.RemoveByName(namespace + "/put")
-
-	if k != nil {
-		persist(t, handle, ks, parentKey)
+	for i := 0; i < n; i++ {
+		create(t, ks, indexedKeyName("/post/mv/from", i))
 	}
-}
-
-func prepareDeleteKdb(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
-	t.Helper()
-
-	get(t, handle, ks, parentKey)
-
-	k, err := elektra.NewKey(namespace + "/delete/kdb")
-
-	Check(t, err, "could not create data key")
-
-	ks.AppendKey(k)
 
 	persist(t, handle, ks, parentKey)
 }
 
-func preparePostKdbMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
-	b.Helper()
+func prepareDeleteKdb(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, n int) {
+	for i := 0; i < n; i++ {
+		k, err := elektra.NewKey(indexedKeyName("/delete/kdb", i))
+		Check(t, err, "could not create data key")
 
+		ks.AppendKey(k)
+	}
+
+	persist(t, handle, ks, parentKey)
+}
+
+func preparePostKdbMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, n int) {
 	k, err := elektra.NewKey(namespace + "/post/meta")
-
 	Check(b, err, "could not create data key")
 
-	get(b, handle, ks, parentKey)
 	ks.AppendKey(k)
 
 	persist(b, handle, ks, parentKey)
 }
 
-func prepareDeleteMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
-	b.Helper()
+func prepareDeleteMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, n int) {
+	for i := 0; i < n; i++ {
+		keyName := indexedKeyName("/delete/meta", i)
 
-	get(b, handle, ks, parentKey)
-
-	keyName := namespace + "/delete/meta"
-
-	key := ks.LookupByName(keyName)
-
-	if key == nil {
-		var err error
-
-		key, err = elektra.NewKey(namespace + "/delete/meta")
+		key, err := elektra.NewKey(keyName)
 		Check(b, err, "could not create data key")
+		key.SetMeta("hello", "world")
 
 		ks.AppendKey(key)
 	}
 
-	key.SetMeta("hello", "world")
-
 	persist(b, handle, ks, parentKey)
 }
 
-func cleanup(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key) {
+func cleanup(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, n int) {
 	b.Helper()
 
 	get(b, handle, ks, parentKey)

@@ -54,7 +54,8 @@ func setupKey(t *testing.T, keyNames ...string) {
 	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
-	ks, err := getKeySet(kdb, rootKey)
+	ks := elektra.NewKeySet()
+	_, err = kdb.Get(ks, rootKey)
 	Checkf(t, err, "could not get KeySet: %v", err)
 
 	for _, k := range keyNames {
@@ -84,7 +85,8 @@ func removeKey(t *testing.T, keyName string) {
 	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
-	ks, err := getKeySet(kdb, parentKey)
+	ks := elektra.NewKeySet()
+	_, err = kdb.Get(ks, parentKey)
 	Checkf(t, err, "could not create key: %v", err)
 
 	k := ks.Lookup(parentKey)
@@ -111,7 +113,8 @@ func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
-	ks, err := getKeySet(kdb, parentKey)
+	ks := elektra.NewKeySet()
+	_, err = kdb.Get(ks, parentKey)
 	Checkf(t, err, "could not get KeySet: %v", err)
 
 	k := ks.Lookup(parentKey)
@@ -145,7 +148,7 @@ func testRequest(t *testing.T, verb, path string, body interface{}) *httptest.Re
 		jsonBody = bytes.NewReader(marshalled)
 	}
 
-	r := setupRouter()
+	r := setupRouter(&server{pool: initPool(10)})
 
 	w := httptest.NewRecorder()
 
@@ -168,7 +171,8 @@ func getKey(t *testing.T, keyName string) elektra.Key {
 	err = kdb.Open()
 	Checkf(t, err, "could not open kdb: %v", err)
 
-	ks, err := getKeySet(kdb, parentKey)
+	ks := elektra.NewKeySet()
+	_, err = kdb.Get(ks, parentKey)
 	Checkf(t, err, "could not get KeySet: %v", err)
 
 	return ks.Lookup(parentKey)
