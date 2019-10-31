@@ -1316,6 +1316,14 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM))
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("mmap file written without OPMPHM, but reading from a build with OPMPHM");
+		goto error;
+	}
+#endif
+
 	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader->allocSize)
 	{
 		// config file size mismatch
