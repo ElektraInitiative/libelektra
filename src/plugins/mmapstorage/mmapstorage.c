@@ -1037,7 +1037,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 static void mmapOpmphmDel (Opmphm * opmphm)
 {
 	ELEKTRA_NOT_NULL (opmphm);
-	if (opmphmIsBuild (opmphm))
+	if (opmphm && opmphm->size)
 	{
 		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH)) elektraFree (opmphm->graph);
 		opmphm->size = 0;
