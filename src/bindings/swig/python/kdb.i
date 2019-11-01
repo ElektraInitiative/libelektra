@@ -206,7 +206,7 @@
 
 // metadata
 %template(_getMeta) kdb::Key::getMeta<const kdb::Key>;
-%template(_setMeta) kdb::Key::setMeta<std::string>;
+%template(_setMeta) kdb::Key::setMeta<const char *>;
 
 // clear exception handler
 %exception;
