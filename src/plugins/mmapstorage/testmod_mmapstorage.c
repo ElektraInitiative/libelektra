@@ -764,8 +764,18 @@ static void test_mmap_opmphm (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
 
-	Key * foundMapped = ksLookupByName (ks, name, KDB_O_OPMPHM);
-	if (!foundMapped)
+	found = ksLookupByName (returned, name, KDB_O_OPMPHM);
+	if (!found)
+	{
+		yield_error ("Key not found.")
+	}
+
+	// force re-generate the OPMPHM, tests cleanup and re-allocation after mmap
+	// i.e. tests if we broke the standard cleanup functions with our mmap flags
+	Key * key = keyNew ("user/tests/mmapstorage/breakOpmphm", KEY_VALUE, "bad key", KEY_META, "e", "other meta root", KEY_END);
+	ksAppendKey (returned, key);
+	found = ksLookupByName (returned, name, KDB_O_OPMPHM);
+	if (!found)
 	{
 		yield_error ("Key not found.")
 	}
