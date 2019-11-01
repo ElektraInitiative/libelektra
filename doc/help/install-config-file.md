@@ -8,10 +8,10 @@ install-config-file(1) -- Install configuration files in Elektra
 
 `install-config-file <elektra path> <config file> [<format>]`
 
-`<elektra path>` is a path in Elektra
-`<config file>` is some file on the filesystem
+- `<elektra path>` is a path in Elektra
+- `<config file>` is some file on the filesystem
 
-`line` will be used if `<format>` is unspecified
+`line` will be used as `<format>` if `<format>` is unspecified.
 
 The script has to be called as administrator (e.g. with `sudo`).
 
