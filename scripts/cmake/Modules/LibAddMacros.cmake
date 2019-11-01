@@ -568,7 +568,7 @@ function (generate_manpage NAME)
 						    -D
 						    MANPAGE=${OUTFILE}
 						    -P
-						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManpage.cmake)
+						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)
