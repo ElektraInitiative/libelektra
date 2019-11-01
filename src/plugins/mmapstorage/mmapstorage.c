@@ -930,7 +930,7 @@ static void printMmapMetaData (MmapMetaData * mmapMetaData ELEKTRA_UNUSED)
  * @retval -1 if msync() failed
  */
 static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
-			      MmapFooter * mmapFooter, DynArray * dynArray, PluginMode mode)
+			     MmapFooter * mmapFooter, DynArray * dynArray, PluginMode mode)
 {
 	writeMagicData (dest);
 
