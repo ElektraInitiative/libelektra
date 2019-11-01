@@ -197,9 +197,13 @@ int keyNameIsSystem (const char * name)
  */
 int keyInit (Key * key)
 {
-	memset (key, 0, sizeof (struct _Key));
+	KeySet * ks = key->meta;
+	if (ks) ksClear (ks);
 
-	key->meta = ksNew (0, KS_END);
+	memset (key, 0, sizeof (struct _Key));
+	key->meta = ks;
+
+	if (!ks) key->meta = ksNew (0, KS_END);
 	return 0;
 }
 

@@ -73,6 +73,21 @@
  * ordering or different Models of your configuration.
  */
 
+/*
+ * @internal
+ *
+ * Allocates and initializes a key
+ * @returns 0 if allocation did not work, the key otherwise
+ */
+static Key * elektraKeyMalloc (void)
+{
+	Key * key = (Key *) elektraMalloc (sizeof (Key));
+	if (!key) return 0;
+	key->meta = NULL;
+	keyInit (key);
+
+	return key;
+}
 
 /**
  * A practical way to fully create a Key object in one step.
@@ -172,9 +187,7 @@ Key * keyNew (const char * name, ...)
 
 	if (!name)
 	{
-		k = (Key *) elektraMalloc (sizeof (Key));
-		if (!k) return 0;
-		keyInit (k);
+		k = elektraKeyMalloc ();
 	}
 	else
 	{
@@ -196,8 +209,7 @@ Key * keyNew (const char * name, ...)
  */
 Key * keyVNew (const char * name, va_list va)
 {
-	Key * key = (Key *) elektraMalloc (sizeof (Key));
-	if (!key) return 0;
+	Key * key = elektraKeyMalloc ();
 
 	keyVInit (key, name, va);
 	return key;
@@ -509,6 +521,7 @@ int keyClear (Key * key)
 
 	ksDel (key->meta);
 
+	key->meta = NULL;
 	keyInit (key);
 
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
