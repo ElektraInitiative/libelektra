@@ -427,6 +427,7 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c)
 			if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (opmphm->hashFunctionSeeds);
 		}
 		opmphm->hashFunctionSeeds = elektraMalloc (r * sizeof (int32_t));
+		clear_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS);
 		if (!opmphm->hashFunctionSeeds)
 		{
 			return NULL;
@@ -551,6 +552,7 @@ int opmphmCopy (Opmphm * dest, const Opmphm * source)
 	if (dest->rUniPar)
 	{
 		if (!test_bit (dest->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (dest->hashFunctionSeeds);
+		clear_bit (dest->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS);
 		dest->rUniPar = 0;
 	}
 	dest->componentSize = 0;
@@ -614,9 +616,10 @@ void opmphmDel (Opmphm * opmphm)
 {
 	ELEKTRA_NOT_NULL (opmphm);
 	opmphmClear (opmphm);
-	if (opmphm->rUniPar)
+	// omit clearing mmap flags since complete structure is free()d
+	if (opmphm->rUniPar && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS))
 	{
-		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (opmphm->hashFunctionSeeds);
+		elektraFree (opmphm->hashFunctionSeeds);
 	}
 	if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_STRUCT)) elektraFree (opmphm);
 }
@@ -635,6 +638,7 @@ void opmphmClear (Opmphm * opmphm)
 	if (opmphmIsBuild (opmphm))
 	{
 		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH)) elektraFree (opmphm->graph);
+		clear_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH);
 		opmphm->size = 0;
 	}
 }
