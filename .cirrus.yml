@@ -192,7 +192,7 @@ mac_task:
         false
       fi
 
-linux_task:
+link_task:
   matrix:
 
     - name: 🔗 Check
@@ -233,3 +233,19 @@ linux_task:
         printf >&2 '—————————————\n'
         false
       fi
+
+docu_task:
+  matrix:
+
+    - name: 📚 Check
+      container:
+          dockerfile: scripts/docker/cirrus/Dockerfile
+
+  script:
+    - *create_build_dir
+    - >
+      set --
+      -DBUILD_PDF=ON
+      -DBUILD_TESTING=OFF
+    - *generate
+    - *build
