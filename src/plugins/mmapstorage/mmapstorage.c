@@ -1052,14 +1052,13 @@ static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global
 static void mmapOpmphmDel (Opmphm * opmphm)
 {
 	ELEKTRA_NOT_NULL (opmphm);
-	if (opmphm && opmphm->size)
+	if (opmphm && opmphm->size && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH))
 	{
-		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH)) elektraFree (opmphm->graph);
-		opmphm->size = 0;
+		elektraFree (opmphm->graph);
 	}
-	if (opmphm->rUniPar)
+	if (opmphm->rUniPar && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS))
 	{
-		if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS)) elektraFree (opmphm->hashFunctionSeeds);
+		elektraFree (opmphm->hashFunctionSeeds);
 	}
 	if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_STRUCT)) elektraFree (opmphm);
 }

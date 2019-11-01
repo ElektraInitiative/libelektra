@@ -747,8 +747,19 @@ static void test_mmap_opmphm (const char * tmpFile)
 		yield_error ("Key not found.")
 	}
 
-	// write keyset with OPMPHM structures
+	// write and re-read keyset with OPMPHM structures
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksClear (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	// try triggering memleaks by copies
+	KeySet * copy = ksNew (0, KS_END);
+	ksCopy (copy, ks);
+	ksDel (copy);
+	KeySet * dup = ksDup (ks);
+	ksDel (dup);
+	KeySet * deepDup = ksDeepDup (ks);
+	ksDel (deepDup);
 
 	KeySet * returned = largeTestKeySet ();
 	// this lookup forces OPMPHM structures into the keyset
@@ -759,7 +770,8 @@ static void test_mmap_opmphm (const char * tmpFile)
 		yield_error ("Key not found.")
 	}
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
-	ksClear (returned);
+	ksDel (returned);
+	returned = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
