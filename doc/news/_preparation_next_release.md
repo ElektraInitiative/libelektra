@@ -297,7 +297,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - Added [Dockerfile for Ubuntu Bionic](../../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
-- We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). (René Schwaiger)
+- We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). _(René Schwaiger)_
 - We added a basic [Dockerfile for Arch Linux](../../scripts/docker/arch/Dockerfile). _(René Schwaiger)_
 - <<TODO>>
 
