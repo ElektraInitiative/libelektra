@@ -109,7 +109,8 @@ Some error codes like the `Permanent Errors` are generalizations and used for de
 all specific types of errors (e.g., it does not matter if it is a Resource or Installation Error but
 the developer wants to check for both). Such errors should not be able to "instantiate" or emitted
 back to Elektra as we want to force developers to take a more specific category. In case of
-Java for example the `Permanent Error` is an abstract class.
+Java for example the `Permanent Error` is an abstract class. Which errors are instantiable or not can be seen in
+the [error-categorization guideline](../dev/error-categorization.md) in the respective title saying either `abstract` or `concrete`.
 Here is an example of how Java has implemented it:
 
 ```java
@@ -150,4 +151,5 @@ getReason()
 ```
 
 Please also keep the wording identical for consistency.
-Take a look how the Java Binding implemented it in the KDBException (TODO: Provide link after merge).
+Take a look how the Java Binding implemented it in the
+[KDBException](../../src/bindings/jna/libelektra4j/src/main/java/org/libelektra/exception/KDBException.java)
