@@ -29,7 +29,7 @@ This tool currently exists alongside `kdb merge` until it is completely ready to
 
 ## Options
 
-The options of `kdb cmerge`are:
+The options of `kdb cmerge` are:
 
 - `-f`, `--force`: overwrite existing keys in `result`
 - `-v`, `--verbose`: give additional information
@@ -52,9 +52,9 @@ If no strategy is specified, the merge will default to the abort strategy.
 
 0 on success.
 
-1 if an error happened
+1 if an error happened.
 
-2 if a merge conflict occured and merge strategy abort was set
+2 if a merge conflict occured and merge strategy abort was set.
 
 The result of the merge is stored in `result`.
 
