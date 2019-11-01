@@ -1,8 +1,8 @@
-install-config-file(1) -- Install configuration files in Elektra
+# kdb-install-config-file(1) -- Install configuration files in Elektra
 
 ## SYNOPSIS
 
-`install-config-file <elektra path> <config file> [<format>]`
+`kdb install-config-file <elektra path> <config file> [<format>]`
 
 - `<elektra path>` is a path in Elektra
 - `<config file>` is some file on the filesystem
