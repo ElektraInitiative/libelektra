@@ -27,4 +27,4 @@ Elektra. There are two possible scenarios:
 
 2. You have already used the script for a previous version of the file. In this case `<elektra path>` already contains data the script performs a three-way
    merge (using `kdb cmerge`) between the file at `<config file>` (their), the `<elektra path>` (our)
-   and the preserved key set (base) from step 1.
+   and the preserved key set (base) from step 1 in scenario 1.
