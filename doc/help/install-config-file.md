@@ -13,7 +13,7 @@ install-config-file(1) -- Install configuration files in Elektra
 
 `line` will be used if `<format>` is unspecified
 
-The script has to be called as administrator.
+The script has to be called as administrator (e.g. with `sudo`).
 
 ## DESCRIPTION
 
