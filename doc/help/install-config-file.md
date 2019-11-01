@@ -1,9 +1,5 @@
 install-config-file(1) -- Install configuration files in Elektra
 
-## NAME
-
-`install-config-file` -- Install configuration files in Elektra
-
 ## SYNOPSIS
 
 `install-config-file <elektra path> <config file> [<format>]`
