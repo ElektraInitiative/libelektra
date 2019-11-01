@@ -924,9 +924,13 @@ static void printMmapMetaData (MmapMetaData * mmapMetaData ELEKTRA_UNUSED)
  * @param mmapMetaData containing meta-information of the mapped region
  * @param mmapFooter containing a magic number for consistency checks
  * @param dynArray containing deduplicated pointers to meta-keys
+ * @param mode the current plugin mode
+ *
+ * @retval 0 on success
+ * @retval -1 if msync() failed
  */
-static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
-			      MmapFooter * mmapFooter, DynArray * dynArray)
+static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
+			      MmapFooter * mmapFooter, DynArray * dynArray, PluginMode mode)
 {
 	writeMagicData (dest);
 
@@ -1024,7 +1028,17 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	mmapHeader->checksum = checksum;
 #endif
 	memcpy (dest, mmapHeader, SIZEOF_MMAPHEADER);
+
+	// force footer to be written last, as a consistency check
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && msync ((void *) dest, mmapHeader->allocSize, MS_SYNC) != 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not msync");
+		return -1;
+	}
+
 	memcpy ((dest + mmapHeader->allocSize - SIZEOF_MMAPFOOTER), mmapFooter, SIZEOF_MMAPFOOTER);
+
+	return 0;
 }
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
@@ -1508,7 +1522,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	MmapFooter mmapFooter;
 	initFooter (&mmapFooter);
-	copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
+	copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray, mode);
 
 	if (test_bit (mode, MODE_NONREGULAR_FILE))
 	{
