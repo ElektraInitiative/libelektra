@@ -6,6 +6,7 @@ RUN apk update \
         cmake \
         doxygen \
         git \
+        graphviz \
         ninja \
         ronn \
         texlive-full \
