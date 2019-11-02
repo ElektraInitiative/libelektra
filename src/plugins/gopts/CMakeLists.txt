@@ -46,7 +46,7 @@ if (gopts_source)
 		set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-gopts-testapp")
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
 
-		add_plugintest (gopts INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 120)
+		add_plugintest (gopts INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 240)
 
 		if (BUILD_SHARED)
 			add_dependencies (elektra-gopts-testapp elektra-gopts)
