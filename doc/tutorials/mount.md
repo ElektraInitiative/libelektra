@@ -78,15 +78,17 @@ sudo kdb rm system/hosts/ipv4/mylocalhost
 sudo kdb umount system/hosts
 ```
 
-> ###### Why do you Need Superuser Privileges to Mount Files?
->
-> Elektra manages its mount points in configuration below **system/elektra/mountpoints**.
-> The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
->
->     $ kdb file system/elektra/mountpoints
->     /etc/kdb/elektra.ecf
->
-> Because of that only root can mount files.
+###### Why do you Need Superuser Privileges to Mount Files?
+
+Elektra manages its mount points in configuration below **system/elektra/mountpoints**.
+The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
+
+```sh
+kdb file system/elektra/mountpoints
+#> /etc/kdb/elektra.ecf
+```
+
+Because of that only root can mount files.
 
 ## Resolver
 
