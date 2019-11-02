@@ -7,5 +7,6 @@ RUN apk update \
         doxygen \
         git \
         ninja \
+        ronn \
         texlive-full \
         wget
