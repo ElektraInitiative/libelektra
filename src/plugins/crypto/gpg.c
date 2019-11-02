@@ -703,7 +703,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		if (execv (argv[0], argv) < 0)
 		{
 			// errno is set according to the man page of execv
-			fprintf (stderr, "%s", strerror (errno));
+			fprintf (stderr, "%d", errno);
 			exit (GPG_CALL_EXECV);
 		}
 		// end of the child process
@@ -769,9 +769,13 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		outputLen = read (pipe_stderr[0], errorBuffer, sizeof (errorBuffer));
 		if (outputLen < 1)
 		{
-			errorBuffer[0] = '\0';
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary \"%s\"", argv[0]);
 		}
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary \"%s\", reason: %s", argv[0], errorBuffer);
+		else
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary \"%s\", reason: %s", argv[0],
+							 strerror (atoi (errorBuffer)));
+		}
 		break;
 
 	default:
