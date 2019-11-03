@@ -246,9 +246,6 @@ docu_task:
     - >
       set --
       -DBUILD_PDF=ON
-      -DBUILD_FULL=OFF
-      -DBUILD_SHARED=OFF
-      -DBUILD_STATIC=OFF
       -DBUILD_TESTING=OFF
       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync'
     - *generate
@@ -261,16 +258,16 @@ docu_task:
         printf -- '\nIt looks like you modified a source file of a man page, but did not commit the updated man page.\n'
         printf -- 'Please either:\n\n'
         printf -- '- build the man pages with `ronn` and commit the result, or\n'
-        printf -- '- use the `patch` command after this message to update the man page.\n\n'
+        printf -- '- use the `patch` command after this message to update the man pages.\n\n'
         printf -- 'For the second option, please\n\n'
         printf -- '1. copy the lines between the long dashes (`—`), and\n'
         printf -- '2. store them in a file called `man.patch` **in the root of the repository**.\n\n'
-        printf -- 'After that use the following command:\n\n'
+        printf -- 'After that use the command:\n\n'
         printf -- '\tcat man.patch | patch -p1\n\n'
         printf -- 'to apply the changes.\n'
-      	printf -- '\n\n————————————————————————————————————————————————————————————\n\n'
-      	printf -- '%s' "$git_diff_output"
-      	printf -- '\n\n————————————————————————————————————————————————————————————\n\n'
+        printf -- '\n\n————————————————————————————————————————————————————————————\n\n'
+        printf -- '%s' "$git_diff_output"
+        printf -- '\n\n————————————————————————————————————————————————————————————\n\n'
         false
       fi
 
