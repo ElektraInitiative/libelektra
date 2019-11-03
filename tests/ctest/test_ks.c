@@ -186,6 +186,25 @@ static void test_ksToArray (void)
 	ksDel (ks);
 }
 
+static void test_ksNoAlloc (void)
+{
+	KeySet * ks = ksNew (0, KS_END);
+
+	succeed_if (ks->alloc == 0, "alloc is not 0");
+	succeed_if (ks->size == 0, "size is not 0");
+	succeed_if (ks->array == NULL, "array is not NULL");
+
+	ksDel (ks);
+
+	ks = ksNew (1, KS_END);
+
+	succeed_if (ks->alloc != 0, "alloc is 0");
+	succeed_if (ks->size == 0, "size is not 0");
+	succeed_if (ks->array != NULL, "array is NULL");
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KS         TESTS\n");
@@ -198,6 +217,7 @@ int main (int argc, char ** argv)
 	test_elektraEmptyKeys ();
 	test_cascadingLookup ();
 	test_creatingLookup ();
+	test_ksNoAlloc ();
 
 	printf ("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
