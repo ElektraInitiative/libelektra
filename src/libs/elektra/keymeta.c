@@ -560,9 +560,10 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  * @see keySetMeta(), keyGetMeta()
  * @ingroup keymeta
  **/
-KeySet * keyMeta (const Key * key)
+KeySet * keyMeta (Key * key)
 {
 	if (!key) return 0;
+	if (!key->meta) key->meta = ksNew (0, KS_END);
 
 	return key->meta;
 }

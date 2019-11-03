@@ -195,16 +195,9 @@ int keyNameIsSystem (const char * name)
  * clears key (all data members are set to zero)
  * Initializes an empty metadata keyset if null or clears it.
  */
-int keyInit (Key * key)
+void keyInit (Key * key)
 {
-	KeySet * ks = key->meta;
-	if (ks) ksClear (ks);
-
 	memset (key, 0, sizeof (struct _Key));
-	key->meta = ks;
-
-	if (!ks) key->meta = ksNew (0, KS_END);
-	return 0;
 }
 
 static int elektraSetMetaInt (Key * key, const char * meta, int value)
