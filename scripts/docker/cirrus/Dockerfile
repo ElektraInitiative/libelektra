@@ -1,13 +1,14 @@
-FROM alpine:edge
+FROM archlinux/base
 
-RUN apk update \
-    && apk add --no-cache \
-        build-base \
-        cmake \
-        doxygen \
-        git \
-        graphviz \
-        ninja \
-        ronn \
-        texlive-full \
-        wget
+RUN pacman -Sy --noconfirm \
+    awk \
+    cmake \
+    diffutils \
+    doxygen \
+    gcc \
+    git \
+    graphviz \
+    ninja \
+    ruby-ronn \
+    texlive-most \
+    wget
