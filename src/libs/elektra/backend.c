@@ -193,7 +193,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			KeySet * cut = ksCut (elektraConfig, cur);
 			if (!strcmp (keyBaseName (cur), "config"))
 			{
-				systemConfig = ksRenameKeys (cut, "system/");
+				systemConfig = ksRenameKeys (cut, "system:/");
 				ksDel (cut);
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
@@ -275,7 +275,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 {
 	Backend * backend = elektraBackendAllocate ();
 
-	KeySet * resolverConfig = ksNew (5, keyNew ("system/path", KEY_VALUE, file, KEY_END), KS_END);
+	KeySet * resolverConfig = ksNew (5, keyNew ("system:/path", KEY_VALUE, file, KEY_END), KS_END);
 
 	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
@@ -291,7 +291,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
 				       // does not matter because it is mounted differently in system/elektra/modules:
-				       // keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
+				       // keyNew("system:/logmodule", KEY_VALUE, "1", KEY_END),
 				       KS_END);
 	Plugin * tracer = elektraPluginOpen ("tracer", modules, tracerConfig, errorKey);
 	if (tracer)
@@ -346,7 +346,7 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 
 	cursor_t save = ksGetCursor (modules);
 	KeySet * defaultConfig =
-		ksNew (5, keyNew ("system/module", KEY_VALUE, "1", KEY_END), keyNew ("user/module", KEY_VALUE, "1", KEY_END), KS_END);
+		ksNew (5, keyNew ("system:/module", KEY_VALUE, "1", KEY_END), keyNew ("user:/module", KEY_VALUE, "1", KEY_END), KS_END);
 	Key * cur = ksCurrent (modules);
 
 	elektraKeySetName (errorKey, keyName (cur), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
@@ -361,7 +361,7 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 	plugin->global = global;
 
 
-	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	Key * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
 
 	// for "virtual" plugins the keyBaseName (cur) would be "resolver" or "storage"
 	// thus we use plugin->name here, which must be handled by kdbGet() of every
@@ -399,7 +399,7 @@ Backend * backendOpenVersion (KeySet * global, Key * errorKey ELEKTRA_UNUSED)
 	}
 	plugin->global = global;
 
-	Key * mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
+	Key * mp = keyNew ("system:/elektra/version", KEY_VALUE, "version", KEY_END);
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;

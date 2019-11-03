@@ -32,9 +32,9 @@ static void test_ksNew (void)
 	succeed_if (ksGetAlloc (keys) == 15, "allocation size wrong");
 	succeed_if (ksDel (keys) == 0, "could not delete keyset");
 
-	config = ksNew (100, keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
+	config = ksNew (100, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
 	succeed_if (ksGetSize (config) == 3, "could not append 3 keys in keyNew");
 	succeed_if (ksGetAlloc (config) == 100, "allocation size wrong");
 	keyDel (ksPop (config));
@@ -45,14 +45,14 @@ static void test_ksNew (void)
 	succeed_if (ksGetAlloc (config) == 15, "allocation size wrong");
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 
-	config = ksNew (17, keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
+	config = ksNew (17, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
 
 	succeed_if (ksGetSize (config) == 4, "could not append 5 keys in keyNew");
 	succeed_if (ksGetAlloc (config) == 17, "allocation size wrong");
-	ksAppendKey (config, keyNew ("user/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
+	ksAppendKey (config, keyNew ("user:/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
 
 	ksClear (ks2);
 	ksCopy (ks2, config);
@@ -67,11 +67,11 @@ static void test_ksDuplicate (void)
 	printf ("Test bug duplicate\n");
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, keyNew ("system/duplicate", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
-	succeed_if (!strcmp (keyValue (ksLookupByName (ks, "system/duplicate", 0)), "abc"), "wrong value for inserted key");
+	succeed_if (ksAppendKey (ks, keyNew ("system:/duplicate", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
+	succeed_if (!strcmp (keyValue (ksLookupByName (ks, "system:/duplicate", 0)), "abc"), "wrong value for inserted key");
 
-	succeed_if (ksAppendKey (ks, keyNew ("system/duplicate", KEY_VALUE, "xyz", KEY_END)) == 1, "could not append duplicate key");
-	succeed_if (!strcmp (keyValue (ksLookupByName (ks, "system/duplicate", 0)), "xyz"), "wrong value for inserted key");
+	succeed_if (ksAppendKey (ks, keyNew ("system:/duplicate", KEY_VALUE, "xyz", KEY_END)) == 1, "could not append duplicate key");
+	succeed_if (!strcmp (keyValue (ksLookupByName (ks, "system:/duplicate", 0)), "xyz"), "wrong value for inserted key");
 
 	ksDel (ks);
 }
@@ -81,9 +81,9 @@ static void test_ksHole (void)
 	printf ("Test holes in keysets\n");
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
-	succeed_if (ksAppendKey (ks, keyNew ("system/sw/new/sub", KEY_VALUE, "xyz", KEY_END)) == 2, "could not append key");
-	succeed_if (ksAppendKey (ks, keyNew ("system/sw/new/mis/sub", KEY_VALUE, "xyz", KEY_END)) == 3,
+	succeed_if (ksAppendKey (ks, keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
+	succeed_if (ksAppendKey (ks, keyNew ("system:/sw/new/sub", KEY_VALUE, "xyz", KEY_END)) == 2, "could not append key");
+	succeed_if (ksAppendKey (ks, keyNew ("system:/sw/new/mis/sub", KEY_VALUE, "xyz", KEY_END)) == 3,
 		    "could not append key which makes a hole");
 
 	ksDel (ks);
@@ -134,12 +134,12 @@ static void test_append (void)
 
 	ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, key = keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
+	succeed_if (ksAppendKey (ks, key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
 	succeed_if (ks->array[0] == key, "key not on position 0");
 	succeed_if (ks->array[1] == 0, "array not null terminated");
 
-	succeed_if (ksAppendKey (ks, n = keyNew ("system/sw/new", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
+	succeed_if (ksAppendKey (ks, n = keyNew ("system:/sw/new", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
 	succeed_if (ks->array[0] == n, "n not on position 0");
 	succeed_if (ks->array[0] != key, "key is on position 0");
@@ -150,12 +150,12 @@ static void test_append (void)
 
 	ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, key = keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
+	succeed_if (ksAppendKey (ks, key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
 	succeed_if (ks->array[0] == key, "key not on position 0");
 	succeed_if (ks->array[1] == 0, "array not null terminated");
 
-	succeed_if (ksAppendKey (ks, n = keyNew ("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 2, "could not append key");
+	succeed_if (ksAppendKey (ks, n = keyNew ("system:/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 2, "could not append key");
 	succeed_if (ksGetSize (ks) == 2, "wrong size");
 	succeed_if (ks->array[0] == key, "key not on position 0");
 	succeed_if (ks->array[1] == n, "new key not on position 1");
@@ -166,12 +166,12 @@ static void test_append (void)
 
 	ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, n = keyNew ("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
+	succeed_if (ksAppendKey (ks, n = keyNew ("system:/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
 	succeed_if (ks->array[0] == n, "key not on position 0");
 	succeed_if (ks->array[1] == 0, "array not null terminated");
 
-	succeed_if (ksAppendKey (ks, key = keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 2, "could not append key");
+	succeed_if (ksAppendKey (ks, key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 2, "could not append key");
 	succeed_if (ksGetSize (ks) == 2, "wrong size");
 	succeed_if (ks->array[0] == key, "key not on position 0");
 	succeed_if (ks->array[1] == n, "key not on position 1");
@@ -180,10 +180,10 @@ static void test_append (void)
 	ksDel (ks);
 
 
-	key = keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END);
-	s1 = keyNew ("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END);
-	s2 = keyNew ("system/sw/new/sub2", KEY_VALUE, "xyz2", KEY_END);
-	s3 = keyNew ("system/sw/new/sub3", KEY_VALUE, "xyz3", KEY_END);
+	key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END);
+	s1 = keyNew ("system:/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END);
+	s2 = keyNew ("system:/sw/new/sub2", KEY_VALUE, "xyz2", KEY_END);
+	s3 = keyNew ("system:/sw/new/sub3", KEY_VALUE, "xyz3", KEY_END);
 	keyIncRef (key);
 	keyIncRef (s1);
 	keyIncRef (s2);
@@ -313,16 +313,16 @@ static void test_equal (void)
 	keySetName (k2, "");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "user/");
-	keySetName (k2, "user/");
+	keySetName (k1, "user:/");
+	keySetName (k2, "user:/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "system/");
-	keySetName (k2, "system/");
+	keySetName (k1, "system:/");
+	keySetName (k2, "system:/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "user/a");
-	keySetName (k2, "user/a");
+	keySetName (k1, "user:/a");
+	keySetName (k2, "user:/a");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
 	keyDel (k1);
@@ -338,8 +338,8 @@ static void test_cmp (void)
 
 	succeed_if (keyCmp (0, 0) == 0, "null keys comparision");
 
-	keySetName (k1, "user/a");
-	keySetName (k2, "user/a");
+	keySetName (k1, "user:/a");
+	keySetName (k2, "user:/a");
 	succeed_if (keyCmp (k1, k1) == 0, "compare the same key");
 	succeed_if (keyCmp (k1, k2) == 0, "compare the same key");
 	succeed_if (keyCmp (k2, k1) == 0, "compare the same key");
@@ -353,7 +353,7 @@ static void test_cmp (void)
 	succeed_if (keyCmp (k1, k2) < 0, "compare key with owner non_existing_user with other_non_existing_user");
 	succeed_if (keyCmp (k2, k1) > 0, "compare key with owner non_existing_user with other_non_existing_user");
 
-	keySetName (k2, "user/b");
+	keySetName (k2, "user:/b");
 	succeed_if (keyCmp (k1, k2) < 0, "compare key with different names");
 	succeed_if (keyCmp (k2, k1) > 0, "compare key with different names");
 
@@ -368,10 +368,10 @@ static void test_appendowner (void)
 
 	printf ("Append Keys with owner");
 
-	key = keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END);
-	s1 = keyNew ("system/sw/new", KEY_VALUE, "xyz1", KEY_OWNER, "s1", KEY_END);
-	s2 = keyNew ("system/sw/new", KEY_VALUE, "xyz2", KEY_OWNER, "s2", KEY_END);
-	s3 = keyNew ("system/sw/new", KEY_VALUE, "xyz3", KEY_OWNER, "s3", KEY_END);
+	key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END);
+	s1 = keyNew ("system:/sw/new", KEY_VALUE, "xyz1", KEY_OWNER, "s1", KEY_END);
+	s2 = keyNew ("system:/sw/new", KEY_VALUE, "xyz2", KEY_OWNER, "s2", KEY_END);
+	s3 = keyNew ("system:/sw/new", KEY_VALUE, "xyz3", KEY_OWNER, "s3", KEY_END);
 	ks = ksNew (0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
