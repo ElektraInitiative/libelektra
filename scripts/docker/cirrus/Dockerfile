@@ -9,6 +9,7 @@ RUN pacman -Sy --noconfirm \
     git \
     graphviz \
     ninja \
+    npm \
     qt5-base \
     qt5-declarative \
     ruby-ronn \
