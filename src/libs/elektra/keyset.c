@@ -252,14 +252,10 @@ KeySet * ksVNew (size_t alloc, va_list va)
 		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
+
 	ksInit (keyset);
 
-	if (alloc == 0)
-	{
-		keyset->alloc = alloc;
-		keyset->array = 0;
-		return keyset;
-	}
+	if (alloc == 0) return keyset;
 
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
