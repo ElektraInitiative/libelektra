@@ -1,6 +1,9 @@
 env:
   BUILD_DIR: build
 
+container:
+  memory: 8
+
 bsd_task:
   matrix:
 
