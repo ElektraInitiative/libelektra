@@ -1465,8 +1465,6 @@ static void test_keyBelow (void)
 	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
 	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
 
-	keySetName (key1, "user/valid\\"); // this is an invalid name, so this situation cannot happen!
-	succeed_if_same_string (keyName (key1), "");
 	keySetName (key2, "user/valid\\/a");
 	succeed_if (!keyIsDirectlyBelow (key1, key2), "Key should not be below");
 	succeed_if (!keyIsDirectlyBelow (key2, key1), "Key should not be below");
@@ -2407,10 +2405,6 @@ static void test_keyDirectBelow (void)
 	keySetName (k1, "user/dir");
 	succeed_if (keySetName (k2, "user/dir/direct\\\\") > -1, "could not set correct name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
-
-	keySetName (k1, "user/dir");
-	succeed_if (keySetName (k2, "user/dir/direct\\") == -1, "could set incorrect name");
-	succeed_if (keyIsDirectlyBelow (k1, k2) == 0, "invalid name: should not be direct below");
 
 	keySetName (k1, "user/dir");
 	keySetName (k2, "user/dir/direct\\\\\\/below");

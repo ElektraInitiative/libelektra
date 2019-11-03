@@ -219,32 +219,35 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if (sizeAbove == 1 && above[0] == '\0' && below[0] != '\0' && sizeBelow == strlen (below) + 1)
+	if ((sizeAbove == 3 && above[0] == KEY_NS_CASCADING && sizeBelow == 3 && below[0] != KEY_NS_CASCADING) ||
+	    (sizeBelow == 3 && below[0] == KEY_NS_CASCADING && sizeAbove == 3 && above[0] != KEY_NS_CASCADING))
 	{
-		// cascading root compared against other root
+		// cascading root compared to other root
 		return 0;
 	}
 
-	if (sizeBelow == 1 && below[0] == '\0' && above[0] != '\0' && sizeAbove == strlen (above) + 1)
+
+	if (sizeAbove == 3)
 	{
-		// cascading root compared against other root
-		return 0;
+		// root key, ignore trailing slash
+		sizeAbove -= 1;
 	}
 
-	if (above[0] != '\0' && below[0] == '\0')
+	if (sizeBelow == 3)
 	{
-		// cascading
-		size_t len = strlen (above);
-		above += len;
-		sizeAbove -= len;
+		// root key, ignore trailing slash
+		sizeBelow -= 1;
 	}
 
-	if (below[0] != '\0' && above[0] == '\0')
+	if ((above[0] != KEY_NS_CASCADING && below[0] == KEY_NS_CASCADING) ||
+	    (below[0] != KEY_NS_CASCADING && above[0] == KEY_NS_CASCADING))
 	{
-		// cascading
-		size_t len = strlen (below);
-		below += len;
-		sizeBelow -= len;
+		// cascading, ignore namespaces
+		++above;
+		--sizeAbove;
+
+		++below;
+		--sizeBelow;
 	}
 
 	if (sizeAbove > sizeBelow)
@@ -295,22 +298,28 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if (above[0] != '\0' && below[0] == '\0')
+	if (sizeAbove == 3)
 	{
-		// cascading
-		size_t len = strlen (above);
-		above += len;
-		sizeAbove -= len;
+		// root key, ignore trailing slash
+		sizeAbove -= 1;
 	}
 
-	if (below[0] != '\0' && above[0] == '\0')
+	if (sizeBelow == 3)
 	{
-		// cascading
-		size_t len = strlen (below);
-		below += len;
-		sizeBelow -= len;
+		// root key, ignore trailing slash
+		sizeBelow -= 1;
 	}
 
+	if ((above[0] != KEY_NS_CASCADING && below[0] == KEY_NS_CASCADING) ||
+	    (below[0] != KEY_NS_CASCADING && above[0] == KEY_NS_CASCADING))
+	{
+		// cascading, ignore namespaces
+		++above;
+		--sizeAbove;
+
+		++below;
+		--sizeBelow;
+	}
 	if (sizeAbove >= sizeBelow)
 	{
 		return 0;
