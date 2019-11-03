@@ -1723,7 +1723,7 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 	} while (m);
 
 	// restore old cascading name
-	keySetNamespace(specKey, KEY_NS_SPEC);
+	keySetNamespace(specKey, KEY_NS_CASCADING);
 	return ret;
 }
 
