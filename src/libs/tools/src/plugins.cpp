@@ -429,7 +429,7 @@ void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		std::string name = baseKey.getName () + "/errorplugins/#" + pluginNumber.str () + plugins[i]->refname ();
+		std::string name = baseKey.getName () + "/errorplugins/\\#" + pluginNumber.str () + plugins[i]->refname ();
 		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
 		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
@@ -446,7 +446,7 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		std::string name = baseKey.getName () + "/getplugins/#" + pluginNumber.str () + plugins[i]->refname ();
+		std::string name = baseKey.getName () + "/getplugins/\\#" + pluginNumber.str () + plugins[i]->refname ();
 		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
 		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
@@ -464,7 +464,7 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		std::string name = baseKey.getName () + "/setplugins/#" + pluginNumber.str () + plugins[i]->refname ();
+		std::string name = baseKey.getName () + "/setplugins/\\#" + pluginNumber.str () + plugins[i]->refname ();
 		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
 		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}

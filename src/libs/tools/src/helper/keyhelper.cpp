@@ -51,7 +51,7 @@ string rebasePath (const Key & key, const Key & oldParent, const Key & newParent
 	{
 		relativePath = oldKeyPath.substr (actualOldParent.getName ().length (), oldKeyPath.length ());
 	}
-	string newPath = actualNewParent.getName () + relativePath;
+	string newPath = actualNewParent.getName () + "/" + relativePath;
 
 	return newPath;
 }
