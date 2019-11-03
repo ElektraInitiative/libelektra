@@ -271,7 +271,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 	Key * specParent = keyDup (parentKey);
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
-		keySetName (specParent, "spec/");
+		keySetName (specParent, "spec:/");
 
 		const char * parent = strchr (keyName (parentKey), '/');
 		if (parent != NULL)
@@ -866,7 +866,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
 		return 0;
 	}
 
-	Key * procKey = keyNew ("proc/", KEY_END);
+	Key * procKey = keyNew ("proc:/", KEY_END);
 	keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 
 	Key * insertKey = keyDup (procKey);
@@ -939,7 +939,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 		return 1;
 	}
 
-	Key * procKey = keyNew ("proc/", KEY_END);
+	Key * procKey = keyNew ("proc:/", KEY_END);
 	keyAddName (procKey, strchr (keyName (key), '/'));
 
 	bool isArrayKey = elektraStrCmp (keyBaseName (procKey), "#") == 0;

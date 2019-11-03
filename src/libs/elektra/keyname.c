@@ -1364,7 +1364,8 @@ ssize_t keyAddName (Key * key, const char * newName)
 static const char * elektraKeyFindBaseNamePtr (Key * key)
 {
 	// TODO (kodebach): check and document
-	const char * slash = strstr (key->key, ":/") + 1;
+	const char * slash = strstr (key->key, ":/");
+	slash = slash == NULL ? key->key : slash + 1;
 	const char * end = key->key + key->keySize - 2;
 	const char * lastPart = slash == end ? NULL : slash;
 	while ((slash = strchr (slash + 1, '/')) != NULL)

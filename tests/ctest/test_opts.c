@@ -11,8 +11,8 @@
 
 #include "tests.h"
 
-#define PROC_BASE_KEY "proc/tests/opts"
-#define SPEC_BASE_KEY "spec/tests/opts"
+#define PROC_BASE_KEY "proc:/tests/opts"
+#define SPEC_BASE_KEY "spec:/tests/opts"
 
 // version 6 and 7 of clang-format don't agree whether it is supposed to be *[] or * [] so disable it here
 // TODO: re-enable clang-format once version 7 is used on build server
@@ -777,7 +777,7 @@ static void test_stop (void)
 	clearValues (ks);
 
 
-	Key * errorKey = keyNew ("spec/tests/opts", KEY_META, "posixly", "1", KEY_END);
+	Key * errorKey = keyNew ("spec:/tests/opts", KEY_META, "posixly", "1", KEY_END);
 	if (elektraGetOpts (ks, ARGS ("-ashort", "other", "-a", "short2"), NO_ENVP, errorKey) != 0)
 	{
 		yield_error ("error found");

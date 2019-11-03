@@ -903,7 +903,7 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 /**
  * creates an metadata array or appends another element to an existing metadata array
  * e.g.
- * Key *key = keyNew("user/test", KEY_END);
+ * Key *key = keyNew("user:/test", KEY_END);
  * elektraMetaArrayAdd(key, "test", "val0");
  * key now has "test/#0" with value "val0" as metadata
  * elektraMetaArrayAdd(key, "test", "val1");
@@ -931,7 +931,7 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 		keyAddBaseName (arrayKey, keyString (meta));
 	}
 	elektraArrayIncName (arrayKey);
-	const char * arrayName = keyName (arrayKey) + sizeof ("meta/") - 1;
+	const char * arrayName = keyName (arrayKey) + sizeof ("meta:/") - 1;
 	keySetMeta (key, arrayName, value);
 	keySetMeta (key, metaName, keyBaseName (arrayKey));
 	keyDel (arrayKey);
@@ -1221,7 +1221,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	{
 		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		keyDel (ksLookupByName (deps, "meta/dep", KDB_O_POP));
+		keyDel (ksLookupByName (deps, "meta:/dep", KDB_O_POP));
 		Key * tmpDep;
 		switch (ksGetSize (deps))
 		{

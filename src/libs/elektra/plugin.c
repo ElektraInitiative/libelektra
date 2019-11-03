@@ -76,7 +76,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 
 	if (fullname[2] == '#')
 	{
-		char prefixReferenceName[] = "system/elektra/plugins/";
+		char prefixReferenceName[] = "system:/elektra/plugins/";
 
 		/* We have a back reference here */
 		if (fullname[fullsize - 2] == '#')

@@ -17,13 +17,13 @@ static void test_ksResize (void)
 	KeySet * copy = ksNew (0, KS_END);
 	char name[NAME_SIZE];
 
-	ks = ksNew (20, keyNew ("user/test01", KEY_END), keyNew ("user/test02", KEY_END), keyNew ("user/test03", KEY_END),
-		    keyNew ("user/test04", KEY_END), keyNew ("user/test05", KEY_END), keyNew ("user/test11", KEY_END),
-		    keyNew ("user/test12", KEY_END), keyNew ("user/test13", KEY_END), keyNew ("user/test14", KEY_END),
-		    keyNew ("user/test15", KEY_END), keyNew ("user/test21", KEY_END), keyNew ("user/test22", KEY_END),
-		    keyNew ("user/test23", KEY_END), keyNew ("user/test24", KEY_END), keyNew ("user/test25", KEY_END),
-		    keyNew ("user/test31", KEY_END), keyNew ("user/test32", KEY_END), keyNew ("user/test33", KEY_END),
-		    keyNew ("user/test34", KEY_END), keyNew ("user/test35", KEY_END), KS_END);
+	ks = ksNew (20, keyNew ("user:/test01", KEY_END), keyNew ("user:/test02", KEY_END), keyNew ("user:/test03", KEY_END),
+		    keyNew ("user:/test04", KEY_END), keyNew ("user:/test05", KEY_END), keyNew ("user:/test11", KEY_END),
+		    keyNew ("user:/test12", KEY_END), keyNew ("user:/test13", KEY_END), keyNew ("user:/test14", KEY_END),
+		    keyNew ("user:/test15", KEY_END), keyNew ("user:/test21", KEY_END), keyNew ("user:/test22", KEY_END),
+		    keyNew ("user:/test23", KEY_END), keyNew ("user:/test24", KEY_END), keyNew ("user:/test25", KEY_END),
+		    keyNew ("user:/test31", KEY_END), keyNew ("user:/test32", KEY_END), keyNew ("user:/test33", KEY_END),
+		    keyNew ("user:/test34", KEY_END), keyNew ("user:/test35", KEY_END), KS_END);
 	succeed_if (ksGetAlloc (ks) == 20, "20 keys with alloc 20 should work");
 	ksDel (ks);
 
@@ -31,7 +31,7 @@ static void test_ksResize (void)
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 	for (i = 0; i < 100; i++)
 	{
-		snprintf (name, NAME_SIZE, "user/test%d", i);
+		snprintf (name, NAME_SIZE, "user:/test%d", i);
 		ksAppendKey (ks, keyNew (name, KEY_END));
 		if (i >= 63)
 		{
@@ -81,7 +81,7 @@ static void test_ksResize (void)
 	succeed_if (ksGetAlloc (ks) == 100, "allocation size wrong");
 	for (i = 0; i < 100; i++)
 	{
-		snprintf (name, NAME_SIZE, "user/test%d", i);
+		snprintf (name, NAME_SIZE, "user:/test%d", i);
 		ksAppendKey (ks, keyNew (name, KEY_END));
 		succeed_if (ksGetAlloc (ks) == 100, "allocation size wrong");
 	}

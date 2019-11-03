@@ -20,7 +20,7 @@ static void test_ro (void)
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
 
 	key->flags |= KEY_FLAG_RO_NAME;
-	succeed_if (keySetName (key, "user/") == -1, "read only name, not allowed to set");
+	succeed_if (keySetName (key, "user:/") == -1, "read only name, not allowed to set");
 
 	key->flags |= KEY_FLAG_RO_META;
 	succeed_if (keySetMeta (key, "meta", "value") == -1, "read only meta, not allowed to set");
@@ -32,7 +32,7 @@ static void test_uid (void)
 {
 	Key * key;
 
-	key = keyNew ("user/uid", KEY_UID, 100, KEY_END);
+	key = keyNew ("user:/uid", KEY_UID, 100, KEY_END);
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "100");
 	succeed_if (keyGetUID (key) == 100, "uid was not set correctly");
 
@@ -75,7 +75,7 @@ static void test_uid (void)
 
 	keyDel (key);
 
-	key = keyNew ("user/uid", KEY_END);
+	key = keyNew ("user:/uid", KEY_END);
 	succeed_if (keyValue (keyGetMeta (key, "uid")) == 0, "got value, but uid was not set up to now");
 	succeed_if (keyGetUID (key) == (uid_t) -1, "got value, but uid was not set up to now");
 
@@ -129,29 +129,29 @@ static void test_owner (void)
 	succeed_if_same_string (keyOwner (key), "");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("system/key", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("system:/key", KEY_END), "could not create new key");
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner set for empty key");
 	succeed_if_same_string (keyOwner (key), "");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("user/key", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("user:/key", KEY_END), "could not create new key");
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner set for empty key");
 	succeed_if_same_string (keyOwner (key), "");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("user/key", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("user:/key", KEY_END), "could not create new key");
 	succeed_if (keySetOwner (key, "markus") == sizeof ("markus"), "could not set owner markus");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "owner")), "markus");
 	succeed_if_same_string (keyOwner (key), "markus");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	setenv ("USER", "markus", 1);
-	succeed_if (key = keyNew ("user/key", KEY_END), "could not create new key with env");
+	succeed_if (key = keyNew ("user:/key", KEY_END), "could not create new key with env");
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner set for empty key with env");
 	succeed_if_same_string (keyOwner (key), "");
 	succeed_if (keyDel (key) == 0, "could not delete key with env");
 
-	succeed_if (key = keyNew ("user/key", KEY_END), "could not create new key with env");
+	succeed_if (key = keyNew ("user:/key", KEY_END), "could not create new key with env");
 	succeed_if (keySetMeta (key, "owner", "myowner") == 8, "owner set for empty key with env");
 	succeed_if_same_string (keyString (keyGetMeta (key, "owner")), "myowner");
 	succeed_if (keyDel (key) == 0, "could not delete key with env");
@@ -161,7 +161,7 @@ static void test_mode (void)
 {
 	Key * key;
 
-	key = keyNew ("user/mode", KEY_MODE, 0100, KEY_END);
+	key = keyNew ("user:/mode", KEY_MODE, 0100, KEY_END);
 	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "100");
 	succeed_if (keyGetMode (key) == 0100, "mode was not set correctly");
 
@@ -205,7 +205,7 @@ static void test_mode (void)
 
 	keyDel (key);
 
-	key = keyNew ("user/mode", KEY_END);
+	key = keyNew ("user:/mode", KEY_END);
 	succeed_if (keyValue (keyGetMeta (key, "mode")) == 0, "got value, but mode was not set up to now");
 	succeed_if (keyGetMode (key) == KDB_FILE_MODE, "KDB_FILE_MODE not default on new key");
 
@@ -218,7 +218,7 @@ static void test_mode (void)
 
 static void test_metaKeySet (void)
 {
-	Key * key = keyNew ("user/test", KEY_END);
+	Key * key = keyNew ("user:/test", KEY_END);
 	keySetMeta (key, "meta/test1", "value1");
 	keySetMeta (key, "meta/test2", "value2");
 	keySetMeta (key, "meta/test3", "value3");
@@ -226,15 +226,15 @@ static void test_metaKeySet (void)
 	KeySet * metaKeys = elektraKeyGetMetaKeySet (key);
 
 	/* test whether the metakeyset contains all keys */
-	Key * metaKey = ksLookupByName (metaKeys, "meta/meta/test1", KDB_O_NONE);
+	Key * metaKey = ksLookupByName (metaKeys, "meta:/meta/test1", KDB_O_NONE);
 	exit_if_fail (metaKey, "the first metakey was not found in the metakeyset");
 	succeed_if (!strcmp (keyString (metaKey), "value1"), "the first metakey in the metakeyset has a wrong value");
 
-	metaKey = ksLookupByName (metaKeys, "meta/meta/test2", KDB_O_NONE);
+	metaKey = ksLookupByName (metaKeys, "meta:/meta/test2", KDB_O_NONE);
 	exit_if_fail (metaKey, "the second metakey was not found in the metakeyset");
 	succeed_if (!strcmp (keyString (metaKey), "value2"), "the second metakey in the metakeyset has a wrong value");
 
-	metaKey = ksLookupByName (metaKeys, "meta/meta/test3", KDB_O_NONE);
+	metaKey = ksLookupByName (metaKeys, "meta:/meta/test3", KDB_O_NONE);
 	exit_if_fail (metaKey, "the third metakey was not found in the metakeyset");
 	succeed_if (!strcmp (keyString (metaKey), "value3"), "the third metakey in the metakeyset has a wrong value");
 
@@ -265,11 +265,11 @@ static void test_metaArrayToKS (void)
 	KeySet * ks = elektraMetaArrayToKS (test, "dep");
 	Key * cur;
 	cur = ksNext (ks);
-	succeed_if (cur && !strcmp (keyName (cur), "meta/dep"), "failed!");
+	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep"), "failed!");
 	cur = ksNext (ks);
-	succeed_if (cur && !strcmp (keyName (cur), "meta/dep/#0"), "failed!");
+	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep/#0"), "failed!");
 	cur = ksNext (ks);
-	succeed_if (cur && !strcmp (keyName (cur), "meta/dep/#1"), "failed!");
+	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep/#1"), "failed!");
 	keyDel (test);
 	ksDel (ks);
 }
