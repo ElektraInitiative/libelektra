@@ -9,6 +9,9 @@ libelektra_0.8 {
 libelektra_0.9 {
 } libelektra_0.8;
 
+libelektra_1.0 {
+} libelektra_0.9;
+
 # This is used for private symbols, which shall only be used by Elektra itself.
 # In future this may be used for ABI-checking tools.
 #
