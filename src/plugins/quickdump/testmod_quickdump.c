@@ -126,7 +126,7 @@ static void test_noParent (void)
 {
 	printf ("test noparent\n");
 
-	KeySet * input = ksNew (2, keyNew ("", KEY_VALUE, "value", KEY_END), keyNew ("/a", KEY_VALUE, "value1", KEY_END), KS_END);
+	KeySet * input = ksNew (2, keyNew ("/", KEY_VALUE, "value", KEY_END), keyNew ("/a", KEY_VALUE, "value1", KEY_END), KS_END);
 	KeySet * expected = ksNew (2, keyNew ("dir/tests/bench", KEY_VALUE, "value", KEY_END),
 				   keyNew ("dir/tests/bench/a", KEY_VALUE, "value1", KEY_END), KS_END);
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));

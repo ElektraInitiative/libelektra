@@ -306,7 +306,7 @@ static int needsMapping (Key * testKey, Key * errorKey)
 
 static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 {
-	Key * testKey = keyNew ("", KEY_END);
+	Key * testKey = keyNew ("/", KEY_END);
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:

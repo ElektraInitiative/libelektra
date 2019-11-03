@@ -621,7 +621,7 @@ static void test_booleanUserValueError (void)
 			       keyNew ("user/booleans/#1/false", KEY_VALUE, "strangeFalseValue", KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("type", modules, conf, errorKey);
 	succeed_if (plugin == NULL, "plugin open should have failed");
 	succeed_if (keyGetMeta (errorKey, "error") != NULL, "no error found after failed open");

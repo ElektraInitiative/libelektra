@@ -84,7 +84,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 		return -1;
 	}
 
-	backend->mountpoint = keyNew ("", KEY_VALUE, keyBaseName (root), KEY_END);
+	backend->mountpoint = keyNew ("/", KEY_VALUE, keyBaseName (root), KEY_END);
 	elektraKeySetName (backend->mountpoint, keyString (foundMountpoint), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
 	keySetName (errorKey, keyName (backend->mountpoint));
@@ -193,7 +193,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			KeySet * cut = ksCut (elektraConfig, cur);
 			if (!strcmp (keyBaseName (cur), "config"))
 			{
-				systemConfig = ksRenameKeys (cut, "system");
+				systemConfig = ksRenameKeys (cut, "system/");
 				ksDel (cut);
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
@@ -326,7 +326,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 	backend->setplugins[STORAGE_PLUGIN] = storage;
 	storage->refcounter = 2;
 
-	Key * mp = keyNew ("", KEY_VALUE, "default", KEY_END);
+	Key * mp = keyNew ("/", KEY_VALUE, "default", KEY_END);
 	backend->mountpoint = mp;
 	keyIncRef (backend->mountpoint);
 

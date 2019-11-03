@@ -38,7 +38,7 @@ int main (int argc, char const * argv[])
 			       keyNew ("user/plugins/#1/placements/set", KEY_VALUE, "presetstorage", KEY_END),
 			       keyNew ("user/plugins/#1/placements/get", KEY_VALUE, "pregetstorage", KEY_END), KS_END);
 
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	elektraModulesInit (modules, 0);
 	Plugin * list = elektraPluginOpen ("list", modules, conf, errorKey);
 	getFunction (list, "addPlugin");

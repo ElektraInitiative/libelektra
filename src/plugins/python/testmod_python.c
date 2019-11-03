@@ -81,14 +81,14 @@ static void test_two_scripts (void)
 				keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
 				keyNew ("user/print", KEY_END), KS_END);
 
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
 	succeed_if (output_warnings (errorKey), "warnings in kdbOpen");
 	succeed_if (output_error (errorKey), "errors in kdbOpen");
 	exit_if_fail (plugin != NULL, "unable to load python plugin");
 	keyDel (errorKey);
 
-	Key * errorKey2 = keyNew ("", KEY_END);
+	Key * errorKey2 = keyNew ("/", KEY_END);
 	Plugin * plugin2 = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf2, errorKey2);
 	succeed_if (output_warnings (errorKey2), "warnings in kdbOpen");
 	succeed_if (output_error (errorKey2), "errors in kdbOpen");
@@ -136,7 +136,7 @@ static void test_wrong (void)
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
 			       keyNew ("user/print", KEY_END), KS_END);
 
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
 	succeed_if (!output_warnings (errorKey), "we expect some warnings");
 	succeed_if (!output_error (errorKey), "we expect some errors");

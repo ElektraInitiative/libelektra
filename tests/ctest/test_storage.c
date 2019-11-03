@@ -77,7 +77,7 @@ static int openStoragePlugin (const size_t storagePlugin)
 	modules[storagePlugin] = ksNew (0, KS_END);
 	elektraModulesInit (modules[storagePlugin], 0);
 	KeySet * conf = ksNew (0, KS_END);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (pluginNames[storagePlugin], modules[storagePlugin], conf, errorKey);
 
 	const Key * metaWarnings = keyGetMeta (errorKey, "warnings");

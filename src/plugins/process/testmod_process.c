@@ -60,7 +60,7 @@ static void test_no_plugin_key (void)
 	// No plugin key, should fail
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("process", modules, conf, errorKey);
 	succeed_if (!output_warnings (errorKey), "no warnings in kdbOpen for plugin process");
 	succeed_if (output_error (errorKey), "error in kdbOpen for plugin process");
@@ -83,7 +83,7 @@ static void test_invalid_plugin_key (void)
 	// Non-existent plugin, should fail
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("process", modules, conf, errorKey);
 	succeed_if (!output_warnings (errorKey), "no warnings in kdbOpen for plugin process");
 	succeed_if (!output_error (errorKey), "no error in kdbOpen for plugin process");

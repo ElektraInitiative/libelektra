@@ -176,7 +176,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				KeySet * cutConfig = ksCut (config, key);
 				keyDel (key);
 
-				KeySet * pluginConfig = ksRenameKeys (cutConfig, "user");
+				KeySet * pluginConfig = ksRenameKeys (cutConfig, "user/");
 				ksDel (cutConfig);
 				if (!pluginConfig) return -1;
 				ksAppend (pluginConfig, systemConfig);

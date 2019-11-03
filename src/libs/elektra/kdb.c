@@ -2150,7 +2150,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
 		ksAppendKey (pluginConfig, pluginCutpoint);
 		{
-			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user");
+			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user/");
 			ksDel (pluginConfig);
 			pluginConfig = newPluginConfig;
 		}

@@ -35,7 +35,7 @@ static int benchmarkOpenPlugins (void)
 		modules[i] = ksNew (0, KS_END);
 		elektraModulesInit (modules[i], 0);
 		KeySet * conf = ksNew (0, KS_END);
-		Key * errorKey = keyNew ("", KEY_END);
+		Key * errorKey = keyNew ("/", KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginNames[i], modules[i], conf, errorKey);
 
 		const Key * metaWarnings = keyGetMeta (errorKey, "warnings");

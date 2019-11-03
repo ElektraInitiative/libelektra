@@ -40,7 +40,7 @@ static void test_plugin_open_script_not_found (void)
 
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
 	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
@@ -59,7 +59,7 @@ static void test_plugin_open_invalid_script (void)
 
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
 	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
@@ -77,7 +77,7 @@ static void test_plugin_open_not_a_script (void)
 	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "not_a_ruby_script.txt"), KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
 	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
@@ -210,12 +210,12 @@ static void test_two_plugin_instances (void)
 	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "statefull.rb"), KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey1 = keyNew ("", KEY_END);
+	Key * errorKey1 = keyNew ("/", KEY_END);
 	Plugin * plugin1 = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey1);
 
 	succeed_if (plugin1 != NULL, "could not open plugin instance 1");
 
-	Key * errorKey2 = keyNew ("", KEY_END);
+	Key * errorKey2 = keyNew ("/", KEY_END);
 	Plugin * plugin2 = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey2);
 
 	succeed_if (plugin2 != NULL, "could not open plugin instance 1");
