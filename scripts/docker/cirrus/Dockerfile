@@ -4,6 +4,7 @@ RUN pacman -Sy --noconfirm \
     awk \
     cmake \
     diffutils \
+    discount \
     doxygen \
     gcc \
     git \
