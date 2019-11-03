@@ -522,31 +522,6 @@ static int keyCompareByName (const void * p1, const void * p2)
 }
 
 /**
- * @brief Compare by unescaped name only, ignoring case
- *
- * @internal
- *
- * @param p1
- * @param p2
- *
- * @return
- */
-static int keyCompareByNameCase (const void * p1, const void * p2)
-{
-	Key * k1 = *(Key **) p1;
-	Key * k2 = *(Key **) p2;
-
-	int k1Shorter = k1->keyUSize < k2->keyUSize;
-	size_t size = k1Shorter ? k1->keyUSize : k2->keyUSize;
-	int cmp = elektraMemCaseCmp (k1->ukey, k2->ukey, size);
-	if (cmp != 0 || k1->keyUSize == k2->keyUSize)
-	{
-		return cmp;
-	}
-	return k1Shorter ? -1 : 1;
-}
-
-/**
  * @brief Compare only the owner of two keys (not the name)
  *
  * @return comparison result
@@ -584,19 +559,6 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
 	}
 	return ret;
 }
-
-
-static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
-{
-	int result = keyCompareByNameCase (p1, p2);
-
-	if (result == 0)
-	{
-		return keyCompareByOwner (p1, p2);
-	}
-	return result;
-}
-
 
 /**
  * Compare the name of two keys.
