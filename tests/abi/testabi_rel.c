@@ -30,16 +30,16 @@ static void test_keyCmp (void)
 	keySetName (k2, "");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "user");
-	keySetName (k2, "user");
+	keySetName (k1, "user/");
+	keySetName (k2, "user/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "system");
-	keySetName (k2, "system");
+	keySetName (k1, "system/");
+	keySetName (k2, "system/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "system");
-	keySetName (k2, "user");
+	keySetName (k1, "system/");
+	keySetName (k2, "user/");
 	succeed_if (keyCmp (k1, k2) < 0, "system is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "system is smaller");
 
@@ -105,19 +105,19 @@ static void test_directbelow (void)
 	Key * k1 = keyNew (0);
 	Key * k2 = keyNew (0);
 
-	keySetName (k1, "user");
+	keySetName (k1, "user/");
 	keySetName (k2, "user/a");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system");
+	keySetName (k1, "system/");
 	keySetName (k2, "system/a");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "user");
+	keySetName (k1, "user/");
 	keySetName (k2, "user/longer_name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system");
+	keySetName (k1, "system/");
 	keySetName (k2, "system/longer_name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
@@ -157,19 +157,19 @@ static void test_below (void)
 	succeed_if (keyCmp (k1, k2) == 0 || keyIsBelow (k1, k2) == 1, "should be below");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "user");
+	keySetName (k1, "user/");
 	keySetName (k2, "user/a/a");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "system");
+	keySetName (k1, "system/");
 	keySetName (k2, "system/a/a");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "user");
+	keySetName (k1, "user/");
 	keySetName (k2, "user/longer_name/also_longer_name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "system");
+	keySetName (k1, "system/");
 	keySetName (k2, "system/longer_name/also_longer_name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 

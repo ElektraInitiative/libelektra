@@ -2721,7 +2721,7 @@ static void test_nsLookup (void)
 		keySetName (lookupKey, "/test/keyset/dir7/key1");
 		if (!strcmp (namespaces[i], "spec"))
 		{
-			keySetName (searchKey, "proc");
+			keySetName (searchKey, "proc/");
 			keyAddName (searchKey, "test/keyset/dir7/key1");
 			Key * k2 = ksLookup (ks, lookupKey, 0);
 			compare_key (k2, searchKey);

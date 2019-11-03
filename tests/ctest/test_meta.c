@@ -20,7 +20,7 @@ static void test_ro (void)
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
 
 	key->flags |= KEY_FLAG_RO_NAME;
-	succeed_if (keySetName (key, "user") == -1, "read only name, not allowed to set");
+	succeed_if (keySetName (key, "user/") == -1, "read only name, not allowed to set");
 
 	key->flags |= KEY_FLAG_RO_META;
 	succeed_if (keySetMeta (key, "meta", "value") == -1, "read only meta, not allowed to set");

@@ -240,19 +240,19 @@ static int elektraKeySetNameByNamespace (Key * parentKey, elektraNamespace ns)
 	switch (ns)
 	{
 	case KEY_NS_SPEC:
-		keySetName (parentKey, "spec");
+		keySetName (parentKey, "spec/");
 		break;
 	case KEY_NS_PROC:
 		/* only transient, should fail */
 		return 0;
 	case KEY_NS_DIR:
-		keySetName (parentKey, "dir");
+		keySetName (parentKey, "dir/");
 		break;
 	case KEY_NS_USER:
-		keySetName (parentKey, "user");
+		keySetName (parentKey, "user/");
 		break;
 	case KEY_NS_SYSTEM:
-		keySetName (parentKey, "system");
+		keySetName (parentKey, "system/");
 		break;
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:

@@ -61,7 +61,7 @@ static void test_mount (void)
 	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
 	compare_key (mountGetMountpoint (kdb, sk), mp);
 
-	keySetName (sk, "system");
+	keySetName (sk, "system/");
 	kdb->defaultBackend = b_new ("", "default");
 	succeed_if (mountGetBackend (kdb, sk) == kdb->defaultBackend, "did not return default backend");
 
@@ -616,7 +616,7 @@ static void test_cascading (void)
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
-	keySetName (searchKey, "system");
+	keySetName (searchKey, "system/");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -696,7 +696,7 @@ static void test_root (void)
 	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);
@@ -754,7 +754,7 @@ static void test_default (void)
 	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);
@@ -827,7 +827,7 @@ static void test_init (void)
 	Key * dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (!b2, "there should be no backend");
 
@@ -856,7 +856,7 @@ static void test_init (void)
 	succeed_if (b2 == kdb->initBackend, "should be the init backend");
 	if (b2) compare_key (b2->mountpoint, dmp);
 
-	keySetName (searchKey, "system");
+	keySetName (searchKey, "system/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (!b2, "there should be no backend");
 
@@ -894,7 +894,7 @@ static void test_rootInit (void)
 	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);
@@ -934,7 +934,7 @@ static void test_rootInit (void)
 	succeed_if (b2 == kdb->initBackend, "should be the init backend");
 	if (b2) compare_key (b2->mountpoint, dmp);
 
-	keySetName (searchKey, "system");
+	keySetName (searchKey, "system/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 != kdb->initBackend, "should not be the init backend");
@@ -979,7 +979,7 @@ static void test_modules (void)
 	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);

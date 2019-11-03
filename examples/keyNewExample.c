@@ -50,8 +50,8 @@ int main (void)
 	key = keyNew ("user/test//", KEY_END);
 
 	/* we are providing a lot of '/' to see it being removed */
-	keySetName (key, "system");
-	keySetName (key, "user");
+	keySetName (key, "system/");
+	keySetName (key, "user/");
 	keySetName (key, "user:aviram");
 	keySetName (key, "user///abc//////def///");
 	keySetName (key, "user:root///aaa//////bbb///");

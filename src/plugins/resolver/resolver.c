@@ -314,7 +314,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	switch (KEY_NS_SPEC)
 	{
 	case KEY_NS_SPEC:
-		keySetName (testKey, "spec");
+		keySetName (testKey, "spec/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -336,7 +336,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		// FALLTHROUGH
 
 	case KEY_NS_DIR:
-		keySetName (testKey, "dir");
+		keySetName (testKey, "dir/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -357,7 +357,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_USER:
-		keySetName (testKey, "user");
+		keySetName (testKey, "user/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -379,7 +379,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
-		keySetName (testKey, "system");
+		keySetName (testKey, "system/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SYSTEM, (p->system).path,

@@ -60,7 +60,7 @@ static void test_mount (void)
 	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
 	compare_key (mountGetMountpoint (kdb, sk), mp);
 
-	keySetName (sk, "system");
+	keySetName (sk, "system/");
 	kdb->defaultBackend = b_new ("", "default");
 	succeed_if (mountGetBackend (kdb, sk) == kdb->defaultBackend, "did not return default backend");
 
@@ -187,7 +187,7 @@ static void test_us (void)
 	succeed_if (kdb->split->size == 5, "size of split not correct");
 	mp = keyNew ("system", KEY_VALUE, "system", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
-	keySetName (mp, "user");
+	keySetName (mp, "user/");
 	keySetString (mp, "user");
 	compare_key (mp, kdb->split->parents[1]);
 	keySetName (mp, "system/elektra");
@@ -265,7 +265,7 @@ static void test_cascading (void)
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
-	keySetName (searchKey, "system");
+	keySetName (searchKey, "system/");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -345,13 +345,13 @@ static void test_root (void)
 	succeed_if (kdb->split->size == 5, "size of split not correct");
 	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
-	keySetName (mp, "dir");
+	keySetName (mp, "dir/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[1]);
-	keySetName (mp, "user");
+	keySetName (mp, "user/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[2]);
-	keySetName (mp, "system");
+	keySetName (mp, "system/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[3]);
 	keySetName (mp, "user/tests/simple");
@@ -363,7 +363,7 @@ static void test_root (void)
 	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);
@@ -412,13 +412,13 @@ static void test_default (void)
 	succeed_if (kdb->split->size == 6, "size of split not correct");
 	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
-	keySetName (mp, "dir");
+	keySetName (mp, "dir/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[1]);
-	keySetName (mp, "user");
+	keySetName (mp, "user/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[2]);
-	keySetName (mp, "system");
+	keySetName (mp, "system/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[3]);
 	keySetName (mp, "system/elektra");
@@ -442,7 +442,7 @@ static void test_default (void)
 	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);
@@ -511,13 +511,13 @@ static void test_modules (void)
 	succeed_if (kdb->split->size == 8, "size of split not correct");
 	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
-	keySetName (mp, "dir");
+	keySetName (mp, "dir/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[1]);
-	keySetName (mp, "user");
+	keySetName (mp, "user/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[2]);
-	keySetName (mp, "system");
+	keySetName (mp, "system/");
 	keySetString (mp, "root");
 	compare_key (mp, kdb->split->parents[3]);
 	/* we cannot exactly know where resolver+dump is located
@@ -542,7 +542,7 @@ static void test_modules (void)
 	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (b2->mountpoint, rmp);
@@ -620,13 +620,13 @@ static void test_defaultonly (void)
 	succeed_if (kdb->split->size == 4, "size of split not correct");
 	Key * mp = keyNew ("spec", KEY_VALUE, "default", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
-	keySetName (mp, "dir");
+	keySetName (mp, "dir/");
 	keySetString (mp, "default");
 	compare_key (mp, kdb->split->parents[1]);
-	keySetName (mp, "user");
+	keySetName (mp, "user/");
 	keySetString (mp, "default");
 	compare_key (mp, kdb->split->parents[2]);
-	keySetName (mp, "system");
+	keySetName (mp, "system/");
 	keySetString (mp, "default");
 	compare_key (mp, kdb->split->parents[3]);
 
@@ -638,7 +638,7 @@ static void test_defaultonly (void)
 	Key * searchKey = keyNew ("", KEY_END);
 	Backend * b2 = 0;
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2 == 0, "should be default backend");
 

@@ -271,7 +271,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 	Key * specParent = keyDup (parentKey);
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
-		keySetName (specParent, "spec");
+		keySetName (specParent, "spec/");
 
 		const char * parent = strchr (keyName (parentKey), '/');
 		if (parent != NULL)

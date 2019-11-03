@@ -326,12 +326,12 @@ static void test_equal (void)
 	keySetName (k2, "");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "user");
-	keySetName (k2, "user");
+	keySetName (k1, "user/");
+	keySetName (k2, "user/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "system");
-	keySetName (k2, "system");
+	keySetName (k1, "system/");
+	keySetName (k2, "system/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
 	keySetName (k1, "user/a");

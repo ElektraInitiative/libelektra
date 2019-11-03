@@ -32,10 +32,10 @@ static void test_minimaltrie (void)
 	succeed_if (trieLookup (trie, s), "trie should not be null");
 	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
-	keySetName (s, "user");
+	keySetName (s, "user/");
 	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
-	keySetName (s, "system");
+	keySetName (s, "system/");
 	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "user/below");
@@ -291,7 +291,7 @@ static void test_moreiterate (void)
 
 	Key * searchKey = keyNew (0);
 
-	keySetName (searchKey, "user");
+	keySetName (searchKey, "user/");
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, ksLookupByName (mps, "user", 0));
@@ -323,7 +323,7 @@ static void test_moreiterate (void)
 	succeed_if (backend, "there should be a backend");
 	if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 
-	keySetName (searchKey, "system");
+	keySetName (searchKey, "system/");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
@@ -435,7 +435,7 @@ static void test_revmoreiterate (void)
 
 		Key * searchKey = keyNew (0);
 
-		keySetName (searchKey, "user");
+		keySetName (searchKey, "user/");
 		Backend * backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
 		if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "user", 0));
@@ -467,7 +467,7 @@ static void test_revmoreiterate (void)
 		succeed_if (backend, "there should be a backend");
 		if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 
-		keySetName (searchKey, "system");
+		keySetName (searchKey, "system/");
 		backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
 		if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
