@@ -1131,7 +1131,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	elektraOpmphmInvalidate (ks);
 
-	if (name[0] == '/')
+	if (cutpoint->ukey[0] == KEY_NS_CASCADING)
 	{
 		ret = ksNew (0, KS_END);
 
