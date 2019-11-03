@@ -482,18 +482,23 @@ int elektraKeyNameValidate (const char * name, const char * prefix)
 	// TODO (kodebach): check and document
 	if (prefix == NULL)
 	{
-		const char * slash = strchr (name, '/');
-		if (slash == NULL) return 0;
-
-		// TODO (kodebach): : after namespace
-		size_t len = slash - name;
-		if (slash != name && elektraReadNamespace (name, len) == KEY_NS_NONE)
+		const char * firstPart = name + 1;
+		if (name[0] != '/')
 		{
-			// wrong namespace
-			return 0;
+			// check namespace
+			const char * colonSlash = strstr (name, ":/");
+			if (colonSlash == NULL) return 0;
+
+			size_t len = colonSlash - name;
+			if (elektraReadNamespace (name, len) == KEY_NS_NONE)
+			{
+				// wrong namespace
+				return 0;
+			}
+			firstPart = colonSlash + 2;
 		}
 
-		if (slash[1] == '.' && slash[2] == '.' && slash[3] == '/')
+		if (firstPart[0] == '.' && firstPart[1] == '.' && firstPart[2] == '/')
 		{
 			// first part is /../
 			return 0;
@@ -502,8 +507,8 @@ int elektraKeyNameValidate (const char * name, const char * prefix)
 	else
 	{
 		// count parts in prefix (excluding namespace)
-		// TODO (kodebach): : after namespace, just start there
-		const char * slash = prefix;
+		const char * slash = strstr (prefix, ":/");
+		slash = slash == NULL ? prefix : slash + 1;
 		const char * end = prefix + strlen (prefix) - 1;
 		while ((slash = strchr (slash, '/')) != NULL)
 		{
@@ -573,6 +578,21 @@ size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, siz
 	char * outPtr = cname;
 
 	const char * lastSlash = name;
+	if (offset == 0)
+	{
+		if (name[0] != '/')
+		{
+			// handle namespace
+			const char * colonSlash = strstr (name, ":/");
+			size_t len = colonSlash - name;
+			memcpy (outPtr, name, len);
+			outPtr += len;
+			*outPtr++ = ':';
+
+			lastSlash = colonSlash + 2;
+		}
+		*outPtr++ = '/';
+	}
 
 	int slashes = 0;
 
@@ -652,7 +672,7 @@ size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, siz
 			outPtr += underscores + digits;
 			*outPtr++ = '/';
 		}
-		else if (len > 0 || lastSlash == name)
+		else if (len > 0)
 		{
 			// normal part -> just copy
 			memcpy (outPtr, lastSlash, len);
@@ -698,10 +718,9 @@ size_t elektraKeyNameUnescape (const char * name, char ** unescapedName, size_t 
 	{
 		if (name[0] != '/')
 		{
-			// TODO (kodebach): colon after namespace
-			const char * firstSlash = strchr (name, '/');
-			*outPtr++ = elektraReadNamespace (name, firstSlash - name);
-			lastSpecial = firstSlash;
+			const char * colonSlash = strstr (name, ":/");
+			*outPtr++ = elektraReadNamespace (name, colonSlash - name);
+			lastSpecial = colonSlash + 1;
 		}
 		else
 		{
@@ -1342,8 +1361,8 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 static const char * elektraKeyFindBaseNamePtr (Key * key)
 {
-	// TODO (kodebach): check and document, : after namespace
-	const char * slash = strchr (key->key, '/');
+	// TODO (kodebach): check and document
+	const char * slash = strstr (key->key, ":/") + 1;
 	const char * end = key->key + key->keySize - 2;
 	const char * lastPart = slash == end ? NULL : slash;
 	while ((slash = strchr (slash + 1, '/')) != NULL)
