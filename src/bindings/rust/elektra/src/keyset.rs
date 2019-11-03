@@ -20,12 +20,6 @@ bitflags! {
         const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::option_t;
         /// The found key will be popped from the keyset.
         const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::option_t;
-        /// Ignore case.
-        const KDB_O_NOCASE = elektra_sys::KDB_O_NOCASE as elektra_sys::option_t;
-        /// Search with owner.
-        const KDB_O_WITHOWNER = elektra_sys::KDB_O_WITHOWNER as elektra_sys::option_t;
-        /// Linear search from start -> cursor to cursor -> end.
-        const KDB_O_NOALL = elektra_sys::KDB_O_NOALL as elektra_sys::option_t;
     }
 }
 
@@ -534,19 +528,6 @@ mod tests {
         assert_eq!(ret_val.unwrap().name(), "user/test/key");
         assert_eq!(ks.size(), 2);
         assert_eq!(ks.tail().unwrap().name(), "user/test/key");
-    }
-
-    #[test]
-    fn can_lookup_key_with_nocase_and_pop_option() {
-        let mut ks = setup_keyset();
-        let lookup_key = StringKey::new("/TEST/key").unwrap();
-        let key = ks.lookup(
-            lookup_key,
-            LookupOption::KDB_O_NOCASE | LookupOption::KDB_O_POP,
-        );
-        assert_eq!(key.unwrap().name(), "user/test/key");
-        assert_eq!(ks.size(), 1);
-        assert_eq!(ks.head().unwrap().name(), "system/test/key");
     }
 
     #[test]
