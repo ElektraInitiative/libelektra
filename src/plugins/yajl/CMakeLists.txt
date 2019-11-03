@@ -2,6 +2,7 @@ if (DEPENDENCY_PHASE)
 	find_package (Yajl QUIET)
 
 	set (INCL ${YAJL_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/yajl.h.in" "${CMAKE_CURRENT_BINARY_DIR}/yajl.h")
 
 	if (NOT YAJL_FOUND)
 		remove_plugin (yajl "yajl (libyajl-dev 1 or 2) not found")
@@ -23,7 +24,3 @@ add_plugin (yajl
 	    INCLUDE_DIRECTORIES "${INCL}"
 	    LINK_ELEKTRA elektra-ease
 	    LINK_LIBRARIES ${YAJL_LIBRARIES})
-
-if (ADDTESTING_PHASE)
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/yajl.h.in" "${CMAKE_CURRENT_BINARY_DIR}/yajl.h")
-endif ()
