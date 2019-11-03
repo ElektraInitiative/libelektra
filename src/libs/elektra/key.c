@@ -375,8 +375,6 @@ int g (const Key * source, KeySet * ks)
  */
 Key * keyDup (const Key * source)
 {
-	Key * dest = 0;
-
 	if (!source) return 0;
 
 	dest = keyNew (0, KEY_END);

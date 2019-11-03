@@ -768,7 +768,6 @@ ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 
 	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	if (!(options & KEY_META_NAME)) keySetOwner (key, NULL);
 
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
@@ -806,6 +805,8 @@ ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 	key->keyUSize = keyUSize;
 
 	set_bit (key->flags, KEY_FLAG_SYNC);
+
+	if (!(options & KEY_META_NAME) && keyGetNamespace (key) != KEY_NS_META) keySetOwner (key, NULL);
 	return key->keySize;
 }
 

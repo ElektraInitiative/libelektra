@@ -265,11 +265,11 @@ static void test_metaArrayToKS (void)
 	KeySet * ks = elektraMetaArrayToKS (test, "dep");
 	Key * cur;
 	cur = ksNext (ks);
-	succeed_if (cur && !strcmp (keyName (cur), "dep"), "failed!");
+	succeed_if (cur && !strcmp (keyName (cur), "meta/dep"), "failed!");
 	cur = ksNext (ks);
-	succeed_if (cur && !strcmp (keyName (cur), "dep/#0"), "failed!");
+	succeed_if (cur && !strcmp (keyName (cur), "meta/dep/#0"), "failed!");
 	cur = ksNext (ks);
-	succeed_if (cur && !strcmp (keyName (cur), "dep/#1"), "failed!");
+	succeed_if (cur && !strcmp (keyName (cur), "meta/dep/#1"), "failed!");
 	keyDel (test);
 	ksDel (ks);
 }

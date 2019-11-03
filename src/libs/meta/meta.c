@@ -931,7 +931,8 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 		keyAddBaseName (arrayKey, keyString (meta));
 	}
 	elektraArrayIncName (arrayKey);
-	keySetMeta (key, keyName (arrayKey), value);
+	const char * arrayName = keyName (arrayKey) + sizeof ("meta/") - 1;
+	keySetMeta (key, arrayName, value);
 	keySetMeta (key, metaName, keyBaseName (arrayKey));
 	keyDel (arrayKey);
 }
@@ -965,25 +966,17 @@ KeySet * elektraMetaArrayToKS (const Key * key, const char * metaName)
 	const Key * meta = keyGetMeta (key, metaName);
 	if (!meta) return NULL;
 
-	KeySet * result = ksNew (0, KS_END);
-
+	KeySet * result;
 	if (keyString (meta)[0] != '#')
 	{
-		ksAppendKey (result, (Key *) meta);
-		ksRewind (result);
-		return result;
+		result = ksNew (1, meta, KS_END);
 	}
-	ksAppendKey (result, keyDup (meta));
-	Key * currentKey = keyDup (meta);
-	keyAddName (currentKey, "#");
-	elektraArrayIncName (currentKey);
-	Key * curMeta = NULL;
-	while ((curMeta = (Key *) keyGetMeta (key, keyName (currentKey))) != NULL)
+	else
 	{
-		ksAppendKey (result, keyDup (curMeta));
-		elektraArrayIncName (currentKey);
+		result = elektraArrayGet (meta, keyMeta (key));
+		ksAppendKey (result, (Key *) meta);
 	}
-	keyDel (currentKey);
+
 	ksRewind (result);
 	return result;
 }
@@ -1206,7 +1199,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	ksRewind (ks);
 	Key * cur;
 	ssize_t size = ksGetSize (ks);
-	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
+	Key * orderCounter = keyNew ("/#", KEY_END);
 	elektraArrayIncName (orderCounter);
 	_adjMatrix adjMatrix[size];
 	int i = 0;
@@ -1228,7 +1221,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	{
 		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		keyDel (ksLookupByName (deps, "dep", KDB_O_POP));
+		keyDel (ksLookupByName (deps, "meta/dep", KDB_O_POP));
 		Key * tmpDep;
 		switch (ksGetSize (deps))
 		{
