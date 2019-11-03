@@ -15,4 +15,5 @@ RUN pacman -Sy --noconfirm \
     qt5-declarative \
     ruby-ronn \
     texlive-most \
-    wget
+    wget \
+    yajl
