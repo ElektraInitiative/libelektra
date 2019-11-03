@@ -1262,7 +1262,6 @@ int main (int argc, char ** argv)
 	test_keyFixedNew ();
 	test_keyFlags ();
 
-	print_result ("test_key")
-
-		return nbError;
+	print_result ("test_key");
+	return nbError;
 }

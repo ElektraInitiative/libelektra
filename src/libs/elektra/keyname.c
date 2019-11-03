@@ -600,6 +600,7 @@ size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, siz
 		if (len == 1 && lastSlash[0] == '.')
 		{
 			// /./ -> ignore
+			--slashes;
 		}
 		else if (len == 2 && lastSlash[0] == '.' && lastSlash[1] == '.')
 		{
@@ -665,10 +666,10 @@ size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, siz
 	size_t lastLen = strlen (lastSlash);
 	if (lastLen > 1 || (lastLen == 1 && lastSlash[0] != '.'))
 	{
-		strncpy (outPtr, lastSlash, lastLen);
+		memcpy (outPtr, lastSlash, lastLen);
 		outPtr += lastLen;
 	}
-	else if (slashes > 1 || offset > 0)
+	else if (slashes > 1 || offset > 0 || (name[0] == '/' && slashes == 1))
 	{
 		--outPtr;
 	}
