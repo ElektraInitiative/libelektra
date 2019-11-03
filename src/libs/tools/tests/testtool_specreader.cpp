@@ -29,7 +29,7 @@ TEST (SpecReader, withDatabase)
 	mpd->data[PluginSpec ("c")]["ordering"];
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
-	sr.readSpecification (KeySet (5, *Key ("spec", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
+	sr.readSpecification (KeySet (5, *Key ("spec/", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				      *Key ("spec/mp/below", KEY_META, "config/needs/something", "here", KEY_END), KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
@@ -50,7 +50,7 @@ TEST (SpecReader, withDatabaseRecursive)
 	mpd->data[PluginSpec ("c")]["ordering"];
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
-	sr.readSpecification (KeySet (5, *Key ("spec", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
+	sr.readSpecification (KeySet (5, *Key ("spec/", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				      *Key ("spec/mp/below", KEY_META, "config/needs/something", "else", KEY_END),
 				      *Key ("spec/mp/below/recursive", KEY_META, "mountpoint", "otherfile.ini", KEY_END), KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
@@ -67,7 +67,7 @@ TEST (SpecReader, withNeeds)
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
 	sr.readSpecification (KeySet (
-		5, *Key ("spec", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
+		5, *Key ("spec/", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 		*Key ("spec/mp/below", KEY_META, "config/needs/something", "here", KEY_META, "infos/needs", "resolver storage", KEY_END),
 		KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
@@ -94,7 +94,7 @@ TEST (SpecReader, withNeedsResolved)
 	SpecReader sr (mpi);
 	// clang-format off
 	sr.readSpecification(KeySet(5,
-				*Key ("spec", KEY_END),
+				*Key ("spec/", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_META, "config/needs/something", "here",
 					KEY_META, "infos/needs", "resolver storage",
@@ -136,7 +136,7 @@ TEST (SpecReader, withNeedsResolvedPreferences)
 	SpecReader sr (mpi);
 	// clang-format off
 	sr.readSpecification(KeySet(5,
-				*Key ("spec", KEY_END),
+				*Key ("spec/", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
@@ -173,7 +173,7 @@ TEST (SpecReader, withNeedsResolvedPreferencesPlugins)
 	SpecReader sr (mpi);
 	// clang-format off
 	sr.readSpecification(KeySet(5,
-				*Key ("spec", KEY_END),
+				*Key ("spec/", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_META, "infos/plugins", "b",
 					KEY_META, "infos/needs", "resolver storage",
@@ -212,7 +212,7 @@ TEST (SpecReader, withNeedsResolvedNumerical)
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
 	sr.readSpecification (
-		KeySet (5, *Key ("spec", KEY_END),
+		KeySet (5, *Key ("spec/", KEY_END),
 			*Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_META, "infos/needs", "resolver storage", KEY_END),
 			*Key ("spec/mp/below", KEY_END), KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
@@ -245,7 +245,7 @@ TEST (SpecReader, withNeedsResolvedPreferencesIgnored)
 	SpecReader sr (mpi);
 	// clang-format off
 	sr.readSpecification(KeySet(5,
-				*Key ("spec", KEY_END),
+				*Key ("spec/", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_META, "infos/needs", "a", // warning: order matters here..
 					KEY_END),
@@ -275,7 +275,7 @@ TEST (SpecReader, withMetadata)
 	SpecReader sr (mpi);
 	// clang-format off
 	sr.readSpecification(KeySet(5,
-				*Key ("spec", KEY_END),
+				*Key ("spec/", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_META, "rename/toupper", "2",
 					KEY_END),
@@ -309,7 +309,7 @@ TEST (SpecReader, withMetadataPreference)
 	mpd->data[PluginSpec ("bestcheck")]["status"] = "recommended";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
-	sr.readSpecification (KeySet (5, *Key ("spec", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
+	sr.readSpecification (KeySet (5, *Key ("spec/", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				      *Key ("spec/mp/below", KEY_META, "check/math", "below >= 3", KEY_END), KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
@@ -339,7 +339,7 @@ TEST (SpecReader, withMetadataPreferenceNumerical)
 	mpd->data[PluginSpec ("bestcheck")]["status"] = "popular 5";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
-	sr.readSpecification (KeySet (5, *Key ("spec", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
+	sr.readSpecification (KeySet (5, *Key ("spec/", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				      *Key ("spec/mp/below", KEY_META, "check/math", "below >= 3", KEY_END), KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
@@ -366,7 +366,7 @@ TEST (SpecReader, pluginConfiguration)
 	SpecReader sr (mpi);
 	// clang-format off
 	sr.readSpecification(KeySet(5,
-				*Key ("spec", KEY_END),
+				*Key ("spec/", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_END),
 				*Key ("spec/mp/transform",

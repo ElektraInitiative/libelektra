@@ -63,7 +63,7 @@ static void test_simple (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -115,7 +115,7 @@ static void test_iterate (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -184,7 +184,7 @@ static void test_reviterate (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -530,7 +530,7 @@ static void test_umlauts (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -612,7 +612,7 @@ static void test_endings (void)
 
 		exit_if_fail (trie, "trie was not build up successfully");
 
-		Key * searchKey = keyNew ("user", KEY_END);
+		Key * searchKey = keyNew ("user/", KEY_END);
 		Backend * backend = trieLookup (trie, searchKey);
 		succeed_if (!backend, "there should be no backend");
 
@@ -700,7 +700,7 @@ static void test_root (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be the root backend");

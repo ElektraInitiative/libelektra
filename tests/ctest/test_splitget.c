@@ -557,7 +557,7 @@ static void test_triesizes (void)
 
 	split = splitNew ();
 
-	parentKey = keyNew ("user", KEY_END);
+	parentKey = keyNew ("user/", KEY_END);
 
 	rootBackend = trieLookup (handle->trie, parentKey);
 	keySetName (parentKey, "user/tests/simple/below");
@@ -654,7 +654,7 @@ static void test_merge (void)
 
 	split = splitNew ();
 
-	parentKey = keyNew ("user", KEY_END);
+	parentKey = keyNew ("user/", KEY_END);
 
 	rootBackend = trieLookup (handle->trie, parentKey);
 	keySetName (parentKey, "user/tests/simple/below");

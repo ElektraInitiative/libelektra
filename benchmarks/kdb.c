@@ -29,7 +29,7 @@ int main (void)
 	fprintf (stdout, "%s;%s;%s\n", "plugin", "operation", "microseconds");
 	{
 		KeySet * returned = ksNew (0, KS_END);
-		Key * parentKey = keyNew ("user", KEY_END);
+		Key * parentKey = keyNew ("user/", KEY_END);
 
 		timeInit ();
 		KDB * handle = kdbOpen (parentKey);

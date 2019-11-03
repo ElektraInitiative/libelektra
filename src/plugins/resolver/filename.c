@@ -113,7 +113,7 @@ static void elektraResolveFinishByFilename (ElektraResolved * handle, ElektraRes
 
 static void elektraResolveUsingHome (ElektraResolved * handle, const char * home, short addPostfix)
 {
-	Key * canonify = keyNew ("user", KEY_END);
+	Key * canonify = keyNew ("user/", KEY_END);
 	keyAddName (canonify, home);
 
 	size_t dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
@@ -228,7 +228,7 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 		return 0;
 	}
 
-	Key * canonify = keyNew ("user", KEY_END);
+	Key * canonify = keyNew ("user/", KEY_END);
 	keyAddName (canonify, user);
 	size_t homeSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 

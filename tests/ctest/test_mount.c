@@ -126,7 +126,7 @@ static void test_simple (void)
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -453,7 +453,7 @@ static void test_endings (void)
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -554,7 +554,7 @@ static void test_oldroot (void)
 
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no root backend");
@@ -612,7 +612,7 @@ static void test_cascading (void)
 
 	// output_trie (kdb->trie);
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 

@@ -174,7 +174,7 @@ static void test_keyNewSystem (void)
 	elektraFree (getBack);
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + owner");
 
-	key = keyNew ("system", KEY_END);
+	key = keyNew ("system/", KEY_END);
 	succeed_if_same_string (keyName (key), "system");
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner not null");
@@ -472,7 +472,7 @@ static void test_keyName (void)
 
 	succeed_if (keySetName (0, ret) == -1, "Null pointer");
 
-	key = keyNew ("user", KEY_END);
+	key = keyNew ("user/", KEY_END);
 	succeed_if_same_string (keyName (key), "user");
 	succeed_if (keyGetNameSize (key) == 5, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -502,7 +502,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("system", KEY_END);
+	key = keyNew ("system/", KEY_END);
 	succeed_if_same_string (keyName (key), "system");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -522,7 +522,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("dir", KEY_END);
+	key = keyNew ("dir/", KEY_END);
 	succeed_if_same_string (keyName (key), "dir");
 	succeed_if (keyGetNameSize (key) == 4, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -542,7 +542,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("proc", KEY_END);
+	key = keyNew ("proc/", KEY_END);
 	succeed_if_same_string (keyName (key), "proc");
 	succeed_if (keyGetNameSize (key) == 5, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -562,7 +562,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("spec", KEY_END);
+	key = keyNew ("spec/", KEY_END);
 	succeed_if_same_string (keyName (key), "spec");
 	succeed_if (keyGetNameSize (key) == 5, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");

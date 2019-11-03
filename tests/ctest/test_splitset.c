@@ -266,7 +266,7 @@ static void test_easyparent (void)
 	Split * split;
 
 
-	parentKey = keyNew ("user", KEY_END);
+	parentKey = keyNew ("user/", KEY_END);
 	split = splitNew ();
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
@@ -284,7 +284,7 @@ static void test_easyparent (void)
 	splitDel (split);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("system", KEY_END);
+	parentKey = keyNew ("system/", KEY_END);
 	split = splitNew ();
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");

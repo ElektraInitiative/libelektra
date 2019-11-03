@@ -33,7 +33,7 @@ void test_resolve (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
 
@@ -124,7 +124,7 @@ void test_name (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (KDB_DB_SYSTEM[0] == '~')
 	{
@@ -172,7 +172,7 @@ void test_lockname (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
@@ -222,7 +222,7 @@ void test_tempname (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{

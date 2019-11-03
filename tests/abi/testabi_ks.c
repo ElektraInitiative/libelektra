@@ -1972,7 +1972,7 @@ static void test_ksAppendKey (void)
 	ksDel (ks);
 
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user/", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 1, "size not correct after 1 keys");
 
@@ -2325,7 +2325,7 @@ static void test_cutpointRoot (void)
 {
 	printf ("Testing operation cut root point\n");
 
-	Key * cutpoint = keyNew ("user", KEY_END);
+	Key * cutpoint = keyNew ("user/", KEY_END);
 	KeySet * orig = ksNew (30, keyNew ("system/a", KEY_END), keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END),
 			       keyNew ("user/a/b/c", KEY_END), keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END),
 			       keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
@@ -2614,7 +2614,7 @@ static void test_morecut (void)
 	KeySet * split1 = ksNew (3, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END), KS_END);
 	KeySet * split2 = ksNew (3, keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
 
-	Key * userKey = keyNew ("user", KEY_END);
+	Key * userKey = keyNew ("user/", KEY_END);
 
 	KeySet * cut = ksCut (ks, userKey);
 

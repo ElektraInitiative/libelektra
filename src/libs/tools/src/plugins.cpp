@@ -404,7 +404,7 @@ void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 {
 	if (!ks.size ()) return;
 
-	Key oldParent ("user", KEY_END);
+	Key oldParent ("user/", KEY_END);
 	Key newParent (name + "/config", KEY_END);
 
 	ret.append (newParent);

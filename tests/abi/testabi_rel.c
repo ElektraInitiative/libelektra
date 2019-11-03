@@ -16,22 +16,13 @@ static void test_keyCmp (void)
 	Key * k1 = keyNew ("user/valid", KEY_END);
 	Key * k2 = keyNew ("user/valid", KEY_END);
 
-	Key * nk1 = keyNew (0);
-	Key * nk2 = keyNew (0);
-
 	succeed_if (keyCmp (0, 0) == 0, "all null pointers are same");
-	succeed_if (keyCmp (nk1, 0) == 1, "null pointer is smaller");
-	succeed_if (keyCmp (0, nk2) == -1, "null pointer is smaller");
 
 	//! [cmp null]
 	succeed_if (keyCmp (0, 0) == 0, "all null pointers same");
 	succeed_if (keyCmp (k1, 0) == 1, "null pointer is smaller");
 	succeed_if (keyCmp (0, k2) == -1, "null pointer is smaller");
 	//! [cmp null]
-
-	succeed_if (keyCmp (nk1, nk1) == 0, "all null keys are same");
-	succeed_if (keyCmp (k1, nk1) == 1, "null keys are smaller");
-	succeed_if (keyCmp (nk1, k2) == -1, "null keys are smaller");
 
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
@@ -103,9 +94,6 @@ static void test_keyCmp (void)
 	keySetName (k2, "user/find_me/a");
 	succeed_if (keyCmp (k1, k2) < 0, "find_me is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "find_me is smaller");
-
-	keyDel (nk1);
-	keyDel (nk2);
 
 	keyDel (k1);
 	keyDel (k2);

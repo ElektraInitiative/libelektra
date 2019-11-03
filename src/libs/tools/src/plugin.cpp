@@ -380,7 +380,7 @@ kdb::KeySet Plugin::getNeededConfig ()
 
 	KeySet ret;
 	Key oldParent = neededConfigKey;
-	Key newParent ("system", KEY_END);
+	Key newParent ("system/", KEY_END);
 	for (KeySet::iterator i = config.begin (); i != config.end (); ++i)
 	{
 		Key k (i->dup ());

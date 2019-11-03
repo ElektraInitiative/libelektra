@@ -44,19 +44,19 @@ static Key * keyDupWithNS (const Key * origKey, elektraNamespace ns)
 	switch (ns)
 	{
 	case KEY_NS_SPEC:
-		newKey = keyNew ("spec", KEY_END);
+		newKey = keyNew ("spec/", KEY_END);
 		break;
 	case KEY_NS_DIR:
-		newKey = keyNew ("dir", KEY_END);
+		newKey = keyNew ("dir/", KEY_END);
 		break;
 	case KEY_NS_USER:
-		newKey = keyNew ("user", KEY_END);
+		newKey = keyNew ("user/", KEY_END);
 		break;
 	case KEY_NS_SYSTEM:
-		newKey = keyNew ("system", KEY_END);
+		newKey = keyNew ("system/", KEY_END);
 		break;
 	case KEY_NS_PROC:
-		newKey = keyNew ("proc", KEY_END);
+		newKey = keyNew ("proc/", KEY_END);
 		break;
 	case KEY_NS_CASCADING:
 	default:

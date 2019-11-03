@@ -484,13 +484,13 @@ TEST (key, name)
 	// so we finally got a name, lets test below
 	succeed_if (test.getName () == "user/dir/mykey/onedeeper", "Basename did not work");
 
-	succeed_if (test.isBelow (Key ("user", KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key ("user/", KEY_END)), "key is below");
 	succeed_if (test.isBelow (Key ("user/dir", KEY_END)), "key is below");
 	succeed_if (test.isBelow (Key ("user/dir/mykey", KEY_END)), "key is below");
 	succeed_if (!test.isBelow (Key ("user/dir/mykey/onedeeper", KEY_END)), "key is not below (but same)");
 	succeed_if (!test.isBelow (Key ("user/otherdir", KEY_END)), "key is not below");
 
-	succeed_if (test.isBelowOrSame (Key ("user", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user/", KEY_END)), "key is below");
 	succeed_if (test.isBelowOrSame (Key ("user/dir", KEY_END)), "key is below");
 	succeed_if (test.isBelowOrSame (Key ("user/dir/mykey", KEY_END)), "key is below");
 	succeed_if (test.isBelowOrSame (Key ("user/dir/mykey/onedeeper", KEY_END)), "key is same");
@@ -501,10 +501,10 @@ TEST (key, name)
 	succeed_if (!test.isDirectBelow (Key ("user/dir", KEY_END)), "key is not direct below");
 	succeed_if (!test.isDirectBelow (Key ("user/dir/otherdir", KEY_END)), "key is not direct below");
 	succeed_if (!test.isDirectBelow (Key ("user/otherdir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user/", KEY_END)), "key is not direct below");
 
 	test.setName ("system/elektra");
-	succeed_if (test.isBelow (Key ("system", KEY_END)), "system/elektra is not below system");
+	succeed_if (test.isBelow (Key ("system/", KEY_END)), "system/elektra is not below system");
 	test.setName ("system");
 	succeed_if (!test.isBelow (Key ("system/elektra", KEY_END)), "system is below system/elektra");
 }
@@ -601,11 +601,11 @@ TEST (key, valid)
 		succeed_if (i3, "even though it is invalid, it is still not a null key");
 	}
 
-	Key v1 ("user", KEY_END);
+	Key v1 ("user/", KEY_END);
 	succeed_if (v1.isValid (), "key should be valid");
 	succeed_if (v1, "should be non-null too");
 
-	Key v2 ("system", KEY_END);
+	Key v2 ("system/", KEY_END);
 	succeed_if (v2.isValid (), "key should be valid");
 	succeed_if (v2, "should be non-null too");
 
@@ -629,7 +629,7 @@ TEST (key, valid)
 
 TEST (key, clear)
 {
-	Key k1 ("user", KEY_END);
+	Key k1 ("user/", KEY_END);
 	Key k2 = k1;
 	Key k3 = k1;
 
@@ -666,7 +666,7 @@ TEST (key, clear)
 
 TEST (key, conversation)
 {
-	Key k1 ("user", KEY_END);
+	Key k1 ("user/", KEY_END);
 	ckdb::Key * ck1 = k1.getKey ();
 	succeed_if (!strcmp (ckdb::keyName (ck1), "user"), "c key does not have correct name");
 	succeed_if (!strcmp (ckdb::keyName (*k1), "user"), "c key does not have correct name");
@@ -678,17 +678,17 @@ TEST (key, conversation)
 
 TEST (key, keynamespace)
 {
-	succeed_if (Key ("user", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user/", KEY_END).getNamespace () == "user", "namespace wrong");
 	succeed_if (Key ("user/a", KEY_END).getNamespace () == "user", "namespace wrong");
 	// std::cout << Key ("user/a", KEY_END).getNamespace () << std::endl;
 	succeed_if (Key ("user/a/b/c", KEY_END).getNamespace () == "user", "namespace wrong");
 	succeed_if (Key ("user/a/../..", KEY_END).getNamespace () == "user", "namespace wrong");
 	succeed_if (Key ("user/a/../../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");
 
-	succeed_if (Key ("dir", KEY_END).getNamespace () == "dir", "namespace wrong");
-	succeed_if (Key ("proc", KEY_END).getNamespace () == "proc", "namespace wrong");
-	succeed_if (Key ("spec", KEY_END).getNamespace () == "spec", "namespace wrong");
-	succeed_if (Key ("system", KEY_END).getNamespace () == "system", "namespace wrong");
+	succeed_if (Key ("dir/", KEY_END).getNamespace () == "dir", "namespace wrong");
+	succeed_if (Key ("proc/", KEY_END).getNamespace () == "proc", "namespace wrong");
+	succeed_if (Key ("spec/", KEY_END).getNamespace () == "spec", "namespace wrong");
+	succeed_if (Key ("system/", KEY_END).getNamespace () == "system", "namespace wrong");
 
 	succeed_if (Key ("dir/abc", KEY_END).getNamespace () == "dir", "namespace wrong");
 	succeed_if (Key ("proc/abc", KEY_END).getNamespace () == "proc", "namespace wrong");

@@ -938,7 +938,7 @@ static void test_keyOwner (void)
 static void test_keyDir (void)
 {
 	mode_t i;
-	Key * key = keyNew ("user", KEY_END);
+	Key * key = keyNew ("user/", KEY_END);
 
 	printf ("Test directory keys\n");
 

@@ -50,16 +50,16 @@ TEST (SameMountpoint, setMountpointsNamespaces)
 
 	Backend b1;
 
-	b1.setMountpoint (Key ("dir", KEY_END), ks);
+	b1.setMountpoint (Key ("dir/", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "dir");
 
-	b1.setMountpoint (Key ("system", KEY_END), ks);
+	b1.setMountpoint (Key ("system/", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "system");
 
-	b1.setMountpoint (Key ("user", KEY_END), ks);
+	b1.setMountpoint (Key ("user/", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user");
 
-	b1.setMountpoint (Key ("spec", KEY_END), ks);
+	b1.setMountpoint (Key ("spec/", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "spec");
 }
 
@@ -125,7 +125,7 @@ TEST (SameMountpoint, wrongMountpoints)
 	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("invalid", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("proc", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("proc/", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("proc/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
@@ -141,7 +141,7 @@ TEST (SameMountpoint, wrongElektraMountpoints)
 	KeySet ks;
 
 	Backend b1;
-	ASSERT_THROW (b1.setMountpoint (Key ("proc", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("proc/", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("proc/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");

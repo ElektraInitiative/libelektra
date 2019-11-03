@@ -131,7 +131,7 @@ static void test_simple (void)
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -261,7 +261,7 @@ static void test_cascading (void)
 	// output_split (kdb->split);
 	// output_trie (kdb->trie);
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	Key * searchKey = keyNew ("user/", KEY_END);
 	Backend * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 

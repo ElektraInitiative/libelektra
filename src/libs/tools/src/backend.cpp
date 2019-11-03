@@ -147,25 +147,25 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 			throw MountpointAlreadyInUseException (
 				"Root mountpoint not possible, because the root mountpoint already exists.\n");
 		}
-		Key specmp ("spec", KEY_END);
+		Key specmp ("spec/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), specmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because spec mountpoint already exists.\n");
 		}
-		Key dkmp ("dir", KEY_END);
+		Key dkmp ("dir/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because dir mountpoint already exists.\n");
 		}
-		Key ukmp ("user", KEY_END);
+		Key ukmp ("user/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because user mountpoint already exists.\n");
 		}
-		Key skmp ("system", KEY_END);
+		Key skmp ("system/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
@@ -422,7 +422,7 @@ void Backend::serialize (kdb::KeySet & ret)
 
 	config.rewind ();
 	Key common = config.next ();
-	Key oldParent ("system", KEY_END);
+	Key oldParent ("system/", KEY_END);
 	Key newParent (configBasePath, KEY_END);
 
 	for (KeySet::iterator i = config.begin (); i != config.end (); ++i)

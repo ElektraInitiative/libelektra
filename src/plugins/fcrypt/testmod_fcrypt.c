@@ -119,7 +119,7 @@ static int isTestFileCorrect (const char * file)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
@@ -168,7 +168,7 @@ static void test_gpg (void)
 static void test_file_crypto_operations (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfiguration ();
 
@@ -212,7 +212,7 @@ static void test_file_crypto_operations (void)
 static void test_file_signature_operations (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfiguration ();
 
@@ -251,7 +251,7 @@ static void test_file_signature_operations (void)
 static void test_file_faulty_signature (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfigurationWithTextmodeEnabled ();
 

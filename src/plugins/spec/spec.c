@@ -541,9 +541,9 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 
 	cur += strlen (cur) + 1; // skip "spec"
 
-	KeySet * newKeys = ksNew (1, keyNew ("spec", KEY_END), KS_END);
+	KeySet * newKeys = ksNew (1, keyNew ("spec/", KEY_END), KS_END);
 	KeySet * parents = ksNew (0, KS_END);
-	Key * specCur = keyNew ("spec", KEY_END);
+	Key * specCur = keyNew ("spec/", KEY_END);
 
 	while (cur < end)
 	{
@@ -900,7 +900,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// remove spec namespace from returned
-	Key * specParent = keyNew ("spec", KEY_END);
+	Key * specParent = keyNew ("spec/", KEY_END);
 	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 
@@ -971,7 +971,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// remove spec namespace from returned
-	Key * specParent = keyNew ("spec", KEY_END);
+	Key * specParent = keyNew ("spec/", KEY_END);
 	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 

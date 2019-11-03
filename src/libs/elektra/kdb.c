@@ -610,7 +610,7 @@ static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 	Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 	KeySet * cutKS = ksCut (ks, cutKey);
-	Key * specCutKey = keyNew ("spec", KEY_END);
+	Key * specCutKey = keyNew ("spec/", KEY_END);
 	KeySet * specCut = ksCut (cutKS, specCutKey);
 	ksRewind (specCut);
 	Key * cur;
@@ -806,7 +806,7 @@ static void elektraCacheCutMeta (KDB * handle)
 
 KeySet * elektraCutProc (KeySet * ks)
 {
-	Key * parentKey = keyNew ("proc", KEY_END);
+	Key * parentKey = keyNew ("proc/", KEY_END);
 	KeySet * ret = ksCut (ks, parentKey);
 	keyDel (parentKey);
 	return ret;
