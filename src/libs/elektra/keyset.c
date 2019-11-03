@@ -1127,7 +1127,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	char * name = cutpoint->key;
 	if (!name) return 0; // TODO (kodebach): not required?
-	if (strcmp(name, "")) return 0;
+	if (strcmp(name, "") == 0) return 0;
 
 	elektraOpmphmInvalidate (ks);
 
