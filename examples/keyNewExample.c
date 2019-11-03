@@ -18,7 +18,7 @@ int main (void)
 
 	ksAppendKey (ks, keyNew ("user/sw", KEY_END)); /* a simple key */
 
-	ksAppendKey (ks, keyNew (0)); /* an empty key */
+	ksAppendKey (ks, keyNew ("/", KEY_END)); /* an empty key */
 
 	ksAppendKey (ks, keyNew ("system/sw", KEY_END));
 

@@ -166,8 +166,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 	(*handle) = NULL;
 
 	// retrieve/derive the cryptographic material
-	Key * key = keyNew (0);
-	Key * iv = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
+	Key * iv = keyNew ("/", KEY_END);
 	switch (op)
 	{
 	case ELEKTRA_CRYPTO_ENCRYPT:

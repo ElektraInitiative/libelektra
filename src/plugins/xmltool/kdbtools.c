@@ -42,7 +42,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		int isbin = 0;
 		int end = 0;
 
-		Key * newKey = keyNew (0);
+		Key * newKey = keyNew ("/", KEY_END);
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context

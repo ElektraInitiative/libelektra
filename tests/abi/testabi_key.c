@@ -96,7 +96,7 @@ static void test_keyNewSpecial (void)
 {
 	printf ("Test special key creation\n");
 
-	Key * k = keyNew (0);
+	Key * k = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyName (k), "");
 	keyDel (k);
 
@@ -140,7 +140,7 @@ static void test_keyNewSystem (void)
 	printf ("Test system key creation\n");
 
 	// Empty key
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a new empty key");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete empty key");
 
@@ -311,7 +311,7 @@ static void test_keyReference (void)
 	succeed_if (keyDel (key) == 0, "last keyDel key, key exist");
 
 	/* From examples in ksNew () */
-	key = keyNew (0); // ref counter 0
+	key = keyNew ("/", KEY_END); // ref counter 0
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyIncRef (key); // ref counter of key 1
 	succeed_if (keyGetRef (key) == 1, "reference counter");
@@ -333,7 +333,7 @@ static void test_keyReference (void)
 	succeed_if (keyGetRef (key) == 1, "reference counter");
 	ksDel (ks2); // key is now deleted
 
-	key = keyNew (0); // ref counter 0
+	key = keyNew ("/", KEY_END); // ref counter 0
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyIncRef (key); // ref counter of key 1
 	succeed_if (keyGetRef (key) == 1, "reference counter");
@@ -364,7 +364,7 @@ static void test_keyReference (void)
 	/* This code needs very long to execute, especially on 64bit
 	 * systems. */
 
-	key = keyNew (0); // ref counter 0
+	key = keyNew ("/", KEY_END); // ref counter 0
 	while (keyGetRef (key) < SSIZE_MAX)
 		keyIncRef (key);
 	succeed_if (keyGetRef (key) == SSIZE_MAX, "reference counter");
@@ -408,7 +408,7 @@ static void test_keyName (void)
 
 	succeed_if (keyName (0) == 0, "null pointer");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyName (key), "");
 	succeed_if (keyGetName (key, ret, 1000) == 1, "get empty name");
 	succeed_if_same_string (ret, "");
@@ -435,7 +435,7 @@ static void test_keyName (void)
 	succeed_if (keyGetFullName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetFullName (key, ret, 1000) == 1, "get empty name");
 	succeed_if_same_string (ret, "");
 	succeed_if (keyGetFullName (key, ret, 0) == -1, "get empty name");
@@ -463,7 +463,7 @@ static void test_keyName (void)
 
 	succeed_if (keyBaseName (0) == 0, "null pointer");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyBaseName (key), "");
 	succeed_if (keyGetBaseName (key, ret, 1000) == 1, "get empty name");
 	succeed_if_same_string (ret, "");
@@ -614,7 +614,7 @@ static void test_keyNameSlashes (void)
 	int i;
 
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetNameSize (key) == 1, "empty name size");
 	keyDel (key);
 
@@ -626,7 +626,7 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 1, "empty name size");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetName (key, "user/");
 	succeed_if_same_string (keyName (key), "user");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
@@ -636,7 +636,7 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetName (key, "system/");
 	succeed_if_same_string (keyName (key), "system");
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
@@ -646,19 +646,19 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keySetName (key, "user:") == 5, "setting user: generates error");
 	succeed_if_same_string (keyName (key), "user");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keySetName (key, "user:y") == 5, "setting user: generates error");
 	succeed_if_same_string (keyName (key), "user");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keySetName (key, "no") == -1, "no error code setting invalid name");
 	succeed_if_same_string (keyName (key), "");
 	succeed_if (keyGetNameSize (key) == 1, "empty name size");
@@ -827,7 +827,7 @@ static void test_keyNameSlashes (void)
 
 	printf ("Test key's name manipulation\n");
 
-	Key * copy = keyNew (0);
+	Key * copy = keyNew ("/", KEY_END);
 
 	for (i = 0; tstKeyName[i].testName != NULL; i++)
 	{
@@ -894,7 +894,7 @@ static void test_keyValue (void)
 
 	printf ("Test value of keys\n");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
 	succeed_if (keySetString (key, "perfectvalue") == 13, "could not set string");
 	succeed_if (keyGetValueSize (key) == 13, "value size not correct");
@@ -908,7 +908,7 @@ static void test_keyValue (void)
 	succeed_if_same_string (ret, "nearperfectvalue");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if_same_string (keyValue (key), "");
 	succeed_if (keyGetValueSize (key) == 1, "Empty value size problem");
 	succeed_if (keySetString (key, "") == 1, "could not set empty string");
@@ -919,13 +919,13 @@ static void test_keyValue (void)
 	succeed_if (ret[0] == 0, "keyGetValue did not return empty value");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keySetString (key, "a long long string") == 19, "could not set string");
 	succeed_if (keyGetString (key, ret, 6) == -1, "string not truncated");
 	succeed_if (keyGetBinary (key, ret, 999) == -1, "binary not mismatch");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keySetBinary (key, "a", 1) == 1, "could not set binary");
 	succeed_if (keyIsString (key) == 0, "is not a string");
 	succeed_if (keyIsBinary (key) == 1, "is not a string");
@@ -935,21 +935,21 @@ static void test_keyValue (void)
 	succeed_if (keySetString (key, 0) == 1, "wrong error code for SetString");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keySetBinary (key, NULL, 0) == 0, "could not set null binary");
 	succeed_if (keyIsString (key) == 0, "is not a string");
 	succeed_if (keyIsBinary (key) == 1, "is not a string");
 	succeed_if (keyGetValueSize (key) == 0, "Empty value size problem");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keySetString (key, "") == 1, "could not set empty string");
 	succeed_if (keyIsString (key) == 1, "is not a string");
 	succeed_if (keyIsBinary (key) == 0, "is a binary");
 	succeed_if (keyGetValueSize (key) == 1, "Empty value size problem");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if (keySetBinary (key, "a long long binary", 19) == 19, "could not set string");
 	succeed_if (keyIsString (key) == 0, "is not a string");
 	succeed_if (keyIsBinary (key) == 1, "is not a string");
@@ -959,7 +959,7 @@ static void test_keyValue (void)
 	succeed_if (keyGetString (key, ret, 999) == -1, "string not mismatch");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	for (i = 1; i < 255; i++)
 	{
 		ret[0] = i;
@@ -972,7 +972,7 @@ static void test_keyValue (void)
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 
-	succeed_if (key = keyNew (0), "could not create new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	for (i = 0; i < 255; i++)
 	{
 		ret[0] = i;
@@ -991,7 +991,7 @@ static void test_keyValue (void)
 	succeed_if (keyGetValueSize (0) == -1, "null pointer");
 	succeed_if (keySetString (0, "") == -1, "null pointer");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
 
 	keySetString (key, testString);
@@ -1036,7 +1036,7 @@ static void test_keyValue (void)
 	succeed_if (keyGetValueSize (0) == -1, "null pointer");
 	succeed_if (keySetBinary (0, "", 1) == -1, "null pointer");
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	succeed_if (keySetBinary (key, "", 0) == -1, "null size");
 	succeed_if (keySetBinary (key, "b", 0) == -1, "null size");
 	succeed_if (keySetBinary (key, "", SIZE_MAX) == -1, "max size");
@@ -1117,7 +1117,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetBinary (key, binaryData, sizeof (binaryData));
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1130,7 +1130,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetBinary (key, 0, 0);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1142,7 +1142,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetBinary (key, 0, 1);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1154,7 +1154,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetBinary (key, "", 1);
 	succeed_if (keySetBinary (key, 0, SIZE_MAX) == -1, "should do nothing and fail");
 	succeed_if (keySetBinary (key, 0, SSIZE_MAX) == 0, "should free data");
@@ -1168,7 +1168,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetBinary (key, "", 1);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1181,7 +1181,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	i = 23;
 	keySetBinary (key, (void *) &i, sizeof (i));
 
@@ -1201,7 +1201,7 @@ static void test_keyBinary (void)
 
 static void test_keyInactive (void)
 {
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 
 	succeed_if (keyIsInactive (0) == -1, "NULL pointer");
 	succeed_if (keyIsInactive (key) == -1, "Key has no name");
@@ -1256,8 +1256,8 @@ static void test_keyInactive (void)
 
 static void test_keyBelow (void)
 {
-	Key * key1 = keyNew (0);
-	Key * key2 = keyNew (0);
+	Key * key1 = keyNew ("/", KEY_END);
+	Key * key2 = keyNew ("/", KEY_END);
 
 	printf ("Test of relative positions of keys\n");
 
@@ -1561,7 +1561,7 @@ static void test_keyDup (void)
 
 	keyDel (ccopy);
 
-	orig = keyNew (0);
+	orig = keyNew ("/", KEY_END);
 	keySetName (orig, "invalid");
 
 	succeed_if ((copy = keyDup (orig)) != 0, "keyDup failed");
@@ -1588,7 +1588,7 @@ static void test_keyCopy (void)
 
 
 	// Copy the key
-	copy = keyNew (0);
+	copy = keyNew ("/", KEY_END);
 	succeed_if (keyCopy (copy, orig) == 1, "keyCopy failed");
 	succeed_if (keyGetRef (orig) == 0, "orig ref counter should be 0");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
@@ -1604,7 +1604,7 @@ static void test_keyCopy (void)
 	succeed_if_same_string (keyName (copy), "user/foo/bar");
 	succeed_if (strncmp (keyValue (copy), "foobar", 6) == 0, "keyCopy: key value copy error");
 
-	orig = keyNew (0);
+	orig = keyNew ("/", KEY_END);
 	succeed_if (keyCopy (copy, orig) == 1, "make a key copy of an unmodified key");
 	compare_key (orig, copy);
 
@@ -1614,10 +1614,10 @@ static void test_keyCopy (void)
 
 	keyDel (copy);
 
-	orig = keyNew (0);
+	orig = keyNew ("/", KEY_END);
 	keySetName (orig, "invalid");
 
-	copy = keyNew (0);
+	copy = keyNew ("/", KEY_END);
 	succeed_if (keyCopy (copy, orig) == 1, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "");
 	succeed_if_same_string (keyName (copy), "");
@@ -1668,7 +1668,7 @@ static void test_binary (void)
 	int i = 20;
 	int * p = &i;
 
-	k = keyNew (0);
+	k = keyNew ("/", KEY_END);
 	succeed_if (keySetBinary (k, &p, sizeof (p)) == sizeof (p), "could not set binary");
 
 	int * q;
@@ -1687,7 +1687,7 @@ static void test_binary (void)
 		void * v;
 	} conversation;
 
-	k = keyNew (0);
+	k = keyNew ("/", KEY_END);
 	conversation.f = fun;
 	succeed_if (keySetBinary (k, &conversation.v, sizeof (conversation)) == sizeof (conversation), "could not set binary");
 
@@ -1759,8 +1759,8 @@ static void test_binary (void)
 
 static void test_keyBelowOrSame (void)
 {
-	Key * key1 = keyNew (0);
-	Key * key2 = keyNew (0);
+	Key * key1 = keyNew ("/", KEY_END);
+	Key * key2 = keyNew ("/", KEY_END);
 
 	printf ("Test of keyBelowOrSame\n");
 
@@ -1845,7 +1845,7 @@ static void test_keyBelowOrSame (void)
 static void test_keyNameSpecial (void)
 {
 	printf ("Test special keynames\n");
-	Key * k = keyNew (0);
+	Key * k = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyName (k), "");
 
 	succeed_if (keySetName (k, "system/"), "could not set key name with system");
@@ -2082,7 +2082,7 @@ static void test_keySetBaseName (void)
 {
 	printf ("Test set basename\n");
 
-	Key * k = keyNew (0);
+	Key * k = keyNew ("/", KEY_END);
 
 	succeed_if (keySetBaseName (k, "abc") == -1, "invalid key");
 	succeed_if_same_string (keyName (k), "");
@@ -2312,7 +2312,7 @@ static void test_keyAddBaseName (void)
 {
 	printf ("Test add basename\n");
 
-	Key * k = keyNew (0);
+	Key * k = keyNew ("/", KEY_END);
 
 	//![base0 empty]
 	keySetName (k, "");

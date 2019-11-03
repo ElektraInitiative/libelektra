@@ -289,7 +289,7 @@ static void test_moreiterate (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key * searchKey = keyNew (0);
+	Key * searchKey = keyNew ("/", KEY_END);
 
 	keySetName (searchKey, "user/");
 	Backend * backend = trieLookup (trie, searchKey);
@@ -433,7 +433,7 @@ static void test_revmoreiterate (void)
 
 		exit_if_fail (trie, "trie was not build up successfully");
 
-		Key * searchKey = keyNew (0);
+		Key * searchKey = keyNew ("/", KEY_END);
 
 		keySetName (searchKey, "user/");
 		Backend * backend = trieLookup (trie, searchKey);

@@ -253,7 +253,7 @@ void l(Key *k)
 void o(KeySet *ks)
 {
 	Key *current;
-	Key *shared = keyNew (0);
+	Key *shared = keyNew ("/", KEY_END);
 	keySetMeta(shared, "shared", "this metadata should be shared among many keys");
 
 	ksRewind(ks);

@@ -150,7 +150,7 @@ static void test_name (void)
 {
 	printf ("Test name\n");
 	KeySet * modules = ksNew (0, KS_END);
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	;
 
 	succeed_if (elektraPluginOpen (0, modules, set_pluginconf (), errorKey) == 0, "should fail with no name");

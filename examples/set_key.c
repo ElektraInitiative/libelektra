@@ -30,13 +30,13 @@ void print_warnings (Key * err)
 /** After writing the key this function rereads the key and print it*/
 void check_key (void)
 {
-	Key * error_key = keyNew (0);
+	Key * error_key = keyNew ("/", KEY_END);
 	KDB * kdb_handle = kdbOpen (error_key);
-	Key * top = keyNew (0);
+	Key * top = keyNew ("/", KEY_END);
 	keySetName (top, "user/sw/MyApp"); // == 14
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb_handle, ks, top);
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user/sw/MyApp/Tests/TestKey1"); // == 14
 	Key * result = ksLookup (ks, key, KDB_O_NONE);
 	const char * key_name = keyName (result);
@@ -53,15 +53,15 @@ void check_key (void)
 // typical usage of Elektra
 int main (void)
 {
-	Key * error_key = keyNew (0);
+	Key * error_key = keyNew ("/", KEY_END);
 	KDB * kdb_handle = kdbOpen (error_key);
-	Key * top = keyNew (0);
+	Key * top = keyNew ("/", KEY_END);
 	keySetName (top, "user/sw/MyApp");
 
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb_handle, ks, top);
 
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		  // == 14
 	keySetMeta (key, "comment", "NULLTestComment");   // == 16

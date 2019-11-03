@@ -705,7 +705,7 @@ static void test_mmap_metacopy (const char * tmpFile)
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = metaTestKeySet ();
 
-	Key * shareMeta = keyNew (0);
+	Key * shareMeta = keyNew ("/", KEY_END);
 	keySetMeta (shareMeta, "sharedmeta", "shared meta key test");
 
 	Key * current;

@@ -91,7 +91,7 @@ static void test_minimaltrie (void)
 	printf ("Test minimal mount\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	succeed_if (mountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not open minimal config");
 
@@ -117,7 +117,7 @@ static void test_simple (void)
 	printf ("Test simple mount\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	Key * mp = keyNew ("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 
@@ -237,7 +237,7 @@ static void test_cascading (void)
 	printf ("Test simple mount with cascading\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	succeed_if (mountOpen (kdb, cascading_config (), modules, errorKey) == 0, "could not open trie");
 	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
@@ -333,7 +333,7 @@ static void test_root (void)
 	printf ("Test mounting with root\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	succeed_if (mountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
 
@@ -404,7 +404,7 @@ static void test_default (void)
 	printf ("Test mounting with default\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	succeed_if (mountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
 	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
@@ -497,7 +497,7 @@ static void test_modules (void)
 	printf ("Test mounting with modules\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	succeed_if (mountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
 	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
@@ -609,7 +609,7 @@ static void test_defaultonly (void)
 	printf ("Test mounting with default only\n");
 
 	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 	KeySet * modules = modules_config ();
 	succeed_if (mountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not buildup mount");
 	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");

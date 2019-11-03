@@ -102,8 +102,8 @@ static void test_keyCmp (void)
 static void test_directbelow (void)
 {
 	printf ("check if direct below\n");
-	Key * k1 = keyNew (0);
-	Key * k2 = keyNew (0);
+	Key * k1 = keyNew ("/", KEY_END);
+	Key * k2 = keyNew ("/", KEY_END);
 
 	keySetName (k1, "user/");
 	keySetName (k2, "user/a");
@@ -149,8 +149,8 @@ static void test_directbelow (void)
 static void test_below (void)
 {
 	printf ("check if below\n");
-	Key * k1 = keyNew (0);
-	Key * k2 = keyNew (0);
+	Key * k1 = keyNew ("/", KEY_END);
+	Key * k2 = keyNew ("/", KEY_END);
 
 	keySetName (k1, "user/tests/simple");
 	keySetName (k2, "user/tests/simple/below");
@@ -189,8 +189,8 @@ static void test_below (void)
 static void test_examples (void)
 {
 	printf ("check examples\n");
-	Key * key = keyNew (0);
-	Key * check = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
+	Key * check = keyNew ("/", KEY_END);
 
 	keySetName (key, "user/key/folder");
 	keySetName (check, "user/key/folder");
@@ -222,8 +222,8 @@ static void test_examples (void)
 static void test_hierarchy (void)
 {
 	printf ("check hierarchy\n");
-	Key * key = keyNew (0);
-	Key * check = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
+	Key * check = keyNew ("/", KEY_END);
 
 	keySetName (key, "user/key/folder/key");
 	keySetName (check, "user/other/folder/key");

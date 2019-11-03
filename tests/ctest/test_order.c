@@ -17,18 +17,18 @@ static void test_ksNew (void)
 	printf ("Test ks creation\n");
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, keyNew (0)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew (0)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew (0)) == -1, "could append a key with no name");
+	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
+	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
+	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
 	succeed_if (ksGetSize (ks) == 0, "size not correct after 3 keys");
 
 	KeySet * ks2 = ksNew (0, KS_END);
 	ksCopy (ks2, ks);
 	succeed_if (ksGetSize (ks2) == 0, "size not correct after 3 keys");
 
-	succeed_if (ksAppendKey (ks, keyNew (0)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew (0)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew (0)) == -1, "could append a key with no name");
+	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
+	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
+	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
 	succeed_if (ksGetSize (ks) == 0, "could not append 3 more keys");
 
 	ksCopy (ks2, ks);
@@ -316,8 +316,8 @@ static void test_append (void)
 
 static void test_equal (void)
 {
-	Key * k1 = keyNew (0);
-	Key * k2 = keyNew (0);
+	Key * k1 = keyNew ("/", KEY_END);
+	Key * k2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCmp (0, 0) == 0, "null pointers should be same");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
@@ -346,8 +346,8 @@ static void test_cmp (void)
 {
 	printf ("Compare two keys\n");
 
-	Key * k1 = keyNew (0);
-	Key * k2 = keyNew (0);
+	Key * k1 = keyNew ("/", KEY_END);
+	Key * k2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCmp (0, 0) == 0, "null keys comparision");
 	succeed_if (keyCmp (k1, 0) == 1, "compare null key with key with no name");

@@ -264,12 +264,12 @@ static void test_gpg (void)
 {
 	// Plugin configuration
 	KeySet * conf = newPluginConfiguration ();
-	Key * errorKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
 
 	// install the gpg key
 	char * argv[] = { "", "-a", "--import", NULL };
 	const size_t argc = 4;
-	Key * msg = keyNew (0);
+	Key * msg = keyNew ("/", KEY_END);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
 	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");

@@ -221,11 +221,11 @@ static void l (Key * k)
 static void test_examples (void)
 {
 	Key * key;
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
 
-	g_c = keyNew (0);
+	g_c = keyNew ("/", KEY_END);
 	keySetMeta (g_c, "xef", "ybc");
 	keySetMeta (g_c, "xop", "yup");
 
@@ -239,11 +239,11 @@ static void test_examples (void)
 	keyDel (key);
 	keyDel (g_c);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
 
-	g_c = keyNew (0);
+	g_c = keyNew ("/", KEY_END);
 	keySetMeta (g_c, "type", "boolean");
 	keySetMeta (g_c, "xop", "yup");
 
@@ -265,8 +265,8 @@ static void test_copy (void)
 	Key * key1;
 	Key * key2;
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keyCopyMeta (key2, key1, "nonexist") == 0, "could not do anything");
 
@@ -276,8 +276,8 @@ static void test_copy (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
@@ -294,8 +294,8 @@ static void test_copy (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
@@ -440,8 +440,8 @@ static void test_copyall (void)
 	Key * key1;
 	Key * key2;
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keyCopyAllMeta (key2, key1) == 0, "could not do anything");
 
@@ -451,8 +451,8 @@ static void test_copyall (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
@@ -469,8 +469,8 @@ static void test_copyall (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
@@ -534,7 +534,7 @@ static void test_type (void)
 {
 	Key * key;
 
-	succeed_if (key = keyNew (0), "could not create a new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create a new key");
 	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after key creation");
 	succeed_if (keySetString (key, "mystring") == sizeof ("mystring"), "could not set string");
 	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after setting string");
