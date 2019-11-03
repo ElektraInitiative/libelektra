@@ -251,7 +251,7 @@ docu_task:
       -DBUILD_PDF=ON
       -DBUILD_TESTING=OFF
       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
-      -DTOOLS=ALL
+      -DTOOLS='ALL;web'
     - *generate
     - *build
 
