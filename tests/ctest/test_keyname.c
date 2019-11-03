@@ -38,15 +38,15 @@ static void test_relative_root (void)
 	printf ("Get relative name of key with backend mounted at `/`\n");
 
 	Key * parent = keyNew ("/", KEY_END);
-	Key * child = keyNew ("spec/ni/test", KEY_END);
+	Key * child = keyNew ("spec:/ni/test", KEY_END);
 
-	test_relative ("spec/ni/test", child, parent);
+	test_relative ("spec:/ni/test", child, parent);
 	keyDel (child);
-	child = keyNew ("system/💩🦄/Fjørt", KEY_END);
-	test_relative ("system/💩🦄/Fjørt", child, parent);
+	child = keyNew ("system:/💩🦄/Fjørt", KEY_END);
+	test_relative ("system:/💩🦄/Fjørt", child, parent);
 	keyDel (child);
-	child = keyNew ("user/\\/dot", KEY_END);
-	test_relative ("user/\\/dot", child, parent);
+	child = keyNew ("user:/\\/dot", KEY_END);
+	test_relative ("user:/\\/dot", child, parent);
 	keyDel (child);
 	keyDel (parent);
 }
@@ -60,15 +60,15 @@ static void test_relative_cascading (void)
 
 	test_relative ("k", child, parent);
 	keyDel (child);
-	child = keyNew ("system/cascading/deep/deeper/deepest", KEY_END);
+	child = keyNew ("system:/cascading/deep/deeper/deepest", KEY_END);
 	test_relative ("deep/deeper/deepest", child, parent);
 	keyDel (parent);
 	keyDel (child);
 	parent = keyNew ("/cascading\\/mountpoint/", KEY_END);
-	child = keyNew ("user/cascading\\/mountpoint/\\/dot", KEY_END);
+	child = keyNew ("user:/cascading\\/mountpoint/\\/dot", KEY_END);
 	test_relative ("\\/dot", child, parent);
 	keyDel (child);
-	child = keyNew ("user/second_level/cascading\\/mountpoint/\\/dot", KEY_END);
+	child = keyNew ("user:/second_level/cascading\\/mountpoint/\\/dot", KEY_END);
 	test_relative ("\\/dot", child, parent);
 	keyDel (child);
 	keyDel (parent);
@@ -78,21 +78,21 @@ static void test_relative_generic (void)
 {
 	printf ("Get relative name of key with generic mountpoint\n");
 
-	Key * parent = keyNew ("system/", KEY_END);
-	Key * child = keyNew ("system/key//", KEY_END);
+	Key * parent = keyNew ("system:/", KEY_END);
+	Key * child = keyNew ("system:/key//", KEY_END);
 
 	test_relative ("key", child, parent);
 	keyDel (child);
-	child = keyNew ("system/Käfer/K", KEY_END);
+	child = keyNew ("system:/Käfer/K", KEY_END);
 	test_relative ("Käfer/K", child, parent);
 	keyDel (child);
 	keyDel (parent);
-	parent = keyNew ("user/", KEY_END);
-	child = keyNew ("user/K", KEY_END);
+	parent = keyNew ("user:/", KEY_END);
+	child = keyNew ("user:/K", KEY_END);
 	test_relative ("K", child, parent);
-	test_relative ("user/", parent, child);
+	test_relative ("user:/", parent, child);
 	keyDel (child);
-	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
+	child = keyNew ("user:/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);
 	keyDel (child);
 	keyDel (parent);
@@ -102,8 +102,8 @@ static void test_relative_equal (void)
 {
 	printf ("Get relative name of key which is the same as the parent key\n");
 
-	Key * parent = keyNew ("system/parentChild", KEY_END);
-	Key * child = keyNew ("system/parentChild", KEY_END);
+	Key * parent = keyNew ("system:/parentChild", KEY_END);
+	Key * child = keyNew ("system:/parentChild", KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (parent);
@@ -112,12 +112,12 @@ static void test_relative_equal (void)
 
 	keyDel (child);
 	keyDel (parent);
-	child = keyNew ("system/parentChild/#", KEY_END);
-	parent = keyNew ("system/parentChild/#", KEY_END);
+	child = keyNew ("system:/parentChild/#", KEY_END);
+	parent = keyNew ("system:/parentChild/#", KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (child);
-	child = keyNew ("system/parentChild/#123", KEY_END);
+	child = keyNew ("system:/parentChild/#123", KEY_END);
 	// expected according to it's spec
 	test_relative ("23", child, parent);
 

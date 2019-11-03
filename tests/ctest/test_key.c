@@ -31,334 +31,24 @@ static void test_keyRefcounter (void)
 
 static void test_keyHelpers (void)
 {
-	char * name = "user:/abc/defghi/jkl";
-	char * p;
-	size_t size = 0;
-	int level = 0;
-	char buffer[20];
-
-	Key * key = keyNew ("system:/parent/base", KEY_END);
 	Key *k1, *k2;
-
-	printf ("Test key helpers\n");
-
-	/* copied out of example from keyNameGetOneLevel
-	 Lets define a key name with a lot of repeating '/' and escaped '/'
-	 char *keyName="user:////abc/def\\/ghi////jkl///";*/
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "user");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "abc");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "defghi");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "jkl");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with escaped sequence:*/
-	name = "user:////abc/def\\/ghi////jkl///";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "user");
-			succeed_if (size == 4, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "abc");
-			succeed_if (size == 3, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "def\\/ghi");
-			succeed_if (size == 8, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "jkl");
-			succeed_if (size == 3, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with escaped sequence at the end:*/
-	name = "user:////abc/def\\/ghi////jkl\\/\\/";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "user");
-			succeed_if (size == 4, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "abc");
-			succeed_if (size == 3, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "def\\/ghi");
-			succeed_if (size == 8, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "jkl\\/\\/");
-			succeed_if (size == 7, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with escaped sequence at the begin:*/
-	name = "user:////\\/abc/\\/def\\/ghi////jkl\\/\\/";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "user");
-			succeed_if (size == 4, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "\\/abc");
-			succeed_if (size == 5, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "\\/def\\/ghi");
-			succeed_if (size == 10, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "jkl\\/\\/");
-			succeed_if (size == 7, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with double escaped slashes:*/
-	name = "user:////\\\\/abc/\\/def\\\\/ghi\\/jkl\\\\///";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "user");
-			succeed_if (size == 4, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "\\\\");
-			succeed_if (size == 2, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "abc");
-			succeed_if (size == 3, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "\\/def\\\\");
-			succeed_if (size == 7, "wrong size returned");
-			break;
-		case 5:
-			succeed_if_same_string (buffer, "ghi\\/jkl\\\\");
-			succeed_if (size == 10, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with triple escaped slashes:*/
-	name = "user:////\\\\\\/ab/\\\\\\/def\\\\/ghi/jkl\\\\\\///";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "user");
-			succeed_if (size == 4, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "\\\\\\/ab");
-			succeed_if (size == 6, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "\\\\\\/def\\\\");
-			succeed_if (size == 9, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "ghi");
-			succeed_if (size == 3, "wrong size returned");
-			break;
-		case 5:
-			succeed_if_same_string (buffer, "jkl\\\\\\/");
-			succeed_if (size == 7, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* backslashes only:*/
-	name = "/\\/\\\\/\\\\\\/\\\\\\\\/\\\\\\\\\\/\\\\\\\\\\\\/\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "\\/\\\\");
-			succeed_if (size == 1 + 1 + 2, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "\\\\\\/\\\\\\\\");
-			succeed_if (size == 3 + 1 + 4, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "\\\\\\\\\\/\\\\\\\\\\\\");
-			succeed_if (size == 5 + 1 + 6, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\");
-			succeed_if (size == 7 + 1 + 8, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* backslashes with slashes:*/
-	name = "////////\\/\\\\//////\\\\\\/\\\\\\\\////\\\\\\\\\\/\\\\\\\\\\\\//\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\";
-	size = 0;
-	level = 0;
-
-	p = name;
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		level++;
-
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-		case 1:
-			succeed_if_same_string (buffer, "\\/\\\\");
-			succeed_if (size == 1 + 1 + 2, "wrong size returned");
-			break;
-		case 2:
-			succeed_if_same_string (buffer, "\\\\\\/\\\\\\\\");
-			succeed_if (size == 3 + 1 + 4, "wrong size returned");
-			break;
-		case 3:
-			succeed_if_same_string (buffer, "\\\\\\\\\\/\\\\\\\\\\\\");
-			succeed_if (size == 5 + 1 + 6, "wrong size returned");
-			break;
-		case 4:
-			succeed_if_same_string (buffer, "\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\");
-			succeed_if (size == 7 + 1 + 8, "wrong size returned");
-			break;
-		default:
-			succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	keyDel (key);
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
 
 	k1 = keyNew ("user:/dir1/dir2", KEY_END);
 	succeed_if (keyAddBaseName (k1, 0) == -1, "Could add null basename");
 	succeed_if_same_string (keyName (k1), "user:/dir1/dir2");
-	succeed_if (keyAddBaseName (k1, "") == 17, "Could not add nothing to basename");
+	succeed_if (keyAddBaseName (k1, "") == 18, "Could not add nothing to basename");
 	succeed_if_same_string (keyName (k1), "user:/dir1/dir2/%");
-	succeed_if (keyAddBaseName (k1, "mykey") == 23, "Could not add basename");
+	succeed_if (keyAddBaseName (k1, "mykey") == 24, "Could not add basename");
 	succeed_if_same_string (keyName (k1), "user:/dir1/dir2/%/mykey");
-	succeed_if (keyGetNameSize (k1) == 23, "Name size not correct");
+	succeed_if (keyGetNameSize (k1) == 24, "Name size not correct");
 	succeed_if (keyAddBaseName (k1, "mykey") == sizeof ("user:/dir1/dir2/%/mykey/mykey"), "Could not add basename");
 	succeed_if_same_string (keyName (k1), "user:/dir1/dir2/%/mykey/mykey");
-	succeed_if (keyGetNameSize (k1) == 29, "Name size not correct");
-	succeed_if (keyAddBaseName (k1, "a") == 31, "Could not add basename");
+	succeed_if (keyGetNameSize (k1) == 30, "Name size not correct");
+	succeed_if (keyAddBaseName (k1, "a") == 32, "Could not add basename");
 	succeed_if_same_string (keyName (k1), "user:/dir1/dir2/%/mykey/mykey/a");
-	succeed_if (keyGetNameSize (k1) == 31, "Name size not correct");
+	succeed_if (keyGetNameSize (k1) == 32, "Name size not correct");
 	keyDel (k1);
 
 	{
@@ -395,23 +85,23 @@ static void test_keyHelpers (void)
 	keyDel (k2);
 
 	k2 = keyNew ("user:/dir1/dir2/mykey/mykey/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "mykey") == 33, "Could not add basename");
+	succeed_if (keySetBaseName (k2, "mykey") == 34, "Could not add basename");
 	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/mykey");
-	succeed_if (keyGetNameSize (k2) == 33, "Name size not correct");
-	succeed_if (keySetBaseName (k2, "einva") == 33, "Could not add basename");
-	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/einva");
-	succeed_if (keyGetNameSize (k2) == 33, "Name size not correct");
-	succeed_if (keySetBaseName (k2, "chang") == 33, "Could not add basename");
-	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/chang");
-	succeed_if (keySetBaseName (k2, "change") == 34, "Could not add basename");
 	succeed_if (keyGetNameSize (k2) == 34, "Name size not correct");
+	succeed_if (keySetBaseName (k2, "einva") == 34, "Could not add basename");
+	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/einva");
+	succeed_if (keyGetNameSize (k2) == 34, "Name size not correct");
+	succeed_if (keySetBaseName (k2, "chang") == 34, "Could not add basename");
+	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/chang");
+	succeed_if (keySetBaseName (k2, "change") == 35, "Could not add basename");
+	succeed_if (keyGetNameSize (k2) == 35, "Name size not correct");
 	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/change");
 	keyDel (k2);
 
 	k2 = keyNew ("user:/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, 0) == 10, "Could not add basename");
+	succeed_if (keySetBaseName (k2, 0) == 11, "Could not add basename");
 	succeed_if_same_string (keyName (k2), "user:/dir1");
-	succeed_if (keyGetNameSize (k2) == 10, "Name size not correct");
+	succeed_if (keyGetNameSize (k2) == 11, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("user:/dir1/a", KEY_END);
@@ -441,13 +131,13 @@ static void test_keyHelpers (void)
 	k2 = keyNew ("user:/", KEY_END);
 	succeed_if (keySetBaseName (k2, "user") == -1, "Could add basename, but there is none");
 	succeed_if_same_string (keyName (k2), "user:/");
-	succeed_if (keyGetNameSize (k2) == 6, "Name size not correct");
+	succeed_if (keyGetNameSize (k2) == 7, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("system:/", KEY_END);
 	succeed_if (keySetBaseName (k2, "system") == -1, "Could add basename, but there is none");
 	succeed_if_same_string (keyName (k2), "system:/");
-	succeed_if (keyGetNameSize (k2) == 8, "Name size not correct");
+	succeed_if (keyGetNameSize (k2) == 9, "Name size not correct");
 	keyDel (k2);
 }
 

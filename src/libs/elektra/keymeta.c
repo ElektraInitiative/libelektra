@@ -421,7 +421,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 	if (!key->meta) return 0;
 
 	// TODO (kodebach): meta namespace
-	search = keyNew ("meta/", KEY_END);
+	search = keyNew ("meta:/", KEY_END);
 	keyAddName (search, metaName);
 
 	ret = ksLookup (key->meta, search, 0);
@@ -474,7 +474,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	// optimization: we have nothing and want to remove something:
 	if (!key->meta && !newMetaString) return 0;
 
-	toSet = keyNew ("meta/", KEY_END);
+	toSet = keyNew ("meta:/", KEY_END);
 	if (!toSet) return -1;
 
 	// TODO (kodebach): fix meta namespace stuff

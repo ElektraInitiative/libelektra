@@ -578,6 +578,9 @@ size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, siz
 	char * outPtr = cname;
 
 	const char * lastSlash = name;
+
+	int slashes = 0;
+
 	if (offset == 0)
 	{
 		if (name[0] != '/')
@@ -590,11 +593,10 @@ size_t elektraKeyNameCanonicalize (const char * name, char ** canonicalName, siz
 			*outPtr++ = ':';
 
 			lastSlash = colonSlash + 2;
+			++slashes;
 		}
 		*outPtr++ = '/';
 	}
-
-	int slashes = 0;
 
 	const char * nextSlash;
 	while ((nextSlash = strchr (lastSlash, '/')) != NULL)
