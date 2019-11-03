@@ -17,22 +17,9 @@ static void test_ksNew (void)
 	printf ("Test ks creation\n");
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
-	succeed_if (ksGetSize (ks) == 0, "size not correct after 3 keys");
-
 	KeySet * ks2 = ksNew (0, KS_END);
 	ksCopy (ks2, ks);
-	succeed_if (ksGetSize (ks2) == 0, "size not correct after 3 keys");
-
-	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
-	succeed_if (ksAppendKey (ks, keyNew ("/", KEY_END)) == -1, "could append a key with no name");
-	succeed_if (ksGetSize (ks) == 0, "could not append 3 more keys");
-
-	ksCopy (ks2, ks);
-	succeed_if (ksGetSize (ks2) == 0, "could not append 3 more keys");
+	succeed_if (ksGetSize (ks2) == 0, "size not correct after copy");
 
 	ksClear (ks2); // useless, just test for double free
 	ksCopy (ks2, ks);
@@ -129,7 +116,7 @@ static void per (int k, Key ** pool, Key ** result)
 		result[i] = pool[selected];
 
 		// remove the selected from the pool
-		memmove (pool + selected,       // destination
+		memmove (pool + selected,	// destination
 			 pool + (selected + 1), // source
 			 (size - selected - 1) * sizeof (struct Key *));
 	}
@@ -350,14 +337,8 @@ static void test_cmp (void)
 	Key * k2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCmp (0, 0) == 0, "null keys comparision");
-	succeed_if (keyCmp (k1, 0) == 1, "compare null key with key with no name");
-	succeed_if (keyCmp (0, k2) == -1, "compare null key with key with no name");
 
 	keySetName (k1, "user/a");
-	succeed_if (keyCmp (k2, k2) == 0, "null keys comparision");
-	succeed_if (keyCmp (k1, k2) == 1, "compare key with no name with user/a");
-	succeed_if (keyCmp (k2, k1) == -1, "compare key with no name with user/a");
-
 	keySetName (k2, "user/a");
 	succeed_if (keyCmp (k1, k1) == 0, "compare the same key");
 	succeed_if (keyCmp (k1, k2) == 0, "compare the same key");
@@ -422,33 +403,6 @@ static void test_appendowner (void)
 	ksDel (ks);
 }
 
-static void test_ksLookupOwner (void)
-{
-	printf ("Test bug lookup with owner\n");
-	Key * found = 0;
-	KeySet * ks = ksNew (32, keyNew ("user:fritz/my/key", KEY_VALUE, "fritz", KEY_END),
-			     keyNew ("user:frotz/my/key", KEY_VALUE, "frotz", KEY_END),
-			     keyNew ("user/my/key", KEY_VALUE, "current", KEY_END), KS_END);
-
-	found = ksLookupByName (ks, "user/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "fritz"), "binary search seems to be non-deterministic");
-
-	found = ksLookupByName (ks, "user:fritz/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "fritz"), "binary search seems to be non-deterministic");
-
-	found = ksLookupByName (ks, "user:frotz/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "fritz"), "binary search seems to be non-deterministic");
-
-	found = ksLookupByName (ks, "user:fretz/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "fritz"), "binary search seems to be non-deterministic");
-
-	ksDel (ks);
-}
-
 int main (int argc, char ** argv)
 {
 	printf ("KEYSET ORDERING      TESTS\n");
@@ -464,7 +418,6 @@ int main (int argc, char ** argv)
 	test_equal ();
 	test_cmp ();
 	test_appendowner ();
-	test_ksLookupOwner ();
 
 	printf ("\n%s RESULTS: %d test(s) done. %d error(s).\n", argv[0], nbTest, nbError);
 
