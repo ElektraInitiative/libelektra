@@ -249,7 +249,6 @@ docu_task:
     - >
       set --
       -DBUILD_PDF=ON
-      -DBUILD_TESTING=OFF
       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
       -DTOOLS='ALL;web;website-frontend;website-backend'
     - *generate
