@@ -80,34 +80,38 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 		return;
 	}
 
-	char buffer[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("warnings/")];
-	nextWarning (key, buffer);
-
-	size_t len = strlen (buffer);
-	if (len > sizeof ("warnings/#_99"))
-	{ /* wrap arround after 100 warnings */
-		keySetMeta (key, "warnings", "#0");
-		strncpy (buffer, "warnings/#0", 12);
-		len = strlen (buffer);
-	}
-	char * bufferEnd = buffer + len;
+	char buffer[25] = "warnings/#00";buffer[12] = '\0';
+	const Key *meta = keyGetMeta(key, "warnings");
+	if (meta)
+	{
+		buffer[10] = keyString(meta)[0];
+		buffer[11] = keyString(meta)[1];
+		buffer[11]++;
+		if (buffer[11] > '9')
+		{
+			buffer[11] = '0';
+			buffer[10]++;
+			if (buffer[10] > '9') buffer[10] = '0';
+		}
+		keySetMeta(key, "warnings", &buffer[10]);
+	} else  keySetMeta(key, "warnings", "00");
 
 	keySetMeta (key, buffer, "number description  module file line mountpoint configfile reason");
-	strncpy (bufferEnd, "/number", 8);
+	strcat(buffer, "/number" );
 	keySetMeta (key, buffer, code);
-	strncpy (bufferEnd, "/description", 13);
+	buffer[12] = '\0'; strcat(buffer, "/description");
 	keySetMeta (key, buffer, name);
-	strncpy (bufferEnd, "/module", 8);
+	buffer[12] = '\0'; strcat(buffer, "/module");
 	keySetMeta (key, buffer, module);
-	strncpy (bufferEnd, "/file", 6);
+	buffer[12] = '\0'; strcat(buffer, "/file");
 	keySetMeta (key, buffer, file);
-	strncpy (bufferEnd, "/line", 6);
+	buffer[12] = '\0'; strcat(buffer, "/line");
 	keySetMeta (key, buffer, line);
-	strncpy (bufferEnd, "/mountpoint", 12);
+	buffer[12] = '\0'; strcat(buffer, "/mountpoint");
 	keySetMeta (key, buffer, keyName (key));
-	strncpy (bufferEnd, "/configfile", 12);
+	buffer[12] = '\0'; strcat(buffer, "/configfile");
 	keySetMeta (key, buffer, keyString (key));
-	strncpy (bufferEnd, "/reason", 8);
+	buffer[12] = '\0'; strcat(buffer, "/reason");
 	char * reason = elektraVFormat (reasonFmt, va);
 	keySetMeta (key, buffer, reason);
 	elektraFree (reason);
