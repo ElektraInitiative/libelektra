@@ -258,7 +258,7 @@ docu_task:
     - |
       git_diff_output="$(git diff -p 2>&1)"
       if [ -n "$git_diff_output" ]; then
-        printf >&2 -- '\nIt looks like you modified a source file of a man page, but did not commit the updated man page.\n'
+        printf >&2 -- 'It looks like you modified a source file of a man page, but did not commit the updated man page.\n'
         printf >&2 -- 'Please either:\n\n'
         printf >&2 -- '- build the man pages with `ronn` and commit the result, or\n'
         printf >&2 -- '- use the `patch` command after this message to update the man pages.\n\n'
