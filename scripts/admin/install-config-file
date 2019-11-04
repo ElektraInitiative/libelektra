@@ -8,7 +8,8 @@
 # This is a part of the preserved base path
 specialPathStart="user/elektra/merge/preserve/"
 # This is the path where a config file is loaded temporarily for merging
-tempPath="user/elektra/merge/tmp"
+# cannot use user/elektra here and use mount at the same time
+tempPath="user/tmp/merge"
 
 our=$1
 their=$2
@@ -21,7 +22,6 @@ else
 	echo "Usage is $0 <elektra path> <config file> [<format>]. It has to called as root."
 	exit 1
 fi
-exit 1
 
 # use the file name (without path) of <config file> as special path
 # in Elektra
@@ -33,10 +33,15 @@ base="${specialPathStart}${specialPathEnd}"
 
 # check if something is in <elektra path>
 if [ $(kdb ls $our | wc -c) = 0 ]; then
-	cat $their | kdb import $base $format
 	kdb mount --with-recommends $their $our $format
+	resolvedLocation=$(kdb file $our)
+	cat $resolvedLocation | kdb import $base $format
 else
-	cat $their | kdb import $tempPath $format
-	kdb cmerge -v -f $our $tempPath $base $our
-	kdb rm -rf $tempPath
+	# we could also import and export at this place
+	# however, mounting a second time gives a more consistent user experience
+	# as like this the resolver is used for <config file> each time the script
+	# is called
+	kdb mount -q --with-recommends $their $tempPath $format
+	kdb cmerge -f $our $tempPath $base $our $format
+	kdb umount $tempPath
 fi
