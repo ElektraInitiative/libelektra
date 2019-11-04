@@ -2,7 +2,7 @@ env:
   BUILD_DIR: build
 
 container:
-  memory: 8
+  memory: 12
 
 bsd_task:
   matrix:
