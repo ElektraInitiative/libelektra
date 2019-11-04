@@ -28,6 +28,7 @@
 
 %pythoncode {
   import warnings
+  import collections
 }
 
 %exceptionclass kdb::Exception;
@@ -198,6 +199,16 @@
 
     def __repr__(self):
       return "kdb.Key(" + repr(self.name) + ")"
+
+    # some helpers
+    Array = collections.namedtuple('Array', 'index name basename')
+    def array_elements(self):
+      basename = self.basename
+      if basename[0] != '#':
+        raise ValueError("Not an array element")
+      x = Key(self.name)
+      x.delBaseName()
+      return Key.Array(int(basename[1:].strip("_")), x.name, x.basename)
  %}
 };
 
@@ -319,16 +330,25 @@
 
     def __str__(self):
       """print the keyset in array style"""
-      items = []
-      for k in self:
-        items.append(str(k))
-      return str(items)
+      return str(list(map(lambda k: str(k), self)))
 
     def __repr__(self):
-      items = []
-      for k in self:
-        items.append(repr(k))
+      items = list(map(lambda k: repr(k), self))
       return "kdb.KeySet({}, {})".format(len(self), ", ".join(items))
+
+    # some helpers
+    def filter(self, func):
+      items = list(filter(func, self))
+      return KeySet(len(items), *items)
+
+    def filter_below(self, where):
+      return self.filter(lambda k: k.isDirectBelow(where))
+
+    def unpack_names(self):
+      return set(map(lambda k: k.name, self))
+
+    def unpack_basenames(self):
+      return set(map(lambda k: k.basename, self))
   %}
 }
 

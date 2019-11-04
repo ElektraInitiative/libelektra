@@ -129,5 +129,10 @@ class KeySet(unittest.TestCase):
 		self.assertNotEqual(ks[0].getKey(), self.ks[0].getKey())
 		self.assertTrue(ks == self.ks)
 
+	def test_helpers(self):
+		self.assertEqual(self.ks.unpack_names(), set([ 'system/key1', 'system/key2', 'user/key3', 'user/key4' ]))
+		self.assertEqual(self.ks.unpack_basenames(), set([ 'key1', 'key2', 'key3', 'key4' ]))
+		self.assertEqual(self.ks.filter_below(kdb.Key('user')), kdb.KeySet(2, self.ks[2], self.ks[3]))
+
 if __name__ == '__main__':
 	unittest.main()

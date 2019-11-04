@@ -167,5 +167,13 @@ class Key(unittest.TestCase):
 		self.assertEqual(iter(k).value(),     "user")
 		self.assertEqual(reversed(k).value(), "c")
 
+	def test_helpers(self):
+		with self.assertRaises(ValueError):
+			kdb.Key("user/noarray").array_elements()
+		parts = kdb.Key("user/some/array/#_12").array_elements()
+		self.assertEqual(parts.index,    12)
+		self.assertEqual(parts.name,     "user/some/array")
+		self.assertEqual(parts.basename, "array")
+
 if __name__ == '__main__':
 	unittest.main()
