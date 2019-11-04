@@ -29,8 +29,15 @@
     value  = None
 
     if len(args):
+      passed.append(args[0])
+      args = args[1:]
+
+      # add support for kdb.Key(name, value, { meta } )
+      if len(args) and isinstance(args[0], str):
+        value = args[0]
+        args = args[1:]
+
       args = iter(args)
-      passed.append(next(args))
       for arg in args:
         if arg == KEY_VALUE:
           value = next(args)
