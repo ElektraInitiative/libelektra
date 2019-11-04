@@ -113,7 +113,7 @@ KeySet * processConfig(BackendHandle * bh, KeySet * config, Key * errorKey)
 		return NULL;
 	}
 
-	KeySet * systemConfig = elektraRenameKeys (config, "system");
+	KeySet * systemConfig = ksRenameKeys (config, "system");
 	ksDel (config);
 
 	return systemConfig;
@@ -186,7 +186,7 @@ int processPlugin(KeySet * config, Key * cur, char ** name, KeySet ** pluginConf
 	KeySet * cutPluginConfig = ksCut (config, pluginConfigSearchKey);
 	keyDel (pluginConfigSearchKey);
 
-	*pluginConfig = elektraRenameKeys (cutPluginConfig, "user");
+	*pluginConfig = ksRenameKeys (cutPluginConfig, "user");
 	ksDel (cutPluginConfig);
 
 	Key * labelKey = ksLookup (config, labelSearchKey, KDB_O_POP);
@@ -262,7 +262,7 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 
 	while ((cur = ksNext (config)) != 0)
 	{
-		if (keyRel (root, cur) == 1)
+		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
 			int position;
 
@@ -378,7 +378,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 
 	while ((cur = ksNext (config)))
 	{
-		if (keyRel (root,cur) == 1)
+		if (keyIsDirectlyBelow (root,cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
 			Slot * slot;
@@ -453,7 +453,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 
 	while ((cur = ksNext (config)) != 0)
 	{
-		if (keyRel (root,cur) == 1)
+		if (keyIsDirectlyBelow (root,cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
 			Slot * slot;
@@ -552,7 +552,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 
 	while ((cur = ksNext (config)) != 0)
 	{
-		if (keyRel (root,cur) == 1)
+		if (keyIsDirectlyBelow (root,cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
 			Slot * slot;
