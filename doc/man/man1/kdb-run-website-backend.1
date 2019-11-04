@@ -1,10 +1,12 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "January 2018" "" ""
+.TH "README" "" "November 2019" "" ""
 .
 .SH "Introduction"
-This document aims to provide information about Elektra’s \fBrest\-backend\fR feature\. \fBrest\-backend\fR offers a RESTful server to search, store and convert configuration snippets\. It also offers authentication methods to restrict access to manipulative methods\. A detailed description of the implemented API can be found in the API description \fI/doc/api_blueprints/snippet\-sharing\.apib\fR\.
+.
+.P
+This document aims to provide information about Elektra’s \fBwebsite\-backend\fR feature\. \fBwebsite\-backend\fR offers a RESTful server to search, store and convert configuration snippets\. It also offers authentication methods to restrict access to manipulative methods\. A detailed description of the implemented API can be found in the API description \fI/doc/api_blueprints/snippet\-sharing\.apib\fR\.
 .
 .P
 Stored are snippet and user entries, both below different paths\. Each entry consists of multiple keys (+ meta keys) belonging together, while the root key matching a certain schema (regex) is used to identify an entry\.
@@ -16,22 +18,22 @@ The REST service operates on user\-defined repositories (paths)\. This paths are
 The reason why a special repository is used to store and retrieve entries is that opening the system to everyone by providing a public interface to the whole key database would result in a security leak\. For a REST API with such an interface, another tool will be published\.
 .
 .SH "Run and Configure"
-To run the \fBrest\-backend\fR we need to find out where it has been installed to\. This can be done by running the command \fBkdb list\-tools\fR which will output a list of installed tools and something like \fBExternal tools are located in /usr/local/lib/elektra/tool_exec\fR\. With this path we can run the service like \fBcd /usr/local/lib/elektra/tool_exec/ && sh run\-rest\-backend\fR\. An alternative is to make use of the \fBkdb\fR tool and run \fBkdb run\-rest\-backend\fR\.
+To run the \fBwebsite\-backend\fR we need to find out where it has been installed to\. This can be done by running the command \fBkdb list\-tools\fR which will output a list of installed tools and something like \fBExternal tools are located in /usr/local/lib/elektra/tool_exec\fR\. With this path we can run the service like \fBcd /usr/local/lib/elektra/tool_exec/ && sh run\-website\-backend\fR\. An alternative is to make use of the \fBkdb\fR tool and run \fBkdb run\-website\-backend\fR\.
 .
 .P
 The REST service can also be configured\. All configuration is read from Elektra’s key database at start\-time of the service\. Further details and configuration options are listed below\.
 .
 .P
-To stop the service, run \fBsh stop\-rest\-backend\fR in the directory where the start script is located or \fBkdb stop\-rest\-backend\fR from anywhere\.
+To stop the service, run \fBsh stop\-website\-backend\fR in the directory where the start script is located or \fBkdb stop\-website\-backend\fR from anywhere\.
 .
 .SS "Configuration"
-The service stores all its configuration below \fB/sw/elektra/restbackend/#0/current\fR, which is split into two parts:
+The service stores all its configuration below \fB/sw/elektra/websitebackend/#0/current\fR, which is split into two parts:
 .
 .IP "\(bu" 4
-one for CppCMS below \fB/sw/elektra/restbackend/#0/current/cppcms\fR and
+one for CppCMS below \fB/sw/elektra/websitebackend/#0/current/cppcms\fR and
 .
 .IP "\(bu" 4
-one for the service itself below \fB/sw/elektra/restbackend/#0/current/backend\fR
+one for the service itself below \fB/sw/elektra/websitebackend/#0/current/backend\fR
 .
 .IP "" 0
 .
@@ -39,30 +41,65 @@ one for the service itself below \fB/sw/elektra/restbackend/#0/current/backend\f
 All configuration options for CppCMS are listed on their Website \fIhttp://cppcms\.com/wikipp/en/page/cppcms_1x_config\fR\. The JSON configuration explained on the website can be translated into Elektra keys easily\. For the values \fBtrue\fR and \fBfalse\fR, the strings \fB"true"\fR and \fB"false"\fR can be used\.
 .
 .P
-The following example configuration in CppCMS style \fB{ "service": { "api": "http" "port": 8080, "ip": "0\.0\.0\.0" }, "security": { "display_error_messages": true } }\fR can be realized within Elektra like \fBkdb set /sw/elektra/restbackend/#0/current/cppcms/service/api "http" kdb set /sw/elektra/restbackend/#0/current/cppcms/service/port 8080 kdb set /sw/elektra/restbackend/#0/current/cppcms/service/ip "0\.0\.0\.0" kdb set /sw/elektra/restbackend/#0/current/cppcms/security/display_error_messages "true"\fR
+The following example configuration in CppCMS style
+.
+.IP "" 4
+.
+.nf
+
+{
+  "service": {
+    "api": "http",
+    "port": 8080,
+    "ip": "0\.0\.0\.0"
+  },
+  "security": {
+    "display_error_messages": true
+  }
+}
+.
+.fi
+.
+.IP "" 0
+.
+.P
+can be realized within Elektra like
+.
+.IP "" 4
+.
+.nf
+
+kdb set /sw/elektra/websitebackend/#0/current/cppcms/service/api "http"
+kdb set /sw/elektra/websitebackend/#0/current/cppcms/service/port 8080
+kdb set /sw/elektra/websitebackend/#0/current/cppcms/service/ip "0\.0\.0\.0"
+kdb set /sw/elektra/websitebackend/#0/current/cppcms/security/display_error_messages "true"
+.
+.fi
+.
+.IP "" 0
 .
 .P
 Simply set the desired settings as keys in the key database and you are done!
 .
 .P
-The service itself offers quite some configuration options as well\. In detail, the options (without the base key \fB/sw/elektra/restbackend/#0/\fR) are:
+The service itself offers quite some configuration options as well\. In detail, the options (without the base key \fB/sw/elektra/websitebackend/#0/\fR) are:
 .
 .IP "" 4
 .
 .nf
 
 [current]
-mountpoint = rest\-backend\.ini
+mountpoint = website\-backend\.ini
 
 [current/backend/api/description/raw]
 check/type = string
 description = A link to the blueprint describing the API\.
-default = https://git\.libelektra\.org/tree/master/doc/api_blueprints/snippet\-sharing\.apib
+default = https://master\.libelektra\.org/doc/api_blueprints/snippet\-sharing\.apib
 
 [current/backend/api/description/html]
 check/type = string
 description = A link to the compiled blueprint describing the API\.
-default = https://doc\.libelektra\.org/restapi/0\.8\.21/snippet\-sharing\.html
+default = https://doc\.libelektra\.org/restapi/0\.9\.0/snippet\-sharing\.html
 
 [current/backend/jwt/encryption/secret]
 check/type = string
@@ -78,13 +115,13 @@ default = 7200
 [current/backend/kdb/path/configs]
 check/type = string
 description = The root path being used to store configuration snippet entries, must start with a namespace\.
-example = user/rest\-backend/configs
+example = user/website\-backend/configs
 default = dir/configs
 
 [current/backend/kdb/path/users]
 check/type = string
 description = The root path being used to store user entries, must start with a namespace\.
-example = user/rest\-backend/users
+example = user/website\-backend/users
 default = dir/users
 
 [current/backend/output/default/entry/sort]
@@ -249,7 +286,7 @@ default = 1
 [current/cppcms/daemon/lock]
 check/type = string
 description = File name for lock file for this daemon\. This file contains the process ID of the daemon that allows you to kill it\.
-default = /run/elektra\-rest\-backend\.pid
+default = /run/elektra\-website\-backend\.pid
 
 [current/cppcms/daemon/user]
 check/type = string
@@ -285,22 +322,55 @@ description = Special setting for concurrency ability of FastCGI server that may
 .
 .IP "" 0
 .
-.SS "Configure as service"
-To configure the rest\-backend as service, it is possible to use \fBsystemd\fR on most systems\.
+.SS "Configure as Service"
+To configure the website\-backend as service, it is possible to use \fBsystemd\fR on most systems\.
 .
-.P
-1) Create a new service file with the following command (and make sure the paths of \fBExecStart\fR match your installation of Elektra): ``` cat > /etc/systemd/system/rest\-backend\.service << EOF [Unit] Description=Start the REST backend for sharing of configuration snippets Requires=network\.target After=network\.target
+.IP "1." 4
+Create a new service file with the following command (and make sure the paths of \fBExecStart\fR match your installation of Elektra):
 .
-.P
-[Service] Type=simple Restart=always ExecStart=kdb run\-rest\-backend ExecStop=kdb stop\-rest\-backend
+.IP "" 4
 .
-.P
-[Install] WantedBy=multi\-user\.target EOF \fB`` 2) Reload the configuration of\fRsystemctl\fBwith\fRsystemctl daemon\-reload\fB\. 3) Enable the rest\-backend service with\fRsystemctl enable rest\-backend\.service\fB, a symbolic link should be created\. 4) Make sure the service is enabled with\fRsystemctl is\-enabled rest\-backend\.service\fB\. 5) Restart the rest\-backend service with\fRsystemctl restart rest\-backend\.service\fB\. If everything went fine, the service should be reachable and\fRsystemctl status rest\-backend\.service` should print information about the running service (PID, etc)\.
+.nf
+
+cat > /etc/systemd/system/website\-backend\.service << EOF
+[Unit]
+Description=Start the REST backend for sharing of configuration snippets
+Requires=network\.target
+After=network\.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=kdb run\-website\-backend
+ExecStop=kdb stop\-website\-backend
+
+[Install]
+WantedBy=multi\-user\.target
+EOF
+.
+.fi
+.
+.IP "" 0
+
+.
+.IP "2." 4
+Reload the configuration of \fBsystemctl\fR with \fBsystemctl daemon\-reload\fR\.
+.
+.IP "3." 4
+Enable the website\-backend service with \fBsystemctl enable website\-backend\.service\fR, a symbolic link should be created\.
+.
+.IP "4." 4
+Make sure the service is enabled with \fBsystemctl is\-enabled website\-backend\.service\fR\.
+.
+.IP "5." 4
+Restart the website\-backend service with \fBsystemctl restart website\-backend\.service\fR\. If everything went fine, the service should be reachable and \fBsystemctl status website\-backend\.service\fR should print information about the running service (PID, etc)\.
+.
+.IP "" 0
 .
 .SH "Compiling and Installation"
 .
 .SS "Dependencies"
-In order to compile and use the new \fBrest\-backend\fR there are a few dependencies which must be installed\.
+In order to compile and use the new \fBwebsite\-backend\fR there are a few dependencies which must be installed\.
 .
 .IP "\(bu" 4
 CppCMS version 1\.0\.0 or higher
@@ -320,22 +390,22 @@ OpenSSL
 An extensive tutorial describing the installation and configuration can be found here \fI/doc/tutorials/snippet\-sharing\-rest\-service\.md\fR\.
 .
 .SS "Compiling"
-Compile Elektra as normal as per the COMPILE document \fIhttps://libelektra\.org/tree/master/doc/COMPILE\.md\fR, but make sure to include the \fBrest\-backend\fR tool using the \fB\-DTOOLS\fR flag\.
+Compile Elektra as normal as per the COMPILE document \fIhttps://master\.libelektra\.org/doc/COMPILE\.md\fR, but make sure to include the \fBwebsite\-backend\fR tool using the \fB\-DTOOLS\fR flag\.
 .
 .P
-For instance: \fB\-DTOOLS=ALL\fR or \fB\-DTOOLS=rest\-backend\fR
+For instance: \fB\-DTOOLS=ALL\fR or \fB\-DTOOLS=website\-backend\fR
 .
 .SS "Installing"
-You can now install Elektra as you normally would or as described in the install documentation \fIhttps://libelektra\.org/tree/master/doc/INSTALL\.md\fR\.
+You can now install Elektra as you normally would or as described in the install documentation \fIhttps://master\.libelektra\.org/doc/INSTALL\.md\fR\.
 .
-.SH "Implementation notes and hints for Front\-Ends"
+.SH "Implementation Notes and Hints for Front\-Ends"
 The here described tool offers an API which can be consumed by either a command line tool like cURL or a custom frontend\. In the following some hints for frontend implementations will be given\.
 .
 .SS "Usability"
 The API validates all inputs, but does not respond always with exact error messages\. Normally error messages contain a general hint on what input was wrong (e\.g\. \'the \fBusername\fR has to be 3\-20 signs long, contain only letters, digits and dashes\'), but not what particular constraint was wrong for the last input (e\.g\. that the input was only 2 instead of 3 signs long)\. This limitation comes from the usage of regex patterns instead of atomic comparisons during validation\.
 .
 .P
-In terms of usability this is sufficient, but not the best possible\. Therefore it would be advisable to implement live\-validation for frontends with more granularity\. Information about allowed input formats can be found in the API description \fIhttps://libelektra\.org/tree/master/doc/rest_api/snippet_sharing/api\-description\.apib\fR\.
+In terms of usability this is sufficient, but not the best possible\. Therefore it would be advisable to implement live\-validation for frontends with more granularity\. Information about allowed input formats can be found in the API description \fIhttps://master\.libelektra\.org/doc/api_blueprints/snippet\-sharing\.apib\fR\.
 .
 .SH "Benchmarks"
 The service has been benchmarked against a MySQL solution, for further details see benchmarks readme \fIbenchmarks/README\.md\fR\.
