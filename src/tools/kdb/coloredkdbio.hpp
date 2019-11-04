@@ -85,7 +85,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 		for (int i = 0; i <= nr; i++)
 		{
 			std::ostringstream name;
-			name << "warnings/#" << i;
+			name << "warnings/#" << std::setfill ('0') << std::setw (2) << i;
 			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
 			os << "\tSorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
 			   << error.getMeta<std::string> (name.str () + "/module") << getErrorColor (ANSI_COLOR::RESET)

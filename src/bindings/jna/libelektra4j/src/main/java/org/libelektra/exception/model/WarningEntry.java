@@ -14,17 +14,10 @@ public class WarningEntry {
 	/**
 	 * Extracts warning information from the errorKey
 	 * @param key the errorkey containing the warnings/* metakeys
-	 * @param current The current entry you want to parse, e.g., (key, 0) will search for entries with "warnings/#0"
+	 * @param current The current entry you want to parse, e.g., (key, 0) will search for entries with "warnings/#00"
 	 */
 	public WarningEntry(Key key, int current) {
-
-		String nextWarning;
-		if (current > 9) {
-			nextWarning = String.format("_%s",current);
-		} else {
-			nextWarning = String.valueOf(current);
-		}
-		final String warningKeyName = String.format("warnings/#%s", nextWarning);
+		final String warningKeyName = String.format("warnings/#%02d", current);
 		warningNumber = key.getMeta(warningKeyName + "/number").getString();
 		reason = key.getMeta(warningKeyName + "/reason").getString();
 		module = key.getMeta(warningKeyName + "/module").getString();

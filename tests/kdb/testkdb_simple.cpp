@@ -230,7 +230,7 @@ TEST_F (Simple, DISABLED_GetNothingEmpty)
 	{
 		std::cout << "Could not get everything from keydatabase: " << e.what () << std::endl;
 	}
-	ASSERT_EQ (k.getMeta<int> ("warnings/#0/number"), 105) << "did not get warning for empty key";
+	ASSERT_EQ (k.getMeta<int> ("warnings/#00/number"), 105) << "did not get warning for empty key";
 	// got everything, so make no assumption of size
 }
 
