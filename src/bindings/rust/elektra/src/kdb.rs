@@ -252,6 +252,203 @@ impl<'a> Display for KDBError<'a> {
 impl<'a> Error for KDBError<'a> {}
 
 #[cfg(test)]
+mod error_tests {
+    use super::*;
+    use crate::KeyBuilder;
+
+    #[rustfmt::skip]
+    const ERROR_CODES: [&str; 12] = [
+        ELEKTRA_ERROR_PERMANENT,
+            ELEKTRA_ERROR_RESOURCE,
+                ELEKTRA_ERROR_OUT_OF_MEMORY,
+            ELEKTRA_ERROR_INSTALLATION,
+            ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_INTERNAL,
+                ELEKTRA_ERROR_INTERFACE,
+                ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR,
+        ELEKTRA_ERROR_CONFLICTING_STATE,
+        ELEKTRA_ERROR_VALIDATION,
+            ELEKTRA_ERROR_VALIDATION_SYNTACTIC,
+            ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+    ];
+
+    fn test_error(kdb_error: &KDBError, error_codes: &[&str]) {
+        for err_code in error_codes {
+            println!("Should succeed {}", err_code);
+            assert!(kdb_error.is_error(err_code));
+        }
+
+        for err_code in ERROR_CODES.iter().filter(|e| !error_codes.contains(e)) {
+            println!("Should not succeed {}", err_code);
+            assert!(!kdb_error.is_error(err_code));
+        }
+    }
+
+    #[test]
+    fn kdb_test_err_out_of_memory() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_OUT_OF_MEMORY)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_RESOURCE,
+                ELEKTRA_ERROR_OUT_OF_MEMORY,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_resource() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_RESOURCE)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_PERMANENT, ELEKTRA_ERROR_RESOURCE],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_permanent() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_PERMANENT)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(&kdb_error, &[ELEKTRA_ERROR_PERMANENT]);
+    }
+
+    #[test]
+    fn kdb_test_err_installation() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_INSTALLATION)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_PERMANENT, ELEKTRA_ERROR_INSTALLATION],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_logical() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_LOGICAL)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_PERMANENT, ELEKTRA_ERROR_LOGICAL],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_internal() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_INTERNAL)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_INTERNAL,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_interface() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_INTERFACE)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_INTERFACE,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_plugin_misbehavior() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_conflicting_state() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_CONFLICTING_STATE)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(&kdb_error, &[ELEKTRA_ERROR_CONFLICTING_STATE]);
+    }
+
+    #[test]
+    fn kdb_test_err_validation() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_VALIDATION)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(&kdb_error, &[ELEKTRA_ERROR_VALIDATION]);
+    }
+
+    #[test]
+    fn kdb_test_err_validation_syntactic() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_VALIDATION_SYNTACTIC)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_VALIDATION, ELEKTRA_ERROR_VALIDATION_SYNTACTIC],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_validation_semantic() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_VALIDATION_SEMANTIC)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_VALIDATION, ELEKTRA_ERROR_VALIDATION_SEMANTIC],
+        );
+    }
+}
+
+#[cfg(test)]
 mod test {
     use super::*;
     use crate::{KeyBuilder, LookupOption};
