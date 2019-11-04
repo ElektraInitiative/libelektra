@@ -10,11 +10,11 @@ Rust bindings for libelektra.
 
 ## Build
 
-Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with your package manager, you should use the crates from [crates.io](https://crates.io/). If you want to built libelektra locally, you should use the bindings that are built in the `build` directory.
+Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with a package manager, you should use the crates from [crates.io](https://crates.io/). If built libelektra locally, you should use the bindings that are built in the `build` directory.
 
 ### Package Manager
 
-If you installed elektra via your package manager, you should use the [elektra](https://crates.io/crate/elektra) crate or [elektra-sys](https://crates.io/crate/elektra-sys) if you need the raw bindings directly. In this case you will need `libelektra` itself, as well as the development headers (often called `libelektra-dev`) for bindings generation.
+If you installed elektra via a package manager, you should use the [elektra](https://crates.io/crate/elektra) crate or [elektra-sys](https://crates.io/crate/elektra-sys) crate if you need the raw bindings. In this case you will need `libelektra` itself, as well as the development headers (often called `libelektra-dev`) for bindings generation.
 The `elektra-sys`, as well as the `elektra` crate have a feature called `pkg-config` that you can enable to find the installation of elektra and its headers. It is not enabled by default, but recommended and you can do so by adding `features = ["pkg-config"]` to the dependency section as seen below. The `pkg-config` utility has to be installed then. Your Cargo.toml dependencies might thus look like this
 
 ```toml
@@ -31,6 +31,13 @@ With this in place, the bindings should be built when you run `cargo build`.
 ### Local Build
 
 To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](../../../doc/COMPILE.md) and the bindings will be built as part of this process.
+
+Your Cargo.toml dependencies might then look like this
+
+```toml
+[dependencies]
+elektra = { path = "../libelektra/build/src/bindings/rust/elektra/"}
+```
 
 ## Example
 
@@ -53,7 +60,7 @@ If you run `cargo run` and everything builds correctly and prints `Hello, world!
 
 ### Key
 
-An example for using a `StringKey`. See the [full example](example/src/bin/key.rs) for more. Run it from the `example` directory using `cargo run --bin key`.
+An example for using a `StringKey`. Run it from the `example` directory using `cargo run --bin key`. See the [full example](example/src/bin/key.rs) for more.
 
 ```rust
 extern crate elektra;
@@ -94,7 +101,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is named `ReadOnly`. The keys returned cannot be modified in accordance to the design.
+The functionality of the keys is split into two traits, `ReadableKey` and `WritableKey`, which define methods that only read information from a key, and modify a key, respectively. For example, the method to retrieve metakeys only returns a key that implements `ReadableKey`, which is one of the keys in a `ReadOnly` wrapper.
 
 ### KeySet
 
@@ -131,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
-    }
+}
 ```
 
 A `KeySet` only contains `StringKey`s, since they are far more prevalent than `BinaryKey`s. However since the underlying KeySet holds generic `Key`s, `BinaryKey`s can occur. You can cast between the two keys, by using the `From` trait. This is safe memory-wise, but can be unsafe if you cast a `BinaryKey` holding arbitrary bytes to a `StringKey`. You can use `is_string` or `is_binary` to find out whether the cast is safe.
@@ -151,29 +158,37 @@ let string_key = StringKey::from(binary_key);
 With the `KDB` struct you can access the key database.
 See the [full example](example/src/bin/kdb.rs) for more. Run it from the `example` directory using `cargo run --bin kdb`.
 
-The KDB error types are nested, so you can match on a high-level or a specific one. For a deeper explanation of the error types, see the [error guideline](https://master.libelektra.org/doc/dev/error-categorization.md).
+The KDB error types are nested, so you can match on a high-level or a specific one. You might want to match all validation errors using `kdb_error.is_validation()` which would include both syntactic and semantic validation errors.
+For an in-depth explanation of the error types, see the [error guideline](https://master.libelektra.org/doc/dev/error-categorization.md).
 
 ```rust
 extern crate elektra;
 
-use elektra::{KDB, KDBError, LogicalError, PermanentError, ValidationError};
+use elektra::{KeySet, StringKey, WriteableKey, KDB};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let kdb = KDB::open?;
-    let mut ks = KeySet::with_capacity(10);
-    let mut parent_key = StringKey::new("user/test")?;
-    let res = kdb.get(&mut ks, &mut parent_key);
+    // Open a KDB session
+    let mut kdb = KDB::open()?;
 
-    if let KDBError::Permanent(PermanentError::Logical(LogicalError::Internal(err))) = res {
-        // Handle Assertion error
-        println!("{:?}", err);
-    } else if let KDBError::Validation(ValidationError::Semantic(err)) = res {
-        // Handle Semantic error
-        println!("{:?}", err);
+    // Create a keyset that will hold the keys we get from the get call
+    let mut ks = KeySet::with_capacity(10);
+
+    // Get the current state of the key database
+    let mut parent_key = StringKey::new("user/test")?;
+    let get_res = kdb.get(&mut ks, &mut parent_key);
+
+    if let Err(kdb_error) = get_res {
+        if kdb_error.is_validation() {
+            // Handle the validation error, which could be syntactic or semantic
+            // You could use is_semantic() or is_syntactic() to match further.
+            Ok(())
+        } else {
+            // Otherwise propagate the error up
+            Err(Box::new(kdb_error))
+        }
     } else {
-        // Ignore Conflicting State errors
+        Ok(())
     }
-    Ok(())
 }
 ```
 
