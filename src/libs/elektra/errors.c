@@ -41,12 +41,13 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 		return;
 	}
 
-	char buffer[25] = "warnings/#00";buffer[12] = '\0';
-	const Key *meta = keyGetMeta(key, "warnings");
+	char buffer[25] = "warnings/#00";
+	buffer[12] = '\0';
+	const Key * meta = keyGetMeta (key, "warnings");
 	if (meta)
 	{
-		buffer[10] = keyString(meta)[0];
-		buffer[11] = keyString(meta)[1];
+		buffer[10] = keyString (meta)[0];
+		buffer[11] = keyString (meta)[1];
 		buffer[11]++;
 		if (buffer[11] > '9')
 		{
@@ -54,25 +55,34 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 			buffer[10]++;
 			if (buffer[10] > '9') buffer[10] = '0';
 		}
-		keySetMeta(key, "warnings", &buffer[10]);
-	} else  keySetMeta(key, "warnings", "00");
+		keySetMeta (key, "warnings", &buffer[10]);
+	}
+	else
+		keySetMeta (key, "warnings", "00");
 
 	keySetMeta (key, buffer, "number description  module file line mountpoint configfile reason");
-	strcat(buffer, "/number" );
+	strcat (buffer, "/number");
 	keySetMeta (key, buffer, code);
-	buffer[12] = '\0'; strcat(buffer, "/description");
+	buffer[12] = '\0';
+	strcat (buffer, "/description");
 	keySetMeta (key, buffer, name);
-	buffer[12] = '\0'; strcat(buffer, "/module");
+	buffer[12] = '\0';
+	strcat (buffer, "/module");
 	keySetMeta (key, buffer, module);
-	buffer[12] = '\0'; strcat(buffer, "/file");
+	buffer[12] = '\0';
+	strcat (buffer, "/file");
 	keySetMeta (key, buffer, file);
-	buffer[12] = '\0'; strcat(buffer, "/line");
+	buffer[12] = '\0';
+	strcat (buffer, "/line");
 	keySetMeta (key, buffer, line);
-	buffer[12] = '\0'; strcat(buffer, "/mountpoint");
+	buffer[12] = '\0';
+	strcat (buffer, "/mountpoint");
 	keySetMeta (key, buffer, keyName (key));
-	buffer[12] = '\0'; strcat(buffer, "/configfile");
+	buffer[12] = '\0';
+	strcat (buffer, "/configfile");
 	keySetMeta (key, buffer, keyString (key));
-	buffer[12] = '\0'; strcat(buffer, "/reason");
+	buffer[12] = '\0';
+	strcat (buffer, "/reason");
 	char * reason = elektraVFormat (reasonFmt, va);
 	keySetMeta (key, buffer, reason);
 	elektraFree (reason);

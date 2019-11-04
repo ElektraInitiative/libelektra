@@ -15,7 +15,6 @@
 
 using ckdb::keyNew;
 using std::exception;
-using ckdb::keyNew;
 
 using elektra::CppTemplateDelegate;
 
