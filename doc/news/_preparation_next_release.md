@@ -266,6 +266,7 @@ you up to date with the multi-language support provided by Elektra.
 - We updated our [Doxygen configuration file](../../doc/Doxyfile), removing the outdated `PERL_PATH` and `MSCGEN_PATH` options. _(René Schwaiger)_
 - Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md).
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
+- Clarified subtyping in the language bindings tutorial. _(Michael Zronek)_
 - A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
 - Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
 - We updated links for the INI parsing library Nickel and the documentation for the ini plugin. _(René Schwaiger)_
