@@ -33,45 +33,6 @@ using namespace ckdb;
 #define ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC "C03200"
 #define ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME "Validation Semantic"
 
-static void nextWarning (Key * key, char * buffer)
-{
-	const Key * meta = keyGetMeta (key, "warnings");
-	const char * last = meta == NULL ? "" : keyString (meta);
-	if (last[0] == '\0' || last[1] == '\0')
-	{
-		strncpy (buffer, "warnings/#0", 12);
-		keySetMeta (key, "warnings", "#0");
-	}
-	else
-	{
-		strncpy (buffer, "warnings/#", 11);
-		size_t len = strlen (last);
-		size_t cur = len - 1;
-		char * buf = buffer + strlen ("warnings/");
-		strncpy (buf, last, len + 1);
-
-		buf[cur] = last[cur];
-		++buf[cur];
-		while (buf[cur] > '9')
-		{
-			buf[cur] = '0';
-			if (last[cur - 1] == '_' || last[cur - 1] == '#')
-			{
-				strncpy (&buf[cur + 2], &last[cur], strlen (&last[cur]));
-				buf[cur] = '_';
-				buf[cur + 1] = '1';
-				buf[cur + 2] = '0';
-				buf[len + 2] = '\0';
-				break;
-			}
-			--cur;
-			buf[cur] = last[cur];
-			++buf[cur];
-		}
-		keySetMeta (key, "warnings", buf);
-	}
-}
-
 static void addWarning (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
 			const char * reasonFmt, va_list va)
 {
