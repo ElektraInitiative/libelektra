@@ -25,6 +25,8 @@ t:pop()
 assert(#t           == #ks - 1)
 
 -- operator
+assert(ks ~= kdb.KeySet(0))
+
 assert(#ks            == 4)
 assert(#kdb.KeySet(0) == 0)
 

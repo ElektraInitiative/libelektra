@@ -28,6 +28,8 @@ class KeySet(unittest.TestCase):
 		self.assertEqual(len(ks), len(self.ks) - 1)
 
 	def test_operator(self):
+		self.assertFalse(self.ks == kdb.KeySet(0))
+
 		self.assertEqual(len(self.ks),       4)
 		self.assertEqual(len(kdb.KeySet(0)), 0)
 
@@ -119,11 +121,13 @@ class KeySet(unittest.TestCase):
 		ks = copy.copy(self.ks)
 		self.assertEqual(len(ks), len(self.ks))
 		self.assertEqual(ks[0].getKey(), self.ks[0].getKey())
+		self.assertTrue(ks == self.ks)
 
 		# deep copy
 		ks = copy.deepcopy(self.ks)
 		self.assertEqual(len(ks), len(self.ks))
 		self.assertNotEqual(ks[0].getKey(), self.ks[0].getKey())
+		self.assertTrue(ks == self.ks)
 
 if __name__ == '__main__':
 	unittest.main()
