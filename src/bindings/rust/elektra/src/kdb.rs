@@ -128,7 +128,22 @@ const ELEKTRA_ERROR_VALIDATION: &str = "C03";
 const ELEKTRA_ERROR_VALIDATION_SYNTACTIC: &str = "C03100";
 const ELEKTRA_ERROR_VALIDATION_SEMANTIC: &str = "C03200";
 
-/// Wraps a key that contains error metakeys
+/// Represents the failure of a KDB operation.
+/// Refer to the [error codes doc](https://master.libelektra.org/doc/decisions/error_codes.md#decision) to see how the errors relate to each other.
+///
+/// Various `is_` methods are provided to find out which error occurred.
+///
+/// # Examples
+/// ```
+/// # use elektra::{KDBError, KeyBuilder, StringKey, WriteableKey};
+/// # fn main() {
+/// # let error_key = KeyBuilder::new_empty().meta("error/number", "C03100").unwrap().build();
+/// # let kdb_error = KDBError::new(error_key);
+/// // If we are dealing with a Validation Syntactic error, both is_syntactic
+/// // and is_validation will return true
+/// assert!(kdb_error.is_syntactic() && kdb_error.is_validation());
+/// # }
+/// ```
 #[derive(Debug)]
 pub struct KDBError<'a> {
     error_key: StringKey<'a>,
