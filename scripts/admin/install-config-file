@@ -35,18 +35,18 @@ base="${specialPathStart}${specialPathEnd}"
 contentOfElektraPath=$(kdb ls $our)
 if [ $? -ne 0 ]; then
 	echo "ERROR: Could not use kdb ls on $our."
-	exit 1
+	exit 30
 fi
 if [ -z "$contentOfElektraPath" ]; then
 	kdb mount --with-recommends $their $our $format
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their. Got code $?"
-		exit 1
+		exit 31
 	fi
 	resolvedLocation=$(kdb file $our)
 	if ! [ -f $resolvedLocation ]; then
 		echo "Could not import file $resolvedLocation as it does not exist!"
-		exit 1
+		exit 32
 	fi
 	cat $resolvedLocation | kdb import $base $format
 else
@@ -57,7 +57,7 @@ else
 	kdb mount -q --with-recommends $their $tempPath $format
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their. Got code $?"
-		exit 1
+		exit 33
 	fi
 	kdb cmerge -f $our $tempPath $base $our $format
 	kdb umount $tempPath
