@@ -958,11 +958,13 @@ static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global
 	{
 		mmapAddr.ksPtr->opmphm = (Opmphm *) (dest + OFFSET_OPMPHM);
 		memcpy (mmapAddr.ksPtr->opmphm, keySet->opmphm, sizeof (Opmphm));
+		mmapAddr.ksPtr->opmphm->flags = OPMPHM_FLAG_MMAP_STRUCT;
 		if (keySet->opmphm->rUniPar)
 		{
 			mmapAddr.ksPtr->opmphm->hashFunctionSeeds = (int32_t *) mmapAddr.dataPtr;
 			memcpy (mmapAddr.ksPtr->opmphm->hashFunctionSeeds, keySet->opmphm->hashFunctionSeeds,
 				keySet->opmphm->rUniPar * sizeof (int32_t));
+			set_bit (mmapAddr.ksPtr->opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS);
 			mmapAddr.dataPtr += keySet->opmphm->rUniPar * sizeof (int32_t);
 			mmapAddr.ksPtr->opmphm->hashFunctionSeeds =
 				(int32_t *) (((char *) mmapAddr.ksPtr->opmphm->hashFunctionSeeds) - mmapAddr.mmapAddrInt);
@@ -971,6 +973,7 @@ static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global
 		{
 			mmapAddr.ksPtr->opmphm->graph = (uint32_t *) mmapAddr.dataPtr;
 			memcpy (mmapAddr.ksPtr->opmphm->graph, keySet->opmphm->graph, keySet->opmphm->size);
+			set_bit (mmapAddr.ksPtr->opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH);
 			mmapAddr.dataPtr += keySet->opmphm->size;
 			mmapAddr.ksPtr->opmphm->graph = (uint32_t *) (((char *) mmapAddr.ksPtr->opmphm->graph) - mmapAddr.mmapAddrInt);
 		}
@@ -984,6 +987,7 @@ static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global
 		mmapAddr.ksPtr->opmphmPredictor->patternTable = (uint8_t *) mmapAddr.dataPtr;
 		memcpy (mmapAddr.ksPtr->opmphmPredictor->patternTable, keySet->opmphmPredictor->patternTable,
 			keySet->opmphmPredictor->size * sizeof (uint8_t));
+		mmapAddr.ksPtr->opmphmPredictor->flags = OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT | OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE;
 		mmapAddr.dataPtr += keySet->opmphmPredictor->size * sizeof (uint8_t);
 		mmapAddr.ksPtr->opmphmPredictor->patternTable =
 			(uint8_t *) (((char *) mmapAddr.ksPtr->opmphmPredictor->patternTable) - mmapAddr.mmapAddrInt);
@@ -1102,25 +1106,11 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	{
 		if (returned->opmphm) mmapOpmphmDel (returned->opmphm);
 		returned->opmphm = keySet->opmphm;
-		returned->opmphm->flags = OPMPHM_FLAG_MMAP_STRUCT;
-		if (returned->opmphm->hashFunctionSeeds)
-		{
-			set_bit (returned->opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS);
-		}
-		if (returned->opmphm->graph)
-		{
-			set_bit (returned->opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH);
-		}
 	}
 	if (keySet->opmphmPredictor)
 	{
 		if (returned->opmphmPredictor) mmapOpmphmPredictorDel (returned->opmphmPredictor);
 		returned->opmphmPredictor = keySet->opmphmPredictor;
-		returned->opmphmPredictor->flags = OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT;
-		if (returned->opmphmPredictor->patternTable)
-		{
-			set_bit (returned->opmphmPredictor->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE);
-		}
 	}
 #endif
 
