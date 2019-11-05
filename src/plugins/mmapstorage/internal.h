@@ -148,6 +148,16 @@ struct _mmapHeader
 	// clang-format on
 };
 
+#define STATIC_SIZEOF_MMAPHEADER 32
+#define STATIC_HEADER_OFFSETOF_MAGICNUMBER 0
+#define STATIC_HEADER_OFFSETOF_ALLOCSIZE 8
+#define STATIC_HEADER_OFFSETOF_CHECKSUMSIZE 16
+#define STATIC_HEADER_OFFSETOF_CHECKSUM 24
+#define STATIC_HEADER_OFFSETOF_FORMATFLAGS 28
+#define STATIC_HEADER_OFFSETOF_FORMATVERSION 29
+#define STATIC_HEADER_OFFSETOF_RESERVED_A 30
+#define STATIC_HEADER_OFFSETOF_RESERVED_B 31
+
 /**
  * Mmap meta-data
  */
@@ -171,5 +181,8 @@ struct _mmapFooter
 	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
 	// clang-format on
 };
+
+#define STATIC_SIZEOF_MMAPFOOTER 8
+#define STATIC_FOOTER_OFFSETOF_MAGICNUMBER 0
 
 #endif

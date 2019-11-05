@@ -1220,17 +1220,17 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 	// plugin initialization logic
 
 	// sanity checks first, return error in non-debug builds to avoid undefined behavior
-	if (SIZEOF_MMAPHEADER != 32) goto error;
-	if (offsetof (MmapHeader, mmapMagicNumber) != 0) goto error;
-	if (offsetof (MmapHeader, allocSize) != 8) goto error;
-	if (offsetof (MmapHeader, cksumSize) != 16) goto error;
-	if (offsetof (MmapHeader, checksum) != 24) goto error;
-	if (offsetof (MmapHeader, formatFlags) != 28) goto error;
-	if (offsetof (MmapHeader, formatVersion) != 29) goto error;
-	if (offsetof (MmapHeader, reservedA) != 30) goto error;
-	if (offsetof (MmapHeader, reservedB) != 31) goto error;
-	if (SIZEOF_MMAPFOOTER != 8) goto error;
-	if (offsetof (MmapFooter, mmapMagicNumber) != 0) goto error;
+	if (sizeof (MmapHeader) != STATIC_SIZEOF_MMAPHEADER) goto error;
+	if (offsetof (MmapHeader, mmapMagicNumber) != STATIC_HEADER_OFFSETOF_MAGICNUMBER) goto error;
+	if (offsetof (MmapHeader, allocSize) != STATIC_HEADER_OFFSETOF_ALLOCSIZE) goto error;
+	if (offsetof (MmapHeader, cksumSize) != STATIC_HEADER_OFFSETOF_CHECKSUMSIZE) goto error;
+	if (offsetof (MmapHeader, checksum) != STATIC_HEADER_OFFSETOF_CHECKSUM) goto error;
+	if (offsetof (MmapHeader, formatFlags) != STATIC_HEADER_OFFSETOF_FORMATFLAGS) goto error;
+	if (offsetof (MmapHeader, formatVersion) != STATIC_HEADER_OFFSETOF_FORMATVERSION) goto error;
+	if (offsetof (MmapHeader, reservedA) != STATIC_HEADER_OFFSETOF_RESERVED_A) goto error;
+	if (offsetof (MmapHeader, reservedB) != STATIC_HEADER_OFFSETOF_RESERVED_B) goto error;
+	if (sizeof (MmapFooter) != STATIC_SIZEOF_MMAPFOOTER) goto error;
+	if (offsetof (MmapFooter, mmapMagicNumber) != STATIC_FOOTER_OFFSETOF_MAGICNUMBER) goto error;
 
 	// initialize magic data
 	const uintptr_t magicNumber = generateMagicNumber ();
