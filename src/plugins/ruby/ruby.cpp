@@ -28,12 +28,13 @@
 /* for global variable access */
 #include <mutex>
 
-using namespace ckdb;
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
 
 #include <stdarg.h>
+
+using namespace ckdb;
 
 typedef struct
 {

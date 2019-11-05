@@ -15,11 +15,12 @@
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
-using namespace ckdb; // required for kdberrors.h
-using namespace xerces;
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
+
+using namespace ckdb;
+using namespace xerces;
 
 XERCES_CPP_NAMESPACE_USE
 

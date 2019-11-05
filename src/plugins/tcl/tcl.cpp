@@ -18,10 +18,10 @@
 #include <boost/spirit/include/qi_expect.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
 
-using namespace ckdb;
 #include <kdberrors.h>
 
 extern "C" {
+using namespace ckdb;
 
 int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 {
