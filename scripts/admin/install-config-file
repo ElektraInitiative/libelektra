@@ -32,7 +32,12 @@ fi
 base="${specialPathStart}${specialPathEnd}"
 
 # check if something is in <elektra path>
-if [ $(kdb ls $our | wc -c) = 0 ]; then
+contentOfElektraPath=$(kdb ls $our)
+if [ $? -ne 0 ]; then
+	echo "ERROR: Could not use kdb ls on $our."
+	exit 1
+fi
+if [ -z "$contentOfElektraPath" ]; then
 	kdb mount --with-recommends $their $our $format
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their. Got code $?"
