@@ -1247,7 +1247,9 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
-	ELEKTRA_SET_INTERNAL_ERROR (errorKey, "The MmapHeader or Mmap data structure was changed in a way that breaks compatibility with existing mmapstorage files. This can lead to undefined behavior so mmapstorage is aborting here.");
+	ELEKTRA_SET_INTERNAL_ERROR (errorKey,
+				    "The MmapHeader or Mmap data structure was changed in a way that breaks compatibility with existing "
+				    "mmapstorage files. This can lead to undefined behavior so mmapstorage is aborting here.");
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
