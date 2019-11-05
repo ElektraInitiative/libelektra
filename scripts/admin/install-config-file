@@ -35,6 +35,10 @@ base="${specialPathStart}${specialPathEnd}"
 if [ $(kdb ls $our | wc -c) = 0 ]; then
 	kdb mount --with-recommends $their $our $format
 	resolvedLocation=$(kdb file $our)
+	if ! [ -f $resolvedLocation ]; then
+		echo "Could not import file $resolvedLocation as it does not exist!"
+		exit 1
+	fi
 	cat $resolvedLocation | kdb import $base $format
 else
 	# we could also import and export at this place
