@@ -276,7 +276,6 @@ static void initHeader (MmapHeader * mmapHeader)
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	mmapHeader->formatVersion = ELEKTRA_MMAP_FORMAT_VERSION;
-	mmapHeader->formatFlags = 0;
 #ifdef ELEKTRA_MMAP_CHECKSUM
 	set_bit (mmapHeader->formatFlags, MMAP_FLAG_CHECKSUM);
 #endif
