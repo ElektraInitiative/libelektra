@@ -475,8 +475,26 @@ mod test {
     const KEY_1_VALUE: &str = "key_value_1";
     const KEY_2_VALUE: &str = "key_value_2";
 
-    fn create_test_keys<'a>() -> (StringKey<'a>, StringKey<'a>, StringKey<'a>) {
-        let parent_key = StringKey::new(PARENT_KEY).unwrap_or_else(|e| panic!("{}", e));
+    #[test]
+    fn test_kdb() {
+        set_kdb();
+        get_kdb();
+        remove_test_keys();
+    }
+
+    fn get_parent_key<'a>() -> StringKey<'a> {
+        StringKey::new(PARENT_KEY).unwrap_or_else(|e| panic!("{}", e))
+    }
+
+    fn set_kdb() {
+        let mut parent_key = get_parent_key();
+        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut ks = KeySet::with_capacity(10);
+        let get_res = kdb
+            .get(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(get_res, true);
+
         let key1: StringKey = KeyBuilder::new(KEY_1_NAME)
             .unwrap()
             .value(KEY_1_VALUE)
@@ -485,53 +503,53 @@ mod test {
             .unwrap()
             .value(KEY_2_VALUE)
             .build();
-        (parent_key, key1, key2)
+
+        ks.append_key(key1);
+        ks.append_key(key2);
+        let set_res = kdb
+            .set(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(set_res, true);
     }
 
-    #[test]
-    fn can_use_kdb() {
-        let (mut parent_key, key1, key2) = create_test_keys();
-        {
-            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
-            let mut ks = KeySet::with_capacity(10);
-            kdb.get(&mut ks, &mut parent_key)
-                .unwrap_or_else(|e| panic!("{}", e));
-            ks.append_key(key1);
-            ks.append_key(key2);
-            kdb.set(&mut ks, &mut parent_key)
-                .unwrap_or_else(|e| panic!("{}", e));
-        }
-        {
-            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
-            let mut ks = KeySet::with_capacity(2);
-            kdb.get(&mut ks, &mut parent_key)
-                .unwrap_or_else(|e| panic!("{}", e));
-            let key1_lookup = ks
-                .lookup_by_name(KEY_1_NAME, Default::default())
-                .unwrap()
-                .duplicate();
-            assert_eq!(key1_lookup.value(), KEY_1_VALUE);
+    fn get_kdb() {
+        let mut parent_key = get_parent_key();
+        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut ks = KeySet::with_capacity(2);
+        let get_res = kdb
+            .get(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(get_res, true);
 
-            let key2_lookup = ks
-                .lookup_by_name(KEY_2_NAME, Default::default())
-                .unwrap()
-                .duplicate();
-            assert_eq!(key2_lookup.value(), KEY_2_VALUE);
-        }
-        remove_test_keys();
+        let key1_lookup = ks
+            .lookup_by_name(KEY_1_NAME, Default::default())
+            .unwrap()
+            .duplicate();
+        assert_eq!(key1_lookup.value(), KEY_1_VALUE);
+
+        let key2_lookup = ks
+            .lookup_by_name(KEY_2_NAME, Default::default())
+            .unwrap()
+            .duplicate();
+        assert_eq!(key2_lookup.value(), KEY_2_VALUE);
     }
 
     fn remove_test_keys() {
-        let (mut parent_key, _, _) = create_test_keys();
+        let mut parent_key = get_parent_key();
         let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
-        kdb.get(&mut ks, &mut parent_key)
+        let get_res = kdb
+            .get(&mut ks, &mut parent_key)
             .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(get_res, true);
+
         ks.lookup_by_name(KEY_1_NAME, LookupOption::KDB_O_POP)
             .unwrap();
         ks.lookup_by_name(KEY_2_NAME, LookupOption::KDB_O_POP)
             .unwrap();
-        kdb.set(&mut ks, &mut parent_key)
+        let set_res = kdb
+            .set(&mut ks, &mut parent_key)
             .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(set_res, true);
     }
 }
