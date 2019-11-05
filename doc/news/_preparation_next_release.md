@@ -81,6 +81,7 @@ plugins. _(René Schwaiger)_
 - A better error, if the plugin fails to load `argv` from the system, was added. _(Klemens Böswirth)_
 - A function to detect help mode, without invoking `elektraGetOpts` was added. It simply checks, whether `--help` is one
   of the string in `argv`. _(Klemens Böswirth)_
+- Increase test timeout from 120s to 240s. _(Mihael Pranjić)_
 
 ### Path
 
