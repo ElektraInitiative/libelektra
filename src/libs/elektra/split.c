@@ -240,19 +240,19 @@ static int elektraKeySetNameByNamespace (Key * parentKey, elektraNamespace ns)
 	switch (ns)
 	{
 	case KEY_NS_SPEC:
-		keySetName (parentKey, "spec/");
+		keySetName (parentKey, "spec:/");
 		break;
 	case KEY_NS_PROC:
 		/* only transient, should fail */
 		return 0;
 	case KEY_NS_DIR:
-		keySetName (parentKey, "dir/");
+		keySetName (parentKey, "dir:/");
 		break;
 	case KEY_NS_USER:
-		keySetName (parentKey, "user/");
+		keySetName (parentKey, "user:/");
 		break;
 	case KEY_NS_SYSTEM:
-		keySetName (parentKey, "system/");
+		keySetName (parentKey, "system:/");
 		break;
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
@@ -721,7 +721,7 @@ int splitMergeDefault (Split * split, KeySet * dest)
  * @retval -3 wrong dir state: kdbGet() was not executed before
  * @retval -4 wrong user state: kdbGet() was not executed before
  * @retval -5 wrong system state: kdbGet() was not executed before
- * @pre user/system was split before.
+ * @pre user:/system was split before.
  * @param split the split object to work with
  * @ingroup split
  *

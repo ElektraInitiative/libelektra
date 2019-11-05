@@ -103,8 +103,8 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 /**
  * @brief Returns the configuration of that plugin.
  *
- * - The user/ config holds plugin specific configuration
- * - The system/ config holds backend specific configuration
+ * - The user:/ config holds plugin specific configuration
+ * - The system:/ config holds backend specific configuration
  *
  * So prefer cascading lookups to honor both.
  *

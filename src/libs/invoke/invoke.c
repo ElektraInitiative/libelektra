@@ -167,7 +167,7 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	Plugin * plugin = handle->plugin;
 	KeySet * exports = NULL;
 
-	Key * exportParent = keyNew ("system/elektra/modules", KEY_END);
+	Key * exportParent = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (exportParent, plugin->name);
 
 	if (handle->exports)

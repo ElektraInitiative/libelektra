@@ -49,7 +49,7 @@
  *
  * @code
 // Lets define a key name with a lot of repeating '/' and escaped '/'
-char *keyName="user////abc/def\/ghi////jkl///";
+char *keyName="user:////abc/def\/ghi////jkl///";
 char *p=keyName;
 size_t size=0;
 int level=0;
@@ -130,19 +130,19 @@ char * keyNameGetOneLevel (const char * name, size_t * size) // TODO (kodebach):
 
 int keyNameIsSpec (const char * name) // TODO (kodebach): remove
 {
-	if (!strcmp ("spec", name) || !strncmp ("spec/", name, sizeof ("spec/") - 1)) return 1;
+	if (!strcmp ("spec", name) || !strncmp ("spec:/", name, sizeof ("spec:/") - 1)) return 1;
 	return 0;
 }
 
 int keyNameIsProc (const char * name) // TODO (kodebach): remove
 {
-	if (!strcmp ("proc", name) || !strncmp ("proc/", name, sizeof ("proc/") - 1)) return 1;
+	if (!strcmp ("proc", name) || !strncmp ("proc:/", name, sizeof ("proc:/") - 1)) return 1;
 	return 0;
 }
 
 int keyNameIsDir (const char * name) // TODO (kodebach): remove
 {
-	if (!strcmp ("dir", name) || !strncmp ("dir/", name, sizeof ("dir/") - 1)) return 1;
+	if (!strcmp ("dir", name) || !strncmp ("dir:/", name, sizeof ("dir:/") - 1)) return 1;
 	return 0;
 }
 
@@ -159,7 +159,7 @@ int keyNameIsDir (const char * name) // TODO (kodebach): remove
  */
 int keyNameIsUser (const char * name) // TODO (kodebach): remove
 {
-	if (!strcmp ("user", name) || !strncmp ("user/", name, sizeof ("user/") - 1) || !strncmp ("user:", name, sizeof ("user:") - 1))
+	if (!strcmp ("user", name) || !strncmp ("user:/", name, sizeof ("user:/") - 1) || !strncmp ("user:", name, sizeof ("user:") - 1))
 	{
 		return 1;
 	}
@@ -179,7 +179,7 @@ int keyNameIsUser (const char * name) // TODO (kodebach): remove
  */
 int keyNameIsSystem (const char * name) // TODO (kodebach): remove
 {
-	if (!strcmp ("system", name) || !strncmp ("system/", name, sizeof ("system/") - 1)) return 1;
+	if (!strcmp ("system", name) || !strncmp ("system:/", name, sizeof ("system:/") - 1)) return 1;
 	return 0;
 }
 

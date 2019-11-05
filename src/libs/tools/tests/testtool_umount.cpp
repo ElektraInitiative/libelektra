@@ -34,19 +34,19 @@ TEST (Umount, SimpleRoot)
 }
 TEST (Umount, SimpleSpec)
 {
-	testUmount ("spec/hello");
+	testUmount ("spec:/hello");
 }
 TEST (Umount, SimpleDir)
 {
-	testUmount ("dir/hello");
+	testUmount ("dir:/hello");
 }
 TEST (Umount, SimpleUser)
 {
-	testUmount ("user/hello");
+	testUmount ("user:/hello");
 }
 TEST (Umount, SimpleSystem)
 {
-	testUmount ("system/hello");
+	testUmount ("system:/hello");
 }
 TEST (Umount, SimpleCascading)
 {
@@ -60,19 +60,19 @@ TEST (Umount, InvolvedRoot)
 
 TEST (Umount, InvolvedSpec)
 {
-	testUmount ("spec/is///a//./more/complex/../complicated///issue//.");
+	testUmount ("spec:/is///a//./more/complex/../complicated///issue//.");
 }
 TEST (Umount, InvolvedDir)
 {
-	testUmount ("dir/is///a//./more/complex/../complicated///issue//.");
+	testUmount ("dir:/is///a//./more/complex/../complicated///issue//.");
 }
 TEST (Umount, InvolvedUser)
 {
-	testUmount ("user/is///a//./more/complex/../complicated///issue//.");
+	testUmount ("user:/is///a//./more/complex/../complicated///issue//.");
 }
 TEST (Umount, InvolvedSystem)
 {
-	testUmount ("system/is///a//./more/complex/../complicated///issue//.");
+	testUmount ("system:/is///a//./more/complex/../complicated///issue//.");
 }
 TEST (Umount, InvolvedCascading)
 {
@@ -92,7 +92,7 @@ void testOldMount (std::string mp, std::string ump)
 	KeySet ks;
 
 	// fake mount
-	Key x ("system/elektra/mountpoints", KEY_END);
+	Key x ("system:/elektra/mountpoints", KEY_END);
 	x.addBaseName (mp);
 	ks.append (x.dup ());
 	x.addBaseName ("mountpoint");
@@ -105,19 +105,19 @@ void testOldMount (std::string mp, std::string ump)
 
 TEST (Umount, SameSpec)
 {
-	testOldMount ("spec/hello", "spec/hello");
+	testOldMount ("spec:/hello", "spec:/hello");
 }
 TEST (Umount, OldSpec)
 {
-	testOldMount ("spec/hello", "spec_hello");
+	testOldMount ("spec:/hello", "spec_hello");
 } // actually this is impossible, in 0.8.10 spec mountpoints did not exist ;)
 TEST (Umount, SameUser)
 {
-	testOldMount ("user/hello", "user_hello");
+	testOldMount ("user:/hello", "user_hello");
 }
 TEST (Umount, SameSystem)
 {
-	testOldMount ("system/hello", "system_hello");
+	testOldMount ("system:/hello", "system_hello");
 }
 TEST (Umount, SimilarOldNew)
 {

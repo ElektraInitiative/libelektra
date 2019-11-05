@@ -56,7 +56,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 	Key * cur;
 
 	ksRewind (config);
-	root = ksLookupByName (config, "system/elektra/mountpoints", KDB_O_CREATE);
+	root = ksLookupByName (config, "system:/elektra/mountpoints", KDB_O_CREATE);
 
 	int ret = 0;
 	while ((cur = ksNext (config)) != 0)
@@ -169,7 +169,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			}
 			break;
 		case KEY_NS_SYSTEM:
-			/* We want system/elektra still reachable
+			/* We want system:/elektra still reachable
 			 * through default backend.
 			 * First check if it is still reachable.
 			 */
@@ -189,14 +189,14 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 				else
 				{
 					/* Lets add the reachable default backend to split.
-					   Note that it is not possible that system/elektra has the default
+					   Note that it is not possible that system:/elektra has the default
 					   backend, but system has not. */
 					splitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "default", KEY_END), 2);
 				}
 			}
 			else
 			{
-				/* We want system/elektra still reachable
+				/* We want system:/elektra still reachable
 				 * through bootstrap backend. */
 				mountBackend (kdb, kdb->initBackend, errorKey);
 				/*mountBackend will set refcounter*/
@@ -311,7 +311,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 
 		// loading the new plugin
 		*plugin = elektraPluginOpen (pluginName, modules, config, openKey);
-		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !ksLookupByName (system, "system/elektra/cache/enabled", 0))
+		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !ksLookupByName (system, "system:/elektra/cache/enabled", 0))
 		{
 			keyDel (openKey);
 			return 0;
@@ -339,39 +339,39 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 {
 	KeySet * config = ksNew (
-		24, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
+		24, keyNew ("system:/elektra/globalplugins", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
 			"pregetstorage procgetstorage postgetstorage", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
+		keyNew ("system:/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
 			KEY_END),
 #ifndef __MINGW32__
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
-		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
 #endif
-		keyNew ("system/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+		keyNew ("system:/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/pregetcache", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system:/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
 
-	Key * cacheEnabled = ksLookupByName (keys, "system/elektra/cache/enabled", 0);
+	Key * cacheEnabled = ksLookupByName (keys, "system:/elektra/cache/enabled", 0);
 	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
 	{
-		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
-		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
+		ksAppendKey (config, keyNew ("system:/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
+		ksAppendKey (config, keyNew ("system:/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
 	}
 
 	return config;
@@ -380,7 +380,7 @@ KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 {
 	int retval = 0;
-	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
+	Key * root = ksLookupByName (keys, "system:/elektra/globalplugins", 0);
 	KeySet * system = ksDup (keys);
 	if (!root)
 	{
@@ -484,7 +484,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 	Key * root;
 	Key * cur;
 
-	root = ksLookupByName (modules, "system/elektra/modules", 0);
+	root = ksLookupByName (modules, "system:/elektra/modules", 0);
 
 	if (!root)
 	{
@@ -565,9 +565,9 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 	if (!strcmp (keyName (backend->mountpoint), ""))
 	{
 		/* Default backend */
-		sprintf (mountpoint, "system/elektra/");
+		sprintf (mountpoint, "system:/elektra/");
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		splitAppend (kdb->split, backend, keyNew ("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
+		splitAppend (kdb->split, backend, keyNew ("system:/elektra/", KEY_VALUE, "default", KEY_END), 0);
 		backend->refcounter = 1;
 	}
 	else if (!strcmp (keyName (backend->mountpoint), "/"))
@@ -676,7 +676,7 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
  *
  * @par Example:
  * @code
-Key * key = keyNew ("system/template");
+Key * key = keyNew ("system:/template");
 KDB * handle = kdbOpen();
 Key *mountpoint=0;
 mountpoint=kdbGetMountpoint(handle, key);

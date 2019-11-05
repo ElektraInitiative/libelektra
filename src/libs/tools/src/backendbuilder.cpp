@@ -456,7 +456,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		else if (checkResult == 1)
 		{
 			// separate plugin config from the backend config
-			ckdb::Key * backendParent = ckdb::keyNew ("system/", KEY_END);
+			ckdb::Key * backendParent = ckdb::keyNew ("system:/", KEY_END);
 			ckdb::KeySet * newBackendConfig = ckdb::ksCut (pluginConfig, backendParent);
 
 			// take over the new configuration
@@ -518,7 +518,7 @@ void GlobalPluginsBuilder::serialize (kdb::KeySet & ret)
 /**
  * @brief Below this path is the configuration for global plugins
  */
-const char * GlobalPluginsBuilder::globalPluginsPath = "system/elektra/globalplugins";
+const char * GlobalPluginsBuilder::globalPluginsPath = "system:/elektra/globalplugins";
 
 
 void MountBackendBuilder::status (std::ostream & os) const

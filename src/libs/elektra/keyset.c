@@ -597,8 +597,8 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
  *
  * Here are some more examples:
  * @code
-Key *k1 = keyNew("user/a", KEY_END);
-Key *k2 = keyNew("user/b", KEY_END);
+Key *k1 = keyNew("user:/a", KEY_END);
+Key *k2 = keyNew("user:/b", KEY_END);
 
 // keyCmp(k1,k2) < 0
 // keyCmp(k2,k1) > 0
@@ -606,8 +606,8 @@ Key *k2 = keyNew("user/b", KEY_END);
  *
  * And even more:
  * @code
-Key *k1 = keyNew("user/a", KEY_OWNER, "markus", KEY_END);
-Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
+Key *k1 = keyNew("user:/a", KEY_OWNER, "markus", KEY_END);
+Key *k2 = keyNew("user:/a", KEY_OWNER, "max", KEY_END);
 
 // keyCmp(k1,k2) < 0
 // keyCmp(k2,k1) > 0
@@ -1077,26 +1077,26 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
  * @par Example:
  *
  * You have the keyset @p ks:
- * - @p system/mountpoint/interest
- * - @p system/mountpoint/interest/folder
- * - @p system/mountpoint/interest/folder/key1
- * - @p system/mountpoint/interest/folder/key2
- * - @p system/mountpoint/other/key1
+ * - @p system:/mountpoint/interest
+ * - @p system:/mountpoint/interest/folder
+ * - @p system:/mountpoint/interest/folder/key1
+ * - @p system:/mountpoint/interest/folder/key2
+ * - @p system:/mountpoint/other/key1
  *
  * When you use
  * @snippet ksCut.c cut
  *
  * Then in @p returned are:
- * - @p system/mountpoint/interest
- * - @p system/mountpoint/interest/folder
- * - @p system/mountpoint/interest/folder/key1
- * - @p system/mountpoint/interest/folder/key2
+ * - @p system:/mountpoint/interest
+ * - @p system:/mountpoint/interest/folder
+ * - @p system:/mountpoint/interest/folder/key1
+ * - @p system:/mountpoint/interest/folder/key2
  *
  * And in @p ks are:
- * - @p system/mountpoint/other/key1
+ * - @p system:/mountpoint/other/key1
  *
  * So kdbSet() permanently removes all keys below
- * @p system/mountpoint/interest.
+ * @p system:/mountpoint/interest.
  *
  * @see kdbGet() for explanation why you might get more keys than you
  * requested.
@@ -1210,7 +1210,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 ks1=ksNew(0, KS_END);
 ks2=ksNew(0, KS_END);
 
-k1=keyNew("user/name", KEY_END); // ref counter 0
+k1=keyNew("user:/name", KEY_END); // ref counter 0
 ksAppendKey(ks1, k1); // ref counter 1
 ksAppendKey(ks2, k1); // ref counter 2
 
@@ -1786,7 +1786,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 		// restore old name
 		keySetNamespace (key, oldNS);
 
-		if (strncmp (keyName (specKey), "spec/", 5))
+		if (strncmp (keyName (specKey), "spec:/", 5))
 		{ // the search was modified in a way that not a spec Key was returned
 			return specKey;
 		}
@@ -2160,8 +2160,8 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  * returned.
  *
  * Cascading lookups will by default search in
- * all namespaces (proc/, dir/, user/ and system/), but will also correctly consider
- * the specification (=metadata) in spec/:
+ * all namespaces (proc:/, dir:/, user:/ and system:/), but will also correctly consider
+ * the specification (=metadata) in spec:/:
  *
  * - @p override/# will make sure that another key is considered before
  * - @p namespace/# will change the number and/or order in which the

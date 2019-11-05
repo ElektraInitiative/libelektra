@@ -121,12 +121,12 @@ ssize_t keyGetOwnerSize (const Key * key)
 
 /**
  * Return the owner of the key.
- * - Given @p user:someuser/..... return @p someuser
- * - Given @p user:some.user/.... return @p some.user
- * - Given @p user/.... return the current user
+ * - Given @p user:someuser:/..... return @p someuser
+ * - Given @p user:some.user:/.... return @p some.user
+ * - Given @p user:/.... return the current user
  *
- * Only @p user/... keys have an owner.
- * For @p system/... keys (that doesn't have a key owner) an empty
+ * Only @p user:/... keys have an owner.
+ * For @p system:/... keys (that doesn't have a key owner) an empty
  * string ("") is returned.
  *
  * Although usually the same, the owner of a key is not related to its

@@ -12,11 +12,11 @@
  *
  * .
  *
- * - @p spec/something for specification of other keys.
- * - @p proc/something for in-memory keys, e.g. commandline.
- * - @p dir/something for dir keys in current working directory
- * - @p system/something for system keys in /etc or /
- * - @p user/something for user keys in home directory
+ * - @p spec:/something for specification of other keys.
+ * - @p proc:/something for in-memory keys, e.g. commandline.
+ * - @p dir:/something for dir keys in current working directory
+ * - @p system:/something for system keys in /etc or /
+ * - @p user:/something for user keys in home directory
  * - @p user:username/something for other users (deprecated: kdbGet() + kdbSet() currently unsupported)
  * - @p /something for cascading keys (actually refers to one of the above, see also ksLookup())
  *
@@ -410,7 +410,7 @@ size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize
  * parameter can be freed after this call.
  *
  * .., . and / will be handled as in filesystem paths. A valid name will be build
- * out of the (valid) name what you pass, e.g. user///sw/../sw//././MyApp -> user/sw/MyApp
+ * out of the (valid) name what you pass, e.g. user:///sw/../sw//././MyApp -> user:/sw/MyApp
  *
  * On invalid names, NULL or "" the name will be "" afterwards.
  *
@@ -980,7 +980,7 @@ const char * keyBaseName (const Key * key)
  * return 1 bytes to store "".
  *
  * Basenames are denoted as:
- * - @c system/some/thing/basename -> @c basename
+ * - @c system:/some/thing/basename -> @c basename
  * - @c user:domain/some/thing/base\\/name > @c base\\/name
  *
  * @param key the key object to work with
@@ -1003,8 +1003,8 @@ ssize_t keyGetBaseNameSize (const Key * key)
  * the string with NULL.
  *
  * Some examples:
- * - basename of @c system/some/keyname is @c keyname
- * - basename of @c "user/tmp/some key" is @c "some key"
+ * - basename of @c system:/some/keyname is @c keyname
+ * - basename of @c "user:/tmp/some key" is @c "some key"
  *
  * @param key the key to extract basename from
  * @param returned a pre-allocated buffer to store the basename
@@ -1213,9 +1213,9 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
  * Assumes that @p key is a directory and will append @p baseName to it.
  * The function adds the path separator for concatenating.
  *
- * So if @p key has name @c "system/dir1/dir2" and this method is called with
+ * So if @p key has name @c "system:/dir1/dir2" and this method is called with
  * @p baseName @c "mykey", the resulting key will have the name
- * @c "system/dir1/dir2/mykey".
+ * @c "system:/dir1/dir2/mykey".
  *
  * When @p baseName is 0 nothing will happen and the size of the name is returned.
  *
@@ -1391,12 +1391,12 @@ static const char * elektraKeyFindBaseNamePtr (Key * key)
  * If @p baseName is 0 (NULL), then the last part of the keyname is
  * removed without replacement.
  *
- * Let us suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
- * is @c "key2", the resulting key name will be @c "system/dir1/dir2/key2".
+ * Let us suppose @p key has name @c "system:/dir1/dir2/key1". If @p baseName
+ * is @c "key2", the resulting key name will be @c "system:/dir1/dir2/key2".
  * If @p baseName is 0 (NULL), the resulting key name will
- * be @c "system/dir1/dir2".
+ * be @c "system:/dir1/dir2".
  * If @p baseName is empty, the resulting key name will
- * be @c "system/dir1/dir2/%", where @c "%" denotes an empty base name,
+ * be @c "system:/dir1/dir2/%", where @c "%" denotes an empty base name,
  * as also shown in the following code:
  *
  * @snippet testabi_key.c base2
@@ -1494,22 +1494,22 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	switch (key->ukey[0])
 	{
 	case KEY_NS_USER:
-		oldNamespaceLen = sizeof ("user") - 1;
+		oldNamespaceLen = sizeof ("user:") - 1;
 		break;
 	case KEY_NS_SYSTEM:
-		oldNamespaceLen = sizeof ("system") - 1;
+		oldNamespaceLen = sizeof ("system:") - 1;
 		break;
 	case KEY_NS_DIR:
-		oldNamespaceLen = sizeof ("dir") - 1;
+		oldNamespaceLen = sizeof ("dir:") - 1;
 		break;
 	case KEY_NS_META:
-		oldNamespaceLen = sizeof ("meta") - 1;
+		oldNamespaceLen = sizeof ("meta:") - 1;
 		break;
 	case KEY_NS_SPEC:
-		oldNamespaceLen = sizeof ("spec") - 1;
+		oldNamespaceLen = sizeof ("spec:") - 1;
 		break;
 	case KEY_NS_PROC:
-		oldNamespaceLen = sizeof ("proc") - 1;
+		oldNamespaceLen = sizeof ("proc:") - 1;
 		break;
 	case KEY_NS_CASCADING:
 		oldNamespaceLen = 0;
@@ -1521,36 +1521,28 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 		return -1;
 	}
 
-	size_t newNamespaceLen;
 	const char * newNamespace;
 	switch (ns)
 	{
 	case KEY_NS_USER:
-		newNamespaceLen = sizeof ("user") - 1;
-		newNamespace = "user";
+		newNamespace = "user:";
 		break;
 	case KEY_NS_SYSTEM:
-		newNamespaceLen = sizeof ("system") - 1;
-		newNamespace = "system";
+		newNamespace = "system:";
 		break;
 	case KEY_NS_DIR:
-		newNamespaceLen = sizeof ("dir") - 1;
-		newNamespace = "dir";
+		newNamespace = "dir:";
 		break;
 	case KEY_NS_META:
-		newNamespaceLen = sizeof ("meta") - 1;
-		newNamespace = "meta";
+		newNamespace = "meta:";
 		break;
 	case KEY_NS_SPEC:
-		newNamespaceLen = sizeof ("spec") - 1;
-		newNamespace = "spec";
+		newNamespace = "spec:";
 		break;
 	case KEY_NS_PROC:
-		newNamespaceLen = sizeof ("proc") - 1;
-		newNamespace = "proc";
+		newNamespace = "proc:";
 		break;
 	case KEY_NS_CASCADING:
-		newNamespaceLen = 0;
 		newNamespace = "";
 		break;
 	/* TODO (kodebach): case KEY_NS_DEFAULT:
@@ -1560,6 +1552,8 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	default:
 		return -1;
 	}
+
+	size_t newNamespaceLen = strlen(newNamespace);
 
 	elektraRealloc ((void **) &key->key, key->keySize - oldNamespaceLen + newNamespaceLen);
 	memmove (key->key + newNamespaceLen, key->key + oldNamespaceLen, key->keySize - oldNamespaceLen);

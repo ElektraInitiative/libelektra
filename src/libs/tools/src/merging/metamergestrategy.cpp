@@ -33,7 +33,7 @@ KeySet MetaMergeStrategy::getMetaKeys (Key & key)
 		Key currentMeta;
 		while ((currentMeta = key.nextMeta ()))
 		{
-			string resultName = "user/" + currentMeta.getName ();
+			string resultName = "user:/" + currentMeta.getName ();
 			Key resultMeta = Key (resultName.c_str (), KEY_VALUE, currentMeta.getString ().c_str (), KEY_END);
 			result.append (resultMeta);
 		}
@@ -55,7 +55,7 @@ void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictK
 	Key ourKey = task.ours.lookup (ourLookup);
 	Key theirKey = task.theirs.lookup (theirLookup);
 
-	Key root ("user/", KEY_END);
+	Key root ("user:/", KEY_END);
 	KeySet baseMeta = getMetaKeys (baseKey);
 	KeySet ourMeta = getMetaKeys (ourKey);
 	KeySet theirMeta = getMetaKeys (theirKey);
@@ -69,7 +69,7 @@ void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictK
 	mergedMeta.rewind ();
 	while ((current = mergedMeta.next ()))
 	{
-		string metaName = current.getName ().substr (string ("user/").length ());
+		string metaName = current.getName ().substr (string ("user:/").length ());
 		conflictKey.setMeta (metaName, current.getString ());
 	}
 

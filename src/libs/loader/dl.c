@@ -47,7 +47,7 @@ struct _Module
 
 int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
 {
-	ksAppendKey (modules, keyNew ("system/elektra/modules", KEY_END));
+	ksAppendKey (modules, keyNew ("system:/elektra/modules", KEY_END));
 
 	return 0;
 }
@@ -60,7 +60,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	static const char elektraPluginPostfix[] = ".so";
 #endif
 
-	Key * moduleKey = keyNew ("system/elektra/modules", KEY_END);
+	Key * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
 	Key * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
@@ -113,14 +113,14 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 
 int elektraModulesClose (KeySet * modules, Key * errorKey)
 {
-	Key * root = ksLookupByName (modules, "system/elektra/modules", KDB_O_POP);
+	Key * root = ksLookupByName (modules, "system:/elektra/modules", KDB_O_POP);
 	Key * cur;
 	KeySet * newModules = 0;
 	int ret = 0;
 
 	if (!root)
 	{
-		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "Could not find root key system/elektra/modules");
+		ELEKTRA_ADD_INTERFACE_WARNING (errorKey, "Could not find root key system:/elektra/modules");
 		return -1;
 	}
 

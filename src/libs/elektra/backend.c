@@ -136,7 +136,7 @@ static Backend * backendOpenMissing (KeySet * global, Key * mp)
  * from:
  *
 @verbatim
-system/elektra/mountpoints/<name>
+system:/elektra/mountpoints/<name>
 @endverbatim
  *
  * The root key must be like the above example. You do
@@ -290,7 +290,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
-				       // does not matter because it is mounted differently in system/elektra/modules:
+				       // does not matter because it is mounted differently in system:/elektra/modules:
 				       // keyNew("system:/logmodule", KEY_VALUE, "1", KEY_END),
 				       KS_END);
 	Plugin * tracer = elektraPluginOpen ("tracer", modules, tracerConfig, errorKey);

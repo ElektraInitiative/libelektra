@@ -103,7 +103,7 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * 		    strings of the format 'KEY=VALUE'.
  * @param parentKey The parent key below which the function while search for option specifications.
  *                  Also used for error reporting. The key will be translated into the spec namespace
- *                  automatically, i.e. 'user/test/parent' will be translated into 'spec/test/parent',
+ *                  automatically, i.e. 'user:/test/parent' will be translated into 'spec:/test/parent',
  *                  before checking against spec keys.
  *
  * @retval 0	on success, this is the only case in which @p ks will be modified

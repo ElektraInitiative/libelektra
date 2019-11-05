@@ -155,16 +155,16 @@ int keyIsUser (const Key * key)
  *
  * Example:
  @verbatim
- key user/sw/app
- check user/sw/app/key
+ key user:/sw/app
+ check user:/sw/app/key
  @endverbatim
  *
  * returns true because check is below key
  *
  * Example:
  @verbatim
- key user/sw/app
- check user/sw/app/folder/key
+ key user:/sw/app
+ check user:/sw/app/folder/key
  @endverbatim
  *
  * returns also true because check is indirect below key
@@ -264,14 +264,14 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
  *
  @verbatim
 Example:
-key user/sw/app
-check user/sw/app/key
+key user:/sw/app
+check user:/sw/app/key
 
 returns true because check is below key
 
 Example:
-key user/sw/app
-check user/sw/app/folder/key
+key user:/sw/app
+check user:/sw/app/folder/key
 
 does not return true, because there is only an indirect relation
 @endverbatim
@@ -336,8 +336,8 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
  * In Elektra terminology a hierarchy of keys is inactive if
  * the rootkey's basename starts with '.'. So a key is
  * also inactive if it is below an inactive key.
- * For example, user/key/.hidden is inactive and so
- * is user/.hidden/below.
+ * For example, user:/key/.hidden is inactive and so
+ * is user:/.hidden/below.
  *
  * Inactive keys should not have any meaning to applications,
  * they are only a convention reserved for users and

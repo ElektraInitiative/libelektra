@@ -34,7 +34,7 @@ Modules::~Modules ()
 
 PluginPtr Modules::load (std::string const & pluginName)
 {
-	KeySet config (1, *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END);
+	KeySet config (1, *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END);
 
 	return load (pluginName, config);
 }

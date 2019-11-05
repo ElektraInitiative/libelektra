@@ -230,7 +230,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
 		keySetString (errorKey, "kdbOpen(): get fallback");
 		fallbackret = kdbGet (handle, keys, errorKey);
-		keySetName (errorKey, "system/elektra/mountpoints");
+		keySetName (errorKey, "system:/elektra/mountpoints");
 
 		KeySet * cutKeys = ksCut (keys, errorKey);
 		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
@@ -258,7 +258,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
  *
  * The method will bootstrap itself the following way.
  * The first step is to open the default backend. With it
- * system/elektra/mountpoints will be loaded and all needed
+ * system:/elektra/mountpoints will be loaded and all needed
  * libraries and mountpoints will be determined.
  * These libraries for backends will be loaded and with it the
  * @p KDB data structure will be initialized.
@@ -610,7 +610,7 @@ static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 	Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 	KeySet * cutKS = ksCut (ks, cutKey);
-	Key * specCutKey = keyNew ("spec/", KEY_END);
+	Key * specCutKey = keyNew ("spec:/", KEY_END);
 	KeySet * specCut = ksCut (cutKS, specCutKey);
 	ksRewind (specCut);
 	Key * cur;
@@ -806,7 +806,7 @@ static void elektraCacheCutMeta (KDB * handle)
 
 KeySet * elektraCutProc (KeySet * ks)
 {
-	Key * parentKey = keyNew ("proc/", KEY_END);
+	Key * parentKey = keyNew ("proc:/", KEY_END);
 	KeySet * ret = ksCut (ks, parentKey);
 	keyDel (parentKey);
 	return ret;
@@ -973,11 +973,11 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
  *     only write configuration that was passed to them.
- *     For example, if you kdbGet() "system/mountpoint/interest"
- *     you will not only get all keys below system/mountpoint/interest,
- *     but also all keys below system/mountpoint (if system/mountpoint
+ *     For example, if you kdbGet() "system:/mountpoint/interest"
+ *     you will not only get all keys below system:/mountpoint/interest,
+ *     but also all keys below system:/mountpoint (if system:/mountpoint
  *     is a mountpoint as the name suggests, but
- *     system/mountpoint/interest is not a mountpoint).
+ *     system:/mountpoint/interest is not a mountpoint).
  *     Make sure to not touch or remove keys outside the keys of interest,
  *     because others may need them!
  *
@@ -2026,7 +2026,7 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * This function can be used to ensure the given KDB @p handle meets certain clauses,
  * specified in @p contract. Currently the following clauses are supported:
  *
- * - `system/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
+ * - `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
  *   `<pluginname>` for the mountpoint `<mountpoint>`:
  * 	- The value `unmounted` ensures the plugin is not mounted, at this mountpoint.
  * 	- The value `mounted` ensures the plugin is mounted, at this mountpoint.
@@ -2034,8 +2034,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * 	- The value `remount` always mounts the plugin, at this mountpoint.
  * 	  If it was already mounted, it will me unmounted and mounted again.
  * 	  This can be used to ensure the plugin is mounted with a certain configuration.
- * - Keys below `system/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
- *   as the plugins config KeySet during mounting. `system/elektra/ensure/plugins/<mountpoint>/<pluginname>`
+ * - Keys below `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
+ *   as the plugins config KeySet during mounting. `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>`
  *   will be replaced by `user` in the keynames. If no keys are given, an empty KeySet is used.
  *
  * There are a few special values for `<mountpoint>`:
@@ -2075,7 +2075,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		return -1;
 	}
 
-	Key * cutpoint = keyNew ("system/elektra/ensure/plugins", KEY_END);
+	Key * cutpoint = keyNew ("system:/elektra/ensure/plugins", KEY_END);
 	KeySet * pluginsContract = ksCut (contract, cutpoint);
 
 	// delete unused part of contract immediately
@@ -2085,7 +2085,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 	Key * clause = NULL;
 	while ((clause = ksNext (pluginsContract)) != NULL)
 	{
-		// only handle 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
+		// only handle 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
 		const char * condUNameBase = keyUnescapedName (clause);
 		const char * condUName = condUNameBase;
 		condUName += sizeof ("system\0elektra\0ensure\0plugins"); // skip known common part
@@ -2105,7 +2105,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		condUName += strlen (condUName) + 1; // skip pluginname
 		if (condUNameBase + condUSize > condUName)
 		{
-			continue; // key below 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>'
+			continue; // key below 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>'
 		}
 
 		const char * mountpoint = keyUnescapedName (clause);
@@ -2150,7 +2150,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
 		ksAppendKey (pluginConfig, pluginCutpoint);
 		{
-			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user/");
+			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user:/");
 			ksDel (pluginConfig);
 			pluginConfig = newPluginConfig;
 		}

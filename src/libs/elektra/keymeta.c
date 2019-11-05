@@ -92,7 +92,7 @@
  * stored.
  *
  * The "owner" is the user that owns the key. It only
- * works for the user/ hierarchy. It rather says where
+ * works for the user:/ hierarchy. It rather says where
  * the key is stored and says nothing about the
  * filesystem properties.
  *
