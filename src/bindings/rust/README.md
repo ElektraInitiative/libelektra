@@ -114,23 +114,18 @@ See the [full example](example/src/bin/keyset.rs) for more. Run it from the `exa
 
 ```rust
 extern crate elektra;
-use elektra::{KeyBuilder, KeySet, ReadableKey, StringKey};
+use elektra::{KeyBuilder, KeySet, ReadableKey, StringKey, keyset};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Create a new KeySet with enough preallocated space for 5 keys
-    let mut keyset = KeySet::with_capacity(5);
-
-    // Append some keys
-    keyset.append_key(
+    // keyset! works just like vec!
+    let keyset = keyset![
         KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
             .value("localhost")
             .build(),
-    );
-    keyset.append_key(
         KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
             .value("8080")
             .build(),
-    );
+    ];
 
     // Iterate the keyset
     for key in keyset.iter() {
