@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "August 2019" "" ""
+.TH "README" "" "November 2019" "" ""
 .
 .SH "Introduction"
 This document aims to provide information about Elektra’s \fBwebsite\-frontend\fR, which is the frontend of the \fBwebsite\-backend\fR allowing for search and sharing of configuration snippets\. Besides that functionality, the frontend also contains the Elektra website\.
@@ -30,10 +30,10 @@ In order to not receive any 404 errors by the webserver, it should serve the \fB
 To stop the \fBwebsite\-frontend\fR, simply run \fBkdb stop\-website\-frontend\fR from anywhere\.
 .
 .SS "application\-config\.json"
-This file does not exist by default\. It needs to be copied from the template \fBapplication\-config\.json\.tpl\fR\. To copy the configuration template and mount it into the key database, execute the command \fBkdb mount\-website\-frontend\-config\fR\. The configuration will then be available below \fB/sw/elektra/websitefrontend/#0//current\fR\.
+This file will be copied and mounted by the command \fBkdb mount\-website\-frontend\-config\fR\. The configuration will then be available below \fB/sw/elektra/websitefrontend/#0//current\fR in Elektra\.
 .
 .P
-Using /sw/elektra/restfrontend/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-rest\-frontend\.pid
+Using /sw/elektra/websitefrontend/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\-frontend\.pid
 .
 .P
 The configuration file allows to set the URL to the backend in \fBbackend\.root\fR\. GitHub settings may be done in \fBgithub\fR\.
