@@ -45,6 +45,7 @@ already somehow integrated with Elektra.
 - [Merge Configuration](merge.md)
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
+- [Specification Language](specification-language.md)
 
 ## Elektra Developers
 
