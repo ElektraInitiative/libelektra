@@ -34,6 +34,10 @@ base="${specialPathStart}${specialPathEnd}"
 # check if something is in <elektra path>
 if [ $(kdb ls $our | wc -c) = 0 ]; then
 	kdb mount --with-recommends $their $our $format
+	if ! [ $? -eq 0 ]; then
+		echo "Could not mount file $their. Got code $?"
+		exit 1
+	fi
 	resolvedLocation=$(kdb file $our)
 	if ! [ -f $resolvedLocation ]; then
 		echo "Could not import file $resolvedLocation as it does not exist!"
@@ -46,6 +50,10 @@ else
 	# as like this the resolver is used for <config file> each time the script
 	# is called
 	kdb mount -q --with-recommends $their $tempPath $format
+	if ! [ $? -eq 0 ]; then
+		echo "Could not mount file $their. Got code $?"
+		exit 1
+	fi
 	kdb cmerge -f $our $tempPath $base $our $format
 	kdb umount $tempPath
 fi
