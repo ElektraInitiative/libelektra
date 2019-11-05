@@ -452,7 +452,7 @@ static void test_lookupDoubleIndirect (void)
 
 	keySetMeta (se, "override/#0", "/abc");
 	k = ksLookupByName (ks, "/first", 0);
-	succeed_if (k == p, "did not find proc/abc");
+	succeed_if (k == p, "did not find proc:/abc");
 
 	keySetMeta (s, "namespace/#0", "system");
 	k = ksLookupByName (ks, "/first", 0);
@@ -501,7 +501,7 @@ static void test_lookupDoubleIndirectDefault (void)
 
 	keySetMeta (se, "override/#0", "/abc");
 	k = ksLookupByName (ks, "/first", 0);
-	succeed_if (k == p, "did not find proc/abc");
+	succeed_if (k == p, "did not find proc:/abc");
 
 	keySetMeta (s, "namespace/#0", "system");
 	k = ksLookupByName (ks, "/first", 0);

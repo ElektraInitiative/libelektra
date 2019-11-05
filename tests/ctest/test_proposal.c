@@ -10,10 +10,10 @@
 
 static void test_ksPopAtCursor (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
-			     keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
-	KeySet * ks_c = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
-			       keyNew ("system/valid/key1", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+			     keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	KeySet * ks_c = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+			       keyNew ("system:/valid/key1", KEY_END), KS_END);
 	ksRewind (ks);
 	ksNext (ks);
 	ksNext (ks);

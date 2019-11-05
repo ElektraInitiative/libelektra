@@ -14,32 +14,32 @@
 
 KeySet * modules_config (void)
 {
-	return ksNew (5, keyNew ("system/elektra/modules", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/modules", KEY_END), KS_END);
 }
 
 
 KeySet * simple_config (void)
 {
-	return ksNew (5, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/root", KEY_END),
-		      keyNew ("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
 }
 
 
 KeySet * set_us (void)
 {
-	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
-		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
 }
 
 
 KeySet * root_config (void)
 {
-	return ksNew (5, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/root", KEY_END),
-		      keyNew ("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END), KS_END);
 }
 
 

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Test cases for how to build a backend out of system/elektra/mountpoints/<name>
+ * @brief Test cases for how to build a backend out of system:/elektra/mountpoints/<name>
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
