@@ -40,7 +40,7 @@ fi
 if [ -z "$contentOfElektraPath" ]; then
 	kdb mount --with-recommends $their $our $format
 	if ! [ $? -eq 0 ]; then
-		echo "Could not mount file $their. Got code $?"
+		echo "Could not mount file $their."
 		exit 31
 	fi
 	resolvedLocation=$(kdb file $our)
@@ -49,6 +49,10 @@ if [ -z "$contentOfElektraPath" ]; then
 		exit 32
 	fi
 	cat $resolvedLocation | kdb import $base $format
+	if ! [ $? -eq 0 ]; then
+		echo "Could not import file from $resolvedLocation to $base."
+		exit 33
+	fi
 else
 	# we could also import and export at this place
 	# however, mounting a second time gives a more consistent user experience
@@ -57,8 +61,16 @@ else
 	kdb mount -q --with-recommends $their $tempPath $format
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their. Got code $?"
-		exit 33
+		exit 34
 	fi
 	kdb cmerge -f $our $tempPath $base $our $format
+	if ! [ $? -eq 0 ]; then
+		echo "Merging $our, $tempPath and $base into $our failed."
+		exit 35
+	fi
 	kdb umount $tempPath
+	if ! [ $? -eq 0 ]; then
+		echo "umount $tempPath failed."
+		exit 36
+	fi
 fi
