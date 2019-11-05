@@ -320,6 +320,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved various error messages and synchronized documentations. _(Michael Zronek)_
 - Improved `range` plugin error message. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
+- Release notes now use git's union merge driver. _(Dominic Jäger)_
 
 ## Infrastructure
 
