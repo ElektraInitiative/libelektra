@@ -25,9 +25,9 @@ static void test_minimaltrie (void)
 {
 	printf ("Test minimal trie\n");
 
-	Trie * trie = test_insert (0, "/", "");
-	Key * s = keyNew ("/", KEY_END);
-	Key * mp = keyNew ("/", KEY_VALUE, "", KEY_END);
+	Trie * trie = test_insert (0, "", "");
+	Key * s = keyNew ("", KEY_END);
+	Key * mp = keyNew ("", KEY_VALUE, "", KEY_END);
 
 	succeed_if (trieLookup (trie, s), "trie should not be null");
 	compare_key (trieLookup (trie, s)->mountpoint, mp);
