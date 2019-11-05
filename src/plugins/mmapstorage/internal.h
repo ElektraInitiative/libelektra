@@ -124,9 +124,9 @@ typedef struct _mmapFooter MmapFooter;
 /**
  * Mmap information header
  *
- * Changes to this struct can break compatibility
- * with existing files. If a breaking changed needs
- * to be introduced, change `ELEKTRA_MAGIC_MMAP_NUMBER`
+ * Changes to this struct can/will break compatibility with existing files.
+ * If a breaking changed needs to be introduced, change `ELEKTRA_MAGIC_MMAP_NUMBER`
+ * to a previously unused value and increment `ELEKTRA_MMAP_FORMAT_VERSION`
  * to avoid undefined behaviour.
  *
  * Shall contain only fixed-width types.
@@ -142,7 +142,7 @@ struct _mmapHeader
 	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
 	uint8_t formatVersion;		/**<Mmap format version */
 
-	// two bytes which are otherwise padding are reserved for future use
+	// two bytes which are otherwise padding or packed away are reserved for future use
 	uint8_t reservedA;		/**<Reserved byte for future use */
 	uint8_t reservedB;		/**<Reserved byte for future use */
 	// clang-format on

@@ -1230,6 +1230,20 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 {
 	// plugin initialization logic
 
+	// sanity checks first, return error in non-debug builds to avoid undefined behavior
+	if (SIZEOF_MMAPHEADER != 32) goto error;
+	if (offsetof (MmapHeader, mmapMagicNumber) != 0) goto error;
+	if (offsetof (MmapHeader, allocSize) != 8) goto error;
+	if (offsetof (MmapHeader, cksumSize) != 16) goto error;
+	if (offsetof (MmapHeader, checksum) != 24) goto error;
+	if (offsetof (MmapHeader, formatFlags) != 28) goto error;
+	if (offsetof (MmapHeader, formatVersion) != 29) goto error;
+	if (offsetof (MmapHeader, reservedA) != 30) goto error;
+	if (offsetof (MmapHeader, reservedB) != 31) goto error;
+	if (SIZEOF_MMAPFOOTER != 8) goto error;
+	if (offsetof (MmapFooter, mmapMagicNumber) != 0) goto error;
+
+	// initialize magic data
 	const uintptr_t magicNumber = generateMagicNumber ();
 	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
 	if (magicKey.data.v == 0) initMagicKey (magicNumber);
@@ -1241,6 +1255,10 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 #endif
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+
+error:
+	ELEKTRA_SET_INTERNAL_ERROR (errorKey, "The MmapHeader or Mmap data structure was changed in a way that breaks compatibility with existing mmapstorage files. This can lead to undefined behavior so mmapstorage is aborting here.");
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 /**
