@@ -52,5 +52,5 @@ kdb umount user/tests/installing
 kdb rm -rf user/elektra/merge/preserve
 rm ~/installing.ini
 rm ~/.config/installing.ini
-rmdir ~/.config
+rmdir --ignore-fail-on-non-empty ~/.config
 ```
