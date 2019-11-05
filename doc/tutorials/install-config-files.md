@@ -6,7 +6,7 @@ Please refer to its man page for details on its syntax.
 First of all, we create a small example configuration file.
 
 ```sh
-mkdir ~/.config
+mkdir -p ~/.config
 echo -e "keyA=a\nkeyB=b\nkeyC=c" > ~/.config/installing.ini
 ```
 
