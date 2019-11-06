@@ -133,7 +133,7 @@ int main (int argc, char ** argv)
 		program_name = argv[0];
 	}
 
-	printf ("KEY   NAME   TESTS\n");
+	printf ("EASE KEY   NAME   TESTS\n");
 	printf ("==================\n\n");
 
 	test_relative_root ();
