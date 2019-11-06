@@ -19,7 +19,7 @@ if [ "$#" -eq 2 ]; then
 elif [ "$#" -eq 3 ]; then
 	format=$3
 else
-	echo "Usage is $0 <elektra path> <config file> [<format>]. It has to called as root."
+	echo "Usage is $0 <elektra path> <config file> [<format>]. It has to called as root." >&2
 	exit 1
 fi
 
@@ -34,23 +34,23 @@ base="${specialPathStart}${specialPathEnd}"
 # check if something is in <elektra path>
 contentOfElektraPath=$(kdb ls $our)
 if [ $? -ne 0 ]; then
-	echo "ERROR: Could not use kdb ls on $our."
+	echo "ERROR: Could not use kdb ls on $our." >&2
 	exit 30
 fi
 if [ -z "$contentOfElektraPath" ]; then
 	kdb mount --with-recommends $their $our $format
 	if ! [ $? -eq 0 ]; then
-		echo "Could not mount file $their."
+		echo "Could not mount file $their." >&2
 		exit 31
 	fi
 	resolvedLocation=$(kdb file $our)
 	if ! [ -f $resolvedLocation ]; then
-		echo "Could not import file $resolvedLocation as it does not exist!"
+		echo "Could not import file $resolvedLocation as it does not exist!" >&2
 		exit 32
 	fi
 	cat $resolvedLocation | kdb import $base $format
 	if ! [ $? -eq 0 ]; then
-		echo "Could not import file from $resolvedLocation to $base."
+		echo "Could not import file from $resolvedLocation to $base." >&2
 		exit 33
 	fi
 else
@@ -60,17 +60,17 @@ else
 	# is called
 	kdb mount -q --with-recommends $their $tempPath $format
 	if ! [ $? -eq 0 ]; then
-		echo "Could not mount file $their. Got code $?"
+		echo "Could not mount file $their. Got code $?" >&2
 		exit 34
 	fi
 	kdb cmerge -f $our $tempPath $base $our $format
 	if ! [ $? -eq 0 ]; then
-		echo "Merging $our, $tempPath and $base into $our failed."
+		echo "Merging $our, $tempPath and $base into $our failed." >&2
 		exit 35
 	fi
 	kdb umount $tempPath
 	if ! [ $? -eq 0 ]; then
-		echo "umount $tempPath failed."
+		echo "umount $tempPath failed." >&2
 		exit 36
 	fi
 fi
