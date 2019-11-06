@@ -23,6 +23,19 @@ else
 	exit 1
 fi
 
+
+# different binaries are installed depending on the build options
+if  command -v kdb ; then
+	binary=$(command -v kdb)
+elif command -v kdb-static ; then
+	binary=$(command -v kdb-static)
+elif command -v kdb-full ; then
+	binary=$(command -v kdb-full)
+else
+	echo "ERROR: Could not find a kdb binary."
+	exit 29
+fi
+
 # use the file name (without path) of <config file> as special path
 # in Elektra
 specialPathEnd=$(basename $their)
