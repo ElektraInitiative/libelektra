@@ -107,6 +107,12 @@ plugins. _(René Schwaiger)_
 - We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
   native boolean types. _(Klemens Böswirth)_
 
+### Mmapstorage
+
+- We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
+- The storage format was changed and many sanity checks were improved or added. _(Mihael Pranjić)_
+- Enforce consistency by writing the magic file footer last. _(Mihael Pranjić)_
+
 ### Noresolver
 
 - The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
@@ -284,6 +290,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - We changed how the [formatting test](../../tests/shell/check_formatting.sh) detects code differences. This update should get rid of transient errors as [reported here](https://issues.libelektra.org/2927#issuecomment-528058641). _(René Schwaiger)_
 - We disabled the test for the conversion engine. For more information, please take a look at [issue #3086](https://issues.libelektra.org/3086). _(René Schwaiger)_
+- We disabled the test `testmod_zeromqsend` from the command `kdb run_all`, since it caused timeouts in high load scenarios. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Build

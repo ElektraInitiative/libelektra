@@ -18,24 +18,46 @@
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
 
 #define OFFSET_MAGIC_KEYSET (SIZEOF_MMAPHEADER)
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/** Squeeze OPMPHM structs between other magic data, to automatically trigger verification fail on non-OPMPHM builds. */
+#define OFFSET_MAGIC_OPMPHM (OFFSET_MAGIC_KEYSET + SIZEOF_KEYSET)
+#define OFFSET_MAGIC_OPMPHMPREDICTOR (OFFSET_MAGIC_OPMPHM + sizeof (Opmphm))
+#define OFFSET_MAGIC_KEY (OFFSET_MAGIC_OPMPHMPREDICTOR + sizeof (OpmphmPredictor))
+#else
 #define OFFSET_MAGIC_KEY (OFFSET_MAGIC_KEYSET + SIZEOF_KEYSET)
+#endif
+
 #define OFFSET_MAGIC_MMAPMETADATA (OFFSET_MAGIC_KEY + SIZEOF_KEY)
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+#define OFFSET_OPMPHM (OFFSET_MAGIC_MMAPMETADATA + SIZEOF_MMAPMETADATA)
+#define OFFSET_OPMPHMPREDICTOR (OFFSET_OPMPHM + sizeof (Opmphm))
+#define OFFSET_MMAPMETADATA (OFFSET_OPMPHMPREDICTOR + sizeof (OpmphmPredictor))
+#else
 #define OFFSET_MMAPMETADATA (OFFSET_MAGIC_MMAPMETADATA + SIZEOF_MMAPMETADATA)
+#endif
+
 #define OFFSET_GLOBAL_KEYSET (OFFSET_MMAPMETADATA + SIZEOF_MMAPMETADATA)
 #define OFFSET_KEYSET (OFFSET_GLOBAL_KEYSET + SIZEOF_KEYSET)
 
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+#define ELEKTRA_MMAP_MINSIZE                                                                                                               \
+	(SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2) +    \
+	 SIZEOF_KEY + SIZEOF_MMAPFOOTER)
+#else
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
+#endif
 
 /** Magic byte order marker, as used by UTF. */
 #define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
 
-/** Magic number used in mmap format */
-#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+/** Magic number used in mmap format (8 bytes). Previously used: 0x0A6172746B656C45 */
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A3472746B656C45)
 
-/** Mmap format version */
-#define ELEKTRA_MMAP_FORMAT_VERSION (1)
+/** Mmap format version (1 byte). Increment on breaking changes to invalidate old files. */
+#define ELEKTRA_MMAP_FORMAT_VERSION (2)
 
 /** Mmap temp file template */
 #define ELEKTRA_MMAP_TMP_NAME "/tmp/elektraMmapTmpXXXXXX"
@@ -65,6 +87,9 @@
 
 /** Defines whether file was written with config timestamps (global cache mode). */
 #define MMAP_FLAG_TIMESTAMPS (1 << 1)
+
+/** Defines whether file was written with opmphm data structures. */
+#define MMAP_FLAG_OPMPHM (1 << 2)
 
 /**
  * Internal MmapAddr structure.
@@ -99,7 +124,12 @@ typedef struct _mmapFooter MmapFooter;
 /**
  * Mmap information header
  *
- * shall contain only fixed-width types
+ * Changes to this struct can/will break compatibility with existing files.
+ * If a breaking changed needs to be introduced, change `ELEKTRA_MAGIC_MMAP_NUMBER`
+ * to a previously unused value and increment `ELEKTRA_MMAP_FORMAT_VERSION`
+ * to avoid undefined behaviour.
+ *
+ * Shall contain only fixed-width types.
  */
 struct _mmapHeader
 {
@@ -111,8 +141,22 @@ struct _mmapHeader
 	uint32_t checksum;		/**<Checksum of the data */
 	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
 	uint8_t formatVersion;		/**<Mmap format version */
+
+	// two bytes which are otherwise padding or packed away are reserved for future use
+	uint8_t reservedA;		/**<Reserved byte for future use */
+	uint8_t reservedB;		/**<Reserved byte for future use */
 	// clang-format on
 };
+
+#define STATIC_SIZEOF_MMAPHEADER 32
+#define STATIC_HEADER_OFFSETOF_MAGICNUMBER 0
+#define STATIC_HEADER_OFFSETOF_ALLOCSIZE 8
+#define STATIC_HEADER_OFFSETOF_CHECKSUMSIZE 16
+#define STATIC_HEADER_OFFSETOF_CHECKSUM 24
+#define STATIC_HEADER_OFFSETOF_FORMATFLAGS 28
+#define STATIC_HEADER_OFFSETOF_FORMATVERSION 29
+#define STATIC_HEADER_OFFSETOF_RESERVED_A 30
+#define STATIC_HEADER_OFFSETOF_RESERVED_B 31
 
 /**
  * Mmap meta-data
@@ -137,5 +181,8 @@ struct _mmapFooter
 	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
 	// clang-format on
 };
+
+#define STATIC_SIZEOF_MMAPFOOTER 8
+#define STATIC_FOOTER_OFFSETOF_MAGICNUMBER 0
 
 #endif
