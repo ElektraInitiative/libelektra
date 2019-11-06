@@ -169,6 +169,7 @@ libelektraprivate_1.0 {
 	elektraRenameKeys;
 	elektraKeyNameUnescape;
 	elektraKeyNameValidate;
+	elektraKeyNameCanonicalize;
 	ksRenameKeys;
 	keyClearSync;
 	keyIsDir;
