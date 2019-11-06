@@ -84,29 +84,6 @@ plugins. _(René Schwaiger)_
   of the string in `argv`. _(Klemens Böswirth)_
 - Increase test timeout from 120s to 240s. _(Mihael Pranjić)_
 
-### Path
-
-- The [Markdown Shell Recorder][] test of the plugin now also works, if you execute it as root user. _(René Schwaiger)_
-
-[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
-
-### Tcl
-
-- We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
-
-### YAwn
-
-- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
-
-### YAy PEG
-
-- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
-
-### Type
-
-- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
-  native boolean types. _(Klemens Böswirth)_
-
 ### Mmapstorage
 
 - We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
@@ -117,20 +94,43 @@ plugins. _(René Schwaiger)_
 
 - The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
 
-### Specload
+### Path
 
-- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
-- Changes to `default` or `type` metadata are no longer supported, since they are not safe in every case. _(Klemens Böswirth)_
-- The plugin no longer has the `experimental` status. _(Klemens Böswirth)_
+- The [Markdown Shell Recorder][] test of the plugin now also works, if you execute it as root user. _(René Schwaiger)_
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ### Spec
 
 - There is now the config key `missing/log` that allows logging of all missing `require`d keys. _(Klemens Böswirth)_
 - `spec` now internally handles errors differently. There should be no external impact apart from better performance. _(Klemens Böswirth)_
 
+### Specload
+
+- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
+- Changes to `default` or `type` metadata are no longer supported, since they are not safe in every case. _(Klemens Böswirth)_
+- The plugin no longer has the `experimental` status. _(Klemens Böswirth)_
+
+### Tcl
+
+- We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
+
+### Type
+
+- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
+  native boolean types. _(Klemens Böswirth)_
+
 ### Yajl
 
 - Yajl now correctly supports Elektras boolean types using the `type` plugin. For example, setting `on`, `enable` or `true` all map to JSONs native `true` value. See the [type](../../src/plugins/type/README.md) plugin for more details about boolean types. _(Philipp Gackstatter)_
+
+### YAwn
+
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
+
+### YAy PEG
+
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
 
 ## Libraries
 
