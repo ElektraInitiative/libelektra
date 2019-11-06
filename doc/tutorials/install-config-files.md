@@ -4,16 +4,18 @@ The `install-config-file` tool makes using Elektra for a configuration file easi
 Please refer to its man page for details on its syntax.
 
 First of all, we create a small example configuration file.
+To do so, we first create a temporary file and store its location in Elektra.
 
 ```sh
-echo -e "keyA=a\nkeyB=b\nkeyC=c" > /tmp/installing.ini
+kdb set user/tests/tempfiles/firstFile $(mktemp --tmpdir file-XXXXX)
+echo -e "keyA=a\nkeyB=b\nkeyC=c" > `kdb get user/tests/tempfiles/firstFile`
 ```
 
 The following call to `kdb install-config-file` will mount it at `system/tests/installing` and additionally create a copy of it.
 The copy will be required for a three-way merge later on.
 
 ```sh
-kdb install-config-file system/tests/installing /tmp/installing.ini ini
+kdb install-config-file system/tests/installing `kdb get user/tests/tempfiles/firstFile` ini
 ```
 
 We can now safely make changes to our configuration.
@@ -31,9 +33,9 @@ You have to enter the paths accordingly.
 Read the tutorials on mounting and namespaces if you are not sure what this means.
 
 ```sh
-mkdir -p /tmp/new
-echo -e "keyA=a\nkeyB=b\nkeyC=Y" > /tmp/new/installing.ini
-kdb install-config-file system/tests/installing /tmp/new/installing.ini ini
+kdb set user/tests/tempfiles/secondFile $(echo $(mktemp -d --tmpdir dir-for-file-XXXXX)/$(basename $(kdb get user/tests/tempfiles/firstFile)))
+echo -e "keyA=a\nkeyB=b\nkeyC=Y" > `kdb get user/tests/tempfiles/secondFile`
+kdb install-config-file system/tests/installing $(kdb get user/tests/tempfiles/secondFile) ini
 ```
 
 We can check that this worked by calling
@@ -49,7 +51,8 @@ Finally, we use the following commands to clean up our tutorial.
 
 ```sh
 kdb umount system/tests/installing
+rm -rf $(kdb get user/tests/tempfiles/firstFile)
+rm -rf $(kdb get user/tests/tempfiles/secondFile)
+kdb rm -rf user/tests/tempfiles
 kdb rm -rf user/elektra/merge/preserve/installing.ini
-rm /tmp/installing.ini
-rm /tmp/new/installing.ini
 ```

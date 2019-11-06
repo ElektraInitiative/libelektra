@@ -56,7 +56,7 @@ if [ -z "$contentOfElektraPath" ]; then
 		echo "Could not mount file $their." >&2
 		exit 31
 	fi
-	resolvedLocation=$($kdb file $our)
+	resolvedLocation=$($kdbBinary file $our)
 	if ! [ -f $resolvedLocation ]; then
 		echo "Could not import file $resolvedLocation as it does not exist!" >&2
 		exit 32
