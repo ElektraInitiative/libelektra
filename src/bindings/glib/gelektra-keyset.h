@@ -68,16 +68,10 @@ GElektraKey * gelektra_keyset_lookup (GElektraKeySet * ks, GElektraKey * key, GE
 GElektraKey * gelektra_keyset_lookup_byname (GElektraKeySet * ks, const char * name, GElektraKdbOptions options);
 
 /* iterating */
-gint gelektra_keyset_rewind (GElektraKeySet * ks);
-GElektraKey * gelektra_keyset_next (GElektraKeySet * ks);
-GElektraKey * gelektra_keyset_current (const GElektraKeySet * ks);
-
 GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks);
 GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks);
 
-gssize gelektra_keyset_getcursor (const GElektraKeySet * ks);
-gint gelektra_keyset_setcursor (GElektraKeySet * ks, gssize pos);
-GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, gssize pos);
+GElektraKey * gelektra_keyset_at (GElektraKeySet * ks, gssize pos);
 
 G_END_DECLS
 
