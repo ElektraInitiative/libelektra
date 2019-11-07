@@ -70,12 +70,27 @@ int init (int argc, char ** argv);
 		printf ("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __func__, message);                                                \
 	}
 
+#define yield_error_fmt(message_fmt, ...)                                                                                                  \
+	{                                                                                                                                  \
+		nbError++;                                                                                                                 \
+		printf ("%s:%d: error in %s: " message_fmt "\n", __FILE__, __LINE__, __func__, __VA_ARGS__);                               \
+	}
+
 #define succeed_if(expression, message)                                                                                                    \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
 		if (!(expression))                                                                                                         \
 		{                                                                                                                          \
 			yield_error (message);                                                                                             \
+		}                                                                                                                          \
+	}
+
+#define succeed_if_fmt(expression, message_fmt, ...)                                                                                       \
+	{                                                                                                                                  \
+		nbTest++;                                                                                                                  \
+		if (!(expression))                                                                                                         \
+		{                                                                                                                          \
+			yield_error_fmt (message_fmt, __VA_ARGS__);                                                                        \
 		}                                                                                                                          \
 	}
 
@@ -236,18 +251,10 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			yield_error ("right hand side is null pointer")                                                                    \
 		}                                                                                                                          \
-		else if (strcmp (s1, s2) != 0)                                                                                             \
+		else                                                                                                                       \
 		{                                                                                                                          \
-			char errorMsg[BUFFER_LENGTH];                                                                                      \
-                                                                                                                                           \
-			strcpy (errorMsg, "string \"");                                                                                    \
-			strcat (errorMsg, s1);                                                                                             \
-			strcat (errorMsg, "\" is not equal to \"");                                                                        \
-			strcat (errorMsg, s2);                                                                                             \
-			strcat (errorMsg, "\"");                                                                                           \
-                                                                                                                                           \
-			yield_error (errorMsg);                                                                                            \
-			printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                              \
+			succeed_if_fmt (strcmp (s1, s2) == 0, "string \"%s\" is not equal to \"%s\"\n\tcompared: %s and %s", s1, s2, #ps1, \
+					#ps2)                                                                                              \
 		}                                                                                                                          \
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}

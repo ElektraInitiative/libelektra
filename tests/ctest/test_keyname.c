@@ -1,0 +1,596 @@
+/**
+ * @file
+ *
+ * @brief Test suite for functions used in creating key name data.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
+#include <kdbprivate.h>
+
+#include "tests.h"
+
+#define TEST_VALIDATE_OK(name, prefix, usizeOld, csizeNew, usizeNew)                                                                       \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		size_t csize = prefix == NULL ? 0 : sizeof (prefix);                                                                       \
+		size_t usize = usizeOld;                                                                                                   \
+		succeed_if_fmt (elektraKeyNameValidate (name, prefix, &csize, &usize), "'%s' SHOULD BE a valid key name", name);           \
+		succeed_if_fmt (csize == csizeNew, "'%s': canonical size wrong (act != exp): %zu != %zu", name, csize, (size_t) csizeNew); \
+		succeed_if_fmt (usize == usizeNew, "'%s': unescaped size wrong (act != exp): %zu != %zu", name, usize, (size_t) usizeNew); \
+	} while (0)
+
+#define TEST_VALIDATE_ERROR(name, prefix)                                                                                                  \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		size_t c = prefix == NULL ? 1234 : sizeof (prefix);                                                                        \
+		size_t u = 5678;                                                                                                           \
+		succeed_if_fmt (!elektraKeyNameValidate (name, prefix, &c, &u), "'%s' SHOULD NOT BE a valid key name", name);              \
+		succeed_if_fmt (c == (prefix == NULL ? 1234 : sizeof (prefix)), "'%s': ERROR case MUST NOT change canonical size", name);  \
+		succeed_if_fmt (u == 5678, "'%s': ERROR case MUST NOT change unescaped size", name);                                       \
+	} while (0)
+
+static void test_validate (void)
+{
+	TEST_VALIDATE_OK ("/", NULL, 0, 2, 3);
+	TEST_VALIDATE_OK ("proc:/", NULL, 0, 7, 3);
+	TEST_VALIDATE_OK ("dir:/", NULL, 0, 6, 3);
+	TEST_VALIDATE_OK ("user:/", NULL, 0, 7, 3);
+	TEST_VALIDATE_OK ("system:/", NULL, 0, 9, 3);
+	TEST_VALIDATE_OK ("spec:/", NULL, 0, 7, 3);
+	TEST_VALIDATE_OK ("meta:/", NULL, 0, 7, 3);
+	TEST_VALIDATE_OK ("default:/", NULL, 0, 9, 3);
+
+	TEST_VALIDATE_OK ("/abc/def/ghi", NULL, 0, 13, 14);
+	TEST_VALIDATE_OK ("user:/abc/def/ghi", NULL, 0, 18, 14);
+
+	TEST_VALIDATE_OK ("/abc/def/ghi/", NULL, 0, 13, 14);
+	TEST_VALIDATE_OK ("user:/abc/def/ghi/", NULL, 0, 18, 14);
+
+	TEST_VALIDATE_OK ("/abc//def////ghi/", NULL, 0, 13, 14);
+	TEST_VALIDATE_OK ("user://abc////def/ghi/", NULL, 0, 18, 14);
+
+	TEST_VALIDATE_OK ("/////////", NULL, 0, 2, 3);
+	TEST_VALIDATE_OK ("user://///////", NULL, 0, 7, 3);
+
+	TEST_VALIDATE_OK ("/abc/%/def", NULL, 0, 11, 11);
+	TEST_VALIDATE_OK ("user:/abc/%/def", NULL, 0, 16, 11);
+
+	TEST_VALIDATE_OK ("/abc/d@ef/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/d@ef/ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/d%ef/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/d%ef/ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/.def/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/.def/ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/./ghi", NULL, 0, 9, 10);
+	TEST_VALIDATE_OK ("user:/abc/./ghi", NULL, 0, 14, 10);
+
+	TEST_VALIDATE_OK ("/abc/../ghi", NULL, 0, 5, 6);
+	TEST_VALIDATE_OK ("user:/abc/../ghi", NULL, 0, 10, 6);
+
+	TEST_VALIDATE_OK ("/abc/.../ghi", NULL, 0, 13, 14);
+	TEST_VALIDATE_OK ("user:/abc/.../ghi", NULL, 0, 18, 14);
+
+	TEST_VALIDATE_OK ("/abc/..../ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/..../ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/#0/ghi", NULL, 0, 12, 13);
+	TEST_VALIDATE_OK ("user:/abc/#0/ghi", NULL, 0, 17, 13);
+
+	TEST_VALIDATE_OK ("/abc/#1/ghi", NULL, 0, 12, 13);
+	TEST_VALIDATE_OK ("user:/abc/#1/ghi", NULL, 0, 17, 13);
+
+	TEST_VALIDATE_OK ("/abc/#5/ghi", NULL, 0, 12, 13);
+	TEST_VALIDATE_OK ("user:/abc/#5/ghi", NULL, 0, 17, 13);
+
+	TEST_VALIDATE_OK ("/abc/#10/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/#10/ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/#10000/ghi", NULL, 0, 20, 21);
+	TEST_VALIDATE_OK ("user:/abc/#10000/ghi", NULL, 0, 25, 21);
+
+	TEST_VALIDATE_OK ("/abc/#9223372036854775807/ghi", NULL, 0, 48, 49);
+	TEST_VALIDATE_OK ("user:/abc/#9223372036854775807/ghi", NULL, 0, 53, 49);
+
+	TEST_VALIDATE_OK ("/abc/#_10/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/#_10/ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/#____10000/ghi", NULL, 0, 20, 21);
+	TEST_VALIDATE_OK ("user:/abc/#____10000/ghi", NULL, 0, 25, 21);
+
+	TEST_VALIDATE_OK ("/abc/#__________________9223372036854775807/ghi", NULL, 0, 48, 49);
+	TEST_VALIDATE_OK ("user:/abc/#__________________9223372036854775807/ghi", NULL, 0, 53, 49);
+
+	TEST_VALIDATE_OK ("/abc/\\%/def", NULL, 0, 12, 12);
+	TEST_VALIDATE_OK ("user:/abc/\\%/def", NULL, 0, 17, 12);
+
+	TEST_VALIDATE_OK ("/abc/\\./ghi", NULL, 0, 12, 12);
+	TEST_VALIDATE_OK ("user:/abc/\\./ghi", NULL, 0, 17, 12);
+
+	TEST_VALIDATE_OK ("/abc/\\../ghi", NULL, 0, 13, 13);
+	TEST_VALIDATE_OK ("user:/abc/\\../ghi", NULL, 0, 18, 13);
+
+	TEST_VALIDATE_OK ("/abc/\\#10/ghi", NULL, 0, 13, 14);
+	TEST_VALIDATE_OK ("user:/abc/\\#10/ghi", NULL, 0, 18, 14);
+
+	TEST_VALIDATE_OK ("/abc/\\#10000/ghi", NULL, 0, 16, 17);
+	TEST_VALIDATE_OK ("user:/abc/\\#10000/ghi", NULL, 0, 21, 17);
+
+	TEST_VALIDATE_OK ("/abc/\\#9223372036854775807/ghi", NULL, 0, 30, 31);
+	TEST_VALIDATE_OK ("user:/abc/\\#9223372036854775807/ghi", NULL, 0, 35, 31);
+
+	TEST_VALIDATE_OK ("/abc\\/def/ghi", NULL, 0, 14, 14);
+	TEST_VALIDATE_OK ("user:/abc\\/def/ghi", NULL, 0, 19, 14);
+
+	TEST_VALIDATE_OK ("/abc/de\\\\f/ghi", NULL, 0, 15, 15);
+	TEST_VALIDATE_OK ("user:/abc/de\\\\f/ghi", NULL, 0, 20, 15);
+
+	TEST_VALIDATE_OK ("/abc/def/ghi\\/", NULL, 0, 15, 15);
+	TEST_VALIDATE_OK ("user:/abc/def/ghi\\/", NULL, 0, 20, 15);
+
+	TEST_VALIDATE_OK ("/abc/\\@/def", NULL, 0, 12, 12);
+	TEST_VALIDATE_OK ("user:/abc/\\@/def", NULL, 0, 17, 12);
+
+	TEST_VALIDATE_OK ("/abc/\\#/def", NULL, 0, 11, 12);
+	TEST_VALIDATE_OK ("user:/abc/\\#/def", NULL, 0, 16, 12);
+
+	TEST_VALIDATE_OK ("/abc/\\#def/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/\\#def/ghi", NULL, 0, 19, 15);
+
+	TEST_VALIDATE_OK ("/abc/def/ghi/%", NULL, 0, 15, 15);
+	TEST_VALIDATE_OK ("user:/abc/def/ghi/%", NULL, 0, 20, 15);
+
+	TEST_VALIDATE_OK ("", "/abc", 6, 5, 6);
+	TEST_VALIDATE_OK ("/", "/abc", 6, 5, 6);
+	TEST_VALIDATE_OK ("%", "/abc", 6, 7, 7);
+
+	TEST_VALIDATE_OK ("/abc/def/ghi", "/abc", 6, 17, 18);
+	TEST_VALIDATE_OK ("/abc/def/ghi/", "/abc", 6, 17, 18);
+	TEST_VALIDATE_OK ("/abc//def////ghi/", "/abc", 6, 17, 18);
+	TEST_VALIDATE_OK ("/////////", "/abc", 6, 5, 6);
+	TEST_VALIDATE_OK ("/abc/%/def", "/abc", 6, 15, 15);
+	TEST_VALIDATE_OK ("/abc/d@ef/ghi", "/abc", 6, 18, 19);
+	TEST_VALIDATE_OK ("/abc/.def/ghi", "/abc", 6, 18, 19);
+
+	TEST_VALIDATE_OK ("abc", "/", 3, 5, 6);
+	TEST_VALIDATE_OK ("abc", "/abc", 6, 9, 10);
+	TEST_VALIDATE_OK (".", "/abc", 6, 5, 6);
+
+	TEST_VALIDATE_OK ("/..", "/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("..", "/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("/../..", "/abc/def", 10, 2, 3);
+	TEST_VALIDATE_OK ("../..", "/abc/def", 10, 2, 3);
+
+	TEST_VALIDATE_OK ("user/", "/", 3, 6, 7);
+	TEST_VALIDATE_OK ("user:", "/", 3, 7, 8);
+	TEST_VALIDATE_OK ("user", "/", 3, 6, 7);
+
+	TEST_VALIDATE_OK ("abc", "user:/", 3, 10, 6);
+	TEST_VALIDATE_OK ("abc", "user:/abc", 6, 14, 10);
+	TEST_VALIDATE_OK ("..", "user:/abc", 6, 2, 3);
+
+	succeed_if (!elektraKeyNameValidate (NULL, NULL, NULL, NULL), "(NULL) SHOULD NOT BE a valid key name");
+
+	TEST_VALIDATE_ERROR ("", NULL);
+	TEST_VALIDATE_ERROR ("user/", NULL);
+	TEST_VALIDATE_ERROR ("user:", NULL);
+	TEST_VALIDATE_ERROR ("user", NULL);
+
+	TEST_VALIDATE_ERROR ("user:abc:/", NULL);
+	TEST_VALIDATE_ERROR ("abc:/", NULL);
+	TEST_VALIDATE_ERROR ("abc", NULL);
+
+	TEST_VALIDATE_ERROR ("/..", NULL);
+	TEST_VALIDATE_ERROR ("user:/..", NULL);
+	TEST_VALIDATE_ERROR ("/abc/../..", NULL);
+
+	TEST_VALIDATE_ERROR ("/../..", "/abc");
+
+	TEST_VALIDATE_ERROR ("/abc/\\.def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\.def/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\.../ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\.../ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\..../ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\..../ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\#0/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\#0/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\#1/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\#1/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\#5/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\#5/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\#_10/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\#_10/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\#____10000/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\#____10000/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\#__________________9223372036854775807/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\#__________________9223372036854775807/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#92233720368547758071/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#92233720368547758071/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#9223372036854775808/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#9223372036854775808/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#__________________9223372036854775808/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#__________________9223372036854775808/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#01/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#01/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#__10/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#__10/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#_100/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#_100/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/#___10/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/#___10/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/d\\.ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\.ef/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/d\\#ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\#ef/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/d\\%ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\%ef/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/d\\@ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\@ef/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/@/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/@/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/@def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/@def/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/%def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/%def/ghi", NULL);
+
+	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL);
+}
+
+#define TEST_CANONICALIZE_OK(name, prefix, cname)                                                                                          \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		char buffer[sizeof (cname) * 2 + sizeof (prefix)]; /* allocate more to be on the safe side */                              \
+		char * buf = buffer;                                                                                                       \
+		strcpy (buffer, prefix);                                                                                                   \
+		elektraKeyNameCanonicalize (name, &buf, sizeof (prefix) - 1,                                                               \
+					    cname[sizeof (cname) - 2] == '/' &&                                                            \
+						    (sizeof (cname) < 3 || cname[sizeof (cname) - 3] != '\\'));                            \
+		succeed_if_same_string (buffer, cname);                                                                                    \
+	} while (0)
+
+static void test_canonicalize (void)
+{
+	TEST_CANONICALIZE_OK ("/", "", "/");
+	TEST_CANONICALIZE_OK ("proc:/", "", "proc:/");
+	TEST_CANONICALIZE_OK ("dir:/", "", "dir:/");
+	TEST_CANONICALIZE_OK ("user:/", "", "user:/");
+	TEST_CANONICALIZE_OK ("system:/", "", "system:/");
+	TEST_CANONICALIZE_OK ("spec:/", "", "spec:/");
+	TEST_CANONICALIZE_OK ("meta:/", "", "meta:/");
+	TEST_CANONICALIZE_OK ("default:/", "", "default:/");
+
+	TEST_CANONICALIZE_OK ("/abc/def/ghi", "", "/abc/def/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/def/ghi", "", "user:/abc/def/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/def/ghi/", "", "/abc/def/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/def/ghi/", "", "user:/abc/def/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc//def////ghi/", "", "/abc/def/ghi");
+	TEST_CANONICALIZE_OK ("user://abc////def/ghi/", "", "user:/abc/def/ghi");
+
+	TEST_CANONICALIZE_OK ("/////////", "", "/");
+	TEST_CANONICALIZE_OK ("user://///////", "", "user:/");
+
+	TEST_CANONICALIZE_OK ("/abc/%/def", "", "/abc/%/def");
+	TEST_CANONICALIZE_OK ("user:/abc/%/def", "", "user:/abc/%/def");
+
+	TEST_CANONICALIZE_OK ("/abc/d@ef/ghi", "", "/abc/d@ef/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/d@ef/ghi", "", "user:/abc/d@ef/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/.def/ghi", "", "/abc/.def/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/.def/ghi", "", "user:/abc/.def/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/./ghi", "", "/abc/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/./ghi", "", "user:/abc/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/../ghi", "", "/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/../ghi", "", "user:/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/.../ghi", "", "/abc/.../ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/.../ghi", "", "user:/abc/.../ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/..../ghi", "", "/abc/..../ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/..../ghi", "", "user:/abc/..../ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#0/ghi", "", "/abc/#0/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#0/ghi", "", "user:/abc/#0/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#1/ghi", "", "/abc/#1/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#1/ghi", "", "user:/abc/#1/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#5/ghi", "", "/abc/#5/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#5/ghi", "", "user:/abc/#5/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#10/ghi", "", "/abc/#_10/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#10/ghi", "", "user:/abc/#_10/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#10000/ghi", "", "/abc/#____10000/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#10000/ghi", "", "user:/abc/#____10000/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#9223372036854775807/ghi", "", "/abc/#__________________9223372036854775807/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#9223372036854775807/ghi", "", "user:/abc/#__________________9223372036854775807/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#_10/ghi", "", "/abc/#_10/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#_10/ghi", "", "user:/abc/#_10/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#____10000/ghi", "", "/abc/#____10000/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#____10000/ghi", "", "user:/abc/#____10000/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/#__________________9223372036854775807/ghi", "", "/abc/#__________________9223372036854775807/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/#__________________9223372036854775807/ghi", "",
+			      "user:/abc/#__________________9223372036854775807/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/\\%/def", "", "/abc/\\%/def");
+	TEST_CANONICALIZE_OK ("user:/abc/\\%/def", "", "user:/abc/\\%/def");
+
+	TEST_CANONICALIZE_OK ("/abc/\\./ghi", "", "/abc/\\./ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\./ghi", "", "user:/abc/\\./ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/\\../ghi", "", "/abc/\\../ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\../ghi", "", "user:/abc/\\../ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/\\#10/ghi", "", "/abc/#10/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\#10/ghi", "", "user:/abc/#10/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/\\#10000/ghi", "", "/abc/#10000/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\#10000/ghi", "", "user:/abc/#10000/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/\\#9223372036854775807/ghi", "", "/abc/#9223372036854775807/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\#9223372036854775807/ghi", "", "user:/abc/#9223372036854775807/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc\\/def/ghi", "", "/abc\\/def/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc\\/def/ghi", "", "user:/abc\\/def/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/de\\\\f/ghi", "", "/abc/de\\\\f/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/de\\\\f/ghi", "", "user:/abc/de\\\\f/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/def/ghi\\/", "", "/abc/def/ghi\\/");
+	TEST_CANONICALIZE_OK ("user:/abc/def/ghi\\/", "", "user:/abc/def/ghi\\/");
+
+	TEST_CANONICALIZE_OK ("/abc/\\@/def", "", "/abc/\\@/def");
+	TEST_CANONICALIZE_OK ("user:/abc/\\@/def", "", "user:/abc/\\@/def");
+
+	TEST_CANONICALIZE_OK ("/abc/\\#/def", "", "/abc/#/def");
+	TEST_CANONICALIZE_OK ("user:/abc/\\#/def", "", "user:/abc/#/def");
+
+	TEST_CANONICALIZE_OK ("/abc/\\#123/ghi", "", "/abc/#123/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\#123/ghi", "", "user:/abc/#123/ghi");
+
+	TEST_CANONICALIZE_OK ("/abc/\\#def/ghi", "", "/abc/#def/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\#def/ghi", "", "user:/abc/#def/ghi");
+
+	TEST_CANONICALIZE_OK ("", "/abc", "/abc");
+	TEST_CANONICALIZE_OK ("/", "/abc", "/abc");
+	TEST_CANONICALIZE_OK ("%", "/abc", "/abc/%");
+
+	TEST_CANONICALIZE_OK ("", "/", "/");
+	TEST_CANONICALIZE_OK ("/", "/", "/");
+	TEST_CANONICALIZE_OK ("%", "/", "/%");
+
+	TEST_CANONICALIZE_OK ("", "user:/", "user:/");
+	TEST_CANONICALIZE_OK ("/", "user:/", "user:/");
+	TEST_CANONICALIZE_OK ("%", "user:/", "user:/%");
+
+	TEST_CANONICALIZE_OK ("/abc/def/ghi", "/abc", "/abc/abc/def/ghi");
+	TEST_CANONICALIZE_OK ("/abc/def/ghi/", "/abc", "/abc/abc/def/ghi");
+	TEST_CANONICALIZE_OK ("/abc//def////ghi/", "/abc", "/abc/abc/def/ghi");
+	TEST_CANONICALIZE_OK ("/////////", "/abc", "/abc");
+	TEST_CANONICALIZE_OK ("/abc/%/def", "/abc", "/abc/abc/%/def");
+	TEST_CANONICALIZE_OK ("/abc/d@ef/ghi", "/abc", "/abc/abc/d@ef/ghi");
+	TEST_CANONICALIZE_OK ("/abc/.def/ghi", "/abc", "/abc/abc/.def/ghi");
+
+	TEST_CANONICALIZE_OK ("abc", "/", "/abc");
+	TEST_CANONICALIZE_OK ("abc", "/abc", "/abc/abc");
+	TEST_CANONICALIZE_OK ("..", "/abc", "/");
+	TEST_CANONICALIZE_OK ("../", "/abc", "/");
+	TEST_CANONICALIZE_OK ("/../..", "/abc/def", "/");
+	TEST_CANONICALIZE_OK ("../..", "/abc/def", "/");
+
+	TEST_CANONICALIZE_OK ("user/", "/", "/user");
+	TEST_CANONICALIZE_OK ("user:", "/", "/user:");
+	TEST_CANONICALIZE_OK ("user", "/", "/user");
+
+	TEST_CANONICALIZE_OK ("..", "user:/abc", "user:/");
+}
+
+static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_EMPTY", "KEY_NS_META", "KEY_NS_CASCADING", "KEY_NS_SPEC",
+				     "KEY_NS_PROC", "KEY_NS_DIR",   "KEY_NS_USER", "KEY_NS_SYSTEM" };
+
+#define succeed_if_same_uname(name, pu1, pu2, size2)                                                                                       \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		const char * u1 = pu1;                                                                                                     \
+		const char * base2 = pu2;                                                                                                  \
+		const char * u2 = base2;                                                                                                   \
+		size_t i = 1;                                                                                                              \
+		int success = 1;                                                                                                           \
+		succeed_if_fmt (success = (success && u1[0] == u2[0]), "\tnamespaces not equal: %s vs %s", keyNsNames[(int) u1[0]],        \
+				keyNsNames[(int) u2[0]]);                                                                                  \
+		++u1;                                                                                                                      \
+		++u2;                                                                                                                      \
+		while (u2 < base2 + size2)                                                                                                 \
+		{                                                                                                                          \
+			succeed_if_fmt (success = (success && strcmp (u1, u2) == 0), "\tpart no %zu \"%s\" is not equal to \"%s\"", i, u1, \
+					u2) u2 += strlen (u2) + 1;                                                                         \
+			u1 += strlen (u1) + 1;                                                                                             \
+			++i;                                                                                                               \
+		}                                                                                                                          \
+		if (!success) yield_error_fmt ("uname for '%s' didn't match", name);                                                       \
+	} while (0)
+
+#define TEST_UNESCAPE_OK(name, prfx, ns, uname)                                                                                            \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		const char * prefix = prfx == NULL ? "" : prfx;                                                                            \
+		size_t prefixSize = prfx == NULL ? 1 : sizeof (prfx);                                                                      \
+		char buffer[sizeof (uname) * 2 + 2 + prefixSize]; /* allocate more to be on the safe side */                               \
+		char * buf = buffer;                                                                                                       \
+		buffer[0] = ns;                                                                                                            \
+		memcpy (buffer + 1, prefix, prefixSize);                                                                                   \
+		buffer[prefixSize] = '\0';                                                                                                 \
+		elektraKeyNameUnescape (name, &buf);                                                                                       \
+		char expected[sizeof (uname) + 2];                                                                                         \
+		expected[0] = ns;                                                                                                          \
+		memcpy (expected + 1, uname, sizeof (uname) - 1);                                                                          \
+		expected[sizeof (uname)] = '\0';                                                                                           \
+		succeed_if_same_uname (name, buffer, expected, sizeof (uname) + 1);                                                        \
+	} while (0)
+
+static void test_unescape (void)
+{
+	TEST_UNESCAPE_OK ("/", NULL, KEY_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("proc:/", NULL, KEY_NS_PROC, "\0");
+	TEST_UNESCAPE_OK ("dir:/", NULL, KEY_NS_DIR, "\0");
+	TEST_UNESCAPE_OK ("user:/", NULL, KEY_NS_USER, "\0");
+	TEST_UNESCAPE_OK ("system:/", NULL, KEY_NS_SYSTEM, "\0");
+	TEST_UNESCAPE_OK ("spec:/", NULL, KEY_NS_SPEC, "\0");
+	TEST_UNESCAPE_OK ("meta:/", NULL, KEY_NS_META, "\0");
+	// TODO: TEST_UNESCAPE_OK ("default:/", NULL, KEY_NS_DEFAULT, "\0");
+
+	TEST_UNESCAPE_OK ("/abc/def/ghi", NULL, KEY_NS_CASCADING, "\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/def/ghi", NULL, KEY_NS_USER, "\0abc\0def\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/def/ghi/", NULL, KEY_NS_CASCADING, "\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/def/ghi/", NULL, KEY_NS_USER, "\0abc\0def\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/%/def", NULL, KEY_NS_CASCADING, "\0abc\0\0def");
+	TEST_UNESCAPE_OK ("user:/abc/%/def", NULL, KEY_NS_USER, "\0abc\0\0def");
+
+	TEST_UNESCAPE_OK ("/abc/d@ef/ghi", NULL, KEY_NS_CASCADING, "\0abc\0d@ef\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/d@ef/ghi", NULL, KEY_NS_USER, "\0abc\0d@ef\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/.def/ghi", NULL, KEY_NS_CASCADING, "\0abc\0.def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/.def/ghi", NULL, KEY_NS_USER, "\0abc\0.def\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/.../ghi", NULL, KEY_NS_CASCADING, "\0abc\0...\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/.../ghi", NULL, KEY_NS_USER, "\0abc\0...\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/..../ghi", NULL, KEY_NS_CASCADING, "\0abc\0....\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/..../ghi", NULL, KEY_NS_USER, "\0abc\0....\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#0/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#0\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#0/ghi", NULL, KEY_NS_USER, "\0abc\0#0\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#1/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#1\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#1/ghi", NULL, KEY_NS_USER, "\0abc\0#1\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#5/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#5\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#5/ghi", NULL, KEY_NS_USER, "\0abc\0#5\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#_10/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#_10\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#_10/ghi", NULL, KEY_NS_USER, "\0abc\0#_10\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#____10000/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#____10000\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#____10000/ghi", NULL, KEY_NS_USER, "\0abc\0#____10000\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#__________________9223372036854775807/ghi", NULL, KEY_NS_CASCADING,
+			  "\0abc\0#__________________9223372036854775807\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#__________________9223372036854775807/ghi", NULL, KEY_NS_USER,
+			  "\0abc\0#__________________9223372036854775807\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/\\%/def", NULL, KEY_NS_CASCADING, "\0abc\0%\0def");
+	TEST_UNESCAPE_OK ("user:/abc/\\%/def", NULL, KEY_NS_USER, "\0abc\0%\0def");
+
+	TEST_UNESCAPE_OK ("/abc/\\./ghi", NULL, KEY_NS_CASCADING, "\0abc\0.\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\./ghi", NULL, KEY_NS_USER, "\0abc\0.\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/\\../ghi", NULL, KEY_NS_CASCADING, "\0abc\0..\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\../ghi", NULL, KEY_NS_USER, "\0abc\0..\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc\\/def/ghi", NULL, KEY_NS_CASCADING, "\0abc/def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc\\/def/ghi", NULL, KEY_NS_USER, "\0abc/def\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/de\\\\f/ghi", NULL, KEY_NS_CASCADING, "\0abc\0de\\f\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/de\\\\f/ghi", NULL, KEY_NS_USER, "\0abc\0de\\f\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/def/ghi\\/", NULL, KEY_NS_CASCADING, "\0abc\0def\0ghi/");
+	TEST_UNESCAPE_OK ("user:/abc/def/ghi\\/", NULL, KEY_NS_USER, "\0abc\0def\0ghi/");
+
+	TEST_UNESCAPE_OK ("/abc/\\@/def", NULL, KEY_NS_CASCADING, "\0abc\0@\0def");
+	TEST_UNESCAPE_OK ("user:/abc/\\@/def", NULL, KEY_NS_USER, "\0abc\0@\0def");
+
+	TEST_UNESCAPE_OK ("/abc/#/def", NULL, KEY_NS_CASCADING, "\0abc\0#\0def");
+	TEST_UNESCAPE_OK ("user:/abc/#/def", NULL, KEY_NS_USER, "\0abc\0#\0def");
+
+	TEST_UNESCAPE_OK ("/abc/#def/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#def/ghi", NULL, KEY_NS_USER, "\0abc\0#def\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#123/ghi", NULL, KEY_NS_CASCADING, "\0abc\0#123\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#123/ghi", NULL, KEY_NS_USER, "\0abc\0#123\0ghi");
+
+	TEST_UNESCAPE_OK ("", "\0abc", KEY_NS_CASCADING, "\0abc");
+	TEST_UNESCAPE_OK ("", "\0abc", KEY_NS_CASCADING, "\0abc");
+	TEST_UNESCAPE_OK ("/", "\0abc", KEY_NS_CASCADING, "\0abc");
+	TEST_UNESCAPE_OK ("%", "\0abc", KEY_NS_CASCADING, "\0abc\0");
+
+	TEST_UNESCAPE_OK ("", "\0", KEY_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("/", "\0", KEY_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("%", "\0", KEY_NS_CASCADING, "\0");
+
+	TEST_UNESCAPE_OK ("", "\0", KEY_NS_USER, "\0");
+	TEST_UNESCAPE_OK ("/", "\0", KEY_NS_USER, "\0");
+	TEST_UNESCAPE_OK ("%", "\0", KEY_NS_USER, "\0");
+
+	TEST_UNESCAPE_OK ("/abc/def/ghi", "\0abc", KEY_NS_CASCADING, "\0abc\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/def/ghi/", "\0abc", KEY_NS_CASCADING, "\0abc\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/%/def", "\0abc", KEY_NS_CASCADING, "\0abc\0abc\0\0def");
+	TEST_UNESCAPE_OK ("/abc/d@ef/ghi", "\0abc", KEY_NS_CASCADING, "\0abc\0abc\0d@ef\0ghi");
+	TEST_UNESCAPE_OK ("/abc/.def/ghi", "\0abc", KEY_NS_CASCADING, "\0abc\0abc\0.def\0ghi");
+
+	TEST_UNESCAPE_OK ("abc", "\0", KEY_NS_CASCADING, "\abc");
+	TEST_UNESCAPE_OK ("abc", "\0abc", KEY_NS_CASCADING, "\0abc\0abc");
+	TEST_UNESCAPE_OK ("..", "\0abc", KEY_NS_CASCADING, "\0..");
+	TEST_UNESCAPE_OK ("/../..", "\0abc\0def", KEY_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("../..", "\0abc\0def", KEY_NS_CASCADING, "\0");
+
+	TEST_UNESCAPE_OK ("user/", "\0", KEY_NS_CASCADING, "\0user");
+	TEST_UNESCAPE_OK ("user:", "\0", KEY_NS_CASCADING, "\0user:");
+	TEST_UNESCAPE_OK ("user", "\0", KEY_NS_CASCADING, "\0user");
+
+	TEST_UNESCAPE_OK ("..", "\0abc", KEY_NS_USER, "\0");
+}
+
+int main (int argc, char ** argv)
+{
+	printf (" KEYNAME   TESTS\n");
+	printf ("==================\n\n");
+
+	init (argc, argv);
+
+	test_validate ();
+	test_canonicalize ();
+	test_unescape ();
+
+	print_result ("test_keyname");
+
+	return nbError;
+}
