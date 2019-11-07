@@ -23,13 +23,12 @@ else
 	exit 1
 fi
 
-
 # different binaries are installed depending on the build options
-if  command -v kdb ; then
+if command -v kdb; then
 	kdbBinary=$(command -v kdb)
-elif command -v kdb-static ; then
+elif command -v kdb-static; then
 	kdbBinary=$(command -v kdb-static)
-elif command -v kdb-full ; then
+elif command -v kdb-full; then
 	kdbBinary=$(command -v kdb-full)
 else
 	echo "ERROR: Could not find a kdb binary."
