@@ -1,5 +1,6 @@
 if (BUILD_DOCUMENTATION)
 	find_program (RONN_LOC ronn)
+	find_program (DIFF_COMMAND diff)
 
 	if (RONN_LOC)
 		add_custom_target (man ALL)

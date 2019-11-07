@@ -86,6 +86,7 @@ libelektra_0.8 {
 	keySetBaseName;
 	keySetBinary;
 	keySetMeta;
+	keyMeta;
 	keySetName;
 	keySetString;
 	keyString;
@@ -112,9 +113,7 @@ libelektra_0.8 {
 	ksHead;
 	ksInit;
 	ksLookup;
-	ksLookupByBinary;
 	ksLookupByName;
-	ksLookupByString;
 	ksNeedSync;
 	ksNew;
 	ksNext;
@@ -142,10 +141,10 @@ libelektraprivate_1.0 {
 	elektraGlobalSet;
 	elektraKeyLock;
 	elektraKsPopAtCursor;
-	elektraRenameKeys;
 	elektraUnescapeKeyName;
 	elektraUnescapeKeyNamePart;
 	elektraValidateKeyName;
+	ksRenameKeys;
 	keyClearSync;
 	keyIsDir;
 	keyIsProc;

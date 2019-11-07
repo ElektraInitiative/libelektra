@@ -36,7 +36,7 @@ additional_files=$(
 shell_files=$(printf '%s\n' "$shell_files" "$additional_files")
 
 if [ $# -gt 0 ]; then
-	tmpfile=$(mktemp /tmp/elektra-reformat-shfmt.XXXXXX)
+	tmpfile=$(mktemp /tmp/elektra-reformat-shell.XXXXXX)
 	printf "%s\n" "$@" > "$tmpfile"
 	shell_files=$(printf "%s\n" "$shell_files" | grep -x -F -f "$tmpfile")
 	rm "$tmpfile"

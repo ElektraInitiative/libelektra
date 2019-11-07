@@ -65,18 +65,7 @@ enum {
 enum {
 	KDB_O_NONE=0,
 	KDB_O_DEL=1,
-	KDB_O_POP=1<<1,
-	KDB_O_NODIR=1<<2,
-	KDB_O_DIRONLY=1<<3,
-	KDB_O_NOREMOVE=1<<6,
-	KDB_O_REMOVEONLY=1<<7,
-	KDB_O_INACTIVE=1<<8,
-	KDB_O_SYNC=1<<9,
-	KDB_O_SORT=1<<10,
-	KDB_O_NORECURSIVE=1<<11,
-	KDB_O_NOCASE=1<<12,
-	KDB_O_WITHOWNER=1<<13,
-	KDB_O_NOALL=1<<14
+	KDB_O_POP=1<<1
 };
 
 enum
@@ -154,7 +143,7 @@ int keyCopyAllMeta(Key *dest, const Key *source);
 const Key *keyGetMeta(const Key *key, const char* metaName);
 ssize_t    keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString);
-
+KeySet * keyMeta (Key * key);
 
 /* Methods for Making Tests */
 int keyCmp(const Key *k1, const Key *k2);

@@ -422,18 +422,6 @@ static void test_appendowner (void)
 	ksDel (ks);
 }
 
-static void test_ksLookupCase (void)
-{
-	printf ("Test bug lookup with case\n");
-	KeySet * ks = ksNew (32, keyNew ("system/ay/key", KEY_VALUE, "aykey", KEY_END),
-			     keyNew ("system/mY/kex", KEY_VALUE, "mykex", KEY_END), keyNew ("system/xy/key", KEY_VALUE, "xykey", KEY_END),
-			     keyNew ("system/My/key", KEY_VALUE, "Mykey", KEY_END), KS_END);
-	// Does not work without KDB_O_NOALL
-	Key * found = ksLookupByName (ks, "system/my/key", KDB_O_NOCASE | KDB_O_NOALL);
-	succeed_if (found != 0, "could not find key (binary search fails when ignoring case)");
-	ksDel (ks);
-}
-
 static void test_ksLookupOwner (void)
 {
 	printf ("Test bug lookup with owner\n");
@@ -441,21 +429,6 @@ static void test_ksLookupOwner (void)
 	KeySet * ks = ksNew (32, keyNew ("user:fritz/my/key", KEY_VALUE, "fritz", KEY_END),
 			     keyNew ("user:frotz/my/key", KEY_VALUE, "frotz", KEY_END),
 			     keyNew ("user/my/key", KEY_VALUE, "current", KEY_END), KS_END);
-
-	found = ksLookupByName (ks, "user/my/key", KDB_O_WITHOWNER);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "current"), "got wrong key");
-
-	found = ksLookupByName (ks, "user:fritz/my/key", KDB_O_WITHOWNER);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "fritz"), "got wrong key");
-
-	found = ksLookupByName (ks, "user:frotz/my/key", KDB_O_WITHOWNER);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue (found), "frotz"), "got wrong key");
-
-	found = ksLookupByName (ks, "user:fretz/my/key", KDB_O_WITHOWNER);
-	succeed_if (found == 0, "found non existing key");
 
 	found = ksLookupByName (ks, "user/my/key", 0);
 	succeed_if (found != 0, "could not find key");
@@ -491,7 +464,6 @@ int main (int argc, char ** argv)
 	test_equal ();
 	test_cmp ();
 	test_appendowner ();
-	test_ksLookupCase ();
 	test_ksLookupOwner ();
 
 	printf ("\n%s RESULTS: %d test(s) done. %d error(s).\n", argv[0], nbTest, nbError);

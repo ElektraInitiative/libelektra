@@ -82,7 +82,11 @@ int PluginListCommand::execute (Cmdline const & cl)
 		sortedPlugins.push_back (elem);
 	}
 
-	std::sort (sortedPlugins.begin (), sortedPlugins.end ());
+	// keep order by status when output verbose is choosen
+	if (!cl.verbose)
+	{
+		std::sort (sortedPlugins.begin (), sortedPlugins.end ());
+	}
 
 	for (auto & elem : sortedPlugins)
 	{

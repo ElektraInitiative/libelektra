@@ -91,6 +91,9 @@
 %ignore kdb::Key::Key (const std::string keyName, ...);
 %ignore kdb::Key::Key (const char *keyName, va_list ap);
 
+// ignore functions we also provide char* signatures
+%ignore kdb::Key::setString(const std::string&);
+
 // reference handling
 %ignore kdb::Key::operator++(int) const;
 %ignore kdb::Key::operator--(int) const;

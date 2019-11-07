@@ -9,8 +9,8 @@
 This command will either list all available Elektra plugins
 or all plugins that provide a specific functionality.
 
-The output will be sorted by their status.
-The best plugins will be the last in the list.
+The output will be sorted alphabetically unless option `-v` is passed.
+With option `-v` the output will be sorted by their status, the best plugins will be the last in the list.
 
 ## OPTIONS
 
@@ -23,8 +23,8 @@ The best plugins will be the last in the list.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Also output the number calculated by their
-  `infos/status` clause in the contract. Prints additional information in case of errors/warnings.
+  Also output the number calculated by their `infos/status` clause in the contract.
+  Sorts the output ascending by the calculated status. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-0`, `--null`:

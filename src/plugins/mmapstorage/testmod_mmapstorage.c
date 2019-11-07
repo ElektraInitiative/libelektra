@@ -33,7 +33,7 @@
 
 #define KEY_NAME_LENGTH 1000
 #define NUM_DIR 10
-#define NUM_KEY 10
+#define NUM_KEY 100
 
 #define TEST_ROOT_KEY "user/tests/mmapstorage"
 
@@ -554,6 +554,13 @@ static void test_mmap_set_get_large_keyset (const char * tmpFile)
 	KeySet * ks = largeTestKeySet ();
 	KeySet * expected = ksDeepDup (ks);
 
+	const char * name = "user/tests/mmapstorage/dir7/key3";
+	Key * found = ksLookupByName (ks, name, KDB_O_OPMPHM);
+	if (!found)
+	{
+		yield_error ("Key not found.")
+	}
+
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
 
@@ -718,6 +725,7 @@ static void test_mmap_ks_copy_with_meta (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 static void test_mmap_opmphm (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -739,13 +747,57 @@ static void test_mmap_opmphm (const char * tmpFile)
 		yield_error ("Key not found.")
 	}
 
-	// write keyset with OPMPHM structures
+	// write and re-read keyset with OPMPHM structures
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksClear (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
+	// try triggering memleaks by copies
+	KeySet * copy = ksNew (0, KS_END);
+	ksCopy (copy, ks);
+	ksDel (copy);
+	KeySet * dup = ksDup (ks);
+	ksDel (dup);
+	KeySet * deepDup = ksDeepDup (ks);
+	ksDel (deepDup);
+
+	KeySet * returned = largeTestKeySet ();
+	// this lookup forces OPMPHM structures into the keyset
+	// to test the OPMPHM cleanup functions inside mmapstorage
+	Key * generateOpmphm = ksLookupByName (ks, name, KDB_O_OPMPHM);
+	if (!generateOpmphm)
+	{
+		yield_error ("Key not found.")
+	}
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	ksDel (returned);
+	returned = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
+
+	found = ksLookupByName (returned, name, KDB_O_OPMPHM);
+	if (!found)
+	{
+		yield_error ("Key not found.")
+	}
+
+	// force re-generate the OPMPHM, tests cleanup and re-allocation after mmap
+	// i.e. tests if we broke the standard cleanup functions with our mmap flags
+	Key * key = keyNew ("user/tests/mmapstorage/breakOpmphm", KEY_VALUE, "bad key", KEY_META, "e", "other meta root", KEY_END);
+	ksAppendKey (returned, key);
+	found = ksLookupByName (returned, name, KDB_O_OPMPHM);
+	if (!found)
+	{
+		yield_error ("Key not found.")
+	}
+
+	ksDel (returned);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
+#endif
 
 static void test_mmap_ksDupFun (const char * tmpFile, KeySet * copyFunction (const KeySet * source))
 {
@@ -1053,8 +1105,10 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	clearStorage (tmpFile);
 	test_mmap_opmphm (tmpFile);
+#endif
 
 	clearStorage (tmpFile);
 	test_mmap_ksDupFun (tmpFile, ksDup);

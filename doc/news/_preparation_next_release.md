@@ -64,9 +64,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
   - `typechecker`,
   - `struct`. _(Markus Raab, René Schwaiger)_
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
-- Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
-- We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 - We improved the error messages in `crypto`, `fcrypt`, and `gpgme` plugins. _(Peter Nirschl)_
+- Handle return codes (error codes) of `execv` in the GPG module. _(Peter Nirschl)_
 
 ### Camel
 
@@ -83,6 +82,17 @@ plugins. _(René Schwaiger)_
 - A better error, if the plugin fails to load `argv` from the system, was added. _(Klemens Böswirth)_
 - A function to detect help mode, without invoking `elektraGetOpts` was added. It simply checks, whether `--help` is one
   of the string in `argv`. _(Klemens Böswirth)_
+- Increase test timeout from 120s to 240s. _(Mihael Pranjić)_
+
+### Mmapstorage
+
+- We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
+- The storage format was changed and many sanity checks were improved or added. _(Mihael Pranjić)_
+- Enforce consistency by writing the magic file footer last. _(Mihael Pranjić)_
+
+### Noresolver
+
+- The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
 
 ### Path
 
@@ -90,9 +100,29 @@ plugins. _(René Schwaiger)_
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
+### Spec
+
+- There is now the config key `missing/log` that allows logging of all missing `require`d keys. _(Klemens Böswirth)_
+- `spec` now internally handles errors differently. There should be no external impact apart from better performance. _(Klemens Böswirth)_
+
+### Specload
+
+- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
+- Changes to `default` or `type` metadata are no longer supported, since they are not safe in every case. _(Klemens Böswirth)_
+- The plugin no longer has the `experimental` status. _(Klemens Böswirth)_
+
 ### Tcl
 
 - We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
+
+### Type
+
+- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
+  native boolean types. _(Klemens Böswirth)_
+
+### Yajl
+
+- Yajl now correctly supports Elektras boolean types using the `type` plugin. For example, setting `on`, `enable` or `true` all map to JSONs native `true` value. See the [type](../../src/plugins/type/README.md) plugin for more details about boolean types. _(Philipp Gackstatter)_
 
 ### YAwn
 
@@ -101,30 +131,6 @@ plugins. _(René Schwaiger)_
 ### YAy PEG
 
 - We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr/README.md). _(René Schwaiger)_
-
-### Type
-
-- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
-  native boolean types. _(Klemens Böswirth)_
-
-### Noresolver
-
-- The plugin now correctly sets the path in the `parentKey`. It therefore now supports set calls. _(Klemens Böswirth)_
-
-### Specload
-
-- We now treat relative paths as relative to `KDB_DB_SPEC` instead of the current working directory. _(Klemens Böswirth)_
-- Changes to `default` or `type` metadata are no longer supported, since they are not safe in every case. _(Klemens Böswirth)_
-- The plugin no longer has the `experimental` status. _(Klemens Böswirth)_
-
-### Spec
-
-- There is now the config key `missing/log` that allows logging of all missing `require`d keys. _(Klemens Böswirth)_
-- `spec` now internally handles errors differently. There should be no external impact apart from better performance. _(Klemens Böswirth)_
-
-### Yajl
-
-- Yajl now correctly supports Elektras boolean types using the `type` plugin. For example, setting `on`, `enable` or `true` all map to JSONs native `true` value. See the [type](../../src/plugins/type/README.md) plugin for more details about boolean types. _(Philipp Gackstatter)_
 
 ## Libraries
 
@@ -139,6 +145,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   the `elektra-highlevel` library. This should not cause any breaking changes since `elektra-highlevel` already depends
   on `elektra-ease`. In addition the header `elektra/conversion.h` is kept for compatibility. _(Klemens Böswirth)_
 - Fixes in documentation that might disallow some code operating in grey areas before. _(Markus Raab)_
+- We removed `keyRel` and `keyRel2` since it can be easily replaced by other existing functions. _(Philipp Gackstatter)_
 
 ### Core
 
@@ -147,6 +154,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   `config.h`-type headers from applications. _(Klemens Böswirth)_
 - `ksAppendKey`: state that it only fail on memory problems. _(Markus Raab)_
 - `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
+- `keyMeta` was added to provide access to a key's underlying keyset that holds its metadata keys. _(Philipp Gackstatter)_
+- Removed the obsolete `ksLookupByString` and `ksLookupByBinary`, as well as deprecated `KDB_O_*` options. _(Philipp Gackstatter)_
 
 ### Opts
 
@@ -159,7 +168,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   - `elektraLookupOptions` was moved to `kdbprivate.h`,
   - `keySetStringF` was moved to `kdbinternal.h`,
   - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
-  - Removed `ksPrev` and `elektraKsPrev`. _(Philipp Gackstatter)_
+  - Removed `ksPrev` and `elektraKsPrev`,
+  - Removed `elektraRenameKeys` and replaced it with `ksRenameKeys`. _(Philipp Gackstatter)_
 
 ### <<Library1>>
 
@@ -186,12 +196,16 @@ you up to date with the multi-language support provided by Elektra.
 
 - Warnings about cmake policies are avoided. _(Markus Raab)_
 - We removed the Haskell and GI bindings. _(Markus Raab)_
+- Avoid unnecessary copying std::string where possible (setString and setMeta only). _(Manuel Mausz)_
 
 ### Java
 
 - Upgraded maven dependencies for Java binding _(Michael Zronek)_
-- Completely overhauled the Java binding to be able to use Elektra plugins directly. For an example see the [test case](../../src/bindings/jna/libelektra4j/src/test/java/org/libelektra/PluginLoaderIT.java). _(Michael Zronek)_
+- Completely overhauled the Java binding to be able to use Elektra plugins directly. A new PluginLoader can load Elektra plugins or a native implemented Java plugin.
+  All Plugins now implement the new [Plugin](../../src/bindings/jna/libelektra4j/src/main/java/org/libelektra/Plugin.java) interface.
+  For an example see the [test case](../../src/bindings/jna/libelektra4j/src/test/java/org/libelektra/PluginLoaderIT.java). _(Michael Zronek)_
 - The java binding now supports the [error codes](../decisions/error_codes.md) in a native way. All exceptions contain the necessary information. _(Michael Zronek)_
+- Further improved the java binding such as wording and documentation. _(Michael Zronek)_
 - <<TODO>>
 
 ### Rust
@@ -217,6 +231,7 @@ you up to date with the multi-language support provided by Elektra.
   - `kdb setmeta` is now `kdb meta-set` _(Philipp Gackstatter)_
 - Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
 - `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
+- `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
 - <<TODO>>
 
 ## Scripts
@@ -244,6 +259,9 @@ you up to date with the multi-language support provided by Elektra.
 - Cleanup: separation of dev, admin and completion scripts. _(Markus Raab, Rene Schwaiger)_
 - Pre-commit hook `pre-commit-check-formatting` now lives in [`scripts/dev/pre-commit-check-formatting`](../../scripts/dev/pre-commit-check-formatting). _(Klemens Böswirth)_
 - The new script [reformat-javascript](../../scripts/dev/reformat-javascript) formats the JavaScript code of the repository using the tool [`prettier`](https://prettier.io). _(René Schwaiger)_
+- We renamed
+  - the script `reformat-source` to `reformat-c`, and
+  - the script `reformat-shfmt` to `reformat-shell`. _(René Schwaiger)_
 
 ## Cleanup
 
@@ -256,18 +274,23 @@ you up to date with the multi-language support provided by Elektra.
 - We updated our [Doxygen configuration file](../../doc/Doxyfile), removing the outdated `PERL_PATH` and `MSCGEN_PATH` options. _(René Schwaiger)_
 - Added a tutorial on how to write language bindings. Visit our new [README](../tutorials/language-bindings.md).
   _(Michael Zronek, Raphael Gruber, Philipp Gackstatter)_
+- Clarified subtyping in the language bindings tutorial. _(Michael Zronek)_
 - A [second tutorial](../tutorials/highlevel-bindings.md) on writing bindings for the high-level API was created as well. _(Klemens Böswirth, Raphael Gruber)_
 - Added [info](../../src/plugins/xerces/README.md) on how to include xerces plugin with homebrew installation. _(Anton Hößl)_
-- We updated links for the INI parsing library Nickel. _(René Schwaiger)_
+- We updated links for the INI parsing library Nickel and the documentation for the ini plugin. _(René Schwaiger)_
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
-- The [compile instructions](../COMPILE.md) do not assume that you use `make` to build Elektra anymore. _(René Schwaiger)_
+- The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
+- Added design decision for error code implementations. _(Michael Zronek)_
+- Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
+- Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
 
 ## Tests
 
 - We changed how the [formatting test](../../tests/shell/check_formatting.sh) detects code differences. This update should get rid of transient errors as [reported here](https://issues.libelektra.org/2927#issuecomment-528058641). _(René Schwaiger)_
 - We disabled the test for the conversion engine. For more information, please take a look at [issue #3086](https://issues.libelektra.org/3086). _(René Schwaiger)_
+- We disabled the test `testmod_zeromqsend` from the command `kdb run_all`, since it caused timeouts in high load scenarios. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Build
@@ -278,17 +301,19 @@ you up to date with the multi-language support provided by Elektra.
 - The variable `ELEKTRA_STAT_ST_SIZE_F` now contains the correct format specifier for the `st_size` member of the `stat` struct on macOS. _(René Schwaiger)_
 - We simplified and unified the CMake code for the [Shell Tests](../../tests/shell) and the [Shell Recorder](../../tests/shell/shell_recorder). _(René Schwaiger)_
 - CMake now prints warnings about missing man pages. _(René Schwaiger)_
+- The build system now reverts man pages generated by `ronn`, if only the creation date of the man page changed. _(René Schwaiger)_
 
 ### Compilation
 
 - We now have a [setup for proper symbol versioning](../dev/symbol-versioning.md). _(Klemens Böswirth)_
 - We do not use implicit typing in the code of the `conditionals` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+- JNA and JNI are not built concurrently anymore to avoid [dependency resolution fails](https://jira.apache.org/jira/browse/MDEP-518). _(Michael Zronek)_
 
 ### Docker
 
 - Added [Dockerfile for Ubuntu Bionic](../../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
-- We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). (René Schwaiger)
-- <<TODO>>
+- We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). _(René Schwaiger)_
+- We added a basic [Dockerfile for Arch Linux](../../scripts/docker/arch/Dockerfile). _(René Schwaiger)_
 - <<TODO>>
 
 ### Vagrant
@@ -314,6 +339,10 @@ you up to date with the multi-language support provided by Elektra.
 - The macOS build jobs now use Ruby `2.6`. _(René Schwaiger)_
 - We do not call `ninja` directly anymore. Instead we use `cmake --build`. This has the advantage that we do not have to care about the Generator used by CMake. _(René Schwaiger)_
 - We added the build job `😈 ASAN`, which builds and executes Elektra on FreeBSD with enabled [AddressSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizer). _(René Schwaiger)_
+- The new job `📚 Check` checks
+
+  - that the [man pages](../man) are up to date, and
+  - that building the PDF version of the Doxygen documentation works. _(René Schwaiger)_
 
 ### Jenkins
 

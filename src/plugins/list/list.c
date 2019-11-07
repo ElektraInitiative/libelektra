@@ -332,10 +332,10 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				KeySet * userConfigAll = ksCut (config, userCutPoint);
 				KeySet * pluginConfig = ksCut (userConfigAll, current);
 				// replace "user/plugins/#X" with "user/"
-				KeySet * pluginConfigWithConfigPrefix = elektraRenameKeys (pluginConfig, "user");
+				KeySet * pluginConfigWithConfigPrefix = ksRenameKeys (pluginConfig, "user");
 				ksDel (pluginConfig);
 				// append config below "/config" to all plugins
-				KeySet * globalPluginConfig = elektraRenameKeys (globalConfigAll, "user/config");
+				KeySet * globalPluginConfig = ksRenameKeys (globalConfigAll, "user/config");
 				ksAppend (pluginConfigWithConfigPrefix, globalPluginConfig);
 				ksDel (globalPluginConfig);
 				// remove "placements" from plugin config
@@ -349,7 +349,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				keyDel (globalConfCutPoint);
 				keyDel (toRemove);
 				// replace "user/config/" with "user/"
-				realPluginConfig = elektraRenameKeys (pluginConfigWithConfigPrefix, "user");
+				realPluginConfig = ksRenameKeys (pluginConfigWithConfigPrefix, "user");
 				ksDel (pluginConfigWithConfigPrefix);
 				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
 				ksDel (realPluginConfig);

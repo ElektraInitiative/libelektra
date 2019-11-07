@@ -558,17 +558,17 @@ function (generate_manpage NAME)
 			add_custom_command (OUTPUT ${OUTFILE}
 					    DEPENDS ${MDFILE}
 					    COMMAND ${CMAKE_COMMAND}
-						    -E
-						    env
-						    RUBYOPT="-Eutf-8:utf-8"
-						    LC_ALL="C.utf-8"
-						    ${RONN_LOC}
 						    ARGS
-						    -r
-						    --pipe
-						    ${MDFILE}
-						    >
-						    ${OUTFILE})
+						    -D
+						    RONN_COMMAND=${RONN_LOC}
+						    -D
+						    DIFF_COMMAND=${DIFF_COMMAND}
+						    -D
+						    MDFILE=${MDFILE}
+						    -D
+						    MANPAGE=${OUTFILE}
+						    -P
+						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)

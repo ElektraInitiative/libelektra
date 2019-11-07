@@ -46,6 +46,11 @@ static KeySet magicKeySet;
 static Key magicKey;
 static MmapMetaData magicMmapMetaData;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+static Opmphm magicOpmphm;
+static OpmphmPredictor magicOpmphmPredictor;
+#endif
+
 typedef enum
 {
 	MODE_STORAGE = 1,
@@ -272,7 +277,10 @@ static void initHeader (MmapHeader * mmapHeader)
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	mmapHeader->formatVersion = ELEKTRA_MMAP_FORMAT_VERSION;
 #ifdef ELEKTRA_MMAP_CHECKSUM
-	mmapHeader->formatFlags = MMAP_FLAG_CHECKSUM;
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_CHECKSUM);
+#endif
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
 #endif
 }
 
@@ -354,6 +362,12 @@ static void writeMagicData (const char * mappedRegion)
 	memcpy (destKeySet, &magicKeySet, SIZEOF_KEYSET);
 	memcpy (keyPtr, &magicKey, SIZEOF_KEY);
 	memcpy (mmapMetaData, &magicMmapMetaData, SIZEOF_MMAPMETADATA);
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	Opmphm * opmphm = (Opmphm *) (mappedRegion + OFFSET_MAGIC_OPMPHM);
+	OpmphmPredictor * opmphmPredictor = (OpmphmPredictor *) (mappedRegion + OFFSET_MAGIC_OPMPHMPREDICTOR);
+	memcpy (opmphm, &magicOpmphm, sizeof (Opmphm));
+	memcpy (opmphmPredictor, &magicOpmphmPredictor, sizeof (OpmphmPredictor));
+#endif
 }
 
 /* -- Verification Functions  ----------------------------------------------------------------------------------------------------------- */
@@ -428,6 +442,36 @@ static void initMagicMmapMetaData (void)
 	magicMmapMetaData.numKeys = SIZE_MAX / 2;
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * @brief Magic Opmphm initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
+static void initMagicOpmphm (const uintptr_t magicNumber)
+{
+	magicOpmphm.hashFunctionSeeds = (void *) magicNumber;
+	magicOpmphm.rUniPar = INT8_MAX;
+	magicOpmphm.componentSize = SIZE_MAX / 2;
+	magicOpmphm.graph = (void *) ~magicNumber;
+	magicOpmphm.size = SIZE_MAX;
+}
+
+/**
+ * @brief Magic OpmphmPredictor initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
+static void initMagicOpmphmPredictor (const uintptr_t magicNumber)
+{
+	magicOpmphmPredictor.history = UINT16_MAX;
+	magicOpmphmPredictor.patternTable = (void *) magicNumber;
+	magicOpmphmPredictor.size = SIZE_MAX / 2;
+	magicOpmphmPredictor.lookupCount = 0;
+	magicOpmphmPredictor.ksSize = SIZE_MAX;
+}
+#endif
+
 /**
  * @brief Verify the magic KeySet.
  *
@@ -470,6 +514,36 @@ static int verifyMagicMmapMetaData (MmapMetaData * mmapMetaData)
 	return memcmp (mmapMetaData, &magicMmapMetaData, SIZEOF_MMAPMETADATA);
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * @brief Verify the magic Opmphm.
+ *
+ * @param opmphm to verify
+ *
+ * @retval 0 if magic Opmphm is consistent
+ * @retval -1 if magic Opmphm is inconsistent
+ */
+static int verifyMagicOpmphm (Opmphm * opmphm)
+{
+	if (!opmphm) return -1;
+	return memcmp (opmphm, &magicOpmphm, sizeof (Opmphm));
+}
+
+/**
+ * @brief Verify the magic OpmphmPredictor.
+ *
+ * @param opmphmPredictor to verify
+ *
+ * @retval 0 if magic OpmphmPredictor is consistent
+ * @retval -1 if magic OpmphmPredictor is inconsistent
+ */
+static int verifyMagicOpmphmPredictor (OpmphmPredictor * opmphmPredictor)
+{
+	if (!opmphmPredictor) return -1;
+	return memcmp (opmphmPredictor, &magicOpmphmPredictor, sizeof (OpmphmPredictor));
+}
+#endif
+
 /**
  * @brief Verify magic data in the mapped region.
  *
@@ -488,6 +562,15 @@ static int verifyMagicData (char * mappedRegion)
 	{
 		return -1;
 	}
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	Opmphm * opmphm = (Opmphm *) (mappedRegion + OFFSET_MAGIC_OPMPHM);
+	OpmphmPredictor * opmphmPredictor = (OpmphmPredictor *) (mappedRegion + OFFSET_MAGIC_OPMPHMPREDICTOR);
+	if ((verifyMagicOpmphm (opmphm) != 0) || (verifyMagicOpmphmPredictor (opmphmPredictor) != 0))
+	{
+		return -1;
+	}
+#endif
 
 	return 0;
 }
@@ -605,13 +688,32 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	}
 	mmapMetaData->numKeys += returned->size + dynArray->size + 1; // +1 for magic Key
 
+	size_t opmphmSize = 0;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// the OPMPHM structs are included regardless of existece in KeySet
+	// s.t. the format stays the same for all KeySets
+	opmphmSize = (sizeof (Opmphm) * 2) + (sizeof (OpmphmPredictor) * 2); // *2 for magic opmphm data
+	Opmphm * opmphm = returned->opmphm;
+	if (opmphm)
+	{
+		if (opmphm->rUniPar) dataBlocksSize += opmphm->rUniPar * sizeof (int32_t);
+		dataBlocksSize += opmphm->size;
+	}
+	OpmphmPredictor * opmphmPredictor = returned->opmphmPredictor;
+	if (opmphmPredictor)
+	{
+		dataBlocksSize += opmphmPredictor->size * sizeof (uint8_t);
+	}
+	ELEKTRA_LOG_DEBUG ("OPMPHM enabled, size: %zu", opmphmSize);
+#endif
+
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
-	mmapHeader->allocSize =
-		(SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
-	mmapHeader->cksumSize = mmapHeader->allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
+	mmapHeader->allocSize = (SIZEOF_MMAPMETADATA * 2) + opmphmSize + (SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize +
+				dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
+	mmapHeader->cksumSize = mmapHeader->allocSize; // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (mmapHeader->allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
-	mmapHeader->allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
+	mmapHeader->allocSize += SIZEOF_MMAPHEADER + padding + SIZEOF_MMAPFOOTER;
 
 	mmapMetaData->numKeys--;    // don't include magic Key
 	mmapMetaData->numKeySets--; // don't include magic KeySet
@@ -821,9 +923,13 @@ static void printMmapMetaData (MmapMetaData * mmapMetaData ELEKTRA_UNUSED)
  * @param mmapMetaData containing meta-information of the mapped region
  * @param mmapFooter containing a magic number for consistency checks
  * @param dynArray containing deduplicated pointers to meta-keys
+ * @param mode the current plugin mode
+ *
+ * @retval 0 on success
+ * @retval -1 if msync() failed
  */
-static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
-			      MmapFooter * mmapFooter, DynArray * dynArray)
+static int copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
+			     MmapFooter * mmapFooter, DynArray * dynArray, PluginMode mode)
 {
 	writeMagicData (dest);
 
@@ -842,6 +948,51 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 
 	printMmapAddr (&mmapAddr);
 	printMmapMetaData (mmapMetaData);
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// We FIRST write the opmphm data. If this is changed, you'll run into alignment problems.
+	// set OPMPHM flag, so file is not readable by builds without OPMPHM
+	set_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM);
+	if (keySet->opmphm)
+	{
+		mmapAddr.ksPtr->opmphm = (Opmphm *) (dest + OFFSET_OPMPHM);
+		memcpy (mmapAddr.ksPtr->opmphm, keySet->opmphm, sizeof (Opmphm));
+		mmapAddr.ksPtr->opmphm->flags = OPMPHM_FLAG_MMAP_STRUCT;
+		if (keySet->opmphm->rUniPar)
+		{
+			mmapAddr.ksPtr->opmphm->hashFunctionSeeds = (int32_t *) mmapAddr.dataPtr;
+			memcpy (mmapAddr.ksPtr->opmphm->hashFunctionSeeds, keySet->opmphm->hashFunctionSeeds,
+				keySet->opmphm->rUniPar * sizeof (int32_t));
+			set_bit (mmapAddr.ksPtr->opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS);
+			mmapAddr.dataPtr += keySet->opmphm->rUniPar * sizeof (int32_t);
+			mmapAddr.ksPtr->opmphm->hashFunctionSeeds =
+				(int32_t *) (((char *) mmapAddr.ksPtr->opmphm->hashFunctionSeeds) - mmapAddr.mmapAddrInt);
+		}
+		if (keySet->opmphm->size)
+		{
+			mmapAddr.ksPtr->opmphm->graph = (uint32_t *) mmapAddr.dataPtr;
+			memcpy (mmapAddr.ksPtr->opmphm->graph, keySet->opmphm->graph, keySet->opmphm->size);
+			set_bit (mmapAddr.ksPtr->opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH);
+			mmapAddr.dataPtr += keySet->opmphm->size;
+			mmapAddr.ksPtr->opmphm->graph = (uint32_t *) (((char *) mmapAddr.ksPtr->opmphm->graph) - mmapAddr.mmapAddrInt);
+		}
+		mmapAddr.ksPtr->opmphm = (Opmphm *) (((char *) mmapAddr.ksPtr->opmphm) - mmapAddr.mmapAddrInt);
+	}
+	if (keySet->opmphmPredictor)
+	{
+		ELEKTRA_LOG_DEBUG ("OPMPHM: will store predictor");
+		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (dest + OFFSET_OPMPHMPREDICTOR);
+		memcpy (mmapAddr.ksPtr->opmphmPredictor, keySet->opmphmPredictor, sizeof (OpmphmPredictor));
+		mmapAddr.ksPtr->opmphmPredictor->patternTable = (uint8_t *) mmapAddr.dataPtr;
+		memcpy (mmapAddr.ksPtr->opmphmPredictor->patternTable, keySet->opmphmPredictor->patternTable,
+			keySet->opmphmPredictor->size * sizeof (uint8_t));
+		mmapAddr.ksPtr->opmphmPredictor->flags = OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT | OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE;
+		mmapAddr.dataPtr += keySet->opmphmPredictor->size * sizeof (uint8_t);
+		mmapAddr.ksPtr->opmphmPredictor->patternTable =
+			(uint8_t *) (((char *) mmapAddr.ksPtr->opmphmPredictor->patternTable) - mmapAddr.mmapAddrInt);
+		mmapAddr.ksPtr->opmphmPredictor = (OpmphmPredictor *) (((char *) mmapAddr.ksPtr->opmphmPredictor) - mmapAddr.mmapAddrInt);
+	}
+#endif
 
 	// first write the meta keys into place
 	writeMetaKeys (&mmapAddr, dynArray);
@@ -880,8 +1031,55 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	mmapHeader->checksum = checksum;
 #endif
 	memcpy (dest, mmapHeader, SIZEOF_MMAPHEADER);
+
+	// force footer to be written last, as a consistency check
+	if (!test_bit (mode, MODE_NONREGULAR_FILE) && msync ((void *) dest, mmapHeader->allocSize, MS_SYNC) != 0)
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("could not msync");
+		return -1;
+	}
+
 	memcpy ((dest + mmapHeader->allocSize - SIZEOF_MMAPFOOTER), mmapFooter, SIZEOF_MMAPFOOTER);
+
+	return 0;
 }
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * @brief Deletes the OPMPHM.
+ *
+ * Clears and frees all memory in Opmphm.
+ *
+ * @param opmphm the OPMPHM
+ */
+static void mmapOpmphmDel (Opmphm * opmphm)
+{
+	ELEKTRA_NOT_NULL (opmphm);
+	if (opmphm && opmphm->size && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH))
+	{
+		elektraFree (opmphm->graph);
+	}
+	if (opmphm->rUniPar && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS))
+	{
+		elektraFree (opmphm->hashFunctionSeeds);
+	}
+	if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_STRUCT)) elektraFree (opmphm);
+}
+
+/**
+ * @brief Deletes the OpmphmPredictor.
+ *
+ * Clears and frees all memory in OpmphmPredictor.
+ *
+ * @param op the OpmphmPredictor
+ */
+static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
+{
+	ELEKTRA_NOT_NULL (op);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE)) elektraFree (op->patternTable);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT)) elektraFree (op);
+}
+#endif
 
 /**
  * @brief Replaces contents of a keyset with the keyset from the mapped region.
@@ -901,7 +1099,19 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	returned->alloc = keySet->alloc;
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
-	// we intentionally do not change the KeySet->opmphm here!
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (keySet->opmphm)
+	{
+		if (returned->opmphm) mmapOpmphmDel (returned->opmphm);
+		returned->opmphm = keySet->opmphm;
+	}
+	if (keySet->opmphmPredictor)
+	{
+		if (returned->opmphmPredictor) mmapOpmphmPredictorDel (returned->opmphmPredictor);
+		returned->opmphmPredictor = keySet->opmphmPredictor;
+	}
+#endif
 
 	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
 	{
@@ -950,6 +1160,31 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		}
 	}
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	KeySet * returnedKs = (KeySet *) (dest + OFFSET_KEYSET);
+	if (returnedKs->opmphm)
+	{
+		returnedKs->opmphm = (Opmphm *) (dest + OFFSET_OPMPHM);
+		if (returnedKs->opmphm->hashFunctionSeeds)
+		{
+			returnedKs->opmphm->hashFunctionSeeds = (int32_t *) (((char *) returnedKs->opmphm->hashFunctionSeeds) + destInt);
+		}
+		if (returnedKs->opmphm->graph)
+		{
+			returnedKs->opmphm->graph = (uint32_t *) (((char *) returnedKs->opmphm->graph) + destInt);
+		}
+	}
+	if (returnedKs->opmphmPredictor)
+	{
+		returnedKs->opmphmPredictor = (OpmphmPredictor *) (dest + OFFSET_OPMPHMPREDICTOR);
+		if (returnedKs->opmphmPredictor->patternTable)
+		{
+			returnedKs->opmphmPredictor->patternTable =
+				(uint8_t *) (((char *) returnedKs->opmphmPredictor->patternTable) + destInt);
+		}
+	}
+#endif
+
 	for (size_t i = 0; i < mmapMetaData->numKeys; ++i)
 	{
 		Key * key = (Key *) keyPtr;
@@ -984,12 +1219,37 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 {
 	// plugin initialization logic
 
+	// sanity checks first, return error in non-debug builds to avoid undefined behavior
+	if (sizeof (MmapHeader) != STATIC_SIZEOF_MMAPHEADER) goto error;
+	if (offsetof (MmapHeader, mmapMagicNumber) != STATIC_HEADER_OFFSETOF_MAGICNUMBER) goto error;
+	if (offsetof (MmapHeader, allocSize) != STATIC_HEADER_OFFSETOF_ALLOCSIZE) goto error;
+	if (offsetof (MmapHeader, cksumSize) != STATIC_HEADER_OFFSETOF_CHECKSUMSIZE) goto error;
+	if (offsetof (MmapHeader, checksum) != STATIC_HEADER_OFFSETOF_CHECKSUM) goto error;
+	if (offsetof (MmapHeader, formatFlags) != STATIC_HEADER_OFFSETOF_FORMATFLAGS) goto error;
+	if (offsetof (MmapHeader, formatVersion) != STATIC_HEADER_OFFSETOF_FORMATVERSION) goto error;
+	if (offsetof (MmapHeader, reservedA) != STATIC_HEADER_OFFSETOF_RESERVED_A) goto error;
+	if (offsetof (MmapHeader, reservedB) != STATIC_HEADER_OFFSETOF_RESERVED_B) goto error;
+	if (sizeof (MmapFooter) != STATIC_SIZEOF_MMAPFOOTER) goto error;
+	if (offsetof (MmapFooter, mmapMagicNumber) != STATIC_FOOTER_OFFSETOF_MAGICNUMBER) goto error;
+
+	// initialize magic data
 	const uintptr_t magicNumber = generateMagicNumber ();
 	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
 	if (magicKey.data.v == 0) initMagicKey (magicNumber);
 	if (magicMmapMetaData.numKeys == 0) initMagicMmapMetaData ();
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (magicOpmphm.size == 0) initMagicOpmphm (magicNumber);
+	if (magicOpmphmPredictor.ksSize == 0) initMagicOpmphmPredictor (magicNumber);
+#endif
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+
+error:
+	ELEKTRA_SET_INTERNAL_ERROR (errorKey,
+				    "The MmapHeader or Mmap data structure was changed in a way that breaks compatibility with existing "
+				    "mmapstorage files. This can lead to undefined behavior so mmapstorage is aborting here.");
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 /**
@@ -1102,6 +1362,13 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
+	if (verifyMagicData (mappedRegion) != 0)
+	{
+		// magic data could not be read properly, indicating unreadable format or different architecture
+		ELEKTRA_MMAP_LOG_WARNING ("mmap magic data could not be read properly");
+		goto error;
+	}
+
 	MmapHeader * mmapHeader;
 	MmapMetaData * mmapMetaData;
 	if (readHeader (mappedRegion, &mmapHeader, &mmapMetaData) == -1)
@@ -1111,22 +1378,24 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		goto error;
 	}
 
-	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS) && mode == MODE_GLOBALCACHE)
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM))
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("plugin in global cache mode, but file does not contain timestamps");
+		ELEKTRA_MMAP_LOG_WARNING ("mmap file written without OPMPHM, but reading from a build with OPMPHM");
+		goto error;
 	}
+#else
+	if (test_bit (mmapHeader->formatFlags, MMAP_FLAG_OPMPHM))
+	{
+		ELEKTRA_MMAP_LOG_WARNING ("mmap file written with OPMPHM, but reading from a build without OPMPHM");
+		goto error;
+	}
+#endif
 
 	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader->allocSize)
 	{
 		// config file size mismatch
 		ELEKTRA_MMAP_LOG_WARNING ("mmap file size differs from metadata, file was altered");
-		goto error;
-	}
-
-	if (readFooter (mappedRegion, mmapHeader) == -1)
-	{
-		// config file was corrupt/truncated
-		ELEKTRA_MMAP_LOG_WARNING ("could not read mmap information footer: file was altered");
 		goto error;
 	}
 
@@ -1138,10 +1407,15 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	}
 #endif
 
-	if (verifyMagicData (mappedRegion) != 0)
+	if (!test_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS) && mode == MODE_GLOBALCACHE)
 	{
-		// magic data could not be read properly, indicating unreadable format or different architecture
-		ELEKTRA_MMAP_LOG_WARNING ("mmap magic data could not be read properly");
+		ELEKTRA_MMAP_LOG_WARNING ("plugin in global cache mode, but file does not contain timestamps");
+	}
+
+	if (readFooter (mappedRegion, mmapHeader) == -1)
+	{
+		// config file was corrupt/truncated
+		ELEKTRA_MMAP_LOG_WARNING ("could not read mmap information footer: file was altered");
 		goto error;
 	}
 
@@ -1262,7 +1536,10 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	MmapFooter mmapFooter;
 	initFooter (&mmapFooter);
-	copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
+	if (copyKeySetToMmap (mappedRegion, ks, global, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray, mode) != 0)
+	{
+		goto error;
+	}
 
 	if (test_bit (mode, MODE_NONREGULAR_FILE))
 	{

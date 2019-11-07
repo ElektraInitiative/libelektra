@@ -14,17 +14,6 @@ public class KeySet implements Iterable<Key> {
 	public static final int KDB_O_NONE = 0;
 	public static final int KDB_O_DEL = 1;
 	public static final int KDB_O_POP = 1 << 1;
-	public static final int KDB_O_NODIR = 1 << 2;
-	public static final int KDB_O_DIRONLY = 1 << 3;
-	public static final int KDB_O_NOREMOVE = 1 << 6;
-	public static final int KDB_O_REMOVEONLY = 1 << 7;
-	public static final int KDB_O_INACTIVE = 1 << 8;
-	public static final int KDB_O_SYNC = 1 << 9;
-	public static final int KDB_O_SORT = 1 << 10;
-	public static final int KDB_O_NORECURSIVE = 1 << 11;
-	public static final int KDB_O_NOCASE = 1 << 12;
-	public static final int KDB_O_WITHOWNER = 1 << 13;
-	public static final int KDB_O_NOALL = 1 << 14;
 	public static final Pointer KS_END = null;
 
 	private Pointer ks;
@@ -46,7 +35,7 @@ public class KeySet implements Iterable<Key> {
 	 */
 	public KeySet(final Pointer p) {
 		if (p == null) {
-			throw new IllegalArgumentException("Passed pointer may not be null");
+			throw new IllegalArgumentException("Passed pointer should not be null");
 		}
 		ks = p;
 	}
@@ -170,7 +159,7 @@ public class KeySet implements Iterable<Key> {
 	 * Copies key references from other key set
 	 *
 	 * @param other Key set that is used as source
-	 * @return 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
+	 * @retval 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
 	 * error (null pointer)
 	 */
 	public int copy(final KeySet other) {
@@ -182,7 +171,7 @@ public class KeySet implements Iterable<Key> {
 	/**
 	 * Helper function to check if synchronization is necessary
 	 *
-	 * @return 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
+	 * @retval 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
 	 */
 	public int needsSync() {
 		return Elektra.INSTANCE.ksNeedSync(get());
@@ -271,7 +260,7 @@ public class KeySet implements Iterable<Key> {
 	/**
 	 * Helper function that rewinds the current key set
 	 *
-	 * @return
+	 * @retval 0 on success, -1 on NullPointer
 	 */
 	public int rewind() {
 		return Elektra.INSTANCE.ksRewind(get());
@@ -308,7 +297,7 @@ public class KeySet implements Iterable<Key> {
 	 * Helper function that sets the current cursor of the key set
 	 *
 	 * @param cursor Cursor position as integer
-	 * @return 1 in case of success
+	 * @retval 1 in case of success
 	 */
 	public int setCursor(final int cursor) {
 		return Elektra.INSTANCE.ksSetCursor(get(), cursor);

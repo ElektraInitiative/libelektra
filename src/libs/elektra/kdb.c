@@ -144,6 +144,44 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
 	}
 }
 
+
+/**
+ * @brief Takes the first key and cuts off this common part
+ * for all other keys, instead name will be prepended
+ *
+ * @return a new allocated keyset with keys in user namespace.
+ *
+ * The first key is removed in the resulting keyset.
+ */
+KeySet * ksRenameKeys (KeySet * config, const char * name)
+{
+	Key * root;
+	Key * cur;
+	ssize_t rootSize = 0;
+
+	ksRewind (config);
+
+	root = ksNext (config);
+	rootSize = keyGetNameSize (root);
+
+	keyDel (ksLookup (config, root, KDB_O_POP));
+
+	KeySet * newConfig = ksNew (ksGetSize (config), KS_END);
+	if (rootSize == -1) return newConfig;
+
+	while ((cur = ksPop (config)) != 0)
+	{
+		Key * dupKey = keyDup (cur);
+		keySetName (dupKey, name);
+		keyAddName (dupKey, keyName (cur) + rootSize - 1);
+		ksAppendKey (newConfig, dupKey);
+		keyDel (cur);
+	}
+
+	return newConfig;
+}
+
+
 /**
  * @brief Bootstrap, first phase with fallback
  * @internal
@@ -800,6 +838,43 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 	}
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * @brief Deletes the OPMPHM.
+ *
+ * Clears and frees all memory in Opmphm.
+ *
+ * @param opmphm the OPMPHM
+ */
+static void cacheOpmphmDel (Opmphm * opmphm)
+{
+	ELEKTRA_NOT_NULL (opmphm);
+	if (opmphm && opmphm->size && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_GRAPH))
+	{
+		elektraFree (opmphm->graph);
+	}
+	if (opmphm->rUniPar && !test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_HASHFUNCTIONSEEDS))
+	{
+		elektraFree (opmphm->hashFunctionSeeds);
+	}
+	if (!test_bit (opmphm->flags, OPMPHM_FLAG_MMAP_STRUCT)) elektraFree (opmphm);
+}
+
+/**
+ * @brief Deletes the OpmphmPredictor.
+ *
+ * Clears and frees all memory in OpmphmPredictor.
+ *
+ * @param op the OpmphmPredictor
+ */
+static void cacheOpmphmPredictorDel (OpmphmPredictor * op)
+{
+	ELEKTRA_NOT_NULL (op);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE)) elektraFree (op->patternTable);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT)) elektraFree (op);
+}
+#endif
+
 static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * parentKey,
 				  Key * initialParent, int debugGlobalPositions)
 {
@@ -824,6 +899,7 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	}
 
 	keySetName (parentKey, keyName (initialParent));
+	// TODO: there are no error checks here, see kdbGet
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
@@ -833,11 +909,19 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	if (ks->size == 0)
 	{
 		ELEKTRA_LOG_DEBUG ("replacing keyset with cached keyset");
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+		if (ks->opmphm) cacheOpmphmDel (ks->opmphm);
+		if (ks->opmphmPredictor) cacheOpmphmPredictorDel (ks->opmphmPredictor);
+#endif
 		ksClose (ks);
 		ks->array = (*cache)->array;
 		ks->size = (*cache)->size;
 		ks->alloc = (*cache)->alloc;
 		ks->flags = (*cache)->flags;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+		ks->opmphm = (*cache)->opmphm;
+		ks->opmphmPredictor = (*cache)->opmphmPredictor;
+#endif
 		elektraFree (*cache);
 		*cache = 0;
 	}
@@ -2065,7 +2149,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
 		ksAppendKey (pluginConfig, pluginCutpoint);
 		{
-			KeySet * newPluginConfig = elektraRenameKeys (pluginConfig, "user");
+			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user");
 			ksDel (pluginConfig);
 			pluginConfig = newPluginConfig;
 		}

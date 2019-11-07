@@ -84,6 +84,7 @@ static Key * elektraKeyMalloc (void)
 {
 	Key * key = (Key *) elektraMalloc (sizeof (Key));
 	if (!key) return 0;
+	key->meta = NULL;
 	keyInit (key);
 
 	return key;
@@ -270,6 +271,9 @@ Key * keyDup (const Key * source)
 
 	dest = elektraKeyMalloc ();
 	if (!dest) return 0;
+
+	// Will be overwritten by keyCopy
+	ksDel (dest->meta);
 
 	/* Copy the struct data */
 	*dest = *source;
@@ -462,6 +466,8 @@ int keyDel (Key * key)
 
 	rc = keyClear (key);
 
+	if (key->meta) ksDel (key->meta);
+
 	if (!keyInMmap)
 	{
 		elektraFree (key);
@@ -514,7 +520,9 @@ int keyClear (Key * key)
 
 	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
 	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
-	if (key->meta) ksDel (key->meta);
+
+	ksDel (key->meta);
+	key->meta = NULL;
 
 	keyInit (key);
 

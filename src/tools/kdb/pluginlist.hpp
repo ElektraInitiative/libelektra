@@ -35,7 +35,8 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "";
+		return "With -v the output will be sorted by the status of the plugin.\n"
+		       "The number is calculated by their infos/status clause in the contract.\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

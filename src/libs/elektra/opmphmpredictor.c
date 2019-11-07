@@ -10,6 +10,7 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbopmphmpredictor.h>
+#include <kdbprivate.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -196,6 +197,6 @@ void opmphmPredictorCopy (OpmphmPredictor * dest, OpmphmPredictor * source)
 void opmphmPredictorDel (OpmphmPredictor * op)
 {
 	ELEKTRA_NOT_NULL (op);
-	elektraFree (op->patternTable);
-	elektraFree (op);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_PATTERNTABLE)) elektraFree (op->patternTable);
+	if (!test_bit (op->flags, OPMPHM_PREDICTOR_FLAG_MMAP_STRUCT)) elektraFree (op);
 }
