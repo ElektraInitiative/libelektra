@@ -197,7 +197,7 @@ int keyNameIsSystem (const char * name)
  */
 void keyInit (Key * key)
 {
-	memset (key, 0, sizeof (struct _Key));
+	memset (key, 0, sizeof (Key));
 }
 
 static int elektraSetMetaInt (Key * key, const char * meta, int value)
