@@ -2554,16 +2554,26 @@ int ksClose (KeySet * ks)
 	Key * k;
 
 	ksRewind (ks);
+	int keysNotFreed = 0;
 	while ((k = ksNext (ks)) != 0)
 	{
-		keyDecRef (k);
+		int refs = keyDecRef (k);
+
+		if (refs > 0)
+		{
+			keysNotFreed++;
+		}
+
 		keyDel (k);
 	}
+
+	printf("ksClose did NOT free %d keys\n", keysNotFreed);
 
 	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
 	{
 		elektraFree (ks->array);
 	}
+	
 	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 
 	ks->array = 0;
