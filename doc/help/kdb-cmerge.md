@@ -43,7 +43,7 @@ Strategies offer fine grained control over conflict handling. The option is:
 The available strategies are:
 
 - `abort`: the merge will abort if any conflict happens and merge the 3 key sets together otherwise.
-- `our`: This option forces conflicting keys to be auto-resolved cleanly by favoring `our`. Changes from the other key sets that do not conflict with the `our` version are reflected to the merge result. This works like the recursive strategy with the `ours` option from git-merge.
+- `our`: This option forces conflicting keys to be auto-resolved cleanly by favoring `our`. Changes from the other key sets that do not conflict with the `our` version are reflected in the merge result. This works like the recursive strategy with the `ours` option from git-merge.
 - `their`: This is the opposite of `our`. The merge will use the `their` version when a conflict happens.
 
 If no strategy is specified, the merge will default to the abort strategy.
@@ -54,7 +54,7 @@ If no strategy is specified, the merge will default to the abort strategy.
 
 1 if an error happened.
 
-2 if a merge conflict occured and merge strategy abort was set.
+2 if a merge conflict occurred and merge strategy abort was set.
 
 The result of the merge is stored in `result`.
 

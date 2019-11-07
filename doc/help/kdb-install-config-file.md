@@ -16,10 +16,10 @@ The script has to be called as administrator (e.g. with `sudo`).
 This script installs or merges configuration files from the file system into
 Elektra. There are two possible scenarios:
 
-1. You use the script for the first time for a file. Then `<elektra path>` is empty the script
+1. You use the script for the first time for a file. Then `<elektra path>` is empty. The script
 
-   1. Copies `<config file>` into a special path to preserve origin version.
-   2. Mounts `<config file>` into `<elektra path>` as our version. This version can then be safely modified.
+   1. copies `<config file>` into a special path to preserve origin version.
+   2. mounts `<config file>` into `<elektra path>` as our version. This version can then be safely modified.
 
 2. You have already used the script for a previous version of the file. In this case `<elektra path>` already contains data the script performs a three-way
    merge (using `kdb cmerge`) between the file at `<config file>` (their), the `<elektra path>` (our)

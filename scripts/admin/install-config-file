@@ -19,7 +19,7 @@ if [ "$#" -eq 2 ]; then
 elif [ "$#" -eq 3 ]; then
 	format=$3
 else
-	echo "Usage is $0 <elektra path> <config file> [<format>]. It has to called as root." >&2
+	echo "Usage is $0 <elektra path> <config file> [<format>]. It has to be called as root." >&2
 	exit 1
 fi
 

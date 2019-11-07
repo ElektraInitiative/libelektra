@@ -69,7 +69,7 @@ kdb get user/tests/result
 
 ### hosts
 
-As a real-world example, we import three different (see the comment) versions of a hosts file. Please remove the trailing backslashes from the example code.
+As a real-world example, we import three different (see the comment) versions of a hosts file.
 
 ```
 echo "127.0.0.1       localhost
@@ -103,6 +103,10 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters" | kdb import user/tests/hosts/their hosts
 
 kdb cmerge user/tests/hosts/our user/tests/hosts/their user/tests/hosts/base user/tests/hosts/result
+```
+The merge notices that only one of the three versions of the key `ip6-localhost` has changed.
+Assuming that this was an update it puts the new value in the result.
+```
 kdb get user/tests/hosts/result/ipv6/ip6-localhost
 #> ::2
 ```
