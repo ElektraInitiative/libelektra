@@ -155,79 +155,17 @@ static void test_keyPlugin (void)
 	keyDel (k);
 }
 
-#define TEST_ESCAPE_PART(A, S)                                                                                                             \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		char a[] = A;                                                                                                              \
-		char s[] = S;                                                                                                              \
-		elektraKeyNameEscapePart (a, &buffer);                                                                                     \
-		succeed_if (!memcmp (buffer, s, sizeof (s) - 1), "unescaped name wrong");                                                  \
-		elektraKeyNameUnescape (buffer, &buffer2, 1);                                                                              \
-		succeed_if_same_string (a, buffer2 + 1);                                                                                   \
-	} while (0)
-
-
-static void test_keyNameEscape (void)
-{
-	char * buffer = NULL;
-	char * buffer2 = elektraMalloc (2);
-	strncpy (buffer2, "/", 2);
-
-	printf ("test elektraKeyNameEscapePart\n");
-
-#include <data_escape.c>
-
-	/*
-	for (size_t i = 0; i<10; ++i)
-	{
-		int z = buffer[i];
-		printf ("%c %d\n", (char)z, z);
-	}
-	*/
-
-	printf ("test roundtripping properties\n");
-	Key * k = keyNew ("user:/a", KEY_END);
-#ifdef LONG_TEST
-	char a[] = "abcd";
-#else
-	char a[] = "ab";
-#endif
-	for (int c0 = 0; c0 < 256; ++c0)
-		for (int c1 = 0; c1 < 256; ++c1)
-#ifdef LONG_TEST
-			for (int c2 = 0; c2 < 256; ++c2)
-				for (int c3 = 0; c3 < 256; ++c3)
-#endif
-				{
-					a[0] = c0;
-					a[1] = c1;
-#ifdef LONG_TEST
-					a[2] = c2;
-					a[3] = c3;
-#endif
-					elektraKeyNameEscapePart (a, &buffer);
-					elektraKeyNameUnescape (buffer, &buffer2, 1);
-					succeed_if_same_string (a, buffer2 + 1);
-
-					// keySetBaseName (k, a);
-					// succeed_if_same_string (a, keyBaseName (k));
-				}
-	keyDel (k);
-
-	elektraFree (buffer);
-	elektraFree (buffer2);
-}
-
 static void test_keyNameUnescape (void)
 {
-	char * buffer = NULL;
+	char buf[1024];
+	char * buffer = buf;
 
 	printf ("test elektraKeyNameUnescape\n");
 	{
 		char a[] = "/\\\\a";
 		char s[] = "\0\0\\a";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -235,7 +173,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/a\\/test";
 		char s[] = "\0\0a/test";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -243,7 +181,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/a\\\\\\/test";
 		char s[] = "\0\0a\\/test";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -251,7 +189,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/a\\\\\\\\\\/test";
 		char s[] = "\0\0a\\\\/test";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -261,7 +199,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/a/test";
 		char s[] = "\0\0a\0test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -269,7 +207,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/a\\/test";
 		char s[] = "\0\0a/test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -277,7 +215,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/a\\\\/test";
 		char s[] = "\0\0a\\\0test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -285,11 +223,9 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/\\\\/test";
 		char s[] = "\0\0\\\0test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer, 0);
+		elektraKeyNameUnescape (a, &buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
-
-	elektraFree (buffer);
 }
 
 static void test_keyCompare (void)
@@ -936,7 +872,6 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_keyNameUnescape ();
-	test_keyNameEscape ();
 	test_elektraKeySetName ();
 	test_keyAddName ();
 

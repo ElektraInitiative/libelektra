@@ -509,8 +509,14 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 
 	const char * nameStart = name;
 
-	size_t size = *sizePtr + strlen (name) + 1;   // +1 either for terminating zero, or starting separator (if we have prefix)
-	size_t usize = *usizePtr + strlen (name) + 1; // +1 either for terminating zero, or starting separator (if we have prefix)
+	size_t size, usize;
+	size = usize = strlen (name) + 1; // +1 either for terminating zero, or starting separator (if we have prefix)
+
+	if (prefix != NULL)
+	{
+		size += *sizePtr;
+		usize += *usizePtr;
+	}
 
 	enum
 	{
@@ -534,7 +540,7 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		name += leadingSlashes;
 	}
 
-	if (*usizePtr == 3)
+	if (prefix != NULL && *usizePtr == 3)
 	{
 		// namespace only base key, no need to add separator
 		--size;
@@ -707,10 +713,11 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		}
 	}
 
-	if (state == FIRST_PART || state == EMPTY_PART)
+	if (state == PART)
 	{
-		*sizePtr = size;
-		*usizePtr = usize;
+		// have trailing slash
+		*sizePtr = size - 1;
+		*usizePtr = usize - 1;
 		return 1;
 	}
 
@@ -721,9 +728,8 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		return 1;
 	}
 
-	// have trailing slash
-	*sizePtr = size - 1;
-	*usizePtr = usize - 1;
+	*sizePtr = size;
+	*usizePtr = usize;
 	return 1;
 }
 
@@ -817,6 +823,11 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 	}
 	else if (offset > 1)
 	{
+		if (*(outPtr - 1) == '\0')
+		{
+			--outPtr;
+		}
+
 		if (*(outPtr - 1) != '/')
 		{
 			*outPtr++ = '/';
@@ -1490,6 +1501,8 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	if (strlen (newName) == 0) return key->keySize;
 
+	size_t oldKeySize = key->keySize;
+
 	if (!elektraKeyNameValidate (newName, key->key, &key->keySize, &key->keyUSize))
 	{
 		// error invalid name suffix
@@ -1516,7 +1529,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 	elektraRealloc ((void **) &key->key, key->keySize);
 	elektraRealloc ((void **) &key->ukey, key->keyUSize);
 
-	elektraKeyNameCanonicalize (newName, &key->key, key->keySize, key->keyUSize == 3);
+	elektraKeyNameCanonicalize (newName, &key->key, oldKeySize, key->keyUSize == 3);
 	elektraKeyNameUnescape (key->key, &key->ukey);
 
 	set_bit (key->flags, KEY_FLAG_SYNC);

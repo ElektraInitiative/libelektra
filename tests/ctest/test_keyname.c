@@ -41,6 +41,14 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("meta:/", NULL, 0, 7, 3);
 	TEST_VALIDATE_OK ("default:/", NULL, 0, 9, 3);
 
+	TEST_VALIDATE_OK ("/a", NULL, 0, 3, 4);
+	TEST_VALIDATE_OK ("/ab", NULL, 0, 4, 5);
+	TEST_VALIDATE_OK ("/abc", NULL, 0, 5, 6);
+
+	TEST_VALIDATE_OK ("/a", NULL, 3, 3, 4);
+	TEST_VALIDATE_OK ("/ab", NULL, 3, 4, 5);
+	TEST_VALIDATE_OK ("/abc", NULL, 3, 5, 6);
+
 	TEST_VALIDATE_OK ("/abc/def/ghi", NULL, 0, 13, 14);
 	TEST_VALIDATE_OK ("user:/abc/def/ghi", NULL, 0, 18, 14);
 
