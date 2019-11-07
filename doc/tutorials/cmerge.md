@@ -104,8 +104,10 @@ ff02::2 ip6-allrouters" | kdb import user/tests/hosts/their hosts
 
 kdb cmerge user/tests/hosts/our user/tests/hosts/their user/tests/hosts/base user/tests/hosts/result
 ```
+
 The merge notices that only one of the three versions of the key `ip6-localhost` has changed.
 Assuming that this was an update it puts the new value in the result.
+
 ```
 kdb get user/tests/hosts/result/ipv6/ip6-localhost
 #> ::2
