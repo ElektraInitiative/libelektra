@@ -34,6 +34,7 @@ endmacro (do_benchmark)
 do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
+do_benchmark (memoryleak)
 
 # exclude storage and KDB benchmark from mingw
 if (NOT WIN32)
