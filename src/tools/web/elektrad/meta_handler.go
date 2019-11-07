@@ -48,6 +48,8 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer parentKey.Close()
+
 	handle, ks := getHandle(r)
 
 	k := ks.Lookup(parentKey)
@@ -107,6 +109,8 @@ func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		badRequest(w)
 		return
 	}
+
+	defer key.Close()
 
 	handle, ks := getHandle(r)
 

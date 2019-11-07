@@ -35,6 +35,8 @@ func (s *server) getFindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer root.Close()
+
 	handle, ks := getHandle(r)
 
 	_, err = handle.Get(ks, root)
@@ -46,11 +48,12 @@ func (s *server) getFindHandler(w http.ResponseWriter, r *http.Request) {
 
 	results := []string{}
 
-	for _, key := range ks.KeyNames() {
-		if regex.MatchString(key) {
-			results = append(results, key)
+	ks.ForEach(func(key elektra.Key, _ int) {
+		name := key.Name()
+		if regex.MatchString(name) {
+			results = append(results, name)
 		}
-	}
+	})
 
 	writeResponse(w, results)
 }

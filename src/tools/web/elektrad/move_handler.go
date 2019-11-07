@@ -33,12 +33,16 @@ func (s *server) postMoveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer fromKey.Close()
+
 	toKey, err := elektra.NewKey(to)
 
 	if err != nil {
 		badRequest(w)
 		return
 	}
+
+	defer toKey.Close()
 
 	root := elektra.CommonKeyName(fromKey, toKey)
 
@@ -48,6 +52,8 @@ func (s *server) postMoveHandler(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err) // this should not happen
 		return
 	}
+
+	defer rootKey.Close()
 
 	handle, conf := getHandle(r)
 
@@ -59,6 +65,7 @@ func (s *server) postMoveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	oldConf := conf.Cut(fromKey)
+	defer oldConf.Close()
 
 	if oldConf.Len() < 1 {
 		noContent(w)
@@ -66,6 +73,7 @@ func (s *server) postMoveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newConf := elektra.NewKeySet()
+	defer newConf.Close()
 
 	for _, k := range oldConf.ToSlice() {
 		newConf.AppendKey(renameKey(k, from, to))

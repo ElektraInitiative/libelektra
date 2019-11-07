@@ -44,6 +44,8 @@ func newHandle() (*handle, error) {
 		return nil, err
 	}
 
+	defer parentKey.Close()
+
 	ks := elektra.NewKeySet()
 
 	if _, err = kdb.Get(ks, parentKey); err != nil {

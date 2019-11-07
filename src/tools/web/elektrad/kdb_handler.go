@@ -43,6 +43,8 @@ func (s *server) getKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer key.Close()
+
 	handle, ks := getHandle(r)
 
 	_, err = handle.Get(ks, key)
@@ -52,7 +54,10 @@ func (s *server) getKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := lookup(ks, key, preload)
+	dup := ks.Duplicate()
+	defer dup.Close()
+
+	response, err := lookup(dup, key, preload)
 
 	if err != nil {
 		writeError(w, err)
@@ -89,6 +94,8 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		badRequest(w)
 		return
 	}
+
+	defer key.Close()
 
 	handle, ks := getHandle(r)
 
@@ -144,6 +151,8 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer key.Close()
+
 	handle, ks := getHandle(r)
 
 	_, err = handle.Get(ks, key)
@@ -176,7 +185,7 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (result *lookupResult
 	result = buildLookupResult(key, ks)
 
 	if depth > 0 {
-		result.Children, err = lookupChildren(result.Ls, ks, key, depth)
+		result.Children, err = lookupChildren(ks, key, depth)
 	}
 
 	return
@@ -218,28 +227,22 @@ func buildLookupResult(key elektra.Key, ks elektra.KeySet) *lookupResult {
 	}
 }
 
-func lookupChildren(ls []string, ks elektra.KeySet, key elektra.Key, depth int) ([]*lookupResult, error) {
+func lookupChildren(ks elektra.KeySet, key elektra.Key, depth int) ([]*lookupResult, error) {
 	var children []*lookupResult
 
-	for _, subKeyName := range ls {
-		subKey, err := elektra.NewKey(subKeyName)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if subKeyName == key.Name() || !key.IsDirectlyBelow(subKey) {
-			continue
+	ks.ForEach(func(subKey elektra.Key, _ int) {
+		if !key.IsDirectlyBelow(subKey) {
+			return
 		}
 
 		childLookup, err := lookup(ks, subKey, depth-1)
 
 		if err != nil {
-			return nil, err
+			return
 		}
 
 		children = append(children, childLookup)
-	}
+	})
 
 	return children, nil
 }
