@@ -591,30 +591,7 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 			}
 			break;
 		case ESCAPED_START_PART:
-			if (cur == '#')
-			{
-				// removed in canonicalization
-				--size;
-
-				size_t underscores = 0;
-				while (name[1 + underscores] == '_')
-				{
-					++underscores;
-				}
-
-				size_t digits = 0;
-				while (isdigit (name[1 + underscores + digits]))
-				{
-					++digits;
-				}
-
-				if (underscores == digits - 1)
-				{
-					// only unprefixed/wrongly prefixed array parts and non-array parts starting with # may be escaped
-					return 0;
-				}
-			}
-			else if (cur == '.')
+			if (cur == '.')
 			{
 				// only '..' or '.' may be escaped
 				if (*(name + 1) == '.')
@@ -626,9 +603,9 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 					if (*(name + 1) != '\0' && *(name + 1) != '/') return 0;
 				}
 			}
-			else if (strchr ("%@/\\", cur) == NULL)
+			else if (strchr ("#%@/\\", cur) == NULL)
 			{
-				// only '#', '.' and the above characters may be escaped (at part start)
+				// only '.' and the above characters may be escaped (at part start)
 				return 0;
 			}
 			// ... and then like any other part
@@ -806,13 +783,6 @@ void elektraKeyNameCanonicalizePart (const char * part, size_t len, char * const
 	}
 	else if (len > 0)
 	{
-		if (part[0] == '\\' && part[1] == '#')
-		{
-			// escaped array part -> ignore leading backslash
-			++part;
-			--len;
-		}
-
 		// normal part -> just copy
 		memcpy ((*outPtr), part, len);
 		(*outPtr) += len;
@@ -1222,7 +1192,8 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 	// TODO (kodebach): array parts
 	if (!part) return 0;
 
-	if (strlen (part) == 0)
+	size_t partLen = strlen (part);
+	if (partLen == 0)
 	{
 		elektraRealloc ((void **) escapedPart, 2);
 		**escapedPart = '%';
@@ -1230,7 +1201,53 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 		return 1;
 	}
 
-	int specialStart = strchr (".%@/\\", part[0]) != NULL;
+	if (partLen == 1 && part[0] == '.')
+	{
+		elektraRealloc ((void **) escapedPart, 3);
+		**escapedPart = '\\';
+		*(*escapedPart + 1) = '.';
+		*(*escapedPart + 2) = '\0';
+		return 2;
+	}
+
+	if (partLen == 2 && part[0] == '.' && part[1] == '.')
+	{
+		elektraRealloc ((void **) escapedPart, 4);
+		**escapedPart = '\\';
+		*(*escapedPart + 1) = '.';
+		*(*escapedPart + 2) = '.';
+		*(*escapedPart + 3) = '\0';
+		return 3;
+	}
+
+	if (part[0] == '#')
+	{
+		size_t underscores = 0;
+		while (part[1 + underscores] == '_')
+		{
+			++underscores;
+		}
+
+		size_t digits = 0;
+		while (isdigit (part[1 + underscores + digits]))
+		{
+			++digits;
+		}
+
+		if (partLen != 1 + underscores + digits || digits == 0 || underscores != digits - 1 || digits > 19 ||
+		    (digits == 19 && strncmp (&part[1 + underscores], "9223372036854775807", 19) > 0) ||
+		    (part[1 + underscores] == '0' && digits > 1))
+		{
+			// not a correct array part -> need to escape
+			elektraRealloc ((void **) escapedPart, partLen + 2);
+			**escapedPart = '\\';
+			memcpy (*escapedPart + 1, part, partLen);
+			*(*escapedPart + partLen + 1) = '\0';
+			return partLen + 1;
+		}
+	}
+
+	int specialStart = strchr ("%@/\\", part[0]) != NULL;
 	size_t special = specialStart ? 1 : 0;
 
 	const char * cur = part + 1;
@@ -1240,7 +1257,7 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 		++cur;
 	}
 
-	elektraRealloc ((void **) escapedPart, strlen (part) + special + 1);
+	elektraRealloc ((void **) escapedPart, partLen + special + 1);
 
 	char * outPtr = *escapedPart;
 
