@@ -1,5 +1,4 @@
 #include "gelektra-keyset.h"
-#include <kdbprivate.h>
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKeySet, gelektra_keyset, G_TYPE_OBJECT)
@@ -49,8 +48,6 @@ GElektraKeySet * gelektra_keyset_new (gsize alloc, ...)
 	GElektraKeySet * ks = g_object_new (GELEKTRA_TYPE_KEYSET, NULL);
 	if (alloc > 0)
 	{
-		ksResize (ks->keyset, alloc);
-
 		va_start (va, alloc);
 		GElektraKey * key = (GElektraKey *) va_arg (va, GElektraKey *);
 		while (key)
@@ -201,11 +198,6 @@ GElektraKey * gelektra_keyset_pop (GElektraKeySet * ks)
 GElektraKeySet * gelektra_keyset_cut (GElektraKeySet * ks, const GElektraKey * point)
 {
 	return gelektra_keyset_make (ksCut (ks->keyset, point->key));
-}
-
-gint gelektra_keyset_resize (GElektraKeySet * ks, gsize alloc)
-{
-	return ksResize (ks->keyset, alloc);
 }
 
 gssize gelektra_keyset_len (const GElektraKeySet * ks)

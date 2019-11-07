@@ -197,6 +197,7 @@ you up to date with the multi-language support provided by Elektra.
 - Warnings about cmake policies are avoided. _(Markus Raab)_
 - We removed the Haskell and GI bindings. _(Markus Raab)_
 - Avoid unnecessary copying std::string where possible (setString and setMeta only). _(Manuel Mausz)_
+- GLIB: remove `gelektra_keyset_resize`. _(Manuel Mausz)_
 
 ### Java
 

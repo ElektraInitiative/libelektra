@@ -61,7 +61,6 @@ gssize gelektra_keyset_append_keyset (GElektraKeySet * ks, GElektraKeySet * appe
 gssize gelektra_keyset_gi_append_keyset (GElektraKeySet * ks, GElektraKeySet * append);
 GElektraKey * gelektra_keyset_pop (GElektraKeySet * ks);
 GElektraKeySet * gelektra_keyset_cut (GElektraKeySet * ks, const GElektraKey * point);
-gint gelektra_keyset_resize (GElektraKeySet * ks, gsize alloc);
 gssize gelektra_keyset_len (const GElektraKeySet * ks);
 
 /* searching */
