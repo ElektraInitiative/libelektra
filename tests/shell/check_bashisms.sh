@@ -16,9 +16,10 @@ find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egre
 
 # - The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
 #   See also: https://unix.stackexchange.com/questions/151925
-# - The script `reformat-source` uses `command -v`, which is optional in POSIX. However, since `which` is not part of POSIX at all
-#   `command -v` is probably the most portable solution to detect the location of a command.
-#   See also: https://stackoverflow.com/questions/592620
+# - The scripts `reformat-source` and `install-config-file` use `command -v`,
+# which was optional in POSIX until issue 7. Since `which` is not part of POSIX
+# at all `command -v` is probably the most portable solution to detect the
+# location of a command.
 scripts=$(
 	$FIND -type f -not \( \
 		-path '*check-env-dep' -or \
@@ -27,6 +28,7 @@ scripts=$(
 		-path '*kdb_zsh_completion' -or \
 		-path '*kdb-zsh-noglob' -or \
 		-path '*reformat-source' -or \
+		-path '*install-config-file' -or \
 		-path '*run_env' -or \
 		-path '*sed' -or \
 		-path '*update-infos-status' -or \
