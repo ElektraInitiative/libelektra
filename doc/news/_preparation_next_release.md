@@ -200,6 +200,7 @@ you up to date with the multi-language support provided by Elektra.
 - GLIB: removed `gelektra_keyset_resize`. _(Manuel Mausz)_
 - GLIB: removed `gelektra_keyset_rewind`, `gelektra_keyset_next`, `gelektra_keyset_current`, `gelektra_keyset_getcursor`, `gelektra_keyset_setcursor`. _(Manuel Mausz)_
 - GLIB: renamed `gelektra_keyset_atcursor` to `gelektra_keyset_at`. _(Manuel Mausz)_
+- gsettings: adapt iterator. _(Manuel Mausz)_
 
 ### Java
 
