@@ -6,8 +6,8 @@ can be used to apply a validation for the configuration that you want to ship fo
 ## How Elektra perfroms validation
 
 One of the main concepts of Elektra are [namespaces](namespaces.md) which is also used by the specification language.
-When you [mount](mount.md) a configuration such as `kdb mount test.conf /tests dump` you usually use one of the four standard namespaces 
-`user`, `dir`, `proc` or `system`. 
+When you [mount](mount.md) a configuration such as `kdb mount test.conf /tests dump` you usually use one of the four standard namespaces
+`user`, `dir`, `proc` or `system`.
 
 There is a 5th namespace called the `spec` namespace and has a special behavior. Any configuration you mount under `spec` will
 be used to validate configurations in other namespaces under the same path. So in the following example you can write any validation
@@ -25,7 +25,7 @@ kdb mount test.conf /tests dump type
 Elektra takes all configuration settings which the user or admin provides and parses it into a structured internal format.
 This structure is called a `KeySet` and is format agnostic (meaning that validation can be applied to any file format
 such as `ini`, `yml`, etc.). After successful parsing into the KeySet, Elektra then passes this KeySet to various
-validation plugins. You can get a picture of all plugins [here](/src/plugins). Every plugin performs validation 
+validation plugins. You can get a picture of all plugins [here](/src/plugins). Every plugin performs validation
 of the KeySet depending on the metadata provided (more detail about this will come in the next section) and emits warnings
 or errors. If any error happened, the changes of the configuration settings are not applied.
 
@@ -48,7 +48,7 @@ still remains in our issue tracker([#2133](https://github.com/ElektraInitiative/
 There are multiple ways how you can set constraints for configuration settings. All possibilities though set `metadata` to certain
 configuration settings (this is also done in the spec namespace). A metadata is just additional data describing the configuration setting.
 One way to set metadata is the command line tool [kdb meta-set](../help/kdb-meta-set.md) which we have used in the upper example.
-For the [validation plugin](../../src/plugins/validation/README.md) which supports regular expression checks there exists even its own 
+For the [validation plugin](../../src/plugins/validation/README.md) which supports regular expression checks there exists even its own
 command line tool [kdb vset](../help/kdb-vset.md).
 
 If you are writing validation for dozens of configuration settings, the command line might not be the most convenient way. You can also
@@ -90,7 +90,7 @@ We have a nice [tutorial](../tutorials/arrays.md) for you to get used to arrays.
 You can also set validation for multiple configurations settings at once by using [globbing](../../src/plugins/glob/README.md).
 
 If you decide to write metadata via a file (and especially the `ini` format) you should be aware of multiline strings that can cause
-parsing issues. Descriptions of metadata often take up multiple lines and 
+parsing issues. Descriptions of metadata often take up multiple lines and
 there are multiple `ini` format standards which tell you differently how to write them.
 Elektra also has two ini plugins (`ni` and `ini`) which also handle multilines differently. We recommend the `ni` plugin which also
 works correctly with our provided [examples](../../examples/spec).
