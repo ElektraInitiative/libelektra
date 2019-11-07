@@ -490,10 +490,8 @@ mod test {
         let mut parent_key = get_parent_key();
         let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
-        let get_res = kdb
-            .get(&mut ks, &mut parent_key)
+        kdb.get(&mut ks, &mut parent_key)
             .unwrap_or_else(|e| panic!("{}", e));
-        assert_eq!(get_res, true);
 
         let key1: StringKey = KeyBuilder::new(KEY_1_NAME)
             .unwrap()
