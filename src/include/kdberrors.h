@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Provides all macros and definitions which are used for emitting error or warnings
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */

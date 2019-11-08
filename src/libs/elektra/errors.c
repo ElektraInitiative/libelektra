@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Used for writing the error/warning information into a key to be used for emitting messages to the user
  *
  * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
  */
