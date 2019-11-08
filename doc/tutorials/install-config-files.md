@@ -33,7 +33,6 @@ You have to enter the paths accordingly.
 Read the tutorials on mounting and namespaces if you are not sure what this means.
 
 ```sh
-kdb set user/tests/tempfiles/
 kdb set user/tests/tempfiles/secondFile $(echo $(mktemp -d)/$(basename $(kdb get user/tests/tempfiles/firstFile)))
 echo -e "keyA=a\nkeyB=b\nkeyC=Y" > `kdb get user/tests/tempfiles/secondFile`
 kdb install-config-file system/tests/installing $(kdb get user/tests/tempfiles/secondFile) ini
@@ -55,5 +54,5 @@ kdb umount system/tests/installing
 rm -rf $(kdb get user/tests/tempfiles/firstFile)
 rm -rf $(kdb get user/tests/tempfiles/secondFile)
 kdb rm -rf user/tests/tempfiles
-kdb rm -rf user/elektra/merge/preserve/installing.ini
+kdb rm -rf user/elektra/merge/preserve
 ```
