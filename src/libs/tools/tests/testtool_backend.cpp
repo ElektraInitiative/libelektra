@@ -99,7 +99,8 @@ TEST (Backend, SimpleBackend)
 	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/\\//errorplugins") << "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/\\//errorplugins/\\#5#" KDB_DEFAULT_RESOLVER "#resolver#")
+	EXPECT_EQ (mountConfig.current ().getName (),
+		   "system:/elektra/mountpoints/\\//errorplugins/\\#5#" KDB_DEFAULT_RESOLVER "#resolver#")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
@@ -159,7 +160,8 @@ TEST (Backend, CrazyName)
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config/fcrypt/textmode")
+	EXPECT_EQ (mountConfig.current ().getName (),
+		   "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config/fcrypt/textmode")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "0") << "string of element in keyset wrong";
 	mountConfig.next ();
@@ -180,7 +182,8 @@ TEST (Backend, CrazyName)
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/getplugins/\\#0#resolver")
+	EXPECT_EQ (mountConfig.current ().getName (),
+		   "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/getplugins/\\#0#resolver")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
@@ -197,7 +200,8 @@ TEST (Backend, CrazyName)
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/setplugins/\\#0#resolver")
+	EXPECT_EQ (mountConfig.current ().getName (),
+		   "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/setplugins/\\#0#resolver")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
@@ -205,7 +209,8 @@ TEST (Backend, CrazyName)
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/setplugins/\\#7#resolver")
+	EXPECT_EQ (mountConfig.current ().getName (),
+		   "system:/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/setplugins/\\#7#resolver")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 }
@@ -274,8 +279,8 @@ TEST (Backend, SimpleBackendWithConf)
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (),
-		   "system:/elektra/mountpoints/user\\/somewhere/errorplugins/\\#5#" KDB_DEFAULT_RESOLVER "#resolver#/config/other_res_conf")
+	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/user\\/somewhere/errorplugins/\\#5#" KDB_DEFAULT_RESOLVER
+						      "#resolver#/config/other_res_conf")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "do resolving too") << "string of element in keyset wrong";
 	mountConfig.next ();
@@ -428,8 +433,8 @@ TEST (Backend, SimpleBackendWithNeededConf)
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
 	mountConfig.next ();
-	EXPECT_EQ (mountConfig.current ().getName (),
-		   "system:/elektra/mountpoints/user\\/somewhere/errorplugins/\\#5#" KDB_DEFAULT_RESOLVER "#resolver#/config/other_res_conf")
+	EXPECT_EQ (mountConfig.current ().getName (), "system:/elektra/mountpoints/user\\/somewhere/errorplugins/\\#5#" KDB_DEFAULT_RESOLVER
+						      "#resolver#/config/other_res_conf")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "do resolving too") << "string of element in keyset wrong";
 	mountConfig.next ();

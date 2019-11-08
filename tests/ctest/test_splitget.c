@@ -733,19 +733,19 @@ static void test_realworld (void)
 	mountOpen (handle, set_realworld (), modules, 0);
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 
-	KeySet * ks =
-		ksNew (18, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/new", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END),
-		       keyNew ("system:/users", KEY_END), keyNew ("system:/users/markus", KEY_END), keyNew ("system:/users/harald", KEY_END),
-		       keyNew ("system:/users/n", KEY_END), keyNew ("system:/users/albert", KEY_END), keyNew ("system:/hosts", KEY_END),
-		       keyNew ("system:/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END), keyNew ("system:/hosts/mobilebyte", KEY_END),
-		       keyNew ("system:/hosts/n900", KEY_END), keyNew ("user:/sw/apps/app1/default", KEY_END),
-		       keyNew ("user:/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
-		       keyNew ("user:/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
-		       keyNew ("user:/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
-		       keyNew ("user:/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
-		       keyNew ("user:/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END),
-		       keyNew ("user:/outside", KEY_VALUE, "test", KEY_END), KS_END);
+	KeySet * ks = ksNew (
+		18, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/new", KEY_END),
+		keyNew ("system:/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END), keyNew ("system:/users", KEY_END),
+		keyNew ("system:/users/markus", KEY_END), keyNew ("system:/users/harald", KEY_END), keyNew ("system:/users/n", KEY_END),
+		keyNew ("system:/users/albert", KEY_END), keyNew ("system:/hosts", KEY_END),
+		keyNew ("system:/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END), keyNew ("system:/hosts/mobilebyte", KEY_END),
+		keyNew ("system:/hosts/n900", KEY_END), keyNew ("user:/sw/apps/app1/default", KEY_END),
+		keyNew ("user:/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
+		keyNew ("user:/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
+		keyNew ("user:/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
+		keyNew ("user:/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
+		keyNew ("user:/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END), keyNew ("user:/outside", KEY_VALUE, "test", KEY_END),
+		KS_END);
 	KeySet * split0 = ksNew (9, keyNew ("user:/sw/apps/app1/default", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),

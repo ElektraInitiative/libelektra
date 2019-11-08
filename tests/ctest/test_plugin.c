@@ -116,10 +116,10 @@ static void test_process (void)
 KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system:/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system:/more", KEY_END),
-		      keyNew ("system:/more/config", KEY_END), keyNew ("system:/more/config/below", KEY_END), keyNew ("system:/path", KEY_END),
-		      keyNew ("user:/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user:/more", KEY_END),
-		      keyNew ("user:/more/config", KEY_END), keyNew ("user:/more/config/below", KEY_END), keyNew ("user:/path", KEY_END),
-		      KS_END);
+		      keyNew ("system:/more/config", KEY_END), keyNew ("system:/more/config/below", KEY_END),
+		      keyNew ("system:/path", KEY_END), keyNew ("user:/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("user:/more", KEY_END), keyNew ("user:/more/config", KEY_END), keyNew ("user:/more/config/below", KEY_END),
+		      keyNew ("user:/path", KEY_END), KS_END);
 }
 
 static void test_simple (void)

@@ -106,8 +106,8 @@ int elektraNotificationOpen (KDB * kdb)
 
 	Key * parent = keyNew ("", KEY_END);
 	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "mounted", KEY_END),
-				   keyNew ("system:/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY, KEY_SIZE,
-					   sizeof (context), KEY_VALUE, &context, KEY_END),
+				   keyNew ("system:/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY,
+					   KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END),
 				   KS_END);
 	if (kdbEnsure (kdb, contract, parent) != 0)
 	{

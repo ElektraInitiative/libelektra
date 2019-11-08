@@ -388,9 +388,9 @@ static void test_lookupIndirect (void)
 	Key * u;
 	Key * y;
 	Key * e;
-	KeySet * ks =
-		ksNew (20, s = keyNew ("spec:/abc", KEY_END), p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END),
-		       u = keyNew ("user:/abc", KEY_END), y = keyNew ("system:/abc", KEY_END), e = keyNew ("system:/else", KEY_END), KS_END);
+	KeySet * ks = ksNew (20, s = keyNew ("spec:/abc", KEY_END), p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END),
+			     u = keyNew ("user:/abc", KEY_END), y = keyNew ("system:/abc", KEY_END), e = keyNew ("system:/else", KEY_END),
+			     KS_END);
 	succeed_if (ksGetSize (ks) == 6, "wrong size");
 
 	Key * k = ksLookupByName (ks, "/abc", 0);
@@ -442,9 +442,9 @@ static void test_lookupDoubleIndirect (void)
 	Key * y;
 	Key * se;
 	Key * pe;
-	KeySet * ks = ksNew (20, se = keyNew ("spec:/first", KEY_END), pe = keyNew ("proc:/first", KEY_END), s = keyNew ("spec:/abc", KEY_END),
-			     p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END), u = keyNew ("user:/abc", KEY_END),
-			     y = keyNew ("system:/abc", KEY_END), KS_END);
+	KeySet * ks = ksNew (20, se = keyNew ("spec:/first", KEY_END), pe = keyNew ("proc:/first", KEY_END),
+			     s = keyNew ("spec:/abc", KEY_END), p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END),
+			     u = keyNew ("user:/abc", KEY_END), y = keyNew ("system:/abc", KEY_END), KS_END);
 	succeed_if (ksGetSize (ks) == 7, "wrong size");
 
 	Key * k = ksLookupByName (ks, "/first", 0);

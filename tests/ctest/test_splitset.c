@@ -256,12 +256,12 @@ static void test_easyparent (void)
 	KDB * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 	KeySet * ks = ksNew (8, keyNew ("user:/valid", KEY_END), keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
-			     keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END),
-			     KS_END);
+			     keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
+			     keyNew ("system:/valid/key2", KEY_END), KS_END);
 	KeySet * split1 = ksNew (5, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
 				 keyNew ("system:/valid/key2", KEY_END), KS_END);
-	KeySet * split2 =
-		ksNew (5, keyNew ("user:/valid", KEY_END), keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
+	KeySet * split2 = ksNew (5, keyNew ("user:/valid", KEY_END), keyNew ("user:/valid/key1", KEY_END),
+				 keyNew ("user:/valid/key2", KEY_END), KS_END);
 	Key * parentKey;
 	Split * split;
 
@@ -424,10 +424,11 @@ static void test_three (void)
 	succeed_if (mountOpen (handle, set_three (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	KeySet * ks = ksNew (18, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
-			     keyNew ("system:/valid/key2", KEY_END), keyNew ("system:/valid/key3", KEY_END), keyNew ("user:/invalid", KEY_END),
-			     keyNew ("user:/invalid/key1", KEY_END), keyNew ("user:/invalid/key2", KEY_END), keyNew ("user:/valid", KEY_END),
-			     keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/outside", KEY_END), KS_END);
+	KeySet * ks =
+		ksNew (18, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
+		       keyNew ("system:/valid/key2", KEY_END), keyNew ("system:/valid/key3", KEY_END), keyNew ("user:/invalid", KEY_END),
+		       keyNew ("user:/invalid/key1", KEY_END), keyNew ("user:/invalid/key2", KEY_END), keyNew ("user:/valid", KEY_END),
+		       keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/outside", KEY_END), KS_END);
 	KeySet * split0 = ksNew (9, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
 				 keyNew ("system:/valid/key2", KEY_END), keyNew ("system:/valid/key3", KEY_END), KS_END);
 	KeySet * split1 = ksNew (9, keyNew ("user:/invalid", KEY_END), keyNew ("user:/invalid/key1", KEY_END),

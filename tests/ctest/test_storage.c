@@ -50,7 +50,8 @@ static KeySet * metaTestKeySet (void)
 {
 	return ksNew (10, keyNew ("user:/tests/storage", KEY_VALUE, "root key", KEY_META, "a", "some metadata for root key", KEY_END),
 		      keyNew ("user:/tests/storage/a", KEY_VALUE, "a value", KEY_META, "ab", "other metadata for a key", KEY_END),
-		      keyNew ("user:/tests/storage/b", KEY_VALUE, "b value", KEY_META, "longer val", "metadata for key b", KEY_END), KS_END);
+		      keyNew ("user:/tests/storage/b", KEY_VALUE, "b value", KEY_META, "longer val", "metadata for key b", KEY_END),
+		      KS_END);
 }
 
 /* -- Test helpers ---------------------------------------------------------------------------------------------------------------------- */

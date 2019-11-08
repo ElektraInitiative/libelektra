@@ -1127,7 +1127,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	char * name = cutpoint->key;
 	if (!name) return 0; // TODO (kodebach): not required?
-	if (strcmp(name, "") == 0) return 0;
+	if (strcmp (name, "") == 0) return 0;
 
 	elektraOpmphmInvalidate (ks);
 
@@ -1147,7 +1147,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			case KEY_NS_USER:
 			case KEY_NS_SYSTEM:
 			case KEY_NS_META:
-				((Key*)cutpoint )->ukey[0] = ns;
+				((Key *) cutpoint)->ukey[0] = ns;
 				break;
 			case KEY_NS_EMPTY:
 			case KEY_NS_NONE:
@@ -1163,7 +1163,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		}
 
 		// restore old cascading name
-		((Key*)cutpoint )->ukey[0] = KEY_NS_CASCADING;
+		((Key *) cutpoint)->ukey[0] = KEY_NS_CASCADING;
 
 		// now look for cascading keys
 		// FIXME: cascading keys shouldn't be allowed in KeySet anymore
@@ -1711,7 +1711,7 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 	do
 	{
 		// lookup with given namespace
-		elektraNamespace ns = elektraReadNamespace (keyString(m), keyGetValueSize(m) - 1);
+		elektraNamespace ns = elektraReadNamespace (keyString (m), keyGetValueSize (m) - 1);
 		if (ns == KEY_NS_NONE) break;
 		keySetNamespace (specKey, ns);
 		ret = ksLookup (ks, specKey, 0);
@@ -1723,7 +1723,7 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 	} while (m);
 
 	// restore old cascading name
-	keySetNamespace(specKey, KEY_NS_CASCADING);
+	keySetNamespace (specKey, KEY_NS_CASCADING);
 	return ret;
 }
 
