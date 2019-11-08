@@ -275,16 +275,16 @@ int main ()
 	using namespace kdb;
 	KeySet ks;
 	KeyHierarchy kh (ks);
-	kh.add (Key ("user/hello", KEY_VALUE, "Hello world", KEY_END));
+	kh.add (Key ("user:/hello", KEY_VALUE, "Hello world", KEY_END));
 	PrintVisitor pv;
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system/b/s/t", KEY_VALUE, "Below", KEY_END));
+	kh.add (Key ("system:/b/s/t", KEY_VALUE, "Below", KEY_END));
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system/b/s/t", KEY_VALUE, "Updated", KEY_END));
+	kh.add (Key ("system:/b/s/t", KEY_VALUE, "Updated", KEY_END));
 	kh.accept (pv);
 	std::cout << std::endl;
 

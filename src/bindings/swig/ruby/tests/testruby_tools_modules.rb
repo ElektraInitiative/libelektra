@@ -38,7 +38,7 @@ class KdbtoolsModulesTestCases < Test::Unit::TestCase
       m = Kdbtools::Modules.new
 
       config = Kdb::KeySet.new(
-        Kdb::Key.new("system/module", value: "without config")
+        Kdb::Key.new("system:/module", value: "without config")
       )
 
       p = m.load "dump", config

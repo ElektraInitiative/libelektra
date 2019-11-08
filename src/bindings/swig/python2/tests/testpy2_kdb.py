@@ -1,7 +1,7 @@
 from __future__ import print_function
 import kdb, unittest
 
-TEST_NS = "user/tests/swig_py2"
+TEST_NS = "user:/tests/swig_py2"
 
 class Constants(unittest.TestCase):
 	def setUp(self):
@@ -29,11 +29,11 @@ class KDB(unittest.TestCase):
 	def test_get(self):
 		with kdb.KDB() as db:
 			ks = kdb.KeySet()
-			db.get(ks, "system/elektra")
+			db.get(ks, "system:/elektra")
 
 			import os
 			if os.getenv("CHECK_VERSION") is None:
-				key = ks["system/elektra/version/constants/KDB_VERSION"]
+				key = ks["system:/elektra/version/constants/KDB_VERSION"]
 				self.assertEqual(key.value, kdb.VERSION)
 
 	def test_set(self):

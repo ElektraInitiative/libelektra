@@ -135,16 +135,16 @@ ks = Kdb::KeySet.new
 A key set with one initial key:
 
 ```ruby
-ks = Kdb::KeySet.new Kdb::Key.new("user/sw/key1")
+ks = Kdb::KeySet.new Kdb::Key.new("user:/sw/key1")
 ```
 
 Passing an array of initial keys:
 
 ```ruby
 ks = Kdb::KeySet.new [
-	Kdb::Key.new "user/sw/key1"
-	Kdb::Key.new "user/sw/key2"
-	Kdb::Key.new "user/sw/key3"
+	Kdb::Key.new "user:/sw/key1"
+	Kdb::Key.new "user:/sw/key2"
+	Kdb::Key.new "user:/sw/key3"
 ]
 ```
 
@@ -159,7 +159,7 @@ ks2 = Kdb::KeySet.new ks
 `KeySet` supports Ruby's "append" operator `<<`
 
 ```ruby
-ks << Kdb::Key.new("user/sw/key1")
+ks << Kdb::Key.new("user:/sw/key1")
 ```
 
 ## Iteration
@@ -177,7 +177,7 @@ Similar to the Ruby `Array`, `KeySet` also implements `delete` and `delete_at`
 methods, which can be used to delete a key by name or by index:
 
 ```ruby
-ks.delete "user/sw/key1"
+ks.delete "user:/sw/key1"
 ks.delete_at 2
 ```
 
@@ -186,7 +186,7 @@ ks.delete_at 2
 Keys can be created with a Hash-like variable argument list:
 
 ```ruby
-Kdb::Key.new "user/sw/key1", value: "v1", owner: "me"
+Kdb::Key.new "user:/sw/key1", value: "v1", owner: "me"
 ```
 
 The first argument is the name of the `Key`, followed by an optional list of

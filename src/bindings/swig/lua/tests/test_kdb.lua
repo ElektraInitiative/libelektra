@@ -1,6 +1,6 @@
 require("kdb")
 
-TEST_NS = "user/tests/swig_lua"
+TEST_NS = "user:/tests/swig_lua"
 
 -- kdbconfig.h
 assert(type(kdb.DB_SYSTEM) == "string")
@@ -25,10 +25,10 @@ assert(swig_type(kdb.KDB(error)) == "kdb::KDB *")
 do
 	local db = kdb.KDB()
 	local ks = kdb.KeySet(100)
-	db:get(ks, "system/elektra")
+	db:get(ks, "system:/elektra")
 
 	if os.getenv("CHECK_VERSION") == nil then
-		local key = ks["system/elektra/version/constants/KDB_VERSION"]
+		local key = ks["system:/elektra/version/constants/KDB_VERSION"]
 		assert(key.value == kdb.VERSION)
 	end
 end

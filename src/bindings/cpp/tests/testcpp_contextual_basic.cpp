@@ -220,14 +220,14 @@ TYPED_TEST (test_contextual_basic, integer)
 	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
 	i.syncKeySet ();
 	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "5");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 	i = 10;
 	ASSERT_EQ (i, 10);
 	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
 
 	c.template activate<LanguageGermanLayer> ();
 	ASSERT_EQ (i, i_value);
@@ -271,7 +271,7 @@ TYPED_TEST (test_contextual_basic, integer)
 		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 		ASSERT_TRUE (ks.lookup ("/german/germany/%/test"));
 		i = 20;
-		ASSERT_EQ (i.getName (), "user/german/germany/%/test");
+		ASSERT_EQ (i.getName (), "user:/german/germany/%/test");
 		ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
 		/*
 		//{debug/backtrace}
@@ -331,31 +331,31 @@ TYPED_TEST (test_contextual_basic, mixedWithActivate)
 	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 	c.template activate<LanguageGermanLayer> ();
 	i = 6;
 	ASSERT_EQ (i, 6);
-	ASSERT_EQ (i.getName (), "user/german/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+	ASSERT_EQ (i.getName (), "user:/german/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 
 	c.template with<CountryGermanyLayer> () ([&]() {
 		i = 7;
 		ASSERT_EQ (i, 7);
-		ASSERT_EQ (i.getName (), "user/german/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/german/germany/%/test").getString (), "7");
+		ASSERT_EQ (i.getName (), "user:/german/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user:/german/germany/%/test").getString (), "7");
 	});
 
 	// LanguageGermanLayer still active
 	ASSERT_EQ (i, 6);
-	ASSERT_EQ (i.getName (), "user/german/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+	ASSERT_EQ (i.getName (), "user:/german/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 
 	c.template deactivate<LanguageGermanLayer> ();
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 }
 
 TYPED_TEST (test_contextual_basic, nestedWithActivate)
@@ -371,34 +371,34 @@ TYPED_TEST (test_contextual_basic, nestedWithActivate)
 	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 	c.template with<CountryGermanyLayer> () ([&]() {
 		i = 7;
 		ASSERT_EQ (i, 7);
-		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
+		ASSERT_EQ (i.getName (), "user:/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "7");
 
 		c.template without<CountryGermanyLayer> () ([&]() {
 			c.template activate<LanguageGermanLayer> ();
 
 			i = 6;
 			ASSERT_EQ (i, 6);
-			ASSERT_EQ (i.getName (), "user/german/%/%/test");
-			ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+			ASSERT_EQ (i.getName (), "user:/german/%/%/test");
+			ASSERT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 		});
 	});
 
 	// LanguageGermanLayer still active
 	ASSERT_EQ (i, 6);
-	ASSERT_EQ (i.getName (), "user/german/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+	ASSERT_EQ (i.getName (), "user:/german/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 
 	c.template deactivate<LanguageGermanLayer> ();
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 }
 
 
@@ -415,38 +415,38 @@ TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
 	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 	c.template with<CountryGermanyLayer> () ([&]() {
 		i = 7;
 		ASSERT_EQ (i, 7);
-		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
+		ASSERT_EQ (i.getName (), "user:/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "7");
 
 		c.template without<CountryGermanyLayer> () ([&]() {
 			ASSERT_EQ (i, 5);
-			ASSERT_EQ (i.getName (), "user/%/%/%/test");
-			ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+			ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+			ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 			c.template activate<CountryGermanyLayer> ();
 
 			i = 6;
 			ASSERT_EQ (i, 6);
-			ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-			ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+			ASSERT_EQ (i.getName (), "user:/%/germany/%/test");
+			ASSERT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "6");
 		});
 		// restore activation of layer
 
 		ASSERT_EQ (i, 6);
-		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+		ASSERT_EQ (i.getName (), "user:/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "6");
 	});
 	// restore deactivation of layer
 
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 }
 
 
@@ -618,7 +618,7 @@ TEST (test_contextual_basic, integer_copy)
 	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (i.getName (), "user:/%/%/%/test");
 	i.syncKeySet ();
 	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "5");
 }

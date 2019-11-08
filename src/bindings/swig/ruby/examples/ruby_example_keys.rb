@@ -24,23 +24,23 @@ require 'kdb'
 k = Kdb::Key.new
 
 # create a new key with initail name
-k = Kdb::Key.new "user/myapp/#1/config1"
+k = Kdb::Key.new "user:/myapp/#1/config1"
 
 # create a new fully initialized key
-k = Kdb::Key.new("user/myapp/#1/config1",
+k = Kdb::Key.new("user:/myapp/#1/config1",
                   value: "some value",
                   meta_data: "important info",
                   owner: "me")
 
 # create a new Key with special flags
-k = Kdb::Key.new("user/myapp/#1/bconfig",
+k = Kdb::Key.new("user:/myapp/#1/bconfig",
                   flags: Kdb::KEY_BINARY)
 
 
 
 # set a name
 begin
-  k.name= "user/myapp/#1/config1"
+  k.name= "user:/myapp/#1/config1"
 rescue Kdb::KeyInvalidName
   puts "invalid key name given"
 end
@@ -76,7 +76,7 @@ puts "k.value: #{k.value}"
 #
 
 # create an initially binary key
-kbin = Kdb::Key.new("user/myapp/#1/binkey", flags: Kdb::KEY_BINARY)
+kbin = Kdb::Key.new("user:/myapp/#1/binkey", flags: Kdb::KEY_BINARY)
 # can be tested
 puts "kbin.is_binary?: #{kbin.is_binary?}"
 
@@ -91,7 +91,7 @@ v = kbin.get_binary
 
 
 # if key is not initially binary
-kbin2 = Kdb::Key.new "user/myapp/#1/binkey2"
+kbin2 = Kdb::Key.new "user:/myapp/#1/binkey2"
 
 # use the set_binary method to set a binary value. After this call
 # the key will be a binary key

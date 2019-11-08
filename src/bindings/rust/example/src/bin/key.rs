@@ -4,9 +4,9 @@ use elektra::{KeyBuilder, ReadableKey, StringKey, WriteableKey};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To create a simple key with a name and value
-    let mut key = StringKey::new("user/test/language")?;
+    let mut key = StringKey::new("user:/test/language")?;
     key.set_value("rust");
-    assert_eq!(key.name(), "user/test/language");
+    assert_eq!(key.name(), "user:/test/language");
     assert_eq!(key.value(), "rust");
 
     // To iterate over the name
@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(key, key_duplicate);
 
     // To create a key with multiple meta values, use the KeyBuilder
-    let mut key: StringKey = KeyBuilder::new("user/test/fruits")?
+    let mut key: StringKey = KeyBuilder::new("user:/test/fruits")?
         .meta("banana", "🍌")?
         .meta("pineapple", "🍍")?
         .meta("strawberry", "🍓")?

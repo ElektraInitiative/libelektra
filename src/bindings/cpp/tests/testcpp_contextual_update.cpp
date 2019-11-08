@@ -96,7 +96,7 @@ TEST_F (test_contextual_update, notifyAllEventsChange)
 	EXPECT_EQ (ks.at (0).getName (), "/%/key") << "nothing done, so its not changed";
 	EXPECT_EQ (ks.at (1).getName (), "/ignore/id") << "nothing done, so its not changed";
 	EXPECT_EQ (ks.at (2).getName (), "/other/key") << "nothing done, so its not changed";
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id") << "nothing done, so its not changed";
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id") << "nothing done, so its not changed";
 	EXPECT_EQ (ks.at (3).getString (), "other");
 }
 
@@ -124,20 +124,20 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdate)
 	EXPECT_EQ (ks.at (0).getName (), "/%/key");
 	EXPECT_EQ (ks.at (0).getString (), "33");
 	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
-	EXPECT_EQ (ks.at (2).getName (), "user/%/key");
+	EXPECT_EQ (ks.at (2).getName (), "user:/%/key");
 	EXPECT_EQ (ks.at (2).getString (), "5");
 
-	ks.append (Key ("user/%/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/%/key", KEY_VALUE, "144", KEY_END));
 
 	c.notifyKeySetUpdate ();
-	ASSERT_EQ (x.getName (), "user/%/key");
+	ASSERT_EQ (x.getName (), "user:/%/key");
 	ASSERT_EQ (x, 144) << "reevaluated context, should have found new key";
 	ASSERT_EQ (ks.lookup ("/%/key").getString (), "144");
 	ASSERT_EQ (ks.size (), 3);
 	EXPECT_EQ (ks.at (0).getName (), "/%/key");
 	EXPECT_EQ (ks.at (0).getString (), "33");
 	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
-	EXPECT_EQ (ks.at (2).getName (), "user/%/key");
+	EXPECT_EQ (ks.at (2).getName (), "user:/%/key");
 	EXPECT_EQ (ks.at (2).getString (), "144");
 }
 
@@ -161,17 +161,17 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayer)
 	EXPECT_EQ (ks.at (0).getName (), "/%/key");
 	EXPECT_EQ (ks.at (0).getString (), "33");
 	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
-	EXPECT_EQ (ks.at (2).getName (), "user/%/key");
+	EXPECT_EQ (ks.at (2).getName (), "user:/%/key");
 	EXPECT_EQ (ks.at (2).getString (), "5");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
 
-	ks.append (Key ("user/other/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/other/key", KEY_VALUE, "144", KEY_END));
 
 	const_cast<Key &> (i.getSpec ()).setMeta<std::string> ("order", "#0");
 	const_cast<Key &> (x.getSpec ()).setMeta<std::string> ("order", "#1");
 	c.notifyKeySetUpdate ();
-	EXPECT_EQ (x.getName (), "user/%/key") << "should be same name";
+	EXPECT_EQ (x.getName (), "user:/%/key") << "should be same name";
 	EXPECT_EQ (x, 5) << "not activated, thus old value persists";
 	EXPECT_EQ (ks.lookup ("/%/key").getString (), "5") << "should get same value";
 
@@ -181,11 +181,11 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayer)
 	EXPECT_EQ (ks.at (0).getString (), "33");
 	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
 	EXPECT_EQ (ks.at (1).getString (), "my");
-	EXPECT_EQ (ks.at (2).getName (), "user/%/key");
+	EXPECT_EQ (ks.at (2).getName (), "user:/%/key");
 	EXPECT_EQ (ks.at (2).getString (), "5");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
-	EXPECT_EQ (ks.at (4).getName (), "user/other/key");
+	EXPECT_EQ (ks.at (4).getName (), "user:/other/key");
 	EXPECT_EQ (ks.at (4).getString (), "144");
 }
 
@@ -203,17 +203,17 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivateOrder)
 	EXPECT_EQ (ks.at (1).getString (), "my");
 	EXPECT_EQ (ks.at (2).getName (), "/my/key");
 	EXPECT_EQ (ks.at (2).getString (), "33");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
-	EXPECT_EQ (ks.at (4).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (4).getName (), "user:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "5");
 
-	ks.append (Key ("user/other/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/other/key", KEY_VALUE, "144", KEY_END));
 
 	const_cast<Key &> (i.getSpec ()).setMeta<std::string> ("layer/order", "#0");
 	const_cast<Key &> (x.getSpec ()).setMeta<std::string> ("layer/order", "#1");
 	c.notifyKeySetUpdate ();
-	EXPECT_EQ (x.getName (), "user/other/key");
+	EXPECT_EQ (x.getName (), "user:/other/key");
 	EXPECT_EQ (x, 144) << "reevaluated context, should have found new key";
 	EXPECT_EQ (ks.lookup ("/%/key").getString (), "33");
 	ASSERT_GE (ks.size (), 6);
@@ -224,11 +224,11 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivateOrder)
 	EXPECT_EQ (ks.at (1).getString (), "my");
 	EXPECT_EQ (ks.at (2).getName (), "/my/key");
 	EXPECT_EQ (ks.at (2).getString (), "33");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
-	EXPECT_EQ (ks.at (4).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (4).getName (), "user:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "5");
-	EXPECT_EQ (ks.at (5).getName (), "user/other/key");
+	EXPECT_EQ (ks.at (5).getName (), "user:/other/key");
 	EXPECT_EQ (ks.at (5).getString (), "144");
 }
 
@@ -246,15 +246,15 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivate)
 	EXPECT_EQ (ks.at (1).getString (), "my");
 	EXPECT_EQ (ks.at (2).getName (), "/my/key");
 	EXPECT_EQ (ks.at (2).getString (), "33");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
-	EXPECT_EQ (ks.at (4).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (4).getName (), "user:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "5");
 
-	ks.append (Key ("user/other/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/other/key", KEY_VALUE, "144", KEY_END));
 
 	c.notifyKeySetUpdate ();
-	EXPECT_EQ (x.getName (), "user/other/key");
+	EXPECT_EQ (x.getName (), "user:/other/key");
 	EXPECT_EQ (x, 144) << "reevaluated context, should have found new key";
 	EXPECT_EQ (ks.lookup ("/%/key").getString (), "33");
 	ASSERT_GE (ks.size (), 6);
@@ -265,11 +265,11 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivate)
 	EXPECT_EQ (ks.at (1).getString (), "my");
 	EXPECT_EQ (ks.at (2).getName (), "/my/key");
 	EXPECT_EQ (ks.at (2).getString (), "33");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
-	EXPECT_EQ (ks.at (4).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (4).getName (), "user:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "5");
-	EXPECT_EQ (ks.at (5).getName (), "user/other/key");
+	EXPECT_EQ (ks.at (5).getName (), "user:/other/key");
 	EXPECT_EQ (ks.at (5).getString (), "144");
 }
 
@@ -297,7 +297,7 @@ TEST_F (test_contextual_update, activateLayersByCV)
 	EXPECT_EQ (c["id"], "my");
 
 	i = "other";
-	ASSERT_EQ (x.getName (), "user/my/key") << "spec should still refer to my";
+	ASSERT_EQ (x.getName (), "user:/my/key") << "spec should still refer to my";
 	EXPECT_EQ (c["id"], "other");
 	EXPECT_EQ (c["key"], "5") << "must be still 5, not synced";
 
@@ -309,9 +309,9 @@ TEST_F (test_contextual_update, activateLayersByCV)
 	EXPECT_EQ (ks.at (1).getString (), "my");
 	EXPECT_EQ (ks.at (2).getName (), "/my/key");
 	EXPECT_EQ (ks.at (2).getString (), "33");
-	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (3).getString (), "other");
-	EXPECT_EQ (ks.at (4).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (4).getName (), "user:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "5");
 
 	c.sync ();
@@ -325,20 +325,20 @@ TEST_F (test_contextual_update, activateLayersByCV)
 	EXPECT_EQ (c["key"], "33");
 
 	c.sync ();
-	ASSERT_EQ (x.getName (), "user/my/key") << "sync done";
+	ASSERT_EQ (x.getName (), "user:/my/key") << "sync done";
 	EXPECT_EQ (c["id"], "my");
 	EXPECT_EQ (c["key"], "5") << "not synced properly";
 
-	ks.append (Key ("user/my/key", KEY_VALUE, "99", KEY_END));
+	ks.append (Key ("user:/my/key", KEY_VALUE, "99", KEY_END));
 
 	c.sync ();
-	ASSERT_EQ (x.getName (), "user/my/key");
+	ASSERT_EQ (x.getName (), "user:/my/key");
 	EXPECT_EQ (c["id"], "my");
 	EXPECT_EQ (c["key"], "99") << "not synced properly";
 
 
 	i = "";
-	ASSERT_EQ (x.getName (), "user/my/key") << "key pending";
+	ASSERT_EQ (x.getName (), "user:/my/key") << "key pending";
 	EXPECT_EQ (c["id"], "") << "but layer should be changed";
 	EXPECT_EQ (c["key"], "99") << "still 99, not synced";
 
@@ -356,9 +356,9 @@ TEST_F (test_contextual_update, activateLayersByCV)
 	EXPECT_EQ (ks.at (2).getString (), "33");
 	EXPECT_EQ (ks.at (3).getName (), "/other/key");
 	EXPECT_EQ (ks.at (3).getString (), "33");
-	EXPECT_EQ (ks.at (4).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (4).getName (), "user:/ignore/id");
 	EXPECT_EQ (ks.at (4).getString (), "");
-	EXPECT_EQ (ks.at (5).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (5).getName (), "user:/my/key");
 	EXPECT_EQ (ks.at (5).getString (), "99");
 
 	i = "hello";
@@ -400,12 +400,12 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 	EXPECT_EQ (ks.at (4).getString (), "55");
 
 	// now in the database the language changes:
-	ks.append (Key ("user/%/language/code", KEY_VALUE, "de", KEY_END));
-	ks.append (Key ("user/de/%/key", KEY_VALUE, "155", KEY_END));
+	ks.append (Key ("user:/%/language/code", KEY_VALUE, "de", KEY_END));
+	ks.append (Key ("user:/de/%/key", KEY_VALUE, "155", KEY_END));
 
 	c.notifyKeySetUpdate ();
-	EXPECT_EQ (j.getName (), "user/%/language/code");
-	EXPECT_EQ (y.getName (), "user/de/%/key");
+	EXPECT_EQ (j.getName (), "user:/%/language/code");
+	EXPECT_EQ (y.getName (), "user:/de/%/key");
 	EXPECT_EQ (std::string (j), "de");
 	EXPECT_EQ (y, 155);
 
@@ -421,9 +421,9 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 	EXPECT_EQ (ks.at (3).getString (), "my");
 	EXPECT_EQ (ks.at (4).getName (), "/my/%/key");
 	EXPECT_EQ (ks.at (4).getString (), "55");
-	EXPECT_EQ (ks.at (5).getName (), "user/%/language/code");
+	EXPECT_EQ (ks.at (5).getName (), "user:/%/language/code");
 	EXPECT_EQ (ks.at (5).getString (), "de");
-	EXPECT_EQ (ks.at (6).getName (), "user/de/%/key");
+	EXPECT_EQ (ks.at (6).getName (), "user:/de/%/key");
 	EXPECT_EQ (ks.at (6).getString (), "155");
 }
 
@@ -448,11 +448,11 @@ TEST_F (test_contextual_update, notifySyncAssign)
 	EXPECT_EQ (ks.at (4).getString (), "55");
 
 	j = "de";
-	ks.append (Key ("user/de/%/key", KEY_VALUE, "155", KEY_END));
+	ks.append (Key ("user:/de/%/key", KEY_VALUE, "155", KEY_END));
 
 	c.sync ();
-	EXPECT_EQ (j.getName (), "user/%/language/code");
-	EXPECT_EQ (y.getName (), "user/de/%/key");
+	EXPECT_EQ (j.getName (), "user:/%/language/code");
+	EXPECT_EQ (y.getName (), "user:/de/%/key");
 	EXPECT_EQ (std::string (j), "de");
 	EXPECT_EQ (y, 155);
 
@@ -468,9 +468,9 @@ TEST_F (test_contextual_update, notifySyncAssign)
 	EXPECT_EQ (ks.at (3).getString (), "my");
 	EXPECT_EQ (ks.at (4).getName (), "/my/%/key");
 	EXPECT_EQ (ks.at (4).getString (), "55");
-	EXPECT_EQ (ks.at (5).getName (), "user/%/language/code");
+	EXPECT_EQ (ks.at (5).getName (), "user:/%/language/code");
 	EXPECT_EQ (ks.at (5).getString (), "de");
-	EXPECT_EQ (ks.at (6).getName (), "user/de/%/key");
+	EXPECT_EQ (ks.at (6).getName (), "user:/de/%/key");
 	EXPECT_EQ (ks.at (6).getString (), "155");
 }
 
@@ -497,8 +497,8 @@ TEST_F (test_contextual_update, notifySyncCycle)
 	EXPECT_EQ (ks.at (5).getString (), "55");
 
 	// now in the database the language changes:
-	ks.append (Key ("user/%/language/code", KEY_VALUE, "de", KEY_END));
-	ks.append (Key ("user/de/%/key", KEY_VALUE, "155", KEY_END));
+	ks.append (Key ("user:/%/language/code", KEY_VALUE, "de", KEY_END));
+	ks.append (Key ("user:/de/%/key", KEY_VALUE, "155", KEY_END));
 
 	EXPECT_THROW (c.sync (), std::runtime_error);
 	EXPECT_EQ (std::string (j), "my");
@@ -518,8 +518,8 @@ TEST_F (test_contextual_update, notifySyncCycle)
 	EXPECT_EQ (ks.at (4).getString (), "my");
 	EXPECT_EQ (ks.at (5).getName (), "/my/%/country");
 	EXPECT_EQ (ks.at (5).getString (), "55");
-	EXPECT_EQ (ks.at (6).getName (), "user/%/language/code");
+	EXPECT_EQ (ks.at (6).getName (), "user:/%/language/code");
 	EXPECT_EQ (ks.at (6).getString (), "de");
-	EXPECT_EQ (ks.at (7).getName (), "user/de/%/key");
+	EXPECT_EQ (ks.at (7).getName (), "user:/de/%/key");
 	EXPECT_EQ (ks.at (7).getString (), "155");
 }

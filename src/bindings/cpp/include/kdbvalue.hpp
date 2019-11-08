@@ -267,7 +267,7 @@ public:
 };
 
 /**
- * @brief Implements creating user/ key when key is not found.
+ * @brief Implements creating user:/ key when key is not found.
  */
 class DefaultSetPolicy
 {
@@ -796,7 +796,7 @@ private:
 	 *
 	 * Is only read and will not be changed.
 	 *
-	 * Might start with / or with spec/ (not implemented yet)
+	 * Might start with / or with spec:/ (not implemented yet)
 	 */
 	Key m_spec;
 

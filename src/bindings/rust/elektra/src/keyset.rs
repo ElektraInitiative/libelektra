@@ -182,7 +182,7 @@ impl KeySet {
     /// ```
     /// # use elektra::{KeySet, StringKey, WriteableKey, ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/key/elektra")?;
+    /// let key = StringKey::new("user:/key/elektra")?;
     /// let mut keyset = KeySet::with_capacity(1);
     /// keyset.append_key(key);
     /// if let Some(popped_key) = keyset.pop() {
@@ -213,16 +213,16 @@ impl KeySet {
     /// # use std::iter::FromIterator;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut keyset = KeySet::from_iter(vec![
-    ///     StringKey::new("user/key/parent")?,
-    ///     StringKey::new("user/key/parent/below")?,
-    ///     StringKey::new("user/key/other")?,
+    ///     StringKey::new("user:/key/parent")?,
+    ///     StringKey::new("user:/key/parent/below")?,
+    ///     StringKey::new("user:/key/other")?,
     /// ]);
-    /// let cut_key = StringKey::new("user/key/parent")?;
+    /// let cut_key = StringKey::new("user:/key/parent")?;
     /// let cut_keyset = keyset.cut(&cut_key);
     /// assert_eq!(keyset.size(), 1);
     /// assert_eq!(cut_keyset.size(), 2);
-    /// assert_eq!(cut_keyset.head().unwrap().name(), "user/key/parent");
-    /// assert_eq!(cut_keyset.tail().unwrap().name(), "user/key/parent/below");
+    /// assert_eq!(cut_keyset.head().unwrap().name(), "user:/key/parent");
+    /// assert_eq!(cut_keyset.tail().unwrap().name(), "user:/key/parent/below");
     /// #
     /// #     Ok(())
     /// # }
@@ -306,11 +306,11 @@ impl KeySet {
     /// # use elektra::{KeySet, StringKey, LookupOption, WriteableKey, ReadableKey};
     /// # use std::iter::FromIterator;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/key/elektra")?;
+    /// let key = StringKey::new("user:/key/elektra")?;
     /// let mut ks = KeySet::with_capacity(1);
     /// ks.append_key(key);
     ///
-    /// let lookup_key = StringKey::new("user/key/elektra")?;
+    /// let lookup_key = StringKey::new("user:/key/elektra")?;
     /// if let Some(mut key) = ks.lookup(lookup_key, LookupOption::KDB_O_NONE) {
     ///     key.set_value("newvalue");
     /// } else {
@@ -448,7 +448,7 @@ mod tests {
     fn can_build_simple_keyset() -> Result<(), KeyNameInvalidError> {
         let mut ks = KeySet::new();
         ks.append_key(
-            KeyBuilder::<StringKey>::new("user/sw/org/app/bool")?
+            KeyBuilder::<StringKey>::new("user:/sw/org/app/bool")?
                 .value("true")
                 .build(),
         );
@@ -467,7 +467,7 @@ mod tests {
 
     #[test]
     fn can_iterate_simple_keyset() -> Result<(), KeyNameInvalidError> {
-        let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
+        let names = ["user:/test/key1", "user:/test/key2", "user:/test/key3"];
         let values = ["value1", "value2", "value3"];
 
         let mut ks = KeySet::from_iter(vec![
@@ -507,7 +507,7 @@ mod tests {
     fn can_use_popped_key_after_keyset_freed() {
         let popped_key;
         {
-            let key = StringKey::new("user/key/k2").unwrap();
+            let key = StringKey::new("user:/key/k2").unwrap();
             let mut keyset = KeySet::with_capacity(1);
             keyset.append_key(key);
             popped_key = keyset.pop().unwrap();
@@ -524,7 +524,7 @@ mod tests {
     }
 
     fn setup_keyset() -> KeySet {
-        let names = ["system/test/key", "user/test/key"];
+        let names = ["system:/test/key", "user:/test/key"];
         let values = ["value1", "value2"];
 
         KeySet::from_iter(vec![
@@ -554,13 +554,13 @@ mod tests {
     fn extend_keyset_and_append_are_equal() {
         let mut ks = setup_keyset();
         let mut ks2 = KeySet::with_capacity(1);
-        let k = StringKey::new("user/test/key").unwrap();
+        let k = StringKey::new("user:/test/key").unwrap();
         ks2.append_key(k);
 
         // Test append
         ks.append(&ks2);
         assert_eq!(ks.size(), 2);
-        assert_eq!(ks.tail().unwrap().name(), "user/test/key");
+        assert_eq!(ks.tail().unwrap().name(), "user:/test/key");
         assert_eq!(ks.tail().unwrap().value(), "");
 
         // Test extend from the Extend trait
@@ -568,7 +568,7 @@ mod tests {
         ksext.extend(ks2.iter_mut());
 
         assert_eq!(ksext.size(), 2);
-        assert_eq!(ksext.tail().unwrap().name(), "user/test/key");
+        assert_eq!(ksext.tail().unwrap().name(), "user:/test/key");
         assert_eq!(ksext.tail().unwrap().value(), "");
     }
 
@@ -577,9 +577,9 @@ mod tests {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
         let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
-        assert_eq!(ret_val.unwrap().name(), "user/test/key");
+        assert_eq!(ret_val.unwrap().name(), "user:/test/key");
         assert_eq!(ks.size(), 2);
-        assert_eq!(ks.tail().unwrap().name(), "user/test/key");
+        assert_eq!(ks.tail().unwrap().name(), "user:/test/key");
     }
 
     #[test]
@@ -587,9 +587,9 @@ mod tests {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
         let key = ks.lookup(lookup_key, LookupOption::KDB_O_POP);
-        assert_eq!(key.unwrap().name(), "user/test/key");
+        assert_eq!(key.unwrap().name(), "user:/test/key");
         assert_eq!(ks.size(), 1);
-        assert_eq!(ks.head().unwrap().name(), "system/test/key");
+        assert_eq!(ks.head().unwrap().name(), "system:/test/key");
     }
 
     #[test]
@@ -604,9 +604,9 @@ mod tests {
                 .unwrap()
                 .duplicate();
             assert_eq!(ks.size(), 2);
-            assert_eq!(ks.head().unwrap().name(), "system/test/key");
+            assert_eq!(ks.head().unwrap().name(), "system:/test/key");
         }
-        assert_eq!(key.name(), "user/test/key");
+        assert_eq!(key.name(), "user:/test/key");
         Ok(())
     }
 

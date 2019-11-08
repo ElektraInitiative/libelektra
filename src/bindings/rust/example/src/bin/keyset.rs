@@ -8,12 +8,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Append some keys
     keyset.append_key(
-        KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
+        KeyBuilder::<StringKey>::new("user:/sw/app/#1/host")?
             .value("localhost")
             .build(),
     );
     keyset.append_key(
-        KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
+        KeyBuilder::<StringKey>::new("user:/sw/app/#1/port")?
             .value("8080")
             .build(),
     );
@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Lookup a key by name and set a new value
     if let Some(mut found_key) =
-        keyset.lookup_by_name("user/sw/app/#1/port", LookupOption::KDB_O_NONE)
+        keyset.lookup_by_name("user:/sw/app/#1/port", LookupOption::KDB_O_NONE)
     {
         found_key.set_value("5001");
     } else {
@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Delete a key by passing the POP option
-    keyset.lookup_by_name("user/sw/app/#1/host", LookupOption::KDB_O_POP);
+    keyset.lookup_by_name("user:/sw/app/#1/host", LookupOption::KDB_O_POP);
 
     // Remove the last (and now only) key in the set
     let removed_key = keyset.pop().unwrap();

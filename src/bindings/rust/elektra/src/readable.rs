@@ -12,7 +12,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/sw/app")?;
+    /// let mut key = StringKey::new("user:/sw/app")?;
     /// key.set_value("myvalue");
     /// assert_eq!(key.value(), "myvalue");
     /// #
@@ -92,7 +92,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # use elektra_sys;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let mut key = BinaryKey::new("user:/sw/app")?;
     /// assert_eq!(key.namespace(), elektra_sys::KEY_NS_USER);
     /// #
     /// #     Ok(())
@@ -139,7 +139,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let mut key = BinaryKey::new("user:/sw/app")?;
     /// key.set_value(b"12345");
     /// assert_eq!(key.value_size(), 5);
     /// #
@@ -164,7 +164,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let mut key = BinaryKey::new("user:/sw/app")?;
     /// key.set_value(b"");
     /// assert!(key.is_binary());
     /// #
@@ -181,7 +181,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/sw/app")?;
+    /// let key = StringKey::new("user:/sw/app")?;
     /// assert!(key.is_string());
     /// #
     /// #     Ok(())
@@ -197,8 +197,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/sw/app")?;
-    /// let key2 = StringKey::new("user/sw/app/folder/key")?;
+    /// let key = StringKey::new("user:/sw/app")?;
+    /// let key2 = StringKey::new("user:/sw/app/folder/key")?;
     /// assert!(key2.is_below(&key));
     /// #
     /// #     Ok(())
@@ -217,8 +217,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/sw/app")?;
-    /// let key2 = StringKey::new("user/sw/app/key")?;
+    /// let key = StringKey::new("user:/sw/app")?;
+    /// let key2 = StringKey::new("user:/sw/app/key")?;
     /// assert!(key2.is_directly_below(&key));
     /// #
     /// #     Ok(())
@@ -240,7 +240,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/key/.hidden")?;
+    /// let key = StringKey::new("user:/key/.hidden")?;
     /// assert!(key.is_inactive());
     /// #
     /// #     Ok(())

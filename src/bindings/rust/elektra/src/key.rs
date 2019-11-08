@@ -381,14 +381,14 @@ mod tests {
 
     #[test]
     fn can_write_read_key() {
-        let key_name = "user/test/key";
+        let key_name = "user:/test/key";
         let key = StringKey::new(key_name).unwrap();
         assert_eq!(key.name(), key_name);
     }
 
     #[test]
     fn can_write_read_key_value() {
-        let key_name = "user/test/key";
+        let key_name = "user:/test/key";
         let utf8_value = "😃";
         let mut key: StringKey = StringKey::new(key_name).unwrap();
         key.set_string(utf8_value);
@@ -398,7 +398,7 @@ mod tests {
 
     #[test]
     fn can_duplicate_key() {
-        let key_name = "user/test/key";
+        let key_name = "user:/test/key";
         let key_dup;
         {
             let key = StringKey::new(key_name).unwrap();
@@ -410,7 +410,7 @@ mod tests {
 
     #[test]
     fn can_write_read_binary() {
-        let mut key = BinaryKey::new("user/test/rust").unwrap();
+        let mut key = BinaryKey::new("user:/test/rust").unwrap();
         let binary_content: [u8; 7] = [25, 34, 0, 254, 1, 0, 7];
         key.set_binary(&binary_content);
         let read_content = key.binary();
@@ -418,7 +418,7 @@ mod tests {
     }
     #[test]
     fn can_write_read_empty_binary() {
-        let mut key = BinaryKey::new("user/test/binary").unwrap();
+        let mut key = BinaryKey::new("user:/test/binary").unwrap();
         let binary_content: [u8; 0] = [];
         key.set_binary(&binary_content);
         let vec = key.binary();
@@ -428,8 +428,8 @@ mod tests {
     #[allow(clippy::eq_op)]
     #[test]
     fn equality_is_exclusive() {
-        let key = BinaryKey::new("user/test/exclusive").unwrap();
-        let key2 = BinaryKey::new("dir/test/exclusive").unwrap();
+        let key = BinaryKey::new("user:/test/exclusive").unwrap();
+        let key2 = BinaryKey::new("dir:/test/exclusive").unwrap();
         assert!(!(key != key));
         assert!(key == key);
 
@@ -440,14 +440,14 @@ mod tests {
     #[allow(clippy::eq_op)]
     #[test]
     fn equality_is_reflexive() {
-        let key = StringKey::new("user/test/reflexive").unwrap();
+        let key = StringKey::new("user:/test/reflexive").unwrap();
         assert!(key == key);
     }
 
     #[test]
     fn equality_is_symmetric() {
-        let key = BinaryKey::new("user/test/symmetric").unwrap();
-        let key_dup = BinaryKey::new("user/test/symmetric").unwrap();
+        let key = BinaryKey::new("user:/test/symmetric").unwrap();
+        let key_dup = BinaryKey::new("user:/test/symmetric").unwrap();
 
         assert!(key_dup == key);
         assert!(key == key_dup);
@@ -455,9 +455,9 @@ mod tests {
 
     #[test]
     fn equality_is_transitive() {
-        let key = BinaryKey::new("user/test/transitive").unwrap();
-        let key2 = BinaryKey::new("user/test/transitive").unwrap();
-        let key3 = BinaryKey::new("user/test/transitive").unwrap();
+        let key = BinaryKey::new("user:/test/transitive").unwrap();
+        let key2 = BinaryKey::new("user:/test/transitive").unwrap();
+        let key3 = BinaryKey::new("user:/test/transitive").unwrap();
 
         assert!(key == key2);
         assert!(key2 == key3);
@@ -466,9 +466,9 @@ mod tests {
 
     #[test]
     fn keys_are_ordered() {
-        let key = BinaryKey::new("user/test/a").unwrap();
-        let key2 = BinaryKey::new("user/test/b").unwrap();
-        let key3 = BinaryKey::new("user/test/c").unwrap();
+        let key = BinaryKey::new("user:/test/a").unwrap();
+        let key2 = BinaryKey::new("user:/test/b").unwrap();
+        let key3 = BinaryKey::new("user:/test/c").unwrap();
 
         assert!(key != key2);
         assert!(key < key2);
@@ -484,8 +484,8 @@ mod tests {
 
     #[test]
     fn keys_are_ordered_with_metadata() -> Result<(), KeyNameInvalidError> {
-        let k1: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abc")?.build();
-        let k2: StringKey = KeyBuilder::new("user/a")?.meta("owner", "abz")?.build();
+        let k1: StringKey = KeyBuilder::new("user:/a")?.meta("owner", "abc")?.build();
+        let k2: StringKey = KeyBuilder::new("user:/a")?.meta("owner", "abz")?.build();
         assert!(k1 < k2);
         assert!(k2 > k1);
         Ok(())
@@ -493,7 +493,7 @@ mod tests {
 
     #[test]
     fn can_reference_count() {
-        let mut key = BinaryKey::new("user/test/a").unwrap();
+        let mut key = BinaryKey::new("user:/test/a").unwrap();
         assert_eq!(key.get_ref(), 0);
         unsafe { key.inc_ref() };
         assert_eq!(key.get_ref(), 1);
@@ -503,7 +503,7 @@ mod tests {
 
     #[test]
     fn error_on_missing_metaname() {
-        let key = StringKey::new("user/test/metatest").unwrap();
+        let key = StringKey::new("user:/test/metatest").unwrap();
         assert!(key.meta("nonexistent metaname").is_err());
     }
     #[test]
@@ -545,7 +545,7 @@ mod tests {
 
     #[test]
     fn can_cast_key_types() {
-        let key = StringKey::new("user/test/cast").unwrap();
+        let key = StringKey::new("user:/test/cast").unwrap();
         let mut bin_key = BinaryKey::from(key);
         let val = b"data";
         bin_key.set_value(val);
@@ -554,7 +554,7 @@ mod tests {
 
     #[test]
     fn can_get_fullname() -> Result<(), KeyNameInvalidError> {
-        let name = "user/test/fulltest";
+        let name = "user:/test/fulltest";
         let key: StringKey = KeyBuilder::new(name)?
             .meta("metaname", "metavalue")?
             .meta("owner", "me")?

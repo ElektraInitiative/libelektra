@@ -34,7 +34,7 @@ TEST (key, null)
 
 TEST (key, typebool)
 {
-	Key k ("user/key", KEY_VALUE, "testkey", KEY_END);
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
 	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
 	k.setString ("O");
 	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
@@ -78,10 +78,10 @@ TEST (key, keynew)
 	succeed_if (key1.getName () == "", "key0 has wrong name");
 
 	// Key with name
-	Key key2 ("system/sw/test", KEY_END);
+	Key key2 ("system:/sw/test", KEY_END);
 	succeed_if (key2.getBaseName () == "test", "wrong base name");
-	succeed_if (key2.getName () == "system/sw/test", "key2 has wrong name");
-	// succeed_if (key2.getDirName() == "system/sw", "wrong dir name");
+	succeed_if (key2.getName () == "system:/sw/test", "key2 has wrong name");
+	// succeed_if (key2.getDirName() == "system:/sw", "wrong dir name");
 	key2.copy (key0);
 	succeed_if (key2.getName () == "", "key0 has wrong name");
 	succeed_if (key2.getBaseName () == "", "wrong base name");
@@ -89,43 +89,43 @@ TEST (key, keynew)
 
 
 	// Key with name
-	Key key3 ("system/sw/test", KEY_END);
-	succeed_if (key3.getName () == "system/sw/test", "key3 has wrong name");
+	Key key3 ("system:/sw/test", KEY_END);
+	succeed_if (key3.getName () == "system:/sw/test", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "test", "wrong base name");
-	// succeed_if (key3.getDirName() == "system/sw", "wrong dir name");
-	key3.setName ("system/other/name");
-	succeed_if (key3.getName () == "system/other/name", "key3 has wrong name");
+	// succeed_if (key3.getDirName() == "system:/sw", "wrong dir name");
+	key3.setName ("system:/other/name");
+	succeed_if (key3.getName () == "system:/other/name", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "name", "wrong base name");
-	// succeed_if (key3.getDirName() == "system/other", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system:/other", "wrong dir name");
 	key3.addBaseName ("base");
-	succeed_if (key3.getName () == "system/other/name/base", "key3 has wrong name");
+	succeed_if (key3.getName () == "system:/other/name/base", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "base", "wrong base name");
-	// succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system:/other/name", "wrong dir name");
 	key3.setBaseName ("name");
-	succeed_if (key3.getName () == "system/other/name/name", "key3 has wrong name");
+	succeed_if (key3.getName () == "system:/other/name/name", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "name", "wrong base name");
-	// succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
-	key3.setName ("system/name");
-	succeed_if (key3.getName () == "system/name", "key3 has wrong name");
+	// succeed_if (key3.getDirName() == "system:/other/name", "wrong dir name");
+	key3.setName ("system:/name");
+	succeed_if (key3.getName () == "system:/name", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "name", "wrong base name");
 	// succeed_if (key3.getDirName() == "system", "wrong dir name");
 
 	// Key with slash in name name
-	key3.setName ("system/name\\/slash");
-	succeed_if (key3.getName () == "system/name\\/slash", "key3 has wrong name");
+	key3.setName ("system:/name\\/slash");
+	succeed_if (key3.getName () == "system:/name\\/slash", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "name/slash", "wrong base name");
 	// succeed_if (key3.getDirName() == "system", "wrong dir name");
 
-	key3.setName ("system/name/with\\/slash");
-	succeed_if (key3.getName () == "system/name/with\\/slash", "key3 has wrong name");
+	key3.setName ("system:/name/with\\/slash");
+	succeed_if (key3.getName () == "system:/name/with\\/slash", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "with/slash", "wrong base name");
-	// succeed_if (key3.getDirName() == "system/name", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system:/name", "wrong dir name");
 
-	key3.setName ("system/name");
+	key3.setName ("system:/name");
 	key3.addName ("some\\/more");
-	succeed_if (key3.getName () == "system/name/some\\/more", "key3 has wrong name");
+	succeed_if (key3.getName () == "system:/name/some\\/more", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "some/more", "wrong base name");
-	// succeed_if (key3.getDirName() == "system/name", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system:/name", "wrong dir name");
 
 	key3.setName ("/name");
 	succeed_if (key3.getName () == "/name", "key3 has wrong name");
@@ -138,8 +138,8 @@ TEST (key, keynew)
 	// succeed_if (key3.getDirName() == "/name", "wrong dir name");
 
 	// Key with name + value
-	Key key4 ("system/sw/test", KEY_VALUE, "test", KEY_END);
-	succeed_if (key4.getName () == "system/sw/test", "key4 has wrong name");
+	Key key4 ("system:/sw/test", KEY_VALUE, "test", KEY_END);
+	succeed_if (key4.getName () == "system:/sw/test", "key4 has wrong name");
 	succeed_if (key4.getString () == "test", "key4 has wrong value");
 	succeed_if (key4.get<string> () == "test", "key4 has wrong value");
 	succeed_if (key4.getStringSize () == 5, "key4 has wrong value size");
@@ -207,27 +207,27 @@ TEST (key, keynew)
 
 #ifndef _WIN32
 	// Key with name + UID/GID
-	Key key5 ("system/sw/test", KEY_UID, 123, KEY_GID, 456, KEY_END);
+	Key key5 ("system:/sw/test", KEY_UID, 123, KEY_GID, 456, KEY_END);
 	succeed_if (key5.getMeta<uid_t> ("uid") == 123, "key5 UID no set correctly");
 	succeed_if (key5.getMeta<gid_t> ("gid") == 456, "key5 UID no set correctly");
-	succeed_if (key5.getName () == "system/sw/test", "key5 has wrong name");
+	succeed_if (key5.getName () == "system:/sw/test", "key5 has wrong name");
 
 	// Key with name + MODE
-	Key key6 ("system/sw/test", KEY_MODE, 0642, KEY_END);
+	Key key6 ("system:/sw/test", KEY_MODE, 0642, KEY_END);
 	succeed_if (key6.getMeta<mode_t> ("mode") == 642, "key6 mode no set correctly");
-	succeed_if (key6.getName () == "system/sw/test", "key6 has wrong name");
+	succeed_if (key6.getName () == "system:/sw/test", "key6 has wrong name");
 	key6.setString ("a very long string");
 	succeed_if (key6.getString () == "a very long string", "key6 has wrong value");
 	succeed_if (key6.get<string> () == "a very long string", "key6 has wrong value");
 #endif
 
 	// Key with name + owner
-	Key key7 ("system/sw/test", KEY_OWNER, "yl", KEY_END);
+	Key key7 ("system:/sw/test", KEY_OWNER, "yl", KEY_END);
 	succeed_if (key7.getMeta<std::string> ("owner") == "yl", "key7 owner not set correctly");
 	succeed_if (!key7.isInactive (), "key should not be inactive");
 
-	Key key8 ("system/valid/there", KEY_BINARY, KEY_SIZE, sizeof (array), KEY_VALUE, array, KEY_END);
-	succeed_if (key8.getName () == "system/valid/there", "key8 has wrong name");
+	Key key8 ("system:/valid/there", KEY_BINARY, KEY_SIZE, sizeof (array), KEY_VALUE, array, KEY_END);
+	succeed_if (key8.getName () == "system:/valid/there", "key8 has wrong name");
 	succeed_if (key8.isBinary (), "Key should be binary");
 	succeed_if (!key8.isString (), "Key should be binary");
 	succeed_if (key8.getBinarySize () == sizeof (array), "Value size not correct");
@@ -235,14 +235,14 @@ TEST (key, keynew)
 	succeed_if (memcmp (&getBack[0], array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
 	succeed_if (key8.getBaseName () == "there", "wrong base name");
 
-	Key key9 ("system/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
+	Key key9 ("system:/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
 	succeed_if (key9.isInactive (), "key should be inactive");
 	succeed_if (key9.getMeta<std::string> ("comment") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName () == ".inactive", "wrong base name");
 
-	std::string name = "system/valid/name";
+	std::string name = "system:/valid/name";
 	Key keyA (name, KEY_END);
-	succeed_if (keyA.getName () == "system/valid/name", "keyA has wrong name");
+	succeed_if (keyA.getName () == "system:/valid/name", "keyA has wrong name");
 	succeed_if (keyA.getBaseName () == "name", "keyA wrong base name");
 
 	Key keyB ("", KEY_END);
@@ -367,8 +367,8 @@ TEST (key, exceptions)
 		succeed_if (test.getName () == "", "not set to noname");
 	}
 
-	test.setName ("user/name");
-	succeed_if (test.getName () == "user/name", "could not get same name");
+	test.setName ("user:/name");
+	succeed_if (test.getName () == "user:/name", "could not get same name");
 
 	try
 	{
@@ -386,7 +386,7 @@ TEST (key, name)
 	succeed_if (test.getName () == "", "Name should be empty");
 
 	test.setName ("user:markus/test");
-	succeed_if (test.getName () == "user/test", "Wrong name");
+	succeed_if (test.getName () == "user:/test", "Wrong name");
 	succeed_if (test.getFullName () == "user:markus/test", "Wrong full name");
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
@@ -399,7 +399,7 @@ TEST (key, name)
 	succeed_if (!test.isSystem (), "key is system");
 
 	test.setMeta<std::string> ("owner", "gerald");
-	succeed_if (test.getName () == "user/test", "Wrong name");
+	succeed_if (test.getName () == "user:/test", "Wrong name");
 	succeed_if (test.getFullName () == "user:gerald/test", "Wrong full name");
 	succeed_if (test.getMeta<std::string> ("owner") == "gerald", "Wrong owner");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
@@ -411,10 +411,10 @@ TEST (key, name)
 	succeed_if (test.isUser (), "key is not user");
 	succeed_if (!test.isSystem (), "key is system");
 
-	test.setName ("system/test");
+	test.setName ("system:/test");
 	test.setMeta<std::string> ("owner", "markus");
-	succeed_if (test.getName () == "system/test", "Wrong name");
-	succeed_if (test.getFullName () == "system/test", "Wrong full name");
+	succeed_if (test.getName () == "system:/test", "Wrong name");
+	succeed_if (test.getFullName () == "system:/test", "Wrong full name");
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
 	succeed_if (test.getNameSize () == 12, "wrong name size");
@@ -426,9 +426,9 @@ TEST (key, name)
 	succeed_if (!test.isUser (), "key is not user");
 	succeed_if (test.isSystem (), "key is system");
 
-	test.setName ("dir/test");
-	succeed_if (test.getName () == "dir/test", "Wrong name");
-	succeed_if (test.getFullName () == "dir/test", "Wrong full name");
+	test.setName ("dir:/test");
+	succeed_if (test.getName () == "dir:/test", "Wrong name");
+	succeed_if (test.getFullName () == "dir:/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 9, "wrong name size");
 	succeed_if (test.getFullNameSize () == 9, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
@@ -438,9 +438,9 @@ TEST (key, name)
 	succeed_if (!test.isUser (), "key is user");
 	succeed_if (!test.isSystem (), "key is system");
 
-	test.setName ("proc/test");
-	succeed_if (test.getName () == "proc/test", "Wrong name");
-	succeed_if (test.getFullName () == "proc/test", "Wrong full name");
+	test.setName ("proc:/test");
+	succeed_if (test.getName () == "proc:/test", "Wrong name");
+	succeed_if (test.getFullName () == "proc:/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
 	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
@@ -450,9 +450,9 @@ TEST (key, name)
 	succeed_if (!test.isUser (), "key is user");
 	succeed_if (!test.isSystem (), "key is system");
 
-	test.setName ("spec/test");
-	succeed_if (test.getName () == "spec/test", "Wrong name");
-	succeed_if (test.getFullName () == "spec/test", "Wrong full name");
+	test.setName ("spec:/test");
+	succeed_if (test.getName () == "spec:/test", "Wrong name");
+	succeed_if (test.getFullName () == "spec:/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
 	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
@@ -475,60 +475,60 @@ TEST (key, name)
 	succeed_if (!test.isSystem (), "key is system");
 
 
-	test.setName ("user/dir/test");
+	test.setName ("user:/dir/test");
 	test.setBaseName ("mykey");
-	succeed_if (test.getName () == "user/dir/mykey", "Basename did not work");
+	succeed_if (test.getName () == "user:/dir/mykey", "Basename did not work");
 	test.setName (test.getName () + "/onedeeper");		     // add basename is trivial
 	succeed_if (test.getName ().find ('/') == 4, "user length"); // keyGetRootNameSize trivial
 
 	// so we finally got a name, lets test below
-	succeed_if (test.getName () == "user/dir/mykey/onedeeper", "Basename did not work");
+	succeed_if (test.getName () == "user:/dir/mykey/onedeeper", "Basename did not work");
 
-	succeed_if (test.isBelow (Key ("user/", KEY_END)), "key is below");
-	succeed_if (test.isBelow (Key ("user/dir", KEY_END)), "key is below");
-	succeed_if (test.isBelow (Key ("user/dir/mykey", KEY_END)), "key is below");
-	succeed_if (!test.isBelow (Key ("user/dir/mykey/onedeeper", KEY_END)), "key is not below (but same)");
-	succeed_if (!test.isBelow (Key ("user/otherdir", KEY_END)), "key is not below");
+	succeed_if (test.isBelow (Key ("user:/", KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key ("user:/dir", KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key ("user:/dir/mykey", KEY_END)), "key is below");
+	succeed_if (!test.isBelow (Key ("user:/dir/mykey/onedeeper", KEY_END)), "key is not below (but same)");
+	succeed_if (!test.isBelow (Key ("user:/otherdir", KEY_END)), "key is not below");
 
-	succeed_if (test.isBelowOrSame (Key ("user/", KEY_END)), "key is below");
-	succeed_if (test.isBelowOrSame (Key ("user/dir", KEY_END)), "key is below");
-	succeed_if (test.isBelowOrSame (Key ("user/dir/mykey", KEY_END)), "key is below");
-	succeed_if (test.isBelowOrSame (Key ("user/dir/mykey/onedeeper", KEY_END)), "key is same");
-	succeed_if (!test.isBelowOrSame (Key ("user/otherdir", KEY_END)), "key is not below");
+	succeed_if (test.isBelowOrSame (Key ("user:/", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user:/dir", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user:/dir/mykey", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user:/dir/mykey/onedeeper", KEY_END)), "key is same");
+	succeed_if (!test.isBelowOrSame (Key ("user:/otherdir", KEY_END)), "key is not below");
 
-	succeed_if (test.isDirectBelow (Key ("user/dir/mykey", KEY_END)), "key is direct below");
-	succeed_if (!test.isDirectBelow (Key ("user/dir/test", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user/dir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user/dir/otherdir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user/otherdir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user/", KEY_END)), "key is not direct below");
+	succeed_if (test.isDirectBelow (Key ("user:/dir/mykey", KEY_END)), "key is direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/dir/test", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/dir", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/dir/otherdir", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/otherdir", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/", KEY_END)), "key is not direct below");
 
-	test.setName ("system/elektra");
-	succeed_if (test.isBelow (Key ("system/", KEY_END)), "system/elektra is not below system");
+	test.setName ("system:/elektra");
+	succeed_if (test.isBelow (Key ("system:/", KEY_END)), "system:/elektra is not below system");
 	test.setName ("system");
-	succeed_if (!test.isBelow (Key ("system/elektra", KEY_END)), "system is below system/elektra");
+	succeed_if (!test.isBelow (Key ("system:/elektra", KEY_END)), "system is below system:/elektra");
 }
 
 void f (Key)
 {
-	Key h ("user/infunction", KEY_END);
+	Key h ("user:/infunction", KEY_END);
 }
 
 TEST (key, ref)
 {
-	Key zgr1 ("user/zgr1", KEY_END);
+	Key zgr1 ("user:/zgr1", KEY_END);
 	{
-		Key zgr2 ("user/zgr2", KEY_END);
-		Key zgr3 ("user/zgr3", KEY_END);
-		Key zgr4 ("user/zgr4", KEY_END);
-		Key zgr5 ("user/zgr5", KEY_END);
+		Key zgr2 ("user:/zgr2", KEY_END);
+		Key zgr3 ("user:/zgr3", KEY_END);
+		Key zgr4 ("user:/zgr4", KEY_END);
+		Key zgr5 ("user:/zgr5", KEY_END);
 		zgr2 = zgr1;
 		zgr3 = zgr1;
 		zgr4 = zgr1;
 	}
 
 	f (zgr1);
-	f (Key ("user/passed", KEY_END));
+	f (Key ("user:/passed", KEY_END));
 
 	Key test;
 	test.setName ("user:markus/test");
@@ -537,21 +537,21 @@ TEST (key, ref)
 	ref1 = test; // operator =
 	succeed_if (*ref1 == *test, "should point to the same object");
 
-	succeed_if (test.getName () == "user/test", "wrong name");
-	succeed_if (ref1.getName () == "user/test", "ref key wrong name");
+	succeed_if (test.getName () == "user:/test", "wrong name");
+	succeed_if (ref1.getName () == "user:/test", "ref key wrong name");
 
 	Key ref2 = test; // copy constructor
 	succeed_if (*ref2 == *test, "should point to the same object");
 
-	succeed_if (test.getName () == "user/test", "wrong name");
-	succeed_if (ref2.getName () == "user/test", "ref key wrong name");
+	succeed_if (test.getName () == "user:/test", "wrong name");
+	succeed_if (ref2.getName () == "user:/test", "ref key wrong name");
 
-	const Key consttest ("user/test", KEY_END);
+	const Key consttest ("user:/test", KEY_END);
 	Key ref3 = consttest; // const copy constructor
 	succeed_if (*ref3 == *consttest, "should point to the same object");
 
-	succeed_if (consttest.getName () == "user/test", "wrong name");
-	succeed_if (ref3.getName () == "user/test", "ref key wrong name");
+	succeed_if (consttest.getName () == "user:/test", "wrong name");
+	succeed_if (ref3.getName () == "user:/test", "ref key wrong name");
 }
 
 TEST (key, dup)
@@ -561,11 +561,11 @@ TEST (key, dup)
 
 	Key dup0 = test.dup (); // directly call of dup()
 
-	succeed_if (test.getName () == "user/test", "wrong name");
-	succeed_if (dup0.getName () == "user/test", "dup key wrong name");
+	succeed_if (test.getName () == "user:/test", "wrong name");
+	succeed_if (dup0.getName () == "user:/test", "dup key wrong name");
 
 	Key dup1 = test.dup (); // directly call of dup()
-	succeed_if (dup1.getName () == "user/test", "dup key wrong name");
+	succeed_if (dup1.getName () == "user:/test", "dup key wrong name");
 
 	succeed_if (*test != *dup0, "should be other key");
 	succeed_if (*test != *dup1, "should be other key");
@@ -601,23 +601,23 @@ TEST (key, valid)
 		succeed_if (i3, "even though it is invalid, it is still not a null key");
 	}
 
-	Key v1 ("user/", KEY_END);
+	Key v1 ("user:/", KEY_END);
 	succeed_if (v1.isValid (), "key should be valid");
 	succeed_if (v1, "should be non-null too");
 
-	Key v2 ("system/", KEY_END);
+	Key v2 ("system:/", KEY_END);
 	succeed_if (v2.isValid (), "key should be valid");
 	succeed_if (v2, "should be non-null too");
 
 	vector<string> valid_names;
-	valid_names.push_back ("user/abc");
-	valid_names.push_back ("user/s");
-	valid_names.push_back ("system/s");
-	valid_names.push_back ("user/error/somthing");
-	valid_names.push_back ("system/");
-	valid_names.push_back ("user/.");
-	valid_names.push_back ("system/abc/..");
-	valid_names.push_back ("system/abc/../more");
+	valid_names.push_back ("user:/abc");
+	valid_names.push_back ("user:/s");
+	valid_names.push_back ("system:/s");
+	valid_names.push_back ("user:/error/somthing");
+	valid_names.push_back ("system:/");
+	valid_names.push_back ("user:/.");
+	valid_names.push_back ("system:/abc/..");
+	valid_names.push_back ("system:/abc/../more");
 
 	for (auto & valid_name : valid_names)
 	{
@@ -629,7 +629,7 @@ TEST (key, valid)
 
 TEST (key, clear)
 {
-	Key k1 ("user/", KEY_END);
+	Key k1 ("user:/", KEY_END);
 	Key k2 = k1;
 	Key k3 = k1;
 
@@ -666,7 +666,7 @@ TEST (key, clear)
 
 TEST (key, conversation)
 {
-	Key k1 ("user/", KEY_END);
+	Key k1 ("user:/", KEY_END);
 	ckdb::Key * ck1 = k1.getKey ();
 	succeed_if (!strcmp (ckdb::keyName (ck1), "user"), "c key does not have correct name");
 	succeed_if (!strcmp (ckdb::keyName (*k1), "user"), "c key does not have correct name");
@@ -678,22 +678,22 @@ TEST (key, conversation)
 
 TEST (key, keynamespace)
 {
-	succeed_if (Key ("user/", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user/a", KEY_END).getNamespace () == "user", "namespace wrong");
-	// std::cout << Key ("user/a", KEY_END).getNamespace () << std::endl;
-	succeed_if (Key ("user/a/b/c", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user/a/../..", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user/a/../../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/a", KEY_END).getNamespace () == "user", "namespace wrong");
+	// std::cout << Key ("user:/a", KEY_END).getNamespace () << std::endl;
+	succeed_if (Key ("user:/a/b/c", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/a/../..", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/a/../../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");
 
-	succeed_if (Key ("dir/", KEY_END).getNamespace () == "dir", "namespace wrong");
-	succeed_if (Key ("proc/", KEY_END).getNamespace () == "proc", "namespace wrong");
-	succeed_if (Key ("spec/", KEY_END).getNamespace () == "spec", "namespace wrong");
-	succeed_if (Key ("system/", KEY_END).getNamespace () == "system", "namespace wrong");
+	succeed_if (Key ("dir:/", KEY_END).getNamespace () == "dir", "namespace wrong");
+	succeed_if (Key ("proc:/", KEY_END).getNamespace () == "proc", "namespace wrong");
+	succeed_if (Key ("spec:/", KEY_END).getNamespace () == "spec", "namespace wrong");
+	succeed_if (Key ("system:/", KEY_END).getNamespace () == "system", "namespace wrong");
 
-	succeed_if (Key ("dir/abc", KEY_END).getNamespace () == "dir", "namespace wrong");
-	succeed_if (Key ("proc/abc", KEY_END).getNamespace () == "proc", "namespace wrong");
-	succeed_if (Key ("spec/abc", KEY_END).getNamespace () == "spec", "namespace wrong");
-	succeed_if (Key ("system/abc", KEY_END).getNamespace () == "system", "namespace wrong");
+	succeed_if (Key ("dir:/abc", KEY_END).getNamespace () == "dir", "namespace wrong");
+	succeed_if (Key ("proc:/abc", KEY_END).getNamespace () == "proc", "namespace wrong");
+	succeed_if (Key ("spec:/abc", KEY_END).getNamespace () == "spec", "namespace wrong");
+	succeed_if (Key ("system:/abc", KEY_END).getNamespace () == "system", "namespace wrong");
 
 	succeed_if (Key ("/", KEY_END).getNamespace () == "/", "namespace wrong");
 	succeed_if (Key ("/abc", KEY_END).getNamespace () == "/", "namespace wrong");
@@ -706,50 +706,50 @@ TEST (key, comparision)
 	succeed_if (ke1 == ke2, "two empty keys are not the same?");
 	succeed_if (!(ke1 != ke2), "two empty keys are not the same?");
 
-	Key k1 ("user/a", KEY_END), k2 ("user/b", KEY_END);
+	Key k1 ("user:/a", KEY_END), k2 ("user:/b", KEY_END);
 
-	succeed_if (ke1 < k1, "compare empty key with user/a");
-	succeed_if (ke1 <= k1, "compare empty key with user/a");
-	succeed_if (!(ke1 > k1), "compare empty key with user/a");
-	succeed_if (!(ke1 >= k1), "compare empty key with user/a");
+	succeed_if (ke1 < k1, "compare empty key with user:/a");
+	succeed_if (ke1 <= k1, "compare empty key with user:/a");
+	succeed_if (!(ke1 > k1), "compare empty key with user:/a");
+	succeed_if (!(ke1 >= k1), "compare empty key with user:/a");
 
-	succeed_if (ke1 < k2, "compare empty key with user/b");
-	succeed_if (ke1 <= k2, "compare empty key with user/b");
-	succeed_if (!(ke1 > k2), "compare empty key with user/b");
-	succeed_if (!(ke1 >= k2), "compare empty key with user/b");
+	succeed_if (ke1 < k2, "compare empty key with user:/b");
+	succeed_if (ke1 <= k2, "compare empty key with user:/b");
+	succeed_if (!(ke1 > k2), "compare empty key with user:/b");
+	succeed_if (!(ke1 >= k2), "compare empty key with user:/b");
 
-	succeed_if (k1 < k2, "compare key user/a with user/b");
-	succeed_if (k1 <= k2, "compare key user/a with user/b");
-	succeed_if (!(k1 > k2), "compare key user/a with user/b");
-	succeed_if (!(k1 >= k2), "compare key user/a with user/b");
-	succeed_if (k1 != k2, "compare key user/a with user/b");
-	succeed_if (!(k1 == k2), "compare key user/a with user/b");
+	succeed_if (k1 < k2, "compare key user:/a with user:/b");
+	succeed_if (k1 <= k2, "compare key user:/a with user:/b");
+	succeed_if (!(k1 > k2), "compare key user:/a with user:/b");
+	succeed_if (!(k1 >= k2), "compare key user:/a with user:/b");
+	succeed_if (k1 != k2, "compare key user:/a with user:/b");
+	succeed_if (!(k1 == k2), "compare key user:/a with user:/b");
 
-	Key ko1 ("user/a", KEY_OWNER, "markus", KEY_END), ko2 ("user/b", KEY_OWNER, "max", KEY_END);
+	Key ko1 ("user:/a", KEY_OWNER, "markus", KEY_END), ko2 ("user:/b", KEY_OWNER, "max", KEY_END);
 
-	succeed_if (ko1 > k1, "compare key with user/a");
-	succeed_if (ko1 >= k1, "compare key with user/a");
-	succeed_if (!(ko1 < k1), "compare key with user/a");
-	succeed_if (!(ko1 <= k1), "compare key with user/a");
+	succeed_if (ko1 > k1, "compare key with user:/a");
+	succeed_if (ko1 >= k1, "compare key with user:/a");
+	succeed_if (!(ko1 < k1), "compare key with user:/a");
+	succeed_if (!(ko1 <= k1), "compare key with user:/a");
 
-	succeed_if (ko2 > k2, "compare key with user/b");
-	succeed_if (ko2 >= k2, "compare key with user/b");
-	succeed_if (!(ko2 < k2), "compare key with user/b");
-	succeed_if (!(ko2 <= k2), "compare key with user/b");
+	succeed_if (ko2 > k2, "compare key with user:/b");
+	succeed_if (ko2 >= k2, "compare key with user:/b");
+	succeed_if (!(ko2 < k2), "compare key with user:/b");
+	succeed_if (!(ko2 <= k2), "compare key with user:/b");
 
-	Key ko ("user/a", KEY_OWNER, "max", KEY_END);
+	Key ko ("user:/a", KEY_OWNER, "max", KEY_END);
 
-	succeed_if (ko1 < ko, "compare key with user/b");
-	succeed_if (ko1 <= ko, "compare key with user/b");
-	succeed_if (!(ko1 > ko), "compare key with user/b");
-	succeed_if (!(ko1 >= ko), "compare key with user/b");
+	succeed_if (ko1 < ko, "compare key with user:/b");
+	succeed_if (ko1 <= ko, "compare key with user:/b");
+	succeed_if (!(ko1 > ko), "compare key with user:/b");
+	succeed_if (!(ko1 >= ko), "compare key with user:/b");
 
-	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max");
-	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max");
-	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max");
-	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max");
-	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max");
-	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max");
+	succeed_if (ko1 < ko2, "compare key user:/a with     user:/a owner max");
+	succeed_if (ko1 <= ko2, "compare key user:/a with    user:/a owner max");
+	succeed_if (!(ko1 > ko2), "compare key user:/a with  user:/a owner max");
+	succeed_if (!(ko1 >= ko2), "compare key user:/a with user:/a owner max");
+	succeed_if (ko1 != ko2, "compare key user:/a with    user:/a owner max");
+	succeed_if (!(ko1 == ko2), "compare key user:/a with user:/a owner max");
 }
 
 
@@ -761,7 +761,7 @@ struct C
 TEST (key, move)
 {
 
-	std::unique_ptr<Key> u1 (new Key ("user/key3/1", KEY_END));
+	std::unique_ptr<Key> u1 (new Key ("user:/key3/1", KEY_END));
 	std::unique_ptr<Key> u2 (std::move (u1));
 	std::unique_ptr<Key> u3 = std::move (u1);
 

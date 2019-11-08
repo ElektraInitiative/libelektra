@@ -22,7 +22,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_instance_of Kdb::Key, k
       assert ! k.is_valid?
 
-      kname = "user/tmp/k1"
+      kname = "user:/tmp/k1"
       k = Kdb::Key.new kname
       assert_not_nil k
       assert_equal kname, k.name
@@ -33,18 +33,18 @@ class KdbKeyTestCases < Test::Unit::TestCase
   def test_key_new_valid_names
     assert_nothing_raised do
       assert Kdb::Key.new("/cascading/tmp/ks1").is_valid?
-      assert Kdb::Key.new("spec/tmp/ks1").is_valid?
-      assert Kdb::Key.new("proc/tmp/ks1").is_valid?
-      assert Kdb::Key.new("dir/tmp/ks1").is_valid?
-      assert Kdb::Key.new("user/tmp/ks1").is_valid?
-      assert Kdb::Key.new("system/tmp/ks1").is_valid?
+      assert Kdb::Key.new("spec:/tmp/ks1").is_valid?
+      assert Kdb::Key.new("proc:/tmp/ks1").is_valid?
+      assert Kdb::Key.new("dir:/tmp/ks1").is_valid?
+      assert Kdb::Key.new("user:/tmp/ks1").is_valid?
+      assert Kdb::Key.new("system:/tmp/ks1").is_valid?
       assert ! Kdb::Key.new("invalidname").is_valid?
     end
   end
 
   def test_key_new_with_options
     assert_nothing_raised do
-      name = "user/tmp/ks1"
+      name = "user:/tmp/ks1"
       k = Kdb::Key.new name
       assert k.is_valid?
       assert_equal name, k.name
@@ -87,7 +87,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
   def test_key_binary_value
     assert_nothing_raised do
 
-      name = "user/tmp/k1"
+      name = "user:/tmp/k1"
       v1 = "\000\000\001"
       v2 = "\002\003\004"
 
@@ -150,7 +150,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
   def test_key_get_set_meta
     assert_nothing_raised do
-      k = Kdb::Key.new "user/asdf"
+      k = Kdb::Key.new "user:/asdf"
 
       assert k.is_valid?
 
@@ -165,7 +165,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
   end
 
   def test_key_get_invalid_meta
-    k = Kdb::Key.new "user/asdf"
+    k = Kdb::Key.new "user:/asdf"
 
     assert_equal "", k["does_not_exist"]
 
@@ -174,7 +174,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
   def test_key_delete_meta
     assert_nothing_raised do
-      k = Kdb::Key.new "user/asdf"
+      k = Kdb::Key.new "user:/asdf"
 
       assert k.is_valid?
 
@@ -205,7 +205,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k = Kdb::Key.new
       assert_equal "", k.name
 
-      name = "user/tmp/k1"
+      name = "user:/tmp/k1"
       k.name = name
       assert_equal name, k.name
       assert_equal name.split('/').reverse[0], k.basename
@@ -254,15 +254,15 @@ class KdbKeyTestCases < Test::Unit::TestCase
     end
 
     assert_nothing_raised do
-      k.name = "user/keyname"
-      assert_equal "user/keyname", k.name
+      k.name = "user:/keyname"
+      assert_equal "user:/keyname", k.name
     end
 
 
   end
 
   def test_throw_KeyTypeMismatch_on_wrong_get_method
-    k = Kdb::Key.new "user/mykey"
+    k = Kdb::Key.new "user:/mykey"
     k.set_binary "\000\001\002"
 
     assert k.is_binary?
@@ -271,7 +271,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k.get_string
     end
 
-    k = Kdb::Key.new "user/mykey2"
+    k = Kdb::Key.new "user:/mykey2"
     k.set_string "hello world"
 
     assert ! k.is_binary?
@@ -283,8 +283,8 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
   def test_KeyName_comperators
     assert_nothing_raised do
-      k1 = Kdb::Key.new "user/test"
-      k2 = Kdb::Key.new "user/test"
+      k1 = Kdb::Key.new "user:/test"
+      k2 = Kdb::Key.new "user:/test"
 
       assert k1.name == k2.name
       assert k1 == k2
@@ -294,7 +294,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_equal 0, k1 <=> k2
 
 
-      k2 = Kdb::Key.new "user/anothertest"
+      k2 = Kdb::Key.new "user:/anothertest"
 
       assert k1.name != k2.name
       assert k1 != k2
@@ -310,9 +310,9 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
   def test_KeyName_hierarchy
     assert_nothing_raised do
-      k1 = Kdb::Key.new "user/app"
-      k2 = Kdb::Key.new "user/app/v1"
-      k3 = Kdb::Key.new "user/app/v1/conf1"
+      k1 = Kdb::Key.new "user:/app"
+      k2 = Kdb::Key.new "user:/app/v1"
+      k3 = Kdb::Key.new "user:/app/v1/conf1"
 
       assert k1.is_valid?
       assert k2.is_valid?
@@ -325,10 +325,10 @@ class KdbKeyTestCases < Test::Unit::TestCase
   end
 
   def test_Key_cloning
-    k = Kdb::Key.new "user/key1", value: "hello", meta1: "mv"
+    k = Kdb::Key.new "user:/key1", value: "hello", meta1: "mv"
 
     assert k.is_valid?
-    assert_equal "user/key1", k.name
+    assert_equal "user:/key1", k.name
     assert_equal "hello", k.value
     assert_equal "mv", k["meta1"]
 
@@ -336,21 +336,21 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
     assert k.__id__ != kc.__id__
     assert_instance_of Kdb::Key, kc
-    assert_equal "user/key1", kc.name
+    assert_equal "user:/key1", kc.name
     assert_equal "hello", kc.value
     assert_equal "mv", kc["meta1"]
 
-    kc.name = "user/key2"
+    kc.name = "user:/key2"
     kc.value = "world"
     kc["meta1"] = "vm"
     kc["meta2"] = "vm2"
 
-    assert_equal "user/key1", k.name
+    assert_equal "user:/key1", k.name
     assert_equal "hello", k.value
     assert_equal "mv", k["meta1"]
     assert ! k.has_meta?("meta2")
 
-    assert_equal "user/key2", kc.name
+    assert_equal "user:/key2", kc.name
     assert_equal "world", kc.value
     assert_equal "vm", kc["meta1"]
     assert_equal "vm2", kc["meta2"]
@@ -360,20 +360,20 @@ class KdbKeyTestCases < Test::Unit::TestCase
     assert kc.__id__ != kc2.__id__
     assert k.__id__ != kc2.__id__
 
-    kc2.name = "user/key3"
+    kc2.name = "user:/key3"
     kc2.value = "wonderful"
 
-    assert_equal "user/key2", kc.name
+    assert_equal "user:/key2", kc.name
     assert_equal "world", kc.value
 
-    assert_equal "user/key3", kc2.name
+    assert_equal "user:/key3", kc2.name
     assert_equal "wonderful", kc2.value
 
   end
 
   def test_meta_iterator
     assert_nothing_raised do
-      k = Kdb::Key.new("user/asdf",
+      k = Kdb::Key.new("user:/asdf",
                        owner: "me",
                        comment: "hello",
                        meta1: "meta1 value",
@@ -434,17 +434,17 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
       assert_equal ": ", k.to_s
 
-      k = Kdb::Key.new "user/key1", value: "somevalue"
+      k = Kdb::Key.new "user:/key1", value: "somevalue"
 
-      assert_equal "user/key1: somevalue", k.to_s
+      assert_equal "user:/key1: somevalue", k.to_s
 
       v = "\000\001\002"
-      k = Kdb::Key.new("user/binkey1",
+      k = Kdb::Key.new("user:/binkey1",
                         value: v,
                         flags: Kdb::KEY_BINARY)
 
       assert k.is_binary?
-      assert_equal "user/binkey1: (binary) length: #{v.length}", k.to_s
+      assert_equal "user:/binkey1: (binary) length: #{v.length}", k.to_s
     end
   end
 
@@ -465,7 +465,7 @@ EOF
       assert_equal '', err
 
 
-      k = Kdb::Key.new "user/key1", value: "somevalue", meta1: "metavalue"
+      k = Kdb::Key.new "user:/key1", value: "somevalue", meta1: "metavalue"
 
       out, err = capture_output { k.pretty_print }
 
@@ -479,7 +479,7 @@ EOF
       assert_equal '', err
 
 
-      k = Kdb::Key.new("user/key2",
+      k = Kdb::Key.new("user:/key2",
                        value: "\xff\xaa\x55\x01",
                        flags: Kdb::KEY_BINARY,
                        meta_1: "m1 value",

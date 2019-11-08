@@ -2,13 +2,13 @@ import kdb, unittest
 
 class Key(unittest.TestCase):
 	def setUp(self):
-		self.key = kdb.Key("user/foo/bar",
+		self.key = kdb.Key("user:/foo/bar",
 			kdb.KEY_VALUE, "value",
 			kdb.KEY_META,  "by",    "manuel",
 			kdb.KEY_META,  "owner", "myowner"
 			)
 
-		self.bkey = kdb.Key("system/bkey",
+		self.bkey = kdb.Key("system:/bkey",
 			kdb.KEY_FLAGS, kdb.KEY_BINARY,
 			kdb.KEY_VALUE, "bvalue\0\0",
 			kdb.KEY_END,
@@ -23,23 +23,23 @@ class Key(unittest.TestCase):
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
-		k = kdb.Key("spec/key")
+		k = kdb.Key("spec:/key")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
-		k = kdb.Key("proc/key")
+		k = kdb.Key("proc:/key")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
-		k = kdb.Key("dir/key")
+		k = kdb.Key("dir:/key")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
-		k = kdb.Key("user/key")
+		k = kdb.Key("user:/key")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
-		k = kdb.Key("system/key")
+		k = kdb.Key("system:/key")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
@@ -51,7 +51,7 @@ class Key(unittest.TestCase):
 		self.assertIsInstance(k, kdb.Key)
 		self.assertFalse(k.isValid())
 
-		k = kdb.Key("user/foo")
+		k = kdb.Key("user:/foo")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
@@ -63,28 +63,28 @@ class Key(unittest.TestCase):
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 		self.assertEqual(k, self.key)
-		k.name = "user/copied"
+		k.name = "user:/copied"
 		self.assertNotEqual(k, self.key)
 
 	def test_operator(self):
 		self.assertNotEqual(self.key, self.bkey)
 		self.assertEqual(kdb.Key(self.key), self.key)
-		self.assertEqual(self.key, kdb.Key("user/foo/bar", kdb.KEY_META, "owner", "myowner"))
+		self.assertEqual(self.key, kdb.Key("user:/foo/bar", kdb.KEY_META, "owner", "myowner"))
 		self.assertEqual(kdb.Key(), kdb.Key())
-		self.assertNotEqual(kdb.Key("user/key1"), kdb.Key("user/key2"))
+		self.assertNotEqual(kdb.Key("user:/key1"), kdb.Key("user:/key2"))
 
-		self.assertTrue(kdb.Key("user/key1") == kdb.Key("user/key1"))
-		self.assertTrue(kdb.Key("user/key1") != kdb.Key("user/key2"))
-		self.assertTrue(kdb.Key("user/key1") <  kdb.Key("user/key2"))
-		self.assertTrue(kdb.Key("user/key1") <= kdb.Key("user/key2"))
-		self.assertTrue(kdb.Key("user/key2") >  kdb.Key("user/key1"))
-		self.assertTrue(kdb.Key("user/key2") >= kdb.Key("user/key1"))
+		self.assertTrue(kdb.Key("user:/key1") == kdb.Key("user:/key1"))
+		self.assertTrue(kdb.Key("user:/key1") != kdb.Key("user:/key2"))
+		self.assertTrue(kdb.Key("user:/key1") <  kdb.Key("user:/key2"))
+		self.assertTrue(kdb.Key("user:/key1") <= kdb.Key("user:/key2"))
+		self.assertTrue(kdb.Key("user:/key2") >  kdb.Key("user:/key1"))
+		self.assertTrue(kdb.Key("user:/key2") >= kdb.Key("user:/key1"))
 
 		self.assertTrue(bool(self.key))
 		self.assertTrue(bool(self.bkey))
 
-		self.assertEqual(str(self.key),  "user/foo/bar")
-		self.assertEqual(str(self.bkey), "system/bkey")
+		self.assertEqual(str(self.key),  "user:/foo/bar")
+		self.assertEqual(str(self.bkey), "system:/bkey")
 
 		self.assertEqual(len(self.key),  3)
 		self.assertEqual(len(self.bkey), 2)
@@ -96,31 +96,31 @@ class Key(unittest.TestCase):
                     hash(kdb.Key("user/not_name_locked"))
 
 	def test_properties(self):
-		self.assertEqual(self.key.name,      "user/foo/bar")
+		self.assertEqual(self.key.name,      "user:/foo/bar")
 		self.assertEqual(self.key.value,     "value")
 		self.assertEqual(self.key.basename,  "bar")
 		self.assertEqual(self.key.fullname,  "user:myowner/foo/bar")
 
-		self.assertEqual(self.bkey.name,     "system/bkey")
+		self.assertEqual(self.bkey.name,     "system:/bkey")
 		self.assertEqual(self.bkey.value,    "bvalue\0\0")
 		self.assertEqual(self.bkey.basename, "bkey")
-		self.assertEqual(self.bkey.fullname, "system/bkey")
+		self.assertEqual(self.bkey.fullname, "system:/bkey")
 
-		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
+		k = kdb.Key("user:/key1", kdb.KEY_VALUE, "value")
 		self.assertFalse(k.isBinary())
 		self.assertIsNone(k.getMeta("binary"))
 
-		k.name     = "system/key2"
+		k.name     = "system:/key2"
 		k.basename = "key3"
 		k.binary   = "bvalue\0\0"
-		self.assertEqual(k.name,  "system/key3")
+		self.assertEqual(k.name,  "system:/key3")
 		self.assertEqual(k.value, "bvalue\0\0")
 		self.assertTrue(k.isBinary())
 		self.assertIsInstance(self.bkey.getMeta("binary"), kdb.Key)
 
-		self.assertEqual(kdb.Key("user/key1", "value").value, "value")
+		self.assertEqual(kdb.Key("user:/key1", "value").value, "value")
 
-		k = kdb.Key("user/key2")
+		k = kdb.Key("user:/key2")
 		with self.assertRaises(kdb.KeyInvalidName):
 			k.name = "foo"
 
@@ -129,12 +129,12 @@ class Key(unittest.TestCase):
 		self.assertTrue(self.bkey.isSystem())
 		self.assertTrue(self.key.isString())
 		self.assertTrue(self.bkey.isBinary())
-		self.assertTrue(self.key.isBelow(kdb.Key("user/foo")))
+		self.assertTrue(self.key.isBelow(kdb.Key("user:/foo")))
 		self.assertFalse(self.key.isNameLocked())
 		self.assertFalse(self.key.isValueLocked())
 		self.assertFalse(self.key.isMetaLocked())
 
-		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
+		k = kdb.Key("user:/key1", kdb.KEY_VALUE, "value")
 		self.assertEqual(k.get(), "value")
 
 	def test_meta(self):
@@ -151,7 +151,7 @@ class Key(unittest.TestCase):
 		self.assertTrue(bool(self.bkey.getMeta("binary")))
 		self.assertIsNone(self.bkey.getMeta("owner"))
 
-		k = kdb.Key("user/key1")
+		k = kdb.Key("user:/key1")
 		k.setMeta("foo", "bar")
 		self.assertEqual(k.getMeta("foo").value, "bar")
 
@@ -166,11 +166,11 @@ class Key(unittest.TestCase):
 		import copy
 		k = copy.copy(self.key)
 		self.assertEqual(k, self.key)
-		k.name = "user/copied"
+		k.name = "user:/copied"
 		self.assertNotEqual(k, self.key)
 
 	def test_iterator(self):
-		k = kdb.Key("user/a\/b/c")
+		k = kdb.Key("user:/a\/b/c")
 		self.assertEqual(sum(1 for _ in k),           3)
 		self.assertEqual(sum(1 for _ in reversed(k)), 3)
 		self.assertEqual(iter(k).value(),     "user")

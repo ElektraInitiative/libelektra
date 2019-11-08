@@ -115,7 +115,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 
 int main ()
 {
-	kdb::Key k ("user/sw/MyApp", KEY_END);
+	kdb::Key k ("user:/sw/MyApp", KEY_END);
 	std::cout << k << std::endl;
 
 	kdb::KeySet ks;
