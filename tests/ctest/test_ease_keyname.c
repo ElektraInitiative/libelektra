@@ -117,11 +117,6 @@ static void test_relative_equal (void)
 	test_relative ("", child, parent);
 
 	keyDel (child);
-	child = keyNew ("system:/parentChild/#123", KEY_END);
-	// expected according to it's spec
-	test_relative ("23", child, parent);
-
-	keyDel (child);
 	keyDel (parent);
 }
 

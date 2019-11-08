@@ -80,9 +80,9 @@ static void test_elektraKeyNameValidate (void)
 	printf ("test validate key name\n");
 
 	TEST_VALIDATE_NAME_OK ("normalKey", "normal key");
-	TEST_VALIDATE_NAME_OK ("nor\\malKey", "stray escape");
-	TEST_VALIDATE_NAME_OK ("nor\\\\malKey", "stray escape");
-	TEST_VALIDATE_NAME_OK ("nor\\\\mal\\Key", "stray escape");
+	TEST_VALIDATE_NAME_NOK ("nor\\malKey", "invalid escape");
+	TEST_VALIDATE_NAME_OK ("nor\\\\malKey", "real escape");
+	TEST_VALIDATE_NAME_NOK ("nor\\\\mal\\Key", "invalid escape");
 	TEST_VALIDATE_NAME_NOK ("danglingKey\\", "dangling escape");
 	TEST_VALIDATE_NAME_OK ("escapedEKey\\\\", "escape at end");
 	TEST_VALIDATE_NAME_NOK ("danglingKey\\\\\\", "dangling escape");
@@ -137,29 +137,27 @@ static void test_elektraKeyNameUnescape (void)
 {
 	printf ("test unescape key name \n");
 
-	char * dest = elektraMalloc (3);
-	dest[0] = KEY_NS_CASCADING;
-	dest[1] = '\0';
-	dest[2] = '\0';
+	char buf[1024];
+	char * dest = buf;
 	char * p = NULL;
 
-	elektraKeyNameUnescape ("abc", &dest);
+	elektraKeyNameUnescape ("/abc", &dest);
 	succeed_if_same_string ("abc", dest + 2);
 
-	elektraKeyNameUnescape ("\\\\.", &dest);
+	elektraKeyNameUnescape ("/\\\\.", &dest);
 	succeed_if_same_string ("\\.", dest + 2);
 
-	elektraKeyNameUnescape ("abc/def", &dest);
+	elektraKeyNameUnescape ("/abc/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("abc\\/def", &dest);
+	elektraKeyNameUnescape ("/abc\\/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc/def", p);
 
-	elektraKeyNameUnescape ("abc/%/def", &dest);
+	elektraKeyNameUnescape ("/abc/%/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -167,7 +165,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 1;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("abc/\\%/def", &dest);
+	elektraKeyNameUnescape ("/abc/\\%/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -175,7 +173,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("abc/\\./def", &dest);
+	elektraKeyNameUnescape ("/abc/\\./def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -183,7 +181,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("abc/\\../def", &dest);
+	elektraKeyNameUnescape ("/abc/\\../def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -191,7 +189,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 3;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("abc/\\\\../def", &dest);
+	elektraKeyNameUnescape ("/abc/\\\\../def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -199,7 +197,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 4;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("a\\\\c/\\../d\\\\f", &dest);
+	elektraKeyNameUnescape ("/a\\\\c/\\../d\\\\f", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("a\\c", p);
 	p += 4;
@@ -207,7 +205,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 3;
 	succeed_if_same_string ("d\\f", p);
 
-	elektraKeyNameUnescape ("\\\\bc/\\%/\\\\ef", &dest);
+	elektraKeyNameUnescape ("/\\\\bc/\\%/\\\\ef", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("\\bc", p);
 	p += 4;
@@ -215,7 +213,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("\\ef", p);
 
-	elektraKeyNameUnescape ("\\\\b/\\%/\\\\e", &dest);
+	elektraKeyNameUnescape ("/\\\\b/\\%/\\\\e", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("\\b", p);
 	p += 3;
@@ -223,7 +221,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("\\e", p);
 
-	elektraKeyNameUnescape ("\\\\b/\\\\%/\\\\e", &dest);
+	elektraKeyNameUnescape ("/\\\\b/\\\\%/\\\\e", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("\\b", p);
 	p += 3;
@@ -231,35 +229,33 @@ static void test_elektraKeyNameUnescape (void)
 	p += 3;
 	succeed_if_same_string ("\\e", p);
 
-	elektraKeyNameUnescape ("a\\/\\/def", &dest);
+	elektraKeyNameUnescape ("/a\\/\\/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("a//def", p);
 
-	elektraKeyNameUnescape ("\\/\\/\\/def", &dest);
+	elektraKeyNameUnescape ("/\\/\\/\\/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("///def", p);
 
-	elektraKeyNameUnescape ("\\/\\/\\/def", &dest);
+	elektraKeyNameUnescape ("/\\/\\/\\/def", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("///def", p);
 
-	elektraKeyNameUnescape ("\\/\\/\\/\\/\\/\\/", &dest);
+	elektraKeyNameUnescape ("/\\/\\/\\/\\/\\/\\/", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("//////", p);
 
-	elektraKeyNameUnescape ("\\/\\/%\\/\\/\\/", &dest);
+	elektraKeyNameUnescape ("/\\/\\/%\\/\\/\\/", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("//%///", p);
 
-	elektraKeyNameUnescape ("\\/\\/..\\/\\/", &dest);
+	elektraKeyNameUnescape ("/\\/\\/..\\/\\/", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("//..//", p);
 
-	elektraKeyNameUnescape ("bar\\/foo_bar\\/", &dest);
+	elektraKeyNameUnescape ("/bar\\/foo_bar\\/", &dest);
 	p = dest + 2;
 	succeed_if_same_string ("bar/foo_bar/", p);
-
-	elektraFree (dest);
 }
 
 static void test_keySetNamespace (void)
