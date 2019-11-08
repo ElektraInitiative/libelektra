@@ -56,10 +56,10 @@
  *
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */
-#define KDB_SYSTEM_ELEKTRA "system/elektra"
+#define KDB_SYSTEM_ELEKTRA "system:/elektra"
 
 /** All keys below this are used for cache metadata in the global keyset */
-#define KDB_CACHE_PREFIX "system/elektra/cache"
+#define KDB_CACHE_PREFIX "system:/elektra/cache"
 
 
 #ifdef __cplusplus
@@ -348,7 +348,7 @@ struct _KDB
  * So this holds a list of set and get plugins.
  *
  * Backends are put together through the configuration
- * in system/elektra/mountpoints
+ * in system:/elektra/mountpoints
  *
  * See kdb mount tool to mount new backends.
  *
@@ -402,8 +402,8 @@ struct _Backend
 struct _Plugin
 {
 	KeySet * config; /*!< This keyset contains configuration for the plugin.
-	 Direct below system/ there is the configuration supplied for the backend.
-	 Direct below user/ there is the configuration supplied just for the
+	 Direct below system:/ there is the configuration supplied for the backend.
+	 Direct below user:/ there is the configuration supplied just for the
 	 plugin, which should be of course preferred to the backend configuration.
 	 The keys inside contain information like /path which path should be used
 	 to write configuration to or /host to which host packets should be send.
