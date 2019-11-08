@@ -367,7 +367,7 @@ bool processOptions (struct Specification * spec, Key * specKey, Key ** keyWithO
 
 		// no other way to create Key with name "opt"
 		Key * k = keyNew ("/", KEY_META, "opt", "", KEY_END);
-		opts = ksNew (2, keyNew ("/#", KEY_END), keyGetMeta (k, "opt"), KS_END);
+		opts = ksNew (2, keyNew ("meta:/#", KEY_END), keyGetMeta (k, "opt"), KS_END);
 		keyDel (k);
 	}
 
@@ -461,7 +461,7 @@ bool processOptions (struct Specification * spec, Key * specKey, Key ** keyWithO
 bool readOptionData (struct OptionData * optionData, Key * key, const char * metaKey, Key * errorKey)
 {
 	// two slashes in string because array index is inserted in-between
-	char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("opt//flagvalue") + 1];
+	char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("meta:/opt//flagvalue") + 1];
 	strncpy (metaBuffer, metaKey, ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
 	strncat (metaBuffer, "/arg", 11);			   // 11 = remaining space in metaBuffer
 
@@ -1309,7 +1309,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 	if (value[0] != '#')
 	{
 		// add dummy key to mimic elektraMetaArrayToKS
-		return ksNew (2, keyNew ("/#", KEY_END), k, KS_END);
+		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
 	}
 
 	Key * testKey = keyDup (k);
@@ -1321,7 +1321,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 	if (test == NULL)
 	{
 		// add dummy key to mimic elektraMetaArrayToKS
-		return ksNew (2, keyNew ("/#", KEY_END), k, KS_END);
+		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
 	}
 
 	return elektraMetaArrayToKS (key, metaName);
