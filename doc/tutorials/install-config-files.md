@@ -7,7 +7,7 @@ First of all, we create a small example configuration file.
 To do so, we first create a temporary file and store its location in Elektra.
 
 ```sh
-kdb set user/tests/tempfiles/firstFile $(mktemp --tmpdir file-XXXXX)
+kdb set user/tests/tempfiles/firstFile $(mktemp)
 echo -e "keyA=a\nkeyB=b\nkeyC=c" > `kdb get user/tests/tempfiles/firstFile`
 ```
 
@@ -33,7 +33,8 @@ You have to enter the paths accordingly.
 Read the tutorials on mounting and namespaces if you are not sure what this means.
 
 ```sh
-kdb set user/tests/tempfiles/secondFile $(echo $(mktemp -d --tmpdir dir-for-file-XXXXX)/$(basename $(kdb get user/tests/tempfiles/firstFile)))
+kdb set user/tests/tempfiles/
+kdb set user/tests/tempfiles/secondFile $(echo $(mktemp -d)/$(basename $(kdb get user/tests/tempfiles/firstFile)))
 echo -e "keyA=a\nkeyB=b\nkeyC=Y" > `kdb get user/tests/tempfiles/secondFile`
 kdb install-config-file system/tests/installing $(kdb get user/tests/tempfiles/secondFile) ini
 ```
