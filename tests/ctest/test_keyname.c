@@ -15,19 +15,25 @@
 	{                                                                                                                                  \
 		size_t csize = prefix == NULL ? 0 : sizeof (prefix);                                                                       \
 		size_t usize = usizeOld;                                                                                                   \
-		succeed_if_fmt (elektraKeyNameValidate (name, prefix, &csize, &usize), "'%s' SHOULD BE a valid key name", name);           \
-		succeed_if_fmt (csize == csizeNew, "'%s': canonical size wrong (act != exp): %zu != %zu", name, csize, (size_t) csizeNew); \
-		succeed_if_fmt (usize == usizeNew, "'%s': unescaped size wrong (act != exp): %zu != %zu", name, usize, (size_t) usizeNew); \
+		succeed_if_fmt (elektraKeyNameValidate (name, prefix, &csize, &usize), "'%s' + '%s' SHOULD BE a valid key name",           \
+				prefix == NULL ? "" : prefix, name);                                                                       \
+		succeed_if_fmt (csize == csizeNew, "'%s' + '%s': canonical size wrong (act != exp): %zu != %zu",                           \
+				prefix == NULL ? "" : prefix, name, csize, (size_t) csizeNew);                                             \
+		succeed_if_fmt (usize == usizeNew, "'%s' + '%s': unescaped size wrong (act != exp): %zu != %zu",                           \
+				prefix == NULL ? "" : prefix, name, usize, (size_t) usizeNew);                                             \
 	} while (0)
 
-#define TEST_VALIDATE_ERROR(name, prefix)                                                                                                  \
+#define TEST_VALIDATE_ERROR(name, prefix, usizeOld)                                                                                        \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		size_t c = prefix == NULL ? 1234 : sizeof (prefix);                                                                        \
-		size_t u = 5678;                                                                                                           \
-		succeed_if_fmt (!elektraKeyNameValidate (name, prefix, &c, &u), "'%s' SHOULD NOT BE a valid key name", name);              \
-		succeed_if_fmt (c == (prefix == NULL ? 1234 : sizeof (prefix)), "'%s': ERROR case MUST NOT change canonical size", name);  \
-		succeed_if_fmt (u == 5678, "'%s': ERROR case MUST NOT change unescaped size", name);                                       \
+		size_t u = usizeOld;                                                                                                       \
+		succeed_if_fmt (!elektraKeyNameValidate (name, prefix, &c, &u), "'%s' + '%s' SHOULD NOT BE a valid key name",              \
+				prefix == NULL ? "" : prefix, name);                                                                       \
+		succeed_if_fmt (c == (prefix == NULL ? 1234 : sizeof (prefix)), "'%s' + '%s': ERROR case MUST NOT change canonical size",  \
+				prefix == NULL ? "" : prefix, name);                                                                       \
+		succeed_if_fmt (u == usizeOld, "'%s' + '%s': ERROR case MUST NOT change unescaped size", prefix == NULL ? "" : prefix,     \
+				name);                                                                                                     \
 	} while (0)
 
 static void test_validate (void)
@@ -45,9 +51,7 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/ab", NULL, 0, 4, 5);
 	TEST_VALIDATE_OK ("/abc", NULL, 0, 5, 6);
 
-	TEST_VALIDATE_OK ("/a", NULL, 3, 3, 4);
-	TEST_VALIDATE_OK ("/ab", NULL, 3, 4, 5);
-	TEST_VALIDATE_OK ("/abc", NULL, 3, 5, 6);
+	TEST_VALIDATE_OK ("/%", NULL, 0, 3, 3);
 
 	TEST_VALIDATE_OK ("/abc/def/ghi", NULL, 0, 13, 14);
 	TEST_VALIDATE_OK ("user:/abc/def/ghi", NULL, 0, 18, 14);
@@ -121,6 +125,15 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/abc/\\../ghi", NULL, 0, 13, 13);
 	TEST_VALIDATE_OK ("user:/abc/\\../ghi", NULL, 0, 18, 13);
 
+	TEST_VALIDATE_OK ("/abc/\\#_10/ghi", NULL, 0, 15, 15);
+	TEST_VALIDATE_OK ("user:/abc/\\#_10/ghi", NULL, 0, 20, 15);
+
+	TEST_VALIDATE_OK ("/abc/\\#0/ghi", NULL, 0, 13, 13);
+	TEST_VALIDATE_OK ("user:/abc/\\#0/ghi", NULL, 0, 18, 13);
+
+	TEST_VALIDATE_OK ("/abc/\\.def/ghi", NULL, 0, 15, 15);
+	TEST_VALIDATE_OK ("user:/abc/\\.def/ghi", NULL, 0, 20, 15);
+
 	TEST_VALIDATE_OK ("/abc/\\#10/ghi", NULL, 0, 14, 14);
 	TEST_VALIDATE_OK ("user:/abc/\\#10/ghi", NULL, 0, 19, 14);
 
@@ -139,6 +152,12 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/abc/de\\\\f/ghi", NULL, 0, 15, 15);
 	TEST_VALIDATE_OK ("user:/abc/de\\\\f/ghi", NULL, 0, 20, 15);
 
+	TEST_VALIDATE_OK ("/abc/de\\\\\\\\f/ghi", NULL, 0, 17, 16);
+	TEST_VALIDATE_OK ("user:/abc/de\\\\\\\\f/ghi", NULL, 0, 22, 16);
+
+	TEST_VALIDATE_OK ("/abc/de\\\\\\\\\\\\f/ghi", NULL, 0, 19, 17);
+	TEST_VALIDATE_OK ("user:/abc/de\\\\\\\\\\\\f/ghi", NULL, 0, 24, 17);
+
 	TEST_VALIDATE_OK ("/abc/def/ghi\\/", NULL, 0, 15, 15);
 	TEST_VALIDATE_OK ("user:/abc/def/ghi\\/", NULL, 0, 20, 15);
 
@@ -153,6 +172,9 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("/abc/def/ghi/%", NULL, 0, 15, 15);
 	TEST_VALIDATE_OK ("user:/abc/def/ghi/%", NULL, 0, 20, 15);
+
+	TEST_VALIDATE_OK ("", "/", 3, 2, 3);
+	TEST_VALIDATE_OK ("", "user:/", 3, 7, 3);
 
 	TEST_VALIDATE_OK ("", "/abc", 6, 5, 6);
 	TEST_VALIDATE_OK ("/", "/abc", 6, 5, 6);
@@ -174,12 +196,10 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("..", "/abc", 6, 2, 3);
 	TEST_VALIDATE_OK ("/../..", "/abc/def", 10, 2, 3);
 	TEST_VALIDATE_OK ("../..", "/abc/def", 10, 2, 3);
-	TEST_VALIDATE_OK ("/def/../..", "/abc", 10, 2, 3);
-	TEST_VALIDATE_OK ("def/../..", "/abc", 10, 2, 3);
-	TEST_VALIDATE_OK ("/./../..", "/abc", 10, 2, 3);
-	TEST_VALIDATE_OK ("./../..", "/abc", 10, 2, 3);
-	TEST_VALIDATE_OK ("/%/../..", "/abc", 10, 2, 3);
-	TEST_VALIDATE_OK ("%/../..", "/abc", 10, 2, 3);
+	TEST_VALIDATE_OK ("/def/../..", "/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("def/../..", "/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("/%/../..", "/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("%/../..", "/abc", 6, 2, 3);
 
 	TEST_VALIDATE_OK ("user/", "/", 3, 6, 7);
 	TEST_VALIDATE_OK ("user:", "/", 3, 7, 8);
@@ -187,81 +207,79 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("abc", "user:/", 3, 10, 6);
 	TEST_VALIDATE_OK ("abc", "user:/abc", 6, 14, 10);
-	TEST_VALIDATE_OK ("..", "user:/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("..", "user:/abc", 6, 7, 3);
 
 	succeed_if (!elektraKeyNameValidate (NULL, NULL, NULL, NULL), "(NULL) SHOULD NOT BE a valid key name");
 
-	TEST_VALIDATE_ERROR ("", NULL);
-	TEST_VALIDATE_ERROR ("user/", NULL);
-	TEST_VALIDATE_ERROR ("user:", NULL);
-	TEST_VALIDATE_ERROR ("user", NULL);
+	TEST_VALIDATE_ERROR ("", NULL, 0);
+	TEST_VALIDATE_ERROR ("user/", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:", NULL, 0);
+	TEST_VALIDATE_ERROR ("user", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("user:abc:/", NULL);
-	TEST_VALIDATE_ERROR ("abc:/", NULL);
-	TEST_VALIDATE_ERROR ("abc", NULL);
+	TEST_VALIDATE_ERROR ("user:abc:/", NULL, 0);
+	TEST_VALIDATE_ERROR ("abc:/", NULL, 0);
+	TEST_VALIDATE_ERROR ("abc", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/..", NULL);
-	TEST_VALIDATE_ERROR ("user:/..", NULL);
-	TEST_VALIDATE_ERROR ("/abc/../..", NULL);
+	TEST_VALIDATE_ERROR ("/..", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/..", NULL, 0);
+	TEST_VALIDATE_ERROR ("/abc/../..", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/../..", "/abc");
+	TEST_VALIDATE_ERROR ("/../..", "/abc", 6);
+	TEST_VALIDATE_ERROR ("@", "/abc", 6);
 
-	TEST_VALIDATE_ERROR ("/abc/\\.def/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/\\.def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#92233720368547758071/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#92233720368547758071/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/\\.../ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/\\.../ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#9223372036854775808/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#9223372036854775808/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/\\..../ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/\\..../ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#__________________9223372036854775808/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#__________________9223372036854775808/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#92233720368547758071/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#92233720368547758071/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#01/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#01/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#9223372036854775808/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#9223372036854775808/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#__10/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#__10/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#__________________9223372036854775808/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#__________________9223372036854775808/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#_100/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#_100/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#01/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#01/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/#___10/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/#___10/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#__10/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#__10/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#_100/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#_100/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/d\\.ef/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\.ef/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/#___10/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/#___10/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/d\\#ef/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\#ef/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/d\\%ef/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\%ef/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/d\\.ef/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/d\\.ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/d\\@ef/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/d\\@ef/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/d\\#ef/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/d\\#ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/@/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/@/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/d\\%ef/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/d\\%ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/@def/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/@def/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/d\\@ef/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/d\\@ef/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/%def/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/%def/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/@/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/@/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL, 0);
+	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL, 0);
 
-	TEST_VALIDATE_ERROR ("/abc/@def/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/@def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("/./../..", "/abc", 6);
+	TEST_VALIDATE_ERROR ("./../..", "/abc", 6);
 
-	TEST_VALIDATE_ERROR ("/abc/%def/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/%def/ghi", NULL);
-
-	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL);
-	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL);
+	TEST_VALIDATE_ERROR ("..", "/", 3);
+	TEST_VALIDATE_ERROR ("..", "user:/", 3);
 }
 
 #define TEST_CANONICALIZE_OK(name, prefix, cname)                                                                                          \

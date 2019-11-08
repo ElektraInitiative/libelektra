@@ -432,300 +432,296 @@ ssize_t keySetName (Key * key, const char * newName)
 	return elektraKeySetName (key, newName, 0);
 }
 
-static int elektraKeyNameValidateNamespace (const char ** namePtr, size_t * usizePtr)
-{
-	const char * name = *namePtr;
-
-	char * end = strchr (name, ':');
-	if (end == NULL) return 0;
-	size_t len = end - name;
-	if (elektraReadNamespace (name, len - 1) == KEY_NS_NONE) return 0;
-	*namePtr = end + 1;
-	*usizePtr -= len; // unescaped namespace is always 1 long
-	return *(end + 1) == '/';
-}
-
-static int elektraKeyNameValidateArrayPart (const char ** namePtr, size_t * sizePtr, size_t * usizePtr)
-{
-	const char * name = *namePtr;
-
-	size_t underscores = 0;
-	while (name[underscores] == '_')
-	{
-		++underscores;
-	}
-
-	size_t digits = 0;
-	while (isdigit (name[underscores + digits]))
-	{
-		++digits;
-	}
-
-	*namePtr = name + underscores + digits;
-	// add missing underscores to sizes
-	// NOTE: this is always 0 or (digits - 1), if we return 1
-	*sizePtr += (digits - 1) - underscores;
-	*usizePtr += (digits - 1) - underscores;
-
-	return **namePtr == '/' && digits > 0 && (underscores == 0 || underscores == digits - 1) &&
-	       (digits < 19 || (digits == 19 && strncmp (&name[underscores], "9223372036854775807", 19) <= 0)) &&
-	       (name[underscores] != '0' || digits == 1);
-}
-
-static int elektraKeyNameValidateOtherPart (const char ** namePtr, size_t * usizePtr)
-{
-	const char * name = *namePtr;
-
-	const char * special = name;
-	while ((special = strpbrk (special, "/\\")) != NULL)
-	{
-		if (*special == '\\')
-		{
-			++special;   // skip backslash
-			--*usizePtr; // ... and remove from unescaped size
-			if (*special != '/' && *special != '\\') return 0;
-			++special; // skip escaped char
-		}
-		else if (*special == '/')
-		{
-			// end of part, can't be escaped; that would be caught above
-			break;
-		}
-		else
-		{
-			// shouldn't happen, we are only searching for '\\' and '/'
-			ELEKTRA_ASSERT (0, "WAIT WHAT??");
-		}
-	}
-
-	*namePtr = special;
-	return 1;
-}
-
 int elektraKeyNameValidate (const char * name, const char * prefix, size_t * sizePtr, size_t * usizePtr)
 {
 	// TODO (kodebach): return required buffer size
-	if (name == NULL || strlen (name) == 0) return 0;
+	if (name == NULL || (strlen (name) == 0 && prefix == NULL)) return 0;
 
-	const char * nameStart = name;
+	size_t size = strlen (name) + 1;  // +1 for terminator at end or separator at beginning
+	size_t usize = strlen (name) + 1; // +1 for terminator at end or separator at beginning
 
-	size_t size, usize;
-	size = usize = strlen (name) + 1; // +1 either for terminating zero, or starting separator (if we have prefix)
-
-	if (prefix != NULL)
+	if (prefix == NULL)
 	{
-		size += *sizePtr;
-		usize += *usizePtr;
+		if (*name != '/')
+		{
+			// check namespace
+			const char * colon = strchr (name, ':');
+
+			if (colon == NULL) return 0;
+			if (elektraReadNamespace (name, colon - name - 1) == KEY_NS_NONE) return 0;
+
+			usize -= colon - name; // unescaped namespace is always 1 long
+			name = colon + 1;
+		}
+		else
+		{
+			++usize; // unescaped namespace is always 1 long
+		}
+
+		if (*name != '/') return 0;
+		++name;
 	}
+
+	const char * pathStart = name;
+	size_t pathLen = strlen (pathStart);
+
+	// validate path in reverse because of ..
+	name = pathStart + pathLen - 1;
 
 	enum
 	{
-		START,
-		NAMESPACE,
-		FIRST_PART,
-		PART,
-		ESCAPED_START_PART,
-		EMPTY_PART,
-		ARRAY_PART,
-		DOT_PART,
-		OTHER_PART
-	} state = prefix == NULL ? START : PART;
+		PART_END,
+		DIGITS,
+		UNDERSCORES,
+		OTHER
+	} state = PART_END;
 
-	if (prefix != NULL)
-	{
-		// skip all leading slashes
-		size_t leadingSlashes = strspn (nameStart, "/");
-		size -= leadingSlashes;
-		usize -= leadingSlashes;
-		name += leadingSlashes;
-	}
-
-	if (prefix != NULL && *usizePtr == 3)
-	{
-		// namespace only base key, no need to add separator
-		--size;
-		--usize;
-	}
-
-	while (*name != '\0')
+	char prev = '\0';
+	int hadEscape = 1;
+	size_t partLen = 0;
+	size_t digits = 0;
+	size_t underscores = 0;
+	size_t skip = 0;
+	while (name >= pathStart)
 	{
 		char cur = *name;
+
+		if (skip > 0)
+		{
+			// ingoring stuff because of ..
+			--size;
+			--usize;
+		}
+
 		switch (state)
 		{
-		case START:
-			if (cur == '/')
+		case PART_END:
+			if (isdigit (cur))
 			{
-				++usize; // increment for unescaped namespace
-				state = FIRST_PART;
+				digits = 1;
+				partLen = 1;
+				state = DIGITS;
+			}
+			else if (cur == '/' && *(name - 1) != '\\')
+			{
+				--size;
+				--usize;
 			}
 			else
 			{
-				state = NAMESPACE;
-				continue; // don't increment, check current again
+				partLen = 1;
+				state = OTHER;
 			}
 			break;
-		case NAMESPACE:
-			if (!elektraKeyNameValidateNamespace (&name, &usize)) return 0;
-			// function call checks slash as well -> we expect a part after increment
-			state = FIRST_PART;
+		case DIGITS:
+			if (isdigit (cur))
+			{
+				++digits;
+			}
+			else
+			{
+				if (cur == '_')
+				{
+					underscores = 1;
+					state = UNDERSCORES;
+				}
+				else
+				{
+					state = OTHER;
+				}
+			}
 			break;
-		case FIRST_PART:
-			// first part is same as others, but special handling if we exit the loop in state FIRST_PART
-		case PART:
+		case UNDERSCORES:
+			if (cur == '_')
+			{
+				++underscores;
+				state = UNDERSCORES;
+			}
+			else
+			{
+				state = OTHER;
+			}
+			break;
+		case OTHER:
+			digits = 0;
+			underscores = 0;
+			break;
+		}
+
+		--name;
+
+		if ((cur == '\\' && *name != '\\') || (cur == '\\' && *name == '\\' && !hadEscape))
+		{
+			hadEscape = 1;
+			if (*name == '/')
+			{
+				if (prev != '/' && prev != '\\' && prev != '.' && prev != '#' && prev != '%' && prev != '@')
+				{
+					// illegal escape sequence (at start of part)
+					return 0;
+				}
+			}
+			else
+			{
+				if (prev != '/' && prev != '\\')
+				{
+					// illegal escape sequence (in middle of part)
+					return 0;
+				}
+			}
+
+			--usize;
+		}
+		else if (cur == '\\')
+		{
+			hadEscape = 0;
+		}
+
+		if (state != PART_END && (name < pathStart || (*name == '/' && *(name - 1) != '\\')))
+		{
+			// reached start of part
 			switch (cur)
 			{
-			case '\\':
-				--usize;
-				state = ESCAPED_START_PART;
-				break;
 			case '#':
-				state = ARRAY_PART;
+				if (digits == 0 || (underscores > 0 && underscores != digits - 1) || digits > 19 ||
+				    (digits == 19 && strncmp (&name[2 + underscores], "9223372036854775807", 19) > 0) ||
+				    (name[2 + underscores] == '0' && digits != 1))
+				{
+					// invalid array part
+					return 0;
+				}
+
+				// account for potentially missing underscores
+				size += (digits - 1) - underscores;  // digits - 1 or 0
+				usize += (digits - 1) - underscores; // digits - 1 or 0
+
+				if (skip > 0)
+				{
+					// finished skipping a part
+					--skip;
+
+					// subtract slash
+					--size;
+					--usize;
+				}
+
 				break;
 			case '%':
+				if (partLen != 1) return 0;
+
+				if (skip > 0)
+				{
+					// finished skipping a part
+					--skip;
+
+					// subtract slash
+					--size;
+					--usize;
+				}
+
 				--usize;
-				state = EMPTY_PART;
-				break;
-			case '.':
-				state = DOT_PART;
 				break;
 			case '@':
 				// reserved
 				return 0;
+			case '.':
+				if (partLen == 1)
+				{
+					// part was '/./'
+					size -= 2;
+					usize -= 2;
+				}
+				else if (partLen == 2 && prev == '.')
+				{
+					// part was '/../'
+					size -= 3;
+					usize -= 3;
+					++skip;
+				}
+				break;
 			default:
-				state = OTHER_PART;
+				if (skip > 0)
+				{
+					// finished skipping a part
+					--skip;
+
+					// subtract slash
+					--size;
+					--usize;
+				}
 				break;
 			}
-			break;
-		case ESCAPED_START_PART:
-			if (cur == '.')
-			{
-				// only '..' or '.' may be escaped
-				if (*(name + 1) == '.')
-				{
-					if (*(name + 2) != '\0' && *(name + 2) != '/') return 0;
-				}
-				else
-				{
-					if (*(name + 1) != '\0' && *(name + 1) != '/') return 0;
-				}
-			}
-			else if (strchr ("#%@/\\", cur) == NULL)
-			{
-				// only '.' and the above characters may be escaped (at part start)
-				return 0;
-			}
-			// ... and then like any other part
-			state = OTHER_PART;
-			break;
-		case EMPTY_PART:
-			// must end immediately
-			if (cur != '/') return 0;
-			state = PART;
-			break;
-		case ARRAY_PART:
-			if (!elektraKeyNameValidateArrayPart (&name, &size, &usize)) return 0;
-			// function call checks slash as well -> we expect another part after increment
-			state = PART;
-			break;
-		case DOT_PART:
-		{
-			// we had one dot already, if we are in this state
-			if (cur == '.' && (*(name + 1) == '/' || *(name + 1) == '\0'))
-			{
-				// part is '/../'
 
-				++name; // skip dot
-
-				const char * base = nameStart;
-				const char * lastPartEnd = name - 3;
-				if (lastPartEnd < nameStart)
-				{
-					// we are in the first part, use prefix
-					if (prefix == NULL) return 0;
-					lastPartEnd = prefix + *sizePtr - 1;
-					base = prefix;
-				}
-
-				const char * lastPartStart = lastPartEnd;
-				do
-				{
-					--lastPartStart;
-					while (*lastPartStart != '/' && lastPartStart > nameStart)
-					{
-						--lastPartStart;
-					}
-					// skip escaped slashes
-				} while (*(lastPartStart - 1) == '\\' && lastPartStart > nameStart);
-
-				if (lastPartStart <= base && *lastPartStart != '/')
-				{
-					// no part to remove
-					return 0;
-				}
-
-				// subtract last part size from sizes
-				size -= lastPartEnd - lastPartStart;
-				usize -= lastPartEnd - lastPartStart;
-
-				// subtract current part size from  sizes
-				size -= 3;
-				usize -= 3;
-				state = PART;
-			}
-			else if (cur == '/')
-			{
-				// part is '/./'
-
-				// subtract current part size from  sizes
-				size -= 2;
-				usize -= 2;
-				state = PART;
-			}
-			else
-			{
-				state = OTHER_PART;
-				continue; // don't increment, check current again
-			}
-			break;
-		}
-		case OTHER_PART:
-			if (!elektraKeyNameValidateOtherPart (&name, &usize)) return 0;
-			if (name == NULL)
-			{
-				// reached end of string during validation
-				*sizePtr = size;
-				*usizePtr = usize;
-				return 1;
-			}
-			// continue with next part
-			state = PART;
-			break;
+			if (name != pathStart) --name; // move past slash
+			state = PART_END;
 		}
 
-		++name;
+		++partLen;
+		prev = cur;
+	}
 
-		// skip additional slashes at start of part
-		while ((state == PART || state == FIRST_PART) && *name == '/')
+	if (prefix == NULL)
+	{
+		if (skip > 0) return 0; // too many .. parts
+	}
+	else
+	{
+		if (size == 1 && *usizePtr != 3)
 		{
+			// didn't add anything and not namespace root -> no need for separator
 			--size;
 			--usize;
-			++name;
 		}
-	}
 
-	if (state == PART)
-	{
-		// have trailing slash
-		*sizePtr = size - 1;
-		*usizePtr = usize - 1;
-		return 1;
-	}
+		size += *sizePtr;
+		usize += *usizePtr;
 
-	if (state == DOT_PART)
-	{
-		*sizePtr = size - 2;
-		*usizePtr = usize - 2;
-		return 1;
+		if (skip > 0)
+		{
+			// some .. parts left to handle
+			const char * cur = prefix + *sizePtr - 1;
+
+			// reset size, the current value is something close to SIZE_MAX because of the .. parts
+			// we can reset to *sizePtr and *usizePtr since the .. parts cancelled all other parts in name
+			size = *sizePtr;
+			usize = *usizePtr;
+
+			while (skip > 0)
+			{
+				// subtract slash
+				--size;
+				--usize;
+
+				if (usize < 3) return 0; // reached namespace
+
+				// still some .. parts left to handle
+				do
+				{
+					--cur;
+					while (*cur != '/' && cur >= prefix)
+					{
+						--cur;
+						--size;
+						--usize;
+					}
+				} while (cur > prefix && *(cur - 1) == '\\');
+
+				if (cur < prefix) return 0;
+
+				--skip;
+			}
+
+			// re-add terminator
+			++size;
+			++usize;
+		}
+
+		if (*usizePtr == 3)
+		{
+			// namespace root key already has slash at end
+			--size;
+			--usize;
+		}
 	}
 
 	*sizePtr = size;
@@ -755,11 +751,6 @@ void elektraKeyNameCanonicalizePart (const char * part, size_t len, char * const
 		// go back forward so we are after the slash
 		++(*outPtr);
 	}
-	/*else if (lastSlash[1] == '.')
-	{
-		// inactive key
-		// TODO: mark inactive with flag?
-	}*/
 	else if (part[0] == '#')
 	{
 		// array part -> ensure prefix and copy
@@ -1538,7 +1529,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 static const char * elektraKeyFindBaseNamePtr (Key * key)
 {
-	// TODO (kodebach): check and document
+	// TODO (kodebach): start from back
 	const char * slash = strstr (key->key, ":/");
 	slash = slash == NULL ? key->key : slash + 1;
 	const char * end = key->key + key->keySize - 2;
