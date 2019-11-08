@@ -462,8 +462,40 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		++name;
 	}
 
+	while (*name == '/')
+	{
+		// ignore additional leading slashes
+		++name;
+		--size;
+		--usize;
+	}
+
 	const char * pathStart = name;
 	size_t pathLen = strlen (pathStart);
+
+	if (pathLen == 0)
+	{
+		if (prefix == NULL)
+		{
+			// root key (cascading or with namespace)
+			*sizePtr = size;
+			*usizePtr = usize;
+			return 1;
+		}
+		else
+		{
+			// nothing to add
+			return 1;
+		}
+	}
+
+	while (name[pathLen - 1] == '/' && name[pathLen - 2] != '\\')
+	{
+		// ignore unescaped trailing slashes
+		--pathLen;
+		--size;
+		--usize;
+	}
 
 	// validate path in reverse because of ..
 	name = pathStart + pathLen - 1;
@@ -477,7 +509,6 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 	} state = PART_END;
 
 	char prev = '\0';
-	int hadEscape = 1;
 	size_t partLen = 0;
 	size_t digits = 0;
 	size_t underscores = 0;
@@ -485,14 +516,6 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 	while (name >= pathStart)
 	{
 		char cur = *name;
-
-		if (skip > 0)
-		{
-			// ingoring stuff because of ..
-			--size;
-			--usize;
-		}
-
 		switch (state)
 		{
 		case PART_END:
@@ -550,39 +573,53 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 
 		--name;
 
-		if ((cur == '\\' && *name != '\\') || (cur == '\\' && *name == '\\' && !hadEscape))
+		if (cur == '\\')
 		{
-			hadEscape = 1;
-			if (*name == '/')
+			int escape = 1;
+			while (name >= pathStart && *name == '\\')
 			{
-				if (prev != '/' && prev != '\\' && prev != '.' && prev != '#' && prev != '%' && prev != '@')
-				{
-					// illegal escape sequence (at start of part)
-					return 0;
-				}
-			}
-			else
-			{
-				if (prev != '/' && prev != '\\')
-				{
-					// illegal escape sequence (in middle of part)
-					return 0;
-				}
+				// handle consecutive backslashes
+				--name;
+				usize -= escape ? 1 : 0;
+				escape = !escape;
 			}
 
-			--usize;
-		}
-		else if (cur == '\\')
-		{
-			hadEscape = 0;
+			if (escape)
+			{
+				// uneven number of backslashes -> must be different escape sequence
+				if (skip == 0)
+				{
+					--usize;
+				}
+				if (name <= pathStart || *name == '/')
+				{
+					if (prev != '/' && prev != '.' && prev != '#' && prev != '%' && prev != '@')
+					{
+						// illegal escape sequence (at start of part)
+						return 0;
+					}
+				}
+				else
+				{
+					if (prev != '/')
+					{
+						// illegal escape sequence (in middle of part)
+						return 0;
+					}
+				}
+			}
 		}
 
 		if (state != PART_END && (name < pathStart || (*name == '/' && *(name - 1) != '\\')))
 		{
-			// reached start of part
+			// reached start of part, cur is first char in part, name points to char left of cur starting the part
+			int isSkip = 0;
+			int isDot = 0;
 			switch (cur)
 			{
 			case '#':
+				if (partLen == 1) break;
+
 				if (digits == 0 || (underscores > 0 && underscores != digits - 1) || digits > 19 ||
 				    (digits == 19 && strncmp (&name[2 + underscores], "9223372036854775807", 19) > 0) ||
 				    (name[2 + underscores] == '0' && digits != 1))
@@ -591,68 +628,73 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 					return 0;
 				}
 
-				// account for potentially missing underscores
-				size += (digits - 1) - underscores;  // digits - 1 or 0
-				usize += (digits - 1) - underscores; // digits - 1 or 0
-
-				if (skip > 0)
+				if (skip == 0)
 				{
-					// finished skipping a part
-					--skip;
-
-					// subtract slash
-					--size;
-					--usize;
+					// account for potentially missing underscores
+					size += (digits - 1) - underscores;  // digits - 1 or 0
+					usize += (digits - 1) - underscores; // digits - 1 or 0
 				}
 
 				break;
 			case '%':
 				if (partLen != 1) return 0;
 
-				if (skip > 0)
+				if (skip == 0)
 				{
-					// finished skipping a part
-					--skip;
-
-					// subtract slash
-					--size;
 					--usize;
 				}
-
-				--usize;
 				break;
 			case '@':
 				// reserved
 				return 0;
 			case '.':
-				if (partLen == 1)
+				if (partLen == 1 && skip == 0)
 				{
 					// part was '/./'
-					size -= 2;
-					usize -= 2;
+					size -= 1;
+					usize -= 1;
+					isDot = 1;
 				}
 				else if (partLen == 2 && prev == '.')
 				{
 					// part was '/../'
-					size -= 3;
-					usize -= 3;
-					++skip;
+					size -= 2;
+					usize -= 2;
+					isSkip = 1;
 				}
 				break;
 			default:
-				if (skip > 0)
-				{
-					// finished skipping a part
-					--skip;
-
-					// subtract slash
-					--size;
-					--usize;
-				}
 				break;
 			}
 
-			if (name != pathStart) --name; // move past slash
+			if (name >= pathStart)
+			{
+				// move past slash
+				--name;
+			}
+
+			if (skip > 0 || isSkip || (isDot && (usize > 3 || prefix != NULL)))
+			{
+				// subtract slash
+				--size;
+				--usize;
+			}
+
+
+			if (skip > 0 && !isSkip)
+			{
+				// finished skipping a part
+				--skip;
+
+				size -= partLen;
+				usize -= partLen;
+			}
+
+			if (isSkip)
+			{
+				++skip;
+			}
+
 			state = PART_END;
 		}
 
@@ -666,62 +708,50 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 	}
 	else
 	{
-		if (size == 1 && *usizePtr != 3)
-		{
-			// didn't add anything and not namespace root -> no need for separator
-			--size;
-			--usize;
-		}
-
-		size += *sizePtr;
-		usize += *usizePtr;
+		size_t psize = *sizePtr;
+		size_t pusize = *usizePtr;
 
 		if (skip > 0)
 		{
 			// some .. parts left to handle
-			const char * cur = prefix + *sizePtr - 1;
-
-			// reset size, the current value is something close to SIZE_MAX because of the .. parts
-			// we can reset to *sizePtr and *usizePtr since the .. parts cancelled all other parts in name
-			size = *sizePtr;
-			usize = *usizePtr;
-
 			while (skip > 0)
 			{
-				// subtract slash
-				--size;
-				--usize;
-
-				if (usize < 3) return 0; // reached namespace
-
 				// still some .. parts left to handle
 				do
 				{
-					--cur;
-					while (cur >= prefix && *cur != '/')
-					{
-						--cur;
-						--size;
-						--usize;
-					}
-				} while (cur > prefix && *(cur - 1) == '\\');
+					// subtract slash
+					--psize;
+					--pusize;
 
-				if (cur < prefix) return 0;
+					if (pusize < 3) return 0; // reached namespace
+
+					while (pusize >= 3 && prefix[psize - 1] != '/')
+					{
+						--psize;
+						--pusize;
+					}
+				} while (pusize >= 3 && prefix[psize - 2] == '\\');
 
 				--skip;
 			}
 
-			// re-add terminator
-			++size;
-			++usize;
+			if (pusize == 2)
+			{
+				// re-add terminator
+				++psize;
+				++pusize;
+			}
 		}
 
-		if (*usizePtr == 3)
+		if (pusize == 3 && size > 0)
 		{
 			// namespace root key already has slash at end
-			--size;
-			--usize;
+			--psize;
+			--pusize;
 		}
+
+		size += psize;
+		usize += pusize;
 	}
 
 	*sizePtr = size;
@@ -1222,7 +1252,7 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 		return 3;
 	}
 
-	if (part[0] == '#')
+	if (part[0] == '#' && partLen != 1)
 	{
 		size_t underscores = 0;
 		while (part[1 + underscores] == '_')
@@ -1530,18 +1560,25 @@ ssize_t keyAddName (Key * key, const char * newName)
 static const char * elektraKeyFindBaseNamePtr (Key * key)
 {
 	// TODO (kodebach): start from back
-	const char * slash = strstr (key->key, ":/");
-	slash = slash == NULL ? key->key : slash + 1;
-	const char * end = key->key + key->keySize - 2;
-	const char * lastPart = slash == end ? NULL : slash;
-	while ((slash = strchr (slash + 1, '/')) != NULL)
+	const char * colon = strchr (key->key, ':');
+	const char * start = colon == NULL ? key->key : colon + 1;
+	++start; // start after first slash
+
+	const char * cur = start + key->keySize - (start - key->key) - 1;
+
+	if (cur == start) return NULL; // no base name
+
+	do
 	{
-		if (*(slash - 1) != '\\')
+		--cur;
+
+		while (cur >= start && *cur != '/')
 		{
-			lastPart = slash;
+			--cur;
 		}
-	}
-	return lastPart;
+	} while (cur > start && *(cur - 1) == '\\');
+
+	return cur;
 }
 
 /**
@@ -1614,6 +1651,13 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 		--ubaseNamePtr;
 	}
 	key->keyUSize = ubaseNamePtr - key->ukey + 1;
+
+	if (key->keyUSize == 2)
+	{
+		// happens if we only have one part after namespace
+		++key->keySize;
+		++key->keyUSize;
+	}
 
 	// add new base name, only resizes buffer when baseName == NULL
 	return keyAddBaseNameInternal (key, baseName);
