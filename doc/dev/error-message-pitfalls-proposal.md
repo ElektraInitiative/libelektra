@@ -43,7 +43,7 @@ these messages and afterwards show potential remedies which are open for discuss
 
 These problems should be checked by the build server and let the build fail if something is not conforming. This would require a test
 that grabs all error messages and analyzes them for certain points. 1.2. and 1.3. are very easy to check by providing a regular
-expression that has to match. 
+expression that has to match.
 
 Another way to address 1.2 and 1.3 beforehand are message templates which could be used by developers. Personally I think this is difficult
 to maintain and new developers will surely do not see and use it (right away). Elektra already has many things which developers should know
@@ -57,7 +57,7 @@ words inside. Otherwise decent error message would trigger a build fail (e.g., "
 if it is not contained in the error message.
 
 The one problem I see here is how to get all error messages in the src folder.
-I have forged the following perl regex which could be used to get most of the error messages: 
+I have forged the following perl regex which could be used to get most of the error messages:
 `grep -rP 'ELEKTRA_(SET|ADD)_[A-Z_]+_(WARNING|ERROR)[F]*\s*\(\n*.*?"\K(.*\n*)(?=")' src/**`
 This though only gets 562 error messages while actually 671 are present. The difference comes from variables which are inserted
 that contain the actual error message. We would probably need to patch those messages to not use variables anymore but the varargs.
