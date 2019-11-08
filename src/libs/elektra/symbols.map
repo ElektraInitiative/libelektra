@@ -86,7 +86,6 @@ libelektra_0.8 {
 	keySetBaseName;
 	keySetBinary;
 	keySetMeta;
-	keyMeta;
 	keySetName;
 	keySetString;
 	keyString;
@@ -130,6 +129,10 @@ libelektra_0.8 {
 
 	# kdbproposal.h
 	elektraKeySetName;
+};
+
+libelektra_1.0 {
+	keyMeta;
 };
 
 libelektraprivate_1.0 {

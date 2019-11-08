@@ -15,10 +15,21 @@ int main (void)
 {
 {
 //! [Simple]
-KeySet * keys = ksNew (0, KS_END);
-// work with it
+KeySet * keys = ksNew (1, KS_END);
+// enough memory for up to 16 keys, without needing reallocation
 ksDel (keys);
 //! [Simple]
+}
+
+{
+//! [No Allocation]
+// Create KeySet without allocating memory for keys
+KeySet * keys = ksNew (0, KS_END);
+// The first allocation will happen in ksAppendKey
+ksAppendKey(keys, keyNew ("user/sw/org/app/#0/current/fixedConfiguration/key02", KEY_VALUE, "value02", 0));
+// work with the KeySet
+ksDel (keys);
+//! [No Allocation]
 }
 
 {
