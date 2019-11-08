@@ -11,6 +11,7 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 #include <modules.hpp>
+#include <plugindatabase.hpp>
 #include <toolexcept.hpp>
 
 #include <iostream>
@@ -54,8 +55,15 @@ int ExportCommand::execute (Cmdline const & cl)
 #endif
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
+	if (cl.verbose) std::cout << "lookup provider for: " << format << endl;
+
+	ModulesPluginDatabase pluginDatabase;
+	PluginSpec provides = pluginDatabase.lookupProvides (format);
+
+	if (cl.verbose) std::cout << "found provider: " << provides.getName () << endl;
+
 	Modules modules;
-	PluginPtr plugin = modules.load (format, cl.getPluginsConfig ());
+	PluginPtr plugin = modules.load (provides.getName (), cl.getPluginsConfig ());
 
 	Key errorKey (root);
 	errorKey.setString (file);
