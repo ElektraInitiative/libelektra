@@ -23,7 +23,7 @@ For other applications, e.g. modifying `smb.conf` you should prefer the
 To mount the ni plugin you can simply use:
 
 ```bash
-kdb mount file.ini spec/ni ni
+kdb mount file.ini spec:/ni ni
 ```
 
 The strength of this plugin is that it supports arbitrary meta
@@ -38,7 +38,7 @@ meta=foo
 specify that `key` has a metadata key `meta` containing the metavalue `foo`:
 
 ```bash
-kdb meta-get user/ni/key meta
+kdb meta-get user:/ni/key meta
 #> foo
 ```
 
@@ -55,7 +55,7 @@ If you want a line break at the end of the line, use `\\n\\`.
 To export a `KeySet` in the nickel format use:
 
 ```bash
-kdb export spec/ni ni > example.ni
+kdb export spec:/ni ni > example.ni
 ```
 
 For in-detail explanation of the syntax
@@ -65,33 +65,33 @@ For in-detail explanation of the syntax
 ## Examples
 
 ```sh
-# Mount the `ni` plugin at `spec/tests/ni`
-sudo kdb mount file.ini spec/tests/ni ni
+# Mount the `ni` plugin at `spec:/tests/ni`
+sudo kdb mount file.ini spec:/tests/ni ni
 
 # Add some metadata
-kdb meta-set spec/tests/ni/key metakey metavalue
-kdb meta-set spec/tests/ni/key check/type char
+kdb meta-set spec:/tests/ni/key metakey metavalue
+kdb meta-set spec:/tests/ni/key check/type char
 
 # Retrieve metadata
-kdb meta-ls spec/tests/ni/key
+kdb meta-ls spec:/tests/ni/key
 #> check/type
 #> metakey
-kdb meta-get spec/tests/ni/key metakey
+kdb meta-get spec:/tests/ni/key metakey
 #> metavalue
 
 # Add and retrieve key values
-kdb get spec/tests/ni/key
+kdb get spec:/tests/ni/key
 #>
-kdb set spec/tests/ni/key value
-kdb set spec/tests/ni/key/to nothing
-kdb get spec/tests/ni/key
+kdb set spec:/tests/ni/key value
+kdb set spec:/tests/ni/key/to nothing
+kdb get spec:/tests/ni/key
 #> value
-kdb get spec/tests/ni/key/to
+kdb get spec:/tests/ni/key/to
 #> nothing
 
 # Undo modifications
-kdb rm -r spec/tests/ni
-sudo kdb umount spec/tests/ni
+kdb rm -r spec:/tests/ni
+sudo kdb umount spec:/tests/ni
 ```
 
 ## Limitations

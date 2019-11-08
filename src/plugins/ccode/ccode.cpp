@@ -28,14 +28,14 @@ typedef Delegator<Coder> coderDelegator;
  */
 inline KeySet * contract (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/ccode", KEY_VALUE, "ccode plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/ccode/exports", KEY_END),
-		      keyNew ("system/elektra/modules/ccode/exports/open", KEY_FUNC, elektraCcodeOpen, KEY_END),
-		      keyNew ("system/elektra/modules/ccode/exports/close", KEY_FUNC, elektraCcodeClose, KEY_END),
-		      keyNew ("system/elektra/modules/ccode/exports/get", KEY_FUNC, elektraCcodeGet, KEY_END),
-		      keyNew ("system/elektra/modules/ccode/exports/set", KEY_FUNC, elektraCcodeSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/ccode", KEY_VALUE, "ccode plugin waits for your orders", KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports", KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/open", KEY_FUNC, elektraCcodeOpen, KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/close", KEY_FUNC, elektraCcodeClose, KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/get", KEY_FUNC, elektraCcodeGet, KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/set", KEY_FUNC, elektraCcodeSet, KEY_END),
 #include "readme_ccode.c"
-		      keyNew ("system/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
 } // end namespace
@@ -61,7 +61,7 @@ int elektraCcodeClose (Plugin * handle ELEKTRA_UNUSED, Key * key)
 /** @see elektraDocGet */
 int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/ccode"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ccode"))
 	{
 		KeySet * const pluginConfig = contract ();
 		ksAppend (returned, pluginConfig);

@@ -18,7 +18,7 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user/tests/template", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/template", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("template");
 

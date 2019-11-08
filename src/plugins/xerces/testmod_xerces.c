@@ -20,7 +20,7 @@ static void test_basics (void)
 	printf ("test basics\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("system/elektra/modules/xerces", KEY_END);
+	Key * parentKey = keyNew ("system:/elektra/modules/xerces", KEY_END);
 	Key * invalidKey = keyNew (0, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
@@ -273,10 +273,11 @@ static void test_jenkins_config (void)
 
 	Key * current;
 
-	succeed_if (
-		current = ksLookupByName (
-			ks, "/sw/elektra/tests/xerces/temporaryOfflineCause/user/properties/jenkins.security.ApiTokenProperty/apiToken", 0),
-		"failed to find apiToken key");
+	succeed_if (current = ksLookupByName (
+			    ks,
+			    "/sw/elektra/tests/xerces/temporaryOfflineCause/user:/properties/jenkins.security.ApiTokenProperty/apiToken",
+			    0),
+		    "failed to find apiToken key");
 	succeed_if (strcmp (keyValue (current), "bee4ahGhOqua3ahzsai2Eef5quie5ohK/eiSe4eav+JhVlerBftAil8Ow5AejahBe9oiksKAlla/kk1/1=") == 0,
 		    "api token is wrong");
 

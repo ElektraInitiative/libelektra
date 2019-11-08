@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_SPECLOAD_TESTDATA_H
 #define ELEKTRA_SPECLOAD_TESTDATA_H
 
-#define PARENT_KEY "spec/tests/specload"
+#define PARENT_KEY "spec:/tests/specload"
 
 #define DEFAULT_SPEC ksNew (50, keyNew (PARENT_KEY "/mykey", KEY_META, "default", "7", KEY_END), KS_END)
 

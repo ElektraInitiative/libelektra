@@ -10,6 +10,6 @@
 ## Example
 
 ```sh
-kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
-kdb mount /var/lib/dpkg/status system/dpkg/available dpkg
+kdb mount /var/lib/dpkg/available system:/dpkg/available dpkg
+kdb mount /var/lib/dpkg/status system:/dpkg/available dpkg
 ```

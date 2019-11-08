@@ -206,7 +206,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	int errnosave = errno;
 	char readBuffer[HOSTS_KDB_BUFFER_SIZE];
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/hosts"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
 	{
 		KeySet * moduleConfig =
 #include "contract.h"

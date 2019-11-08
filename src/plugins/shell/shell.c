@@ -45,16 +45,16 @@ static int executeCommand (const char * cmdline)
 
 int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/shell"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/shell"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/shell", KEY_VALUE, "shell plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/shell/exports", KEY_END),
-			       keyNew ("system/elektra/modules/shell/exports/get", KEY_FUNC, elektraShellGet, KEY_END),
-			       keyNew ("system/elektra/modules/shell/exports/set", KEY_FUNC, elektraShellSet, KEY_END),
-			       keyNew ("system/elektra/modules/shell/exports/error", KEY_FUNC, elektraShellError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/shell", KEY_VALUE, "shell plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/get", KEY_FUNC, elektraShellGet, KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/set", KEY_FUNC, elektraShellSet, KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/error", KEY_FUNC, elektraShellError, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/shell/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/shell/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

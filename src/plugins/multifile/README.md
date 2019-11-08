@@ -64,22 +64,22 @@ addr = 192.168.1.125\
 Link encap = Ethernet\
 EOF
 
-sudo kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" multitest user/tests/multifile
+sudo kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" multitest user:/tests/multifile
 
-kdb ls user/tests/multifile
-#> user/tests/multifile/lan.ini/eth0
-#> user/tests/multifile/lan.ini/eth0/Link encap
-#> user/tests/multifile/lan.ini/eth0/addr
-#> user/tests/multifile/lo.ini/lo
-#> user/tests/multifile/lo.ini/lo/Link encap
-#> user/tests/multifile/lo.ini/lo/addr
-#> user/tests/multifile/wlan.ini/wlan0
-#> user/tests/multifile/wlan.ini/wlan0/Link encap
-#> user/tests/multifile/wlan.ini/wlan0/addr
+kdb ls user:/tests/multifile
+#> user:/tests/multifile/lan.ini/eth0
+#> user:/tests/multifile/lan.ini/eth0/Link encap
+#> user:/tests/multifile/lan.ini/eth0/addr
+#> user:/tests/multifile/lo.ini/lo
+#> user:/tests/multifile/lo.ini/lo/Link encap
+#> user:/tests/multifile/lo.ini/lo/addr
+#> user:/tests/multifile/wlan.ini/wlan0
+#> user:/tests/multifile/wlan.ini/wlan0/Link encap
+#> user:/tests/multifile/wlan.ini/wlan0/addr
 
-kdb set user/tests/multifile/lan.ini/eth0/addr 10.0.0.2
+kdb set user:/tests/multifile/lan.ini/eth0/addr 10.0.0.2
 
-kdb get user/tests/multifile/lan.ini/eth0/addr
+kdb get user:/tests/multifile/lan.ini/eth0/addr
 #> 10.0.0.2
 
 cat > $(dirname $(kdb file user))/multitest/test.ini << EOF \
@@ -87,25 +87,25 @@ cat > $(dirname $(kdb file user))/multitest/test.ini << EOF \
 key = val\
 EOF
 
-kdb ls user/tests/multifile
-#> user/tests/multifile/lan.ini/eth0
-#> user/tests/multifile/lan.ini/eth0/Link encap
-#> user/tests/multifile/lan.ini/eth0/addr
-#> user/tests/multifile/lo.ini/lo
-#> user/tests/multifile/lo.ini/lo/Link encap
-#> user/tests/multifile/lo.ini/lo/addr
-#> user/tests/multifile/test.ini/testsection
-#> user/tests/multifile/test.ini/testsection/key
-#> user/tests/multifile/wlan.ini/wlan0
-#> user/tests/multifile/wlan.ini/wlan0/Link encap
-#> user/tests/multifile/wlan.ini/wlan0/addr
+kdb ls user:/tests/multifile
+#> user:/tests/multifile/lan.ini/eth0
+#> user:/tests/multifile/lan.ini/eth0/Link encap
+#> user:/tests/multifile/lan.ini/eth0/addr
+#> user:/tests/multifile/lo.ini/lo
+#> user:/tests/multifile/lo.ini/lo/Link encap
+#> user:/tests/multifile/lo.ini/lo/addr
+#> user:/tests/multifile/test.ini/testsection
+#> user:/tests/multifile/test.ini/testsection/key
+#> user:/tests/multifile/wlan.ini/wlan0
+#> user:/tests/multifile/wlan.ini/wlan0/Link encap
+#> user:/tests/multifile/wlan.ini/wlan0/addr
 
-kdb rm -r user/tests/multifile/test.ini
+kdb rm -r user:/tests/multifile/test.ini
 
 stat $(dirname $(kdb file user))/multifile/test.ini
 # RET:1
 
-sudo kdb umount user/tests/multifile
+sudo kdb umount user:/tests/multifile
 ```
 
 Recursive:
@@ -118,16 +118,16 @@ echo "a1key = a1val" > $(dirname $(kdb file user))/multitest/a/a1/a12/testa1.fil
 echo "a2key = a2val" > $(dirname $(kdb file user))/multitest/a/a2/a22/testa2.file
 echo "b1key = b1val" > $(dirname $(kdb file user))/multitest/b/b1/testb1.file
 
-sudo kdb mount -R multifile -c storage="ini",pattern="*.file",recursive=,resolver="resolver" multitest user/tests/multifile
+sudo kdb mount -R multifile -c storage="ini",pattern="*.file",recursive=,resolver="resolver" multitest user:/tests/multifile
 
-kdb ls user/tests/multifile
-#> user/tests/multifile/a/a1/a12/testa1.file/a1key
-#> user/tests/multifile/a/a2/a22/testa2.file/a2key
-#> user/tests/multifile/b/b1/testb1.file/b1key
+kdb ls user:/tests/multifile
+#> user:/tests/multifile/a/a1/a12/testa1.file/a1key
+#> user:/tests/multifile/a/a2/a22/testa2.file/a2key
+#> user:/tests/multifile/b/b1/testb1.file/b1key
 
 rm -rf $(dirname $(kdb file user))/multitest
 
-sudo kdb umount user/tests/multifile
+sudo kdb umount user:/tests/multifile
 ```
 
 ## Limitations

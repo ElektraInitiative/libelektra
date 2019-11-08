@@ -25,15 +25,15 @@
 
 int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/sync"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/sync"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/sync", KEY_VALUE, "sync plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/sync/exports", KEY_END),
-			       keyNew ("system/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
-			       keyNew ("system/elektra/modules/sync/exports/set", KEY_FUNC, elektraSyncSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/sync", KEY_VALUE, "sync plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports/set", KEY_FUNC, elektraSyncSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/sync/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/sync/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

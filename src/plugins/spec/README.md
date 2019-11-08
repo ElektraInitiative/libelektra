@@ -156,7 +156,7 @@ everything still works after the source is removed):
 
 ```sh
 cp battery.ini $(dirname $(kdb file spec))
-kdb mount battery.ini spec/example/battery ni
+kdb mount battery.ini spec:/example/battery ni
 kdb spec-mount /example/battery
 kdb meta-ls /example/battery/level    # we see it has a check/enum
 kdb meta-get /example/battery/level check/enum    # now we know allowed values
@@ -164,11 +164,11 @@ kdb set /example/battery/level low   # success, low is ok!
 kdb set /example/battery/level x     # fails, not one of the allowed values!
 
 cp openicc.ini $(dirname $(kdb file spec))
-kdb mount openicc.ini spec/freedesktop/openicc ni
+kdb mount openicc.ini spec:/freedesktop/openicc ni
 kdb spec-mount /freedesktop/openicc
 
 kdb ls /freedesktop/openicc # lets see the whole configuration
-kdb export spec/freedesktop/openicc ni   # give us details about the specification
+kdb export spec:/freedesktop/openicc ni   # give us details about the specification
 kdb meta-ls /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long

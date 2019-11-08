@@ -281,7 +281,7 @@
  * To solve that problem the module loader adds the configuration key
  * /module. Even if your plugin is basically not able to startup
  * successfully, it should still provide a fallback when /module
- * is present, so that elektraDocGet() on system/elektra/modules can be
+ * is present, so that elektraDocGet() on system:/elektra/modules can be
  * called successfully later on.
  *
  * @snippet doc.c doc module
@@ -358,7 +358,7 @@ int elektraDocClose (Plugin * handle, Key * warningsKey);
  * @subsection contract Contract Handling
  *
  * The contract is a keyset that needs to be returned if the parentKey
- * is system/elektra/modules/yourpluginname.
+ * is system:/elektra/modules/yourpluginname.
  *
  * Which keys and their meaning is specified in doc/CONTRACT.ini
  *

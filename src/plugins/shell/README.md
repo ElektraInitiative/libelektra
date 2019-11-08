@@ -31,23 +31,23 @@ can be compared against the return values of the shell commandos.
 
 ```sh
 # Create temporary file
-kdb set system/tests/tempfile $(mktemp)
+kdb set system:/tests/tempfile $(mktemp)
 
 # Mount plugin and specify plugin configuration
-sudo kdb mount shell.ini system/tests/shell ini array= shell execute/set="echo set >> $(kdb get system/tests/tempfile)"
+sudo kdb mount shell.ini system:/tests/shell ini array= shell execute/set="echo set >> $(kdb get system:/tests/tempfile)"
 
-cat $(kdb get system/tests/tempfile)
+cat $(kdb get system:/tests/tempfile)
 #>
 
 # Execute `set` command
-kdb set system/tests/shell
-#> Create a new key system/tests/shell with null value
+kdb set system:/tests/shell
+#> Create a new key system:/tests/shell with null value
 
-cat $(kdb get system/tests/tempfile)
+cat $(kdb get system:/tests/tempfile)
 #> set
 
 # Undo modifications
-rm $(kdb get system/tests/tempfile)
-kdb rm -r system/tests/shell
-sudo kdb umount system/tests/shell
+rm $(kdb get system:/tests/tempfile)
+kdb rm -r system:/tests/shell
+sudo kdb umount system:/tests/shell
 ```

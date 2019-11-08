@@ -25,7 +25,7 @@ static void convertLong (char * returned, unsigned long long i)
 
 static int setKey (KeySet * testKs)
 {
-	Key * parent = keyNew ("user/tests/mac", KEY_VALUE, "", KEY_END);
+	Key * parent = keyNew ("user:/tests/mac", KEY_VALUE, "", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
@@ -38,7 +38,7 @@ static int setKey (KeySet * testKs)
 
 static const char * getKeyString (KeySet * ks, char * keyName)
 {
-	Key * parent = keyNew ("user/tests/mac", KEY_VALUE, "", KEY_END);
+	Key * parent = keyNew ("user:/tests/mac", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	ksRewind (ks);
@@ -50,7 +50,7 @@ static const char * getKeyString (KeySet * ks, char * keyName)
 
 static void testAddressSet (const char * keyValue, int retValue)
 {
-	KeySet * testKs = ksNew (10, keyNew ("user/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END), KS_END);
+	KeySet * testKs = ksNew (10, keyNew ("user:/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END), KS_END);
 	succeed_if (setKey (testKs) == retValue, "error");
 	ksDel (testKs);
 }
@@ -58,11 +58,11 @@ static void testAddressSet (const char * keyValue, int retValue)
 static void testAddressesSetGet (const char * keyValue, unsigned long long longValue)
 {
 	char intChar[21];
-	Key * key = keyNew ("user/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END);
+	Key * key = keyNew ("user:/tests/mac/addr", KEY_VALUE, keyValue, KEY_META, META, "", KEY_END);
 	KeySet * testKs = ksNew (10, key, KS_END);
 	setKey (testKs);
 	convertLong (intChar, longValue);
-	succeed_if (!strcmp (getKeyString (testKs, "user/tests/mac/addr"), intChar), "error");
+	succeed_if (!strcmp (getKeyString (testKs, "user:/tests/mac/addr"), intChar), "error");
 	succeed_if (!strcmp (keyString (keyGetMeta (key, "origvalue")), keyValue), "error");
 	keyDel (key);
 	ksDel (testKs);
@@ -139,10 +139,10 @@ static void testAddressesNumber (void)
 static void testRestoreValue (void)
 {
 	char * val = "00:11:55:AA:FF:CC";
-	Key * key = keyNew ("user/tests/mac/addr", KEY_VALUE, val, KEY_META, META, "", KEY_END);
+	Key * key = keyNew ("user:/tests/mac/addr", KEY_VALUE, val, KEY_META, META, "", KEY_END);
 	KeySet * testKs = ksNew (10, key, KS_END);
 	setKey (testKs);
-	getKeyString (testKs, "user/tests/mac/addr");
+	getKeyString (testKs, "user:/tests/mac/addr");
 	setKey (testKs);
 	succeed_if (!strcmp (keyString (key), val), "error");
 	keyDel (key);

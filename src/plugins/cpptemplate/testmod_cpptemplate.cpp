@@ -24,7 +24,7 @@ TEST (cpptemplate, basics)
 	CppKeySet keys{ 0, KS_END };
 	elektraModulesInit (modules.getKeySet (), 0);
 
-	CppKey parent{ "system/elektra/modules/cpptemplate", KEY_END };
+	CppKey parent{ "system:/elektra/modules/cpptemplate", KEY_END };
 	Plugin * plugin = elektraPluginOpen ("cpptemplate", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open cpptemplate plugin"); //! OCLint (empty if, too few branches switch)
 

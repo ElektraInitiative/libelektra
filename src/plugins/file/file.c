@@ -20,15 +20,15 @@
 
 int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/file"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/file"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/file", KEY_VALUE, "file plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/file/exports", KEY_END),
-			       keyNew ("system/elektra/modules/file/exports/get", KEY_FUNC, elektraFileGet, KEY_END),
-			       keyNew ("system/elektra/modules/file/exports/set", KEY_FUNC, elektraFileSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/file", KEY_VALUE, "file plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/file/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/file/exports/get", KEY_FUNC, elektraFileGet, KEY_END),
+			       keyNew ("system:/elektra/modules/file/exports/set", KEY_FUNC, elektraFileSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/file/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/file/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

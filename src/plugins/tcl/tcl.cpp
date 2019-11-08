@@ -26,21 +26,21 @@ using namespace ckdb;
 int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 {
 	kdb::Key parent (parentKey);
-	if (parent.getName () == "system/elektra/modules/tcl")
+	if (parent.getName () == "system:/elektra/modules/tcl")
 	{
 		/* get config */
 		KeySet * n;
 		ksAppend (returned,
-			  n = ksNew (30, keyNew ("system/elektra/modules/tcl", KEY_VALUE, "tcl plugin waits for your orders", KEY_END),
-				     keyNew ("system/elektra/modules/tcl/exports", KEY_END),
-				     keyNew ("system/elektra/modules/tcl/exports/get", KEY_FUNC, elektraTclGet, KEY_END),
-				     keyNew ("system/elektra/modules/tcl/exports/set", KEY_FUNC, elektraTclSet, KEY_END),
-				     keyNew ("system/elektra/modules/tcl/exports/cpp_serialise", KEY_SIZE, sizeof (&elektra::serialise),
+			  n = ksNew (30, keyNew ("system:/elektra/modules/tcl", KEY_VALUE, "tcl plugin waits for your orders", KEY_END),
+				     keyNew ("system:/elektra/modules/tcl/exports", KEY_END),
+				     keyNew ("system:/elektra/modules/tcl/exports/get", KEY_FUNC, elektraTclGet, KEY_END),
+				     keyNew ("system:/elektra/modules/tcl/exports/set", KEY_FUNC, elektraTclSet, KEY_END),
+				     keyNew ("system:/elektra/modules/tcl/exports/cpp_serialise", KEY_SIZE, sizeof (&elektra::serialise),
 					     KEY_BINARY, KEY_VALUE, &elektra::serialise, KEY_END),
-				     keyNew ("system/elektra/modules/tcl/exports/cpp_unserialise", KEY_SIZE, sizeof (&elektra::unserialise),
-					     KEY_BINARY, KEY_VALUE, &elektra::unserialise, KEY_END),
+				     keyNew ("system:/elektra/modules/tcl/exports/cpp_unserialise", KEY_SIZE,
+					     sizeof (&elektra::unserialise), KEY_BINARY, KEY_VALUE, &elektra::unserialise, KEY_END),
 #include "readme_tcl.c"
-				     keyNew ("system/elektra/modules/tcl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				     keyNew ("system:/elektra/modules/tcl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}

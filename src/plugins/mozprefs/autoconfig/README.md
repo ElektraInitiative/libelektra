@@ -72,12 +72,12 @@ Setting lockPref HTTP Proxy to 127.0.0.1:8080
 This example shows how to manually setup a preferences. It's equivalent to the example shown above in the `Guided setup`
 
 ```sh
-kdb meta-set user/prefs/lock/network/proxy/type type integer
-kdb set user/prefs/lock/network/proxy/type 1
-kdb meta-set user/prefs/lock/network/proxy/http type string
-kdb set user/prefs/lock/network/proxy/http 127.0.0.1
-kdb meta-set user/prefs/lock/network/proxy/http_port type integer
-kdb set user/prefs/lock/network/proxy/http_port 8080
+kdb meta-set user:/prefs/lock/network/proxy/type type integer
+kdb set user:/prefs/lock/network/proxy/type 1
+kdb meta-set user:/prefs/lock/network/proxy/http type string
+kdb set user:/prefs/lock/network/proxy/http 127.0.0.1
+kdb meta-set user:/prefs/lock/network/proxy/http_port type integer
+kdb set user:/prefs/lock/network/proxy/http_port 8080
 ```
 
 ### Test Setup
@@ -88,21 +88,21 @@ Running `kdb configure-firefox -t` will set up some test values.
 kdb export /preload
 #> [open]
 #> \/tmp\/imnotreal.js =
-#> \/tmp\/imnotreal.js/generate = user/prefs
+#> \/tmp\/imnotreal.js/generate = user:/prefs
 #> \/tmp\/imnotreal.js/generate/plugin = mozprefs
 
-kdb export user/prefs
+kdb export user:/prefs
 #> [lock/a/lock]
 #> 1 = lock1
 #> 2 = lock2
 #> [pref/a/default]
 #> 1 = 1
 #> 2 = 2
-#> [user/a/user]
+#> [user:/a/user]
 #> f = false
 #> t = true
 
-kdb export user/prefs mozprefs
+kdb export user:/prefs mozprefs
 #> lockPref("a.lock.1", "lock1");
 #> lockPref("a.lock.2", "lock2");
 #> pref("a.default.1", 1);
@@ -118,9 +118,9 @@ kdb elektrify-open firefox-esr "about:config"
 ![about:config before](./config_1.jpg)
 
 ```sh
-kdb meta-set user/prefs/lock/a/lock/3 type boolean
-kdb set user/prefs/lock/a/lock/3 true
-kdb export user/prefs
+kdb meta-set user:/prefs/lock/a/lock/3 type boolean
+kdb set user:/prefs/lock/a/lock/3 true
+kdb export user:/prefs
 #> [lock/a/lock]
 #> 1 = lock1
 #> 2 = lock2
@@ -128,7 +128,7 @@ kdb export user/prefs
 #> [pref/a/default]
 #> 1 = 1
 #> 2 = 2
-#> [user/a/user]
+#> [user:/a/user]
 #> f = false
 #> t = true
 ```

@@ -3,7 +3,7 @@
 <keyset xmlns="https://www.libelektra.org"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
-	parent = "user/tests/filesys"
+	parent = "user:/tests/filesys"
 	>
 	<key type="string" basename="PerfectStringKey" value="StringValue"><comment>String key with standard name</comment></key>
 	<key type="string" isdir="true" basename="PerfectDirectoryKey" value="DirectoryValue"><comment>Directory key with standard name</comment></key>

@@ -39,9 +39,9 @@ int main (int argc, char ** argv)
 
 static void testPort (char const * const port, const int ret, char const * const version, char const * const metaName)
 {
-	Key * parentKey = keyNew ("user/tests/port", KEY_VALUE, "", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/port", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user:/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];

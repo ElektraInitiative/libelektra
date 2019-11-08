@@ -31,10 +31,10 @@
  * @par Example:
  * @code
 KeySet *ks = ksNew (5,
-		keyNew ("user/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
-		keyNew ("user/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
-		keyNew ("user/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
-		keyNew ("user/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END),
+		keyNew ("user:/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
+		keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
+		keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
+		keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END),
 		KS_END);
 
 Key *match = 0;
@@ -69,12 +69,12 @@ regcomp(&regex,
 regfree(&regex);
 
 regcomp(&regex,
-	"^system/folder/.* /basename$", // match real system/ keys that end with 'basename'
+	"^system:/folder/.* /basename$", // match real system:/ keys that end with 'basename'
 	REG_NOSUB);       // always use REG_NOSUB to increase performance
 regfree(&regex);
 
 regcomp(&regex,
-	"^system/sw/xorg/.* /Screen[0-9]* /Displays/[0-9]* /Depth$", // we want all X.org's depths of all displays of all screens
+	"^system:/sw/xorg/.* /Screen[0-9]* /Displays/[0-9]* /Depth$", // we want all X.org's depths of all displays of all screens
 	REG_ICASE | REG_NOSUB);   // we don't care about the case
 regfree(&regex);        // don't forget to free resources
 

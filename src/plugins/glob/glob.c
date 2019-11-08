@@ -86,17 +86,17 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 	Key * userDirGlobConfig = 0;
 	Key * systemDirGlobConfig = 0;
 
-	userGlobConfig = keyNew ("user/glob", KEY_END);
-	systemGlobConfig = keyNew ("system/glob", KEY_END);
+	userGlobConfig = keyNew ("user:/glob", KEY_END);
+	systemGlobConfig = keyNew ("system:/glob", KEY_END);
 	switch (direction)
 	{
 	case GET:
-		userDirGlobConfig = keyNew ("user/glob/get", KEY_END);
-		systemDirGlobConfig = keyNew ("system/glob/get", KEY_END);
+		userDirGlobConfig = keyNew ("user:/glob/get", KEY_END);
+		systemDirGlobConfig = keyNew ("system:/glob/get", KEY_END);
 		break;
 	case SET:
-		userDirGlobConfig = keyNew ("user/glob/set", KEY_END);
-		systemDirGlobConfig = keyNew ("system/glob/set", KEY_END);
+		userDirGlobConfig = keyNew ("user:/glob/set", KEY_END);
+		systemDirGlobConfig = keyNew ("system:/glob/set", KEY_END);
 		break;
 	}
 
@@ -186,7 +186,7 @@ int elektraGlobClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNU
 
 int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/glob"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/glob"))
 	{
 		// TODO: improve plugin contract
 		KeySet * config =

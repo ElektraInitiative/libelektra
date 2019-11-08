@@ -309,7 +309,7 @@ static Codes initBackend (Plugin * handle, MultiConfig * mc, SingleConfig * s, K
 	}
 	Plugin * storage = NULL;
 	KeySet * storageChildConfig = ksDup (mc->childConfig);
-	ksAppendKey (storageChildConfig, keyNew ("system/path", KEY_VALUE, s->fullPath, KEY_END));
+	ksAppendKey (storageChildConfig, keyNew ("system:/path", KEY_VALUE, s->fullPath, KEY_END));
 	storage = elektraPluginOpen (mc->storage, mc->modules, storageChildConfig, parentKey);
 	if (!storage)
 	{
@@ -606,22 +606,22 @@ static void fillReturned (MultiConfig * mc, KeySet * returned)
 
 int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/multifile"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/multifile"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/multifile", KEY_VALUE, "multifile plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports", KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/open", KEY_FUNC, elektraMultifileOpen, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/close", KEY_FUNC, elektraMultifileClose, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/get", KEY_FUNC, elektraMultifileGet, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/set", KEY_FUNC, elektraMultifileSet, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/commit", KEY_FUNC, elektraMultifileCommit, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/error", KEY_FUNC, elektraMultifileError, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConf, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/checkfile", KEY_FUNC, elektraMultifileCheckFile, KEY_END),
+			30, keyNew ("system:/elektra/modules/multifile", KEY_VALUE, "multifile plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports", KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/open", KEY_FUNC, elektraMultifileOpen, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/close", KEY_FUNC, elektraMultifileClose, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/get", KEY_FUNC, elektraMultifileGet, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/set", KEY_FUNC, elektraMultifileSet, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/commit", KEY_FUNC, elektraMultifileCommit, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/error", KEY_FUNC, elektraMultifileError, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConf, KEY_END),
+			keyNew ("system:/elektra/modules/multifile/exports/checkfile", KEY_FUNC, elektraMultifileCheckFile, KEY_END),
 
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/multifile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/multifile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

@@ -24,13 +24,13 @@ Therefore, the files must not be edited by hand. Files written by mmapstorage ar
 Mount mmapstorage using `kdb mount`:
 
 ```sh
-sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
+sudo kdb mount config.mmap user:/tests/mmapstorage mmapstorage
 ```
 
 Unmount mmapstorage using `kdb umount`:
 
 ```sh
-sudo kdb umount user/tests/mmapstorage
+sudo kdb umount user:/tests/mmapstorage
 ```
 
 ## Compiling
@@ -53,36 +53,36 @@ Additionally, zlib is needed for the `mmapstorage_crc` compilation variant: `zli
 ## Examples
 
 ```sh
-# Mount mmapstorage to `user/tests/mmapstorage`
-sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
+# Mount mmapstorage to `user:/tests/mmapstorage`
+sudo kdb mount config.mmap user:/tests/mmapstorage mmapstorage
 
 # Add some values via `kdb set`
-kdb set user/tests/mmapstorage 'Some root key'
-kdb set user/tests/mmapstorage/dir 'Directory within the hierarchy.'
-kdb set user/tests/mmapstorage/dir/leaf 'A leaf node holding some valuable data.'
-kdb meta-set  user/tests/mmapstorage/dir/leaf superMetaKey 'Metadata is supported too.'
+kdb set user:/tests/mmapstorage 'Some root key'
+kdb set user:/tests/mmapstorage/dir 'Directory within the hierarchy.'
+kdb set user:/tests/mmapstorage/dir/leaf 'A leaf node holding some valuable data.'
+kdb meta-set  user:/tests/mmapstorage/dir/leaf superMetaKey 'Metadata is supported too.'
 
-# List the configuration tree below `user/tests/mmapstorage`
-kdb ls user/tests/mmapstorage
-#> user/tests/mmapstorage
-#> user/tests/mmapstorage/dir
-#> user/tests/mmapstorage/dir/leaf
+# List the configuration tree below `user:/tests/mmapstorage`
+kdb ls user:/tests/mmapstorage
+#> user:/tests/mmapstorage
+#> user:/tests/mmapstorage/dir
+#> user:/tests/mmapstorage/dir/leaf
 
 # Retrieve the new values
-kdb get user/tests/mmapstorage
+kdb get user:/tests/mmapstorage
 #> Some root key
-kdb get user/tests/mmapstorage/dir
+kdb get user:/tests/mmapstorage/dir
 #> Directory within the hierarchy.
-kdb get user/tests/mmapstorage/dir/leaf
+kdb get user:/tests/mmapstorage/dir/leaf
 #> A leaf node holding some valuable data.
-kdb meta-get  user/tests/mmapstorage/dir/leaf superMetaKey
+kdb meta-get  user:/tests/mmapstorage/dir/leaf superMetaKey
 #> Metadata is supported too.
 
 # Undo modifications to the database
-kdb rm -r user/tests/mmapstorage
+kdb rm -r user:/tests/mmapstorage
 
 # Unmount mmapstorage
-sudo kdb umount user/tests/mmapstorage
+sudo kdb umount user:/tests/mmapstorage
 ```
 
 ## Limitations

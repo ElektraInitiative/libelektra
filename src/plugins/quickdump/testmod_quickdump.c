@@ -82,7 +82,7 @@ static void test_basics (void)
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
 
 	{
-		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("dir:/tests/bench", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -92,8 +92,8 @@ static void test_basics (void)
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
 
-		Key * k1 = ksLookupByName (ks, "dir/tests/bench/__112", 0);
-		Key * k8 = ksLookupByName (ks, "dir/tests/bench/__911", 0);
+		Key * k1 = ksLookupByName (ks, "dir:/tests/bench/__112", 0);
+		Key * k8 = ksLookupByName (ks, "dir:/tests/bench/__911", 0);
 		succeed_if (keyGetMeta (k1, "meta/_35") == keyGetMeta (k8, "meta/_35"), "copy meta failed");
 
 		ksDel (expected);
@@ -103,7 +103,7 @@ static void test_basics (void)
 	}
 
 	{
-		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -127,14 +127,14 @@ static void test_noParent (void)
 	printf ("test noparent\n");
 
 	KeySet * input = ksNew (2, keyNew ("/", KEY_VALUE, "value", KEY_END), keyNew ("/a", KEY_VALUE, "value1", KEY_END), KS_END);
-	KeySet * expected = ksNew (2, keyNew ("dir/tests/bench", KEY_VALUE, "value", KEY_END),
-				   keyNew ("dir/tests/bench/a", KEY_VALUE, "value1", KEY_END), KS_END);
+	KeySet * expected = ksNew (2, keyNew ("dir:/tests/bench", KEY_VALUE, "value", KEY_END),
+				   keyNew ("dir:/tests/bench/a", KEY_VALUE, "value1", KEY_END), KS_END);
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
 
 	{
-		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (1, keyNew ("user/noparent", KEY_END), KS_END);
+		KeySet * conf = ksNew (1, keyNew ("user:/noparent", KEY_END), KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 		succeed_if (plugin->kdbSet (plugin, input, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -147,7 +147,7 @@ static void test_noParent (void)
 	}
 
 	{
-		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * getKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -180,7 +180,7 @@ static void test_readV1 (void)
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
 
 	{
-		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("dir:/tests/bench", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -190,8 +190,8 @@ static void test_readV1 (void)
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
 
-		Key * k1 = ksLookupByName (ks, "dir/tests/bench/__112", 0);
-		Key * k8 = ksLookupByName (ks, "dir/tests/bench/__911", 0);
+		Key * k1 = ksLookupByName (ks, "dir:/tests/bench/__112", 0);
+		Key * k8 = ksLookupByName (ks, "dir:/tests/bench/__911", 0);
 		succeed_if (keyGetMeta (k1, "meta/_35") == keyGetMeta (k8, "meta/_35"), "copy meta failed");
 
 		ksDel (expected);
@@ -201,7 +201,7 @@ static void test_readV1 (void)
 	}
 
 	{
-		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -231,7 +231,7 @@ static void test_readV2 (void)
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
 
 	{
-		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("dir:/tests/bench", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -241,8 +241,8 @@ static void test_readV2 (void)
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
 
-		Key * k1 = ksLookupByName (ks, "dir/tests/bench/__112", 0);
-		Key * k8 = ksLookupByName (ks, "dir/tests/bench/__911", 0);
+		Key * k1 = ksLookupByName (ks, "dir:/tests/bench/__112", 0);
+		Key * k8 = ksLookupByName (ks, "dir:/tests/bench/__911", 0);
 		succeed_if (keyGetMeta (k1, "meta/_35") == keyGetMeta (k8, "meta/_35"), "copy meta failed");
 
 		ksDel (expected);
@@ -252,7 +252,7 @@ static void test_readV2 (void)
 	}
 
 	{
-		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -276,11 +276,11 @@ static void test_parentKeyValue (void)
 {
 	printf ("test parent key value\n");
 
-	KeySet * expected = ksNew (1, keyNew ("dir/tests/bench", KEY_VALUE, "value", KEY_END), KS_END);
+	KeySet * expected = ksNew (1, keyNew ("dir:/tests/bench", KEY_VALUE, "value", KEY_END), KS_END);
 	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
 
 	{
-		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
@@ -296,7 +296,7 @@ static void test_parentKeyValue (void)
 	}
 
 	{
-		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+		Key * getKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");

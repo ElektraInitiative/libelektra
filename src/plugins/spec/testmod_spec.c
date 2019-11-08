@@ -42,7 +42,7 @@ static void test_default (void)
 {
 	printf ("test default\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 	TEST_BEGIN
 	{
 		KeySet * ks =
@@ -78,7 +78,7 @@ static void test_assign_condition (void)
 {
 	printf ("test assign/condition\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -106,7 +106,7 @@ static void test_wildcard (void)
 {
 	printf ("test wildcard (_)\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -146,7 +146,7 @@ static void test_require (void)
 {
 	printf ("test require\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -176,8 +176,8 @@ static void test_logMissing (void)
 {
 	printf ("test logMissing\n");
 
-	KeySet * _conf = ksNew (2, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END),
-				keyNew ("user/missing/log", KEY_VALUE, "1", KEY_END), KS_END);
+	KeySet * _conf = ksNew (2, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END),
+				keyNew ("user:/missing/log", KEY_VALUE, "1", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -215,7 +215,7 @@ static void test_array (void)
 {
 	printf ("test array\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -411,7 +411,7 @@ static void test_require_array (void)
 {
 	printf ("test require array\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -458,7 +458,7 @@ static void test_array_member (void)
 {
 	printf ("test array member\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
@@ -571,7 +571,7 @@ static void test_remove_meta (void)
 {
 	printf ("test remove meta\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{

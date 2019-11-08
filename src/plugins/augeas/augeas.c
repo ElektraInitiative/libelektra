@@ -75,7 +75,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 			if (l > 4)
 			{
 				p[l - 4] = '\0';
-				Key * k = keyNew ("system/", KEY_END);
+				Key * k = keyNew ("system:/", KEY_END);
 				keyAddBaseName (k, p);
 				ksAppendKey (ks, keyDup (k));
 
@@ -463,7 +463,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int errnosave = errno;
 	int ret = 0;
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/augeas"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/augeas"))
 	{
 		KeySet * info =
 #include "contract.h"

@@ -212,34 +212,34 @@ static void elektraGenCloseFirst (yajl_gen g, const char * pcur, size_t csize, c
  *
  * @example
  *
- * cur:  user/sw/org/deeper
- * next: user/sw/org/other/deeper/below
+ * cur:  user:/sw/org/deeper
+ * next: user:/sw/org/other/deeper/below
  * -> nothing will be done ("deeper" is value)
  * [eq: 3, cur: 4, next: 6, gen: 0]
  *
- * cur:  user/sw/org/other/deeper/below
- * next: user/no
+ * cur:  user:/sw/org/other/deeper/below
+ * next: user:/no
  * -> "deeper", "other", "org" and "sw" maps will be closed ("below" is value)
  * [eq: 1, cur: 6, next: 2, gen: 4]
  *
- * cur:  user/no
- * next: user/oops/it/is/below
+ * cur:  user:/no
+ * next: user:/oops/it/is/below
  * -> nothing will be done ("no" is value)
  * [eq: 1, cur: 2, next: 5, gen: 0]
  *
- * cur:  user/oops/it/is/below
- * next: user/x/t/s/x
+ * cur:  user:/oops/it/is/below
+ * next: user:/x/t/s/x
  * -> close "is", "it", "oops"
  * [eq: 1, cur: 5, next: 5, gen: 3]
  *
  * last iteration (e.g. close down to root)
- * cur:  user/x/t/s/x
+ * cur:  user:/x/t/s/x
  * next: user
  * -> close "s", "t" and "x" maps
  * [eq: 1, cur: 5, next: 1, gen: 3]
  *
- * cur:  user/#0/1/1/1
- * next: user/#1/1/1/1
+ * cur:  user:/#0/1/1/1
+ * next: user:/#1/1/1/1
  * -> close "1", "1", "1", but not array
  * [eq: 1, cur: 5, next: 5, gen: 3]
  *

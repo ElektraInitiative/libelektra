@@ -16,7 +16,7 @@
 
 static void testBom (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf;
 	if (!reject)
 	{
@@ -24,7 +24,7 @@ static void testBom (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system/reject/bom", KEY_END), KS_END);
+		conf = ksNew (10, keyNew ("system:/reject/bom", KEY_END), KS_END);
 	}
 	KeySet * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
@@ -37,7 +37,7 @@ static void testBom (const char * filename, int reject, int expected)
 
 static void testNull (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf;
 	if (!reject)
 	{
@@ -45,7 +45,7 @@ static void testNull (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system/reject/null", KEY_END), KS_END);
+		conf = ksNew (10, keyNew ("system:/reject/null", KEY_END), KS_END);
 	}
 	KeySet * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
@@ -58,7 +58,7 @@ static void testNull (const char * filename, int reject, int expected)
 
 static void testLEConsistency (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf;
 	if (!reject)
 	{
@@ -66,7 +66,7 @@ static void testLEConsistency (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system/check/lineending", KEY_END), KS_END);
+		conf = ksNew (10, keyNew ("system:/check/lineending", KEY_END), KS_END);
 	}
 	KeySet * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
@@ -79,7 +79,7 @@ static void testLEConsistency (const char * filename, int reject, int expected)
 
 static void testLEcrlf (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf;
 	if (!reject)
 	{
@@ -87,8 +87,8 @@ static void testLEcrlf (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system/check/lineending", KEY_END),
-			      keyNew ("system/valid/lineending", KEY_VALUE, "CRLF", KEY_END), KS_END);
+		conf = ksNew (10, keyNew ("system:/check/lineending", KEY_END),
+			      keyNew ("system:/valid/lineending", KEY_VALUE, "CRLF", KEY_END), KS_END);
 	}
 	KeySet * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
@@ -101,7 +101,7 @@ static void testLEcrlf (const char * filename, int reject, int expected)
 
 static void testEncoding (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf;
 	if (!reject)
 	{
@@ -109,8 +109,8 @@ static void testEncoding (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system/check/encoding", KEY_END), keyNew ("system/valid/encoding", KEY_VALUE, "UTF-8", KEY_END),
-			      KS_END);
+		conf = ksNew (10, keyNew ("system:/check/encoding", KEY_END),
+			      keyNew ("system:/valid/encoding", KEY_VALUE, "UTF-8", KEY_END), KS_END);
 	}
 	KeySet * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");

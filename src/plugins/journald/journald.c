@@ -19,19 +19,19 @@
 
 int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/journald"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/journald"))
 	{
 		KeySet * n;
 		ksAppend (
 			returned,
 			n = ksNew (30,
-				   keyNew ("system/elektra/modules/journald", KEY_VALUE, "journald plugin waits for your orders", KEY_END),
-				   keyNew ("system/elektra/modules/journald/exports", KEY_END),
-				   keyNew ("system/elektra/modules/journald/exports/get", KEY_FUNC, elektraJournaldGet, KEY_END),
-				   keyNew ("system/elektra/modules/journald/exports/set", KEY_FUNC, elektraJournaldSet, KEY_END),
-				   keyNew ("system/elektra/modules/journald/exports/error", KEY_FUNC, elektraJournaldError, KEY_END),
+				   keyNew ("system:/elektra/modules/journald", KEY_VALUE, "journald plugin waits for your orders", KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports", KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/get", KEY_FUNC, elektraJournaldGet, KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/set", KEY_FUNC, elektraJournaldSet, KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/error", KEY_FUNC, elektraJournaldError, KEY_END),
 #include "readme_journald.c"
-				   keyNew ("system/elektra/modules/journald/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				   keyNew ("system:/elektra/modules/journald/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 		return 1;
 	}

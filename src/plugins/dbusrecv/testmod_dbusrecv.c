@@ -147,7 +147,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test commit\n");
 
-	KeySet * conf = ksNew (1, keyNew ("user/announce", KEY_VALUE, "once", KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/announce", KEY_VALUE, "once", KEY_END), KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
 	// io binding is required for dispatching
@@ -167,7 +167,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	openNotification (plugin, openNotificationParams);
 	ksDel (openNotificationParams);
 
-	char * expectedKeyName = "system/tests/testmod_dbusrecv/changed";
+	char * expectedKeyName = "system:/tests/testmod_dbusrecv/changed";
 	dbusSendMessage ("Commit", expectedKeyName);
 
 	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TEST_TIMEOUT, 1, test_timerCallback, NULL);
@@ -215,7 +215,7 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 	openNotification (plugin, openNotificationParams);
 	ksDel (openNotificationParams);
 
-	char * expectedKeyName = "system/tests/testmod_dbusrecv/added";
+	char * expectedKeyName = "system:/tests/testmod_dbusrecv/added";
 	dbusSendMessage ("KeyAdded", expectedKeyName);
 
 	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TEST_TIMEOUT, 1, test_timerCallback, NULL);
@@ -263,7 +263,7 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 	openNotification (plugin, openNotificationParams);
 	ksDel (openNotificationParams);
 
-	char * expectedKeyName = "system/tests/testmod_dbusrecv/changed";
+	char * expectedKeyName = "system:/tests/testmod_dbusrecv/changed";
 	dbusSendMessage ("KeyChanged", expectedKeyName);
 
 	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TEST_TIMEOUT, 1, test_timerCallback, NULL);

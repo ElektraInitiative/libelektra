@@ -3,7 +3,7 @@
 <keyset xmlns="https://www.libelektra.org"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
-	parent = "user/tests/filesys"
+	parent = "user:/tests/filesys"
 	>
  <key type="43" basename="0-27042916" value="0 216905227"><comment>2551516588474823843</comment></key>
  <key type="253" basename="1-2449524622" value="1 1679328197"><comment>3246436893195629244</comment></key>

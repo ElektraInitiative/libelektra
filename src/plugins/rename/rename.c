@@ -271,7 +271,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	/* configuration only */
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/rename"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/rename"))
 	{
 		KeySet * info =
 #include "contract.h"

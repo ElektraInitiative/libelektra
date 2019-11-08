@@ -35,7 +35,7 @@ using CppKey = kdb::Key;
 	elektraPluginClose (plugin, 0);                                                                                                    \
 	elektraModulesClose (modules.getKeySet (), 0)
 
-#define PREFIX "user/tests/yambi/"
+#define PREFIX "user:/tests/yambi/"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ void test_read (string const & filepath, CppKeySet expected)
 
 TEST (yambi, basics)
 {
-	OPEN_PLUGIN ("system/elektra/modules/yambi", "file/path");
+	OPEN_PLUGIN ("system:/elektra/modules/yambi", "file/path");
 
 	CppKeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` failed");

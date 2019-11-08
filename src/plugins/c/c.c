@@ -186,15 +186,15 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 
 int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/c"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/c"))
 	{
-		KeySet * contract = ksNew (30, keyNew ("system/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
-					   keyNew ("system/elektra/modules/c/exports", KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
+		KeySet * contract = ksNew (30, keyNew ("system:/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports", KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
 #include ELEKTRA_README
-					   keyNew ("system/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+					   keyNew ("system:/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

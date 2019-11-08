@@ -541,9 +541,9 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 
 	cur += strlen (cur) + 1; // skip "spec"
 
-	KeySet * newKeys = ksNew (1, keyNew ("spec/", KEY_END), KS_END);
+	KeySet * newKeys = ksNew (1, keyNew ("spec:/", KEY_END), KS_END);
 	KeySet * parents = ksNew (0, KS_END);
-	Key * specCur = keyNew ("spec/", KEY_END);
+	Key * specCur = keyNew ("spec:/", KEY_END);
 
 	while (cur < end)
 	{
@@ -852,15 +852,15 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 
 int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/spec"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/spec"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/spec/exports", KEY_END),
-			       keyNew ("system/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
-			       keyNew ("system/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -900,7 +900,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// remove spec namespace from returned
-	Key * specParent = keyNew ("spec/", KEY_END);
+	Key * specParent = keyNew ("spec:/", KEY_END);
 	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 
@@ -971,7 +971,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// remove spec namespace from returned
-	Key * specParent = keyNew ("spec/", KEY_END);
+	Key * specParent = keyNew ("spec:/", KEY_END);
 	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 

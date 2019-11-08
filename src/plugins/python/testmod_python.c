@@ -48,16 +48,16 @@ static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
-			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/print", KEY_END),
-			       keyNew ("user/python/path", KEY_VALUE, ".", KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
+			       keyNew ("user:/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user:/print", KEY_END),
+			       keyNew ("user:/python/path", KEY_VALUE, ".", KEY_END), KS_END);
 	PLUGIN_OPEN (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
 
-	Key * parentKey = keyNew ("user/from_c", KEY_END);
+	Key * parentKey = keyNew ("user:/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	exit_if_fail (ksGetSize (ks) == 1, "keyset size is still 0");
-	succeed_if_same_string (keyName (ksHead (ks)), "user/from_python");
+	succeed_if_same_string (keyName (ksHead (ks)), "user:/from_python");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -73,13 +73,13 @@ static void test_two_scripts (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
-			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (2, keyNew ("user:/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
+			       keyNew ("user:/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user:/python/path", KEY_VALUE, ".", KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 
-	KeySet * conf2 = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin2.py"), KEY_END),
-				keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
-				keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf2 = ksNew (2, keyNew ("user:/script", KEY_VALUE, python_file ("python_plugin2.py"), KEY_END),
+				keyNew ("user:/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user:/python/path", KEY_VALUE, ".", KEY_END),
+				keyNew ("user:/print", KEY_END), KS_END);
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
@@ -106,12 +106,12 @@ static void test_fail (void)
 {
 	printf ("Testing return values from python functions...\n");
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin_fail.py"), KEY_END),
-			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (2, keyNew ("user:/script", KEY_VALUE, python_file ("python_plugin_fail.py"), KEY_END),
+			       keyNew ("user:/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user:/python/path", KEY_VALUE, ".", KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 	PLUGIN_OPEN (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
 
-	Key * parentKey = keyNew ("user/tests/from_c", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "call to kdbGet didn't fail");
@@ -132,9 +132,9 @@ static void test_wrong (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin_wrong.py"), KEY_END),
-			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (2, keyNew ("user:/script", KEY_VALUE, python_file ("python_plugin_wrong.py"), KEY_END),
+			       keyNew ("user:/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user:/python/path", KEY_VALUE, ".", KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);

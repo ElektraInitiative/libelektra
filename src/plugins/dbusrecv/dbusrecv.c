@@ -174,21 +174,21 @@ int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/dbusrecv"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbusrecv"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/dbusrecv", KEY_VALUE, "dbusrecv plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports", KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports/open", KEY_FUNC, elektraDbusRecvOpen, KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports/get", KEY_FUNC, elektraDbusRecvGet, KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports/close", KEY_FUNC, elektraDbusRecvClose, KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports/setIoBinding", KEY_FUNC, elektraDbusRecvSetIoBinding, KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports/openNotification", KEY_FUNC, elektraDbusRecvOpenNotification,
+			30, keyNew ("system:/elektra/modules/dbusrecv", KEY_VALUE, "dbusrecv plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/dbusrecv/exports", KEY_END),
+			keyNew ("system:/elektra/modules/dbusrecv/exports/open", KEY_FUNC, elektraDbusRecvOpen, KEY_END),
+			keyNew ("system:/elektra/modules/dbusrecv/exports/get", KEY_FUNC, elektraDbusRecvGet, KEY_END),
+			keyNew ("system:/elektra/modules/dbusrecv/exports/close", KEY_FUNC, elektraDbusRecvClose, KEY_END),
+			keyNew ("system:/elektra/modules/dbusrecv/exports/setIoBinding", KEY_FUNC, elektraDbusRecvSetIoBinding, KEY_END),
+			keyNew ("system:/elektra/modules/dbusrecv/exports/openNotification", KEY_FUNC, elektraDbusRecvOpenNotification,
 				KEY_END),
-			keyNew ("system/elektra/modules/dbusrecv/exports/closeNotification", KEY_FUNC, elektraDbusRecvCloseNotification,
+			keyNew ("system:/elektra/modules/dbusrecv/exports/closeNotification", KEY_FUNC, elektraDbusRecvCloseNotification,
 				KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/dbusrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/dbusrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

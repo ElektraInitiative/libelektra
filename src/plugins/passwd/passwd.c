@@ -169,15 +169,15 @@ static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 
 int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/passwd"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/passwd"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/passwd", KEY_VALUE, "passwd plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/passwd/exports", KEY_END),
-			       keyNew ("system/elektra/modules/passwd/exports/get", KEY_FUNC, elektraPasswdGet, KEY_END),
-			       keyNew ("system/elektra/modules/passwd/exports/set", KEY_FUNC, elektraPasswdSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/passwd", KEY_VALUE, "passwd plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/passwd/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/passwd/exports/get", KEY_FUNC, elektraPasswdGet, KEY_END),
+			       keyNew ("system:/elektra/modules/passwd/exports/set", KEY_FUNC, elektraPasswdSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/passwd/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/passwd/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

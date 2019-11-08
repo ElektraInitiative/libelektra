@@ -40,8 +40,8 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 	if (filename[0] == '0') return -1;
 
 	size_t size = strlen (filename);
-	char * buffer = elektraMalloc (size + sizeof ("system/"));
-	strcpy (buffer, "system/");
+	char * buffer = elektraMalloc (size + sizeof ("system:/"));
+	strcpy (buffer, "system:/");
 	strcat (buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
@@ -228,13 +228,13 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 		return 0;
 	}
 
-	Key * canonify = keyNew ("user/", KEY_END);
+	Key * canonify = keyNew ("user:/", KEY_END);
 	keyAddName (canonify, user);
 	size_t homeSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 
 	char * homeBuf = elektraMalloc (homeSize);
 	strcpy (homeBuf, KDB_DB_HOME "/");
-	strcat (homeBuf, keyName (canonify) + 5); // cut user/
+	strcat (homeBuf, keyName (canonify) + 5); // cut user:/
 	if (handle->relPath[0] != '/')
 	{
 		strcat (homeBuf, "/" KDB_DB_USER);

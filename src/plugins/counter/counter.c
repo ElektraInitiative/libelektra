@@ -62,18 +62,18 @@ int elektraCounterClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/counter"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/counter"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/counter", KEY_VALUE, "counter plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/counter/exports", KEY_END),
-			       keyNew ("system/elektra/modules/counter/exports/open", KEY_FUNC, elektraCounterOpen, KEY_END),
-			       keyNew ("system/elektra/modules/counter/exports/close", KEY_FUNC, elektraCounterClose, KEY_END),
-			       keyNew ("system/elektra/modules/counter/exports/get", KEY_FUNC, elektraCounterGet, KEY_END),
-			       keyNew ("system/elektra/modules/counter/exports/set", KEY_FUNC, elektraCounterSet, KEY_END),
-			       keyNew ("system/elektra/modules/counter/exports/error", KEY_FUNC, elektraCounterError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/counter", KEY_VALUE, "counter plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/open", KEY_FUNC, elektraCounterOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/close", KEY_FUNC, elektraCounterClose, KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/get", KEY_FUNC, elektraCounterGet, KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/set", KEY_FUNC, elektraCounterSet, KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/error", KEY_FUNC, elektraCounterError, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/counter/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/counter/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

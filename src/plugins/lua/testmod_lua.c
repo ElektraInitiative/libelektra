@@ -19,15 +19,15 @@ static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 	PLUGIN_OPEN ("lua");
 
-	Key * parentKey = keyNew ("user/from_c", KEY_END);
+	Key * parentKey = keyNew ("user:/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (ksGetSize (ks) == 1, "keyset size is still 0");
-	succeed_if (ksGetSize (ks) == 1 && !strcmp (keyName (ksHead (ks)), "user/from_lua"), "key in keyset has wrong name");
+	succeed_if (ksGetSize (ks) == 1 && !strcmp (keyName (ksHead (ks)), "user:/from_lua"), "key in keyset has wrong name");
 	succeed_if (output_warnings (parentKey), "warnings in kdbOpen");
 	succeed_if (output_error (parentKey), "errors in kdbOpen");
 
@@ -45,11 +45,11 @@ static void test_two_scripts (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (2, keyNew ("user:/script", KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 
-	KeySet * conf2 = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("lua/lua_plugin2.lua"), KEY_END),
-				keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf2 = ksNew (2, keyNew ("user:/script", KEY_VALUE, srcdir_file ("lua/lua_plugin2.lua"), KEY_END),
+				keyNew ("user:/print", KEY_END), KS_END);
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("lua", modules, conf, errorKey);
@@ -76,11 +76,11 @@ static void test_fail (void)
 {
 	printf ("Testing return values from lua functions...\n");
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("lua/lua_plugin_fail.lua"), KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (2, keyNew ("user:/script", KEY_VALUE, srcdir_file ("lua/lua_plugin_fail.lua"), KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 	PLUGIN_OPEN ("lua");
 
-	Key * parentKey = keyNew ("user/tests/from_c", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "call to kdbGet didn't fail");
@@ -103,8 +103,8 @@ static void test_wrong (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("lua/lua_plugin_wrong.lua"), KEY_END),
-			       keyNew ("user/print", KEY_END), KS_END);
+	KeySet * conf = ksNew (2, keyNew ("user:/script", KEY_VALUE, srcdir_file ("lua/lua_plugin_wrong.lua"), KEY_END),
+			       keyNew ("user:/print", KEY_END), KS_END);
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("lua", modules, conf, errorKey);

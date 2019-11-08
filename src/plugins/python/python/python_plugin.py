@@ -10,8 +10,8 @@ class ElektraPlugin(object):
 
 	def get(self, returned, parentKey):
 		print("[CLASS-PYTHON-1] get")
-		if parentKey.name == 'user/from_c':
-			returned.append(kdb.Key("user/from_python"))
+		if parentKey.name == 'user:/from_c':
+			returned.append(kdb.Key("user:/from_python"))
 		return 1
 
 	def set(self, returned, parentKey):

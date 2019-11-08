@@ -38,5 +38,5 @@ kdb import user xmltool < user.xml
 Or you can also mount an XML file using `xmltool` (not recommended):
 
 ```sh
-kdb mount /etc/example.xml system/example xmltool
+kdb mount /etc/example.xml system:/example xmltool
 ```

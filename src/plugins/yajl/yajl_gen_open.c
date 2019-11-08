@@ -335,53 +335,53 @@ static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next
  * @example
  *
  * Example for elektraNextNotBelow:
- * cur:  user/sw/org
- * next: user/sw/org/deeper
+ * cur:  user:/sw/org
+ * next: user:/sw/org/deeper
  * -> do nothing, "deeper" is value
  *
  *  -- cut --
  *
- * cur:  user/sw/org/deeper
- * next: user/sw/org/other
+ * cur:  user:/sw/org/deeper
+ * next: user:/sw/org/other
  * -> this cannot happen (see elektraNextNotBelow)
  *
- * cur:  user/sw/org/other
- * next: user/sw/org/other/deeper/below
+ * cur:  user:/sw/org/other
+ * next: user:/sw/org/other/deeper/below
  * -> this cannot happen (see elektraNextNotBelow)
  *
  *  -- cut --
  *
  * instead of cut two entries above following would happen:
- * cur:  user/sw/org/deeper
- * next: user/sw/org/other/deeper/below
+ * cur:  user:/sw/org/deeper
+ * next: user:/sw/org/other/deeper/below
  * -> and "other" and "deeper" would be opened
  *
- * cur:  user/sw/org/other/deeper/below
- * next: user/no
+ * cur:  user:/sw/org/other/deeper/below
+ * next: user:/no
  * -> do nothing, because "no" is value
  *
- * cur:  user/no
- * next: user/oops/it/is/below
+ * cur:  user:/no
+ * next: user:/oops/it/is/below
  * -> create map "oops" "it" "is"
  *
- * cur:  user/oops/it/is/below
- * next: user/x/t/s/x
+ * cur:  user:/oops/it/is/below
+ * next: user:/x/t/s/x
  * -> create "x" "t" "s"
  *
  * @example
  *
- * cur:  user/sw/org/#0
- * next: user/sw/org/#1
+ * cur:  user:/sw/org/#0
+ * next: user:/sw/org/#1
  * -> will not open org or array (because that did not change),
  *    but will open group test (because within arrays every key
  *    needs a group).
  *
- * cur:  user/sw/org/#0
- * next: user/sw/oth/#0
+ * cur:  user:/sw/org/#0
+ * next: user:/sw/oth/#0
  * -> will open new group oth and new array and yield blah
  *
- * cur:  user/sw
- * next: user/sw/array/#0
+ * cur:  user:/sw
+ * next: user:/sw/array/#0
  * -> will yield a new array using name "array"
  *
  * @pre cur and next have a name which is not equal

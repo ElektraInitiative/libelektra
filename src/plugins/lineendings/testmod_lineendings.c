@@ -16,7 +16,7 @@
 
 void testvalid (const char * file)
 {
-	Key * parentKey = keyNew ("user/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("lineendings");
 	KeySet * ks = ksNew (0, KS_END);
@@ -29,7 +29,7 @@ void testvalid (const char * file)
 
 void testinconsistent (const char * file)
 {
-	Key * parentKey = keyNew ("user/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("lineendings");
 	KeySet * ks = ksNew (0, KS_END);
@@ -42,8 +42,8 @@ void testinconsistent (const char * file)
 
 void testinvalid (const char * file)
 {
-	Key * parentKey = keyNew ("user/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system/valid", KEY_VALUE, "CRLF", KEY_END), KS_END);
+	Key * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	KeySet * conf = ksNew (20, keyNew ("system:/valid", KEY_VALUE, "CRLF", KEY_END), KS_END);
 	PLUGIN_OPEN ("lineendings");
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");

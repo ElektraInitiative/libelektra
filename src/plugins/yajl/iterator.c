@@ -79,9 +79,9 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
  * ksCurrent() will point at the same key as the key which is returned.
  *
  * e.g.
- * user/sw/x
- * user/sw/x/y
- * user/sw/x/y/z1
+ * user:/sw/x
+ * user:/sw/x/y
+ * user:/sw/x/y/z1
  *
  * @retval last element if no other found.
  * @retval 0 if there is no other element afterwards (keyset will be

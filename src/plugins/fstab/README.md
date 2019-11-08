@@ -87,13 +87,13 @@ would have a key name that is an array (so the value is the number of
 children, in this case 1):
 
 ```
-system/filesystems/\/media\/cdrom
+system:/filesystems/\/media\/cdrom
 ```
 
 with the array entry:
 
 ```
-system/filesystems/\/media\/cdrom0/#0/
+system:/filesystems/\/media\/cdrom0/#0/
 ```
 
 So when following line is added
@@ -119,5 +119,5 @@ Spaces in the names are replaced by \040 in the fstab.
 Mount the plugin:
 
 ```sh
-kdb mount /etc/fstab system/filesystems fstab struct type path
+kdb mount /etc/fstab system:/filesystems fstab struct type path
 ```

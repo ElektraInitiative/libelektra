@@ -36,12 +36,12 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/yambi", KEY_VALUE, "yambi plugin waits for your orders", KEY_END),
-			  keyNew ("system/elektra/modules/yambi/exports", KEY_END),
-			  keyNew ("system/elektra/modules/yambi/exports/get", KEY_FUNC, elektraYambiGet, KEY_END),
-			  keyNew ("system/elektra/modules/yambi/exports/set", KEY_FUNC, elektraYambiSet, KEY_END),
+			  keyNew ("system:/elektra/modules/yambi", KEY_VALUE, "yambi plugin waits for your orders", KEY_END),
+			  keyNew ("system:/elektra/modules/yambi/exports", KEY_END),
+			  keyNew ("system:/elektra/modules/yambi/exports/get", KEY_FUNC, elektraYambiGet, KEY_END),
+			  keyNew ("system:/elektra/modules/yambi/exports/set", KEY_FUNC, elektraYambiSet, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/yambi/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system:/elektra/modules/yambi/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
 
@@ -55,7 +55,7 @@ int elektraYambiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 
-	if (parent.getName () == "system/elektra/modules/yambi")
+	if (parent.getName () == "system:/elektra/modules/yambi")
 	{
 		keys.append (getContract ());
 		parent.release ();

@@ -31,7 +31,7 @@ static Key * createMergingKey (int i)
 	char * name;
 	char * value;
 	char * order;
-	if (asprintf (&name, "user/convertkey%d", i) == -1 || asprintf (&value, "meta line %d", i) == -1 ||
+	if (asprintf (&name, "user:/convertkey%d", i) == -1 || asprintf (&value, "meta line %d", i) == -1 ||
 	    asprintf (&order, "%i", i) == -1)
 	{
 		fprintf (stderr, "Unable to create key attributes");
@@ -51,27 +51,27 @@ static KeySet* createSimpleTestKeys(void)
 	 * or the previous key.
 	 */
 	return ksNew (20,
-			keyNew ("user/normalkey1",
+			keyNew ("user:/normalkey1",
 					KEY_META, "order", "10", KEY_END),
-			keyNew ("user/convertkey1",
+			keyNew ("user:/convertkey1",
 					KEY_VALUE, "testvalue1",
 					KEY_META, "order", "20",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "next",
 					KEY_END),
-			keyNew ("user/normalkey2",
+			keyNew ("user:/normalkey2",
 					KEY_META, "order", "30",
 					KEY_END),
-			keyNew ("user/normalkey3",
+			keyNew ("user:/normalkey3",
 					KEY_META, "order", "40",
 					KEY_END),
-			keyNew ("user/convertkey2",
+			keyNew ("user:/convertkey2",
 					KEY_VALUE, "testvalue2",
 					KEY_META, "order", "50",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "previous",
 					KEY_END),
-			keyNew ("user/normalkey1/subkey",
+			keyNew ("user:/normalkey1/subkey",
 					KEY_VALUE, "testvalue3",
 					KEY_META, "order", "60",
 					KEY_META, "convert/metaname", "testmeta",
@@ -94,9 +94,9 @@ static KeySet* createMergeTestkeys(void)
 		ksAppendKey (ks, key);
 	}
 	ksAppendKey (ks,
-			keyNew ("user/normalkey1", KEY_META, "order", "10", KEY_END));
+			keyNew ("user:/normalkey1", KEY_META, "order", "10", KEY_END));
 	ksAppendKey (ks,
-			keyNew ("user/normalkey2", KEY_META, "order", "20", KEY_END));
+			keyNew ("user:/normalkey2", KEY_META, "order", "20", KEY_END));
 	for (int i = 30; i <= 32; i++)
 	{
 		Key* key = createMergingKey (i);
@@ -113,33 +113,33 @@ static KeySet* createSkipMergeTestKeys(void)
 	 * of the other directio
 	 */
 	return ksNew (20,
-			keyNew ("user/normalkey1",
+			keyNew ("user:/normalkey1",
 					KEY_META, "order", "10", KEY_END),
-			keyNew ("user/convertkey1",
+			keyNew ("user:/convertkey1",
 					KEY_VALUE, "meta line1",
 					KEY_META, "order", "20",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "previous",
 					KEY_END),
-			keyNew ("user/convertkey2",
+			keyNew ("user:/convertkey2",
 					KEY_VALUE, "meta line2",
 					KEY_META, "order", "30",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "next",
 					KEY_END),
-			keyNew ("user/convertkey3",
+			keyNew ("user:/convertkey3",
 					KEY_VALUE, "meta line3",
 					KEY_META, "order", "40",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "previous",
 					KEY_END),
-			keyNew ("user/convertkey4",
+			keyNew ("user:/convertkey4",
 					KEY_VALUE, "meta line4",
 					KEY_META, "order", "50",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "next",
 					KEY_END),
-			keyNew ("user/normalkey2",
+			keyNew ("user:/normalkey2",
 					KEY_META, "order", "60",
 					KEY_END),
 			KS_END);
@@ -152,46 +152,46 @@ static KeySet *createParentTestKeys(void)
 	 * parent key of the keyset for any of the possible reasons
 	 */
 	return ksNew (20,
-			keyNew ("user/parentkey1",
+			keyNew ("user:/parentkey1",
 					KEY_META, "order", "10", KEY_END),
-			keyNew ("user/parentkey1/convertkeydirect",
+			keyNew ("user:/parentkey1/convertkeydirect",
 					KEY_VALUE, "testvalue1",
 					KEY_META, "order", "20",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "parent",
 					KEY_END),
-			keyNew ("user/parentkey2",
+			keyNew ("user:/parentkey2",
 					KEY_META, "order", "30", KEY_END),
-			keyNew ("user/parentkey2/subparent/convertkeyhole",
+			keyNew ("user:/parentkey2/subparent/convertkeyhole",
 					KEY_VALUE, "testvalue2",
 					KEY_META, "order", "40",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "parent",
 					KEY_END),
-			keyNew ("user/parentkey3",
+			keyNew ("user:/parentkey3",
 					KEY_META, "order", "50",
 					KEY_END),
-			keyNew ("user/normalkey1",
+			keyNew ("user:/normalkey1",
 					KEY_META, "order", "60",
 					KEY_END),
-			keyNew ("user/parentkey3/convertkeyprev",
+			keyNew ("user:/parentkey3/convertkeyprev",
 					KEY_VALUE, "testvalue3",
 					KEY_META, "order", "70",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "previous",
 					KEY_META, "convert/append/samelevel", "",
 					KEY_END),
-			keyNew ("user/parentkey4",
+			keyNew ("user:/parentkey4",
 					KEY_META, "order", "80",
 					KEY_END),
-			keyNew ("user/parentkey4/convertkeynext",
+			keyNew ("user:/parentkey4/convertkeynext",
 					KEY_VALUE, "testvalue4",
 					KEY_META, "order", "90",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "next",
 					KEY_META, "convert/append/samelevel", "",
 					KEY_END),
-			keyNew ("user/normalkey2",
+			keyNew ("user:/normalkey2",
 					KEY_META, "order", "100",
 					KEY_END),
 			KS_END);
@@ -200,19 +200,19 @@ static KeySet *createParentTestKeys(void)
 static KeySet* createDifferentMetaNameTestKeys(void)
 {
 	return ksNew (20,
-			keyNew ("user/convertkey1",
+			keyNew ("user:/convertkey1",
 					KEY_VALUE, "meta line1",
 					KEY_META, "order", "10",
 					KEY_META, "convert/metaname", "testmeta1",
 					KEY_META, "convert/append", "next",
 					KEY_END),
-			keyNew ("user/convertkey2",
+			keyNew ("user:/convertkey2",
 					KEY_VALUE, "meta line2",
 					KEY_META, "order", "20",
 					KEY_META, "convert/metaname", "testmeta2",
 					KEY_META, "convert/append", "next",
 					KEY_END),
-			keyNew ("user/normalkey1",
+			keyNew ("user:/normalkey1",
 					KEY_META, "order", "30",
 					KEY_END),
 			KS_END);
@@ -221,27 +221,27 @@ static KeySet* createDifferentMetaNameTestKeys(void)
 static KeySet* createSameLevelTestKeys(void)
 {
 	return ksNew (20,
-			keyNew ("user/levelkey1",
+			keyNew ("user:/levelkey1",
 					KEY_META, "order", "10",
 					KEY_END),
-			keyNew ("user/levelkey1/convertkey1",
+			keyNew ("user:/levelkey1/convertkey1",
 					KEY_VALUE, "convertkey1value",
 					KEY_META, "order","20",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "next",
 					KEY_META, "convert/append/samelevel", "",
 					KEY_END),
-			keyNew ("user/levelkey1/childkey1",
+			keyNew ("user:/levelkey1/childkey1",
 					KEY_META, "order", "30",
 					KEY_END),
-			keyNew ("user/levelkey1/convertkey2",
+			keyNew ("user:/levelkey1/convertkey2",
 					KEY_VALUE, "convertkey2value",
 					KEY_META, "order", "40",
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "next",
 					KEY_META, "convert/append/samelevel", "",
 					KEY_END),
-			keyNew ("user/levelkey2",
+			keyNew ("user:/levelkey2",
 					KEY_META, "order", "50",
 					KEY_END),
 			KS_END);
@@ -250,7 +250,7 @@ static KeySet* createSameLevelTestKeys(void)
 
 void test_parentAppendMode (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -261,7 +261,7 @@ void test_parentAppendMode (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/* parentkey1 must contain meta information generated from convertkeydirect (via parent) */
-	Key * key = ksLookupByName (ks, "user/parentkey1", 0);
+	Key * key = ksLookupByName (ks, "user:/parentkey1", 0);
 	succeed_if (key, "parentkey1 was removed");
 
 	const Key * metaKey1 = keyGetMeta (key, "testmeta");
@@ -269,7 +269,7 @@ void test_parentAppendMode (void)
 	succeed_if (!strcmp (keyString (metaKey1), "testvalue1"), "metakey of parentkey1 contained incorrect data");
 
 	/* parentkey2 must contain meta information generated from convertkeyhole (via parent) */
-	key = ksLookupByName (ks, "user/parentkey2", 0);
+	key = ksLookupByName (ks, "user:/parentkey2", 0);
 	succeed_if (key, "parentkey2 was removed");
 
 	const Key * metaKey2 = keyGetMeta (key, "testmeta");
@@ -278,7 +278,7 @@ void test_parentAppendMode (void)
 
 	/* parentkey3 must contain meta information generated from convertkeyprev
 	 * (via previous append samelevel which falls back to parent) */
-	key = ksLookupByName (ks, "user/parentkey3", 0);
+	key = ksLookupByName (ks, "user:/parentkey3", 0);
 	succeed_if (key, "parentkey3 was removed");
 
 	const Key * metaKey3 = keyGetMeta (key, "testmeta");
@@ -286,13 +286,13 @@ void test_parentAppendMode (void)
 	succeed_if (!strcmp (keyString (metaKey3), "testvalue3"), "metakey of parentkey3 contained incorrect data");
 
 	/* normalkey1 must not contain metadata */
-	key = ksLookupByName (ks, "user/normalkey1", 0);
+	key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey1 should not contain any metadata");
 
 	/* parentkey4 must contain meta information generated from convertkeynext
 	 * (via next append samelevel which falls back to parent) */
-	key = ksLookupByName (ks, "user/parentkey4", 0);
+	key = ksLookupByName (ks, "user:/parentkey4", 0);
 	succeed_if (key, "parentkey4 was removed");
 
 	const Key * metaKey4 = keyGetMeta (key, "testmeta");
@@ -300,7 +300,7 @@ void test_parentAppendMode (void)
 	succeed_if (!strcmp (keyString (metaKey4), "testvalue4"), "metakey of parentkey4 contained incorrect data");
 
 	/* normalkey2 must not contain metadata */
-	key = ksLookupByName (ks, "user/normalkey2", 0);
+	key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey2 should not contain any metadata");
 
@@ -313,7 +313,7 @@ void test_parentAppendMode (void)
 
 void test_simpleAppendModes (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -325,11 +325,11 @@ void test_simpleAppendModes (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/* converted keys must be removed from the result */
-	succeed_if (!ksLookupByName (ks, "user/convertkey1", 0), "convertkey1 was not converted");
-	succeed_if (!ksLookupByName (ks, "user/convertkey2", 0), "convertkey2 was not converted");
+	succeed_if (!ksLookupByName (ks, "user:/convertkey1", 0), "convertkey1 was not converted");
+	succeed_if (!ksLookupByName (ks, "user:/convertkey2", 0), "convertkey2 was not converted");
 
 	/* normalkey2 must contain meta information generated from convertkey1 (via next) */
-	Key * key = ksLookupByName (ks, "user/normalkey2", 0);
+	Key * key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
 	const Key * metaKey1 = keyGetMeta (key, "testmeta");
@@ -337,7 +337,7 @@ void test_simpleAppendModes (void)
 	succeed_if (!strcmp (keyString (metaKey1), "testvalue1"), "metakey of normalkey2 contained incorrect data");
 
 	/* normalkey3 must contain meta information generated from convertkey2 (via previous) */
-	key = ksLookupByName (ks, "user/normalkey3", 0);
+	key = ksLookupByName (ks, "user:/normalkey3", 0);
 	succeed_if (key, "normalkey3 was removed");
 
 	const Key * metaKey2 = keyGetMeta (key, "testmeta");
@@ -345,7 +345,7 @@ void test_simpleAppendModes (void)
 	succeed_if (!strcmp (keyString (metaKey2), "testvalue2"), "metakey of normalkey3 contained incorrect data");
 
 	/* normalkey1 must contain meta information generated from subkey (via parent) */
-	key = ksLookupByName (ks, "user/normalkey1", 0);
+	key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
 	const Key * metaKey3 = keyGetMeta (key, "testmeta");
@@ -361,7 +361,7 @@ void test_simpleAppendModes (void)
 
 void test_metaMerging (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -370,7 +370,7 @@ void test_metaMerging (void)
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user/normalkey1", 0);
+	Key * key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
 	const Key * metaKey1 = keyGetMeta (key, "testmeta");
@@ -378,7 +378,7 @@ void test_metaMerging (void)
 	const char * expected1 = "meta line 1\nmeta line 2\nmeta line 3";
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey of normalkey1 contained incorrect data");
 
-	key = ksLookupByName (ks, "user/normalkey2", 0);
+	key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
 	const Key * metaKey2 = keyGetMeta (key, "testmeta");
@@ -393,15 +393,15 @@ void test_metaMerging (void)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	key = ksLookupByName (ks, "user/convertkey30", 0);
+	key = ksLookupByName (ks, "user:/convertkey30", 0);
 	succeed_if (key, "convertkey30 was not restored");
 	succeed_if (!strcmp (keyString (key), "meta line 30"), "value of convertkey30 was modified");
 
-	key = ksLookupByName (ks, "user/convertkey31", 0);
+	key = ksLookupByName (ks, "user:/convertkey31", 0);
 	succeed_if (key, "convertkey31 was not restored");
 	succeed_if (!strcmp (keyString (key), "changed meta line"), "meta information was not written back to convertkey31");
 
-	key = ksLookupByName (ks, "user/convertkey32", 0);
+	key = ksLookupByName (ks, "user:/convertkey32", 0);
 	succeed_if (key, "convertkey32 was not restored");
 	succeed_if (!strcmp (keyString (key), "meta line 32"), "value of convertkey32 was modified");
 
@@ -412,7 +412,7 @@ void test_metaMerging (void)
 
 void test_metaSkipMerge (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -421,7 +421,7 @@ void test_metaSkipMerge (void)
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user/normalkey1", 0);
+	Key * key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
 	const Key * metaKey1 = keyGetMeta (key, "testmeta");
@@ -429,7 +429,7 @@ void test_metaSkipMerge (void)
 	const char * expected1 = "meta line1\nmeta line3";
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey of normalkey1 contained incorrect data");
 
-	key = ksLookupByName (ks, "user/normalkey2", 0);
+	key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
 	const Key * metaKey2 = keyGetMeta (key, "testmeta");
@@ -444,7 +444,7 @@ void test_metaSkipMerge (void)
 
 void test_differentMetaNames (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -453,7 +453,7 @@ void test_differentMetaNames (void)
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user/normalkey1", 0);
+	Key * key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
 	const Key * metaKey1 = keyGetMeta (key, "testmeta1");
@@ -473,7 +473,7 @@ void test_differentMetaNames (void)
 
 void test_appendSameLevel (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -483,7 +483,7 @@ void test_appendSameLevel (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/* convertkey1 should be converted to childkey1 as childkey1 is on the same level as requested */
-	Key * childKey = ksLookupByName (ks, "user/levelkey1/childkey1", 0);
+	Key * childKey = ksLookupByName (ks, "user:/levelkey1/childkey1", 0);
 	succeed_if (childKey, "childkey1 was removed");
 
 	const Key * metaKey1 = keyGetMeta (childKey, "testmeta");
@@ -492,7 +492,7 @@ void test_appendSameLevel (void)
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey testmeta of childkey1 contained incorrect data");
 
 	/* convertkey2 should be converted to levelkey as the next key in order is not on the same level */
-	Key * levelkey1 = ksLookupByName (ks, "user/levelkey1", 0);
+	Key * levelkey1 = ksLookupByName (ks, "user:/levelkey1", 0);
 	succeed_if (levelkey1, "levelkey1 was removed");
 
 	const Key * metaKey2 = keyGetMeta (levelkey1, "testmeta");
@@ -507,7 +507,7 @@ void test_appendSameLevel (void)
 
 void test_restoreOnSet (void)
 {
-	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
@@ -517,7 +517,7 @@ void test_restoreOnSet (void)
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user/normalkey2", 0);
+	Key * key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
 	/* change the meta information stored in normalkey2
@@ -533,15 +533,15 @@ void test_restoreOnSet (void)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	key = ksLookupByName (ks, "user/convertkey1", 0);
+	key = ksLookupByName (ks, "user:/convertkey1", 0);
 	succeed_if (key, "convertkey1 was not restored");
 	succeed_if (!strcmp (keyString (key), "changedtestvalue"), "meta information was not written back to convertkey1");
 
-	key = ksLookupByName (ks, "user/convertkey2", 0);
+	key = ksLookupByName (ks, "user:/convertkey2", 0);
 	succeed_if (key, "convertkey2 was not restored");
 	succeed_if (!strcmp (keyString (key), "testvalue2"), " value of convertkey2 was modified");
 
-	key = ksLookupByName (ks, "user/normalkey1/subkey", 0);
+	key = ksLookupByName (ks, "user:/normalkey1/subkey", 0);
 	succeed_if (key, "subkey was not restored");
 	succeed_if (!strcmp (keyString (key), "testvalue3"), " value of subkey was modified");
 

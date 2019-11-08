@@ -16,7 +16,7 @@
 
 #include "reference.h"
 
-#define BASE_KEY "user/tests/reference"
+#define BASE_KEY "user:/tests/reference"
 
 #define xstr(a) str (a)
 #define str(a) #a

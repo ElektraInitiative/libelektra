@@ -19,7 +19,7 @@ other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
 To mount the plugin please use:
 
 ```sh
-sudo kdb mount --resolver noresolver none system/info/desktop desktop
+sudo kdb mount --resolver noresolver none system:/info/desktop desktop
 ```
 
 or it is already included if you already mounted the info plugins with:
@@ -31,7 +31,7 @@ sudo kdb mount-info
 Then you can get desktop information via:
 
 ```sh
-kdb get system/info/desktop
+kdb get system:/info/desktop
 ```
 
 You either get a _lower-case_ string (supported desktops see below)

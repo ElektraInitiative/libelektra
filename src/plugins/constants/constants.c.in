@@ -33,7 +33,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "version");
-	keySetString (key, "Duplicate of version info also found below system/elektra/version");
+	keySetString (key, "Duplicate of version info also found below system:/elektra/version");
 	ksAppendKey (ks, key);
 
 
@@ -341,16 +341,17 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/constants"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/constants"))
 	{
-		ksAppendKey (ks, keyNew ("system/elektra/modules/constants", KEY_VALUE, "constants plugin waits for your orders", KEY_END));
-		ksAppendKey (ks, keyNew ("system/elektra/modules/constants/exports", KEY_END));
-		ksAppendKey (ks, keyNew ("system/elektra/modules/constants/exports/get", KEY_FUNC, elektraConstantsGet, KEY_END));
-		ksAppendKey (ks, keyNew ("system/elektra/modules/constants/exports/set", KEY_FUNC, elektraConstantsSet, KEY_END));
+		ksAppendKey (ks,
+			     keyNew ("system:/elektra/modules/constants", KEY_VALUE, "constants plugin waits for your orders", KEY_END));
+		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports", KEY_END));
+		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/get", KEY_FUNC, elektraConstantsGet, KEY_END));
+		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/set", KEY_FUNC, elektraConstantsSet, KEY_END));
 		KeySet * contract =
 			ksNew (30,
 #include "readme_constants.c"
-			       keyNew ("system/elektra/modules/constants/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/constants/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (ks, contract);
 		ksDel (contract);
 		return 1;

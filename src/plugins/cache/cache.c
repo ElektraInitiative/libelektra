@@ -54,7 +54,7 @@ struct _cacheHandle
 
 static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * errorKey)
 {
-	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
+	KeySet * resolverConfig = ksNew (5, keyNew ("user:/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
@@ -240,7 +240,7 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey)
 
 	ch->modules = ksNew (0, KS_END);
 	elektraModulesInit (ch->modules, 0);
-	ch->cachePath = keyNew ("user/elektracache", KEY_END);
+	ch->cachePath = keyNew ("user:/elektracache", KEY_END);
 
 	if (resolveCacheDirectory (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	if (loadCacheStoragePlugin (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -272,17 +272,17 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/cache"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/cache"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports", KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/open", KEY_FUNC, elektraCacheOpen, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/open", KEY_FUNC, elektraCacheOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

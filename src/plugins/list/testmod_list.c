@@ -16,25 +16,25 @@
 
 static void doTest (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user/tests/list/to/be/cut/key1", KEY_END), keyNew ("user/tests/list/to/be/cut/key2", KEY_END),
-			     keyNew ("user/tests/list/to/be/cut/meta1", KEY_END),
-			     keyNew ("user/tests/list/to/be/cut/meta2", KEY_VALUE, "meta?", KEY_META, "convert/metaname", "amimetanow?",
+	KeySet * ks = ksNew (5, keyNew ("user:/tests/list/to/be/cut/key1", KEY_END), keyNew ("user:/tests/list/to/be/cut/key2", KEY_END),
+			     keyNew ("user:/tests/list/to/be/cut/meta1", KEY_END),
+			     keyNew ("user:/tests/list/to/be/cut/meta2", KEY_VALUE, "meta?", KEY_META, "convert/metaname", "amimetanow?",
 				     KEY_META, "convert/append", "previous", KEY_END),
 			     KS_END);
-	KeySet * conf = ksNew (20, keyNew ("user/placements", KEY_END), keyNew ("user/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
-			       keyNew ("user/placements/set", KEY_VALUE, "presetstorage", KEY_END), keyNew ("user/plugins", KEY_END),
-			       keyNew ("user/plugins/#0", KEY_VALUE, "rename", KEY_END), keyNew ("user/plugins/#0/config", KEY_END),
-			       // Configure "rename" plugin directly to cut a part of the key name
-			       keyNew ("user/plugins/#0/config/cut", KEY_VALUE, "to/be/cut", KEY_END),
-			       keyNew ("user/plugins/#0/placements", KEY_END),
-			       keyNew ("user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
-			       keyNew ("user/plugins/#0/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
-			       keyNew ("user/plugins/#1", KEY_VALUE, "keytometa", KEY_END), keyNew ("user/plugins/#1/placements", KEY_END),
-			       keyNew ("user/plugins/#1/placements/set", KEY_VALUE, "presetstorage", KEY_END),
-			       keyNew ("user/plugins/#1/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
-			       // For all plugins, but only used by "rename" plugin
-			       keyNew ("user/config", KEY_END), keyNew ("user/config/toupper", KEY_END), KS_END);
-	Key * parentKey = keyNew ("user/tests/list", KEY_END);
+	KeySet * conf = ksNew (
+		20, keyNew ("user:/placements", KEY_END), keyNew ("user:/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
+		keyNew ("user:/placements/set", KEY_VALUE, "presetstorage", KEY_END), keyNew ("user:/plugins", KEY_END),
+		keyNew ("user:/plugins/#0", KEY_VALUE, "rename", KEY_END), keyNew ("user:/plugins/#0/config", KEY_END),
+		// Configure "rename" plugin directly to cut a part of the key name
+		keyNew ("user:/plugins/#0/config/cut", KEY_VALUE, "to/be/cut", KEY_END), keyNew ("user:/plugins/#0/placements", KEY_END),
+		keyNew ("user:/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
+		keyNew ("user:/plugins/#0/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
+		keyNew ("user:/plugins/#1", KEY_VALUE, "keytometa", KEY_END), keyNew ("user:/plugins/#1/placements", KEY_END),
+		keyNew ("user:/plugins/#1/placements/set", KEY_VALUE, "presetstorage", KEY_END),
+		keyNew ("user:/plugins/#1/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
+		// For all plugins, but only used by "rename" plugin
+		keyNew ("user:/config", KEY_END), keyNew ("user:/config/toupper", KEY_END), KS_END);
+	Key * parentKey = keyNew ("user:/tests/list", KEY_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("list");
 
@@ -55,12 +55,12 @@ static void doTest (void)
 	elektraPluginClose (check, 0);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");
-	const Key * key = ksLookupByName (ks, "user/tests/list/META1", 0);
+	const Key * key = ksLookupByName (ks, "user:/tests/list/META1", 0);
 	succeed_if (key, "key not found");
 	const Key * meta = keyGetMeta (key, "amimetanow?");
 	succeed_if (meta, "metakey not found");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "kdbset failed");
-	key = ksLookupByName (ks, "user/tests/list/to/be/cut/meta1", 0);
+	key = ksLookupByName (ks, "user:/tests/list/to/be/cut/meta1", 0);
 	succeed_if (key, "key not found");
 
 end:

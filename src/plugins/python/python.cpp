@@ -374,7 +374,7 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 
 int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-#define _MODULE_CONFIG_PATH "system/elektra/modules/" PYTHON_PLUGIN_NAME_STR
+#define _MODULE_CONFIG_PATH "system:/elektra/modules/" PYTHON_PLUGIN_NAME_STR
 	if (!strcmp (keyName (parentKey), _MODULE_CONFIG_PATH))
 	{
 		KeySet * n;

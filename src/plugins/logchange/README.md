@@ -18,7 +18,7 @@ Prints every added, changed or deleted key on the console.
 To use it, add it during mounting:
 
 ```sh
-kdb mount logchange.dump user/logchange dump logchange
+kdb mount logchange.dump user:/logchange dump logchange
 ```
 
 Configure the plugin with `log/get=1` to enable printing when configuration is

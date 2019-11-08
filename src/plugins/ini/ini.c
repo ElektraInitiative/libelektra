@@ -706,7 +706,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	/* get all keys */
 	int errnosave = errno;
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/ini"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ini"))
 	{
 		KeySet * info = getPluginContract ();
 

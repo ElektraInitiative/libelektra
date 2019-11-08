@@ -17,9 +17,9 @@ describe "shellvars plugin" do
   context "reads and writes files" do
     let(:file)     { Tempfile.new 'test' }
     let(:keyset)   { Kdb::KeySet.new }
-    let(:parent)   { Kdb::Key.new 'user/tests/shellvar', value: file.path }
+    let(:parent)   { Kdb::Key.new 'user:/tests/shellvar', value: file.path }
     let(:outfile)  { Tempfile.new 'outtest' }
-    let(:outparent){ Kdb::Key.new 'user/tests/shellvar', value: outfile.path }
+    let(:outparent){ Kdb::Key.new 'user:/tests/shellvar', value: outfile.path }
 
 
     after :example do

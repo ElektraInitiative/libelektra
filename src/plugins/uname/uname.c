@@ -61,15 +61,15 @@ int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	int errnosave = errno;
 	ELEKTRA_LOG ("get uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/uname"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/uname"))
 	{
 		KeySet * moduleConfig =
-			ksNew (50, keyNew ("system/elektra/modules/uname", KEY_VALUE, "uname plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/uname/exports", KEY_END),
-			       keyNew ("system/elektra/modules/uname/exports/get", KEY_FUNC, elektraUnameGet, KEY_END),
-			       keyNew ("system/elektra/modules/uname/exports/set", KEY_FUNC, elektraUnameSet, KEY_END),
+			ksNew (50, keyNew ("system:/elektra/modules/uname", KEY_VALUE, "uname plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/uname/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/uname/exports/get", KEY_FUNC, elektraUnameGet, KEY_END),
+			       keyNew ("system:/elektra/modules/uname/exports/set", KEY_FUNC, elektraUnameSet, KEY_END),
 #include "readme_uname.c"
-			       keyNew ("system/elektra/modules/uname/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/uname/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

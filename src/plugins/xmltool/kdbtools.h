@@ -61,7 +61,7 @@ typedef int (*KSFromXML) (KeySet * ks, int fd);
 typedef ssize_t (*output) (const KeySet * ks, FILE * stream, option_t options);
 
 
-#define KDB_SCHEMA_PATH_KEY "system/elektra/xml/schemapath"
+#define KDB_SCHEMA_PATH_KEY "system:/elektra/xml/schemapath"
 
 #ifndef DYN_LINK
 

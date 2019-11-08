@@ -69,14 +69,14 @@ static int isMarkedForEncryption (const Key * k)
  */
 static KeySet * newTestdataKeySet (void)
 {
-	Key * kUnchanged1 = keyNew ("user/crypto/test/nochange", KEY_END);
-	Key * kUnchanged2 = keyNew ("user/crypto/test/nochange2", KEY_END);
-	Key * kNull = keyNew ("user/crypto/test/mynull", KEY_END);
-	Key * kString = keyNew ("user/crypto/test/mystring", KEY_END);
-	Key * kStringLong = keyNew ("user/crypto/test/myextralongstring", KEY_END);
-	Key * kStringFullBlockSingle = keyNew ("user/crypto/test/myfullblocksingle", KEY_END);
-	Key * kStringFullBlockDouble = keyNew ("user/crypto/test/myfullblockdouble", KEY_END);
-	Key * kBin = keyNew ("user/crypto/test/mybin", KEY_END);
+	Key * kUnchanged1 = keyNew ("user:/crypto/test/nochange", KEY_END);
+	Key * kUnchanged2 = keyNew ("user:/crypto/test/nochange2", KEY_END);
+	Key * kNull = keyNew ("user:/crypto/test/mynull", KEY_END);
+	Key * kString = keyNew ("user:/crypto/test/mystring", KEY_END);
+	Key * kStringLong = keyNew ("user:/crypto/test/myextralongstring", KEY_END);
+	Key * kStringFullBlockSingle = keyNew ("user:/crypto/test/myfullblocksingle", KEY_END);
+	Key * kStringFullBlockDouble = keyNew ("user:/crypto/test/myfullblockdouble", KEY_END);
+	Key * kBin = keyNew ("user:/crypto/test/mybin", KEY_END);
 
 	keySetString (kUnchanged1, strVal);
 
@@ -119,7 +119,7 @@ static KeySet * newPluginConfiguration (void)
 static void test_init (const char * pluginName)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system/", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
@@ -154,7 +154,7 @@ static void test_init (const char * pluginName)
 static void test_incomplete_config (const char * pluginName)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system/", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * configKs = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
@@ -183,7 +183,7 @@ static void test_crypto_operations (const char * pluginName)
 	} conversation;
 
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system/", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfiguration ();
 
@@ -200,11 +200,11 @@ static void test_crypto_operations (const char * pluginName)
 
 		// read and check the contract
 		KeySet * contract = ksNew (0, KS_END);
-		Key * contractParent = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+		Key * contractParent = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 		succeed_if (plugin->kdbGet (plugin, contract, contractParent) == 1, "kdb get for contract failed");
 
 		// run checkconf to generate the master password
-		Key * function = ksLookupByName (contract, "system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", 0);
+		Key * function = ksLookupByName (contract, "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", 0);
 		succeed_if (function, "no symbol exported for the checkconf function");
 		if (function)
 		{

@@ -33,16 +33,16 @@
  */
 static inline KeySet * elektraMiniContract (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/mini/exports", KEY_END),
-		      keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
-		      keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
+		      keyNew ("system:/elektra/modules/mini/exports", KEY_END),
+		      keyNew ("system:/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
+		      keyNew ("system:/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
 #include ELEKTRA_README
-		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
-		      keyNew ("system/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
-		      keyNew ("system/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ `=`
-		      keyNew ("system/elektra/modules/mini/config/needs/chars/5C", KEY_VALUE, "5C", KEY_END), // 5C ↔︎ `\`
+		      keyNew ("system:/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ `=`
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/5C", KEY_VALUE, "5C", KEY_END), // 5C ↔︎ `\`
 		      KS_END);
 }
 
@@ -303,7 +303,7 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 /** @see elektraDocGet */
 int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mini"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/mini"))
 	{
 		ELEKTRA_LOG_DEBUG ("Retrieve plugin contract");
 		KeySet * contract = elektraMiniContract ();

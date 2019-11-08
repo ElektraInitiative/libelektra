@@ -190,7 +190,7 @@ int elektraLuaClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
 
 int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-#define _MODULE_CONFIG_PATH "system/elektra/modules/lua"
+#define _MODULE_CONFIG_PATH "system:/elektra/modules/lua"
 	if (!strcmp (keyName (parentKey), _MODULE_CONFIG_PATH))
 	{
 		KeySet * n;

@@ -22,7 +22,7 @@ extern char ** environ;
 
 static KeySet * getSpec (const char * name, Key ** parentKey)
 {
-	*parentKey = keyNew ("spec/tests/gopts", KEY_END);
+	*parentKey = keyNew ("spec:/tests/gopts", KEY_END);
 
 	if (strcmp (name, TEST_EMPTY) == 0)
 	{

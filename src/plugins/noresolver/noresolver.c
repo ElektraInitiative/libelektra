@@ -30,21 +30,21 @@ static KeySet * elektraNoresolverModules (void)
 {
 	return ksNew (
 		50,
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "", KEY_VALUE, "" ELEKTRA_PLUGIN_NAME " plugin waits for your orders",
-			KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraNoresolverGet, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraNoresolverSet, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", KEY_FUNC, elektraNoresolverError, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", KEY_FUNC, elektraNoresolverCheckFile, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "", KEY_VALUE,
+			"" ELEKTRA_PLUGIN_NAME " plugin waits for your orders", KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraNoresolverGet, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraNoresolverSet, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", KEY_FUNC, elektraNoresolverError, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", KEY_FUNC, elektraNoresolverCheckFile, KEY_END),
 #include ELEKTRA_README
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
 int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 
-	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{

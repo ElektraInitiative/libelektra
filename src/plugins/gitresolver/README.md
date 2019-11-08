@@ -28,6 +28,6 @@ Currently it only works inside existing git repositories.
 ## Examples
 
 ```sh
-kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell \
+kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system:/gittest ini shell \
     execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
 ```

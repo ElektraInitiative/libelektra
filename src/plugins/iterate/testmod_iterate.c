@@ -18,7 +18,7 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user/tests/iterate", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/iterate", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("iterate");
 
@@ -31,7 +31,7 @@ static void test_basics (void)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 0, "call to kdbSet was not successful");
 
 	// clang-format off
-	ksAppendKey (ks, keyNew("user/tests/iterate/key",
+	ksAppendKey (ks, keyNew("user:/tests/iterate/key",
 				KEY_META, "iterate", "has",
 				KEY_END));
 	// clang-format on

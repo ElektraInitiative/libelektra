@@ -75,10 +75,10 @@ bool isArrayParent (Key const & parent, KeySet const & keys)
  * @note This function also adds empty parent keys for arrays, if they did not exist beforehand. For example for the key set that **only**
  *       contains the keys:
  *
- *       - `user/array/#0`, and
- *       - `user/array/#1`
+ *       - `user:/array/#0`, and
+ *       - `user:/array/#1`
  *
- *       the function will add the array parent `user/array` to the returned key set.
+ *       the function will add the array parent `user:/array` to the returned key set.
  *
  * @param keys This parameter contains the key set this function searches for array parents.
  *
@@ -176,17 +176,17 @@ KeySet removeArrayMetaData (KeySet const & keys)
  *
  * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
  *
- *  - `user/parent`
+ *  - `user:/parent`
  *
  * that contains the keys
  *
- * - `user/parent/level1/level2`, and
- * - `user/parent/level1/level2/level3/level4`
+ * - `user:/parent/level1/level2`, and
+ * - `user:/parent/level1/level2/level3/level4`
  *
  * , the keys
  *
- * - `user/parent/level1`, and
- * - user/parent/level1/level2/level3
+ * - `user:/parent/level1`, and
+ * - user:/parent/level1/level2/level3
  *
  * are missing.
  *

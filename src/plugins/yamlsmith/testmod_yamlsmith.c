@@ -34,7 +34,7 @@ static void test_contract (void)
 {
 	printf ("• Retrieve plugin contract\n");
 
-	INIT_PLUGIN ("system/elektra/modules/yamlsmith", "Could not retrieve plugin contract");
+	INIT_PLUGIN ("system:/elektra/modules/yamlsmith", "Could not retrieve plugin contract");
 	CLOSE_PLUGIN ();
 }
 

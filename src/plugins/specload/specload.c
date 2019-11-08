@@ -83,7 +83,7 @@ int elektraSpecloadOpen (Plugin * handle, Key * errorKey)
 	Specload * specload = elektraMalloc (sizeof (Specload));
 
 	KeySet * conf = elektraPluginGetConfig (handle);
-	if (ksLookupByName (conf, "system/module", 0) != NULL || ksLookupByName (conf, "system/sendspec", 0) != NULL)
+	if (ksLookupByName (conf, "system:/module", 0) != NULL || ksLookupByName (conf, "system:/sendspec", 0) != NULL)
 	{
 		elektraFree (specload);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -142,7 +142,7 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
  * Sends the given specification (@p spec) over stdout, to be received by the process using specload.
  *
  * Note: To use this function with elektraInvoke2Args, call elektraInvokeOpen with a config containing
- * the key 'system/sendspec'. This postpones the check for an existent app until elektraSpecloadGet is called.
+ * the key 'system:/sendspec'. This postpones the check for an existent app until elektraSpecloadGet is called.
  *
  * @param handle    A specload plugin handle.
  * @param spec      The specification to send.
@@ -157,9 +157,9 @@ int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key 
 
 	KeySet * quickDumpConf = ksNew (0, KS_END);
 
-	if (keyGetMeta (parentKey, "system/elektra/quickdump/noparent") != NULL)
+	if (keyGetMeta (parentKey, "system:/elektra/quickdump/noparent") != NULL)
 	{
-		ksAppendKey (quickDumpConf, keyNew ("system/noparent", KEY_END));
+		ksAppendKey (quickDumpConf, keyNew ("system:/noparent", KEY_END));
 	}
 
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConf, errorKey);
@@ -178,19 +178,19 @@ int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key 
 
 int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/specload"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/specload"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/specload", KEY_VALUE, "specload plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports", KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/open", KEY_FUNC, elektraSpecloadOpen, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/close", KEY_FUNC, elektraSpecloadClose, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/get", KEY_FUNC, elektraSpecloadGet, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/set", KEY_FUNC, elektraSpecloadSet, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConf, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/sendspec", KEY_FUNC, elektraSpecloadSendSpec, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/specload", KEY_VALUE, "specload plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/open", KEY_FUNC, elektraSpecloadOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/close", KEY_FUNC, elektraSpecloadClose, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/get", KEY_FUNC, elektraSpecloadGet, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/set", KEY_FUNC, elektraSpecloadSet, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConf, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/sendspec", KEY_FUNC, elektraSpecloadSendSpec, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/specload/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/specload/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -429,7 +429,7 @@ bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** 
 	KeySet * args;
 	if (ksLookupByName (conf, "/app/args", 0) == NULL)
 	{
-		args = ksNew (1, keyNew ("user/app/args/#0", KEY_VALUE, "--elektra-spec", KEY_END), KS_END);
+		args = ksNew (1, keyNew ("user:/app/args/#0", KEY_VALUE, "--elektra-spec", KEY_END), KS_END);
 	}
 	else
 	{

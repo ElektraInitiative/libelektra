@@ -73,7 +73,7 @@ For example, the hosts plugin contract contained:
 ```c
 ksNew (30,
   // …
-  keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+  keyNew ("system:/elektra/modules/hosts/config/needs/glob/#1",
       KEY_VALUE, "/*",
       KEY_META, "check/ipaddr", "", /* Preferred way to check */
           /* Can be checked additionally */
@@ -81,7 +81,7 @@ ksNew (30,
       KEY_META, "check/validation/message",
           "Character present not suitable for ip address",
       KEY_END),
-  keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+  keyNew ("system:/elektra/modules/hosts/config/needs/glob/#2",
       KEY_VALUE, "/*/*",
           /* Strict character validation */
       KEY_META, "check/validation", "^[0-9a-zA-Z.:]+$",

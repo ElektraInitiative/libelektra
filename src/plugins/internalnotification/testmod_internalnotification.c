@@ -120,7 +120,7 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user/tests/internalnotification", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/internalnotification", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
@@ -143,11 +143,11 @@ static void test_updateOnKdbGet (void)
 {
 	printf ("test update on kdbGet\n");
 
-	Key * parentKey = keyNew ("user/tests/internalnotification", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/internalnotification", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 0;
@@ -167,11 +167,11 @@ static void test_updateOnKdbSet (void)
 {
 	printf ("test update on kdbSet\n");
 
-	Key * parentKey = keyNew ("user/tests/internalnotification", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/internalnotification", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 0;
@@ -199,7 +199,7 @@ static void test_intUpdateWithCascadingKey (void)
 	succeed_if (internalnotificationRegisterInt (plugin, registeredKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
@@ -218,7 +218,7 @@ static void test_intNoUpdateWithInvalidValue (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 123;
@@ -243,7 +243,7 @@ static void test_conversionError (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	succeed_if (internalnotificationSetConversionErrorCallback (plugin, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
@@ -275,7 +275,7 @@ static void test_intUpdateWithValueNotYetExceedingIntMax (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 123;
@@ -303,7 +303,7 @@ static void test_intNoUpdateWithValueExceedingIntMax (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 123;
@@ -332,7 +332,7 @@ static void test_intUpdateWithValueNotYetExceedingIntMin (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 123;
@@ -360,7 +360,7 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 123;
@@ -388,7 +388,7 @@ static void test_callbackCalledWithKey (void)
 	PLUGIN_OPEN ("internalnotification");
 
 	char * value = "foobaroo!";
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, value, KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, value, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
@@ -412,7 +412,7 @@ static void test_callbackCalledWithChangeDetection (void)
 	PLUGIN_OPEN ("internalnotification");
 
 	char * value = "foobaroo!";
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, value, KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, value, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
@@ -442,7 +442,7 @@ static void test_doUpdateShouldUpdateKey (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * changedKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 
 	succeed_if (internalnotificationRegisterCallback (plugin, changedKey, test_callback, NULL) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
@@ -468,9 +468,9 @@ static void test_doUpdateShouldUpdateKeyBelow (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * changedKey = keyNew ("user/test/internalnotification", KEY_END);
+	Key * changedKey = keyNew ("user:/test/internalnotification", KEY_END);
 
-	Key * registeredKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * registeredKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	succeed_if (internalnotificationRegisterCallback (plugin, registeredKey, test_callback, NULL) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
@@ -496,9 +496,9 @@ static void test_doUpdateShouldNotUpdateKeyAbove (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * changedKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 
-	Key * registeredKey = keyNew ("user/test/internalnotification", KEY_END);
+	Key * registeredKey = keyNew ("user:/test/internalnotification", KEY_END);
 	succeed_if (internalnotificationRegisterCallback (plugin, registeredKey, test_callback, NULL) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
@@ -524,9 +524,9 @@ static void test_doUpdateShouldUpdateKeyAbove (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * changedKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 
-	Key * registeredKey = keyNew ("user/test/internalnotification", KEY_END);
+	Key * registeredKey = keyNew ("user:/test/internalnotification", KEY_END);
 	succeed_if (internalnotificationRegisterCallbackSameOrBelow (plugin, registeredKey, test_callback, NULL) == 1,
 		    "call to internalnotificationRegisterCallbackSameOrBelow was not successful");
 
@@ -552,7 +552,7 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * changedKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 
 	// No key registration made
 
