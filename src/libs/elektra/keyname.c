@@ -698,7 +698,7 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 				do
 				{
 					--cur;
-					while (*cur != '/' && cur >= prefix)
+					while (cur >= prefix && *cur != '/')
 					{
 						--cur;
 						--size;
@@ -742,12 +742,12 @@ void elektraKeyNameCanonicalizePart (const char * part, size_t len, char * const
 		do
 		{
 			--(*outPtr);
-			while (*(*outPtr) != '/' && (*outPtr) > *canonicalName)
+			while ((*outPtr) > *canonicalName && *(*outPtr) != '/')
 			{
 				--(*outPtr);
 			}
 			// skip escaped slashes
-		} while (*((*outPtr) - 1) == '\\' && (*outPtr) > *canonicalName);
+		} while ((*outPtr) > *canonicalName && *((*outPtr) - 1) == '\\');
 		// go back forward so we are after the slash
 		++(*outPtr);
 	}
