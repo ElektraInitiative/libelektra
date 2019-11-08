@@ -257,10 +257,6 @@
 
 %rename(__len__) kdb::KeySet::size;
 
-%ignore kdb::KeySet::rewind;
-%ignore kdb::KeySet::next;
-%ignore kdb::KeySet::current;
-
 %rename("_%s") kdb::KeySet::lookup;
 %rename("_%s") kdb::KeySet::append;
 %rename("_lookup") kdb::KeySet::at;
