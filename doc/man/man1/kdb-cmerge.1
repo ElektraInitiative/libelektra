@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-CMERGE" "1" "October 2019" "" ""
+.TH "KDB\-CMERGE" "1" "November 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-cmerge\fR \- Three\-way merge of KeySets
@@ -53,7 +53,7 @@ On unresolved conflicts nothing will be changed\.
 This tool currently exists alongside \fBkdb merge\fR until it is completely ready to supersede it\. At this moment, cmerge will be renamed to merge\.
 .
 .SH "Options"
-The options of \fBkdb cmerge\fRare:
+The options of \fBkdb cmerge\fR are:
 .
 .IP "\(bu" 4
 \fB\-f\fR, \fB\-\-force\fR: overwrite existing keys in \fBresult\fR
@@ -78,7 +78,7 @@ The available strategies are:
 \fBabort\fR: the merge will abort if any conflict happens and merge the 3 key sets together otherwise\.
 .
 .IP "\(bu" 4
-\fBour\fR: This option forces conflicting keys to be auto\-resolved cleanly by favoring \fBour\fR\. Changes from the other key sets that do not conflict with the \fBour\fR version are reflected to the merge result\. This works like the recursive strategy with the \fBours\fR option from git\-merge\.
+\fBour\fR: This option forces conflicting keys to be auto\-resolved cleanly by favoring \fBour\fR\. Changes from the other key sets that do not conflict with the \fBour\fR version are reflected in the merge result\. This works like the recursive strategy with the \fBours\fR option from git\-merge\.
 .
 .IP "\(bu" 4
 \fBtheir\fR: This is the opposite of \fBour\fR\. The merge will use the \fBtheir\fR version when a conflict happens\.
@@ -92,10 +92,10 @@ If no strategy is specified, the merge will default to the abort strategy\.
 0 on success\.
 .
 .P
-1 if an error happened
+1 if an error happened\.
 .
 .P
-2 if a merge conflict occured and merge strategy abort was set
+2 if a merge conflict occurred and merge strategy abort was set\.
 .
 .P
 The result of the merge is stored in \fBresult\fR\.
