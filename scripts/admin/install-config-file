@@ -52,7 +52,7 @@ fi
 if [ -z "$contentOfElektraPath" ]; then
 	$kdbBinary mount --with-recommends $their $our $format
 	if ! [ $? -eq 0 ]; then
-		echo "Could not mount file $their." >&2
+		echo "Could not mount file $their to $our with $format." >&2
 		exit 31
 	fi
 	resolvedLocation=$($kdbBinary file $our)
