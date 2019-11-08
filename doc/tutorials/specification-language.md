@@ -66,7 +66,8 @@ infos/plugins = type
 type = boolean
 ```
 
-This could then be mounted into the spec namespace with the following command:
+To integrate a configuration into the key database, we mount it by using the property `mountpoint` in the configuration specification.
+This will be mounted into the spec namespace with the following command:
 
 ```shell script
 kdb mount </absolute/path/to/ini/file.ini> spec/tests ni
