@@ -961,7 +961,7 @@ elektraMetaArrayToKS(
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */
-KeySet * elektraMetaArrayToKS (const Key * key, const char * metaName)
+KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 {
 	const Key * meta = keyGetMeta (key, metaName);
 	if (!meta) return NULL;
