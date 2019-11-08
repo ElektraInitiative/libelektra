@@ -275,7 +275,7 @@ bool CompleteCommand::shallShowNextLevel (string const & argument)
 void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline const & cl)
 {
 	KDB kdb;
-	Key mountpointPath ("system/elektra/mountpoints", KEY_END);
+	Key mountpointPath ("system:/elektra/mountpoints", KEY_END);
 	KeySet mountpoints;
 
 	kdb.get (mountpoints, mountpointPath);
@@ -307,7 +307,7 @@ void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline con
 void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdline const & cl)
 {
 	const string namespaces[] = {
-		"spec/", "proc/", "dir/", "user/", "system/",
+		"spec:/", "proc:/", "dir:/", "user:/", "system:/",
 	};
 
 	// Check for new namespaces, issue a warning in case

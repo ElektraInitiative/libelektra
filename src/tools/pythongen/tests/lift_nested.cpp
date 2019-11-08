@@ -34,10 +34,10 @@ int main()
 	bool write = lift.getWrite();
 	par.test().lift().setWrite(false);
 
-	// write back to user/test/lift, see comments in lift.c
+	// write back to user:/test/lift, see comments in lift.c
 	if (write)
 	{
-		kdb.set(ks, "user/test/lift");
+		kdb.set(ks, "user:/test/lift");
 	}
 
 	return 0;

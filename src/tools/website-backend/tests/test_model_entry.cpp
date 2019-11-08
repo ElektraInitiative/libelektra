@@ -18,7 +18,7 @@
 
 TEST (kdbrestModelsEntryTest, ConstructorByKeyReference)
 {
-	kdb::Key key ("proc/test/newkey1", KEY_END);
+	kdb::Key key ("proc:/test/newkey1", KEY_END);
 	kdbrest::model::Entry entry (key);
 	ASSERT_EQ (entry.getName (), key.getName ());
 }
@@ -220,6 +220,6 @@ int main (int argc, char * argv[])
 	testing::InitGoogleTest (&argc, argv);
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
 	(void) kdbrest::Config::instance ().initializeConfiguration (config);
-	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir/configs");
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir:/configs");
 	return RUN_ALL_TESTS ();
 }

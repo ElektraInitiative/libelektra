@@ -87,7 +87,7 @@ TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue)
 TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue2)
 {
 
-	std::string conf_root = "system/sw/elektra/restbackend/#0/current";
+	std::string conf_root = "system:/sw/elektra/restbackend/#0/current";
 	std::string conf_root_cascading = "/sw/elektra/restbackend/#0/current";
 
 	kdb::KeySet testKeySet (
@@ -123,8 +123,8 @@ TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue2)
 		"https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/doc/api_blueprints/snippet-sharing.apib";
 	expected["backend"]["jwt"]["encryption"]["secret"] = "some_random_string";
 	expected["backend"]["jwt"]["validity"] = 7200;
-	expected["backend"]["kdb"]["path"]["configs"] = "dir/configs";
-	expected["backend"]["kdb"]["path"]["users"] = "dir/users";
+	expected["backend"]["kdb"]["path"]["configs"] = "dir:/configs";
+	expected["backend"]["kdb"]["path"]["users"] = "dir:/users";
 	expected["backend"]["output"]["default"]["entry"]["filterby"] = "all";
 	expected["backend"]["output"]["default"]["entry"]["sort"] = "asc";
 	expected["backend"]["output"]["default"]["entry"]["sortby"] = "key";
@@ -152,11 +152,11 @@ TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue2)
 TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue3)
 {
 
-	std::string conf_root_dir = "dir/sw/elektra/restbackend/#0/current";
-	std::string conf_root_proc = "proc/sw/elektra/restbackend/#0/current";
-	std::string conf_root_spec = "spec/sw/elektra/restbackend/#0/current";
-	std::string conf_root_system = "system/sw/elektra/restbackend/#0/current";
-	std::string conf_root_user = "user/sw/elektra/restbackend/#0/current";
+	std::string conf_root_dir = "dir:/sw/elektra/restbackend/#0/current";
+	std::string conf_root_proc = "proc:/sw/elektra/restbackend/#0/current";
+	std::string conf_root_spec = "spec:/sw/elektra/restbackend/#0/current";
+	std::string conf_root_system = "system:/sw/elektra/restbackend/#0/current";
+	std::string conf_root_user = "user:/sw/elektra/restbackend/#0/current";
 	std::string conf_root_cascading = "/sw/elektra/restbackend/#0/current";
 
 	kdb::KeySet testKeySet (

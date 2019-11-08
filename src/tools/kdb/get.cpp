@@ -42,7 +42,7 @@ void printOptions (option_t options)
 
 ckdb::Key * warnOnMeta (ELEKTRA_UNUSED ckdb::KeySet * ks, ELEKTRA_UNUSED ckdb::Key * key, ckdb::Key * found, option_t options)
 {
-	if (found && !strncmp (keyName (found), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
+	if (found && !strncmp (keyName (found), "spec:/", 5) && options == ckdb::KDB_O_CALLBACK)
 	{
 		const ckdb::Key * meta = keyGetMeta (found, "context");
 		if (meta)
@@ -85,7 +85,7 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	}
 	std::cout << std::endl;
 
-	if (k.getName ().substr (0, 5) == "spec/" && (options & ckdb::KDB_O_CALLBACK))
+	if (k.getName ().substr (0, 5) == "spec:/" && (options & ckdb::KDB_O_CALLBACK))
 	{
 		depth += 4;
 		k.setMeta<int> ("callback/print_trace/depth", depth);

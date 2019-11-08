@@ -58,9 +58,9 @@ void displayVersion ()
 {
 	kdb::KDB kdb;
 	kdb::KeySet versions;
-	kdb::Key k ("system/elektra/version", KEY_END);
+	kdb::Key k ("system:/elektra/version", KEY_END);
 	kdb.get (versions, k);
-	kdb::Key kdb_version = versions.lookup ("system/elektra/version/constants/KDB_VERSION");
+	kdb::Key kdb_version = versions.lookup ("system:/elektra/version/constants/KDB_VERSION");
 	if (!kdb_version)
 	{
 		cerr << "Could not lookup KDB_VERSION key" << endl;
@@ -69,7 +69,7 @@ void displayVersion ()
 	{
 		cout << "KDB_VERSION: " << kdb_version.getString () << endl;
 	}
-	kdb::Key so_version = versions.lookup ("system/elektra/version/constants/SO_VERSION");
+	kdb::Key so_version = versions.lookup ("system:/elektra/version/constants/SO_VERSION");
 	if (!so_version)
 	{
 		cerr << "Could not lookup SO_VERSION key" << endl;

@@ -31,16 +31,16 @@ class Support:
 	def override(self, info):
 		"""Array of override options of parameter
 		>>> info = dict()
-		>>> info["override/#0"] = "user/0"
-		>>> info["override/#1"] = "user/1"
+		>>> info["override/#0"] = "user:/0"
+		>>> info["override/#1"] = "user:/1"
 		>>> print info
-		{'override/#1': 'user/1', 'override/#0': 'user/0'}
+		{'override/#1': 'user:/1', 'override/#0': 'user:/0'}
 		>>> ret = toarray(info, "override")
 		>>> print ret
-		['user/0', 'user/1']
+		['user:/0', 'user:/1']
 		>>> ret = override(info)
 		>>> print ret
-		['user/0', 'user/1']
+		['user:/0', 'user:/1']
 		"""
 		return self.toarray(info, "override")
 

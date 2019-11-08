@@ -34,17 +34,17 @@ if kdb mount -13 | grep -Fxq '{{{ spec_parent_key }}}'; then
 
 	MP=$(echo "{{{ spec_parent_key }}}" | sed 's:\\:\\\\:g' | sed 's:/:\\/:g')
 	{{# direct_file? }}
-	if [ "$(kdb get "system/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/file")" != "$SPEC_FILE" ]; then
+	if [ "$(kdb get "system:/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/file")" != "$SPEC_FILE" ]; then
 		error_other_mp
 	fi
 	{{/ direct_file? }}{{^ direct_file? }}
-	if [ -n "$(kdb get "system/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/file")" ]; then
+	if [ -n "$(kdb get "system:/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/file")" ]; then
 		error_other_mp
 	fi
-	if [ "$(kdb get "system/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/app")" != "$APP_PATH" ]; then
+	if [ "$(kdb get "system:/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/app")" != "$APP_PATH" ]; then
 		error_other_mp
 	fi
-	if [ -n "$(kdb ls "system/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/app/args")" ]; then
+	if [ -n "$(kdb ls "system:/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/app/args")" ]; then
 		error_other_mp
 	fi
 	{{/ direct_file? }}

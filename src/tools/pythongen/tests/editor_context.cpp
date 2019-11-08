@@ -20,7 +20,7 @@ int main()
 	KeySet ks;
 	Context c;
 	// some predefined values (for convenience):
-	ks.append(Key("user/kate/quit",
+	ks.append(Key("user:/kate/quit",
 				   KEY_VALUE,
 				   "Ctrl+k",
 				   KEY_END));

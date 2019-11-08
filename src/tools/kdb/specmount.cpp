@@ -63,7 +63,7 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 				  << std::endl;
 		}
 
-		backend.setBackendConfig (cl.getPluginsConfig ("system/"));
+		backend.setBackendConfig (cl.getPluginsConfig ("system:/"));
 		backend.needPlugin (cl.resolver);
 		backend.needPlugin ("storage");
 

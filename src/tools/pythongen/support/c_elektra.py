@@ -5,9 +5,9 @@ class CSupportElektra(CSupport):
 	def funcname(self, key):
 		if key.startswith('/'):
 			return self.funcpretty(key[1:])
-		elif key.startswith('user/'):
+		elif key.startswith('user:/'):
 			return self.funcpretty(key[5:])
-		elif key.startswith('system/'):
+		elif key.startswith('system:/'):
 			return self.funcpretty(key[7:])
 		else:
 			raise Exception("invalid keyname " + key)

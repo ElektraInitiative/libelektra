@@ -13,9 +13,9 @@ using namespace kdb;
 
 void TreeViewTest::initTestCase ()
 {
-	Key userBranch1Key1 ("user/branch1/Key1");
-	Key userBranch1Key2 ("user/branch1/Key2");
-	Key userBranch2Branch1Key ("user/branch2/branch1/Key");
+	Key userBranch1Key1 ("user:/branch1/Key1");
+	Key userBranch1Key2 ("user:/branch1/Key2");
+	Key userBranch2Branch1Key ("user:/branch2/branch1/Key");
 
 	userBranch1Key1.setString ("branch1Key1: Value");
 	userBranch1Key2.setString ("branch1Key2: Value");

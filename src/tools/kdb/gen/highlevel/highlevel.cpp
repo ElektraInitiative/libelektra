@@ -178,7 +178,7 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 
 	Modules modules;
 	KeySet config;
-	config.append (Key ("system/noparent", KEY_END));
+	config.append (Key ("system:/noparent", KEY_END));
 	PluginPtr plugin = modules.load ("quickdump", config);
 
 	Key parentKey (parent.c_str (), KEY_VALUE, path.c_str (), KEY_END);
@@ -266,7 +266,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		specParentName = "spec" + parentKey;
 		ks = cascadingToSpec (keySet);
 	}
-	else if (parentKey.substr (0, 5) == "spec/")
+	else if (parentKey.substr (0, 5) == "spec:/")
 	{
 		cascadingParent = parentKey.substr (4);
 		specParentName = parentKey;
@@ -274,7 +274,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 	else
 	{
-		throw CommandAbortException ("parentKey has to start with spec/ or /");
+		throw CommandAbortException ("parentKey has to start with spec:/ or /");
 	}
 
 	auto data = object{ { "header_file", headerFile },
@@ -556,14 +556,14 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
-	contract.append (kdb::Key ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
 	if (specValidation == SpecValidation::Minimal)
 	{
-		contract.append (kdb::Key ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+		contract.append (kdb::Key ("system:/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
 	}
 
 	data["keys_count"] = std::to_string (keys.size ());

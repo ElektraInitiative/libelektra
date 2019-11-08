@@ -594,7 +594,7 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 	base.rewind ();
 	for (Key o : ours)
 	{
-		std::string prefix ("user/guitest");
+		std::string prefix ("user:/guitest");
 		Key t = theirs.next ();
 		Key b = base.next ();
 		if (!((o && !o.getName ().compare (0, prefix.size (), prefix)) &&

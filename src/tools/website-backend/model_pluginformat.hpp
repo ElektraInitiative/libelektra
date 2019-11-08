@@ -96,7 +96,7 @@ public:
 	 * example:
 	 * - plugin name: simpleini
 	 * - plugin config:
-	 *     system/format = % %
+	 *     system:/format = % %
 	 * - returns: simpleini format=% %
 	 *
 	 * @return plugin name with config params

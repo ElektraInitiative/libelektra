@@ -427,8 +427,8 @@ int main (int argc, char * argv[])
 	// load configuration
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
 	(void) kdbrest::Config::instance ().initializeConfiguration (config);
-	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir/configs");
-	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", "dir/users");
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir:/configs");
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", "dir:/users");
 
 	// run benchmarks
 	if (std::string (argv[1]).compare (0, sizeof ("key"), "key") == 0)

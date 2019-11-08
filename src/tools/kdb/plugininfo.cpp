@@ -39,7 +39,7 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 	std::string name = cl.arguments[0];
 
 	KeySet conf;
-	Key parentKey (std::string ("system/elektra/modules/") + name, KEY_END);
+	Key parentKey (std::string ("system:/elektra/modules/") + name, KEY_END);
 
 	if (!cl.load)
 	{
@@ -76,11 +76,11 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 		conf.append (plugin->getInfo ());
 	}
 
-	Key root (std::string ("system/elektra/modules/") + name + "/exports", KEY_END);
+	Key root (std::string ("system:/elektra/modules/") + name + "/exports", KEY_END);
 
 	if (!subkey.empty ())
 	{
-		root.setName (std::string ("system/elektra/modules/") + name + "/infos/" + subkey);
+		root.setName (std::string ("system:/elektra/modules/") + name + "/infos/" + subkey);
 		Key k = conf.lookup (root);
 		if (k)
 		{
@@ -94,7 +94,7 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	root.setName (std::string ("system/elektra/modules/") + name + "/exports");
+	root.setName (std::string ("system:/elektra/modules/") + name + "/exports");
 	Key k = conf.lookup (root);
 
 	if (k)
@@ -109,7 +109,7 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 	else
 		cout << "no exported symbols found" << endl;
 
-	root.setName (std::string ("system/elektra/modules/") + name + "/infos");
+	root.setName (std::string ("system:/elektra/modules/") + name + "/infos");
 	k = conf.lookup (root);
 
 	if (k)

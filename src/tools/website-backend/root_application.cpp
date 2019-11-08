@@ -113,7 +113,7 @@ void RootApp::version ()
 		{
 			kdb::KDB kdb;
 			kdb::KeySet ks;
-			kdb.get (ks, "system/elektra/version/constants");
+			kdb.get (ks, "system:/elektra/version/constants");
 
 			auto ksLookup = [&ks, &error](const std::string key, cppcms::json::value & out, const bool isInt) {
 				kdb::Key k = ks.lookup (key);
@@ -134,10 +134,10 @@ void RootApp::version ()
 				}
 			};
 
-			ksLookup ("system/elektra/version/constants/KDB_VERSION", data["elektra"]["version"], false);
-			ksLookup ("system/elektra/version/constants/KDB_VERSION_MAJOR", data["elektra"]["major"], true);
-			ksLookup ("system/elektra/version/constants/KDB_VERSION_MINOR", data["elektra"]["minor"], true);
-			ksLookup ("system/elektra/version/constants/KDB_VERSION_MICRO", data["elektra"]["micro"], true);
+			ksLookup ("system:/elektra/version/constants/KDB_VERSION", data["elektra"]["version"], false);
+			ksLookup ("system:/elektra/version/constants/KDB_VERSION_MAJOR", data["elektra"]["major"], true);
+			ksLookup ("system:/elektra/version/constants/KDB_VERSION_MINOR", data["elektra"]["minor"], true);
+			ksLookup ("system:/elektra/version/constants/KDB_VERSION_MICRO", data["elektra"]["micro"], true);
 		}
 		catch (kdb::KDBException const & e)
 		{

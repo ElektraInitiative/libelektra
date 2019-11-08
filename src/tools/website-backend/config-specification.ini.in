@@ -25,14 +25,14 @@ default = 7200
 [@config_default_profile@/backend/kdb/path/configs]
 check/type = string
 description = The root path being used to store configuration snippet entries, must start with a namespace.
-example = user/@tool@/configs
-default = dir/configs
+example = user:/@tool@/configs
+default = dir:/configs
 
 [@config_default_profile@/backend/kdb/path/users]
 check/type = string
 description = The root path being used to store user entries, must start with a namespace.
-example = user/@tool@/users
-default = dir/users
+example = user:/@tool@/users
+default = dir:/users
 
 [@config_default_profile@/backend/output/default/entry/sort]
 check/enum = 'asc', 'desc'

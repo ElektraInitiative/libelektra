@@ -22,15 +22,15 @@ int main()
 	ThreadContext tc (c);
 	KeySet ks;
 	// some predefined values (for convenience):
-	ks.append(Key("user/test/location",
+	ks.append(Key("user:/test/location",
 				   KEY_VALUE,
 				   "48N16O",
 				   KEY_END));
-	ks.append(Key("user/test/48N16O/country",
+	ks.append(Key("user:/test/48N16O/country",
 				   KEY_VALUE,
 				   "austria",
 				   KEY_END));
-	ks.append(Key("user/test/person/austria/greeting",
+	ks.append(Key("user:/test/person/austria/greeting",
 				   KEY_VALUE,
 				   "Griaz Enk!",
 				   KEY_END));

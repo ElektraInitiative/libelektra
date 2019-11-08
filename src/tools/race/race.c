@@ -23,12 +23,12 @@ pthread_barrier_t * bar;
 
 void * writer (void * pV_data ELEKTRA_UNUSED)
 {
-	Key * parent = keyNew ("user/test/race", KEY_END);
+	Key * parent = keyNew ("user:/test/race", KEY_END);
 	KDB * h = kdbOpen (parent);
 	char buffer[4096];
 	unsigned long tid = (unsigned long) pthread_self ();
 	int pid = getpid ();
-	sprintf (buffer, "user/test/race/keys/%d/%lu", pid, tid);
+	sprintf (buffer, "user:/test/race/keys/%d/%lu", pid, tid);
 	KeySet * ks = ksNew (20, KS_END);
 
 	int retg = kdbGet (h, ks, parent);

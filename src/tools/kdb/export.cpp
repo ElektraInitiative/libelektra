@@ -41,7 +41,7 @@ int ExportCommand::execute (Cmdline const & cl)
 
 	if (cl.withoutElektra)
 	{
-		Key systemElektra ("system/elektra", KEY_END);
+		Key systemElektra ("system:/elektra", KEY_END);
 		part.cut (systemElektra);
 	}
 
