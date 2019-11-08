@@ -27,6 +27,7 @@ these messages and afterwards show potential remedies which are open for discuss
    4. Leaking internals
 
       Some messages I have seen state which internal method has failed. E.g., in LCDproc there was a message `xosd: xosd_set_font() failed`. This though should be of no relevance for the user.
+      "Internal" means variable names and method names.
 
 2. Forgetting crucial error information
 
