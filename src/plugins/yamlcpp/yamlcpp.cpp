@@ -16,11 +16,12 @@
 using namespace yamlcpp;
 
 #include <kdb.hpp>
-using namespace ckdb;
 #include <kdberrors.h>
 #include <kdblogger.h>
 
 #include "yaml-cpp/yaml.h"
+
+using namespace ckdb;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

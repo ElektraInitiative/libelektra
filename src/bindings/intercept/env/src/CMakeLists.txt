@@ -8,7 +8,6 @@ file (GLOB_RECURSE SRC_FILES *.cpp)
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 add_library (elektraintercept-env SHARED ${SOURCES})
-add_dependencies (elektraintercept-env kdberrors_generated elektra_error_codes_generated)
 
 target_link_libraries (elektraintercept-env ${CMAKE_DL_LIBS})
 target_link_libraries (elektraintercept-env elektra-kdb elektra-meta) # must be shared!

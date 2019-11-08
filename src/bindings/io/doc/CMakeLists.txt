@@ -44,7 +44,6 @@ list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
 list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 add_executable (${testexename} ${TEST_SOURCES})
-add_dependencies (${testexename} kdberrors_generated elektra_error_codes_generated)
 
 target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 

@@ -20,7 +20,7 @@ else ()
 		include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 		set (SOURCES ${HDR_FILES} ${other_sources} ${source}.cpp)
 		add_executable (${source} ${SOURCES})
-		add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
+
 		target_link_libraries (${source} ${libraries})
 	endmacro (do_benchmark)
 

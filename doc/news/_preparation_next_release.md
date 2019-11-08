@@ -153,6 +153,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - `kdbconfig.h` is no longer included in the installed headers. This is because it could cause conflicts with other
   `config.h`-type headers from applications. _(Klemens Böswirth)_
 - `ksAppendKey`: state that it only fail on memory problems. _(Markus Raab)_
+- Implemented `kdberrors.h` directly without generation of the `specification` file because of drastically reduced error code count _(Michael Zronek)_
 - `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
 - `keyMeta` was added to provide access to a key's underlying KeySet that holds its metadata keys. _(Philipp Gackstatter)_
 - Removed the obsolete `ksLookupByString` and `ksLookupByBinary`, as well as deprecated `KDB_O_*` options. _(Philipp Gackstatter)_

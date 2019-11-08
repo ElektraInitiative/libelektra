@@ -21,10 +21,7 @@ function (add_lib name)
 	endif (ARG_CPP)
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
-	add_dependencies (elektra-${name}-objects
-			  kdberrors_generated
-			  elektra_error_codes_generated
-			  generate_version_script)
+	add_dependencies (elektra-${name}-objects generate_version_script)
 	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
 	target_include_directories (elektra-${name}-objects SYSTEM PUBLIC ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
