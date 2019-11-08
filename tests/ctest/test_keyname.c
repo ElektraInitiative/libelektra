@@ -174,6 +174,12 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("..", "/abc", 6, 2, 3);
 	TEST_VALIDATE_OK ("/../..", "/abc/def", 10, 2, 3);
 	TEST_VALIDATE_OK ("../..", "/abc/def", 10, 2, 3);
+	TEST_VALIDATE_OK ("/def/../..", "/abc", 10, 2, 3);
+	TEST_VALIDATE_OK ("def/../..", "/abc", 10, 2, 3);
+	TEST_VALIDATE_OK ("/./../..", "/abc", 10, 2, 3);
+	TEST_VALIDATE_OK ("./../..", "/abc", 10, 2, 3);
+	TEST_VALIDATE_OK ("/%/../..", "/abc", 10, 2, 3);
+	TEST_VALIDATE_OK ("%/../..", "/abc", 10, 2, 3);
 
 	TEST_VALIDATE_OK ("user/", "/", 3, 6, 7);
 	TEST_VALIDATE_OK ("user:", "/", 3, 7, 8);
