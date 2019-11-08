@@ -22,8 +22,8 @@ namespace kdb
  * @param k the key to search in
  * @param n the level
  *
- * nth_level_of_name(Key("user/hello", KEY_END), 0) -> "user"
- * nth_level_of_name(Key("user/hello", KEY_END), 1) -> "hello"
+ * nth_level_of_name(Key("user:/hello", KEY_END), 0) -> "user:"// TODO (kodebach): ?????
+ * nth_level_of_name(Key("user:/hello", KEY_END), 1) -> "hello"
  *
  * @return the searched string (without slashes)
  */

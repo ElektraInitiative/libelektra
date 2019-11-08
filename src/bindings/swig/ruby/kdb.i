@@ -139,7 +139,7 @@ The following variants are available:
 
   k = Kdb::Key.new
 
-  k = Kdb::Key.new('user/myapp/config1',
+  k = Kdb::Key.new('user:/myapp/config1',
                    value: 'hello',
                    owner: 'me',
                    meta-data1: 'meta')

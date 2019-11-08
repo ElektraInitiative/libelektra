@@ -470,7 +470,7 @@ EOF
       out, err = capture_output { k.pretty_print }
 
       expected = <<EOF
-key 'user/key1'
+key 'user:/key1'
   string value: somevalue
   meta data keys: 1
     meta1: metavalue
@@ -491,7 +491,7 @@ EOF
       out, err = capture_output { k.pretty_print }
 
       expected = <<EOF
-key 'user/key2'
+key 'user:/key2'
   binary key, length: 4
     value: ffaa5501
   meta data keys: 4

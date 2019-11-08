@@ -744,9 +744,9 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       out, err = capture_output { ks.pretty_print }
 
       expected = <<EOF
-user/k1: v1
-user/k2: v2
-user/k3: v3
+user:/k1: v1
+user:/k2: v2
+user:/k3: v3
 EOF
       assert_equal expected, out
       assert_equal '', err
