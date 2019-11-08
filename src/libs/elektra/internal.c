@@ -480,6 +480,6 @@ elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len)
 	if (strncmp (namespaceStr, "proc", len) == 0) return KEY_NS_PROC;
 	if (strncmp (namespaceStr, "spec", len) == 0) return KEY_NS_SPEC;
 	if (strncmp (namespaceStr, "meta", len) == 0) return KEY_NS_META;
-	// TODO (kodebach): if (strncmp (namespaceStr, "default", len) == 0) return KEY_NS_DEFAULT;
+	if (strncmp (namespaceStr, "default", len) == 0) return KEY_NS_DEFAULT;
 	return KEY_NS_NONE;
 }

@@ -45,7 +45,7 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("system:/", NULL, 0, 9, 3);
 	TEST_VALIDATE_OK ("spec:/", NULL, 0, 7, 3);
 	TEST_VALIDATE_OK ("meta:/", NULL, 0, 7, 3);
-	TEST_VALIDATE_OK ("default:/", NULL, 0, 9, 3);
+	TEST_VALIDATE_OK ("default:/", NULL, 0, 10, 3);
 
 	TEST_VALIDATE_OK ("/a", NULL, 0, 3, 4);
 	TEST_VALIDATE_OK ("/ab", NULL, 0, 4, 5);
@@ -442,8 +442,8 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("..", "user:/abc", "user:/");
 }
 
-static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_EMPTY", "KEY_NS_META", "KEY_NS_CASCADING", "KEY_NS_SPEC",
-				     "KEY_NS_PROC", "KEY_NS_DIR",   "KEY_NS_USER", "KEY_NS_SYSTEM" };
+static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",   "KEY_NS_SPEC",   "KEY_NS_PROC",
+				     "KEY_NS_DIR",  "KEY_NS_USER",      "KEY_NS_SYSTEM", "KEY_NS_DEFAULT" };
 
 #define succeed_if_same_uname(name, pu1, pu2, size2)                                                                                       \
 	do                                                                                                                                 \
@@ -489,7 +489,7 @@ static void test_unescape (void)
 	TEST_UNESCAPE_OK ("system:/", KEY_NS_SYSTEM, "\0");
 	TEST_UNESCAPE_OK ("spec:/", KEY_NS_SPEC, "\0");
 	TEST_UNESCAPE_OK ("meta:/", KEY_NS_META, "\0");
-	// TODO: TEST_UNESCAPE_OK ("default:/", KEY_NS_DEFAULT, "\0");
+	TEST_UNESCAPE_OK ("default:/", KEY_NS_DEFAULT, "\0");
 
 	TEST_UNESCAPE_OK ("/abc/def/ghi", KEY_NS_CASCADING, "\0abc\0def\0ghi");
 	TEST_UNESCAPE_OK ("user:/abc/def/ghi", KEY_NS_USER, "\0abc\0def\0ghi");

@@ -1680,9 +1680,9 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	case KEY_NS_CASCADING:
 		oldNamespaceLen = 0;
 		break;
-	/* TODO (kodebach): case KEY_NS_DEFAULT:
-		oldNamespaceLen = sizeof("default") -1;
-		break;*/
+	case KEY_NS_DEFAULT:
+		oldNamespaceLen = sizeof ("default") - 1;
+		break;
 	default:
 		return -1;
 	}
@@ -1711,10 +1711,9 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	case KEY_NS_CASCADING:
 		newNamespace = "";
 		break;
-	/* TODO (kodebach): case KEY_NS_DEFAULT:
-		newNamespaceLen = sizeof("default") -1;
+	case KEY_NS_DEFAULT:
 		newNamespace = "default";
-		break;*/
+		break;
 	default:
 		return -1;
 	}
