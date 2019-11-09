@@ -333,6 +333,7 @@ KDB * kdbOpen (Key * errorKey)
 		keySetString (errorKey, keyString (initialParent));
 		keyDel (initialParent);
 		errno = errnosave;
+		ksDel (keys);
 		return 0;
 	case 0:
 		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial 'kdbGet()' failed, you should either fix " KDB_DB_INIT
