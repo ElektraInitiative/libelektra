@@ -143,6 +143,8 @@ function (add_msr_test_plugin PLUGIN)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_TOOLS ${TOOL})
 
-	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN}
-		      REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS} REQUIRED_TOOLS ${ARG_REQUIRED_TOOLS})
+	add_msr_test (
+		${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN}
+		REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS}
+		REQUIRED_TOOLS ${ARG_REQUIRED_TOOLS})
 endfunction ()
