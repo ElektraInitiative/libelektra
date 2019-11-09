@@ -23,6 +23,58 @@ bitflags! {
     }
 }
 
+#[macro_export]
+macro_rules! replace_expr {
+    ($_t:expr, $sub:expr) => {
+        $sub
+    };
+}
+
+#[macro_export]
+macro_rules! count_exprs {
+    ($($key:expr),*) => {<[()]>::len(&[$($crate::replace_expr!($key, ())),*])};
+}
+
+/// Creates a KeySet with the given keys.
+///
+/// Enough memory is allocated before appending all
+/// keys, such that it also performs well with a
+/// large number of keys.
+///
+/// # Examples
+/// ```
+/// # use elektra::{KeySet, StringKey, WriteableKey, KeyBuilder, keyset};
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let ks = keyset![
+///     StringKey::new("user/test/key1")?,
+///     KeyBuilder::<StringKey>::new("user/test/key2")?
+///                .meta("metakey1", "metavalue1")?
+///                .meta("metakey2", "metavalue2")?
+///                .build(),
+///     StringKey::new("user/test/key3")?,
+/// ];
+/// assert_eq!(ks.size(), 3);
+/// # Ok(())
+/// # }
+/// ```
+#[macro_export]
+macro_rules! keyset {
+    // For keyset![];
+    () => { KeySet::new() };
+    ($($key:expr),*) => {{
+        let capacity = $crate::count_exprs!( $($key),*);
+        let mut keyset = KeySet::with_capacity(capacity);
+        $(
+            keyset.append_key($key);
+        )*
+        keyset
+    }};
+    // To also allow a trailing comma in the key list
+    ($($key:expr,)*) => {{
+        keyset!($($key),*)
+    }};
+}
+
 impl Drop for KeySet {
     fn drop(&mut self) {
         unsafe {
@@ -89,7 +141,7 @@ impl KeySet {
     }
 
     /// Append a key to the keyset.
-    /// 
+    ///
     /// # Panics
     /// Panics on out-of-memory errors.
     pub fn append_key<T: WriteableKey>(&mut self, mut key: T) {
@@ -556,5 +608,39 @@ mod tests {
         }
         assert_eq!(key.name(), "user/test/key");
         Ok(())
+    }
+
+    #[test]
+    fn test_keyset_macro() {
+        let ks = keyset![];
+        assert_eq!(0, ks.size());
+
+        let ks = keyset![
+            StringKey::new("user/test1").unwrap(),
+            StringKey::new("user/test2").unwrap(),
+            StringKey::new("user/test3").unwrap(),
+            StringKey::new("user/test4").unwrap()
+        ];
+        assert_eq!(4, ks.size());
+        assert_eq!("user/test1", ks.head().unwrap().name());
+        assert_eq!("user/test4", ks.tail().unwrap().name());
+
+        let ks = keyset![
+            KeyBuilder::<StringKey>::new("user/test1")
+                .unwrap()
+                .meta("metakey1", "metavalue1")
+                .unwrap()
+                .meta("metakey2", "metavalue2")
+                .unwrap()
+                .build(),
+            // Macro invocation also works with a trailing comma
+            StringKey::new("user/test2").unwrap(),
+        ];
+        assert_eq!(2, ks.size());
+        assert_eq!("user/test1", ks.head().unwrap().name());
+        assert_eq!(
+            "metavalue2",
+            ks.head().unwrap().meta("metakey2").unwrap().value()
+        );
     }
 }
