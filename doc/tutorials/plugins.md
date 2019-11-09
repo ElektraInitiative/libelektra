@@ -364,8 +364,6 @@ even if a critical error occurs, we write the error to the parentKey. The error 
 If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`.
 
 The first parameter of `ELEKTRA_SET_ERROR` is an id specifying the general error that occurred.
-A listing of existing errors together with a short description and a categorization can be found at
-[error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
 caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
