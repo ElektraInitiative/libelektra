@@ -16,10 +16,10 @@
 
 int main (void)
 {
-    KDB * handles[NUM_RUNS];
-    KeySet * keysets[NUM_RUNS];
+	KDB * handles[NUM_RUNS];
+	KeySet * keysets[NUM_RUNS];
 
-    Key * parentKey = keyNew ("user", KEY_END);
+	Key * parentKey = keyNew ("user", KEY_END);
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
@@ -29,7 +29,7 @@ int main (void)
 
 		kdbGet (handle, ks, parentKey);
 
-		printf("Retrieved %d keys\n", (int)ksGetSize(ks));
+		printf ("Retrieved %d keys\n", (int) ksGetSize (ks));
 
 		handles[i] = handle;
 		keysets[i] = ks;
@@ -37,12 +37,11 @@ int main (void)
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
-		printf("Freeing %d keys\n", (int)ksGetSize(keysets[i]));
+		printf ("Freeing %d keys\n", (int) ksGetSize (keysets[i]));
 
-		kdbClose(handles[i], parentKey);
-		ksDel(keysets[i]);
+		kdbClose (handles[i], parentKey);
+		ksDel (keysets[i]);
 	}
 
 	keyDel (parentKey);
 }
-
