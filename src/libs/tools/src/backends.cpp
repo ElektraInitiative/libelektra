@@ -43,7 +43,7 @@ Backends::BackendInfoVector Backends::getBackendInfo (KeySet mountConf)
 			{
 				bi.path = path.getString ();
 			}
-			Key mp = mountConf.lookup (cur.getName () + "/config/mountpoint");
+			Key mp = mountConf.lookup (cur.getName () + "/mountpoint");
 			if (mp)
 			{
 				bi.mountpoint = mp.getString ();

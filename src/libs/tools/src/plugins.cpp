@@ -26,20 +26,22 @@ namespace tools
 
 Plugins::Plugins () : plugins (NR_OF_PLUGINS), nrStoragePlugins (0), nrResolverPlugins (0)
 {
-	placementInfo["prerollback"] = Place (ERROR_PREROLLBACK, ERROR_PREROLLBACK);
-	placementInfo["rollback"] = Place (ERROR_ROLLBACK, ERROR_ROLLBACK);
-	placementInfo["postrollback"] = Place (ERROR_POSTROLLBACK, ERROR_POSTROLLBACK);
+	placementInfo["prerollback"] = Place (RESOLVER_PLUGIN, STORAGE_PLUGIN - 1);
+	placementInfo["rollback"] = Place (STORAGE_PLUGIN, STORAGE_PLUGIN);
+	placementInfo["postrollback"] = Place (STORAGE_PLUGIN + 1, NR_OF_PLUGINS - 1);
 
-	placementInfo["resolver"] = Place (GET_RESOLVER, GET_RESOLVER);
-	placementInfo["prestorage"] = Place (GET_PRESTORAGE, GET_PRESTORAGE);
-	placementInfo["storage"] = Place (GET_STORAGE, GET_STORAGE);
-	placementInfo["poststorage"] = Place (GET_POSTSTORAGE, GET_POSTSTORAGE);
+	placementInfo["getresolver"] = Place (RESOLVER_PLUGIN, RESOLVER_PLUGIN);
+	placementInfo["pregetstorage"] = Place (RESOLVER_PLUGIN + 1, STORAGE_PLUGIN - 1);
+	placementInfo["getstorage"] = Place (STORAGE_PLUGIN, STORAGE_PLUGIN);
+	placementInfo["postgetstorage"] = Place (STORAGE_PLUGIN + 1, NR_OF_PLUGINS - 1);
 	revPostGet = NR_OF_PLUGINS - 1;
 
-	placementInfo["resolver"] = Place (SET_RESOLVER, SET_RESOLVER);
-	placementInfo["precommit"] = Place (SET_PRECOMMIT, SET_PRECOMMIT);
-	placementInfo["commit"] = Place (SET_COMMIT, SET_COMMIT);
-	placementInfo["postcommit"] = Place (SET_POSTCOMMIT, SET_POSTCOMMIT);
+	placementInfo["setresolver"] = Place (RESOLVER_PLUGIN, RESOLVER_PLUGIN);
+	placementInfo["presetstorage"] = Place (RESOLVER_PLUGIN + 1, STORAGE_PLUGIN - 1);
+	placementInfo["setstorage"] = Place (STORAGE_PLUGIN, STORAGE_PLUGIN);
+	placementInfo["precommit"] = Place (STORAGE_PLUGIN + 1, COMMIT_PLUGIN - 1);
+	placementInfo["commit"] = Place (COMMIT_PLUGIN, COMMIT_PLUGIN);
+	placementInfo["postcommit"] = Place (COMMIT_PLUGIN + 1, NR_OF_PLUGINS - 1);
 }
 
 void Plugins::addInfo (Plugin & plugin)
@@ -89,22 +91,65 @@ void Plugins::addPlugin (Plugin & plugin, std::string which)
 
 	std::string stacking = plugin.lookupInfo ("stacking");
 
-	Slot * current;
-	if (which == "poststorage" && stacking == "")
+	if (which == "postgetstorage" && stacking == "")
 	{
-		current = plugins[revPostGet--];
-	}
-	else
-	{
-		current = plugins[placementInfo[which].current++];
+		plugins[revPostGet--] = &plugin;
+		return;
 	}
 
-	while(current != nullptr)
+	plugins[placementInfo[which].current++] = &plugin;
+}
+
+/**
+ * @brief check if this plugin can be placed in the unfortunately
+ * limited number of slots
+ *
+ * @param plugin the plugin to check
+ * @param which placementInfo it is
+ *
+ * @retval true if it should be added
+ * @retval false no placements (will not be added)
+ */
+bool Plugins::checkPlacement (Plugin & plugin, std::string which)
+{
+	if (!plugin.findInfo (which, "placements")) return false; // nothing to check, won't be added anyway
+
+	std::string stacking = plugin.lookupInfo ("stacking");
+
+	if (which == "postgetstorage" && stacking == "")
 	{
-		current = current->next;
+		if (revPostGet >= placementInfo["postgetstorage"].current)
+		{
+			return true;
+		}
+
+		std::ostringstream os;
+		os << "Too many plugins!\n"
+		      "The plugin "
+		   << plugin.name () << " can't be positioned at position " << which
+		   << " anymore.\n"
+		      "Try to reduce the number of plugins!\n"
+		      "\n"
+		      "Failed because of stack overflow: cant place to "
+		   << revPostGet << " because " << placementInfo["postgetstorage"].current << " is larger (this slot is in use)." << endl;
+		throw TooManyPlugins (os.str ());
 	}
-	current = static_cast<Slot*>(malloc (sizeof (Slot)));
-	current->value = &plugin;
+
+	if (placementInfo[which].current > placementInfo[which].max)
+	{
+		std::ostringstream os;
+		os << "Too many plugins!\n"
+		      "The plugin "
+		   << plugin.name () << " can't be positioned at position " << which
+		   << " anymore.\n"
+		      "Try to reduce the number of plugins!\n"
+		      "\n"
+		      "Failed because "
+		   << which << " with " << placementInfo[which].current << " is larger than " << placementInfo[which].max << endl;
+		throw TooManyPlugins (os.str ());
+	}
+
+	return true;
 }
 
 bool Plugins::validateProvided () const
@@ -235,6 +280,12 @@ void ErrorPlugins::tryPlugin (Plugin & plugin)
 	checkOrdering (plugin);
 	checkConflicts (plugin);
 
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement (plugin, "prerollback");
+	willBeAdded |= checkPlacement (plugin, "rollback");
+	willBeAdded |= checkPlacement (plugin, "postrollback");
+	if (!willBeAdded) return;
+
 	if (!plugin.getSymbol ("error"))
 	{
 		throw MissingSymbol ("error");
@@ -246,6 +297,12 @@ void ErrorPlugins::tryPlugin (Plugin & plugin)
 
 void GetPlugins::tryPlugin (Plugin & plugin)
 {
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement (plugin, "getresolver");
+	willBeAdded |= checkPlacement (plugin, "pregetstorage");
+	willBeAdded |= checkPlacement (plugin, "getstorage");
+	willBeAdded |= checkPlacement (plugin, "postgetstorage");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol ("get"))
 	{
@@ -258,6 +315,14 @@ void GetPlugins::tryPlugin (Plugin & plugin)
 
 void SetPlugins::tryPlugin (Plugin & plugin)
 {
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement (plugin, "setresolver");
+	willBeAdded |= checkPlacement (plugin, "presetstorage");
+	willBeAdded |= checkPlacement (plugin, "setstorage");
+	willBeAdded |= checkPlacement (plugin, "precommit");
+	willBeAdded |= checkPlacement (plugin, "commit");
+	willBeAdded |= checkPlacement (plugin, "postcommit");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol ("set"))
 	{
@@ -281,17 +346,17 @@ void ErrorPlugins::addPlugin (Plugin & plugin)
 
 void GetPlugins::addPlugin (Plugin & plugin)
 {
-	Plugins::addPlugin (plugin, "resolver");
-	Plugins::addPlugin (plugin, "prestorage");
-	Plugins::addPlugin (plugin, "storage");
-	Plugins::addPlugin (plugin, "poststorage");
+	Plugins::addPlugin (plugin, "getresolver");
+	Plugins::addPlugin (plugin, "pregetstorage");
+	Plugins::addPlugin (plugin, "getstorage");
+	Plugins::addPlugin (plugin, "postgetstorage");
 }
 
 void SetPlugins::addPlugin (Plugin & plugin)
 {
-	Plugins::addPlugin (plugin, "resolver");
-	Plugins::addPlugin (plugin, "prestorage");
-	Plugins::addPlugin (plugin, "storage");
+	Plugins::addPlugin (plugin, "setresolver");
+	Plugins::addPlugin (plugin, "presetstorage");
+	Plugins::addPlugin (plugin, "setstorage");
 	Plugins::addPlugin (plugin, "precommit");
 	Plugins::addPlugin (plugin, "commit");
 	Plugins::addPlugin (plugin, "postcommit");
@@ -355,167 +420,53 @@ void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 
 void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 {
-	ret.append (*Key (baseKey.getName () + "/error", KEY_COMMENT, "List of plugins to use", KEY_END));
+	ret.append (*Key (baseKey.getName () + "/errorplugins", KEY_COMMENT, "List of plugins to use", KEY_END));
 
-	for (int i = 0; i < NR_OF_ERROR_PLUGINS; ++i)
+	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == nullptr) continue;
+		bool fr = plugins[i]->firstRef;
 
-		std::string roleName;
-
-		switch (i)
-		{
-		case ERROR_PREROLLBACK:
-			roleName = "prerollback";
-			break;
-		case ERROR_ROLLBACK:
-			roleName = "rollback";
-			break;
-		default:
-			roleName = "postrollback";
-		}
-
-		std::string comment = "List of plugins fulfilling the role " + roleName;
-
-		ret.append (*Key (baseKey.getName () + "/error/" + roleName, KEY_COMMENT, comment.c_str (), KEY_END));
-
-		int position = 0;
-		Slot * current = plugins[i];
-		while(current != nullptr)
-		{
-			if(current->value != nullptr)
-			{
-				bool fr = current->value->firstRef;
-
-				std::ostringstream posNumber;
-				posNumber << position++;
-
-				std::string name = baseKey.getName () + "/error/" + roleName + "/#" + posNumber.str ();
-				std::string refName = current->value->refname ();
-
-				comment = "Plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-				ret.append (*Key (name, KEY_COMMENT, comment.c_str (), KEY_END));
-				comment = "Reference name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-				ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
-				if (fr) serializeConfig (name, current->value->getConfig (), ret);
-			}
-			current = current->next;
-		}
+		std::ostringstream pluginNumber;
+		pluginNumber << i;
+		std::string name = baseKey.getName () + "/errorplugins/#" + pluginNumber.str () + plugins[i]->refname ();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
 
 void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 {
-	ret.append (*Key (baseKey.getName () + "/get", KEY_COMMENT, "List of plugins to use", KEY_END));
+	ret.append (*Key (baseKey.getName () + "/getplugins", KEY_COMMENT, "List of plugins to use", KEY_END));
 
-	for (int i = 0; i < NR_OF_GET_PLUGINS; ++i)
+	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == nullptr) continue;
+		bool fr = plugins[i]->firstRef;
 
-		std::string roleName;
-
-		switch (i)
-		{
-		case GET_RESOLVER:
-			roleName = "resolver";
-			break;
-		case GET_PRESTORAGE:
-			roleName = "prestorage";
-			break;
-		case GET_STORAGE:
-			roleName = "storage";
-			break;
-		default:
-			roleName = "poststorage";
-		}
-
-		std::string comment = "List of plugins fulfilling the role " + roleName;
-
-		ret.append (*Key (baseKey.getName () + "/get/" + roleName, KEY_COMMENT, comment.c_str (), KEY_END));
-
-		int position = 0;
-		Slot * current = plugins[i];
-		while(current != nullptr)
-		{
-			if(current->value != nullptr)
-			{
-				bool fr = current->value->firstRef;
-
-				std::ostringstream posNumber;
-				posNumber << position++;
-
-				std::string name = baseKey.getName () + "/get/" + roleName + "/#" + posNumber.str ();
-				std::string refName = current->value->refname ();
-
-				comment = "Plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-				ret.append (*Key (name, KEY_COMMENT, comment.c_str (), KEY_END));
-				comment = "Reference name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-				ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
-				if (fr) serializeConfig (name, current->value->getConfig (), ret);
-			}
-			current = current->next;
-		}
+		std::ostringstream pluginNumber;
+		pluginNumber << i;
+		std::string name = baseKey.getName () + "/getplugins/#" + pluginNumber.str () + plugins[i]->refname ();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
 
 
 void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 {
-	ret.append (*Key (baseKey.getName () + "/set", KEY_COMMENT, "List of plugins to use", KEY_END));
+	ret.append (*Key (baseKey.getName () + "/setplugins", KEY_COMMENT, "List of plugins to use", KEY_END));
 
-	for (int i = 0; i < NR_OF_SET_PLUGINS; ++i)
+	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == nullptr) continue;
+		bool fr = plugins[i]->firstRef;
 
-		std::string roleName;
-
-		switch (i)
-		{
-		case SET_RESOLVER:
-			roleName = "resolver";
-			break;
-		case SET_PRESTORAGE:
-			roleName = "prestorage";
-			break;
-		case SET_STORAGE:
-			roleName = "storage";
-			break;
-		case SET_PRECOMMIT:
-			roleName = "precommit";
-			break;
-		case SET_COMMIT:
-			roleName = "commit";
-			break;
-		default:
-			roleName = "postcommit";
-		}
-
-		std::string comment = "List of plugins fulfilling the role " + roleName;
-
-		ret.append (*Key (baseKey.getName () + "/set/" + roleName, KEY_COMMENT, comment.c_str (), KEY_END));
-
-		int position = 0;
-		Slot * current = plugins[i];
-		while(current != nullptr)
-		{
-			if(current->value != nullptr)
-			{
-				bool fr = current->value->firstRef;
-
-				std::ostringstream posNumber;
-				posNumber << position++;
-
-				std::string name = baseKey.getName () + "/set/" + roleName + "/#" + posNumber.str ();
-				std::string refName = current->value->refname ();
-
-				comment = "Plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-				ret.append (*Key (name, KEY_COMMENT, comment.c_str (), KEY_END));
-				comment = "Reference name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-				ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
-				if (fr) serializeConfig (name, current->value->getConfig (), ret);
-			}
-			current = current->next;
-		}
+		std::ostringstream pluginNumber;
+		pluginNumber << i;
+		std::string name = baseKey.getName () + "/setplugins/#" + pluginNumber.str () + plugins[i]->refname ();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
 } // namespace tools

@@ -41,19 +41,13 @@ struct Place
 	}
 };
 
-struct Slot
-{
-	Plugin * value;
-	Slot * next;
-};
-
 /**
  * @brief A collection of plugins (either get, set or error)
  */
 class Plugins
 {
 protected:
-	std::vector<Slot *> plugins;
+	std::vector<Plugin *> plugins;
 
 	std::vector<std::string> needed;
 	std::vector<std::string> recommended;
@@ -81,6 +75,7 @@ public:
 	std::vector<std::string> getNeededMissing () const;
 	std::vector<std::string> getRecommendedMissing () const;
 
+	bool checkPlacement (Plugin & plugin, std::string which);
 	void checkStorage (Plugin & plugin);
 	void checkResolver (Plugin & plugin);
 	void checkOrdering (Plugin & plugin);

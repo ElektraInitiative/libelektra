@@ -396,14 +396,14 @@ void Backend::serialize (kdb::KeySet & ret)
 
 	if (mp == "/")
 	{
-		ret.append (*Key (backendRootKey.getName () + "/config/mountpoint", KEY_VALUE, "/", KEY_COMMENT,
+		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, "/", KEY_COMMENT,
 				  "The mount point stores the location where the backend should be mounted.\n"
 				  "This is the root mountpoint.\n",
 				  KEY_END));
 	}
 	else if (mp.at (0) == '/')
 	{
-		ret.append (*Key (backendRootKey.getName () + "/config/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
+		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mount point stores the location where the backend should be mounted.\n"
 				  "This is a cascading mountpoint.\n"
 				  "That means it is both mounted to dir, user and system.",
@@ -411,7 +411,7 @@ void Backend::serialize (kdb::KeySet & ret)
 	}
 	else
 	{
-		ret.append (*Key (backendRootKey.getName () + "/config/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
+		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mount point stores the location where the backend should be mounted.\n"
 				  "This is a normal mount point.\n",
 				  KEY_END));
@@ -453,7 +453,7 @@ void PluginAdder::addPlugin (PluginSpec const & spec)
 	std::string placement;
 	while (ss >> placement)
 	{
-		if (sharedPlugin->lookupInfo ("stacking") == "" && placement == "poststorage")
+		if (sharedPlugin->lookupInfo ("stacking") == "" && placement == "postgetstorage")
 		{
 			// reverse postgetstorage, except stacking is set
 			plugins[placement].push_front (sharedPlugin);
@@ -496,14 +496,14 @@ struct Placements
 		append (placement, error, "rollback");
 		append (placement, error, "postrollback");
 
-		append (placement, get, "resolver");
-		append (placement, get, "prestorage");
-		append (placement, get, "storage");
-		append (placement, get, "poststorage");
+		append (placement, get, "getresolver");
+		append (placement, get, "pregetstorage");
+		append (placement, get, "getstorage");
+		append (placement, get, "postgetstorage");
 
-		append (placement, set, "resolver");
-		append (placement, set, "prestorage");
-		append (placement, set, "storage");
+		append (placement, set, "setresolver");
+		append (placement, set, "presetstorage");
+		append (placement, set, "setstorage");
 		append (placement, set, "precommit");
 		append (placement, set, "commit");
 		append (placement, set, "postcommit");
@@ -598,7 +598,7 @@ void ImportExportBackend::status (std::ostream & os) const
 {
 	if (plugins.empty ())
 		os << "no plugin added" << std::endl;
-	else if (plugins.find ("storage") == plugins.end ())
+	else if (plugins.find ("setstorage") == plugins.end ())
 		os << "no storage plugin added" << std::endl;
 	else
 		os << "everything ok" << std::endl;
@@ -608,10 +608,10 @@ void ImportExportBackend::importFromFile (KeySet & ks, Key const & parentKey) co
 {
 	Key key = parentKey;
 	std::vector<std::string> placements;
-	placements.push_back ("resolver");
-	placements.push_back ("prestorage");
-	placements.push_back ("storage");
-	placements.push_back ("poststorage");
+	placements.push_back ("getresolver");
+	placements.push_back ("pregetstorage");
+	placements.push_back ("getstorage");
+	placements.push_back ("postgetstorage");
 	for (auto const & placement : placements)
 	{
 		auto currentPlugins = plugins.find (placement);
@@ -628,9 +628,9 @@ void ImportExportBackend::exportToFile (KeySet const & cks, Key const & parentKe
 	KeySet ks = cks;
 	Key key = parentKey;
 	std::vector<std::string> placements;
-	placements.push_back ("resolver");
-	placements.push_back ("prestorage");
-	placements.push_back ("storage");
+	placements.push_back ("setresolver");
+	placements.push_back ("presetstorage");
+	placements.push_back ("setstorage");
 	placements.push_back ("precommit");
 	placements.push_back ("commit");
 	placements.push_back ("postcommit");
