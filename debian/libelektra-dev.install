@@ -4,7 +4,6 @@ usr/include/elektra/backendparser.hpp
 usr/include/elektra/backends.hpp
 usr/include/elektra/elektra/conversion.h
 usr/include/elektra/elektra/error.h
-usr/include/elektra/elektra/errors.h
 usr/include/elektra/elektra.h
 usr/include/elektra/elektra/types.h
 usr/include/elektra/helper/comparison.hpp
