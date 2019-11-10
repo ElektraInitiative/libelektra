@@ -1638,7 +1638,7 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 	{
 		elektraWriteArrayNumber (&buffer[prefixSize], i);
 		m = keyGetMeta (specKey, buffer);
-		if (!m) break;
+		if (!m || keyGetValueSize (m) == 1) break;
 		// optimization: lazy instanziation of k
 		if (!k)
 		{
