@@ -176,6 +176,7 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("/abc/def/ghi/%", NULL, 0, 15, 15);
 	TEST_VALIDATE_OK ("user:/abc/def/ghi/%", NULL, 0, 20, 15);
+	TEST_VALIDATE_OK ("user:/abc/..", NULL, 0, 7, 3);
 
 	TEST_VALIDATE_OK ("///////.", NULL, 0, 2, 3);
 	TEST_VALIDATE_OK ("/.", NULL, 0, 2, 3);
@@ -250,6 +251,7 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("/./../..", "/abc", 6, 2, 3);
 	TEST_VALIDATE_OK ("./../..", "/abc", 6, 2, 3);
+	TEST_VALIDATE_OK ("abc/..", "user:/", 3, 7, 3);
 
 	succeed_if (!elektraKeyNameValidate (NULL, NULL, NULL, NULL), "(NULL) SHOULD NOT BE a valid key name");
 
@@ -492,6 +494,7 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("user", "/", "/user");
 
 	TEST_CANONICALIZE_OK ("..", "user:/abc", "user:/");
+	TEST_CANONICALIZE_OK ("abc/..", "user:/", "user:/");
 	TEST_CANONICALIZE_OK ("user:/abc/..", "", "user:/");
 }
 

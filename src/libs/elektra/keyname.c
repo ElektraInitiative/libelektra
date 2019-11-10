@@ -614,7 +614,6 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		{
 			// reached start of part, cur is first char in part, name points to char left of cur starting the part
 			int isSkip = 0;
-			int isDot = 0;
 			switch (cur)
 			{
 			case '#':
@@ -651,15 +650,19 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 				if (partLen == 1 && skip == 0)
 				{
 					// part was '/./'
-					size -= 1;
-					usize -= 1;
-					isDot = 1;
+					--size;
+					--usize;
+
+					if (usize > 3 || prefix != NULL)
+					{
+						--size;
+						--usize;
+					}
 				}
 				else if (partLen == 2 && prev == '.')
 				{
 					// part was '/../'
-					size -= 2;
-					usize -= 2;
+					// size updated below
 					isSkip = 1;
 				}
 				break;
@@ -673,21 +676,24 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 				--name;
 			}
 
-			if (skip > 0 || isSkip || (isDot && (usize > 3 || prefix != NULL)))
+			if (skip > 0 || isSkip)
 			{
-				// subtract slash
-				--size;
-				--usize;
-			}
-
-
-			if (skip > 0 && !isSkip)
-			{
-				// finished skipping a part
-				--skip;
-
+				// subtract part
 				size -= partLen;
 				usize -= partLen;
+
+				if (usize > 3 || prefix != NULL)
+				{
+					// subtract slash
+					--size;
+					--usize;
+				}
+
+				if (!isSkip)
+				{
+					// finished skipping a part
+					--skip;
+				}
 			}
 
 			if (isSkip)
