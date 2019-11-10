@@ -405,6 +405,7 @@ int f(Key *k)
  *
  * @param key the key object to work with
  * @param metaName the name of the meta information you want the value from
+ *                 If the name does not start with 'meta:/', we will prefix it with 'meta:/'.
  * @retval 0 if the key or metaName is 0
  * @retval 0 if no such metaName is found
  * @return value of meta-information if meta-information is found
@@ -454,6 +455,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * @param key the key object to work with
  * @param metaName the name of the meta information where you
  *                 want to change the value
+ *                 If the name does not start with 'meta:/', we will prefix it with 'meta:/'.
  * @param newMetaString the new value for the meta information
  * @retval -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
