@@ -65,7 +65,7 @@ void elektraAddLineComment (KeySet * comments, size_t spaces, const char * comme
 	/* initialize the comment key */
 	if (ksGetSize (comments) == 0)
 	{
-		lineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
+		lineComment = keyNew ("meta:/comment/#", KEY_END);
 		elektraArrayIncName (lineComment);
 		ksAppendKey (comments, lineComment);
 		lineComment = elektraArrayGetNextKey (comments);
@@ -74,7 +74,7 @@ void elektraAddLineComment (KeySet * comments, size_t spaces, const char * comme
 	{
 		// TODO: doing all this every time is very inefficient. Arrayhandling
 		// definitely needs to be improved
-		Key * arrayBase = keyNew ("comment", KEY_META_NAME, KEY_END);
+		Key * arrayBase = keyNew ("meta:/comment", KEY_END);
 		KeySet * array = elektraArrayGet (arrayBase, comments);
 		lineComment = elektraArrayGetNextKey (array);
 		keyDel (arrayBase);
@@ -97,7 +97,7 @@ void elektraAddLineComment (KeySet * comments, size_t spaces, const char * comme
  */
 void elektraAddInlineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment)
 {
-	Key * inlineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
+	Key * inlineComment = keyNew ("meta:/comment/#", KEY_END);
 	elektraArrayIncName (inlineComment);
 
 	elektraAddCommentInfo (comments, inlineComment, spaces, commentStart, comment);
