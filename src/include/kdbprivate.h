@@ -599,7 +599,7 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns);
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
 
 int elektraKeyNameValidate (const char * name, const char * prefix, size_t * size, size_t * usize);
-void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t offset, int trailingSlash);
+void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t canonicalSize, size_t offset);
 void elektraKeyNameUnescape (const char * name, char ** unescapedName);
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 

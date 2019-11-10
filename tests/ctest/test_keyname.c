@@ -337,13 +337,13 @@ static void test_validate (void)
 #define TEST_CANONICALIZE_OK(name, prefix, cname)                                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		char buffer[sizeof (prefix) > sizeof (cname) ? sizeof (prefix) : sizeof (cname)];                                          \
-		char * buf = buffer;                                                                                                       \
-		strcpy (buffer, prefix);                                                                                                   \
-		elektraKeyNameCanonicalize (name, &buf, sizeof (prefix) - 1,                                                               \
-					    cname[sizeof (cname) - 2] == '/' &&                                                            \
-						    (sizeof (cname) < 3 || cname[sizeof (cname) - 3] != '\\'));                            \
-		succeed_if_same_string (buffer, cname);                                                                                    \
+		size_t bufLen = sizeof (prefix) > sizeof (cname) ? sizeof (prefix) : sizeof (cname);                                       \
+		char * buf = elektraMalloc (bufLen);                                                                                       \
+		memset (buf, ' ', bufLen - 1);                                                                                             \
+		strcpy (buf, prefix);                                                                                                      \
+		elektraKeyNameCanonicalize (name, &buf, sizeof (cname), sizeof (prefix) - 1);                                              \
+		succeed_if_same_string (buf, cname);                                                                                       \
+		elektraFree (buf);                                                                                                         \
 	} while (0)
 
 static void test_canonicalize (void)
@@ -492,6 +492,7 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("user", "/", "/user");
 
 	TEST_CANONICALIZE_OK ("..", "user:/abc", "user:/");
+	TEST_CANONICALIZE_OK ("user:/abc/..", "", "user:/");
 }
 
 static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",   "KEY_NS_SPEC",   "KEY_NS_PROC",
