@@ -223,7 +223,7 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 		return -3;
 	}
 
-	Key * restoreKey = keyNew ("", KEY_VALUE, &restoreString[digitStart], KEY_END);
+	Key * restoreKey = keyNew ("/", KEY_VALUE, &restoreString[digitStart], KEY_END);
 
 	kdb_long_long_t size;
 	if (!elektraKeyToLongLong (restoreKey, &size))
