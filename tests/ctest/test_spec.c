@@ -181,7 +181,7 @@ static void test_lookupDefault (void)
 	k = ksLookup (ks, specKey, KDB_O_SPEC);
 	succeed_if (k != 0, "found no default key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if_same_string (keyName (k), "/abc");
+	succeed_if_same_string (keyName (k), "default:/abc");
 	succeed_if_same_string (keyString (k), "xyz");
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
@@ -257,7 +257,7 @@ static void test_lookupDefaultCascading (void)
 	k = ksLookup (ks, specKey, KDB_O_SPEC);
 	succeed_if (k != 0, "found no default key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if_same_string (keyName (k), "/abc");
+	succeed_if_same_string (keyName (k), "default:/abc");
 	succeed_if_same_string (keyString (k), "xyz");
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find default key again");

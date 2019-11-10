@@ -1675,7 +1675,6 @@ static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
 
 	keySetNamespace (specKey, KEY_NS_DEFAULT);
 	ret = ksLookup (ks, specKey, 0);
-	keySetNamespace (specKey, KEY_NS_CASCADING);
 
 	if (ret) return ret; // return previous added default key
 
@@ -1683,6 +1682,8 @@ static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
 	if (!m) return ret;
 	ret = keyNew (keyName (specKey), KEY_VALUE, keyString (m), KEY_END);
 	ksAppendKey (ks, ret);
+
+	keySetNamespace (specKey, KEY_NS_CASCADING);
 
 	return ret;
 }
