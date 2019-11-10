@@ -46,8 +46,8 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 
 	/* Because of the outbreak bugs these tests are not enough */
 	Key * check = keyNew (buffer, KEY_END);
-	if (!strcmp (keyName (check), "")) goto error;
-	if (!strcmp (keyName (check), "system")) goto error;
+	if (!check) goto error;
+	if (!strcmp (keyName (check), "system:/")) goto error;
 	keyDel (check);
 	elektraFree (buffer);
 
@@ -119,7 +119,7 @@ static void elektraResolveUsingHome (ElektraResolved * handle, const char * home
 	size_t dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 	char * dir = elektraMalloc (dirnameSize);
 
-	strcpy (dir, keyName (canonify) + 4); // cut user, leave slash
+	strcpy (dir, keyName (canonify) + sizeof ("user:") - 1);
 	if (addPostfix && handle->relPath[0] != '/')
 	{
 		strcat (dir, "/" KDB_DB_USER);
