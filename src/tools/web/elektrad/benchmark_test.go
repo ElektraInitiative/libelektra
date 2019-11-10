@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 
 	elektra "go.libelektra.org/kdb"
 )
@@ -267,8 +266,6 @@ func indexedKeyName(keyName string, i int) string {
 
 func prepareBenchmark(b *testing.B, prepareFuncs []prepareFunc) func() {
 	b.Helper()
-
-	t := time.Now()
 
 	runs := 10 // b.N
 	// we have to add a fixed value because the first b.N call is always "1"
