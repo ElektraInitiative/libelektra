@@ -662,7 +662,7 @@ static void test_double (void)
 {
 	printf ("Test double insertion\n");
 
-	Trie * trie = test_insert (0, "", "root");
+	Trie * trie = test_insert (0, "/", "root");
 	succeed_if (trie, "could not insert into trie");
 
 	Trie * t1 = test_insert (trie, "user:/tests/simple", "t1");
@@ -708,6 +708,46 @@ static void test_emptyvalues (void)
 	trieClose (trie, 0);
 }
 
+static void test_userroot (void)
+{
+	printf ("Test trie with user:/\n");
+
+	Trie * trie = 0;
+	trie = test_insert (trie, "user:/", "root");
+
+	exit_if_fail (trie, "trie was not build up successfully");
+
+	Key * mp = keyNew ("user:/", KEY_VALUE, "root", KEY_END);
+	Backend * backend = trieLookup (trie, "user:/");
+	succeed_if (backend, "there should be a backend");
+	if (backend) compare_key (backend->mountpoint, mp);
+
+	backend = trieLookup (trie, "user:/tests");
+	succeed_if (backend, "there should be a backend");
+	if (backend) compare_key (backend->mountpoint, mp);
+
+	backend = trieLookup (trie, "user:/tests/simple");
+	succeed_if (backend, "there should be a backend");
+	if (backend) compare_key (backend->mountpoint, mp);
+
+
+	Backend * b2 = trieLookup (trie, "user:/tests/simple/below");
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	if (b2) compare_key (b2->mountpoint, mp);
+
+
+	b2 = trieLookup (trie, "user:/tests/simple/deep/below");
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	if (b2) compare_key (b2->mountpoint, mp);
+
+	// output_trie(trie);
+
+	trieClose (trie, 0);
+	keyDel (mp);
+}
+
 
 int main (int argc, char ** argv)
 {
@@ -727,6 +767,7 @@ int main (int argc, char ** argv)
 	test_root ();
 	test_double ();
 	test_emptyvalues ();
+	test_userroot ();
 
 	printf ("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
