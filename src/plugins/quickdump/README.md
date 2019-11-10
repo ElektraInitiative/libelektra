@@ -60,18 +60,6 @@ x1000000 [6] up to 49 bits in 7 bytes
 
 Thanks to https://github.com/stoklund/varint for listing various integer encodings.
 
-## Old Formats
-
-All old versions can still be read by this plugin, but we will always write the newest format.
-
-### Version 1
-
-The first version used the magic number `0x454b444200000001` and stored the full keynames, instead of one relative to the parent key.
-
-### Version 2
-
-The second version used the magic number `0x454b444200000001` and always used 64-bit integers to store the length of strings.
-
 ## Usage
 
 Like any other storage plugin, you simply use `quickdump` during mounting, import or export.
