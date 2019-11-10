@@ -89,7 +89,10 @@ static void flushCollectedComment (CallbackHandle * handle, Key * key)
 		keyRewindMeta (handle->collectedComment);
 		while ((cur = (Key *) keyNextMeta (handle->collectedComment)) != NULL)
 		{
-			if (!strncmp (keyName (cur), "meta/", 5)) keySetMeta (key, keyName (cur) + 5, keyString (cur));
+			if (!strncmp (keyName (cur), "meta:/meta/", sizeof ("meta:/meta/") - 1))
+			{
+				keySetMeta (key, keyName (cur) + sizeof ("meta:/meta/") - 1, keyString (cur));
+			}
 		}
 		keyDel (handle->collectedComment);
 		handle->collectedComment = NULL;
@@ -1185,7 +1188,7 @@ static void iniWriteMeta (FILE * fh, Key * key)
 	while (keyNextMeta (key) != NULL)
 	{
 		Key * meta = (Key *) keyCurrentMeta (key);
-		const char * name = keyName (meta);
+		const char * name = keyName (meta) + sizeof ("meta:/") - 1; // ignore namespace
 		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7) &&
 		    strncmp (name, "warnings/", 9) && strncmp (name, "error/", 6) && strcmp (name, "warnings") && strcmp (name, "error"))
 		{
