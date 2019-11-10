@@ -52,17 +52,25 @@ void tryExternalCommand (char ** argv)
 {
 	std::vector<std::string> pathes;
 
-	std::string execPath = getenv ("KDB_EXEC_PATH");
-	size_t pos = 0;
-	std::string token;
-	std::string delimiter = ":";
-	while ((pos = execPath.find (delimiter)) != std::string::npos)
+	char * execPathPtr = getenv ("KDB_EXEC_PATH");
+	if (execPathPtr)
 	{
-		token = execPath.substr (0, pos);
-		pathes.push_back (token);
-		execPath.erase (0, pos + delimiter.length ());
+		// The string pointed by the pointer returned by getenv shall
+		// not be modified. The constructor of std::string constructs a
+		// copy of the string.
+		std::string execPath (execPathPtr);
+		size_t pos = 0;
+		std::string token;
+		std::string delimiter = ":";
+		while ((pos = execPath.find (delimiter)) != std::string::npos)
+		{
+			token = execPath.substr (0, pos);
+			pathes.push_back (token);
+			execPath.erase (0, pos + delimiter.length ());
+		}
+		// There is one last path in execPath after the while
+		pathes.push_back (execPath);
 	}
-	pathes.push_back (execPath);
 	pathes.push_back (buildinExecPath);
 
 	for (auto & pathe : pathes)
