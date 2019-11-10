@@ -22,7 +22,6 @@
 #endif
 
 #ifdef HAVE_STDLIB_H
-#include <kdbassert.h>
 #include <stdlib.h>
 #endif
 
@@ -173,8 +172,6 @@ Key * keyNew (const char * name, ...)
 	va_start (va, name);
 	Key * k = keyVNew (name, va);
 	va_end (va);
-
-	ELEKTRA_ASSERT (k, "Couldn't create key");
 
 	return k;
 }
