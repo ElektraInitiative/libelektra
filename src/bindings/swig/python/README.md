@@ -33,8 +33,13 @@ For Python3 on Debian Jessie you need:
 On most distributions `CMAKE_INSTALL_PREFIX` needs to be set to `/usr`
 so that Python finds the modules without setting `PYTHONPATH`.
 
-With the default `CMAKE_INSTALL_PREFIX` (`/usr/local`) you need
-to set `PYTHONPATH=/usr/local/lib/python3/dist-packages`.
+The default `CMAKE_INSTALL_PREFIX` (`/usr/local`) usually is
+not part of Python's default search path, see `python3 -c 'import sys; print(sys.path)'`.
+So either make sure to:
+
+1. compile with `CMAKE_INSTALL_PREFIX=/usr`
+2. tell CMake your correct Python site package with e.g. `PYTHON_SITE_PACKAGES=/usr/lib64/python3.y/site-packages`
+3. extend Python's default search path at runtime with e.g. `PYTHONPATH=/usr/local/lib/python3/dist-packages`
 
 ## Development
 
