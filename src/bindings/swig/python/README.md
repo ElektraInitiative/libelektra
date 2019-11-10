@@ -8,11 +8,12 @@
 
 Python bindings for Elektra.
 
-Get started by reading the [tutorial](/doc/tutorials/python-kdb.md).
+If you have the Python bindings already installed,
+you get started by reading the [tutorial](/doc/tutorials/python-kdb.md).
 
 ## CMake Variables
 
-To build the python binding
+To build the Python bindings
 on Debian Stretch or Buster you need:
 
 ```sh
@@ -29,13 +30,11 @@ For Python3 on Debian Jessie you need:
 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4
 ```
 
-Debian Wheezy needs:
+On most distributions `CMAKE_INSTALL_PREFIX` needs to be set to `/usr`
+so that Python finds the modules without setting `PYTHONPATH`.
 
-```sh
--DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3
--DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.2
--DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so
-```
+With the default `CMAKE_INSTALL_PREFIX` (`/usr/local`) you need
+to set `PYTHONPATH=/usr/local/lib/python3/dist-packages`.
 
 ## Development
 
