@@ -333,7 +333,7 @@
     "APP.HOME.LABEL.TOOL.OTHERS.HEADLINE": "Other Applications",
     "APP.HOME.LABEL.TOOL.QTGUI.DETAILS": "Elektra offers a GUI based on Qt Quick. It simplifies common tasks and offers easy access to the key database itself. A description for the GUI tool can be found <a href=\"/tools/qt-gui\">here</a>.",
     "APP.HOME.LABEL.TOOL.QTGUI.HEADLINE": "Graphical User Interface",
-    "APP.HOME.LABEL.TOOL.WEBGUI.DETAILS": "The Web UI allows remote configuration of multiple Elektra instances. Furthermore, the Web UI generates special input fields from metadata, making it harder to make mistakes when configuring programs. Try it out now on <a href=\"https://webdemo.libelektra.org\">webdemo.libelektra.org</a>!",
+    "APP.HOME.LABEL.TOOL.WEBGUI.DETAILS": "The Web UI allows remote configuration of multiple Elektra instances. Furthermore, the Web UI generates special input fields from metadata, making it harder to make mistakes when configuring programs.",
     "APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE": "Web UI",
 
     "APP.NAV.BUTTON.ACCOUNT": "Account",
