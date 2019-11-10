@@ -1673,12 +1673,15 @@ static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
 	Key * ret = 0;
 	const Key * m = 0;
 
-	ret = ksLookup (ks, specKey, KDB_O_NOCASCADING);
+	keySetNamespace (specKey, KEY_NS_DEFAULT);
+	ret = ksLookup (ks, specKey, 0);
+	keySetNamespace (specKey, KEY_NS_CASCADING);
+
 	if (ret) return ret; // return previous added default key
 
 	m = keyGetMeta (specKey, "default");
 	if (!m) return ret;
-	ret = keyNew (keyName (specKey), KEY_CASCADING_NAME, KEY_VALUE, keyString (m), KEY_END);
+	ret = keyNew (keyName (specKey), KEY_VALUE, keyString (m), KEY_END);
 	ksAppendKey (ks, ret);
 
 	return ret;
@@ -1820,6 +1823,12 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	if (!found)
 	{
 		keySetNamespace (key, KEY_NS_SYSTEM);
+		found = ksLookup (ks, key, options & ~KDB_O_DEL);
+	}
+
+	if (!found)
+	{
+		keySetNamespace (key, KEY_NS_DEFAULT);
 		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 

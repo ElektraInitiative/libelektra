@@ -74,6 +74,11 @@ int elektraArrayValidateBaseNameString (const char * baseName)
 		return -1;
 	}
 
+	if (*current != '\0' && *current != '/')
+	{
+		return -1;
+	}
+
 	return underscores + 1;
 }
 

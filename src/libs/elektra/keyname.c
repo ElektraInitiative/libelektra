@@ -1837,7 +1837,7 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 		oldNamespaceLen = 0;
 		break;
 	case KEY_NS_DEFAULT:
-		oldNamespaceLen = sizeof ("default") - 1;
+		oldNamespaceLen = sizeof ("default:") - 1;
 		break;
 	default:
 		return -1;
@@ -1868,7 +1868,7 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 		newNamespace = "";
 		break;
 	case KEY_NS_DEFAULT:
-		newNamespace = "default";
+		newNamespace = "default:";
 		break;
 	default:
 		return -1;
