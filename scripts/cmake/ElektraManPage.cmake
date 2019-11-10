@@ -25,19 +25,21 @@ endif (NOT EXISTS "${OLD_MAN_PAGE_COPY}")
 
 # We revert newly generated man pages, where only the date has changed.
 execute_process (COMMAND ${DIFF_COMMAND}
-			 -u
+			 -e
 			 ${MANPAGE}
 			 ${OLD_MAN_PAGE_COPY}
 		 OUTPUT_VARIABLE DIFF_OUTPUT)
-string (FIND "${DIFF_OUTPUT}" "\n+.TH" DIFF_POSITION_DATE_ADDED)
-string (FIND "${DIFF_OUTPUT}" "\n+" DIFF_LAST_POSITION_ADDED REVERSE)
+string (REGEX MATCH
+	      "^4c\n\\.TH [^\n]+\n\\.\n$"
+	      ONLY_DATE_CHANGED
+	      "${DIFF_OUTPUT}")
 
-if (NOT "${DIFF_POSITION_DATE_ADDED}" STREQUAL -1 AND "${DIFF_POSITION_DATE_ADDED}" STREQUAL "${DIFF_LAST_POSITION_ADDED}")
+if (NOT "${ONLY_DATE_CHANGED}" STREQUAL "")
 	execute_process (COMMAND ${CMAKE_COMMAND}
 				 -E
 				 copy
 				 ${OLD_MAN_PAGE_COPY}
 				 ${MANPAGE})
-endif (NOT "${DIFF_POSITION_DATE_ADDED}" STREQUAL -1 AND "${DIFF_POSITION_DATE_ADDED}" STREQUAL "${DIFF_LAST_POSITION_ADDED}")
+endif (NOT "${ONLY_DATE_CHANGED}" STREQUAL "")
 
 file (REMOVE "${OLD_MAN_PAGE_COPY}")
