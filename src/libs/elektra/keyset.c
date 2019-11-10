@@ -2293,6 +2293,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 
 	found = ksLookup (ks, &key, options);
 	elektraFree (key.key);
+	elektraFree (key.ukey);
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }

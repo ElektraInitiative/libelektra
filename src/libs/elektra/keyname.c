@@ -971,6 +971,9 @@ ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
+	size_t oldKeySize = key->keySize;
+	size_t oldKeyUSize = key->keyUSize;
+
 	if (!elektraKeyNameValidate (newName, NULL, &key->keySize, &key->keyUSize))
 	{
 		// error invalid name
@@ -989,12 +992,32 @@ ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 
-	// resize buffers
-	elektraRealloc ((void **) &key->key, key->keySize);
-	elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	if (key->keySize > oldKeySize)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->key, key->keySize);
+	}
+
+	if (key->keyUSize > oldKeyUSize)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	}
 
 	elektraKeyNameCanonicalize (newName, &key->key, 0, key->keyUSize == 3);
 	elektraKeyNameUnescape (key->key, &key->ukey);
+
+	if (key->keySize < oldKeySize)
+	{
+		// buffer shrinking -> realloc after
+		elektraRealloc ((void **) &key->key, key->keySize);
+	}
+
+	if (key->keyUSize < oldKeyUSize)
+	{
+		// buffer shrinking -> realloc after
+		elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	}
 
 	set_bit (key->flags, KEY_FLAG_SYNC);
 
@@ -1523,6 +1546,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 	if (strlen (newName) == 0) return key->keySize;
 
 	size_t oldKeySize = key->keySize;
+	size_t oldKeyUSize = key->keyUSize;
 
 	if (!elektraKeyNameValidate (newName, key->key, &key->keySize, &key->keyUSize))
 	{
@@ -1546,12 +1570,32 @@ ssize_t keyAddName (Key * key, const char * newName)
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 
-	// resize buffers
-	elektraRealloc ((void **) &key->key, key->keySize);
-	elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	if (key->keySize > oldKeySize)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->key, key->keySize);
+	}
+
+	if (key->keyUSize > oldKeyUSize)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	}
 
 	elektraKeyNameCanonicalize (newName, &key->key, oldKeySize, key->keyUSize == 3);
 	elektraKeyNameUnescape (key->key, &key->ukey);
+
+	if (key->keySize < oldKeySize)
+	{
+		// buffer shrinking -> realloc after
+		elektraRealloc ((void **) &key->key, key->keySize);
+	}
+
+	if (key->keyUSize < oldKeyUSize)
+	{
+		// buffer shrinking -> realloc after
+		elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	}
 
 	set_bit (key->flags, KEY_FLAG_SYNC);
 	return key->keySize;
@@ -1764,8 +1808,20 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 
 	size_t newNamespaceLen = strlen (newNamespace);
 
-	elektraRealloc ((void **) &key->key, key->keySize - oldNamespaceLen + newNamespaceLen);
+	if (newNamespaceLen > oldNamespaceLen)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->key, key->keySize - oldNamespaceLen + newNamespaceLen);
+	}
+
 	memmove (key->key + newNamespaceLen, key->key + oldNamespaceLen, key->keySize - oldNamespaceLen);
+
+	if (newNamespaceLen < oldNamespaceLen)
+	{
+		// buffer growing -> realloc after
+		elektraRealloc ((void **) &key->key, key->keySize - oldNamespaceLen + newNamespaceLen);
+	}
+
 	memcpy (key->key, newNamespace, newNamespaceLen);
 	key->keySize += newNamespaceLen - oldNamespaceLen;
 	key->key[key->keySize - 1] = '\0';

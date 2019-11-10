@@ -388,7 +388,7 @@ Key * keyDup (const Key * source)
 {
 	if (!source) return 0;
 
-	Key * dest = keyNew ("/", KEY_END); // TODO (kodebach): just allocate instead?
+	Key * dest = elektraCalloc (sizeof (Key));
 	if (!dest) return 0;
 
 	/* Copy the struct data */

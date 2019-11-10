@@ -337,7 +337,7 @@ static void test_validate (void)
 #define TEST_CANONICALIZE_OK(name, prefix, cname)                                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		char buffer[sizeof (cname) * 2 + sizeof (prefix)]; /* allocate more to be on the safe side */                              \
+		char buffer[sizeof (prefix) > sizeof (cname) ? sizeof (prefix) : sizeof (cname)];                                          \
 		char * buf = buffer;                                                                                                       \
 		strcpy (buffer, prefix);                                                                                                   \
 		elektraKeyNameCanonicalize (name, &buf, sizeof (prefix) - 1,                                                               \
@@ -522,7 +522,7 @@ static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_
 #define TEST_UNESCAPE_OK(name, ns, uname)                                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		char buffer[sizeof (uname) * 2 + 2]; /* allocate more to be on the safe side */                                            \
+		char buffer[sizeof (uname) + 2];                                                                                           \
 		char * buf = buffer;                                                                                                       \
 		elektraKeyNameUnescape (name, &buf);                                                                                       \
 		char expected[sizeof (uname) + 2];                                                                                         \
