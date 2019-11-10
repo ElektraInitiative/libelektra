@@ -195,8 +195,9 @@ int keyIsBelow (const Key * key, const Key * check)
 
 	// same key, only if namespace and size are equal
 	// size alone could be equal with cascading keys
-	return keyIsBelowOrSame (key, check) &&
-	       (keyGetNamespace (key) != keyGetNamespace (check) || keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check));
+	return keyIsBelowOrSame (key, check) && keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check) &&
+	       (keyGetNamespace (key) == keyGetNamespace (check) || keyGetNamespace (check) == KEY_NS_CASCADING ||
+		keyGetNamespace (key) == KEY_NS_CASCADING);
 }
 
 
