@@ -325,7 +325,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			}
 			else
 			{
-				Key * userCutPoint = keyNew ("user", 0);
+				Key * userCutPoint = keyNew ("user:/", 0);
 				Key * globalConfCutPoint = keyNew ("/config", 0);
 				KeySet * config = ksDup (configOrig);
 				KeySet * globalConfigAll = ksCut (config, globalConfCutPoint);
@@ -359,8 +359,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 					return -1;
 				}
 				slave->global = global;
-				Key * slaveKey = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
-				keySetName (slaveKey, "/");
+				Key * slaveKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
 				keyAddBaseName (slaveKey, name);
 				ksAppendKey (plugins, keyDup (slaveKey));
 				keyDel (slaveKey);

@@ -163,7 +163,7 @@ static void test_cascading (void)
 
 	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
 
-	mp = keyNew ("user", KEY_VALUE, "root", KEY_END);
+	mp = keyNew ("user:/", KEY_VALUE, "root", KEY_END);
 	compare_key (split->parents[0], mp);
 	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
 	keyDel (mp);
@@ -219,7 +219,7 @@ static void test_get (void)
 			     keyNew ("user:/testkey/below2/here", KEY_END), KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
@@ -276,7 +276,7 @@ static void test_get (void)
 
 
 	split = splitNew ();
-	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "system backend should be added");
 	succeed_if (output_error (parentKey), "error found");
@@ -317,7 +317,7 @@ static void test_limit (void)
 			     keyNew ("user:/testkey/below2/here", KEY_END), KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
@@ -348,7 +348,7 @@ static void test_limit (void)
 
 
 	split = splitNew ();
-	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "system backend should be added");
 	succeed_if (output_error (parentKey), "error found");
@@ -457,7 +457,7 @@ static void test_sizes (void)
 	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (output_error (parentKey), "error found");
@@ -493,7 +493,7 @@ static void test_sizes (void)
 
 
 	split = splitNew ();
-	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "system backend should be added");
 	succeed_if (output_error (parentKey), "error found");

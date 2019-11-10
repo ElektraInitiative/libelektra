@@ -51,8 +51,8 @@ static void test_mount (void)
 	mountBackend (kdb, b_new ("user", "user"), 0);
 	succeed_if (kdb->trie, "there should be a trie");
 
-	Key * mp = keyNew ("user", KEY_VALUE, "user", KEY_END);
-	Key * sk = keyNew ("user", KEY_VALUE, "user", KEY_END);
+	Key * mp = keyNew ("user:/", KEY_VALUE, "user", KEY_END);
+	Key * sk = keyNew ("user:/", KEY_VALUE, "user", KEY_END);
 
 	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
 	compare_key (mountGetMountpoint (kdb, sk), mp);

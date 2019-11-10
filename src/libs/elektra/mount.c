@@ -141,7 +141,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 		switch (ns)
 		{
 		case KEY_NS_SPEC:
-			key = keyNew ("spec", KEY_VALUE, "default", KEY_END);
+			key = keyNew ("spec:/", KEY_VALUE, "default", KEY_END);
 			backend = mountGetBackend (kdb, key);
 			if (backend != kdb->defaultBackend)
 			{
@@ -155,7 +155,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			}
 			break;
 		case KEY_NS_DIR:
-			key = keyNew ("dir", KEY_VALUE, "default", KEY_END);
+			key = keyNew ("dir:/", KEY_VALUE, "default", KEY_END);
 			backend = mountGetBackend (kdb, key);
 			if (backend != kdb->defaultBackend)
 			{
@@ -191,7 +191,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 					/* Lets add the reachable default backend to split.
 					   Note that it is not possible that system:/elektra has the default
 					   backend, but system has not. */
-					splitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "default", KEY_END), 2);
+					splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "default", KEY_END), 2);
 				}
 			}
 			else
@@ -203,7 +203,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 				++kdb->initBackend->refcounter;
 				kdb->split->syncbits[kdb->split->size - 1] = 2;
 
-				key = keyNew ("system", KEY_VALUE, "default", KEY_END);
+				key = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
 				backend = mountGetBackend (kdb, key);
 				if (backend != kdb->defaultBackend)
 				{
@@ -218,7 +218,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			}
 			break;
 		case KEY_NS_USER:
-			key = keyNew ("user", KEY_VALUE, "default", KEY_END);
+			key = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 			backend = mountGetBackend (kdb, key);
 			if (backend != kdb->defaultBackend)
 			{
@@ -581,25 +581,25 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_SPEC:
 				sprintf (mountpoint, "spec%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("spec", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("spec:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_DIR:
 				sprintf (mountpoint, "dir%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("dir", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("dir:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
 				sprintf (mountpoint, "user%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("user", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
 				sprintf (mountpoint, "system%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_PROC:

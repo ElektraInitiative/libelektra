@@ -9,7 +9,7 @@
 // clang-format off
 
 ksNew( 94 ,
-	keyNew ("user"
+	keyNew ("user:/"
 		, KEY_DIR
 	, KEY_END),
 	keyNew ("user/test"

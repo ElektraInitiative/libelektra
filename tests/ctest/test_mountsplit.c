@@ -47,8 +47,8 @@ static void test_mount (void)
 	mountBackend (kdb, b_new ("user", "user"), 0);
 	succeed_if (kdb->trie, "there should be a trie");
 
-	Key * mp = keyNew ("user", KEY_VALUE, "user", KEY_END);
-	Key * sk = keyNew ("user", KEY_VALUE, "user", KEY_END);
+	Key * mp = keyNew ("user:/", KEY_VALUE, "user", KEY_END);
+	Key * sk = keyNew ("user:/", KEY_VALUE, "user", KEY_END);
 
 	succeed_if (kdb->split->size == 1, "size of split not correct");
 	compare_key (mp, kdb->split->parents[0]);
@@ -180,7 +180,7 @@ static void test_us (void)
 	succeed_if (mountDefault (kdb, modules, 1, 0) == 0, "could not mount default backend");
 
 	succeed_if (kdb->split->size == 5, "size of split not correct");
-	mp = keyNew ("system", KEY_VALUE, "system", KEY_END);
+	mp = keyNew ("system:/", KEY_VALUE, "system", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "user:/");
 	keySetString (mp, "user");
@@ -322,7 +322,7 @@ static void test_root (void)
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
 	succeed_if (kdb->split->size == 5, "size of split not correct");
-	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
+	Key * mp = keyNew ("spec:/", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "dir:/");
 	keySetString (mp, "root");
@@ -382,7 +382,7 @@ static void test_default (void)
 	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
 
 	succeed_if (kdb->split->size == 6, "size of split not correct");
-	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
+	Key * mp = keyNew ("spec:/", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "dir:/");
 	keySetString (mp, "root");
@@ -472,7 +472,7 @@ static void test_modules (void)
 	// output_split (kdb->split);
 
 	succeed_if (kdb->split->size == 8, "size of split not correct");
-	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
+	Key * mp = keyNew ("spec:/", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "dir:/");
 	keySetString (mp, "root");
@@ -572,7 +572,7 @@ static void test_defaultonly (void)
 	// output_split (kdb->split);
 
 	succeed_if (kdb->split->size == 4, "size of split not correct");
-	Key * mp = keyNew ("spec", KEY_VALUE, "default", KEY_END);
+	Key * mp = keyNew ("spec:/", KEY_VALUE, "default", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "dir:/");
 	keySetString (mp, "default");

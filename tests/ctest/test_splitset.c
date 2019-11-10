@@ -88,7 +88,7 @@ static void test_needsync (void)
 	KeySet * ks = ksNew (5, keyNew ("user:/abc", KEY_END), KS_END);
 	Split * split = splitNew ();
 
-	Key * parent = keyNew ("user", KEY_VALUE, "parent", KEY_END);
+	Key * parent = keyNew ("user:/", KEY_VALUE, "parent", KEY_END);
 
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
@@ -1170,19 +1170,19 @@ static void test_emptysplit (void)
 	succeed_if (split->syncbits[3] == 2, "size of split not correct");
 	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
 
-	parentKey = keyNew ("spec", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("spec:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[0], parentKey);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("dir", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("dir:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[1], parentKey);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[2], parentKey);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[3], parentKey);
 	keyDel (parentKey);
 
@@ -1215,7 +1215,7 @@ static void test_nothingsync (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
@@ -1248,7 +1248,7 @@ static void test_state (void)
 	KeySet * ks = ksNew (2, k = keyNew ("user:/abc", KEY_END), KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 

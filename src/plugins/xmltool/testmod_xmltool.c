@@ -235,7 +235,7 @@ static void test_ksCommonParentName (void)
 	succeed_if_same_string (ret, "system:/sw/xorg");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system", 0), keyNew ("user", 0), KS_END);
+	ks = ksNew (10, keyNew ("system:/", 0), keyNew ("user:/", 0), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 0, "could find correct parentname");
 	succeed_if_same_string (ret, "");
 	ksDel (ks);
