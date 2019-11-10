@@ -6,6 +6,7 @@ RUN apk update \
         build-base \
         cmake \
         curl \
+        diffutils \
         file \
         git \
         ninja \
