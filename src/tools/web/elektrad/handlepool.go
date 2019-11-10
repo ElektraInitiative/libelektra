@@ -72,9 +72,7 @@ func (p *handlePool) pop() *handle {
 func (p *handlePool) refillLoop() {
 	for range p.doRefill {
 		for l := len(p.handles); l < p.size; {
-			// t := time.Now()
 			h, err := newHandle()
-			// log.Printf("time to create new handle: %v", time.Now().Sub(t))
 
 			if err != nil {
 				panic("could not create new handle")

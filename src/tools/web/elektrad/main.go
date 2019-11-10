@@ -10,12 +10,13 @@ import (
 
 func main() {
 	port := flag.Int("port", 33333, "the port the server listens on")
+	initHandles := flag.Int("handles", 10, "count of preinitialized handles")
 
 	flag.Parse()
 
 	loadVersion()
 
-	app := &server{pool: initPool(50)}
+	app := &server{pool: initPool(*initHandles)}
 
 	r := setupRouter(app)
 

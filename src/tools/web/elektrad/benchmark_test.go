@@ -273,7 +273,6 @@ func prepareBenchmark(b *testing.B, prepareFuncs []prepareFunc) func() {
 	runs := 10 // b.N
 	// we have to add a fixed value because the first b.N call is always "1"
 	// for initialization reasons.
-	b.Logf("Preparing data for %d runs", runs)
 
 	handle := getTestHandle(b)
 
@@ -290,8 +289,6 @@ func prepareBenchmark(b *testing.B, prepareFuncs []prepareFunc) func() {
 	}
 
 	persist(b, handle, ks, parentKey)
-
-	b.Logf("Done preparing data after %v", time.Now().Sub(t))
 
 	return func() {
 		cleanup(b, handle, ks, parentKey)
@@ -340,8 +337,6 @@ func preparePostKdbMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, par
 }
 
 func prepareDeleteMeta(b testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, runs int) {
-	b.Logf("creating %d keys with meta values", runs)
-
 	for i := 0; i < runs; i++ {
 		key1, err := elektra.NewKey(indexedKeyName("/delete/meta/v1", i))
 		Check(b, err, "could not create data key")

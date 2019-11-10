@@ -73,6 +73,8 @@ func freeHandles() {
 					log.Printf("error closing handle: %v", err)
 				}
 
+				s.handle.keySet.Close()
+
 				sessions.Delete(key)
 			}
 

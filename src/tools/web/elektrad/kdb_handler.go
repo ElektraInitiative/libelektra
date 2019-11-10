@@ -180,12 +180,13 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 func lookup(ks elektra.KeySet, key elektra.Key, depth int) (result *lookupResult, err error) {
-	ks = ks.Cut(key)
+	childKs := ks.Cut(key)
+	defer childKs.Close()
 
-	result = buildLookupResult(key, ks)
+	result = buildLookupResult(key, childKs)
 
 	if depth > 0 {
-		result.Children, err = lookupChildren(ks, key, depth)
+		result.Children, err = lookupChildren(childKs, key, depth)
 	}
 
 	return
