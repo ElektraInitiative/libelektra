@@ -539,7 +539,7 @@ Plugin * elektraPluginVersion (void);
 
 /*Trie handling*/
 int trieClose (Trie * trie, Key * errorKey);
-Backend * trieLookup (Trie * trie, const Key * key);
+Backend * trieLookup (Trie * trie, const char * name);
 Trie * trieInsert (Trie * trie, const char * name, Backend * value);
 
 /*Mounting handling */

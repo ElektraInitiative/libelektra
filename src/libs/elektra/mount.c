@@ -728,7 +728,7 @@ Backend * mountGetBackend (KDB * handle, const Key * key)
 {
 	if (!key || !strcmp (keyName (key), "")) return handle->defaultBackend;
 
-	Backend * ret = trieLookup (handle->trie, key);
+	Backend * ret = trieLookup (handle->trie, keyName (key));
 	if (!ret) return handle->defaultBackend;
 	return ret;
 }

@@ -93,7 +93,7 @@ static void test_simple (void)
 	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
 	keyDel (mp);
 
-	backend = trieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, keyName (parentKey));
 	succeed_if (split->handles[0] == backend, "should be user backend");
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys");
@@ -168,11 +168,11 @@ static void test_cascading (void)
 	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
 	keyDel (mp);
 
-	backend = trieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, keyName (parentKey));
 	succeed_if (split->handles[0] == backend, "should be user backend");
 
 	keySetName (parentKey, "user:/cascading/simple/below");
-	/*backend = */ trieLookup (handle->trie, parentKey);
+	/*backend = */ trieLookup (handle->trie, keyName (parentKey));
 	// succeed_if (split->handles[1] == backend, "should be cascading backend");
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys");
@@ -422,7 +422,7 @@ static void test_nobackend (void)
 	succeed_if (ksGetSize (split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize (split->keysets[1]) == 3, "wrong size");
 	compare_key (split->parents[0], mp);
-	backend = trieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, keyName (parentKey));
 	succeed_if (split->handles[0] == backend, "should be user backend");
 	succeed_if (split->handles[1] == 0, "should be default backend");
 
@@ -559,9 +559,9 @@ static void test_triesizes (void)
 
 	parentKey = keyNew ("user:/", KEY_END);
 
-	rootBackend = trieLookup (handle->trie, parentKey);
+	rootBackend = trieLookup (handle->trie, keyName (parentKey));
 	keySetName (parentKey, "user:/tests/simple/below");
-	backend = trieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, keyName (parentKey));
 
 	// now clear name so that we process all backends
 	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
@@ -656,9 +656,9 @@ static void test_merge (void)
 
 	parentKey = keyNew ("user:/", KEY_END);
 
-	rootBackend = trieLookup (handle->trie, parentKey);
+	rootBackend = trieLookup (handle->trie, keyName (parentKey));
 	keySetName (parentKey, "user:/tests/simple/below");
-	backend = trieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, keyName (parentKey));
 	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
 	succeed_if (backend->specsize == -1, "specsize not initialized correct");
 	succeed_if (backend->dirsize == -1, "dirsize not initialized correct");
