@@ -26,6 +26,13 @@
                         }
                     },
                     {
+                        "name": "Who",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/WHO.md"
+                        }
+                    },
+                    {
                         "name": "Why Elektra?",
                         "type": "staticfile",
                         "options": {
