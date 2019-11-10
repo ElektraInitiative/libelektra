@@ -22,6 +22,7 @@
 #endif
 
 #ifdef HAVE_STDLIB_H
+#include <kdbassert.h>
 #include <stdlib.h>
 #endif
 
@@ -172,6 +173,8 @@ Key * keyNew (const char * name, ...)
 	va_start (va, name);
 	Key * k = keyVNew (name, va);
 	va_end (va);
+
+	ELEKTRA_ASSERT (k, "Couldn't create key");
 
 	return k;
 }
@@ -385,7 +388,7 @@ Key * keyDup (const Key * source)
 {
 	if (!source) return 0;
 
-	Key * dest = keyNew ("/", KEY_END);
+	Key * dest = keyNew ("/", KEY_END); // TODO (kodebach): just allocate instead?
 	if (!dest) return 0;
 
 	/* Copy the struct data */
