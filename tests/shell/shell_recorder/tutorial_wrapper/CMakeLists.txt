@@ -29,7 +29,7 @@ add_msr_test (tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install
 	      REQUIRED_PLUGINS ini
 			       resolver
 			       ENVIRONMENT
-			       KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/admin)
+			       KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
 
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
