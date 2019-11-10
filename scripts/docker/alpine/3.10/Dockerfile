@@ -9,6 +9,7 @@ RUN apk update \
         file \
         git \
         ninja \
+        ronn \
         yaml-cpp-dev
 
 # Google Test
