@@ -66,6 +66,12 @@ additional_commands:
       REQUIRED_PLUGINS: +
       REQUIRED_TOOLS: +
 
+  add_msr_test_plugin:
+    kwargs:
+      ENVIRONMENT: +
+      REQUIRED_PLUGINS: +
+      REQUIRED_TOOLS: +
+
   download_project:
     kwargs:
       PROJ: 1

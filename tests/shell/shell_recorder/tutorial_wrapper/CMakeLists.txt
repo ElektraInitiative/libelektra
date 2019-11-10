@@ -24,9 +24,10 @@ endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 
 add_msr_test (tutorial_arrays "${CMAKE_SOURCE_DIR}/doc/tutorials/arrays.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
-add_msr_test (tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install-config-files.md"
-	      REQUIRED_PLUGINS ini resolver
-	      ENVIRONMENT KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
+add_msr_test (
+	tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install-config-files.md"
+	REQUIRED_PLUGINS ini resolver
+	ENVIRONMENT KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
 add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
 add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line PROPERTY LABELS memleak)
 
@@ -34,9 +35,10 @@ if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
 else (ENABLE_ASAN)
 	add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation)
-	add_msr_test (tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
-		      REQUIRED_PLUGINS crypto_gcrypt fcrypt
-		      REQUIRED_TOOLS gen-gpg-testkey)
+	add_msr_test (
+		tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
+		REQUIRED_PLUGINS crypto_gcrypt fcrypt
+		REQUIRED_TOOLS gen-gpg-testkey)
 endif (ENABLE_ASAN)
 
 # ========
