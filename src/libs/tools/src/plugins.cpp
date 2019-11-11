@@ -30,7 +30,7 @@ Plugins::Plugins () : plugins (NR_OF_SET_PLUGINS), nrStoragePlugins (0), nrResol
 	placementInfo["rollback"] = ERROR_ROLLBACK;
 	placementInfo["postrollback"] = ERROR_POSTROLLBACK;
 
-	placementInfo["getresolver"] = GET_RESOLVER;
+	placementInfo["getresolver"] = GET_GETRESOLVER;
 	placementInfo["pregetstorage"] = GET_PREGETSTORAGE;
 	placementInfo["getstorage"] = GET_GETSTORAGE;
 	placementInfo["postgetstorage"] = GET_POSTGETSTORAGE;
@@ -110,8 +110,7 @@ void Plugins::addPlugin (Plugin & plugin, std::string which)
 }
 
 /**
- * @brief check if this plugin can be placed in the unfortunately
- * limited number of slots
+ * @brief check if this plugin has at least one placement
  *
  * @param plugin the plugin to check
  * @param which placementInfo it is
@@ -488,7 +487,7 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		switch (i)
 		{
-		case GET_RESOLVER:
+		case GET_GETRESOLVER:
 			roleName = "getresolver";
 			break;
 		case GET_PREGETSTORAGE:

@@ -382,7 +382,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 		{
 			KeySet * cut = ksCut (config, cur);
 			Slot * slot;
-			if (!strcmp (keyBaseName (cur), "resolver"))
+			if (!strcmp (keyBaseName (cur), "getresolver"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
@@ -394,37 +394,37 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 
 				slots[0] = slot;
 			}
-			else if (!strcmp (keyBaseName (cur), "prestorage"))
+			else if (!strcmp (keyBaseName (cur), "pregetstorage"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
 				if (slot == 0)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: prestorage");
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: pregetstorage");
 					return 0;
 				}
 
 				slots[1] = slot;
 			}
-			else if (!strcmp (keyBaseName (cur), "storage"))
+			else if (!strcmp (keyBaseName (cur), "getstorage"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
 				if (slot == 0)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: storage");
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: getstorage");
 					return 0;
 				}
 
 				slots[2] = slot;
 			}
-			else if (!strcmp (keyBaseName (cur), "poststorage"))
+			else if (!strcmp (keyBaseName (cur), "postgetstorage"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
 				if (slot == 0)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: poststorage");
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: postgetstorage");
 					return 0;
 				}
 
@@ -457,7 +457,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 		{
 			KeySet * cut = ksCut (config, cur);
 			Slot * slot;
-			if (!strcmp (keyBaseName (cur), "resolver"))
+			if (!strcmp (keyBaseName (cur), "setresolver"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
@@ -469,7 +469,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 
 				slots[0] = slot;
 			}
-			else if (!strcmp (keyBaseName (cur), "prestorage"))
+			else if (!strcmp (keyBaseName (cur), "presetstorage"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
@@ -481,7 +481,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 
 				slots[1] = slot;
 			}
-			else if (!strcmp (keyBaseName (cur), "storage"))
+			else if (!strcmp (keyBaseName (cur), "setstorage"))
 			{
 				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
 
@@ -607,7 +607,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 {
 	BackendHandle * bh = elektraMalloc (sizeof (BackendHandle));
 
-	bh->getposition = GET_RESOLVER;
+	bh->getposition = GET_GETRESOLVER;
 	bh->setposition = SET_SETRESOLVER;
 	bh->errorposition = ERROR_PREROLLBACK;
 
@@ -714,7 +714,7 @@ void incrementGetPosition (BackendHandle * bh)
 {
 	if (bh->getposition == GET_POSTGETSTORAGE)
 	{
-		bh->getposition = GET_RESOLVER;
+		bh->getposition = GET_GETRESOLVER;
 	}
 	else
 	{
@@ -758,15 +758,15 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (bh->getposition > GET_POSTGETSTORAGE || bh->getposition < GET_RESOLVER)
+	if (bh->getposition > GET_POSTGETSTORAGE || bh->getposition < GET_GETRESOLVER)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (bh->getposition == GET_RESOLVER)
+	if (bh->getposition == GET_GETRESOLVER)
 	{
-		Slot * resolver = bh->getplugins[GET_RESOLVER];
+		Slot * resolver = bh->getplugins[GET_GETRESOLVER];
 
 		if (!resolver || !resolver->value || !resolver->value->kdbGet)
 		{
@@ -806,7 +806,7 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				if (bh->getposition == GET_RESOLVER || bh->getposition == GET_GETSTORAGE)
+				if (bh->getposition == GET_GETRESOLVER || bh->getposition == GET_GETSTORAGE)
 				{
 					cur = 0;
 				}
