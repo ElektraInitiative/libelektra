@@ -98,7 +98,7 @@ static void test_write_read (CppKeySet expected)
 	// Read written data
 	CppKeySet keySetRead;
 	succeed_if_same (plugin->kdbGet (plugin, keySetRead.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
-			 "Unable to open or parse file");
+			 parent.getString ().c_str ());
 
 	// Compare data
 	compare_keyset (keySetRead, expected);
