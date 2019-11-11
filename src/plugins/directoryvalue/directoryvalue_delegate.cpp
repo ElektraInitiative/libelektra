@@ -15,7 +15,7 @@
 
 #include "directoryvalue_delegate.hpp"
 
-using ckdb::elektraArrayValidateBaseNameString;
+using ::elektraArrayValidateBaseNameString;
 using std::accumulate;
 using std::ignore;
 using std::make_pair;

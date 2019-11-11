@@ -31,20 +31,20 @@ namespace
 void printOptions (option_t options)
 {
 	// :'<,'>s/\(.*\)/^Iif(options \& \1) std::cout << "\1 ";
-	if (options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
-	if (options & ckdb::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
-	if (options & ckdb::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
-	if (options & ckdb::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
-	if (options & ckdb::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";
-	if (options & ckdb::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
+	if (options & ::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
+	if (options & ::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
+	if (options & ::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
+	if (options & ::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
+	if (options & ::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";
+	if (options & ::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
 }
 
 
-ckdb::Key * warnOnMeta (ELEKTRA_UNUSED ckdb::KeySet * ks, ELEKTRA_UNUSED ckdb::Key * key, ckdb::Key * found, option_t options)
+::Key * warnOnMeta (ELEKTRA_UNUSED ::KeySet * ks, ELEKTRA_UNUSED ::Key * key, ::Key * found, option_t options)
 {
-	if (found && !strncmp (keyName (found), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
+	if (found && !strncmp (keyName (found), "spec/", 5) && options == ::KDB_O_CALLBACK)
 	{
-		const ckdb::Key * meta = keyGetMeta (found, "context");
+		const ::Key * meta = keyGetMeta (found, "context");
 		if (meta)
 		{
 			std::cout << "WARNING " << keyName (found)
@@ -62,7 +62,7 @@ std::string getCascadingName (std::string name)
 }
 } // namespace
 
-ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, option_t options)
+::Key * printTrace (ELEKTRA_UNUSED ::KeySet * ks, ::Key * key, ::Key * found, option_t options)
 {
 	warnOnMeta (ks, key, found, options);
 
@@ -85,7 +85,7 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	}
 	std::cout << std::endl;
 
-	if (k.getName ().substr (0, 5) == "spec/" && (options & ckdb::KDB_O_CALLBACK))
+	if (k.getName ().substr (0, 5) == "spec/" && (options & ::KDB_O_CALLBACK))
 	{
 		depth += 4;
 		k.setMeta<int> ("callback/print_trace/depth", depth);

@@ -127,9 +127,9 @@ TEST (GetEnv, ArgvParam)
 	EXPECT_EQ (argv[0], std::string ("name"));
 	EXPECT_EQ (argv[1], static_cast<char *> (nullptr));
 
-	ckdb::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/override/does-exist", 0);
+	::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/override/does-exist", 0);
 
-	ASSERT_NE (k, static_cast<ckdb::Key *> (nullptr));
+	ASSERT_NE (k, static_cast<::Key *> (nullptr));
 	EXPECT_EQ (keyString (k), std::string ("hello"));
 
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
@@ -155,9 +155,9 @@ TEST (GetEnv, ArgvParamUninvolved)
 	EXPECT_EQ (argv[6], std::string ("-L"));
 	EXPECT_EQ (argv[7], static_cast<char *> (nullptr));
 
-	ckdb::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/override/does-exist", 0);
+	::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/override/does-exist", 0);
 
-	ASSERT_NE (k, static_cast<ckdb::Key *> (nullptr));
+	ASSERT_NE (k, static_cast<::Key *> (nullptr));
 	EXPECT_EQ (keyString (k), std::string ("hello"));
 
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
@@ -173,12 +173,12 @@ TEST (GetEnv, NameArgv0)
 	char ** argv = const_cast<char **> (cargv);
 
 	elektraOpen (&argc, argv);
-	ckdb::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/layer/name", 0);
-	ASSERT_NE (k, static_cast<ckdb::Key *> (nullptr));
+	::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/layer/name", 0);
+	ASSERT_NE (k, static_cast<::Key *> (nullptr));
 	EXPECT_EQ (keyString (k), std::string ("path/to/any-name"));
 
 	k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/layer/basename", 0);
-	ASSERT_NE (k, static_cast<ckdb::Key *> (nullptr));
+	ASSERT_NE (k, static_cast<::Key *> (nullptr));
 	EXPECT_EQ (keyString (k), std::string ("any-name"));
 	elektraClose ();
 }
@@ -192,8 +192,8 @@ TEST (GetEnv, NameExplicit)
 	char ** argv = const_cast<char **> (cargv);
 
 	elektraOpen (&argc, argv);
-	ckdb::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/layer/name", 0);
-	ASSERT_NE (k, static_cast<ckdb::Key *> (nullptr));
+	::Key * k = ksLookupByName (elektraConfig, "proc/elektra/intercept/getenv/layer/name", 0);
+	ASSERT_NE (k, static_cast<::Key *> (nullptr));
 	EXPECT_EQ (keyString (k), std::string ("other-name"));
 	elektraClose ();
 }

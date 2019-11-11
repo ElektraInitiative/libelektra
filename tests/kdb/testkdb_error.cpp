@@ -150,8 +150,8 @@ TEST_F (Error, CSimple)
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
 
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
+	EXPECT_TRUE (::keyGetMeta (parentKey, "error"));
+	EXPECT_STREQ (keyString (::keyGetMeta (parentKey, "error/number")), "C01310");
 
 	kdbClose (kdb, parentKey);
 	keyDel (parentKey);
@@ -173,11 +173,11 @@ TEST_F (Error, ToWarning)
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
 
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
+	EXPECT_TRUE (::keyGetMeta (parentKey, "error"));
+	EXPECT_STREQ (keyString (::keyGetMeta (parentKey, "error/number")), "C01310");
 
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "warnings/#00"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "warnings/#00/number")), "C01110");
+	EXPECT_TRUE (::keyGetMeta (parentKey, "warnings/#00"));
+	EXPECT_STREQ (keyString (::keyGetMeta (parentKey, "warnings/#00/number")), "C01110");
 
 
 	kdbClose (kdb, parentKey);
@@ -199,15 +199,15 @@ TEST_F (Error, Persists)
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
 
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
+	EXPECT_TRUE (::keyGetMeta (parentKey, "error"));
+	EXPECT_STREQ (keyString (::keyGetMeta (parentKey, "error/number")), "C01310");
 
 
 	keyDel (ksLookup (ks, keyNew (("system" + testRoot + "key").c_str (), KEY_END), KDB_O_POP | KDB_O_DEL));
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), 0) << "kdbSet failed";
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
+	EXPECT_TRUE (::keyGetMeta (parentKey, "error"));
+	EXPECT_STREQ (keyString (::keyGetMeta (parentKey, "error/number")), "C01310");
 
 
 	kdbClose (kdb, parentKey);

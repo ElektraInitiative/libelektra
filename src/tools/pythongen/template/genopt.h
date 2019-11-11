@@ -29,7 +29,7 @@ extern "C"
  */
 int ksGetOpt(int argc, char **argv,
 #ifdef __cplusplus
-		ckdb::KeySet *ks
+		::KeySet *ks
 #else
 		KeySet *ks
 #endif

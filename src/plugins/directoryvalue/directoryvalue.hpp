@@ -14,9 +14,9 @@
 
 #include "directoryvalue_delegate.hpp"
 
-using ckdb::Key;
-using ckdb::KeySet;
-using ckdb::Plugin;
+using ::Key;
+using ::KeySet;
+using ::Plugin;
 
 extern "C" {
 int elektraDirectoryValueOpen (Plugin * handle, Key * errorKey);

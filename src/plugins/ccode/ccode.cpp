@@ -12,7 +12,7 @@
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
 
-using ckdb::keyNew;
+using ::keyNew;
 using elektra::Coder;
 
 using CppKeySet = kdb::KeySet;

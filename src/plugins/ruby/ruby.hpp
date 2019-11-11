@@ -17,14 +17,14 @@
 extern "C" {
 #include <kdbplugin.h>
 
-int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int RUBY_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf);
+int RUBY_PLUGIN_FUNCTION (Open) (::Plugin * handle, ::Key * errorKey);
+int RUBY_PLUGIN_FUNCTION (Close) (::Plugin * handle, ::Key * errorKey);
+int RUBY_PLUGIN_FUNCTION (Get) (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int RUBY_PLUGIN_FUNCTION (Set) (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int RUBY_PLUGIN_FUNCTION (Error) (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int RUBY_PLUGIN_FUNCTION (CheckConf) (::Key * errorKey, ::KeySet * conf);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
+::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

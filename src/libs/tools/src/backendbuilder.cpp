@@ -151,7 +151,7 @@ void BackendBuilder::sort ()
 					for (auto const & k : deps)
 					{
 						if (k == self) continue;
-						ckdb::elektraMetaArrayAdd (*self, "dep", (k.getName ()).c_str ());
+						::elektraMetaArrayAdd (*self, "dep", (k.getName ()).c_str ());
 					}
 				}
 			}
@@ -159,7 +159,7 @@ void BackendBuilder::sort ()
 	}
 
 	// now sort by the given topology
-	std::vector<ckdb::Key *> ordered;
+	std::vector<::Key *> ordered;
 	ordered.resize (deps.size ());
 	int ret = elektraSortTopology (deps.getKeySet (), &ordered[0]);
 	if (ret == 0) throw CyclicOrderingViolation ();
@@ -171,7 +171,7 @@ void BackendBuilder::sort ()
 	i = 0;
 	for (auto const & o : ordered)
 	{
-		toAdd[i] = copy[atoi (ckdb::keyString (o))];
+		toAdd[i] = copy[atoi (::keyString (o))];
 		++i;
 	}
 }
@@ -414,7 +414,7 @@ void BackendBuilder::recommendPlugin (std::string name)
  */
 void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
-	typedef int (*checkConfPtr) (ckdb::Key *, ckdb::KeySet *);
+	typedef int (*checkConfPtr) (::Key *, ::KeySet *);
 
 	for (auto & p : toAdd)
 	{
@@ -440,24 +440,24 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
 	if (checkConfFunction)
 	{
-		ckdb::Key * errorKey = ckdb::keyNew (nullptr);
+		::Key * errorKey = ::keyNew (nullptr);
 
 		// merge plugin config and backend config together
-		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
-		ckdb::ksAppend (pluginConfig, backendConf.getKeySet ());
+		::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
+		::ksAppend (pluginConfig, backendConf.getKeySet ());
 
 		// call the plugin's checkconf function
 		int checkResult = checkConfFunction (errorKey, pluginConfig);
 		if (checkResult == -1)
 		{
-			ckdb::ksDel (pluginConfig);
+			::ksDel (pluginConfig);
 			throw PluginConfigInvalid (errorKey);
 		}
 		else if (checkResult == 1)
 		{
 			// separate plugin config from the backend config
-			ckdb::Key * backendParent = ckdb::keyNew ("system/", KEY_END);
-			ckdb::KeySet * newBackendConfig = ckdb::ksCut (pluginConfig, backendParent);
+			::Key * backendParent = ::keyNew ("system/", KEY_END);
+			::KeySet * newBackendConfig = ::ksCut (pluginConfig, backendParent);
 
 			// take over the new configuration
 			KeySet modifiedPluginConfig = KeySet (pluginConfig);
@@ -466,13 +466,13 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 			newPlugin.setConfig (modifiedPluginConfig);
 			setBackendConfig (modifiedBackendConfig);
 
-			ckdb::keyDel (backendParent);
+			::keyDel (backendParent);
 		}
 		else
 		{
-			ckdb::ksDel (pluginConfig);
+			::ksDel (pluginConfig);
 		}
-		ckdb::keyDel (errorKey);
+		::keyDel (errorKey);
 	}
 
 	toAdd.push_back (newPlugin);

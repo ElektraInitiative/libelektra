@@ -15,13 +15,13 @@
 extern "C" {
 #include <kdbplugin.h>
 
-int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int PYTHON_PLUGIN_FUNCTION (Open) (::Plugin * handle, ::Key * errorKey);
+int PYTHON_PLUGIN_FUNCTION (Close) (::Plugin * handle, ::Key * errorKey);
+int PYTHON_PLUGIN_FUNCTION (Get) (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int PYTHON_PLUGIN_FUNCTION (Set) (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int PYTHON_PLUGIN_FUNCTION (Error) (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
 
-ckdb::Plugin * PYTHON_PLUGIN_EXPORT (PYTHON_PLUGIN_NAME);
+::Plugin * PYTHON_PLUGIN_EXPORT (PYTHON_PLUGIN_NAME);
 }
 
 #endif

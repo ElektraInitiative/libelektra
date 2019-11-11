@@ -248,7 +248,7 @@ int CompleteCommand::getKeyDepth (Key const & key)
 const Key CompleteCommand::getParentKey (Key const & key)
 {
 	Key parentKey = key.dup (); // We can't set baseName on keys in keysets, so duplicate it
-	ckdb::keySetBaseName (parentKey.getKey (), NULL);
+	::keySetBaseName (parentKey.getKey (), NULL);
 	return parentKey;
 }
 
@@ -319,7 +319,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 			bool found = false;
 			for (const string ns : namespaces)
 			{
-				found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
+				found = found || ::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
 			}
 			if (!found)
 			{
@@ -331,7 +331,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 	for (const string ns : namespaces)
 	{
 		const Key nsKey (ns, KEY_END);
-		if ((cl.debug || cl.verbose) && ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
+		if ((cl.debug || cl.verbose) && ::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
 		{ // Check for outdated namespaces, issue a warning in case
 			cerr << "Outdated namespace detected:" << ns << ".\nPlease report this issue." << endl;
 		}

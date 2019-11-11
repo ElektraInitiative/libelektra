@@ -12,12 +12,12 @@
 extern "C" {
 #include <kdbplugin.h>
 
-int elektraXercesOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int elektraXercesClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int elektraXercesGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraXercesSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraXercesOpen (::Plugin * handle, ::Key * errorKey);
+int elektraXercesClose (::Plugin * handle, ::Key * errorKey);
+int elektraXercesGet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int elektraXercesSet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
+::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

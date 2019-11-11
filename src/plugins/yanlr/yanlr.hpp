@@ -14,9 +14,9 @@
 
 extern "C" {
 
-using ckdb::Key;
-using ckdb::KeySet;
-using ckdb::Plugin;
+using ::Key;
+using ::KeySet;
+using ::Plugin;
 
 int elektraYanlrGet (Plugin *, KeySet *, Key *);
 

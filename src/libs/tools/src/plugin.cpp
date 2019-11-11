@@ -36,7 +36,7 @@ namespace tools
 Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firstRef (true)
 {
 	Key errorKey;
-	plugin = ckdb::elektraPluginOpen (spec.getName ().c_str (), modules.getKeySet (), spec.getConfig ().dup (), *errorKey);
+	plugin = ::elektraPluginOpen (spec.getName ().c_str (), modules.getKeySet (), spec.getConfig ().dup (), *errorKey);
 
 	if (!plugin)
 	{
@@ -90,7 +90,7 @@ void Plugin::uninit ()
 	/* ref counting will avoid closing */
 
 	Key errorKey;
-	ckdb::elektraPluginClose (plugin, errorKey.getKey ());
+	::elektraPluginClose (plugin, errorKey.getKey ());
 }
 
 void Plugin::loadInfo ()
@@ -337,7 +337,7 @@ void Plugin::check (vector<string> & warnings)
 	}
 }
 
-ckdb::Plugin * Plugin::operator-> ()
+::Plugin * Plugin::operator-> ()
 {
 	return plugin;
 }

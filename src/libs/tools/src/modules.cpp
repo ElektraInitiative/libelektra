@@ -24,12 +24,12 @@ namespace tools
 
 Modules::Modules ()
 {
-	ckdb::elektraModulesInit (modules.getKeySet (), nullptr);
+	::elektraModulesInit (modules.getKeySet (), nullptr);
 }
 
 Modules::~Modules ()
 {
-	ckdb::elektraModulesClose (modules.getKeySet (), nullptr);
+	::elektraModulesClose (modules.getKeySet (), nullptr);
 }
 
 PluginPtr Modules::load (std::string const & pluginName)

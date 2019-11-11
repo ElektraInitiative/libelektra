@@ -17,7 +17,7 @@
 #include <tests.h>
 #include <tests.hpp>
 
-using ckdb::keyNew;
+using ::keyNew;
 
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;

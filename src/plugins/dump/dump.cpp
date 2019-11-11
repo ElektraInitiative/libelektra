@@ -24,52 +24,52 @@ using namespace ckdb;
 namespace dump
 {
 
-int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
+int serialise (std::ostream & os, ::Key *, ::KeySet * ks)
 {
-	ckdb::Key * cur;
+	::Key * cur;
 
 	os << "kdbOpen 1" << std::endl;
 
-	os << "ksNew " << ckdb::ksGetSize (ks) << std::endl;
+	os << "ksNew " << ::ksGetSize (ks) << std::endl;
 
-	ckdb::KeySet * metacopies = ckdb::ksNew (0, KS_END);
+	::KeySet * metacopies = ::ksNew (0, KS_END);
 
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != nullptr)
 	{
-		size_t namesize = ckdb::keyGetNameSize (cur);
-		size_t valuesize = ckdb::keyGetValueSize (cur);
+		size_t namesize = ::keyGetNameSize (cur);
+		size_t valuesize = ::keyGetValueSize (cur);
 		os << "keyNew " << namesize << " " << valuesize << std::endl;
-		os.write (ckdb::keyName (cur), namesize);
-		os.write (static_cast<const char *> (ckdb::keyValue (cur)), valuesize);
+		os.write (::keyName (cur), namesize);
+		os.write (static_cast<const char *> (::keyValue (cur)), valuesize);
 		os << std::endl;
 
-		const ckdb::Key * meta;
-		ckdb::keyRewindMeta (cur);
-		while ((meta = ckdb::keyNextMeta (cur)) != nullptr)
+		const ::Key * meta;
+		::keyRewindMeta (cur);
+		while ((meta = ::keyNextMeta (cur)) != nullptr)
 		{
 			std::stringstream ss;
 			ss << "user/" << meta; // use the address of pointer as name
 
-			ckdb::Key * search = ckdb::keyNew (ss.str ().c_str (), KEY_END);
-			ckdb::Key * ret = ksLookup (metacopies, search, 0);
+			::Key * search = ::keyNew (ss.str ().c_str (), KEY_END);
+			::Key * ret = ksLookup (metacopies, search, 0);
 
 			if (!ret)
 			{
 				/* This metakey was not serialised up to now */
-				size_t metanamesize = ckdb::keyGetNameSize (meta);
-				size_t metavaluesize = ckdb::keyGetValueSize (meta);
+				size_t metanamesize = ::keyGetNameSize (meta);
+				size_t metavaluesize = ::keyGetValueSize (meta);
 
 				os << "keyMeta " << metanamesize << " " << metavaluesize << std::endl;
-				os.write (ckdb::keyName (meta), metanamesize);
-				os.write (static_cast<const char *> (ckdb::keyValue (meta)), metavaluesize);
+				os.write (::keyName (meta), metanamesize);
+				os.write (static_cast<const char *> (::keyValue (meta)), metavaluesize);
 				os << std::endl;
 
 				std::stringstream ssv;
 				ssv << namesize << " " << metanamesize << std::endl;
-				ssv.write (ckdb::keyName (cur), namesize);
-				ssv.write (ckdb::keyName (meta), metanamesize);
-				ckdb::keySetRaw (search, ssv.str ().c_str (), ssv.str ().size ());
+				ssv.write (::keyName (cur), namesize);
+				ssv.write (::keyName (meta), metanamesize);
+				::keySetRaw (search, ssv.str ().c_str (), ssv.str ().size ());
 
 				ksAppendKey (metacopies, search);
 			}
@@ -79,7 +79,7 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 				keyDel (search);
 
 				os << "keyCopyMeta ";
-				os.write (static_cast<const char *> (ckdb::keyValue (ret)), ckdb::keyGetValueSize (ret));
+				os.write (static_cast<const char *> (::keyValue (ret)), ::keyGetValueSize (ret));
 				os << std::endl;
 			}
 		}
@@ -92,9 +92,9 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 	return 1;
 }
 
-int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
+int unserialise (std::istream & is, ::Key * errorKey, ::KeySet * ks)
 {
-	ckdb::Key * cur = nullptr;
+	::Key * cur = nullptr;
 
 	std::vector<char> namebuffer (4048);
 	std::vector<char> valuebuffer (4048);
@@ -127,7 +127,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else if (command == "keyNew")
 		{
-			cur = ckdb::keyNew (nullptr);
+			cur = ::keyNew (nullptr);
 
 			ss >> namesize;
 			ss >> valuesize;
@@ -135,13 +135,13 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
 			is.read (&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
-			ckdb::keySetName (cur, &namebuffer[0]);
+			::keySetName (cur, &namebuffer[0]);
 
 			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 			is.read (&valuebuffer[0], valuesize);
 			valuebuffer[valuesize] = 0;
 
-			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
+			::keySetRaw (cur, &valuebuffer[0], valuesize);
 			std::getline (is, line);
 		}
 		else if (command == "keyMeta")
@@ -173,13 +173,13 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			is.read (&valuebuffer[0], valuesize);
 			valuebuffer[valuesize] = 0;
 
-			ckdb::Key * search = ckdb::ksLookupByName (ks, &namebuffer[0], 0);
-			ckdb::keyCopyMeta (cur, search, &valuebuffer[0]);
+			::Key * search = ::ksLookupByName (ks, &namebuffer[0], 0);
+			::keyCopyMeta (cur, search, &valuebuffer[0]);
 			std::getline (is, line);
 		}
 		else if (command == "keyEnd")
 		{
-			ckdb::ksAppendKey (ks, cur);
+			::ksAppendKey (ks, cur);
 			cur = nullptr;
 		}
 		else if (command == "ksEnd")
@@ -229,9 +229,9 @@ public:
 
 extern "C" {
 
-int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraDumpGet (::Plugin *, ::KeySet * returned, ::Key * parentKey)
 {
-	Key * root = ckdb::keyNew ("system/elektra/modules/dump", KEY_END);
+	Key * root = ::keyNew ("system/elektra/modules/dump", KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
@@ -277,7 +277,7 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	}
 }
 
-int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraDumpSet (::Plugin *, ::KeySet * returned, ::Key * parentKey)
 {
 	int errnosave = errno;
 	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
@@ -292,7 +292,7 @@ int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	return dump::serialise (ofs, parentKey, returned);
 }
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
+::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("dump",

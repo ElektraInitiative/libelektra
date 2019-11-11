@@ -100,15 +100,15 @@ bool StructFieldsProcessor::processArrayStructRef (const kdb::Key & key, const k
 
 	restrict = arrayParent.getMeta<std::string> ("check/reference/restrict");
 
-	if (ckdb::elektraArrayValidateBaseNameString (restrict.c_str ()) > 0)
+	if (::elektraArrayValidateBaseNameString (restrict.c_str ()) > 0)
 	{
 		return false;
 	}
 
-	char * rawResolved = ckdb::elektraResolveReference (restrict.c_str (), arrayParent.getKey (), parentKey.getKey ());
+	char * rawResolved = ::elektraResolveReference (restrict.c_str (), arrayParent.getKey (), parentKey.getKey ());
 
 	auto restrictKey = allKeys.lookup (rawResolved);
-	ckdb::elektraFree (rawResolved);
+	::elektraFree (rawResolved);
 
 	if (!restrictKey)
 	{
@@ -170,16 +170,16 @@ bool StructFieldsProcessor::processStructRef (const kdb::Key & key, const kdb::K
 
 	restrict = key.getMeta<std::string> ("check/reference/restrict");
 
-	if (ckdb::elektraArrayValidateBaseNameString (restrict.c_str ()) > 0)
+	if (::elektraArrayValidateBaseNameString (restrict.c_str ()) > 0)
 	{
 		return false;
 	}
 
 
-	char * rawResolved = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
+	char * rawResolved = ::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
 
 	auto restrictKey = allKeys.lookup (rawResolved);
-	ckdb::elektraFree (rawResolved);
+	::elektraFree (rawResolved);
 
 	if (!restrictKey)
 	{
@@ -221,10 +221,10 @@ kainjow::mustache::object StructFieldsProcessor::processStructRefUnion (const kd
 		if (checkKey.hasMeta ("check/reference/restrict/" + cur))
 		{
 			auto restrict = checkKey.getMeta<std::string> ("check/reference/restrict/" + cur);
-			char * rawResolved = ckdb::elektraResolveReference (restrict.c_str (), checkKey.getKey (), parentKey.getKey ());
+			char * rawResolved = ::elektraResolveReference (restrict.c_str (), checkKey.getKey (), parentKey.getKey ());
 
 			auto restrictKey = allKeys.lookup (rawResolved);
-			ckdb::elektraFree (rawResolved);
+			::elektraFree (rawResolved);
 
 			if (!restrictKey)
 			{
@@ -240,10 +240,10 @@ kainjow::mustache::object StructFieldsProcessor::processStructRefUnion (const kd
 
 			auto discriminatorRef = restrict + "/";
 			discriminatorRef += discriminatorKeyName;
-			rawResolved = ckdb::elektraResolveReference (discriminatorRef.c_str (), checkKey.getKey (), parentKey.getKey ());
+			rawResolved = ::elektraResolveReference (discriminatorRef.c_str (), checkKey.getKey (), parentKey.getKey ());
 
 			auto discriminatorKey = allKeys.lookup (rawResolved);
-			ckdb::elektraFree (rawResolved);
+			::elektraFree (rawResolved);
 
 			if (!discriminatorKey)
 			{

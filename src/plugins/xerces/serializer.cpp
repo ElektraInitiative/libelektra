@@ -79,7 +79,7 @@ DOMElement * prepareArrayNodes (DOMDocument & doc, KeySet const & ks, Key & curr
 	if (arrays.find (arrayKey) == arrays.end () && it == arrays.end ())
 	{
 		arrays[arrayKey] = nullptr; // used as a marker not mapped to the DOM for now
-		KeySet arrayKeys = ckdb::elektraArrayGet (currentPathKey.getKey (), ks.getKeySet ());
+		KeySet arrayKeys = ::elektraArrayGet (currentPathKey.getKey (), ks.getKeySet ());
 		for (auto ak : arrayKeys)
 		{
 			ELEKTRA_LOG_DEBUG ("Precreating array node %s", ak->getFullName ().c_str ());

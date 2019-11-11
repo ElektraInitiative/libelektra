@@ -321,7 +321,7 @@ private:
 class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:
-	typedef int (*checkConfPtr) (ckdb::Key *, ckdb::KeySet *);
+	typedef int (*checkConfPtr) (::Key *, ::KeySet *);
 
 	/// only data from here will be returned
 	/// @note that it is ordered by name, i.e., different ref-names cannot be distinguished

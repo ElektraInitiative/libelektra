@@ -12,9 +12,9 @@
 
 #include <kdbplugin.h>
 
-using ckdb::Key;
-using ckdb::KeySet;
-using ckdb::Plugin;
+using ::Key;
+using ::KeySet;
+using ::Plugin;
 
 extern "C" {
 

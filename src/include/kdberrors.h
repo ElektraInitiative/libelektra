@@ -16,8 +16,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-using Key = ckdb::Key;
-using KeySet = ckdb::KeySet;
 #endif
 
 #ifndef ELEKTRA_MODULE_NAME

@@ -38,7 +38,7 @@ public:
 		return new Delegated (config);
 	}
 
-	inline static int open (ckdb::Plugin * handle, ckdb::Key * errorKey, Builder builder = defaultBuilder)
+	inline static int open (::Plugin * handle, ::Key * errorKey, Builder builder = defaultBuilder)
 	{
 		kdb::KeySet config (elektraPluginGetConfig (handle));
 		int ret = openHelper (handle, config, errorKey, builder);
@@ -46,13 +46,13 @@ public:
 		return ret;
 	}
 
-	inline static int close (ckdb::Plugin * handle, ckdb::Key *)
+	inline static int close (::Plugin * handle, ::Key *)
 	{
 		delete get (handle);
 		return 1; // always successfully
 	}
 
-	inline static Delegated * get (ckdb::Plugin * handle)
+	inline static Delegated * get (::Plugin * handle)
 	{
 		return static_cast<Delegated *> (elektraPluginGetData (handle));
 	}
@@ -60,7 +60,7 @@ public:
 private:
 	/**This function avoid that every return path need to release the
 	 * configuration. */
-	inline static int openHelper (ckdb::Plugin * handle, kdb::KeySet & config, ckdb::Key * errorKey, Builder builder)
+	inline static int openHelper (::Plugin * handle, kdb::KeySet & config, ::Key * errorKey, Builder builder)
 	{
 		if (config.lookup ("/module"))
 		{

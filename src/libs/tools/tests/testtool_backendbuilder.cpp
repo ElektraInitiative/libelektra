@@ -554,9 +554,9 @@ TEST (BackendBuilder, resolveDoubleRecommends)
 	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c"));
 }
 
-static int checkconfLookup (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
+static int checkconfLookup (::Key * errorKey ELEKTRA_UNUSED, ::KeySet * config)
 {
-	ckdb::Key * k = ckdb::ksLookupByName (config, "/a", 0);
+	::Key * k = ::ksLookupByName (config, "/a", 0);
 	if (k)
 	{
 		return 0;
@@ -595,9 +595,9 @@ TEST (BackendBuilder, checkconfNotOKmissing)
 	EXPECT_THROW (bb.addPlugin (PluginSpec ("checkconf3")), PluginConfigInvalid);
 }
 
-static int checkconfAppend (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
+static int checkconfAppend (::Key * errorKey ELEKTRA_UNUSED, ::KeySet * config)
 {
-	ckdb::ksAppendKey (config, ckdb::keyNew ("user/b", KEY_VALUE, "test", KEY_END));
+	::ksAppendKey (config, ::keyNew ("user/b", KEY_VALUE, "test", KEY_END));
 	return 1;
 }
 
@@ -619,9 +619,9 @@ TEST (BackendBuilder, checkconfOkChanged)
 	EXPECT_EQ (spec.getConfig ().get<std::string> ("user/b"), "test");
 }
 
-static int checkconfDelete (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
+static int checkconfDelete (::Key * errorKey ELEKTRA_UNUSED, ::KeySet * config)
 {
-	ckdb::ksCopy (config, NULL);
+	::ksCopy (config, NULL);
 	return 1;
 }
 
@@ -671,9 +671,9 @@ TEST (BackendBuilder, checkconfOkRemovedBackendConfig)
 	EXPECT_THROW (bb.getBackendConfig ().get<std::string> ("system/b"), KeyNotFoundException);
 }
 
-static int checkconfAppendBackendConf (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
+static int checkconfAppendBackendConf (::Key * errorKey ELEKTRA_UNUSED, ::KeySet * config)
 {
-	ckdb::ksAppendKey (config, ckdb::keyNew ("system/a", KEY_VALUE, "abc", KEY_END));
+	::ksAppendKey (config, ::keyNew ("system/a", KEY_VALUE, "abc", KEY_END));
 	return 1;
 }
 

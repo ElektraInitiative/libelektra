@@ -11,7 +11,7 @@
 namespace ckdb
 {
 extern "C" {
-extern ckdb::KeySet * elektraDocu;
+extern ::KeySet * elektraDocu;
 extern std::ostream * elektraLog;
 }
 void elektraSingleCleanup ();

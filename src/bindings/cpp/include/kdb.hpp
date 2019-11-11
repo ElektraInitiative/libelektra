@@ -59,7 +59,7 @@ public:
 	inline int ensure (const KeySet & contract, Key & parentKey);
 
 private:
-	ckdb::KDB * handle; ///< holds an kdb handle
+	::KDB * handle; ///< holds an kdb handle
 };
 
 /**
@@ -100,7 +100,7 @@ inline KDB::KDB (Key & errorKey)
  */
 inline void KDB::open (Key & errorKey)
 {
-	handle = ckdb::kdbOpen (errorKey.getKey ());
+	handle = ::kdbOpen (errorKey.getKey ());
 	if (!handle)
 	{
 		throw kdb::KDBException (errorKey);
@@ -117,7 +117,7 @@ inline void KDB::open (Key & errorKey)
 inline void KDB::close () throw ()
 {
 	Key errorKey;
-	ckdb::kdbClose (handle, errorKey.getKey ());
+	::kdbClose (handle, errorKey.getKey ());
 	handle = nullptr;
 }
 
@@ -133,7 +133,7 @@ inline void KDB::close () throw ()
  */
 inline void KDB::close (Key & errorKey) throw ()
 {
-	ckdb::kdbClose (handle, errorKey.getKey ());
+	::kdbClose (handle, errorKey.getKey ());
 	handle = nullptr;
 }
 
@@ -182,7 +182,7 @@ inline int KDB::get (KeySet & returned, std::string const & keyname)
  */
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
-	int ret = ckdb::kdbGet (handle, returned.getKeySet (), parentKey.getKey ());
+	int ret = ::kdbGet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
 	{
 		throw KDBException (parentKey);
@@ -226,7 +226,7 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
  */
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
-	int ret = ckdb::kdbSet (handle, returned.getKeySet (), parentKey.getKey ());
+	int ret = ::kdbSet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
 	{
 		throw KDBException (parentKey);
@@ -237,7 +237,7 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 /**
  * Ensures that the conditions defined in @p contract are met by this KDB.
  *
- * @see ckdb::kdbEnsure()
+ * @see ::kdbEnsure()
  *
  * @param contract  The contract to ensure.
  * @param parentKey The parentKey to use.
@@ -248,7 +248,7 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 int KDB::ensure (const KeySet & contract, Key & parentKey)
 {
 	// have to ksDup because contract is consumed and ksDel()ed by kdbEnsure
-	int ret = ckdb::kdbEnsure (handle, ckdb::ksDup (contract.getKeySet ()), parentKey.getKey ());
+	int ret = ::kdbEnsure (handle, ::ksDup (contract.getKeySet ()), parentKey.getKey ());
 	if (ret == -1)
 	{
 		throw KDBException (parentKey);

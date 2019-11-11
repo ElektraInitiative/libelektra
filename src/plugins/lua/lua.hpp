@@ -11,13 +11,13 @@
 extern "C" {
 #include <kdbplugin.h>
 
-int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int elektraLuaClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
-int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraLuaSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraLuaError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraLuaOpen (::Plugin * handle, ::Key * errorKey);
+int elektraLuaClose (::Plugin * handle, ::Key * errorKey);
+int elektraLuaGet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int elektraLuaSet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int elektraLuaError (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
+::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

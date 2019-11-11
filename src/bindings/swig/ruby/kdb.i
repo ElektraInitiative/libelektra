@@ -18,7 +18,7 @@ this module differs to the C++ API in the following way:
  * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
    a 'each' method and includes 'Enumerable'. Therefore it is very similar to
    a Ruby-Array. However, the KeySet cursor methods are still available.
- * Access to native C-level KDB structures (such as ckdb::Key) is not
+ * Access to native C-level KDB structures (such as ::Key) is not
    possible, as this does not make much sense within Ruby.
  * Method names are renamed to follow Ruby naming conventions
  * Key and KeySet methods directly modify the underlying Key/KeySet
@@ -148,7 +148,7 @@ The following variants are available:
 //%ignore kdb::Key::Key (const std::string keyName, ...);
 //%ignore kdb::Key::Key (const char *keyName, va_list ap);
 %ignore kdb::Key::Key (char const *keyName, ...);
-%ignore kdb::Key::Key (ckdb::Key *k);
+%ignore kdb::Key::Key (::Key *k);
 %ignore kdb::Key::Key (Key &k);
 %ignore kdb::Key::Key (Key const &k);
 
@@ -446,7 +446,7 @@ aliased to '<=>', implemented for sorting operations.
 %alias kdb::Key::spaceship "<=>"
 %extend kdb::Key {
   int spaceship(const kdb::Key &comp) {
-    int ret = ckdb::keyCmp ($self->getKey(), comp.getKey());
+    int ret = ::keyCmp ($self->getKey(), comp.getKey());
     if (ret < 0) return -1;
     if (ret > 0) return 1;
     return 0;
@@ -482,7 +482,7 @@ aliased to '<=>', implemented for sorting operations.
  ****************************************************************************/
 
 /* ignore unused constructors */
-%ignore kdb::KeySet::KeySet (ckdb::KeySet * k);
+%ignore kdb::KeySet::KeySet (::KeySet * k);
 %ignore kdb::KeySet::KeySet (size_t alloc, ...);
 %ignore kdb::KeySet::KeySet (VaAlloc alloc, va_list ap);
 %ignore kdb::KeySet::KeySet (Key, ...);
@@ -490,7 +490,7 @@ aliased to '<=>', implemented for sorting operations.
 %ignore kdb::VaAlloc;
 
 
-/* ignore raw ckdb::KeySet methods */
+/* ignore raw ::KeySet methods */
 %ignore kdb::KeySet::getKeySet;
 %ignore kdb::KeySet::setKeySet;
 %ignore kdb::KeySet::release;
@@ -689,8 +689,8 @@ aliased to '<=>', implemented for sorting operations.
  * shallow copy KeySet
  */
 
-/* return a kdb::KeySet instead of a ckdb::KeySet */
-%typemap(out) ckdb::KeySet* kdb::KeySet::dup {
+/* return a kdb::KeySet instead of a ::KeySet */
+%typemap(out) ::KeySet* kdb::KeySet::dup {
   $result = SWIG_NewPointerObj(new KeySet($1),
                                 SWIGTYPE_p_kdb__KeySet,
                                 SWIG_POINTER_OWN | 0);

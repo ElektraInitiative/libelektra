@@ -144,7 +144,7 @@ class MyDynamicGetPolicy
 public:
 	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, kdb::Key const & spec)
 	{
-		return ksLookup (ks.getKeySet (), *spec, ckdb::KDB_O_SPEC);
+		return ksLookup (ks.getKeySet (), *spec, ::KDB_O_SPEC);
 	}
 };
 

@@ -138,7 +138,7 @@ __attribute__ ((noinline)) void benchmark_bootstrap_getenv ()
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		ckdb::elektraBootstrapGetEnv ("HELLO");
+		::elektraBootstrapGetEnv ("HELLO");
 		__asm__("");
 	}
 	t.stop ();

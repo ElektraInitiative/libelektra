@@ -56,7 +56,7 @@ class KeySet
 {
 public:
 	inline KeySet ();
-	inline KeySet (ckdb::KeySet * k);
+	inline KeySet (::KeySet * k);
 	inline KeySet (const KeySet & other);
 
 	ELEKTRA_WRONG explicit KeySet (Key, ...);
@@ -66,16 +66,16 @@ public:
 
 	inline ~KeySet ();
 
-	ckdb::KeySet * release ();
+	::KeySet * release ();
 
-	ckdb::KeySet * getKeySet () const;
-	void setKeySet (ckdb::KeySet * k);
+	::KeySet * getKeySet () const;
+	void setKeySet (::KeySet * k);
 
 	KeySet & operator= (KeySet const & other);
 
 	ssize_t size () const;
 
-	ckdb::KeySet * dup () const;
+	::KeySet * dup () const;
 
 	void copy (const KeySet & other);
 	void clear ();
@@ -125,7 +125,7 @@ public:
 #endif // ELEKTRA_WITHOUT_ITERATOR
 
 private:
-	ckdb::KeySet * ks; ///< holds an elektra keyset
+	::KeySet * ks; ///< holds an elektra keyset
 };
 
 
@@ -155,11 +155,11 @@ public:
 
 	Key get () const
 	{
-		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
+		return Key (::ksAtCursor (ks.getKeySet (), current));
 	}
 	Key get (cursor_t pos) const
 	{
-		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
+		return Key (::ksAtCursor (ks.getKeySet (), pos));
 	}
 
 	KeySet const & getKeySet () const
@@ -296,11 +296,11 @@ public:
 
 	Key get () const
 	{
-		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
+		return Key (::ksAtCursor (ks.getKeySet (), current));
 	}
 	Key get (cursor_t pos) const
 	{
-		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
+		return Key (::ksAtCursor (ks.getKeySet (), pos));
 	}
 
 	KeySet const & getKeySet () const
@@ -483,7 +483,7 @@ inline KeySet::const_reverse_iterator KeySet::crend () const noexcept
  *
  * @copydoc ksNew
  */
-inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
+inline KeySet::KeySet () : ks (::ksNew (0, KS_END))
 {
 }
 
@@ -499,7 +499,7 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
  * @see release()
  * @see setKeySet()
  */
-inline KeySet::KeySet (ckdb::KeySet * k) : ks (k)
+inline KeySet::KeySet (::KeySet * k) : ks (k)
 {
 }
 
@@ -538,7 +538,7 @@ inline KeySet::KeySet (const KeySet & other)
  */
 inline KeySet::KeySet (VaAlloc alloc, va_list av)
 {
-	ks = ckdb::ksVNew (alloc.alloc, av);
+	ks = ::ksVNew (alloc.alloc, av);
 }
 
 /**
@@ -554,7 +554,7 @@ inline KeySet::KeySet (size_t alloc, ...)
 	va_list vl;
 
 	va_start (vl, alloc);
-	ks = ckdb::ksVNew (alloc, vl);
+	ks = ::ksVNew (alloc, vl);
 	va_end (vl);
 }
 
@@ -565,17 +565,17 @@ inline KeySet::KeySet (size_t alloc, ...)
  */
 inline KeySet::~KeySet ()
 {
-	ckdb::ksDel (ks);
+	::ksDel (ks);
 }
 
 /**
  * If you don't want destruction of keyset at
  * the end you can release the pointer.
  * */
-inline ckdb::KeySet * KeySet::release ()
+inline ::KeySet * KeySet::release ()
 {
-	ckdb::KeySet * ret = ks;
-	ks = ckdb::ksNew (0, KS_END);
+	::KeySet * ret = ks;
+	ks = ::ksNew (0, KS_END);
 	return ret;
 }
 
@@ -587,7 +587,7 @@ inline ckdb::KeySet * KeySet::release ()
  * @see release()
  * @see setKeySet()
  */
-inline ckdb::KeySet * KeySet::getKeySet () const
+inline ::KeySet * KeySet::getKeySet () const
 {
 	return ks;
 }
@@ -599,9 +599,9 @@ inline ckdb::KeySet * KeySet::getKeySet () const
  * @see release()
  * @see getKeySet()
  */
-inline void KeySet::setKeySet (ckdb::KeySet * k)
+inline void KeySet::setKeySet (::KeySet * k)
 {
-	ckdb::ksDel (ks);
+	::ksDel (ks);
 	ks = k;
 }
 
@@ -618,7 +618,7 @@ inline KeySet & KeySet::operator= (KeySet const & other)
 {
 	if (this != &other)
 	{
-		ckdb::ksDel (ks);
+		::ksDel (ks);
 		ks = other.dup ();
 	}
 	return *this;
@@ -631,7 +631,7 @@ inline KeySet & KeySet::operator= (KeySet const & other)
  */
 inline ssize_t KeySet::size () const
 {
-	return ckdb::ksGetSize (ks);
+	return ::ksGetSize (ks);
 }
 
 /**
@@ -644,9 +644,9 @@ inline ssize_t KeySet::size () const
  *
  * @copydoc ksDup()
  */
-inline ckdb::KeySet * KeySet::dup () const
+inline ::KeySet * KeySet::dup () const
 {
-	return ckdb::ksDup (ks);
+	return ::ksDup (ks);
 }
 
 /**
@@ -661,7 +661,7 @@ inline ckdb::KeySet * KeySet::dup () const
  */
 inline void KeySet::copy (const KeySet & other)
 {
-	ckdb::ksCopy (ks, other.ks);
+	::ksCopy (ks, other.ks);
 }
 
 /**
@@ -671,7 +671,7 @@ inline void KeySet::copy (const KeySet & other)
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy (ks, nullptr);
+	::ksCopy (ks, nullptr);
 }
 
 /**
@@ -685,7 +685,7 @@ inline void KeySet::clear ()
  */
 inline ssize_t KeySet::append (const Key & toAppend)
 {
-	return ckdb::ksAppendKey (ks, toAppend.getKey ());
+	return ::ksAppendKey (ks, toAppend.getKey ());
 }
 
 /**
@@ -699,7 +699,7 @@ inline ssize_t KeySet::append (const Key & toAppend)
  */
 inline ssize_t KeySet::append (KeySet const & toAppend)
 {
-	return ckdb::ksAppend (ks, toAppend.getKeySet ());
+	return ::ksAppend (ks, toAppend.getKeySet ());
 }
 
 /**
@@ -709,7 +709,7 @@ inline ssize_t KeySet::append (KeySet const & toAppend)
  */
 inline Key KeySet::head () const
 {
-	return Key (ckdb::ksHead (ks));
+	return Key (::ksHead (ks));
 }
 
 /**
@@ -719,7 +719,7 @@ inline Key KeySet::head () const
  */
 inline Key KeySet::tail () const
 {
-	return Key (ckdb::ksTail (ks));
+	return Key (::ksTail (ks));
 }
 
 
@@ -728,7 +728,7 @@ inline Key KeySet::tail () const
  */
 inline void KeySet::rewind () const
 {
-	ckdb::ksRewind (ks);
+	::ksRewind (ks);
 }
 
 /**
@@ -736,7 +736,7 @@ inline void KeySet::rewind () const
  */
 inline Key KeySet::next () const
 {
-	ckdb::Key * k = ckdb::ksNext (ks);
+	::Key * k = ::ksNext (ks);
 	return Key (k);
 }
 
@@ -745,7 +745,7 @@ inline Key KeySet::next () const
  */
 inline Key KeySet::current () const
 {
-	return Key (ckdb::ksCurrent (ks));
+	return Key (::ksCurrent (ks));
 }
 
 /**
@@ -753,7 +753,7 @@ inline Key KeySet::current () const
  */
 inline void KeySet::setCursor (cursor_t cursor) const
 {
-	ckdb::ksSetCursor (ks, cursor);
+	::ksSetCursor (ks, cursor);
 }
 
 /**
@@ -761,7 +761,7 @@ inline void KeySet::setCursor (cursor_t cursor) const
  */
 inline cursor_t KeySet::getCursor () const
 {
-	return ckdb::ksGetCursor (ks);
+	return ::ksGetCursor (ks);
 }
 
 /**
@@ -769,7 +769,7 @@ inline cursor_t KeySet::getCursor () const
  */
 inline Key KeySet::pop ()
 {
-	ckdb::Key * k = ckdb::ksPop (ks);
+	::Key * k = ::ksPop (ks);
 	Key key (k);
 	return key;
 }
@@ -784,7 +784,7 @@ inline Key KeySet::pop ()
 inline Key KeySet::at (cursor_t pos) const
 {
 	if (pos < 0) pos += size ();
-	return Key (ckdb::ksAtCursor (ks, pos));
+	return Key (::ksAtCursor (ks, pos));
 }
 
 /**
@@ -792,7 +792,7 @@ inline Key KeySet::at (cursor_t pos) const
  */
 inline KeySet KeySet::cut (Key k)
 {
-	return KeySet (ckdb::ksCut (ks, k.getKey ()));
+	return KeySet (::ksCut (ks, k.getKey ()));
 }
 
 /**
@@ -802,7 +802,7 @@ inline KeySet KeySet::cut (Key k)
  */
 inline Key KeySet::lookup (const Key & key, const option_t options) const
 {
-	ckdb::Key * k = ckdb::ksLookup (ks, key.getKey (), options);
+	::Key * k = ::ksLookup (ks, key.getKey (), options);
 	return Key (k);
 }
 
@@ -819,7 +819,7 @@ inline Key KeySet::lookup (const Key & key, const option_t options) const
  */
 inline Key KeySet::lookup (std::string const & name, option_t const options) const
 {
-	ckdb::Key * k = ckdb::ksLookupByName (ks, name.c_str (), options);
+	::Key * k = ::ksLookupByName (ks, name.c_str (), options);
 	return Key (k);
 }
 

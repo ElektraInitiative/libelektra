@@ -24,11 +24,11 @@ void unserialise (std::istream & os, kdb::KeySet & output, kdb::Key & parent);
 
 extern "C" {
 
-int elektraTclGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraTclSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraTclError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraTclGet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int elektraTclSet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int elektraTclError (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
+::Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 } // end extern "C"
 

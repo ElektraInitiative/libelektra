@@ -17,7 +17,7 @@
 #include <kdbplugin.h>
 #include <kdbprivate.h>
 
-#include <kdbease.h> // for ckdb::elektraArrayIncName
+#include <kdbease.h> // for ::elektraArrayIncName
 
 #include <algorithm>
 
@@ -584,7 +584,7 @@ void GlobalPlugins::serialize (kdb::KeySet & ret)
 		ret.append (g (placements, "error", plugin.second.error));
 
 		serializeConf (ret, Key (i.getName () + "/config", KEY_VALUE, "", KEY_END), plugin.first->getConfig ());
-		ckdb::elektraArrayIncName (*i);
+		::elektraArrayIncName (*i);
 	}
 	ret.append (Key ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
 	ret.append (Key ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));

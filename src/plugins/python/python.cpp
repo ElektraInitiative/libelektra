@@ -33,14 +33,14 @@ using namespace ckdb;
 #define PYTHON_PLUGIN_NAME_STR2(x) ELEKTRA_QUOTE (x)
 #define PYTHON_PLUGIN_NAME_STR PYTHON_PLUGIN_NAME_STR2 (PYTHON_PLUGIN_NAME)
 
-static PyObject * Python_fromSWIG (ckdb::Key * key)
+static PyObject * Python_fromSWIG (::Key * key)
 {
 	swig_type_info * ti = SWIG_TypeQuery ("kdb::Key *");
 	if (key == nullptr || ti == nullptr) return Py_None;
 	return SWIG_NewPointerObj (new kdb::Key (key), ti, 0);
 }
 
-static PyObject * Python_fromSWIG (ckdb::KeySet * keyset)
+static PyObject * Python_fromSWIG (::KeySet * keyset)
 {
 	swig_type_info * ti = SWIG_TypeQuery ("kdb::KeySet *");
 	if (keyset == nullptr || ti == nullptr) return Py_None;
@@ -95,7 +95,7 @@ static PyObject * Python_CallFunction (PyObject * object, PyObject * args)
 	return res;
 }
 
-static int Python_CallFunction_Int (moduleData * data, PyObject * object, PyObject * args, ckdb::Key * errorKey)
+static int Python_CallFunction_Int (moduleData * data, PyObject * object, PyObject * args, ::Key * errorKey)
 {
 	int ret = -1;
 	PyObject * res = Python_CallFunction (object, args);
@@ -122,7 +122,7 @@ static int Python_CallFunction_Int (moduleData * data, PyObject * object, PyObje
 	return ret;
 }
 
-static int Python_CallFunction_Helper1 (moduleData * data, const char * funcName, ckdb::Key * errorKey)
+static int Python_CallFunction_Helper1 (moduleData * data, const char * funcName, ::Key * errorKey)
 {
 	int ret = 0;
 	Python_LockSwap pylock (data->tstate);
@@ -139,7 +139,7 @@ static int Python_CallFunction_Helper1 (moduleData * data, const char * funcName
 	return ret;
 }
 
-static int Python_CallFunction_Helper2 (moduleData * data, const char * funcName, ckdb::KeySet * returned, ckdb::Key * parentKey)
+static int Python_CallFunction_Helper2 (moduleData * data, const char * funcName, ::KeySet * returned, ::Key * parentKey)
 {
 	int ret = 0;
 	Python_LockSwap pylock (data->tstate);
@@ -179,7 +179,7 @@ static void Python_Shutdown (moduleData * data)
 	}
 }
 
-static moduleData * createModuleData (ckdb::Plugin * handle)
+static moduleData * createModuleData (::Plugin * handle)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 
@@ -199,7 +199,7 @@ static moduleData * createModuleData (ckdb::Plugin * handle)
 }
 
 extern "C" {
-int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
+int PYTHON_PLUGIN_FUNCTION (Open) (::Plugin * handle, ::Key * errorKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (pp == nullptr)
@@ -347,7 +347,7 @@ error:
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
-int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
+int PYTHON_PLUGIN_FUNCTION (Close) (::Plugin * handle, ::Key * errorKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (!pp) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -372,7 +372,7 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	return ret;
 }
 
-int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int PYTHON_PLUGIN_FUNCTION (Get) (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" PYTHON_PLUGIN_NAME_STR
 	if (!strcmp (keyName (parentKey), _MODULE_CONFIG_PATH))
@@ -400,7 +400,7 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	return Python_CallFunction_Helper2 (data, "get", returned, parentKey);
 }
 
-int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int PYTHON_PLUGIN_FUNCTION (Set) (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (!pp) return 0;
@@ -411,7 +411,7 @@ int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	return Python_CallFunction_Helper2 (data, "set", returned, parentKey);
 }
 
-int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int PYTHON_PLUGIN_FUNCTION (Error) (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (!pp) return 0;
@@ -422,7 +422,7 @@ int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * return
 	return Python_CallFunction_Helper2 (data, "error", returned, parentKey);
 }
 
-ckdb::Plugin * PYTHON_PLUGIN_EXPORT (PYTHON_PLUGIN_NAME)
+::Plugin * PYTHON_PLUGIN_EXPORT (PYTHON_PLUGIN_NAME)
 {
 	// clang-format off
 	return elektraPluginExport(PYTHON_PLUGIN_NAME_STR,

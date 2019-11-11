@@ -27,7 +27,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 	std::set<std::pair<std::string, std::string>> stringValues;
 
 	const auto end = key.getMeta<std::string> ("check/enum");
-	if (ckdb::elektraArrayValidateBaseNameString (end.c_str ()) < 0)
+	if (::elektraArrayValidateBaseNameString (end.c_str ()) < 0)
 	{
 		throw CommandAbortException ("The key '" + key.getName () + "' has invalid check/enum metadata: " + end);
 	}

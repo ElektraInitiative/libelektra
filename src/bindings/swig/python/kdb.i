@@ -130,7 +130,7 @@
   }
 
   int __cmp__(const Key *o) {
-    return ckdb::keyCmp($self->getKey(), o->getKey());
+    return ::keyCmp($self->getKey(), o->getKey());
   }
 
   kdb::Key *__copy__() {

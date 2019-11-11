@@ -31,7 +31,7 @@ TEST (ks, new)
 
 	KeySet ks1;
 
-	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);
+	KeySet ks2 (5, ::keyNew ("user/key2", KEY_END), KS_END);
 
 	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
@@ -120,7 +120,7 @@ TEST (ks, iterate)
 	succeed_if (!ks3.next (), "no more key");
 	succeed_if (!ks3.next (), "no more key");
 
-	Key null = static_cast<ckdb::Key *> (nullptr);
+	Key null = static_cast<::Key *> (nullptr);
 	succeed_if (!null, "null key");
 
 	ks3.rewind ();
@@ -255,7 +255,7 @@ TEST (ks, append)
 {
 	KeySet ks1;
 
-	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);
+	KeySet ks2 (5, ::keyNew ("user/key2", KEY_END), KS_END);
 	ks1.append (ks2);
 
 	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
@@ -685,24 +685,24 @@ TEST (ks, release)
 {
 	KeySet ks1;
 
-	ckdb::KeySet * ks = ks1.release ();
-	ckdb::ksDel (ks);
+	::KeySet * ks = ks1.release ();
+	::ksDel (ks);
 
-	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);
+	KeySet ks2 (5, ::keyNew ("user/key2", KEY_END), KS_END);
 
 	ks = ks2.release ();
-	ckdb::ksDel (ks);
+	::ksDel (ks);
 
 	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
 
 	ks = ks3.release ();
-	ckdb::ksDel (ks);
+	::ksDel (ks);
 
-	ks = ckdb::ksNew (5, ckdb::keyNew ("user/abc", KEY_END), KS_END);
+	ks = ::ksNew (5, ::keyNew ("user/abc", KEY_END), KS_END);
 	rcall (ks);
-	succeed_if (ckdb::ksLookupByName (ks, "user/xxx", 0) != nullptr, "could not find key");
-	ckdb::ksDel (ks);
+	succeed_if (::ksLookupByName (ks, "user/xxx", 0) != nullptr, "could not find key");
+	::ksDel (ks);
 }
 
 TEST (ks, lookupPop)

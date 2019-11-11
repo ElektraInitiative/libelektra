@@ -14,7 +14,7 @@
 #include <keysetio.hpp>
 #include <string>
 
-using ckdb::keyNew;
+using ::keyNew;
 
 CMergeCommand::CMergeCommand ()
 {
@@ -105,11 +105,11 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 				  << std::endl;
 		}
 	}
-	ckdb::KeySet * c_ours = ours.getKeySet ();
-	ckdb::KeySet * c_theirs = theirs.getKeySet ();
-	ckdb::KeySet * c_base = base.getKeySet ();
+	::KeySet * c_ours = ours.getKeySet ();
+	::KeySet * c_theirs = theirs.getKeySet ();
+	::KeySet * c_base = base.getKeySet ();
 	Key * informationKey = keyNew (0, KEY_END);
-	ckdb::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base,
+	::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base,
 						      baseRoot.getKey (), resultRoot.getKey (), strategy, informationKey);
 	if (c_merge_result != NULL)
 	{

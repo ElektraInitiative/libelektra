@@ -212,16 +212,16 @@ static std::string generateHelpMessage (const std::string & appName, const std::
 	std::vector<const char *> argv = { appName.c_str (), "--help" };
 
 	kdb::Key parentKey (specParent.c_str (), KEY_END);
-	int ret = ckdb::elektraGetOpts (spec.getKeySet (), argv.size (), argv.data (), NULL, parentKey.getKey ());
+	int ret = ::elektraGetOpts (spec.getKeySet (), argv.size (), argv.data (), NULL, parentKey.getKey ());
 
 	if (ret != 1)
 	{
 		throw CommandAbortException ("could not generate fallback help message");
 	}
 
-	char * help = ckdb::elektraGetOptsHelpMessage (parentKey.getKey (), NULL, NULL);
+	char * help = ::elektraGetOptsHelpMessage (parentKey.getKey (), NULL, NULL);
 	std::string result (help);
-	ckdb::elektraFree (help);
+	::elektraFree (help);
 
 	return result;
 }

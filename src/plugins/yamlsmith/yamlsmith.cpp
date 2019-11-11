@@ -22,10 +22,10 @@ using std::endl;
 using std::ofstream;
 using std::string;
 
-using ckdb::Key;
-using ckdb::KeySet;
+using ::Key;
+using ::KeySet;
 
-using ckdb::keyNew;
+using ::keyNew;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;

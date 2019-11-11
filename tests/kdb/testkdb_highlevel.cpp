@@ -72,9 +72,9 @@ static std::ostream & operator<< (std::ostream & os, ElektraError ** error)
 				ElektraError * warning = elektraKDBErrorGetWarning (*error, i);
 				os << "\t\t - Warning " << elektraKDBErrorCode (warning) << " [" << elektraKDBErrorGroup (warning) << "/"
 				   << elektraKDBErrorModule (warning) << "]: " << elektraKDBErrorDescription (warning) << std::endl;
-				ckdb::elektraFree (warning);
+				::elektraFree (warning);
 			}
-			os << "\t\tFrom Key: " << ckdb::keyName (elektraKDBErrorKey (*error)) << std::endl;
+			os << "\t\tFrom Key: " << ::keyName (elektraKDBErrorKey (*error)) << std::endl;
 		}
 
 		elektraErrorReset (error);
@@ -130,7 +130,7 @@ protected:
 		throw std::runtime_error (msg.str ());
 	}
 
-	void createElektra (ckdb::KeySet * defaults = nullptr, ckdb::KeySet * contract = nullptr)
+	void createElektra (::KeySet * defaults = nullptr, ::KeySet * contract = nullptr)
 	{
 		closeElektra ();
 
@@ -190,7 +190,7 @@ protected:
 		char arrayNumber[ELEKTRA_MAX_ARRAY_SIZE];
 		for (size_t i = 0; i < values.size (); ++i)
 		{
-			ckdb::elektraWriteArrayNumber (arrayNumber, i);
+			::elektraWriteArrayNumber (arrayNumber, i);
 			array[i + 1] = kdb::Key ("user" + testRoot + name + "/" + arrayNumber, KEY_VALUE, values[i].c_str (), KEY_META,
 						 "type", type, KEY_END);
 		}
@@ -872,8 +872,8 @@ TEST_F (Highlevel, ArraySetters)
 
 TEST_F (Highlevel, DefaultValues)
 {
-	ckdb::KeySet * defaults =
-		ksNew (5, ckdb::keyNew ("/stringkey", KEY_VALUE, "A string", KEY_META, "type", KDB_TYPE_STRING, KEY_END), KS_END);
+	::KeySet * defaults =
+		ksNew (5, ::keyNew ("/stringkey", KEY_VALUE, "A string", KEY_META, "type", KDB_TYPE_STRING, KEY_END), KS_END);
 
 	createElektra (defaults);
 
@@ -892,7 +892,7 @@ TEST_F (Highlevel, DefaultValues)
 	ASSERT_NE (elektra, nullptr) << "elektraOpen failed" << &error << std::endl;
 
 	EXPECT_STREQ (elektraGetString (elektra, "stringkey"), "My string") << "Wrong key value.";
-	ckdb::ksDel (defaults);
+	::ksDel (defaults);
 }
 
 TEST_F (Highlevel, Raw)

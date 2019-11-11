@@ -47,9 +47,9 @@ typedef struct
  * CPP helper function to create new Ruby objects
  */
 
-/* create a new Ruby Kdb::Key object from the given ckdb::Key
+/* create a new Ruby Kdb::Key object from the given ::Key
  * will be deleted by the Ruby gc. */
-static inline VALUE newRubyObject (ckdb::Key * key)
+static inline VALUE newRubyObject (::Key * key)
 {
 	return SWIG_NewPointerObj (new kdb::Key (key), SWIG_TypeQuery ("kdb::Key *"), 1);
 }
@@ -131,7 +131,7 @@ static inline VALUE clear_ruby_exception ()
  * @brief additional to 'clear_ruby_exception()' adds exception msg to warningsKey
  *
  */
-static VALUE clear_ruby_exception_add_warning (ckdb::Key * warningsKey)
+static VALUE clear_ruby_exception_add_warning (::Key * warningsKey)
 {
 	VALUE exception = clear_ruby_exception ();
 	VALUE msg = get_exception_string (exception);
@@ -141,7 +141,7 @@ static VALUE clear_ruby_exception_add_warning (ckdb::Key * warningsKey)
 	return exception;
 }
 
-static VALUE clear_ruby_exception_set_error (ckdb::Key * errorKey)
+static VALUE clear_ruby_exception_set_error (::Key * errorKey)
 {
 	VALUE exception = clear_ruby_exception ();
 	VALUE msg = get_exception_string (exception);
@@ -305,7 +305,7 @@ static VALUE require_kdb (VALUE v ELEKTRA_UNUSED)
 }
 
 
-static int init_ruby_environment (ckdb::Key * warningsKey)
+static int init_ruby_environment (::Key * warningsKey)
 {
 	/*
 	 * init and start Ruby-VM
@@ -393,7 +393,7 @@ static VALUE load_ruby_plugin (VALUE config ELEKTRA_UNUSED)
  */
 
 
-int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
+int RUBY_PLUGIN_FUNCTION (CheckConf) (::Key * errorKey, ::KeySet * conf)
 {
 
 	ELEKTRA_LOG_DEBUG ("ruby plugin checkConf");
@@ -460,7 +460,7 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 	return 0;
 }
 
-int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
+int RUBY_PLUGIN_FUNCTION (Open) (::Plugin * handle, ::Key * warningsKey)
 {
 	/*
 	 * parse plugin config settings
@@ -479,7 +479,7 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 		return 0;
 	}
 
-	ckdb::KeySet * conf_ks = elektraPluginGetConfig (handle);
+	::KeySet * conf_ks = elektraPluginGetConfig (handle);
 	if (!ksLookupByName (conf_ks, CONFIG_KEY_SCRIPT, 0))
 	{
 		/* no script specified
@@ -553,7 +553,7 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 }
 
 
-int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
+int RUBY_PLUGIN_FUNCTION (Close) (::Plugin * handle, ::Key * warningsKey)
 {
 	int returnValue = 0;
 
@@ -601,7 +601,7 @@ int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * warningsKey
 }
 
 
-int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int RUBY_PLUGIN_FUNCTION (Get) (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	ELEKTRA_LOG_DEBUG ("ruby plugin get");
 	/* TODO
@@ -660,7 +660,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	return -1;
 }
 
-int RUBY_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int RUBY_PLUGIN_FUNCTION (Set) (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	/*
 	 * pass call to Ruby plugin
@@ -686,7 +686,7 @@ int RUBY_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	return -1;
 }
 
-int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int RUBY_PLUGIN_FUNCTION (Error) (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	/*
 	 * pass call to Ruby plugin
@@ -712,7 +712,7 @@ int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned
 }
 
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
+::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(RUBY_PLUGIN_NAME_STR,

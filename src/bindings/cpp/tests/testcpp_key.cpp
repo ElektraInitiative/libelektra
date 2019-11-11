@@ -15,12 +15,12 @@
 
 TEST (key, null)
 {
-	Key key0 (static_cast<ckdb::Key *> (nullptr));
+	Key key0 (static_cast<::Key *> (nullptr));
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
 	succeed_if (key0.needSync (), "key should need sync");
 
-	key0 = static_cast<ckdb::Key *> (nullptr);
+	key0 = static_cast<::Key *> (nullptr);
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
 	succeed_if (key0.needSync (), "key should need sync");
@@ -259,8 +259,8 @@ TEST (key, keynew)
 
 TEST (key, constructor)
 {
-	ckdb::Key * ck = ckdb::keyNew (nullptr);
-	Key k = ck; // constructor with (ckdb::Key)
+	::Key * ck = ::keyNew (nullptr);
+	Key k = ck; // constructor with (::Key)
 
 	/*
 	cout << "ck:   " << (void*)ck << endl;
@@ -274,10 +274,10 @@ TEST (key, constructor)
 
 TEST (key, set)
 {
-	ckdb::Key * ck;
+	::Key * ck;
 	Key k;
 
-	ck = ckdb::keyNew (nullptr);
+	ck = ::keyNew (nullptr);
 	k = ck; // operator= alias for setKey()
 
 	/*
@@ -292,10 +292,10 @@ TEST (key, set)
 
 TEST (key, cast)
 {
-	ckdb::Key * ck;
+	::Key * ck;
 	Key * k;
 
-	ck = ckdb::keyNew (nullptr);
+	ck = ::keyNew (nullptr);
 	k = reinterpret_cast<Key *> (&ck); // not copied on purpose
 
 	/*
@@ -308,7 +308,7 @@ TEST (key, cast)
 	k->set<int> (30);
 	succeed_if (k->get<int> () == 30, "could not get same int");
 
-	ckdb::keyDel (ck);
+	::keyDel (ck);
 }
 
 TEST (key, value)
@@ -667,13 +667,13 @@ TEST (key, clear)
 TEST (key, conversation)
 {
 	Key k1 ("user", KEY_END);
-	ckdb::Key * ck1 = k1.getKey ();
-	succeed_if (!strcmp (ckdb::keyName (ck1), "user"), "c key does not have correct name");
-	succeed_if (!strcmp (ckdb::keyName (*k1), "user"), "c key does not have correct name");
+	::Key * ck1 = k1.getKey ();
+	succeed_if (!strcmp (::keyName (ck1), "user"), "c key does not have correct name");
+	succeed_if (!strcmp (::keyName (*k1), "user"), "c key does not have correct name");
 
 	ck1 = k1.release ();
-	succeed_if (!strcmp (ckdb::keyName (ck1), "user"), "c key does not have correct name");
-	ckdb::keyDel (ck1);
+	succeed_if (!strcmp (::keyName (ck1), "user"), "c key does not have correct name");
+	::keyDel (ck1);
 }
 
 TEST (key, keynamespace)

@@ -15,8 +15,8 @@ void escapeNonAlphaNum (std::string & str)
 
 std::vector<std::string> getKeyParts (const kdb::Key & key)
 {
-	auto rawName = static_cast<const char *> (ckdb::keyUnescapedName (key.getKey ()));
-	size_t size = ckdb::keyGetUnescapedNameSize (key.getKey ());
+	auto rawName = static_cast<const char *> (::keyUnescapedName (key.getKey ()));
+	size_t size = ::keyGetUnescapedNameSize (key.getKey ());
 	std::vector<char> name (rawName, rawName + size);
 	auto cur = name.begin ();
 	std::vector<std::string> parts;

@@ -632,9 +632,9 @@ int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position
 }
 }
 
-#define KDB ckdb::KDB
-#define Key ckdb::Key
-#define KeySet ckdb::KeySet
+#define KDB ::KDB
+#define Key ::Key
+#define KeySet ::KeySet
 extern "C" {
 #endif
 

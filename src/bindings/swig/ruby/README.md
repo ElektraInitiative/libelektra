@@ -23,7 +23,7 @@ the modules differs to the C++ API in the following way:
   an `each` method and includes `Enumerable`. Therefore it is very similar to
   a Ruby-Array. However, the `KeySet` cursor methods are still available.
 - Method names are renamed to follow Ruby naming conventions
-- Access to native C-level `KDB` structures (such as `ckdb::Key`) is not
+- Access to native C-level `KDB` structures (such as `::Key`) is not
   possible, as this does not make much sense within Ruby.
 - Key and `KeySet` implement a `pretty_print` method very suitable for debugging
 - The `Kdb` module has a static `open` method taking a block, which can be

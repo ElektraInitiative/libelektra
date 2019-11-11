@@ -48,7 +48,7 @@ private:
 	typedef void (*func_t) ();
 
 private:
-	ckdb::Plugin * plugin;
+	::Plugin * plugin;
 	PluginSpec spec;
 	kdb::KeySet info;
 
@@ -103,7 +103,7 @@ public:
 	 */
 	void check (std::vector<std::string> & warnings);
 
-	ckdb::Plugin * operator-> ();
+	::Plugin * operator-> ();
 
 	/**
 	 * Gets the whole string of an information item.

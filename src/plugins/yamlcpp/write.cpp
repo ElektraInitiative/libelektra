@@ -39,7 +39,7 @@ using KeySetPair = pair<KeySet, KeySet>;
 bool isArrayElementOf (Key const & parent, Key const & child)
 {
 	char const * relative = elektraKeyGetRelativeName (*child, *parent);
-	auto offsetIndex = ckdb::elektraArrayValidateBaseNameString (relative);
+	auto offsetIndex = ::elektraArrayValidateBaseNameString (relative);
 	if (offsetIndex <= 0) return false;
 	// Skip `#`, underscores and digits
 	relative += 2 * offsetIndex;
@@ -103,7 +103,7 @@ KeySet splitArrayParents (KeySet const & keys)
 			if (!keys.current ().isDirectBelow (previous))
 			{
 				Key directParent{ keys.current ().getName (), KEY_END };
-				ckdb::keySetBaseName (*directParent, NULL);
+				::keySetBaseName (*directParent, NULL);
 				if (isArrayParent (*directParent, keys)) arrayParents.append (directParent);
 			}
 			else if (isArrayParent (*previous, keys))
@@ -208,7 +208,7 @@ KeySet missingKeys (KeySet const & keys, Key const & parent)
 		Key current{ keys.current ().getName (), KEY_BINARY, KEY_END };
 		while (!current.isDirectBelow (previous))
 		{
-			ckdb::keySetBaseName (*current, NULL);
+			::keySetBaseName (*current, NULL);
 			missing.append (current);
 			current = current.dup ();
 		}
@@ -252,7 +252,7 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameIterator)
 {
 	string const name = *nameIterator;
-	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
+	auto const offsetIndex = ::elektraArrayValidateBaseNameString (name.c_str ());
 	auto const isArrayElement = offsetIndex >= 1;
 	return { isArrayElement, isArrayElement ? stoull (name.substr (offsetIndex)) : 0 };
 }

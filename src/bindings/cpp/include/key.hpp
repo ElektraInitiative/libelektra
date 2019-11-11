@@ -31,14 +31,14 @@ class NameReverseIterator;
 /**
  * @copydoc key
  *
- * This class is an wrapper for an optional, refcounted ckdb::Key.
- * It is like an shared_ptr<ckdb::Key>, but the
+ * This class is an wrapper for an optional, refcounted ::Key.
+ * It is like an shared_ptr<::Key>, but the
  * shared_ptr functionality is already within the Key and exposed
  * with this wrapper.
  *
  * @par optional
  * A key can be constructed with an null pointer, by using
- * Key (static_cast<ckdb::Key*>(0));
+ * Key (static_cast<::Key*>(0));
  * or made empty afterwards by using release() or assign a null key.
  * To check if there is an associated managed object the user
  * can use isNull().
@@ -70,7 +70,7 @@ public:
 	// constructors
 
 	inline Key ();
-	inline Key (ckdb::Key * k);
+	inline Key (::Key * k);
 	inline Key (Key & k);
 	inline Key (Key const & k);
 
@@ -93,20 +93,20 @@ public:
 	// basic methods
 
 
-	inline Key & operator= (ckdb::Key * k);
+	inline Key & operator= (::Key * k);
 	inline Key & operator= (const Key & k);
 
 	inline void copy (const Key & other);
 	inline void clear ();
-	inline ckdb::Key * operator-> () const;
+	inline ::Key * operator-> () const;
 
 	inline Key * operator-> ();
 
-	inline ckdb::Key * getKey () const;
-	inline ckdb::Key * operator* () const;
+	inline ::Key * getKey () const;
+	inline ::Key * operator* () const;
 
-	inline ckdb::Key * release ();
-	inline ckdb::Key * dup () const;
+	inline ::Key * release ();
+	inline ::Key * dup () const;
 	inline ~Key ();
 
 
@@ -182,7 +182,7 @@ public:
 	typedef void (*func_t) ();
 	inline func_t getFunc () const;
 
-	typedef ckdb::Key * (*callback_t) (ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, option_t options);
+	typedef ::Key * (*callback_t) (::KeySet * ks, ::Key * key, ::Key * found, option_t options);
 	inline void setCallback (callback_t fct);
 
 	inline const void * getValue () const;
@@ -236,7 +236,7 @@ public:
 private:
 	inline int del ();
 
-	ckdb::Key * key; ///< holds an elektra key
+	::Key * key; ///< holds an elektra key
 };
 
 
@@ -543,7 +543,7 @@ inline Key::const_reverse_iterator Key::crend () const noexcept
  *
  * @see isValid(), isNull()
  */
-inline Key::Key () : key (ckdb::keyNew (nullptr))
+inline Key::Key () : key (::keyNew (nullptr))
 {
 	operator++ ();
 }
@@ -558,7 +558,7 @@ inline Key::Key () : key (ckdb::keyNew (nullptr))
  *
  * @see isValid(), isNull()
  */
-inline Key::Key (ckdb::Key * k) : key (k)
+inline Key::Key (::Key * k) : key (k)
 {
 	operator++ ();
 }
@@ -601,7 +601,7 @@ inline Key::Key (const char * keyName, ...)
 	va_list ap;
 
 	va_start (ap, keyName);
-	key = ckdb::keyVNew (keyName, ap);
+	key = ::keyVNew (keyName, ap);
 	va_end (ap);
 
 	if (!key) throw std::bad_alloc ();
@@ -625,7 +625,7 @@ inline Key::Key (const std::string keyName, ...)
 	va_list ap;
 
 	va_start (ap, keyName);
-	key = ckdb::keyVNew (keyName.c_str (), ap);
+	key = ::keyVNew (keyName.c_str (), ap);
 	va_end (ap);
 
 	if (!key) throw std::bad_alloc ();
@@ -643,7 +643,7 @@ inline Key::Key (const std::string keyName, ...)
  */
 inline Key::Key (const char * keyName, va_list ap)
 {
-	key = ckdb::keyVNew (keyName, ap);
+	key = ::keyVNew (keyName, ap);
 
 	if (!key) throw std::bad_alloc ();
 
@@ -663,7 +663,7 @@ void Key::operator++ (int) const
  */
 void Key::operator++ () const
 {
-	ckdb::keyIncRef (key);
+	::keyIncRef (key);
 }
 
 /**
@@ -679,7 +679,7 @@ void Key::operator-- (int) const
  */
 void Key::operator-- () const
 {
-	ckdb::keyDecRef (key);
+	::keyDecRef (key);
 }
 
 /**
@@ -687,7 +687,7 @@ void Key::operator-- () const
  */
 inline ssize_t Key::getReferenceCounter () const
 {
-	return ckdb::keyGetRef (key);
+	return ::keyGetRef (key);
 }
 
 /**
@@ -695,7 +695,7 @@ inline ssize_t Key::getReferenceCounter () const
  *
  * Will call del() on the old key.
  */
-inline Key & Key::operator= (ckdb::Key * k)
+inline Key & Key::operator= (::Key * k)
 {
 	if (key != k)
 	{
@@ -727,7 +727,7 @@ inline Key & Key::operator= (const Key & k)
  */
 inline void Key::copy (const Key & other)
 {
-	ckdb::keyCopy (key, other.key);
+	::keyCopy (key, other.key);
 }
 
 /**
@@ -746,7 +746,7 @@ inline void Key::copy (const Key & other)
  */
 inline void Key::clear ()
 {
-	ckdb::keyClear (key);
+	::keyClear (key);
 }
 
 /**
@@ -757,7 +757,7 @@ inline void Key::clear ()
  *
  * \note that the ownership remains in the object
  */
-ckdb::Key * Key::getKey () const
+::Key * Key::getKey () const
 {
 	return key;
 }
@@ -769,7 +769,7 @@ ckdb::Key * Key::getKey () const
  *
  * @see getKey()
  */
-ckdb::Key * Key::operator* () const
+::Key * Key::operator* () const
 {
 	return key;
 }
@@ -792,9 +792,9 @@ Key * Key::operator-> ()
  *
  * @retval 0 if no key is held (null pointer), no action is done then.
  */
-ckdb::Key * Key::release ()
+::Key * Key::release ()
 {
-	ckdb::Key * ret = key;
+	::Key * ret = key;
 	if (key)
 	{
 		operator-- ();
@@ -806,9 +806,9 @@ ckdb::Key * Key::release ()
 /**
  * @copydoc keyDup
  */
-ckdb::Key * Key::dup () const
+::Key * Key::dup () const
 {
-	return ckdb::keyDup (getKey ());
+	return ::keyDup (getKey ());
 }
 
 /**
@@ -837,7 +837,7 @@ inline Key::~Key ()
 inline std::string Key::getName () const
 {
 	if (!key) throw KeyException ();
-	return std::string (ckdb::keyName (key));
+	return std::string (::keyName (key));
 }
 
 /**
@@ -845,7 +845,7 @@ inline std::string Key::getName () const
  */
 inline ssize_t Key::getNameSize () const
 {
-	return ckdb::keyGetNameSize (getKey ());
+	return ::keyGetNameSize (getKey ());
 }
 
 
@@ -854,7 +854,7 @@ inline ssize_t Key::getNameSize () const
  */
 inline ssize_t Key::getBaseNameSize () const
 {
-	return ckdb::keyGetBaseNameSize (getKey ());
+	return ::keyGetBaseNameSize (getKey ());
 }
 
 /**
@@ -862,7 +862,7 @@ inline ssize_t Key::getBaseNameSize () const
  */
 inline std::string Key::getBaseName () const
 {
-	return std::string (ckdb::keyBaseName (key));
+	return std::string (::keyBaseName (key));
 }
 
 /**
@@ -872,7 +872,7 @@ inline std::string Key::getBaseName () const
  * */
 inline void Key::setName (const std::string & newName)
 {
-	if (ckdb::keySetName (getKey (), newName.c_str ()) == -1)
+	if (::keySetName (getKey (), newName.c_str ()) == -1)
 	{
 		throw KeyInvalidName ();
 	}
@@ -880,7 +880,7 @@ inline void Key::setName (const std::string & newName)
 
 inline void Key::addName (const std::string & addedName)
 {
-	if (ckdb::keyAddName (getKey (), addedName.c_str ()) == -1)
+	if (::keyAddName (getKey (), addedName.c_str ()) == -1)
 	{
 		throw KeyInvalidName ();
 	}
@@ -894,7 +894,7 @@ inline void Key::addName (const std::string & addedName)
  */
 inline void Key::setBaseName (const std::string & baseName)
 {
-	if (ckdb::keySetBaseName (getKey (), baseName.c_str ()) == -1)
+	if (::keySetBaseName (getKey (), baseName.c_str ()) == -1)
 	{
 		throw KeyInvalidName ();
 	}
@@ -908,7 +908,7 @@ inline void Key::setBaseName (const std::string & baseName)
  */
 inline void Key::addBaseName (const std::string & baseName)
 {
-	if (ckdb::keyAddBaseName (getKey (), baseName.c_str ()) == -1)
+	if (::keyAddBaseName (getKey (), baseName.c_str ()) == -1)
 	{
 		throw KeyInvalidName ();
 	}
@@ -920,7 +920,7 @@ inline void Key::addBaseName (const std::string & baseName)
  */
 inline void Key::delBaseName ()
 {
-	if (ckdb::keySetBaseName (getKey (), 0) == -1)
+	if (::keySetBaseName (getKey (), 0) == -1)
 	{
 		throw KeyInvalidName ();
 	}
@@ -931,7 +931,7 @@ inline void Key::delBaseName ()
  */
 inline ssize_t Key::getFullNameSize () const
 {
-	return ckdb::keyGetFullNameSize (getKey ());
+	return ::keyGetFullNameSize (getKey ());
 }
 
 /**
@@ -953,7 +953,7 @@ inline std::string Key::getFullName () const
 	}
 
 	std::string str (csize - 1, '\0');
-	ckdb::keyGetFullName (getKey (), &str[0], csize);
+	::keyGetFullName (getKey (), &str[0], csize);
 	return str;
 }
 
@@ -964,7 +964,7 @@ inline std::string Key::getFullName () const
  */
 inline bool Key::operator== (const Key & k) const
 {
-	return ckdb::keyCmp (key, k.key) == 0;
+	return ::keyCmp (key, k.key) == 0;
 }
 
 /**
@@ -974,7 +974,7 @@ inline bool Key::operator== (const Key & k) const
  */
 inline bool Key::operator!= (const Key & k) const
 {
-	return ckdb::keyCmp (key, k.key) != 0;
+	return ::keyCmp (key, k.key) != 0;
 }
 
 /**
@@ -984,7 +984,7 @@ inline bool Key::operator!= (const Key & k) const
  */
 inline bool Key::operator< (const Key & other) const
 {
-	return ckdb::keyCmp (key, other.key) < 0;
+	return ::keyCmp (key, other.key) < 0;
 }
 
 /**
@@ -994,7 +994,7 @@ inline bool Key::operator< (const Key & other) const
  */
 inline bool Key::operator<= (const Key & other) const
 {
-	return ckdb::keyCmp (key, other.key) <= 0;
+	return ::keyCmp (key, other.key) <= 0;
 }
 
 /**
@@ -1004,7 +1004,7 @@ inline bool Key::operator<= (const Key & other) const
  */
 inline bool Key::operator> (const Key & other) const
 {
-	return ckdb::keyCmp (key, other.key) > 0;
+	return ::keyCmp (key, other.key) > 0;
 }
 
 /**
@@ -1014,7 +1014,7 @@ inline bool Key::operator> (const Key & other) const
  */
 inline bool Key::operator>= (const Key & other) const
 {
-	return ckdb::keyCmp (key, other.key) >= 0;
+	return ::keyCmp (key, other.key) >= 0;
 }
 
 
@@ -1053,7 +1053,7 @@ inline bool Key::isNull () const
  */
 inline bool Key::needSync () const
 {
-	return ckdb::keyNeedSync (key);
+	return ::keyNeedSync (key);
 }
 
 /**
@@ -1150,7 +1150,7 @@ inline std::string Key::getString () const
 	}
 
 	std::string str (csize - 1, '\0');
-	if (ckdb::keyGetString (getKey (), &str[0], csize) == -1)
+	if (::keyGetString (getKey (), &str[0], csize) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1162,7 +1162,7 @@ inline std::string Key::getString () const
  */
 inline ssize_t Key::getStringSize () const
 {
-	return ckdb::keyGetValueSize (key);
+	return ::keyGetValueSize (key);
 }
 
 /**
@@ -1182,7 +1182,7 @@ inline Key::func_t Key::getFunc () const
 	} conversation;
 	static_assert (sizeof (conversation) == sizeof (func_t), "union does not have size of function pointer");
 
-	if (ckdb::keyGetBinary (getKey (), &conversation.v, sizeof (conversation)) != sizeof (conversation)) throw KeyTypeMismatch ();
+	if (::keyGetBinary (getKey (), &conversation.v, sizeof (conversation)) != sizeof (conversation)) throw KeyTypeMismatch ();
 
 	return conversation.f;
 }
@@ -1198,8 +1198,8 @@ inline void Key::setCallback (callback_t fct)
 	static_assert (sizeof (conversation) == sizeof (callback_t), "union does not have size of function pointer");
 
 	conversation.f = fct;
-	ckdb::keySetBinary (getKey (), &conversation.v, sizeof (conversation));
-	ckdb::keySetMeta (getKey (), "callback", "");
+	::keySetBinary (getKey (), &conversation.v, sizeof (conversation));
+	::keySetMeta (getKey (), "callback", "");
 }
 
 
@@ -1208,7 +1208,7 @@ inline void Key::setCallback (callback_t fct)
  */
 inline void Key::setString (const char * newString)
 {
-	ckdb::keySetString (getKey (), newString);
+	::keySetString (getKey (), newString);
 }
 
 inline void Key::setString (const std::string & newString)
@@ -1224,7 +1224,7 @@ inline void Key::setString (const std::string & newString)
  */
 inline const void * Key::getValue () const
 {
-	return ckdb::keyValue (getKey ());
+	return ::keyValue (getKey ());
 }
 
 /**
@@ -1256,7 +1256,7 @@ inline std::string Key::getBinary () const
 	}
 
 	std::string str (csize, '\0');
-	if (ckdb::keyGetBinary (getKey (), &str[0], csize) == -1)
+	if (::keyGetBinary (getKey (), &str[0], csize) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1268,7 +1268,7 @@ inline std::string Key::getBinary () const
  */
 inline ssize_t Key::getBinarySize () const
 {
-	return ckdb::keyGetValueSize (key);
+	return ::keyGetValueSize (key);
 }
 
 /**
@@ -1276,7 +1276,7 @@ inline ssize_t Key::getBinarySize () const
  */
 inline ssize_t Key::setBinary (const void * newBinary, size_t dataSize)
 {
-	return ckdb::keySetBinary (getKey (), newBinary, dataSize);
+	return ::keySetBinary (getKey (), newBinary, dataSize);
 }
 
 
@@ -1292,8 +1292,8 @@ inline yourtype Key::getMeta(const std::string &name) const
 	std::string str;
 	str = std::string(
 		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
+			::keyValue(
+				::keyGetMeta(key, name.c_str())
 				)
 			)
 		);
@@ -1318,7 +1318,7 @@ inline yourtype Key::getMeta(const std::string &name) const
 template <class T>
 inline T Key::getMeta (const std::string & metaName) const
 {
-	Key k (const_cast<ckdb::Key *> (ckdb::keyGetMeta (key, metaName.c_str ())));
+	Key k (const_cast<::Key *> (::keyGetMeta (key, metaName.c_str ())));
 	if (!k)
 	{
 		return T ();
@@ -1335,33 +1335,33 @@ inline T Key::getMeta (const std::string & metaName) const
  */
 inline bool Key::hasMeta (const std::string & metaName) const
 {
-	Key k (const_cast<ckdb::Key *> (ckdb::keyGetMeta (key, metaName.c_str ())));
+	Key k (const_cast<::Key *> (::keyGetMeta (key, metaName.c_str ())));
 	return k;
 }
 
 template <>
-inline const ckdb::Key * Key::getMeta (const std::string & name) const
+inline const ::Key * Key::getMeta (const std::string & name) const
 {
-	return ckdb::keyGetMeta (key, name.c_str ());
+	return ::keyGetMeta (key, name.c_str ());
 }
 
 template <>
 inline const Key Key::getMeta (const std::string & name) const
 {
-	const ckdb::Key * k = ckdb::keyGetMeta (key, name.c_str ());
-	return Key (const_cast<ckdb::Key *> (k));
+	const ::Key * k = ::keyGetMeta (key, name.c_str ());
+	return Key (const_cast<::Key *> (k));
 }
 
 template <>
 inline const char * Key::getMeta (const std::string & name) const
 {
-	return static_cast<const char *> (ckdb::keyValue (ckdb::keyGetMeta (key, name.c_str ())));
+	return static_cast<const char *> (::keyValue (::keyGetMeta (key, name.c_str ())));
 }
 
 template <>
 inline std::string Key::getMeta (const std::string & name) const
 {
-	const char * v = static_cast<const char *> (ckdb::keyValue (ckdb::keyGetMeta (key, name.c_str ())));
+	const char * v = static_cast<const char *> (::keyValue (::keyGetMeta (key, name.c_str ())));
 	if (!v)
 	{
 		return std::string ();
@@ -1392,7 +1392,7 @@ inline void Key::setMeta (const std::string & metaName, T x)
 {
 	Key k;
 	k.set<T> (x);
-	ckdb::keySetMeta (key, metaName.c_str (), k.getString ().c_str ());
+	::keySetMeta (key, metaName.c_str (), k.getString ().c_str ());
 }
 
 /**
@@ -1402,7 +1402,7 @@ inline void Key::setMeta (const std::string & metaName, T x)
  */
 inline void Key::delMeta (const std::string & metaName)
 {
-	ckdb::keySetMeta (key, metaName.c_str (), nullptr);
+	::keySetMeta (key, metaName.c_str (), nullptr);
 }
 
 /**
@@ -1412,7 +1412,7 @@ inline void Key::delMeta (const std::string & metaName)
  */
 inline void Key::copyMeta (const Key & other, const std::string & metaName)
 {
-	ckdb::keyCopyMeta (key, other.key, metaName.c_str ());
+	::keyCopyMeta (key, other.key, metaName.c_str ());
 }
 
 /**
@@ -1422,7 +1422,7 @@ inline void Key::copyMeta (const Key & other, const std::string & metaName)
  */
 inline void Key::copyAllMeta (const Key & other)
 {
-	ckdb::keyCopyAllMeta (key, other.key);
+	::keyCopyAllMeta (key, other.key);
 }
 
 /**
@@ -1432,7 +1432,7 @@ inline void Key::copyAllMeta (const Key & other)
  */
 inline void Key::rewindMeta ()
 {
-	ckdb::keyRewindMeta (key);
+	::keyRewindMeta (key);
 }
 
 /**
@@ -1442,8 +1442,8 @@ inline void Key::rewindMeta ()
  */
 inline const Key Key::nextMeta ()
 {
-	const ckdb::Key * k = ckdb::keyNextMeta (key);
-	return Key (const_cast<ckdb::Key *> (k));
+	const ::Key * k = ::keyNextMeta (key);
+	return Key (const_cast<::Key *> (k));
 }
 
 
@@ -1464,7 +1464,7 @@ inline const Key Key::nextMeta ()
  */
 inline const Key Key::currentMeta () const
 {
-	return Key (const_cast<ckdb::Key *> (ckdb::keyCurrentMeta (const_cast<const ckdb::Key *> (key))));
+	return Key (const_cast<::Key *> (::keyCurrentMeta (const_cast<const ::Key *> (key))));
 }
 
 
@@ -1480,7 +1480,7 @@ inline const Key Key::currentMeta () const
  */
 inline bool Key::isValid () const
 {
-	return ckdb::keyGetNameSize (getKey ()) > 1;
+	return ::keyGetNameSize (getKey ()) > 1;
 }
 
 /**
@@ -1508,7 +1508,7 @@ inline std::string Key::getNamespace () const
  */
 inline bool Key::isCascading () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_CASCADING;
+	return ::keyGetNamespace (getKey ()) == KEY_NS_CASCADING;
 }
 
 /**
@@ -1519,7 +1519,7 @@ inline bool Key::isCascading () const
  */
 inline bool Key::isSpec () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SPEC;
+	return ::keyGetNamespace (getKey ()) == KEY_NS_SPEC;
 }
 
 /**
@@ -1530,7 +1530,7 @@ inline bool Key::isSpec () const
  */
 inline bool Key::isProc () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_PROC;
+	return ::keyGetNamespace (getKey ()) == KEY_NS_PROC;
 }
 
 /**
@@ -1541,7 +1541,7 @@ inline bool Key::isProc () const
  */
 inline bool Key::isDir () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_DIR;
+	return ::keyGetNamespace (getKey ()) == KEY_NS_DIR;
 }
 
 /**
@@ -1552,7 +1552,7 @@ inline bool Key::isDir () const
  */
 inline bool Key::isUser () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_USER;
+	return ::keyGetNamespace (getKey ()) == KEY_NS_USER;
 }
 
 /**
@@ -1563,7 +1563,7 @@ inline bool Key::isUser () const
  */
 inline bool Key::isSystem () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SYSTEM;
+	return ::keyGetNamespace (getKey ()) == KEY_NS_SYSTEM;
 }
 
 /**
@@ -1571,7 +1571,7 @@ inline bool Key::isSystem () const
  */
 inline bool Key::isString () const
 {
-	return ckdb::keyIsString (key);
+	return ::keyIsString (key);
 }
 
 /**
@@ -1579,7 +1579,7 @@ inline bool Key::isString () const
  */
 inline bool Key::isBinary () const
 {
-	return ckdb::keyIsBinary (key);
+	return ::keyIsBinary (key);
 }
 
 /**
@@ -1587,7 +1587,7 @@ inline bool Key::isBinary () const
  */
 inline bool Key::isInactive () const
 {
-	return ckdb::keyIsInactive (key);
+	return ::keyIsInactive (key);
 }
 
 /**
@@ -1598,7 +1598,7 @@ inline bool Key::isInactive () const
  */
 inline bool Key::isBelow (const Key & k) const
 {
-	int ret = ckdb::keyIsBelow (k.getKey (), key);
+	int ret = ::keyIsBelow (k.getKey (), key);
 	if (ret == -1) return false;
 	return ret;
 }
@@ -1611,7 +1611,7 @@ inline bool Key::isBelow (const Key & k) const
  */
 inline bool Key::isBelowOrSame (const Key & k) const
 {
-	int ret = ckdb::keyIsBelowOrSame (k.getKey (), key);
+	int ret = ::keyIsBelowOrSame (k.getKey (), key);
 	if (ret == -1) return false;
 	return ret;
 }
@@ -1624,7 +1624,7 @@ inline bool Key::isBelowOrSame (const Key & k) const
  */
 inline bool Key::isDirectBelow (const Key & k) const
 {
-	int ret = ckdb::keyIsDirectlyBelow (k.getKey (), key);
+	int ret = ::keyIsDirectlyBelow (k.getKey (), key);
 	if (ret == -1) return false;
 	return ret;
 }
@@ -1644,7 +1644,7 @@ inline int Key::del ()
 	if (key)
 	{
 		operator-- ();
-		return ckdb::keyDel (key);
+		return ::keyDel (key);
 	}
 	return -1;
 }

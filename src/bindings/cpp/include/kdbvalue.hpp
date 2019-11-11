@@ -262,7 +262,7 @@ class DefaultGetPolicy
 public:
 	static Key get (KeySet & ks, Key const & spec)
 	{
-		return ks.lookup (spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE);
+		return ks.lookup (spec, ::KDB_O_SPEC | ::KDB_O_CREATE);
 	}
 };
 
@@ -461,7 +461,7 @@ public:
 	{
 		Command::Func fun = [this]() -> Command::Pair {
 			std::string oldName = m_key.getName ();
-			m_key = static_cast<ckdb::Key *> (nullptr);
+			m_key = static_cast<::Key *> (nullptr);
 			// after destructor we do not need to care about
 			// invariant anymore. But we need to care about
 			// thread safe m_key.
@@ -756,7 +756,7 @@ private:
 #if DEBUG && VERBOSE
 			std::cout << "add dep " << current_id << " to " << dep.getName () << std::endl;
 #endif
-			ckdb::elektraMetaArrayAdd (*dep, "dep", ("/" + current_id).c_str ());
+			::elektraMetaArrayAdd (*dep, "dep", ("/" + current_id).c_str ());
 			return false;
 		});
 		return dep;

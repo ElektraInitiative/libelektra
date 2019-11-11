@@ -48,8 +48,8 @@
  * @{
  */
 #ifdef __cplusplus
-#define Key ckdb::Key
-#define KeySet ckdb::KeySet
+#define Key ::Key
+#define KeySet ::KeySet
 extern "C" {
 #endif
 

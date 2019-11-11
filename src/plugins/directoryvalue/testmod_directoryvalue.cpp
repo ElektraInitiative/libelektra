@@ -19,7 +19,7 @@
 using std::ignore;
 using std::tie;
 
-using ckdb::keyNew;
+using ::keyNew;
 
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;

@@ -16,7 +16,7 @@
 #include "convert.hpp"
 #include "yambi.hpp"
 
-using ckdb::keyNew;
+using ::keyNew;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;

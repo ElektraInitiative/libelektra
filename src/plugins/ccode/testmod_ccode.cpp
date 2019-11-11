@@ -18,14 +18,14 @@ using std::string;
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
-using ckdb::elektraModulesClose;
-using ckdb::elektraModulesInit;
-using ckdb::elektraPluginClose;
-using ckdb::elektraPluginOpen;
-using ckdb::keyNew;
-using ckdb::ksDel;
+using ::elektraModulesClose;
+using ::elektraModulesInit;
+using ::elektraPluginClose;
+using ::elektraPluginOpen;
+using ::keyNew;
+using ::ksDel;
 
-using ckdb::Plugin;
+using ::Plugin;
 
 CppKeySet defaultConfig ()
 {

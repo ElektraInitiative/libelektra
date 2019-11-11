@@ -578,7 +578,7 @@ std::string printKey (Key const & k)
 	std::string ret;
 	ret += k.getName ();
 
-	if (ckdb::keyNeedSync (*k)) ret += "°";
+	if (::keyNeedSync (*k)) ret += "°";
 
 	if (!k.isBinary ())
 	{
@@ -737,7 +737,7 @@ QString TreeViewModel::getCurrentArrayNo () const
 	if (max)
 	{
 		Key k = max->getKey ();
-		ckdb::elektraArrayIncName (k.getKey ());
+		::elektraArrayIncName (k.getKey ());
 		return QString::fromStdString (k.getBaseName ());
 	}
 
@@ -767,7 +767,7 @@ void TreeViewModel::refreshArrayNumbers ()
 			for (int i = 1; i < arrayElements.count (); i++)
 			{
 				Key k = arrayElements.at (i - 1)->getKey ().dup ();
-				ckdb::elektraArrayIncName (k.getKey ());
+				::elektraArrayIncName (k.getKey ());
 				arrayElements.at (i)->setName (QString::fromStdString (k.getBaseName ()));
 			}
 		}

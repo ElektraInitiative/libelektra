@@ -15,8 +15,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-using Key = ckdb::Key;
-using KeySet = ckdb::KeySet;
 #endif
 
 #define ELEKTRA_CRYPTO_BOTAN_KEYSIZE (32)

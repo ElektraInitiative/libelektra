@@ -12,16 +12,16 @@
 
 #include <kdbplugin.h>
 
-using ckdb::Key;
-using ckdb::KeySet;
-using ckdb::Plugin;
+using ::Key;
+using ::KeySet;
+using ::Plugin;
 
 extern "C" {
 
-int elektraYamlcppGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraYamlcppSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraYamlcppGet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
+int elektraYamlcppSet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
+::Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 } // end extern "C"
 

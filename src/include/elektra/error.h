@@ -14,7 +14,7 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-#define Key ckdb::Key
+#define Key ::Key
 extern "C" {
 #endif
 

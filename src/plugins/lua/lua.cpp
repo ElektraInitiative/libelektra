@@ -32,7 +32,7 @@ using namespace ckdb;
 #define LUA_OK 0
 #endif
 
-static void Lua_fromSWIG (lua_State * L, ckdb::Key * key)
+static void Lua_fromSWIG (lua_State * L, ::Key * key)
 {
 	swig_type_info * ti = SWIG_TypeQuery (L, "kdb::Key *");
 	if (key == NULL || ti == NULL)
@@ -41,7 +41,7 @@ static void Lua_fromSWIG (lua_State * L, ckdb::Key * key)
 		SWIG_NewPointerObj (L, new kdb::Key (key), ti, 0);
 }
 
-static void Lua_fromSWIG (lua_State * L, ckdb::KeySet * keyset)
+static void Lua_fromSWIG (lua_State * L, ::KeySet * keyset)
 {
 	swig_type_info * ti = SWIG_TypeQuery (L, "kdb::KeySet *");
 	if (keyset == NULL || ti == NULL)
@@ -71,7 +71,7 @@ static int Lua_Require (lua_State * L, const char * name)
 	return status;
 }
 
-static int Lua_CallFunction_Int (lua_State * L, int nargs, ckdb::Key * errorKey)
+static int Lua_CallFunction_Int (lua_State * L, int nargs, ::Key * errorKey)
 {
 	int ret = -1;
 	if (lua_pcall (L, nargs, 1, 0) != LUA_OK)
@@ -86,7 +86,7 @@ static int Lua_CallFunction_Int (lua_State * L, int nargs, ckdb::Key * errorKey)
 	return ret;
 }
 
-static int Lua_CallFunction_Helper1 (lua_State * L, const char * funcName, ckdb::Key * errorKey)
+static int Lua_CallFunction_Helper1 (lua_State * L, const char * funcName, ::Key * errorKey)
 {
 	int ret = 0;
 	int top = lua_gettop (L);
@@ -100,7 +100,7 @@ static int Lua_CallFunction_Helper1 (lua_State * L, const char * funcName, ckdb:
 	return ret;
 }
 
-static int Lua_CallFunction_Helper2 (lua_State * L, const char * funcName, ckdb::KeySet * returned, ckdb::Key * parentKey)
+static int Lua_CallFunction_Helper2 (lua_State * L, const char * funcName, ::KeySet * returned, ::Key * parentKey)
 {
 	int ret = 0;
 	int top = lua_gettop (L);
@@ -126,7 +126,7 @@ static void * Lua_alloc (void * ud ELEKTRA_UNUSED, void * ptr, size_t osize ELEK
 	return (elektraRealloc (&ptr, nsize) < 0) ? NULL : ptr;
 }
 
-int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
+int elektraLuaOpen (::Plugin * handle, ::Key * errorKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 
@@ -175,7 +175,7 @@ error:
 	return -1;
 }
 
-int elektraLuaClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
+int elektraLuaClose (::Plugin * handle, ::Key * errorKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
 	if (data == NULL) return 0;
@@ -188,7 +188,7 @@ int elektraLuaClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	return ret;
 }
 
-int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraLuaGet (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 #define _MODULE_CONFIG_PATH "system/elektra/modules/lua"
 	if (!strcmp (keyName (parentKey), _MODULE_CONFIG_PATH))
@@ -212,21 +212,21 @@ int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * p
 	return 0;
 }
 
-int elektraLuaSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraLuaSet (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
 	if (data != NULL) return Lua_CallFunction_Helper2 (data->L, "elektraSet", returned, parentKey);
 	return 0;
 }
 
-int elektraLuaError (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraLuaError (::Plugin * handle, ::KeySet * returned, ::Key * parentKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
 	if (data != NULL) return Lua_CallFunction_Helper2 (data->L, "elektraError", returned, parentKey);
 	return 0;
 }
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
+::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("lua",

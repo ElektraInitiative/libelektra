@@ -427,7 +427,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec con
 	// read plugin variants via genconf
 	try
 	{
-		auto funcGenconf = reinterpret_cast<void (*) (ckdb::KeySet *, ckdb::Key *)> (plugin->getSymbol ("genconf"));
+		auto funcGenconf = reinterpret_cast<void (*) (::KeySet *, ::Key *)> (plugin->getSymbol ("genconf"));
 		funcGenconf (ksGenconf.getKeySet (), 0);
 	}
 	catch (kdb::tools::MissingSymbol const & e)
