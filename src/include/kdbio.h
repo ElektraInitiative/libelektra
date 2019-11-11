@@ -13,8 +13,6 @@
 #include "kdb.h"
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -618,7 +616,6 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding);
 ElektraIoInterface * elektraIoGetBinding (KDB * kdb);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

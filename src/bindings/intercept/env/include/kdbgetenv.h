@@ -17,8 +17,7 @@
 #define KDB_GETENV_VERSION "0"
 
 #ifdef __cplusplus
-namespace ckdb
-{
+
 extern "C" {
 #endif
 
@@ -79,7 +78,6 @@ void elektraClose ();
 
 
 #ifdef __cplusplus
-}
 }
 #endif
 

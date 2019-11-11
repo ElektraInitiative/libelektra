@@ -5,8 +5,6 @@
 #include <kdbplugin.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -47,7 +45,6 @@ void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * lis
 int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, KeySet * parameters);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

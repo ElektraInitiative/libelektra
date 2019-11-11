@@ -77,8 +77,6 @@
  */
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -206,7 +204,6 @@ int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, Elektr
 
 
 #ifdef __cplusplus
-}
 }
 #endif
 

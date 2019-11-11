@@ -11,8 +11,6 @@
 #include "kdbio.h"
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -207,7 +205,6 @@ typedef struct _ElektraIoInterface
 } _ElektraIoInterface;
 
 #ifdef __cplusplus
-}
 }
 #endif
 

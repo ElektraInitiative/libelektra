@@ -66,8 +66,6 @@ typedef ssize_t (*output) (const KeySet * ks, FILE * stream, option_t options);
 #ifndef DYN_LINK
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -86,7 +84,6 @@ int keyOutput (const Key * key, FILE * stream, option_t options);
 int keyGenerate (const Key * key, FILE * stream, option_t options);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

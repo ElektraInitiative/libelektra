@@ -85,7 +85,6 @@ enum
 
 
 #ifdef __cplusplus
-namespace ckdb {
 extern "C" {
 #endif
 
@@ -236,7 +235,6 @@ Key *ksLookup(KeySet *ks, Key *k, option_t options);
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

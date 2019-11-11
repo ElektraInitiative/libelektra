@@ -5,8 +5,6 @@
 #include <kdbtypes.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -64,7 +62,6 @@ char * elektraLongDoubleToString (kdb_long_double_t value);
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 #ifdef __cplusplus
-}
 }
 #endif
 

@@ -13,8 +13,6 @@
 #include "kdbplugin.h"
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -29,7 +27,6 @@ extern "C" {
 typedef void (*ElektraIoPluginSetBinding) (Plugin * plugin, KeySet * parameters);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

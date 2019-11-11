@@ -91,8 +91,6 @@ typedef enum
 #define ELEKTRA_PLUGIN_STATUS_CACHE_HIT 2
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -110,7 +108,6 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
 
 #ifdef __cplusplus
-}
 }
 #endif
 

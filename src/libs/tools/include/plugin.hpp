@@ -18,10 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace ckdb
-{
 typedef struct _Plugin Plugin;
-}
 
 namespace kdb
 {

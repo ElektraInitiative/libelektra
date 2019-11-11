@@ -21,8 +21,6 @@
 #include <kdbproposal.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -31,7 +29,6 @@ extern "C" {
 ssize_t keySetStringF (Key * key, const char * format, ...);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

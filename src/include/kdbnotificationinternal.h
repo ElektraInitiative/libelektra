@@ -18,8 +18,6 @@
 #include "kdbplugin.h"
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -151,7 +149,6 @@ struct _ElektraNotificationCallbackContext
 };
 
 #ifdef __cplusplus
-}
 }
 #endif
 

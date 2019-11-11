@@ -65,9 +65,6 @@ using namespace std;
 #endif
 #endif
 
-namespace ckdb
-{
-
 extern "C" {
 Key * elektraParentKey;
 KeySet * elektraConfig;
@@ -747,4 +744,3 @@ extern "C" char * secure_getenv (const char * name) // throw ()
 	elektraUnlockMutex ();
 	return ret;
 }
-} // namespace ckdb

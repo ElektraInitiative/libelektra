@@ -10,10 +10,7 @@
 
 extern "C" {
 
-namespace ckdb
-{
 ssize_t keySetRaw (::Key * key, const void * newBinary, size_t dataSize);
-}
 
 int elektraDumpGet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);
 int elektraDumpSet (::Plugin * handle, ::KeySet * ks, ::Key * parentKey);

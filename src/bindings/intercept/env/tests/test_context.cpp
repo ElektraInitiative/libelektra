@@ -10,10 +10,8 @@
 #include <gtest/gtest.h>
 #include <kdbgetenv.h>
 
-namespace ckdb
-{
+
 Key * elektraLookupWithContext (std::string name);
-}
 
 
 TEST (Context, Exist)
@@ -49,10 +47,7 @@ TEST (Context, ExistWithContextCascading)
 	EXPECT_EQ (k, f);
 }
 
-namespace ckdb
-{
 void addLayers ();
-}
 
 TEST (Context, ExistWithContextOverrideCascading)
 {

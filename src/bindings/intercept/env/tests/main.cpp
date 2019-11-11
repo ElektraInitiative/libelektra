@@ -8,14 +8,11 @@
 
 #include <iostream>
 
-namespace ckdb
-{
 extern "C" {
 extern ::KeySet * elektraDocu;
 extern std::ostream * elektraLog;
 }
 void elektraSingleCleanup ();
-} // namespace ckdb
 
 int main (int argc, char ** argv)
 {

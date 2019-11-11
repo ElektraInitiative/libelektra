@@ -13,8 +13,6 @@
 #include <kdbplugin.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -26,7 +24,6 @@ int elektraModulesClose (KeySet * modules, Key * error);
 
 
 #ifdef __cplusplus
-}
 }
 #endif
 

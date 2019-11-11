@@ -63,8 +63,6 @@
 
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 

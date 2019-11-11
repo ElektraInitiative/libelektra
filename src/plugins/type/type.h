@@ -18,8 +18,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-namespace ckdb
-{
 #endif
 
 typedef struct _Type Type;
@@ -49,7 +47,6 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #ifdef __cplusplus
-}
 };
 #endif
 

@@ -5,8 +5,6 @@
 #include <kdbplugin.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -50,7 +48,6 @@ void elektraPluginProcessSetData (ElektraPluginProcess *, void *);
 void * elektraPluginProcessGetData (const ElektraPluginProcess *);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

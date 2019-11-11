@@ -11,10 +11,7 @@
 #include <kdbconfig.h>
 #include <kdbgetenv.h>
 
-namespace ckdb
-{
 extern pthread_mutex_t elektraGetEnvMutex;
-}
 
 TEST (GetEnv, SimpleFork)
 {

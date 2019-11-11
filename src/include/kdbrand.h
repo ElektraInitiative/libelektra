@@ -11,8 +11,6 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -27,7 +25,6 @@ extern int32_t elektraRandBenchmarkInitSeed;
 int32_t elektraRandGetInitSeed (void);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

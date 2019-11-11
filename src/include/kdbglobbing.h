@@ -4,8 +4,6 @@
 #include <kdb.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -15,7 +13,6 @@ int elektraKeyGlob (const Key * key, const char * pattern);
 int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

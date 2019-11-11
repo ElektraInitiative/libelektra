@@ -14,8 +14,6 @@
 #include "kdb.h"
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -62,7 +60,6 @@ char * elektraMetaArrayToString (const Key *, const char *, const char *);
 int elektraSortTopology (KeySet *, Key **);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

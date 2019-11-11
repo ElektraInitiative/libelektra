@@ -13,8 +13,6 @@
 #include <kdb.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -22,7 +20,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

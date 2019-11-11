@@ -39,10 +39,8 @@ std::ofstream data (csvfilename);
 
 
 // from libgetenv
-namespace ckdb
-{
+
 char * elektraBootstrapGetEnv (const char * name);
-}
 
 
 // very fast benchmarks without any if:

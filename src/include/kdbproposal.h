@@ -14,8 +14,6 @@
 #include <kdb.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -27,7 +25,6 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key);
 Key * ksPopAtCursor (KeySet * ks, cursor_t c);
 
 #ifdef __cplusplus
-}
 }
 #endif
 

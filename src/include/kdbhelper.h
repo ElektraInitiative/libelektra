@@ -19,8 +19,6 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
-namespace ckdb
-{
 extern "C" {
 #endif
 
@@ -67,7 +65,6 @@ enum elektraLookupOptions
 
 
 #ifdef __cplusplus
-}
 }
 #endif
 
