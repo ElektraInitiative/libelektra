@@ -3,7 +3,6 @@ use crate::{KeySet, StringKey, WriteableKey};
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use {KDBError::*, LogicalError::*, PermanentError::*, ResourceError::*, ValidationError::*};
 
 /// General methods to access the Key database.
 /// For example usage see [the Readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/rust).
@@ -29,7 +28,7 @@ impl KDB {
         let kdb_ptr = unsafe { elektra_sys::kdbOpen(key.as_ptr()) };
 
         if kdb_ptr.is_null() {
-            Err(map_kdb_error(&key))
+            Err(KDBError::new(key.duplicate()))
         } else {
             Ok(KDB {
                 ptr: NonNull::new(kdb_ptr).unwrap(),
@@ -55,7 +54,7 @@ impl KDB {
         } else if ret_val == 0 {
             Ok(false)
         } else {
-            Err(map_kdb_error(key))
+            Err(KDBError::new(key.duplicate()))
         }
     }
 
@@ -77,7 +76,7 @@ impl KDB {
         } else if ret_val == 0 {
             Ok(false)
         } else {
-            Err(map_kdb_error(key))
+            Err(KDBError::new(key.duplicate()))
         }
     }
 
@@ -97,7 +96,7 @@ impl KDB {
         } else if ret_val == 1 {
             Ok(false)
         } else {
-            Err(map_kdb_error(key))
+            Err(KDBError::new(key.duplicate()))
         }
     }
     /// Returns the raw pointer of the KDB object.
@@ -115,60 +114,98 @@ impl AsRef<elektra_sys::KDB> for KDB {
         unsafe { self.ptr.as_ref() }
     }
 }
-const ELEKTRA_ERROR_RESOURCE: &str = "C01100";
+
+const ELEKTRA_ERROR_PERMANENT: &str = "C01";
+const ELEKTRA_ERROR_RESOURCE: &str = "C011";
 const ELEKTRA_ERROR_OUT_OF_MEMORY: &str = "C01110";
+const ELEKTRA_ERROR_INSTALLATION: &str = "C012";
+const ELEKTRA_ERROR_LOGICAL: &str = "C013";
 const ELEKTRA_ERROR_INTERNAL: &str = "C01310";
-const ELEKTRA_ERROR_INSTALLATION: &str = "C01200";
 const ELEKTRA_ERROR_INTERFACE: &str = "C01320";
 const ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR: &str = "C01330";
-const ELEKTRA_ERROR_CONFLICTING_STATE: &str = "C02000";
+const ELEKTRA_ERROR_CONFLICTING_STATE: &str = "C02";
+const ELEKTRA_ERROR_VALIDATION: &str = "C03";
 const ELEKTRA_ERROR_VALIDATION_SYNTACTIC: &str = "C03100";
 const ELEKTRA_ERROR_VALIDATION_SEMANTIC: &str = "C03200";
 
+/// Represents the failure of a KDB operation.
+/// Refer to the [error codes doc](https://master.libelektra.org/doc/decisions/error_codes.md#decision) to see how the errors relate to each other.
+///
+/// Various `is_` methods are provided to find out which error occurred.
+///
+/// # Examples
+/// ```
+/// # use elektra::{KDBError, KeyBuilder, StringKey, WriteableKey};
+/// # fn main() {
+/// # let error_key = KeyBuilder::new_empty().meta("error/number", "C03100").unwrap().build();
+/// # let kdb_error = KDBError::new(error_key);
+/// // If we are dealing with a Validation Syntactic error, both is_syntactic
+/// // and is_validation will return true
+/// assert!(kdb_error.is_syntactic() && kdb_error.is_validation());
+/// # }
+/// ```
 #[derive(Debug)]
-pub enum KDBError<'a> {
-    Permanent(PermanentError<'a>),
-    ConflictingState(KDBErrorWrapper<'a>),
-    Validation(ValidationError<'a>),
-}
-
-#[derive(Debug)]
-pub enum PermanentError<'a> {
-    Resource(ResourceError<'a>),
-    Logical(LogicalError<'a>),
-    Installation(KDBErrorWrapper<'a>),
-}
-
-#[derive(Debug)]
-pub enum LogicalError<'a> {
-    Internal(KDBErrorWrapper<'a>),
-    Interface(KDBErrorWrapper<'a>),
-    PluginMisbehavior(KDBErrorWrapper<'a>),
-}
-
-#[derive(Debug)]
-pub enum ResourceError<'a> {
-    GeneralResourceError(KDBErrorWrapper<'a>),
-    OutOfMemory(KDBErrorWrapper<'a>),
-}
-
-#[derive(Debug)]
-pub enum ValidationError<'a> {
-    Syntactic(KDBErrorWrapper<'a>),
-    Semantic(KDBErrorWrapper<'a>),
-}
-
-/// Wraps a key that contains error metakeys
-#[derive(Debug)]
-pub struct KDBErrorWrapper<'a> {
+pub struct KDBError<'a> {
     error_key: StringKey<'a>,
 }
 
-impl<'a> KDBErrorWrapper<'a> {
-    /// Constructs a new KDBErrorWrapper from a StringKey.
+impl<'a> KDBError<'a> {
+    /// Constructs a new KDBError from a StringKey.
     /// Only pass keys where the metakeys error/* are set.
-    pub fn new(error_key: StringKey) -> KDBErrorWrapper {
-        KDBErrorWrapper { error_key }
+    pub fn new(error_key: StringKey) -> KDBError {
+        KDBError { error_key }
+    }
+
+    fn is_error(&self, error_str: &str) -> bool {
+        self.number().starts_with(error_str)
+    }
+
+    pub fn is_permanent(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_PERMANENT)
+    }
+
+    pub fn is_resource(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_RESOURCE)
+    }
+
+    pub fn is_out_of_memory(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_OUT_OF_MEMORY)
+    }
+
+    pub fn is_installation(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_INSTALLATION)
+    }
+
+    pub fn is_logical(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_LOGICAL)
+    }
+
+    pub fn is_internal(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_INTERNAL)
+    }
+
+    pub fn is_interface(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_INTERFACE)
+    }
+
+    pub fn is_plugin_misbehavior(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR)
+    }
+
+    pub fn is_conflicting_state(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_CONFLICTING_STATE)
+    }
+
+    pub fn is_validation(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_VALIDATION)
+    }
+
+    pub fn is_syntactic(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_VALIDATION_SYNTACTIC)
+    }
+
+    pub fn is_semantic(&self) -> bool {
+        self.is_error(ELEKTRA_ERROR_VALIDATION_SEMANTIC)
     }
 
     /// Returns the error number or an empty string if unavailable.
@@ -221,114 +258,209 @@ impl<'a> KDBErrorWrapper<'a> {
     }
 }
 
-// Display + Error impl for all variants. Needed such that an error can be catched an printed, instead of
-// matched all the way down, since only KDBErrorWrapper implements the actual message conversion.
-
 impl<'a> Display for KDBError<'a> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            KDBError::ConflictingState(err) => write!(f, "{}", err),
-            KDBError::Permanent(err) => write!(f, "{}", err),
-            KDBError::Validation(err) => write!(f, "{}", err),
-        }
-    }
-}
-
-impl<'a> Error for KDBError<'a> {}
-
-impl<'a> Display for PermanentError<'a> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            PermanentError::Installation(err) => write!(f, "{}", err),
-            PermanentError::Logical(err) => write!(f, "{}", err),
-            PermanentError::Resource(err) => write!(f, "{}", err),
-        }
-    }
-}
-
-impl<'a> Error for PermanentError<'a> {}
-
-impl<'a> Display for ResourceError<'a> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            ResourceError::GeneralResourceError(err) => write!(f, "{}", err),
-            ResourceError::OutOfMemory(err) => write!(f, "{}", err),
-        }
-    }
-}
-
-impl<'a> Error for ResourceError<'a> {}
-
-impl<'a> Display for LogicalError<'a> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            LogicalError::Interface(err) => write!(f, "{}", err),
-            LogicalError::Internal(err) => write!(f, "{}", err),
-            LogicalError::PluginMisbehavior(err) => write!(f, "{}", err),
-        }
-    }
-}
-
-impl<'a> Error for LogicalError<'a> {}
-
-impl<'a> Display for ValidationError<'a> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            ValidationError::Semantic(err) => write!(f, "{}", err),
-            ValidationError::Syntactic(err) => write!(f, "{}", err),
-        }
-    }
-}
-
-impl<'a> Error for ValidationError<'a> {}
-
-impl<'a> Display for KDBErrorWrapper<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self.to_error_message())
     }
 }
 
-impl<'a> Error for KDBErrorWrapper<'a> {}
+impl<'a> Error for KDBError<'a> {}
 
-fn map_kdb_error<'a, 'b>(error_key: &'a StringKey) -> KDBError<'b> {
-    let err_num_key_res = error_key.meta("error/number");
-    if let Ok(err_num_key) = err_num_key_res {
-        let err_wrapper = KDBErrorWrapper::new(error_key.duplicate());
+#[cfg(test)]
+mod error_tests {
+    use super::*;
+    use crate::KeyBuilder;
 
-        match err_num_key.value().to_owned().to_string().as_str() {
-            ELEKTRA_ERROR_RESOURCE => {
-                return Permanent(Resource(GeneralResourceError(err_wrapper)));
-            }
-            ELEKTRA_ERROR_OUT_OF_MEMORY => {
-                return Permanent(Resource(OutOfMemory(err_wrapper)));
-            }
-            ELEKTRA_ERROR_INSTALLATION => {
-                return Permanent(Installation(err_wrapper));
-            }
-            ELEKTRA_ERROR_INTERNAL => {
-                return Permanent(Logical(Internal(err_wrapper)));
-            }
-            ELEKTRA_ERROR_INTERFACE => {
-                return Permanent(Logical(Interface(err_wrapper)));
-            }
-            ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR => {
-                return Permanent(Logical(PluginMisbehavior(err_wrapper)));
-            }
-            ELEKTRA_ERROR_CONFLICTING_STATE => {
-                return ConflictingState(err_wrapper);
-            }
-            ELEKTRA_ERROR_VALIDATION_SYNTACTIC => {
-                return Validation(Syntactic(err_wrapper));
-            }
-            ELEKTRA_ERROR_VALIDATION_SEMANTIC => {
-                return Validation(Semantic(err_wrapper));
-            }
-            _ => {
-                panic!("Unknown error code {}. Error Message: {}", err_num_key.value(), err_wrapper.to_error_message());
-            }
+    #[rustfmt::skip]
+    const ERROR_CODES: [&str; 12] = [
+        ELEKTRA_ERROR_PERMANENT,
+            ELEKTRA_ERROR_RESOURCE,
+                ELEKTRA_ERROR_OUT_OF_MEMORY,
+            ELEKTRA_ERROR_INSTALLATION,
+            ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_INTERNAL,
+                ELEKTRA_ERROR_INTERFACE,
+                ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR,
+        ELEKTRA_ERROR_CONFLICTING_STATE,
+        ELEKTRA_ERROR_VALIDATION,
+            ELEKTRA_ERROR_VALIDATION_SYNTACTIC,
+            ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+    ];
+
+    fn test_error(kdb_error: &KDBError, error_codes: &[&str]) {
+        for err_code in error_codes {
+            println!("Should succeed {}", err_code);
+            assert!(kdb_error.is_error(err_code));
+        }
+
+        for err_code in ERROR_CODES.iter().filter(|e| !error_codes.contains(e)) {
+            println!("Should not succeed {}", err_code);
+            assert!(!kdb_error.is_error(err_code));
         }
     }
-    panic!("No error/number metakey is available.")
+
+    #[test]
+    fn kdb_test_err_out_of_memory() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_OUT_OF_MEMORY)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_RESOURCE,
+                ELEKTRA_ERROR_OUT_OF_MEMORY,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_resource() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_RESOURCE)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_PERMANENT, ELEKTRA_ERROR_RESOURCE],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_permanent() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_PERMANENT)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(&kdb_error, &[ELEKTRA_ERROR_PERMANENT]);
+    }
+
+    #[test]
+    fn kdb_test_err_installation() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_INSTALLATION)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_PERMANENT, ELEKTRA_ERROR_INSTALLATION],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_logical() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_LOGICAL)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_PERMANENT, ELEKTRA_ERROR_LOGICAL],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_internal() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_INTERNAL)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_INTERNAL,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_interface() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_INTERFACE)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_INTERFACE,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_plugin_misbehavior() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[
+                ELEKTRA_ERROR_PERMANENT,
+                ELEKTRA_ERROR_LOGICAL,
+                ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR,
+            ],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_conflicting_state() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_CONFLICTING_STATE)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(&kdb_error, &[ELEKTRA_ERROR_CONFLICTING_STATE]);
+    }
+
+    #[test]
+    fn kdb_test_err_validation() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_VALIDATION)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(&kdb_error, &[ELEKTRA_ERROR_VALIDATION]);
+    }
+
+    #[test]
+    fn kdb_test_err_validation_syntactic() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_VALIDATION_SYNTACTIC)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_VALIDATION, ELEKTRA_ERROR_VALIDATION_SYNTACTIC],
+        );
+    }
+
+    #[test]
+    fn kdb_test_err_validation_semantic() {
+        let error_key = KeyBuilder::new_empty()
+            .meta("error/number", ELEKTRA_ERROR_VALIDATION_SEMANTIC)
+            .unwrap()
+            .build();
+        let kdb_error = KDBError::new(error_key);
+        test_error(
+            &kdb_error,
+            &[ELEKTRA_ERROR_VALIDATION, ELEKTRA_ERROR_VALIDATION_SEMANTIC],
+        );
+    }
 }
 
 #[cfg(test)]
@@ -343,8 +475,24 @@ mod test {
     const KEY_1_VALUE: &str = "key_value_1";
     const KEY_2_VALUE: &str = "key_value_2";
 
-    fn create_test_keys<'a>() -> (StringKey<'a>, StringKey<'a>, StringKey<'a>) {
-        let parent_key = StringKey::new(PARENT_KEY).unwrap_or_else(|e| panic!("{}", e));
+    #[test]
+    fn test_kdb() {
+        set_kdb();
+        get_kdb();
+        remove_test_keys();
+    }
+
+    fn get_parent_key<'a>() -> StringKey<'a> {
+        StringKey::new(PARENT_KEY).unwrap_or_else(|e| panic!("{}", e))
+    }
+
+    fn set_kdb() {
+        let mut parent_key = get_parent_key();
+        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut ks = KeySet::with_capacity(10);
+        kdb.get(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+
         let key1: StringKey = KeyBuilder::new(KEY_1_NAME)
             .unwrap()
             .value(KEY_1_VALUE)
@@ -353,48 +501,53 @@ mod test {
             .unwrap()
             .value(KEY_2_VALUE)
             .build();
-        (parent_key, key1, key2)
+
+        ks.append_key(key1);
+        ks.append_key(key2);
+        let set_res = kdb
+            .set(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(set_res, true);
     }
 
-    #[test]
-    fn can_use_kdb() {
-        let (mut parent_key, key1, key2) = create_test_keys();
-        {
-            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
-            let mut ks = KeySet::with_capacity(10);
-            kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
-            ks.append_key(key1);
-            ks.append_key(key2);
-            kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
-        }
-        {
-            let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
-            let mut ks = KeySet::with_capacity(2);
-            kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
-            let key1_lookup = ks
-                .lookup_by_name(KEY_1_NAME, Default::default())
-                .unwrap()
-                .duplicate();
-            assert_eq!(key1_lookup.value(), KEY_1_VALUE);
+    fn get_kdb() {
+        let mut parent_key = get_parent_key();
+        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut ks = KeySet::with_capacity(2);
+        let get_res = kdb
+            .get(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(get_res, true);
 
-            let key2_lookup = ks
-                .lookup_by_name(KEY_2_NAME, Default::default())
-                .unwrap()
-                .duplicate();
-            assert_eq!(key2_lookup.value(), KEY_2_VALUE);
-        }
-        remove_test_keys();
+        let key1_lookup = ks
+            .lookup_by_name(KEY_1_NAME, Default::default())
+            .unwrap()
+            .duplicate();
+        assert_eq!(key1_lookup.value(), KEY_1_VALUE);
+
+        let key2_lookup = ks
+            .lookup_by_name(KEY_2_NAME, Default::default())
+            .unwrap()
+            .duplicate();
+        assert_eq!(key2_lookup.value(), KEY_2_VALUE);
     }
 
     fn remove_test_keys() {
-        let (mut parent_key, _, _) = create_test_keys();
+        let mut parent_key = get_parent_key();
         let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
-        kdb.get(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
+        let get_res = kdb
+            .get(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(get_res, true);
+
         ks.lookup_by_name(KEY_1_NAME, LookupOption::KDB_O_POP)
             .unwrap();
         ks.lookup_by_name(KEY_2_NAME, LookupOption::KDB_O_POP)
             .unwrap();
-        kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|e| panic!("{}", e));
+        let set_res = kdb
+            .set(&mut ks, &mut parent_key)
+            .unwrap_or_else(|e| panic!("{}", e));
+        assert_eq!(set_res, true);
     }
 }

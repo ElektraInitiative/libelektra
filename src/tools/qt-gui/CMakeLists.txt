@@ -73,7 +73,6 @@ else ()
 			${UIS}
 			${RSCS}
 			${TRS})
-	add_dependencies (qt-gui kdberrors_generated elektra_error_codes_generated)
 
 	target_link_libraries (qt-gui
 			       Qt5::Quick

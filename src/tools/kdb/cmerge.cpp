@@ -14,6 +14,7 @@
 #include <keysetio.hpp>
 #include <string>
 
+using ckdb::keyNew;
 
 CMergeCommand::CMergeCommand ()
 {

@@ -86,7 +86,6 @@ libelektra_0.8 {
 	keySetBaseName;
 	keySetBinary;
 	keySetMeta;
-	keyMeta;
 	keySetName;
 	keySetString;
 	keyString;
@@ -132,6 +131,31 @@ libelektra_0.8 {
 	elektraKeySetName;
 };
 
+libelektra_1.0 {
+	# kdberrors.h
+	ELEKTRA_ERROR_RESOURCE;
+	ELEKTRA_ERROR_OUT_OF_MEMORY;
+	ELEKTRA_ERROR_INSTALLATION;
+	ELEKTRA_ERROR_INTERNAL;
+	ELEKTRA_ERROR_INTERFACE;
+	ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR;
+	ELEKTRA_ERROR_CONFLICTING_STATE;
+	ELEKTRA_ERROR_VALIDATION_SYNTACTIC;
+	ELEKTRA_ERROR_VALIDATION_SEMANTIC;
+
+	ELEKTRA_WARNING_RESOURCE;
+	ELEKTRA_WARNING_OUT_OF_MEMORY;
+	ELEKTRA_WARNING_INSTALLATION;
+	ELEKTRA_WARNING_INTERNAL;
+	ELEKTRA_WARNING_INTERFACE;
+	ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR;
+	ELEKTRA_WARNING_CONFLICTING_STATE;
+	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
+	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
+
+	keyMeta;
+};
+
 libelektraprivate_1.0 {
 	# kdbprivate.h
 	elektraAbort;
@@ -170,4 +194,29 @@ libelektraprivate_1.0 {
 	# kdbrand.h
 	elektraRand;
 	elektraRandGetInitSeed;
+
+	#kdberrors.h
+	elektraSetErrorRESOURCE;
+	elektraSetErrorOUT_OF_MEMORY;
+	elektraSetErrorINSTALLATION;
+	elektraSetErrorINTERNAL;
+	elektraSetErrorINTERFACE;
+	elektraSetErrorPLUGIN_MISBEHAVIOR;
+	elektraSetErrorCONFLICTING_STATE;
+	elektraSetErrorVALIDATION_SYNTACTIC;
+	elektraSetErrorVALIDATION_SEMANTIC;
+
+	elektraAddWarningRESOURCE;
+	elektraAddWarningOUT_OF_MEMORY;
+	elektraAddWarningINSTALLATION;
+	elektraAddWarningINTERNAL;
+	elektraAddWarningINTERFACE;
+	elektraAddWarningPLUGIN_MISBEHAVIOR;
+	elektraAddWarningCONFLICTING_STATE;
+	elektraAddWarningVALIDATION_SYNTACTIC;
+	elektraAddWarningVALIDATION_SEMANTIC;
+
+	elektraErrorSpecification;
+	elektraTriggerError;
+	elektraTriggerWarnings;
 };

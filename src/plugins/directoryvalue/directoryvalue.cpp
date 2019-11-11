@@ -11,6 +11,7 @@
 
 #include <kdbhelper.h>
 
+using ckdb::keyNew;
 using std::exception;
 using std::range_error;
 

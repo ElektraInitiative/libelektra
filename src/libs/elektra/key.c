@@ -73,24 +73,6 @@
  * ordering or different Models of your configuration.
  */
 
-
-/*
- * @internal
- *
- * Allocates and initializes a key
- * @returns 0 if allocation did not work, the key otherwise
- */
-static Key * elektraKeyMalloc (void)
-{
-	Key * key = (Key *) elektraMalloc (sizeof (Key));
-	if (!key) return 0;
-	key->meta = NULL;
-	keyInit (key);
-
-	return key;
-}
-
-
 /**
  * A practical way to fully create a Key object in one step.
  *
@@ -189,7 +171,7 @@ Key * keyNew (const char * name, ...)
 
 	if (!name)
 	{
-		k = elektraKeyMalloc ();
+		k = elektraCalloc (sizeof (Key));
 	}
 	else
 	{
@@ -211,8 +193,8 @@ Key * keyNew (const char * name, ...)
  */
 Key * keyVNew (const char * name, va_list va)
 {
-	Key * key = elektraKeyMalloc ();
-	if (!key) return 0;
+	Key * key = elektraCalloc (sizeof (Key));
+
 	keyVInit (key, name, va);
 	return key;
 }
@@ -269,11 +251,8 @@ Key * keyDup (const Key * source)
 
 	if (!source) return 0;
 
-	dest = elektraKeyMalloc ();
+	dest = keyNew (0, KEY_END);
 	if (!dest) return 0;
-
-	// Will be overwritten by keyCopy
-	ksDel (dest->meta);
 
 	/* Copy the struct data */
 	*dest = *source;
@@ -466,7 +445,7 @@ int keyDel (Key * key)
 
 	rc = keyClear (key);
 
-	if (key->meta) ksDel (key->meta);
+	ksDel (key->meta);
 
 	if (!keyInMmap)
 	{
@@ -522,7 +501,6 @@ int keyClear (Key * key)
 	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 
 	ksDel (key->meta);
-	key->meta = NULL;
 
 	keyInit (key);
 

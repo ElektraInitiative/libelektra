@@ -1,8 +1,6 @@
 extern crate elektra;
 
-use elektra::{
-    KDBError, KeyBuilder, KeySet, LookupOption, StringKey, ValidationError, WriteableKey, KDB,
-};
+use elektra::{KeyBuilder, KeySet, LookupOption, StringKey, WriteableKey, KDB};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Open a KDB session
@@ -17,7 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // We can append a new key we want to store in the key database.
     let new_key: StringKey = KeyBuilder::new("user/test/mycolor")?.value("#fff").build();
-    ks.append_key(new_key)?;
+    ks.append_key(new_key);
 
     // Lookup a key in the keyset and modify it
     // As an example, we're modifying the same key we just added
@@ -28,16 +26,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Store the modified keyset
+    let set_res = kdb.set(&mut ks, &mut parent_key);
+
     // If we don't care about specific errors and just want to print
     // a nice error message, we could do
-    // kdb.set(&mut ks, &mut parent_key).unwrap_or_else(|err| panic!("{}", err));
+    // set_res.unwrap_or_else(|err| panic!("{}", err));
 
     // Instead, you may want to match on specific error types
-    if let Err(KDBError::Validation(ValidationError::Syntactic(val_err))) =
-        kdb.set(&mut ks, &mut parent_key)
-    {
-        panic!("{}", val_err);
+    match set_res {
+        Ok(success) => {
+            if success {
+                println!("Successfully set new key in KDB.");
+            } else {
+                println!("No changes were made to the KDB.");
+            }
+            Ok(())
+        }
+        Err(kdb_error) => {
+            if kdb_error.is_semantic() {
+                // Handle the semantic validation error
+                Ok(())
+            } else {
+                // Otherwise propagate the error up
+                Err(Box::new(kdb_error))
+            }
+        }
     }
-
-    Ok(())
 }

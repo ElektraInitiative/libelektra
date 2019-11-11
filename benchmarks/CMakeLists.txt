@@ -11,7 +11,6 @@ macro (do_benchmark source)
 	     benchmarks.h
 	     ${source}.c)
 	add_executable (benchmark_${source} ${SOURCES})
-	add_dependencies (benchmark_${source} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (benchmark_${source} elektra-kdb elektra-meta)
 
@@ -34,6 +33,7 @@ endmacro (do_benchmark)
 do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
+do_benchmark (memoryleak)
 
 # exclude storage and KDB benchmark from mingw
 if (NOT WIN32)

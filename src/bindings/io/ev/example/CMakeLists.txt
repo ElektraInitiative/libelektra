@@ -14,7 +14,6 @@ endif ()
 set (example exampleio_ev)
 
 add_executable (${example} ${SOURCES})
-add_dependencies (${example} kdberrors_generated elektra_error_codes_generated)
 
 target_include_directories (${example} SYSTEM PUBLIC ${LIBEV_INCLUDE_DIRS})
 

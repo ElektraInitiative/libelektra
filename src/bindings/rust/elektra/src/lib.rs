@@ -27,4 +27,4 @@ pub use self::readable::ReadableKey;
 pub use self::readonly::ReadOnly;
 pub use self::writable::WriteableKey;
 pub use self::keyset::{KeySet, ReadOnlyStringKeyIter, StringKeyIter, Cursor, LookupOption};
-pub use self::kdb::{KDB, KDBError, KDBErrorWrapper, LogicalError, PermanentError, ResourceError, ValidationError};
+pub use self::kdb::{KDB, KDBError};

@@ -10,7 +10,6 @@
 #define ELEKTRA_H
 
 #include <elektra/error.h>
-#include <elektra/errors.h>
 #include <elektra/types.h>
 #include <kdb.h>
 #include <kdbmacros.h>

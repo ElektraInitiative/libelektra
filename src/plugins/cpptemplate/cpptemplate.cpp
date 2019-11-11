@@ -13,6 +13,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+using ckdb::keyNew;
 using std::exception;
 
 using elektra::CppTemplateDelegate;

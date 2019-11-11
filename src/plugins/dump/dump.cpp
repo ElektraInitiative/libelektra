@@ -8,8 +8,6 @@
 
 #include "dump.hpp"
 
-using namespace ckdb;
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -20,6 +18,8 @@ using namespace ckdb;
 
 #include <kdberrors.h>
 #include <kdblogger.h>
+
+using namespace ckdb;
 
 namespace dump
 {

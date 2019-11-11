@@ -372,21 +372,22 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	gchar const * keypathname = g_variant_get_string (variant, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
-	gelektra_keyset_rewind (ks);
 	GElektraKey * key = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!",
 	       "GSEttings Path: ", (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
-	gelektra_keyset_next (ks);
-	do
+	GElektraKey * item;
+	gssize pos = 0;
+	while ((item = gelektra_keyset_at (ks, pos)) != NULL)
 	{
-		if (gelektra_key_isbeloworsame (key, gelektra_keyset_current (ks)))
+		if (gelektra_key_isbeloworsame (key, item))
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
 			g_settings_backend_changed (user_data, gsettingskeyname, NULL);
 			g_free (gsettingskeyname);
 		}
-	} while (gelektra_keyset_next (ks) != NULL);
+		pos++;
+	}
 	g_variant_unref (variant);
 }
 
