@@ -63,6 +63,19 @@ enum elektraNamespace
 };
 
 /**
+ * Lock options
+ *
+ * @ingroup key
+ * @see keyLock(), keyIsLocked()
+ */
+enum elektraLockOptions
+{
+	KEY_LOCK_NAME=1<<17,  ///< lock the name of a key
+	KEY_LOCK_VALUE=1<<18, ///< lock the value of a key
+	KEY_LOCK_META=1<<19   ///< lock the meta data of a key
+};
+
+/**
  * End of a list of keys.
  *
  * Use this macro to define the end of a variable-length list

@@ -561,23 +561,6 @@ KeySet * ksDeepDup (const KeySet * source);
 
 Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos);
 
-/**
- * @brief Lock options
- *
- * @ingroup proposal
- */
-enum elektraLockOptions
-{
-	KEY_LOCK_NAME = 1 << 17, ///< lock the name of a key
-	KEY_LOCK_VALUE = 1 << 18,
-	KEY_LOCK_META = 1 << 19
-};
-
-// locks a key, is this needed externally?
-int keyLock (Key * key, option_t what);
-
-int elektraKeyLock (Key * key, enum elektraLockOptions what);
-
 ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 
 /*Used for internal memcpy/memmove*/

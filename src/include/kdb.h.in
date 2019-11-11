@@ -63,13 +63,18 @@ enum {
 };
 
 enum {
+	KEY_LOCK_NAME=1<<17,
+	KEY_LOCK_VALUE=1<<18,
+	KEY_LOCK_META=1<<19
+};
+
+enum {
 	KDB_O_NONE=0,
 	KDB_O_DEL=1,
 	KDB_O_POP=1<<1
 };
 
-enum
-{
+enum {
 	KEY_NS_NONE=0,
 	KEY_NS_EMPTY=1,
 	KEY_NS_META=2,
@@ -193,7 +198,8 @@ ssize_t keySetString(Key *key, const char *newString);
 ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
-
+int keyLock (Key * key, option_t what);
+int keyIsLocked (const Key * key, option_t what);
 
 /**************************************
  *

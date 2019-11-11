@@ -296,9 +296,9 @@ void keyVInit (Key * key, const char * name, va_list va)
 			case KEY_EMPTY_NAME:
 				if (action != KEY_FLAGS) flags |= action;
 				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
-				if (test_bit (flags, KEY_LOCK_NAME)) elektraKeyLock (key, KEY_LOCK_NAME);
-				if (test_bit (flags, KEY_LOCK_VALUE)) elektraKeyLock (key, KEY_LOCK_VALUE);
-				if (test_bit (flags, KEY_LOCK_META)) elektraKeyLock (key, KEY_LOCK_META);
+				if (test_bit (flags, KEY_LOCK_NAME)) keyLock (key, KEY_LOCK_NAME);
+				if (test_bit (flags, KEY_LOCK_VALUE)) keyLock (key, KEY_LOCK_VALUE);
+				if (test_bit (flags, KEY_LOCK_META)) keyLock (key, KEY_LOCK_META);
 				break;
 
 			/* deprecated flags */

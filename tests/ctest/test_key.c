@@ -1318,7 +1318,10 @@ static void test_keyLock (void)
 	keyDel (key);
 	key = keyNew (0);
 
+	succeed_if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME, "can lock name");
 	keyLock (key, KEY_LOCK_NAME);
+	succeed_if (keyIsLocked (key, KEY_LOCK_NAME) == 0, "name is locked");
+
 	succeed_if (keySetName (key, "user") == -1, "read only name, not allowed to set");
 	succeed_if (keyAddName (key, "a") == -1, "read only name, not allowed to set");
 	succeed_if (keySetBaseName (key, "a") == -1, "read only name, not allowed to set");
@@ -1327,7 +1330,9 @@ static void test_keyLock (void)
 	keyDel (key);
 	key = keyNew (0);
 
+	succeed_if (keyIsLocked (key, KEY_LOCK_VALUE) == KEY_LOCK_VALUE, "can lock name");
 	keyLock (key, KEY_LOCK_VALUE);
+	succeed_if (keyIsLocked (key, KEY_LOCK_VALUE) == 0, "value is locked");
 
 	succeed_if (keySetString (key, "a") == -1, "read only string, not allowed to set");
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
@@ -1335,7 +1340,9 @@ static void test_keyLock (void)
 	keyDel (key);
 	key = keyNew (0);
 
+	succeed_if (keyIsLocked (key, KEY_LOCK_META) == KEY_LOCK_META, "can lock meta");
 	keyLock (key, KEY_LOCK_META);
+	succeed_if (keyIsLocked (key, KEY_LOCK_META) == 0, "meta is locked");
 
 	succeed_if (keySetMeta (key, "meta", "value") == -1, "read only meta, not allowed to set");
 	succeed_if (keyCopyMeta (key, key2, "meta") == -1, "read only meta, not allowed to set");

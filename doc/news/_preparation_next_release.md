@@ -158,6 +158,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
 - `keyMeta` was added to provide access to a key's underlying KeySet that holds its metadata keys. _(Philipp Gackstatter)_
 - Removed the obsolete `ksLookupByString` and `ksLookupByBinary`, as well as deprecated `KDB_O_*` options. _(Philipp Gackstatter)_
+- Add `keyLock` and `keyIsLocked`. _(Manuel Mausz)_
 
 ### Opts
 
@@ -169,7 +170,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   - `elektraKsToMemArray` was moved to `kdbease.h`,
   - `elektraLookupOptions` was moved to `kdbprivate.h`,
   - `keySetStringF` was moved to `kdbinternal.h`,
-  - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
   - Removed `ksPrev` and `elektraKsPrev`,
   - Removed `elektraRenameKeys` and replaced it with `ksRenameKeys`. _(Philipp Gackstatter)_
 
