@@ -496,7 +496,7 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 {
 	m_model.clear ();
 
-	using namespace ckdb; // for namespaces
+	// for namespaces
 	for (int i = KEY_NS_FIRST; i <= KEY_NS_LAST; ++i)
 	{
 		elektraNamespace ns = static_cast<elektraNamespace> (i);

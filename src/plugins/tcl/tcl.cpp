@@ -21,7 +21,7 @@
 #include <kdberrors.h>
 
 extern "C" {
-using namespace ckdb;
+
 
 int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 {

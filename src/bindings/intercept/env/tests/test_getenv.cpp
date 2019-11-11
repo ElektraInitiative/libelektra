@@ -17,7 +17,7 @@ TEST (GetEnv, NonExist)
 
 TEST (GetEnv, ExistOverride)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	ksAppendKey (elektraConfig, keyNew ("user/elektra/intercept/getenv/override/does-exist", KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
@@ -27,7 +27,7 @@ TEST (GetEnv, ExistOverride)
 
 TEST (GetEnv, ExistOverrideFallback)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	ksAppendKey (elektraConfig, keyNew ("user/env/override/does-exist-fb", KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
@@ -37,7 +37,7 @@ TEST (GetEnv, ExistOverrideFallback)
 
 TEST (GetEnv, ExistEnv)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	setenv ("does-exist", "hello", 1);
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
@@ -47,7 +47,7 @@ TEST (GetEnv, ExistEnv)
 
 TEST (GetEnv, ExistEnvFallback)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	setenv ("does-exist-fb", "hello", 1);
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
@@ -57,7 +57,7 @@ TEST (GetEnv, ExistEnvFallback)
 
 TEST (GetEnv, ExistFallback)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	ksAppendKey (elektraConfig, keyNew ("user/elektra/intercept/getenv/fallback/does-exist", KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
@@ -67,7 +67,7 @@ TEST (GetEnv, ExistFallback)
 
 TEST (GetEnv, ExistFallbackFallback)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	ksAppendKey (elektraConfig, keyNew ("user/env/fallback/does-exist-fb", KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
@@ -77,7 +77,7 @@ TEST (GetEnv, ExistFallbackFallback)
 
 TEST (GetEnv, OpenClose)
 {
-	using namespace ckdb;
+
 	// KeySet *oldElektraConfig = elektraConfig;
 	elektraOpen (nullptr, nullptr);
 	// EXPECT_NE(elektraConfig, oldElektraConfig); // even its a new object, it might point to same address
@@ -92,7 +92,7 @@ TEST (GetEnv, OpenClose)
 
 TEST (GetEnv, OpenCloseFallback)
 {
-	using namespace ckdb;
+
 	// KeySet *oldElektraConfig = elektraConfig;
 	elektraOpen (nullptr, nullptr);
 	// EXPECT_NE(elektraConfig, oldElektraConfig); // even its a new object, it might point to same address
@@ -107,7 +107,7 @@ TEST (GetEnv, OpenCloseFallback)
 
 void elektraPrintConfig ()
 {
-	using namespace ckdb;
+
 	Key * c;
 	ksRewind (elektraConfig);
 	while ((c = ksNext (elektraConfig)))
@@ -121,7 +121,7 @@ TEST (GetEnv, ArgvParam)
 	const char * cargv[] = { "name", "--elektra:does-exist=hello", nullptr };
 	char ** argv = const_cast<char **> (cargv);
 	int argc = 2;
-	using namespace ckdb;
+
 	elektraOpen (&argc, argv);
 	EXPECT_EQ (argc, 1) << "elektra proc not consumed";
 	EXPECT_EQ (argv[0], std::string ("name"));
@@ -143,7 +143,7 @@ TEST (GetEnv, ArgvParamUninvolved)
 				 "--uninvolved", "--not-used",   "-L",	 nullptr };
 	char ** argv = const_cast<char **> (cargv);
 	int argc = 8;
-	using namespace ckdb;
+
 	elektraOpen (&argc, argv);
 	EXPECT_EQ (argc, 7) << "elektra proc not consumed";
 	EXPECT_EQ (argv[0], std::string ("name"));
@@ -167,7 +167,7 @@ TEST (GetEnv, ArgvParamUninvolved)
 
 TEST (GetEnv, NameArgv0)
 {
-	using namespace ckdb;
+
 	int argc = 1;
 	const char * cargv[] = { "path/to/any-name", nullptr };
 	char ** argv = const_cast<char **> (cargv);
@@ -186,7 +186,7 @@ TEST (GetEnv, NameArgv0)
 
 TEST (GetEnv, NameExplicit)
 {
-	using namespace ckdb;
+
 	int argc = 2;
 	const char * cargv[] = { "any-name", "--elektra%name%=other-name" };
 	char ** argv = const_cast<char **> (cargv);

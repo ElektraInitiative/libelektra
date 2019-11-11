@@ -138,7 +138,7 @@ TEST_F (Error, AgainRepeat)
 
 TEST_F (Error, CSimple)
 {
-	using namespace ckdb;
+
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
 	KDB * kdb = kdbOpen (parentKey);
 	KeySet * ks = ksNew (20, KS_END);
@@ -160,7 +160,7 @@ TEST_F (Error, CSimple)
 
 TEST_F (Error, ToWarning)
 {
-	using namespace ckdb;
+
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
 	KDB * kdb = kdbOpen (parentKey);
 	KeySet * ks = ksNew (20, KS_END);
@@ -187,7 +187,7 @@ TEST_F (Error, ToWarning)
 
 TEST_F (Error, Persists)
 {
-	using namespace ckdb;
+
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
 	KDB * kdb = kdbOpen (parentKey);
 	KeySet * ks = ksNew (20, KS_END);

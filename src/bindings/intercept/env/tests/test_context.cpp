@@ -15,7 +15,6 @@ namespace ckdb
 Key * elektraLookupWithContext (std::string name);
 }
 
-using namespace ckdb;
 
 TEST (Context, Exist)
 {
@@ -147,7 +146,7 @@ TEST (Context, ExistWithContextOverrideCascadingWithSlash)
 
 TEST (Context, NameExplicit)
 {
-	using namespace ckdb;
+
 	int argc = 2;
 	const char * cargv[] = { "any-name", "--elektra%name%=other-name", "--elektra%layer%=layer" };
 	char ** argv = const_cast<char **> (cargv);

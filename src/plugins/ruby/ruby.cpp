@@ -34,7 +34,6 @@
 
 #include <stdarg.h>
 
-using namespace ckdb;
 
 typedef struct
 {

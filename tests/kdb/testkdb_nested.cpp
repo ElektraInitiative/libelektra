@@ -93,9 +93,8 @@ TEST_F (Nested, GetSetRoot)
 	ASSERT_EQ (ks2.size (), 1) << "did not get key stored before" << ks;
 }
 
-kdb::KeySet getAll ()
-{
-	using namespace ckdb;
+kdb::KeySet getAll (){
+
 	return
 #include <data_allns.c>
 }

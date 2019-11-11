@@ -11,7 +11,7 @@
 #include <string.h>
 
 #ifdef __cplusplus
-using namespace ckdb;
+
 #endif
 
 #define ELEKTRA_ERROR_CODE_RESOURCE "C01100"

@@ -50,7 +50,7 @@
 #endif
 
 using namespace std;
-using namespace ckdb;
+
 
 #define LOG                                                                                                                                \
 	if (elektraLog) (*elektraLog)
@@ -352,7 +352,7 @@ void addLayersHelper (KeySet * lookupConfig, string prefix)
 
 void addLayers ()
 {
-	using namespace ckdb;
+
 	KeySet * lookupConfig = ksDup (elektraConfig);
 
 	// add fallback config

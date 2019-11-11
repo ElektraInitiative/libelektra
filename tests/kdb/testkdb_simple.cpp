@@ -127,7 +127,7 @@ TEST_F (Simple, InvalidKeysInSet)
 
 kdb::KeySet getAll ()
 {
-	using namespace ckdb;
+
 	return
 #include <data_allns.c>
 }

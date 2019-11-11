@@ -29,7 +29,7 @@ extern "C" {
 #include <kdberrors.h>
 #include <string.h>
 
-using namespace ckdb;
+
 using namespace Botan;
 using std::unique_ptr;
 

@@ -109,8 +109,8 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	::KeySet * c_theirs = theirs.getKeySet ();
 	::KeySet * c_base = base.getKeySet ();
 	Key * informationKey = keyNew (0, KEY_END);
-	::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base,
-						      baseRoot.getKey (), resultRoot.getKey (), strategy, informationKey);
+	::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base, baseRoot.getKey (),
+						  resultRoot.getKey (), strategy, informationKey);
 	if (c_merge_result != NULL)
 	{
 		kdb::KeySet merge_result = c_merge_result;

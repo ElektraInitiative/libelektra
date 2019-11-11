@@ -872,8 +872,7 @@ TEST_F (Highlevel, ArraySetters)
 
 TEST_F (Highlevel, DefaultValues)
 {
-	::KeySet * defaults =
-		ksNew (5, ::keyNew ("/stringkey", KEY_VALUE, "A string", KEY_META, "type", KDB_TYPE_STRING, KEY_END), KS_END);
+	::KeySet * defaults = ksNew (5, ::keyNew ("/stringkey", KEY_VALUE, "A string", KEY_META, "type", KDB_TYPE_STRING, KEY_END), KS_END);
 
 	createElektra (defaults);
 

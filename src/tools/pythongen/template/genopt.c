@@ -40,7 +40,7 @@ $util.header($args.output)
 #endif
 
 #ifdef __cplusplus
-using namespace ckdb;
+
 
 extern "C"
 {

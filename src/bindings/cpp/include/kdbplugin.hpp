@@ -8,7 +8,7 @@
  *
  * Proper usage:
  * @code
-using namespace ckdb;
+
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
 

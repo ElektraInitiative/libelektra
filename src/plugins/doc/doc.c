@@ -13,7 +13,7 @@
 //! [plugin include]
 //
 //! [plugin errors include]
-// using namespace ckdb; // for C++
+//  // for C++
 #include <kdberrors.h>
 //! [plugin errors include]
 

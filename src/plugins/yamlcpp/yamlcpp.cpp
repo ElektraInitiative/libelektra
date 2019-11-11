@@ -21,7 +21,6 @@ using namespace yamlcpp;
 
 #include "yaml-cpp/yaml.h"
 
-using namespace ckdb;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

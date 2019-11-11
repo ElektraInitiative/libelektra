@@ -26,7 +26,7 @@ extern "C" {
 #include "runtime.h"
 
 #include <kdberrors.h>
-using namespace ckdb;
+
 
 #ifndef LUA_OK
 #define LUA_OK 0

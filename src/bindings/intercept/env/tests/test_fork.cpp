@@ -18,7 +18,7 @@ extern pthread_mutex_t elektraGetEnvMutex;
 
 TEST (GetEnv, SimpleFork)
 {
-	using namespace ckdb;
+
 	elektraOpen (nullptr, nullptr);
 	setenv ("does-exist", "hello", 1);
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
