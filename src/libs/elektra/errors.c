@@ -139,7 +139,6 @@ static void setError (Key * key, const char * code, const char * name, const cha
 	}
 
 DEFINE_ERROR_AND_WARNING (RESOURCE)
-DEFINE_ERROR_AND_WARNING (OUT_OF_MEMORY)
 DEFINE_ERROR_AND_WARNING (INSTALLATION)
 DEFINE_ERROR_AND_WARNING (INTERNAL)
 DEFINE_ERROR_AND_WARNING (INTERFACE)
@@ -147,6 +146,11 @@ DEFINE_ERROR_AND_WARNING (PLUGIN_MISBEHAVIOR)
 DEFINE_ERROR_AND_WARNING (CONFLICTING_STATE)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SYNTACTIC)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
+
+void elektraSetErrorOUT_OF_MEMORY (Key * key, const char * file, const char * line, const char * module)
+{
+	setError (key, ELEKTRA_ERROR_OUT_OF_MEMORY, ELEKTRA_ERROR_OUT_OF_MEMORY_NAME, file, line, module, "Out of memory");
+}
 
 KeySet * elektraErrorSpecification (void)
 {
