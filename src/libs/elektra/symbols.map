@@ -182,7 +182,6 @@ libelektraprivate_1.0 {
 	keyNameIsSystem;
 	keyNameIsUser;
 	keySetRaw;
-	keyVInit;
 	elektraPluginFindGlobal;
 	elektraPluginMissing;
 	elektraPluginVersion;

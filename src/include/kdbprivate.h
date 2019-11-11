@@ -547,7 +547,6 @@ Key * mountGetMountpoint (KDB * handle, const Key * where);
 Backend * mountGetBackend (KDB * handle, const Key * key);
 
 void keyInit (Key * key);
-void keyVInit (Key * key, const char * keyname, va_list ap);
 
 int keyClearSync (Key * key);
 
