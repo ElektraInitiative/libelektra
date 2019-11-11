@@ -207,7 +207,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			}
 			if (elektraRealloc ((void **) &compareTo, (size_t) (endPos - rightSide)) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -226,7 +226,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 
 			if (elektraRealloc ((void **) &lookupName, (size_t) len) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -251,7 +251,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			}
 			if (elektraRealloc ((void **) &compareTo, (size_t) keyGetValueSize (key)) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -267,7 +267,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 
 	if (elektraRealloc ((void **) &lookupName, (size_t) len) < 0)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 		result = ERROR;
 		goto Cleanup;
 	}

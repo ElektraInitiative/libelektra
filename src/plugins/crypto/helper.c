@@ -125,7 +125,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	}
 	else if (result == -2)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, OUT_OF_MEMORY_MSG);
 		return -1;
 	}
 	else if (result < -2)

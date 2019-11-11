@@ -334,6 +334,7 @@ you up to date with the multi-language support provided by Elektra.
 - The reformatting scripts now run in parallel. _(Markus Raab)_
 - Improved various error messages and synchronized documentations. _(Michael Zronek)_
 - Improved `range` plugin error message. _(Michael Zronek)_
+- Introduced error message template for out of memory errors. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
 - Release notes now use git's union merge driver. _(Dominic Jäger)_
 

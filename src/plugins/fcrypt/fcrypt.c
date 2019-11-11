@@ -295,7 +295,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 		return -1;
 	}
 
@@ -434,7 +434,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 		return -1;
 	}
 
@@ -513,7 +513,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED,
 	fcryptState * s = elektraMalloc (sizeof (fcryptState));
 	if (!s)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, OUT_OF_MEMORY_MSG);
 		return -1;
 	}
 

@@ -161,4 +161,11 @@
  */
 #define ELEKTRA_SYMVER_DECLARE(ver, sym, impl) ELEKTRA_SYMVER_COMMAND (ELEKTRA_STRINGIFY (ELEKTRA_SYMVER (sym, impl)), #sym "@" ver)
 
+/** Error message templates
+ *
+ * The following templates should be used whenever possible as they are ensured to be consistent with all other messages
+ * **/
+
+#define OUT_OF_MEMORY_MSG "Memory allocation failed"
+
 #endif
