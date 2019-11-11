@@ -50,7 +50,7 @@ if [ $? -ne 0 ]; then
 	exit 30
 fi
 if [ -z "$contentOfElektraPath" ]; then
-	$kdbBinary mount --with-recommends $their $our $format
+	$kdbBinary mount $their $our $format
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their to $our with $format." >&2
 		exit 31
@@ -70,7 +70,7 @@ else
 	# however, mounting a second time gives a more consistent user experience
 	# as like this the resolver is used for <config file> each time the script
 	# is called
-	$kdbBinary mount -q --with-recommends $their $tempPath $format
+	$kdbBinary mount -q $their $tempPath $format
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their. Got code $?" >&2
 		exit 34
