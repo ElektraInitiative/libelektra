@@ -97,7 +97,7 @@ export default class SimpleTextField extends Component {
               }
               // ensure that it is a number and stop the keypress
               if (
-                (e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+                (e.shiftKey || e.keyCode < 48 || e.keyCode > 57) &&
                 (e.keyCode < 96 || e.keyCode > 105)
               ) {
                 e.preventDefault();
