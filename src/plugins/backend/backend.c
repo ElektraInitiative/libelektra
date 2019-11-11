@@ -608,7 +608,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	BackendHandle * bh = elektraMalloc (sizeof (BackendHandle));
 
 	bh->getposition = GET_RESOLVER;
-	bh->setposition = SET_RESOLVER;
+	bh->setposition = SET_SETRESOLVER;
 	bh->errorposition = ERROR_PREROLLBACK;
 
 	ksRewind (handle->config);
@@ -712,7 +712,7 @@ int elektraBackendClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 void incrementGetPosition (BackendHandle * bh)
 {
-	if (bh->getposition == GET_POSTSTORAGE)
+	if (bh->getposition == GET_POSTGETSTORAGE)
 	{
 		bh->getposition = GET_RESOLVER;
 	}
@@ -726,7 +726,7 @@ void incrementSetPosition (BackendHandle * bh)
 {
 	if (bh->setposition == SET_POSTCOMMIT)
 	{
-		bh->setposition = SET_RESOLVER;
+		bh->setposition = SET_SETRESOLVER;
 	}
 	else
 	{
@@ -758,7 +758,7 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (bh->getposition > GET_POSTSTORAGE || bh->getposition < GET_RESOLVER)
+	if (bh->getposition > GET_POSTGETSTORAGE || bh->getposition < GET_RESOLVER)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -806,7 +806,7 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				if (bh->getposition == GET_RESOLVER || bh->getposition == GET_STORAGE)
+				if (bh->getposition == GET_RESOLVER || bh->getposition == GET_GETSTORAGE)
 				{
 					cur = 0;
 				}
@@ -833,15 +833,15 @@ int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (bh->setposition < SET_RESOLVER || bh->setposition > SET_POSTCOMMIT)
+	if (bh->setposition < SET_SETRESOLVER || bh->setposition > SET_POSTCOMMIT)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (bh->setposition == SET_RESOLVER)
+	if (bh->setposition == SET_SETRESOLVER)
 	{
-		Slot * resolver = bh->setplugins[SET_RESOLVER];
+		Slot * resolver = bh->setplugins[SET_SETRESOLVER];
 		if (!resolver || !resolver->value)
 		{
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The resolver plugin is not defined!");

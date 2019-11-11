@@ -199,17 +199,17 @@ system/elektra/mountpoints/\/hosts/error/rollback/#0
 system/elektra/mountpoints/\/hosts/error/rollback/#0/label (="resolver")
 system/elektra/mountpoints/\/hosts/error/rollback/#0/name (="resolver_fm_hpu_b")
 system/elektra/mountpoints/\/hosts/get
-system/elektra/mountpoints/\/hosts/get/poststorage
-system/elektra/mountpoints/\/hosts/get/poststorage/#0
-system/elektra/mountpoints/\/hosts/get/poststorage/#0/label (="glob")
-system/elektra/mountpoints/\/hosts/get/poststorage/#0/name (="glob")
-system/elektra/mountpoints/\/hosts/get/resolver
-system/elektra/mountpoints/\/hosts/get/resolver/#0
-system/elektra/mountpoints/\/hosts/get/resolver/#0/reference (="resolver")
-system/elektra/mountpoints/\/hosts/get/storage
-system/elektra/mountpoints/\/hosts/get/storage/#0
-system/elektra/mountpoints/\/hosts/get/storage/#0/label (="hosts")
-system/elektra/mountpoints/\/hosts/get/storage/#0/name (="hosts")
+system/elektra/mountpoints/\/hosts/get/postgetstorage
+system/elektra/mountpoints/\/hosts/get/postgetstorage/#0
+system/elektra/mountpoints/\/hosts/get/postgetstorage/#0/label (="glob")
+system/elektra/mountpoints/\/hosts/get/postgetstorage/#0/name (="glob")
+system/elektra/mountpoints/\/hosts/get/getresolver
+system/elektra/mountpoints/\/hosts/get/getresolver/#0
+system/elektra/mountpoints/\/hosts/get/getresolver/#0/reference (="resolver")
+system/elektra/mountpoints/\/hosts/get/getstorage
+system/elektra/mountpoints/\/hosts/get/getstorage/#0
+system/elektra/mountpoints/\/hosts/get/getstorage/#0/label (="hosts")
+system/elektra/mountpoints/\/hosts/get/getstorage/#0/name (="hosts")
 system/elektra/mountpoints/\/hosts/set
 system/elektra/mountpoints/\/hosts/set/commit
 system/elektra/mountpoints/\/hosts/set/commit/#0
@@ -218,21 +218,21 @@ system/elektra/mountpoints/\/hosts/set/precommit
 system/elektra/mountpoints/\/hosts/set/precommit/#0
 system/elektra/mountpoints/\/hosts/set/precommit/#0/label (="sync")
 system/elektra/mountpoints/\/hosts/set/precommit/#0/name (="sync")
-system/elektra/mountpoints/\/hosts/set/prestorage
-system/elektra/mountpoints/\/hosts/set/prestorage/#0
-system/elektra/mountpoints/\/hosts/set/prestorage/#0/reference (="glob")
-system/elektra/mountpoints/\/hosts/set/prestorage/#1
-system/elektra/mountpoints/\/hosts/set/prestorage/#1/label (="error")
-system/elektra/mountpoints/\/hosts/set/prestorage/#1/name (="error")
-system/elektra/mountpoints/\/hosts/set/prestorage/#2
-system/elektra/mountpoints/\/hosts/set/prestorage/#2/label (="network")
-system/elektra/mountpoints/\/hosts/set/prestorage/#2/name (="network")
-system/elektra/mountpoints/\/hosts/set/resolver
-system/elektra/mountpoints/\/hosts/set/resolver/#0
-system/elektra/mountpoints/\/hosts/set/resolver/#0/reference (="resolver")
-system/elektra/mountpoints/\/hosts/set/storage
-system/elektra/mountpoints/\/hosts/set/storage/#0
-system/elektra/mountpoints/\/hosts/set/storage/#0/reference (="hosts")
+system/elektra/mountpoints/\/hosts/set/presetstorage
+system/elektra/mountpoints/\/hosts/set/presetstorage/#0
+system/elektra/mountpoints/\/hosts/set/presetstorage/#0/reference (="glob")
+system/elektra/mountpoints/\/hosts/set/presetstorage/#1
+system/elektra/mountpoints/\/hosts/set/presetstorage/#1/label (="error")
+system/elektra/mountpoints/\/hosts/set/presetstorage/#1/name (="error")
+system/elektra/mountpoints/\/hosts/set/presetstorage/#2
+system/elektra/mountpoints/\/hosts/set/presetstorage/#2/label (="network")
+system/elektra/mountpoints/\/hosts/set/presetstorage/#2/name (="network")
+system/elektra/mountpoints/\/hosts/set/setresolver
+system/elektra/mountpoints/\/hosts/set/setresolver/#0
+system/elektra/mountpoints/\/hosts/set/setresolver/#0/reference (="resolver")
+system/elektra/mountpoints/\/hosts/set/setstorage
+system/elektra/mountpoints/\/hosts/set/setstorage/#0
+system/elektra/mountpoints/\/hosts/set/setstorage/#0/reference (="hosts")
 
 ```
 

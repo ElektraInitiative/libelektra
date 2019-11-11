@@ -64,10 +64,10 @@ Here you see a table that contains all names:
 
 | Slot | Error        | Get            | Set           |
 | ---- | ------------ | -------------- | ------------- |
-| 0    | prerollback  | resolver       | resolver      |
-| 1    | rollback     | prestorage     | prestorage    |
-| 2    | postrollback | storage        | storage       |
-| 3    |              | poststorage    | precommit     |
+| 0    | prerollback  | getresolver    | setresolver   |
+| 1    | rollback     | pregetstorage  | presetstorage |
+| 2    | postrollback | getstorage     | setstorage    |
+| 3    |              | postgetstorage | precommit     |
 | 4    |              |                | commit        |
 | 5    |              |                | postcommit    |
 

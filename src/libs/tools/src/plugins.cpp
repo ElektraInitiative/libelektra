@@ -31,13 +31,13 @@ Plugins::Plugins () : plugins (NR_OF_SET_PLUGINS), nrStoragePlugins (0), nrResol
 	placementInfo["postrollback"] = ERROR_POSTROLLBACK;
 
 	placementInfo["getresolver"] = GET_RESOLVER;
-	placementInfo["pregetstorage"] = GET_PRESTORAGE;
-	placementInfo["getstorage"] = GET_STORAGE;
-	placementInfo["postgetstorage"] = GET_POSTSTORAGE;
+	placementInfo["pregetstorage"] = GET_PREGETSTORAGE;
+	placementInfo["getstorage"] = GET_GETSTORAGE;
+	placementInfo["postgetstorage"] = GET_POSTGETSTORAGE;
 
-	placementInfo["setresolver"] = SET_RESOLVER;
-	placementInfo["presetstorage"] = SET_PRESTORAGE;
-	placementInfo["setstorage"] = SET_STORAGE;
+	placementInfo["setresolver"] = SET_SETRESOLVER;
+	placementInfo["presetstorage"] = SET_PRESETSTORAGE;
+	placementInfo["setstorage"] = SET_SETSTORAGE;
 	placementInfo["precommit"] = SET_PRECOMMIT;
 	placementInfo["commit"] = SET_COMMIT;
 	placementInfo["postcommit"] = SET_POSTCOMMIT;
@@ -491,10 +491,10 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 		case GET_RESOLVER:
 			roleName = "getresolver";
 			break;
-		case GET_PRESTORAGE:
+		case GET_PREGETSTORAGE:
 			roleName = "pregetstorage";
 			break;
-		case GET_STORAGE:
+		case GET_GETSTORAGE:
 			roleName = "getstorage";
 			break;
 		default:
@@ -554,13 +554,13 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		switch (i)
 		{
-		case SET_RESOLVER:
+		case SET_SETRESOLVER:
 			roleName = "setresolver";
 			break;
-		case SET_PRESTORAGE:
+		case SET_PRESETSTORAGE:
 			roleName = "presetstorage";
 			break;
-		case SET_STORAGE:
+		case SET_SETSTORAGE:
 			roleName = "setstorage";
 			break;
 		case SET_PRECOMMIT:
