@@ -51,20 +51,13 @@ using KeySet = ckdb::KeySet;
 					   __VA_ARGS__);                                                                                   \
 	} while (0)
 
-#define ELEKTRA_SET_OUT_OF_MEMORY_ERROR(key, reason)                                                                                       \
+#define ELEKTRA_SET_OUT_OF_MEMORY_ERROR(key)                                                                                               \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_OUT_OF_MEMORY, reason);                                                     \
-		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),        \
-					      reason);                                                                                     \
+		ELEKTRA_LOG ("Add Error %s", ELEKTRA_ERROR_OUT_OF_MEMORY);                                                                 \
+		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME));       \
 	} while (0)
-#define ELEKTRA_SET_OUT_OF_MEMORY_ERRORF(key, reason, ...)                                                                                 \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_OUT_OF_MEMORY, __VA_ARGS__);                                           \
-		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),        \
-					      reason, __VA_ARGS__);                                                                        \
-	} while (0)
+
 #define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key, reason)                                                                                     \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
@@ -290,7 +283,6 @@ using KeySet = ckdb::KeySet;
 	void elektraAddWarning##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...);
 
 DECLARE_ERROR_CODE (RESOURCE)
-DECLARE_ERROR_CODE (OUT_OF_MEMORY)
 DECLARE_ERROR_CODE (INSTALLATION)
 DECLARE_ERROR_CODE (INTERNAL)
 DECLARE_ERROR_CODE (INTERFACE)
@@ -300,6 +292,10 @@ DECLARE_ERROR_CODE (VALIDATION_SYNTACTIC)
 DECLARE_ERROR_CODE (VALIDATION_SEMANTIC)
 
 #undef DECLARE_ERROR_CODE
+
+extern const char * ELEKTRA_ERROR_OUT_OF_MEMORY;
+extern const char * ELEKTRA_ERROR_OUT_OF_MEMORY_NAME;
+void elektraSetErrorOUT_OF_MEMORY_NAME (Key * key, const char * file, const char * line, const char * module);
 
 KeySet * elektraErrorSpecification (void);
 
