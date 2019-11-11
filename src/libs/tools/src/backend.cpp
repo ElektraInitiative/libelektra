@@ -396,14 +396,14 @@ void Backend::serialize (kdb::KeySet & ret)
 
 	if (mp == "/")
 	{
-		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, "/", KEY_COMMENT,
+		ret.append (*Key (backendRootKey.getName () + "/config/mountpoint", KEY_VALUE, "/", KEY_COMMENT,
 				  "The mount point stores the location where the backend should be mounted.\n"
 				  "This is the root mountpoint.\n",
 				  KEY_END));
 	}
 	else if (mp.at (0) == '/')
 	{
-		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
+		ret.append (*Key (backendRootKey.getName () + "/config/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mount point stores the location where the backend should be mounted.\n"
 				  "This is a cascading mountpoint.\n"
 				  "That means it is both mounted to dir, user and system.",
@@ -411,7 +411,7 @@ void Backend::serialize (kdb::KeySet & ret)
 	}
 	else
 	{
-		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
+		ret.append (*Key (backendRootKey.getName () + "/config/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mount point stores the location where the backend should be mounted.\n"
 				  "This is a normal mount point.\n",
 				  KEY_END));

@@ -458,7 +458,7 @@ int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
 }
 
 
-std::string Plugin::name () // TODO: rename + use internally
+std::string Plugin::name ()
 {
 	return spec.getName ();
 }
@@ -473,12 +473,8 @@ std::string Plugin::refname ()
 	if (firstRef)
 	{
 		firstRef = false;
-		return std::string ("#") + spec.getName () + "#" + spec.getRefName () + "#";
 	}
-	else
-	{
-		return std::string ("#") + spec.getRefName ();
-	}
+	return spec.getRefName ();
 }
 } // namespace tools
 } // namespace kdb
