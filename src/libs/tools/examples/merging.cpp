@@ -16,13 +16,15 @@
 #include <merging/onesidemergeconfiguration.hpp>
 #include <merging/threewaymerge.hpp>
 
-
-using namespace kdb;
 using namespace kdb::tools::merging;
 using namespace std;
 
 int main ()
 {
+	using kdb::Key;
+	using kdb::KeySet;
+	using kdb::KDB;
+
 	KeySet ours;
 	KeySet theirs;
 	KeySet base;

@@ -48,8 +48,6 @@
  * @{
  */
 #ifdef __cplusplus
-#define Key ::Key
-#define KeySet ::KeySet
 extern "C" {
 #endif
 
@@ -248,8 +246,6 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_lo
 
 #ifdef __cplusplus
 }
-#undef Key
-#undef KeySet
 #endif
 
 /**

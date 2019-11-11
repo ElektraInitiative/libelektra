@@ -47,7 +47,9 @@ kdb::Key getMountpointForIteration (int iteration)
 template <enum PluginVariant VARIANT>
 kdb::Key mountBackend (int iteration)
 {
-	using namespace kdb;
+	using kdb::Key;
+	using kdb::KeySet;
+	using kdb::KDB;
 	using namespace kdb::tools;
 
 	Key mp = getMountpointForIteration<VARIANT> (iteration);
@@ -82,7 +84,9 @@ kdb::Key mountBackend (int iteration)
 template <enum PluginVariant VARIANT>
 __attribute__ ((noinline)) void benchmark_crypto_set (int iteration)
 {
-	using namespace kdb;
+	using kdb::Key;
+	using kdb::KeySet;
+	using kdb::KDB;
 	using namespace kdb::tools;
 	static Timer t (plugin_variant_names[VARIANT]);
 
@@ -122,7 +126,9 @@ __attribute__ ((noinline)) void benchmark_crypto_set (int iteration)
 template <enum PluginVariant VARIANT>
 __attribute__ ((noinline)) void benchmark_crypto_get (int iteration)
 {
-	using namespace kdb;
+	using kdb::Key;
+	using kdb::KeySet;
+	using kdb::KDB;
 	using namespace kdb::tools;
 	static Timer t (plugin_variant_names[VARIANT]);
 

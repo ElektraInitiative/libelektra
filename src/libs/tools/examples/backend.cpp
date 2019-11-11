@@ -13,7 +13,8 @@
 
 int main ()
 {
-	using namespace kdb;
+	using kdb::KeySet;
+	using kdb::Key;
 	using namespace kdb::tools;
 	MountBackendBuilder b;
 	b.setMountpoint (Key ("/", KEY_CASCADING_NAME, KEY_END), KeySet (0, KS_END));

@@ -14,7 +14,6 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-#define Key ::Key
 extern "C" {
 #endif
 
@@ -35,7 +34,6 @@ ElektraError * elektraErrorConversionFromString (KDBType targetType, const char 
 
 #ifdef __cplusplus
 }
-#undef Key
 #endif
 
 #endif // ELEKTRA_ERROR_H

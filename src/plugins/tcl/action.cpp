@@ -26,7 +26,8 @@ using namespace std;
 namespace elektra
 {
 
-using namespace kdb;
+using kdb::Key;
+using kdb::KeySet;
 
 void serialise (ostream & ofs, KeySet & output, Key & parent)
 {

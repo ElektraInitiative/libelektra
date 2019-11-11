@@ -43,7 +43,9 @@ __attribute__ ((noinline)) void benchmark_nothing ()
 template <int PLUGINS>
 __attribute__ ((noinline)) void benchmark_backend ()
 {
-	using namespace kdb;
+	using kdb::KDB;
+	using kdb::Key;
+	using kdb::KeySet;
 	using namespace kdb::tools;
 	static Timer t (std::to_string (PLUGINS) + " mountpoint(s)");
 

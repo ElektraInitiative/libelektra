@@ -10,7 +10,8 @@
 #include <gtest/gtest.h>
 #include <helper/keyhelper.hpp>
 
-using namespace kdb;
+namespace {
+using kdb::Key;
 using namespace kdb::tools::helper;
 
 TEST (RebasePath, RebasesCorrectlyWithValidArguments)
@@ -126,4 +127,6 @@ TEST (CommonKeyName, Key1)
 		   Key ("/test/script", KEY_END));
 	EXPECT_EQ (commonKeyName (Key ("user/test/script//x", KEY_END), Key ("user/test/script/other//x", KEY_END)),
 		   Key ("user/test/script", KEY_END));
+}
+
 }

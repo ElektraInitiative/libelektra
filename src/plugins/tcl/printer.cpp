@@ -15,10 +15,12 @@
 #include <string>
 
 using namespace std;
-using namespace kdb;
 
 namespace elektra
 {
+
+using kdb::Key;
+using kdb::KeySet;
 
 Printer::Printer (KeySet & ks, Key & parentKey) : nr_keys (0), nr_meta (0), current (ks), parent (parentKey)
 {

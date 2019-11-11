@@ -626,16 +626,6 @@ int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position
 /** Clear a bit. @see set_bit() */
 #define clear_bit(var, bit) ((var) &= ~(bit))
 
-#ifdef __cplusplus
-}
-}
-
-#define KDB ::KDB
-#define Key ::Key
-#define KeySet ::KeySet
-extern "C" {
-#endif
-
 struct _Elektra
 {
 	KDB * kdb;
@@ -679,9 +669,6 @@ ElektraError * elektraErrorMinimalValidationFailed (const char * function);
 
 #ifdef __cplusplus
 }
-#undef Key
-#undef KeySet
-#undef KDB
 #endif
 
 #endif /* KDBPRIVATE_H */
