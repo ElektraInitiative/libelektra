@@ -2,7 +2,8 @@ package org.libelektra.exception.model;
 
 import org.libelektra.Key;
 
-public class WarningEntry {
+public class WarningEntry
+{
 
 	private final String warningNumber;
 	private final String reason;
@@ -16,15 +17,16 @@ public class WarningEntry {
 	 * @param key the errorkey containing the warnings/* metakeys
 	 * @param current The current entry you want to parse, e.g., (key, 0) will search for entries with "warnings/#00"
 	 */
-	public WarningEntry(Key key, int current) {
-		final String warningKeyName = String.format("warnings/#%02d", current);
-		warningNumber = key.getMeta(warningKeyName + "/number").getString();
-		reason = key.getMeta(warningKeyName + "/reason").getString();
-		module = key.getMeta(warningKeyName + "/module").getString();
-		debugInformation = String.format("At: %s:%s", key.getMeta(warningKeyName + "/file").getString(),
-				key.getMeta(warningKeyName + "/line").getString());
-		mountpoint = key.getMeta(warningKeyName + "/mountpoint").getString();
-		configFile = key.getMeta(warningKeyName + "/configfile").getString();
+	public WarningEntry (Key key, int current)
+	{
+		final String warningKeyName = String.format ("warnings/#%02d", current);
+		warningNumber = key.getMeta (warningKeyName + "/number").getString ();
+		reason = key.getMeta (warningKeyName + "/reason").getString ();
+		module = key.getMeta (warningKeyName + "/module").getString ();
+		debugInformation = String.format ("At: %s:%s", key.getMeta (warningKeyName + "/file").getString (),
+						  key.getMeta (warningKeyName + "/line").getString ());
+		mountpoint = key.getMeta (warningKeyName + "/mountpoint").getString ();
+		configFile = key.getMeta (warningKeyName + "/configfile").getString ();
 	}
 
 	/**
@@ -32,7 +34,8 @@ public class WarningEntry {
 	 *
 	 * @return the warningNumber from Elektra
 	 */
-	public String getWarningNumber() {
+	public String getWarningNumber ()
+	{
 		return warningNumber;
 	}
 
@@ -41,7 +44,8 @@ public class WarningEntry {
 	 *
 	 * @return the reason text from the warning
 	 */
-	public String getReason() {
+	public String getReason ()
+	{
 		return reason;
 	}
 
@@ -50,7 +54,8 @@ public class WarningEntry {
 	 *
 	 * @return the mountpoint from the warning
 	 */
-	public String getMountpoint() {
+	public String getMountpoint ()
+	{
 		return mountpoint;
 	}
 
@@ -59,7 +64,8 @@ public class WarningEntry {
 	 *
 	 * @return the module from the warning
 	 */
-	public String getModule() {
+	public String getModule ()
+	{
 		return module;
 	}
 
@@ -68,7 +74,8 @@ public class WarningEntry {
 	 *
 	 * @return the configuration file from the warning
 	 */
-	public String getConfigFile() {
+	public String getConfigFile ()
+	{
 		return configFile;
 	}
 
@@ -77,7 +84,8 @@ public class WarningEntry {
 	 *
 	 * @return the debug information from the warning in the form of "At: file:line"
 	 */
-	public String getDebugInformation() {
+	public String getDebugInformation ()
+	{
 		return debugInformation;
 	}
 }

@@ -8,7 +8,8 @@ import com.sun.jna.Pointer;
 /**
  * A keyset holds together a set of keys.
  */
-public class KeySet implements Iterable<Key> {
+public class KeySet implements Iterable<Key>
+{
 
 	// constants
 	public static final int KDB_O_NONE = 0;
@@ -23,8 +24,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @param p Pointer to another KeySet in long format
 	 */
-	protected KeySet(final long p) {
-		ks = new Pointer(p);
+	protected KeySet (final long p)
+	{
+		ks = new Pointer (p);
 	}
 
 	/**
@@ -33,9 +35,11 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @param p Pointer to another KeySet
 	 */
-	public KeySet(final Pointer p) {
-		if (p == null) {
-			throw new IllegalArgumentException("Passed pointer should not be null");
+	public KeySet (final Pointer p)
+	{
+		if (p == null)
+		{
+			throw new IllegalArgumentException ("Passed pointer should not be null");
 		}
 		ks = p;
 	}
@@ -51,21 +55,24 @@ public class KeySet implements Iterable<Key> {
 	 * @return New key set with the given initial data
 	 * @see #create()
 	 */
-	protected static KeySet create(final int alloc, final Object... args) {
+	protected static KeySet create (final int alloc, final Object... args)
+	{
 		int i = 0;
-		for (i = 0; i < args.length; ++i) {
-			if (args[i] instanceof Key) {
+		for (i = 0; i < args.length; ++i)
+		{
+			if (args[i] instanceof Key)
+			{
 				final Key k = (Key) args[i];
-				args[i] = k.get();
+				args[i] = k.get ();
 			}
 		}
-		if (args.length > 0 && args[i - 1] != KeySet.KS_END) {
-			final Object[] sanitized = Arrays.copyOf(args, args.length + 1);
+		if (args.length > 0 && args[i - 1] != KeySet.KS_END)
+		{
+			final Object[] sanitized = Arrays.copyOf (args, args.length + 1);
 			sanitized[i] = KeySet.KS_END;
-			return new KeySet(Elektra.INSTANCE.ksNew(alloc < sanitized.length ? alloc + 1 : sanitized.length,
-					sanitized));
+			return new KeySet (Elektra.INSTANCE.ksNew (alloc < sanitized.length ? alloc + 1 : sanitized.length, sanitized));
 		}
-		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
+		return new KeySet (Elektra.INSTANCE.ksNew (alloc, args));
 	}
 
 	/**
@@ -73,8 +80,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return New key set
 	 */
-	public static KeySet create() {
-		return create(16);
+	public static KeySet create ()
+	{
+		return create (16);
 	}
 
 	/**
@@ -85,21 +93,23 @@ public class KeySet implements Iterable<Key> {
 	 * @return New key set with the given initial data
 	 * @see #create()
 	 */
-	public static KeySet create(final int alloc, final Key... args) {
-		if (args == null)
-			return create(alloc);
-		final Object[] keys = Arrays.copyOf(args, args.length + 1, Object[].class);
+	public static KeySet create (final int alloc, final Key... args)
+	{
+		if (args == null) return create (alloc);
+		final Object[] keys = Arrays.copyOf (args, args.length + 1, Object[].class);
 		keys[args.length] = KS_END;
-		return create(alloc, keys);
+		return create (alloc, keys);
 	}
 
 	/**
 	 * Clean-up method to release keyset reference
 	 */
-	public void release() {
+	public void release ()
+	{
 		// Otherwise this reference would most likely be lost, resulting in a potential leak
-		if (ks != null) {
-			Elektra.INSTANCE.ksDel(ks);
+		if (ks != null)
+		{
+			Elektra.INSTANCE.ksDel (ks);
 		}
 		ks = null;
 	}
@@ -107,9 +117,9 @@ public class KeySet implements Iterable<Key> {
 	/**
 	 * Clean-up method to inform underlying c-library about the release of the keyset reference
 	 */
-	@Override
-	protected void finalize() throws Throwable {
-		release();
+	@Override protected void finalize () throws Throwable
+	{
+		release ();
 	}
 
 	/**
@@ -117,9 +127,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Custom KeySetIterator
 	 */
-	@Override
-	public Iterator<Key> iterator() {
-		return new KeySetIterator(this);
+	@Override public Iterator<Key> iterator ()
+	{
+		return new KeySetIterator (this);
 	}
 
 	/**
@@ -130,16 +140,17 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return List of key-value pairs contained in this key set
 	 */
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
+	@Override public String toString ()
+	{
+		final StringBuilder sb = new StringBuilder ();
 		String sep = "";
-		for (final Key k : this) {
-			sb.append(sep);
-			sb.append(k);
+		for (final Key k : this)
+		{
+			sb.append (sep);
+			sb.append (k);
 			sep = "\n";
 		}
-		return sb.toString();
+		return sb.toString ();
 	}
 
 	/*
@@ -151,8 +162,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return New KeySet containing the same key references as this object does
 	 */
-	public KeySet dup() {
-		return new KeySet(Elektra.INSTANCE.ksDup(get()));
+	public KeySet dup ()
+	{
+		return new KeySet (Elektra.INSTANCE.ksDup (get ()));
 	}
 
 	/**
@@ -162,10 +174,10 @@ public class KeySet implements Iterable<Key> {
 	 * @retval 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
 	 * error (null pointer)
 	 */
-	public int copy(final KeySet other) {
-		if (other == null)
-			return -1;
-		return Elektra.INSTANCE.ksCopy(get(), other.get());
+	public int copy (final KeySet other)
+	{
+		if (other == null) return -1;
+		return Elektra.INSTANCE.ksCopy (get (), other.get ());
 	}
 
 	/**
@@ -173,8 +185,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @retval 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
 	 */
-	public int needsSync() {
-		return Elektra.INSTANCE.ksNeedSync(get());
+	public int needsSync ()
+	{
+		return Elektra.INSTANCE.ksNeedSync (get ());
 	}
 
 	/**
@@ -182,8 +195,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Size of key set (number of possible keys)
 	 */
-	public int length() {
-		return Elektra.INSTANCE.ksGetSize(get());
+	public int length ()
+	{
+		return Elektra.INSTANCE.ksGetSize (get ());
 	}
 
 	/**
@@ -192,11 +206,13 @@ public class KeySet implements Iterable<Key> {
 	 * @param k Key to append
 	 * @return Index of key in key set; starting from 1, -1 if null was provided
 	 */
-	public int append(final Key k) {
-		if (k == null) {
+	public int append (final Key k)
+	{
+		if (k == null)
+		{
 			return -1;
 		}
-		return Elektra.INSTANCE.ksAppendKey(get(), k.get());
+		return Elektra.INSTANCE.ksAppendKey (get (), k.get ());
 	}
 
 	/**
@@ -205,15 +221,18 @@ public class KeySet implements Iterable<Key> {
 	 * @param ks Key set to append
 	 * @return Highest new index of key in key set; starting from 1, -1 if null was provided
 	 */
-	public int append(final KeySet ks) {
-		if (ks == null) {
+	public int append (final KeySet ks)
+	{
+		if (ks == null)
+		{
 			return -1;
 		}
 
 		int result = -1;
-		final Iterator<Key> iter = ks.iterator();
-		while (iter.hasNext()) {
-			result = Elektra.INSTANCE.ksAppendKey(get(), iter.next().get());
+		final Iterator<Key> iter = ks.iterator ();
+		while (iter.hasNext ())
+		{
+			result = Elektra.INSTANCE.ksAppendKey (get (), iter.next ().get ());
 		}
 		return result;
 	}
@@ -224,10 +243,10 @@ public class KeySet implements Iterable<Key> {
 	 * @param cutpoint Key that is used as cutting point
 	 * @return New KeySet containing all keys until the cutting point, this if null was provided
 	 */
-	public KeySet cut(final Key cutpoint) {
-		if (cutpoint == null)
-			return this;
-		return new KeySet(Elektra.INSTANCE.ksCut(get(), cutpoint.get()));
+	public KeySet cut (final Key cutpoint)
+	{
+		if (cutpoint == null) return this;
+		return new KeySet (Elektra.INSTANCE.ksCut (get (), cutpoint.get ()));
 	}
 
 	/**
@@ -235,8 +254,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return First Key in the set
 	 */
-	public Key pop() {
-		return new Key(Elektra.INSTANCE.ksPop(get()));
+	public Key pop ()
+	{
+		return new Key (Elektra.INSTANCE.ksPop (get ()));
 	}
 
 	/**
@@ -244,8 +264,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Current Key in iteration
 	 */
-	public Key current() {
-		return new Key(Elektra.INSTANCE.ksCurrent(get()));
+	public Key current ()
+	{
+		return new Key (Elektra.INSTANCE.ksCurrent (get ()));
 	}
 
 	/**
@@ -253,8 +274,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Next Key in key set
 	 */
-	public Key next() {
-		return new Key(Elektra.INSTANCE.ksNext(get()));
+	public Key next ()
+	{
+		return new Key (Elektra.INSTANCE.ksNext (get ()));
 	}
 
 	/**
@@ -262,8 +284,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @retval 0 on success, -1 on NullPointer
 	 */
-	public int rewind() {
-		return Elektra.INSTANCE.ksRewind(get());
+	public int rewind ()
+	{
+		return Elektra.INSTANCE.ksRewind (get ());
 	}
 
 	/**
@@ -271,8 +294,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return First element of the key set
 	 */
-	public Key head() {
-		return new Key(Elektra.INSTANCE.ksHead(get()));
+	public Key head ()
+	{
+		return new Key (Elektra.INSTANCE.ksHead (get ()));
 	}
 
 	/**
@@ -280,8 +304,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Last element of the key set
 	 */
-	public Key tail() {
-		return new Key(Elektra.INSTANCE.ksTail(get()));
+	public Key tail ()
+	{
+		return new Key (Elektra.INSTANCE.ksTail (get ()));
 	}
 
 	/**
@@ -289,8 +314,9 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Cursor position as integer; initially -1, incremented by next()
 	 */
-	public int getCursor() {
-		return Elektra.INSTANCE.ksGetCursor(get());
+	public int getCursor ()
+	{
+		return Elektra.INSTANCE.ksGetCursor (get ());
 	}
 
 	/**
@@ -299,8 +325,9 @@ public class KeySet implements Iterable<Key> {
 	 * @param cursor Cursor position as integer
 	 * @retval 1 in case of success
 	 */
-	public int setCursor(final int cursor) {
-		return Elektra.INSTANCE.ksSetCursor(get(), cursor);
+	public int setCursor (final int cursor)
+	{
+		return Elektra.INSTANCE.ksSetCursor (get (), cursor);
 	}
 
 	/**
@@ -309,8 +336,9 @@ public class KeySet implements Iterable<Key> {
 	 * @param cursor Cursor position used to fetch key; starting from 0
 	 * @return Key at given cursor position
 	 */
-	public Key at(final int cursor) {
-		return new Key(Elektra.INSTANCE.ksAtCursor(get(), cursor));
+	public Key at (final int cursor)
+	{
+		return new Key (Elektra.INSTANCE.ksAtCursor (get (), cursor));
 	}
 
 	/**
@@ -320,11 +348,13 @@ public class KeySet implements Iterable<Key> {
 	 * @param options Custom search options; concatenation of flags
 	 * @return Key if search successful, null otherwise
 	 */
-	public Key lookup(final Key find, final int options) {
-		if (find == null) {
+	public Key lookup (final Key find, final int options)
+	{
+		if (find == null)
+		{
 			return null;
 		}
-		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), options));
+		return new Key (Elektra.INSTANCE.ksLookup (ks, find.get (), options));
 	}
 
 	/**
@@ -333,11 +363,13 @@ public class KeySet implements Iterable<Key> {
 	 * @param find Key used in search
 	 * @return Key if search successful, null otherwise
 	 */
-	public Key lookup(final Key find) {
-		if (find == null) {
+	public Key lookup (final Key find)
+	{
+		if (find == null)
+		{
 			return null;
 		}
-		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), 0));
+		return new Key (Elektra.INSTANCE.ksLookup (ks, find.get (), 0));
 	}
 
 	/**
@@ -347,8 +379,9 @@ public class KeySet implements Iterable<Key> {
 	 * @param options Custom search options; concatenation of flags
 	 * @return Key if search successful, null otherwise
 	 */
-	public Key lookup(final String find, final int options) {
-		return new Key(Elektra.INSTANCE.ksLookupByName(ks, find, options));
+	public Key lookup (final String find, final int options)
+	{
+		return new Key (Elektra.INSTANCE.ksLookupByName (ks, find, options));
 	}
 
 	/**
@@ -357,8 +390,9 @@ public class KeySet implements Iterable<Key> {
 	 * @param find Key name used in search
 	 * @return Key if search successful, null otherwise
 	 */
-	public Key lookup(final String find) {
-		return new Key(Elektra.INSTANCE.ksLookupByName(ks, find, 0));
+	public Key lookup (final String find)
+	{
+		return new Key (Elektra.INSTANCE.ksLookupByName (ks, find, 0));
 	}
 
 	/**
@@ -366,7 +400,8 @@ public class KeySet implements Iterable<Key> {
 	 *
 	 * @return Native pointer object used for this key set
 	 */
-	public Pointer get() {
+	public Pointer get ()
+	{
 		return ks;
 	}
 }

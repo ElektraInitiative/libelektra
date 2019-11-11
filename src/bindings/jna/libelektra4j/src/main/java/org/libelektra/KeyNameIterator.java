@@ -8,7 +8,8 @@ import com.sun.jna.Pointer;
 /**
  * An {@link Iterator} over a {@link Key}'s name parts, separated by /.
  */
-public class KeyNameIterator implements Iterator<String> {
+public class KeyNameIterator implements Iterator<String>
+{
 
 	private int pos = 0;
 	private int size = 0;
@@ -19,9 +20,10 @@ public class KeyNameIterator implements Iterator<String> {
 	 *
 	 * @param key Key which name is used in iterator
 	 */
-	KeyNameIterator(final Key key) {
-		con = Elektra.INSTANCE.keyUnescapedName(key.get());
-		size = Elektra.INSTANCE.keyGetUnescapedNameSize(key.get());
+	KeyNameIterator (final Key key)
+	{
+		con = Elektra.INSTANCE.keyUnescapedName (key.get ());
+		size = Elektra.INSTANCE.keyGetUnescapedNameSize (key.get ());
 	}
 
 	/**
@@ -29,8 +31,8 @@ public class KeyNameIterator implements Iterator<String> {
 	 *
 	 * @return Boolean if another value is available
 	 */
-	@Override
-	public boolean hasNext() {
+	@Override public boolean hasNext ()
+	{
 		return pos < size;
 	}
 
@@ -39,14 +41,15 @@ public class KeyNameIterator implements Iterator<String> {
 	 *
 	 * @return Next key name part in iteration
 	 */
-	@Override
-	public String next() {
-		if (pos == size) {
-			throw new NoSuchElementException("End of key names reached");
+	@Override public String next ()
+	{
+		if (pos == size)
+		{
+			throw new NoSuchElementException ("End of key names reached");
 		}
 
-		final String ret = con.getString(pos);
-		pos += ret.length() + 1;
+		final String ret = con.getString (pos);
+		pos += ret.length () + 1;
 		return ret;
 	}
 
@@ -55,9 +58,8 @@ public class KeyNameIterator implements Iterator<String> {
 	 *
 	 * @throws UnsupportedOperationException
 	 */
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+	@Override public void remove ()
+	{
+		throw new UnsupportedOperationException ();
 	}
-
 }
