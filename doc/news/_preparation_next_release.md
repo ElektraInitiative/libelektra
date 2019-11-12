@@ -293,6 +293,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added design decision for error code implementations. _(Michael Zronek)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
+- We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
 
 ## Tests
 
