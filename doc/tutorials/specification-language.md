@@ -10,7 +10,7 @@ understanding of [set](../help/kdb-set.md) and [meta-set](../help/kdb-meta-set.m
 When you [mount](mount.md) a configuration such as `kdb mount test.conf /tests dump` you usually use one of the four standard namespaces
 `user`, `dir`, `proc` or `system`.
 
-There is a 5th namespace called the `spec` namespace and has a special behavior. Any validation behavior 
+There is a 5th namespace called the `spec` namespace and has a special behavior. Any validation behavior
 will be written to the `spec` namespace. You can use `meta-set` to set any metadata to the spec namespace.
 
 ```shell script
@@ -24,7 +24,7 @@ have a boolean value validation applied:
 # An example configuration which will by default gets mounted to the 'user' namespace
 kdb mount test.conf /tests dump type
 
-kdb set /tests/bool Batman     
+kdb set /tests/bool Batman
 # Using name user/tests/bool
 # Sorry, module type issued the error C03200:
 # Validation Semantic: The value 'uaud' of key 'user/tests/bool' could not be converted into a boolean
@@ -83,7 +83,7 @@ kdb spec-mount /tests
 ```
 
 The `spec-mount` command tells Elektra to load all relevant plugins. It is smart enough to automatically detect the needed plugins
-by looking at all metadata. Sine `type` for is given under the `[bool]` key, Elektra will load the `type` plugin. 
+by looking at all metadata. Sine `type` for is given under the `[bool]` key, Elektra will load the `type` plugin.
 You might need to remove some metadata to not load certain plugins that cause the exceeding of the maximum
 plugin number.
 
