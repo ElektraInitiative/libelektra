@@ -24,7 +24,12 @@ endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 
 add_msr_test (tutorial_arrays "${CMAKE_SOURCE_DIR}/doc/tutorials/arrays.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
-add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
+
+if (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
+	message (STATUS "Excluding storage tutorial MSR test, since it currently fails for ASan macOS builds in Cirrus CI")
+else (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
+	add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
+endif (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
 
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
