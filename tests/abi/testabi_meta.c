@@ -11,7 +11,7 @@
 static void test_basic (void)
 {
 	Key * key;
-	key = keyNew ("user/key_with_meta", KEY_END);
+	key = keyNew ("user:/key_with_meta", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyGetMeta (key, "hello") == 0, "hello was not set up to now");
 	succeed_if (keyGetMeta (key, "error") == 0, "hello was not set up to now");
@@ -63,7 +63,7 @@ static void test_iterate (void)
 {
 	Key * key;
 
-	key = keyNew ("user/test", KEY_END);
+	key = keyNew ("user:/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyRewindMeta (key) == 0, "Could not rewind empty key");
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty");
@@ -91,7 +91,7 @@ static void test_size (void)
 	Key * key;
 	char * buffer;
 
-	key = keyNew ("user/test", KEY_END);
+	key = keyNew ("user:/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyValue (keyGetMeta (key, "hello")) == 0, "hello was not set up to now");
 	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == -1, "got wrong size for empty metavalue");
@@ -176,7 +176,7 @@ static void test_dup (void)
 	Key * key;
 	Key * dup;
 
-	key = keyNew ("user/orig", KEY_END);
+	key = keyNew ("user:/orig", KEY_END);
 	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof ("some_meta_test"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "test")), "some_meta_test");
 
@@ -320,14 +320,14 @@ static void test_copy (void)
 	Key * c;
 
 	// clang-format off
-	k=keyNew ("user/metakey",
+	k=keyNew ("user:/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the metadata later",
 		KEY_META, "mode", "0775",
 		KEY_END);
 	// clang-format on
-	c = keyNew ("user/metacopy", KEY_END);
+	c = keyNew ("user:/metacopy", KEY_END);
 
 	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
 	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
@@ -346,13 +346,13 @@ static void test_copy (void)
 
 
 	// clang-format off
-	k=keyNew ("user/metakey",
+	k=keyNew ("user:/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the metadata later",
 		KEY_META, "mode", "0775",
 		KEY_END);
-	c=keyNew ("user/metacopy",
+	c=keyNew ("user:/metacopy",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "wrong",
 		KEY_META, "old", "will stay",
@@ -384,7 +384,7 @@ static void test_new (void)
 {
 	Key * key;
 	// clang-format off
-	key = keyNew ("user/test",
+	key = keyNew ("user:/test",
 		KEY_META, "hello", "hello_world",
 		KEY_META, "mode", "0644",
 		KEY_META, "time", "1271234264",
@@ -408,7 +408,7 @@ static void test_new (void)
 	keyDel (key);
 
 	// clang-format off
-	key = keyNew ("user/test",
+	key = keyNew ("user:/test",
 		KEY_META, "hello", "goodbye",
 		KEY_META, "mode", "0775",
 		KEY_META, "time", "1271939923",
@@ -495,14 +495,14 @@ static void test_copyall (void)
 	Key * c;
 
 	// clang-format off
-	k=keyNew ("user/metakey",
+	k=keyNew ("user:/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the metadata later",
 		KEY_META, "mode", "0775",
 		KEY_END);
 	// clang-format on
-	c = keyNew ("user/metacopy", KEY_END);
+	c = keyNew ("user:/metacopy", KEY_END);
 
 	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
 	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
@@ -555,7 +555,7 @@ static void test_keyMeta (void)
 	keyDel (key);
 
 	// clang-format off
-	key = keyNew ("user/test",
+	key = keyNew ("user:/test",
 		KEY_META, "hello", "hello_world",
 		KEY_META, "mode", "0644",
 		KEY_META, "time", "1271234264",

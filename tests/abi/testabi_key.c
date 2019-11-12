@@ -10,7 +10,7 @@
 
 #define NUMBER_OF_NAMESPACES 6
 
-char * namespaces[] = { "/", "spec", "proc", "dir", "user", "system", 0 };
+char * namespaces[] = { "/", "spec:/", "proc:/", "dir:/", "user:/", "system:/", 0 };
 
 struct test
 {
@@ -473,7 +473,7 @@ static void test_keyName (void)
 	succeed_if (keySetName (0, ret) == -1, "Null pointer");
 
 	key = keyNew ("user:/", KEY_END);
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
@@ -483,7 +483,7 @@ static void test_keyName (void)
 	keyDel (key);
 
 	key = keyNew ("user:/", KEY_END);
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
@@ -493,7 +493,7 @@ static void test_keyName (void)
 	keyDel (key);
 
 	key = keyNew ("user://", KEY_END);
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
@@ -628,7 +628,7 @@ static void test_keyNameSlashes (void)
 
 	key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 
 	keySetName (key, "system:/");
@@ -642,19 +642,19 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 
 	keySetName (key, "user:/");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("/", KEY_END);
 	succeed_if (keySetName (key, "user:") == 5, "setting user: generates error");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("/", KEY_END);
 	succeed_if (keySetName (key, "user:y") == 5, "setting user: generates error");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 5, "empty name size");
 	keyDel (key);
 
@@ -719,26 +719,26 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
 
 	keySetName (key, "user:/");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	keySetName (key, "user:/");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	keySetName (key, "user:/a");
 	succeed_if_same_string (keyName (key), "user:/a");
 
 	keySetName (key, "user://");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	keySetName (key, "user://///////");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	printf ("Test Dots in Key Name\n");
 	keySetName (key, "user:/hidden/.");
 	succeed_if_same_string (keyName (key), "user:/hidden");
 
 	keySetName (key, "user:/.");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	keySetName (key, "user:/./hidden");
 	succeed_if_same_string (keyName (key), "user:/hidden");
@@ -760,14 +760,14 @@ static void test_keyNameSlashes (void)
 	succeed_if_same_string (keyName (key), "user:/hidden");
 
 	keySetName (key, "user:/hidden/..");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	keySetName (key, "user:/..");
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	keySetName (key, "user:/hidden/../..");
 	// printf ("Name: %s\n", keyName(key));
-	succeed_if_same_string (keyName (key), "user");
+	succeed_if_same_string (keyName (key), "user:/");
 
 	succeed_if (keySetName (key, "user:///sw/../sw//././MyApp") == sizeof ("user:/sw/MyApp"), "could not set keySet example");
 	// printf("%s %d\n", keyName(key), keyGetNameSize(key));
@@ -1847,41 +1847,41 @@ static void test_keyNameSpecial (void)
 	succeed_if_same_string (keyName (k), "");
 
 	succeed_if (keySetName (k, "system:/"), "could not set key name with system");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, 0) == 0, "could not set key name with 0");
 	succeed_if_same_string (keyName (k), "");
 
 	succeed_if (keySetName (k, "system:/"), "could not set key name with system");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "") == 0, "could not set key name with empty string");
 	succeed_if_same_string (keyName (k), "");
 
 	succeed_if (keySetName (k, "system:/"), "could not set key name with system");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "invalid") == -1, "could not set key name invalid");
 	succeed_if_same_string (keyName (k), "");
 
 
 	succeed_if (keySetName (k, "system:/something/.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/something/.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/something/../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/something/../../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/something/../../../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/something/../../../../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 
 	succeed_if (keySetName (k, "system:/../something"), "could not set key name with ..");
@@ -1907,13 +1907,13 @@ static void test_keyNameSpecial (void)
 	succeed_if_same_string (keyName (k), "system:/a");
 
 	succeed_if (keySetName (k, "system:/a/b/c/../../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/a/b/c/../../../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 	succeed_if (keySetName (k, "system:/a/b/c/../../../../.."), "could not set key name with ..");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 
 
 	succeed_if (keySetName (k, "system:/../a/b/c"), "could not set key name with ..");
@@ -2088,27 +2088,27 @@ static void test_keySetBaseName (void)
 
 	keySetName (k, "spec/");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
-	succeed_if_same_string (keyName (k), "spec");
+	succeed_if_same_string (keyName (k), "spec:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "proc/");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
-	succeed_if_same_string (keyName (k), "proc");
+	succeed_if_same_string (keyName (k), "proc:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "dir/");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
-	succeed_if_same_string (keyName (k), "dir");
+	succeed_if_same_string (keyName (k), "dir:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "user:/");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
-	succeed_if_same_string (keyName (k), "user");
+	succeed_if_same_string (keyName (k), "user:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "system:/");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "/");
@@ -2128,7 +2128,7 @@ static void test_keySetBaseName (void)
 
 	keySetName (k, "system:/notCascading");
 	succeed_if (keySetBaseName (k, 0) >= 0, "removing basename of non cascading key with depth 1 failed");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "system:/foo/bar");
@@ -2136,7 +2136,7 @@ static void test_keySetBaseName (void)
 	succeed_if_same_string (keyName (k), "system:/foo");
 	succeed_if_same_string (keyBaseName (k), "foo");
 	succeed_if (keySetBaseName (k, 0) >= 0, "second removing basename of non cascading key with depth 2 failed");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "/foo/bar");
@@ -2177,7 +2177,7 @@ static void test_keySetBaseName (void)
 
 	keySetName (k, "system:/");
 	succeed_if (keySetBaseName (k, "valid") == -1, "add root name, but set was used");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "proc/");
@@ -2187,7 +2187,7 @@ static void test_keySetBaseName (void)
 
 	keySetName (k, "system:/valid");
 	succeed_if (keySetBaseName (k, 0) == sizeof ("system"), "could not remove base name");
-	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyName (k), "system:/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "system:/valid");
