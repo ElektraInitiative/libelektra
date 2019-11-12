@@ -55,7 +55,8 @@ using KeySet = ckdb::KeySet;
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		ELEKTRA_LOG ("Add Error %s", ELEKTRA_ERROR_OUT_OF_MEMORY);                                                                 \
-		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME));       \
+		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),        \
+					      "Memory allocation failed");                                                                 \
 	} while (0)
 
 #define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key, reason)                                                                                     \

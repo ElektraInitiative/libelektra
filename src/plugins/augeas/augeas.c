@@ -415,7 +415,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 
 memoryerror:
 	elektraFree (keyArray);
-	ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Unable to allocate memory while saving the augeas tree");
+	ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 	return -1;
 }
 
@@ -432,7 +432,7 @@ int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 
 		if (ret >= 0)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Unable to allocate memory for a detailed augeas error message");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 			return -1;
 		}
 

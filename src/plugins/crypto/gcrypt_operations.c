@@ -58,7 +58,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	if (!saltHexString)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
@@ -205,7 +205,7 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 		memset (ivBuffer, 0, sizeof (ivBuffer));
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 
@@ -293,7 +293,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_octet_t * output = elektraMalloc (outputLen);
 	if (!output)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		elektraFree (salt);
 		return -1;
 	}
@@ -373,7 +373,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_octet_t * output = elektraMalloc (payloadLen);
 	if (!output)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 
@@ -446,7 +446,7 @@ char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_s
 	}
 	if (!encoded)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 	}
 	return encoded;
 }
