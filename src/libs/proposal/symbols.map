@@ -1,6 +1,5 @@
 libelektra_0.8 {
 	# kdbproposal.h
-	elektraKeyGetMetaKeySet;
 	elektraKsToMemArray;
 	keyAsCascading;
 	keyGetLevelsBelow;

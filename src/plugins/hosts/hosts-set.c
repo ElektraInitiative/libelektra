@@ -60,7 +60,7 @@ static const char * getMetaValue (Key * key, const char * metaName)
 static void writeLineComments (Key * key, FILE * fp)
 {
 	// TODO: this is really inefficient
-	KeySet * metaKeys = elektraKeyGetMetaKeySet (key);
+	KeySet * metaKeys = keyMeta (key);
 	Key * commentParent = keyNew ("comment", KEY_META_NAME, KEY_END);
 	KeySet * comments = elektraArrayGet (commentParent, metaKeys);
 	keyDel (commentParent);
@@ -85,7 +85,6 @@ static void writeLineComments (Key * key, FILE * fp)
 		}
 	}
 
-	ksDel (metaKeys);
 	ksDel (comments);
 }
 
