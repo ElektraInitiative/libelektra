@@ -289,7 +289,9 @@ you up to date with the multi-language support provided by Elektra.
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
+- Reference testing with Docker tutorial in main testing documentation. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
+- Add information on debuggers to main testing documentation. _(Dominic Jäger)_
 - Added design decision for error code implementations. _(Michael Zronek)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
