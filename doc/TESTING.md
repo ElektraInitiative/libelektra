@@ -146,6 +146,9 @@ For `make run_all` following development tools enable even more tests:
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
   requires POSIX utilities (`awk`, `grep`, …).
 
+You can also use Docker to set up such an environment.
+There is [a tutorial](/doc/tutorials/run_all_tests_with_docker.md) that guides you through the necessary steps.
+
 ## Adding Tests
 
 For plugins, adding `ADD_TEST` to `add_plugin` will execute the tests in `testmod_${pluginname}.c`.
