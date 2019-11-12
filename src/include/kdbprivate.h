@@ -362,7 +362,9 @@ struct _Backend
 	Key * mountpoint; /*!< The mountpoint where the backend resides.
 	  The keyName() is the point where the backend was mounted.
 	  The keyValue() is the name of the backend without pre/postfix, e.g.
-	  filesys. */
+	  filesys.
+	  NOTE: This is NULL, if this is a default backend (created by backendOpenDefault).
+	  */
 
 	Plugin * setplugins[NR_OF_PLUGINS];
 	Plugin * getplugins[NR_OF_PLUGINS];

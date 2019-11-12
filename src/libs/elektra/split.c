@@ -842,7 +842,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 	for (size_t i = 0; i < split->size; ++i)
 	{
 		// TODO: simplify this code below, seems like this affects only the last split anyway
-		if (!split->handles[i] || !split->handles[i]->mountpoint)
+		if (!split->handles[i])
 		{
 			ELEKTRA_LOG_DEBUG (">>>> Skipping split->handle[%ld]: pseudo-backend or no mountpoint", i);
 			ELEKTRA_ASSERT (i == (split->size - 1), "ERROR: NOT THE LAST SPLIT");
@@ -859,7 +859,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		// TODO: simplify this code above, seems like this affects only the last split anyway
 
 		char * name = 0;
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		if (split->handles[i]->mountpoint != NULL)
 		{
 			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
 		}

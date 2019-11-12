@@ -135,7 +135,7 @@ protected:
 		closeElektra ();
 
 		ElektraError * error = nullptr;
-		elektra = elektraOpen (("user" + testRoot).c_str (), defaults, contract, &error);
+		elektra = elektraOpen (("user:" + testRoot).c_str (), defaults, contract, &error);
 
 		ASSERT_NE (elektra, nullptr) << "elektraOpen failed" << &error << std::endl;
 
@@ -181,7 +181,7 @@ protected:
 
 	static const inline kdb::Key makeKey (KDBType type, const char * name, const char * value)
 	{
-		return kdb::Key ("user" + testRoot + name, KEY_VALUE, value, KEY_META, "type", type, KEY_END);
+		return kdb::Key ("user:" + testRoot + name, KEY_VALUE, value, KEY_META, "type", type, KEY_END);
 	}
 
 	static const std::vector<kdb::Key> makeArray (KDBType type, const char * name, const std::vector<std::string> & values)
@@ -191,10 +191,10 @@ protected:
 		for (size_t i = 0; i < values.size (); ++i)
 		{
 			ckdb::elektraWriteArrayNumber (arrayNumber, i);
-			array[i + 1] = kdb::Key ("user" + testRoot + name + "/" + arrayNumber, KEY_VALUE, values[i].c_str (), KEY_META,
+			array[i + 1] = kdb::Key ("user:" + testRoot + name + "/" + arrayNumber, KEY_VALUE, values[i].c_str (), KEY_META,
 						 "type", type, KEY_END);
 		}
-		array[0] = kdb::Key ("user" + testRoot + name, KEY_META, "array", arrayNumber, KEY_END);
+		array[0] = kdb::Key ("user:" + testRoot + name, KEY_META, "array", arrayNumber, KEY_END);
 		return array;
 	}
 };

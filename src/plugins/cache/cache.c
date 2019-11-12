@@ -181,16 +181,15 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 	if (mode == modeDirectory) return elektraStrDup (directory);
 
 	const char * name = keyName (parentKey);
-	const char * value = keyString (parentKey);
 	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
-	if (strlen (name) != 0)
+	if (name != NULL)
 	{
 		cacheFileName = elektraStrConcat (directory, "/backend/");
 		char * tmp = cacheFileName;
 		cacheFileName = elektraStrConcat (cacheFileName, name);
 		elektraFree (tmp);
 	}
-	else if (elektraStrCmp (value, "default") == 0)
+	else if (name == NULL)
 	{
 		cacheFileName = elektraStrConcat (directory, "/default/");
 	}
@@ -272,7 +271,7 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/cache"))
+	if (parentKey != NULL && elektraStrCmp (keyName (parentKey), "system:/elektra/modules/cache") == 0)
 	{
 		KeySet * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),

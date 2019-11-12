@@ -72,7 +72,7 @@ public:
 	{
 		unlink ();
 		mount (mountpoint, configFile_);
-		mount ("spec/" + mountpoint, configFile_);
+		mount ("spec:/" + mountpoint, configFile_);
 
 		userConfigFile = getConfigFileName ("user", mountpoint);
 		specConfigFile = getConfigFileName ("spec", mountpoint);
@@ -85,7 +85,7 @@ public:
 
 	~Mountpoint ()
 	{
-		umount ("spec/" + mountpoint);
+		umount ("spec:/" + mountpoint);
 		umount (mountpoint);
 		unlink ();
 	}
@@ -106,7 +106,7 @@ public:
 		using namespace kdb::tools;
 
 		KDB kdb;
-		Key parent (ns + "/" + mp, KEY_END);
+		Key parent (ns + ":/" + mp, KEY_END);
 		KeySet ks;
 		kdb.get (ks, parent);
 		return parent.getString ();
@@ -125,7 +125,7 @@ public:
 		b.addPlugin (PluginSpec ("error"));
 		KeySet ks;
 		KDB kdb;
-		Key parentKey ("system/elektra/mountpoints", KEY_END);
+		Key parentKey ("system:/elektra/mountpoints", KEY_END);
 		kdb.get (ks, parentKey);
 		b.serialize (ks);
 		kdb.set (ks, parentKey);
@@ -137,7 +137,7 @@ public:
 		using namespace kdb::tools;
 		KeySet ks;
 		KDB kdb;
-		Key parentKey ("system/elektra/mountpoints", KEY_END);
+		Key parentKey ("system:/elektra/mountpoints", KEY_END);
 		kdb.get (ks, parentKey);
 		Backends::umount (mountpoint_, ks);
 		kdb.set (ks, parentKey);

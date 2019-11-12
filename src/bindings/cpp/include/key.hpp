@@ -547,7 +547,7 @@ inline Key::const_reverse_iterator Key::crend () const noexcept
  *
  * @see isValid(), isNull()
  */
-inline Key::Key () : key (ckdb::keyNew (nullptr))
+inline Key::Key () : key (ckdb::keyNew ("/", KEY_END))
 {
 	operator++ ();
 }

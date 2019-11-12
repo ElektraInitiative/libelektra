@@ -100,16 +100,16 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		std::string const & name = it->mountpoint;
 		if (name == "/")
 		{
-			alreadyUsedMountpoints.push_back ("spec");
-			alreadyUsedMountpoints.push_back ("dir");
-			alreadyUsedMountpoints.push_back ("user");
-			alreadyUsedMountpoints.push_back ("system");
+			alreadyUsedMountpoints.push_back ("spec:/");
+			alreadyUsedMountpoints.push_back ("dir:/");
+			alreadyUsedMountpoints.push_back ("user:/");
+			alreadyUsedMountpoints.push_back ("system:/");
 		}
 		else if (name.at (0) == '/')
 		{
-			alreadyUsedMountpoints.push_back (Key ("dir" + name, KEY_END).getName ());
-			alreadyUsedMountpoints.push_back (Key ("user" + name, KEY_END).getName ());
-			alreadyUsedMountpoints.push_back (Key ("system" + name, KEY_END).getName ());
+			alreadyUsedMountpoints.push_back (Key ("dir:" + name, KEY_END).getName ());
+			alreadyUsedMountpoints.push_back (Key ("user:" + name, KEY_END).getName ());
+			alreadyUsedMountpoints.push_back (Key ("system:" + name, KEY_END).getName ());
 		}
 
 		// always add name itself, too
@@ -134,9 +134,9 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 	}
 
 	// STEP 2: check for wrong namespace (proc)
-	if (mountpoint.getNamespace () == "proc")
+	if (mountpoint.getNamespace () == "proc:/")
 	{
-		throw MountpointAlreadyInUseException ("proc mountpoint not allowed");
+		throw MountpointAlreadyInUseException ("proc:/ mountpoint not allowed");
 	}
 
 	// STEP 3: check for name match
@@ -179,21 +179,21 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
 							       " not possible, because cascading mountpoint " + smp + " already exists.\n");
 		}
-		Key dkmp ("dir" + smp, KEY_END);
+		Key dkmp ("dir:" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
 							       " not possible, because dir mountpoint already exists.\n");
 		}
-		Key ukmp ("user" + smp, KEY_END);
+		Key ukmp ("user:" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
 							       " not possible, because user mountpoint already exists.\n");
 		}
-		Key skmp ("system" + smp, KEY_END);
+		Key skmp ("system:" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
