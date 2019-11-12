@@ -263,14 +263,14 @@ impl KeySet {
     ///
     /// # Examples
     /// ```
-    /// # use elektra::{KeySet, StringKey, WriteableKey, ReadableKey};
+    /// # use elektra::{KeySet, StringKey, WriteableKey, ReadableKey, keyset};
     /// # use std::iter::FromIterator;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut keyset = KeySet::from_iter(vec![
+    /// let mut keyset = keyset![
     ///     StringKey::new("user/key/parent")?,
     ///     StringKey::new("user/key/parent/below")?,
     ///     StringKey::new("user/key/other")?,
-    /// ]);
+    /// ];
     /// let cut_key = StringKey::new("user/key/parent")?;
     /// let cut_keyset = keyset.cut(&cut_key);
     /// assert_eq!(keyset.size(), 1);
@@ -284,7 +284,6 @@ impl KeySet {
     pub fn cut(&mut self, cut_point: &StringKey) -> KeySet {
         let ks_ptr = unsafe { elektra_sys::ksCut(self.as_ptr(), cut_point.as_ref()) };
         if ks_ptr.is_null() {
-            println!("was null");
             KeySet::new()
         } else {
             unsafe { KeySet::from_ptr(ks_ptr) }
