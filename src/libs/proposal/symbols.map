@@ -4,6 +4,5 @@ libelektra_0.8 {
 	keyAsCascading;
 	keyGetLevelsBelow;
 	keyRel2;
-	keySetStringF;
 	ksPopAtCursor;
 };
