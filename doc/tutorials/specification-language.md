@@ -5,21 +5,29 @@ can be used to apply a validation for the configuration that you want to ship fo
 
 ## How Elektra perfroms validation
 
-One of the main concepts of Elektra are [namespaces](namespaces.md) which is also used by the specification language.
+We encourage the reader to be first familiar with the tutorial of [namespaces](namespaces.md) and [mounting](mount.md). A basic
+understanding of [set](../help/kdb-set.md) and [meta-set](../help/kdb-meta-set.md) is also helpful for understanding this tutorial.
 When you [mount](mount.md) a configuration such as `kdb mount test.conf /tests dump` you usually use one of the four standard namespaces
 `user`, `dir`, `proc` or `system`.
 
-There is a 5th namespace called the `spec` namespace and has a special behavior. Any configuration you mount under `spec` will
-be used to validate configurations in other namespaces under the same path. So in the following example you can write any validation
-data in the `test.spec` file and can be assured it will be validated in the other namespaces:
+There is a 5th namespace called the `spec` namespace and has a special behavior. Any validation behavior 
+will be written to the `spec` namespace. You can use `meta-set` to set any metadata to the spec namespace.
 
 ```shell script
-# Mounts the specification 'test.spec'
-# Configuration validation is now applies to all keys below the '/tests' path
-kdb mount test.spec spec/tests dump
+kdb meta-set /tests/bool 'type' boolean
+```
 
+Now you can mount a configuration under the `/tests` path and be assured that the key `bool` will
+have a boolean value validation applied:
+
+```shell script
 # An example configuration which will by default gets mounted to the 'user' namespace
 kdb mount test.conf /tests dump type
+
+kdb set /tests/bool Batman     
+# Using name user/tests/bool
+# Sorry, module type issued the error C03200:
+# Validation Semantic: The value 'uaud' of key 'user/tests/bool' could not be converted into a boolean
 ```
 
 Elektra takes all configuration settings which the user or admin provides and parses it into a structured internal format.
@@ -34,7 +42,7 @@ that in the upper example we also mounted the [type](/src/plugins/type/README.md
 can check for wrong types:
 
 ```shell script
-kdb meta-set spec/tests/bool 'type' boolean
+kdb meta-set /tests/bool 'type' boolean
 kdb set /tests/bool Batman
 # Sorry, module type issued the error C03200:
 # Validation Semantic: The value 'Batman' of key 'user/tests/bool' could not be converted into a boolean
@@ -46,7 +54,7 @@ still remains in our issue tracker([#2133](https://github.com/ElektraInitiative/
 ## Specification writing
 
 There are multiple ways how you can set constraints for configuration settings. All possibilities though set `metadata` to certain
-configuration settings (this is also done in the spec namespace). A metadata is just additional data describing the configuration setting.
+configuration settings. Setting metadata should be done in the spec namespace. A metadata is just additional data describing the configuration setting.
 One way to set metadata is the command line tool [kdb meta-set](../help/kdb-meta-set.md) which we have used in the upper example.
 For the [validation plugin](../../src/plugins/validation/README.md) which supports regular expression checks there exists even its own
 command line tool [kdb vset](../help/kdb-vset.md).
@@ -75,7 +83,8 @@ kdb spec-mount /tests
 ```
 
 The `spec-mount` command tells Elektra to load all relevant plugins. It is smart enough to automatically detect the needed plugins
-by looking at all metadata. You might need to remove some metadata to not load certain plugins that cause the exceeding of the maximum
+by looking at all metadata. Sine `type` for is given under the `[bool]` key, Elektra will load the `type` plugin. 
+You might need to remove some metadata to not load certain plugins that cause the exceeding of the maximum
 plugin number.
 
 What remains to know are the metadata names and meanings. We have used the `type` plugin which provides the metadata `type` metadata along with
