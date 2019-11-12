@@ -283,17 +283,22 @@ int init (int argc, char ** argv);
  *
  */
 #define compare_key(pk1, pk2)                                                                                                              \
+	do                                                                                                                                 \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
 		Key * mmk1 = (Key *) pk1;                                                                                                  \
 		Key * mmk2 = (Key *) pk2;                                                                                                  \
-		if (mmk1 == NULL)                                                                                                          \
+		if (mmk1 == mmk2)                                                                                                          \
 		{                                                                                                                          \
-			yield_error ("first key is null")                                                                                  \
+			break; /* same pointer */                                                                                          \
+		}                                                                                                                          \
+		else if (mmk1 == NULL)                                                                                                     \
+		{                                                                                                                          \
+			yield_error ("first key is null, but second is not")                                                               \
 		}                                                                                                                          \
 		else if (mmk2 == NULL)                                                                                                     \
 		{                                                                                                                          \
-			yield_error ("second key is null")                                                                                 \
+			yield_error ("second key is null, but first is not")                                                               \
 		}                                                                                                                          \
 		else if (mmk1 != mmk2)                                                                                                     \
 		{                                                                                                                          \
@@ -341,7 +346,7 @@ int init (int argc, char ** argv);
 					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2));                         \
 			}                                                                                                                  \
 		}                                                                                                                          \
-	}
+	} while (0)
 
 
 /**Compare two keysets.

@@ -14,9 +14,17 @@
 Trie * test_insert (Trie * trie, char * name, char * value)
 {
 	Backend * backend = elektraCalloc (sizeof (Backend));
-	backend->mountpoint = keyNew (name, KEY_VALUE, value, KEY_END);
+
+	if (strlen (name) == 0)
+	{
+		backend->mountpoint = NULL;
+	}
+	else
+	{
+		backend->mountpoint = keyNew (name, KEY_VALUE, value, KEY_END);
+		keyIncRef (backend->mountpoint);
+	}
 	backend->refcounter = 1;
-	keyIncRef (backend->mountpoint);
 	return trieInsert (trie, name, backend);
 }
 
@@ -25,18 +33,16 @@ static void test_minimaltrie (void)
 {
 	printf ("Test minimal trie\n");
 
-	Trie * trie = test_insert (0, "/", "");
-	Key * mp = keyNew ("/", KEY_VALUE, "", KEY_END);
+	Trie * trie = test_insert (0, "", "");
 
 	succeed_if (trieLookup (trie, "/"), "trie should not be null");
-	compare_key (trieLookup (trie, "/")->mountpoint, mp);
-	compare_key (trieLookup (trie, "user:/")->mountpoint, mp);
-	compare_key (trieLookup (trie, "system:/")->mountpoint, mp);
-	compare_key (trieLookup (trie, "user:/below")->mountpoint, mp);
-	compare_key (trieLookup (trie, "system:/below")->mountpoint, mp);
+	succeed_if (trieLookup (trie, "/")->mountpoint == NULL, "default backend should have NULL mountpoint");
+	succeed_if (trieLookup (trie, "user:/")->mountpoint == NULL, "default backend should have NULL mountpoint");
+	succeed_if (trieLookup (trie, "system:/")->mountpoint == NULL, "default backend should have NULL mountpoint");
+	succeed_if (trieLookup (trie, "user:/below")->mountpoint == NULL, "default backend should have NULL mountpoint");
+	succeed_if (trieLookup (trie, "system:/below")->mountpoint == NULL, "default backend should have NULL mountpoint");
 
 	trieClose (trie, 0);
-	keyDel (mp);
 }
 
 KeySet * simple_config (void)
@@ -623,7 +629,7 @@ static void test_root (void)
 	printf ("Test trie with root\n");
 
 	Trie * trie = 0;
-	trie = test_insert (trie, "/", "root");
+	trie = test_insert (trie, "", "root");
 	trie = test_insert (trie, "user:/tests/simple", "simple");
 
 	exit_if_fail (trie, "trie was not build up successfully");
@@ -631,7 +637,7 @@ static void test_root (void)
 	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * backend = trieLookup (trie, "user:/");
 	succeed_if (backend, "there should be the root backend");
-	if (backend) compare_key (backend->mountpoint, rmp);
+	if (backend) succeed_if (backend->mountpoint == NULL, "default backend mountpoint should be NULL");
 
 
 	Key * mp = keyNew ("user:/tests/simple", KEY_VALUE, "simple", KEY_END);

@@ -749,10 +749,18 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 		// move Key name
 		if (curMeta->key)
 		{
-			size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
-			memcpy (mmapAddr->dataPtr, curMeta->key, keyNameSize);
+			memcpy (mmapAddr->dataPtr, curMeta->key, curMeta->keySize);
 			mmapMetaKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
-			mmapAddr->dataPtr += keyNameSize;
+			mmapAddr->dataPtr += curMeta->keySize;
+			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
+		}
+
+		// move Key unescaped name
+		if (curMeta->ukey)
+		{
+			memcpy (mmapAddr->dataPtr, curMeta->ukey, curMeta->keyUSize);
+			mmapMetaKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapAddr->dataPtr += curMeta->keyUSize;
 			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
@@ -853,10 +861,18 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		// move Key name
 		if (cur->key)
 		{
-			size_t keyNameSize = cur->keySize + cur->keyUSize;
-			memcpy (mmapAddr->dataPtr, cur->key, keyNameSize);
+			memcpy (mmapAddr->dataPtr, cur->key, cur->keySize);
 			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
-			mmapAddr->dataPtr += keyNameSize;
+			mmapAddr->dataPtr += cur->keySize;
+			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
+		}
+
+		// move Key unescaped name
+		if (cur->ukey)
+		{
+			memcpy (mmapAddr->dataPtr, cur->ukey, cur->keyUSize);
+			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapAddr->dataPtr += cur->keyUSize;
 			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 

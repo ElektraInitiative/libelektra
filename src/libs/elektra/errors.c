@@ -41,24 +41,26 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 		return;
 	}
 
-	char buffer[25] = "warnings/#00";
-	buffer[12] = '\0';
+	char buffer[64] = "warnings/#0\0\0";
 	const Key * meta = keyGetMeta (key, "warnings");
-	if (meta)
+	const char * old = meta == NULL ? NULL : keyString (meta);
+	if (old && strcmp (old, "#_99") < 0)
 	{
-		buffer[10] = keyString (meta)[0];
-		buffer[11] = keyString (meta)[1];
-		buffer[11]++;
-		if (buffer[11] > '9')
+		int i = old[1] == '_' ? ((old[2] - '0') * 10 + (old[3] - '0')) : (old[1] - '0');
+		i = (i + 1) % 100;
+
+		if (i < 10)
 		{
-			buffer[11] = '0';
-			buffer[10]++;
-			if (buffer[10] > '9') buffer[10] = '0';
+			buffer[10] = '0' + i;
 		}
-		keySetMeta (key, "warnings", &buffer[10]);
+		else
+		{
+			buffer[10] = '_';
+			buffer[11] = '0' + (i / 10);
+			buffer[12] = '0' + (i % 10);
+		}
 	}
-	else
-		keySetMeta (key, "warnings", "00");
+	keySetMeta (key, "warnings", &buffer[9]);
 
 	keySetMeta (key, buffer, "number description  module file line mountpoint configfile reason");
 	strcat (buffer, "/number");

@@ -550,8 +550,8 @@ int mountVersion (KDB * kdb, Key * errorKey);
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
 int mountBackend (KDB * kdb, Backend * backend, Key * errorKey);
 
-Key * mountGetMountpoint (KDB * handle, const Key * where);
-Backend * mountGetBackend (KDB * handle, const Key * key);
+Key * mountGetMountpoint (KDB * handle, const char * where);
+Backend * mountGetBackend (KDB * handle, const char * where);
 
 void keyInit (Key * key);
 

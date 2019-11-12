@@ -1078,7 +1078,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	cache = ksNew (0, KS_END);
-	cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
+	cacheParent = keyDup (mountGetMountpoint (handle, keyName (initialParent)));
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
@@ -1888,8 +1888,7 @@ static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, K
  */
 static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const char * pluginName, Key * errorKey)
 {
-	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-	Backend * backend = mountGetBackend (handle, mountpointKey);
+	Backend * backend = mountGetBackend (handle, mountpoint);
 
 	int ret = 1;
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
@@ -1935,7 +1934,6 @@ static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const c
 		}
 	}
 
-	keyDel (mountpointKey);
 	return ret;
 }
 

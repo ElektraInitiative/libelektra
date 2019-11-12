@@ -119,7 +119,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 	{
 		trie = elektraCalloc (sizeof (Trie));
 
-		if (strcmp ("", name) == 0 || strcmp ("/", name) == 0)
+		if (strcmp ("", name) == 0)
 		{
 			trie->empty_value = value;
 			return trie;

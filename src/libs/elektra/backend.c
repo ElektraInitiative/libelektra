@@ -84,9 +84,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 		return -1;
 	}
 
-	backend->mountpoint = keyNew ("/", KEY_VALUE, keyBaseName (root), KEY_END);
-	elektraKeySetName (backend->mountpoint, keyString (foundMountpoint), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
-
+	backend->mountpoint = keyNew (keyString (foundMountpoint), KEY_VALUE, keyBaseName (root), KEY_END);
 	keySetName (errorKey, keyName (backend->mountpoint));
 
 	if (!backend->mountpoint)
@@ -277,7 +275,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 
 	KeySet * resolverConfig = ksNew (5, keyNew ("system:/path", KEY_VALUE, file, KEY_END), KS_END);
 
-	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	keySetName (errorKey, "/");
 
 	Plugin * resolver = elektraPluginOpen (KDB_RESOLVER, modules, resolverConfig, errorKey);
 	if (!resolver)
@@ -326,10 +324,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 	backend->setplugins[STORAGE_PLUGIN] = storage;
 	storage->refcounter = 2;
 
-	Key * mp = keyNew ("/", KEY_VALUE, "default", KEY_END);
-	backend->mountpoint = mp;
-	keyIncRef (backend->mountpoint);
-
+	backend->mountpoint = NULL;
 	return backend;
 }
 
@@ -468,9 +463,12 @@ int backendClose (Backend * backend, Key * errorKey)
 	/* Check if we have the last reference on the backend (unsigned!) */
 	if (backend->refcounter > 0) return 0;
 
-	keyDecRef (backend->mountpoint);
-	keySetName (errorKey, keyName (backend->mountpoint));
-	keyDel (backend->mountpoint);
+	if (backend->mountpoint)
+	{
+		keyDecRef (backend->mountpoint);
+		keySetName (errorKey, keyName (backend->mountpoint));
+		keyDel (backend->mountpoint);
+	}
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{

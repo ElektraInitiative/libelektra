@@ -30,6 +30,15 @@ Backend * b_new (const char * name, const char * value)
 	return backend;
 }
 
+Backend * b_default (void)
+{
+	Backend * backend = elektraCalloc (sizeof (Backend));
+	backend->refcounter = 1;
+	backend->mountpoint = NULL;
+
+	return backend;
+}
+
 static void kdb_del (KDB * kdb)
 {
 	backendClose (kdb->defaultBackend, 0);
@@ -44,32 +53,26 @@ static void test_mount (void)
 	printf ("test mount backend\n");
 
 	KDB * kdb = kdb_new ();
-	mountBackend (kdb, b_new ("user", "user"), 0);
+	mountBackend (kdb, b_new ("user:/", "user"), 0);
 	succeed_if (kdb->trie, "there should be a trie");
 
 	Key * mp = keyNew ("user:/", KEY_VALUE, "user", KEY_END);
-	Key * sk = keyNew ("user:/", KEY_VALUE, "user", KEY_END);
 
 	succeed_if (kdb->split->size == 1, "size of split not correct");
 	compare_key (mp, kdb->split->parents[0]);
 
-	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
-	compare_key (mountGetMountpoint (kdb, sk), mp);
+	compare_key (mountGetBackend (kdb, "user:/")->mountpoint, mp);
+	compare_key (mountGetMountpoint (kdb, "user:/"), mp);
 
-	keySetName (sk, "user:/below");
-	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
-	compare_key (mountGetMountpoint (kdb, sk), mp);
+	compare_key (mountGetBackend (kdb, "user:/below")->mountpoint, mp);
+	compare_key (mountGetMountpoint (kdb, "user:/below"), mp);
 
-	keySetName (sk, "system:/");
-	kdb->defaultBackend = b_new ("", "default");
-	succeed_if (mountGetBackend (kdb, sk) == kdb->defaultBackend, "did not return default backend");
+	kdb->defaultBackend = b_default ();
+	succeed_if (mountGetBackend (kdb, "system:/") == kdb->defaultBackend, "did not return default backend");
 
-	keySetName (mp, "");
-	keySetString (mp, "default");
-	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
-	compare_key (mountGetMountpoint (kdb, sk), mp);
+	succeed_if (mountGetBackend (kdb, "system:/")->mountpoint == NULL, "mountpoint of default backend should be NULL");
+	succeed_if (mountGetMountpoint (kdb, "system:/") == NULL, "mountpoint of default backend should be NULL");
 
-	keyDel (sk);
 	keyDel (mp);
 
 	kdb_del (kdb);
@@ -159,10 +162,10 @@ static void test_simple (void)
 
 KeySet * set_us (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user:\\/", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/user:\\//mountpoint", KEY_VALUE, "user:/", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system:\\/", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system:\\//mountpoint", KEY_VALUE, "system:/", KEY_END), KS_END);
 }
 
 static void test_us (void)
@@ -180,10 +183,10 @@ static void test_us (void)
 	succeed_if (mountDefault (kdb, modules, 1, 0) == 0, "could not mount default backend");
 
 	succeed_if (kdb->split->size == 5, "size of split not correct");
-	mp = keyNew ("system:/", KEY_VALUE, "system", KEY_END);
+	mp = keyNew ("system:/", KEY_VALUE, "system:/", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "user:/");
-	keySetString (mp, "user");
+	keySetString (mp, "user:/");
 	compare_key (mp, kdb->split->parents[1]);
 	keySetName (mp, "system:/elektra");
 	keySetString (mp, "default");
@@ -197,16 +200,16 @@ static void test_us (void)
 	succeed_if (mp, "no mountpoint found");
 	if (mp)
 	{
-		succeed_if_same_string (keyName (mp), "user");
-		succeed_if_same_string (keyString (mp), "user");
+		succeed_if_same_string (keyName (mp), "user:/");
+		succeed_if_same_string (keyString (mp), "user:/");
 	}
 
 	Backend * two = trieLookup (kdb->trie, "system:/anywhere/tests/backend/two");
 	succeed_if (two != backend, "should be differnt backend");
 
 	succeed_if ((mp = two->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "system");
-	succeed_if_same_string (keyString (mp), "system");
+	succeed_if_same_string (keyName (mp), "system:/");
+	succeed_if_same_string (keyString (mp), "system:/");
 
 	kdb_del (kdb);
 	elektraModulesClose (modules, 0);
@@ -256,9 +259,7 @@ static void test_cascading (void)
 	succeed_if (!backend, "there should be no backend");
 
 
-	mp = keyNew ("", KEY_VALUE, "simple", KEY_END);
-	elektraKeySetName (mp, "/tests/simple", KEY_CASCADING_NAME);
-
+	mp = keyNew ("/tests/simple", KEY_VALUE, "simple", KEY_END);
 	backend = trieLookup (kdb->trie, "user:/tests/simple");
 	succeed_if (backend, "there should be a backend");
 	if (backend) compare_key (backend->mountpoint, mp);
@@ -337,8 +338,7 @@ static void test_root (void)
 	keySetString (mp, "simple");
 	compare_key (mp, kdb->split->parents[4]);
 
-	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
-	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
+	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * b2 = 0;
 
 	b2 = trieLookup (kdb->trie, "user:/");
@@ -409,8 +409,7 @@ static void test_default (void)
 
 	// output_trie (kdb->trie);
 
-	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
-	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
+	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	Backend * b2 = 0;
 
 	b2 = trieLookup (kdb->trie, "user:/");
@@ -435,18 +434,16 @@ static void test_default (void)
 	succeed_if (backend == b2, "should be same backend");
 	if (b2) compare_key (b2->mountpoint, mp);
 
-	Key * dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	b2 = trieLookup (kdb->trie, "system:/elektra");
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	if (b2) compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, NULL);
 
 	b2 = trieLookup (kdb->trie, "system:/elektra/below");
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	if (b2) compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, NULL);
 
-	keyDel (dmp);
 	keyDel (mp);
 	keyDel (rmp);
 
@@ -500,7 +497,7 @@ static void test_modules (void)
 
 	// output_trie (kdb->trie);
 
-	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
+	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
 	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
 	Backend * b2 = 0;
 
@@ -526,16 +523,15 @@ static void test_modules (void)
 	succeed_if (backend == b2, "should be same backend");
 	if (b2) compare_key (b2->mountpoint, mp);
 
-	Key * dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	b2 = trieLookup (kdb->trie, "system:/elektra");
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	if (b2) compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, NULL);
 
 	b2 = trieLookup (kdb->trie, "system:/elektra/below");
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	if (b2) compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, NULL);
 
 	Key * mmp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
 	keyAddBaseName (mmp, "default");
@@ -549,7 +545,6 @@ static void test_modules (void)
 	*/
 
 	keyDel (mmp);
-	keyDel (dmp);
 	keyDel (mp);
 	keyDel (rmp);
 

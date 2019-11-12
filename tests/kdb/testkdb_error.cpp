@@ -176,8 +176,8 @@ TEST_F (Error, ToWarning)
 	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
 
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "warnings/#00"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "warnings/#00/number")), "C01110");
+	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "warnings/#0"));
+	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "warnings/#0/number")), "C01110");
 
 
 	kdbClose (kdb, parentKey);

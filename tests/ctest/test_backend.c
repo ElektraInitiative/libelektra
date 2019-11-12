@@ -144,9 +144,7 @@ static void test_default (void)
 	Backend * backend = backendOpenDefault (modules, global, KDB_DB_FILE, 0);
 
 	Key * mp;
-	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "/");
-	succeed_if_same_string (keyString (mp), "default");
+	succeed_if ((mp = backend->mountpoint) == NULL, "default backend mountpoint should be NULL");
 
 	backendClose (backend, 0);
 	elektraModulesClose (modules, 0);

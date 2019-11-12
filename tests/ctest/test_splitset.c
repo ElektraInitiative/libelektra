@@ -15,16 +15,16 @@
 KeySet * set_us (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user:/", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system:/", KEY_END), KS_END);
 }
 
 
 KeySet * set_three (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system:/", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/userin", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/userin/mountpoint", KEY_VALUE, "user:/invalid", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/userva", KEY_END),
@@ -275,7 +275,7 @@ static void test_easyparent (void)
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "user part need not to by synced");
-	succeed_if_same_string (keyName (split->parents[0]), "user");
+	succeed_if_same_string (keyName (split->parents[0]), "user:/");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split2);
@@ -293,7 +293,7 @@ static void test_easyparent (void)
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "system part need to by synced");
-	succeed_if_same_string (keyName (split->parents[0]), "system");
+	succeed_if_same_string (keyName (split->parents[0]), "system:/");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split1);
@@ -869,7 +869,7 @@ static void test_emptyremove (void)
 	}
 	splitPrepare (split);
 	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if_same_string (keyName (split->parents[0]), "user");
+	succeed_if_same_string (keyName (split->parents[0]), "user:/");
 	succeed_if_same_string (keyValue (split->parents[0]), "default");
 
 	splitDel (split);

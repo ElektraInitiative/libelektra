@@ -27,7 +27,6 @@
 #include "kdbprivate.h"
 #include "kdbtypes.h"
 
-
 /**
  * @internal
  *

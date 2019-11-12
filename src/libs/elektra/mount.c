@@ -133,7 +133,6 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 		}
 	}
 
-	Key * key = 0;
 	Backend * backend = 0;
 
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
@@ -141,31 +140,27 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 		switch (ns)
 		{
 		case KEY_NS_SPEC:
-			key = keyNew ("spec:/", KEY_VALUE, "default", KEY_END);
-			backend = mountGetBackend (kdb, key);
+			backend = mountGetBackend (kdb, "spec:/");
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that spec is not reachable anymore */
-				keyDel (key);
 			}
 			else
 			{
 				/* User is reachable, so append that to split */
-				splitAppend (kdb->split, backend, key, 2);
+				splitAppend (kdb->split, backend, keyNew ("spec:/", KEY_VALUE, "default", KEY_END), 2);
 			}
 			break;
 		case KEY_NS_DIR:
-			key = keyNew ("dir:/", KEY_VALUE, "default", KEY_END);
-			backend = mountGetBackend (kdb, key);
+			backend = mountGetBackend (kdb, "dir:/");
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that dir is not reachable anymore */
-				keyDel (key);
 			}
 			else
 			{
 				/* Dir is reachable, so append that to split */
-				splitAppend (kdb->split, backend, key, 2);
+				splitAppend (kdb->split, backend, keyNew ("dir:/", KEY_VALUE, "default", KEY_END), 2);
 			}
 			break;
 		case KEY_NS_SYSTEM:
@@ -175,9 +170,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			 */
 			if (inFallback)
 			{
-				key = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
-				backend = mountGetBackend (kdb, key);
-				keyDel (key);
+				backend = mountGetBackend (kdb, KDB_SYSTEM_ELEKTRA);
 				if (backend != kdb->defaultBackend)
 				{
 					/* It is not reachable, mount it */
@@ -203,32 +196,28 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 				++kdb->initBackend->refcounter;
 				kdb->split->syncbits[kdb->split->size - 1] = 2;
 
-				key = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
-				backend = mountGetBackend (kdb, key);
+				backend = mountGetBackend (kdb, "system:/");
 				if (backend != kdb->defaultBackend)
 				{
 					/* It does not matter that system is not reachable anymore */
-					keyDel (key);
 				}
 				else
 				{
 					/* System is reachable, so append that to split */
-					splitAppend (kdb->split, backend, key, 2);
+					splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "default", KEY_END), 2);
 				}
 			}
 			break;
 		case KEY_NS_USER:
-			key = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
-			backend = mountGetBackend (kdb, key);
+			backend = mountGetBackend (kdb, "user:/");
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that user is not reachable anymore */
-				keyDel (key);
 			}
 			else
 			{
 				/* User is reachable, so append that to split */
-				splitAppend (kdb->split, backend, key, 2);
+				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "default", KEY_END), 2);
 			}
 			break;
 		case KEY_NS_EMPTY:
@@ -554,23 +543,23 @@ int mountVersion (KDB * kdb, Key * errorKey)
  */
 int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 {
-
-	char * mountpoint;
-	/* 20 is enough for any of the combinations below. */
-	mountpoint = elektraMalloc (keyGetNameSize (backend->mountpoint) + 20);
-
 	/* Note that you must set the refcounter to the number of insertions
 	   into the trie */
 
-	if (!strcmp (keyName (backend->mountpoint), ""))
+	if (backend->mountpoint == NULL)
 	{
 		/* Default backend */
-		sprintf (mountpoint, "system:/elektra/");
-		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
+		kdb->trie = trieInsert (kdb->trie, "system:/elektra/", backend);
 		splitAppend (kdb->split, backend, keyNew ("system:/elektra/", KEY_VALUE, "default", KEY_END), 0);
 		backend->refcounter = 1;
+		return 1;
 	}
-	else if (!strcmp (keyName (backend->mountpoint), "/"))
+
+	/* 20 is enough for any of the combinations below. */
+	size_t nameSize = keyGetNameSize (backend->mountpoint);
+	char * mountpoint = elektraMalloc (nameSize + 20);
+
+	if (!strcmp (keyName (backend->mountpoint), "/"))
 	{
 		/* Root backend */
 		backend->refcounter = 0;
@@ -579,25 +568,25 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				sprintf (mountpoint, "spec%s", keyName (backend->mountpoint));
+				sprintf (mountpoint, "spec:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("spec:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_DIR:
-				sprintf (mountpoint, "dir%s", keyName (backend->mountpoint));
+				sprintf (mountpoint, "dir:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("dir:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
-				sprintf (mountpoint, "user%s", keyName (backend->mountpoint));
+				sprintf (mountpoint, "user:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
-				sprintf (mountpoint, "system%s", keyName (backend->mountpoint));
+				sprintf (mountpoint, "system:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
@@ -620,21 +609,21 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			switch (ns)
 			{
 			case KEY_NS_DIR:
-				sprintf (mountpoint, "dir%s/", keyName (backend->mountpoint));
+				sprintf (mountpoint, "dir:%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END),
 					     2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
-				sprintf (mountpoint, "user%s/", keyName (backend->mountpoint));
+				sprintf (mountpoint, "user:%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END),
 					     2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
-				sprintf (mountpoint, "system%s/", keyName (backend->mountpoint));
+				sprintf (mountpoint, "system:%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END),
 					     2);
@@ -655,7 +644,12 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 	else
 	{
 		/* Common single mounted backend */
-		sprintf (mountpoint, "%s/", keyName (backend->mountpoint));
+		strncpy (mountpoint, keyName (backend->mountpoint), nameSize);
+		if (mountpoint[nameSize - 2] != '/')
+		{
+			mountpoint[nameSize - 1] = '/';
+			mountpoint[nameSize] = '\0';
+		}
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 		splitAppend (kdb->split, backend, keyDup (backend->mountpoint), 0);
 		backend->refcounter = 1;
@@ -676,25 +670,23 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
  *
  * @par Example:
  * @code
-Key * key = keyNew ("system:/template");
 KDB * handle = kdbOpen();
 Key *mountpoint=0;
-mountpoint=kdbGetMountpoint(handle, key);
+mountpoint=kdbGetMountpoint(handle, "system:/template");
 
 printf("The backend I am using is %s mounted in %s\n",
 	keyValue(mountpoint),
 	keyName(mountpoint));
 kdbClose (handle);
-keyDel (key);
  * @endcode
  *
  *
  * @param handle is the data structure, where the mounted directories are saved.
- * @param where the key, that should be looked up.
+ * @param where the key name, that should be looked up.
  * @return the mountpoint associated with the key
  * @ingroup mount
  */
-Key * mountGetMountpoint (KDB * handle, const Key * where)
+Key * mountGetMountpoint (KDB * handle, const char * where)
 {
 	Backend * backend_handle;
 
@@ -720,15 +712,15 @@ Key * mountGetMountpoint (KDB * handle, const Key * where)
  * If key is 0 or invalid the default backend will be returned.
  *
  * @param handle is the data structure, where the mounted directories are saved.
- * @param key the key, that should be looked up.
+ * @param where the key name, that should be looked up.
  * @return the backend handle associated with the key
  * @ingroup mount
  */
-Backend * mountGetBackend (KDB * handle, const Key * key)
+Backend * mountGetBackend (KDB * handle, const char * where)
 {
-	if (!key || !strcmp (keyName (key), "")) return handle->defaultBackend;
+	if (where == NULL || strlen (where) == 0) return handle->defaultBackend;
 
-	Backend * ret = trieLookup (handle->trie, keyName (key));
+	Backend * ret = trieLookup (handle->trie, where);
 	if (!ret) return handle->defaultBackend;
 	return ret;
 }

@@ -311,7 +311,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 
 	/* Returns the backend the key is in or the default backend
 	   otherwise */
-	Backend * backend = mountGetBackend (kdb, parentKey);
+	Backend * backend = mountGetBackend (kdb, name);
 
 #if DEBUG && VERBOSE
 	printf (" with parent %s\n", keyName (parentKey));
@@ -381,7 +381,7 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		// TODO: handle keys in wrong namespaces
-		Backend * curHandle = mountGetBackend (handle, curKey);
+		Backend * curHandle = mountGetBackend (handle, keyName (curKey));
 		if (!curHandle) return -1;
 
 		/* If key could be appended to any of the existing split keysets */
@@ -415,7 +415,7 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
  */
 void splitUpdateFileName (Split * split, KDB * handle, Key * key)
 {
-	Backend * curHandle = mountGetBackend (handle, key);
+	Backend * curHandle = mountGetBackend (handle, keyName (key));
 	if (!curHandle) return;
 	ssize_t curFound = splitSearchBackend (split, curHandle, key);
 	if (curFound == -1) return;
@@ -448,7 +448,7 @@ int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		Backend * curHandle = mountGetBackend (handle, curKey);
+		Backend * curHandle = mountGetBackend (handle, keyName (curKey));
 		if (!curHandle) return -1;
 
 		/* If key could be appended to any of the existing split keysets */
@@ -470,40 +470,27 @@ int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const Backend * otherHandle, const char * msg)
 {
 	const Key * k = ksCurrent (ks);
+	const char * name = keyName (k);
+	const char * mountpoint = keyName (curHandle->mountpoint);
 
-	const size_t sizeOfStaticText = 300;
-	size_t size = keyGetNameSize (curHandle->mountpoint) + keyGetValueSize (curHandle->mountpoint) + keyGetNameSize (k) + strlen (msg) +
-		      sizeOfStaticText;
 	if (otherHandle)
 	{
-		size += keyGetNameSize (otherHandle->mountpoint) + keyGetValueSize (otherHandle->mountpoint);
-	}
-	char * warningMsg = elektraMalloc (size);
-	strcpy (warningMsg, "drop key ");
-	const char * name = keyName (k);
-	if (name)
-	{
-		strcat (warningMsg, name);
+		ELEKTRA_ADD_INTERFACE_WARNINGF (
+			warningKey,
+			"Postcondition of backend was violated: drop key %s not belonging to \"%s\" with name \"%s\" but "
+			"instead to \"%s\" with name \"%s\" because %s ",
+			name ? name : "(no name)", mountpoint ? mountpoint : "(default mountpoint)", keyString (curHandle->mountpoint),
+			keyName (otherHandle->mountpoint), keyString (otherHandle->mountpoint), msg);
 	}
 	else
 	{
-		strcat (warningMsg, "(no name)");
+		ELEKTRA_ADD_INTERFACE_WARNINGF (
+			warningKey,
+			"Postcondition of backend was violated: drop key %s not belonging to \"%s\" with name \"%s\" because %s ",
+			name ? name : "(no name)", mountpoint ? mountpoint : "(default mountpoint)", keyString (curHandle->mountpoint),
+			msg);
 	}
-	strcat (warningMsg, " not belonging to \"");
-	strcat (warningMsg, keyName (curHandle->mountpoint));
-	strcat (warningMsg, "\" with name \"");
-	strcat (warningMsg, keyString (curHandle->mountpoint));
-	if (otherHandle)
-	{
-		strcat (warningMsg, "\" but instead to \"");
-		strcat (warningMsg, keyName (otherHandle->mountpoint));
-		strcat (warningMsg, "\" with name \"");
-		strcat (warningMsg, keyString (otherHandle->mountpoint));
-	}
-	strcat (warningMsg, "\" because ");
-	strcat (warningMsg, msg);
-	ELEKTRA_ADD_INTERFACE_WARNINGF (warningKey, "Postcondition of backend was violated: %s", warningMsg);
-	elektraFree (warningMsg);
+
 	cursor_t c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
 	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again
@@ -527,7 +514,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 	ksRewind (split->keysets[i]);
 	while ((cur = ksNext (split->keysets[i])) != 0)
 	{
-		Backend * curHandle = mountGetBackend (handle, cur);
+		Backend * curHandle = mountGetBackend (handle, keyName (cur));
 		if (!curHandle) return -1;
 
 		keyClearSync (cur);
@@ -840,7 +827,7 @@ static char * elektraStrConcat (const char * a, const char * b)
 
 void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
 {
-	Key * mountPoint = mountGetMountpoint (handle, parentKey);
+	Key * mountPoint = mountGetMountpoint (handle, keyName (parentKey));
 	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
 	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
 	Key * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);

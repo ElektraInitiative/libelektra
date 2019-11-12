@@ -470,7 +470,7 @@ static void test_sizes (void)
 	succeed_if (output_error (parentKey), "error found");
 	// there will be a warning
 	// succeed_if (output_warnings(parentKey), "warning(s) found");
-	succeed_if_same_string (keyString (keyGetMeta (parentKey, "warnings/#00/number")), ELEKTRA_ERROR_INTERFACE) // drop key
+	succeed_if_same_string (keyString (keyGetMeta (parentKey, "warnings/#0/number")), ELEKTRA_ERROR_INTERFACE) // drop key
 
 		succeed_if (handle->defaultBackend->usersize == 3, "usersize not updated by splitGet");
 	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
@@ -553,18 +553,13 @@ static void test_triesizes (void)
 			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
 
 	Split * split;
-	Key * parentKey;
+	Key * parentKey = keyNew ("/", KEY_END);
 
 	split = splitNew ();
 
-	parentKey = keyNew ("user:/", KEY_END);
+	rootBackend = trieLookup (handle->trie, "user:/");
+	backend = trieLookup (handle->trie, "user:/tests/simple/below");
 
-	rootBackend = trieLookup (handle->trie, keyName (parentKey));
-	keySetName (parentKey, "user:/tests/simple/below");
-	backend = trieLookup (handle->trie, keyName (parentKey));
-
-	// now clear name so that we process all backends
-	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
 	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
 	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
 	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
@@ -654,12 +649,10 @@ static void test_merge (void)
 
 	split = splitNew ();
 
-	parentKey = keyNew ("user:/", KEY_END);
+	parentKey = keyNew ("/", KEY_END);
 
-	rootBackend = trieLookup (handle->trie, keyName (parentKey));
-	keySetName (parentKey, "user:/tests/simple/below");
-	backend = trieLookup (handle->trie, keyName (parentKey));
-	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
+	rootBackend = trieLookup (handle->trie, "user:/");
+	backend = trieLookup (handle->trie, "user:/tests/simple/below");
 	succeed_if (backend->specsize == -1, "specsize not initialized correct");
 	succeed_if (backend->dirsize == -1, "dirsize not initialized correct");
 	succeed_if (backend->usersize == -1, "usersize  not initialized correct");
@@ -777,10 +770,10 @@ static void test_realworld (void)
 	succeed_if_same_string (keyName (split->parents[2]), "system:/groups");
 	succeed_if_same_string (keyName (split->parents[3]), "system:/hosts");
 	succeed_if_same_string (keyName (split->parents[4]), "user:/sw/kde/default");
-	succeed_if_same_string (keyName (split->parents[5]), "spec");
-	succeed_if_same_string (keyName (split->parents[6]), "dir");
-	succeed_if_same_string (keyName (split->parents[7]), "user");
-	succeed_if_same_string (keyName (split->parents[8]), "system");
+	succeed_if_same_string (keyName (split->parents[5]), "spec:/");
+	succeed_if_same_string (keyName (split->parents[6]), "dir:/");
+	succeed_if_same_string (keyName (split->parents[7]), "user:/");
+	succeed_if_same_string (keyName (split->parents[8]), "system:/");
 	succeed_if_same_string (keyName (split->parents[9]), "system:/users");
 	succeed_if_same_string (keyName (split->parents[10]), "system:/elektra");
 
