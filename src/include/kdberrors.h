@@ -284,6 +284,7 @@ using KeySet = ckdb::KeySet;
 	void elektraAddWarning##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...);
 
 DECLARE_ERROR_CODE (RESOURCE)
+DECLARE_ERROR_CODE (OUT_OF_MEMORY)
 DECLARE_ERROR_CODE (INSTALLATION)
 DECLARE_ERROR_CODE (INTERNAL)
 DECLARE_ERROR_CODE (INTERFACE)
@@ -293,10 +294,6 @@ DECLARE_ERROR_CODE (VALIDATION_SYNTACTIC)
 DECLARE_ERROR_CODE (VALIDATION_SEMANTIC)
 
 #undef DECLARE_ERROR_CODE
-
-extern const char * ELEKTRA_ERROR_OUT_OF_MEMORY;
-extern const char * ELEKTRA_ERROR_OUT_OF_MEMORY_NAME;
-void elektraSetErrorOUT_OF_MEMORY_NAME (Key * key, const char * file, const char * line, const char * module);
 
 KeySet * elektraErrorSpecification (void);
 
