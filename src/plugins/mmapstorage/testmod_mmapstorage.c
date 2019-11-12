@@ -555,7 +555,7 @@ static void test_mmap_set_get_large_keyset (const char * tmpFile)
 	KeySet * ks = largeTestKeySet ();
 	KeySet * expected = ksDeepDup (ks);
 
-	const char * name = "user/tests/mmapstorage/dir7/key3";
+	const char * name = "user:/tests/mmapstorage/dir7/key3";
 	Key * found = ksLookupByName (ks, name, KDB_O_OPMPHM);
 	if (!found)
 	{
@@ -822,7 +822,7 @@ static void test_mmap_opmphm (const char * tmpFile)
 
 	// force re-generate the OPMPHM, tests cleanup and re-allocation after mmap
 	// i.e. tests if we broke the standard cleanup functions with our mmap flags
-	Key * key = keyNew ("user/tests/mmapstorage/breakOpmphm", KEY_VALUE, "bad key", KEY_META, "e", "other meta root", KEY_END);
+	Key * key = keyNew ("user:/tests/mmapstorage/breakOpmphm", KEY_VALUE, "bad key", KEY_META, "e", "other meta root", KEY_END);
 	ksAppendKey (returned, key);
 	found = ksLookupByName (returned, name, KDB_O_OPMPHM);
 	if (!found)
