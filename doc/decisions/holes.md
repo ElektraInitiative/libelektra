@@ -14,7 +14,7 @@ set a single key.
 ## Considered Alternatives
 
 - data structure is always complete
-- to not allow "directory values" or "directory meta data"
+- to not allow "directory values" or "directory metadata"
 
 ## Decision
 
