@@ -15,6 +15,42 @@
 #include <kdbinternal.h>
 #include <string.h>
 
+/**
+ * @brief Set a formatted string
+ *
+ * @param key the key to set the string value
+ * @param format NULL-terminated text format string
+ * @param ... more arguments
+ *
+ * @return the size of the string as set (with including 0)
+ */
+ssize_t keySetStringF (Key * key, const char * format, ...)
+{
+	va_list arg_list;
+
+	keySetMeta (key, "binary", 0);
+
+	va_start (arg_list, format);
+	char * p = elektraVFormat (format, arg_list);
+	va_end (arg_list);
+
+	if (!p)
+	{
+		return -1;
+	}
+
+	if (key->data.c && !test_bit (key->flags, KEY_FLAG_MMAP_DATA))
+	{
+		elektraFree (key->data.c);
+	}
+
+	key->data.c = p;
+	key->dataSize = elektraStrLen (key->data.c);
+	set_bit (key->flags, KEY_FLAG_SYNC);
+
+	return key->dataSize;
+}
+
 static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t spaces, const char * commentStart, const char * comment)
 {
 	keySetString (commentBase, comment);
