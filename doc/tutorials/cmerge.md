@@ -123,7 +123,7 @@ In case that the values of some keys are equal, the `our` version wins and conse
 
 To demonstrate this, we continue the hosts example:
 
-<!--- Some ini tests fail with multiline metadata => no sh => no markdown shell
+<!--- Some ini tests fail with multiline metadata => no sh => no Markdown shell
 recorder tests -->
 
 ```
@@ -157,7 +157,7 @@ kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/t
 
 Now we can check if the metadata has been merged as expected.
 
-<!--- Some ini tests fail with multiline metadata => no sh => no markdown shell
+<!--- Some ini tests fail with multiline metadata => no sh => no Markdown shell
 recorder tests -->
 
 ```
@@ -180,7 +180,7 @@ kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/t
 
 We can test again if the result meets our expectations.
 
-<!--- Some ini tests fail with multiline metadata => no sh => no markdown shell
+<!--- Some ini tests fail with multiline metadata => no sh => no Markdown shell
 recorder tests -->
 
 ```
