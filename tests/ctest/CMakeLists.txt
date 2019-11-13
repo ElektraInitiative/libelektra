@@ -39,3 +39,7 @@ target_link_elektra (test_globbing elektra-globbing)
 target_link_elektra (test_opts elektra-opts)
 
 target_link_elektra (test_cmerge elektra-merge)
+
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set_property (TEST test_cmerge PROPERTY LABELS memleak)
+endif ()
