@@ -34,12 +34,11 @@ module.exports = function($httpProvider, $provide) {
 
           if (
             ($auth.isAuthenticated() &&
-              (rejection.status === 401 &&
-                typeof rejection.data.i18n !== "undefined" &&
-                [
-                  "NEED_AUTHENTICATION",
-                  "USER_INSUFFICIENT_PERMISSIONS"
-                ].indexOf(rejection.data.i18n) > -1)) ||
+              rejection.status === 401 &&
+              typeof rejection.data.i18n !== "undefined" &&
+              ["NEED_AUTHENTICATION", "USER_INSUFFICIENT_PERMISSIONS"].indexOf(
+                rejection.data.i18n
+              ) > -1) ||
             (rejection.status === 400 &&
               typeof rejection.data.i18n !== "undefined" &&
               ["NO_CURRENT_USER"].indexOf(rejection.data.i18n) > -1)
