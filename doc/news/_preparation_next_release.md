@@ -380,7 +380,8 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- The Website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- The website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- Improve mainpage of website, restructure getting started. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
