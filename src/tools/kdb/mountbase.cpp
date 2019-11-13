@@ -122,21 +122,6 @@ void MountBaseCommand::askForConfirmation (Cmdline const & cl)
 	}
 }
 
-class KDBMountException : public KDBException
-{
-	std::string msg;
-
-public:
-	explicit KDBMountException (std::string const & e) : KDBException (Key ()), msg (e)
-	{
-	}
-
-	virtual const char * what () const noexcept override
-	{
-		return msg.c_str ();
-	}
-};
-
 /**
  * @brief Really write out config
  */
