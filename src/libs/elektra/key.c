@@ -277,9 +277,6 @@ Key * keyVNew (const char * name, va_list va)
 			case KEY_EMPTY_NAME:
 				if (action != KEY_FLAGS) flags |= action;
 				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
-				if (test_bit (flags, KEY_LOCK_NAME)) keyLock (key, KEY_LOCK_NAME);
-				if (test_bit (flags, KEY_LOCK_VALUE)) keyLock (key, KEY_LOCK_VALUE);
-				if (test_bit (flags, KEY_LOCK_META)) keyLock (key, KEY_LOCK_META);
 				break;
 
 			/* deprecated flags */
@@ -331,6 +328,8 @@ Key * keyVNew (const char * name, va_list va)
 			elektraSetMode (key, mode);
 
 		if (owner) keySetOwner (key, owner);
+
+		(void) keyLock (key, flags);
 	}
 	return key;
 }
@@ -765,46 +764,6 @@ ssize_t keyGetRef (const Key * key)
 
 
 /**
- * @internal
- * @see keyLock + keyIsLocked
- */
-static int elektraKeyLock (Key * key, option_t what, int test)
-{
-	int ret = 0;
-
-	if (!key) return -1;
-
-	if (test_bit (what, KEY_LOCK_NAME))
-	{
-		if (!test_bit (key->flags, KEY_FLAG_RO_NAME))
-		{
-			if (!test) set_bit (key->flags, KEY_FLAG_RO_NAME);
-			set_bit (ret, KEY_LOCK_NAME);
-		}
-	}
-
-	if (test_bit (what, KEY_LOCK_VALUE))
-	{
-		if (!test_bit (key->flags, KEY_FLAG_RO_VALUE))
-		{
-			if (!test) set_bit (key->flags, KEY_FLAG_RO_VALUE);
-			set_bit (ret, KEY_LOCK_VALUE);
-		}
-	}
-
-	if (test_bit (what, KEY_LOCK_META))
-	{
-		if (!test_bit (key->flags, KEY_FLAG_RO_META))
-		{
-			if (!test) set_bit (key->flags, KEY_FLAG_RO_META);
-			set_bit (ret, KEY_LOCK_META);
-		}
-	}
-
-	return ret;
-}
-
-/**
  * @brief Permanently locks a part of the key
  *
  * This can be:
@@ -830,19 +789,27 @@ static int elektraKeyLock (Key * key, option_t what, int test)
  */
 int keyLock (Key * key, option_t what)
 {
-	return elektraKeyLock (key, what, 0);
+	if (!key) return -1;
+	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+	what >>= 16; // to KEY_FLAG_RO_xyz
+	int ret = test_bit (~key->flags, what);
+	set_bit (key->flags, what);
+	return (ret << 16);
 }
 
 /**
  * @brief Tests if a part of a key is locked
  *
- * @see keyLock() for details and return values
- * @retval >0 the bits that were successfully locked
- * @retval 0 if everything was locked before
- * @retval -1 if it could not be locked (nullpointer)
+ * @see keyLock() for more details
+ * @retval >0 the bits are locked
+ * @retval 0 if everything is unlocked
+ * @retval -1 on error (nullpointer)
  * @ingroup key
  */
 int keyIsLocked (const Key * key, option_t what)
 {
-	return elektraKeyLock ((Key *) key, what, 1);
+	if (!key) return -1;
+	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+	what >>= 16; // to KEY_FLAG_RO_xyz
+	return (test_bit (key->flags, what) << 16);
 }

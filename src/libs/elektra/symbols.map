@@ -92,8 +92,6 @@ libelektra_0.8 {
 	keyUnescapedName;
 	keyValue;
 	keyVNew;
-	keyLock;
-	keyIsLocked;
 
 	## KeySet functions
 	ksAppend;
@@ -156,6 +154,8 @@ libelektra_1.0 {
 	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
 
 	keyMeta;
+	keyLock;
+	keyIsLocked;
 };
 
 libelektraprivate_1.0 {
