@@ -293,6 +293,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added design decision for error code implementations. _(Michael Zronek)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
+- We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
 
 ## Tests
 
@@ -379,7 +380,8 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- The Website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- The website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- Improve mainpage of website, restructure getting started. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
