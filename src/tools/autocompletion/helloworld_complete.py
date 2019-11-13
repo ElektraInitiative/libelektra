@@ -11,8 +11,18 @@ def find_auto_completion_options():
 		completion_options = []
 		for key in ks: 
 			command = str(key).split('/')[-1]
-			if start_of_word == None or command.startswith(start_of_word):
-				completion_options.append(command)
+			opt_long = (key.getMeta(name="opt/long"))
+			opt = (key.getMeta(name="opt"))
+			if start_of_word != None:
+				if not opt and opt and opt.value.startswith(start_of_word):
+					completion_options.append(opt.value)
+				if opt_long and opt_long.value.startswith(start_of_word):
+					completion_options.append(opt_long.value)
+			else:
+				if opt_long:
+					completion_options.append(opt_long.value)
+				elif opt:
+					completion_options.append(opt.value)
 
 	output = ""
 	for i in completion_options:
