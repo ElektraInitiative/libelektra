@@ -27,23 +27,13 @@ using namespace kdb;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
-#define succeed_if(x, y) ASSERT_TRUE (x) << y
+#define succeed_if(x, y) EXPECT_TRUE (x) << y
 
-#define exit_if_fail(expression, message)                                                                                                  \
-	if (!(expression))                                                                                                                 \
-	{                                                                                                                                  \
-		cerr << __FILE__ << ":" << __LINE__ << ": Failure" << endl;                                                                \
-		cerr << "Value of: " << ELEKTRA_STRINGIFY (expression) << endl;                                                            \
-		cerr << "  Actual: false" << endl;                                                                                         \
-		cerr << "Expected: true" << endl;                                                                                          \
-		cerr << message << endl;                                                                                                   \
-		exit (1);                                                                                                                  \
-	}                                                                                                                                  \
-	SUCCEED () << message
+#define exit_if_fail(expression, message) ASSERT_TRUE (expression) << message
 
-#define succeed_if_same(x, y, message) ASSERT_EQ (x, y) << message
+#define succeed_if_same(x, y, message) EXPECT_EQ (x, y) << message
 
-#define compare_keyset(keySet1, keySet2) ASSERT_TRUE (compareKeySet (keySet1, keySet2))
+#define compare_keyset(keySet1, keySet2) EXPECT_TRUE (compareKeySet (keySet1, keySet2))
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

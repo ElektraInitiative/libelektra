@@ -129,7 +129,7 @@ TEST (ks, iterate)
 		Key k = ks3.next ();
 		char str[] = "user:/key3/X";
 
-		str[10] = i + '1';
+		str[11] = i + '1';
 		succeed_if (k.getName () == str, "wrong keyname");
 	}
 
@@ -140,7 +140,7 @@ TEST (ks, iterate)
 	{
 		char str[] = "user:/key3/X";
 
-		str[10] = j + '1';
+		str[11] = j + '1';
 		succeed_if (n.getName () == str, "wrong keyname");
 		j++;
 	}
@@ -151,7 +151,7 @@ TEST (ks, iterate)
 	{
 		char str[] = "user:/key3/X";
 
-		str[10] = j + '1';
+		str[11] = j + '1';
 		succeed_if (n.getName () == str, "wrong keyname");
 		j++;
 	}
@@ -162,7 +162,7 @@ TEST (ks, iterate)
 	{
 		char str[] = "user:/key3/X";
 
-		str[10] = j + '1';
+		str[11] = j + '1';
 		succeed_if (k.getName () == str, "wrong keyname");
 		j++;
 	}
@@ -173,7 +173,7 @@ TEST (ks, iterate)
 	{
 		char str[] = "user:/key3/X";
 
-		str[10] = j + '1';
+		str[11] = j + '1';
 		succeed_if (k.getName () == str, "wrong keyname");
 		j++;
 	}
@@ -224,7 +224,7 @@ TEST (ks, pop)
 		Key k = ks4.pop ();
 		char str[] = "user:/key3/X";
 
-		str[10] = i + '1';
+		str[11] = i + '1';
 		succeed_if (k.getName () == str, str);
 	}
 }
@@ -740,7 +740,7 @@ TEST (ks, lookupPop)
 	{
 		char str[] = "user:/key3/X";
 
-		str[10] = i + '0';
+		str[11] = i + '0';
 		succeed_if (ks4.size () == i, "size not correct");
 		Key k = ks4.lookup (str, KDB_O_POP);
 		succeed_if (k, "there should be a key");
@@ -756,7 +756,7 @@ TEST (ks, lookupPop)
 	{
 		char str[] = "user:/key3/X";
 
-		str[10] = i + '0';
+		str[11] = i + '0';
 		Key searchKey (str, KEY_END);
 		succeed_if (ks5.size () == i, "size not correct");
 

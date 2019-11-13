@@ -34,16 +34,16 @@ struct KeySetTypeWrapper<std::map<std::string, T>>
 				switch (i)
 				{
 				case 0:
-					n = "proc" + name;
+					n = "proc:" + name;
 					break;
 				case 1:
-					n = "dir" + name;
+					n = "dir:" + name;
 					break;
 				case 2:
-					n = "user" + name;
+					n = "user:" + name;
 					break;
 				case 3:
-					n = "system" + name;
+					n = "system:" + name;
 					break;
 				}
 			Key b = ks.lookup (n, options);

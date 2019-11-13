@@ -39,14 +39,14 @@ TEST (keyio, outmeta)
 	std::stringstream ss;
 	ss.setf (std::ios_base::showbase);
 	ss << k;
-	EXPECT_EQ (ss.str (), "user:/hello abc def");
+	EXPECT_EQ (ss.str (), "user:/hello meta:/abc meta:/def");
 }
 
 TEST (keyio, inmeta)
 {
 	Key k ("user:/hello", KEY_META, "abc", "", KEY_META, "def", "", KEY_END);
 	Key k2;
-	std::stringstream ss ("user:/hello abc def");
+	std::stringstream ss ("user:/hello meta:/abc meta:/def");
 	ss.setf (std::ios_base::showbase);
 	ss >> k2;
 	EXPECT_EQ (k, k2);

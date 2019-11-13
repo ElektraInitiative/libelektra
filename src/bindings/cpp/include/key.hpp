@@ -1484,6 +1484,7 @@ inline const Key Key::currentMeta () const
  */
 inline bool Key::isValid () const
 {
+	// TODO (kodebach): always valid?
 	return ckdb::keyGetNameSize (getKey ()) > 1;
 }
 
@@ -1496,11 +1497,11 @@ inline bool Key::isValid () const
  */
 inline std::string Key::getNamespace () const
 {
+	// TODO (kodebach): enum?
 	std::string name = getName ();
-	size_t slash = name.find ('/');
-	if (slash == 0) return "/";
-	if (slash != std::string::npos) return name.substr (0, slash);
-	return name;
+	size_t colon = name.find (':');
+	if (colon == std::string::npos) return "/";
+	return name.substr (0, colon);
 }
 
 

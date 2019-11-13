@@ -70,12 +70,7 @@ TEST (key, keynew)
 
 	Key key0;
 	succeed_if (key0, "key should evaluate to true");
-	succeed_if (key0.getName () == "", "key0 has wrong name");
-
-	// Empty key
-	Key key1 ("", KEY_END);
-	succeed_if (key1, "key should evaluate to true");
-	succeed_if (key1.getName () == "", "key0 has wrong name");
+	succeed_if (key0.getName () == "/", "key0 has wrong name");
 
 	// Key with name
 	Key key2 ("system:/sw/test", KEY_END);
@@ -83,7 +78,7 @@ TEST (key, keynew)
 	succeed_if (key2.getName () == "system:/sw/test", "key2 has wrong name");
 	// succeed_if (key2.getDirName() == "system:/sw", "wrong dir name");
 	key2.copy (key0);
-	succeed_if (key2.getName () == "", "key0 has wrong name");
+	succeed_if (key2.getName () == "/", "key0 has wrong name");
 	succeed_if (key2.getBaseName () == "", "wrong base name");
 	// succeed_if (key2.getDirName() == "", "wrong dir name");
 
@@ -245,7 +240,7 @@ TEST (key, keynew)
 	succeed_if (keyA.getName () == "system:/valid/name", "keyA has wrong name");
 	succeed_if (keyA.getBaseName () == "name", "keyA wrong base name");
 
-	Key keyB ("", KEY_END);
+	Key keyB ("/", KEY_END);
 	keyB.setBinary (nullptr, 0);
 	succeed_if (keyB.isBinary (), "should be binary");
 	succeed_if (keyB.getBinary () == "", "Binary should be a nullpointer");
@@ -259,7 +254,7 @@ TEST (key, keynew)
 
 TEST (key, constructor)
 {
-	ckdb::Key * ck = ckdb::keyNew (nullptr);
+	ckdb::Key * ck = ckdb::keyNew ("/", KEY_END);
 	Key k = ck; // constructor with (ckdb::Key)
 
 	/*
@@ -277,7 +272,7 @@ TEST (key, set)
 	ckdb::Key * ck;
 	Key k;
 
-	ck = ckdb::keyNew (nullptr);
+	ck = ckdb::keyNew ("/", KEY_END);
 	k = ck; // operator= alias for setKey()
 
 	/*
@@ -295,7 +290,7 @@ TEST (key, cast)
 	ckdb::Key * ck;
 	Key * k;
 
-	ck = ckdb::keyNew (nullptr);
+	ck = ckdb::keyNew ("/", KEY_END);
 	k = reinterpret_cast<Key *> (&ck); // not copied on purpose
 
 	/*
@@ -364,7 +359,7 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "", "not set to noname");
+		succeed_if (test.getName () == "/", "name not unchanged");
 	}
 
 	test.setName ("user:/name");
@@ -376,34 +371,22 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "", "not set to noname");
+		succeed_if (test.getName () == "user:/name", "name not unchanged");
 	}
 }
 
 TEST (key, name)
 {
 	Key test;
-	succeed_if (test.getName () == "", "Name should be empty");
+	succeed_if (test.getName () == "/", "Name should be empty");
 
-	test.setName ("user:markus/test");
-	succeed_if (test.getName () == "user:/test", "Wrong name");
-	succeed_if (test.getFullName () == "user:markus/test", "Wrong full name");
-	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
-	succeed_if (test.getNameSize () == 10, "wrong name size");
-	succeed_if (test.getFullNameSize () == 17, "wrong full name size");
-	succeed_if (!test.isCascading (), "key is cascading");
-	succeed_if (!test.isSpec (), "key is spec");
-	succeed_if (!test.isProc (), "key is proc");
-	succeed_if (!test.isDir (), "key is dir");
-	succeed_if (test.isUser (), "key is not user");
-	succeed_if (!test.isSystem (), "key is system");
-
+	test.setName ("user:/test");
 	test.setMeta<std::string> ("owner", "gerald");
 	succeed_if (test.getName () == "user:/test", "Wrong name");
-	succeed_if (test.getFullName () == "user:gerald/test", "Wrong full name");
+	succeed_if (test.getFullName () == "user/gerald:/test", "Wrong full name");
 	succeed_if (test.getMeta<std::string> ("owner") == "gerald", "Wrong owner");
-	succeed_if (test.getNameSize () == 10, "wrong name size");
-	succeed_if (test.getFullNameSize () == 17, "wrong full name size");
+	succeed_if (test.getNameSize () == 11, "wrong name size");
+	succeed_if (test.getFullNameSize () == 18, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
 	succeed_if (!test.isSpec (), "key is spec");
 	succeed_if (!test.isProc (), "key is proc");
@@ -417,8 +400,8 @@ TEST (key, name)
 	succeed_if (test.getFullName () == "system:/test", "Wrong full name");
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
-	succeed_if (test.getNameSize () == 12, "wrong name size");
-	succeed_if (test.getFullNameSize () == 12, "wrong full name size");
+	succeed_if (test.getNameSize () == 13, "wrong name size");
+	succeed_if (test.getFullNameSize () == 13, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
 	succeed_if (!test.isSpec (), "key is spec");
 	succeed_if (!test.isProc (), "key is proc");
@@ -429,8 +412,8 @@ TEST (key, name)
 	test.setName ("dir:/test");
 	succeed_if (test.getName () == "dir:/test", "Wrong name");
 	succeed_if (test.getFullName () == "dir:/test", "Wrong full name");
-	succeed_if (test.getNameSize () == 9, "wrong name size");
-	succeed_if (test.getFullNameSize () == 9, "wrong full name size");
+	succeed_if (test.getNameSize () == 10, "wrong name size");
+	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
 	succeed_if (!test.isSpec (), "key is spec");
 	succeed_if (!test.isProc (), "key is proc");
@@ -441,8 +424,8 @@ TEST (key, name)
 	test.setName ("proc:/test");
 	succeed_if (test.getName () == "proc:/test", "Wrong name");
 	succeed_if (test.getFullName () == "proc:/test", "Wrong full name");
-	succeed_if (test.getNameSize () == 10, "wrong name size");
-	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
+	succeed_if (test.getNameSize () == 11, "wrong name size");
+	succeed_if (test.getFullNameSize () == 11, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
 	succeed_if (!test.isSpec (), "key is spec");
 	succeed_if (test.isProc (), "key is not proc");
@@ -453,8 +436,8 @@ TEST (key, name)
 	test.setName ("spec:/test");
 	succeed_if (test.getName () == "spec:/test", "Wrong name");
 	succeed_if (test.getFullName () == "spec:/test", "Wrong full name");
-	succeed_if (test.getNameSize () == 10, "wrong name size");
-	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
+	succeed_if (test.getNameSize () == 11, "wrong name size");
+	succeed_if (test.getFullNameSize () == 11, "wrong full name size");
 	succeed_if (!test.isCascading (), "key is cascading");
 	succeed_if (test.isSpec (), "key is not spec");
 	succeed_if (!test.isProc (), "key is proc");
@@ -479,7 +462,7 @@ TEST (key, name)
 	test.setBaseName ("mykey");
 	succeed_if (test.getName () == "user:/dir/mykey", "Basename did not work");
 	test.setName (test.getName () + "/onedeeper");		     // add basename is trivial
-	succeed_if (test.getName ().find ('/') == 4, "user length"); // keyGetRootNameSize trivial
+	succeed_if (test.getName ().find ('/') == 5, "user length"); // keyGetRootNameSize trivial
 
 	// so we finally got a name, lets test below
 	succeed_if (test.getName () == "user:/dir/mykey/onedeeper", "Basename did not work");
@@ -505,7 +488,7 @@ TEST (key, name)
 
 	test.setName ("system:/elektra");
 	succeed_if (test.isBelow (Key ("system:/", KEY_END)), "system:/elektra is not below system");
-	test.setName ("system");
+	test.setName ("system:/");
 	succeed_if (!test.isBelow (Key ("system:/elektra", KEY_END)), "system is below system:/elektra");
 }
 
@@ -531,7 +514,7 @@ TEST (key, ref)
 	f (Key ("user:/passed", KEY_END));
 
 	Key test;
-	test.setName ("user:markus/test");
+	test.setName ("user:/test");
 
 	Key ref1;
 	ref1 = test; // operator =
@@ -557,7 +540,7 @@ TEST (key, ref)
 TEST (key, dup)
 {
 	Key test;
-	test.setName ("user:markus/test");
+	test.setName ("user:/test");
 
 	Key dup0 = test.dup (); // directly call of dup()
 
@@ -574,11 +557,11 @@ TEST (key, dup)
 TEST (key, valid)
 {
 	Key i1;
-	succeed_if (!i1.isValid (), "key should not be valid");
+	succeed_if (i1.isValid (), "key should be valid");
 	succeed_if (i1, "even though it is invalid, it is still not a null key");
 
-	Key i2 ("", KEY_END);
-	succeed_if (!i2.isValid (), "key should not be valid");
+	Key i2 ("/", KEY_END);
+	succeed_if (i2.isValid (), "key should be valid");
 	succeed_if (i2, "even though it is invalid, it is still not a null key");
 
 	vector<string> invalid_names;
@@ -596,9 +579,7 @@ TEST (key, valid)
 
 	for (auto & invalid_name : invalid_names)
 	{
-		Key i3 (invalid_name, KEY_END);
-		succeed_if (!i3.isValid (), "key " + invalid_name + " should not be valid");
-		succeed_if (i3, "even though it is invalid, it is still not a null key");
+		EXPECT_THROW (Key (invalid_name, KEY_END), std::bad_alloc);
 	}
 
 	Key v1 ("user:/", KEY_END);
@@ -637,9 +618,9 @@ TEST (key, clear)
 	succeed_if (k2.isValid (), "key should be valid");
 	succeed_if (k3.isValid (), "key should be valid");
 
-	succeed_if (k1.getName () == "user", "name should be user");
-	succeed_if (k2.getName () == "user", "name should be user");
-	succeed_if (k3.getName () == "user", "name should be user");
+	succeed_if (k1.getName () == "user:/", "name should be user");
+	succeed_if (k2.getName () == "user:/", "name should be user");
+	succeed_if (k3.getName () == "user:/", "name should be user");
 
 
 	k1.clear ();
@@ -668,11 +649,11 @@ TEST (key, conversation)
 {
 	Key k1 ("user:/", KEY_END);
 	ckdb::Key * ck1 = k1.getKey ();
-	succeed_if (!strcmp (ckdb::keyName (ck1), "user"), "c key does not have correct name");
-	succeed_if (!strcmp (ckdb::keyName (*k1), "user"), "c key does not have correct name");
+	succeed_if (!strcmp (ckdb::keyName (ck1), "user:/"), "c key does not have correct name");
+	succeed_if (!strcmp (ckdb::keyName (*k1), "user:/"), "c key does not have correct name");
 
 	ck1 = k1.release ();
-	succeed_if (!strcmp (ckdb::keyName (ck1), "user"), "c key does not have correct name");
+	succeed_if (!strcmp (ckdb::keyName (ck1), "user:/"), "c key does not have correct name");
 	ckdb::keyDel (ck1);
 }
 
@@ -682,8 +663,8 @@ TEST (key, keynamespace)
 	succeed_if (Key ("user:/a", KEY_END).getNamespace () == "user", "namespace wrong");
 	// std::cout << Key ("user:/a", KEY_END).getNamespace () << std::endl;
 	succeed_if (Key ("user:/a/b/c", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user:/a/../..", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user:/a/../../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/a/..", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/a/../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");
 
 	succeed_if (Key ("dir:/", KEY_END).getNamespace () == "dir", "namespace wrong");
 	succeed_if (Key ("proc:/", KEY_END).getNamespace () == "proc", "namespace wrong");
