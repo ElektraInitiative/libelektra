@@ -234,7 +234,7 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 
 	char * homeBuf = elektraMalloc (homeSize);
 	strcpy (homeBuf, KDB_DB_HOME "/");
-	strcat (homeBuf, keyName (canonify) + 5); // cut user:/
+	strcat (homeBuf, keyName (canonify) + 6); // cut user:/
 	if (handle->relPath[0] != '/')
 	{
 		strcat (homeBuf, "/" KDB_DB_USER);
