@@ -155,7 +155,7 @@ static int test_prerequisites (void)
 	if (systemBus)
 	{
 		testBusType = DBUS_BUS_SYSTEM;
-		testKeyNamespace = "system";
+		testKeyNamespace = "system:/";
 		dbus_connection_unref (systemBus);
 		return 1; // success
 	}
@@ -164,7 +164,7 @@ static int test_prerequisites (void)
 	if (sessionBus)
 	{
 		testBusType = DBUS_BUS_SESSION;
-		testKeyNamespace = "user";
+		testKeyNamespace = "user:/";
 		dbus_connection_unref (sessionBus);
 		return 1; // success
 	}
