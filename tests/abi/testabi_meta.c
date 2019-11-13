@@ -546,7 +546,7 @@ static void test_type (void)
 
 static void test_keyMeta (void)
 {
-	Key * key = keyNew (0, KEY_END);
+	Key * key = keyNew ("/", KEY_END);
 
 	KeySet * meta = keyMeta (key);
 

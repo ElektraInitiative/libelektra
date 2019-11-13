@@ -298,7 +298,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 	}
 	else if (name[0] == '/')
 	{
-		Key * key = keyNew (0, KEY_END);
+		Key * key = keyNew ("/", KEY_END);
 		for (elektraNamespace ins = KEY_NS_FIRST; ins <= KEY_NS_LAST; ++ins)
 		{
 			if (!elektraKeySetNameByNamespace (key, ins)) continue;

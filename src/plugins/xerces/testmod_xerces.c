@@ -21,7 +21,7 @@ static void test_basics (void)
 	fflush (stdout);
 
 	Key * parentKey = keyNew ("system:/elektra/modules/xerces", KEY_END);
-	Key * invalidKey = keyNew (0, KEY_END);
+	Key * invalidKey = keyNew ("/", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 

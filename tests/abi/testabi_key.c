@@ -100,7 +100,7 @@ static void test_keyNewSpecial (void)
 	succeed_if_same_string (keyName (k), "");
 	keyDel (k);
 
-	k = keyNew (0, KEY_END); //  might break, useless arguments?
+	k = keyNew ("/", KEY_END); //  might break, useless arguments?
 	succeed_if_same_string (keyName (k), "");
 	keyDel (k);
 

@@ -153,7 +153,7 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
  */
 int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key * parentKey)
 {
-	Key * errorKey = keyNew (0, KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 
 	KeySet * quickDumpConf = ksNew (0, KS_END);
 

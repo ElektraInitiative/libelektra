@@ -171,7 +171,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	elektra->parentKey = parentKey;
 	elektra->parentKeyLength = keyGetNameSize (parentKey) - 1;
 	elektra->config = config;
-	elektra->lookupKey = keyNew (NULL, KEY_END);
+	elektra->lookupKey = keyNew ("/", KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
 	elektra->defaults = ksDup (defaults);
 

@@ -153,7 +153,7 @@ static std::string keySetToCCode (kdb::KeySet & set)
 	PluginPtr plugin = modules.load ("c", KeySet ());
 
 	auto file = "/tmp/elektra.highlevelgen." + std::to_string (std::time (nullptr));
-	Key errorKey ("", KEY_VALUE, file.c_str (), KEY_END);
+	Key errorKey ("/", KEY_VALUE, file.c_str (), KEY_END);
 	if (plugin->set (set, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		throw CommandAbortException ("c (plugin) failed");

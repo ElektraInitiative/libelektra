@@ -29,7 +29,7 @@ static void test_ctor (void)
 	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
 	g_object_unref (key);
 
-	Key * ckey = keyNew (NULL);
+	Key * ckey = keyNew ("/", KEY_END);
 	key = gelektra_key_make (ckey);
 	succeed_if (key->key == ckey, "new key not wrapped");
 	g_object_unref (key);

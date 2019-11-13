@@ -104,7 +104,7 @@ int elektraNotificationOpen (KDB * kdb)
 	context->kdb = kdb;
 	context->kdbUpdate = &elektraNotificationKdbUpdate;
 
-	Key * parent = keyNew ("", KEY_END);
+	Key * parent = keyNew ("/", KEY_END);
 	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "mounted", KEY_END),
 				   keyNew ("system:/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY,
 					   KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END),
@@ -171,7 +171,7 @@ int elektraNotificationClose (KDB * kdb)
 	elektraFree (context);
 
 	// Unmount the plugin
-	Key * parent = keyNew ("", KEY_END);
+	Key * parent = keyNew ("/", KEY_END);
 	KeySet * contract =
 		ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
 	if (kdbEnsure (kdb, contract, parent) != 0)

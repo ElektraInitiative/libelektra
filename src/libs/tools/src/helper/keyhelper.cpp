@@ -67,15 +67,10 @@ Key rebaseKey (const Key & key, const Key & oldParent, const Key & newParent)
 void removeNamespace (Key & key)
 {
 	std::string name = key.getName ();
-	size_t pos = name.find_first_of ('/');
-	if (pos == string::npos)
+	size_t pos = name.find_first_of (':');
+	if (pos != string::npos)
 	{
-		// we directly had a namespace
-		key.setName ("/");
-	}
-	else
-	{
-		name = name.substr (pos);
+		name = name.substr (pos + 1);
 		key.setName (name);
 	}
 }
@@ -127,7 +122,13 @@ Key commonKeyName (Key key1, Key key2)
 		removeNamespace (key2);
 	}
 
-	Key ret (key1.getNamespace (), KEY_END);
+	auto ns = key1.getNamespace ();
+	if (ns != "/")
+	{
+		ns += ":/";
+	}
+
+	Key ret (ns, KEY_END);
 	for (auto it1 = ++key1.begin (), it2 = ++key2.begin (); it1 != key1.end () && it2 != key2.end (); ++it1, ++it2)
 	{
 		if (*it1 != *it2) break;

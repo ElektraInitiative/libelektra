@@ -48,7 +48,7 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 	Key * their_root = keyNew ("user:/their", KEY_END);
 	Key * base_root = keyNew ("user:/base", KEY_END);
 	Key * result_root = keyNew ("user:/result", KEY_END);
-	Key * informationKey = keyNew (0, KEY_END);
+	Key * informationKey = keyNew ("/", KEY_END);
 	KeySet * our = ksNew (0, KS_END);
 	KeySet * their = ksNew (0, KS_END);
 	KeySet * base = ksNew (0, KS_END);
@@ -144,7 +144,7 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 	Key * their_root = keyNew ("user:/their", KEY_END);
 	Key * base_root = keyNew ("user:/base", KEY_END);
 	Key * result_root = keyNew ("user:/result", KEY_END);
-	Key * informationKey = keyNew (0, KEY_END);
+	Key * informationKey = keyNew ("/", KEY_END);
 	KeySet * our = ksNew (1, keyNew ("user:/our/key", KEY_VALUE, "1", KEY_META, "order", our_order, KEY_END), KS_END);
 	KeySet * their = ksNew (1, keyNew ("user:/their/key", KEY_VALUE, "1", KEY_META, "order", their_order, KEY_END), KS_END);
 	KeySet * base = ksNew (1, keyNew ("user:/base/key", KEY_VALUE, "1", KEY_META, "order", base_order, KEY_END), KS_END);

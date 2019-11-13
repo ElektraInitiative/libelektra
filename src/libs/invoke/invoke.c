@@ -118,7 +118,7 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet 
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew (0, KEY_END);
+		errorKey = keyNew ("/", KEY_END);
 	}
 
 	Plugin * plugin = elektraPluginOpen (elektraPluginName, modules, config, errorKey);
@@ -324,7 +324,7 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew (0, KEY_END);
+		errorKey = keyNew ("/", KEY_END);
 	}
 	elektraPluginClose (handle->plugin, errorKey);
 	if (errorKeyMissing)

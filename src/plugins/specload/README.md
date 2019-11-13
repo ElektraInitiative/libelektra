@@ -59,7 +59,7 @@ for communication, so the application should call `elektraQuickdumpSet`. Because
 you use the function `elektraSpecloadSendSpec` exported as `"system:/elektra/modules/specload/exports/sendspec"`:
 
 ```c
-Key * errorKey = keyNew (0, KEY_END);
+Key * errorKey = keyNew ("/", KEY_END);
 
 // add 'system:/sendspec' key to suppress checking the 'app' key in elektraSpecloadOpen
 KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);

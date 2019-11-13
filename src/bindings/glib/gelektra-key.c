@@ -16,7 +16,7 @@ static Key * gelektra_key_swap (GElektraKey * key, Key * newkey);
 static void gelektra_key_init (GElektraKey * self)
 {
 	/* initialize the object */
-	self->key = keyNew (NULL);
+	self->key = keyNew ("/", KEY_END);
 	keyIncRef (self->key);
 }
 

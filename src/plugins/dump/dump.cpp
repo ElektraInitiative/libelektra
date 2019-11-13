@@ -49,7 +49,7 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 		while ((meta = ckdb::keyNextMeta (cur)) != nullptr)
 		{
 			std::stringstream ss;
-			ss << "user:/" << meta; // use the address of pointer as name
+			ss << "/" << meta; // use the address of pointer as name
 
 			ckdb::Key * search = ckdb::keyNew (ss.str ().c_str (), KEY_END);
 			ckdb::Key * ret = ksLookup (metacopies, search, 0);
@@ -127,15 +127,14 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else if (command == "keyNew")
 		{
-			cur = ckdb::keyNew (nullptr);
-
 			ss >> namesize;
 			ss >> valuesize;
 
 			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
 			is.read (&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
-			ckdb::keySetName (cur, &namebuffer[0]);
+
+			cur = ckdb::keyNew (namebuffer.data (), KEY_END);
 
 			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 			is.read (&valuebuffer[0], valuesize);

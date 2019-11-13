@@ -2086,7 +2086,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		// only handle 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
 		const char * condUNameBase = keyUnescapedName (clause);
 		const char * condUName = condUNameBase;
-		condUName += sizeof ("system\0elektra\0ensure\0plugins"); // skip known common part
+		condUName += sizeof ("\0\0elektra\0ensure\0plugins"); // skip known common part
 
 		size_t condUSize = keyGetUnescapedNameSize (clause);
 		if (condUNameBase + condUSize <= condUName)
@@ -2107,7 +2107,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		}
 
 		const char * mountpoint = keyUnescapedName (clause);
-		mountpoint += sizeof ("system\0elektra\0ensure\0plugins");
+		mountpoint += sizeof ("\0\0elektra\0ensure\0plugins");
 		const char * pluginName = keyBaseName (clause);
 		const char * pluginStateString = keyString (clause);
 

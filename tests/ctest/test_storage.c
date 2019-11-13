@@ -466,7 +466,7 @@ static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFil
 	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * copy = keyNew (0, KEY_END);
+	Key * copy = keyNew ("/", KEY_END);
 	succeed_if (keyCopy (copy, found) != -1, "keyCopy failed");
 
 	compare_key (found, copy);
