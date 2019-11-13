@@ -1140,6 +1140,7 @@ ssize_t keyGetFullNameSize (const Key * key)
  */
 ssize_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)
 {
+	// TODO (kodebach): remove?
 	size_t userSize = sizeof ("user") - 1;
 	ssize_t length;
 	ssize_t maxSSize;
@@ -1174,7 +1175,7 @@ ssize_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)
 		cursor += userSize;
 		if (keyGetMeta (key, "owner"))
 		{
-			*cursor = ':';
+			*cursor = '/';
 			++cursor;
 			size_t ownerSize = keyGetValueSize (keyGetMeta (key, "owner")) - 1;
 			strncpy (cursor, keyValue (keyGetMeta (key, "owner")), ownerSize);

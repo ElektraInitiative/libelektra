@@ -650,7 +650,7 @@ int keyClear (Key * key)
 
 	ksDel (key->meta);
 
-	keyInit (key);
+	keyInit (key); // TODO (kodebach): keyname?
 
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 

@@ -177,7 +177,8 @@ void Coder::decodeValue (CppKey & key)
 CppKey Coder::encodeName (CppKey const & key)
 {
 	CppKey escaped{ key.dup () };
-	escaped.setName (key.getNamespace ());
+	auto ns = key.getNamespace ();
+	escaped.setName (ns == "/" ? "/" : ns + ":/");
 	auto keyIterator = key.begin ();
 
 	while (++keyIterator != key.end ())
@@ -198,7 +199,8 @@ CppKey Coder::encodeName (CppKey const & key)
 CppKey Coder::decodeName (CppKey const & key)
 {
 	CppKey unescaped{ key.dup () };
-	unescaped.setName (key.getNamespace ());
+	auto ns = key.getNamespace ();
+	unescaped.setName (ns == "/" ? "/" : ns + ":/");
 	auto keyIterator = key.begin ();
 
 	while (++keyIterator != key.end ())
