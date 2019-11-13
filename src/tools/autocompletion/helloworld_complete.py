@@ -14,7 +14,7 @@ def find_auto_completion_options():
 			opt_long = (key.getMeta(name="opt/long"))
 			opt = (key.getMeta(name="opt"))
 			if start_of_word != None:
-				if not opt and opt and opt.value.startswith(start_of_word):
+				if opt and opt.value.startswith(start_of_word):
 					completion_options.append(opt.value)
 				if opt_long and opt_long.value.startswith(start_of_word):
 					completion_options.append(opt_long.value)
