@@ -342,6 +342,7 @@ you up to date with the multi-language support provided by Elektra.
 - The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
 - Fixed augeas crash if fopen fails. _(Michael Zronek)_
 - Fixed no message being shown when trying to mount as non-root user. _(Michael Zronek)_
+- Fixed no message being shown when trying to mount as non-root user. _(Michael Zronek)_
 - The reformatting scripts now run in parallel. _(Markus Raab)_
 - Improved various error messages and synchronized documentations. _(Michael Zronek)_
 - Improved `range` plugin error message. _(Michael Zronek)_
