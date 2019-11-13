@@ -332,7 +332,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				KeySet * userConfigAll = ksCut (config, userCutPoint);
 				KeySet * pluginConfig = ksCut (userConfigAll, current);
 				// replace "user:/plugins/#X" with "user:/"
-				KeySet * pluginConfigWithConfigPrefix = ksRenameKeys (pluginConfig, "user");
+				KeySet * pluginConfigWithConfigPrefix = ksRenameKeys (pluginConfig, "user:/");
 				ksDel (pluginConfig);
 				// append config below "/config" to all plugins
 				KeySet * globalPluginConfig = ksRenameKeys (globalConfigAll, "user:/config");
@@ -349,7 +349,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				keyDel (globalConfCutPoint);
 				keyDel (toRemove);
 				// replace "user:/config/" with "user:/"
-				realPluginConfig = ksRenameKeys (pluginConfigWithConfigPrefix, "user");
+				realPluginConfig = ksRenameKeys (pluginConfigWithConfigPrefix, "user:/");
 				ksDel (pluginConfigWithConfigPrefix);
 				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
 				ksDel (realPluginConfig);
