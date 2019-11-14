@@ -1,12 +1,15 @@
-# How-To: kdb cmerge
+# How-To: Merging
 
 ## Introduction
 
-The kdb tool allows users to access and perform functions on the Elektra key database from the command line. We added
+Elektra takes the semantic aspects of configuration files into account when merging them into one result file.
+Those configuration files are represented as key sets in Elektra. Key sets are collections of name-value pairs.
+
+The `kdb` tool allows users to access and perform functions on the Elektra key database from the command line. We added
 a new command to this very useful tool, the `cmerge` command. This command allows a user to perform a three-way merge
 of key sets from the `kdb` tool.
 
-The command to use this tool is:
+The syntax to use this tool is:
 
 `kdb cmerge [OPTIONS] our their base result`
 
