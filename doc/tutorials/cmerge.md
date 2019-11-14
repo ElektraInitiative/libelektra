@@ -220,5 +220,5 @@ kdb get user/tests/arrays/result/#0
 There are two tools of which cmerge is the central tool:
 
 1. `kdb install-config-file` installs or merges configuration files from the file system into
-   Elektra.
+   Elektra. There is [a tutorial](/doc/tutorials/install-config-files.md) for this tool, too.
 2. `kdb cmerge-config-files` performs a three-way merge on three files using Elektra
