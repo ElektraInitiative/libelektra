@@ -22,103 +22,71 @@ struct test
 	char * expectedFRootName;
 };
 
-struct test tstKeyName[] = {
-	{ "Normal key", "system:/foo/bar", "system:/foo/bar", "bar", "system" },
+struct test tstKeyName[] = { { "Normal key", "system:/foo/bar", "system:/foo/bar", "bar", "system" },
 
-	{
-		"Key containing redundant & trailing separator", "system://foo//bar//", "system:/foo/bar", /* keyName 	*/
-		"bar",											   /* keyBaseName	*/
-		"system",										   /* keyGetFullRootName	*/
-	},
+			     {
+				     "Key containing redundant & trailing separator", "system://foo//bar//",
+				     "system:/foo/bar", /* keyName 	*/
+				     "bar",		/* keyBaseName	*/
+				     "system",		/* keyGetFullRootName	*/
+			     },
 
-	{
-		"Normal user key", "user:/key", "user:/key", /* keyName 	*/
-		"key",					     /* keyBaseName 	*/
-		"user",					     /* keyGetFullRootName 	*/
-	},
+			     {
+				     "Normal user key", "user:/key", "user:/key", /* keyName 	*/
+				     "key",					  /* keyBaseName 	*/
+				     "user",					  /* keyGetFullRootName 	*/
+			     },
 
-	{
-		"Normal user key with owner", "user:owner/key", "user:/key", /* keyName 	*/
-		"key",							     /* keyBaseName 	*/
-		"user:owner",						     /* keyGetFullRootName 	*/
-	},
+			     {
+				     "Key with empty part", "user:///%", "user:/%", /* keyName 	*/
+				     "",					    /* keyBaseName 	*/
+				     "",					    /* keyGetFullRootName 	*/
 
-	{
-		"Depth user key with owner", "user:owner/folder/long/base/dir/key", "user:/folder/long/base/dir/key", /* keyName 	*/
-		"key",												      /* keyBaseName 	*/
-		"user:owner", /* keyGetFullRootName 	*/
-	},
+			     },
 
-#ifdef COMPAT
-	{
-		"Key containing escaped separator", "user:yl///foo\\///bar\\/foo_bar\\", "user:/foo\\//bar\\/foo_bar\\", /* keyName 	*/
-		"bar/foo_bar\\",											 /* keyBaseName 	*/
-		"user:yl", /* keyGetFullRootName 	*/
-	},
-#endif
+			     {
+				     "Key with escaped %", "user:///\\%", "user:/\\%", /* keyName 	*/
+				     "%",					       /* keyBaseName 	*/
+				     "",					       /* keyGetFullRootName 	*/
 
-	{
-		"Key containing escaped separator at the end", "user:yl///foo\\///bar\\/foo_bar\\/",
-		"user:/foo\\//bar\\/foo_bar\\/", /* keyName 	*/
-		"bar/foo_bar/",			 /* keyBaseName 	*/
-		"user:yl",			 /* keyGetFullRootName 	*/
-	},
+			     },
 
-	{
-		"Key with empty part", "user:///%", "user:/%", /* keyName 	*/
-		"",					       /* keyBaseName 	*/
-		"",					       /* keyGetFullRootName 	*/
+			     {
+				     "Key with multi escaped %", "user:///\\\\%", "user:/\\\\%", /* keyName 	*/
+				     "\\%",							 /* keyBaseName 	*/
+				     "",							 /* keyGetFullRootName 	*/
 
-	},
+			     },
 
-	{
-		"Key with escaped %", "user:///\\%", "user:/\\%", /* keyName 	*/
-		"%",						  /* keyBaseName 	*/
-		"",						  /* keyGetFullRootName 	*/
-
-	},
-
-	{
-		"Key with multi escaped %", "user:///\\\\%", "user:/\\\\%", /* keyName 	*/
-		"\\%",							    /* keyBaseName 	*/
-		"",							    /* keyGetFullRootName 	*/
-
-	},
-
-	{
-		NULL, NULL, NULL, /* keyName 	*/
-		NULL,		  /* keyBaseName 	*/
-		NULL,		  /* keyGetFullRootName 	*/
-	}
-};
+			     {
+				     NULL, NULL, NULL, /* keyName 	*/
+				     NULL,	     /* keyBaseName 	*/
+				     NULL,	     /* keyGetFullRootName 	*/
+			     } };
 
 static void test_keyNewSpecial (void)
 {
 	printf ("Test special key creation\n");
 
 	Key * k = keyNew ("/", KEY_END);
-	succeed_if_same_string (keyName (k), "");
-	keyDel (k);
-
-	k = keyNew ("/", KEY_END); //  might break, useless arguments?
-	succeed_if_same_string (keyName (k), "");
+	succeed_if_same_string (keyName (k), "/");
 	keyDel (k);
 
 	k = keyNew ("", KEY_END);
-	succeed_if_same_string (keyName (k), "");
+	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
 	k = keyNew ("invalid", KEY_END);
-	succeed_if_same_string (keyName (k), "");
+	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
 
 	k = keyNew ("other invalid", KEY_END);
-	succeed_if_same_string (keyName (k), "");
+	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
 	k = keyNew ("system spaces", KEY_END);
-	succeed_if_same_string (keyName (k), "");
+	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
 	k = keyNew ("system:/bin", KEY_BINARY, KEY_VALUE, "a 2d\0b", KEY_END);
@@ -175,26 +143,14 @@ static void test_keyNewSystem (void)
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew ("system:/", KEY_END);
-	succeed_if_same_string (keyName (key), "system");
-	succeed_if (keyGetNameSize (key) == 7, "empty name size");
+	succeed_if_same_string (keyName (key), "system:/");
+	succeed_if (keyGetNameSize (key) == 9, "empty name size");
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner not null");
 	keyDel (key);
 
 	key = keyNew ("user:/abc", KEY_OWNER, "huhu", KEY_END);
 	succeed_if_same_string (keyName (key), "user:/abc");
-	succeed_if (keyGetNameSize (key) == 9, "empty name size");
-	succeed_if_same_string (keyString (keyGetMeta (key, "owner")), "huhu");
-	keyDel (key);
-
-	key = keyNew ("user:lost/abc", KEY_OWNER, "huhu", KEY_END);
-	succeed_if_same_string (keyName (key), "user:/abc");
-	succeed_if (keyGetNameSize (key) == 9, "empty name size");
-	succeed_if_same_string (keyString (keyGetMeta (key, "owner")), "huhu");
-	keyDel (key);
-
-	key = keyNew ("user:huhu/abc", KEY_END);
-	succeed_if_same_string (keyName (key), "user:/abc");
-	succeed_if (keyGetNameSize (key) == 9, "empty name size");
+	succeed_if (keyGetNameSize (key) == 10, "empty name size");
 	succeed_if_same_string (keyString (keyGetMeta (key, "owner")), "huhu");
 	keyDel (key);
 
@@ -247,10 +203,7 @@ static void test_keyNewUser (void)
 	succeed_if (keyDel (k3) == 0, "keyDel: Unable to delete key with name + value");
 
 	k1 = keyNew ("invalid", KEY_END);
-	succeed_if (k1 != 0, "should construct key even on invalid names");
-	succeed_if_same_string (keyName (k1), "");
-	succeed_if (keyGetNameSize (k1) == 1, "namesize");
-	keyDel (k1);
+	succeed_if (k1 == 0, "should not construct key on invalid names");
 }
 
 static void test_keyReference (void)
@@ -380,7 +333,6 @@ static void test_keyName (void)
 	char ret[1000];
 	size_t i;
 	char testName[] = "user:/name";
-	char testFullName[] = "user:max/name";
 	char testBaseName[] = "name";
 
 #ifdef HAVE_CLEARENV
@@ -408,45 +360,38 @@ static void test_keyName (void)
 
 	succeed_if (keyName (0) == 0, "null pointer");
 
-	key = keyNew ("/", KEY_END);
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (keyGetName (key, ret, 1000) == 1, "get empty name");
-	succeed_if_same_string (ret, "");
-	succeed_if (keyGetName (key, ret, 0) == -1, "get empty name");
-	keyDel (key);
-
 	succeed_if (keySetName (0, ret) == -1, "Null pointer");
 
+	/* TODO (kodebach): remove?
+		printf ("Test Key Full Name\n");
 
-	printf ("Test Key Full Name\n");
+		key = keyNew (testFullName, KEY_END);
+		succeed_if (keyGetFullName (0, ret, 100) == -1, "null pointer");
+		succeed_if (keyGetFullName (key, 0, 100) == -1, "string null pointer");
+		succeed_if (keyGetFullName (key, ret, 0) == -1, "length checking");
+		for (i = 1; i < sizeof (testFullName); i++)
+		{
+			succeed_if (keyGetFullName (key, ret, i) == -1, "length checking too short");
+		}
+		for (i = sizeof (testFullName); i < sizeof (testFullName) * 2; i++)
+		{
+			succeed_if (keyGetFullName (key, ret, i) == sizeof (testFullName), "length checking longer");
+		}
+		succeed_if (keyGetFullName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
+		keyDel (key);
 
-	key = keyNew (testFullName, KEY_END);
-	succeed_if (keyGetFullName (0, ret, 100) == -1, "null pointer");
-	succeed_if (keyGetFullName (key, 0, 100) == -1, "string null pointer");
-	succeed_if (keyGetFullName (key, ret, 0) == -1, "length checking");
-	for (i = 1; i < sizeof (testFullName); i++)
-	{
-		succeed_if (keyGetFullName (key, ret, i) == -1, "length checking too short");
-	}
-	for (i = sizeof (testFullName); i < sizeof (testFullName) * 2; i++)
-	{
-		succeed_if (keyGetFullName (key, ret, i) == sizeof (testFullName), "length checking longer");
-	}
-	succeed_if (keyGetFullName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
-	keyDel (key);
+		key = keyNew ("/", KEY_END);
+		succeed_if (keyGetFullName (key, ret, 1000) == 1, "get empty name");
+		succeed_if_same_string (ret, "");
+		succeed_if (keyGetFullName (key, ret, 0) == -1, "get empty name");
+		keyDel (key);
 
-	key = keyNew ("/", KEY_END);
-	succeed_if (keyGetFullName (key, ret, 1000) == 1, "get empty name");
-	succeed_if_same_string (ret, "");
-	succeed_if (keyGetFullName (key, ret, 0) == -1, "get empty name");
-	keyDel (key);
-
-	succeed_if (keySetName (0, ret) == -1, "Null pointer");
-
+		succeed_if (keySetName (0, ret) == -1, "Null pointer");
+	*/
 
 	printf ("Test Key Base Name\n");
 
-	key = keyNew (testFullName, KEY_END);
+	key = keyNew (testName, KEY_END);
 	succeed_if (keyGetBaseName (0, ret, 100) == -1, "null pointer");
 	succeed_if (keyGetBaseName (key, 0, 100) == -1, "string null pointer");
 	succeed_if (keyGetBaseName (key, ret, 0) == -1, "length checking");
@@ -474,7 +419,7 @@ static void test_keyName (void)
 
 	key = keyNew ("user:/", KEY_END);
 	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -484,7 +429,7 @@ static void test_keyName (void)
 
 	key = keyNew ("user:/", KEY_END);
 	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -494,16 +439,6 @@ static void test_keyName (void)
 
 	key = keyNew ("user://", KEY_END);
 	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
-	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
-	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
-	succeed_if_same_string (ret, "");
-	succeed_if (keyGetBaseName (key, ret, 2) == 1, "GetBaseName for root key");
-	succeed_if_same_string (ret, "");
-	keyDel (key);
-
-	key = keyNew ("system:/", KEY_END);
-	succeed_if_same_string (keyName (key), "system");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
@@ -513,7 +448,47 @@ static void test_keyName (void)
 	keyDel (key);
 
 	key = keyNew ("system:/", KEY_END);
-	succeed_if_same_string (keyName (key), "system");
+	succeed_if_same_string (keyName (key), "system:/");
+	succeed_if (keyGetNameSize (key) == 9, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key, ret, 2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("system:/", KEY_END);
+	succeed_if_same_string (keyName (key), "system:/");
+	succeed_if (keyGetNameSize (key) == 9, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key, ret, 2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("dir:/", KEY_END);
+	succeed_if_same_string (keyName (key), "dir:/");
+	succeed_if (keyGetNameSize (key) == 6, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key, ret, 2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("dir:/", KEY_END);
+	succeed_if_same_string (keyName (key), "dir:/");
+	succeed_if (keyGetNameSize (key) == 6, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key, ret, 2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("proc:/", KEY_END);
+	succeed_if_same_string (keyName (key), "proc:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
@@ -522,9 +497,9 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("dir/", KEY_END);
-	succeed_if_same_string (keyName (key), "dir");
-	succeed_if (keyGetNameSize (key) == 4, "name length checking");
+	key = keyNew ("proc:/", KEY_END);
+	succeed_if_same_string (keyName (key), "proc:/");
+	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -532,9 +507,9 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("dir/", KEY_END);
-	succeed_if_same_string (keyName (key), "dir");
-	succeed_if (keyGetNameSize (key) == 4, "name length checking");
+	key = keyNew ("spec:/", KEY_END);
+	succeed_if_same_string (keyName (key), "spec:/");
+	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -542,9 +517,9 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("proc/", KEY_END);
-	succeed_if_same_string (keyName (key), "proc");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	key = keyNew ("spec:/", KEY_END);
+	succeed_if_same_string (keyName (key), "spec:/");
+	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -552,9 +527,9 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("proc/", KEY_END);
-	succeed_if_same_string (keyName (key), "proc");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	key = keyNew ("meta:/", KEY_END);
+	succeed_if_same_string (keyName (key), "meta:/");
+	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -562,19 +537,9 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("spec/", KEY_END);
-	succeed_if_same_string (keyName (key), "spec");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
-	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
-	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
-	succeed_if_same_string (ret, "");
-	succeed_if (keyGetBaseName (key, ret, 2) == 1, "GetBaseName for root key");
-	succeed_if_same_string (ret, "");
-	keyDel (key);
-
-	key = keyNew ("spec/", KEY_END);
-	succeed_if_same_string (keyName (key), "spec");
-	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	key = keyNew ("default:/", KEY_END);
+	succeed_if_same_string (keyName (key), "default:/");
+	succeed_if (keyGetNameSize (key) == 10, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key, ret, 1) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
@@ -609,114 +574,97 @@ static void test_keyNameSlashes (void)
 	printf ("Test Slashes in Key Name\n");
 	char * buf;
 	char * getBack;
-	char ret[1000];
 	Key * key = 0;
 	int i;
 
 
 	key = keyNew ("/", KEY_END);
-	succeed_if (keyGetNameSize (key) == 1, "empty name size");
+	succeed_if (keyGetNameSize (key) == 2, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("", KEY_END);
-	succeed_if (key != 0, "key should not be null!");
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (keyGetName (key, ret, 999) == 1, "keyGetName should return 1");
-	succeed_if_same_string (ret, "");
-	succeed_if (keyGetNameSize (key) == 1, "empty name size");
-	keyDel (key);
+	succeed_if (key == 0, "key should be null!");
 
 	key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/");
 	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "empty name size");
+	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 
 	keySetName (key, "system:/");
-	succeed_if_same_string (keyName (key), "system");
-	succeed_if (keyGetNameSize (key) == 7, "empty name size");
+	succeed_if_same_string (keyName (key), "system:/");
+	succeed_if (keyGetNameSize (key) == 9, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("/", KEY_END);
 	keySetName (key, "system:/");
-	succeed_if_same_string (keyName (key), "system");
-	succeed_if (keyGetNameSize (key) == 7, "empty name size");
+	succeed_if_same_string (keyName (key), "system:/");
+	succeed_if (keyGetNameSize (key) == 9, "empty name size");
 
 	keySetName (key, "user:/");
 	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "empty name size");
+	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("/", KEY_END);
-	succeed_if (keySetName (key, "user:") == 5, "setting user: generates error");
+	succeed_if (keySetName (key, "user:/") == 7, "setting user:/ generates error");
 	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "empty name size");
-	keyDel (key);
-
-	key = keyNew ("/", KEY_END);
-	succeed_if (keySetName (key, "user:y") == 5, "setting user: generates error");
-	succeed_if_same_string (keyName (key), "user:/");
-	succeed_if (keyGetNameSize (key) == 5, "empty name size");
+	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("/", KEY_END);
 	succeed_if (keySetName (key, "no") == -1, "no error code setting invalid name");
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (keyGetNameSize (key) == 1, "empty name size");
+	succeed_if_same_string (keyName (key), "/");
+	succeed_if (keyGetNameSize (key) == 2, "empty name size");
 	keyDel (key);
 
 	key = keyNew ("user:/noname", KEY_END);
-	succeed_if (keyGetNameSize (key) == 12, "size not correct after keyNew");
-	getBack = elektraMalloc (12);
-	succeed_if (keyGetName (key, getBack, 12), "could not get name");
+	succeed_if (keyGetNameSize (key) == 13, "size not correct after keyNew");
+	getBack = elektraMalloc (13);
+	succeed_if (keyGetName (key, getBack, 13), "could not get name");
 	succeed_if_same_string (getBack, "user:/noname");
 	elektraFree (getBack);
 
 	keySetName (key, "user:/noname");
-	succeed_if (keyGetNameSize (key) == 12, "size not correct after keySetName");
-	getBack = elektraMalloc (12);
-	succeed_if (keyGetName (key, getBack, 12), "could not get name");
+	succeed_if (keyGetNameSize (key) == 13, "size not correct after keySetName");
+	getBack = elektraMalloc (13);
+	succeed_if (keyGetName (key, getBack, 13), "could not get name");
 	succeed_if_same_string (getBack, "user:/noname");
 	elektraFree (getBack);
 
 	keySetName (key, "no");
-	succeed_if (keyGetNameSize (key) == 1, "size not correct after keySetName");
-	getBack = elektraMalloc (1);
-	succeed_if (keyGetName (key, getBack, 1), "could not get name");
-	succeed_if_same_string (getBack, "");
+	succeed_if (keyGetNameSize (key) == 13, "size not correct after keySetName");
+	getBack = elektraMalloc (13);
+	succeed_if (keyGetName (key, getBack, 13), "could not get name");
+	succeed_if_same_string (getBack, "user:/noname");
 	elektraFree (getBack);
 	keyDel (key);
 
 	key = keyNew ("user:/noname", KEY_END);
-	keySetName (key, "");
-	succeed_if_same_string (keyName (key), "");
-	succeed_if (keyGetName (key, ret, 999) == 1, "keyGetName should return 1");
-	succeed_if_same_string (ret, "");
-	succeed_if (keyGetNameSize (key) == 1, "empty name size");
 
 	keySetName (key, "user://hidden");
 	succeed_if_same_string (keyName (key), "user:/hidden");
-	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
+	succeed_if (keyGetNameSize (key) == 13, "name size minus slashes");
 
 	keySetName (key, "user:///hidden");
 	succeed_if_same_string (keyName (key), "user:/hidden");
-	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
+	succeed_if (keyGetNameSize (key) == 13, "name size minus slashes");
 
 	keySetName (key, "user:////////////////////////////////////hidden");
 	succeed_if_same_string (keyName (key), "user:/hidden");
-	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
+	succeed_if (keyGetNameSize (key) == 13, "name size minus slashes");
 
 	printf ("Test trailing Slashes in Key Name\n");
 	keySetName (key, "user://hidden/");
 	succeed_if_same_string (keyName (key), "user:/hidden");
-	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
+	succeed_if (keyGetNameSize (key) == 13, "name size minus slashes");
 
 	keySetName (key, "user://hidden//");
 	succeed_if_same_string (keyName (key), "user:/hidden");
-	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
+	succeed_if (keyGetNameSize (key) == 13, "name size minus slashes");
 
 	keySetName (key, "user://hidden///////");
 	succeed_if_same_string (keyName (key), "user:/hidden");
-	succeed_if (keyGetNameSize (key) == 12, "name size minus slashes");
+	succeed_if (keyGetNameSize (key) == 13, "name size minus slashes");
 
 	keySetName (key, "user:/");
 	succeed_if_same_string (keyName (key), "user:/");
@@ -783,38 +731,26 @@ static void test_keyNameSlashes (void)
 	printf ("Test failure key creation\n");
 
 	key = keyNew ("invalid", KEY_END);
-	succeed_if (key != 0, "null pointer for invalid name");
-	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
+	succeed_if (key == 0, "should be null");
+	succeed_if (keyDel (key) == -1, "keyDel: should fail");
 
 	key = keyNew ("nonhere/valid/there", KEY_END);
-	succeed_if (key != NULL, "keyNew did not accept wrong name");
-	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
+	succeed_if (key == 0, "should be null");
+	succeed_if (keyDel (key) == -1, "keyDel: should fail");
 
 	key = keyNew ("nonhere:y/valid/there", KEY_END);
-	succeed_if (key != NULL, "keyNew did not accept wrong name");
-	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
+	succeed_if (key == 0, "should be null");
+	succeed_if (keyDel (key) == -1, "keyDel: should fail");
 
 	key = keyNew ("user:/validname", KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name");
 	succeed_if_same_string (keyName (key), "user:/validname");
 
-	keySetName (key, "invalid");
-	succeed_if (keyGetNameSize (key) == 1, "name size for invalid name");
-	succeed_if_same_string (keyName (key), "");
-
 	keySetName (key, "user:/validname");
 	succeed_if_same_string (keyName (key), "user:/validname");
 
-	keySetName (key, "");
-	succeed_if (keyGetNameSize (key) == 1, "name size for invalid name");
-	succeed_if_same_string (keyName (key), "");
-
 	keySetName (key, "user:/validname\\/t");
 	succeed_if_same_string (keyName (key), "user:/validname\\/t");
-
-	keySetName (key, 0);
-	succeed_if (keyGetNameSize (key) == 1, "name size for invalid name");
-	succeed_if_same_string (keyName (key), "");
 
 #ifdef COMPAT
 	keySetName (key, "user:/validname\\");
@@ -1204,7 +1140,6 @@ static void test_keyInactive (void)
 	Key * key = keyNew ("/", KEY_END);
 
 	succeed_if (keyIsInactive (0) == -1, "NULL pointer");
-	succeed_if (keyIsInactive (key) == -1, "Key has no name");
 
 	printf ("Test of active and inactive keys\n");
 	keySetName (key, "user:/valid");
@@ -1533,8 +1468,8 @@ static void test_keyDup (void)
 	succeed_if (keyDup (0) == 0, "could not duplicate null");
 
 	// Create test key
-	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID,
-		       456, KEY_MODE, 0644, KEY_END);
+	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID, 456,
+		       KEY_MODE, 0644, KEY_END);
 
 
 	// Dup the key
@@ -1581,8 +1516,8 @@ static void test_keyCopy (void)
 	printf ("Test key copy\n");
 
 	// Create test key
-	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID,
-		       456, KEY_MODE, 0644, KEY_END);
+	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID, 456,
+		       KEY_MODE, 0644, KEY_END);
 
 
 	// Copy the key
@@ -2003,7 +1938,7 @@ static void test_keyClear (void)
 static void test_keyBaseName (void)
 {
 	printf ("Test basename\n");
-	Key * k = keyNew ("user:yl///foo\\///bar\\/foo_bar\\/", KEY_END);
+	Key * k = keyNew ("user:///foo\\///bar\\/foo_bar\\/", KEY_END);
 	succeed_if_same_string (keyName (k), "user:/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "bar/foo_bar/");
 
@@ -2038,7 +1973,7 @@ static void test_keyBaseName (void)
 	succeed_if_same_string (keyBaseName (k), "valid");
 
 
-	keySetName (k, "user:yl///foo\\///bar\\/foo_bar\\/");
+	keySetName (k, "user:///foo\\///bar\\/foo_bar\\/");
 	succeed_if_same_string (keyName (k), "user:/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "bar/foo_bar/");
 
@@ -2645,39 +2580,38 @@ static void test_keyUnescapedName (void)
 	printf ("test keyUnescapedName\n");
 
 	Key * k = keyNew ("user:/something", KEY_END);
-	succeed_if (!memcmp (keyUnescapedName (k), "user\0something", sizeof ("user:/something")), "unescaped name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something", sizeof ("\0\0something")), "unescaped name wrong");
 
 	keySetName (k, "/something/else");
-	succeed_if (!memcmp (keyUnescapedName (k), "\0something\0else", sizeof ("/something/else")), "unescaped cascading name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else", sizeof ("\0\0something\0else")),
+		    "unescaped cascading name wrong");
 
 	keySetName (k, "/\\/other/more");
-	succeed_if (!memcmp (keyUnescapedName (k), "\0/other\0more", sizeof ("\0/other\0more")), "unescaped cascading name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0/other\0more", sizeof ("\0\0/other\0more")), "unescaped cascading name wrong");
 
 	keySetName (k, "/\\/other/\\/more");
-	succeed_if (!memcmp (keyUnescapedName (k), "\0/other\0/more", sizeof ("\0/other\0/more")), "unescaped cascading name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0/other\0/more", sizeof ("\0\0/other\0/more")), "unescaped cascading name wrong");
 
 	keySetName (k, "system:/something/else");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something\0else", sizeof ("system:/something/else")), "unescaped name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else", sizeof ("\0\0something\0else")), "unescaped name wrong");
 
 	keyAddBaseName (k, "more");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something\0else\0more", sizeof ("system:/something/else/more")),
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else\0more", sizeof ("\0\0something\0else\0more")),
 		    "unescaped name wrong");
 
 	keySetBaseName (k, "else");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something\0else\0else", sizeof ("system:/something/else/else")),
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else\0else", sizeof ("\0\0something\0else\0else")),
 		    "unescaped name wrong");
 
 	keySetBaseName (k, "");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something\0else\0\0", sizeof ("system:/something/else/")),
-		    "unescaped name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else\0\0", sizeof ("\0\0something\0else\0")), "unescaped name wrong");
 
 	keySetBaseName (k, "%");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something\0else\0%", sizeof ("system:/something/else/%")),
-		    "unescaped name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else\0%", sizeof ("\0\0something\0else\0%")), "unescaped name wrong");
 
 	keySetBaseName (k, "\\");
 	succeed_if_same_string (keyBaseName (k), "\\");
-	char sol1[] = "system\0something\0else\0\\";
+	char sol1[] = "\0\0something\0else\0\\";
 	succeed_if (!memcmp (keyUnescapedName (k), sol1, sizeof (sol1)), "unescaped name wrong");
 
 	/* print memory of keyUnescapedName
@@ -2688,16 +2622,16 @@ static void test_keyUnescapedName (void)
 	*/
 
 	keySetBaseName (k, "\\\\");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something\0else\0\\\\", sizeof ("system:/something/else/\\\\")),
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something\0else\0\\\\", sizeof ("\0\0something\0else\0\\\\")),
 		    "unescaped name wrong");
 
 	keySetName (k, "system:/something\\/else");
-	succeed_if (!memcmp (keyUnescapedName (k), "system\0something/else", sizeof ("system:/something/else")), "unescaped name wrong");
+	succeed_if (!memcmp (keyUnescapedName (k), "\0\0something/else", sizeof ("\0\0something\0else")), "unescaped name wrong");
 
 	succeed_if (keySetName (k, "system:/something/else/\\") == -1, "tangling backslash");
 
 	keySetName (k, "system:/something/else/\\\\");
-	char sol2[] = "system\0something\0else\0\\";
+	char sol2[] = "\0\0something\0else\0\\";
 	succeed_if (!memcmp (keyUnescapedName (k), sol2, sizeof (sol2)), "unescaped name wrong");
 	/*
 	for (size_t i = 0; i<sizeof(sol2); ++i)
@@ -2713,15 +2647,15 @@ static void test_keyCanonify (void)
 {
 	printf ("test canonify\n");
 
-	Key * k = keyNew ("/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key",
-			  KEY_CASCADING_NAME, KEY_END);
-	succeed_if_same_string (
-		keyName (k), "/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key");
-	succeed_if (keyGetNameSize (k) == 105, "name size wrong");
+	Key * k =
+		keyNew ("/a/very/long/#0/name\\/with/section/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key", KEY_END);
+	succeed_if_same_string (keyName (k),
+				"/a/very/long/#0/name\\/with/section/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key");
+	succeed_if (keyGetNameSize (k) == 104, "name size wrong");
 	succeed_if (keyGetUnescapedNameSize (k) == 103, "unescaped name size wrong");
-	succeed_if_same_string ((char *) keyUnescapedName (k), "");
-	succeed_if_same_string ((char *) keyUnescapedName (k) + 1, "a");
-	succeed_if_same_string ((char *) keyUnescapedName (k) + 3, "very");
+	succeed_if (((char *) keyUnescapedName (k))[0] == KEY_NS_CASCADING, "wrong namespace");
+	succeed_if_same_string ((char *) keyUnescapedName (k) + 2, "a");
+	succeed_if_same_string ((char *) keyUnescapedName (k) + 4, "very");
 	succeed_if_same_string ((char *) keyUnescapedName (k) + 99, "key");
 
 	keyDel (k);

@@ -71,7 +71,7 @@ static void test_iterate (void)
 
 	keySetMeta (key, "meta1", "meta_value");
 	succeed_if (keyRewindMeta (key) == 0, "Could not rewind key");
-	succeed_if_same_string (keyName (keyNextMeta (key)), "meta1");
+	succeed_if_same_string (keyName (keyNextMeta (key)), "meta:/meta1");
 	succeed_if_same_string (keyValue (keyCurrentMeta (key)), "meta_value");
 
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 2. iteration");
@@ -566,19 +566,19 @@ static void test_keyMeta (void)
 
 	meta = keyMeta (key);
 
-	const char * value = keyString (ksLookupByName (meta, "hello", 0));
+	const char * value = keyString (ksLookupByName (meta, "meta:/hello", 0));
 	succeed_if (!strcmp (value, "hello_world"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "mode", 0));
+	value = keyString (ksLookupByName (meta, "meta:/mode", 0));
 	succeed_if (!strcmp (value, "0644"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "time", 0));
+	value = keyString (ksLookupByName (meta, "meta:/time", 0));
 	succeed_if (!strcmp (value, "1271234264"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "empty", 0));
+	value = keyString (ksLookupByName (meta, "meta:/empty", 0));
 	succeed_if (!strcmp (value, ""), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "", 0));
+	value = keyString (ksLookupByName (meta, "meta:/", 0));
 	succeed_if (!strcmp (value, "empty"), "unexpected value");
 
 	succeed_if (ksGetSize (meta) == 5, "unexpected meta keyset size");
