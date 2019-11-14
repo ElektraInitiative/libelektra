@@ -82,33 +82,33 @@ To import a configuration stored in the `ini` format in a file called `example.i
 To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:<br>
 `cat sw.ecf | kdb import system/sw`
 
-To import a sample `json` content with the `yajl` plugin:
+To import a sample `xml` content with the `xerces` plugin:
 
 ```sh
-# import two keys from a json string
-kdb import user/tests/ yajl <<< "{ \"one\": \"one\", \"two\": \"two\" }"
+# import two keys from a xml string
+kdb import user/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/one
+kdb get user/tests/kdb-import/one
 #> one
-kdb get user/tests/two
+kdb get user/tests/kdb-import/two
 #> two
-kdb rm -r user/tests
+kdb rm -r user/tests/kdb-import
 ```
 
-To import a sample `json` content via specifying :
+To import a sample `xml` content via specifying the file format directly:
 
 ```sh
-# import two keys from a json string
-kdb import user/tests/ json <<< "{ \"one\": \"one\", \"two\": \"two\" }"
+# import two keys from a xml string
+kdb import user/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/one
+kdb get user/tests/kdb-import/one
 #> one
-kdb get user/tests/two
+kdb get user/tests/kdb-import/two
 #> two
 
-kdb rm -r user/tests
+kdb rm -r user/tests/kdb-import
 ```
 
 ## SEE ALSO
