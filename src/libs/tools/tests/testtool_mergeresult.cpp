@@ -24,7 +24,7 @@ TEST (MergeResult, ResolveConflictDeletesConflictMeta)
 	Key conflictKey = Key ("user:/test/config/key1", KEY_VALUE, "testvalue", KEY_META, "conflict/operation/our", "delete", KEY_META,
 			       "conflict/operation/their", "modify", KEY_META, "conflict/test", "testvalue", KEY_END);
 
-	Key test = Key ("", KEY_END);
+	Key test = Key ("/", KEY_END);
 
 	result.resolveConflict (conflictKey);
 
