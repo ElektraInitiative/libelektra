@@ -217,7 +217,8 @@ const char * keyName (const Key * key)
 {
 	if (!key) return 0;
 
-	return key->key == NULL ? "" : key->key;
+	ELEKTRA_ASSERT (key->key != NULL, "invalid name");
+	return key->key;
 }
 
 /**
@@ -240,7 +241,7 @@ ssize_t keyGetNameSize (const Key * key)
 	if (!key) return -1;
 
 	// TODO (kodebach): change to return size_t
-	return key->keySize == 0 ? 1 : key->keySize;
+	return key->keySize;
 }
 
 
@@ -266,7 +267,8 @@ ssize_t keyGetNameSize (const Key * key)
 const void * keyUnescapedName (const Key * key)
 {
 	if (!key) return 0;
-	return key->ukey == NULL ? "" : key->ukey;
+	ELEKTRA_ASSERT (key->ukey != NULL, "invalid name");
+	return key->ukey;
 }
 
 
@@ -285,7 +287,7 @@ ssize_t keyGetUnescapedNameSize (const Key * key)
 	if (!key) return -1;
 
 	// TODO (kodebach): change to return size_t
-	return key->keyUSize == 0 ? 1 : key->keyUSize;
+	return key->keyUSize;
 }
 
 
@@ -1807,7 +1809,7 @@ elektraNamespace keyGetNamespace (const Key * key)
 // TODO (kodebach): replace ssize_t with size_t?
 ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 {
-	// TODO (kodebach): document and correct escaped key
+	// TODO (kodebach): document and correct escaped key, lock?
 	if (!key) return -1;
 	if (ns == KEY_NS_NONE || ns == KEY_NS_EMPTY) return -1;
 

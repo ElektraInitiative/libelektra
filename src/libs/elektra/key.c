@@ -650,9 +650,10 @@ int keyClear (Key * key)
 
 	ksDel (key->meta);
 
-	keyInit (key); // TODO (kodebach): keyname?
-
+	keyInit (key);
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
+	
+	keySetName (key, "/");
 
 	/* Set reference properties */
 	key->ksReference = ref;

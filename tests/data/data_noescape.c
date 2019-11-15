@@ -25,7 +25,6 @@ TEST_ESCAPE_PART("a\\/b\\/c\\/d\\/e\\/f\\/g\\/h\\/j\\/k\\/l\\/m\\/n\\/o\\/p\\/q\
 TEST_NOESCAPE_PART("%", "");
 TEST_NOESCAPE_PART("\\%", "%");
 TEST_NOESCAPE_PART("\\\\%", "\\%");
-TEST_NOESCAPE_PART("\\\\\\%", "\\\\%");
 
 // TEST_NOESCAPE_PART("a\\\\\\", "a\\\\\\");
 // TEST_NOESCAPE_PART("\\", "\\");

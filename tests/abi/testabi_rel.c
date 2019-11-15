@@ -38,8 +38,8 @@ static void test_keyCmp (void)
 	keySetName (k2, "system:/");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "system:/");
-	keySetName (k2, "user:/");
+	keySetName (k1, "user:/");
+	keySetName (k2, "system:/");
 	succeed_if (keyCmp (k1, k2) < 0, "system is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "system is smaller");
 
@@ -62,7 +62,7 @@ static void test_keyCmp (void)
 	for (int i = 1; i < 256; ++i)
 	{
 		if (i == '/') continue;
-		cmp[6] = i;
+		cmp[7] = i;
 		// printf ("%i %s\n", i, cmp);
 		keySetName (k1, "user:/a/a");
 		keySetName (k2, cmp);
@@ -248,6 +248,99 @@ static void test_hierarchy (void)
 	keyDel (check);
 }
 
+void test_keyCmpNsOrder (void)
+{
+	Key * cascadingKey = keyNew ("/key", KEY_END);
+	Key * metaKey = keyNew ("meta:/key", KEY_END);
+	Key * specKey = keyNew ("spec:/key", KEY_END);
+	Key * procKey = keyNew ("proc:/key", KEY_END);
+	Key * dirKey = keyNew ("dir:/key", KEY_END);
+	Key * userKey = keyNew ("user:/key", KEY_END);
+	Key * systemKey = keyNew ("system:/key", KEY_END);
+	Key * defaultKey = keyNew ("default:/key", KEY_END);
+
+	succeed_if (keyCmp (cascadingKey, cascadingKey) == 0, "cascading not equal to cascading");
+	succeed_if (keyCmp (cascadingKey, metaKey) < 0, "cascading not smaller than meta");
+	succeed_if (keyCmp (cascadingKey, specKey) < 0, "cascading not smaller than spec");
+	succeed_if (keyCmp (cascadingKey, procKey) < 0, "cascading not smaller than proc");
+	succeed_if (keyCmp (cascadingKey, dirKey) < 0, "cascading not smaller than dir");
+	succeed_if (keyCmp (cascadingKey, userKey) < 0, "cascading not smaller than user");
+	succeed_if (keyCmp (cascadingKey, systemKey) < 0, "cascading not smaller than system");
+	succeed_if (keyCmp (cascadingKey, defaultKey) < 0, "cascading not smaller than default");
+
+	succeed_if (keyCmp (metaKey, cascadingKey) > 0, "meta not greater than cascading");
+	succeed_if (keyCmp (metaKey, metaKey) == 0, "meta not equal to meta");
+	succeed_if (keyCmp (metaKey, specKey) < 0, "meta not smaller than spec");
+	succeed_if (keyCmp (metaKey, procKey) < 0, "meta not smaller than proc");
+	succeed_if (keyCmp (metaKey, dirKey) < 0, "meta not smaller than dir");
+	succeed_if (keyCmp (metaKey, userKey) < 0, "meta not smaller than user");
+	succeed_if (keyCmp (metaKey, systemKey) < 0, "meta not smaller than system");
+	succeed_if (keyCmp (metaKey, defaultKey) < 0, "meta not smaller than default");
+
+	succeed_if (keyCmp (specKey, cascadingKey) > 0, "spec not greater than cascading");
+	succeed_if (keyCmp (specKey, metaKey) > 0, "spec not greater than meta");
+	succeed_if (keyCmp (specKey, specKey) == 0, "spec not equal to spec");
+	succeed_if (keyCmp (specKey, procKey) < 0, "spec not smaller than proc");
+	succeed_if (keyCmp (specKey, dirKey) < 0, "spec not smaller than dir");
+	succeed_if (keyCmp (specKey, userKey) < 0, "spec not smaller than user");
+	succeed_if (keyCmp (specKey, systemKey) < 0, "spec not smaller than system");
+	succeed_if (keyCmp (specKey, defaultKey) < 0, "spec not smaller than default");
+
+	succeed_if (keyCmp (procKey, cascadingKey) > 0, "proc not greater than cascading");
+	succeed_if (keyCmp (procKey, metaKey) > 0, "proc not greater than meta");
+	succeed_if (keyCmp (procKey, specKey) > 0, "proc not greater than spec");
+	succeed_if (keyCmp (procKey, procKey) == 0, "proc not equal to proc");
+	succeed_if (keyCmp (procKey, dirKey) < 0, "proc not smaller than dir");
+	succeed_if (keyCmp (procKey, userKey) < 0, "proc not smaller than user");
+	succeed_if (keyCmp (procKey, systemKey) < 0, "proc not smaller than system");
+	succeed_if (keyCmp (procKey, defaultKey) < 0, "proc not smaller than default");
+
+	succeed_if (keyCmp (dirKey, cascadingKey) > 0, "dir not greater than cascading");
+	succeed_if (keyCmp (dirKey, metaKey) > 0, "dir not greater than meta");
+	succeed_if (keyCmp (dirKey, specKey) > 0, "dir not greater than spec");
+	succeed_if (keyCmp (dirKey, procKey) > 0, "dir not grater than proc");
+	succeed_if (keyCmp (dirKey, dirKey) == 0, "dir not equal to dir");
+	succeed_if (keyCmp (dirKey, userKey) < 0, "dir not smaller than user");
+	succeed_if (keyCmp (dirKey, systemKey) < 0, "dir not smaller than system");
+	succeed_if (keyCmp (dirKey, defaultKey) < 0, "dir not smaller than default");
+
+	succeed_if (keyCmp (userKey, cascadingKey) > 0, "user not greater than cascading");
+	succeed_if (keyCmp (userKey, metaKey) > 0, "user not greater than meta");
+	succeed_if (keyCmp (userKey, specKey) > 0, "user not greater than spec");
+	succeed_if (keyCmp (userKey, procKey) > 0, "user not greater than proc");
+	succeed_if (keyCmp (userKey, dirKey) > 0, "user not greater than dir");
+	succeed_if (keyCmp (userKey, userKey) == 0, "user not eqaul user");
+	succeed_if (keyCmp (userKey, systemKey) < 0, "user not smaller than system");
+	succeed_if (keyCmp (userKey, defaultKey) < 0, "user not smaller than default");
+
+	succeed_if (keyCmp (systemKey, cascadingKey) > 0, "system not greater than cascading");
+	succeed_if (keyCmp (systemKey, metaKey) > 0, "system not greater than meta");
+	succeed_if (keyCmp (systemKey, specKey) > 0, "system not greater than spec");
+	succeed_if (keyCmp (systemKey, procKey) > 0, "system not greater than proc");
+	succeed_if (keyCmp (systemKey, dirKey) > 0, "system not greater than dir");
+	succeed_if (keyCmp (systemKey, userKey) > 0, "system not greater than user");
+	succeed_if (keyCmp (systemKey, systemKey) == 0, "system not equal to system");
+	succeed_if (keyCmp (systemKey, defaultKey) < 0, "system not smaller than default");
+
+	succeed_if (keyCmp (defaultKey, cascadingKey) > 0, "default not greater than cascading");
+	succeed_if (keyCmp (defaultKey, metaKey) > 0, "default not greater than meta");
+	succeed_if (keyCmp (defaultKey, specKey) > 0, "default not greater than spec");
+	succeed_if (keyCmp (defaultKey, procKey) > 0, "default not greater than proc");
+	succeed_if (keyCmp (defaultKey, dirKey) > 0, "default not greater than dir");
+	succeed_if (keyCmp (defaultKey, userKey) > 0, "default not greater than user");
+	succeed_if (keyCmp (defaultKey, systemKey) > 0, "default not greater than system");
+	succeed_if (keyCmp (defaultKey, defaultKey) == 0, "default not equal to default");
+
+	keyDel (cascadingKey);
+	keyDel (metaKey);
+	keyDel (specKey);
+	keyDel (procKey);
+	keyDel (dirKey);
+	keyDel (userKey);
+	keyDel (systemKey);
+	keyDel (defaultKey);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEY RELATION TESTS\n");
@@ -260,6 +353,7 @@ int main (int argc, char ** argv)
 	test_below ();
 	test_examples ();
 	test_hierarchy ();
+	test_keyCmpNsOrder ();
 
 	printf ("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
