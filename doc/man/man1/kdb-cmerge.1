@@ -52,7 +52,7 @@ On unresolved conflicts nothing will be changed\.
 .br
 This tool currently exists alongside \fBkdb merge\fR until it is completely ready to supersede it\. At this moment, cmerge will be renamed to merge\.
 .
-.SH "Options"
+.SH "OPTIONS"
 The options of \fBkdb cmerge\fR are:
 .
 .IP "\(bu" 4
@@ -71,31 +71,22 @@ Strategies offer fine grained control over conflict handling\. The option is:
 .
 .IP "" 0
 .
-.SH "Strategies"
-The available strategies are:
-.
-.IP "\(bu" 4
-\fBabort\fR: the merge will abort if any conflict happens and merge the 3 key sets together otherwise\.
-.
-.IP "\(bu" 4
-\fBour\fR: This option forces conflicting keys to be auto\-resolved cleanly by favoring \fBour\fR\. Changes from the other key sets that do not conflict with the \fBour\fR version are reflected in the merge result\. This works like the recursive strategy with the \fBours\fR option from git\-merge\.
-.
-.IP "\(bu" 4
-\fBtheir\fR: This is the opposite of \fBour\fR\. The merge will use the \fBtheir\fR version when a conflict happens\.
-.
-.IP "" 0
-.
 .P
-If no strategy is specified, the merge will default to the abort strategy\.
+Strategies have their own man page \fI/doc/help/elektra\-cmerge\-strategy\.md\fR which can be accessed with \fBman elektra\-cmerge\-strategies\fR\.
 .
-.SH "Return value"
-0 on success\.
+.SH "RETURN VALUE"
 .
-.P
-1 if an error happened\.
+.TP
+0
+Successful\.
 .
-.P
-2 if a merge conflict occurred and merge strategy abort was set\.
+.TP
+1
+An error happened\.
+.
+.TP
+2
+A merge conflict occurred and merge strategy abort was set\.
 .
 .P
 The result of the merge is stored in \fBresult\fR\.
