@@ -34,16 +34,12 @@ if (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
 else (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
 	add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
 endif (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line)
-else ()
-	add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md"
-		      REQUIRED_PLUGINS hosts
-				       line
-				       PROPERTY
-				       LABELS
-				       memleak)
-endif ()
+add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md"
+	      REQUIRED_PLUGINS hosts
+			       line
+			       PROPERTY
+			       LABELS
+			       memleak)
 
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")

@@ -4,9 +4,6 @@ if (LibGit2_FOUND)
 	set (CMERGE_INCLUDE_DIRS ${LibGit2_INCLUDE_DIRS})
 	set (CMERGE_LIBRARY_DIRS ${LibGit2_LIBRARIES})
 	add_definitions (-DLIBGITFOUND)
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-		add_definitions (-DCMERGE_ON_LINUX)
-	endif ()
 endif ()
 
 # This is derived from LibAddPlugin. LibAddLib has no such functionality yet. This is required so that libelektra-full.so has defined
