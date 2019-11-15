@@ -491,16 +491,23 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		}
 	}
 
-	while (name[pathLen - 1] == '/' && name[pathLen - 2] != '\\')
-	{
-		// ignore unescaped trailing slashes
-		--pathLen;
-		--size;
-		--usize;
-	}
-
 	// validate path in reverse because of ..
 	name = pathStart + pathLen - 1;
+
+	// check backslashes at end of name
+	size_t backslashes = 0;
+	while (name >= pathStart && *name == '\\')
+	{
+		++backslashes;
+		--name;
+	}
+
+	if (backslashes % 2 != 0)
+	{
+		// dangling escape
+		return 0;
+	}
+	usize -= backslashes / 2;
 
 	enum
 	{
@@ -518,6 +525,16 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 	while (name >= pathStart)
 	{
 		char cur = *name;
+
+		// count upcomming backslashes
+		backslashes = 0;
+		while (name - 1 - backslashes >= pathStart && *(name - 1 - backslashes) == '\\')
+		{
+			++backslashes;
+		}
+
+		int escaped = backslashes % 2 != 0;
+
 		switch (state)
 		{
 		case PART_END:
@@ -527,7 +544,7 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 				partLen = 1;
 				state = DIGITS;
 			}
-			else if (cur == '/' && *(name - 1) != '\\')
+			else if (cur == '/' && !escaped)
 			{
 				--size;
 				--usize;
@@ -573,103 +590,125 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 			break;
 		}
 
+		// move past cur
 		--name;
 
-		if (cur == '\\')
+		// move past upcomming backslashes
+		name -= backslashes;
+		if (skip == 0)
 		{
-			int escape = 1;
-			while (name >= pathStart && *name == '\\')
+			usize -= backslashes / 2;
+		}
+		partLen += backslashes;
+
+		if (escaped)
+		{
+			if (skip == 0)
 			{
-				// handle consecutive backslashes
-				--name;
-				usize -= escape ? 1 : 0;
-				escape = !escape;
+				--usize;
 			}
 
-			if (escape)
+			// uneven number of backslashes -> check escape sequence
+			if (backslashes == 1 && (name < pathStart || *name == '/'))
 			{
-				// uneven number of backslashes -> must be different escape sequence
-				if (skip == 0)
+				if (cur != '\\' && cur != '/' && cur != '.' && cur != '#' && cur != '%' && cur != '@')
 				{
-					--usize;
+					// illegal escape sequence (at start of part)
+					return 0;
 				}
-				if (name <= pathStart || *name == '/')
+			}
+			else
+			{
+				if (cur != '\\' && cur != '/')
 				{
-					if (prev != '/' && prev != '.' && prev != '#' && prev != '%' && prev != '@')
-					{
-						// illegal escape sequence (at start of part)
-						return 0;
-					}
-				}
-				else
-				{
-					if (prev != '/')
-					{
-						// illegal escape sequence (in middle of part)
-						return 0;
-					}
+					// illegal escape sequence (in middle of part)
+					return 0;
 				}
 			}
 		}
+		else if (backslashes > 0)
+		{
+			// even number of backslashes -> cur is '\\' after moving past backslashes
+			cur = '\\';
+		}
 
-		if (state != PART_END && (name < pathStart || (*name == '/' && *(name - 1) != '\\')))
+		int partStart = 0;
+		if (name < pathStart || *name == '/')
+		{
+			size_t count = 0;
+			while (name - 1 - count >= pathStart && *(name - 1 - count) == '\\')
+			{
+				++count;
+			}
+
+			if (count % 2 == 0)
+			{
+				partStart = 1;
+			}
+		}
+
+		if (state != PART_END && partStart)
 		{
 			// reached start of part, cur is first char in part, name points to char left of cur starting the part
+			// escaped indicates whether cur is escaped
 			int isSkip = 0;
-			switch (cur)
+			if (!escaped)
 			{
-			case '#':
-				if (partLen == 1) break;
-
-				if (digits == 0 || (underscores > 0 && underscores != digits - 1) || digits > 19 ||
-				    (digits == 19 && strncmp (&name[2 + underscores], "9223372036854775807", 19) > 0) ||
-				    (name[2 + underscores] == '0' && digits != 1))
+				switch (cur)
 				{
-					// invalid array part
-					return 0;
-				}
+				case '#':
+					if (partLen == 1) break;
 
-				if (skip == 0)
-				{
-					// account for potentially missing underscores
-					size += (digits - 1) - underscores;  // digits - 1 or 0
-					usize += (digits - 1) - underscores; // digits - 1 or 0
-				}
-
-				break;
-			case '%':
-				if (partLen != 1) return 0;
-
-				if (skip == 0)
-				{
-					--usize;
-				}
-				break;
-			case '@':
-				// reserved
-				return 0;
-			case '.':
-				if (partLen == 1 && skip == 0)
-				{
-					// part was '/./'
-					--size;
-					--usize;
-
-					if (usize > 3 || prefix != NULL)
+					if (digits == 0 || (underscores > 0 && underscores != digits - 1) || digits > 19 ||
+					    (digits == 19 && strncmp (&name[2 + underscores], "9223372036854775807", 19) > 0) ||
+					    (name[2 + underscores] == '0' && digits != 1))
 					{
-						--size;
+						// invalid array part
+						return 0;
+					}
+
+					if (skip == 0)
+					{
+						// account for potentially missing underscores
+						size += (digits - 1) - underscores;  // digits - 1 or 0
+						usize += (digits - 1) - underscores; // digits - 1 or 0
+					}
+
+					break;
+				case '%':
+					if (partLen != 1) return 0;
+
+					if (skip == 0)
+					{
 						--usize;
 					}
+					break;
+				case '@':
+					// reserved
+					return 0;
+				case '.':
+					if (partLen == 1 && skip == 0)
+					{
+						// part was '/./'
+						--size;
+						--usize;
+
+						if (usize > 3 || prefix != NULL)
+						{
+							--size;
+							--usize;
+						}
+					}
+					else if (partLen == 2 && prev == '.')
+					{
+						// part was '/../'
+						// size updated below
+						isSkip = 1;
+					}
+					break;
+				default:
+					break;
 				}
-				else if (partLen == 2 && prev == '.')
-				{
-					// part was '/../'
-					// size updated below
-					isSkip = 1;
-				}
-				break;
-			default:
-				break;
 			}
 
 			if (name >= pathStart)
@@ -807,12 +846,6 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 		return;
 	}
 
-	while (name[pathLen - 1] == '/' && name[pathLen - 2] != '\\')
-	{
-		// ignore unescaped trailing slashes
-		--pathLen;
-	}
-
 	// canonicalize path in reverse because of ..
 	name = pathStart + pathLen - 1;
 	outPtr = *canonicalName + canonicalSize - 1;
@@ -837,6 +870,15 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 	{
 		char cur = *name;
 
+		// count upcomming backslashes
+		size_t backslashes = 0;
+		while (name - 1 - backslashes >= pathStart && *(name - 1 - backslashes) == '\\')
+		{
+			++backslashes;
+		}
+
+		int escaped = backslashes % 2 != 0;
+
 		switch (state)
 		{
 		case PART_END:
@@ -846,7 +888,7 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 				partLen = 1;
 				state = DIGITS;
 			}
-			else if (cur != '/' || *(name - 1) == '\\')
+			else if (cur != '/' || escaped)
 			{
 				partLen = 1;
 				state = OTHER;
@@ -887,6 +929,7 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 			break;
 		}
 
+		// move past cur
 		--name;
 
 		if (state != PART_END && (name < pathStart || (*name == '/' && *(name - 1) != '\\')))

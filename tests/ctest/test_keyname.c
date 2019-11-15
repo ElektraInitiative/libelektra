@@ -56,6 +56,18 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/abc", NULL, 33, 5, 6);
 
 	TEST_VALIDATE_OK ("/%", NULL, 0, 3, 3);
+	TEST_VALIDATE_OK ("/\\%", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\%", NULL, 0, 5, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\%", NULL, 0, 7, 6);
+
+	TEST_VALIDATE_OK ("/\\/", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\/", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\\\/", NULL, 0, 6, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\/", NULL, 0, 6, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\\\/", NULL, 0, 8, 6);
+
+	TEST_VALIDATE_OK ("/\\///", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\/\\/", NULL, 0, 6, 5);
 
 	TEST_VALIDATE_OK ("/abc/def/ghi", NULL, 0, 13, 14);
 	TEST_VALIDATE_OK ("user:/abc/def/ghi", NULL, 0, 18, 14);
@@ -233,6 +245,7 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/\\//..", "/abc", 6, 5, 6);
 	TEST_VALIDATE_OK ("/\\./..", "/abc", 6, 5, 6);
 	TEST_VALIDATE_OK ("/a/./..", "/abc", 6, 7, 8);
+	TEST_VALIDATE_OK ("/\\\\\\\\\\\\/..", "/abc", 6, 5, 6);
 
 	TEST_VALIDATE_OK ("../.", "/%", 4, 2, 3);
 
@@ -334,6 +347,9 @@ static void test_validate (void)
 	TEST_VALIDATE_ERROR ("..///../../../../../../..//user", "/much/more/level/1/2/3", 23);
 	TEST_VALIDATE_ERROR ("..///../../..////../../../..//user", "/much/more/level/1/2/3", 23);
 	TEST_VALIDATE_ERROR ("../../....///../../..////../../../..//user", "/much/more/level/1/2/3", 23);
+
+	TEST_VALIDATE_ERROR ("/\\\\\\%", NULL, 0);
+	TEST_VALIDATE_ERROR ("/\\\\\\\\\\%", NULL, 0);
 }
 
 #define TEST_CANONICALIZE_OK(name, prefix, cname)                                                                                          \
@@ -496,10 +512,21 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("..", "user:/abc", "user:/");
 	TEST_CANONICALIZE_OK ("abc/..", "user:/", "user:/");
 	TEST_CANONICALIZE_OK ("user:/abc/..", "", "user:/");
+
+	TEST_CANONICALIZE_OK ("/%", "", "/%");
+	TEST_CANONICALIZE_OK ("/\\%", "", "/\\%");
+	TEST_CANONICALIZE_OK ("/\\\\%", "", "/\\\\%");
+	TEST_CANONICALIZE_OK ("/\\\\\\\\%", "", "/\\\\\\\\%");
+
+	TEST_CANONICALIZE_OK ("/\\/", "", "/\\/");
+	TEST_CANONICALIZE_OK ("/\\\\/", "", "/\\\\");
+	TEST_CANONICALIZE_OK ("/\\\\\\/", "", "/\\\\\\/");
+	TEST_CANONICALIZE_OK ("/\\\\\\\\/", "", "/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("/\\\\\\\\\\/", "", "/\\\\\\\\\\/");
 }
 
-static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",   "KEY_NS_SPEC",   "KEY_NS_PROC",
-				     "KEY_NS_DIR",  "KEY_NS_USER",      "KEY_NS_SYSTEM", "KEY_NS_DEFAULT" };
+static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",	 "KEY_NS_SPEC",	  "KEY_NS_PROC",
+				     "KEY_NS_DIR",  "KEY_NS_USER",	"KEY_NS_SYSTEM", "KEY_NS_DEFAULT" };
 
 #define succeed_if_same_uname(name, pu1, pu2, size2)                                                                                       \
 	do                                                                                                                                 \
@@ -623,6 +650,17 @@ static void test_unescape (void)
 
 	TEST_UNESCAPE_OK ("/abc/\\#__10/ghi", KEY_NS_CASCADING, "\0abc\0#__10\0ghi");
 	TEST_UNESCAPE_OK ("user:/abc/\\#_100/ghi", KEY_NS_USER, "\0abc\0#_100\0ghi");
+
+	TEST_UNESCAPE_OK ("/%", KEY_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("/\\%", KEY_NS_CASCADING, "\0%");
+	TEST_UNESCAPE_OK ("/\\\\%", KEY_NS_CASCADING, "\0\\%");
+	TEST_UNESCAPE_OK ("/\\\\\\\\%", KEY_NS_CASCADING, "\0\\\\%");
+
+	TEST_UNESCAPE_OK ("/\\/", KEY_NS_CASCADING, "\0/");
+	TEST_UNESCAPE_OK ("/\\\\", KEY_NS_CASCADING, "\0\\");
+	TEST_UNESCAPE_OK ("/\\\\\\/", KEY_NS_CASCADING, "\0\\/");
+	TEST_UNESCAPE_OK ("/\\\\\\\\", KEY_NS_CASCADING, "\0\\\\");
+	TEST_UNESCAPE_OK ("/\\\\\\\\\\/", KEY_NS_CASCADING, "\0\\\\/");
 }
 
 #define TEST_ESCAPE_PART_OK(upart, part)                                                                                                   \
