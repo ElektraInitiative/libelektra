@@ -213,6 +213,6 @@ kdb get user/tests/arrays/result/#0
 
 There are two tools of which cmerge is the central tool:
 
-1. `kdb install-config-file` installs or merges configuration files from the file system into
+1. [`kdb install-config-file`](/doc/help/kdb-install-config-file.md) installs or merges configuration files from the file system into
    Elektra. There is [a tutorial](/doc/tutorials/install-config-files.md) for this tool, too.
-2. `kdb cmerge-config-files` performs a three-way merge on three files using Elektra
+2. [`kdb cmerge-config-files`](/doc/help/kdb-cmerge-config-files) performs a three-way merge on three files using Elektra

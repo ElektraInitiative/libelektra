@@ -62,5 +62,3 @@ rm -rf $(kdb get user/tests/tempfiles/secondFile)
 kdb rm -rf user/tests/tempfiles
 kdb rm -rf user/elektra/merge/preserve
 ```
-
-
