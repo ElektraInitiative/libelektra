@@ -38,6 +38,8 @@ Strategies offer fine grained control over conflict handling. The option is:
 
 - `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
 
+Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which can be accessed with `man elektra-cmerge-strategies`.
+
 ## Return value
 
 0 on success.
