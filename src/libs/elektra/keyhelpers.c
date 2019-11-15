@@ -10,8 +10,6 @@
 #include "kdbconfig.h"
 #endif
 
-#include <stdio.h>
-
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
@@ -28,7 +26,6 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 #include "kdbtypes.h"
-#include <kdbassert.h>
 
 
 /**
@@ -198,157 +195,4 @@ int keyNameIsSystem (const char * name)
 void keyInit (Key * key)
 {
 	memset (key, 0, sizeof (Key));
-}
-
-static int elektraSetMetaInt (Key * key, const char * meta, int value)
-{
-	char * str = 0;
-	if ((str = elektraFormat ("%d", value)) == 0)
-	{
-		return -1;
-	}
-
-	keySetMeta (key, meta, str);
-	elektraFree (str);
-	return 0;
-}
-
-// duplicate of keySetMode in meta/meta.c
-static int elektraSetMode (Key * key, mode_t mode)
-{
-	char str[MAX_LEN_INT];
-	if (!key) return -1;
-
-	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
-	{
-		return -1;
-	}
-
-	keySetMeta (key, "mode", str);
-
-	return 0;
-}
-
-/**
- * @internal
- *
- * helper functions for keyNew/keyVNew
- *
- * @pre caller must use va_start and va_end on va
- * @param key initialized Key
- * @param keyName a valid name to the key, or NULL to get a simple
- * initialized, but really empty, object
- * @param va the variadic argument list
- */
-void keyVInit (Key * key, const char * name, va_list va)
-{
-	if (!key) return;
-
-	keyInit (key);
-
-	if (name)
-	{
-		keyswitch_t action = 0;
-		size_t value_size = 0;
-		void * value = 0;
-		void (*func) (void) = 0;
-		int flags = 0;
-		char * owner = 0;
-		int mode = 0;
-		int hasMode = 0;
-
-		while ((action = va_arg (va, keyswitch_t)))
-		{
-			switch (action)
-			{
-			/* flags with an argument */
-			case KEY_SIZE:
-				value_size = va_arg (va, size_t);
-				break;
-			case KEY_VALUE:
-				value = va_arg (va, void *);
-				if (value_size && keyIsBinary (key))
-					keySetBinary (key, value, value_size);
-				else if (keyIsBinary (key))
-					keySetBinary (key, value, elektraStrLen (value));
-				else
-					keySetString (key, value);
-				break;
-			case KEY_FUNC:
-				func = va_arg (va, void (*) (void));
-				keySetBinary (key, &func, sizeof (func));
-				break;
-			case KEY_META:
-				value = va_arg (va, char *);
-				/* First parameter is name */
-				keySetMeta (key, value, va_arg (va, char *));
-				break;
-
-			/* flags without an argument */
-			case KEY_FLAGS:
-				flags |= va_arg (va, int); // FALLTHROUGH
-			case KEY_BINARY:
-			case KEY_LOCK_NAME:
-			case KEY_LOCK_VALUE:
-			case KEY_LOCK_META:
-			case KEY_CASCADING_NAME:
-			case KEY_META_NAME:
-			case KEY_EMPTY_NAME:
-				if (action != KEY_FLAGS) flags |= action;
-				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
-				if (test_bit (flags, KEY_LOCK_NAME)) elektraKeyLock (key, KEY_LOCK_NAME);
-				if (test_bit (flags, KEY_LOCK_VALUE)) elektraKeyLock (key, KEY_LOCK_VALUE);
-				if (test_bit (flags, KEY_LOCK_META)) elektraKeyLock (key, KEY_LOCK_META);
-				break;
-
-			/* deprecated flags */
-			case KEY_NAME:
-				name = va_arg (va, char *);
-				break;
-			case KEY_OWNER:
-				owner = va_arg (va, char *);
-				break;
-			case KEY_COMMENT:
-				keySetMeta (key, "comment", va_arg (va, char *));
-				break;
-			case KEY_UID:
-				elektraSetMetaInt (key, "uid", va_arg (va, int));
-				break;
-			case KEY_GID:
-				elektraSetMetaInt (key, "gid", va_arg (va, int));
-				break;
-			case KEY_DIR:
-				mode |= KDB_DIR_MODE;
-				break;
-			case KEY_MODE:
-				hasMode = 1;
-				mode |= va_arg (va, int);
-				break;
-			case KEY_ATIME:
-				elektraSetMetaInt (key, "atime", va_arg (va, time_t));
-				break;
-			case KEY_MTIME:
-				elektraSetMetaInt (key, "mtime", va_arg (va, time_t));
-				break;
-			case KEY_CTIME:
-				elektraSetMetaInt (key, "ctime", va_arg (va, time_t));
-				break;
-
-			default:
-				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyVInit",
-						(kdb_unsigned_long_long_t) action);
-				break;
-			}
-		}
-
-		option_t name_options = flags & (KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
-		elektraKeySetName (key, name, name_options);
-
-		if (!hasMode && mode == KDB_DIR_MODE)
-			elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
-		else if (mode != 0)
-			elektraSetMode (key, mode);
-
-		if (owner) keySetOwner (key, owner);
-	}
 }

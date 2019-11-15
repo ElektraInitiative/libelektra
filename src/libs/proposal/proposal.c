@@ -75,34 +75,6 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 	return key->dataSize;
 }
 
-/**
- * @brief Permanently locks a part of the key
- *
- * This can be:
- * - KEY_FLAG_LOCK_NAME to lock the name
- * - KEY_FLAG_LOCK_VALUE to lock the value
- * - KEY_FLAG_LOCK_META to lock the metadata
- *
- * To unlock the key, duplicate it.
- *
- * It is also possible to lock when the key is created with
- * keyNew().
- *
- * Some data structures need to lock the key (most likely
- * its name), so that the ordering does not get confused.
- *
- * @param key which name should be locked
- *
- * @see keyNew(), keyDup(), ksAppendKey()
- * @retval >0 the bits that were successfully locked
- * @retval 0 if everything was locked before
- * @retval -1 if it could not be locked (nullpointer)
- */
-int keyLock (Key * key, option_t what)
-{
-	return elektraKeyLock (key, what);
-}
-
 
 /**
  * @brief Return metadata as keyset
