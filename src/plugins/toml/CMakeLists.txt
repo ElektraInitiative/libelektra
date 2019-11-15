@@ -80,6 +80,8 @@ if (DEPENDENCY_PHASE)
 	     codepoint.c
 	     utility.h
 	     utility.c
+		 write.h
+		 write.c
 	     error.h
 	     error.c
 	     ${FLEX_OUTPUT_HEADER}

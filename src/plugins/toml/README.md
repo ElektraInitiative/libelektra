@@ -6,7 +6,7 @@
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
-- infos/metadata =
+- infos/metadata = order comment/# comment/#/start comment/#/space
 - infos/description = This storage plugin reads and writes TOML files, using Flex and Bison.
 
 # TODO: Documentation

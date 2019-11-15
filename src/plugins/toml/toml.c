@@ -12,6 +12,7 @@
 #include <kdberrors.h>
 #include <kdbmacros.h>
 
+#include "write.h"
 #include "driver.h"
 #include "toml.h"
 
@@ -46,7 +47,9 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	int result = tomlWrite(returned, parentKey);
+
+	return result != 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR; // TODO: revers logic
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
