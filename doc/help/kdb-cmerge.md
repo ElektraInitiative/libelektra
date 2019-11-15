@@ -42,11 +42,14 @@ Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which
 
 ## RETURN VALUE
 
-0 on success.
+- 0:
+  Successful.
 
-1 if an error happened.
+- 1:
+  An error happened.
 
-2 if a merge conflict occurred and merge strategy abort was set.
+- 2:
+  A merge conflict occurred and merge strategy abort was set.
 
 The result of the merge is stored in `result`.
 
