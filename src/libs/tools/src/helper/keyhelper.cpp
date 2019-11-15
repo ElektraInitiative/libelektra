@@ -23,17 +23,22 @@ namespace helper
 string rebasePath (const Key & key, const Key & oldParent, const Key & newParent)
 {
 	string oldKeyPath = key.getName ();
+	string ns = key.getNamespace ();
+	if (ns != "/")
+	{
+		ns = ns + ":";
+	}
 
 	Key actualOldParent = oldParent.dup ();
 	if (oldParent.getNamespace () == "/")
 	{
-		actualOldParent.setName (key.getNamespace () + oldParent.getName ());
+		actualOldParent.setName (ns + oldParent.getName ());
 	}
 
 	Key actualNewParent = newParent.dup ();
 	if (newParent.getNamespace () == "/")
 	{
-		actualNewParent.setName (key.getNamespace () + newParent.getName ());
+		actualNewParent.setName (ns + newParent.getName ());
 	}
 
 	if (!key.isBelowOrSame (actualOldParent))
@@ -45,13 +50,20 @@ string rebasePath (const Key & key, const Key & oldParent, const Key & newParent
 	{
 		string actualOldParentName = actualOldParent.getName ();
 		string withoutNamespaceParent = actualOldParentName.substr (actualOldParentName.find ('/'));
-		relativePath = oldKeyPath.substr (withoutNamespaceParent.length (), oldKeyPath.length ());
+		relativePath = oldKeyPath.substr (withoutNamespaceParent.length ());
 	}
 	else
 	{
-		relativePath = oldKeyPath.substr (actualOldParent.getName ().length (), oldKeyPath.length ());
+		relativePath = oldKeyPath.substr (actualOldParent.getName ().length ());
 	}
-	string newPath = actualNewParent.getName () + "/" + relativePath;
+
+	if (relativePath.length () > 0 && relativePath[0] != '/')
+	{
+		relativePath = "/" + relativePath;
+	}
+
+
+	string newPath = actualNewParent.getName () + relativePath;
 
 	return newPath;
 }

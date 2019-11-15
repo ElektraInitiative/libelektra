@@ -508,7 +508,12 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 	KeySet ksToIterate (genconf);
 	for (auto kCurrent : ksToIterate)
 	{
-		Key kCurrentTest (kCurrent.getNamespace () + "/", KEY_END);
+		auto ns = kCurrent.getNamespace ();
+		if (ns != "/")
+		{
+			ns += ":";
+		}
+		Key kCurrentTest (ns + "/", KEY_END);
 		kCurrentTest.addBaseName (kCurrent.getBaseName ()); // e.g. system:/space
 		if (kCurrentTest == kCurrent)
 		{

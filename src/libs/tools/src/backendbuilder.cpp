@@ -182,11 +182,20 @@ void BackendBuilder::needMetadata (std::string addMetadata)
 	std::string md;
 	while (is >> md)
 	{
+		if (md.substr (0, sizeof ("meta:/") - 1) != "meta:/")
+		{
+			md = "meta:/" + md;
+		}
+
 		std::string nd;
-		Key k (md.c_str (), KEY_META_NAME, KEY_END);
+		Key k (md.c_str (), KEY_END);
 		for (auto && elem : k)
 		{
-			if (!elem.empty () && elem[0] == '#')
+			if (elem[0] == KEY_NS_META)
+			{
+				continue;
+			}
+			else if (!elem.empty () && elem[0] == '#')
 			{
 				// reduce array entries to #
 				nd += '#';

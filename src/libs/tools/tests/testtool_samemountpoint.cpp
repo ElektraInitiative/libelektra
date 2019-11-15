@@ -51,16 +51,16 @@ TEST (SameMountpoint, setMountpointsNamespaces)
 	Backend b1;
 
 	b1.setMountpoint (Key ("dir:/", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "dir");
+	EXPECT_EQ (b1.getMountpoint (), "dir:/");
 
 	b1.setMountpoint (Key ("system:/", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "system");
+	EXPECT_EQ (b1.getMountpoint (), "system:/");
 
 	b1.setMountpoint (Key ("user:/", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "user");
+	EXPECT_EQ (b1.getMountpoint (), "user:/");
 
 	b1.setMountpoint (Key ("spec:/", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "spec");
+	EXPECT_EQ (b1.getMountpoint (), "spec:/");
 }
 
 TEST (SameMountpoint, strangeMountpoints)
@@ -70,41 +70,14 @@ TEST (SameMountpoint, strangeMountpoints)
 	KeySet ks;
 
 	Backend b1;
-	b1.setMountpoint (Key ("user:/..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "user");
-
 	b1.setMountpoint (Key ("user:/elektras", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/elektras");
 
 	b1.setMountpoint (Key ("user:/elektra/..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "user");
+	EXPECT_EQ (b1.getMountpoint (), "user:/");
 
 	b1.setMountpoint (Key ("user:/elektra\\/", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/elektra\\/");
-
-	b1.setMountpoint (Key ("user://../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "user");
-
-	b1.setMountpoint (Key ("user://../..////../", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "user");
-
-	b1.setMountpoint (Key ("spec://..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "spec");
-
-	b1.setMountpoint (Key ("dir://..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "dir");
-
-	b1.setMountpoint (Key ("user://..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "user");
-
-	b1.setMountpoint (Key ("system://..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "system");
-
-	b1.setMountpoint (Key ("/..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "/");
-
-	b1.setMountpoint (Key ("//..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ (b1.getMountpoint (), "/");
 
 	b1.setMountpoint (Key ("/is//../a//../complex/..///.", KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "/");
@@ -119,18 +92,9 @@ TEST (SameMountpoint, wrongMountpoints)
 	Backend b1;
 	ASSERT_THROW (b1.setMountpoint (Key (static_cast<ckdb::Key *> (nullptr)), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("/", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key (".", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("invalid", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("proc:/", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("proc:/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("proc://..//hello//..//.//..////../..", KEY_END), ks),
-		      kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 }
 
@@ -347,34 +311,17 @@ TEST (SameMountpoint, sameRoot)
 }
 TEST (SameMountpoint, sameRootSpec)
 {
-	checkSame ("/", "spec");
+	checkSame ("/", "spec:/");
 }
 TEST (SameMountpoint, sameRootDir)
 {
-	checkSame ("/", "dir");
+	checkSame ("/", "dir:/");
 }
 TEST (SameMountpoint, sameRootUser)
 {
-	checkSame ("/", "user");
-}
-TEST (SameMountpoint, sameRootSystem)
-{
-	checkSame ("/", "system");
-}
-
-TEST (SameMountpoint, sameRootSlashSpec)
-{
-	checkSame ("/", "spec:/");
-}
-TEST (SameMountpoint, sameRootSlashDir)
-{
-	checkSame ("/", "dir:/");
-}
-TEST (SameMountpoint, sameRootSlashUser)
-{
 	checkSame ("/", "user:/");
 }
-TEST (SameMountpoint, sameRootSlashSystem)
+TEST (SameMountpoint, sameRootSystem)
 {
 	checkSame ("/", "system:/");
 }

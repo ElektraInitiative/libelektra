@@ -29,16 +29,16 @@ TEST (MountBackendBuilder, parsePluginArguments)
 	EXPECT_EQ (KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_VALUE, "a", KEY_END),
 			   *Key ("user:/ax/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("a=5,ax=a,ax/bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
 			   *Key ("user:/ax/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5,ax=,ax/bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user:/ ax", KEY_END, KEY_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/ ax", KEY_END, KEY_END),
 			   *Key ("user:/ ax/ bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5, ax=, ax/ bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user:/	ax", KEY_END, KEY_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/	ax", KEY_END, KEY_END),
 			   *Key ("user:/	ax/	bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5,	ax=,	ax/	bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
 			   *Key ("user:/ax\\/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5,ax=,ax\\/bx=8"));
 	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
