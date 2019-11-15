@@ -27,7 +27,7 @@ On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
 This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, cmerge will be renamed to merge.
 
-## Options
+## OPTIONS
 
 The options of `kdb cmerge` are:
 
@@ -40,7 +40,7 @@ Strategies offer fine grained control over conflict handling. The option is:
 
 Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which can be accessed with `man elektra-cmerge-strategies`.
 
-## Return value
+## RETURN VALUE
 
 0 on success.
 
