@@ -19,12 +19,6 @@ the three files MYFILE (our), OLDFILE (base) and YOURFILE (their)
 The result off the three-way merge
 will be stored in `result`.
 
-For configuration files in the context of package upgrades:
-
-- `their` is the current version of the maintainer's copy of a configuration file,
-- `base` is the previous version of the maintainer's copy of the configuration file.
-- `our` is the user's copy of the configuration file, derived from `base`
-
 ## Simple example
 
 The easiest case is if all three versions contain equal data.
