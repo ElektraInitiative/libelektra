@@ -101,7 +101,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 		}
 		else
 		{
-			throw CommandAbortException (discard.size () + " keys exist in resultpath. Use -f to override the keys there.");
+			throw CommandAbortException ("There are keys in the result path. Use -f to override them.");
 		}
 	}
 	ckdb::KeySet * c_ours = ours.getKeySet ();
