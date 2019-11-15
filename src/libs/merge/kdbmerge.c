@@ -10,6 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef LIBGITFOUND
+#include <git2.h>
+#endif
+
 #define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
 /**
@@ -49,14 +53,29 @@ static void setStatisticalValue (Key * informationKey, char * metaName, int valu
 {
 	char stringy[INT_BUF_SIZE];
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
-	if (printsize < INT_BUF_SIZE)
+	if (printsize == INT_BUF_SIZE || printsize < 0)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Statistical value was too large for its buffer.");
+		if (printsize < 0)
+		{
+			ELEKTRA_SET_INTERNAL_ERRORF (
+				informationKey,
+				"Encoding error when setting %s: Could not convert %d into the string that should be used as meta value "
+				"for the information key.",
+				metaName, value);
+		}
+		else
+		{
+			ELEKTRA_SET_INTERNAL_ERRORF (informationKey,
+						     "Statistical value %d was too large for its buffer. This happened with meta name %s.",
+						     value, metaName);
+		}
+		return;
 	}
 	ssize_t size = keySetMeta (informationKey, metaName, stringy);
 	if (size <= 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set statistical value.");
+		return;
 	}
 }
 
@@ -159,10 +178,12 @@ static int getTotalNonOverlaps (Key * informationKey)
 }
 
 /**
+ * This function returns the number of conflicts that is store in the key
+ *
  * @param informationKey contains the statistics in its meta information
- * @retval the number of overlaps and non-overlaps that happened
+ * @returns the number of conflicts stored in the key
  */
-static int getTotalConflicts (Key * informationKey)
+int getConflicts (Key * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
@@ -189,8 +210,12 @@ static char * strremove (char * string, const char * sub)
 
 /**
  *  @brief This is the counterpart to the removeRoot function
- *  @param input keys are from here
+ *
+ *  Also turns the name for the /root key into the original one again
+ *
  *  @param result all keys with extended name will be appended here
+ *  @param input keys are from here
+ *  @param string will be prepended to all the key names
  *  @param informationKey errors will be set here
  *  @retval -1 on error
  *  @retval  0 on success
@@ -216,9 +241,22 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 	ksRewind (input);
 	while ((key = ksNext (input)) != NULL)
 	{
-		char * newName = elektraMalloc (keyGetNameSize (key) + strlen (string));
+		bool isRoot = strcmp (keyName (key), "/root") == 0;
+		size_t size = strlen (string);
+		if (isRoot)
+		{
+			size += 1;
+		}
+		else
+		{
+			size += keyGetNameSize (key);
+		}
+		char * newName = elektraMalloc (size);
 		strcpy (newName, string);
-		strcat (newName, keyName (key));
+		if (!isRoot)
+		{
+			strcat (newName, keyName (key));
+		}
 		Key * duplicateKey = keyDup (key); // keySetName returns -1 if key was inserted to a keyset before
 		int status = keySetName (duplicateKey, newName);
 		elektraFree (newName);
@@ -263,32 +301,37 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * keyCopy = keyDup (currentKey);
+			Key * duplicateKey = keyDup (currentKey);
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
 				currentKeyNameString = strremove (currentKeyNameString, rootKeyNameString);
-				retVal = keySetName (keyCopy, currentKeyNameString);
+				retVal = keySetName (duplicateKey, currentKeyNameString);
 			}
 			else
 			{
 				// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
-				retVal = keySetName (keyCopy, "/root");
+				retVal = keySetName (duplicateKey, "/root");
 			}
 			if (retVal < 0)
 			{
 				elektraFree (currentKeyNameString);
 				ksDel (result);
+				keyDel (duplicateKey);
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
+				return NULL;
 			}
-			ksAppendKey (result, keyCopy);
+			ksAppendKey (result, duplicateKey);
 			elektraFree (currentKeyNameString);
 		}
 		else
 		{
 			elektraFree (currentKeyNameString);
 			ksDel (result);
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
+			ELEKTRA_SET_INTERNAL_ERROR (
+				informationKey,
+				"Setting new key name was not possible. The current key is not below or equal to the root key.");
+			return NULL;
 		}
 	}
 	return result;
@@ -353,7 +396,7 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 		// overlap  with single empty
 		// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
 		increaseStatisticalValue (informationKey, "overlap1empty");
-		if (checkedIsDominant) // TODO This also happens when there is no conflict
+		if (checkedIsDominant)
 		{
 			if (ksAppendKey (result, checkedKey) < 0)
 			{
@@ -609,6 +652,284 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 	return 0;
 }
 
+#ifdef LIBGITFOUND
+
+/**
+ * Iterates over all keys that belong to an key array started by arrayStart and puts their values into a newly allocated string
+ * Each value is separated by a newline.
+ * Does not modify arrayStart.
+ *
+ * @param ks the key set of which the array is part
+ * @param arrayStart key that is the start of the array /#0
+ * @param informationKey the key for error codes
+ * @returns pointer to the string, NULL on error
+ * */
+static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * informationKey)
+{
+	ELEKTRA_LOG_DEBUG ("Converting key set to char array");
+	if (ks == NULL || arrayStart == NULL || informationKey == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameters must not be null");
+		return NULL;
+	}
+	int bufferSize = 64;
+	int stringSize = 2; // 1 for final \n and \0
+	/**
+	 * this calloc sets the first character to \0 so that the first invocation of
+	 * strncat has something to append to
+	 */
+	char * buffer = elektraCalloc (bufferSize);
+	/** ksLookup does not get a copy of the key but the real key.
+	 *  The elektraArrayIncName would then change the name of the real key.
+	 *  We don't want that as we only increase the name to loop over all keys.
+	 */
+	Key * iterator = keyDup (arrayStart);
+	if (iterator == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");
+		elektraFree (buffer);
+		return NULL;
+	}
+	Key * lookup;
+	int counter = 0;
+	while ((lookup = ksLookup (ks, iterator, KDB_O_POP)) != 0)
+	{
+		counter++;
+		int tmpSize = keyGetValueSize (lookup);
+		stringSize += tmpSize; // keyGetValueSize includes size for \0 which we use for \n instead
+		if (stringSize > bufferSize)
+		{
+			/** A single key could require more memory than multiplying once gives us
+			 * For example if the first key name is 255
+			 * The = in >= is important so that there is space for the null terminator of \n in strcat later on
+			 */
+			while (stringSize >= bufferSize)
+			{
+				bufferSize *= 2;
+			}
+			if (elektraRealloc ((void **) &buffer, bufferSize) < 0)
+			{
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+				elektraFree (buffer);
+				keyDel (iterator);
+				return NULL;
+			}
+		}
+		strncat (buffer, keyString (lookup), tmpSize);
+		// LibGit2 later operates on the newlines. This also ensures
+		// that there is a null terminator at the end of all the
+		// concatenated lines
+		strcat (buffer, "\n");
+		if (counter >= 2)
+		{
+			int retval = keyDel (lookup);
+			if (retval != 0)
+			{
+				if (retval < 0)
+				{
+					ELEKTRA_SET_INTERNAL_ERROR (informationKey,
+								    "Could not delete key from key set because null pointer.");
+				}
+				else
+				{
+					ELEKTRA_SET_INTERNAL_ERRORF (
+						informationKey,
+						"Could not delete key with name %s from key set. There are %d references left.",
+						keyName (lookup), retval);
+				}
+				elektraFree (buffer);
+				keyDel (iterator);
+				return NULL;
+			}
+		}
+		if (elektraArrayIncName (iterator) < 0)
+		{
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
+			elektraFree (buffer);
+			keyDel (iterator);
+			return NULL;
+		}
+	}
+	keyDel (iterator);
+	return buffer;
+}
+
+/**
+ * Turns an array from getValuesAsArray into a key set again.
+ * Frees the array and creates a new key set.
+ *
+ * @param array array to be converted, has no \0 terminator at end
+ * @param length length of array, does not include size for \0 as this is not there
+ * @param informationKey for errors
+ * @returns the KeySet
+ */
+static KeySet * ksFromArray (const char * array, int length, Key * informationKey)
+{
+	if (array == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter must not be null.");
+		return NULL;
+	}
+	KeySet * result = ksNew (0, KS_END);
+	if (result == NULL)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+		return NULL;
+	}
+	Key * iterator = keyNew ("/#0", KEY_END);
+	if (iterator == NULL)
+	{
+		ksDel (result);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+		return NULL;
+	}
+	char * buffer = elektraCalloc (length + 1); // + 1 for terminating null character
+	memcpy (buffer, array, length);
+	char * saveptr;
+	char * token = strtok_r (buffer, "\n", &saveptr);
+	do
+	{
+		ksAppendKey (result, keyNew (keyName (iterator), KEY_VALUE, token, KEY_END));
+		if (elektraArrayIncName (iterator) < 0)
+		{
+			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
+			elektraFree (result);
+			keyDel (iterator);
+			return NULL;
+		}
+	} while ((token = strtok_r (NULL, "\n", &saveptr)) != NULL);
+	elektraFree (buffer);
+	keyDel (iterator);
+	return result;
+}
+
+
+/**
+ * Counts how many conflict markers ======= are in the string "text"
+ * @param text The text in which conflict markers occur
+ * @returns the number of ocnflict markers in the text
+ */
+static int numberOfConflictMarkers (const char * text)
+{
+	int result = 0;
+	const char * tmp = text;
+	// conflict markers in LibGit2 are exactly 7 equal signs
+	while ((tmp = strstr (tmp, "=======")))
+	{
+		result++;
+		tmp++;
+	}
+	return result;
+}
+/**
+ * Removes all the arrays from our, their, base and result and puts the result of the merge into resultSet
+ * @param ourSet our
+ * @param theirSet their
+ * @param baseSet base
+ * @param resultSet result
+ * @retval 0 on success, -1 on error
+ */
+static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
+{
+	ELEKTRA_LOG ("cmerge now handles arrays");
+	Key * checkedKey;
+	KeySet * toAppend = NULL;
+	while ((checkedKey = ksNext (baseSet)) != NULL)
+	{
+		if (elektraArrayValidateName (checkedKey) >= 0)
+		{
+			Key * keyInOur = ksLookup (ourSet, checkedKey, 0);
+			Key * keyInTheir = ksLookup (theirSet, checkedKey, 0);
+			char * baseArray = getValuesAsArray (baseSet, checkedKey, informationKey);
+			if (baseArray == NULL)
+			{
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `base` KeySet into char[] for LibGit.");
+				keyDel (checkedKey);
+				ksDel (toAppend);
+				return -1;
+			}
+			char * ourArray = getValuesAsArray (ourSet, keyInOur, informationKey);
+			if (ourArray == NULL)
+			{
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `our` KeySet into char[] for LibGit.");
+				elektraFree (baseArray);
+				keyDel (checkedKey);
+				ksDel (toAppend);
+				return -1;
+			}
+			char * theirArray = getValuesAsArray (theirSet, keyInTheir, informationKey);
+			if (theirArray == NULL)
+			{
+				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `their` KeySet into char[] for LibGit.");
+				elektraFree (ourArray);
+				elektraFree (baseArray);
+				keyDel (checkedKey);
+				ksDel (toAppend);
+				return -1;
+			}
+			git_merge_file_result out = { 0 }; // out.ptr will not receive a terminating null character
+			const git_merge_file_input libgit_base = { .ptr = baseArray, .size = strlen (baseArray) };
+			const git_merge_file_input libgit_our = { .ptr = ourArray, .size = strlen (ourArray) };
+			const git_merge_file_input libgit_their = { .ptr = theirArray, .size = strlen (theirArray) };
+			// This is the usual way but it throws a compiler error
+			// git_merge_file_options options = GIT_MERGE_FILE_OPTIONS_INIT;
+			git_merge_file_options options = { 0 };
+			switch (strategy)
+			{
+			case MERGE_STRATEGY_OUR:
+				options.favor = GIT_MERGE_FILE_FAVOR_OURS;
+				break;
+			case MERGE_STRATEGY_THEIR:
+				options.favor = GIT_MERGE_FILE_FAVOR_THEIRS;
+				break;
+			}
+			int ret = git_merge_file (&out, &libgit_base, &libgit_our, &libgit_their, &options);
+			if (ret == 0)
+			{
+				if (out.automergeable)
+				{
+					toAppend = ksFromArray (out.ptr, out.len, informationKey);
+					ELEKTRA_LOG ("libgit successfully handled an array");
+				}
+				else
+				{
+					if (!MERGE_STRATEGY_ABORT)
+					{
+						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Expected merge strategy abort.");
+					}
+					int currentNumberOfConflicts = numberOfConflictMarkers (out.ptr);
+					int previousNumberOfConflicts = getStatisticalValue (informationKey, "libgitConflicts");
+					int newNumberOfConflicts = previousNumberOfConflicts + currentNumberOfConflicts;
+					setStatisticalValue (informationKey, "libgitConflicts", newNumberOfConflicts);
+					char msg[300];
+					snprintf (msg, 300, "libgit could not automerge an array. It contains %d conflict markers.",
+						  currentNumberOfConflicts);
+					ELEKTRA_LOG ("%s", msg);
+				}
+			}
+			else
+			{
+				ELEKTRA_LOG ("libgit returned error code %d", ret);
+			}
+			git_merge_file_result_free (&out);
+			elektraFree (ourArray);
+			elektraFree (theirArray);
+			elektraFree (baseArray);
+			keyDel (keyInOur);
+			keyDel (keyInTheir);
+			keyDel (checkedKey);
+		}
+	}
+	if (toAppend != NULL)
+	{
+		ksAppend (resultSet, toAppend);
+		ksDel (toAppend);
+	}
+	return 0;
+}
+
+#endif // LIBGITFOUND
+
 
 /**
  *
@@ -630,11 +951,27 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
 		       int strategy, Key * informationKey)
 {
-	ELEKTRA_LOG ("cmerge starts with strategy %d", strategy);
-	KeySet * result = ksNew (0, KS_END);
+	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
+
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
+	if (ourCropped == NULL)
+	{
+		return NULL;
+	}
 	KeySet * theirCropped = removeRoot (their, theirRoot, informationKey);
+	if (theirCropped == NULL)
+	{
+		ksDel (ourCropped);
+		return NULL;
+	}
 	KeySet * baseCropped = removeRoot (base, baseRoot, informationKey);
+	if (baseCropped == NULL)
+	{
+		ksDel (ourCropped);
+		ksDel (theirCropped);
+		return NULL;
+	}
+	KeySet * result = ksNew (0, KS_END);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
@@ -650,23 +987,51 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		break;
 	}
 
+#ifdef LIBGITFOUND
+#ifndef CMERGE_ON_LINUX
+	git_libgit2_init ();
+	ELEKTRA_LOG ("Initializing LibGit2");
+#else
+	ELEKTRA_LOG ("Not initializing LibGit2, but using it all the same.");
+#endif
+	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
+	if (handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey, strategy) > 0)
+	{
+		ksDel (result);
+		return NULL;
+	}
+#ifndef CMERGE_ON_LINUX
+	git_libgit2_shutdown ();
+#endif
+#else
+	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
+#endif
+
+	ksRewind (ourCropped);
+	ksRewind (theirCropped);
+	ksRewind (baseCropped);
 	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, 0, informationKey); // base is never dominant
 	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
+	ksRewind (ourCropped);
+
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
 	{
+		ksDel (result);
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
 		return NULL;
 	}
-	if (getTotalConflicts (informationKey) > 0)
+	if (getConflicts (informationKey) > 0)
 	{
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			ksDel (result);
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Abort strategy was set and at least one conflict occured.");
+			ELEKTRA_SET_INTERNAL_ERRORF (informationKey, "Abort strategy was set and %d conflicts occured.",
+						     getConflicts (informationKey));
 			return NULL;
 		}
 	}
+
 	KeySet * resultWithRoot = ksNew (0, KS_END);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot), informationKey);
 	ksDel (result);

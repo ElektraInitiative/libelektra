@@ -170,11 +170,22 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 		char * resultValue = elektraMalloc (default_result_size);
 		keyGetString (metaKey, resultValue, default_result_size);
 		char msg[200];
-		snprintf (msg, 200,
-			  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
-			  "%s.\n",
-			  __func__, our_order, their_order, base_order, strategy, expected_result, resultValue);
-		succeed_if (strcmp (resultValue, expected_result) == 0, msg);
+		if (resultValue == NULL)
+		{
+			yield_error ("resultValue must not be null");
+		}
+		if (expected_result == NULL)
+		{
+			yield_error ("expectedResult must not be null");
+		}
+		if (resultValue != NULL && expected_result != NULL)
+		{
+			snprintf (msg, 200,
+				  "Executing %s with our=%s their=%s base=%s and strategy %i. Expected result was %s but in reality it was "
+				  "%s.\n",
+				  __func__, our_order, their_order, base_order, strategy, expected_result, resultValue);
+			succeed_if (strcmp (resultValue, expected_result) == 0, msg);
+		}
 		elektraFree (resultValue);
 	}
 
@@ -190,342 +201,106 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 }
 
 /**
- * Changing a comment in a own configuration file leaves this comment be if an upgrade happens and
- * the comment changes
- * Similar to ucf https://packages.debian.org/sid/ucf
- * Base                 Ours                  Theirs                Result
- * key1=1               key1=1                key1=1                key1=1
- * comment=some_comment comment=other_comment comment=some_comment comment=other_comment
+ * Checks if adding a single line to an array gives one error as happens in regular diff algorithms
+ * or as many errors as there are number of lines, which a trivial implementation does.
  *
+ *       ours their base result
+ *  /#0  0    0     a
+ *  /#1  1    1     0
+ *  /#2  2    2     1
+ *  /#3  3    3     2
+ *  /#4             3
  */
-// static void test_15 (void)
-// {
-// 	printf ("In test function %s\n", __func__);
-// 	Key * a = keyNew (OUR_ROOT, KEY_END);
-// 	Key * b = keyNew (THEIR_ROOT, KEY_END);
-// 	Key * c = keyNew (BASE_ROOT, KEY_END);
-// 	Key * d = keyNew (RESULT_ROOT, KEY_END);
-// 	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
-// 	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-// 	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-// 	KeySet * result = kdbMerge (our, a, their, b, base, c, d, MERGE_STRATEGY_IRRELEVANT);
+static void array_conflict_number_test (void)
+{
+	printf ("Executing %s\n", __func__);
+	Key * our_root = keyNew ("user/our", KEY_END);
+	Key * their_root = keyNew ("user/their", KEY_END);
+	Key * base_root = keyNew ("user/base", KEY_END);
+	Key * result_root = keyNew ("user/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
+	KeySet * our = ksNew (5, keyNew ("user/our/#0", KEY_VALUE, "a", KEY_END), keyNew ("user/our/#1", KEY_VALUE, "0", KEY_END),
+			      keyNew ("user/our/#2", KEY_VALUE, "1", KEY_END), keyNew ("user/our/#3", KEY_VALUE, "2", KEY_END),
+			      keyNew ("user/our/#4", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * their =
+		ksNew (4, keyNew ("user/their/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/their/#1", KEY_VALUE, "1", KEY_END),
+		       keyNew ("user/their/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/their/#3", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * base = ksNew (4, keyNew ("user/base/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/base/#1", KEY_VALUE, "1", KEY_END),
+			       keyNew ("user/base/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/base/#3", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * result =
+		elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
 
-// 	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-// 	if (resultKey == NULL)
-// 	{
-// 		yield_error ("Should not be NULL");
-// 	}
-// 	else
-// 	{
-// 		char * resultValue = elektraMalloc (default_result_size);
-// 		const Key * metakey = keyGetMeta (resultKey, COMMENT);
-// 		if (metakey == 0) yield_error ("Meta key must not be null");
-// 		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
-// 		elektraFree (resultValue);
-// 	}
+	ksDel (our);
+	ksDel (their);
+	ksDel (base);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+	keyDel (informationKey);
+}
 
-// 	ksDel (our);
-// 	ksDel (their);
-// 	ksDel (base);
-// 	ksDel (result);
-// 	keyDel (a);
-// 	keyDel (b);
-// 	keyDel (c);
-// 	keyDel (d);
-// }
+static void testValuesWithGivenLength (int size)
+{
+	printf ("Executing %s with size %d\n", __func__, size);
+	Key * our_root = keyNew ("user/tests/our", KEY_END);
+	Key * their_root = keyNew ("user/tests/their", KEY_END);
+	Key * base_root = keyNew ("user/tests/base", KEY_END);
+	Key * result_root = keyNew ("user/tests/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
+	char * value = elektraCalloc (size);
+	memset (value, 'a', size - 1); // leave the last element \0
+	// clang-format off
+	KeySet * our = ksNew (3,
+		keyNew ("user/tests/our/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/our/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/our/#2", KEY_VALUE, value, KEY_END),
+		KS_END);
+	KeySet * their = ksNew (3,
+		keyNew ("user/tests/their/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/their/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/their/#2", KEY_VALUE, value, KEY_END),
+		KS_END);
+	KeySet * base = ksNew (3,
+		keyNew ("user/tests/base/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/base/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user/tests/base/#2", KEY_VALUE, value, KEY_END),
+		KS_END);
+	// clang-format on
+	elektraFree (value);
+	KeySet * result =
+		elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
 
-///**
-// * When local changes have been done and the comment gets updated then really do this update
-// * Base                 Ours                 Theirs                Result
-// * key1=1               key1=1               key1=1                key1=1
-// * comment=some_comment comment=some_comment comment=other_comment comment=other_comment
-// *
-// */
-// static void test_16 (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
-//	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
-//
-//	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-//	if (resultKey == NULL)
-//	{
-//		yield_error ("Should not be NULL");
-//	}
-//	else
-//	{
-//		char * resultValue = elektraMalloc (default_result_size);
-//		const Key * metakey = keyGetMeta (resultKey, COMMENT);
-//		if (metakey == 0) yield_error ("Meta key must not be null");
-//		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
-//		elektraFree (resultValue);
-//	}
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-//
-///**
-// * When local changes have been done and the comment gets updated then really do this update
-// * Base                 Ours                 Theirs                Result
-// * key1=1               key1=1               key1=1                key1=1
-// * comment=some_comment comment=other_comment comment=some_comment comment=other_comment
-// *
-// */
-// static void test_16a (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
-//	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
-//
-//	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-//	if (resultKey == NULL)
-//	{
-//		yield_error ("Should not be NULL");
-//	}
-//	else
-//	{
-//		char * resultValue = elektraMalloc (default_result_size);
-//		const Key * metakey = keyGetMeta (resultKey, COMMENT);
-//		if (metakey == 0) yield_error ("Meta key must not be null");
-//		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
-//		elektraFree (resultValue);
-//	}
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-//
-///**
-// * Base                 Ours                 Theirs                Result
-// * key1=1               key1=1               key1=1                key1=1
-// * comment=other_comment comment=some_comment comment=some_comment comment=other_comment
-// *
-// */
-// static void test_16b (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
-//
-//	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-//	if (resultKey == NULL)
-//	{
-//		yield_error ("Should not be NULL");
-//	}
-//	else
-//	{
-//		char * resultValue = elektraMalloc (default_result_size);
-//		const Key * metakey = keyGetMeta (resultKey, COMMENT);
-//		if (metakey == 0) yield_error ("Meta key must not be null");
-//		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
-//		elektraFree (resultValue);
-//	}
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-//
-///**
-// * Base                 Ours                 Theirs                Result
-// * key1=1               key1=1               key1=1                key1=1
-// * comment=other_comment comment=some_comment comment=some_comment comment=other_comment
-// *
-// */
-// static void test_16c (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * our = ksNew (1, keyNew (OUR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * their = ksNew (1, keyNew (THEIR_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, SOME_COMMENT, KEY_END), KS_END);
-//	KeySet * base = ksNew (1, keyNew (BASE_KEY1, KEY_VALUE, ORIGINAL_VALUE, KEY_META, COMMENT, OTHER_COMMENT, KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
-//
-//	Key * resultKey = ksLookupByName (result, RESULT_KEY1, 0);
-//	if (resultKey == NULL)
-//	{
-//		yield_error ("Should not be NULL");
-//	}
-//	else
-//	{
-//		char * resultValue = elektraMalloc (default_result_size);
-//		const Key * metakey = keyGetMeta (resultKey, COMMENT);
-//		if (metakey == 0) yield_error ("Meta key must not be null");
-//		succeed_if_same_string (keyValue (metakey), OTHER_COMMENT);
-//		elektraFree (resultValue);
-//	}
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-//
-///**
-// * This is the example from the file build/doc/html/doc_tutorials_merge_md.html
-// *
-// * Key 4 is deleted in our and changed in their key set. Strategy abort.
-// */
-// static void test_17 (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * their = ksNew (
-//		5, keyNew ("user/their/key1", KEY_VALUE, "1", KEY_END), keyNew ("user/their/key2", KEY_VALUE, "pie", KEY_END),
-//		keyNew ("user/their/key4", KEY_VALUE, "banana", KEY_END), keyNew ("user/their/key5", KEY_VALUE, "5", KEY_END), KS_END);
-//
-//	KeySet * our =
-//		ksNew (4, keyNew ("user/our/key1", KEY_VALUE, "apple", KEY_END), keyNew ("user/our/key2", KEY_VALUE, "2", KEY_END),
-//		       keyNew ("user/our/key3", KEY_VALUE, "3", KEY_END), keyNew ("user/our/key5", KEY_VALUE, "fish", KEY_END), KS_END);
-//
-//	KeySet * base = ksNew (5, keyNew ("user/base/key1", KEY_VALUE, "1", KEY_END), keyNew ("user/base/key2", KEY_VALUE, "2", KEY_END),
-//			       keyNew ("user/base/key3", KEY_VALUE, "3", KEY_END), keyNew ("user/base/key4", KEY_VALUE, "4", KEY_END),
-//			       keyNew ("user/base/key5", KEY_VALUE, "5", KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_ABORT);
-//
-//	succeed_if (result == NULL, "There should be a conflict and that should lead to NULL as keyset!");
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-//
-///**
-// * This is the example from the file build/doc/html/doc_tutorials_merge_md.html
-// *
-// * Key 4 is deleted in our and changed in their key set. Strategy our.
-// */
-// static void test_17a (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * their = ksNew (
-//		5, keyNew ("user/their/key1", KEY_VALUE, "1", KEY_END), keyNew ("user/their/key2", KEY_VALUE, "pie", KEY_END),
-//		keyNew ("user/their/key4", KEY_VALUE, "banana", KEY_END), keyNew ("user/their/key5", KEY_VALUE, "5", KEY_END), KS_END);
-//
-//	KeySet * our =
-//		ksNew (4, keyNew ("user/our/key1", KEY_VALUE, "apple", KEY_END), keyNew ("user/our/key2", KEY_VALUE, "2", KEY_END),
-//		       keyNew ("user/our/key3", KEY_VALUE, "3", KEY_END), keyNew ("user/our/key5", KEY_VALUE, "fish", KEY_END), KS_END);
-//
-//	KeySet * base = ksNew (5, keyNew ("user/base/key1", KEY_VALUE, "1", KEY_END), keyNew ("user/base/key2", KEY_VALUE, "2", KEY_END),
-//			       keyNew ("user/base/key3", KEY_VALUE, "3", KEY_END), keyNew ("user/base/key4", KEY_VALUE, "4", KEY_END),
-//			       keyNew ("user/base/key5", KEY_VALUE, "5", KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_OUR);
-//
-//	if (result == NULL)
-//	{
-//		yield_error ("Not the whole key set should be null. Only key 4 must not be found!\n");
-//	}
-//	Key * resultKey = ksLookupByName (result, "user/result/key4", 0);
-//	succeed_if (resultKey == NULL, "key 4 must not be found!");
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-///**
-// * This is the example from the file build/doc/html/doc_tutorials_merge_md.html
-// * At the moment there is only the preserve strategy
-// *
-// * Key 4 is deleted in our and changed in their key set. Strategy their.
-// */
-// static void test_17b (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * their = ksNew (
-//		5, keyNew ("user/their/key1", KEY_VALUE, "1", KEY_END), keyNew ("user/their/key2", KEY_VALUE, "pie", KEY_END),
-//		keyNew ("user/their/key4", KEY_VALUE, "banana", KEY_END), keyNew ("user/their/key5", KEY_VALUE, "5", KEY_END), KS_END);
-//
-//	KeySet * our =
-//		ksNew (4, keyNew ("user/our/key1", KEY_VALUE, "apple", KEY_END), keyNew ("user/our/key2", KEY_VALUE, "2", KEY_END),
-//		       keyNew ("user/our/key3", KEY_VALUE, "3", KEY_END), keyNew ("user/our/key5", KEY_VALUE, "fish", KEY_END), KS_END);
-//
-//	KeySet * base = ksNew (5, keyNew ("user/base/key1", KEY_VALUE, "1", KEY_END), keyNew ("user/base/key2", KEY_VALUE, "2", KEY_END),
-//			       keyNew ("user/base/key3", KEY_VALUE, "3", KEY_END), keyNew ("user/base/key4", KEY_VALUE, "4", KEY_END),
-//			       keyNew ("user/base/key5", KEY_VALUE, "5", KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_THEIR);
-//
-//	Key * resultKey = ksLookupByName (result, "user/result/key4", 0);
-//	if (resultKey == NULL)
-//	{
-//		yield_error ("Should not be NULL");
-//	}
-//	else
-//	{
-//		char * resultValue = elektraMalloc (default_result_size);
-//		keyGetString (resultKey, resultValue, default_result_size);
-//		succeed_if_same_string ("banana", resultValue);
-//		elektraFree (resultValue);
-//	}
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
-///**
-// * Adding two values to an array independently
-// * base              our              their            result
-// * [First Element]   [First Element]  [First Element]  [First Element]
-// * [Second Element]  [Second Element] [Second Element] [Second Element]
-// *                   [Third Element]                   [Third Element]
-// *                                    [Fourth Element] [Fourth Element]
-// */
-// static void test_18 (void)
-//{
-//	printf ("In test function %s\n", __func__);
-//	KeySet * base = ksNew (2, keyNew ("user/base/key1/#1", KEY_VALUE, "First Element", KEY_END),
-//			       keyNew ("user/base/key1/#2", KEY_VALUE, "Second Element", KEY_END), KS_END);
-//
-//	KeySet * our = ksNew (3, keyNew ("user/our/key1/#1", KEY_VALUE, "First Element", KEY_END),
-//			      keyNew ("user/our/key1/#2", KEY_VALUE, "Second Element", KEY_END),
-//			      keyNew ("user/our/key1/#3", KEY_VALUE, "Third Element", KEY_END), KS_END);
-//
-//	KeySet * their = ksNew (3, keyNew ("user/their/key1/#1", KEY_VALUE, "First Element", KEY_END),
-//				keyNew ("user/their/key1/#2", KEY_VALUE, "Second Element", KEY_END),
-//				keyNew ("user/their/key1/#4", KEY_VALUE, "Fourth Element", KEY_END), KS_END);
-//	KeySet * result = kdbMerge (our, keyNew (OUR_ROOT, KEY_END), their, keyNew (THEIR_ROOT, KEY_END), base, keyNew (BASE_ROOT, KEY_END),
-//				    keyNew (RESULT_ROOT, KEY_END), MERGE_STRATEGY_IRRELEVANT);
-//
-//	Key * resultKey = ksLookupByName (result, "user/result/key1/#3", 0);
-//	char * resultValue = elektraMalloc (default_result_size);
-//	if (keyGetString (resultKey, resultValue, default_result_size) <= 0)
-//	{
-//		yield_error ("Getting value has not worked")
-//	}
-//	else
-//	{
-//		succeed_if_same_string (resultValue, "Third Element");
-//	}
-//	elektraFree (resultValue);
-//
-//	Key * resultKey2 = ksLookupByName (result, "user/result/key1/#4", 0);
-//	char * resultValue2 = elektraMalloc (default_result_size);
-//	if (keyGetString (resultKey2, resultValue2, default_result_size) <= 1)
-//	{
-//		yield_error ("Getting second value has not worked")
-//	}
-//	else
-//	{
-//		succeed_if_same_string (resultValue2, "Fourth Element");
-//	}
-//	elektraFree (resultValue2);
-//
-//	ksDel (our);
-//	ksDel (their);
-//	ksDel (base);
-//}
+	ksDel (our);
+	ksDel (their);
+	ksDel (base);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+	keyDel (informationKey);
+}
+
+/** Tests if the libgit array merge works with various sizes
+ *  This should especially test the memory allocations in getValuesAsArray()
+ */
+static void testArrayWithDifferentLengths (void)
+{
+	// allocationSize is 64 in getValuesAsArray() in kdbmerge.c
+	// 14 already allocates around 1 MB
+	int size = 64;
+	for (int i = 1; i < 14; i++)
+	{
+		testValuesWithGivenLength (size - 5); // avoid errors where we are 1 or 2 off
+		testValuesWithGivenLength (size - 1);
+		testValuesWithGivenLength (size);
+		testValuesWithGivenLength (size + 1);
+		testValuesWithGivenLength (size + 5);
+		size *= 2; // getValuesAsArray() doubles the size, too
+	}
+}
 
 int main (int argc, char ** argv)
 {
@@ -533,6 +308,7 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
+	testArrayWithDifferentLengths ();
 	all_strategies_same_result ("EMPTY", "EMPTY", "EMPTY", "EMPTY");
 	all_strategies_conflict ("EMPTY", "EMPTY", "1");
 	all_strategies_same_result ("EMPTY", "1", "EMPTY", "1");
@@ -553,15 +329,7 @@ int main (int argc, char ** argv)
 	all_strategies_conflict ("EMPTY", "2", "3");
 	test_order ("1", "1", "1", 1, "1");
 	test_order ("2", "1", "1", 1, "2");
-
-
-	// test_15 ();
-	//	test_16 ();
-	//	test_17 ();
-	//	test_17a ();
-	//	test_17b ();
-	//	test_18 ();
-
+	array_conflict_number_test ();
 
 	printf ("\ntest_merge RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -25,9 +25,9 @@ enum
 	MERGE_STRATEGY_THEIR = 4,
 } strategies;
 
-
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
 		       int strategy, Key * informationKey);
+int getConflicts (Key * informationKey);
 
 #ifdef __cplusplus
 }

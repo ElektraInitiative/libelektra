@@ -14,9 +14,10 @@ cd "@CMAKE_SOURCE_DIR@"
 # Use (non-emacs) extended regex for GNU find or BSD find
 find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'
 
-# - The script `reformat-c` uses `command -v`, which is optional in POSIX. However, since `which` is not part of POSIX at all
-#   `command -v` is probably the most portable solution to detect the location of a command.
-#   See also: https://stackoverflow.com/questions/592620
+# - The scripts `reformat-c` and `install-config-file` use `command -v`,
+# which was optional in POSIX until issue 7. Since `which` is not part of POSIX
+# at all `command -v` is probably the most portable solution to detect the
+# location of a command.
 set $(
 	$FIND -type f -not \( \
 		-path '*COPYING-CMAKE-SCRIPTS' -or \
@@ -25,6 +26,7 @@ set $(
 		-path '*gitignore' -or \
 		-path '*kdb_zsh_completion' -or \
 		-path '*kdb-zsh-noglob' -or \
+		-path '*install-config-file' -or \
 		-path '*reformat-c' -or \
 		-path '*run_env' -or \
 		-path '*sed' -or \

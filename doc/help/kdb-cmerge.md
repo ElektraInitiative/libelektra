@@ -6,7 +6,7 @@ kdb-cmerge - Join three key sets together
 
 ## SYNOPSIS
 
-`kdb cmerge [options] ourpath theirpath basepath resultpath`<br>
+`kdb cmerge [OPTIONS] our their base result`
 
 - ourpath:
   Path to the keyset to serve as `our`<br>
@@ -26,6 +26,37 @@ kdb-cmerge - Join three key sets together
 On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
 This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, cmerge will be renamed to merge.
+
+## Options
+
+The options of `kdb cmerge` are:
+
+- `-f`, `--force`: overwrite existing keys in `result`
+- `-v`, `--verbose`: give additional information
+
+Strategies offer fine grained control over conflict handling. The option is:
+
+- `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
+
+## Strategies
+
+The available strategies are:
+
+- `abort`: the merge will abort if any conflict happens and merge the 3 key sets together otherwise.
+- `our`: This option forces conflicting keys to be auto-resolved cleanly by favoring `our`. Changes from the other key sets that do not conflict with the `our` version are reflected in the merge result. This works like the recursive strategy with the `ours` option from git-merge.
+- `their`: This is the opposite of `our`. The merge will use the `their` version when a conflict happens.
+
+If no strategy is specified, the merge will default to the abort strategy.
+
+## Return value
+
+0 on success.
+
+1 if an error happened.
+
+2 if a merge conflict occurred and merge strategy abort was set.
+
+The result of the merge is stored in `result`.
 
 ## THREE-WAY MERGE
 
