@@ -676,9 +676,7 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 
 					break;
 				case '%':
-					if (partLen != 1) return 0;
-
-					if (skip == 0)
+					if (partLen == 1 && skip == 0)
 					{
 						--usize;
 					}
@@ -1051,9 +1049,12 @@ void elektraKeyNameUnescape (const char * canonicalName, char ** unescapedName)
 		{
 			*outPtr++ = *++nextSpecial;
 		}
-		else if (*nextSpecial == '%' && outPtr != uname && *(outPtr - 1) != '\0')
+		else if (*nextSpecial == '%')
 		{
-			*outPtr++ = '%';
+			if (*(nextSpecial - 1) != '/' || (*(nextSpecial + 1) != '/' && *(nextSpecial + 1) != '\0'))
+			{
+				*outPtr++ = '%';
+			}
 		}
 
 		lastSpecial = nextSpecial + 1;

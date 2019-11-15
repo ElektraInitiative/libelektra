@@ -266,6 +266,9 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("./../..", "/abc", 6, 2, 3);
 	TEST_VALIDATE_OK ("abc/..", "user:/", 3, 7, 3);
 
+	TEST_VALIDATE_OK ("/abc/%def/ghi", NULL, 0, 14, 15);
+	TEST_VALIDATE_OK ("user:/abc/%def/ghi", NULL, 0, 19, 15);
+
 	succeed_if (!elektraKeyNameValidate (NULL, NULL, NULL, NULL), "(NULL) SHOULD NOT BE a valid key name");
 
 	TEST_VALIDATE_ERROR ("", NULL, 0);
@@ -328,9 +331,6 @@ static void test_validate (void)
 
 	TEST_VALIDATE_ERROR ("/abc/@def/ghi", NULL, 0);
 	TEST_VALIDATE_ERROR ("user:/abc/@def/ghi", NULL, 0);
-
-	TEST_VALIDATE_ERROR ("/abc/%def/ghi", NULL, 0);
-	TEST_VALIDATE_ERROR ("user:/abc/%def/ghi", NULL, 0);
 
 	TEST_VALIDATE_ERROR ("/abc/\\def/ghi", NULL, 0);
 	TEST_VALIDATE_ERROR ("user:/abc/\\def/ghi", NULL, 0);
@@ -523,6 +523,11 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("/\\\\\\/", "", "/\\\\\\/");
 	TEST_CANONICALIZE_OK ("/\\\\\\\\/", "", "/\\\\\\\\");
 	TEST_CANONICALIZE_OK ("/\\\\\\\\\\/", "", "/\\\\\\\\\\/");
+
+	TEST_CANONICALIZE_OK ("/abc/%def/ghi", "", "/abc/%def/ghi");
+	TEST_CANONICALIZE_OK ("/abc/%d%ef%/ghi", "", "/abc/%d%ef%/ghi");
+	TEST_CANONICALIZE_OK ("/abc/%def%/ghi", "", "/abc/%def%/ghi");
+	TEST_CANONICALIZE_OK ("/abc/d%ef/ghi", "", "/abc/d%ef/ghi");
 }
 
 static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",	 "KEY_NS_SPEC",	  "KEY_NS_PROC",
@@ -661,6 +666,11 @@ static void test_unescape (void)
 	TEST_UNESCAPE_OK ("/\\\\\\/", KEY_NS_CASCADING, "\0\\/");
 	TEST_UNESCAPE_OK ("/\\\\\\\\", KEY_NS_CASCADING, "\0\\\\");
 	TEST_UNESCAPE_OK ("/\\\\\\\\\\/", KEY_NS_CASCADING, "\0\\\\/");
+
+	TEST_UNESCAPE_OK ("/abc/%def/ghi", KEY_NS_CASCADING, "\0abc\0%def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/d%ef/ghi", KEY_NS_CASCADING, "\0abc\0d%ef\0ghi");
 }
 
 #define TEST_ESCAPE_PART_OK(upart, part)                                                                                                   \
