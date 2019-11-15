@@ -625,13 +625,13 @@ TEST (key, clear)
 
 	k1.clear ();
 
-	succeed_if (!k1.isValid (), "key should be invalid");
-	succeed_if (!k2.isValid (), "key should be invalid");
-	succeed_if (!k3.isValid (), "key should be invalid");
+	succeed_if (k1.isValid (), "key should be valid");
+	succeed_if (k2.isValid (), "key should be valid");
+	succeed_if (k3.isValid (), "key should be valid");
 
-	succeed_if (k1.getName () == "", "name should be empty");
-	succeed_if (k2.getName () == "", "name should be empty");
-	succeed_if (k3.getName () == "", "name should be empty");
+	succeed_if (k1.getName () == "/", "name should be empty");
+	succeed_if (k2.getName () == "/", "name should be empty");
+	succeed_if (k3.getName () == "/", "name should be empty");
 
 	k1.setMeta ("test_meta", "meta_value");
 	succeed_if (k1.getMeta<std::string> ("test_meta") == "meta_value", "metadata not set correctly");
