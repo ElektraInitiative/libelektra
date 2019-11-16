@@ -3,6 +3,12 @@
 The `install-config-file` tool makes using Elektra for a configuration file easier.
 Please refer to its man page for details on its syntax.
 
+It is especially useful in the context of package upgrades. In this case
+
+- `their` is the current version of the maintainer's copy of a configuration file,
+- `base` is the previous version of the maintainer's copy of the configuration file.
+- `our` is the user's copy of the configuration file, derived from `base`
+
 First of all, we create a small example configuration file.
 To do so, we first create a temporary file and store its location in Elektra.
 

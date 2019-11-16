@@ -27,7 +27,7 @@ On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
 This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, cmerge will be renamed to merge.
 
-## Options
+## OPTIONS
 
 The options of `kdb cmerge` are:
 
@@ -38,23 +38,18 @@ Strategies offer fine grained control over conflict handling. The option is:
 
 - `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
 
-## Strategies
+Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which can be accessed with `man elektra-cmerge-strategies`.
 
-The available strategies are:
+## RETURN VALUE
 
-- `abort`: the merge will abort if any conflict happens and merge the 3 key sets together otherwise.
-- `our`: This option forces conflicting keys to be auto-resolved cleanly by favoring `our`. Changes from the other key sets that do not conflict with the `our` version are reflected in the merge result. This works like the recursive strategy with the `ours` option from git-merge.
-- `their`: This is the opposite of `our`. The merge will use the `their` version when a conflict happens.
+- 0:
+  Successful.
 
-If no strategy is specified, the merge will default to the abort strategy.
+- 1:
+  An error happened.
 
-## Return value
-
-0 on success.
-
-1 if an error happened.
-
-2 if a merge conflict occurred and merge strategy abort was set.
+- 2:
+  A merge conflict occurred and merge strategy abort was set.
 
 The result of the merge is stored in `result`.
 

@@ -1,12 +1,15 @@
-# How-To: kdb cmerge
+# How-To: Merging
 
 ## Introduction
 
-The kdb tool allows users to access and perform functions on the Elektra key database from the command line. We added
+Elektra takes the semantic aspects of configuration files into account when merging them into one result file.
+Those configuration files are represented as key sets in Elektra. Key sets are collections of name-value pairs.
+
+The `kdb` tool allows users to access and perform functions on the Elektra key database from the command line. We added
 a new command to this very useful tool, the `cmerge` command. This command allows a user to perform a three-way merge
 of key sets from the `kdb` tool.
 
-The command to use this tool is:
+The syntax to use this tool is:
 
 `kdb cmerge [OPTIONS] our their base result`
 
@@ -15,12 +18,6 @@ a three-way merge. As in the `diff3` tool, required are
 the three files MYFILE (our), OLDFILE (base) and YOURFILE (their)
 The result off the three-way merge
 will be stored in `result`.
-
-For configuration files in the context of package upgrades:
-
-- `their` is the current version of the maintainer's copy of a configuration file,
-- `base` is the previous version of the maintainer's copy of the configuration file.
-- `our` is the user's copy of the configuration file, derived from `base`
 
 ## Simple example
 
@@ -216,6 +213,6 @@ kdb get user/tests/arrays/result/#0
 
 There are two tools of which cmerge is the central tool:
 
-1. `kdb install-config-file` installs or merges configuration files from the file system into
-   Elektra.
-2. `kdb cmerge-config-files` performs a three-way merge on three files using Elektra
+1. [`kdb install-config-file`](/doc/help/kdb-install-config-file.md) installs or merges configuration files from the file system into
+   Elektra. There is [a tutorial](/doc/tutorials/install-config-files.md) for this tool, too.
+2. [`kdb cmerge-config-files`](/doc/help/kdb-cmerge-config-files) performs a three-way merge on three files using Elektra

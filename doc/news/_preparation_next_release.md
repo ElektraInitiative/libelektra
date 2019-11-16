@@ -26,6 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Code generation
+- Elektra now has a technical preview of a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). It is written in C99 and can currently be used with [`kdb cmerge`](../help/kdb-cmerge.md). _(Dominic Jäger)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -228,7 +229,6 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
-- kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to merge key sets. _(Dominic Jäger)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
 - Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab`. _(Philipp Gackstatter)_
