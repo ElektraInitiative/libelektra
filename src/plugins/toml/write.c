@@ -23,7 +23,7 @@ typedef struct
 
 static Writer * createWriter (Key * rootKey, KeySet * keys);
 static void destroyWriter (Writer * writer);
-static int writeKeys (Writer * writer);
+static int writeKeys (Key * parent, Writer * writer);
 static int writeAssignment (Key * parent, Key * key, Writer * writer);
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer);
 static int writeArrayBody (Key * parent, Key * key, Writer * writer);
@@ -47,7 +47,7 @@ int tomlWrite (KeySet * keys, Key * rootKey)
 		return 1;
 	}
 	int result = 0;
-	result |= writeKeys (w);
+	result |= writeKeys (NULL, w);
 
 	destroyWriter (w);
 	return result;
@@ -62,7 +62,6 @@ static Writer * createWriter (Key * rootKey, KeySet * keys)
 		destroyWriter (writer);
 		return NULL;
 	}
-	printf ("FILENAME = %s\n", writer->filename);
 	writer->f = fopen (writer->filename, "w");
 	if (writer->f == NULL)
 	{
@@ -92,33 +91,44 @@ static void destroyWriter (Writer * writer)
 	}
 }
 
-static int writeKeys (Writer * writer)
+
+static int writeKeys (Key * parent, Writer * writer)
 {
-	int result = 0;
-	ksRewind (writer->keys);
-	Key * key = ksNext (writer->keys);
-	while (result == 0 && key != NULL)
-	{
-		if (keyCmp (key, writer->rootKey) == 0)
-		{
-			key = ksNext (writer->keys);
-			continue;
+	if (parent == NULL) {
+		ksRewind(writer->keys);
+		parent = ksNext(writer->keys);
+		if (parent == NULL) {
+			printf(">>>EMPTY KEYSET\n");
+			return 0;
+		} else {
+			ksNext (writer->keys);
+			return writeKeys (parent, writer);
 		}
+	}
+	// printf(">>> Starting loop with parent %s\n", keyName(parent));
+	Key * key = ksCurrent (writer->keys);
+
+	int result = 0;
+	while (result == 0 && key != NULL && keyIsBelow(parent, key) == 1)
+	{
 		printf("LOOP KEY = %s\n", keyName (key));
 		switch (getKeyType (key))
 		{
 		case KEY_TYPE_ASSIGNMENT:
-			result |= writeAssignment (writer->rootKey, key, writer);
+			result |= writeAssignment (parent, key, writer);
 			result |= writeNewline (writer);
 			break;
 		case KEY_TYPE_SIMPLE_TABLE:
+			result |= writeSimpleTable (parent, key, writer);
 			break;
 		case KEY_TYPE_TABLE_ARRAY:
 			break;
 		}
 		key = ksCurrent (writer->keys);
-		printf("AFTER KEY = %s, type = %d, result = %d\n", keyName (key), getKeyType (key), result);
+		// printf(">>> Finished one loop with parent %s\n", keyName(parent));
+		// printf("AFTER KEY = %s, type = %d, result = %d\n", keyName (key), getKeyType (key), result);
 	}
+	return result;
 }
 
 static int writeAssignment (Key * parent, Key * key, Writer * writer)
@@ -133,6 +143,8 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 	}
 	else
 	{
+		result |= writeScalar(key, writer);
+		ksNext(writer->keys);
 	}
 	return result;
 }
@@ -140,6 +152,11 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
+	result |= fputc('[', writer->f) == EOF;
+	result |= writeRelativeKeyName(parent, key, writer);
+	result |= fputs("]\n", writer->f) == EOF;
+	ksNext (writer->keys);
+	result |= writeKeys(key, writer);
 
 	return result;
 }
@@ -198,11 +215,6 @@ static int writeScalar (Key * key, Writer * writer)
 	}
 	printf("Write scalar: %s\n", valueStr);
 	return fputs (valueStr, writer->f) == EOF;
-}
-
-static int writeAssignementChar (Writer * writer)
-{
-	return fputs (" = ", writer->f) == EOF;
 }
 
 static int writeNewline (Writer * writer)
