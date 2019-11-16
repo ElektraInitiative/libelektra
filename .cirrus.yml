@@ -195,6 +195,18 @@ mac_task:
         false
       fi
 
+linux_task:
+  matrix:
+
+    - name: 🐧 Fedora
+      container:
+          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+
+  script:
+    - *create_build_dir
+    - *generate
+    - *build
+
 link_task:
   matrix:
 
