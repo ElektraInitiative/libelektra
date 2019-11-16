@@ -31,7 +31,7 @@ int main (int argc, char ** argv)
 	testPositiveCompareKeySets ();
 	testNegativeCompareErrors ();
 	//TODO: proper roundtrip testing
-	testRoundTrip("toml/positive/basic.toml");
+	testRoundTrip("toml/positive/array.toml");
 
 	print_result ("testmod_toml");
 	return nbError;

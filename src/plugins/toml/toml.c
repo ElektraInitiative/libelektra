@@ -49,7 +49,7 @@ int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 {
 	int result = tomlWrite(returned, parentKey);
 
-	return result != 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR; // TODO: revers logic
+	return result != 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : ELEKTRA_PLUGIN_STATUS_ERROR; // TODO: fix logic
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
