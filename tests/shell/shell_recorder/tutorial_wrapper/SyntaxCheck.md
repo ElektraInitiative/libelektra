@@ -47,13 +47,13 @@
   #> test
 
   #> bla
-  if [ -e `kdb file user` ]; then cat `kdb file user`; fi
+  if [ -e `kdb file user:/` ]; then cat `kdb file user:/`; fi
   ```
 
 - Sudo
 
   ```sh
-  sudo echo `sudo kdb file system`
+  sudo echo `sudo kdb file system:/`
   sudo ls
-  echo `    sudo kdb file system`
+  echo `    sudo kdb file system:/`
   ```

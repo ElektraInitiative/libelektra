@@ -189,7 +189,7 @@ Now you should be able to use the new template by running (after compiling/insta
 kdb gen example user userkeys
 ```
 
-This should produce the file `userkeys.txt`. The file should be the same, as if we had called `kdb ls user > userkeys.txt`.
+This should produce the file `userkeys.txt`. The file should be the same, as if we had called `kdb ls user:/ > userkeys.txt`.
 
 ## Advanced concepts
 

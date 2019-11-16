@@ -281,16 +281,16 @@ export_config() {
 	SYSTEMEXPORT="$EXPORTS/system.export.dump"
 	MOUNTEXPORT="$EXPORTS/mount.export.dump"
 
-	"$KDB" export spec dump > "$SPECEXPORT"
+	"$KDB" export spec:/ dump > "$SPECEXPORT"
 	exit_if_fail "Could not export spec config"
 
-	"$KDB" export dir dump > "$DIREXPORT"
+	"$KDB" export dir:/ dump > "$DIREXPORT"
 	exit_if_fail "Could not export dir config"
 
-	"$KDB" export user dump > "$USEREXPORT"
+	"$KDB" export user:/ dump > "$USEREXPORT"
 	exit_if_fail "Could not export user config"
 
-	"$KDB" export system --without-elektra dump > "$SYSTEMEXPORT"
+	"$KDB" export system:/ --without-elektra dump > "$SYSTEMEXPORT"
 	exit_if_fail "Could not export system config"
 
 	"$KDB" export system:/elektra/mountpoints dump > "$MOUNTEXPORT"
@@ -317,32 +317,32 @@ export_check() {
 	MOUNTEXPORT="$EXPORTS/mount.export.dump"
 	MOUNTCHECK="$EXPORTS/mount.check.dump"
 
-	"$KDB" export spec dump > "$SPECCHECK"
+	"$KDB" export spec:/ dump > "$SPECCHECK"
 	exit_if_fail "Could not export spec config"
 
-	"$KDB" export dir dump > "$DIRCHECK"
+	"$KDB" export dir:/ dump > "$DIRCHECK"
 	exit_if_fail "Could not export dir config"
 
-	"$KDB" export user dump > "$USERCHECK"
+	"$KDB" export user:/ dump > "$USERCHECK"
 	exit_if_fail "Could not export user config"
 
-	"$KDB" export system --without-elektra dump > "$SYSTEMCHECK"
+	"$KDB" export system:/ --without-elektra dump > "$SYSTEMCHECK"
 	exit_if_fail "Could not export system config"
 
 	"$KDB" export system:/elektra/mountpoints dump > "$MOUNTCHECK"
 	exit_if_fail "Could not export mount config"
 
 	if [ "$IMPORTCONFIG" = 'true' ]; then
-		"$KDB" import spec dump < "$SPECEXPORT"
+		"$KDB" import spec:/ dump < "$SPECEXPORT"
 		exit_if_fail "Could not import spec config"
 
-		"$KDB" import dir dump < "$DIREXPORT"
+		"$KDB" import dir:/ dump < "$DIREXPORT"
 		exit_if_fail "Could not import dir config"
 
-		"$KDB" import user dump < "$USEREXPORT"
+		"$KDB" import user:/ dump < "$USEREXPORT"
 		exit_if_fail "Could not import user config"
 
-		"$KDB" import system --without-elektra dump < "$SYSTEMEXPORT"
+		"$KDB" import system:/ --without-elektra dump < "$SYSTEMEXPORT"
 		exit_if_fail "Could not import system config"
 
 		"$KDB" import system:/elektra/mountpoints dump < "$MOUNTEXPORT"

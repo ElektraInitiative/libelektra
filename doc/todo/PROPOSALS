@@ -6,7 +6,7 @@ Please create an issue if you favor these ideas.
 people that belong to the group can write to system/spec
 	@krit0n proposed:
 		$ sudo groupadd elektra
-		$ KDB_SYSTEM=$(dirname $(kdb file system))
+		$ KDB_SYSTEM=$(dirname $(kdb file system:/))
 		$ sudo chown -R :elektra  ${KDB_SYSTEM}
 		# sudo chmod g+s ${KDB_SYSTEM} # does not work in ubuntu
 		$ sudo chmod -R g+w ${KDB_SYSTEM}

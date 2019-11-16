@@ -86,8 +86,8 @@ Before we start, let us make a backup of the current data in the spec and user n
 ```sh
 kdb set system:/tests/specbackup $(mktemp)
 kdb set system:/tests/userbackup $(mktemp)
-kdb export spec dump > $(kdb get system:/tests/specbackup)
-kdb export user dump > $(kdb get system:/tests/userbackup)
+kdb export spec:/ dump > $(kdb get system:/tests/specbackup)
+kdb export user:/ dump > $(kdb get system:/tests/userbackup)
 ```
 
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
@@ -295,8 +295,8 @@ kdb umount spec:/tests/tutorial
 kdb umount /tests/tutorial
 kdb rm -rf spec
 kdb rm -rf user
-kdb import spec dump < $(kdb get system:/tests/specbackup)
-kdb import user dump < $(kdb get system:/tests/userbackup)
+kdb import spec:/ dump < $(kdb get system:/tests/specbackup)
+kdb import user:/ dump < $(kdb get system:/tests/userbackup)
 rm $(kdb get system:/tests/specbackup)
 rm $(kdb get system:/tests/userbackup)
 kdb rm system:/tests/specbackup

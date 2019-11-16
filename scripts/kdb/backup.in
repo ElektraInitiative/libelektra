@@ -10,9 +10,9 @@ if [ -z "$KDB" ]; then
 fi
 
 TS="$(date +%s)"
-KDBSYSTEM=$("$KDB" file system)
-KDBUSER=$("$KDB" file user)
-KDBSPEC=$("$KDB" file spec)
+KDBSYSTEM=$("$KDB" file system:/)
+KDBUSER=$("$KDB" file user:/)
+KDBSPEC=$("$KDB" file spec:/)
 KDBINIT="@KDB_DB_SYSTEM@/@KDB_DB_INIT@"
 
 TMPDIR="/var/tmp/elektra_backup/${TS}"

@@ -60,7 +60,7 @@ So I hear you asking, if every key has to belong to a namespace, where are the k
 They are in the _user_ namespace, as you can verify with:
 
 ```sh
-kdb ls user | grep -E '(/a|/b/c)'
+kdb ls user:/ | grep -E '(/a|/b/c)'
 #> user:/a
 #> user:/b/c
 ```
@@ -117,7 +117,7 @@ kdb set "dir:/sw/elektra/kdb/#0/%/verbose" 1
 ```
 
 > The configuration for a directory is actually stored in this directory.
-> By default the configuration is contained in a folder named `.dir`, as you can verify with `kdb file dir` (_kdb file_ tells you the file where a key is stored in).
+> By default the configuration is contained in a folder named `.dir`, as you can verify with `kdb file dir:/` (_kdb file_ tells you the file where a key is stored in).
 >
 > For the purpose of demonstration we chose to only manipulate the verbosity of kdb.
 > Note that setting `dir:/sw/elektra/kdb/#0/%/namespace` to `dir` can be handy if you want to work with configuration of an application in a certain directory.

@@ -104,7 +104,7 @@ You can now access the client on: \fIhttp://localhost:33334\fR
 .SH "Use\-cases"
 .
 .SS "Running elektra\-web on a Single Instance"
-If you do not want to configure multiple instances, you can set the \fBINSTANCE\fR environment variable to the server you want to configure\. You can also set \fBuser/sw/elektra/web/#0/current/instance\fR to the host\. Make sure to enter a full HTTP URL, e\.g\. \fBhttp://localhost:33333\fR\.
+If you do not want to configure multiple instances, you can set the \fBINSTANCE\fR environment variable to the server you want to configure\. You can also set \fBuser:/sw/elektra/web/#0/current/instance\fR to the host\. Make sure to enter a full HTTP URL, e\.g\. \fBhttp://localhost:33333\fR\.
 .
 .P
 If this configuration option is set, elektra\-web will load the configuration page for that instance instead of the main overview page\.
@@ -229,10 +229,10 @@ Additional note\. It is recommended to install the elektrad tool than starting t
 Examples:
 .
 .P
-let\'s create the new key\-value pair \fBuser/test\fR and set its value to 5\. You can do it next way:
+let\'s create the new key\-value pair \fBuser:/test\fR and set its value to 5\. You can do it next way:
 .
 .IP "\(bu" 4
-through the command terminal \fBsh kdb set user/test 5\fR
+through the command terminal \fBsh kdb set user:/test 5\fR
 .
 .IP "\(bu" 4
 through the rest api using curl \fBsh curl \-X PUT \-H "Content\-Type: text/plain" \-\-data "5" http://localhost:33333/kdb/user/test\fR
@@ -240,7 +240,7 @@ through the rest api using curl \fBsh curl \-X PUT \-H "Content\-Type: text/plai
 .IP "" 0
 .
 .P
-The output of any of two commands will be: \fBSet string to "5"\fR\. If the specified key didn\'t exist before, then the output will be \fBCreate a new key user/test with string "5"\fR\.
+The output of any of two commands will be: \fBSet string to "5"\fR\. If the specified key didn\'t exist before, then the output will be \fBCreate a new key user:/test with string "5"\fR\.
 .
 .P
 Now, the command
@@ -256,7 +256,7 @@ curl http://localhost:33333/kdb/user/test
 .IP "" 0
 .
 .P
-will return us the value of the specified key \fBuser/test\fR, which is stored in the database right now
+will return us the value of the specified key \fBuser:/test\fR, which is stored in the database right now
 .
 .P
 \fI!\-\- prettier\-ignore\-start \-\-\fR

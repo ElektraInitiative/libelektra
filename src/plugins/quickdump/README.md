@@ -110,7 +110,7 @@ rm a.tmp
 rm b.tmp
 
 # test file name, so KDB isn't destroyed if mounting failed
-[ "x$(kdb file user:/tests/quickdump/key)" != "x$(kdb file user)" ] && mv c.tmp $(kdb file user:/tests/quickdump/key)
+[ "x$(kdb file user:/tests/quickdump/key)" != "x$(kdb file user:/)" ] && mv c.tmp $(kdb file user:/tests/quickdump/key)
 
 kdb get user:/tests/quickdump/key
 #> other value

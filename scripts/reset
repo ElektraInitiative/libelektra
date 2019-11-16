@@ -20,9 +20,9 @@ fi
 
 "$KDB" reset-elektra -f || fail "Could not reset Elektra, will abort"
 
-KDBSYSTEM=$("$KDB" file system)
-KDBUSER=$("$KDB" file user)
-KDBSPEC=$("$KDB" file spec)
+KDBSYSTEM=$("$KDB" file system:/)
+KDBUSER=$("$KDB" file user:/)
+KDBSPEC=$("$KDB" file spec:/)
 
 "$KDB" rm -rf --without-elektra system || rm -f "$KDBSYSTEM"
 

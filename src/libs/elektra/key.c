@@ -652,7 +652,7 @@ int keyClear (Key * key)
 
 	keyInit (key);
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
-	
+
 	keySetName (key, "/");
 
 	/* Set reference properties */

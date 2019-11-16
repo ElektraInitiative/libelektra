@@ -530,8 +530,8 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("/abc/d%ef/ghi", "", "/abc/d%ef/ghi");
 }
 
-static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",	 "KEY_NS_SPEC",	  "KEY_NS_PROC",
-				     "KEY_NS_DIR",  "KEY_NS_USER",	"KEY_NS_SYSTEM", "KEY_NS_DEFAULT" };
+static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",   "KEY_NS_SPEC",   "KEY_NS_PROC",
+				     "KEY_NS_DIR",  "KEY_NS_USER",      "KEY_NS_SYSTEM", "KEY_NS_DEFAULT" };
 
 #define succeed_if_same_uname(name, pu1, pu2, size2)                                                                                       \
 	do                                                                                                                                 \

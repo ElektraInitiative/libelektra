@@ -60,8 +60,8 @@ struct test tstKeyName[] = { { "Normal key", "system:/foo/bar", "system:/foo/bar
 
 			     {
 				     NULL, NULL, NULL, /* keyName 	*/
-				     NULL,	       /* keyBaseName 	*/
-				     NULL,	       /* keyGetFullRootName 	*/
+				     NULL,	     /* keyBaseName 	*/
+				     NULL,	     /* keyGetFullRootName 	*/
 			     } };
 
 static void test_keyNewSpecial (void)
