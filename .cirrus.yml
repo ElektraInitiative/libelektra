@@ -206,6 +206,10 @@ linux_task:
     - *create_build_dir
     - *generate
     - *build
+    - *install
+
+  tests_script:
+    - *run_tests
 
 link_task:
   matrix:
