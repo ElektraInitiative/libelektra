@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "helper/cmergehelper.hpp"
+#include "kdbmerge.h"
 #include <import.hpp>
 
 #include <cmdline.hpp>
@@ -17,14 +19,9 @@
 
 #include <iostream>
 
-#include <mergehelper.hpp>
-#include <merging/metamergestrategy.hpp>
-#include <merging/threewaymerge.hpp>
-
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
-using namespace kdb::tools::merging;
 
 ImportCommand::ImportCommand ()
 {
@@ -38,13 +35,13 @@ int ImportCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("need 1 to 3 arguments");
 	}
 
-	Key root = cl.createKey (0);
+	kdb::Key root = cl.createKey (0);
 	if (!root.isValid ())
 	{
 		throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
 	}
 
-	KeySet originalKeys;
+	kdb::KeySet originalKeys;
 	kdb.get (originalKeys, root);
 	printWarnings (cerr, root, cl.verbose, cl.debug);
 
@@ -64,10 +61,10 @@ int ImportCommand::execute (Cmdline const & cl)
 	Modules modules;
 	PluginPtr plugin = modules.load (provides.getName (), cl.getPluginsConfig ());
 
-	Key errorKey (root);
+	kdb::Key errorKey (root);
 	errorKey.setString (file);
 
-	KeySet importedKeys;
+	kdb::KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
 
 	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
@@ -75,7 +72,7 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
-		KeySet toset = prependNamespace (importedKeys, cl.ns);
+		kdb::KeySet toset = prependNamespace (importedKeys, cl.ns);
 		originalKeys.cut (prependNamespace (root, cl.ns));
 		originalKeys.append (toset);
 
@@ -98,44 +95,41 @@ int ImportCommand::execute (Cmdline const & cl)
 		return 0;
 	}
 
-	KeySet base = originalKeys.cut (root);
+	kdb::KeySet base = originalKeys.cut (root);
 	importedKeys = importedKeys.cut (root);
 	if (cl.withoutElektra)
 	{
-		KeySet baseCopy = base.dup ();
-		Key systemElektra ("system/elektra", KEY_END);
-		KeySet systemKeySet = baseCopy.cut (systemElektra);
+		kdb::KeySet baseCopy = base.dup ();
+		kdb::Key systemElektra ("system/elektra", KEY_END);
+		kdb::KeySet systemKeySet = baseCopy.cut (systemElektra);
 		importedKeys.append (systemKeySet);
 	}
-
-	ThreeWayMerge merger;
-	MergeHelper helper;
-
-	helper.configureMerger (cl, merger);
-	MergeResult result = merger.mergeKeySet (
-		MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root), TheirMergeKeys (importedKeys, root), root));
-
-	helper.reportResult (cl, result, cout, cerr);
-
-	int ret = -1;
-	if (!result.hasConflicts ())
+	ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
+	ckdb::KeySet * resultNew = elektraMerge (base.getKeySet (), root.getKey (), importedKeys.getKeySet (), root.getKey (),
+						 base.getKeySet (), root.getKey (), root.getKey (), 1, informationKey);
+	int numberOfConflicts = getConflicts (informationKey);
+	keyDel (informationKey);
+	int retVal;
+	if (resultNew != NULL)
 	{
-		if (cl.verbose)
-		{
-			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
-			cout << result.getMergedKeys ();
-		}
-
-		KeySet resultKeys = result.getMergedKeys ();
-		originalKeys.append (resultKeys);
+		originalKeys.append (resultNew);
 		kdb.set (originalKeys, root);
-		ret = 0;
-
 		printWarnings (cerr, root, cl.verbose, cl.debug);
 		printError (cerr, root, cl.verbose, cl.debug);
+		retVal = 0;
 	}
-
-	return ret;
+	else
+	{
+		if (numberOfConflicts > 0)
+		{
+			retVal = 11;
+		}
+		else
+		{
+			retVal = 3;
+		}
+	}
+	return retVal;
 }
 
 ImportCommand::~ImportCommand ()
