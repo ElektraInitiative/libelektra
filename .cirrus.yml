@@ -200,7 +200,7 @@ link_task:
 
     - name: 🔗 Check
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
@@ -242,7 +242,7 @@ docu_task:
 
     - name: 📚 Check
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
     - *create_build_dir
