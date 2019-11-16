@@ -360,6 +360,8 @@ you up to date with the multi-language support provided by Elektra.
   - that the [man pages](../man) are up to date, and
   - that building the PDF version of the Doxygen documentation works. _(René Schwaiger)_
 
+- The new build job `🐧 Fedora` builds and tests Elektra on Fedora Linux. _(René Schwaiger)_
+
 ### Jenkins
 
 - We upgraded all servers to buster so that debian buster docker image work. _(Markus Raab)_
