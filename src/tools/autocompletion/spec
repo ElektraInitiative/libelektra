@@ -41,7 +41,7 @@ opt=cp
 opt/long=editor
 
 [kdb/export]
-opt/long
+opt/long=export
 
 [kdb/file]
 opt/long=file
@@ -59,7 +59,7 @@ opt/long=getmeta
 opt/long=global-mount
 
 [kdb/global-unmount]
-opt/long=gloabl-unmount
+opt/long=global-unmount
 
 [kdb/help]
 opt/long=help

@@ -2,7 +2,7 @@
 
 _helloworld_completions() {
 	# completing for last input before a tab
-	OUTPUT="$(python3 helloworld_complete.py ${COMP_WORDS[-1]})"
+	OUTPUT="$(python3 find_autocompletion_options.py ${COMP_WORDS[-1]})"
 	COMPREPLY+=$OUTPUT
 }
 

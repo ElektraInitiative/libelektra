@@ -1,10 +1,21 @@
 import kdb
 import sys
 
-def find_auto_completion_options():
-	start_of_word = None
+start_of_word = None
+
+def get_start_of_word():
+	global start_of_word
 	if (len(sys.argv) > 1):
 		start_of_word = sys.argv[1]
+
+def set_start_of_word_and_run(input_start_of_word):
+	global start_of_word
+	start_of_word = input_start_of_word
+	return find_auto_completion_options()
+
+
+def find_auto_completion_options():
+	global start_of_word
 	with kdb.KDB() as k:
 		ks = kdb.KeySet()
 		k.get(ks, 'spec/autocomplete')
@@ -14,10 +25,10 @@ def find_auto_completion_options():
 			opt_long = (key.getMeta(name="opt/long"))
 			opt = (key.getMeta(name="opt"))
 			if start_of_word != None:
-				if opt and opt.value.startswith(start_of_word):
-					completion_options.append(opt.value)
 				if opt_long and opt_long.value.startswith(start_of_word):
 					completion_options.append(opt_long.value)
+				elif opt and opt.value.startswith(start_of_word):
+					completion_options.append(opt.value)
 			else:
 				if opt_long:
 					completion_options.append(opt_long.value)
@@ -27,6 +38,8 @@ def find_auto_completion_options():
 	output = ""
 	for i in completion_options:
 		output += " " + i
-	print(output)
+	return output
 
-find_auto_completion_options()
+if __name__ == "__main__":
+	get_start_of_word()
+	print(find_auto_completion_options())
