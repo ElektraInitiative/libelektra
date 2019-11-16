@@ -83,27 +83,27 @@ check_distribution() {
 
 echo "Testing sibling"
 check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution/b2
-check_distribution system/$MOUNTPOINT/distribution/a1 system/$MOUNTPOINT/distribution/b2
-check_distribution system////$MOUNTPOINT/distribution///a1 system/////$MOUNTPOINT/distribution////b2
+check_distribution system:/$MOUNTPOINT/distribution/a1 system:/$MOUNTPOINT/distribution/b2
+check_distribution system:////$MOUNTPOINT/distribution///a1 system://///$MOUNTPOINT/distribution////b2
 
 echo "Testing direct below"
 check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2
 check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution
-check_distribution system///$MOUNTPOINT///distribution system//$MOUNTPOINT///distribution///b2
-check_distribution system//$MOUNTPOINT///distribution///a1 system//$MOUNTPOINT///distribution
+check_distribution system:///$MOUNTPOINT///distribution system://$MOUNTPOINT///distribution///b2
+check_distribution system://$MOUNTPOINT///distribution///a1 system://$MOUNTPOINT///distribution
 
 echo "Testing below"
 check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2/more/below
 check_distribution system$MOUNTPOINT/distribution/a1/more/below system$MOUNTPOINT/distribution
-check_distribution system///$MOUNTPOINT////distribution system//$MOUNTPOINT//distribution/b2///more///below
-check_distribution system///$MOUNTPOINT//distribution///a1/more///below system//$MOUNTPOINT////distribution
+check_distribution system:///$MOUNTPOINT////distribution system://$MOUNTPOINT//distribution/b2///more///below
+check_distribution system:///$MOUNTPOINT//distribution///a1/more///below system://$MOUNTPOINT////distribution
 
 if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 	echo "Testing root with normal"
 	check_distribution / system$MOUNTPOINT/distribution
-	check_distribution / system//$MOUNTPOINT////distribution
+	check_distribution / system://$MOUNTPOINT////distribution
 	check_distribution system$MOUNTPOINT/distribution /
-	check_distribution system//$MOUNTPOINT////distribution /
+	check_distribution system://$MOUNTPOINT////distribution /
 
 	echo "Testing root with cascading"
 	check_distribution / $MOUNTPOINT/distribution

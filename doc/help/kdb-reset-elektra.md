@@ -1,4 +1,4 @@
-# kdb-reset-elektra(1) - Resets system/elektra
+# kdb-reset-elektra(1) - Resets system:/elektra
 
 ## SYNOPSIS
 
@@ -7,7 +7,7 @@
 ## DESCRIPTION
 
 Resets all configuration changes that influence Elektra's core, i.e.,
-keys in `system/elektra`.
+keys in `system:/elektra`.
 
 ## WARNING
 

@@ -29,4 +29,4 @@ Actual reason might be in errno or an exception
 - `"Could not rename file %s. Reason: %s" file.path(), e.what()`
   Result: `Could not rename file /etc/conf/file.yml. Reason: File is not existent`
 - `"The key %s contained the value '%s', but only 'unmounted' is supported for non-global clauses at the moment", keyName(key), keyString(key)`
-  Result: `The key user/my/key contained the value 'mounted', but only 'unmounted' is supported for non-global clauses at the moment`
+  Result: `The key user:/my/key contained the value 'mounted', but only 'unmounted' is supported for non-global clauses at the moment`

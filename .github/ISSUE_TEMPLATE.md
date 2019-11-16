@@ -9,17 +9,17 @@ Please provide a step by step guide on how to reproduce the problem here. If pos
 syntax:
 
 ```sh
-kdb set user/tests/hello world
-#> Create a new key user/tests/hello with string "world"
+kdb set user:/tests/hello world
+#> Create a new key user:/tests/hello with string "world"
 
-kdb get user/tests/hello
+kdb get user:/tests/hello
 #> world
 
-kdb get user/does/not/exist
+kdb get user:/does/not/exist
 # RET: 11
-# STDERR: [Dd]id not find key 'user/does/not/exist'
+# STDERR: [Dd]id not find key 'user:/does/not/exist'
 
-kdb rm user/tests/hello
+kdb rm user:/tests/hello
 ```
 
 If your key database (KDB) might influence the outcome, please use `kdb stash`

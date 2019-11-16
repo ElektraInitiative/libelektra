@@ -147,7 +147,7 @@ The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
 ```c
-keyNew ("system/elektra/modules/yajl/infos/licence",
+keyNew ("system:/elektra/modules/yajl/infos/licence",
         KEY_VALUE, "BSD", KEY_END);
 ```
 
@@ -155,10 +155,10 @@ keyNew ("system/elektra/modules/yajl/infos/licence",
 
 In your plugin, specifically in your `elektraPluginGet()`
 implementation, you have to return the contract whenever configuration
-below `system/elektra/modules/plugin` is requested:
+below `system:/elektra/modules/plugin` is requested:
 
 ```c
-if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
+if (!strcmp (keyName(parentKey), "system:/elektra/modules/plugin"))
 {
 	KeySet *moduleConf = elektraPluginContract();
 	ksAppend(returned, moduleConf);
@@ -175,23 +175,23 @@ An example of this function (taken from the [`yajl`](/src/plugins/yajl/) plugin)
 static inline KeySet *elektraYajlContract()
 {
 	return ksNew (30,
-	keyNew ("system/elektra/modules/yajl",
+	keyNew ("system:/elektra/modules/yajl",
 		KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
-	keyNew ("system/elektra/modules/yajl/exports", KEY_END),
-	keyNew ("system/elektra/modules/yajl/exports/get",
+	keyNew ("system:/elektra/modules/yajl/exports", KEY_END),
+	keyNew ("system:/elektra/modules/yajl/exports/get",
 		KEY_FUNC, elektraYajlGet,
 		KEY_END),
-	keyNew ("system/elektra/modules/yajl/exports/set",
+	keyNew ("system:/elektra/modules/yajl/exports/set",
 		KEY_FUNC, elektraYajlSet,
 		KEY_END),
 #include "readme_yourplugin.c"
-	keyNew ("system/elektra/modules/yajl/infos/version",
+	keyNew ("system:/elektra/modules/yajl/infos/version",
 		KEY_VALUE, PLUGINVERSION, KEY_END),
-	keyNew ("system/elektra/modules/yajl/config", KEY_END),
-	keyNew ("system/elektra/modules/yajl/config/",
+	keyNew ("system:/elektra/modules/yajl/config", KEY_END),
+	keyNew ("system:/elektra/modules/yajl/config/",
 		KEY_VALUE, "system",
 		KEY_END),
-	keyNew ("system/elektra/modules/yajl/config/below",
+	keyNew ("system:/elektra/modules/yajl/config/below",
 		KEY_VALUE, "user",
 		KEY_END),
 	KS_END);
@@ -293,7 +293,7 @@ This function usually differs pretty greatly between each plugin. This function 
 - `0`: The function was successful and the given keyset/configuration was **not changed** (`ELEKTRA_PLUGIN_STATUS_NO_UPDATE`).
 
 Any other return value indicates an error (`ELEKTRA_PLUGIN_STATUS_ERROR`). The function will take in a `Key`, usually called `parentKey` which contains a string containing the path
-to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system/linetest line` then `keyString(parentKey)`
+to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system:/linetest line` then `keyString(parentKey)`
 should be equal to `/etc/linetest`. At this point, you generally want to open the file so you can begin saving it into keys.
 Here is the trickier part to explain. Basically, at this point you will want to iterate through the file and create keys and store string values
 inside of them according to what your plugin is supposed to do. I will give a few examples of different plugins to better explain.
@@ -303,7 +303,7 @@ number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open th
 let's call it `new_key` using `dupKey(parentKey)`. Then I set `new_key`'s name to `lineNN` (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the `KeySet` that was passed into the
 `elektraPluginGet` function, let's call it `returned` for now, using `ksAppendKey(returned, new_key)`. Now the `KeySet` will contain `new_key` with the
-name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system/linetest/#N`), and a string value
+name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system:/linetest/#N`), and a string value
 equal to the contents of that line in the file. The line plugin repeats these steps as long as it hasn't reached end of file, thus saving the whole file
 into a `KeySet` line by line.
 
@@ -420,7 +420,7 @@ int elektraLineCheckConf (Key * errorKey, KeySet * conf)
 The `elektraPluginCheckConf` function is exported via the plugin's contract. The following example demonstrates how to export the `checkconf` function (see section [Contract](#contract) for further details):
 
 ```c
-keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConf, KEY_END);
+keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConf, KEY_END);
 ```
 
 Within the `checkconf` function all of the plugin configuration values should be validated.

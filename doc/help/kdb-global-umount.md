@@ -22,7 +22,7 @@ Unmount a global plugin from the key database.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: system/elektra/globalplugins
+# Backup-and-Restore: system:/elektra/globalplugins
 
 sudo kdb global-mount tracer
 

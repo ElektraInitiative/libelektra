@@ -18,7 +18,7 @@ usage of the default backend by simple mounting another backend to `/`.
 The mounting configuration (the configuration how to mount the
 mount points) also needs to be stored somewhere.
 The so called **init backend** is responsible for fetching configuration
-from `system/elektra`, where the mount points are stored.
+from `system:/elektra`, where the mount points are stored.
 Again `KDB_STORAGE` and `KDB_RESOLVER` is used, but now
 they write into the configuration file `KDB_DB_INIT` (`elektra.ecf` by default).
 
@@ -28,9 +28,9 @@ symbolic links (`libelektra-resolver.so` and `libelektra-storage.so`) to concret
 and thus can be changed without recompilation.
 
 The **init backend** is guaranteed to stay mounted at
-`system/elektra` where the configuration for Elektra
+`system:/elektra` where the configuration for Elektra
 itself is stored. After mounting all backends, Elektra checks if
-`system/elektra` still resides at the default backend. If not,
+`system:/elektra` still resides at the default backend. If not,
 the init backend will be mounted there.
 
 ## SUMMARY
@@ -38,7 +38,7 @@ the init backend will be mounted there.
 To summarize, this approach delivers a good out-of-the-box experience
 capable of storing configuration. For special use cases, applications
 and administrators can mount specific backends anywhere except at, and
-below, `system/elektra`. On `kdbOpen()`, the system
+below, `system:/elektra`. On `kdbOpen()`, the system
 bootstraps itself starting with the init backend.
 
 The default backend consists of a default storage plugin and default

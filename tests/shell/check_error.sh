@@ -10,7 +10,7 @@ FILE_SUFFIX=test_error
 
 check_remaining_files $FILE_SUFFIX
 
-ROOT=user/test/script
+ROOT=user:/test/script
 ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
 if ! is_plugin_available dump || ! is_plugin_available sync; then

@@ -71,13 +71,13 @@ To interactively resolve conflicts, use the `-i` option.
 ## EXAMPLES
 
 To complete a simple merge of three KeySets:<br>
-`kdb merge user/ours user/theirs user/base user/result`<br>
+`kdb merge user:/ours user:/theirs user:/base user:/result`<br>
 
 To complete a merge whilst using the `ours` version of the KeySet to resolve conflicts:<br>
-`kdb merge -s ours user/ours user/theirs user/base user/result`<br>
+`kdb merge -s ours user:/ours user:/theirs user:/base user:/result`<br>
 
 To complete a three-way merge and overwrite all current keys in the `resultpath`:<br>
-`kdb merge -s cut user/ours user/theirs user/base user/result`<br>
+`kdb merge -s cut user:/ours user:/theirs user:/base user:/result`<br>
 
 ## SEE ALSO
 

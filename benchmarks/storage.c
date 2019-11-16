@@ -104,7 +104,7 @@ int main (int argc, char ** argv)
 		init (argc, argv);
 
 		Plugin * plugin = plugins[i];
-		Key * parentKey = keyNew ("user/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
+		Key * parentKey = keyNew ("user:/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
 
 		for (size_t run = 0; run < NUM_RUNS; ++run)
 		{

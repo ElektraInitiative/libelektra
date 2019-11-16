@@ -25,8 +25,8 @@ was provided.
 
 ```sh
 cd examples/highlevel
-sudo kdb mount spec.ini 'spec/sw/example/highlevel/#0/current' ni
-sudo kdb import 'spec/sw/example/highlevel/#0/current' ni < spec.ini
+sudo kdb mount spec.ini 'spec:/sw/example/highlevel/#0/current' ni
+sudo kdb import 'spec:/sw/example/highlevel/#0/current' ni < spec.ini
 sudo kdb spec-mount '/sw/example/highlevel/#0/current'
 ```
 

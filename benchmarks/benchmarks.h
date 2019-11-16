@@ -22,7 +22,7 @@
 
 #include <time.h>
 
-#define KEY_ROOT "user/benchmark"
+#define KEY_ROOT "user:/benchmark"
 
 #define KEY_NAME_LENGTH 1000
 #define NUM_DIR 200

@@ -28,7 +28,7 @@ This command will either print the value of the key it retrieves or a default va
 ## EXAMPLES
 
 To get the value of a key from a script or return the value `0`:<br>
-`kdb sget user/example/key 0`
+`kdb sget user:/example/key 0`
 
 To get the value of a key using a cascading lookup or return the value `notfound`:<br>
 `kdb sget /example/key "notfound"`

@@ -19,7 +19,7 @@ if (ELEKTRA_FOUND)
 	include_directories (${Elektra_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 	elektra_kdb_gen (
-		highlevel "spec/sw/example/econf/#0/current" "genelektra"
+		highlevel "spec:/sw/example/econf/#0/current" "genelektra"
 		INPUT ni "${CMAKE_CURRENT_SOURCE_DIR}/../spec.ini"
 		KDB ${KDB})
 

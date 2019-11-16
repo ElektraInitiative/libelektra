@@ -7,7 +7,7 @@
 <!--
 	This file was generated (comments edited later) by the command:
 	
-	   bash$ kdb export user/tmp > keyset.xml
+	   bash$ kdb export user:/tmp > keyset.xml
 	   
 	You can fully re-import it with command:
 	
@@ -29,12 +29,12 @@
         xsi:schemaLocation="https://www.libelektra.org elektra.xsd">
 
 
-<key name="user/tmp/binaryKey"
+<key name="user:/tmp/binaryKey"
      type="string" mode="0664">
 
 <!--
 	Created with command:
-	kdb set user/tmp/binaryKey "some fake-binary value"
+	kdb set user:/tmp/binaryKey "some fake-binary value"
   -->
 
      <value><![CDATA[some fake-binary value]]></value>
@@ -44,12 +44,12 @@
 
 
 
-<key name="user/tmp/dir1"
+<key name="user:/tmp/dir1"
      type="directory" mode="0775">
 
 <!--
 	Created with command:
-	kdb set -t dir user/tmp/dir1
+	kdb set -t dir user:/tmp/dir1
   -->
 
 </key>
@@ -58,7 +58,7 @@
 
 
 
-<key name="user/tmp/key with user-defined binary type"
+<key name="user:/tmp/key with user-defined binary type"
      type="25" mode="0664">
 
  
@@ -66,7 +66,7 @@
 	Created with command:
 	kdb set -t 25 \
 		-c "User defined, semanticfull binary types are between KEY_TYPE_BINARY (>=20) and KEY_TYPE_STRING (<40)" \
-		"user/tmp/key with user-defined binary type" \
+		"user:/tmp/key with user-defined binary type" \
 		"binary-semantic value"
   -->
   
@@ -81,14 +81,14 @@
 
 
 
-<key name="user/tmp/key with user-defined type"
+<key name="user:/tmp/key with user-defined type"
      type="45" mode="0664">
 
 <!--
 	Created with command:
 	kdb set -t 45 \
 		-c "User defined, semanticfull string types are bigger then KEY_TYPE_STRING, or 40" \
-		"user/tmp/key with user-defined type" \
+		"user:/tmp/key with user-defined type" \
 		"a semanticfull value"
   -->
   
@@ -99,12 +99,12 @@
 
 
 
-<key name="user/tmp/link"
+<key name="user:/tmp/link"
      type="link" mode="0666">
 
 <!--
 	Created with command:
-	kdb ln ./regularKey user/tmp/link  
+	kdb ln ./regularKey user:/tmp/link  
   -->
 
      <value><![CDATA[./regularKey]]></value>
@@ -114,14 +114,14 @@
 
 
 
-<key name="user/tmp/realBinary"
+<key name="user:/tmp/realBinary"
      type="binary" mode="0664">
 
 <!--
 	Created with command:
 	kdb set -t bin -b /tmp/file.bin \
 		-c "random real binary value" \
-		user/tmp/realBinary
+		user:/tmp/realBinary
 		
 	/tmp/file.bin was a file containing 50 random bytes.
 	
@@ -139,12 +139,12 @@
 
 
 
-<key name="user/tmp/regularKey"
+<key name="user:/tmp/regularKey"
      type="string" mode="0664">
 
 <!--
 	Created with command:
-	kdb set user/tmp/regularKey "some value"
+	kdb set user:/tmp/regularKey "some value"
   -->
   
      <value><![CDATA[some value]]></value>

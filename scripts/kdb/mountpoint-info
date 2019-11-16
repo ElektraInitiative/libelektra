@@ -6,7 +6,7 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-PREFIX="system/elektra/mountpoints/"
+PREFIX="system:/elektra/mountpoints/"
 MP=
 MOUNTPOINT=
 if [ "$#" -eq 1 ]; then
@@ -19,7 +19,7 @@ $KDB get "${PREFIX}system\\/info\\/elektra\\/constants" > /dev/null 2> /dev/null
 HASCONSTANT=$?
 UMOUNTCONSTANT=0
 if [ "$HASCONSTANT" -ne 0 ]; then
-	$KDB mount -c assume/unchanged=1 --resolver noresolver none system/info/elektra/constants constants > /dev/null 2> /dev/null
+	$KDB mount -c assume/unchanged=1 --resolver noresolver none system:/info/elektra/constants constants > /dev/null 2> /dev/null
 	if [ "$?" -eq 0 ]; then
 		HASCONSTANT=1
 		UMOUNTCONSTANT=1
@@ -28,18 +28,18 @@ else
 	HASCONSTANT=1
 fi
 
-KDB_VERSION=$($KDB sget system/elektra/version/constants/KDB_VERSION "NA" 2> /dev/null)
+KDB_VERSION=$($KDB sget system:/elektra/version/constants/KDB_VERSION "NA" 2> /dev/null)
 echo "Version: $KDB_VERSION"
 
 if [ "$HASCONSTANT" -eq 1 ]; then
-	RESOLVER=$($KDB sget system/info/elektra/constants/cmake/KDB_DEFAULT_RESOLVER "NA" 2> /dev/null)
-	STORAGE=$($KDB sget system/info/elektra/constants/cmake/KDB_DEFAULT_STORAGE "NA" 2> /dev/null)
+	RESOLVER=$($KDB sget system:/info/elektra/constants/cmake/KDB_DEFAULT_RESOLVER "NA" 2> /dev/null)
+	STORAGE=$($KDB sget system:/info/elektra/constants/cmake/KDB_DEFAULT_STORAGE "NA" 2> /dev/null)
 	echo "Default resolver: $RESOLVER"
 	echo "Default storage: $STORAGE"
 fi
 
 if [ "$UMOUNTCONSTANT" -eq 1 ]; then
-	$KDB umount system/info/elektra/constants > /dev/null 2> /dev/null
+	$KDB umount system:/info/elektra/constants > /dev/null 2> /dev/null
 fi
 
 output_plugins() {

@@ -103,8 +103,8 @@ s/\<[^-]symlink/symbolic link/g
 s/\<middle[- ]ware/middleware/g
 
 # plural
-s/\<files-?system\>/file system/g
+s/\<files-?system\>/file system:/g
 
-s/type-?system/type system/g
+s/type-?system:/type system:/g
 s/type-checker/type checker/g
 s/\<([Tt])ypecheck((s|ing)?)\>/\1ype check\2/g

@@ -46,12 +46,12 @@ macro_rules! count_exprs {
 /// # use elektra::{KeySet, StringKey, WriteableKey, KeyBuilder, keyset};
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// let ks = keyset![
-///     StringKey::new("user/test/key1")?,
-///     KeyBuilder::<StringKey>::new("user/test/key2")?
+///     StringKey::new("user:/test/key1")?,
+///     KeyBuilder::<StringKey>::new("user:/test/key2")?
 ///                .meta("metakey1", "metavalue1")?
 ///                .meta("metakey2", "metavalue2")?
 ///                .build(),
-///     StringKey::new("user/test/key3")?,
+///     StringKey::new("user:/test/key3")?,
 /// ];
 /// assert_eq!(ks.size(), 3);
 /// # Ok(())
@@ -616,17 +616,17 @@ mod tests {
         assert_eq!(0, ks.size());
 
         let ks = keyset![
-            StringKey::new("user/test1").unwrap(),
-            StringKey::new("user/test2").unwrap(),
-            StringKey::new("user/test3").unwrap(),
-            StringKey::new("user/test4").unwrap()
+            StringKey::new("user:/test1").unwrap(),
+            StringKey::new("user:/test2").unwrap(),
+            StringKey::new("user:/test3").unwrap(),
+            StringKey::new("user:/test4").unwrap()
         ];
         assert_eq!(4, ks.size());
-        assert_eq!("user/test1", ks.head().unwrap().name());
-        assert_eq!("user/test4", ks.tail().unwrap().name());
+        assert_eq!("user:/test1", ks.head().unwrap().name());
+        assert_eq!("user:/test4", ks.tail().unwrap().name());
 
         let ks = keyset![
-            KeyBuilder::<StringKey>::new("user/test1")
+            KeyBuilder::<StringKey>::new("user:/test1")
                 .unwrap()
                 .meta("metakey1", "metavalue1")
                 .unwrap()
@@ -634,10 +634,10 @@ mod tests {
                 .unwrap()
                 .build(),
             // Macro invocation also works with a trailing comma
-            StringKey::new("user/test2").unwrap(),
+            StringKey::new("user:/test2").unwrap(),
         ];
         assert_eq!(2, ks.size());
-        assert_eq!("user/test1", ks.head().unwrap().name());
+        assert_eq!("user:/test1", ks.head().unwrap().name());
         assert_eq!(
             "metavalue2",
             ks.head().unwrap().meta("metakey2").unwrap().value()

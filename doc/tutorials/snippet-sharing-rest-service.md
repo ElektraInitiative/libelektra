@@ -118,7 +118,7 @@ but some settings have to be set manually afterwards.
 After the installation, the configuration specification of the backend has to be mounted
 with the command `kdb mount-website-backend-config`. You can check if the mounting was successful
 by issuing `kdb mount`. There should be an entry in the list with a path like
-`spec/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
+`spec:/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
 If you do not see this mount points, have a look at the mount script in the tool_exec
 (which is defined during installation of Elektra). You can also run the commands manually.
 
@@ -174,16 +174,16 @@ not part of the specification. That means it does not get validated.
 The frontend does only require small mandatory changes in its configuration.
 Before they can be made, the configuration file has to be mounted though. This can be
 achieved by issuing `kdb mount-website-frontend-config`. The configuration should then
-be available at `system/sw/elektra/restfrontend/#0/current`. To get a list of possible
-configuration parameters, use `kdb ls system/sw/elektra/restfrontend/#0/current`.
+be available at `system:/sw/elektra/restfrontend/#0/current`. To get a list of possible
+configuration parameters, use `kdb ls system:/sw/elektra/restfrontend/#0/current`.
 
 Note that the frontend is not elektrified, only changes within
-`system/sw/elektra/restfrontend/#0/current` will work.
+`system:/sw/elektra/restfrontend/#0/current` will work.
 
 The parameters that need to be changed in order for the frontend to work correctly, are:
 
-- `system/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
-- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `https://libelektra.org/` (with trailing slash!)
+- `system:/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
+- `system:/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `https://libelektra.org/` (with trailing slash!)
 
 ## Running the Applications
 
@@ -322,23 +322,23 @@ section above, but with CppCMS using SCGI instead of HTTP as API variant.
 This requires setting the keys
 
 ```sh
-kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
-kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
-kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
+kdb set system:/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
+kdb set system:/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
+kdb set system:/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
 ```
 
 Additionally we are using a worker process, which ensures that in case of a crash
 the backend restarts automatically (= basically supervisor + worker). Config:
 
 ```sh
-kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
+kdb set system:/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
 ```
 
-Configuration snippets and users are stored at `system/configs` and `system/users`:
+Configuration snippets and users are stored at `system:/configs` and `system:/users`:
 
 ```sh
-kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
-kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
+kdb set system:/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system:/configs
+kdb set system:/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system:/users
 ```
 
 ### Rest-Frontend

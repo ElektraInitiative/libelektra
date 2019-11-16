@@ -36,7 +36,7 @@
 Configuration will be in arrays below the keys:
 
 ```
-system/elektra/globalplugins
+system:/elektra/globalplugins
                              /prerollback
                              /rollback
                              /postrollback
@@ -199,7 +199,7 @@ getresolver/after/once
 Its useful to have some important global plugins, e.g. locking by default.
 See #690.
 
-Internal list to be used when no system/elektra/global_mountpoints/ exists.
+Internal list to be used when no system:/elektra/global_mountpoints/ exists.
 
 State diagrams of plugins need to be redrawn to also include global plugin
 states.
@@ -215,9 +215,9 @@ states.
 ## Implementation Hints
 
 - add `Plugin *globalPlugins [NR_OF_PLUGINS]` to `_KDB`
-- during `kdbOpen`, `system/elektra/globalplugins/` is read and plugins are constructed and placed into `globalPlugins`.
+- during `kdbOpen`, `system:/elektra/globalplugins/` is read and plugins are constructed and placed into `globalPlugins`.
 - In kdbGet and kdbSet hooks execute one of these plugins
 - by default
-  - the plugins are all the same `list` plugins, and their subplugins are executed, when `system/elektra/globalplugins/_` states they should be executed
+  - the plugins are all the same `list` plugins, and their subplugins are executed, when `system:/elektra/globalplugins/_` states they should be executed
   - a `lock` plugin that executes at begin and end of kdbGet and kdbSet, respective, i.e. postrollback preget postget preset postcommit
   - the `lock` plugin contains the code currently found in resolver

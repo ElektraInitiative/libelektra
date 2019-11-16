@@ -83,28 +83,28 @@ Specify the namespace to use when writing cascading keys (\fBvalidate\fR strateg
 .IP "" 0
 .
 .SH "EXAMPLES"
-To import a configuration stored in the XML format in a file called \fBexample\.xml\fR below \fBuser/keyset\fR:
+To import a configuration stored in the XML format in a file called \fBexample\.xml\fR below \fBuser:/keyset\fR:
 .
 .br
-\fBkdb import user/keyset xmltool < example\.xml\fR
+\fBkdb import user:/keyset xmltool < example\.xml\fR
 .
 .P
-To import a configuration stored in the \fBini\fR format in a file called \fBexample\.ini\fR below \fBuser/keyset\fR replacing any previous keys stored there:
+To import a configuration stored in the \fBini\fR format in a file called \fBexample\.ini\fR below \fBuser:/keyset\fR replacing any previous keys stored there:
 .
 .br
-\fBcat example\.ini | kdb import \-s cut user/keyset ini\fR
+\fBcat example\.ini | kdb import \-s cut user:/keyset ini\fR
 .
 .P
-To import a configuration stored in the \fBini\fR format in a file called \fBexample\.ini\fR below \fBuser/keyset\fR keeping any previous keys stored there that aren\'t present in the newly imported configuration:
+To import a configuration stored in the \fBini\fR format in a file called \fBexample\.ini\fR below \fBuser:/keyset\fR keeping any previous keys stored there that aren\'t present in the newly imported configuration:
 .
 .br
-\fBcat example\.ini | kdb import \-s import user/keyset ini\fR
+\fBcat example\.ini | kdb import \-s import user:/keyset ini\fR
 .
 .P
-To restore a backup (stored as \fBsw\.ecf\fR) of a user\'s configuration below \fBsystem/sw\fR:
+To restore a backup (stored as \fBsw\.ecf\fR) of a user\'s configuration below \fBsystem:/sw\fR:
 .
 .br
-\fBcat sw\.ecf | kdb import system/sw\fR
+\fBcat sw\.ecf | kdb import system:/sw\fR
 .
 .P
 To import a sample \fBxml\fR content with the \fBxerces\fR plugin:

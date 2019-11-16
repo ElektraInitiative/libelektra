@@ -70,7 +70,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    Open key database
    Retrieve key set
    Number of key-value pairs: 0
-   Add key user/test/hello
+   Add key user:/test/hello
    Number of key-value pairs: 1
 
    hello, elektra

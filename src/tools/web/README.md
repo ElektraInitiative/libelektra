@@ -156,7 +156,7 @@ Now, the command
 curl http://localhost:33333/kdb/user/test
 ```
 
-will return us the value of the specified key `user/test`, which is stored in the database right now
+will return us the value of the specified key `user:/test`, which is stored in the database right now
 
 <!-- prettier-ignore-start -->
 

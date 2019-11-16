@@ -17,7 +17,7 @@ mkdir "$PWD/cmake/build" && cd "$PWD/cmake/build"
 cmake ..
 cmake --build .
 
-sudo kdb mount -R noresolver codegen_menu_example.conf "spec/sw/example/menu/#0/current" specload "app=$PWD/application"
+sudo kdb mount -R noresolver codegen_menu_example.conf "spec:/sw/example/menu/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/menu/#0/current"
 ```
 
@@ -29,7 +29,7 @@ cd "$PWD/pkgconfig"
 
 make
 
-sudo kdb mount -R noresolver codegen_menu_example.conf "spec/sw/example/menu/#0/current" specload "app=$PWD/application"
+sudo kdb mount -R noresolver codegen_menu_example.conf "spec:/sw/example/menu/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/menu/#0/current"
 ```
 
@@ -67,7 +67,7 @@ The first menu to be displayed is defined by `main`. It must be a reference to o
 Setting up these menu structures is a bit complicated, but here is an example to get you started:
 
 ```sh
-kdb meta-set "user/sw/example/menu/#0/current/menu" "array" "#4"
+kdb meta-set "user:/sw/example/menu/#0/current/menu" "array" "#4"
 kdb set -N user "/sw/example/menu/#0/current/menu/#0/name" "Main Menu"
 kdb set -N user "/sw/example/menu/#0/current/menu/#1/name" "Menu 1"
 kdb set -N user "/sw/example/menu/#0/current/menu/#2/name" "Menu 2"
@@ -79,15 +79,15 @@ kdb set -N user "/sw/example/menu/#0/current/menu/#2/command" 'echo "Hello from 
 kdb set -N user "/sw/example/menu/#0/current/menu/#3/command" 'echo "Hello from Menu 2.1"'
 kdb set -N user "/sw/example/menu/#0/current/menu/#4/command" 'echo "Hello from Menu 2.2"'
 
-kdb meta-set "user/sw/example/menu/#0/current/menu/#0/children" "array" "#1"
+kdb meta-set "user:/sw/example/menu/#0/current/menu/#0/children" "array" "#1"
 kdb set -N user "/sw/example/menu/#0/current/menu/#0/children/#0" "@/menu/#1"
 kdb set -N user "/sw/example/menu/#0/current/menu/#0/children/#1" "@/menu/#2"
 
-kdb meta-set "user/sw/example/menu/#0/current/menu/#2/children" "array" "#1"
+kdb meta-set "user:/sw/example/menu/#0/current/menu/#2/children" "array" "#1"
 kdb set -N user "/sw/example/menu/#0/current/menu/#2/children/#0" "@/menu/#3"
 kdb set -N user "/sw/example/menu/#0/current/menu/#2/children/#1" "@/menu/#4"
 
-kdb set "user/sw/example/menu/#0/current/main" "@/menu/#0"
+kdb set "user:/sw/example/menu/#0/current/main" "@/menu/#0"
 ```
 
 The shell script above sets up this simple menu structure:

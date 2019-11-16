@@ -44,7 +44,7 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" import $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script"
 	succeed_if "key name not correct one_value"
 
 	test "$("$KDB" get $ROOT)" = root
@@ -64,7 +64,7 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" import $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
 	if [ "x$PLUGIN" != "xyajl" ]; then
@@ -88,7 +88,7 @@ for PLUGIN in $PLUGINS; do
 	cat "$DATADIR"/one_value.$PLUGIN | "$KDB" import $ROOT $PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
 	if [ "x$PLUGIN" != "xyajl" ]; then
@@ -118,7 +118,7 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" import -s "import" $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" ]; then
@@ -152,8 +152,8 @@ for PLUGIN in $PLUGINS; do
 	"$KDB" import $ROOT $PLUGIN < "$DATADIR"/two_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script
-user/tests/script/key"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script
+user:/tests/script/key"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" ]; then
@@ -180,7 +180,7 @@ user/tests/script/key"
 	"$KDB" import -s "cut" $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" ]; then
@@ -216,7 +216,7 @@ user/tests/script/key"
 	"$KDB" import -s "cut" $ROOT $PLUGIN < "$DATADIR"/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "x$("$KDB" ls $ROOT)" = "xuser/tests/script"
+	test "x$("$KDB" ls $ROOT)" = "xuser:/tests/script"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" ]; then

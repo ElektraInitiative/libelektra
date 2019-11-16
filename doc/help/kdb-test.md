@@ -28,11 +28,11 @@ The following tests are available: basic string umlauts binary naming meta<br>
 
 ## EXAMPLES
 
-To run all tests below the `user/example/tests` key:<br>
-`kdb test user/example/tests`<br>
+To run all tests below the `user:/example/tests` key:<br>
+`kdb test user:/example/tests`<br>
 
 To run the `binary` and `naming` tests:<br>
-`kdb test user/example/tests binary naming`<br>
+`kdb test user:/example/tests binary naming`<br>
 
 ## SEE ALSO
 

@@ -6,7 +6,7 @@
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
   It must be a cascading mount point, i.e., `mountpoint` must start with `/`.
-- `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/<mountpoint>`).
+- `plugin` are extra Elektra plugins to be used (next to the one specified in `spec:/<mountpoint>`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
 `kdb smount` is an alias and can be used in the same way as `kdb spec-mount`.
@@ -17,7 +17,7 @@ This command allows a user to mount a new _backend_ described by a previously mo
 To mount a specification file to `spec`-[namespace](elektra-namespaces.md) first use [kdb-mount(7)](kdb-mount.md):
 
 ```sh
-sudo kdb mount /path/to/some-spec-file.ini spec/example/mountpoint ni
+sudo kdb mount /path/to/some-spec-file.ini spec:/example/mountpoint ni
 ```
 
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
@@ -34,16 +34,16 @@ During `spec-mount` the `spec` keys are searched for relevant metadata:
 For example:
 
 ```sh
-kdb meta-get spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+kdb meta-get spec:/example/mountpoint mountpoint  # verify that we have a mountpoint here
 sudo kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to
                                          # the specification as found at
-                                         # spec/example/mountpoint
+                                         # spec:/example/mountpoint
 ```
 
 ## IMPORTANT
 
 This command writes into the `/etc` directory and as such it requires root permissions.
-Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
+Use `kdb file system:/elektra/mountpoints` to find out where exactly it will write to.
 
 Note that many specifications have globs like `_` and `#`. They will only work if
 the `spec` plugin is present:
@@ -94,7 +94,7 @@ kdb global-mount
 
 ## EXAMPLES
 
-To mount /example as described in `spec/example`:<br>
+To mount /example as described in `spec:/example`:<br>
 `sudo kdb spec-mount /example`
 
 Additionally, add `ini` plugin (instead of some default resolver) with a config for INI:<br>

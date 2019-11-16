@@ -35,7 +35,7 @@ This command will return the following values as an exit status:
 - `-r`, `--recursive`:
   Work in a recursive mode.
 - `-E`, `--without-elektra`:
-  Omit the `system/elektra` directory.
+  Omit the `system:/elektra` directory.
 - `-f`, `--force`:
   Do not fail on missing key, nor print if there was a key (-v to still print).
 - `-v`, `--verbose`:
@@ -46,16 +46,16 @@ This command will return the following values as an exit status:
 ## EXAMPLES
 
 To remove a single key:<br>
-`kdb rm user/example/key1`
+`kdb rm user:/example/key1`
 
 To remove multiple keys:<br>
-`kdb rm -r user/example`
+`kdb rm -r user:/example`
 
-To remove all keys in `system` except `system/elektra`:<br>
+To remove all keys in `system` except `system:/elektra`:<br>
 `sudo kdb rm -rE system`
 
 To not fail when key is missing:<br>
-`kdb rm -f user/maybe/missing`
+`kdb rm -f user:/maybe/missing`
 
 ## SEE ALSO
 

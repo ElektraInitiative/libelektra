@@ -14,7 +14,7 @@ mkdir "$PWD/cmake/build" && cd "$PWD/cmake/build"
 cmake ..
 cmake --build .
 
-sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$PWD/application"
+sudo kdb mount -R noresolver codegen_tree_example.conf "spec:/sw/example/tree/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/tree/#0/current"
 ```
 
@@ -26,7 +26,7 @@ cd "$PWD/pkgconfig"
 
 make
 
-sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$PWD/application"
+sudo kdb mount -R noresolver codegen_tree_example.conf "spec:/sw/example/tree/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/tree/#0/current"
 ```
 

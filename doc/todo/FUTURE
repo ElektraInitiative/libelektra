@@ -100,10 +100,10 @@ Remove/Refactor/Rename obsolete/not needed methods:
 1.* does not need to be compatible with 0.* version.
 
 - remove mountpoint name concept
- - system/elektra/mountpoints/system\/info\/uname/mountpoint key not needed (system/info/uname already in name present!)
+ - system:/elektra/mountpoints/system\/info\/uname/mountpoint key not needed (system:/info/uname already in name present!)
 - remove numbers in backend mounting (placements only per name)
 - have consistent instantiate+backreferencing syntax for both backend+global mounting
-   (system/elektra/mountpoints and system/elektra/globalplugins)
+   (system:/elektra/mountpoints and system:/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
 - recursive backend=plugin (separate commit method)
 - remove legacy configuration of the `kdb` tool
@@ -262,8 +262,8 @@ can be up to one thousand individual files.
 == User Mount Point Configuration ==
 
 The mountpoint configuration resides only below
-system/elektra/mountpoints. We decided against
-providing \keyname{user/elektra/mountpoints} because of security concerns.
+system:/elektra/mountpoints. We decided against
+providing \keyname{user:/elektra/mountpoints} because of security concerns.
 This issue, however, is solved because of the specification.
 Now its possible to specify which namespaces should be used.
 

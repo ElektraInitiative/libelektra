@@ -80,8 +80,8 @@ The other strategies are implemented by the merge framework and are documented i
 
 ## EXAMPLES
 
-To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you would use:<br>
-`kdb editor -e /usr/bin/vim user/ini`
+To change the configuration in KDB below `user:/ini` with `/usr/bin/vim`, you would use:<br>
+`kdb editor -e /usr/bin/vim user:/ini`
 
 Or set a new editor as default using:<br>
 `kdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano`

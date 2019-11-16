@@ -34,7 +34,7 @@ subcommand can only remove a user's cache files (i.e. not system wide).
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: system/elektra/cache
+# Backup-and-Restore: system:/elektra/cache
 
 # Enable the cache
 kdb cache enable

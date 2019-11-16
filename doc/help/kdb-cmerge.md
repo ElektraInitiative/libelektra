@@ -80,14 +80,14 @@ Conflicts occur when a key has a different value in all three key sets or when o
 To complete a simple merge of three KeySets:<br>
 
 ````sh
-kdb set user/base "A"
-#> Create a new key user/base with string "A"
-kdb set user/their "A"
-#> Create a new key user/their with string "A"
-kdb set user/our "B"
-#> Create a new key user/our with string "B"
-kdb cmerge user/our user/their user/base user/result
-kdb get user/result
+kdb set user:/base "A"
+#> Create a new key user:/base with string "A"
+kdb set user:/their "A"
+#> Create a new key user:/their with string "A"
+kdb set user:/our "B"
+#> Create a new key user:/our with string "B"
+kdb cmerge user:/our user:/their user:/base user:/result
+kdb get user:/result
 #>B
 
 ```<br>

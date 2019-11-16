@@ -93,8 +93,8 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	
 
 	KeySet * contract = ksNew (2,
-	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	KS_END);
 ;
 
@@ -142,9 +142,9 @@ void exitForSpecload (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/nosetter", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec:/tests/script/gen/highlevel/nosetter", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);

@@ -37,7 +37,7 @@
 
 ## Implications
 
-1. Introduction of spec/ hierarchy
+1. Introduction of spec:/ hierarchy
 2. kdbGet() for cascading
 3. kdbSet() for cascading
 4. modify ksLookup() for cascading

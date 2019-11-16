@@ -1,5 +1,5 @@
 Storage: hosts
-Mountpoint: system/tests/hosts
+Mountpoint: system:/tests/hosts
 File: /tmp/hosts
 MountArgs: --with-recommends
 DiffType: File
@@ -12,7 +12,7 @@ RET: 0
 < kdb set $Mountpoint/ipv4/localhost 127.0.0.1
 
 RET: 0
-STDOUT-REGEX: system/tests/hosts(⏎system/tests/hosts/ipv[4,6]/localhost){1,2}
+STDOUT-REGEX: system:/tests/hosts(⏎system:/tests/hosts/ipv[4,6]/localhost){1,2}
 < kdb ls $Mountpoint
 
 RET: 0

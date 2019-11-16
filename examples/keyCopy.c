@@ -63,9 +63,9 @@ void i (Key * k)
 
 int main (void)
 {
-	Key * k = keyNew ("user/hello", KEY_VALUE, "my content", KEY_END);
+	Key * k = keyNew ("user:/hello", KEY_VALUE, "my content", KEY_END);
 
-	copy = keyNew ("user/copy", KEY_VALUE, "copies content", KEY_END);
+	copy = keyNew ("user:/copy", KEY_VALUE, "copies content", KEY_END);
 
 	h (k);
 	g (k);

@@ -4,19 +4,19 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
 >
-<key name="user/tests/script"
+<key name="user:/tests/script"
 	value="root">
 
      <comment><![CDATA[]]></comment>
 </key>
 
-<key name="user/tests/script/key"
+<key name="user:/tests/script/key"
 	value="value">
 
      <comment><![CDATA[]]></comment>
 </key>
 
-<key name="user/tests/script/key/subkey"
+<key name="user:/tests/script/key/subkey"
 	value="another value">
 
      <comment><![CDATA[]]></comment>

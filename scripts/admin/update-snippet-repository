@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SNIPPET_REPO=/var/lib/jenkins/snippets
-SNIPPET_ROOT=system/configs
+SNIPPET_ROOT=system:/configs
 LOCK_FILE=/run/elektra-update-snippet-repository.lock
 KEY_SLASH_REPLACED=$(echo "$ELEKTRA_REST_KEY" | tr '/' '_')
 

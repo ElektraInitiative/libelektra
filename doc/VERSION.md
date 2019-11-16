@@ -9,10 +9,10 @@ information.
 The same information can be retrieved at run-time using
 
 ```
-system/elektra/version/constants/KDB_VERSION
-system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MICRO
-system/elektra/version/constants/KDB_VERSION_MINOR
+system:/elektra/version/constants/KDB_VERSION
+system:/elektra/version/constants/KDB_VERSION_MAJOR
+system:/elektra/version/constants/KDB_VERSION_MICRO
+system:/elektra/version/constants/KDB_VERSION_MINOR
 ```
 
 This is the API to programs using Elektra. Its interface

@@ -45,7 +45,7 @@ int main (void)
 	// clang-format off
 //! [set]
 KeySet * myConfig = ksNew (0, KS_END);
-Key * parentKey = keyNew ("system/sw/MyApp", KEY_END);
+Key * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
 KDB * handle = kdbOpen (parentKey);
 
 kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!

@@ -121,15 +121,15 @@ can append a key to a key set.
 For example, the key set with the keys
 
 ```
-system
-system/elektra
-system/elektra/mountpoints
+system:/
+system:/elektra
+system:/elektra/mountpoints
 ```
 
 would allow the
-key `system/elektra/mountpoints/tcl` to be added,
+key `system:/elektra/mountpoints/tcl` to be added,
 but not the key
-`system/apps/abc` because `system/apps` is missing.
+`system:/apps/abc` because `system:/apps` is missing.
 File systems enforce this kind of consistency.
 
 These semantics are however not useful for configurations.
@@ -157,19 +157,19 @@ without a parent key.
 For example, with the keys
 
 ```
-user/sw/apps/abc/current/bindings
-user/sw/apps/abc/current/bindings/key1
-user/sw/apps/abc/current/bindings/key2
+user:/sw/apps/abc/current/bindings
+user:/sw/apps/abc/current/bindings/key1
+user:/sw/apps/abc/current/bindings/key2
 ```
 
 the weak consistency would allow inserting
-`user/sw/apps/abc/current/bindings/key3`
+`user:/sw/apps/abc/current/bindings/key3`
 because it is directly below an existing key.
 It would also allow adding
-`user/sw/apps/xyz/current`
+`user:/sw/apps/xyz/current`
 because it does not have any parent key.
 But it would not allow
-`user/sw/apps/abc/current/bindings/dir/key1`
+`user:/sw/apps/abc/current/bindings/dir/key1`
 to add.
 The worst-case complexity was
 found to be too expensive, and hence `KeySet` has

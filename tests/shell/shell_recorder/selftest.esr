@@ -1,11 +1,11 @@
 Storage: mini
-Mountpoint: user/tests
+Mountpoint: user:/tests
 File: config.ini
 
 RET: 0
 < kdb mount $File $Mountpoint $Storage
 
-STDOUT: Create a new key user/test/key with string "value"
+STDOUT: Create a new key user:/test/key with string "value"
 < kdb set $Mountpoint/key value
 
 STDOUT: Set string to "value"
@@ -20,7 +20,7 @@ STDERR: The command kdb.* not-a-command is not known
 STDERR: .+not-a-command.+
 < kdb not-a-command 1>/dev/null
 
-STDOUT: Create a new key user/test/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"
+STDOUT: Create a new key user:/test/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"
 < kdb set $Mountpoint/\\/evil\\\\\\/tripleEscaped\\\\/doubleEscaped/key/.withADot/..andADoubleDot txt
 
 < cat > `kdb file $Mountpoint` <<EOF

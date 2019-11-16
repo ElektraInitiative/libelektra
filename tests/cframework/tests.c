@@ -103,7 +103,7 @@ int init (int argc, char ** argv)
  * @return an allocated root key */
 Key * create_root_key (const char * backendName)
 {
-	Key * root = keyNew ("user/tests", KEY_END);
+	Key * root = keyNew ("user:/tests", KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
@@ -116,7 +116,7 @@ Key * create_root_key (const char * backendName)
  * @return an allocated configuration keyset for a backend*/
 KeySet * create_conf (const char * filename)
 {
-	return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END);
+	return ksNew (2, keyNew ("system:/path", KEY_VALUE, filename, KEY_END), KS_END);
 }
 
 

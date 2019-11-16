@@ -4,7 +4,7 @@ application:../src/application.c genelektra.c
 	gcc ../src/application.c genelektra.c -std=c99 `pkg-config --cflags --libs elektra-codegen` -I. -o application -Wl,-rpath `pkg-config --variable=libdir elektra-codegen`
 
 genelektra.c:../spec.ini
-	$(KDB) gen -F ni=../spec.ini highlevel spec/sw/example/menu/#0/current genelektra
+	$(KDB) gen -F ni=../spec.ini highlevel spec:/sw/example/menu/#0/current genelektra
 
 clean:
 	rm -f genelektra.c

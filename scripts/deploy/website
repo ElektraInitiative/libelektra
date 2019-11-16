@@ -118,7 +118,7 @@ netstat -tlpen
 #   required files afterwards, ensuring an always up-to-date deployment
 kdb build-website-frontend
 
-ELEKTRA_VERSION=$(kdb get --no-newline system/elektra/version/constants/KDB_VERSION)
+ELEKTRA_VERSION=$(kdb get --no-newline system:/elektra/version/constants/KDB_VERSION)
 API_DOC_DIR="${ROOT_DIR}/build/API_DOC/restapi/${ELEKTRA_VERSION}"
 
 mkdir -p ${API_DOC_DIR}

@@ -46,8 +46,8 @@ void o (KeySet * ks)
 
 int main (void)
 {
-	Key * k = keyNew ("user/key", KEY_END);
-	copy = keyNew ("user/copy", KEY_END);
+	Key * k = keyNew ("user:/key", KEY_END);
+	copy = keyNew ("user:/copy", KEY_END);
 	l (k);
 	keyDel (k);
 	keyDel (copy);

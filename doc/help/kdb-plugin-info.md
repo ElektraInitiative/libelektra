@@ -11,7 +11,7 @@ The optional `clause name` argument can be used to just print information from a
 
 This command will print out all the information about an Elektra plugin except it's configuration.<br>
 This command will also print out any functions that are exported by the plugin.<br>
-Information about a plugin will be read from `system/elektra/modules/`. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin.<br>
+Information about a plugin will be read from `system:/elektra/modules/`. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin.<br>
 If a user wishes to load the information directly from the plugin, they can force that by using the `-l` option.<br>
 
 ## RETURN VALUES
@@ -35,7 +35,7 @@ This command returns the following exit statuses:<br>
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-l`, `--load`:
-  Load plugin even if system/elektra is available.
+  Load plugin even if system:/elektra is available.
 - `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration.
 

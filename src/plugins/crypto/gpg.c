@@ -108,7 +108,7 @@ static int isExecutable (const char * file, Key * errorKey)
  * @param errorKey holds an error description in case of failure.
  * @param dir contains the path to a directory
  * @param file contains a file name
- * @returns an allocated string containing "dir/file" which must be freed by the caller or NULL in case of error.
+ * @returns an allocated string containing "dir:/file" which must be freed by the caller or NULL in case of error.
  */
 static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
 {

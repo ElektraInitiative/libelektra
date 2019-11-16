@@ -16,7 +16,7 @@ This command allows a user to globally mount some plugins that will be part of e
 ## IMPORTANT
 
 This command writes into the `/etc` directory and as such it requires root permissions.
-Use `kdb file system/elektra/globalplugins` to find out where exactly it will write to.
+Use `kdb file system:/elektra/globalplugins` to find out where exactly it will write to.
 
 ## OPTIONS
 
