@@ -1,32 +1,14 @@
 []
 root=kdb
 
-[kdb/list-tools]
-opt/long=list-tools
-
-[kdb/get]
-opt/long=get
-
-[kdb/set]
-opt/long=set
-
-[kdb/ls]
-opt=ls
-
 [kdb/backup]
 opt/long=backup
 
-[kdb/plugin-info]
-opt/long=plugin-info
-
-[kdb/plugin-list]
-opt/long=plugin-list
+[kdb/check]
+opt/long=check
 
 [kdb/check-env-dep]
 opt/long=check-env-dep
-
-[kdb/check]
-opt/long=check
 
 [kdb/complete]
 opt/long=complete
@@ -52,6 +34,9 @@ opt/long=find
 [kdb/fstab]
 opt/long=fstab
 
+[kdb/get]
+opt/long=get
+
 [kdb/getmeta]
 opt/long=getmeta
 
@@ -76,6 +61,12 @@ opt/long=list-commands
 [kdb/list]
 opt/long=list
 
+[kdb/list-tools]
+opt/long=list-tools
+
+[kdb/ls]
+opt=ls
+
 [kdb/lsmeta]
 opt/long=lsmeta
 
@@ -94,6 +85,12 @@ opt/long=mountpoint-info
 [kdb/mv]
 opt=mv
 
+[kdb/plugin-info]
+opt/long=plugin-info
+
+[kdb/plugin-list]
+opt/long=plugin-list
+
 [kdb/remount]
 opt/long=remount
 
@@ -111,6 +108,9 @@ opt=rm
 
 [kdb/rmmeta]
 opt/long=rmmeta
+
+[kdb/set]
+opt/long=set
 
 [kdb/setmeta]
 opt/long=setmeta
