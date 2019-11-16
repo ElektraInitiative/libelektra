@@ -216,6 +216,8 @@ static ssize_t splitSearchBackend (Split * split, Backend * backend, Key * paren
 					return -1;
 				case KEY_NS_CASCADING:
 					return -1;
+				case KEY_NS_DEFAULT:
+					return -1;
 				}
 				continue;
 			}
@@ -258,6 +260,7 @@ static int elektraKeySetNameByNamespace (Key * parentKey, elektraNamespace ns)
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		return 0;
 	}
 	return 1;
@@ -555,6 +558,9 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 			case KEY_NS_CASCADING:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a cascading name");
 				break;
+			case KEY_NS_DEFAULT:
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a default name");
+				break;
 			case KEY_NS_NONE:
 				ELEKTRA_ASSERT (0, "wrong key namespace `none'");
 				return -1;
@@ -644,6 +650,7 @@ int splitUpdateSize (Split * split)
 		case KEY_NS_NONE:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
+		case KEY_NS_DEFAULT:
 			return -1;
 		}
 	}
@@ -779,6 +786,7 @@ int splitSync (Split * split)
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:
+		case KEY_NS_DEFAULT:
 			ELEKTRA_ASSERT (0, "Got keys in wrong namespace %d in split %zu", keyGetNamespace (split->parents[i]), i);
 			return -1;
 		}

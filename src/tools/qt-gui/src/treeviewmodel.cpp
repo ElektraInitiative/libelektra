@@ -526,6 +526,8 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 			break;
 		case KEY_NS_CASCADING:
 			break;
+		case KEY_NS_DEFAULT:
+			break;
 		}
 		if (toAdd) m_model << toAdd;
 	}

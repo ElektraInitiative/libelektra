@@ -225,6 +225,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 		case KEY_NS_NONE:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
+		case KEY_NS_DEFAULT:
 			break;
 		}
 	}
@@ -596,6 +597,7 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_NONE:
 			case KEY_NS_META:
 			case KEY_NS_CASCADING:
+			case KEY_NS_DEFAULT:
 				break;
 			}
 		}
@@ -637,6 +639,7 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_NONE:
 			case KEY_NS_META:
 			case KEY_NS_CASCADING:
+			case KEY_NS_DEFAULT:
 				break;
 			}
 		}

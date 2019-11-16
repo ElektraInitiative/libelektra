@@ -440,6 +440,7 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:
+	case KEY_NS_DEFAULT:
 		ELEKTRA_ASSERT (0, "invalid namespace %d", keyGetNamespace (parent));
 		return -1;
 	}

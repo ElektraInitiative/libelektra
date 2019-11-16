@@ -1152,6 +1152,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			case KEY_NS_EMPTY:
 			case KEY_NS_NONE:
 			case KEY_NS_CASCADING:
+			case KEY_NS_DEFAULT:
 				validNS = 0;
 			}
 			if (validNS)

@@ -96,6 +96,7 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		return 0;
 	}
 
@@ -405,6 +406,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 	keyDel (testKey);

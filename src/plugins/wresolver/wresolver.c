@@ -82,6 +82,7 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 	ELEKTRA_ASSERT (0, "namespace %d not valid for resolving", keyGetNamespace (parentKey));
@@ -292,6 +293,7 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 
@@ -321,6 +323,7 @@ int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		case KEY_NS_NONE:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
+		case KEY_NS_DEFAULT:
 			break;
 		}
 

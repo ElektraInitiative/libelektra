@@ -58,6 +58,12 @@ static Key * keyDupWithNS (const Key * origKey, elektraNamespace ns)
 	case KEY_NS_PROC:
 		newKey = keyNew ("proc:/", KEY_END);
 		break;
+	case KEY_NS_META:
+		newKey = keyNew ("meta:/", KEY_END);
+		break;
+	case KEY_NS_DEFAULT:
+		newKey = keyNew ("default:/", KEY_END);
+		break;
 	case KEY_NS_CASCADING:
 	default:
 		newKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);

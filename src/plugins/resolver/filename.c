@@ -667,6 +667,10 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve cascading");
 		rc = -1;
 		break;
+	case KEY_NS_DEFAULT:
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve default");
+		rc = -1;
+		break;
 	}
 	if (rc == -1)
 	{
