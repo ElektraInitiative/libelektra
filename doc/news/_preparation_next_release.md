@@ -398,6 +398,10 @@ We are currently working on following topics:
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
+## Autocompletion
+
+- First prototype for bash-completion in the folder [website-backend](/src/tools/autocompletion). _(Ulrike Schaefer)_
+
 ## Finished Thesis
 
 - [Klemens Böswirth](https://www.libelektra.org/ftp/elektra/publications/boeswirth2019highlevel.pdf):
