@@ -26,6 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Code generation
+- Elektra now has a technical preview of a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). It is written in C99 and can currently be used with [`kdb cmerge`](../help/kdb-cmerge.md). _(Dominic Jäger)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -158,6 +159,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
 - `keyMeta` was added to provide access to a key's underlying KeySet that holds its metadata keys. _(Philipp Gackstatter)_
 - Removed the obsolete `ksLookupByString` and `ksLookupByBinary`, as well as deprecated `KDB_O_*` options. _(Philipp Gackstatter)_
+- Added `keyLock` and `keyIsLocked`. _(Manuel Mausz)_
+- Removed `keyVInit`. _(Manuel Mausz)_
 
 ### Opts
 
@@ -169,7 +172,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   - `elektraKsToMemArray` was moved to `kdbease.h`,
   - `elektraLookupOptions` was moved to `kdbprivate.h`,
   - `keySetStringF` was moved to `kdbinternal.h`,
-  - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
   - Removed `ksPrev` and `elektraKsPrev`,
   - Removed `elektraRenameKeys` and replaced it with `ksRenameKeys`. _(Philipp Gackstatter)_
 
@@ -226,7 +228,6 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
 - Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
@@ -289,7 +290,9 @@ you up to date with the multi-language support provided by Elektra.
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
+- Reference testing with Docker tutorial in main testing documentation. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
+- Add information on debuggers to main testing documentation. _(Dominic Jäger)_
 - Added design decision for error code implementations. _(Michael Zronek)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
@@ -337,6 +340,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved `range` plugin error message. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
 - Release notes now use git's union merge driver. _(Dominic Jäger)_
+- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
 
 ## Infrastructure
 
