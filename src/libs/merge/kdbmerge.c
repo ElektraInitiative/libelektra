@@ -988,21 +988,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	}
 
 #ifdef LIBGITFOUND
-#ifndef CMERGE_ON_LINUX
 	git_libgit2_init ();
-	ELEKTRA_LOG ("Initializing LibGit2");
-#else
-	ELEKTRA_LOG ("Not initializing LibGit2, but using it all the same.");
-#endif
 	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
 	if (handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey, strategy) > 0)
 	{
 		ksDel (result);
 		return NULL;
 	}
-#ifndef CMERGE_ON_LINUX
-	git_libgit2_shutdown ();
-#endif
 #else
 	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
 #endif
