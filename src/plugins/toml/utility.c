@@ -1,6 +1,7 @@
 #include "utility.h"
 
 #include <kdbhelper.h>
+#include <kdbassert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -31,7 +32,7 @@ char * indexToArrayString (size_t index)
 	}
 	int strLen = 1 +	    //  '#'
 		     (digits - 1) + // underscores
-		     digits +       // actual digits
+		     digits +	    // actual digits
 		     1;		    // '\0'
 	char * str = (char *) elektraCalloc (sizeof (char) * strLen);
 	memset (str, '_', sizeof (char) * strLen);
@@ -39,6 +40,53 @@ char * indexToArrayString (size_t index)
 	str[strLen - 1] = 0;
 	snprintf (str + 1 + (digits - 1), strLen, "%lu", index);
 	return str;
+}
+
+size_t arrayStringToIndex (const char * indexStr)
+{
+	if (*indexStr++ != '#')
+	{
+		return 0;
+	}
+	while (*indexStr == '_')
+	{
+		indexStr++;
+	}
+	size_t val = 0;
+	if (sscanf (indexStr, "%llu", &val) == EOF)
+	{
+		ELEKTRA_ASSERT (0, "Could not parse array index");
+		return 0;
+	}
+	return val;
+}
+
+bool isEmptyArray(Key * key) {
+	Key * meta = findMetaKey (key, "array");
+	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
+	const char * sizeStr = keyString(meta);
+	return elektraStrLen(sizeStr) == 1;
+}
+
+size_t getArrayMax (Key * key)
+{
+	const Key * meta = findMetaKey (key, "array");
+	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
+
+	return arrayStringToIndex (keyString(meta));
+}
+
+const Key * findMetaKey (Key * key, const char * metakeyName)
+{
+	keyRewindMeta (key);
+	for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
+	{
+		if (elektraStrCmp (keyName (meta), metakeyName) == 0)
+		{
+			return meta;
+		}
+	}
+	return NULL;
 }
 
 void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value)

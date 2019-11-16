@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "write.h"
+#include "utility.h"
 
 typedef enum
 {
@@ -26,8 +27,10 @@ static void destroyWriter (Writer * writer);
 static int writeKeys (Key * parent, Writer * writer);
 static int writeAssignment (Key * parent, Key * key, Writer * writer);
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer);
+static int writeTableArray (Key * parent, Key * key, Writer * writer);
 static int writeArrayBody (Key * parent, Key * key, Writer * writer);
 static int writeArrayElements (Key * parent, Writer * writer);
+static int writeValue (Key * parent, Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
 static int writeNewline (Writer * writer);
@@ -36,8 +39,10 @@ static bool isArray (Key * key);
 static bool isType (Key * key, const char * type);
 static bool isTableArray (Key * key);
 static char * getRelativeKeyName (const Key * parent, const Key * key);
+static char * getDirectSubKeyName(const Key * parent, const Key * key);
 static KeyType getKeyType (Key * key);
-static const Key * findMetaKey (Key * key, const char * metakeyName);
+static void addMissingArrayEntries (KeySet * keys);
+static void addEmptyTableArrayEntries (Key * key, KeySet * keys);
 
 int tomlWrite (KeySet * keys, Key * rootKey)
 {
@@ -47,6 +52,7 @@ int tomlWrite (KeySet * keys, Key * rootKey)
 		return 1;
 	}
 	int result = 0;
+	// addMissingArrayEntries(keys);
 	result |= writeKeys (NULL, w);
 
 	destroyWriter (w);
@@ -91,16 +97,19 @@ static void destroyWriter (Writer * writer)
 	}
 }
 
-
 static int writeKeys (Key * parent, Writer * writer)
 {
-	if (parent == NULL) {
-		ksRewind(writer->keys);
-		parent = ksNext(writer->keys);
-		if (parent == NULL) {
-			printf(">>>EMPTY KEYSET\n");
+	if (parent == NULL)
+	{
+		ksRewind (writer->keys);
+		parent = ksNext (writer->keys);
+		if (parent == NULL)
+		{
+			printf (">>>EMPTY KEYSET\n");
 			return 0;
-		} else {
+		}
+		else
+		{
 			ksNext (writer->keys);
 			return writeKeys (parent, writer);
 		}
@@ -109,9 +118,9 @@ static int writeKeys (Key * parent, Writer * writer)
 	Key * key = ksCurrent (writer->keys);
 
 	int result = 0;
-	while (result == 0 && key != NULL && keyIsBelow(parent, key) == 1)
+	while (result == 0 && key != NULL && keyIsBelow (parent, key) == 1)
 	{
-		printf("LOOP KEY = %s\n", keyName (key));
+		printf ("LOOP KEY = %s\n", keyName (key));
 		switch (getKeyType (key))
 		{
 		case KEY_TYPE_ASSIGNMENT:
@@ -122,6 +131,7 @@ static int writeKeys (Key * parent, Writer * writer)
 			result |= writeSimpleTable (parent, key, writer);
 			break;
 		case KEY_TYPE_TABLE_ARRAY:
+			result |= writeTableArray (parent, key, writer);
 			break;
 		}
 		key = ksCurrent (writer->keys);
@@ -136,15 +146,15 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 	int result = 0;
 
 	result |= writeRelativeKeyName (parent, key, writer);
-	result |= fputs(" = ", writer->f) == EOF;
+	result |= fputs (" = ", writer->f) == EOF;
 	if (isArray (key))
 	{
 		result |= writeArrayBody (parent, key, writer);
 	}
 	else
 	{
-		result |= writeScalar(key, writer);
-		ksNext(writer->keys);
+		result |= writeScalar (key, writer);
+		ksNext (writer->keys);
 	}
 	return result;
 }
@@ -152,18 +162,23 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= fputc('[', writer->f) == EOF;
-	result |= writeRelativeKeyName(parent, key, writer);
-	result |= fputs("]\n", writer->f) == EOF;
+	result |= fputc ('[', writer->f) == EOF;
+	result |= writeRelativeKeyName (parent, key, writer);
+	result |= fputs ("]\n", writer->f) == EOF;
 	ksNext (writer->keys);
-	result |= writeKeys(key, writer);
+	result |= writeKeys (key, writer);
 
 	return result;
 }
 
-static int writeSimpleTableArray (Key * parent, Key * key, Writer * writer)
+static int writeTableArray (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
+	result |= fputs ("[[", writer->f) == EOF;
+	result |= writeRelativeKeyName (parent, key, writer);
+	result |= fputs ("]]\n", writer->f) == EOF;
+	ksNext (writer->keys);
+	result |= writeKeys (key, writer);
 
 	return result;
 }
@@ -183,11 +198,18 @@ static int writeArrayElements (Key * parent, Writer * writer)
 	Key * key = ksNext (writer->keys);
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
-		printf("Write array element\n");
-		result |= writeScalar (key, writer);
+		printf ("Write array element\n");
+		result |= writeValue (parent, key, writer);
 		result |= fputc (',', writer->f) == EOF;
 		key = ksNext (writer->keys);
 	}
+	return result;
+}
+
+static int writeValue (Key * parent, Key * key, Writer * writer)
+{
+	int result = 0;
+	result |= writeScalar (key, writer);
 	return result;
 }
 
@@ -198,7 +220,7 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 	if (relativeName != NULL)
 	{
 		result |= fputs (relativeName, writer->f) == EOF;
-		printf("Write relative name: %s\n", relativeName);
+		printf ("Write relative name: %s\n", relativeName);
 		elektraFree (relativeName);
 	}
 	return result;
@@ -213,7 +235,7 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		valueStr = keyValue (origValue);
 	}
-	printf("Write scalar: %s\n", valueStr);
+	printf ("Write scalar: %s\n", valueStr);
 	return fputs (valueStr, writer->f) == EOF;
 }
 
@@ -224,7 +246,7 @@ static int writeNewline (Writer * writer)
 
 static char * getRelativeKeyName (const Key * parent, const Key * key)
 {
-	if (keyIsBelow (parent, key) == 0)
+	if (keyIsBelow (parent, key) <= 0)
 	{
 		return NULL;
 	}
@@ -246,6 +268,14 @@ static char * getRelativeKeyName (const Key * parent, const Key * key)
 	}
 
 	return name;
+}
+
+static char * getDirectSubKeyName(const Key * parent, const Key * key) {
+	if (keyIsBelow (parent, key) <= 0) {
+		return NULL;
+	}
+	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
+	return elektraStrDup (keyPart);
 }
 
 static KeyType getKeyType (Key * key)
@@ -290,15 +320,36 @@ static bool isType (Key * key, const char * type)
 	return elektraStrCmp (keyString (meta), type) == 0;
 }
 
-static const Key * findMetaKey (Key * key, const char * metakeyName)
+static void addMissingArrayEntries (KeySet * keys)
 {
-	keyRewindMeta (key);
-	for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
+	ksRewind (keys);
+	Key * key;
+	while ((key = ksNext (keys)) != NULL)
 	{
-		if (elektraStrCmp (keyName (meta), metakeyName) == 0)
+		if (isTableArray (key))
 		{
-			return meta;
+			addEmptyTableArrayEntries (key, keys);
 		}
 	}
-	return NULL;
 }
+
+static void addEmptyTableArrayEntries (Key * key, KeySet * keys)
+{
+	if (!isEmptyArray (key)) {
+		size_t maxIndex = getArrayMax (key);
+		size_t currIndex = 0;
+		printf("Got array with max index %llu\n", maxIndex);
+		Key * sub;
+		while ((sub = ksNext (keys)) != NULL && keyIsBelow(key, sub) == 1) {
+			const char * keyName = getDirectSubKeyName (key, sub);
+			size_t readIndex = arrayStringToIndex (keyName);
+			elektraFree (keyName);
+			while (currIndex < readIndex) {
+				Key * tableArray = keyNew(KEY_END);	
+			}
+		}
+		
+	}
+}
+
+
