@@ -39,7 +39,6 @@ static char * getRelativeKeyName (const Key * parent, const Key * key);
 static KeyType getKeyType (Key * key);
 static const Key * findMetaKey (Key * key, const char * metakeyName);
 
-
 int tomlWrite (KeySet * keys, Key * rootKey)
 {
 	Writer * w = createWriter (rootKey, keys);
@@ -100,21 +99,25 @@ static int writeKeys (Writer * writer)
 	Key * key = ksNext (writer->keys);
 	while (result == 0 && key != NULL)
 	{
-		if (keyCmp (key, writer->rootKey) != 0)
+		if (keyCmp (key, writer->rootKey) == 0)
 		{
-			switch (getKeyType (key))
-			{
-			case KEY_TYPE_ASSIGNMENT:
-				result |= writeAssignment (writer->rootKey, key, writer);
-				break;
-			case KEY_TYPE_SIMPLE_TABLE:
-				break;
-			case KEY_TYPE_TABLE_ARRAY:
-				break;
-			}
-		} else {
 			key = ksNext (writer->keys);
+			continue;
 		}
+		printf("LOOP KEY = %s\n", keyName (key));
+		switch (getKeyType (key))
+		{
+		case KEY_TYPE_ASSIGNMENT:
+			result |= writeAssignment (writer->rootKey, key, writer);
+			result |= writeNewline (writer);
+			break;
+		case KEY_TYPE_SIMPLE_TABLE:
+			break;
+		case KEY_TYPE_TABLE_ARRAY:
+			break;
+		}
+		key = ksCurrent (writer->keys);
+		printf("AFTER KEY = %s, type = %d, result = %d\n", keyName (key), getKeyType (key), result);
 	}
 }
 
@@ -123,7 +126,7 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 	int result = 0;
 
 	result |= writeRelativeKeyName (parent, key, writer);
-	result |= fputs(" = ", writer->f);
+	result |= fputs(" = ", writer->f) == EOF;
 	if (isArray (key))
 	{
 		result |= writeArrayBody (parent, key, writer);
@@ -151,22 +154,24 @@ static int writeSimpleTableArray (Key * parent, Key * key, Writer * writer)
 static int writeArrayBody (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= fputc ('[', writer->f);
+	result |= fputc ('[', writer->f) == EOF;
 	result |= writeArrayElements (key, writer);
-	result |= fputc (']', writer->f);
+	result |= fputc (']', writer->f) == EOF;
 	return result;
 }
 
 static int writeArrayElements (Key * parent, Writer * writer)
 {
+	int result = 0;
 	Key * key = ksNext (writer->keys);
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
 		printf("Write array element\n");
-		writeScalar (key, writer);
-		fputc (',', writer->f);
+		result |= writeScalar (key, writer);
+		result |= fputc (',', writer->f) == EOF;
 		key = ksNext (writer->keys);
 	}
+	return result;
 }
 
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
@@ -175,7 +180,7 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 	char * relativeName = getRelativeKeyName (parent, key);
 	if (relativeName != NULL)
 	{
-		result |= fputs (relativeName, writer->f);
+		result |= fputs (relativeName, writer->f) == EOF;
 		printf("Write relative name: %s\n", relativeName);
 		elektraFree (relativeName);
 	}
