@@ -46,7 +46,8 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to set
  * @param value which value to set it to, must be a number
- * @retval 0 on success, -1 otherwise.
+ * @retval 0 on success
+ * @retval -1 on error
  *
  * This enforces that a number is set.
  */
@@ -829,7 +830,8 @@ static int numberOfConflictMarkers (const char * text)
  * @param theirSet their
  * @param baseSet base
  * @param resultSet result
- * @retval 0 on success, -1 on error
+ * @retval 0 on success
+ * @retval -1 on error
  */
 static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
 {
