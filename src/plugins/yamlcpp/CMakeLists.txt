@@ -44,7 +44,6 @@ add_plugin (yamlcpp
 	    ADD_TEST
 	    CPP_TEST
 	    INSTALL_TEST_DATA
-	    ${ASAN_DISABLE_CONTAINER_OVERFLOW_CHECK}
 	    TEST_README
 	    TEST_REQUIRED_PLUGINS base64 directoryvalue
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0"
