@@ -30,7 +30,7 @@
 
 ## TODOs
 	- Document functions
+	- ORDER on writing file
 	- Preserve spaces before comments
 	- Don't store origvalue, if transformed value is equal to untransformed value
-    - directory value plugin? Doesn't seem to be needed
     - Maybe use date plugin
