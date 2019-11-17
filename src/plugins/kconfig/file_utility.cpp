@@ -1,7 +1,7 @@
 #include "file_utility.hpp"
 #include "base.hpp"
 
-FileUtility::FileUtility (const std::string & filename) : file{ filename }, string_buffer{}
+FileUtility::FileUtility (const std::string & filename) : file{ filename }, stringBuffer{}
 {
 	if (!(this->file).is_open ())
 	{
@@ -15,10 +15,38 @@ char FileUtility::peekNextChar ()
 	return (this->file).peek ();
 }
 
+bool FileUtility::isNextCharEOF ()
+{
+	return peekNextChar () == EOF;
+}
+
+bool FileUtility::isNextCharNewline ()
+{
+	char nextChar = peekNextChar ();
+	return nextChar == character_newline || nextChar == character_carriage_return;
+}
+
 bool FileUtility::isNextCharNewlineOrEOF ()
 {
-	char next_char = this->peekNextChar ();
-	return next_char == EOF || next_char == character_newline || next_char == character_carriage_return;
+	return isNextCharNewline () || isNextCharEOF ();
+}
+
+bool FileUtility::isNextCharToken ()
+{
+	switch (peekNextChar ())
+	{
+	case character_dollar_sign:
+	case character_open_bracket:
+	case character_newline:
+	case character_carriage_return:
+	case character_equals_sign:
+	case character_hash_sign:
+	case character_close_bracket:
+	case EOF:
+		return true;
+	default:
+		return false;
+	}
 }
 
 void FileUtility::skipChar ()
@@ -50,14 +78,6 @@ void FileUtility::skipLine ()
 			// (this->file).putback (EOF);
 			return;
 		}
-	}
-}
-
-void FileUtility::skipLineIfNotEndOfLine ()
-{
-	if (!isNextCharNewlineOrEOF ())
-	{
-		skipLine ();
 	}
 }
 
@@ -110,14 +130,16 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiterA, co
 
 std::string FileUtility::getUntilChar (const char & delimiter)
 {
-	(this->string_buffer).clear ();
-	readUntilChar (this->string_buffer, delimiter);
-	return (this->string_buffer).str ();
+	// Empty the stringBuffer before re-using it
+	(this->stringBuffer).str (std::string ());
+	readUntilChar (this->stringBuffer, delimiter);
+	return (this->stringBuffer).str ();
 }
 
 std::string FileUtility::getUntilChar (const char & delimiterA, const char & delimiterB)
 {
-	(this->string_buffer).clear ();
-	readUntilChar (this->string_buffer, delimiterA, delimiterB);
-	return (this->string_buffer).str ();
+	// Empty the stringBuffer before re-using it
+	(this->stringBuffer).str (std::string ());
+	readUntilChar (this->stringBuffer, delimiterA, delimiterB);
+	return (this->stringBuffer).str ();
 }

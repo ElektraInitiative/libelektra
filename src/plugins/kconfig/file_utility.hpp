@@ -11,8 +11,8 @@ class FileUtility
 private:
 	/* This file is the file stream that we want to parse  */
 	std::ifstream file;
-	/* This string_buffer is used when reading strings from file so that we don't initialize a stringstream each time */
-	std::stringstream string_buffer;
+	/* This stringBuffer is used when reading strings from file so that we don't initialize a stringstream each time */
+	std::stringstream stringBuffer;
 
 public:
 	/**
@@ -28,11 +28,32 @@ public:
 	char peekNextChar ();
 
 	/**
+	 * @brief This method is used to check if the next character in the buffer is end of file
+	 *
+	 * @return true if the next character is end of file, false otherwise
+	 */
+	bool isNextCharEOF ();
+
+	/**
+	 * @brief This method is used to check if the next character in the buffer is a new line
+	 *
+	 * @return true if the next character is new line, false otherwise
+	 */
+	bool isNextCharNewline ();
+
+	/**
 	 * @brief This method is used to check if the next character in the buffer is a new line or end of file
 	 *
 	 * @return true if the next character is new line or end of file, false otherwise
 	 */
 	bool isNextCharNewlineOrEOF ();
+
+	/**
+	 * @brief This method is used to check if the next character in the buffer is any of special characters used to specify a token
+	 *
+	 * @return true if the next character is used to specify a token, false otherwise
+	 */
+	bool isNextCharToken ();
 
 	/**
 	 * @brief This method is used to consume a character from the buffer
@@ -48,11 +69,6 @@ public:
 	 * @brief This method is used to skip all characters until (inclusive) the new line character
 	 */
 	void skipLine ();
-
-	/**
-	 * @brief This method is used to skip the line only if the current position in the buffer is not at the end of a line
-	 */
-	void skipLineIfNotEndOfLine ();
 
 	/**
 	 * @brief This method is used to skip empty lines or lines that start with a `#` character
