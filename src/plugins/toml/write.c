@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "write.h"
 #include "utility.h"
+#include "write.h"
 
 typedef enum
 {
@@ -34,15 +34,13 @@ static int writeValue (Key * parent, Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
 static int writeNewline (Writer * writer);
-static int writeArraySeparator (Writer * writer);
 static bool isArray (Key * key);
 static bool isType (Key * key, const char * type);
 static bool isTableArray (Key * key);
+static bool isInlineArray (Key * key);
 static char * getRelativeKeyName (const Key * parent, const Key * key);
-static char * getDirectSubKeyName(const Key * parent, const Key * key);
+static char * getDirectSubKeyName (const Key * parent, const Key * key);
 static KeyType getKeyType (Key * key);
-static void addMissingArrayEntries (KeySet * keys);
-static void addEmptyTableArrayEntries (Key * key, KeySet * keys);
 
 int tomlWrite (KeySet * keys, Key * rootKey)
 {
@@ -174,11 +172,42 @@ static int writeSimpleTable (Key * parent, Key * key, Writer * writer)
 static int writeTableArray (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= fputs ("[[", writer->f) == EOF;
-	result |= writeRelativeKeyName (parent, key, writer);
-	result |= fputs ("]]\n", writer->f) == EOF;
-	ksNext (writer->keys);
-	result |= writeKeys (key, writer);
+	Key * arrayRoot = key;
+	size_t maxIndex = getArrayMax (arrayRoot);
+	size_t nextIndex = 0;
+	key = ksNext (writer->keys);
+
+	while (result == 0 && nextIndex <= maxIndex)
+	{
+		if (keyIsBelow (arrayRoot, key) == 1)
+		{
+			char * subIndex = getDirectSubKeyName (arrayRoot, key);
+			size_t foundIndex = arrayStringToIndex (subIndex);
+			Key * elementRoot = keyDup (arrayRoot);
+			keyAddName (elementRoot, subIndex);
+			elektraFree (subIndex);
+			while (nextIndex <= foundIndex)
+			{
+				result |= fputs ("[[", writer->f) == EOF;
+				result |= writeRelativeKeyName (parent, arrayRoot, writer);
+				result |= fputs ("]]\n", writer->f) == EOF;
+				nextIndex++;
+			}
+			result |= writeKeys (elementRoot, writer);
+			keyDel (elementRoot);
+			key = ksCurrent (writer->keys);
+		}
+		else
+		{
+			while (nextIndex <= maxIndex)
+			{
+				result |= fputs ("[[", writer->f) == EOF;
+				result |= writeRelativeKeyName (parent, arrayRoot, writer);
+				result |= fputs ("]]\n", writer->f) == EOF;
+				nextIndex++;
+			}
+		}
+	}
 
 	return result;
 }
@@ -270,8 +299,10 @@ static char * getRelativeKeyName (const Key * parent, const Key * key)
 	return name;
 }
 
-static char * getDirectSubKeyName(const Key * parent, const Key * key) {
-	if (keyIsBelow (parent, key) <= 0) {
+static char * getDirectSubKeyName (const Key * parent, const Key * key)
+{
+	if (keyIsBelow (parent, key) <= 0)
+	{
 		return NULL;
 	}
 	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
@@ -319,37 +350,3 @@ static bool isType (Key * key, const char * type)
 	}
 	return elektraStrCmp (keyString (meta), type) == 0;
 }
-
-static void addMissingArrayEntries (KeySet * keys)
-{
-	ksRewind (keys);
-	Key * key;
-	while ((key = ksNext (keys)) != NULL)
-	{
-		if (isTableArray (key))
-		{
-			addEmptyTableArrayEntries (key, keys);
-		}
-	}
-}
-
-static void addEmptyTableArrayEntries (Key * key, KeySet * keys)
-{
-	if (!isEmptyArray (key)) {
-		size_t maxIndex = getArrayMax (key);
-		size_t currIndex = 0;
-		printf("Got array with max index %llu\n", maxIndex);
-		Key * sub;
-		while ((sub = ksNext (keys)) != NULL && keyIsBelow(key, sub) == 1) {
-			const char * keyName = getDirectSubKeyName (key, sub);
-			size_t readIndex = arrayStringToIndex (keyName);
-			elektraFree (keyName);
-			while (currIndex < readIndex) {
-				Key * tableArray = keyNew(KEY_END);	
-			}
-		}
-		
-	}
-}
-
-
