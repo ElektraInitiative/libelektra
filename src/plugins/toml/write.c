@@ -22,6 +22,15 @@ typedef struct
 	KeySet * keys;
 } Writer;
 
+typedef struct CommentList_
+{
+	size_t index;
+	const char * content;
+	char start;
+	size_t spaces;
+	struct CommentList_ * next;
+} CommentList;
+
 static Writer * createWriter (Key * rootKey, KeySet * keys);
 static void destroyWriter (Writer * writer);
 static int writeKeys (Key * parent, Writer * writer);
@@ -37,8 +46,9 @@ static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
 static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer);
 static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer);
-static int writePrecedingComments (Key * key, Writer * writer);
-static int writeInlineComment (Key * key, Writer * writer);
+static int writePrecedingComments (const CommentList * commentList, Writer * writer);
+static int writeInlineComment (const CommentList * commentList, Writer * writer);
+static int writeComment (const CommentList * comment, Writer * writer);
 static int writeNewline (Writer * writer);
 static bool isArray (Key * key);
 static bool isType (Key * key, const char * type);
@@ -46,6 +56,8 @@ static bool isTableArray (Key * key);
 static bool isInlineTable (Key * key);
 static char * getRelativeKeyName (const Key * parent, const Key * key);
 static char * getDirectSubKeyName (const Key * parent, const Key * key);
+static CommentList * collectComments (Key * key);
+static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
 
 int tomlWrite (KeySet * keys, Key * rootKey)
@@ -144,12 +156,13 @@ static int writeKeys (Key * parent, Writer * writer)
 static int writeAssignment (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-
-	result |= writePrecedingComments (key, writer);
+	CommentList * comments = collectComments (key);
+	result |= writePrecedingComments (comments, writer);
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputs (" = ", writer->f) == EOF;
 	result |= writeValue (parent, key, writer);
-	result |= writeInlineComment (key, writer);
+	result |= writeInlineComment (comments, writer);
+	freeComments (comments);
 	return result;
 }
 
@@ -327,45 +340,79 @@ static int writeInlineTableElements (Key * parent, Writer * writer)
 static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= writePrecedingComments (key, writer);
+	CommentList * comments = collectComments (key);
+	result |= writePrecedingComments (comments, writer);
 	result |= fputs ("[[", writer->f) == EOF;
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputs ("]]", writer->f) == EOF;
-	result |= writeInlineComment (key, writer);
+	result |= writeInlineComment (comments, writer);
 	result |= writeNewline (writer);
+	freeComments (comments);
 	return result;
 }
 
 static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= writePrecedingComments (key, writer);
+	CommentList * comments = collectComments (key);
+	result |= writePrecedingComments (comments, writer);
 	result |= fputc ('[', writer->f) == EOF;
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputc (']', writer->f) == EOF;
-	result |= writeInlineComment (key, writer);
+	result |= writeInlineComment (comments, writer);
 	result |= writeNewline (writer);
+	freeComments (comments);
 	return result;
 }
 
-static int writePrecedingComments (Key * key, Writer * writer)
+static int writePrecedingComments (const CommentList * commentList, Writer * writer)
 {
 	int result = 0;
-	keyRewindMeta (key);
-	Key * meta;
-	while ((meta = keyNextMeta (key)) != NULL)
+	while (commentList != NULL)
 	{
-		printf("> META = %s -> %s\n", keyName(meta), keyString(meta));
+		if (commentList->index > 0)
+		{
+			result |= writeComment (commentList, writer);
+			result |= writeNewline (writer);
+		}
+		commentList = commentList->next;
 	}
 	return result;
 }
 
-static int writeInlineComment (Key * key, Writer * writer)
+static int writeInlineComment (const CommentList * commentList, Writer * writer)
 {
 	int result = 0;
-	keyRewindMeta (key);
+	while (commentList != NULL)
+	{
+		if (commentList->index == 0)
+		{
+			result |= writeComment (commentList, writer);
+			break;
+		}
+		commentList = commentList->next;
+	}
 	return result;
 }
+
+static int writeComment (const CommentList * comment, Writer * writer)
+{
+	int result = 0;
+	for (size_t i = 0; i < (comment->index == 0 ? 4 : 0); i++)	// TODO: do with comment->spaces
+	{
+		result |= fputc (' ', writer->f) == EOF;
+	}
+	if (comment->start != '\0')
+	{
+		result |= fputc (comment->start, writer->f) == EOF;
+	}
+	if (comment->content != NULL)
+	{
+		result |= fputs (comment->content, writer->f) == EOF;
+	}
+	return result;
+}
+
 
 static int writeNewline (Writer * writer)
 {
@@ -423,6 +470,84 @@ static KeyType getKeyType (Key * key)
 		}
 	}
 	return KEY_TYPE_ASSIGNMENT;
+}
+
+static CommentList * collectComments (Key * key)
+{
+	keyRewindMeta (key);
+	Key * meta;
+	CommentList * commentRoot = NULL;
+	CommentList * commentBack = NULL;
+	size_t currIndex = 0;
+	while ((meta = keyNextMeta (key)) != 0)
+	{
+		size_t size = keyGetUnescapedNameSize (meta);
+		const char * pos = (const char *) keyUnescapedName (meta);
+		const char * stop = pos + keyGetUnescapedNameSize (meta);
+		if (elektraStrCmp (pos, "comment") == 0)
+		{
+			int subDepth = 0;
+			while (pos < stop)
+			{
+				if (subDepth == 1) {
+					size_t readIndex = arrayStringToIndex (pos);
+					if (readIndex != currIndex || commentRoot == NULL) {
+						CommentList * nextComment = (CommentList *) elektraCalloc(sizeof(CommentList));
+						if (nextComment == NULL) {
+							freeComments (commentRoot);
+							return NULL;
+						}
+						if (commentBack != NULL) {
+							commentBack->next = nextComment;
+							commentBack = nextComment;
+						} else {
+							commentRoot = nextComment;
+							commentBack = commentRoot;
+						}
+						commentBack->index = readIndex;
+						currIndex = readIndex;
+					}
+
+					if (pos + elektraStrLen (pos) >= stop) {	// meta key holding the array content
+						commentBack->content = keyString(meta);
+					}
+				} else if (subDepth == 2) {
+					const char * fieldName = pos;
+					if (elektraStrCmp (fieldName, "start") == 0) {
+						if (elektraStrLen (keyString(meta)) > 1) {
+							commentBack->start = keyString(meta)[0];
+						} else {
+							commentBack->start = '\0';
+						}
+					} else if (elektraStrCmp (fieldName, "space") == 0) {
+						if (sscanf(keyString(meta), "%ld", &commentBack->spaces) == EOF) {
+							printf("[ERROR] Cant read space value: %s\n", keyString(meta));
+							freeComments (commentRoot);
+							return NULL;
+						}
+					}
+				}
+
+				subDepth++;
+				pos += elektraStrLen (pos);
+			}
+
+		}
+	}
+	for (CommentList * ptr = commentRoot; ptr != NULL; ptr = ptr->next) {
+		printf("index = %ld, spaces = %ld, start: 0x%02X, content = %s\n", ptr->index, ptr->spaces, ptr->start, ptr->content);
+	}
+	return commentRoot;
+}
+
+static void freeComments (CommentList * comments)
+{
+	while (comments != NULL)
+	{
+		CommentList * next = comments->next;
+		elektraFree (comments);
+		comments = next;
+	}
 }
 
 static bool isArray (Key * key)
