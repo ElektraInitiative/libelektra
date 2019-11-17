@@ -119,7 +119,12 @@ static int writeKeys (Key * parent, Writer * writer)
 		else
 		{
 			ksNext (writer->keys);
-			return writeKeys (parent, writer);
+			int result = writeKeys (parent, writer);
+			// write comments at document end
+			CommentList * comments = collectComments (parent);
+			writePrecedingComments (comments, writer);
+			freeComments (comments);
+			return result;
 		}
 	}
 	Key * key = ksCurrent (writer->keys);
