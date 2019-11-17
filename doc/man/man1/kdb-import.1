@@ -107,43 +107,43 @@ To restore a backup (stored as \fBsw\.ecf\fR) of a user\'s configuration below \
 \fBcat sw\.ecf | kdb import system/sw\fR
 .
 .P
-To import a sample \fBxml\fR content with the \fBxerces\fR plugin:
+To import a sample \fBjson\fR content with the \fByajl\fR plugin:
 .
 .IP "" 4
 .
 .nf
 
-# import two keys from a xml string
-kdb import user/tests/kdb\-import/ xerces <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+# import two keys from a json string
+kdb import user/tests/ yajl <<< "{ \e"one\e": \e"one\e", \e"two\e": \e"two\e" }"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb\-import/one
+kdb get user/tests/one
 #> one
-kdb get user/tests/kdb\-import/two
+kdb get user/tests/two
 #> two
-kdb rm \-r user/tests/kdb\-import
+kdb rm \-r user/tests
 .
 .fi
 .
 .IP "" 0
 .
 .P
-To import a sample \fBxml\fR content via specifying the file format directly:
+To import a sample \fBjson\fR content via specifying :
 .
 .IP "" 4
 .
 .nf
 
-# import two keys from a xml string
-kdb import user/tests/kdb\-import/ xml <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+# import two keys from a json string
+kdb import user/tests/ json <<< "{ \e"one\e": \e"one\e", \e"two\e": \e"two\e" }"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb\-import/one
+kdb get user/tests/one
 #> one
-kdb get user/tests/kdb\-import/two
+kdb get user/tests/two
 #> two
 
-kdb rm \-r user/tests/kdb\-import
+kdb rm \-r user/tests
 .
 .fi
 .
