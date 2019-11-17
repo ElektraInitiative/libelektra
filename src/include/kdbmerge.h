@@ -10,11 +10,12 @@
 #define KDBMERGE_H_
 
 #include "kdb.h"
-#include "kdberrors.h"
 #include "kdbprivate.h"
 
 #ifdef __cplusplus
 extern "C" {
+using Key = ckdb::Key;
+using KeySet = ckdb::KeySet;
 #endif
 
 enum
