@@ -56,6 +56,8 @@ YY_DECL;
 %token BRACKETS_CLOSE
 %token CURLY_OPEN
 %token CURLY_CLOSE
+%token SPACE
+%token TAB
 
 %type <scalar> Scalar
 %type <scalar> IntegerScalar
@@ -65,50 +67,51 @@ YY_DECL;
 %type <scalar> DateScalar
 %type <scalar> SimpleKey
 
+
 %start Toml
 
 %%
 
-Toml		:	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
+Toml	:	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
 		|	%empty
 		;
 
-Nodes		:	Node
+Nodes	:	Node
 		|	Nodes Newlines Node
 		;
 
-Node		:	COMMENT { driverExitComment (driver, $1); }
-		|	Table OptComment { driverExitOptCommentTable (driver); }
-		|	KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
+Node	:	AnyWS COMMENT { driverExitComment (driver, $2); }
+		|	AnyWS Table OptComment { driverExitOptCommentTable (driver); }
+		|	AnyWS KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
 		;
 
-OptComment	:	COMMENT { driverExitComment (driver, $1); }
-		|	%empty
-		;
+OptComment	:	AnyWS COMMENT { driverExitComment (driver, $2); } AnySWS
+			|	AnySWS
+			;
 
 
-Newlines	:	NEWLINE { /*driverExitNewline (driver);*/ }
-		|	Newlines NEWLINE { driverExitNewline (driver); }
-		;	
+Newlines	:	NEWLINE AnySWS
+			|	Newlines NEWLINE AnySWS { driverExitNewline (driver); }
+			;	
 
 AnyNewlines	:	Newlines
-		|	%empty
-		;
+			|	%empty
+			;
 
 Table		:	TableSimple
-		|	TableArray
+			|	TableArray
+			;
+
+TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } AnySWS TopKey { driverExitSimpleTable(driver); } AnySWS BRACKETS_CLOSE
+			;
+
+TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } AnySWS TopKey { driverExitTableArray(driver); } AnySWS BRACKETS_CLOSE BRACKETS_CLOSE
+			;
+
+KeyPair	:	TopKey AnySWS EQUAL AnySWS Value { driverExitKeyValue (driver); }
 		;
 
-TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } TopKey { driverExitSimpleTable(driver); } BRACKETS_CLOSE
-		;
-
-TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } TopKey { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
-		;
-
-KeyPair		:	TopKey EQUAL Value { driverExitKeyValue (driver); }
-		;
-
-TopKey		:	{ driverEnterKey (driver); } Key { driverExitKey (driver); }
+TopKey	:	{ driverEnterKey (driver); } Key { driverExitKey (driver); }
 		;
 
 Key		:	SimpleKey
@@ -116,77 +119,92 @@ Key		:	SimpleKey
 		;
 
 DottedKeys	:	DOT SimpleKey
-		|	DottedKeys DOT SimpleKey
-		;
+			|	DottedKeys DOT SimpleKey
+			;
 
 SimpleKey	:	Scalar { driverExitSimpleKey (driver, $1); }
-		;
+			;
 
 Value		:	Scalar { driverExitValue (driver, $1); }
-		|	InlineTable
-		|	Array
-		;
+			|	InlineTable
+			|	Array
+			;
 
-InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
-		|	CURLY_OPEN CURLY_CLOSE { driverEmptyInlineTable(driver); }
-		;
+InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } AnySWS InlineTableList AnySWS CURLY_CLOSE { driverExitInlineTable (driver); }
+			|	CURLY_OPEN AnySWS CURLY_CLOSE { driverEmptyInlineTable(driver); }
+			;
 
-InlineTableList	:	KeyPair
-		|	InlineTableList COMMA KeyPair
-		;
+InlineTableList	:	KeyPair AnySWS
+				|	InlineTableList COMMA AnySWS KeyPair
+				;
 
 Array		:	ArrayEmpty | ArrayNonEmpty
-		;
+			;
 
 ArrayNonEmpty	:	BRACKETS_OPEN { driverEnterArray (driver); } ArrayList ArrayEpilogue BRACKETS_CLOSE { driverExitArray (driver); };
 ArrayEmpty	:	BRACKETS_OPEN BRACKETS_CLOSE { driverEmptyArray (driver); };
 
 
 ArrayList	:	AnyCommentNL ArrayElement
-		|	ArrayList COMMA AnyCommentNL ArrayElement
-		;
+			|	ArrayList COMMA AnyCommentNL ArrayElement
+			;
 
-ArrayElement	:	Value { driverExitArrayElement (driver); }
-		;
+ArrayElement	:	AnyWS Value { driverExitArrayElement (driver); }
+				;
 
 ArrayEpilogue	:	AnyCommentNL
-		|	COMMA AnyCommentNL
-		;
+				|	COMMA AnyCommentNL
+				;
 
 AnyCommentNL	:	AnyCommentNL NEWLINE { driverExitNewline (driver); }
-		|	AnyCommentNL COMMENT NEWLINE { driverExitComment (driver, $2); }
-		|	%empty 
-		;
+				|	AnyCommentNL AnyWS COMMENT NEWLINE { driverExitComment (driver, $3); }
+				|	AnySWS
+				;
 
 Scalar		:	IntegerScalar { $$ = $1; }
-		|	BooleanScalar { $$ = $1; }
-		|	FloatScalar { $$ = $1; }
-		|	StringScalar { $$ = $1; }
-		|	DateScalar { $$ = $1; }
-		;
+			|	BooleanScalar { $$ = $1; }
+			|	FloatScalar { $$ = $1; }
+			|	StringScalar { $$ = $1; }
+			|	DateScalar { $$ = $1; }
+			;
 
 IntegerScalar	:	DECIMAL { $$ = $1; }
-		|	HEXADECIMAL { $$ = $1; }
-		|	OCTAL { $$ = $1; }
-		|	BINARY { $$ = $1; }
-		;
+				|	HEXADECIMAL { $$ = $1; }
+				|	OCTAL { $$ = $1; }
+				|	BINARY { $$ = $1; }
+				;
 
 BooleanScalar	:	BOOLEAN { $$ = $1; }
-		;
+				;
 
 FloatScalar	:	FLOAT { $$ = $1; }
-		;
+			;
 
 StringScalar	:	LITERAL_STRING { $$ = $1; }
-		|	BASIC_STRING { $$ = $1; }
-		|	MULTI_LITERAL_STRING { $$ = $1; }
-		|	MULTI_BASIC_STRING { $$ = $1; }
-		|	BARE_STRING { $$ = $1; }
-		;
+				|	BASIC_STRING { $$ = $1; }
+				|	MULTI_LITERAL_STRING { $$ = $1; }
+				|	MULTI_BASIC_STRING { $$ = $1; }
+				|	BARE_STRING { $$ = $1; }
+				;
 
 DateScalar	:	OFFSET_DATETIME { $$ = $1; }
-		|	LOCAL_DATETIME { $$ = $1; }
-		|	LOCAL_DATE { $$ = $1; }
-		|	LOCAL_TIME { $$ = $1; }
+			|	LOCAL_DATETIME { $$ = $1; }
+			|	LOCAL_DATE { $$ = $1; }
+			|	LOCAL_TIME { $$ = $1; }
+			;
+
+AnyWS	:	%empty
+		|	AnyWS Whitespace
 		;
+AnySWS	:	%empty
+		|	AnySWS SilentWhitespace
+		;
+Whitespace	:	TAB {}
+			|	SPACE {}
+			;
+
+SilentWhitespace	:	TAB
+					|	SPACE
+					;
+
 %%

@@ -142,6 +142,7 @@ static void testRoundTrip (const char * filename)
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {
+	printf ("Reading '%s'\n", filename);
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);

@@ -20,7 +20,7 @@
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Comments/newlines between the last element of an array and the closing bracket are discarded.
-	- Spaces before comments are not yet preserved. On writing, full line comments have no preceding spaces, while inline comments have 4.
+	- Currently, no spaces are preserved.
 
 ## Questions
 
@@ -31,6 +31,9 @@
 ## TODOs
 	- Document functions
 	- ORDER on writing file
-	- Preserve spaces before comments
+	- Preserve spaces
+		- Before comments
+		- Before array values
+		- Before assignment/simple table header/table array header
 	- Don't store origvalue, if transformed value is equal to untransformed value
     - Maybe use date plugin
