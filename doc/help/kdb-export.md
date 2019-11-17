@@ -59,7 +59,6 @@ Change default format to `simpleini`:<br>
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
 Create two key values and export them as `json`:
-
 ```sh
 kdb set user/tests/kdb-export/one one
 kdb set user/tests/kdb-export/two two
@@ -75,7 +74,6 @@ kdb rm -r user/tests
 ```
 
 Create two key values and export them with the `yajl` plugin:
-
 ```sh
 kdb set user/tests/kdb-export/one one
 kdb set user/tests/kdb-export/two two
