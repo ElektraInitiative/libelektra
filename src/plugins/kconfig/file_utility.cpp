@@ -1,7 +1,6 @@
 #include "file_utility.hpp"
 #include "base.hpp"
 
-
 FileUtility::FileUtility (const std::string & filename) : file{ filename }, string_buffer{}
 {
 	if (!(this->file).is_open ())

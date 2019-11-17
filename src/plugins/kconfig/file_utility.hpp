@@ -1,43 +1,93 @@
 #ifndef ELEKTRA_FILEUTILITY_HPP
 #define ELEKTRA_FILEUTILITY_HPP
 
-
 #include <fstream>
 #include <ostream>
 #include <sstream>
 #include <string>
 
-
 class FileUtility
 {
 private:
+	/* This file is the file stream that we want to parse  */
 	std::ifstream file;
+	/* This string_buffer is used when reading strings from file so that we don't initialize a stringstream each time */
 	std::stringstream string_buffer;
+
 public:
-	explicit FileUtility(const std::string &filename);
+	/**
+	 * @brief This constructor is used to abstract the file stream into the methods that are specific to parsing a kconfig configuration
+	 * file
+	 * @param filename This string contains the absolute/relative path to the file
+	 */
+	explicit FileUtility (const std::string & filename);
 
-	char peekNextChar();
+	/**
+	 * \copydoc std::ifstream::peek()
+	 */
+	char peekNextChar ();
 
-	bool isNextCharNewlineOrEOF();
+	/**
+	 * @brief This method is used to check if the next character in the buffer is a new line or end of file
+	 *
+	 * @return true if the next character is new line or end of file, false otherwise
+	 */
+	bool isNextCharNewlineOrEOF ();
 
-	void skipChar();
+	/**
+	 * @brief This method is used to consume a character from the buffer
+	 */
+	void skipChar ();
 
-	void skipCharsIfBlank();
+	/**
+	 * @brief This method is used to consume a character from the buffer only if it is a blank character
+	 */
+	void skipCharsIfBlank ();
 
-	void skipLine();
+	/**
+	 * @brief This method is used to skip all characters until (inclusive) the new line character
+	 */
+	void skipLine ();
 
-	void skipLineIfNotEndOfLine();
+	/**
+	 * @brief This method is used to skip the line only if the current position in the buffer is not at the end of a line
+	 */
+	void skipLineIfNotEndOfLine ();
 
-	void skipLineIfEmptyOrComment();
+	/**
+	 * @brief This method is used to skip empty lines or lines that start with a `#` character
+	 */
+	void skipLineIfEmptyOrComment ();
 
-	void readUntilChar(std::ostream &str, const char &delimiter);
+	/**
+	 * @brief This method is used to read characters into a buffer until (exclusive) a given delimiter, new line or end of file
+	 * @param str This output stream is used to read the characters into it
+	 * @param delimiter This character is used to determine when to stop reading
+	 */
+	void readUntilChar (std::ostream & str, const char & delimiter);
 
-	void readUntilChar(std::ostream &str, const char &delimiterA, const char &delimiterB);
+	/**
+	 * @brief This method is used to read characters into a buffer until (exclusive) any given delimiter, new line or end of file
+	 * @param str This output stream is used to read the characters into it
+	 * @param delimiterA This character is used to determine when to stop reading
+	 * @param delimiterB This character is used to determine when to stop reading
+	 */
+	void readUntilChar (std::ostream & str, const char & delimiterA, const char & delimiterB);
 
-	std::string getUntilChar(const char &delimiter);
+	/**
+	 * @brief This method is used to read characters into a string until (exclusive) a given delimiter, new line or end of file
+	 * @param delimiter This character is used to determine when to stop reading
+	 * @return A string containing the characters that are read
+	 */
+	std::string getUntilChar (const char & delimiter);
 
-	std::string getUntilChar(const char &delimiterA, const char &delimiterB);
+	/**
+	 * @brief This method is used to read characters into a string until (exclusive) any given delimiter, new line or end of file
+	 * @param delimiterA This character is used to determine when to stop reading
+	 * @param delimiterB This character is used to determine when to stop reading
+	 * @return A string containing the characters that are read
+	 */
+	std::string getUntilChar (const char & delimiterA, const char & delimiterB);
 };
-
 
 #endif // ELEKTRA_FILEUTILITY_HPP
