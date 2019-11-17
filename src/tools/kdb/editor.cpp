@@ -13,19 +13,17 @@
 
 #include <kdbmacros.h>
 
+#include "kdbmerge.h"
+#include "helper/keyhelper.hpp"
 #include <export.hpp>
 #include <import.hpp>
 
 #include <iostream>
 #include <string>
 
-#include <mergehelper.hpp>
-#include <merging/metamergestrategy.hpp>
-#include <merging/threewaymerge.hpp>
-
 using namespace kdb;
 using namespace kdb::tools;
-using namespace kdb::tools::merging;
+using namespace kdb::tools::helper;
 using namespace std;
 
 EditorCommand::EditorCommand ()
@@ -35,6 +33,7 @@ EditorCommand::EditorCommand ()
 EditorCommand::~EditorCommand ()
 {
 }
+
 
 void EditorCommand::tmpFile ()
 {
@@ -86,13 +85,13 @@ int EditorCommand::execute (Cmdline const & cl)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
 	}
-	Key root = cl.createKey (0);
+	kdb::Key root = cl.createKey (0);
 
-	KeySet ours;
+	kdb::KeySet ours;
 	KDB kdb;
 	kdb.get (ours, root);
-	KeySet oursToEdit = ours.cut (root);
-	KeySet original = oursToEdit.dup ();
+	kdb::KeySet oursToEdit = ours.cut (root);
+	kdb::KeySet original = oursToEdit.dup ();
 
 	if (cl.strategy == "validate")
 	{
@@ -116,7 +115,7 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	tmpFile ();
 	if (cl.verbose) std::cout << "filename set to " << filename << std::endl;
-	Key errorKey (root);
+	kdb::Key errorKey (root);
 	errorKey.setString (filename);
 	struct stat orig;
 	stat (filename.c_str (), &orig);
@@ -161,7 +160,7 @@ int EditorCommand::execute (Cmdline const & cl)
 	}
 
 	// import from the file
-	KeySet importedKeys;
+	kdb::KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
 	importedKeys = importedKeys.cut (root);
 
@@ -170,34 +169,31 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
-		applyMeta (importedKeys, original);
+		copyAllMeta (importedKeys, original);
 		kdb.set (importedKeys, root);
 		printWarnings (cerr, root, cl.verbose, cl.debug);
 		printError (cerr, root, cl.verbose, cl.debug);
 		return 0;
 	}
 
-	ThreeWayMerge merger;
-	MergeHelper helper;
-
-	helper.configureMerger (cl, merger);
-	MergeResult result = merger.mergeKeySet (
-		MergeTask (BaseMergeKeys (oursToEdit, root), OurMergeKeys (oursToEdit, root), TheirMergeKeys (importedKeys, root), root));
-
-	helper.reportResult (cl, result, cout, cerr);
+	ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
+	ckdb::KeySet * resultKs = elektraMerge (oursToEdit.getKeySet (), root.getKey (), importedKeys.getKeySet (), root.getKey (),
+						oursToEdit.getKeySet (), root.getKey (), root.getKey (), 1, informationKey);
+	int numberOfConflicts = getConflicts (informationKey);
+	keyDel (informationKey);
 
 	int ret = 13;
-	if (!result.hasConflicts ())
+	if (resultKs != NULL && numberOfConflicts == 0)
 	{
 		if (cl.verbose)
 		{
 			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
-			cout << result.getMergedKeys ();
+			cout << resultKs;
 		}
 
-		KeySet resultKeys = result.getMergedKeys ();
-		if (cl.verbose) std::cout << "about to write result keys " << resultKeys << std::endl;
-		ours.append (resultKeys);
+		kdb::KeySet resultKeys = resultKs;
+		if (cl.verbose) std::cout << "about to write result keys " << resultKs << std::endl;
+		ours.append (resultKs);
 		try
 		{
 			kdb.set (ours, root);
