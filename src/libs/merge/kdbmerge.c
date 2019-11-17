@@ -20,8 +20,8 @@
  * @brief Get a statistical value from an information key
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to get
- * @retval the statistical value
- * @retval -1 on error
+ * @param retval the statistical value
+ * @param retval -1 on error
  */
 static int getStatisticalValue (Key * informationKey, char * metaName)
 {
@@ -46,7 +46,7 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to set
  * @param value which value to set it to, must be a number
- * @retval 0 on success, 1 otherwise.
+ * @returns 0 on success, 1 otherwise.
  *
  * This enforces that a number is set.
  */
