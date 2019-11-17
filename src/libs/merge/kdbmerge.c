@@ -709,7 +709,7 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 			}
 			if (elektraRealloc ((void **) &buffer, bufferSize) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 				elektraFree (buffer);
 				keyDel (iterator);
 				return NULL;
@@ -773,14 +773,14 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
 	KeySet * result = ksNew (0, KS_END);
 	if (result == NULL)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
 	Key * iterator = keyNew ("/#0", KEY_END);
 	if (iterator == NULL)
 	{
 		ksDel (result);
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey, "Memory allocation failed.");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
 	char * buffer = elektraCalloc (length + 1); // + 1 for terminating null character
