@@ -47,8 +47,8 @@ The option `-f` can be used to override. **Attention!** This deletes existing ke
 
 ```sh
 kdb cmerge user/tests/our user/tests/their user/tests/base user/tests/result
-# RET: 3
-# There are keys in the result path. Use -f to override them.
+# RET: 1
+# STDERR: ERROR: 1 keys exist in resultpath. Use -f to override the keys there.
 kdb cmerge -f user/tests/our user/tests/their user/tests/base user/tests/result
 kdb get user/tests/result
 #> b
