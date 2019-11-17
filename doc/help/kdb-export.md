@@ -67,11 +67,11 @@ kdb set user/tests/kdb-export/two two
 kdb export user/tests/kdb-export/ xml
 #> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 #> <kdb-export>
-#>
+#> 
 #>   <one>one</one>
-#>
+#> 
 #>   <two>two</two>
-#>
+#> 
 #> </kdb-export>
 
 
@@ -88,11 +88,11 @@ kdb set user/tests/kdb-export/two two
 kdb export user/tests/kdb-export/ xerces
 #> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 #> <kdb-export>
-#>
+#> 
 #>   <one>one</one>
-#>
+#> 
 #>   <two>two</two>
-#>
+#> 
 #> </kdb-export>
 
 kdb rm -r user/tests
