@@ -20,8 +20,8 @@
  * @brief Get a statistical value from an information key
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to get
- * @param retval the statistical value
- * @param retval -1 on error
+ * @retval the statistical value
+ * @retval -1 on error
  */
 static int getStatisticalValue (Key * informationKey, char * metaName)
 {
@@ -46,10 +46,12 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to set
  * @param value which value to set it to, must be a number
+ * @retval 0 on success
+ * @retval -1 on error
  *
  * This enforces that a number is set.
  */
-static void setStatisticalValue (Key * informationKey, char * metaName, int value)
+static int setStatisticalValue (Key * informationKey, char * metaName, int value)
 {
 	char stringy[INT_BUF_SIZE];
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
@@ -69,14 +71,15 @@ static void setStatisticalValue (Key * informationKey, char * metaName, int valu
 						     "Statistical value %d was too large for its buffer. This happened with meta name %s.",
 						     value, metaName);
 		}
-		return;
+		return -1;
 	}
 	ssize_t size = keySetMeta (informationKey, metaName, stringy);
 	if (size <= 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set statistical value.");
-		return;
+		return -1;
 	}
+	return 0;
 }
 
 /**
@@ -827,7 +830,8 @@ static int numberOfConflictMarkers (const char * text)
  * @param theirSet their
  * @param baseSet base
  * @param resultSet result
- * @retval 0 on success, -1 on error
+ * @retval 0 on success
+ * @retval -1 on error
  */
 static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
 {
