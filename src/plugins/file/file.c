@@ -62,7 +62,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (!buffer)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "Failed to allocate buffer of %lld bytes for %s", fileSize, fileName);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		return -1;
 	}
 
@@ -155,7 +155,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	unsigned char * value = elektraMalloc (valueSize);
 	if (!value)
 	{
-		ELEKTRA_MALLOC_ERROR (parentKey, valueSize);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		fclose (fp);
 		return -1;
 	}

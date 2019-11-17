@@ -59,19 +59,12 @@ using KeySet = ckdb::KeySet;
 					      "Memory allocation failed");                                                                 \
 	} while (0)
 
-#define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key, reason)                                                                                     \
+#define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key)                                                                                             \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_OUT_OF_MEMORY, reason);                                                 \
 		elektraAddWarningOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),      \
-						reason);                                                                                   \
-	} while (0)
-#define ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF(key, reason, ...)                                                                               \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_OUT_OF_MEMORY, __VA_ARGS__);                                       \
-		elektraAddWarningOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),      \
-						reason, __VA_ARGS__);                                                                      \
+						"Memory allocation failed");                                                               \
 	} while (0)
 
 #define ELEKTRA_SET_INSTALLATION_ERROR(key, reason)                                                                                        \
