@@ -60,7 +60,7 @@ void MergeResult::resolveConflict (Key & key)
 	{
 		// TODO: this is just a workaround because keys with a prefix other than
 		// user:/ or system:/ cannot be created and therefore isBelow cannot be used
-		if (currentMeta.getName ().find ("conflict/") == 0)
+		if (currentMeta.getName ().find ("meta:/conflict/") == 0)
 		{
 			key.delMeta (currentMeta.getName ());
 		}

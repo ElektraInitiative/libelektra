@@ -581,7 +581,7 @@ static int moveFile (const char * source, const char * dest)
 
 int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system://elektra/modules/curlget"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/curlget"))
 	{
 		KeySet * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/curlget", KEY_VALUE, "curlget plugin waits for your orders", KEY_END),

@@ -206,46 +206,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 	keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
 	keySetString (errorKey, "kdbOpen(): get");
 
-	int funret = 1;
-	int ret = kdbGet (handle, keys, errorKey);
-	int fallbackret = 0;
-	if (ret == 0 || ret == -1)
-	{
-		// could not get KDB_DB_INIT, try KDB_DB_FILE
-		// first cleanup:
-		ksClear (keys);
-		backendClose (handle->defaultBackend, errorKey);
-		splitDel (handle->split);
-
-		// then create new setup:
-		handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_FILE, errorKey);
-		if (!handle->defaultBackend)
-		{
-			elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
-			return -1;
-		}
-		handle->split = splitNew ();
-		splitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-		keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
-		keySetString (errorKey, "kdbOpen(): get fallback");
-		fallbackret = kdbGet (handle, keys, errorKey);
-		keySetName (errorKey, "system:/elektra/mountpoints");
-
-		KeySet * cutKeys = ksCut (keys, errorKey);
-		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
-		{
-			funret = 2;
-		}
-		ksAppend (keys, cutKeys);
-		ksDel (cutKeys);
-	}
-
-	if (ret == -1 && fallbackret == -1)
-	{
-		funret = 0;
-	}
-
+	int funret = kdbGet (handle, keys, errorKey) != -1;
 	elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
 	return funret;
 }

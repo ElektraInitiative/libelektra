@@ -41,7 +41,7 @@
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (2,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
+	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
 	keyNew ("/notype", KEY_META, "default", "2", KEY_END),
 	KS_END);
 ;

@@ -308,7 +308,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	kdb::KeySet defaults;
 
 	kdb::Key parent = ks.lookup (specParent).dup ();
-	parent.setName ("");
+	parent.setName ("/");
 	spec.append (parent);
 
 	auto parentKeyParts = getKeyParts (specParent);

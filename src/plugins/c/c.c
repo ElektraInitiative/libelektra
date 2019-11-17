@@ -135,10 +135,10 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	keyRewindMeta (dup);
 	while ((meta = keyNextMeta (dup)))
 	{
-		char * metaNam = elektraStrDup (keyName (meta));
+		char * metaName = elektraStrDup (keyName (meta) + sizeof ("meta:/") - 1);
 		char * metaStr = elektraStrDup (keyString (meta));
-		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaNam), escapeString (&metaStr));
-		elektraFree (metaNam);
+		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaName), escapeString (&metaStr));
+		elektraFree (metaName);
 		elektraFree (metaStr);
 	}
 	keyDel (dup);

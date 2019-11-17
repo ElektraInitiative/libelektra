@@ -449,7 +449,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
 	if (checkConfFunction)
 	{
-		ckdb::Key * errorKey = ckdb::keyNew (nullptr);
+		ckdb::Key * errorKey = ckdb::keyNew ("/", KEY_END);
 
 		// merge plugin config and backend config together
 		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();

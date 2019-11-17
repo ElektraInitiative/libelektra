@@ -41,7 +41,7 @@
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (15,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
+	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", KEY_END),
 	keyNew ("/myotherstruct", KEY_META, "default", "", KEY_META, "gen/struct/depth", "2", KEY_META, "type", "struct", KEY_END),
 	keyNew ("/myotherstruct/x", KEY_META, "default", "4", KEY_META, "type", "long", KEY_END),
 	keyNew ("/myotherstruct/x/y", KEY_META, "default", "6", KEY_META, "type", "long", KEY_END),

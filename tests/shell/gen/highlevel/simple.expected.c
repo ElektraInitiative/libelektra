@@ -41,7 +41,7 @@
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
+	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
 	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
 	keyNew ("/myfloatarray/#", KEY_META, "default", "2.5", KEY_META, "type", "float", KEY_END),
 	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),

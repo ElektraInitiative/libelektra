@@ -52,7 +52,7 @@ kdb set user:/tests/complete/examples/kdb-complete/level1 foo
 kdb set user:/tests/complete/examples/kdb-complete/lvl1/lvl2 bar
 kdb set user:/tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
 kdb set user:/tests/complete/examples/kdb-complete/buzz fizzBuzz
-kdb set user:/tests/complete/examples/kdb-complete/#array_1 asdf
+kdb set user:/tests/complete/examples/kdb-complete/#1 asdf
 kdb set user:/tests/complete/examples/kdb-complete/% nothing
 
 # list suggestions for namespaces starting with us, only the current level
@@ -80,7 +80,7 @@ kdb complete /tests/complete/examples/kdb-complete --max-depth=1
 # again, note the difference to the previous example which has no trailing /
 kdb complete /tests/complete/examples/kdb-complete/ --max-depth=1
 #> user:/tests/complete/examples/kdb-complete/%
-#> user:/tests/complete/examples/kdb-complete/#array_1
+#> user:/tests/complete/examples/kdb-complete/#1
 #> user:/tests/complete/examples/kdb-complete/buzz
 #> user:/tests/complete/examples/kdb-complete/level1
 #> user:/tests/complete/examples/kdb-complete/lvl1/

@@ -524,7 +524,8 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == KEY_NS_SPEC ||
+		    keyGetNamespace (cur) == KEY_NS_CASCADING)
 		{
 			continue;
 		}

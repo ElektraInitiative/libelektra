@@ -34,9 +34,7 @@ The default backend reading `default.ecf` is only relevant as long as no root ba
 Algorithm:
 
 1. try to get system:/elektra using the file elektra.ecf (KDB_DB_INIT)
-2. if it works, mount the init backend to system:/elektra (non-fallback mode)
-3. if it fails (== 0 or == -1), try default.ecf as fallback
-4. if the fallback works (i.e. keys are present in system:/elektra), mount the default backend to system:/elektra (fallback mode)
+2. if it works, mount the init backend to system:/elektra
 
 ## Rationale
 
@@ -46,7 +44,6 @@ Algorithm:
 
 ## Implications
 
-- Fallback mode should be removed with 1.0
 - added scripts/upgrade-bootstrap
 
 ## Related Decisions
