@@ -76,22 +76,22 @@ Toml	:	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
 		|	%empty
 		;
 
-Nodes	:	Node
-		|	Nodes Newlines Node
+Nodes	:	AnyWS Node
+		|	Nodes Newlines AnyWS Node
 		;
 
-Node	:	AnyWS COMMENT { driverExitComment (driver, $2); }
-		|	AnyWS Table OptComment { driverExitOptCommentTable (driver); }
-		|	AnyWS KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
+Node	:	COMMENT { driverExitComment (driver, $1); }
+		|	Table OptComment { driverExitOptCommentTable (driver); }
+		|	KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
 		;
 
-OptComment	:	AnyWS COMMENT { driverExitComment (driver, $2); } AnySWS
-			|	AnySWS
+OptComment	:	AnyWS COMMENT { driverExitComment (driver, $2); }
+			|	%empty
 			;
 
 
-Newlines	:	NEWLINE AnySWS
-			|	Newlines NEWLINE AnySWS { driverExitNewline (driver); }
+Newlines	:	NEWLINE
+			|	Newlines NEWLINE { driverExitNewline (driver); }
 			;	
 
 AnyNewlines	:	Newlines
@@ -130,7 +130,7 @@ Value		:	Scalar { driverExitValue (driver, $1); }
 			|	Array
 			;
 
-InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } AnySWS InlineTableList AnySWS CURLY_CLOSE { driverExitInlineTable (driver); }
+InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } AnySWS InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
 			|	CURLY_OPEN AnySWS CURLY_CLOSE { driverEmptyInlineTable(driver); }
 			;
 
@@ -157,8 +157,8 @@ ArrayEpilogue	:	AnyCommentNL
 				;
 
 AnyCommentNL	:	AnyCommentNL NEWLINE { driverExitNewline (driver); }
-				|	AnyCommentNL AnyWS COMMENT NEWLINE { driverExitComment (driver, $3); }
-				|	AnySWS
+				|	AnyCommentNL COMMENT NEWLINE { driverExitComment (driver, $2); }
+				|	%empty
 				;
 
 Scalar		:	IntegerScalar { $$ = $1; }
