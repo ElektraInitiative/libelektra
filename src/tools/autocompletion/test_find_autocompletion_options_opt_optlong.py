@@ -10,18 +10,19 @@ failed = 0
 
 all_commands = ['list-tools','get', 'set', 'ls', 'backup', 'plugin-info', 'plugin-list', 'check-env-dep', 'check', 'complete', 'convert', 'cp', 'editor', 'export', 'file', 'find', 'fstab', 'getmeta', 'global-mount', 'global-unmount', 'help', 'import', 'info', 'list-commands', 'list', 'lsmeta', 'merge', 'mount-list-all-files', 'mount', 'mountpoint-info', 'mv', 'remount', 'reset-elektra', 'reset', 'restore', 'rm', 'rmmeta', 'setmeta', 'sget', 'shell', 'spec-mount', 'stash', 'test', 'umount-all', 'umount', 'vset']
 
-def run_test(start_of_word, name_of_test_case):
+def run_test(start_of_input, name_of_test_case):
 	global passed, failed, tests_run
 	tests_run+=1
 	# get the result from executing autocompletion
-	result = sorted(set_start_of_word_and_run(start_of_word).split())
+	result = sorted(set_input_and_run(start_of_input, None).split())
 	if not silent:
+		print('TESTCASE: ' + name_of_test_case)
 		print('RESULTS:')
 		print(result)
 	# get the expected result to compare to
 	expected_result = []
 	for i in all_commands:
-		if i.startswith(start_of_word):
+		if i.startswith(start_of_input):
 			expected_result.append(i)
 	expected_result = sorted(expected_result)
 	if not silent:
@@ -42,7 +43,6 @@ def run_test(start_of_word, name_of_test_case):
 		if i not in expected_result:
 			if not silent:
 				print('NOT EXPECTED: ' + i)
-	
 	if sorted(result) == sorted(expected_result):
 		print('SUCCESS - ' + name_of_test_case)
 		passed += 1
