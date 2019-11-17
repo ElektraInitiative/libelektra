@@ -28,16 +28,19 @@ static int writeKeys (Key * parent, Writer * writer);
 static int writeAssignment (Key * parent, Key * key, Writer * writer);
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer);
 static int writeTableArray (Key * parent, Key * key, Writer * writer);
+static int writeInlineTableBody (Key * parent, Key * key, Writer * writer);
+static int writeInlineTableElements (Key * parent, Writer * writer);
 static int writeArrayBody (Key * parent, Key * key, Writer * writer);
 static int writeArrayElements (Key * parent, Writer * writer);
 static int writeValue (Key * parent, Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
+static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer);
 static int writeNewline (Writer * writer);
 static bool isArray (Key * key);
 static bool isType (Key * key, const char * type);
 static bool isTableArray (Key * key);
-static bool isInlineArray (Key * key);
+static bool isInlineTable (Key * key);
 static char * getRelativeKeyName (const Key * parent, const Key * key);
 static char * getDirectSubKeyName (const Key * parent, const Key * key);
 static KeyType getKeyType (Key * key);
@@ -50,7 +53,6 @@ int tomlWrite (KeySet * keys, Key * rootKey)
 		return 1;
 	}
 	int result = 0;
-	// addMissingArrayEntries(keys);
 	result |= writeKeys (NULL, w);
 
 	destroyWriter (w);
@@ -145,15 +147,7 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputs (" = ", writer->f) == EOF;
-	if (isArray (key))
-	{
-		result |= writeArrayBody (parent, key, writer);
-	}
-	else
-	{
-		result |= writeScalar (key, writer);
-		ksNext (writer->keys);
-	}
+	result |= writeValue (parent, key, writer);
 	return result;
 }
 
@@ -182,15 +176,22 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 		if (keyIsBelow (arrayRoot, key) == 1)
 		{
 			char * subIndex = getDirectSubKeyName (arrayRoot, key);
+			if (subIndex == NULL)
+			{
+				return 1;
+			}
 			size_t foundIndex = arrayStringToIndex (subIndex);
 			Key * elementRoot = keyDup (arrayRoot);
+			if (elementRoot == NULL)
+			{
+				elektraFree (subIndex);
+				return 1;
+			}
 			keyAddName (elementRoot, subIndex);
 			elektraFree (subIndex);
 			while (nextIndex <= foundIndex)
 			{
-				result |= fputs ("[[", writer->f) == EOF;
-				result |= writeRelativeKeyName (parent, arrayRoot, writer);
-				result |= fputs ("]]\n", writer->f) == EOF;
+				result |= writeTableArrayHeader (parent, arrayRoot, writer);
 				nextIndex++;
 			}
 			result |= writeKeys (elementRoot, writer);
@@ -201,9 +202,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 		{
 			while (nextIndex <= maxIndex)
 			{
-				result |= fputs ("[[", writer->f) == EOF;
-				result |= writeRelativeKeyName (parent, arrayRoot, writer);
-				result |= fputs ("]]\n", writer->f) == EOF;
+				result |= writeTableArrayHeader (parent, arrayRoot, writer);
 				nextIndex++;
 			}
 		}
@@ -225,12 +224,20 @@ static int writeArrayElements (Key * parent, Writer * writer)
 {
 	int result = 0;
 	Key * key = ksNext (writer->keys);
+	bool firstElement = true;
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
 		printf ("Write array element\n");
+		if (firstElement)
+		{
+			firstElement = false;
+		}
+		else
+		{
+			result |= fputs (", ", writer->f) == EOF;
+		}
 		result |= writeValue (parent, key, writer);
-		result |= fputc (',', writer->f) == EOF;
-		key = ksNext (writer->keys);
+		key = ksCurrent (writer->keys);
 	}
 	return result;
 }
@@ -238,7 +245,19 @@ static int writeArrayElements (Key * parent, Writer * writer)
 static int writeValue (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= writeScalar (key, writer);
+	if (isArray (key))
+	{
+		result |= writeArrayBody (parent, key, writer);
+	}
+	else if (isInlineTable (key))
+	{
+		result |= writeInlineTableBody (parent, key, writer);
+	}
+	else
+	{
+		result |= writeScalar (key, writer);
+		ksNext (writer->keys);
+	}
 	return result;
 }
 
@@ -266,6 +285,44 @@ static int writeScalar (Key * key, Writer * writer)
 	}
 	printf ("Write scalar: %s\n", valueStr);
 	return fputs (valueStr, writer->f) == EOF;
+}
+
+static int writeInlineTableBody (Key * parent, Key * key, Writer * writer)
+{
+	int result = 0;
+	result |= fputs ("{ ", writer->f) == EOF;
+	result |= writeInlineTableElements (key, writer);
+	result |= fputs (" }", writer->f) == EOF;
+}
+
+static int writeInlineTableElements (Key * parent, Writer * writer)
+{
+	int result = 0;
+	Key * key = ksNext (writer->keys);
+	bool firstElement = true;
+	while (keyIsBelow (parent, key) == 1)
+	{
+		if (firstElement)
+		{
+			firstElement = false;
+		}
+		else
+		{
+			result |= fputs (", ", writer->f) == EOF;
+		}
+		result |= writeAssignment (parent, key, writer);
+		key = ksCurrent (writer->keys);
+	}
+	return result;
+}
+
+static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer)
+{
+	int result = 0;
+	result |= fputs ("[[", writer->f) == EOF;
+	result |= writeRelativeKeyName (parent, key, writer);
+	result |= fputs ("]]\n", writer->f) == EOF;
+	return result;
 }
 
 static int writeNewline (Writer * writer)
@@ -331,9 +388,9 @@ static bool isArray (Key * key)
 	return findMetaKey (key, "array") != NULL;
 }
 
-static bool isInlineArray (Key * key)
+static bool isInlineTable (Key * key)
 {
-	return isType (key, "inlinearray");
+	return isType (key, "inlinetable");
 }
 
 static bool isTableArray (Key * key)
