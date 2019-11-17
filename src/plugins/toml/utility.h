@@ -15,5 +15,11 @@ void setOrderForKey (Key * key, size_t order);
 bool isEmptyArray(Key * key);
 size_t getArrayMax (Key * key);
 const Key * findMetaKey (Key * key, const char * metakeyName);
+bool isArray (Key * key);
+bool isType (Key * key, const char * type);
+bool isTableArray (Key * key);
+bool isInlineTable (Key * key);
+char * getRelativeKeyName (const Key * parent, const Key * key);
+char * getDirectSubKeyName (const Key * parent, const Key * key);
 
 #endif // ELEKTRA_PLUGIN_TOML_UTILITY_H

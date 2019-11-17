@@ -50,12 +50,6 @@ static int writePrecedingComments (const CommentList * commentList, Writer * wri
 static int writeInlineComment (const CommentList * commentList, Writer * writer);
 static int writeComment (const CommentList * comment, Writer * writer);
 static int writeNewline (Writer * writer);
-static bool isArray (Key * key);
-static bool isType (Key * key, const char * type);
-static bool isTableArray (Key * key);
-static bool isInlineTable (Key * key);
-static char * getRelativeKeyName (const Key * parent, const Key * key);
-static char * getDirectSubKeyName (const Key * parent, const Key * key);
 static CommentList * collectComments (Key * key);
 static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
@@ -120,7 +114,6 @@ static int writeKeys (Key * parent, Writer * writer)
 		parent = ksNext (writer->keys);
 		if (parent == NULL)
 		{
-			printf (">>>EMPTY KEYSET\n");
 			return 0;
 		}
 		else
@@ -289,7 +282,6 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 	if (relativeName != NULL)
 	{
 		result |= fputs (relativeName, writer->f) == EOF;
-		printf ("Write relative name: %s\n", relativeName);
 		elektraFree (relativeName);
 	}
 	return result;
@@ -304,7 +296,6 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		valueStr = keyValue (origValue);
 	}
-	printf ("Write scalar: %s\n", valueStr);
 	return fputs (valueStr, writer->f) == EOF;
 }
 
@@ -419,42 +410,6 @@ static int writeNewline (Writer * writer)
 	return fputc ('\n', writer->f) == EOF;
 }
 
-static char * getRelativeKeyName (const Key * parent, const Key * key)
-{
-	if (keyIsBelow (parent, key) <= 0)
-	{
-		return NULL;
-	}
-	size_t len = keyGetUnescapedNameSize (key) - keyGetUnescapedNameSize (parent);
-	size_t pos = 0;
-	char * name = elektraCalloc (sizeof (char) * len);
-	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
-	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
-	while (keyPart < keyStop)
-	{
-		strncat (name + pos, keyPart, len);
-		pos += elektraStrLen (keyPart) - 1;
-		name[pos++] = '.';
-		keyPart += elektraStrLen (keyPart);
-	}
-	if (pos > 0)
-	{
-		name[pos - 1] = '\0';
-	}
-
-	return name;
-}
-
-static char * getDirectSubKeyName (const Key * parent, const Key * key)
-{
-	if (keyIsBelow (parent, key) <= 0)
-	{
-		return NULL;
-	}
-	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
-	return elektraStrDup (keyPart);
-}
-
 static KeyType getKeyType (Key * key)
 {
 	const Key * meta = findMetaKey (key, "type");
@@ -534,9 +489,6 @@ static CommentList * collectComments (Key * key)
 
 		}
 	}
-	for (CommentList * ptr = commentRoot; ptr != NULL; ptr = ptr->next) {
-		printf("index = %ld, spaces = %ld, start: 0x%02X, content = %s\n", ptr->index, ptr->spaces, ptr->start, ptr->content);
-	}
 	return commentRoot;
 }
 
@@ -548,29 +500,4 @@ static void freeComments (CommentList * comments)
 		elektraFree (comments);
 		comments = next;
 	}
-}
-
-static bool isArray (Key * key)
-{
-	return findMetaKey (key, "array") != NULL;
-}
-
-static bool isInlineTable (Key * key)
-{
-	return isType (key, "inlinetable");
-}
-
-static bool isTableArray (Key * key)
-{
-	return isType (key, "tablearray");
-}
-
-static bool isType (Key * key, const char * type)
-{
-	const Key * meta = findMetaKey (key, "type");
-	if (meta == NULL)
-	{
-		return false;
-	}
-	return elektraStrCmp (keyString (meta), type) == 0;
 }

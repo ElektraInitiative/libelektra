@@ -107,3 +107,64 @@ void setOrderForKey (Key * key, size_t order)
 {
 	setPlainIntMeta (key, "order", order);
 }
+
+bool isArray (Key * key)
+{
+	return findMetaKey (key, "array") != NULL;
+}
+
+bool isInlineTable (Key * key)
+{
+	return isType (key, "inlinetable");
+}
+
+bool isTableArray (Key * key)
+{
+	return isType (key, "tablearray");
+}
+
+bool isType (Key * key, const char * type)
+{
+	const Key * meta = findMetaKey (key, "type");
+	if (meta == NULL)
+	{
+		return false;
+	}
+	return elektraStrCmp (keyString (meta), type) == 0;
+}
+
+char * getRelativeKeyName (const Key * parent, const Key * key)
+{
+	if (keyIsBelow (parent, key) <= 0)
+	{
+		return NULL;
+	}
+	size_t len = keyGetUnescapedNameSize (key) - keyGetUnescapedNameSize (parent);
+	size_t pos = 0;
+	char * name = elektraCalloc (sizeof (char) * len);
+	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
+	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
+	while (keyPart < keyStop)
+	{
+		strncat (name + pos, keyPart, len);
+		pos += elektraStrLen (keyPart) - 1;
+		name[pos++] = '.';
+		keyPart += elektraStrLen (keyPart);
+	}
+	if (pos > 0)
+	{
+		name[pos - 1] = '\0';
+	}
+
+	return name;
+}
+
+char * getDirectSubKeyName (const Key * parent, const Key * key)
+{
+	if (keyIsBelow (parent, key) <= 0)
+	{
+		return NULL;
+	}
+	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
+	return elektraStrDup (keyPart);
+}
