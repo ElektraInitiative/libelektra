@@ -35,7 +35,7 @@ Currently the identifier must be unique.
 ## Example
 
 ```sh
-# Backup-and-Restore:system$2:/tests/blockresolver
+# Backup-and-Restore: system:/tests/blockresolver
 
 # create testfile
 kdb set system:/tests/blockfile $(mktemp)

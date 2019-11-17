@@ -878,7 +878,7 @@ inline void Key::setName (const std::string & newName)
 {
 	if (ckdb::keySetName (getKey (), newName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (newName, "");
 	}
 }
 
@@ -886,7 +886,7 @@ inline void Key::addName (const std::string & addedName)
 {
 	if (ckdb::keyAddName (getKey (), addedName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (addedName, "(added to end)");
 	}
 }
 
@@ -900,7 +900,7 @@ inline void Key::setBaseName (const std::string & baseName)
 {
 	if (ckdb::keySetBaseName (getKey (), baseName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (baseName, "(as base name)");
 	}
 }
 
@@ -914,7 +914,7 @@ inline void Key::addBaseName (const std::string & baseName)
 {
 	if (ckdb::keyAddBaseName (getKey (), baseName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (baseName, "(as base name)");
 	}
 }
 
@@ -926,7 +926,7 @@ inline void Key::delBaseName ()
 {
 	if (ckdb::keySetBaseName (getKey (), 0) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName ("", "(removing base name)");
 	}
 }
 

@@ -207,7 +207,7 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 
 		// Add YAML mapping key for each part of the key we did not already write into the file
 		auto endCurrent = keys.current ().end ();
-		CppKey current{ "user", KEY_END };
+		CppKey current{ "user:/", KEY_END };
 
 		while (relative != endCurrent)
 		{

@@ -62,7 +62,7 @@ kdb export user:/tests/mozprefs ini
 #> [pref/a/default]
 #> #@META type = string
 #> key=i'm a default key
-#> [user:/a/user]
+#> [user/a/user]
 #> #@META type = integer
 #> key=123
 

@@ -51,9 +51,9 @@ kdb get user:/tests/ccode/tab
 #> Tab	Fabulous
 
 # The plugin also escapes special characters inside key names
-kdb set 'user:/tests/ccode/tab/t\ta	b' 'Escaped Tabs'
+kdb set 'user:/tests/ccode/tab/t\\ta	b' 'Escaped Tabs'
 grep 'tab/' `kdb file user:/tests/ccode` | sed 's/[[:space:]]*//'
-#> tab/t\\ta\tb = Escaped Tabs
+#> tab/t\\\\ta\\tb = Escaped Tabs
 
 # Undo modifications to database
 kdb rm -r user:/tests/ccode

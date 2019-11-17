@@ -49,15 +49,15 @@ if is_plugin_available hosts; then
 		[ $? != 0 ]
 		succeed_if "could remount the same backend"
 
-		"$KDB" mount $ROOT_FILE dir$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
+		"$KDB" mount $ROOT_FILE dir:$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the dir backend, even though cascading already mounted"
 
-		"$KDB" mount $ROOT_FILE user$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
+		"$KDB" mount $ROOT_FILE user:$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the user backend, even though cascading already mounted"
 
-		"$KDB" mount $ROOT_FILE system$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
+		"$KDB" mount $ROOT_FILE system:$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the system backend, even though cascading already mounted"
 

@@ -423,6 +423,7 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.data.v = (void *) ~magicNumber;
 	magicKey.dataSize = SIZE_MAX;
 	magicKey.key = (char *) magicNumber;
+	magicKey.ukey = 0;
 	magicKey.keySize = UINT16_MAX;
 	magicKey.keyUSize = 0;
 	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
@@ -871,7 +872,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		if (cur->ukey)
 		{
 			memcpy (mmapAddr->dataPtr, cur->ukey, cur->keyUSize);
-			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += cur->keyUSize;
 			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
@@ -1213,13 +1214,13 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		{
 			key->key = key->key + destInt;
 		}
-		if (key->meta)
-		{
-			key->meta = (KeySet *) ((char *) (key->meta) + destInt);
-		}
 		if (key->ukey)
 		{
 			key->ukey = key->ukey + destInt;
+		}
+		if (key->meta)
+		{
+			key->meta = (KeySet *) ((char *) (key->meta) + destInt);
 		}
 	}
 }

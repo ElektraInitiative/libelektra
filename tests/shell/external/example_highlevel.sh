@@ -25,8 +25,8 @@ EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/highlevel"
 
 do_tests() {
 	KEY=/sw/example/highlevel/#0/current
-	UKEY="user$KEY"
-	SPECKEY="spec$KEY"
+	UKEY="user:$KEY"
+	SPECKEY="spec:$KEY"
 
 	"$KDB" umount "$SPECKEY"
 	"$KDB" umount "$KEY"

@@ -80,8 +80,19 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 	}
 	else
 	{
-		const Key parsedArgument (argument, KEY_END);
-		if ((!parsedArgument.isValid () || !shallShowNextLevel (argument)) && parsedArgument.getBaseName ().empty ())
+		Key parsedArgument;
+		bool valid;
+		try
+		{
+			parsedArgument = Key (argument, KEY_END);
+			valid = true;
+		}
+		catch (std::exception &)
+		{
+			valid = false;
+		}
+
+		if ((!valid || !shallShowNextLevel (argument)) && parsedArgument.getBaseName ().empty ())
 		{ // is it a namespace completion?
 			const Key root = Key ("/", KEY_END);
 			const auto filter = [&](const pair<Key, pair<int, int>> & c) {

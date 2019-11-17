@@ -20,8 +20,8 @@ EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/codegen/econf"
 
 do_tests() {
 	KEY="/sw/example/econf/#0/current"
-	UKEY="user$KEY"
-	SPECKEY="spec$KEY"
+	UKEY="user:$KEY"
+	SPECKEY="spec:$KEY"
 
 	"$KDB" umount "$SPECKEY"
 	"$KDB" umount "$UKEY"

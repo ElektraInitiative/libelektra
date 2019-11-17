@@ -196,7 +196,7 @@ static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 		if (it->isCascading ())
 		{
 			auto specKey = kdb::Key (it->dup ());
-			specKey.setName ("spec" + specKey.getName ());
+			specKey.setName ("spec:" + specKey.getName ());
 			result.append (specKey);
 		}
 		if (it->isSpec ())
@@ -263,7 +263,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	if (parentKey[0] == '/')
 	{
 		cascadingParent = parentKey;
-		specParentName = "spec" + parentKey;
+		specParentName = "spec:" + parentKey;
 		ks = cascadingToSpec (keySet);
 	}
 	else if (parentKey.substr (0, 5) == "spec:/")
@@ -366,7 +366,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 		auto type = getType (key);
 		auto name = key.getName ();
-		name.erase (0, sizeof ("spec") - 1);
+		name.erase (0, sizeof ("spec:") - 1);
 
 		std::string fmtString;
 		list args;

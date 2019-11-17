@@ -162,6 +162,6 @@ kdb rm user:/tests/overrides
 
 kdb rm -r spec:/tests/tutorial/
 
-rm -r .dir:/
+rm -r .dir/
 rmdir kdbtutorial
 ```

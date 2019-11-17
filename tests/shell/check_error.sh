@@ -98,7 +98,7 @@ if is_plugin_available error; then
 	#[ $? -ne 0 ]
 	#succeed_if "Was able to get from missing backend"
 	#
-	#$KDB get system$ERROR_MOUNTPOINT > $TMPFILE 2>&1
+	#$KDB get system:$ERROR_MOUNTPOINT > $TMPFILE 2>&1
 	#[ $? -ne 0 ]
 	#succeed_if "Was able to get from missing backend"
 	#

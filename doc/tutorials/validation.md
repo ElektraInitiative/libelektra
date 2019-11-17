@@ -95,7 +95,7 @@ We write metadata to the namespace `spec` and the plugin `spec` applies it to ev
 ```sh
 kdb meta-set spec:/tests/spec/test hello world
 kdb set /tests/spec/test value
-# STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Create a new key (user|system)/tests/spec/test with string "value"
+# STDOUT-REGEX: Using name (user|system):/tests/spec/test⏎Create a new key (user|system):/tests/spec/test with string "value"
 kdb meta-ls spec:/tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
@@ -114,7 +114,7 @@ But it also supports globbing (`_` for any key, `?` for any char, `[]` for chara
 ```sh
 kdb meta-set "spec:/tests/spec/_" new metaval
 kdb set /tests/spec/test value
-# STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Set string to "value"
+# STDOUT-REGEX: Using name (user|system):/tests/spec/test⏎Set string to "value"
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
@@ -137,7 +137,7 @@ If we now set a new key with
 
 ```sh
 kdb set /tests/spec/test "not a number"
-# STDOUT-REGEX: Using name [a-z]+/tests/spec/test⏎Create a new key [a-z]+/tests/spec/test with string "not a number"
+# STDOUT-REGEX: Using name [a-z]+:/tests/spec/test⏎Create a new key [a-z]+:/tests/spec/test with string "not a number"
 ```
 
 this key has adopted all metadata from the spec namespace:
@@ -235,7 +235,7 @@ you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2
 
 ```sh
 kdb set /tests/tutorial/links/url "invalid url"
-# STDOUT-REGEX: Using name (user|system)/tests/tutorial/links/url
+# STDOUT-REGEX: Using name (user|system):/tests/tutorial/links/url
 # STDERR: .*Validation Syntactic.*not a valid URL.*
 # ERROR:  C03100
 # RET:    5
@@ -274,7 +274,7 @@ kdb meta-set /tests/tutorial/spec/should_not_be_here trigger/error C03200
 #> Using keyname spec:/tests/tutorial/spec/should_not_be_here
 kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
-# STDOUT-REGEX: Using name (user|system)/tests/tutorial/spec/should_not_be_here
+# STDOUT-REGEX: Using name (user|system):/tests/tutorial/spec/should_not_be_here
 # RET:    5
 # ERROR:C03200
 kdb get /tests/tutorial/spec/should_not_be_here
@@ -293,8 +293,8 @@ kdb rm -r system:/tests/tutorial
 kdb rm -rf user:/tests/tutorial
 kdb umount spec:/tests/tutorial
 kdb umount /tests/tutorial
-kdb rm -rf spec
-kdb rm -rf user
+kdb rm -rf spec:/
+kdb rm -rf user:/
 kdb import spec:/ dump < $(kdb get system:/tests/specbackup)
 kdb import user:/ dump < $(kdb get system:/tests/userbackup)
 rm $(kdb get system:/tests/specbackup)

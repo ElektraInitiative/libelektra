@@ -506,6 +506,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		ns = "user";
 #endif
 	}
+	ns += ":";
 
 	optind++; // skip the command name
 	while (optind < argc)

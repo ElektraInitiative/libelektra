@@ -16,7 +16,7 @@
 extern char ** environ;
 
 #define BASE_KEY "/sw/org/erm/#0/current"
-#define SPEC_BASE_KEY "spec" BASE_KEY
+#define SPEC_BASE_KEY "spec:" BASE_KEY
 
 static KeySet * createSpec (void)
 {
