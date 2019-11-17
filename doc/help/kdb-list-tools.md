@@ -15,6 +15,7 @@ The tool itself is extern.
 
 - `KDB_EXEC_PATH`:
   Path to additional external tools.
+  Can contain multiple paths separated with :.
 
 ## OPTIONS
 
