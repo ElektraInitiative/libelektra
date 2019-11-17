@@ -309,7 +309,6 @@ you up to date with the multi-language support provided by Elektra.
 - We disabled the test for the conversion engine. For more information, please take a look at [issue #3086](https://issues.libelektra.org/3086). _(René Schwaiger)_
 - We disabled the test `testmod_zeromqsend` from the command `kdb run_all`, since it caused timeouts in high load scenarios. _(Mihael Pranjić)_
 - The (Markdown) [Shell Recorder](../../tests/shell/shell_recorder/README.md) now prints the protocol for a failed test, even if the test modified the database permanently. _(René Schwaiger)_
-- We rerun ctest twice to ignore temporary build failures. _(Markus Raab)_
 
 ## Build
 

@@ -66,26 +66,26 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.2)
 endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
 
 add_custom_target (run_all
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_all" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_all" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		   ${USES_TERMINAL})
 
 add_custom_target (run_checkshell
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_checkshell" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_checkshell" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		   ${USES_TERMINAL})
 
 add_custom_target (run_nocheckshell
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_nocheckshell" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nocheckshell" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		   ${USES_TERMINAL})
 
 add_custom_target (run_nokdbtests
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_nokdbtests" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 add_custom_target (run_memcheck
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_memcheck" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_memcheck" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 include_directories (data)
