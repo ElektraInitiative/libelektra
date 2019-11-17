@@ -1,14 +1,15 @@
 #include "kconfig_parser.hpp"
 #include "base.hpp"
+#include "kconfig_parser_exception.hpp"
 
 using kdb::Key;
 using kdb::KeySet;
 
-KconfigParser::KconfigParser (FileUtility & fileUtilityParam, KeySet & keySetParam) : fileUtility{ fileUtilityParam }, keySet{ keySetParam }
+KConfigParser::KConfigParser (FileUtility & fileUtilityParam, KeySet & keySetParam) : fileUtility{ fileUtilityParam }, keySet{ keySetParam }
 {
 }
 
-void KconfigParser::parse (Key const & parent)
+void KConfigParser::parse (Key const & parent)
 {
 	Key current_group{ parent.getName (), KEY_END };
 	Key current_key{ parent.getName (), KEY_END };
@@ -35,7 +36,7 @@ void KconfigParser::parse (Key const & parent)
 	}
 }
 
-kdb::Key KconfigParser::loadGroupNameFromFile (kdb::Key const & parent)
+kdb::Key KConfigParser::loadGroupNameFromFile (kdb::Key const & parent)
 {
 	Key key{ parent.getName (), KEY_END };
 
@@ -58,9 +59,7 @@ kdb::Key KconfigParser::loadGroupNameFromFile (kdb::Key const & parent)
 			}
 			else
 			{
-				// TODO: Handle error properly
-				//     Expected close bracket, found new line or end of file
-				return parent;
+				throw KConfigParserException::expect (fileUtility, character_close_bracket);
 			}
 
 			// A meta value can only be placed at the last value. E.g.
@@ -86,34 +85,28 @@ kdb::Key KconfigParser::loadGroupNameFromFile (kdb::Key const & parent)
 			}
 			else
 			{
-				// TODO: Handle error properly
-				//     Expected close bracket, found new line or end of file
-				return parent;
+				throw KConfigParserException::expect (fileUtility, character_close_bracket);
 			}
 		}
 	}
 
 	if (!fileUtility.isNextCharNewlineOrEOF ())
 	{
-		// TODO: Handle error properly
-		// 	Expected new line or end of file
-		return parent;
+		throw KConfigParserException::expect (fileUtility, "new line or end of file");
 	}
 
 	return key;
 }
 
-kdb::Key KconfigParser::loadKeyFromFile (kdb::Key const & parent)
+kdb::Key KConfigParser::loadKeyFromFile (kdb::Key const & parent)
 {
 	fileUtility.skipCharsIfBlank ();
 	if (fileUtility.isNextCharToken ())
 	{
-		// TODO: Handle error properly
-		// 	Expected a key name, not a special character
-		return parent;
+		throw KConfigParserException::expect (fileUtility, "key name, not a spacial character");
 	}
 
-	std::string keyname{ fileUtility.getUntilChar (character_equals_sign, character_open_bracket) };
+	std::string keyName{ fileUtility.getUntilChar (character_equals_sign, character_open_bracket) };
 
 	// If the following line introduces problems, use `parent.dup();`
 	Key key{ parent.getName (), KEY_END };
@@ -121,7 +114,7 @@ kdb::Key KconfigParser::loadKeyFromFile (kdb::Key const & parent)
 	if (fileUtility.isNextCharNewlineOrEOF ())
 	{
 		// This key doesn't contain any value
-		key.addBaseName (keyname);
+		key.addBaseName (keyName);
 		return key;
 	}
 
@@ -145,15 +138,13 @@ kdb::Key KconfigParser::loadKeyFromFile (kdb::Key const & parent)
 			// Load locale
 			if (has_locale)
 			{
-				// TODO: Handle error properly
-				//     Only one locale is allowed
-				return parent;
+				throw KConfigParserException{ fileUtility, "Only one locale is allowed in a single key definition." };
 			}
 			else
 			{
 				has_locale = true;
 			}
-			keyname += character_open_bracket + fileUtility.getUntilChar (character_close_bracket) + character_close_bracket;
+			keyName += character_open_bracket + fileUtility.getUntilChar (character_close_bracket) + character_close_bracket;
 		}
 
 
@@ -163,14 +154,12 @@ kdb::Key KconfigParser::loadKeyFromFile (kdb::Key const & parent)
 		}
 		else
 		{
-			// TODO: Handle error properly
-			//     Expected close bracket
-			return parent;
+			throw KConfigParserException::expect (fileUtility, character_close_bracket);
 		}
 	}
 
 
-	key.addBaseName (keyname);
+	key.addBaseName (keyName);
 	// Skip empty spaces if any
 	fileUtility.skipCharsIfBlank ();
 	// Load the value
@@ -183,12 +172,10 @@ kdb::Key KconfigParser::loadKeyFromFile (kdb::Key const & parent)
 	}
 	else if (!fileUtility.isNextCharNewlineOrEOF ())
 	{
-		// TODO: Handle error properly
-		//     Expected new line or end of file
-		return parent;
+		throw KConfigParserException::expect (fileUtility, "new line or end of file");
 	}
 
-	if (meta != "")
+	if (!meta.empty ())
 	{
 		key.setMeta (KCONFIG_METADATA_KEY, meta);
 	}
@@ -196,7 +183,7 @@ kdb::Key KconfigParser::loadKeyFromFile (kdb::Key const & parent)
 	return key;
 }
 
-void KconfigParser::appendIfContainsMeta (Key const & key)
+void KConfigParser::appendIfContainsMeta (Key const & key)
 {
 	if (key.hasMeta (KCONFIG_METADATA_KEY))
 	{
@@ -204,7 +191,7 @@ void KconfigParser::appendIfContainsMeta (Key const & key)
 	}
 }
 
-void KconfigParser::appendIfNotGroup (Key const & key, Key const & group)
+void KConfigParser::appendIfNotGroup (Key const & key, Key const & group)
 {
 	if (key != group)
 	{

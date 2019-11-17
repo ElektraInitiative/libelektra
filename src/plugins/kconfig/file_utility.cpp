@@ -1,12 +1,13 @@
 #include "file_utility.hpp"
 #include "base.hpp"
+#include "kconfig_parser_exception.hpp"
 
-FileUtility::FileUtility (const std::string & filename) : file{ filename }, stringBuffer{}
+FileUtility::FileUtility (const std::string & filenameParam)
+: file{ filenameParam }, stringBuffer{}, currentLine{ 1 }, filename{ filenameParam }
 {
 	if (!(this->file).is_open ())
 	{
-		// TODO: Handle exception correctly
-		return;
+		throw KConfigParserException (*this, "Could not open the file.");
 	}
 }
 
@@ -64,6 +65,7 @@ void FileUtility::skipCharsIfBlank ()
 
 void FileUtility::skipLine ()
 {
+	++currentLine;
 	while (true)
 	{
 		switch ((this->file).get ())
@@ -142,4 +144,14 @@ std::string FileUtility::getUntilChar (const char & delimiterA, const char & del
 	(this->stringBuffer).str (std::string ());
 	readUntilChar (this->stringBuffer, delimiterA, delimiterB);
 	return (this->stringBuffer).str ();
+}
+
+int FileUtility::getCurrentLineNumber () const
+{
+	return currentLine;
+}
+
+std::string FileUtility::getFilename () const
+{
+	return filename;
 }

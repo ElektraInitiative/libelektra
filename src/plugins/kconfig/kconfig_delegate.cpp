@@ -38,19 +38,22 @@ kdb::KeySet KconfigDelegate::getConfig (Key const & parent)
 {
 	KeySet keys{ 0, KS_END };
 
-	FileUtility fileUtility{ parent.getString () };
-
-	if (fileUtility.isNextCharEOF ())
+	try
 	{
-		// TODO: Throw an error
-		//	File is empty or could not be opened
-		return keys;
-	}
+		ELEKTRA_LOG_DEBUG ("Parse `%s` using the kconfig plugin", parent.getString ().c_str ());
+		FileUtility fileUtility{ parent.getString () };
 
-	ELEKTRA_LOG_DEBUG ("The file opened successfully. Start parsing");
-	KconfigParser parser{ fileUtility, keys };
-	parser.parse (parent);
-	ELEKTRA_LOG_DEBUG ("Parsing finished successfully");
+		ELEKTRA_LOG_DEBUG ("The file opened successfully. Start parsing");
+		KConfigParser parser{ fileUtility, keys };
+		parser.parse (parent);
+
+		ELEKTRA_LOG_DEBUG ("Parsing finished successfully");
+	}
+	catch (KConfigParserException & e)
+	{
+		// TODO: Handle the error properly
+		throw std::runtime_error (e.getMessage ());
+	}
 
 	return keys;
 }

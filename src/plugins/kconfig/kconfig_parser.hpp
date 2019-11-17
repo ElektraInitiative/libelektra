@@ -4,7 +4,7 @@
 #include "file_utility.hpp"
 #include <kdbplugin.hpp>
 
-class KconfigParser
+class KConfigParser
 {
 private:
 	FileUtility & fileUtility;
@@ -17,7 +17,7 @@ private:
 	void appendIfNotGroup (kdb::Key const & key, kdb::Key const & group);
 
 public:
-	KconfigParser (FileUtility & fileUtilityParam, kdb::KeySet & keySetParam);
+	KConfigParser (FileUtility & fileUtilityParam, kdb::KeySet & keySetParam);
 	void parse (kdb::Key const & parent);
 };
 

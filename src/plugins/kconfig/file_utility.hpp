@@ -1,6 +1,7 @@
 #ifndef ELEKTRA_FILEUTILITY_HPP
 #define ELEKTRA_FILEUTILITY_HPP
 
+#include "kconfig_parser_exception.hpp"
 #include <fstream>
 #include <ostream>
 #include <sstream>
@@ -13,6 +14,10 @@ private:
 	std::ifstream file;
 	/* This stringBuffer is used when reading strings from file so that we don't initialize a stringstream each time */
 	std::stringstream stringBuffer;
+	/* This int is used to save the current line number for the purpose of better error messages */
+	int currentLine;
+	/* This string is used to save the filename for the purpose of better error messages */
+	std::string filename;
 
 public:
 	/**
@@ -20,7 +25,7 @@ public:
 	 * file
 	 * @param filename This string contains the absolute/relative path to the file
 	 */
-	explicit FileUtility (const std::string & filename);
+	explicit FileUtility (const std::string & filenameParam);
 
 	/**
 	 * \copydoc std::ifstream::peek()
@@ -104,6 +109,18 @@ public:
 	 * @return A string containing the characters that are read
 	 */
 	std::string getUntilChar (const char & delimiterA, const char & delimiterB);
+
+	/**
+	 * @brief This method is used to get the current line number
+	 * @return An int containing the current line number
+	 */
+	int getCurrentLineNumber () const;
+
+	/**
+	 * @brief This method is used to get the file name
+	 * @return A string containing the file name
+	 */
+	std::string getFilename () const;
 };
 
 #endif // ELEKTRA_FILEUTILITY_HPP
