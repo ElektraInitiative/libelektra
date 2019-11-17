@@ -8,4 +8,5 @@ add_plugin (kconfig
 	    SOURCES kconfig.hpp
 		    kconfig.cpp
 		    kconfig_delegate.hpp
-		    kconfig_delegate.cpp)
+		    kconfig_delegate.cpp
+		    file_utility.cpp)
