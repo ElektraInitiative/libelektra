@@ -44,7 +44,7 @@ static int writeArrayElements (Key * parent, Writer * writer);
 static int writeValue (Key * parent, Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
-static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer);
+static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * writer);
 static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer);
 static int writePrecedingComments (const CommentList * commentList, Writer * writer);
 static int writeInlineComment (const CommentList * commentList, Writer * writer);
@@ -202,20 +202,21 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 			}
 			keyAddName (elementRoot, subIndex);
 			elektraFree (subIndex);
-			while (nextIndex <= foundIndex)
+			while (nextIndex < foundIndex)	// write empty table array headers
 			{
-				result |= writeTableArrayHeader (parent, arrayRoot, writer);
+				result |= writeTableArrayHeader (parent, arrayRoot, NULL, writer);
 				nextIndex++;
 			}
-			if (keyCmp (elementRoot, key) != 0) // holds only for empty table array entries with comments (only for them, table
-							    // array keys with an index, but without subkeys, are spawned)
-			{
-				result |= writeKeys (elementRoot, writer);
-			}
-			else
+
+			result |= writeTableArrayHeader (parent, arrayRoot, key, writer);
+
+			if (keyCmp (elementRoot, key) == 0) // holds for table array entries with comments
 			{
 				ksNext (writer->keys);
 			}
+			result |= writeKeys (elementRoot, writer);
+			nextIndex++;
+			
 			keyDel (elementRoot);
 			key = ksCurrent (writer->keys);
 		}
@@ -223,7 +224,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 		{
 			while (nextIndex <= maxIndex)
 			{
-				result |= writeTableArrayHeader (parent, arrayRoot, writer);
+				result |= writeTableArrayHeader (parent, arrayRoot, NULL, writer);
 				nextIndex++;
 			}
 		}
@@ -245,20 +246,19 @@ static int writeArrayElements (Key * parent, Writer * writer)
 {
 	int result = 0;
 	Key * key = ksNext (writer->keys);
-	bool firstElement = true;
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
 		printf ("Write array element\n");
-		if (firstElement)
-		{
-			firstElement = false;
-		}
-		else
-		{
-			result |= fputs (", ", writer->f) == EOF;
-		}
+		CommentList * comments = collectComments (key);
+		result |= writePrecedingComments (comments, writer);
 		result |= writeValue (parent, key, writer);
 		key = ksCurrent (writer->keys);
+		if (keyIsDirectlyBelow (parent, key)) {
+			result |= fputs (", ", writer->f) == EOF;
+		}
+		result |= writeInlineComment (comments, writer);
+		result |= writeNewline(writer);
+		freeComments (comments);
 	}
 	return result;
 }
@@ -337,17 +337,17 @@ static int writeInlineTableElements (Key * parent, Writer * writer)
 	return result;
 }
 
-static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer)
+static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * writer)
 {
 	int result = 0;
-	CommentList * comments = collectComments (key);
+	CommentList * comments = (key != NULL ? collectComments (key) : NULL);
+	
 	result |= writePrecedingComments (comments, writer);
 	result |= fputs ("[[", writer->f) == EOF;
-	result |= writeRelativeKeyName (parent, key, writer);
+	result |= writeRelativeKeyName (parent, root, writer);
 	result |= fputs ("]]", writer->f) == EOF;
 	result |= writeInlineComment (comments, writer);
 	result |= writeNewline (writer);
-	freeComments (comments);
 	return result;
 }
 
