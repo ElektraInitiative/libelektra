@@ -11,12 +11,12 @@
 
 ## Introduction
 
-This plugin can be used to parse a KConfig ini file into a KeySet and save a given KeySet to such a file. 
+This plugin can be used to parse a KConfig ini file into a KeySet and save a given KeySet to such a file.
 
 The main differences between KConfig parser and default ini parser are:
 
 - Comments can only start with character `#`, `;`
-- Keys can contain spaces and special characters (including `;`) except from the main special characters (`[`, `]`, `=`, `#`and  `$`)
+- Keys can contain spaces and special characters (including `;`) except from the main special characters (`[`, `]`, `=`, `#`and `$`)
 - Can contain multiple keys with different locales (`keyName[en]` and `keyName[de]`)
 - Cannot contain multiple keys with different medatada (either `keyname[$a]` or `keyname[$b]`)
 
@@ -41,5 +41,5 @@ sudo kdb umount /tests/kconfig
 
 ## Limitations
 
-* Comments from file are discarded on save (save as the default KConfig functionality)
-* No validation for meta values or locale codes
+- Comments from file are discarded on save (save as the default KConfig functionality)
+- No validation for meta values or locale codes
