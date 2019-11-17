@@ -58,36 +58,6 @@ To backup a keyset stored in `user/keyset` in the `ini` format to a file called 
 Change default format to `simpleini`:<br>
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
-Create two key values and export them as `json`:
-```sh
-kdb set user/tests/kdb-export/one one
-kdb set user/tests/kdb-export/two two
-
-kdb export user/tests/kdb-export/ json
-#> {
-#>     "one": "one",
-#>     "two": "two"
-#> }
-
-kdb rm -r user/tests
-# cleanup
-```
-
-Create two key values and export them with the `yajl` plugin:
-```sh
-kdb set user/tests/kdb-export/one one
-kdb set user/tests/kdb-export/two two
-
-kdb export user/tests/kdb-export/ yajl
-#> {
-#>     "one": "one",
-#>     "two": "two"
-#> }
-
-kdb rm -r user/tests
-# cleanup
-```
-
 ## Note
 
 - Only storage plugins can be used for formatting.
