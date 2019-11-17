@@ -10,4 +10,5 @@ if [ $# -ne 1 ]; then
 	exit 1
 fi
 
-ctest -j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure -R testscr_check --build-config $1
+ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process --rerun-failed --output-on-failure -R testscr_check --build-config $1"
+ctest $ARGS || ctest $ARGS --rerun-failed
