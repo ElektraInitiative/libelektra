@@ -245,7 +245,7 @@ you up to date with the multi-language support provided by Elektra.
 - Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
 - `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
 - `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
-- `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
+- `kdb import` and `kdb export` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
 - <<TODO>>
 
 ## Scripts
