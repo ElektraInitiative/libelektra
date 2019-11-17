@@ -9,7 +9,6 @@
 #include <kdb.hpp>
 #include <keysetio.hpp>
 #include <modules.hpp>
-#include <plugindatabase.hpp>
 
 #include <kdbmacros.h>
 
@@ -104,15 +103,8 @@ int EditorCommand::execute (Cmdline const & cl)
 	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
 
-	if (cl.verbose) std::cout << "lookup provider for: " << format << endl;
-
-	ModulesPluginDatabase pluginDatabase;
-	PluginSpec provides = pluginDatabase.lookupProvides (format);
-
-	if (cl.verbose) std::cout << "found provider: " << provides.getName () << endl;
-
 	Modules modules;
-	PluginPtr plugin = modules.load (provides.getName ());
+	PluginPtr plugin = modules.load (format);
 
 	tmpFile ();
 	if (cl.verbose) std::cout << "filename set to " << filename << std::endl;
