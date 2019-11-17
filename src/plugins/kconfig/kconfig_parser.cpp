@@ -64,7 +64,7 @@ kdb::Key KConfigParser::loadGroupNameFromFile (kdb::Key const & parent)
 
 			// A meta value can only be placed at the last value. E.g.
 			// 	[keyName1][$pseudoMeta][keyName2][$realMeta]
-			//	In the previous example `realMeta` is a meta value, pseudoMeta is not
+			//	In the previous example `realMeta` is a meta value, `pseudoMeta` is not
 			if (fileUtility.isNextCharNewlineOrEOF ())
 			{
 				key.setMeta (KCONFIG_METADATA_KEY, meta_candidate);

@@ -7,17 +7,53 @@
 class KConfigParser
 {
 private:
+	/* This FileUtility is used to read from the file */
 	FileUtility & fileUtility;
+	/* This KeySet is used to store the parsed values */
 	kdb::KeySet & keySet;
 
+	/**
+	 * @brief This method parses a group from the file into an Elektra key
+	 * 	Format: (\[keyname\])+[\[$meta\]]
+	 * @param parent
+	 * @return
+	 */
 	kdb::Key loadGroupNameFromFile (kdb::Key const & parent);
+
+	/**
+	 * @brief This method parses a key from the file into an Elektra key.
+	 * 	Format: keyname[\[locale\]](\[$meta\])*[=value]
+	 * @param parent
+	 * @return
+	 */
 	kdb::Key loadKeyFromFile (kdb::Key const & parent);
 
+	/**
+	 * @brief This method is used to add a key to the KeySet only if it contains KConfig metadata
+	 * @param key This is the key that we want to add
+	 */
 	void appendIfContainsMeta (kdb::Key const & key);
+
+	/**
+	 * @brief This method is used to add a key to the KeySet if it isn't the same as the group
+	 * @param key This is the key that we want to add
+	 * @param group This is the key that we don't want to add
+	 */
 	void appendIfNotGroup (kdb::Key const & key, kdb::Key const & group);
 
 public:
+	/**
+	 * @brief This constructor is used to abstract the File and KeySet that we're working on as well as the parsing methods
+	 * @param fileUtilityParam This FileUtility is where we read the file from
+	 * @param keySetParam This KeySet is where we store the parsed keys
+	 */
 	KConfigParser (FileUtility & fileUtilityParam, kdb::KeySet & keySetParam);
+
+	/**
+	 * @brief This method is used to parses a KConfig file into an Elektra KeySet similarly to the KConfigIniBackend from the KConfig
+	 * project
+	 * @param parent the prefix to all the created keys
+	 */
 	void parse (kdb::Key const & parent);
 };
 
