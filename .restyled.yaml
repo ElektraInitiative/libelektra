@@ -1,6 +1,11 @@
 restylers_version: '20190904'
 auto: true
 restylers:
+
+  # TODO: Enable `prettier` again, after Restyled offers Prettier 1.19
+  # See also: https://github.com/restyled-io/restylers/blob/master/prettier/Dockerfile
+  # - prettier
+
   - prettier-markdown:
       arguments: []
   - shfmt:

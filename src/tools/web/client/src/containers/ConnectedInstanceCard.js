@@ -30,7 +30,4 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(InstanceCard);
+export default connect(mapStateToProps, mapDispatchToProps)(InstanceCard);

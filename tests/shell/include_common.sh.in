@@ -68,7 +68,8 @@ if [ $? = 0 ]; then
 	KDB=${KDB_GETENV}
 fi
 
-export KDB_EXEC_PATH="@CMAKE_BINARY_DIR@/bin"
+# Do not overwriting existing KDB_EXEC_PATH
+export KDB_EXEC_PATH="@CMAKE_BINARY_DIR@/bin:$KDB_EXEC_PATH"
 
 # ensure ruby plugin finds Ruby bindings without installation
 # (require both the src and the build dir)
@@ -375,7 +376,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
 #
 #
 #

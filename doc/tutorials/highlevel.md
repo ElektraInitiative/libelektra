@@ -14,7 +14,7 @@ at [its documentation](/src/libs/highlevel/README.md). Please note, however, tha
 ## Overview
 
 The code-generation API builds on Elektra's specifications. Instead of just using specifications at runtime, the code-generator parses
-them when invoked (ideally right before compiling) and utilises the specification when generating configuration accessor functions.
+them when invoked (ideally right before compiling) and utilizes the specification when generating configuration accessor functions.
 
 ## Writing a specification
 
@@ -307,7 +307,7 @@ should immediately close it once you called `printHelpMessage`.
 ### Advanced concepts
 
 The code-generator has some more advanced features that are supported out of the box. For example, you can read multiple config values at
-once by utilising structs. The use of structs also allows for recursive configurations like menus (a menu can have submenus).
+once by utilizing structs. The use of structs also allows for recursive configurations like menus (a menu can have submenus).
 
 For more information take a look at the man-page [`kdb-gen-highlevel(1)`](../help/kdb-gen-highlevel.md).
 

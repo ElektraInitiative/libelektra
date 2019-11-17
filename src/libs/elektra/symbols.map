@@ -154,6 +154,8 @@ libelektra_1.0 {
 	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
 
 	keyMeta;
+	keyLock;
+	keyIsLocked;
 };
 
 libelektraprivate_1.0 {
@@ -163,7 +165,6 @@ libelektraprivate_1.0 {
 	elektraGlobalError;
 	elektraGlobalGet;
 	elektraGlobalSet;
-	elektraKeyLock;
 	elektraKsPopAtCursor;
 	elektraUnescapeKeyName;
 	elektraUnescapeKeyNamePart;
@@ -181,7 +182,6 @@ libelektraprivate_1.0 {
 	keyNameIsSystem;
 	keyNameIsUser;
 	keySetRaw;
-	keyVInit;
 	elektraPluginFindGlobal;
 	elektraPluginMissing;
 	elektraPluginVersion;

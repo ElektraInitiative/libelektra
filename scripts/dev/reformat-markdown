@@ -16,7 +16,7 @@ cd "$SOURCE" || {
 PRETTIER="$(which prettier)"
 
 if [ -z "${PRETTIER}" ]; then
-	printf 2>&1 'Please install `prettier` (npm install --global prettier@1.18.2)\n'
+	printf 2>&1 'Please install `prettier` (npm install --global prettier@1.19.1)\n'
 	exit 1
 fi
 

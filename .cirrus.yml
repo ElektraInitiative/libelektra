@@ -156,7 +156,7 @@ mac_task:
       brew install ruby@2.6
       export PATH="/usr/local/opt/ruby@2.6/bin:/usr/local/lib/ruby/gems/2.6.0/bin:$PATH"
     - | # Install Ruby gems
-      gem install ronn test-unit --user-install --no-document
+      sudo gem install ronn test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
 

@@ -21,7 +21,4 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ findKey, clearSearch, sendNotification }, dispatch);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TreeSearch);
+export default connect(mapStateToProps, mapDispatchToProps)(TreeSearch);

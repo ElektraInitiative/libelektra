@@ -1,0 +1,5 @@
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_all.in" "${CMAKE_CURRENT_BINARY_DIR}/run_all" @ONLY)
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_memcheck.in" "${CMAKE_CURRENT_BINARY_DIR}/run_memcheck" @ONLY)
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nokdbtests.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nokdbtests" @ONLY)
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_checkshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_checkshell" @ONLY)
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nocheckshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nocheckshell" @ONLY)

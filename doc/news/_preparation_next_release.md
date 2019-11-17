@@ -26,6 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Code generation
+- Elektra now has a technical preview of a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). It is written in C99 and can currently be used with [`kdb cmerge`](../help/kdb-cmerge.md). _(Dominic Jäger)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -158,6 +159,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - `keyIsDirectBelow` was renamed to `keyIsDirectlyBelow`. _(Philipp Gackstatter)_
 - `keyMeta` was added to provide access to a key's underlying KeySet that holds its metadata keys. _(Philipp Gackstatter)_
 - Removed the obsolete `ksLookupByString` and `ksLookupByBinary`, as well as deprecated `KDB_O_*` options. _(Philipp Gackstatter)_
+- Added `keyLock` and `keyIsLocked`. _(Manuel Mausz)_
+- Removed `keyVInit`. _(Manuel Mausz)_
 
 ### Opts
 
@@ -169,7 +172,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   - `elektraKsToMemArray` was moved to `kdbease.h`,
   - `elektraLookupOptions` was moved to `kdbprivate.h`,
   - `keySetStringF` was moved to `kdbinternal.h`,
-  - `keyLock` and `elektraLockOptions` was moved to `kdbprivate.h`,
   - Removed `ksPrev` and `elektraKsPrev`,
   - Removed `elektraRenameKeys` and replaced it with `ksRenameKeys`. _(Philipp Gackstatter)_
 
@@ -226,7 +228,6 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- kdb can call [cmerge](../help/kdb-cmerge.md) and specify a [strategy](../help/elektra-cmerge-strategy.md) to resolve conflicts. _(Dominic Jäger)_
 - Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - [elektrad](../../src/tools/web/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` commandline tool on every request. _(Raphael Gruber)_
@@ -242,6 +243,7 @@ you up to date with the multi-language support provided by Elektra.
 - `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
 - `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
 - elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings. _(Raphael Gruber)_
+- `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
 - <<TODO>>
 
 ## Scripts
@@ -291,10 +293,13 @@ you up to date with the multi-language support provided by Elektra.
 - We removed links to old and disabled Jenkins build jobs. _(René Schwaiger)_
 - The [compile instructions](../COMPILE.md) do not assume that you use `make` or `gcc` to build Elektra anymore. _(René Schwaiger)_
 - Add hints about reformatting with docker. _(Dominic Jäger)_
+- Reference testing with Docker tutorial in main testing documentation. _(Dominic Jäger)_
 - Add instructions about sourcing on FreeBSD. _(Dominic Jäger)_
+- Add information on debuggers to main testing documentation. _(Dominic Jäger)_
 - Added design decision for error code implementations. _(Michael Zronek)_
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
+- We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
 
 ## Tests
 
@@ -302,6 +307,7 @@ you up to date with the multi-language support provided by Elektra.
 - We disabled the test for the conversion engine. For more information, please take a look at [issue #3086](https://issues.libelektra.org/3086). _(René Schwaiger)_
 - We disabled the test `testmod_zeromqsend` from the command `kdb run_all`, since it caused timeouts in high load scenarios. _(Mihael Pranjić)_
 - The (Markdown) [Shell Recorder](../../tests/shell/shell_recorder/README.md) now prints the protocol for a failed test, even if the test modified the database permanently. _(René Schwaiger)_
+- We rerun ctest twice to ignore temporary build failures. _(Markus Raab)_
 
 ## Build
 
@@ -338,6 +344,8 @@ you up to date with the multi-language support provided by Elektra.
 - Improved `range` plugin error message. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
 - Release notes now use git's union merge driver. _(Dominic Jäger)_
+- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
+- I'm only here for the build server. This PR contains only fix ups. _(Dominic Jäger)_
 
 ## Infrastructure
 
@@ -381,7 +389,8 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- The Website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- The website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
+- Improve mainpage of website, restructure getting started. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 

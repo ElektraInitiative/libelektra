@@ -12,46 +12,6 @@
 #include <kdbprivate.h>
 
 /**
- * @copydoc keyLock
- */
-int elektraKeyLock (Key * key, /*option_t*/ enum elektraLockOptions what)
-{
-	int ret = 0;
-
-	if (!key) return -1;
-
-	if (test_bit (what, KEY_LOCK_NAME))
-	{
-		if (!test_bit (key->flags, KEY_FLAG_RO_NAME))
-		{
-			set_bit (key->flags, KEY_FLAG_RO_NAME);
-			set_bit (ret, KEY_LOCK_NAME);
-		}
-	}
-
-	if (test_bit (what, KEY_LOCK_VALUE))
-	{
-		if (!test_bit (key->flags, KEY_FLAG_RO_VALUE))
-		{
-			set_bit (key->flags, KEY_FLAG_RO_VALUE);
-			set_bit (ret, KEY_LOCK_VALUE);
-		}
-	}
-
-	if (test_bit (what, KEY_LOCK_META))
-	{
-		if (!test_bit (key->flags, KEY_FLAG_RO_META))
-		{
-			set_bit (key->flags, KEY_FLAG_RO_META);
-			set_bit (ret, KEY_LOCK_META);
-		}
-	}
-
-	return ret;
-}
-
-
-/**
  * @copydoc ksPopAtCursor
  */
 Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos)

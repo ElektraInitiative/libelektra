@@ -6,7 +6,7 @@ kdb-cmerge - Join three key sets together
 
 ## SYNOPSIS
 
-`kdb cmerge [options] ourpath theirpath basepath resultpath`<br>
+`kdb cmerge [OPTIONS] our their base result`
 
 - ourpath:
   Path to the keyset to serve as `our`<br>
@@ -26,6 +26,32 @@ kdb-cmerge - Join three key sets together
 On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
 This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, cmerge will be renamed to merge.
+
+## OPTIONS
+
+The options of `kdb cmerge` are:
+
+- `-f`, `--force`: overwrite existing keys in `result`
+- `-v`, `--verbose`: give additional information
+
+Strategies offer fine grained control over conflict handling. The option is:
+
+- `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
+
+Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which can be accessed with `man elektra-cmerge-strategies`.
+
+## RETURN VALUE
+
+- 0:
+  Successful.
+
+- 1:
+  An error happened.
+
+- 2:
+  A merge conflict occurred and merge strategy abort was set.
+
+The result of the merge is stored in `result`.
 
 ## THREE-WAY MERGE
 
