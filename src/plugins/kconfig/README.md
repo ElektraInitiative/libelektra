@@ -1,56 +1,45 @@
 - infos = Information about the kconfig plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = Dardan Haxhimustafa <mail@dardan.im>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage/kconfig storage kconfig
+- infos/provides = storage/kconfig
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = recommended maintained compatible specific experimental unfinished nodoc concept
 - infos/metadata =
-- infos/description = one-line description of kconfig
+- infos/description = Reads and writes the KConfig ini format
 
 ## Introduction
 
-Copy this kconfig if you want to start a new
-plugin written in C++.
+This plugin can be used to parse a KConfig ini file into a KeySet and save a given KeySet to such a file. 
+
+The main differences between KConfig parser and default ini parser are:
+
+- Comments can only start with character `#`, `;`
+- Keys can contain spaces and special characters (including `;`) except from the main special characters (`[`, `]`, `=`, `#`and  `$`)
+- Can contain multiple keys with different locales (`keyName[en]` and `keyName[de]`)
+- Cannot contain multiple keys with different medatada (either `keyname[$a]` or `keyname[$b]`)
 
 ## Usage
 
-You can use `scripts/copy-kconfig`
-to automatically rename everything to your
-plugin name:
-
-```bash
-cd src/plugins
-../../scripts/copy-kconfig yourplugin
-```
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
-
-## Dependencies
-
-None.
-
-## Examples
+The following example shows you how you can read and write data using this plugin.
 
 ```sh
-# Backup-and-Restore: user/tests/kconfig
+# Mount the plugin to the cascading namespace `/tests/kconfig`
+sudo kdb mount configrc /tests/kconfig kconfig
 
-kdb set user/tests/kconfig/key value
-#> Create a new key user/tests/kconfig/key with string "value"
+# Manually add a key-value pair to the database
+printf 'key=Value' > `kdb file /tests/Kconfig`
 
+# Retrieve the new value
 kdb get /tests/kconfig/key
-#> value
+#> Value
+
+# Undo modifications to the database
+sudo kdb umount /tests/kconfig
 ```
 
 ## Limitations
 
-None.
+* Comments from file are discarded on save (save as the default KConfig functionality)
+* No validation for meta values or locale codes

@@ -2,17 +2,16 @@
 #include "base.hpp"
 #include "kconfig_parser_exception.hpp"
 
-using kdb::Key;
-using kdb::KeySet;
-
-KConfigParser::KConfigParser (FileUtility & fileUtilityParam, KeySet & keySetParam) : fileUtility{ fileUtilityParam }, keySet{ keySetParam }
+KConfigParser::KConfigParser (FileUtility & fileUtilityParam, CppKeySet & keySetParam)
+: fileUtility{ fileUtilityParam }, keySet{ keySetParam }
 {
 }
 
-void KConfigParser::parse (Key const & parent)
+
+void KConfigParser::parse (CppKey const & parent)
 {
-	Key current_group{ parent.getName (), KEY_END };
-	Key current_key{ parent.getName (), KEY_END };
+	CppKey current_group{ parent.getName (), KEY_END };
+	CppKey current_key{ parent.getName (), KEY_END };
 
 	while (true)
 	{
@@ -36,9 +35,9 @@ void KConfigParser::parse (Key const & parent)
 	}
 }
 
-kdb::Key KConfigParser::loadGroupNameFromFile (kdb::Key const & parent)
+kdb::Key KConfigParser::loadGroupNameFromFile (CppKey const & parent)
 {
-	Key key{ parent.getName (), KEY_END };
+	CppKey key{ parent.getName (), KEY_END };
 
 	while (fileUtility.peekNextChar () == character_open_bracket)
 	{
@@ -98,7 +97,7 @@ kdb::Key KConfigParser::loadGroupNameFromFile (kdb::Key const & parent)
 	return key;
 }
 
-kdb::Key KConfigParser::loadKeyFromFile (kdb::Key const & parent)
+CppKey KConfigParser::loadKeyFromFile (CppKey const & parent)
 {
 	fileUtility.skipCharsIfBlank ();
 	if (fileUtility.isNextCharToken ())
@@ -109,7 +108,7 @@ kdb::Key KConfigParser::loadKeyFromFile (kdb::Key const & parent)
 	std::string keyName{ fileUtility.getUntilChar (character_equals_sign, character_open_bracket) };
 
 	// If the following line introduces problems, use `parent.dup();`
-	Key key{ parent.getName (), KEY_END };
+	CppKey key{ parent.getName (), KEY_END };
 
 	if (fileUtility.isNextCharNewlineOrEOF ())
 	{
@@ -183,15 +182,14 @@ kdb::Key KConfigParser::loadKeyFromFile (kdb::Key const & parent)
 	return key;
 }
 
-void KConfigParser::appendIfContainsMeta (Key const & key)
+void KConfigParser::appendIfContainsMeta (CppKey const & key)
 {
 	if (key.hasMeta (KCONFIG_METADATA_KEY))
 	{
 		keySet.append (key);
 	}
 }
-
-void KConfigParser::appendIfNotGroup (Key const & key, Key const & group)
+void KConfigParser::appendIfNotGroup (CppKey const & key, CppKey const & group)
 {
 	if (key != group)
 	{
