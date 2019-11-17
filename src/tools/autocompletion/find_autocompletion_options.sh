@@ -1,9 +1,21 @@
 #/usr/bin/env bash
+IFS=$'\n'
 
-_helloworld_completions() {
-	# completing for last input before a tab
-	OUTPUT="$(python3 find_autocompletion_options.py ${COMP_WORDS[-1]})"
-	COMPREPLY+=$OUTPUT
+_find_completions() 
+{
+	COMPREPLY=()
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local prev="${COMP_WORDS[COMP_CWORD-1]}"
+	local cur_str=""
+	local prev_str=""
+	if ! [ -z "${cur}" ] ; then
+		cur_str="-s ${cur}"
+	fi
+	if ! [ -z "${prev}" ] ; then
+		prev_str="-l ${prev}"
+	fi
+	output="$(python3 find_autocompletion_options.py ${cur_str} ${prev_str})"
+	COMPREPLY=($(compgen -W "${output}"))
 }
+complete -F _find_completions kdb
 
-complete -F _helloworld_completions helloworld

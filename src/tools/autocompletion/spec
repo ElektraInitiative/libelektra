@@ -12,6 +12,7 @@ opt/long=check-env-dep
 
 [kdb/complete]
 opt/long=complete
+opt/arg/check=types/kdb-path
 
 [kdb/convert]
 opt/long=convert
@@ -24,21 +25,29 @@ opt/long=editor
 
 [kdb/export]
 opt/long=export
+opt/arg/check=types/kdb-path
 
 [kdb/file]
 opt/long=file
+opt/arg/check=types/kdb-path
 
 [kdb/find]
 opt/long=find
 
 [kdb/fstab]
 opt/long=fstab
+opt/arg/check=types/kdb-path
+
+[kdb/get]
+opt/long=get
+opt/arg/check=types/kdb-path
 
 [kdb/get]
 opt/long=get
 
 [kdb/getmeta]
 opt/long=getmeta
+opt/arg/check=types/kdb-path
 
 [kdb/global-mount]
 opt/long=global-mount
@@ -51,15 +60,23 @@ opt/long=help
 
 [kdb/import]
 opt/long=import
+opt/arg/check=types/kdb-path
 
 [kdb/info]
 opt/long=info
 
+[kdb/list]
+opt/long=list
+
 [kdb/list-commands]
 opt/long=list-commands
 
-[kdb/list]
-opt/long=list
+[kdb/list-tools]
+opt/long=list-tools
+
+[kdb/ls]
+opt=ls
+opt/arg/check=types/kdb-path
 
 [kdb/list-tools]
 opt/long=list-tools
@@ -69,9 +86,15 @@ opt=ls
 
 [kdb/lsmeta]
 opt/long=lsmeta
+opt/arg/check=types/kdb-path
 
 [kdb/merge]
 opt/long=merge
+opt/arg=#3
+opt/arg/#0/check=types/kdb-path
+opt/arg/#1/check=types/kdb-path
+opt/arg/#2/check=types/kdb-path
+opt/arg/#3/check=types/kdb-path
 
 [kdb/mount-list-all-files]
 opt/long=mount-list-all-files
@@ -81,9 +104,19 @@ opt/long=mount
 
 [kdb/mountpoint-info]
 opt/long=mountpoint-info
+opt/arg/check=types/kdb-path
 
 [kdb/mv]
 opt=mv
+opt/arg=#1
+opt/arg/#0/check=types/kdb-path
+opt/arg/#1/check=types/kdb-path
+
+[kdb/plugin-info]
+opt/long=plugin-info
+
+[kdb/plugin-list]
+opt/long=plugin-list
 
 [kdb/plugin-info]
 opt/long=plugin-info
@@ -105,18 +138,26 @@ opt/long=restore
 
 [kdb/rm]
 opt=rm
+opt/arg/check=types/kdb-path
 
 [kdb/rmmeta]
 opt/long=rmmeta
+opt/arg/check=types/kdb-path
+
+[kdb/set]
+opt/long=set
+opt/arg/check=types/kdb-path
 
 [kdb/set]
 opt/long=set
 
 [kdb/setmeta]
 opt/long=setmeta
+opt/arg/check=types/kdb-path
 
 [kdb/sget]
 opt/long=sget
+opt/arg/check=types/kdb-path
 
 [kdb/shell]
 opt/long=shell
@@ -129,12 +170,18 @@ opt/long=stash
 
 [kdb/test]
 opt/long=test
+opt/arg/check=types/kdb-path
 
 [kdb/umount-all]
 opt/long=umount-all
 
 [kdb/umount]
 opt/long=umount
+opt/arg/check=types/kdb-path
 
 [kdb/vset]
 opt/long=vset
+opt/arg/check=types/kdb-path
+
+[types/kdb-path]
+completion/shell=kdb complete
