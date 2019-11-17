@@ -84,6 +84,8 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 "]"		return BRACKETS_CLOSE;
 "{"		return CURLY_OPEN;
 "}"		return CURLY_CLOSE;
+" "		return SPACE;
+"\t"	return TAB;
 {newline}	return NEWLINE;
 
 "#" {
@@ -208,8 +210,6 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	yylval.scalar = createScalarDup (SCALAR_STRING_BARE, yytext, yylineno);
 	return BARE_STRING;
 }
-
-{whitespace} ;
 
 .  {
 	driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s'", yytext);
