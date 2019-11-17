@@ -18,9 +18,8 @@
 ## Limitations:
 
 	- Comments and newlines between the last array element and closing brackets are discarded.
-	- Leap seconds for RFC3339 date times are not checked. For seconds, a value of 60 is always valid.
-	As a result of this decision, no valid RFC3339 date is determined invalid, but invalid RFC3339 dates may be determined valid.
-	Leap seconds can occur on the ends of June/Dec, where a time of 23:59:60 (positive leap second) or 23:59:58 (negative leap second) is the highest valid value for a second.
+	- Trailing commas in arrays and inline tables are discarded
+	- Comments/newlines between the last element of an array and the closing bracket are discarded.
 
 ## Questions
 
@@ -29,6 +28,6 @@
         * Maybe add own metakey (eg. epilogue/comment/#1)?
 
 ## TODOs
-    - Use date plugin
-    - directory value plugin?
-    - empty array with ###empty_array
+	- Don't store origvalue, if transformed value is equal to untransformed value
+    - directory value plugin? Doesn't seem to be needed
+    - Maybe use date plugin

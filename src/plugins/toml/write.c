@@ -36,6 +36,9 @@ static int writeValue (Key * parent, Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
 static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer);
+static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer);
+static int writePrecedingComments (Key * key, Writer * writer);
+static int writeInlineComment (Key * key, Writer * writer);
 static int writeNewline (Writer * writer);
 static bool isArray (Key * key);
 static bool isType (Key * key, const char * type);
@@ -114,13 +117,12 @@ static int writeKeys (Key * parent, Writer * writer)
 			return writeKeys (parent, writer);
 		}
 	}
-	// printf(">>> Starting loop with parent %s\n", keyName(parent));
 	Key * key = ksCurrent (writer->keys);
 
 	int result = 0;
+
 	while (result == 0 && key != NULL && keyIsBelow (parent, key) == 1)
 	{
-		printf ("LOOP KEY = %s\n", keyName (key));
 		switch (getKeyType (key))
 		{
 		case KEY_TYPE_ASSIGNMENT:
@@ -135,8 +137,6 @@ static int writeKeys (Key * parent, Writer * writer)
 			break;
 		}
 		key = ksCurrent (writer->keys);
-		// printf(">>> Finished one loop with parent %s\n", keyName(parent));
-		// printf("AFTER KEY = %s, type = %d, result = %d\n", keyName (key), getKeyType (key), result);
 	}
 	return result;
 }
@@ -145,18 +145,18 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
 
+	result |= writePrecedingComments (key, writer);
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputs (" = ", writer->f) == EOF;
 	result |= writeValue (parent, key, writer);
+	result |= writeInlineComment (key, writer);
 	return result;
 }
 
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	result |= fputc ('[', writer->f) == EOF;
-	result |= writeRelativeKeyName (parent, key, writer);
-	result |= fputs ("]\n", writer->f) == EOF;
+	result |= writeSimpleTableHeader (parent, key, writer);
 	ksNext (writer->keys);
 	result |= writeKeys (key, writer);
 
@@ -194,7 +194,15 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 				result |= writeTableArrayHeader (parent, arrayRoot, writer);
 				nextIndex++;
 			}
-			result |= writeKeys (elementRoot, writer);
+			if (keyCmp (elementRoot, key) != 0) // holds only for empty table array entries with comments (only for them, table
+							    // array keys with an index, but without subkeys, are spawned)
+			{
+				result |= writeKeys (elementRoot, writer);
+			}
+			else
+			{
+				ksNext (writer->keys);
+			}
 			keyDel (elementRoot);
 			key = ksCurrent (writer->keys);
 		}
@@ -319,9 +327,43 @@ static int writeInlineTableElements (Key * parent, Writer * writer)
 static int writeTableArrayHeader (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
+	result |= writePrecedingComments (key, writer);
 	result |= fputs ("[[", writer->f) == EOF;
 	result |= writeRelativeKeyName (parent, key, writer);
-	result |= fputs ("]]\n", writer->f) == EOF;
+	result |= fputs ("]]", writer->f) == EOF;
+	result |= writeInlineComment (key, writer);
+	result |= writeNewline (writer);
+	return result;
+}
+
+static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer)
+{
+	int result = 0;
+	result |= writePrecedingComments (key, writer);
+	result |= fputc ('[', writer->f) == EOF;
+	result |= writeRelativeKeyName (parent, key, writer);
+	result |= fputc (']', writer->f) == EOF;
+	result |= writeInlineComment (key, writer);
+	result |= writeNewline (writer);
+	return result;
+}
+
+static int writePrecedingComments (Key * key, Writer * writer)
+{
+	int result = 0;
+	keyRewindMeta (key);
+	Key * meta;
+	while ((meta = keyNextMeta (key)) != NULL)
+	{
+		printf("> META = %s -> %s\n", keyName(meta), keyString(meta));
+	}
+	return result;
+}
+
+static int writeInlineComment (Key * key, Writer * writer)
+{
+	int result = 0;
+	keyRewindMeta (key);
 	return result;
 }
 
