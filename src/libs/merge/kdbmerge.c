@@ -46,7 +46,7 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to set
  * @param value which value to set it to, must be a number
- * @retval 0 on success, -1 otherwise.
+ * @retval 0 on success, 1 otherwise.
  *
  * This enforces that a number is set.
  */
@@ -70,13 +70,13 @@ static int setStatisticalValue (Key * informationKey, char * metaName, int value
 						     "Statistical value %d was too large for its buffer. This happened with meta name %s.",
 						     value, metaName);
 		}
-		return -1;
+		return 1;
 	}
 	ssize_t size = keySetMeta (informationKey, metaName, stringy);
 	if (size <= 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set statistical value.");
-		return -1;
+		return 1;
 	}
 	return 0;
 }
