@@ -4,11 +4,18 @@ IFS=$'\n'
 _find_completions() 
 {
 	COMPREPLY=()
-	cur="${COMP_WORDS[COMP_CWORD]}"
-	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	OUTPUT="$(python3 find_autocompletion_options.py ${cur})"
-	COMPREPLY=($(compgen -W "${OUTPUT}"))
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local prev="${COMP_WORDS[COMP_CWORD-1]}"
+	local cur_str=""
+	local prev_str=""
+	if ! [ -z "${cur}" ] ; then
+		cur_str="-s ${cur}"
+	fi
+	if ! [ -z "${prev}" ] ; then
+		prev_str="-l ${prev}"
+	fi
+	output="$(python3 find_autocompletion_options.py ${cur_str} ${prev_str})"
+	COMPREPLY=($(compgen -W "${output}"))
 }
+complete -F _find_completions kdb
 
-# TODO the kdb should not hardcoded
-complete -F _find_completions helloworld
