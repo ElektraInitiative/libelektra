@@ -82,33 +82,6 @@ To import a configuration stored in the `ini` format in a file called `example.i
 To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:<br>
 `cat sw.ecf | kdb import system/sw`
 
-To import a sample `json` content with the `yajl` plugin:
-```sh
-# import two keys from a json string 
-kdb import user/tests/ yajl <<< "{ \"one\": \"one\", \"two\": \"two\" }"
-
-# get the values and verify they got imported correctly
-kdb get user/tests/one
-#> one
-kdb get user/tests/two
-#> two
-kdb rm -r user/tests
-```
-
-To import a sample `json` content via specifying :
-```sh
-# import two keys from a json string 
-kdb import user/tests/ json <<< "{ \"one\": \"one\", \"two\": \"two\" }"
-
-# get the values and verify they got imported correctly
-kdb get user/tests/one
-#> one
-kdb get user/tests/two
-#> two
-
-kdb rm -r user/tests
-```
-
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
