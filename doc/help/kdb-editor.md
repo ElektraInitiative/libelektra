@@ -86,9 +86,6 @@ To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you wou
 Or set a new editor as default using:<br>
 `kdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano`
 
-To change the configuration in KDB below `user` in json format, you would use:<br>
-`kdb editor user json`
-
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
