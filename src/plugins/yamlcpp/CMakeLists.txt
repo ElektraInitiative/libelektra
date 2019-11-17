@@ -24,12 +24,6 @@ if (DEPENDENCY_PHASE)
 
 endif (DEPENDENCY_PHASE)
 
-set (TEST_ARGUMENTS ADD_TEST CPP_TEST INSTALL_TEST_DATA)
-if (BUILD_SHARED AND APPLE AND DEFINED ENV{CIRRUS_CI})
-	message (STATUS "Excluding unit test for YAML CPP plugin, since it currently fails for shared builds in Cirrus CI")
-	set (TEST_ARGUMENTS "")
-endif (BUILD_SHARED AND APPLE AND DEFINED ENV{CIRRUS_CI})
-
 # ——————————————————————————————————————————————————————————
 # TODO: Remove this after we enabled `-Wconversion` globally
 set_source_files_properties (yamlcpp.hpp
@@ -47,7 +41,9 @@ set_source_files_properties (yamlcpp.hpp
 
 add_plugin (yamlcpp
 	    CPP
-	    ${TEST_ARGUMENTS}
+	    ADD_TEST
+	    CPP_TEST
+	    INSTALL_TEST_DATA
 	    ${ASAN_DISABLE_CONTAINER_OVERFLOW_CHECK}
 	    TEST_README
 	    TEST_REQUIRED_PLUGINS base64 directoryvalue
