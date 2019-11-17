@@ -13,9 +13,9 @@
 #include "kdbprivate.h"
 
 #ifdef __cplusplus
+namespace ckdb
+{
 extern "C" {
-using Key = ckdb::Key;
-using KeySet = ckdb::KeySet;
 #endif
 
 enum
@@ -31,6 +31,7 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 int getConflicts (Key * informationKey);
 
 #ifdef __cplusplus
+}
 }
 #endif
 #endif
