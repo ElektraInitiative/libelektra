@@ -50,7 +50,7 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  *
  * This enforces that a number is set.
  */
-static int setStatisticalValue (Key * informationKey, char * metaName, int value)
+static void setStatisticalValue (Key * informationKey, char * metaName, int value)
 {
 	char stringy[INT_BUF_SIZE];
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
