@@ -10,7 +10,7 @@ start_of_input = None
 # mount_point is used to store the mount point the specification file is
 # 		mounted at
 # TODO: should not be hardcoded
-mount_point = 'spec/autocomplete'
+mount_point = 'spec/tests/autocomplete'
 
 # ARGUMENTS for find_autocompletion_options.py
 # -s ... start_of_input
@@ -40,6 +40,7 @@ def get_command_line_arguments():
 def set_input_and_run(input_start_of_input, input_last_word):
 	global start_of_input, last_word
 	start_of_input = input_start_of_input
+	last_word = input_last_word
 	return find_auto_completion_options()
 
 # depending on last_word calls completion for commands or arguments
@@ -50,11 +51,18 @@ def find_auto_completion_options():
 	key_start_of_input = get_key(start_of_input)
 	key_last_word = get_key(last_word)
 	completion = []
+	with kdb.KDB() as k:
+		ks = kdb.KeySet()
+		k.get(ks, mount_point)
+		root_key = ks.lookup(mount_point)
+		root = root_key.getMeta('root').value
 	# case: last_word is a command => first get all completion options
 	# 		for arguments, then completion options for all commands
-	if key_last_word != None:
+	if key_last_word != None and last_word != root:
 		argument_completion = complete_arguments(key_last_word)
 		completion.extend(argument_completion)
+		option_completion = complete_options(key_last_word)
+		completion.extend(option_completion)
 		# TODO - this should be changed as soon as opt/arg is added - for 
 		#		opt/arg=required this should not be run 
 		command_completion = []
@@ -86,18 +94,10 @@ def complete_commands(start_of_input):
 			path = str(key).split('/')
 			if len(path) <= len_path_mount_point or path[len_path_mount_point] != root:
 				continue
-			opt_long = (key.getMeta(name='opt/long'))
-			opt = (key.getMeta(name='opt'))
-			if  start_of_input != None:
-				if opt_long and opt_long.value.startswith( start_of_input):
-					completion_options.append(opt_long.value)
-				elif opt and opt.value.startswith(start_of_input):
-					completion_options.append(opt.value)
-			else:
-				if opt_long:
-					completion_options.append(opt_long.value)
-				elif opt:
-					completion_options.append(opt.value)
+			if start_of_input == None:
+				completion_options.append(path[-1])
+			elif path[-1].startswith(start_of_input):
+				completion_options.append(path[-1])
 		k.close()
 		return completion_options
 
@@ -127,6 +127,33 @@ def complete_arguments(key_path):
 		k.close()
 	return completion_options
 
+# searches for options starting with start_of_input belonging to last_word
+# return: list of all possible arguments
+def complete_options(key_path):
+	global start_of_input
+	completion_options = []
+	with kdb.KDB() as k:
+		ks = kdb.KeySet()
+		k.get(ks, mount_point)
+		key = ks.lookup(key_path)
+		len_opts = int((key.getMeta(name='opt').value)[1:])
+		i = 0
+		while i <= len_opts:
+			i+=1
+			opt = key.getMeta(name='opt/#{}'.format(i))
+			opt_long = key.getMeta(name='opt/#{}/long'.format(i))
+			if start_of_input != None:
+				if opt_long and opt_long.value.startswith(start_of_input):
+					completion_options.append(opt_long.value)
+				elif opt and opt.value.startswith(start_of_input):
+					completion_options.append(opt.value)
+			else:
+				if opt_long:
+					completion_options.append(opt_long.value)
+				elif opt:
+					completion_options.append(opt.value)
+	return completion_options
+
 # input: command, a string that should be a shell command
 #		seperator, a char that seperates every result in the result 
 # executes the shell command and returns the output
@@ -144,14 +171,13 @@ def execute_shell_command(command):
 # checks if the typed string is a valid command
 # return: the key belonging to the command, if no command found None
 def get_key(input_string):
-	global mount_point, last_key
+	global mount_point, last_word
 	with kdb.KDB() as k:
 		ks = kdb.KeySet()
 		k.get(ks, mount_point)
 		for key in ks:
-			opt_long = (key.getMeta(name='opt/long'))
-			opt = (key.getMeta(name='opt'))
-			if (opt_long and opt_long.value == input_string) or (opt and opt.value == input_string):
+			path = str(key).split('/')
+			if path[-1] == last_word:
 				return str(key)
 		k.close()
 	return None

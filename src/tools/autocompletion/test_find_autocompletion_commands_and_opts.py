@@ -8,13 +8,14 @@ tests_run = 0
 passed = 0
 failed = 0
 
-all_commands = ['list-tools','get', 'set', 'ls', 'backup', 'plugin-info', 'plugin-list', 'check-env-dep', 'check', 'complete', 'convert', 'cp', 'editor', 'export', 'file', 'find', 'fstab', 'getmeta', 'global-mount', 'global-unmount', 'help', 'import', 'info', 'list-commands', 'list', 'lsmeta', 'merge', 'mount-list-all-files', 'mount', 'mountpoint-info', 'mv', 'remount', 'reset-elektra', 'reset', 'restore', 'rm', 'rmmeta', 'setmeta', 'sget', 'shell', 'spec-mount', 'stash', 'test', 'umount-all', 'umount', 'vset']
+#all_commands = ['list-tools','get', 'set', 'ls', 'backup', 'plugin-info', 'plugin-list', 'check-env-dep', 'check', 'complete', 'convert', 'cp', 'editor', 'export', 'file', 'find', 'fstab', 'getmeta', 'global-mount', 'global-unmount', 'help', 'import', 'info', 'list-commands', 'list', 'lsmeta', 'merge', 'mount-list-all-files', 'mount', 'mountpoint-info', 'mv', 'remount', 'reset-elektra', 'reset', 'restore', 'rm', 'rmmeta', 'setmeta', 'sget', 'shell', 'spec-mount', 'stash', 'test', 'umount-all', 'umount', 'vset']
+all_commands = ['get', 'list-tools', 'ls', 'plugin-info', 'plugin-list', 'set']
 
-def run_test(start_of_input, name_of_test_case):
+def run_test(start_of_input, last_word, name_of_test_case):
 	global passed, failed, tests_run
 	tests_run+=1
 	# get the result from executing autocompletion
-	result = sorted(set_input_and_run(start_of_input, None).split())
+	result = sorted(set_input_and_run(start_of_input, last_word).split())
 	if not silent:
 		print('TESTCASE: ' + name_of_test_case)
 		print('RESULTS:')
@@ -54,17 +55,13 @@ if __name__ == "__main__":
 	for i in sys.argv:
 		if i == '-s':
 			silent = True
-	# test 1: ask for all options
-	run_test('', 'all')
-	# test 2-27: every letter of the alphabet
+
+	run_test('', 'kdb', 'all')
 	for i in list(string.ascii_lowercase):
-		run_test(i, 'start with: '+i)
-	# test 28: start with gl
-	run_test('gl', 'start with: gl')
-	# test 29: start with rm
-	run_test('rm', 'start with: rm')
-	# test 30: complete mount
-	run_test('mount', 'start with: mount')
+		run_test(i, 'kdb', 'start with: '+i)
+	run_test('lis', 'kdb', 'start with: lis')
+	run_test('rm', 'kdb', 'start with: rm')
+	run_test('plugi', 'kdb', 'start with: plugi')
 
 	print('\nTests run: ' + str(tests_run))
 	if failed > 0:
