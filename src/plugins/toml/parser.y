@@ -130,12 +130,12 @@ Value		:	Scalar { driverExitValue (driver, $1); }
 			|	Array
 			;
 
-InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } AnySWS InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
+InlineTable	:	CURLY_OPEN AnySWS { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
 			|	CURLY_OPEN AnySWS CURLY_CLOSE { driverEmptyInlineTable(driver); }
 			;
 
 InlineTableList	:	KeyPair AnySWS
-				|	InlineTableList COMMA AnySWS KeyPair
+				|	InlineTableList COMMA AnySWS KeyPair AnySWS
 				;
 
 Array		:	ArrayEmpty | ArrayNonEmpty

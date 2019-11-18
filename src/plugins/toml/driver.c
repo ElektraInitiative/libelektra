@@ -205,7 +205,7 @@ void driverExitOptCommentTable (Driver * driver)
 	}
 	if (driver->commentRoot != NULL)
 	{
-		if (driver->prevKey == NULL)
+		if (driver->parentStack->key == NULL)
 		{
 			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign inline comment to table, but table key is NULL.");
 			return;
