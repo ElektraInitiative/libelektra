@@ -23,6 +23,7 @@ enum
 	MERGE_STRATEGY_INTERACTIVE = 2,
 	MERGE_STRATEGY_OUR = 3,
 	MERGE_STRATEGY_THEIR = 4,
+	MERGE_STRATEGY_EQUAL = 5,
 };
 
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
