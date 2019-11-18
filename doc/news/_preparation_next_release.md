@@ -404,7 +404,7 @@ We are currently working on following topics:
 
 ## Autocompletion
 
-- First prototype for bash-completion in the folder [website-backend](/src/tools/autocompletion). _(Ulrike Schaefer)_
+- First prototype for bash-completion in the folder [autocompletion](/src/tools/autocompletion). _(Ulrike Schaefer)_
 
 ## Finished Thesis
 

@@ -47,11 +47,10 @@ def set_input_and_run(input_start_of_input, input_last_word):
 	return find_auto_completion_options()
 
 # depending on last_word calls completion for commands or arguments
-# return: string seperated by a white-space, every line is one possible completion 
+# return: string seperated by a \n, every line is one possible completion 
 #		option
 def find_auto_completion_options():
 	global last_word, start_of_input
-	key_start_of_input = get_key(start_of_input)
 	key_last_word = get_key(last_word)
 	completion = []
 	with kdb.KDB() as k:
@@ -69,7 +68,7 @@ def find_auto_completion_options():
 		# TODO - this should be changed as soon as opt/arg is added - for 
 		#		opt/arg=required this should not be run 
 		command_completion = []
-		if start_of_input == None or len(start_of_input.strip()) <=0:
+		if start_of_input is None or len(start_of_input.strip()) <=0:
 			command_completion = complete_commands(None)
 		else:
 			command_completion = complete_commands(start_of_input)
@@ -97,7 +96,7 @@ def complete_commands(start_of_input):
 			path = str(key).split('/')
 			if len(path) <= len_path_mount_point or path[len_path_mount_point] != root:
 				continue
-			if start_of_input == None:
+			if start_of_input is None:
 				completion_options.append(path[-1])
 			elif path[-1].startswith(start_of_input):
 				completion_options.append(path[-1])
@@ -163,7 +162,7 @@ def complete_options(key_path):
 # return: list of strings with the result of the executed command
 def execute_shell_command(command):
 	global start_of_input
-	complete_command = command if start_of_input == None else (command + ' ' + start_of_input)
+	complete_command = command if start_of_input is None else (command + ' ' + start_of_input)
 	process = subprocess.Popen(complete_command.split(), stdout=subprocess.PIPE)
 	output, error = process.communicate()
 	output = output.decode('utf-8')
