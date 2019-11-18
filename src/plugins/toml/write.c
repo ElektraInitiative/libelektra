@@ -1,6 +1,6 @@
 #include <kdbassert.h>
-#include <kdbhelper.h>
 #include <kdberrors.h>
+#include <kdbhelper.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -54,20 +54,37 @@ static int writeNewline (Writer * writer);
 static CommentList * collectComments (Key * key);
 static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
+static bool isBoolean (const char * str);
+static const char * getTomlBool (const char * boolStr);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
+	ksRewind (keys);
+	printf ("***PRINT SUPPLIED KEYS***\n");
+	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
+	{
+		printf ("KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
+	}
+	printf ("***END PRINT SUPPLIED KEYS***\n");
 	Writer * w = createWriter (parent, keys);
 	if (w == NULL)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR(parent, keyString(parent));
+		ELEKTRA_SET_RESOURCE_ERROR (parent, keyString (parent));
 		return 1;
 	}
 	int result = 0;
-	result |= writeKeys (NULL, w);
+	ksRewind (w->keys);
+	if (keyCmp (ksNext (w->keys), parent) == 0)
+	{
+		ksNext (w->keys);
+	}
+	result |= writeKeys (parent, w);
+	CommentList * comments = collectComments (parent);
+	writePrecedingComments (comments, w);
+	freeComments (comments);
 
 	destroyWriter (w);
-	ksRewind(keys);
+	ksRewind (keys);
 	return result;
 }
 
@@ -75,7 +92,7 @@ static Writer * createWriter (Key * rootKey, KeySet * keys)
 {
 	Writer * writer = elektraCalloc (sizeof (Writer));
 	writer->filename = elektraStrDup (keyString (rootKey));
-	printf ("Writing file %s\n", writer->filename);
+	ELEKTRA_LOG_DEBUG ("Writing file %s\n", writer->filename);
 	if (writer->filename == 0)
 	{
 		destroyWriter (writer);
@@ -112,25 +129,7 @@ static void destroyWriter (Writer * writer)
 
 static int writeKeys (Key * parent, Writer * writer)
 {
-	if (parent == NULL)
-	{
-		ksRewind (writer->keys);
-		parent = ksNext (writer->keys);
-		if (parent == NULL)
-		{
-			return 0;
-		}
-		else
-		{
-			ksNext (writer->keys);
-			int result = writeKeys (parent, writer);
-			// write comments at document end
-			CommentList * comments = collectComments (parent);
-			writePrecedingComments (comments, writer);
-			freeComments (comments);
-			return result;
-		}
-	}
+	printf ("*** WRITE KEYS FOR %s\n", keyName (parent));
 	Key * key = ksCurrent (writer->keys);
 
 	int result = 0;
@@ -204,7 +203,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 			}
 			keyAddName (elementRoot, subIndex);
 			elektraFree (subIndex);
-			while (nextIndex < foundIndex)	// write empty table array headers
+			while (nextIndex < foundIndex) // write empty table array headers
 			{
 				result |= writeTableArrayHeader (parent, arrayRoot, NULL, writer);
 				nextIndex++;
@@ -218,7 +217,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 			}
 			result |= writeKeys (elementRoot, writer);
 			nextIndex++;
-			
+
 			keyDel (elementRoot);
 			key = ksCurrent (writer->keys);
 		}
@@ -254,11 +253,12 @@ static int writeArrayElements (Key * parent, Writer * writer)
 		result |= writePrecedingComments (comments, writer);
 		result |= writeValue (key, writer);
 		key = ksCurrent (writer->keys);
-		if (keyIsDirectlyBelow (parent, key)) {
+		if (keyIsDirectlyBelow (parent, key))
+		{
 			result |= fputs (", ", writer->f) == EOF;
 		}
 		result |= writeInlineComment (comments, writer);
-		result |= writeNewline(writer);
+		result |= writeNewline (writer);
 		freeComments (comments);
 	}
 	return result;
@@ -297,16 +297,54 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 
 static int writeScalar (Key * key, Writer * writer)
 {
+	printf ("**** Writing scalar: Value = '%s'\n", keyString (key));
+	int result = 0;
 	keyRewindMeta (key);
-	const char * valueStr = keyString (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
 	if (origValue != NULL)
 	{
-		valueStr = keyValue (origValue);
+		result |= fputs (keyString (origValue), writer->f) == EOF;
 	}
+	else
+	{
+		const char * valueStr = keyString (key);
+		if (isBoolean (valueStr))
+		{
+			result |= fputs (getTomlBool (valueStr), writer->f) == EOF;
+		}
+		else
+		{
+			result |= fputc ('"', writer->f) == EOF;
+			result |= fputs (valueStr, writer->f) == EOF;
+			result |= fputc ('"', writer->f) == EOF;
+		}
+	}
+	return result;
+}
 
-	// TODO: determine type of value
-	return fputs (valueStr, writer->f) == EOF;
+static const char * getTomlBool (const char * boolStr)
+{
+	if (/*elektraStrCmp (boolStr, "true") == 0 || */elektraStrCmp (boolStr, "1") == 0)
+	{
+		return "true";
+	}
+	else
+	{
+		return "false";
+	}
+}
+
+static bool isBoolean (const char * str)
+{
+	return /*elektraStrCmp(str, "true") == 0 ||
+		   elektraStrCmp(str, "false") == 0 ||*/
+		   elektraStrCmp(str, "0") == 0 ||
+		   elektraStrCmp(str, "1") == 0;
+}
+
+static bool isNumber (const char * str)
+{
+	return true;
 }
 
 static int writeInlineTableBody (Key * key, Writer * writer)
@@ -343,7 +381,7 @@ static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * 
 {
 	int result = 0;
 	CommentList * comments = (key != NULL ? collectComments (key) : NULL);
-	
+
 	result |= writePrecedingComments (comments, writer);
 	result |= fputs ("[[", writer->f) == EOF;
 	result |= writeRelativeKeyName (parent, root, writer);
@@ -400,7 +438,7 @@ static int writeInlineComment (const CommentList * commentList, Writer * writer)
 static int writeComment (const CommentList * comment, Writer * writer)
 {
 	int result = 0;
-	for (size_t i = 0; i < (comment->index == 0 ? 4 : 0); i++)	// TODO: do with comment->spaces
+	for (size_t i = 0; i < (comment->index == 0 ? 4 : 0); i++) // TODO: do with comment->spaces
 	{
 		result |= fputc (' ', writer->f) == EOF;
 	}
@@ -454,18 +492,24 @@ static CommentList * collectComments (Key * key)
 			int subDepth = 0;
 			while (pos < stop)
 			{
-				if (subDepth == 1) {
+				if (subDepth == 1)
+				{
 					size_t readIndex = arrayStringToIndex (pos);
-					if (readIndex != currIndex || commentRoot == NULL) {
-						CommentList * nextComment = (CommentList *) elektraCalloc(sizeof(CommentList));
-						if (nextComment == NULL) {
+					if (readIndex != currIndex || commentRoot == NULL)
+					{
+						CommentList * nextComment = (CommentList *) elektraCalloc (sizeof (CommentList));
+						if (nextComment == NULL)
+						{
 							freeComments (commentRoot);
 							return NULL;
 						}
-						if (commentBack != NULL) {
+						if (commentBack != NULL)
+						{
 							commentBack->next = nextComment;
 							commentBack = nextComment;
-						} else {
+						}
+						else
+						{
 							commentRoot = nextComment;
 							commentBack = commentRoot;
 						}
@@ -473,20 +517,30 @@ static CommentList * collectComments (Key * key)
 						currIndex = readIndex;
 					}
 
-					if (pos + elektraStrLen (pos) >= stop) {	// meta key holding the array content
-						commentBack->content = keyString(meta);
+					if (pos + elektraStrLen (pos) >= stop)
+					{ // meta key holding the array content
+						commentBack->content = keyString (meta);
 					}
-				} else if (subDepth == 2) {
+				}
+				else if (subDepth == 2)
+				{
 					const char * fieldName = pos;
-					if (elektraStrCmp (fieldName, "start") == 0) {
-						if (elektraStrLen (keyString(meta)) > 1) {
-							commentBack->start = keyString(meta)[0];
-						} else {
+					if (elektraStrCmp (fieldName, "start") == 0)
+					{
+						if (elektraStrLen (keyString (meta)) > 1)
+						{
+							commentBack->start = keyString (meta)[0];
+						}
+						else
+						{
 							commentBack->start = '\0';
 						}
-					} else if (elektraStrCmp (fieldName, "space") == 0) {
-						if (sscanf(keyString(meta), "%lu", &commentBack->spaces) == EOF) {
-							printf("[ERROR] Cant read space value: %s\n", keyString(meta));
+					}
+					else if (elektraStrCmp (fieldName, "space") == 0)
+					{
+						if (sscanf (keyString (meta), "%lu", &commentBack->spaces) == EOF)
+						{
+							printf ("[ERROR] Cant read space value: %s\n", keyString (meta));
 							freeComments (commentRoot);
 							return NULL;
 						}
@@ -496,7 +550,6 @@ static CommentList * collectComments (Key * key)
 				subDepth++;
 				pos += elektraStrLen (pos);
 			}
-
 		}
 	}
 	return commentRoot;

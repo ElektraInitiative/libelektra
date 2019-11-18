@@ -18,13 +18,11 @@
 
 static void testPositiveCompareKeySets (void);
 static void testNegativeCompareErrors (void);
-static void testRoundTrip (const char * filename);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadCompareError (const char * filename, KeySet * expected);
 static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName);
 static void testCompareErrors (Key * expected, Key * found);
-static void testWriteReads (void);
-static void testWriteRead (KeySet * expected);
+// static void testWriteRead (KeySet * expected);
 
 int main (int argc, char ** argv)
 {
@@ -32,7 +30,6 @@ int main (int argc, char ** argv)
 
 	testPositiveCompareKeySets ();
 	testNegativeCompareErrors ();
-	// testWriteReads ();
 
 	print_result ("testmod_toml");
 	return nbError;
@@ -118,15 +115,7 @@ static void testNegativeCompareErrors (void)
 	);
 }
 
-static void testWriteReads (void)
-{
-	testWriteRead (ksNew( 16,
-		keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
-		keyNew (PREFIX "/a", KEY_VALUE, "1", KEY_END)
-		));
-}
-
-static void testWriteRead (KeySet * expected)
+/*static void testWriteRead (KeySet * expected)
 {
 	const char * filename = "storage_toml_test.toml";
 	KeySet * conf = ksNew (0, KS_END);
@@ -152,7 +141,7 @@ static void testWriteRead (KeySet * expected)
 	keyDel (root);
 	PLUGIN_CLOSE ();
 	ksDel (expected);
-}
+}*/
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {

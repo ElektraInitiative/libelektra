@@ -5,8 +5,8 @@
 
 #include <kdb.h>
 #include <kdbassert.h>
-#include <kdbhelper.h>
 #include <kdberrors.h>
+#include <kdbhelper.h>
 
 #include "driver.h"
 #include "error.h"
@@ -36,23 +36,28 @@ static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
 
-int tomlRead (KeySet * keys, Key * parent) {
+int tomlRead (KeySet * keys, Key * parent)
+{
 	Driver * driver = createDriver (parent, keys);
 	int status = 0;
-	if (driver != NULL) {
+	if (driver != NULL)
+	{
 		status = driverParse (driver);
 		destroyDriver (driver);
-	} else {
+	}
+	else
+	{
 		status = 1;
 	}
-	ksRewind(keys);
+	ksRewind (keys);
 	return status;
 }
 
 static Driver * createDriver (Key * parent, KeySet * keys)
 {
 	Driver * driver = (Driver *) elektraCalloc (sizeof (Driver));
-	if (driver == NULL) {
+	if (driver == NULL)
+	{
 		return NULL;
 	}
 	driver->root = parent;
@@ -102,7 +107,7 @@ static int driverParse (Driver * driver)
 	FILE * file = fopen (driver->filename, "rb");
 	if (file == NULL)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR(driver->root, keyString(driver->root));
+		ELEKTRA_SET_RESOURCE_ERROR (driver->root, keyString (driver->root));
 		return 1;
 	}
 	yyin = file;
@@ -808,8 +813,11 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		keySetString (driver->parentStack->key, elektraStr);
 		elektraFree (elektraStr);
 
+		// if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
+		//{
 		keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
-		keySetMeta (driver->parentStack->key, "check/type", getTypeCheckerType (driver->lastScalar));
+		//}
+		keySetMeta (driver->parentStack->key, "type", getTypeCheckerType (driver->lastScalar));
 
 		ksAppendKey (driver->keys, driver->parentStack->key);
 		driverClearLastScalar (driver);
@@ -821,4 +829,3 @@ static void driverClearLastScalar (Driver * driver)
 	freeScalar (driver->lastScalar);
 	driver->lastScalar = NULL;
 }
-
