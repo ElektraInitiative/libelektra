@@ -303,9 +303,9 @@ static void testArrayWithDifferentLengths (void)
 }
 
 /**
-  * KeySets equality depends only on what is below root. Consequently the three sets
-  * user/test1 and user/test2 and user/test3 must be equal
-  */
+ * KeySets equality depends only on what is below root. Consequently the three sets
+ * user/test1 and user/test2 and user/test3 must be equal
+ */
 void test_strategy_equal_different_roots (void)
 {
 	printf ("Executing %s\n", __func__);
@@ -358,24 +358,23 @@ void test_strategy_equal_different_roots (void)
 void test_strategy_equal_helper (KeySet * our, KeySet * their, KeySet * base, bool expectedToBeEqual, int counter)
 {
 	printf ("Executing %s number %d\n", __func__, counter);
-	Key * our_root    = keyNew ("user/test", KEY_END);
-	Key * their_root  = keyNew ("user/test", KEY_END);
-	Key * base_root   = keyNew ("user/test", KEY_END);
+	Key * our_root = keyNew ("user/test", KEY_END);
+	Key * their_root = keyNew ("user/test", KEY_END);
+	Key * base_root = keyNew ("user/test", KEY_END);
 	Key * result_root = keyNew ("user/test/result", KEY_END);
 	Key * informationKey = keyNew (0, KEY_END);
-	KeySet * ourDup   = ksDup(our);
-	KeySet * theirDup = ksDup(their);
-	KeySet * baseDup  = ksDup(base);
-	KeySet * result = elektraMerge (
-		ourDup, our_root,
-		theirDup, their_root,
-		baseDup, base_root,
-		result_root, MERGE_STRATEGY_EQUAL, informationKey
-		);
+	KeySet * ourDup = ksDup (our);
+	KeySet * theirDup = ksDup (their);
+	KeySet * baseDup = ksDup (base);
+	KeySet * result = elektraMerge (ourDup, our_root, theirDup, their_root, baseDup, base_root, result_root, MERGE_STRATEGY_EQUAL,
+					informationKey);
 	// clang-format on
-	if (expectedToBeEqual) {
+	if (expectedToBeEqual)
+	{
 		succeed_if (result != NULL, "Merge must NOT return null if strategy is MERGE_STRATEGY_EQUAL and all key sets are equal");
-	} else {
+	}
+	else
+	{
 		succeed_if (result == NULL, "Merge must return null if strategy is MERGE_STRATEGY_EQUAL and a key set is different");
 	}
 	ksDel (ourDup);
