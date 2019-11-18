@@ -443,7 +443,7 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 /**
  * Set the value of a key as a binary.
  *
- * A private copy of @p newBinary will allocated and saved inside @p key,
+ * A private copy of @p newBinary will be allocated and saved inside @p key,
  * so the parameter can be deallocated after the call.
  *
  * Binary values might be encoded in another way then string values

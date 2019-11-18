@@ -26,7 +26,7 @@ If [go-elektra](https://github.com/ElektraInitiative/go-elektra) fails to compil
 
 ### Manually
 
-- make sure you have go (>1.11) installed.
+- make sure you have go (>1.13) installed.
 - install [libelektra](https://libelektra.org/).
 - now run `go build` in the elektrad folder with Go modules enabled (GO111MODULE=on).
 
