@@ -505,6 +505,8 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		fclose (fh);
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle));
+		errno = errnosave;
+		return -1;
 	}
 
 	/* convert the augeas tree to an Elektra KeySet */
@@ -535,6 +537,8 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		fclose (fh);
 		ksDel (append);
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle));
+		errno = errnosave;
+		return -1;
 	}
 
 	fclose (fh);
@@ -587,6 +591,8 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			fclose (fh);
 			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle));
+			errno = errnosave;
+			return -1;
 		}
 	}
 
