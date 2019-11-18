@@ -10,7 +10,7 @@ start_of_input = None
 # mount_point is used to store the mount point the specification file is
 # 		mounted at
 # TODO: should not be hardcoded
-mount_point = 'spec/tests/autocomplete'
+mount_point = None
 
 # ARGUMENTS for find_autocompletion_options.py
 # -s ... start_of_input
@@ -18,9 +18,9 @@ mount_point = 'spec/tests/autocomplete'
 
 # gets arguments passed to the script and sets last_word and start_of_input
 def get_command_line_arguments():
-	global start_of_input, last_word
+	global start_of_input, last_word, mount_point
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],'s:l:')
+		opts, args = getopt.getopt(sys.argv[1:],'s:l:m:')
 	except getopt.GetoptError:
 		print('getting command line options failed')
 		sys.exit(2)
@@ -31,6 +31,9 @@ def get_command_line_arguments():
 		elif opt == '-l':
 			if arg.strip():
 				last_word = arg.strip()
+		elif opt == '-m':
+			if arg.strip():
+				mount_point = arg.strip()
 	
 
 # input: input_start_of_input, the string that should be used to complete

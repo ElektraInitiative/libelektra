@@ -14,7 +14,7 @@ _find_completions()
 	if ! [ -z "${prev}" ] ; then
 		prev_str="-l ${prev}"
 	fi
-	output="$(python3 find_autocompletion_options.py ${cur_str} ${prev_str})"
+	output="$(python3 find_autocompletion_options.py -m spec/tests/autocomplete ${cur_str} ${prev_str})"
 	COMPREPLY=($(compgen -W "${output}"))
 }
 complete -F _find_completions kdb
