@@ -957,6 +957,10 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		       int strategy, Key * informationKey)
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
+	if (strategy == MERGE_STRATEGY_EQUAL)
+	{
+		return NULL;
+	}
 
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
 	if (ourCropped == NULL)
