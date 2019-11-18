@@ -122,6 +122,21 @@ shell. For example on standard FreeBSD 11.3 you have to execute `sh` in the
 root of the repository first. Then do _not_ use the `source` command but the
 point `.` as explained above.
 
+## Using debuggers
+
+You can use debuggers such as `gdb` to develop Elektra.
+This can be interesting if you write test cases and they fail at some unknown point.
+Many tests are put into the `/bin` folder in your build directory.
+As a consequence, you can `cd` into `/bin` and call, for example
+
+```
+gdb hello
+```
+
+If you use [Docker to run your tests](/doc/tutorials/run_all_tests_with_docker.md) it makes sense to call the debugger in the same container.
+In this case you might be required to pass additional parameters to Docker.
+An example for this is passing `--security-opt seccomp=unconfined` to disable address space randomization.
+
 ## Recommended Environment
 
 The tests are designed to disable themselves if some necessary tools are
@@ -145,6 +160,9 @@ For `make run_all` following development tools enable even more tests:
 - A build environment including gcc (`check_gen.sh`).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
   requires POSIX utilities (`awk`, `grep`, …).
+
+You can also use Docker to set up such an environment.
+There is [a tutorial](/doc/tutorials/run_all_tests_with_docker.md) that guides you through the necessary steps.
 
 ## Adding Tests
 

@@ -19,6 +19,7 @@ s/serialise/serialize/g
 s/summarise/summarize/g
 s/synchronisation/synchronization/g
 s/synchronised/synchronized/g
+s/\<([Uu]tili)s/\1z/g
 
 # ==========
 # = Brands =

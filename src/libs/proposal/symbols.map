@@ -4,7 +4,6 @@ libelektra_0.8 {
 	elektraKsToMemArray;
 	keyAsCascading;
 	keyGetLevelsBelow;
-	keyLock;
 	keyRel2;
 	keySetStringF;
 	ksPopAtCursor;
