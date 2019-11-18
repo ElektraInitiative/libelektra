@@ -30,7 +30,6 @@ KeySet * getContract (void)
 
 int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	printf ("TOML_GET\n");
 	if (strcmp (keyName (parentKey), "system/elektra/modules/toml") == 0)
 	{
 		KeySet * contract = getContract ();
@@ -40,16 +39,14 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	else
 	{
-		printf("READ\n");
 		int result = tomlRead (returned, parentKey);
-		printf("RESULT = %d\n", result);
 		return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }
 
 int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	printf ("TOML_SET\n");
+	printf(">>>> TOML WRITE INVOKED\n");
 	int result = tomlWrite (returned, parentKey);
 
 	return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;

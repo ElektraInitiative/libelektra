@@ -6,7 +6,7 @@ ksNew (16,
 
 	keyNew (PREFIX "/emojis",
 		KEY_VALUE, "😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue", "\"😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾\"",
 		KEY_META, "order", "0", 
 	KEY_END),
@@ -16,7 +16,7 @@ ksNew (16,
 			"Runes: ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ\n"
 			"ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗᛁᚳᛚᚢᚾ᛫ᚻᛦᛏ᛫ᛞᚫᛚᚪᚾ\n"
 			"ᚷᛁᚠ᛫ᚻᛖ᛫ᚹᛁᛚᛖ᛫ᚠᚩᚱ᛫ᛞᚱᛁᚻᛏᚾᛖ᛫ᛞᚩᛗᛖᛋ᛫ᚻᛚᛇᛏᚪᚾ᛬",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\"\"\""
 			"Runes: ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ\n"
@@ -36,7 +36,7 @@ ksNew (16,
 			"He wonede at Ernleȝe at æðelen are chirechen,\n"
 			"Uppen Sevarne staþe, sel þar him þuhte,\n"
 			"Onfest Radestone, þer he bock radde.",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\'\'\'"
 			"Middle English: An preost wes on leoden, Laȝamon was ihoten\n"
@@ -54,7 +54,7 @@ ksNew (16,
 			"er stîget ûf mit grôzer kraft, ich sih in grâwen tägelîch als er wil tagen, "
 			"den tac, der im geselleschaft erwenden wil, dem werden man, den ich mit sorgen în verliez.  "
 			"ich bringe in hinnen, ob ich kan.  sîn vil manegiu tugent michz leisten hiez.",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\'Middle High German: Sîne klâwen durh die wolken sint geslagen, "
 			"er stîget ûf mit grôzer kraft, ich sih in grâwen tägelîch als er wil tagen, "
@@ -68,7 +68,7 @@ ksNew (16,
 			"Greek Monotonic: Τη γλώσσα μου έδωσαν ελληνική το σπίτι φτωχικό στις α"
 			"μμουδιές του Ομήρου.Μονάχη έγνοια η γλώσσα μου στις αμμουδιές του Ομήρ"
 			"ου.από το Άξιον Εστί του Οδυσσέα Ελύτη",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\"Greek Monotonic: Τη γλώσσα μου έδωσαν ελληνική το σπίτι φτωχικό στις α"
 			"μμουδιές του Ομήρου.Μονάχη έγνοια η γλώσσα μου στις αμμουδιές του Ομήρ"
@@ -87,7 +87,7 @@ ksNew (16,
 			"И лес, неведомый лучам\n"
 			"В тумане спрятанного солнца,\n"
 			"Кругом шумел.",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\"\"\"\nИ вдаль глядел. Пред ним широко\n"
 			"Река неслася; бедный чёлн\n"
@@ -113,7 +113,7 @@ ksNew (16,
 			"பாமரராய் விலங்குகளாய், உலகனைத்தும் இகழ்ச்சிசொலப் பான்மை கெட்டு,\n"
 			"நாமமது தமிழரெனக் கொண்டு இங்கு வாழ்ந்திடுதல் நன்றோ? சொல்லீர்!\n"
 			"தேமதுரத் தமிழோசை உலகமெலாம் பரவும்வகை செய்தல் வேண்டும்",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\"\"\""
 			"யாமறிந்த மொழிகளிலே தமிழ்மொழி போல் இனிதாவது எங்கும் காணோம்,\n"
@@ -132,7 +132,7 @@ ksNew (16,
 			"ಮಣ್ಣಾಗಿ ಮರವಾಗಿ ಮಿಗವಾಗಿ ಕಗವಾಗಿ\n"
 			"ಭವ ಭವದಿ ಭತಿಸಿಹೇ ಭವತಿ ದೂರ\n"
 			"ನಿತ್ಯವೂ ಅವತರಿಪ ಸತ್ಯಾವತಾರ || ಬಾ ಇಲ್ಲಿ || ",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"'''"
 			"ಬಾ ಇಲ್ಲಿ ಸಂಭವಿಸು ಇಂದೆನ್ನ ಹೃದಯದಲಿ\n"
@@ -156,7 +156,7 @@ ksNew (16,
 			"ს სოფლისა შრომასა, ცეცხლს, წყალსა და მიწასა, ჰაერთა თანა მრ"
 			"ომასა; მომცნეს ფრთენი და აღვფრინდე, მივჰხვდე მას ჩემსა ნდომ"
 			"ასა, დღისით და ღამით ვჰხედვიდე მზისა ელვათა კრთომაასა.",
-		KEY_META, "check/type", "string",
+		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\"ტყაოსანი შოთა რუსთაველი ღმერთსი შემვედრე, ნუთუ კვლა დამხსნა"
 			"ს სოფლისა შრომასა, ცეცხლს, წყალსა და მიწასა, ჰაერთა თანა მრ"
