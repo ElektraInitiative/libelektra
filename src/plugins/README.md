@@ -87,6 +87,7 @@ Read (and write) standard config files:
 - [augeas](augeas/) reads/writes many different configuration
   files using the augeas library
 - [hosts](hosts/) reads/writes hosts files
+- [kconfig](kconfig/) reads/writes KConfig ini files
 - [line](line/) reads/writes any file line by line
 - [yajl](yajl/) reads/writes JSON.
 
