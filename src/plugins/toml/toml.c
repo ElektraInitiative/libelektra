@@ -11,10 +11,11 @@
 #include <kdb.h>
 #include <kdberrors.h>
 #include <kdbmacros.h>
+#include <kdblogger.h>
 
-#include "write.h"
 #include "driver.h"
 #include "toml.h"
+#include "write.h"
 
 KeySet * getContract (void)
 {
@@ -29,6 +30,7 @@ KeySet * getContract (void)
 
 int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
+	printf ("TOML_GET\n");
 	if (strcmp (keyName (parentKey), "system/elektra/modules/toml") == 0)
 	{
 		KeySet * contract = getContract ();
@@ -38,16 +40,17 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	else
 	{
-		Driver * driver = createDriver (parentKey);
-		int status = driverParse (driver, returned);
-		destroyDriver (driver);
-		return status == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
+		printf("READ\n");
+		int result = tomlRead (returned, parentKey);
+		printf("RESULT = %d\n", result);
+		return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }
 
 int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	int result = tomlWrite(returned, parentKey);
+	printf ("TOML_SET\n");
+	int result = tomlWrite (returned, parentKey);
 
 	return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }

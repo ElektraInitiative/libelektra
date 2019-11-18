@@ -52,7 +52,7 @@ void driverErrorGeneric (Driver * driver, int err, const char * caller, const ch
 		driver->errorSet = true;
 		snprintf (msg, 256, "%s: Error during call of %s", caller, callee);
 		emitElektraError (driver->root, err, msg);
-		ELEKTRA_LOG_DEBUG (msg);
+		ELEKTRA_LOG_DEBUG ("Error: %s\n", msg);
 	}
 }
 

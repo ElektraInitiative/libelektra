@@ -23,6 +23,8 @@ static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadCompareError (const char * filename, KeySet * expected);
 static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName);
 static void testCompareErrors (Key * expected, Key * found);
+static void testWriteReads (void);
+static void testWriteRead (KeySet * expected);
 
 int main (int argc, char ** argv)
 {
@@ -30,8 +32,7 @@ int main (int argc, char ** argv)
 
 	testPositiveCompareKeySets ();
 	testNegativeCompareErrors ();
-	//TODO: proper roundtrip testing
-	testRoundTrip("toml/positive/comment.toml");
+	// testWriteReads ();
 
 	print_result ("testmod_toml");
 	return nbError;
@@ -117,32 +118,44 @@ static void testNegativeCompareErrors (void)
 	);
 }
 
-static void testRoundTrip (const char * filename)
+static void testWriteReads (void)
 {
-	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
-	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
+	testWriteRead (ksNew( 16,
+		keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
+		keyNew (PREFIX "/a", KEY_VALUE, "1", KEY_END)
+		));
+}
+
+static void testWriteRead (KeySet * expected)
+{
+	const char * filename = "storage_toml_test.toml";
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
-
-	KeySet * ks = ksNew (0, KS_END);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+	Key * root = ksLookupByName (expected, PREFIX, KDB_O_POP);
+	if (root != NULL)
+	{
+		if (strcmp (keyString (root), "@CONFIG_FILEPATH@") == 0)
+		{
+			keySetString (root, srcdir_file (filename));
+			ksAppendKey (expected, root);
+		}
+	}
+	succeed_if (plugin->kdbSet (plugin, expected, root) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 		    "Expected kdbGet to succeed, but got failure.");
+	
+	KeySet * ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, root) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+		    "Expected kdbGet to succeed, but got failure.");
+	compare_keyset (expected, ks);
 
-	char * fileOut = strdup (filename);
-	fileOut[strlen (fileOut) - 1] = 'o';
-	Key * parentKeyOut = keyNew (PREFIX, KEY_VALUE, srcdir_file (fileOut), KEY_END);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKeyOut) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
-		    "Expected kdbSet to succeed, but got failure.");
-	keyDel (parentKeyOut);
-	elektraFree (fileOut);
 	ksDel (ks);
+	keyDel (root);
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
+	ksDel (expected);
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {
-	printf ("Reading '%s'\n", filename);
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -164,7 +177,6 @@ static void testReadCompare (const char * filename, KeySet * expected)
 	ksDel (ks);
 	keyDel (root);
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
 	ksDel (expected);
 }
 
@@ -193,7 +205,6 @@ static void testReadCompareError (const char * filename, KeySet * expected)
 	ksDel (ks);
 	keyDel (root);
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
 	ksDel (expected);
 }
 

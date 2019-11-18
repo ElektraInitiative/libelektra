@@ -27,12 +27,14 @@
     - Don't know where/how exactly to store trailing array comments/newline info
         * Can't associate those info to array top key in the way like file ending comments are preserved
         * Maybe add own metakey (eg. epilogue/comment/#1)?
+	- Don't know how to differentiate between empty keys / keys containing an empty string? (See storage plugin tutorial)
+		* How can i affect this?
 
 ## TODOs
 	- Document functions
 	- ORDER on writing file
-	- Preserve spaces
-		- Before comments
+	- Error checks for writing
+	- Maybe preserve spaces
 		- Before array values
 		- Before assignment/simple table header/table array header
 	- Don't store origvalue, if transformed value is equal to untransformed value
