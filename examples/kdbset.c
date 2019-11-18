@@ -7,6 +7,7 @@
  */
 
 #include <kdb.h>
+#include <kdbmerge.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,9 +19,9 @@ typedef enum
 	INPUT_USE_THEIRS
 } input;
 
-int showElektraErrorDialog (Key * parentKey, Key * problemKey)
+int showElektraErrorDialog (Key * parentKey)
 {
-	printf ("dialog for %s and %s\n", keyName (parentKey), keyName (problemKey));
+	printf ("dialog for %s\n", keyName (parentKey));
 	int a;
 	if (scanf ("%d", &a) != 1)
 	{
@@ -51,41 +52,42 @@ kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
 KeySet * base = ksDup (myConfig);     // save a copy of original keyset
 
 // change the keys within myConfig
+ksAppendKey (myConfig, keyNew ("system/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
 
 KeySet * ours = ksDup (myConfig); // save a copy of our keyset
 KeySet * theirs;		  // needed for 3-way merging
 int ret = kdbSet (handle, myConfig, parentKey);
 while (ret == -1) // as long as we have an error
 {
-	// We got an error. Warn user.
-	Key * problemKey = ksCurrent (myConfig);
-	// parentKey has the errorInformation
-	// problemKey is the faulty key (may be null)
-	int userInput = showElektraErrorDialog (parentKey, problemKey);
-	switch (userInput)
-	{
-	case INPUT_USE_OURS:
-		kdbGet (handle, myConfig, parentKey); // refresh key database
-		ksDel (myConfig);
-		myConfig = ours;
-		break;
-	case INPUT_DO_MERGE:
-		theirs = ksDup (ours);
-		kdbGet (handle, theirs, parentKey); // refresh key database
-		KeySet * res = doElektraMerge (ours, theirs, base);
-		ksDel (theirs);
-		myConfig = res;
-		break;
-	case INPUT_USE_THEIRS:
-		// should always work, we just write what we got
-		// but to be sure always give the user another way
-		// to exit the loop
-		kdbGet (handle, myConfig, parentKey); // refresh key database
-		break;
-		// other cases ...
+	int strategy = showElektraErrorDialog (parentKey);
+	theirs = ksDup (ours);
+	kdbGet (handle, theirs, parentKey); // refresh key database
+	Key * informationKey = keyNew(0, KEY_END);
+	KeySet * res = elektraMerge(
+		ksCut(ours, parentKey), parentKey,
+		ksCut(theirs, parentKey), parentKey,
+		ksCut(base, parentKey), parentKey,
+		parentKey, strategy, informationKey);
+	int numberOfConflicts = getConflicts (informationKey);
+	keyDel (informationKey);
+	ksDel (theirs);
+	if (res != NULL) {
+		ret = kdbSet (handle, res, parentKey);
+	} else {
+		// an error happened while merging
+		if (numberOfConflicts > 0 && strategy == MERGE_STRATEGY_ABORT)
+		{
+			// Error due to merge conflicts
+			ret = -1;
+		}
+		else
+		{
+			// Other error
+			ret = -1;
+		}
 	}
-	ret = kdbSet (handle, myConfig, parentKey);
 }
+
 
 ksDel (ours);
 ksDel (base);
