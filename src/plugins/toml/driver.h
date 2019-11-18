@@ -44,10 +44,8 @@ typedef struct
 	bool errorSet;
 } Driver;
 
+int tomlRead (KeySet * keys, Key * parent);
 
-Driver * createDriver (const Key * parent);
-void destroyDriver (Driver * driver);
-int driverParse (Driver * driver, KeySet * returned);
 void driverError (Driver * driver, int err, int lineno, const char * format, ...);
 void driverErrorGeneric (Driver * driver, int err, const char * caller, const char * callee);
 

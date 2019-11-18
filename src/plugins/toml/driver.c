@@ -6,6 +6,7 @@
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbhelper.h>
+#include <kdberrors.h>
 
 #include "driver.h"
 #include "error.h"
@@ -15,6 +16,9 @@
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
 
+static Driver * createDriver (Key * parent, KeySet * keys);
+static void destroyDriver (Driver * driver);
+static int driverParse (Driver * driver);
 static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount);
 static void driverClearCommentList (Driver * driver);
 static void driverDrainCommentsToKey (Key * key, Driver * driver);
@@ -32,10 +36,27 @@ static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
 
-Driver * createDriver (const Key * parent)
+int tomlRead (KeySet * keys, Key * parent) {
+	Driver * driver = createDriver (parent, keys);
+	int status = 0;
+	if (driver != NULL) {
+		status = driverParse (driver);
+		destroyDriver (driver);
+	} else {
+		status = 1;
+	}
+	ksRewind(keys);
+	return status;
+}
+
+static Driver * createDriver (Key * parent, KeySet * keys)
 {
 	Driver * driver = (Driver *) elektraCalloc (sizeof (Driver));
-	driver->root = keyDup (parent);
+	if (driver == NULL) {
+		return NULL;
+	}
+	driver->root = parent;
+	driver->keys = keys;
 	driver->parentStack = pushParent (NULL, keyDup (parent));
 	driver->filename = elektraStrDup (keyString (parent));
 	driver->simpleTableActive = false;
@@ -44,11 +65,10 @@ Driver * createDriver (const Key * parent)
 	return driver;
 }
 
-void destroyDriver (Driver * driver)
+static void destroyDriver (Driver * driver)
 {
 	if (driver != NULL)
 	{
-		keyDel (driver->root);
 		setCurrKey (driver, NULL);
 		setPrevKey (driver, NULL);
 		driverClearLastScalar (driver);
@@ -76,17 +96,16 @@ void destroyDriver (Driver * driver)
 	}
 }
 
-int driverParse (Driver * driver, KeySet * returned)
+static int driverParse (Driver * driver)
 {
-	driver->keys = returned;
+	ksAppendKey (driver->keys, driver->root);
 	FILE * file = fopen (driver->filename, "rb");
 	if (file == NULL)
 	{
-		driverError (driver, ERROR_SYNTACTIC, 0, "Could not open file '%s'", file);
+		ELEKTRA_SET_RESOURCE_ERROR(driver->root, keyString(driver->root));
 		return 1;
 	}
 	yyin = file;
-	ksAppendKey (driver->keys, driver->root);
 	int yyResult = yyparse (driver);
 	fclose (file);
 	return driver->errorSet == true || yyResult != 0;

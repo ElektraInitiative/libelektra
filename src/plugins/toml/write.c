@@ -1,5 +1,6 @@
 #include <kdbassert.h>
 #include <kdbhelper.h>
+#include <kdberrors.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -54,17 +55,19 @@ static CommentList * collectComments (Key * key);
 static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
 
-int tomlWrite (KeySet * keys, Key * rootKey)
+int tomlWrite (KeySet * keys, Key * parent)
 {
-	Writer * w = createWriter (rootKey, keys);
+	Writer * w = createWriter (parent, keys);
 	if (w == NULL)
 	{
+		ELEKTRA_SET_RESOURCE_ERROR(parent, keyString(parent));
 		return 1;
 	}
 	int result = 0;
 	result |= writeKeys (NULL, w);
 
 	destroyWriter (w);
+	ksRewind(keys);
 	return result;
 }
 
@@ -72,6 +75,7 @@ static Writer * createWriter (Key * rootKey, KeySet * keys)
 {
 	Writer * writer = elektraCalloc (sizeof (Writer));
 	writer->filename = elektraStrDup (keyString (rootKey));
+	printf ("Writing file %s\n", writer->filename);
 	if (writer->filename == 0)
 	{
 		destroyWriter (writer);
@@ -300,6 +304,8 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		valueStr = keyValue (origValue);
 	}
+
+	// TODO: determine type of value
 	return fputs (valueStr, writer->f) == EOF;
 }
 
