@@ -10,7 +10,6 @@
 #define KDBMERGE_H_
 
 #include "kdb.h"
-#include "kdbprivate.h"
 
 #ifdef __cplusplus
 namespace ckdb

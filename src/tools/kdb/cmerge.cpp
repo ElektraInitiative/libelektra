@@ -7,6 +7,7 @@
  */
 
 #include "cmerge.hpp"
+#include "kdbmacros.h"
 #include "kdbmerge.h"
 #include "keyset.hpp"
 #include <cmdline.hpp>
