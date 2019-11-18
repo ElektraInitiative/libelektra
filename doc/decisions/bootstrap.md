@@ -4,7 +4,7 @@
 
 Currently the default backend (default.ecf) will also be used for bootstrapping. There are two problems with this approach:
 
-1. Thus the default backend first will be read with parentKey `system:/elektra` and later with parentKey `system`, it needs to store absolute paths and thus won't work with the current INI plugin
+1. Thus the default backend first will be read with parentKey `system:/elektra` and later with parentKey `system:/`, it needs to store absolute paths and thus won't work with most of the plugins (except dump).
 2. When `system` is large without mount points, everything is reread twice during bootstrapping.
 
 ## Constraints
@@ -19,7 +19,7 @@ Currently the default backend (default.ecf) will also be used for bootstrapping.
 
 ## Considered Alternatives
 
-- Implement a hack so that `system:/elektra` is actually read as `system`. (Will not solve problem 2.)
+- Implement a hack so that `system:/elektra` is actually read as `system:/`. (Will not solve problem 2.)
   - Its a hack.
   - Its confusing and does not play well with persistent data with relative key names.
 - Split up without compatibility mode: would need to migrate all mount points by exporting (with old version!) and then importing (with new version!)
