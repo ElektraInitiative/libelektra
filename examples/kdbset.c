@@ -62,14 +62,12 @@ while (ret == -1) // as long as we have an error
 	int strategy = showElektraErrorDialog (parentKey);
 	theirs = ksDup (ours);
 	kdbGet (handle, theirs, parentKey); // refresh key database
-	Key * informationKey = keyNew(0, KEY_END);
 	KeySet * result = elektraMerge(
 		ksCut(ours, parentKey), parentKey,
 		ksCut(theirs, parentKey), parentKey,
 		ksCut(base, parentKey), parentKey,
-		parentKey, strategy, informationKey);
-	int numberOfConflicts = getConflicts (informationKey);
-	keyDel (informationKey);
+		parentKey, strategy, parentKey);
+	int numberOfConflicts = getConflicts (parentKey);
 	ksDel (theirs);
 	if (result != NULL) {
 		ret = kdbSet (handle, result, parentKey);
