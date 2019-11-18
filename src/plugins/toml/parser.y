@@ -56,8 +56,6 @@ YY_DECL;
 %token BRACKETS_CLOSE
 %token CURLY_OPEN
 %token CURLY_CLOSE
-%token SPACE
-%token TAB
 
 %type <scalar> Scalar
 %type <scalar> IntegerScalar
@@ -76,8 +74,8 @@ Toml	:	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
 		|	%empty
 		;
 
-Nodes	:	AnyWS Node
-		|	Nodes Newlines AnyWS Node
+Nodes	:	Node
+		|	Nodes Newlines Node
 		;
 
 Node	:	COMMENT { driverExitComment (driver, $1); }
@@ -85,7 +83,7 @@ Node	:	COMMENT { driverExitComment (driver, $1); }
 		|	KeyPair OptComment { driverExitOptCommentKeyPair (driver); }
 		;
 
-OptComment	:	AnyWS COMMENT { driverExitComment (driver, $2); }
+OptComment	:	COMMENT { driverExitComment (driver, $1); }
 			|	%empty
 			;
 
@@ -102,13 +100,13 @@ Table		:	TableSimple
 			|	TableArray
 			;
 
-TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } AnySWS TopKey { driverExitSimpleTable(driver); } AnySWS BRACKETS_CLOSE
+TableSimple	:	BRACKETS_OPEN { driverEnterSimpleTable(driver); } TopKey { driverExitSimpleTable(driver); } BRACKETS_CLOSE
 			;
 
-TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } AnySWS TopKey { driverExitTableArray(driver); } AnySWS BRACKETS_CLOSE BRACKETS_CLOSE
+TableArray	:	BRACKETS_OPEN BRACKETS_OPEN { driverEnterTableArray(driver); } TopKey { driverExitTableArray(driver); } BRACKETS_CLOSE BRACKETS_CLOSE
 			;
 
-KeyPair	:	TopKey AnySWS EQUAL AnySWS Value { driverExitKeyValue (driver); }
+KeyPair	:	TopKey EQUAL Value { driverExitKeyValue (driver); }
 		;
 
 TopKey	:	{ driverEnterKey (driver); } Key { driverExitKey (driver); }
@@ -130,12 +128,12 @@ Value		:	Scalar { driverExitValue (driver, $1); }
 			|	Array
 			;
 
-InlineTable	:	CURLY_OPEN AnySWS { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
-			|	CURLY_OPEN AnySWS CURLY_CLOSE { driverEmptyInlineTable(driver); }
+InlineTable	:	CURLY_OPEN { driverEnterInlineTable(driver); } InlineTableList CURLY_CLOSE { driverExitInlineTable (driver); }
+			|	CURLY_OPEN CURLY_CLOSE { driverEmptyInlineTable(driver); }
 			;
 
-InlineTableList	:	KeyPair AnySWS
-				|	InlineTableList COMMA AnySWS KeyPair AnySWS
+InlineTableList	:	KeyPair
+				|	InlineTableList COMMA KeyPair
 				;
 
 Array		:	ArrayEmpty | ArrayNonEmpty
@@ -149,7 +147,7 @@ ArrayList	:	AnyCommentNL ArrayElement
 			|	ArrayList COMMA AnyCommentNL ArrayElement
 			;
 
-ArrayElement	:	AnyWS Value { driverExitArrayElement (driver); }
+ArrayElement	:	Value { driverExitArrayElement (driver); }
 				;
 
 ArrayEpilogue	:	AnyCommentNL
@@ -192,19 +190,4 @@ DateScalar	:	OFFSET_DATETIME { $$ = $1; }
 			|	LOCAL_DATE { $$ = $1; }
 			|	LOCAL_TIME { $$ = $1; }
 			;
-
-AnyWS	:	%empty
-		|	AnyWS Whitespace
-		;
-AnySWS	:	%empty
-		|	AnySWS SilentWhitespace
-		;
-Whitespace	:	TAB {}
-			|	SPACE {}
-			;
-
-SilentWhitespace	:	TAB
-					|	SPACE
-					;
-
 %%

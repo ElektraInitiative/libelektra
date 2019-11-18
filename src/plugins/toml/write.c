@@ -37,11 +37,11 @@ static int writeKeys (Key * parent, Writer * writer);
 static int writeAssignment (Key * parent, Key * key, Writer * writer);
 static int writeSimpleTable (Key * parent, Key * key, Writer * writer);
 static int writeTableArray (Key * parent, Key * key, Writer * writer);
-static int writeInlineTableBody (Key * parent, Key * key, Writer * writer);
+static int writeInlineTableBody (Key * key, Writer * writer);
 static int writeInlineTableElements (Key * parent, Writer * writer);
-static int writeArrayBody (Key * parent, Key * key, Writer * writer);
+static int writeArrayBody (Key * key, Writer * writer);
 static int writeArrayElements (Key * parent, Writer * writer);
-static int writeValue (Key * parent, Key * key, Writer * writer);
+static int writeValue (Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
 static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * writer);
@@ -158,7 +158,7 @@ static int writeAssignment (Key * parent, Key * key, Writer * writer)
 	result |= writePrecedingComments (comments, writer);
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputs (" = ", writer->f) == EOF;
-	result |= writeValue (parent, key, writer);
+	result |= writeValue (key, writer);
 	result |= writeInlineComment (comments, writer);
 	freeComments (comments);
 	return result;
@@ -231,7 +231,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 	return result;
 }
 
-static int writeArrayBody (Key * parent, Key * key, Writer * writer)
+static int writeArrayBody (Key * key, Writer * writer)
 {
 	int result = 0;
 	result |= fputc ('[', writer->f) == EOF;
@@ -246,10 +246,9 @@ static int writeArrayElements (Key * parent, Writer * writer)
 	Key * key = ksNext (writer->keys);
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
-		printf ("Write array element\n");
 		CommentList * comments = collectComments (key);
 		result |= writePrecedingComments (comments, writer);
-		result |= writeValue (parent, key, writer);
+		result |= writeValue (key, writer);
 		key = ksCurrent (writer->keys);
 		if (keyIsDirectlyBelow (parent, key)) {
 			result |= fputs (", ", writer->f) == EOF;
@@ -261,16 +260,16 @@ static int writeArrayElements (Key * parent, Writer * writer)
 	return result;
 }
 
-static int writeValue (Key * parent, Key * key, Writer * writer)
+static int writeValue (Key * key, Writer * writer)
 {
 	int result = 0;
 	if (isArray (key))
 	{
-		result |= writeArrayBody (parent, key, writer);
+		result |= writeArrayBody (key, writer);
 	}
 	else if (isInlineTable (key))
 	{
-		result |= writeInlineTableBody (parent, key, writer);
+		result |= writeInlineTableBody (key, writer);
 	}
 	else
 	{
@@ -304,12 +303,13 @@ static int writeScalar (Key * key, Writer * writer)
 	return fputs (valueStr, writer->f) == EOF;
 }
 
-static int writeInlineTableBody (Key * parent, Key * key, Writer * writer)
+static int writeInlineTableBody (Key * key, Writer * writer)
 {
 	int result = 0;
 	result |= fputs ("{ ", writer->f) == EOF;
 	result |= writeInlineTableElements (key, writer);
 	result |= fputs (" }", writer->f) == EOF;
+	return result;
 }
 
 static int writeInlineTableElements (Key * parent, Writer * writer)
@@ -435,13 +435,12 @@ static KeyType getKeyType (Key * key)
 static CommentList * collectComments (Key * key)
 {
 	keyRewindMeta (key);
-	Key * meta;
+	const Key * meta;
 	CommentList * commentRoot = NULL;
 	CommentList * commentBack = NULL;
 	size_t currIndex = 0;
 	while ((meta = keyNextMeta (key)) != 0)
 	{
-		size_t size = keyGetUnescapedNameSize (meta);
 		const char * pos = (const char *) keyUnescapedName (meta);
 		const char * stop = pos + keyGetUnescapedNameSize (meta);
 		if (elektraStrCmp (pos, "comment") == 0)
@@ -480,7 +479,7 @@ static CommentList * collectComments (Key * key)
 							commentBack->start = '\0';
 						}
 					} else if (elektraStrCmp (fieldName, "space") == 0) {
-						if (sscanf(keyString(meta), "%ld", &commentBack->spaces) == EOF) {
+						if (sscanf(keyString(meta), "%lu", &commentBack->spaces) == EOF) {
 							printf("[ERROR] Cant read space value: %s\n", keyString(meta));
 							freeComments (commentRoot);
 							return NULL;

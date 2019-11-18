@@ -37,6 +37,7 @@ static void handleEscapedSequence (Buffer * buffer, bool isMultiline, Driver * d
 static void handlePossibleLineEndingBackslash (Buffer * buffer, Driver * driver);
 static void readHex (Buffer * buffer, size_t count, Driver * driver);
 static void readNonAsciiChar (Buffer * buffer, Driver * driver);
+static size_t whitespaceToSpaces (const char * whitespace);
 
 static inline bool validAscii (char c);
 static inline bool validMultilineAscii (char c);
@@ -84,14 +85,13 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 "]"		return BRACKETS_CLOSE;
 "{"		return CURLY_OPEN;
 "}"		return CURLY_CLOSE;
-" "		return SPACE;
-"\t"	return TAB;
 {newline}	return NEWLINE;
 
-"#" {
+{whitespace}*"#" {
 	char * str = readString (COMMENT_TERMINATOR, false, driver);
 	unput ('\n');
-	yylval.scalar = createScalar (SCALAR_STRING_COMMENT, str, yylineno);
+	size_t spaces = whitespaceToSpaces (yytext);
+	yylval.scalar = createScalarComment (str, spaces, yylineno);
 	return COMMENT;
 }
 
@@ -210,6 +210,8 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	yylval.scalar = createScalarDup (SCALAR_STRING_BARE, yytext, yylineno);
 	return BARE_STRING;
 }
+
+{whitespace}* {}
 
 .  {
 	driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s'", yytext);
@@ -472,4 +474,24 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 	{
 		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Invalid utf8 head char: 0x%02X", c);
 	}
+}
+
+static size_t whitespaceToSpaces (const char * whitespace)
+{
+	size_t spaces = 0;
+	while (*whitespace != 0)
+	{
+		switch (*whitespace++)
+		{
+		case ' ':
+			spaces++;
+			break;
+		case '\t':
+			spaces += 4;
+			break;
+		default:
+			return spaces;
+		}
+	}
+	return spaces;
 }

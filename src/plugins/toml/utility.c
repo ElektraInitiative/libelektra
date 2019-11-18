@@ -53,7 +53,7 @@ size_t arrayStringToIndex (const char * indexStr)
 		indexStr++;
 	}
 	size_t val = 0;
-	if (sscanf (indexStr, "%llu", &val) == EOF)
+	if (sscanf (indexStr, "%lu", &val) == EOF)
 	{
 		ELEKTRA_ASSERT (0, "Could not parse array index");
 		return 0;
@@ -62,7 +62,7 @@ size_t arrayStringToIndex (const char * indexStr)
 }
 
 bool isEmptyArray(Key * key) {
-	Key * meta = findMetaKey (key, "array");
+	const Key * meta = findMetaKey (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 	const char * sizeStr = keyString(meta);
 	return elektraStrLen(sizeStr) == 1;
