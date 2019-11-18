@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	elektra "go.libelektra.org/kdb"
 )
 
