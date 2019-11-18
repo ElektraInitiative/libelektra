@@ -63,7 +63,7 @@ while (ret == -1) // as long as we have an error
 	theirs = ksDup (ours);
 	kdbGet (handle, theirs, parentKey); // refresh key database
 	Key * informationKey = keyNew(0, KEY_END);
-	KeySet * res = elektraMerge(
+	KeySet * result = elektraMerge(
 		ksCut(ours, parentKey), parentKey,
 		ksCut(theirs, parentKey), parentKey,
 		ksCut(base, parentKey), parentKey,
@@ -71,8 +71,8 @@ while (ret == -1) // as long as we have an error
 	int numberOfConflicts = getConflicts (informationKey);
 	keyDel (informationKey);
 	ksDel (theirs);
-	if (res != NULL) {
-		ret = kdbSet (handle, res, parentKey);
+	if (result != NULL) {
+		ret = kdbSet (handle, result, parentKey);
 	} else {
 		// an error happened while merging
 		if (numberOfConflicts > 0 && strategy == MERGE_STRATEGY_ABORT)
@@ -82,7 +82,7 @@ while (ret == -1) // as long as we have an error
 		}
 		else
 		{
-			// Other error
+			// Internal errors, out of memory etc.
 			ret = -1;
 		}
 	}
