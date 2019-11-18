@@ -124,7 +124,7 @@ The idea is to add the error and warning information as metadata to
 this key. This approach does not limit flexibility, because a key can
 hold a potentially unlimited number of metakeys.
 
-The error information is categorised in metadata as follows:
+The error information is categorized in metadata as follows:
 
 - [error] indicates that a faulty state is present. The value
   of the metakey contains the name of all the subkeys that are used for
