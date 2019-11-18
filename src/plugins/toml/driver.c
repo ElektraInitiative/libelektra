@@ -581,35 +581,18 @@ void driverExitComment (Driver * driver, Scalar * comment)
 
 	if (driver->commentRoot == NULL)
 	{
-		driverNewCommentList (driver, comment->str, driver->spaceCount);
+		driverNewCommentList (driver, comment->str, comment->leadingSpaces);
 	}
 	else
 	{
-		driver->commentBack = commentListAdd (driver->commentBack, comment->str, driver->spaceCount);
+		driver->commentBack = commentListAdd (driver->commentBack, comment->str, comment->leadingSpaces);
 		if (driver->commentBack == NULL)
 		{
 			driverErrorGeneric (driver, ERROR_MEMORY, "driverExitComment", "commentListAdd");
 		}
 	}
-	driver->spaceCount = 0;
-
 	driver->currLine = comment->line;
 	freeScalar (comment);
-}
-
-// TODO: handle spaces
-void driverExitSpace (Driver * driver)
-{
-	if (driver->errorSet)
-	{
-		return;
-	}
-	if (driver->spaceCount == SIZE_MAX)
-	{
-		driverError (driver, ERROR_INTERNAL, 0, "Space counter at maximum range of size_t: SIZE_MAX");
-		return;
-	}
-	driver->spaceCount++;
 }
 
 void driverExitNewline (Driver * driver)
@@ -625,7 +608,6 @@ void driverExitNewline (Driver * driver)
 	}
 	driver->newlineCount++;
 }
-
 
 static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount)
 {
@@ -820,3 +802,4 @@ static void driverClearLastScalar (Driver * driver)
 	freeScalar (driver->lastScalar);
 	driver->lastScalar = NULL;
 }
+

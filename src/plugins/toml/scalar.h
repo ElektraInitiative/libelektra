@@ -34,11 +34,13 @@ typedef struct
 {
 	ScalarType type;
 	char * str;
+	size_t leadingSpaces;
 	size_t line;
 } Scalar;
 
-Scalar * createScalar (ScalarType type, char * comment, size_t line);
-Scalar * createScalarDup (ScalarType type, const char * comment, size_t line);
+Scalar * createScalar (ScalarType type, char * scalarString, size_t line);
+Scalar * createScalarComment (char * scalarString, size_t spaces, size_t line);
+Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t line);
 void freeScalar(Scalar * scalar);
 const char * getTypeCheckerType (const Scalar * scalar);
 char * translateScalar (const Scalar * scalar);

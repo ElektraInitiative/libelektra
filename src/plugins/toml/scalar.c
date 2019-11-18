@@ -38,6 +38,15 @@ Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 	scalar->type = type;
 	scalar->str = scalarString;
 	scalar->line = line;
+	scalar->leadingSpaces = 0;
+	return scalar;
+}
+
+Scalar * createScalarComment (char * scalarString, size_t leadingSpaces, size_t line) {
+	Scalar * scalar = createScalar (SCALAR_STRING_COMMENT, scalarString, line);
+	if (scalar != NULL) {
+		scalar->leadingSpaces = leadingSpaces;
+	}
 	return scalar;
 }
 

@@ -37,7 +37,6 @@ typedef struct
 	Scalar * lastScalar;
 	char * filename;
 	size_t order;
-	size_t spaceCount;
 	size_t newlineCount;
 	size_t currLine;
 	bool simpleTableActive;
@@ -80,7 +79,6 @@ void driverExitInlineTable (Driver * driver);
 void driverEmptyInlineTable (Driver * driver);
 
 void driverExitComment (Driver * driver, Scalar * comment);
-void driverExitSpace (Driver * driver);
 void driverExitNewline (Driver * driver);
 
 #endif // ELEKTRA_PLUGIN_TOML_DRIVER_H
