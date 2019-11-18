@@ -20,27 +20,26 @@ Information about the syntax:
 - Lines that start with a `#` character are considered comments. Comments are ignored too.
 - Configurations consist of groups and keys. Only keys can have values.
 - Key names can't start with a `[` character
-- Keys can contain spaces and any special characters as long except `=`.
+- Keys can contain spaces and any special characters except `=`.
 - If a key has a value, then it will be followed with an `=` symbol and then the value will be read until the end of the line.
   The white space characters around the `=` symbol are ignored.
 - In values, the following escape sequences can be used:
-  - `\n` and `r` are mapped to newline
+  - `\n` and `\r` are mapped to newline
   - `\t` is mapped to tab
   - `\\` is mapped to `\`
-- Values can contain any character from the `UTF-8` set except for newline and `\` followed by an invalid excape sequence.
-- Keys can be localized. The locale is surrounded with `[` and `]` and cannot contain start with `$`.
-- Same key name can be used multiple times if it has different locales. The following example is valid:
+- Values can contain any character from the `UTF-8` set except for newline and `\` followed by an invalid escape sequence.
+- Keys can be localized. The locale is surrounded with `[` and `]` and cannot start with `$`.
+- Same key names can be used multiple times if it has different locales. The following example is valid:
   ```
   greeting[en] = Hello
   greeting[de] = Hallo
   ```
-- Keys can have meta data. Those are one character (1 byte only) long, start with `$` and are surrounded with `[` and `]`.
-- Same key name can't be used multiple times with different metadata as in locales. The following example is invalid:
+- Keys can have metadata. Those are one byte long, start with `$` and are surrounded with `[` and `]`.
+- The same key name can't be used multiple times with different metadata (different to locales). The following example is invalid:
   ```
   key.name[$a] = Something
   key.name[$i] = Something else
   ```
-- If a key `keyname[$metavalue]` is parsed, it will be represented as a Key with name `parent/keyname` and meta `kconfig` as `metavalue`
 - Group names begin have a `[` symbol at the beginning of a line and every key that follows them is part of this group (until the next
   group is declared)
 
@@ -94,5 +93,5 @@ sudo kdb umount /tests/kconfig
 
 ## Limitations
 
-- Comments from file are discarded on save (same as the default KConfig functionality)
+- Comments from the file are discarded on save (same as the default KConfig functionality)
 - No validation for meta values or locale codes
