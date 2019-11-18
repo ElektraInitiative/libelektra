@@ -48,7 +48,8 @@ TEST (yamlcpp, contract)
 	OPEN_PLUGIN ("system/elektra/modules/yamlcpp", "file/path");
 
 	CppKeySet keys;
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` failed");
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 "Unable to retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
 }
@@ -76,7 +77,7 @@ static void test_read (string const & filename, CppKeySet expected, int const st
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
 	CppKeySet keys;
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbGet` failed");
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, parent.getMeta<string> ("error/reason"));
 	compare_keyset (keys, expected);
 
 	CLOSE_PLUGIN ();
@@ -93,12 +94,13 @@ static void test_write_read (CppKeySet expected)
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
 	// Write key set to file
-	succeed_if_same (plugin->kdbSet (plugin, expected.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write to file");
+	succeed_if_same (plugin->kdbSet (plugin, expected.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 parent.getMeta<string> ("error/reason"));
 
 	// Read written data
 	CppKeySet keySetRead;
 	succeed_if_same (plugin->kdbGet (plugin, keySetRead.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
-			 parent.getString ().c_str ());
+			 parent.getMeta<string> ("error/reason"));
 
 	// Compare data
 	compare_keyset (keySetRead, expected);
