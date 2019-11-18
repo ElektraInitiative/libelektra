@@ -203,3 +203,11 @@ development of the highlevel API and code-generation; various other things
 - email: k.boeswirth+git@gmail.com
 - github user: [kodebach](https://github.com/kodebach)
 - devel/test on: Fedora
+
+## Dardan Haxhimustafa
+
+development of KConfig plugin and changes on qt-gui
+
+- email: mail@dardan.im
+- github user: [darddan](https://github.com/darddan)
+- devel/test on: Arch Linux
