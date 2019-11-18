@@ -18,6 +18,68 @@
 #define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
 /**
+  * @retval true if both meta keys are equal
+  * @retval false otherwise
+  */
+static bool keysAreEqual(const Key * k1, const Key * k2) {
+	// Two nothings are not keys and thus false too
+	if (k1 == NULL || k2 == NULL)
+	{
+		return false;
+	}
+	if (keyCmp(k1, k2) != 0) {
+		return false;
+	}
+	if (keyGetValueSize(k1) != keyGetValueSize(k2)) {
+		return false;
+	}
+	if (0 != memcmp(keyValue(k1), keyValue(k2), keyGetValueSize(k1))) {
+		return false;
+	}
+	return true;
+}
+/**
+  * @retval true if both keys are equal
+  * @retval false otherwise
+  */
+static bool keysAreEqualIncludingMeta (Key * k1, Key * k2) {
+	if (!keysAreEqual(k1, k2) ) {
+		return false;
+	}
+	keyRewindMeta(k1);
+	keyRewindMeta(k2);
+	const Key * mk1;
+	const Key * mk2;
+	while((mk1 = keyNextMeta(k1)) != 0) {
+		mk2 = keyNextMeta(k2);
+		if (!keysAreEqual(mk1, mk2)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+  * @retval true if both key sets are equal
+  * @retval false otherwise
+  */
+static bool keySetsAreEqual(KeySet * ks1, KeySet * ks2) {
+	if (ksGetSize(ks1) != ksGetSize(ks2)) {
+		return false;
+	}
+	ksRewind(ks1);
+	ksRewind(ks2);
+	Key * k1;
+	Key * k2;
+	while((k1 = ksNext(ks1)) != 0) {
+		k2 = ksNext(ks2);
+		if (!keysAreEqualIncludingMeta(k1, k2)) {
+			return false;
+		}
+	}
+	return true;
+}
+/**
  * @brief Get a statistical value from an information key
  * @param informationKey contains the statistics in its meta information
  * @param metaName which statistic to get
@@ -339,29 +401,6 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		}
 	}
 	return result;
-}
-
-/**
- * @brief Compares two keys
- * @retval true if two keys are equal
- * @retval false otherwise
- */
-static bool keysAreEqual (Key * a, Key * b)
-{
-	// Two nothings are not keys and thus false too
-	if (a == NULL || b == NULL)
-	{
-		return false;
-	}
-	if (keyGetValueSize (a) != keyGetValueSize (b))
-	{
-		return false;
-	}
-	if (0 != memcmp (keyValue (a), keyValue (b), keyGetValueSize (a)))
-	{
-		return false;
-	}
-	return true;
 }
 
 /**
@@ -957,10 +996,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		       int strategy, Key * informationKey)
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
-	if (strategy == MERGE_STRATEGY_EQUAL)
-	{
-		return NULL;
-	}
 
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
 	if (ourCropped == NULL)
@@ -980,6 +1015,15 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		ksDel (theirCropped);
 		return NULL;
 	}
+	if (strategy == MERGE_STRATEGY_EQUAL)
+	{
+		if ( keySetsAreEqual(ourCropped, theirCropped) && keySetsAreEqual (theirCropped, baseCropped)) {
+			return ksDup(our);
+		} else {
+			return NULL;
+		}
+	}
+
 	KeySet * result = ksNew (0, KS_END);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
