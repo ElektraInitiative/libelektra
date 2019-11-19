@@ -361,7 +361,7 @@ be called and the mounted file will be updated.
 We haven't discussed `ELEKTRA_SET_<CONCRETE>_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_<CONCRETE>_ERROR` does. The `<CONCRETE>` in the
 text means the concrete error type such as `RESOURCE`, `INSTALLATION`, etc.
-You can see all available error types as well as their categorization guidelines [here](doc/dev/error-categorization.mddoc/dev/error-categorization.md).
+You can see all available error types as well as their categorization guidelines [here](/doc/dev/error-categorization.md).
 Because the parentKey always exists
 even if a critical error occurs, we write the error to the parentKey. The error does not necessarily have to be in a configuration.
 If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`.
