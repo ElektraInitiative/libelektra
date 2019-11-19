@@ -461,7 +461,7 @@ static int writeNewline (Writer * writer)
 
 static KeyType getKeyType (Key * key)
 {
-	const Key * meta = findMetaKey (key, "type");
+	const Key * meta = findMetaKey (key, "tomltype");
 	if (meta != NULL)
 	{
 		if (elektraStrCmp (keyString (meta), "simpletable") == 0)
