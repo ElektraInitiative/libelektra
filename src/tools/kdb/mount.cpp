@@ -14,6 +14,7 @@
 #include <cmdline.hpp>
 #include <mount.hpp>
 
+#include <kdbmerge.h>
 #include <keysetio.hpp>
 
 #include <fstream>
@@ -184,15 +185,21 @@ void MountCommand::buildBackend (Cmdline const & cl)
 
 	if (!cl.force && (cl.strategy == "unchanged" && mountConf != dupMountConf))
 	{
-		// throw error because it is not unchanged
-		try
+		// We only compare two key sets => their and base are equal
+		if (ckdb::elektraMerge (mountConf.getKeySet (), Key (Backends::mountpointsPath, KEY_END).getKey (),
+					dupMountConf.getKeySet (), Key (Backends::mountpointsPath, KEY_END).getKey (),
+					dupMountConf.getKeySet (), Key (Backends::mountpointsPath, KEY_END).getKey (),
+					Key (Backends::mountpointsPath, KEY_END).getKey (), ckdb::MERGE_STRATEGY_EQUAL,
+					Key (Backends::mountpointsPath, KEY_END).getKey ()) != NULL)
 		{
+			// elektraMerge avoids alreadyInUseException
 			backend.setMountpoint (mpk, dupMountConf);
 		}
-		catch (MountpointAlreadyInUseException const & e)
+		else
 		{
+			// throw error because it is not unchanged
 			throw MountpointAlreadyInUseException (
-				std::string ("Requested unchanged mountpoint but mount would lead to changes\n") + e.what ());
+				std::string ("Requested unchanged mountpoint but mount would lead to changes\n"));
 		}
 	}
 }
