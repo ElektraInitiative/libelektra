@@ -356,15 +356,17 @@ and write each key as its own line in the file. Since we don't care about the na
 the value of `keyString` for each `Key` as a new line in the file. That's it. Now, each time the mounted `KeySet` is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
-#### `ELEKTRA_SET_ERROR`
+#### `ELEKTRA_SET_<CONCRETE>_ERROR`
 
-We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
-and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
+We haven't discussed `ELEKTRA_SET_<CONCRETE>_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
+and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_<CONCRETE>_ERROR` does. The `<CONCRETE>` in the
+text means the concrete error type such as `RESOURCE`, `INSTALLATION`, etc.
+You can see all available error types as well as their categorization guidelines [here](doc/dev/error-categorization.mddoc/dev/error-categorization.md).
+Because the parentKey always exists
 even if a critical error occurs, we write the error to the parentKey. The error does not necessarily have to be in a configuration.
 If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`.
 
-The first parameter of `ELEKTRA_SET_ERROR` is an id specifying the general error that occurred.
-The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
+The second parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
 caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
 
@@ -419,8 +421,9 @@ keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_
 ```
 
 Within the `checkconf` function all of the plugin configuration values should be validated.
-Errors should be reported via Elektra's error handling mechanism (see section [ELEKTRA_SET_ERROR](#elektra_set_error) for further details).
-If `checkconf` encounters a configuration value, that is not strictly invalid but can not be parsed by the plugin (e.g. a parameter which is not part of the plugin configuration), then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_WARNING`.
+Errors should be reported via Elektra's error handling mechanism (see section [ELEKTRA*SET*<CONCRETE>\_ERROR](#elektra_set_concrete_error) for further details).
+If `checkconf` encounters a configuration value, that is not strictly invalid but can not be parsed by the plugin (e.g. a parameter which is not part of the plugin configuration),
+then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_<CONCRETE>_WARNING`.
 
 ### `ELEKTRA_PLUGIN_EXPORT`
 
