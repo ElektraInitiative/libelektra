@@ -51,33 +51,20 @@ using KeySet = ckdb::KeySet;
 					   __VA_ARGS__);                                                                                   \
 	} while (0)
 
-#define ELEKTRA_SET_OUT_OF_MEMORY_ERROR(key, reason)                                                                                       \
+#define ELEKTRA_SET_OUT_OF_MEMORY_ERROR(key)                                                                                               \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_OUT_OF_MEMORY, reason);                                                     \
+		ELEKTRA_LOG ("Add Error %s", ELEKTRA_ERROR_OUT_OF_MEMORY);                                                                 \
 		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),        \
-					      reason);                                                                                     \
+					      "Memory allocation failed");                                                                 \
 	} while (0)
-#define ELEKTRA_SET_OUT_OF_MEMORY_ERRORF(key, reason, ...)                                                                                 \
+
+#define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key)                                                                                             \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_OUT_OF_MEMORY, __VA_ARGS__);                                           \
-		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),        \
-					      reason, __VA_ARGS__);                                                                        \
-	} while (0)
-#define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key, reason)                                                                                     \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_OUT_OF_MEMORY, reason);                                                 \
+		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_OUT_OF_MEMORY, "Memory allocation failed");                             \
 		elektraAddWarningOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),      \
-						reason);                                                                                   \
-	} while (0)
-#define ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF(key, reason, ...)                                                                               \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_OUT_OF_MEMORY, __VA_ARGS__);                                       \
-		elektraAddWarningOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),      \
-						reason, __VA_ARGS__);                                                                      \
+						"Memory allocation failed");                                                               \
 	} while (0)
 
 #define ELEKTRA_SET_INSTALLATION_ERROR(key, reason)                                                                                        \

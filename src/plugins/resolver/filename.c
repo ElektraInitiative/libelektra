@@ -484,7 +484,7 @@ static char * elektraGetCwd (Key * warningsKey)
 	char * cwd = elektraMalloc (size);
 	if (cwd == NULL)
 	{
-		ELEKTRA_ADD_OUT_OF_MEMORY_WARNING (warningsKey, "Could not alloc for getcwd, defaulting to /");
+		ELEKTRA_ADD_RESOURCE_WARNING (warningsKey, "Could not alloc for getcwd, defaulting to /");
 		return 0;
 	}
 
@@ -509,8 +509,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_OUT_OF_MEMORY_WARNINGF (warningsKey,
-								    "Could not realloc for `getcwd()` size %d, defaulting to /", size);
+				ELEKTRA_ADD_RESOURCE_WARNINGF (warningsKey, "Could not realloc for `getcwd()` size %d, defaulting to /",
+							       size);
 				return 0;
 			}
 		}

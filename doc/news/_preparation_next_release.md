@@ -345,6 +345,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved various error messages and synchronized documentations. _(Michael Zronek)_
 - Improved `range` plugin error message. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
+- Out of memory error messages are now uniform. _(Michael Zronek)_
 - Release notes now use git's union merge driver. _(Dominic Jäger)_
 - Please remove me. I'm only here for the build server. _(Dominic Jäger)_
 - I'm only here for the build server. This PR contains only fix ups. _(Dominic Jäger)_
