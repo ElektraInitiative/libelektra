@@ -300,6 +300,7 @@ you up to date with the multi-language support provided by Elektra.
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
 - We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
+- Corrected buildserver documentation. _(Djordje Bulatovic)_
 
 ## Tests
 
