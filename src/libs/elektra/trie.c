@@ -33,7 +33,7 @@
 #include "kdbinternal.h"
 
 static char * elektraTrieStartsWith (const char * str, const char * substr);
-static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
+static Plugin * elektraTriePrefixLookup (Trie * trie, const char * name);
 
 /**
  * @brief The Trie structure
@@ -48,10 +48,10 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
  * @param key the name of this key will be looked up
  * @ingroup trie
  */
-Backend * trieLookup (Trie * trie, const Key * key)
+Plugin * trieLookup (Trie * trie, const Key * key)
 {
 	char * where = 0;
-	Backend * ret = 0;
+	Plugin * ret = 0;
 	size_t len = 0;
 
 	if (!key) return 0;
@@ -86,13 +86,16 @@ int trieClose (Trie * trie, Key * errorKey)
 		if (trie->text[i] != NULL)
 		{
 			trieClose (trie->children[i], errorKey);
-			if (trie->value[i]) backendClose (trie->value[i], errorKey);
+			if (trie->value[i])
+			{
+				elektraPluginClose (trie->value[i], errorKey);
+			}
 			elektraFree (trie->text[i]);
 		}
 	}
 	if (trie->empty_value)
 	{
-		backendClose (trie->empty_value, errorKey);
+		elektraPluginClose (trie->empty_value, errorKey);
 	}
 	elektraFree (trie);
 	return 0;
@@ -109,7 +112,7 @@ int trieClose (Trie * trie, Key * errorKey)
  *
  * @retval trie on success
  */
-Trie * trieInsert (Trie * trie, const char * name, Backend * value)
+Trie * trieInsert (Trie * trie, const char * name, Plugin * value)
 {
 	unsigned char idx;
 
@@ -245,7 +248,7 @@ static char * elektraTrieStartsWith (const char * str, const char * substr)
 	return 0;
 }
 
-static Backend * elektraTriePrefixLookup (Trie * trie, const char * name)
+static Plugin * elektraTriePrefixLookup (Trie * trie, const char * name)
 {
 	if (trie == NULL) return NULL;
 
