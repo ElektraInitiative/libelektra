@@ -228,6 +228,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
+- `KDB_EXEC_PATH`, which can be used to add further external tools to `kdb`, now supports `:` to separate paths.
+  `kdb list-tools` and `run_env` were improved to take advantage of this. _(Markus Raab)_
 - Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
