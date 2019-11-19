@@ -14,7 +14,7 @@
 #include <kdbmacros.h>
 
 #include "kdbmerge.h"
-#include "helper/cmergehelper.hpp"
+#include "helper/keyhelper.hpp"
 #include <export.hpp>
 #include <import.hpp>
 
@@ -23,6 +23,7 @@
 
 using namespace kdb;
 using namespace kdb::tools;
+using namespace kdb::tools::helper;
 using namespace std;
 
 EditorCommand::EditorCommand ()
@@ -168,7 +169,7 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
-		applyMeta (importedKeys, original);
+		copyAllMeta (importedKeys, original);
 		kdb.set (importedKeys, root);
 		printWarnings (cerr, root, cl.verbose, cl.debug);
 		printError (cerr, root, cl.verbose, cl.debug);
