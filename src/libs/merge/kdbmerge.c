@@ -1018,8 +1018,16 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	if (strategy == MERGE_STRATEGY_EQUAL)
 	{
 		if ( keySetsAreEqual(ourCropped, theirCropped) && keySetsAreEqual (theirCropped, baseCropped)) {
-			return ksDup(our);
+			KeySet * resultWithRoot = ksNew (0, KS_END);
+			prependStringToAllKeyNames (resultWithRoot, ourCropped, keyName (resultRoot), informationKey);
+			ksDel (ourCropped);
+			ksDel (theirCropped);
+			ksDel (baseCropped);
+			return resultWithRoot;
 		} else {
+			ksDel (ourCropped);
+			ksDel (theirCropped);
+			ksDel (baseCropped);
 			return NULL;
 		}
 	}
