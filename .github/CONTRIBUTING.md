@@ -1,6 +1,7 @@
 # Contributing
 
 We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this project. First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
+If you are looking for a IDE you can use [CLion](https://www.jetbrains.com/clion/) ([setup tutorial](/doc/tutorials/contributing-clion.md)) or [Visual Studio Code](https://code.visualstudio.com/).
 
 ## Configure Git
 
@@ -25,22 +26,24 @@ $ git push origin master --force
 
 ## Issues
 
-Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues). Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
+Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues) and filter the list by pre-defined labels like _good first issue_ or _help wanted_.Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
 
 ## Creating a Pull-Request
 
 If you want to publish your local changes to this project you have to create a new pull-request.
 
-1. Open GitHub and navigate to _your_ libeketra-fork
+1. Open GitHub and navigate to _your_ libelektra-fork
 2. In the tab _Codes_ press the _New Pull-Request_ button and choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
 3. Now you should be able to set up the _Comparing changes_ settings. Choose the head repository and base repository. E.g.: if you have some changes in the master branch of your forked repository, select *head repository: yournickname/libelektra and *compare: master* and *base repositroy: ElektraInitiative/libelektra* and *base: master\*
 4. Add some information about the changes in the release notes (path of the file: /libelektra/doc/news/\_preparation_next_release.md), skipping this step may cause a rejected pull-request
-5. Commit and push your local changes in git (keep in mind to sync your fork - fetch, rebase & push)
-6. Wait for the code-review
+5. Do not forget to format your code since the build server fails instantly. Take a look at the [coding guidelines](/doc/CODING.md) for more information.
+6. Commit and push your local changes in git (keep in mind to sync your fork - fetch, rebase & push)
+7. Wait for the code-review
 
 ## Code-Review
 
-After the pull-request your code will be reviewed and if your pull-request passes the review , your changes will be merged to master.
+After opening the pull-request, your code will be reviewed and if your pull-request passes the review and build server steps , your changes will be merged to master.
+Get rejected? Don't worry... there are many reasons why the build server could fail. Open your created pull-request in github and scroll to the bottom of the site, there should be a list of all checks - by clicking on the _Details_, you get more infomation about the checks. However, there are also cases where the websites are down, build server stucks or times-out etc., please get also an overview of the [build server](/doc/BUILDSERVER.md) to avoid frustration and long review times.
 
 # General
 
