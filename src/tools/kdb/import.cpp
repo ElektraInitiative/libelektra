@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "helper/cmergehelper.hpp"
+#include "helper/keyhelper.hpp"
 #include "kdbmerge.h"
 #include <import.hpp>
 
@@ -22,6 +22,7 @@
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
+using namespace kdb::tools::helper;
 
 ImportCommand::ImportCommand ()
 {
