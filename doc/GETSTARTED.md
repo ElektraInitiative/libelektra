@@ -4,7 +4,7 @@
 
   - Operating system
 
-    We recommend a unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
+    We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
 
   - Using command-line interface and commands
 
