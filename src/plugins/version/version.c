@@ -9,9 +9,9 @@
 
 #include "version.h"
 
+#include <kdberrors.h>
 #include <kdbprivate.h>
 #include <kdbversion.h>
-#include <kdberrors.h>
 
 
 int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -54,8 +54,8 @@ int elektraVersionSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
-	{
-		// clang-format off
+{
+	// clang-format off
 		return elektraPluginExport ("version",
 		ELEKTRA_PLUGIN_GET,	&elektraVersionGet,
 		ELEKTRA_PLUGIN_SET,	&elektraVersionSet,
