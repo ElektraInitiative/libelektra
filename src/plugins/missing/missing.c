@@ -7,23 +7,23 @@
  *
  */
 
+#include "missing.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbplugin.h>
-#include "missing.h"
 
 
 int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/missing"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/missing", KEY_VALUE, "The missing plugin is waiting for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/missing/exports", KEY_END),
-			       keyNew ("system/elektra/modules/missing/exports/get", KEY_FUNC, elektraMissingGet, KEY_END),
-			       keyNew ("system/elektra/modules/missing/exports/set", KEY_FUNC, elektraMissingSet, KEY_END),
+		KeySet * contract = ksNew (
+			30, keyNew ("system/elektra/modules/missing", KEY_VALUE, "The missing plugin is waiting for your orders", KEY_END),
+			keyNew ("system/elektra/modules/missing/exports", KEY_END),
+			keyNew ("system/elektra/modules/missing/exports/get", KEY_FUNC, elektraMissingGet, KEY_END),
+			keyNew ("system/elektra/modules/missing/exports/set", KEY_FUNC, elektraMissingSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/missing/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system/elektra/modules/missing/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

@@ -10,10 +10,10 @@
 #ifndef ELEKTRA_MISSING_H
 #define ELEKTRA_MISSING_H
 
-
+#include <kdbplugin.h>
 
 int elektraMissingGet (Plugin * plugin, KeySet * returned, Key * parentKey);
 int elektraMissingSet (Plugin * plugin, KeySet * returned, Key * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
-#endif //ELEKTRA_MISSING_H
+#endif // ELEKTRA_MISSING_H
