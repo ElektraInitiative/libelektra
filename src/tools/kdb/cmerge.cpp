@@ -118,11 +118,11 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 		kdb::KeySet merge_result = c_merge_result;
 		if (keysAtResultRoot.append (merge_result) < 0)
 		{
-			return 1;
+			return 3;
 		}
 		if (kdb.set (keysAtResultRoot, resultRoot) < 0)
 		{
-			return 1;
+			return 3;
 		}
 		return 0;
 	}
@@ -130,11 +130,11 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	{
 		if (numberOfConflicts > 0 && strategy == ckdb::MERGE_STRATEGY_ABORT)
 		{
-			return 2;
+			return 11;
 		}
 		else
 		{
-			return 1;
+			return 3;
 		}
 	}
 }
