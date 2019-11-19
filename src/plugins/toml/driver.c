@@ -147,7 +147,7 @@ void driverExitKey (Driver * driver)
 		bool isTableArrayList = false;
 		for (const Key * meta = keyNextMeta (existing); meta != NULL; meta = keyNextMeta (existing))
 		{
-			if (strcmp (keyName (meta), "type") == 0 && strcmp (keyString (meta), "tablearray") == 0)
+			if (strcmp (keyName (meta), "tomltype") == 0 && strcmp (keyString (meta), "tablearray") == 0)
 			{
 				isTableArrayList = true;
 				break;
@@ -384,7 +384,7 @@ void driverExitSimpleTable (Driver * driver)
 	{
 		return;
 	}
-	keySetMeta (driver->parentStack->key, "type", "simpletable");
+	keySetMeta (driver->parentStack->key, "tomltype", "simpletable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
@@ -447,7 +447,7 @@ void driverExitTableArray (Driver * driver)
 	if (existingRoot == NULL)
 	{
 		existingRoot = rootNameKey;
-		keySetMeta (existingRoot, "type", "tablearray");
+		keySetMeta (existingRoot, "tomltype", "tablearray");
 		keySetMeta (existingRoot, "array", "#0");
 		setOrderForKey (existingRoot, driver->order++);
 		ksAppendKey (driver->keys, existingRoot);
@@ -554,7 +554,7 @@ void driverEnterInlineTable (Driver * driver)
 	{
 		return;
 	}
-	keySetMeta (driver->parentStack->key, "type", "inlinetable");
+	keySetMeta (driver->parentStack->key, "tomltype", "inlinetable");
 	ksAppendKey (driver->keys, driver->parentStack->key);
 }
 
