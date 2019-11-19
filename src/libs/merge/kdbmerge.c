@@ -18,41 +18,49 @@
 #define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
 /**
-  * @retval true if both meta keys are equal
-  * @retval false otherwise
-  */
-static bool keysAreEqual(const Key * k1, const Key * k2) {
+ * @retval true if both meta keys are equal
+ * @retval false otherwise
+ */
+static bool keysAreEqual (const Key * k1, const Key * k2)
+{
 	// Two nothings are not keys and thus false too
 	if (k1 == NULL || k2 == NULL)
 	{
 		return false;
 	}
-	if (keyCmp(k1, k2) != 0) {
+	if (keyCmp (k1, k2) != 0)
+	{
 		return false;
 	}
-	if (keyGetValueSize(k1) != keyGetValueSize(k2)) {
+	if (keyGetValueSize (k1) != keyGetValueSize (k2))
+	{
 		return false;
 	}
-	if (0 != memcmp(keyValue(k1), keyValue(k2), keyGetValueSize(k1))) {
+	if (0 != memcmp (keyValue (k1), keyValue (k2), keyGetValueSize (k1)))
+	{
 		return false;
 	}
 	return true;
 }
 /**
-  * @retval true if both keys are equal
-  * @retval false otherwise
-  */
-static bool keysAreEqualIncludingMeta (Key * k1, Key * k2) {
-	if (!keysAreEqual(k1, k2) ) {
+ * @retval true if both keys are equal
+ * @retval false otherwise
+ */
+static bool keysAreEqualIncludingMeta (Key * k1, Key * k2)
+{
+	if (!keysAreEqual (k1, k2))
+	{
 		return false;
 	}
-	keyRewindMeta(k1);
-	keyRewindMeta(k2);
+	keyRewindMeta (k1);
+	keyRewindMeta (k2);
 	const Key * mk1;
 	const Key * mk2;
-	while((mk1 = keyNextMeta(k1)) != 0) {
-		mk2 = keyNextMeta(k2);
-		if (!keysAreEqual(mk1, mk2)) {
+	while ((mk1 = keyNextMeta (k1)) != 0)
+	{
+		mk2 = keyNextMeta (k2);
+		if (!keysAreEqual (mk1, mk2))
+		{
 			return false;
 		}
 	}
@@ -60,20 +68,24 @@ static bool keysAreEqualIncludingMeta (Key * k1, Key * k2) {
 }
 
 /**
-  * @retval true if both key sets are equal
-  * @retval false otherwise
-  */
-static bool keySetsAreEqual(KeySet * ks1, KeySet * ks2) {
-	if (ksGetSize(ks1) != ksGetSize(ks2)) {
+ * @retval true if both key sets are equal
+ * @retval false otherwise
+ */
+static bool keySetsAreEqual (KeySet * ks1, KeySet * ks2)
+{
+	if (ksGetSize (ks1) != ksGetSize (ks2))
+	{
 		return false;
 	}
-	ksRewind(ks1);
-	ksRewind(ks2);
+	ksRewind (ks1);
+	ksRewind (ks2);
 	Key * k1;
 	Key * k2;
-	while((k1 = ksNext(ks1)) != 0) {
-		k2 = ksNext(ks2);
-		if (!keysAreEqualIncludingMeta(k1, k2)) {
+	while ((k1 = ksNext (ks1)) != 0)
+	{
+		k2 = ksNext (ks2);
+		if (!keysAreEqualIncludingMeta (k1, k2))
+		{
 			return false;
 		}
 	}
@@ -1017,14 +1029,17 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	}
 	if (strategy == MERGE_STRATEGY_EQUAL)
 	{
-		if ( keySetsAreEqual(ourCropped, theirCropped) && keySetsAreEqual (theirCropped, baseCropped)) {
+		if (keySetsAreEqual (ourCropped, theirCropped) && keySetsAreEqual (theirCropped, baseCropped))
+		{
 			KeySet * resultWithRoot = ksNew (0, KS_END);
 			prependStringToAllKeyNames (resultWithRoot, ourCropped, keyName (resultRoot), informationKey);
 			ksDel (ourCropped);
 			ksDel (theirCropped);
 			ksDel (baseCropped);
 			return resultWithRoot;
-		} else {
+		}
+		else
+		{
 			ksDel (ourCropped);
 			ksDel (theirCropped);
 			ksDel (baseCropped);
