@@ -214,7 +214,8 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		// could not get KDB_DB_INIT, try KDB_DB_FILE
 		// first cleanup:
 		ksClear (keys);
-		backendClose (handle->defaultBackend, errorKey);
+
+		elektraPluginClose (handle->defaultBackend, errorKey);
 		splitDel (handle->split);
 
 		// then create new setup:
@@ -356,7 +357,7 @@ KDB * kdbOpen (Key * errorKey)
 	keySetName (errorKey, keyName (initialParent));
 	keySetString (errorKey, "kdbOpen(): backendClose");
 
-	backendClose (handle->defaultBackend, errorKey);
+	elektraPluginClose (handle->defaultBackend, errorKey);
 	splitDel (handle->split);
 	handle->defaultBackend = 0;
 	handle->trie = 0;
@@ -449,13 +450,13 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	trieClose (handle->trie, errorKey);
 
-	backendClose (handle->defaultBackend, errorKey);
+	elektraPluginClose (handle->defaultBackend, errorKey);
 	handle->defaultBackend = 0;
 
 	// not set in fallback mode, so lets check:
 	if (handle->initBackend)
 	{
-		backendClose (handle->initBackend, errorKey);
+		elektraPluginClose (handle->initBackend, errorKey);
 		handle->initBackend = 0;
 	}
 
@@ -505,8 +506,13 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 	for (size_t i = 0; i < split->size; i++)
 	{
 		int ret = -1;
-		Backend * backend = split->handles[i];
+		Plugin * backend = split->handles[i];
 		clear_bit (split->syncbits[i], (splitflag_t) SPLIT_FLAG_SYNC);
+
+		if (backend && backend->kdbGet)
+		{
+			// TODO continue
+		}
 
 		Plugin * resolver = backend->getplugins[RESOLVER_PLUGIN];
 		if (resolver && resolver->kdbGet)
@@ -1341,7 +1347,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 		{
 			int ret = 0; // last return value
 
-			Backend * backend = split->handles[i];
+			Plugin * backend = split->handles[i];
 			ksRewind (split->keysets[i]);
 			if (backend->setplugins[p] && backend->setplugins[p]->kdbSet)
 			{
@@ -1889,7 +1895,7 @@ static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, K
 static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const char * pluginName, Key * errorKey)
 {
 	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-	Backend * backend = mountGetBackend (handle, mountpointKey);
+	Plugin * backend = mountGetBackend (handle, mountpointKey);
 
 	int ret = 1;
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
