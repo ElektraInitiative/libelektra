@@ -148,7 +148,7 @@ static void splitResize (Split * split)
  * @retval -1 if no split is found
  * @return the position of the new element: size-1
  */
-ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits)
+ssize_t splitAppend (Split * split, Plugin * backend, Key * parentKey, int syncbits)
 {
 	if (!split)
 	{
@@ -184,7 +184,7 @@ ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int sync
  * @retval -1 if it does not exist
  * @ingroup split
  */
-static ssize_t splitSearchBackend (Split * split, Backend * backend, Key * parent)
+static ssize_t splitSearchBackend (Split * split, Plugin * backend, Key * parent)
 {
 	for (size_t i = 0; i < split->size; ++i)
 	{
@@ -311,7 +311,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 
 	/* Returns the backend the key is in or the default backend
 	   otherwise */
-	Backend * backend = mountGetBackend (kdb, parentKey);
+	Plugin * backend = mountGetBackend (kdb, parentKey);
 
 #if DEBUG && VERBOSE
 	printf (" with parent %s\n", keyName (parentKey));
@@ -381,7 +381,7 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		// TODO: handle keys in wrong namespaces
-		Backend * curHandle = mountGetBackend (handle, curKey);
+		Plugin * curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
 		/* If key could be appended to any of the existing split keysets */
@@ -415,7 +415,7 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
  */
 void splitUpdateFileName (Split * split, KDB * handle, Key * key)
 {
-	Backend * curHandle = mountGetBackend (handle, key);
+	Plugin * curHandle = mountGetBackend (handle, key);
 	if (!curHandle) return;
 	ssize_t curFound = splitSearchBackend (split, curHandle, key);
 	if (curFound == -1) return;
@@ -448,7 +448,7 @@ int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		Backend * curHandle = mountGetBackend (handle, curKey);
+		Plugin * curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
 		/* If key could be appended to any of the existing split keysets */
@@ -467,16 +467,20 @@ int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 	return 1;
 }
 
-static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const Backend * otherHandle, const char * msg)
+static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin * curHandle, const Plugin * otherHandle, const char * msg)
 {
 	const Key * k = ksCurrent (ks);
 
 	const size_t sizeOfStaticText = 300;
-	size_t size = keyGetNameSize (curHandle->mountpoint) + keyGetValueSize (curHandle->mountpoint) + keyGetNameSize (k) + strlen (msg) +
+
+	char * curHandleMountpoint = backendGetMountpoint (curHandle);
+	char * otherHandleMountpoint = backendGetMountpoint (otherHandle);
+
+	size_t size = keyGetNameSize (curHandleMountpoint) + keyGetValueSize (curHandleMountpoint) + keyGetNameSize (k) + strlen (msg) +
 		      sizeOfStaticText;
 	if (otherHandle)
 	{
-		size += keyGetNameSize (otherHandle->mountpoint) + keyGetValueSize (otherHandle->mountpoint);
+		size += keyGetNameSize (otherHandleMountpoint) + keyGetValueSize (otherHandleMountpoint);
 	}
 	char * warningMsg = elektraMalloc (size);
 	strcpy (warningMsg, "drop key ");
@@ -490,15 +494,15 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 		strcat (warningMsg, "(no name)");
 	}
 	strcat (warningMsg, " not belonging to \"");
-	strcat (warningMsg, keyName (curHandle->mountpoint));
+	strcat (warningMsg, keyName (curHandleMountpoint));
 	strcat (warningMsg, "\" with name \"");
-	strcat (warningMsg, keyString (curHandle->mountpoint));
+	strcat (warningMsg, keyString (curHandleMountpoint));
 	if (otherHandle)
 	{
 		strcat (warningMsg, "\" but instead to \"");
-		strcat (warningMsg, keyName (otherHandle->mountpoint));
+		strcat (warningMsg, keyName (otherHandleMountpoint));
 		strcat (warningMsg, "\" with name \"");
-		strcat (warningMsg, keyString (otherHandle->mountpoint));
+		strcat (warningMsg, keyString (otherHandleMountpoint));
 	}
 	strcat (warningMsg, "\" because ");
 	strcat (warningMsg, msg);
@@ -527,7 +531,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 	ksRewind (split->keysets[i]);
 	while ((cur = ksNext (split->keysets[i])) != 0)
 	{
-		Backend * curHandle = mountGetBackend (handle, cur);
+		Plugin * curHandle = mountGetBackend (handle, cur);
 		if (!curHandle) return -1;
 
 		keyClearSync (cur);
@@ -854,8 +858,9 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 	ELEKTRA_LOG_DEBUG ("SIZE STORAGE STORE STUFF");
 	for (size_t i = 0; i < split->size; ++i)
 	{
+		Key * backendMountpoint = backendGetMountpoint (split->handles[i]);
 		// TODO: simplify this code below, seems like this affects only the last split anyway
-		if (!split->handles[i] || !split->handles[i]->mountpoint)
+		if (!split->handles[i] || !backendMountpoint)
 		{
 			ELEKTRA_LOG_DEBUG (">>>> Skipping split->handle[%ld]: pseudo-backend or no mountpoint", i);
 			ELEKTRA_ASSERT (i == (split->size - 1), "ERROR: NOT THE LAST SPLIT");
@@ -872,9 +877,9 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		// TODO: simplify this code above, seems like this affects only the last split anyway
 
 		char * name = 0;
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		if (strlen (keyName (backendMountpoint)) != 0)
 		{
-			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (backendMountpoint));
 		}
 		else
 		{
@@ -970,9 +975,10 @@ int splitCacheCheckState (Split * split, KeySet * global)
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		Key * backendMountpoint = backendGetMountpoint (split->handles[i]);
+		if (strlen (keyName (backendMountpoint)) != 0)
 		{
-			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (backendMountpoint));
 		}
 		else
 		{
@@ -1071,9 +1077,10 @@ int splitCacheLoadState (Split * split, KeySet * global)
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		Key * backendMountpoint = backendGetMountpoint (split->handles[i]);
+		if (strlen (keyName (backendMountpoint)) != 0)
 		{
-			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (backendMountpoint));
 		}
 		else
 		{
