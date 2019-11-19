@@ -469,4 +469,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
