@@ -20,4 +20,4 @@ int elektraBackendError (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
-#endif //ELEKTRA_BACKEND_H
+#endif // ELEKTRA_BACKEND_H
