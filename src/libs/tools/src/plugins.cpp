@@ -95,12 +95,12 @@ void Plugins::addPlugin (Plugin & plugin, std::string which)
 		if (!plugins[placementInfo[which]])
 		{
 			plugins[placementInfo[which]] = static_cast<Slot *> (ckdb::elektraMalloc (sizeof (Slot)));
-			plugins[placementInfo[which]]->value=&plugin;
+			plugins[placementInfo[which]]->value = &plugin;
 			plugins[placementInfo[which]]->next = NULL;
 			return;
 		}
 		Slot * cur = static_cast<Slot *> (ckdb::elektraMalloc (sizeof (Slot)));
-		cur->value=&plugin;
+		cur->value = &plugin;
 		cur->next = plugins[placementInfo[which]];
 		plugins[placementInfo[which]] = cur;
 		return;
@@ -251,7 +251,7 @@ void Plugins::addPluginToSlot (Plugin * plugin, std::string which)
 	if (!plugins[placementInfo[which]])
 	{
 		plugins[placementInfo[which]] = static_cast<Slot *> (ckdb::elektraMalloc (sizeof (Slot)));
-		plugins[placementInfo[which]]->value=plugin;
+		plugins[placementInfo[which]]->value = plugin;
 		plugins[placementInfo[which]]->next = NULL;
 
 		return;
@@ -259,10 +259,10 @@ void Plugins::addPluginToSlot (Plugin * plugin, std::string which)
 	Slot * cur = plugins[placementInfo[which]];
 	while (cur->next)
 	{
-		cur=cur->next;
+		cur = cur->next;
 	}
 	cur->next = static_cast<Slot *> (ckdb::elektraMalloc (sizeof (Slot)));
-	cur->next->value=plugin;
+	cur->next->value = plugin;
 	cur->next->next = NULL;
 }
 
@@ -438,9 +438,9 @@ void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		int position = 0;
 		Slot * current = plugins[i];
-		while(current)
+		while (current)
 		{
-			if(current->value)
+			if (current->value)
 			{
 				bool fr = current->value->firstRef;
 
@@ -458,14 +458,18 @@ void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 				if (fr)
 				{
 					comment = "Label of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/label", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					ret.append (*Key (name + "/label", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 					comment = "Name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/name", KEY_VALUE, pluginName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					ret.append (*Key (name + "/name", KEY_VALUE, pluginName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 				}
 				else
 				{
-					comment = "Reference name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					comment = "Reference name of plugin fulfilling the role " + roleName + " at position " +
+						  posNumber.str ();
+					ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 				}
 
 				if (fr) serializeConfig (name, current->value->getConfig (), ret);
@@ -506,9 +510,9 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		int position = 0;
 		Slot * current = plugins[i];
-		while(current)
+		while (current)
 		{
-			if(current->value)
+			if (current->value)
 			{
 				bool fr = current->value->firstRef;
 
@@ -524,14 +528,18 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 				if (fr)
 				{
 					comment = "Label of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/label", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					ret.append (*Key (name + "/label", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 					comment = "Name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/name", KEY_VALUE, pluginName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					ret.append (*Key (name + "/name", KEY_VALUE, pluginName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 				}
 				else
 				{
-					comment = "Reference name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					comment = "Reference name of plugin fulfilling the role " + roleName + " at position " +
+						  posNumber.str ();
+					ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 				}
 				if (fr) serializeConfig (name, current->value->getConfig (), ret);
 			}
@@ -578,9 +586,9 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 		int position = 0;
 		Slot * current = plugins[i];
-		while(current)
+		while (current)
 		{
-			if(current->value)
+			if (current->value)
 			{
 				bool fr = current->value->firstRef;
 
@@ -596,14 +604,18 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 				if (fr)
 				{
 					comment = "Label of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/label", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					ret.append (*Key (name + "/label", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 					comment = "Name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/name", KEY_VALUE, pluginName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					ret.append (*Key (name + "/name", KEY_VALUE, pluginName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 				}
 				else
 				{
-					comment = "Reference name of plugin fulfilling the role " + roleName + " at position " + posNumber.str ();
-					ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (), KEY_END));
+					comment = "Reference name of plugin fulfilling the role " + roleName + " at position " +
+						  posNumber.str ();
+					ret.append (*Key (name + "/reference", KEY_VALUE, refName.c_str (), KEY_COMMENT, comment.c_str (),
+							  KEY_END));
 				}
 				if (fr) serializeConfig (name, current->value->getConfig (), ret);
 			}

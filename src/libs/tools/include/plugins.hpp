@@ -50,7 +50,7 @@ protected:
 
 	std::map<std::string, int> placementInfo;
 
-	void addPluginToSlot(Plugin * plugin, std::string which);
+	void addPluginToSlot (Plugin * plugin, std::string which);
 
 public:
 	Plugins ();
