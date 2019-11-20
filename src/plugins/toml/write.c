@@ -306,7 +306,7 @@ static int writeScalar (Key * key, Writer * writer)
 	else
 	{
 		const char * valueStr = keyString (key);
-		if (isNumber (valueStr) || isFloat(valueStr))
+		if (isNumber (valueStr) || isFloat(valueStr))	// TODO: isDate
 		{
 			result |= fputs (valueStr, writer->f) == EOF;
 		}
