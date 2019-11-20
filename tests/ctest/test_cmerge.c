@@ -302,6 +302,172 @@ static void testArrayWithDifferentLengths (void)
 	}
 }
 
+/**
+ * KeySets equality depends only on what is below root. Consequently the three sets
+ * user/test1 and user/test2 and user/test3 must be equal
+ */
+void test_strategy_equal_different_roots (void)
+{
+	printf ("Executing %s\n", __func__);
+	// clang-format off
+	Key * our_root    = keyNew ("user/test1", KEY_END);
+	Key * their_root  = keyNew ("user/test2", KEY_END);
+	Key * base_root   = keyNew ("user/test3", KEY_END);
+	Key * result_root = keyNew ("user/test/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
+	KeySet * our = ksNew (3,
+		keyNew ("user/test1/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test1/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test1/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * their = ksNew (3,
+		keyNew ("user/test2/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test2/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test2/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * base = ksNew (3,
+		keyNew ("user/test3/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test3/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test3/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * result = elektraMerge (
+		our, our_root,
+		their, their_root,
+		base, base_root,
+		result_root, MERGE_STRATEGY_EQUAL, informationKey
+		);
+	// clang-format on
+	succeed_if (result != NULL, "Merge must NOT return null if strategy is MERGE_STRATEGY_EQUAL and only the roots differ");
+	ksDel (our);
+	ksDel (their);
+	ksDel (base);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+	keyDel (informationKey);
+}
+
+void test_strategy_equal_helper (KeySet * our, KeySet * their, KeySet * base, bool expectedToBeEqual, int counter)
+{
+	printf ("Executing %s number %d\n", __func__, counter);
+	Key * our_root = keyNew ("user/test", KEY_END);
+	Key * their_root = keyNew ("user/test", KEY_END);
+	Key * base_root = keyNew ("user/test", KEY_END);
+	Key * result_root = keyNew ("user/test/result", KEY_END);
+	Key * informationKey = keyNew (0, KEY_END);
+	KeySet * ourDup = ksDup (our);
+	KeySet * theirDup = ksDup (their);
+	KeySet * baseDup = ksDup (base);
+	KeySet * result = elektraMerge (ourDup, our_root, theirDup, their_root, baseDup, base_root, result_root, MERGE_STRATEGY_EQUAL,
+					informationKey);
+	// clang-format on
+	if (expectedToBeEqual)
+	{
+		succeed_if (result != NULL, "Merge must NOT return null if strategy is MERGE_STRATEGY_EQUAL and all key sets are equal");
+	}
+	else
+	{
+		succeed_if (result == NULL, "Merge must return null if strategy is MERGE_STRATEGY_EQUAL and a key set is different");
+	}
+	ksDel (ourDup);
+	ksDel (theirDup);
+	ksDel (baseDup);
+	ksDel (result);
+	keyDel (our_root);
+	keyDel (their_root);
+	keyDel (base_root);
+	keyDel (result_root);
+	keyDel (informationKey);
+}
+
+void test_strategy_equal (void)
+{
+	printf ("Executing %s\n", __func__);
+	int counter = 1;
+	// clang-format off
+	KeySet * original1 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * original2 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * original3 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * changedValue1 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValueXXXXX",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * changedValue2 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValueXXXXX",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValue", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * changedMetaValue1 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValueXXXXX", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	KeySet * changedMetaValue2 = ksNew (3,
+		keyNew ("user/test/a", KEY_VALUE, "aValue", KEY_END),
+		keyNew ("user/test/b", KEY_VALUE, "bValue",
+			KEY_META, "metaA", "metaAValue",
+			KEY_META, "metaB", "metaBValueXXXXX", KEY_END),
+		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
+		KS_END);
+	test_strategy_equal_helper (original1,     original2,     original3,     true,  counter++);
+	test_strategy_equal_helper (original1,     original2,     changedValue1, false, counter++);
+	test_strategy_equal_helper (original1,     changedValue1, original2,     false, counter++);
+	test_strategy_equal_helper (original1,     changedValue1, changedValue2, false, counter++);
+	test_strategy_equal_helper (changedValue1, original1,     original1,     false, counter++);
+	test_strategy_equal_helper (changedValue1, original1,     changedValue2, false, counter++);
+	test_strategy_equal_helper (changedValue1, changedValue2, original1,     false, counter++);
+	test_strategy_equal_helper (original1,         original2,         original3,         true,  counter++);
+	test_strategy_equal_helper (original1,         original2,         changedMetaValue1, false, counter++);
+	test_strategy_equal_helper (original1,         changedMetaValue1, original2,         false, counter++);
+	test_strategy_equal_helper (original1,         changedMetaValue1, changedMetaValue2, false, counter++);
+	test_strategy_equal_helper (changedMetaValue1, original1,         original2,         false, counter++);
+	test_strategy_equal_helper (changedMetaValue1, original1,         changedMetaValue2, false, counter++);
+	test_strategy_equal_helper (changedMetaValue1, changedMetaValue2, original1,         false, counter++);
+	test_strategy_equal_different_roots ();
+	// clang-format on
+
+	ksDel (original1);
+	ksDel (original2);
+	ksDel (original3);
+	ksDel (changedValue1);
+	ksDel (changedValue2);
+	ksDel (changedMetaValue1);
+	ksDel (changedMetaValue2);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("CMERGE       TESTS\n");
@@ -330,6 +496,7 @@ int main (int argc, char ** argv)
 	test_order ("1", "1", "1", 1, "1");
 	test_order ("2", "1", "1", 1, "2");
 	array_conflict_number_test ();
+	test_strategy_equal ();
 
 	printf ("\ntest_merge RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
