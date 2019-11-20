@@ -56,7 +56,8 @@ static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
 static bool isBoolean (const char * str);
 static bool isNumber (const char * str);
-static bool * isTrue (const char * boolStr);
+static bool isFloat (const char * str);
+static bool isTrue (const char * boolStr);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -305,7 +306,8 @@ static int writeScalar (Key * key, Writer * writer)
 	else
 	{
 		const char * valueStr = keyString (key);
-		if (isNumber (valueStr)) {
+		if (isNumber (valueStr) || isFloat(valueStr))
+		{
 			result |= fputs (valueStr, writer->f) == EOF;
 		}
 		else if (isBoolean (valueStr))
@@ -393,7 +395,7 @@ static bool isNumber (const char * str)
 		}
 		else if (base == 16)
 		{
-			if (!(*ptr >= '0' && *ptr <= '9' || *ptr >= 'a' && *ptr <= 'f' || *ptr >= 'A' && *ptr <= 'F'))
+			if (!((*ptr >= '0' && *ptr <= '9') || (*ptr >= 'a' && *ptr <= 'f') || (*ptr >= 'A' && *ptr <= 'F')))
 			{
 				return false;
 			}
@@ -404,56 +406,72 @@ static bool isNumber (const char * str)
 	return true;
 }
 
-bool isFloat(const char * str) {
+static bool isFloat (const char * str)
+{
 	const char * ptr = str;
 	const char * dot = NULL;
 	const char * exponent = NULL;
-	if (*ptr == '+' || *ptr == '-') {
+	if (*ptr == '+' || *ptr == '-')
+	{
 		ptr++;
 		str++;
 	}
-	while (*ptr != 0) {
-		if (*ptr >= '0' && *ptr <= '9') {
-		} else if (*ptr == '.') {
-			if (exponent != NULL || dot != NULL) {
+	while (*ptr != 0)
+	{
+		if (*ptr >= '1' && *ptr <= '9')
+		{
+		}
+		else if (*ptr == '.')
+		{
+			if (exponent != NULL || dot != NULL)
+			{
 				return false;
-			} else
+			}
+			else
+			{
 				dot = ptr;
 			}
-		} else if (*ptr == 'e' || *ptr == 'E') {
-			if (exponent != NULL) {
+		}
+		else if (*ptr == 'e' || *ptr == 'E')
+		{
+			if (exponent != NULL)
+			{
 				return false;
-			} else if (ptr == str) {
+			}
+			else if (ptr == str)
+			{
 				return false;
 			}
 			exponent = ptr;
-			if (*(exponent + 1) == '+' ||
-				*(exponent + 1) == '-') {
+			if (*(exponent + 1) == '+' || *(exponent + 1) == '-')
+			{
 				ptr++;
 			}
-		} else if (*ptr == '0') {
-			if (dot == NULL) {
-				if (ptr == str && *(ptr + 1) != '.'){	
-					return false;	// no leading zeros, except for 0.*
+		}
+		else if (*ptr == '0')
+		{
+			if (dot == NULL)
+			{
+				if (ptr == str && *(ptr + 1) != '.')
+				{
+					return false; // no leading zeros, except for 0.*
 				}
-			} else if (exponent != NULL) {
-				if (ptr - 1 == exponent || *(ptr - 1) == '+' || *(ptr - 1) == '-') {
+			}
+
+			if (exponent != NULL)
+			{
+				if (ptr - 1 == exponent || *(ptr - 1) == '+' || *(ptr - 1) == '-')
+				{
 					return false;
 				}
 			}
 		}
 		ptr++;
 	}
+	return true;
 }
 
-bool validDigits(const char * start, bool allowLeadingZero) {
-	/*while (*ptr != 0) {
-		if (*ptr >= '0'
-	}*/
-}
-
-
-static bool * isTrue (const char * boolStr)
+static bool isTrue (const char * boolStr)
 {
 	if (elektraStrCmp (boolStr, "true") == 0 || elektraStrCmp (boolStr, "1") == 0)
 	{
