@@ -213,6 +213,8 @@ As for labels `gitmirror` should be if you want to cache repositories on this
 node.
 If Docker is available the `docker` label should be set.
 
+All files and folders in the Node under `/home/jenkins` should be owned by user `jenkins`.
+
 ## Understanding Jenkins Output
 
 Our Jenkins build uses parallel steps inside a single build job to do most of
