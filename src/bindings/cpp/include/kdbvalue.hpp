@@ -274,14 +274,18 @@ class DefaultSetPolicy
 public:
 	static Key set (KeySet & ks, Key const & spec)
 	{
-		return setWithNamespace (ks, spec, "user");
+		return setWithNamespace (ks, spec, "user:");
 	}
 
 	static Key setWithNamespace (KeySet & ks, Key const & spec, std::string const & ns)
 	{
 		std::string const & name = spec.getName ();
-
-		kdb::Key k (ns + "/" + name, KEY_END);
+		size_t offset = spec.getNamespace().length();
+		if (offset != 1)
+		{
+			++offset;
+		}
+		kdb::Key k (ns + "/" + name.substr(offset), KEY_END);
 		ks.append (k);
 
 		return k;
@@ -690,7 +694,7 @@ private:
 	 */
 	void unsafeSyncKeySet () const
 	{
-		if (m_hasChanged && m_key.getName ().at (0) == '/')
+		if (m_hasChanged && m_key.getNamespace() == "default")
 		{
 			m_hasChanged = false;
 			Key spec (m_spec.dup ());

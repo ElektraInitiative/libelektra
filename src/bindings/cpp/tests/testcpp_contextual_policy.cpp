@@ -97,7 +97,7 @@ public:
 	typedef T type;
 	static kdb::Key set (kdb::KeySet & ks, kdb::Key const & spec)
 	{
-		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir");
+		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir:");
 	}
 };
 
