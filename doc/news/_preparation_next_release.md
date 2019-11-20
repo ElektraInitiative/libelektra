@@ -245,6 +245,7 @@ you up to date with the multi-language support provided by Elektra.
 - `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
 - `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
 - Make `kdb editor` use the new merge library. _(Dominic Jäger)_
+- Integrate the merge library preview into `kdb import`. _(Dominic Jäger)_
 - <<TODO>>
 
 ## Scripts
