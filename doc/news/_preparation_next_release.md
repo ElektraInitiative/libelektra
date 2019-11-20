@@ -308,6 +308,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added a new [Get Started](../../doc/GETSTARTED.md). _(Hani Torabi)_
 - Added some informations about [contributing](../../.github/CONTRIBUTING.md) to Elektra. _(Hani Torabi)_
 - Further imporvement on buildserver documentation. _(Djordje Bulatovic)_
+- Further improvement of the buildserver documentation. _(Djordje Bulatovic)_
 
 ## Tests
 
