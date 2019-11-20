@@ -26,7 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Code generation
-- Elektra now has a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). _(Dominic Jäger)_
+- Elektra now has a new [merge library](../tutorials/merge.md) offering a number of [merge strategies](../help/elektra-merge-strategy.md). _(Dominic Jäger)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 

@@ -1,12 +1,12 @@
-# kdb-cmerge(1) -- Three-way merge of KeySets
+# kdb-merge(1) -- Three-way merge of KeySets
 
 ## NAME
 
-kdb-cmerge - Join three key sets together
+kdb-merge - Join three key sets together
 
 ## SYNOPSIS
 
-`kdb cmerge [OPTIONS] our their base result`
+`kdb merge [OPTIONS] our their base result`
 
 - ourpath:
   Path to the keyset to serve as `our`<br>
@@ -22,14 +22,14 @@ kdb-cmerge - Join three key sets together
 
 ## DESCRIPTION
 
-`kdb cmerge` can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set. This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.<br>
+`kdb merge` can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set. This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.<br>
 On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
-This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, cmerge will be renamed to merge.
+This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, merge will be renamed to merge.
 
 ## OPTIONS
 
-The options of `kdb cmerge` are:
+The options of `kdb merge` are:
 
 - `-f`, `--force`: overwrite existing keys in `result`
 - `-v`, `--verbose`: give additional information
@@ -38,7 +38,7 @@ Strategies offer fine grained control over conflict handling. The option is:
 
 - `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
 
-Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which can be accessed with `man elektra-cmerge-strategies`.
+Strategies have their own [man page](/doc/help/elektra-merge-strategy.md) which can be accessed with `man elektra-merge-strategies`.
 
 ## RETURN VALUE
 
@@ -73,7 +73,7 @@ The three-way merge works by comparing the `our` KeySet and the `their` KeySet t
 
 ## CONFLICTS
 
-Conflicts occur when a key has a different value in all three key sets or when only base differs. When all three values for a key differ, we call this an overlap. Different [merge strategies](elektra-cmerge-strategy.md) exist to resolve those conflicts.<br>
+Conflicts occur when a key has a different value in all three key sets or when only base differs. When all three values for a key differ, we call this an overlap. Different [merge strategies](elektra-merge-strategy.md) exist to resolve those conflicts.<br>
 
 ## EXAMPLES
 
@@ -86,7 +86,7 @@ kdb set user/their "A"
 #> Create a new key user/their with string "A"
 kdb set user/our "B"
 #> Create a new key user/our with string "B"
-kdb cmerge user/our user/their user/base user/result
+kdb merge user/our user/their user/base user/result
 kdb get user/result
 #>B
 
@@ -94,6 +94,6 @@ kdb get user/result
 
 ## SEE ALSO
 
-- [elektra-cmerge-strategy(7)](elektra-cmerge-strategy.md)
+- [elektra-merge-strategy(7)](elektra-merge-strategy.md)
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
 ````

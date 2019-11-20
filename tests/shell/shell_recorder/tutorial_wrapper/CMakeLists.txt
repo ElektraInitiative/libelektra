@@ -34,7 +34,7 @@ if (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
 else (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
 	add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
 endif (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md"
+add_msr_test (merge "${CMAKE_SOURCE_DIR}/doc/tutorials/merge.md"
 	      REQUIRED_PLUGINS hosts
 			       line
 			       PROPERTY

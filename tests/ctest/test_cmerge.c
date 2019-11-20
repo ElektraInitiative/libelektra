@@ -470,7 +470,7 @@ void test_strategy_equal (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("CMERGE       TESTS\n");
+	printf ("MERGE       TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);

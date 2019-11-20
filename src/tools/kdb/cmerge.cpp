@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "cmerge.hpp"
+#include "merge.hpp"
 #include "kdbmacros.h"
 #include "kdbmerge.h"
 #include "keyset.hpp"
@@ -17,15 +17,15 @@
 
 using ckdb::keyNew;
 
-CMergeCommand::CMergeCommand ()
+MergeCommand::MergeCommand ()
 {
 }
 
-CMergeCommand::~CMergeCommand ()
+MergeCommand::~MergeCommand ()
 {
 }
 
-int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
+int MergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 {
 	if (cl.arguments.size () < 4)
 	{
@@ -39,10 +39,10 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	if (cl.strategy == "preserve")
 	{
 		/** This is here for compatibility. The old merge has preserve as default as defined in cmdline.cpp.
-		 *  As cmerge uses the existing functionality it is still default, even though it does not exist in cmerge.
+		 *  As merge uses the existing functionality it is still default, even though it does not exist in merge.
 		 *  Default in new merge is abort.
 		 *
-		 *  This will be obsolete as soon as cmerge supersedes the old merge.
+		 *  This will be obsolete as soon as merge supersedes the old merge.
 		 */
 		strategy = ckdb::MERGE_STRATEGY_ABORT;
 	}

@@ -1,4 +1,4 @@
-# elektra-cmerge-strategies(7) -- how to merge key sets
+# elektra-merge-strategies(7) -- how to merge key sets
 
 Elektra's merge library offers different strategies to resolve conflicts in merges without user interaction.
 Consequently, Elektra's tools all have access to the following merge strategies:
