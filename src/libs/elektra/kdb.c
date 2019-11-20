@@ -1040,8 +1040,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	cache = ksNew (0, KS_END);
 	cacheParent = keyDup (mountGetMountpoint (handle, keyName (initialParent)));
-	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
-	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+	// TODO (kodebach): make cache work for default mountpoint
+	if (cacheParent != NULL && ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
+	if (cacheParent != NULL && handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
 		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent);
 	}
@@ -1050,7 +1051,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
+		if (cacheParent == NULL || elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
 		{
 			goto cachemiss;
 		}
@@ -1230,7 +1231,7 @@ cachemiss:
 		goto error;
 	}
 
-	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	if (cacheParent != NULL && handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
 		KeySet * proc = elektraCutProc (ks); // remove proc keys before caching
