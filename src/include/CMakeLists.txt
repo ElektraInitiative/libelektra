@@ -187,8 +187,6 @@ install (FILES kdbextension.h
 	       kdbendian.h
 	       kdbmacros.h
 		   kdbmerge.h
-		   kdberrors.h
-		   kdblogger.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 add_custom_target (elektra_config_headers ALL
