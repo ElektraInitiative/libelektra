@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+void dumpKS(KeySet * keys);
+
 Key * keyAppendIndex (size_t index, const Key * parent);
 void keyUpdateArrayMetakey (Key * key, size_t newIndex);
 char * indexToArrayString (size_t index);

@@ -5,6 +5,21 @@
 #include <stdio.h>
 #include <string.h>
 
+void dumpKS(KeySet * keys) {
+	ksRewind (keys);
+	printf ("***PRINT KEYS***\n");
+	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
+	{
+		printf ("KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
+		keyRewindMeta (key);
+		for (const Key * meta = keyNextMeta(key); meta != NULL; meta = keyNextMeta(key)) {
+			printf ("\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
+		}
+	}
+	printf ("***END PRINT KEYS***\n");
+	ksRewind (keys);
+}
+
 Key * keyAppendIndex (size_t index, const Key * parent)
 {
 	// Key * indexKey = keyDup (parent);
