@@ -24,7 +24,6 @@
 
 // TODO: to add a new command, 1.) include your header here
 #include <cache.hpp>
-#include <merge.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
@@ -40,6 +39,7 @@
 #include <listcommands.hpp>
 #include <ls.hpp>
 #include <memory>
+#include <merge.hpp>
 #include <metaget.hpp>
 #include <metals.hpp>
 #include <metaremove.hpp>

@@ -62,21 +62,22 @@ int ShellCommand::execute (Cmdline const &)
 			Key parentKey (parent, KEY_END);
 			cout << "return value: " << kdb.set (current, parentKey) << endl;
 		}
-		else if (command == "kdbMerge") {
+		else if (command == "kdbMerge")
+		{
 			string theirRootString;
 			is >> theirRootString;
 			Key theirRootKey (theirRootString, KEY_END);
 			KeySet their;
 			kdb.get (their, theirRootKey);
 			ckdb::KeySet * result;
-			if ( (result = ckdb::elektraMerge(
-				current.getKeySet(), currentKey.getKey(),
-				their.getKeySet(), theirRootKey.getKey(),
-				current.getKeySet(), currentKey.getKey(),
-				currentKey.getKey(), ckdb::MERGE_STRATEGY_ABORT,
-				currentKey.getKey())) != NULL) {
-				cout << "return value: " << current.append(result) << endl;
-			} else {
+			if ((result = ckdb::elektraMerge (current.getKeySet (), currentKey.getKey (), their.getKeySet (),
+							  theirRootKey.getKey (), current.getKeySet (), currentKey.getKey (),
+							  currentKey.getKey (), ckdb::MERGE_STRATEGY_ABORT, currentKey.getKey ())) != NULL)
+			{
+				cout << "return value: " << current.append (result) << endl;
+			}
+			else
+			{
 				cout << "return value: -1" << endl;
 			}
 		}

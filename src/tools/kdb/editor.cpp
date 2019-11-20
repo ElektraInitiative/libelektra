@@ -13,8 +13,8 @@
 
 #include <kdbmacros.h>
 
-#include "kdbmerge.h"
 #include "helper/keyhelper.hpp"
+#include "kdbmerge.h"
 #include <export.hpp>
 #include <import.hpp>
 
