@@ -38,7 +38,7 @@ target_link_elektra (test_globbing elektra-globbing)
 
 target_link_elektra (test_opts elektra-opts)
 
-target_link_elektra (test_cmerge elektra-merge)
+target_link_elektra (test_merge elektra-merge)
 
 # LibGit leaks memory
-set_property (TEST test_cmerge PROPERTY LABELS memleak)
+set_property (TEST test_merge PROPERTY LABELS memleak)

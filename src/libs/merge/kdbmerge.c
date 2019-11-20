@@ -887,7 +887,7 @@ static int numberOfConflictMarkers (const char * text)
  */
 static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
 {
-	ELEKTRA_LOG ("cmerge now handles arrays");
+	ELEKTRA_LOG ("merge now handles arrays");
 	Key * checkedKey;
 	KeySet * toAppend = NULL;
 	while ((checkedKey = ksNext (baseSet)) != NULL)
@@ -1007,7 +1007,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
 		       int strategy, Key * informationKey)
 {
-	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
+	ELEKTRA_LOG ("merge starts with strategy %d (see kdbmerge.h)", strategy);
 
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
 	if (ourCropped == NULL)
@@ -1065,14 +1065,14 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 
 #ifdef LIBGITFOUND
 	git_libgit2_init ();
-	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
+	ELEKTRA_LOG ("merge can use libgit2 to handle arrays");
 	if (handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey, strategy) > 0)
 	{
 		ksDel (result);
 		return NULL;
 	}
 #else
-	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
+	ELEKTRA_LOG ("merge can NOT use libgit2 to handle arrays");
 #endif
 
 	ksRewind (ourCropped);

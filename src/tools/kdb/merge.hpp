@@ -6,21 +6,21 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef CMERGE_HPP
-#define CMERGE_HPP
+#ifndef MERGE_HPP
+#define MERGE_HPP
 
 #include <command.hpp>
 #include <kdb.hpp>
 
 using namespace std;
 
-class CMergeCommand : public Command
+class MergeCommand : public Command
 {
 	kdb::KDB kdb;
 
 public:
-	CMergeCommand ();
-	~CMergeCommand ();
+	MergeCommand ();
+	~MergeCommand ();
 
 	virtual int execute (Cmdline const & cmdline) override;
 

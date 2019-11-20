@@ -1,8 +1,8 @@
 include (LibAddMacros)
 find_package (LibGit2 0.24.1 QUIET)
 if (LibGit2_FOUND)
-	set (CMERGE_INCLUDE_DIRS ${LibGit2_INCLUDE_DIRS})
-	set (CMERGE_LIBRARY_DIRS ${LibGit2_LIBRARIES})
+	set (MERGE_INCLUDE_DIRS ${LibGit2_INCLUDE_DIRS})
+	set (MERGE_LIBRARY_DIRS ${LibGit2_LIBRARIES})
 	add_definitions (-DLIBGITFOUND)
 endif ()
 
@@ -10,21 +10,20 @@ endif ()
 # references to the functions from libgit2.so. I am not sure if the second set_property from LibAddPlugin has to be here as well. It might
 # not always be obvious, that this property has to be set. For example if the gitresolver plugin is included, then it sets the property
 # itself and it appears as if setting it here were unnecessary.
-set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" ${CMERGE_LIBRARY_DIRS})
+set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" ${MERGE_LIBRARY_DIRS})
 
 # elektra-ease is required for elektraArrayIncName and elektraArrayValidateName see add_plugin for how LINK_ELEKTRA etc. work
 #
 # we have to link CMERGE_LIBRARY_DIRS here so that elektra-merge.so has the functions from libgit2.so
-add_lib (
-	merge
-	SOURCES
-	kdbmerge.c
-	INCLUDE_SYSTEM_DIRECTORIES
-	${CMERGE_INCLUDE_DIRS}
-	LINK_ELEKTRA
-	elektra-ease
-	LINK_LIBRARIES
-	${CMERGE_LIBRARY_DIRS})
+add_lib (merge
+	 SOURCES
+	 kdbmerge.c
+	 INCLUDE_SYSTEM_DIRECTORIES
+	 ${MERGE_INCLUDE_DIRS}
+	 LINK_ELEKTRA
+	 elektra-ease
+	 LINK_LIBRARIES
+	 ${MERGE_LIBRARY_DIRS})
 
 set (LIBRARY_NAME elektra-merge)
 
