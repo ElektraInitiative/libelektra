@@ -2,6 +2,7 @@
 #include "kdbmerge.h"
 #include "kdb.h"
 #include "kdbassert.h"
+#include "kdberrors.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"
 #include <ctype.h>

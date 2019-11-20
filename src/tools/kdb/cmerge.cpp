@@ -7,6 +7,7 @@
  */
 
 #include "cmerge.hpp"
+#include "kdbmacros.h"
 #include "kdbmerge.h"
 #include "keyset.hpp"
 #include <cmdline.hpp>
@@ -34,7 +35,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	kdb::Key theirsRoot = cl.createKey (1);
 	kdb::Key baseRoot = cl.createKey (2);
 	kdb::Key resultRoot = cl.createKey (3);
-	int strategy = MERGE_STRATEGY_ABORT;
+	int strategy = ckdb::MERGE_STRATEGY_ABORT;
 	if (cl.strategy == "preserve")
 	{
 		/** This is here for compatibility. The old merge has preserve as default as defined in cmdline.cpp.
@@ -43,19 +44,19 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 		 *
 		 *  This will be obsolete as soon as cmerge supersedes the old merge.
 		 */
-		strategy = MERGE_STRATEGY_ABORT;
+		strategy = ckdb::MERGE_STRATEGY_ABORT;
 	}
 	else if (cl.strategy == "abort")
 	{
-		strategy = MERGE_STRATEGY_ABORT;
+		strategy = ckdb::MERGE_STRATEGY_ABORT;
 	}
 	else if (cl.strategy == "our")
 	{
-		strategy = MERGE_STRATEGY_OUR;
+		strategy = ckdb::MERGE_STRATEGY_OUR;
 	}
 	else if (cl.strategy == "their")
 	{
-		strategy = MERGE_STRATEGY_THEIR;
+		strategy = ckdb::MERGE_STRATEGY_THEIR;
 	}
 	else
 	{
@@ -107,11 +108,11 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	ckdb::KeySet * c_ours = ours.getKeySet ();
 	ckdb::KeySet * c_theirs = theirs.getKeySet ();
 	ckdb::KeySet * c_base = base.getKeySet ();
-	Key * informationKey = keyNew (0, KEY_END);
+	ckdb::Key * informationKey = keyNew (0, KEY_END);
 	ckdb::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base,
 						      baseRoot.getKey (), resultRoot.getKey (), strategy, informationKey);
 	int numberOfConflicts = getConflicts (informationKey);
-	keyDel (informationKey);
+	ckdb::keyDel (informationKey);
 	if (c_merge_result != NULL)
 	{
 		kdb::KeySet merge_result = c_merge_result;
@@ -127,7 +128,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	}
 	else
 	{
-		if (numberOfConflicts > 0 && strategy == MERGE_STRATEGY_ABORT)
+		if (numberOfConflicts > 0 && strategy == ckdb::MERGE_STRATEGY_ABORT)
 		{
 			return 2;
 		}

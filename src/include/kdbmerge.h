@@ -10,10 +10,10 @@
 #define KDBMERGE_H_
 
 #include "kdb.h"
-#include "kdberrors.h"
-#include "kdbprivate.h"
 
 #ifdef __cplusplus
+namespace ckdb
+{
 extern "C" {
 #endif
 
@@ -23,13 +23,14 @@ enum
 	MERGE_STRATEGY_INTERACTIVE = 2,
 	MERGE_STRATEGY_OUR = 3,
 	MERGE_STRATEGY_THEIR = 4,
-} strategies;
+};
 
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
 		       int strategy, Key * informationKey);
 int getConflicts (Key * informationKey);
 
 #ifdef __cplusplus
+}
 }
 #endif
 #endif
