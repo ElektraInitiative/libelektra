@@ -247,6 +247,7 @@ you up to date with the multi-language support provided by Elektra.
 - Make `kdb editor` use the new merge library. _(Dominic Jäger)_
 - Integrate the merge library preview into `kdb import`. _(Dominic Jäger)_
 - Make `kdb mount` use merge library. _(Dominic Jäger)_
+- `kdb (c)merge` now has consistent return values. _(Dominic Jäger)_
 - <<TODO>>
 
 ## Scripts
