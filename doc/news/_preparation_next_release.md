@@ -26,6 +26,8 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - <<HIGHLIGHT1>>
+- Code generation
+- Elektra now has a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). _(Dominic Jäger)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -120,6 +122,24 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - <<TODO>>
+- `KDB_EXEC_PATH`, which can be used to add further external tools to `kdb`, now supports `:` to separate paths.
+  `kdb list-tools` and `run_env` were improved to take advantage of this. _(Markus Raab)_
+- Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
+- add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
+- Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
+- Removed `kdb vset` as it does not properly put meta-data to the spec namespace. _(Michael Zronek)_
+- Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab`. _(Philipp Gackstatter)_
+- Renamed kdb meta commands:
+  - `kdb getmeta` is now `kdb meta-get`
+  - `kdb lsmeta` is now `kdb meta-ls`
+  - `kdb showmeta` is now `kdb meta-show`
+  - `kdb rmmeta` is now `kdb meta-rm`
+  - `kdb setmeta` is now `kdb meta-set` _(Philipp Gackstatter)_
+- Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
+- `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
+- `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
+- `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
+- Tools like `kdb editor` use the new merge library. _(Dominic Jäger)_
 - <<TODO>>
 
 ## Scripts
@@ -154,6 +174,24 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Added [Dockerfile for Ubuntu Bionic](../../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
+- We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). _(René Schwaiger)_
+- We added a basic [Dockerfile for Arch Linux](../../scripts/docker/arch/Dockerfile). _(René Schwaiger)_
+- We updated the [Dockerfile for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
+
+### Vagrant
+
+- We added a [Vagrantfile](../../scripts/vagrant/freebsd/README.md) for a virtual machine based on FreeBSD 12. _(René Schwaiger)_
+
+### Other
+
+- The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
+- Fixed augeas crash if fopen fails. _(Michael Zronek)_
+- The reformatting scripts now run in parallel. _(Markus Raab)_
+- Improved various error messages and synchronized documentations. _(Michael Zronek)_
+- Improved `range` plugin error message. _(Michael Zronek)_
+- Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
+- Out of memory error messages are now uniform. _(Michael Zronek)_
 
 ## Infrastructure
 
