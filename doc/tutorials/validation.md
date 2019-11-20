@@ -50,7 +50,6 @@ kdb set user/tests/together/test 123
 
 # Undo modifications
 kdb rm -r user/tests/together
-sudo kdb umount user/tests/together
 ```
 
 The approach is not limited to validation via regular expressions, but
