@@ -813,7 +813,6 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		{
 			driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
 		}
-		printf("ELEKTRASTR = '%s'\n", elektraStr);
 		keySetString (driver->parentStack->key, elektraStr);
 
 		const char * type = getTypeCheckerType(driver->lastScalar);

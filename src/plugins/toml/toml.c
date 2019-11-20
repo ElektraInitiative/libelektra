@@ -39,7 +39,6 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	else
 	{
-		printf(">>>> TOML READ INVOKED\n");
 		int result = tomlRead (returned, parentKey);
 		return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -47,7 +46,6 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	printf(">>>> TOML WRITE INVOKED\n");
 	int result = tomlWrite (returned, parentKey);
 
 	return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
