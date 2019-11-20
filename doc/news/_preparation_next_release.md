@@ -26,7 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Code generation
-- Elektra now has a technical preview of a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). It is written in C99 and can currently be used with [`kdb cmerge`](../help/kdb-cmerge.md). _(Dominic Jäger)_
+- Elektra now has a new [merge library](../tutorials/cmerge.md) offering a number of [merge strategies](../help/elektra-cmerge-strategy.md). _(Dominic Jäger)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -244,10 +244,7 @@ you up to date with the multi-language support provided by Elektra.
 - `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
 - `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
 - `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
-- Make `kdb editor` use the new merge library. _(Dominic Jäger)_
-- Integrate the merge library preview into `kdb import`. _(Dominic Jäger)_
-- Make `kdb mount` use merge library. _(Dominic Jäger)_
-- `kdb (c)merge` now has consistent return values. _(Dominic Jäger)_
+- Tools like `kdb editor` use the new merge library. _(Dominic Jäger)_
 - <<TODO>>
 
 ## Scripts
@@ -350,11 +347,6 @@ you up to date with the multi-language support provided by Elektra.
 - Improved `range` plugin error message. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
 - Out of memory error messages are now uniform. _(Michael Zronek)_
-- Release notes now use git's union merge driver. _(Dominic Jäger)_
-- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
-- I'm only here for the build server. This PR contains only fix ups. _(Dominic Jäger)_
-- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
-- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
 
 ## Infrastructure
 
@@ -407,7 +399,6 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 We are currently working on following topics:
 
-- Merge tool in C99 (the same language as the core of Elektra). This is planned to supersede the existing merge tool. The goal is to reduce the number of merge conflicts in contrast to regular merge tools using the specific semantics of configuration files. _(Dominic Jäger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
