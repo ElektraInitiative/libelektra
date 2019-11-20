@@ -1077,7 +1077,7 @@ def buildDebianPackage(stageName, image) {
               sh "gbp buildpackage -sa"
             }
             if(isMaster()) {
-              publishDebianPackages()
+              // publishDebianPackages()
             }
           }
         }
