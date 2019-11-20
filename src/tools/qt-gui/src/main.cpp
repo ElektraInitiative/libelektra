@@ -15,7 +15,6 @@
 #include <QtQml>
 #include <QtTest/qtestcase.h>
 #include <kdb.hpp>
-#include <merging/mergingkdb.hpp>
 
 #include "QQuickThemeIconProvider.hpp"
 
@@ -54,8 +53,7 @@ int main (int argc, char * argv[])
 	UndoManager manager;
 	GUIBackend backend;
 	GUISettings settings;
-	kdb::tools::merging::MergingKDB kdb;
-	TreeViewModel treeModel (&kdb);
+	TreeViewModel treeModel;
 
 	engine.setObjectOwnership (&treeModel, QQmlApplicationEngine::CppOwnership);
 

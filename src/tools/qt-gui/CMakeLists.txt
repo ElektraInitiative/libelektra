@@ -78,7 +78,7 @@ else ()
 		${Qt5Svg_LIBRARIES}
 		${Qt5Test_LIBRARIES}
 		${Qt5DBus_LIBRARIES})
-	tool_link_elektratools (qt-gui elektra-ease)
+	tool_link_elektratools (qt-gui elektra-ease elektra-merge)
 
 	install (TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra-qt-editor.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor")

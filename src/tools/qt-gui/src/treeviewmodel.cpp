@@ -22,31 +22,19 @@
 #endif
 
 #include "kdblogger.h"
-#include <merging/automergeconfiguration.hpp>
-#include <merging/automergestrategy.hpp>
-#include <merging/mergeconflictstrategy.hpp>
-#include <merging/onesidestrategy.hpp>
-#include <merging/onesidevaluestrategy.hpp>
-#include <merging/threewaymerge.hpp>
+#include "kdbmerge.h"
 
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
-using namespace kdb::tools::merging;
 
-TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb ()
+TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), kdb ()
 {
 	Q_UNUSED (parentModel);
-}
-
-TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
-{
-	Q_UNUSED (parentModel);
-	connectDBus ();
 }
 
 TreeViewModel::TreeViewModel (const TreeViewModel & other)
-: QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), m_kdb (other.m_kdb)
+: QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), kdb (other.kdb)
 
 {
 }
@@ -221,55 +209,44 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 		return;
 	}
 
-	ThreeWayMerge merger;
-
 	foreach (QVariant s, mergeStrategies)
 	{
-		MergeConflictStrategy * strategy = getMergeStrategy (s.toString ());
+		int strategy = ckdb::MERGE_STRATEGY_ABORT;
+		if (s.toString () == "Preserve")
+			strategy = ckdb::MERGE_STRATEGY_ABORT;
+		else if (s.toString () == "Ours")
+			strategy = ckdb::MERGE_STRATEGY_OUR;
+		else if (s.toString () == "Theirs")
+			strategy = ckdb::MERGE_STRATEGY_THEIR;
+		else if (s.toString () == "Base")
+			strategy = ckdb::MERGE_STRATEGY_ABORT;
 
-		if (strategy) merger.addConflictStrategy (strategy);
-	}
-
-	MergeResult result;
-
-	try
-	{
-		result = merger.mergeKeySet (
-			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root), TheirMergeKeys (importedKeys, root), root));
-	}
-	catch (...) // TODO: Which exceptions are possible?
-	{
-		emit showMessage (tr ("Error"), tr ("Could not merge keys."), "");
-	}
-
-	if (!result.hasConflicts ())
-	{
-		createNewNodes (result.getMergedKeys ());
-
-		if (importedKeys.size () > 0)
-			emit showMessage (tr ("Information"), tr ("Successfully imported %1 keys.").arg (importedKeys.size ()), "");
-	}
-	else
-	{
-		KeySet conflictSet = result.getConflictSet ();
-		QStringList conflicts;
-		conflictSet.rewind ();
-		Key current;
-
-		while ((current = conflictSet.next ()))
+		ckdb::KeySet * c_theirs = importedKeys.getKeySet ();
+		ckdb::KeySet * c_base = base.getKeySet ();
+		ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
+		ckdb::KeySet * c_merge_result = ckdb::elektraMerge (c_base, root.getKey (), c_theirs, root.getKey (), c_base,
+								    root.getKey (), root.getKey (), strategy, informationKey);
+		int numberOfConflicts = ckdb::getConflicts (informationKey);
+		ckdb::keyDel (informationKey);
+		if (c_merge_result != NULL)
 		{
-			QString ourConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/our"));
-			QString theirConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/their"));
-
-			conflicts.append (QString::fromStdString (current.getName ()));
-			conflicts.append ("Ours: " + ourConflict + ", Theirs " + theirConflict);
-			conflicts.append ("\n");
+			KeySet merge_result = c_merge_result;
+			createNewNodes (merge_result);
+			if (merge_result.size () > 0)
+				emit showMessage (tr ("Information"), tr ("Successfully imported %1 keys.").arg (importedKeys.size ()), "");
+			break; // Success => no more trying of strategies needed
 		}
-
-		emit showMessage (
-			tr ("Error"),
-			tr ("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg (file, format, name),
-			conflicts.join ("\n"));
+		else
+		{
+			if (numberOfConflicts > 0 && strategy == ckdb::MERGE_STRATEGY_ABORT)
+			{
+				emit showMessage (tr ("Error"), tr ("Could not merge keys due to merge conflicts."), "");
+			}
+			else
+			{
+				emit showMessage (tr ("Internal error"), tr ("Could not merge keys."), "");
+			}
+		}
 	}
 }
 
@@ -488,7 +465,7 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 void TreeViewModel::populateModel ()
 {
 	kdb::KeySet config;
-	m_kdb->get (config, m_root);
+	kdb.get (config, m_root);
 	populateModel (config);
 }
 
@@ -641,12 +618,50 @@ void TreeViewModel::synchronize ()
 		printKeys (ours, ours, ours);
 #endif
 
-		ThreeWayMerge merger;
-		AutoMergeConfiguration configuration;
-		configuration.configureMerger (merger);
+		try
+		{
+			// write our config
+			kdb.set (ours, m_root);
 
-		// write our config
-		m_kdb->synchronize (ours, m_root, merger);
+			// update our config (if no conflict)
+			kdb.get (ours, m_root);
+		}
+		catch (KDBException const &)
+		{
+			cout << "Bad" << endl;
+			// a conflict occurred, see if we can solve it with the merger
+
+			// refresh the key database
+			KeySet theirs = ours.dup ();
+			kdb.get (theirs, m_root);
+
+			// try to merge
+			ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
+			ckdb::KeySet * c_merge_result = ckdb::elektraMerge (ours.getKeySet (), m_root.getKey (), theirs.getKeySet (),
+									    m_root.getKey (), modelBase.getKeySet (), m_root.getKey (),
+									    m_root.getKey (), ckdb::MERGE_STRATEGY_OUR, informationKey);
+			int numberOfConflicts = ckdb::getConflicts (informationKey);
+			ckdb::keyDel (informationKey);
+			if (c_merge_result != NULL)
+			{
+				// hurray, we solved the issue
+				kdb::KeySet result = c_merge_result;
+				kdb.set (result, m_root);
+				modelBase = result;
+			}
+			else
+			{
+				if (numberOfConflicts > 0)
+				{
+					emit showMessage (tr ("Error"), tr ("Could not merge keys due to merge conflicts."), "");
+				}
+				else
+				{
+					emit showMessage (tr ("Internal error"), tr ("Could not merge keys."), "");
+				}
+				throw "Could not synchronize";
+			}
+		}
 
 #if DEBUG && VERBOSE
 		std::cout << "guitest: after get" << std::endl;
@@ -654,11 +669,6 @@ void TreeViewModel::synchronize ()
 #endif
 
 		createNewNodes (ours);
-	}
-	catch (MergingKDBException const & exc)
-	{
-		QStringList conflicts = getConflicts (exc.getConflicts ());
-		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occurred."), conflicts.join ("\n"));
 	}
 	catch (KDBException const & e)
 	{
@@ -808,22 +818,6 @@ QStringList TreeViewModel::getSplittedKeyname (const Key & key)
 void TreeViewModel::discardModel ()
 {
 	delete this;
-}
-
-MergeConflictStrategy * TreeViewModel::getMergeStrategy (const QString & mergeStrategy)
-{
-	if (mergeStrategy == "Preserve")
-		return new AutoMergeStrategy ();
-	else if (mergeStrategy == "Ours")
-		return new OneSideStrategy (OURS);
-	else if (mergeStrategy == "Theirs")
-		return new OneSideStrategy (THEIRS);
-	else if (mergeStrategy == "Base")
-		return new OneSideStrategy (BASE);
-	else if (mergeStrategy == "None")
-		return nullptr;
-
-	return nullptr;
 }
 
 void TreeViewModel::showConfigNodeMessage (QString title, QString text, QString detailedText)
