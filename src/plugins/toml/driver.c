@@ -49,6 +49,9 @@ int tomlRead (KeySet * keys, Key * parent)
 	{
 		status = 1;
 	}
+
+
+	// dumpKS(keys);
 	ksRewind (keys);
 	return status;
 }
@@ -103,7 +106,7 @@ static void destroyDriver (Driver * driver)
 
 static int driverParse (Driver * driver)
 {
-	ksAppendKey (driver->keys, driver->root);
+	// ksAppendKey (driver->keys, driver->root);
 	FILE * file = fopen (driver->filename, "rb");
 	if (file == NULL)
 	{
@@ -810,14 +813,17 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		{
 			driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
 		}
+		printf("ELEKTRASTR = '%s'\n", elektraStr);
 		keySetString (driver->parentStack->key, elektraStr);
-		elektraFree (elektraStr);
 
-		// if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
-		//{
-		keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
-		//}
-		keySetMeta (driver->parentStack->key, "type", getTypeCheckerType (driver->lastScalar));
+		const char * type = getTypeCheckerType(driver->lastScalar);
+		keySetMeta (driver->parentStack->key, "type", type);
+		if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0 &&
+			(elektraStrCmp (type, "boolean") != 0))
+		{
+			keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
+		}
+		elektraFree (elektraStr);
 
 		ksAppendKey (driver->keys, driver->parentStack->key);
 		driverClearLastScalar (driver);

@@ -28,6 +28,13 @@ static bool isValidPartialTime (const char * partialTime);
 static bool isValidTimeOffset (const char * timeOffset);
 static bool isValidTime (int hour, int minute, int second);
 
+static char * numToStr(long long num);
+static char * uNumToStr(unsigned long long num);
+static char * convertDecimal(const char * str);
+static char * convertHex(const char * str);
+static char * convertOctal(const char * str);
+static char * convertBinary(const char * str);
+
 Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 {
 	Scalar * scalar = elektraCalloc (sizeof (Scalar));
@@ -87,10 +94,11 @@ const char * getTypeCheckerType (const Scalar * scalar)
 	switch (scalar->type)
 	{
 	case SCALAR_INTEGER_DEC:
+		return "long_long";
 	case SCALAR_INTEGER_HEX:
 	case SCALAR_INTEGER_OCT:
 	case SCALAR_INTEGER_BIN:
-		return "long_long";
+		return "unsigned_long_long";
 	case SCALAR_BOOLEAN:
 		return "boolean";
 	case SCALAR_FLOAT_NUM:
@@ -111,8 +119,11 @@ char * translateScalar (const Scalar * scalar)
 	switch (scalar->type)
 	{
 	case SCALAR_INTEGER_DEC:
+		return convertDecimal(scalar->str);
 	case SCALAR_INTEGER_HEX:
+		return convertHex(scalar->str);
 	case SCALAR_INTEGER_OCT:
+		return convertOctal(scalar->str);
 	case SCALAR_FLOAT_NUM:
 		return stripUnderscores (scalar->str);
 	case SCALAR_FLOAT_INF:
@@ -147,6 +158,70 @@ char * translateScalar (const Scalar * scalar)
 		ELEKTRA_ASSERT (0, "All possible scalar enums must be handeled, but got into default branch");
 		return NULL;
 	}
+}
+
+static char * numToStr(long long num) {
+	char * ret = elektraCalloc(100);
+	if (ret == NULL) {
+		return NULL;
+	}
+	snprintf(ret, 100, "%lld", num);
+	return ret;
+}
+
+static char * uNumToStr(unsigned long long num) {
+	char * ret = elektraCalloc(100);
+	if (ret == NULL) {
+		return NULL;
+	}
+	snprintf(ret, 100, "%llu", num);
+	return ret;
+}
+
+static char * convertDecimal(const char * str) {
+	return stripUnderscores(str);
+}
+static char * convertHex(const char * str) {
+	unsigned long long n = 0;
+	char * stripped = stripUnderscores (str);
+	if (sscanf(str, "0x%llx", &n) != 1) {
+		elektraFree(stripped);
+		ELEKTRA_ASSERT(0, "str must be convertible as long long hex");
+		return NULL;
+	}
+	elektraFree(stripped);
+	return uNumToStr(n);
+}
+
+static char * convertOctal(const char * str) {
+	unsigned long long n = 0;
+	char * stripped = stripUnderscores (str);
+	if (sscanf(str, "0o%llo", &n) != 1) {
+		elektraFree(stripped);
+		ELEKTRA_ASSERT(0, "str must be convertible as long long octal");
+		return NULL;
+	}
+	elektraFree(stripped);
+	return uNumToStr(n);
+}
+
+static char * convertBinary (const char * str)
+{
+	str += 2; // skip 0b prefix
+	unsigned long long value = 0;
+	unsigned long long exp = 1;
+	for (int i = elektraStrLen (str) - 2; i >= 0; i--)
+	{
+		if (str[i] == '1')
+		{
+			value += exp;
+		}
+		if (str[i] != '_')
+		{
+			exp <<= 1;
+		}
+	}
+	return uNumToStr (value);
 }
 
 static char * convertBoolean (const char * str)
@@ -314,30 +389,7 @@ static const char * skipUntilNonWhitespace (const char * str)
 	return str;
 }
 
-static char * convertBinary (const char * binStr)
-{
-	binStr += 2; // skip 0b prefix
-	long long value = 0;
-	long long exp = 1;
-	for (int i = elektraStrLen (binStr) - 2; i >= 0; i--)
-	{
-		if (binStr[i] == '1')
-		{
-			value += exp;
-		}
-		if (binStr[i] != '_')
-		{
-			exp <<= 1;
-		}
-	}
-	char * ret = elektraCalloc (40);
-	if (ret == NULL)
-	{
-		return NULL;
-	}
-	snprintf (ret, 40, "%lli", value);
-	return ret;
-}
+
 
 static char * stripUnderscores (const char * num)
 {
