@@ -301,7 +301,7 @@ you up to date with the multi-language support provided by Elektra.
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
 - We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
 - Corrected buildserver documentation. _(Djordje Bulatovic)_
-- Further imporvement on buildserver documentation. _(Djordje Bulatovic)_
+- Further improvement of the buildserver documentation. _(Djordje Bulatovic)_
 
 ## Tests
 
