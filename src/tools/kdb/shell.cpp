@@ -10,6 +10,7 @@
 
 #include <cmdline.hpp>
 #include <kdb.hpp>
+#include <kdbmerge.h>
 
 #include <iostream>
 #include <sstream>
@@ -21,6 +22,7 @@ ShellCommand::ShellCommand ()
 : supportedCommands (
 	  "kdbGet <name> .. get conf into current keyset\n"
 	  "kdbSet <name> .. set conf from current keyset\n"
+	  "kdbMerge <name> .. merge keys from below current key in database into current keyset\n"
 	  "keyClear .. clears the current key\n"
 	  "keySetName <name> .. set name of current key (without bookmarks!)\n"
 	  "keySetMeta <name> <string> .. set meta of current key\n"
@@ -59,6 +61,24 @@ int ShellCommand::execute (Cmdline const &)
 			is >> parent;
 			Key parentKey (parent, KEY_END);
 			cout << "return value: " << kdb.set (current, parentKey) << endl;
+		}
+		else if (command == "kdbMerge") {
+			string theirRootString;
+			is >> theirRootString;
+			Key theirRootKey (theirRootString, KEY_END);
+			KeySet their;
+			kdb.get (their, theirRootKey);
+			ckdb::KeySet * result;
+			if ( (result = ckdb::elektraMerge(
+				current.getKeySet(), currentKey.getKey(),
+				their.getKeySet(), theirRootKey.getKey(),
+				current.getKeySet(), currentKey.getKey(),
+				currentKey.getKey(), ckdb::MERGE_STRATEGY_ABORT,
+				currentKey.getKey())) != NULL) {
+				cout << "return value: " << current.append(result) << endl;
+			} else {
+				cout << "return value: -1" << endl;
+			}
 		}
 		else if (command == "keyClear")
 		{
