@@ -423,8 +423,9 @@ void CompleteCommand::printBookmarkResult (pair<Key, pair<int, int>> const & cur
 
 void CompleteCommand::printResult (pair<Key, pair<int, int>> const & current, const bool verbose)
 {
-	cout << current.first.getFullName ();
-	if (current.second.first > 1)
+	auto name = current.first.getFullName ();
+	cout << name;
+	if (current.second.first > 1 && name[name.length() - 1] != '/')
 	{
 		cout << "/";
 	}
