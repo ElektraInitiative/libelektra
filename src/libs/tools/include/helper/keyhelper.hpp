@@ -68,6 +68,34 @@ std::string rebasePath (const Key & key, const Key & oldParent, const Key & newP
 void removeNamespace (Key & key);
 
 /**
+ * @brief Prepends the namespace to the key
+ *
+ * @param root is the key where the namespace will be prepended
+ * @param ns is the namespace to be prepended
+ * @returns a duplicate of root with the new namespace
+ */
+Key prependNamespace (Key const & root, std::string const & ns);
+
+/**
+ * @brief Prepends the namespace to each key of the key set
+ *
+ * @param resultKeys which keys to prepend the namepsace to
+ * @param ns is the namespace to be prepended to each key
+ * @returns a keyset where each key has the new namespace
+ */
+KeySet prependNamespace (KeySet const & resultKeys, std::string const & ns);
+
+/**
+ * @brief Copies all metadata of each key in from to their pendant in to
+ *
+ * The pendant is determined by ksLookup.
+ *
+ * @param to metadata is copied to keys in this key set
+ * @param from metadata is copied from keys in this key set
+ */
+void copyAllMeta (KeySet & to, KeySet const & from);
+
+/**
  * @brief Find common name between two keys
  *
  * @return the longest common name found
