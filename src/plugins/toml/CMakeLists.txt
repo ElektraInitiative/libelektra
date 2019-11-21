@@ -82,6 +82,7 @@ if (DEPENDENCY_PHASE)
 	     utility.c
 		 write.h
 		 write.c
+		 null_indicator.h
 	     error.h
 	     error.c
 	     ${FLEX_OUTPUT_HEADER}

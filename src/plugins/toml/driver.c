@@ -12,6 +12,7 @@
 #include "error.h"
 #include "parser.h"
 #include "utility.h"
+#include "null_indicator.h"
 
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
@@ -802,86 +803,104 @@ static IndexList * popIndex (IndexList * top)
 
 static void driverCommitLastScalarToParentKey (Driver * driver)
 {
-	if (driver->lastScalar != NULL)
+	if (driver->lastScalar == NULL)
 	{
-		if (driver->parentStack == 0)
-		{
-			driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
-			return;
-		}
-		char * elektraStr = translateScalar (driver->lastScalar);
-		if (elektraStr == NULL)
-		{
-			driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
-			return;
-		}
+		return;
+	}
+	if (driver->parentStack == 0)
+	{
+		driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
+		return;
+	}
+	char * elektraStr = translateScalar (driver->lastScalar);
+	if (elektraStr == NULL)
+	{
+		driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
+		return;
+	}
+	if (elektraStrCmp (elektraStr, NULL_INDICATOR) == 0)
+	{
+		keySetBinary (driver->parentStack->key, NULL, 0);
+	}
+	else
+	{
 		keySetString (driver->parentStack->key, elektraStr);
 
 		const char * type = getTypeCheckerType (driver->lastScalar);
 		keySetMeta (driver->parentStack->key, "type", type);
 
-		switch(driver->lastScalar->type) {
-			case SCALAR_STRING_LITERAL:
-				if (!sameString(driver->lastScalar->str, elektraStr, '\'', 1)) {
-					char * orig = stripTerminators (driver->lastScalar->str, 1);
-					if (orig == NULL) {
-						elektraFree (elektraStr);
-						driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-						return;
-					}
-					keySetMeta (driver->parentStack->key, "origvalue", orig);
-					elektraFree(orig);
+		switch (driver->lastScalar->type)
+		{
+		case SCALAR_STRING_LITERAL:
+			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 1))
+			{
+				char * orig = stripTerminators (driver->lastScalar->str, 1);
+				if (orig == NULL)
+				{
+					elektraFree (elektraStr);
+					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+					return;
 				}
-				break;
-			case SCALAR_STRING_ML_LITERAL:
-				if (!sameString(driver->lastScalar->str, elektraStr, '\'', 3)) {
-					char * orig = stripTerminators (driver->lastScalar->str, 3);
-					if (orig == NULL) {
-						elektraFree (elektraStr);
-						driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-						return;
-					}
-					keySetMeta (driver->parentStack->key, "origvalue", orig);
-					elektraFree(orig);
+				keySetMeta (driver->parentStack->key, "origvalue", orig);
+				elektraFree (orig);
+			}
+			break;
+		case SCALAR_STRING_ML_LITERAL:
+			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 3))
+			{
+				char * orig = stripTerminators (driver->lastScalar->str, 3);
+				if (orig == NULL)
+				{
+					elektraFree (elektraStr);
+					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+					return;
 				}
-				break;
-			case SCALAR_STRING_BASIC:
-				if (!sameString(driver->lastScalar->str, elektraStr, '"', 1)) {
-					char * orig = stripTerminators (driver->lastScalar->str, 1);
-					if (orig == NULL) {
-						elektraFree (elektraStr);
-						driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-						return;
-					}
-					keySetMeta (driver->parentStack->key, "origvalue", orig);
-					elektraFree(orig);
+				keySetMeta (driver->parentStack->key, "origvalue", orig);
+				elektraFree (orig);
+			}
+			break;
+		case SCALAR_STRING_BASIC:
+			if (!sameString (driver->lastScalar->str, elektraStr, '"', 1))
+			{
+				char * orig = stripTerminators (driver->lastScalar->str, 1);
+				if (orig == NULL)
+				{
+					elektraFree (elektraStr);
+					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+					return;
 				}
-				break;
-			case SCALAR_STRING_ML_BASIC:
-				if (!sameString(driver->lastScalar->str, elektraStr, '"', 3)) {
-					char * orig = stripTerminators (driver->lastScalar->str, 3);
-					if (orig == NULL) {
-						elektraFree (elektraStr);
-						driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-						return;
-					}
-					keySetMeta (driver->parentStack->key, "origvalue", orig);
-					elektraFree(orig);
+				keySetMeta (driver->parentStack->key, "origvalue", orig);
+				elektraFree (orig);
+			}
+			break;
+		case SCALAR_STRING_ML_BASIC:
+			if (!sameString (driver->lastScalar->str, elektraStr, '"', 3))
+			{
+				char * orig = stripTerminators (driver->lastScalar->str, 3);
+				if (orig == NULL)
+				{
+					elektraFree (elektraStr);
+					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+					return;
 				}
-				break;
-			case SCALAR_BOOLEAN:	// done by type plugin
-				break;
-			default:
-				if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0) {
-					keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
-				}
-				break;
+				keySetMeta (driver->parentStack->key, "origvalue", orig);
+				elektraFree (orig);
+			}
+			break;
+		case SCALAR_BOOLEAN: // done by type plugin
+			break;
+		default:
+			if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
+			{
+				keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
+			}
+			break;
 		}
-		elektraFree (elektraStr);
-
-		ksAppendKey (driver->keys, driver->parentStack->key);
-		driverClearLastScalar (driver);
 	}
+	elektraFree (elektraStr);
+
+	ksAppendKey (driver->keys, driver->parentStack->key);
+	driverClearLastScalar (driver);
 }
 
 static bool sameString (const char * raw, const char * transformed, char terminator, int terminatorCount)
