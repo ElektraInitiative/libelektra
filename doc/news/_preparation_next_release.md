@@ -91,6 +91,7 @@ plugins. _(René Schwaiger)_
 - We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
 - The storage format was changed and many sanity checks were improved or added. _(Mihael Pranjić)_
 - Enforce consistency by writing the magic file footer last. _(Mihael Pranjić)_
+- Filter empty meta KeySets to save space. _(Mihael Pranjić)_
 
 ### Noresolver
 
