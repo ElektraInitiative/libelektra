@@ -3,7 +3,8 @@
 #include "file_utility.hpp"
 
 #include <sstream>
-
+namespace kconfig
+{
 KConfigParserException::KConfigParserException (FileUtility const & fileUtility, std::string const & errorMessage)
 {
 	message = generateErrorMessage (fileUtility.getFilename (), fileUtility.getCurrentLineNumber (), errorMessage);
@@ -20,7 +21,7 @@ KConfigParserException KConfigParserException::expect (FileUtility & fileUtility
 	return { fileUtility, "Expected " + expectedValue + " character, found " + foundValue };
 }
 
-std::string KConfigParserException::generateErrorMessage (std::string filename, int lineNumber, std::string message)
+std::string KConfigParserException::generateErrorMessage (std::string const & filename, int lineNumber, std::string const & message)
 {
 	std::stringstream errorMessage;
 	errorMessage << "Error while parsing " << filename;
@@ -51,4 +52,5 @@ std::string KConfigParserException::describeCharacter (char c)
 std::string KConfigParserException::getMessage () const
 {
 	return message;
+}
 }

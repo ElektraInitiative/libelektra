@@ -2,19 +2,21 @@
 #include "base.hpp"
 #include "kconfig_parser_exception.hpp"
 
-FileUtility::FileUtility (const std::string & filenameParam, std::istream & fileParam)
-: file{ fileParam }, stringBuffer{}, currentLine{ 1 }, filename{ filenameParam }
+namespace kconfig
+{
+FileUtility::FileUtility (std::string filenameParam, std::unique_ptr<std::istream> fileParam)
+: file{ std::move (fileParam) }, stringBuffer{}, currentLine{ 1 }, filename{ std::move (filenameParam) }
 {
 }
 
 char FileUtility::peekNextChar ()
 {
-	return (this->file).peek ();
+	return this->file->peek ();
 }
 
 bool FileUtility::isNextCharEOF ()
 {
-	return this->file.eof ();
+	return this->file->eof ();
 }
 
 bool FileUtility::isNextCharNewline ()
@@ -48,7 +50,7 @@ bool FileUtility::isNextCharToken ()
 
 void FileUtility::skipChar ()
 {
-	(this->file).get ();
+	this->file->get ();
 }
 
 void FileUtility::skipCharsIfBlank ()
@@ -64,7 +66,7 @@ void FileUtility::skipLine ()
 	++currentLine;
 	while (true)
 	{
-		switch ((this->file).get ())
+		switch (this->file->get ())
 		{
 		case character_newline:
 			return;
@@ -84,7 +86,7 @@ void FileUtility::skipLineIfEmptyOrComment ()
 {
 	while (true)
 	{
-		switch ((this->file).peek ())
+		switch (peekNextChar ())
 		{
 		case character_newline:
 		case character_carriage_return:
@@ -99,7 +101,7 @@ void FileUtility::skipLineIfEmptyOrComment ()
 
 inline void FileUtility::readEscapedChar (std::ostream & str)
 {
-	switch (this->file.get ())
+	switch (this->file->get ())
 	{
 	case 'n':
 		str << '\n';
@@ -112,6 +114,7 @@ inline void FileUtility::readEscapedChar (std::ostream & str)
 		break;
 	case '\\':
 		str << '\\';
+		break;
 	default:
 		throw KConfigParserException::expect (*this, "valid escape character code ('n', 't', 'r' or '\\')");
 	}
@@ -127,10 +130,10 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiter)
 			break;
 		}
 
-		c = this->file.get ();
+		c = this->file->get ();
 		if (c == character_newline || c == character_carriage_return || c == delimiter)
 		{
-			this->file.putback (c);
+			this->file->putback (c);
 			break;
 		}
 		else if (c == character_escape)
@@ -154,10 +157,10 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiterA, co
 			break;
 		}
 
-		c = this->file.get ();
+		c = this->file->get ();
 		if (c == character_newline || c == character_carriage_return || c == delimiterA || c == delimiterB)
 		{
-			this->file.putback (c);
+			this->file->putback (c);
 			break;
 		}
 		else if (c == character_escape)
@@ -195,4 +198,5 @@ int FileUtility::getCurrentLineNumber () const
 std::string FileUtility::getFilename () const
 {
 	return filename;
+}
 }

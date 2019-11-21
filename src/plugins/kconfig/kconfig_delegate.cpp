@@ -17,6 +17,7 @@ using kdb::KeySet;
 
 namespace elektra
 {
+using namespace kconfig;
 
 /**
  * @brief This constructor creates a new delegate object used by the `kconfig` plugin
@@ -41,27 +42,27 @@ kdb::KeySet KconfigDelegate::getConfig (Key const & parent)
 
 
 	ELEKTRA_LOG_DEBUG ("Parse `%s` using the kconfig plugin", parent.getString ().c_str ());
-	std::ifstream file{ parent.getString () };
-	if (!file.is_open ())
+	auto filePtr = new std::ifstream{ parent.getString () };
+	if (!filePtr->is_open ())
 	{
 		throw std::runtime_error ("Could not open the file.");
 	}
 
+	std::unique_ptr<std::istream> file{ filePtr };
+
 	ELEKTRA_LOG_DEBUG ("The file opened successfully. Start parsing");
 	try
 	{
-		FileUtility fileUtility{ parent.getString (), file };
+		FileUtility fileUtility{ parent.getString (), std::move (file) };
 		KConfigParser parser{ fileUtility, keys };
 		parser.parse (parent);
 		ELEKTRA_LOG_DEBUG ("Parsing finished successfully");
 	}
 	catch (KConfigParserException & e)
 	{
-		file.close ();
 		// TODO: Handle the error properly
 		throw std::runtime_error (e.getMessage ());
 	}
-	file.close ();
 
 	return keys;
 }
