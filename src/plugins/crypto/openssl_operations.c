@@ -199,7 +199,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Invalid key length was provided by the configuration");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, key, "Invalid key length was provided by the configuration");
 		return -1;
 	}
 
@@ -208,7 +208,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		keyDel (key);
 		keyDel (iv);
 
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Invalid IV length was prodived by the configuration");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, iv, "Invalid IV length was prodived by the configuration");
 		return -1;
 	}
 

@@ -187,7 +187,7 @@ static void addConflict (Key * key, int conflict)
  * @param msg         The conflict message
  * @param onConflict  What to do with the conflict
  */
-static void handleConflict (Key * parentKey, const char * msg, OnConflict onConflict)
+static void handleConflict (Key * parentKey, Key * key, const char * msg, OnConflict onConflict)
 {
 	ELEKTRA_LOG_DEBUG ("spec conflict: %s", msg);
 
@@ -195,7 +195,7 @@ static void handleConflict (Key * parentKey, const char * msg, OnConflict onConf
 	{
 	case ERROR:
 		keySetMeta (parentKey, "internal/spec/error", "1");
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "%s", msg);
 		break;
 	case WARNING:
 		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "%s", msg);
@@ -249,7 +249,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 			msg = elektraFormat ("Invalid key %s", keyName (key));
 		}
 
-		handleConflict (parentKey, msg, ch->invalid);
+		handleConflict (parentKey, key, msg, ch->invalid);
 		elektraFree (msg);
 		ret = -1;
 	}
@@ -259,7 +259,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/arraymember")), ", ");
 		char * msg =
 			elektraFormat ("Array key %s has invalid children (only array elements allowed): %s", keyName (key), problemKeys);
-		handleConflict (parentKey, msg, ch->member);
+		handleConflict (parentKey, key, msg, ch->member);
 		elektraFree (msg);
 		safeFree (problemKeys);
 		ret = -1;
@@ -270,7 +270,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/wildcardmember")), ", ");
 		char * msg =
 			elektraFormat ("Widlcard key %s has invalid children (no array elements allowed): %s", keyName (key), problemKeys);
-		handleConflict (parentKey, msg, ch->member);
+		handleConflict (parentKey, key, msg, ch->member);
 		elektraFree (msg);
 		safeFree (problemKeys);
 		ret = -1;
@@ -280,7 +280,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 	{
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/collision")), ", ");
 		char * msg = elektraFormat ("%s has conflicting metakeys: %s", keyName (key), problemKeys);
-		handleConflict (parentKey, msg, ch->conflict);
+		handleConflict (parentKey, key, msg, ch->conflict);
 		elektraFree (msg);
 		safeFree (problemKeys);
 		ret = -1;
@@ -294,7 +294,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		char * msg = elektraFormat ("%s has invalid number of members: %s. Expected: %s - %s", keyName (key),
 					    keyString (keyGetMeta (key, "conflict/outofrange")), min == NULL ? "" : keyString (min),
 					    max == NULL ? "" : keyString (max));
-		handleConflict (parentKey, msg, ch->range);
+		handleConflict (parentKey, key, msg, ch->range);
 		elektraFree (msg);
 		ret = -1;
 	}
@@ -462,7 +462,7 @@ static void validateEmptyArray (KeySet * ks, Key * arraySpecParent, Key * parent
 				elektraMetaArrayToString (arrayParent, keyName (keyGetMeta (arrayParent, "conflict/arraymember")), ", ");
 			char * msg = elektraFormat ("Array key %s has invalid children (only array elements allowed): %s",
 						    keyName (arrayParent), problemKeys);
-			handleConflict (parentKey, msg, onConflict);
+			handleConflict (parentKey, arrayParent, msg, onConflict);
 			elektraFree (msg);
 			safeFree (problemKeys);
 		}
@@ -805,7 +805,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 		{
 			const char * missing = strchr (keyName (specKey), '/');
 			char * msg = elektraFormat ("Required key %s is missing.", missing);
-			handleConflict (parentKey, msg, ch->missing);
+			handleConflict (parentKey, specKey, msg, ch->missing);
 			elektraFree (msg);
 			if (ch->missing != IGNORE)
 			{

@@ -130,7 +130,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		// Check if user exists
 		if (p == NULL)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key,
 								"Could not find user '%s' for key '%s'. "
 								"Does the user exist?",
 								name, keyName (key));
@@ -213,7 +213,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	if (canAccess != 0)
 	{
 		// No Resource error per se because related to the specification check!
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on '%s'. Key: %s", name,
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "User %s does not have required permission (%s) on '%s'. Key: %s", name,
 							modes, validPath, keyName (key));
 		return -1;
 	}
@@ -314,7 +314,7 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 	int result = access (validPath, modeMask);
 	if (result != 0)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User '%s' does not have required permission (%s) on '%s'. Key: %s",
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "User '%s' does not have required permission (%s) on '%s'. Key: %s",
 							p->pw_name, modes, validPath, keyName (key));
 		return -1;
 	}

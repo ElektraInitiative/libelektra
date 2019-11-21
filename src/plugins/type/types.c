@@ -492,7 +492,7 @@ void elektraTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, co
 	if (max == NULL)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-			errorKey,
+			errorKey, key,
 			"The type 'enum' failed to match for '%s' with string: '%s'\n"
 			"No values are allowed (check/enum is an empty array, or parent isn't set to last element)",
 			keyName (key), keyString (key));
@@ -525,6 +525,6 @@ void elektraTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, co
 		elektraWriteArrayNumber (indexStart, index);
 	}
 
-	ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorMessage);
+	ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, key, errorMessage);
 	elektraFree (errorMessage);
 }

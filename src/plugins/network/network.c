@@ -63,7 +63,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	{
 		if (portNumber < 0 || portNumber > 65535)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Port %ld on key %s was not within 0 - 65535", portNumber,
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "Port %ld on key %s was not within 0 - 65535", portNumber,
 								keyName (toCheck));
 			return -1;
 		}
@@ -76,8 +76,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		if (service == NULL)
 		{
 			// `getservbyname` does not set any errno
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not find service with name %s on key %s",
-								keyString (toCheck), keyName (toCheck));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, toCheck, "Could not find service");
 			return -1;
 		}
 		portNumberNetworkByteOrder = service->s_port;
@@ -102,12 +101,12 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	{
 		if (errno == HOST_NOT_FOUND)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not connect to %s: No such host", hostname);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "Could not connect to %s: No such host", hostname);
 			return -1;
 		}
 		else
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "There was an error trying to connect to host '%s'. Reason: %s",
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "There was an error trying to connect to host '%s'. Reason: %s",
 								hostname, strerror (errno));
 			return -1;
 		}
@@ -125,12 +124,12 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		close (sockfd);
 		if (errno == EADDRINUSE)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Port %s is already in use which was specified on key %s",
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "Port %s is already in use which was specified on key %s",
 								keyString (toCheck), keyName (toCheck));
 		}
 		else
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, 
 								"Could not bind to port %s which was specified on key %s. Reason: %s",
 								keyString (toCheck), keyName (toCheck), strerror (errno));
 		}
@@ -181,7 +180,7 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			strcat (errmsg, keyValue (cur));
 			strcat (errmsg, " message: ");
 			strcat (errmsg, gaimsg);
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, errmsg);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, cur, errmsg);
 			elektraFree (errmsg);
 			return -1;
 		}

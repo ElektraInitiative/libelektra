@@ -444,7 +444,7 @@ static int validateKey (Key * key, Key * parentKey)
 		}
 		else if (rc == 0)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
 								rangeString);
 			return 0;
 		}
@@ -458,7 +458,7 @@ static int validateKey (Key * key, Key * parentKey)
 		int rc = validateMultipleRanges (keyString (key), rangeString, parentKey, type);
 		if (rc == 0)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
 								rangeString);
 		}
 		return rc;

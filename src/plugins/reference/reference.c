@@ -136,7 +136,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 		if (refKey == NULL)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				parentKey, "Reference '%s', set in key '%s', does not reference an existing key", ref, elementName);
+				parentKey, arrayElement, "Reference '%s', set in key '%s', does not reference an existing key", ref, elementName);
 			error = true;
 		}
 
@@ -158,7 +158,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 			if (!anyMatch)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, "Reference '%s', set in key '%s', does not any of the given restrictions", ref,
+					parentKey, refKey, "Reference '%s', set in key '%s', does not any of the given restrictions", ref,
 					elementName);
 				error = true;
 			}
@@ -339,7 +339,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				if (refKey == NULL)
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						parentKey, "Reference '%s', set in key '%s', does not reference an existing key", ref,
+						parentKey, refKey, "Reference '%s', set in key '%s', does not reference an existing key", ref,
 						elementName);
 					error = true;
 				}
@@ -364,7 +364,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					if (!anyMatch)
 					{
 						ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-							parentKey,
+							parentKey, refKey,
 							"Reference '%s', set in key '%s', does not any of the given restrictions", ref,
 							elementName);
 						error = true;
@@ -407,7 +407,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 	*strrchr (rootName, '/') = '\0';
 	if (!checkReferenceGraphAcyclic (referenceGraph, rootName))
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, "The configuration contains a cyclic reference");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, parentKey, "The configuration contains a cyclic reference");
 
 		elektraFree (rootName);
 		rgDel (referenceGraph);

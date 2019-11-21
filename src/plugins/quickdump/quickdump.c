@@ -255,7 +255,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, "Missing key type");
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, parentKey, "Missing key type");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -316,7 +316,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			elektraFree (metaNameBuffer.string);
 			elektraFree (valueBuffer.string);
 			fclose (file);
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Unknown key type %c", type);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, parentKey, "Unknown key type %c", type);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 

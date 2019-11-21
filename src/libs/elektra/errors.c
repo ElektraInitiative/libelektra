@@ -116,6 +116,36 @@ static void setError (Key * key, const char * code, const char * name, const cha
 	}
 }
 
+static void setValidationError (Key * key, Key * wrongKey, const char * code, const char * name, const char * file, const char * line, const char * module,
+		      const char * reasonFmt, va_list va)
+{
+	if (key == NULL)
+	{
+		return;
+	}
+
+	if (keyGetMeta (key, "error"))
+	{
+		addWarning (key, code, name, file, line, module, reasonFmt, va);
+	}
+	else
+	{
+		keySetMeta (key, "error", "number description  module file line mountpoint configfile reason");
+		keySetMeta (key, "error/number", code);
+		keySetMeta (key, "error/description", name);
+		keySetMeta (key, "error/module", module);
+		keySetMeta (key, "error/file", file);
+		keySetMeta (key, "error/line", line);
+		keySetMeta (key, "error/mountpoint", keyName (key));
+		keySetMeta (key, "error/configfile", keyString (key));
+		char * keyText = elektraFormat ("Key %s with value %s does not fulfill: ", keyName (wrongKey), keyValue (wrongKey));
+		char * reason = elektraVFormat (reasonFmt, va);
+		keySetMeta (key, "error/reason", strncat(keyText, reason, strlen (reason)));
+		elektraFree (reason);
+		elektraFree (keyText);
+	}
+}
+
 #define DEFINE_ERROR_AND_WARNING(cname)                                                                                                    \
 	const char * ELEKTRA_ERROR_##cname = ELEKTRA_ERROR_CODE_##cname;                                                                   \
 	const char * ELEKTRA_ERROR_##cname##_NAME = ELEKTRA_ERROR_CODE_##cname##_NAME;                                                     \
@@ -146,7 +176,27 @@ DEFINE_ERROR_AND_WARNING (INTERFACE)
 DEFINE_ERROR_AND_WARNING (PLUGIN_MISBEHAVIOR)
 DEFINE_ERROR_AND_WARNING (CONFLICTING_STATE)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SYNTACTIC)
-DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
+//DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
+
+const char * ELEKTRA_ERROR_VALIDATION_SEMANTIC = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC;
+const char * ELEKTRA_ERROR_VALIDATION_SEMANTIC_NAME = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME;
+const char * ELEKTRA_WARNING_VALIDATION_SEMANTIC = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC;
+const char * ELEKTRA_WARNING_VALIDATION_SEMANTIC_NAME = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME;
+
+void elektraSetErrorVALIDATION_SEMANTIC (Key * parentKey, Key * wrongKey, const char * file, const char * line, const char * module, const char * reason, ...)
+{
+		va_list va;
+		va_start (va, reason);
+	setValidationError (parentKey, wrongKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, ELEKTRA_ERROR_VALIDATION_SEMANTIC_NAME, file, line, module, reason, va);
+		va_end (va);
+	}
+
+void elektraAddWarningVALIDATION_SEMANTIC (Key * parentKey, const char * file, const char * line, const char * module, const char * reason, ...) {
+	va_list va;
+		va_start (va, reason);
+		addWarning (parentKey, ELEKTRA_WARNING_VALIDATION_SEMANTIC, ELEKTRA_WARNING_VALIDATION_SEMANTIC_NAME, file, line, module, reason, va);
+		va_end (va);
+}
 
 KeySet * elektraErrorSpecification (void)
 {
@@ -275,7 +325,7 @@ void elektraTriggerError (const char * nr, Key * parentKey, const char * message
 	}
 	if (strcmp (nr, ELEKTRA_ERROR_VALIDATION_SEMANTIC) == 0)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, message);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, parentKey, message);
 		return;
 	}
 	ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Unkown error code %s", nr);

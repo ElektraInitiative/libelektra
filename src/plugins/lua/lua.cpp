@@ -75,11 +75,11 @@ static int Lua_CallFunction_Int (lua_State * L, int nargs, ckdb::Key * errorKey)
 {
 	int ret = -1;
 	if (lua_pcall (L, nargs, 1, 0) != LUA_OK)
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, lua_tostring (L, -1));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorKey, lua_tostring (L, -1));
 	else
 	{
 		if (!lua_isnumber (L, -1))
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "Return value is no integer");
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorKey, "Return value is no integer");
 		else
 			ret = lua_tonumber (L, -1);
 	}

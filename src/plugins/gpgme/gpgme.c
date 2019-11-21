@@ -153,7 +153,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Failed to read the specified GPG key. Reason: %s",
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, gpgRecipientRoot, "Failed to read the specified GPG key. Reason: %s",
 								gpgme_strerror (err));
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
@@ -184,7 +184,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				if (err)
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						errorKey, "Failed to read the specified GPG key. Reason: %s", gpgme_strerror (err));
+						errorKey, k, "Failed to read the specified GPG key. Reason: %s", gpgme_strerror (err));
 					elektraGpgmeKeylistFree (&list);
 					return NULL;
 				}
@@ -365,7 +365,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	recipients = extractRecipientFromPluginConfig (pluginConfig, errorKey, ctx);
 	if (!recipients)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No valid recipients were specified");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorKey, "No valid recipients were specified");
 		returnValue = -1;
 		goto cleanup;
 	}
@@ -433,7 +433,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			generateInvalidKeyErrorMsg (&errorMsg, invalidKey);
 			if (errorMsg)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Invalid key ID(s): %s", errorMsg);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, invalidKey, "Invalid key ID(s): %s", errorMsg);
 				elektraFree (errorMsg);
 			}
 			else
@@ -614,7 +614,7 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	}
 	else
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "No valid recipients were specified");
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorKey, "No valid recipients were specified");
 		return -1; // failure
 	}
 	return 1; // success

@@ -112,7 +112,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT,
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, k, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT,
 							keyName (k));
 		return -1;
 	}
@@ -120,7 +120,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
 	int result = ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Salt was not stored Base64 encoded in key %s", keyName (k));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, k, "Salt was not stored Base64 encoded");
 		return -1;
 	}
 	else if (result == -2)
@@ -155,7 +155,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate payload length
 	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Payload is too small to contain a salt (payload length is: %zu)",
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, k, "Payload is too small to contain a salt (payload length is: %zu)",
 							payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
@@ -172,7 +172,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
 	// validate restored salt length
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Restored salt has invalid length of %u (payload length is: %zu)",
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, k, "Restored salt has invalid length of %u (payload length is: %zu)",
 							restoredSaltLen, payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
@@ -272,7 +272,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	if (recipientCount == 0)
 	{
 		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorDescription);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, msgKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}

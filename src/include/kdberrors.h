@@ -237,18 +237,18 @@ using KeySet = ckdb::KeySet;
 						       ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason, __VA_ARGS__);                      \
 	} while (0)
 
-#define ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR(key, reason)                                                                                 \
+#define ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR(parentKey, wrongKey, reason)                                                                                 \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_VALIDATION_SEMANTIC, reason);                                               \
-		elektraSetErrorVALIDATION_SEMANTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
+		elektraSetErrorVALIDATION_SEMANTIC (parentKey, wrongKey, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
 						    reason);                                                                               \
 	} while (0)
-#define ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF(key, reason, ...)                                                                           \
+#define ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF(key, wrongKey, reason, ...)                                                                           \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_VALIDATION_SEMANTIC, __VA_ARGS__);                                     \
-		elektraSetErrorVALIDATION_SEMANTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
+		elektraSetErrorVALIDATION_SEMANTIC (key, wrongKey, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
 						    reason, __VA_ARGS__);                                                                  \
 	} while (0)
 #define ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING(key, reason)                                                                               \
@@ -284,7 +284,15 @@ DECLARE_ERROR_CODE (INTERFACE)
 DECLARE_ERROR_CODE (PLUGIN_MISBEHAVIOR)
 DECLARE_ERROR_CODE (CONFLICTING_STATE)
 DECLARE_ERROR_CODE (VALIDATION_SYNTACTIC)
-DECLARE_ERROR_CODE (VALIDATION_SEMANTIC)
+
+extern const char * ELEKTRA_ERROR_VALIDATION_SEMANTIC;
+extern const char * ELEKTRA_ERROR_VALIDATION_SEMANTIC_NAME;
+
+extern const char * ELEKTRA_WARNING_VALIDATION_SEMANTIC;
+extern const char * ELEKTRA_WARNING_VALIDATION_SEMANTIC_NAME;
+
+void elektraSetErrorVALIDATION_SEMANTIC (Key * parentKey, Key * wrongKey, const char * file, const char * line, const char * module, const char * reason, ...);
+void elektraAddWarningVALIDATION_SEMANTIC (Key * parentKey, const char * file, const char * line, const char * module, const char * reason, ...);
 
 #undef DECLARE_ERROR_CODE
 

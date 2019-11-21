@@ -242,9 +242,8 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			{
 				if (!keyGetMeta (parentKey, "error"))
 				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
-										"Key %s not found but is required for the evaluation of %s",
-										lookupName, condition);
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key,
+										"Key not found but is required for the evaluation of %s", condition);
 				}
 				result = FALSE;
 				goto Cleanup;
@@ -290,8 +289,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 	{
 		if (!keyGetMeta (parentKey, "error"))
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key %s not found but is required for the evaluation of %s",
-								lookupName, condition);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Key not found but is required for the evaluation of %s", condition);
 		}
 		result = FALSE;
 		goto Cleanup;
@@ -522,7 +520,7 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		Key * assign = ksLookup (ks, lookupKey, KDB_O_NONE);
 		if (!assign)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key %s not found", keyName (lookupKey));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, assign, "Key not found");
 			keyDel (lookupKey);
 			return NULL;
 		}
@@ -744,8 +742,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			ret = parseCondition (key, thenexpr, suffixList, ks, parentKey);
 			if (ret == FALSE)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of Key %s: %s failed. (%s failed)",
-									keyName (key) + strlen (keyName (parentKey)) + 1, conditionString,
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Validation of Key failed. (%s failed)",
 									thenexpr);
 			}
 			else if (ret == ERROR)
@@ -781,8 +778,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 
 				if (ret == FALSE)
 				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of Key %s: %s failed. (%s failed)",
-										keyName (key) + strlen (keyName (parentKey)) + 1,
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Validation of Key failed. (%s failed)",
 										conditionString, elseexpr);
 				}
 				else if (ret == ERROR)

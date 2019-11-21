@@ -285,7 +285,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-			parentKey,
+			parentKey, k,
 			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration",
 			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
 		return -1;
@@ -674,7 +674,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorDescription);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}

@@ -68,7 +68,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	if (errno == ERANGE && value == ULLONG_MAX)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Hexadecimal number %s out of range 0 to %llu", hexValue, ULLONG_MAX);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Hexadecimal number %s out of range 0 to %llu", hexValue, ULLONG_MAX);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if ((errno != 0 && value == 0) || endPtr == hexValue || *endPtr != '\0')
@@ -137,7 +137,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	if (errno == ERANGE && value == ULLONG_MAX)
 	{
 		errno = errnoSaved;
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Decimal number %s out of range 0 to %llu", decValue, ULLONG_MAX);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Decimal number %s out of range 0 to %llu", decValue, ULLONG_MAX);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if ((errno != 0 && value == 0) || endPtr == decValue)

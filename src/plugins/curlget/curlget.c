@@ -428,7 +428,7 @@ int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		if (!data->password)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (
-				errorKey, "No password specified for SSH password authentication in plugin configuration");
+				errorKey, key, "No password specified for SSH password authentication in plugin configuration");
 			if (data->uploadFileName) elektraFree (data->__uploadFileName);
 			elektraFree (data);
 			data = NULL;

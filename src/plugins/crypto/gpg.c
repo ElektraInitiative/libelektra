@@ -447,7 +447,7 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
 	{
 		if (isValidGpgKey (conf, rootValue) != 1)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, GPG_ERROR_INVALID_KEY, rootValue);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, root, GPG_ERROR_INVALID_KEY, rootValue);
 			return -1; // failure
 		}
 	}
@@ -462,7 +462,7 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
 			const char * childValue = keyString (k);
 			if (isValidGpgKey (conf, childValue) != 1)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, GPG_ERROR_INVALID_KEY, childValue);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, k, GPG_ERROR_INVALID_KEY, childValue);
 				return -1; // failure
 			}
 		}
@@ -750,7 +750,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 
 	case 1:
 		// bad signature
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "GPG reported a bad signature. Reason: %s", strerror (errno));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, msgKey, "GPG reported a bad signature. Reason: %s", strerror (errno));
 		break;
 
 	case GPG_CALL_DUP_STDIN:
