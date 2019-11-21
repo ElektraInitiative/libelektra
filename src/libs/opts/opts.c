@@ -315,7 +315,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			if (elektraStrCmp (keyBaseName (cur), "#") != 0)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, cur, "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
+					parentKey, cur,
+					"'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
 					keyName (cur));
 				keyDel (specParent);
 				ksDel (spec->options);
@@ -776,7 +777,8 @@ int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * er
 		else if (res < 0)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				errorKey, keyWithOpt, "The option '%s%s' cannot be used, because another option has already been used for the key '%s'",
+				errorKey, keyWithOpt,
+				"The option '%s%s' cannot be used, because another option has already been used for the key '%s'",
 				isShort ? "-" : "--", isShort ? (const char[]){ keyBaseName (optKey)[0], '\0' } : keyBaseName (optKey),
 				keyName (keyWithOpt));
 			ksDel (optMetas);
@@ -1126,7 +1128,8 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 		}
 		else if (!repeated)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, shortOpt, "This option cannot be repeated: -%c", keyBaseName (shortOpt)[0]);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, shortOpt, "This option cannot be repeated: -%c",
+								keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
 			keyDel (optSpec);
 			return false;
@@ -1140,8 +1143,8 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 			{
 				if (i >= argc - 1)
 				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, shortOpt, "Missing argument for short option: -%c",
-										keyBaseName (shortOpt)[0]);
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						errorKey, shortOpt, "Missing argument for short option: -%c", keyBaseName (shortOpt)[0]);
 					keyDel (shortOpt);
 					keyDel (option);
 					return false;

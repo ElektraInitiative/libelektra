@@ -1824,8 +1824,7 @@ static int ensureGlobalPluginMounted (KDB * handle, const char * pluginName, Key
 	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		ELEKTRA_LOG_WARNING ("could not add plugin %s to list plugin", pluginName);
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "The global plugin %s couldn't be mounted (via the list plugin)",
-							pluginName);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "The global plugin %s couldn't be mounted (via the list plugin)", pluginName);
 		return -1;
 	}
 
@@ -1864,8 +1863,7 @@ static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, K
 	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		ELEKTRA_LOG_WARNING ("could not remove %s from list plugin", pluginName);
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "The global plugin %s couldn't be unmounted (via the list plugin)",
-							pluginName);
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "The global plugin %s couldn't be unmounted (via the list plugin)", pluginName);
 		return -1;
 	}
 

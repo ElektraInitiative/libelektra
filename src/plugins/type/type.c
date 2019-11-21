@@ -127,7 +127,7 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 
 	if (type->restore != NULL && !type->restore (handle, key))
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, key, 
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, key,
 							"The normalized value '%s' of key '%s' could not be restored (type is '%s')",
 							keyString (key), keyName (key), typeName);
 		return false;
@@ -172,7 +172,7 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
 		if ((trueKey == NULL) != (falseKey == NULL))
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				errorKey,parent,  "You must set both true and false for a boolean pair (config key: '%s')", buffer);
+				errorKey, parent, "You must set both true and false for a boolean pair (config key: '%s')", buffer);
 			elektraFree (*result);
 			*result = NULL;
 			return -2;
@@ -267,8 +267,9 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 	data->booleanRestore = readBooleanRestore (conf);
 	if (data->booleanRestore < -2 || data->booleanRestore >= data->booleanCount)
 	{
-		//TODO: Add value which was invalid
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, keyNew ("/boolean/restoreas"), "The value of the config key /boolean/restoreas was invalid");
+		// TODO: Add value which was invalid
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, keyNew ("/boolean/restoreas"),
+						       "The value of the config key /boolean/restoreas was invalid");
 		elektraFree (data);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -404,8 +405,8 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		if (type->restore != NULL && !type->restore (handle, cur))
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				parentKey, cur, "The normalized value '%s' of key '%s' could not be restored (type is '%s')", keyString (cur),
-				keyName (cur), typeName);
+				parentKey, cur, "The normalized value '%s' of key '%s' could not be restored (type is '%s')",
+				keyString (cur), keyName (cur), typeName);
 			ksSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

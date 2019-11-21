@@ -135,8 +135,9 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 		bool error = false;
 		if (refKey == NULL)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				parentKey, arrayElement, "Reference '%s', set in key '%s', does not reference an existing key", ref, elementName);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, arrayElement,
+								"Reference '%s', set in key '%s', does not reference an existing key", ref,
+								elementName);
 			error = true;
 		}
 
@@ -339,8 +340,8 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				if (refKey == NULL)
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						parentKey, refKey, "Reference '%s', set in key '%s', does not reference an existing key", ref,
-						elementName);
+						parentKey, refKey, "Reference '%s', set in key '%s', does not reference an existing key",
+						ref, elementName);
 					error = true;
 				}
 

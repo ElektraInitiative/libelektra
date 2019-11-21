@@ -213,8 +213,8 @@ static int validatePermission (Key * key, Key * parentKey)
 	if (canAccess != 0)
 	{
 		// No Resource error per se because related to the specification check!
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "User %s does not have required permission (%s) on '%s'. Key: %s", name,
-							modes, validPath, keyName (key));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "User %s does not have required permission (%s) on '%s'. Key: %s",
+							name, modes, validPath, keyName (key));
 		return -1;
 	}
 

@@ -63,8 +63,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	{
 		if (portNumber < 0 || portNumber > 65535)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "Port %ld on key %s was not within 0 - 65535", portNumber,
-								keyName (toCheck));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "Port %ld on key %s was not within 0 - 65535",
+								portNumber, keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = htons (portNumber);
@@ -106,8 +106,9 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		}
 		else
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "There was an error trying to connect to host '%s'. Reason: %s",
-								hostname, strerror (errno));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck,
+								"There was an error trying to connect to host '%s'. Reason: %s", hostname,
+								strerror (errno));
 			return -1;
 		}
 		// TODO: Maybe consider errno == TRY_AGAIN separately and try to reconnect
@@ -124,12 +125,13 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		close (sockfd);
 		if (errno == EADDRINUSE)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, "Port %s is already in use which was specified on key %s",
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck,
+								"Port %s is already in use which was specified on key %s",
 								keyString (toCheck), keyName (toCheck));
 		}
 		else
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck, 
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, toCheck,
 								"Could not bind to port %s which was specified on key %s. Reason: %s",
 								keyString (toCheck), keyName (toCheck), strerror (errno));
 		}

@@ -153,8 +153,8 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, gpgRecipientRoot, "Failed to read the specified GPG key. Reason: %s",
-								gpgme_strerror (err));
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, gpgRecipientRoot,
+								"Failed to read the specified GPG key. Reason: %s", gpgme_strerror (err));
 			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}

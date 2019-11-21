@@ -242,8 +242,8 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			{
 				if (!keyGetMeta (parentKey, "error"))
 				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key,
-										"Key not found but is required for the evaluation of %s", condition);
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey, key, "Key not found but is required for the evaluation of %s", condition);
 				}
 				result = FALSE;
 				goto Cleanup;
@@ -289,7 +289,8 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 	{
 		if (!keyGetMeta (parentKey, "error"))
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Key not found but is required for the evaluation of %s", condition);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Key not found but is required for the evaluation of %s",
+								condition);
 		}
 		result = FALSE;
 		goto Cleanup;
@@ -742,8 +743,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			ret = parseCondition (key, thenexpr, suffixList, ks, parentKey);
 			if (ret == FALSE)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Validation of Key failed. (%s failed)",
-									thenexpr);
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, key, "Validation of Key failed. (%s failed)", thenexpr);
 			}
 			else if (ret == ERROR)
 			{

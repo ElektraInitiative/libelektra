@@ -116,8 +116,8 @@ static void setError (Key * key, const char * code, const char * name, const cha
 	}
 }
 
-static void setValidationError (Key * key, Key * wrongKey, const char * code, const char * name, const char * file, const char * line, const char * module,
-		      const char * reasonFmt, va_list va)
+static void setValidationError (Key * key, Key * wrongKey, const char * code, const char * name, const char * file, const char * line,
+				const char * module, const char * reasonFmt, va_list va)
 {
 	if (key == NULL)
 	{
@@ -140,7 +140,7 @@ static void setValidationError (Key * key, Key * wrongKey, const char * code, co
 		keySetMeta (key, "error/configfile", keyString (key));
 		char * keyText = elektraFormat ("Key %s with value %s does not fulfill: ", keyName (wrongKey), keyValue (wrongKey));
 		char * reason = elektraVFormat (reasonFmt, va);
-		keySetMeta (key, "error/reason", strncat(keyText, reason, strlen (reason)));
+		keySetMeta (key, "error/reason", strncat (keyText, reason, strlen (reason)));
 		elektraFree (reason);
 		elektraFree (keyText);
 	}
@@ -176,26 +176,31 @@ DEFINE_ERROR_AND_WARNING (INTERFACE)
 DEFINE_ERROR_AND_WARNING (PLUGIN_MISBEHAVIOR)
 DEFINE_ERROR_AND_WARNING (CONFLICTING_STATE)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SYNTACTIC)
-//DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
+// DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
 
 const char * ELEKTRA_ERROR_VALIDATION_SEMANTIC = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC;
 const char * ELEKTRA_ERROR_VALIDATION_SEMANTIC_NAME = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME;
 const char * ELEKTRA_WARNING_VALIDATION_SEMANTIC = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC;
 const char * ELEKTRA_WARNING_VALIDATION_SEMANTIC_NAME = ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME;
 
-void elektraSetErrorVALIDATION_SEMANTIC (Key * parentKey, Key * wrongKey, const char * file, const char * line, const char * module, const char * reason, ...)
+void elektraSetErrorVALIDATION_SEMANTIC (Key * parentKey, Key * wrongKey, const char * file, const char * line, const char * module,
+					 const char * reason, ...)
 {
-		va_list va;
-		va_start (va, reason);
-	setValidationError (parentKey, wrongKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, ELEKTRA_ERROR_VALIDATION_SEMANTIC_NAME, file, line, module, reason, va);
-		va_end (va);
-	}
-
-void elektraAddWarningVALIDATION_SEMANTIC (Key * parentKey, const char * file, const char * line, const char * module, const char * reason, ...) {
 	va_list va;
-		va_start (va, reason);
-		addWarning (parentKey, ELEKTRA_WARNING_VALIDATION_SEMANTIC, ELEKTRA_WARNING_VALIDATION_SEMANTIC_NAME, file, line, module, reason, va);
-		va_end (va);
+	va_start (va, reason);
+	setValidationError (parentKey, wrongKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, ELEKTRA_ERROR_VALIDATION_SEMANTIC_NAME, file, line,
+			    module, reason, va);
+	va_end (va);
+}
+
+void elektraAddWarningVALIDATION_SEMANTIC (Key * parentKey, const char * file, const char * line, const char * module, const char * reason,
+					   ...)
+{
+	va_list va;
+	va_start (va, reason);
+	addWarning (parentKey, ELEKTRA_WARNING_VALIDATION_SEMANTIC, ELEKTRA_WARNING_VALIDATION_SEMANTIC_NAME, file, line, module, reason,
+		    va);
+	va_end (va);
 }
 
 KeySet * elektraErrorSpecification (void)
