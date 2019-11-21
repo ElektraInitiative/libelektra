@@ -1,7 +1,5 @@
 // clang-format off
 ksNew (16,
-keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
-
 	keyNew (PREFIX "/multiline_basic_leading_newline",
 		KEY_VALUE, "This string should be in a single line",
 		KEY_META, "type", "string",

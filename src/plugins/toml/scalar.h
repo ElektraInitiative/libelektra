@@ -47,5 +47,6 @@ char * translateScalar (const Scalar * scalar);
 
 bool isValidBareString (const char * str);
 bool isValidDateTime (const Scalar * scalar);
+char * stripTerminators(const char * str, size_t count);
 
 #endif // ELEKTRA_PLUGIN_TOML_SCALAR_H

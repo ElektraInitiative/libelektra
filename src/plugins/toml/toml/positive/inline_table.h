@@ -1,10 +1,5 @@
 // clang-format off
 ksNew (32,
-
-	keyNew (PREFIX,
-		KEY_VALUE, "@CONFIG_FILEPATH@",
-	KEY_END),
-
 	keyNew (PREFIX "/basic",
 		KEY_META, "tomltype", "inlinetable",
 		KEY_META, "order", "0",
@@ -71,17 +66,14 @@ ksNew (32,
 	keyNew (PREFIX "/inl_with_array/bool/#0",
 		KEY_VALUE, "1",
 		KEY_META, "type", "boolean",
-		KEY_META, "origvalue", "true",
 	KEY_END),
 	keyNew (PREFIX "/inl_with_array/bool/#1",
 		KEY_VALUE, "0",
 		KEY_META, "type", "boolean",
-		KEY_META, "origvalue", "false",
 	KEY_END),
     	keyNew (PREFIX "/inl_with_array/bool/#2",
 		KEY_VALUE, "1",
 		KEY_META, "type", "boolean",
-		KEY_META, "origvalue", "true",
 	KEY_END),
 
 

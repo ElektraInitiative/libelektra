@@ -1,9 +1,5 @@
 // clang-format off
 ksNew (16,
-	keyNew (PREFIX,
-		KEY_VALUE, "@CONFIG_FILEPATH@",
-	KEY_END),
-
 	keyNew (PREFIX "/local_date_1",
 		KEY_VALUE, "0000-01-01",
 		KEY_META, "type", "string",
