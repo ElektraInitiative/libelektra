@@ -307,7 +307,7 @@ function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the c
 end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
-    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm rmmeta sget shell test vset help list-tools qt-gui
+    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm rmmeta sget shell test help list-tools qt-gui
     __fish_kdb_subcommand_exists_does_not_include $commands
 end
 
@@ -361,7 +361,6 @@ end
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 
 set -l arguments complete editor export file fstab get getmeta import ls lsmeta rm rmmeta set setmeta sget smount spec-mount test umount
-set -l arguments $arguments vset 1
 set -l completion_function "__fish_kdb_needs_namespace $arguments"
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'

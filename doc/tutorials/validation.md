@@ -42,30 +42,6 @@ described in this tutorial, e.g.:
 The most direct way to validate keys is
 
 ```sh
-sudo kdb mount validation.dump user/tests/together dump validation
-kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
-kdb set user/tests/together/test abc
-# STDERR: Sorry, module validation issued the error.*
-# ERROR:C03100
-# RET:5
-```
-
-For all other plugins (except `validation`) the convenience tool `kdb vset`
-is missing. Let us see what `kdb vset` actually did:
-
-```sh
-kdb meta-ls user/tests/together/test
-#> check/validation
-#> check/validation/match
-#> check/validation/message
-```
-
-So it only appended some metadata (data describing the data) next to the key,
-which we also could do by:
-
-```sh
-# Following lines are (except for error conditions) identical to
-# kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb meta-set user/tests/together/test check/validation "[1-9][0-9]*"
 kdb meta-set user/tests/together/test check/validation/match LINE
 kdb meta-set user/tests/together/test check/validation/message "Not a number"
@@ -74,7 +50,6 @@ kdb set user/tests/together/test 123
 
 # Undo modifications
 kdb rm -r user/tests/together
-sudo kdb umount user/tests/together
 ```
 
 The approach is not limited to validation via regular expressions, but
@@ -92,9 +67,6 @@ The drawbacks of this approach are:
   the key which won't work with most configuration files.
   This is the reason why we explicitly used `dump` as storage in `kdb mount`.
 - After the key is removed, the validation information is gone, too.
-- It only works for the [namespace](/doc/tutorials/namespaces.md) where `vset` was used.
-  In the example above we could override the cascading key `/tutorial/together/test`
-  with the unvalidated key `dir/tutorial/together/test`.
 - You cannot validate structure of which keys must be present or absent.
 
 ## Get Started with `spec`

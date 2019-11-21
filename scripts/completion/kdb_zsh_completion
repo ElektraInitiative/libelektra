@@ -152,11 +152,6 @@ _kdb-umount () {
     _kdb_paths
 }
 
-_kdb-vset () {
-    # TODO path value regex [message]
-    _kdb_paths
-}
-
 _kdb-help () {
     # TODO can we get the command list all over again?
 }
@@ -204,7 +199,6 @@ _kdb_commands () {
         shell:'Start a kdb shell.'
         test:'Run key database test suite.'
         umount:'Unmount backend from key database.'
-        vset:'Set a value together with a validation regex.'
         help:'View the man page of a tool'
         list-tools:'List all external tools')
 
