@@ -1,5 +1,4 @@
 []
-root=kdb
 
 [kdb/get]
 opt=#6
@@ -17,7 +16,6 @@ opt/#5=-n
 opt/#5/long=--no-newline
 opt/#6=-d
 opt/#6/long=--debug
-opt/arg/check=types/kdb-path
 
 [kdb/ls]
 opt=#8
@@ -39,7 +37,6 @@ opt/#7=-d
 opt/#7/long=--debug
 opt/#8=-0
 opt/#8/long=--null
-opt/arg/check=types/kdb-path
 
 [kdb/list-tools]
 
@@ -94,7 +91,3 @@ opt/#7=-v
 opt/#7/long=--verbose
 opt/#8=-d
 opt/#8/long=--debug
-opt/arg/check=types/kdb-path
-
-[types/kdb-path]
-completion/shell=kdb complete

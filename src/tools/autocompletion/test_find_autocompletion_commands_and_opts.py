@@ -15,7 +15,7 @@ def run_test(start_of_input, last_word, name_of_test_case):
 	global passed, failed, tests_run
 	tests_run+=1
 	# get the result from executing autocompletion
-	result = sorted(set_input_and_run(start_of_input, last_word).split())
+	result = sorted(set_input_and_run('spec/tests/autocomplete', 'kdb', start_of_input, last_word, []).split())
 	if not silent:
 		print('TESTCASE: ' + name_of_test_case)
 		print('RESULTS:')
@@ -56,12 +56,12 @@ if __name__ == "__main__":
 		if i == '-s':
 			silent = True
 
-	run_test('', 'kdb', 'all')
+	run_test('', None, 'all')
 	for i in list(string.ascii_lowercase):
-		run_test(i, 'kdb', 'start with: '+i)
-	run_test('lis', 'kdb', 'start with: lis')
-	run_test('rm', 'kdb', 'start with: rm')
-	run_test('plugi', 'kdb', 'start with: plugi')
+		run_test(i, None, 'start with: '+i)
+	run_test('lis', None, 'start with: lis')
+	run_test('rm', None, 'start with: rm')
+	run_test('plugi', None, 'start with: plugi')
 
 	print('\nTests run: ' + str(tests_run))
 	if failed > 0:
@@ -69,3 +69,4 @@ if __name__ == "__main__":
 		print('SUCCESSES: ' + str(passed))
 	else:
 		print('ALL TESTS SUCCEEDED')
+

@@ -3,93 +3,98 @@ import sys
 import subprocess
 import getopt
 
+# get name of program
+root = None
+# all the previous typed commands, options and arguments
+typed = []
 # last_word is used to store the last command typed
-last_word = None
-# start_of_input is used to store the string that should be completed
-start_of_input = None
+last_command = None
+# start_of_current_input is used to store the string that should be completed
+start_of_current_input = None
 # mount_point is used to store the mount point the specification file is
 # 		mounted at
 # TODO: should not be hardcoded
 mount_point = None
 
 # ARGUMENTS for find_autocompletion_options.py
-# -s ... start_of_input
+# -s ... start_of_current_input
 # -l ... last_word
 
-# gets arguments passed to the script and sets last_word and start_of_input
+# gets arguments passed to the script and sets last_word and start_of_current_input
 def get_command_line_arguments():
-	global start_of_input, last_word, mount_point
+	global mount_point, root, typed, start_of_current_input, last_command
+	with kdb.KDB() as k:
+		mount_point = 'spec/tests/autocomplete'
+		ks = kdb.KeySet()
+		k.get(ks, mount_point)
+		for i in ks:
+			len_path_mount_point = len(mount_point.split('/'))
+			len_path_key = len(str(i))
+			if str(i) != mount_point and len_path_mount_point < len_path_key:
+				key_split = str(i).split('/')
+				root = key_split[len_path_mount_point]
+				break
+	if root is None:
+		print('getting root failed')
+		sys.exit(2)
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],'s:l:m:')
+		opts, args = getopt.getopt(sys.argv[1:],'s:m:')
 	except getopt.GetoptError:
 		print('getting command line options failed')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-s':
-			if arg.strip():
-				start_of_input = arg.strip()
-		elif opt == '-l':
-			if arg.strip():
-				last_word = arg.strip()
-		elif opt == '-m':
+			s = arg.strip()
+			if s:
+				start_of_current_input = s
+		if opt == '-m':
 			if arg.strip():
 				mount_point = arg.strip()
+	if len(args) > 0:
+		typed = args[0].split()
+		for i in reversed(typed):
+			if last_command is not None:
+				break
+			for j in ks:
+				if str(j).split('/')[-1] == i:
+					last_command = str(j)
+					break
 	
 
 # input: input_start_of_input, the string that should be used to complete
 #		input_last_word, the last typed string
 # sets start of word and calls find_auto_completion_options
 # used for testing
-def set_input_and_run(input_start_of_input, input_last_word):
-	global start_of_input, last_word
-	start_of_input = input_start_of_input
-	last_word = input_last_word
+def set_input_and_run(input_mount_point, input_root, input_start_of_current_input, input_last_command, input_typed):
+	global mount_point, root, last_command, typed, start_of_current_input
+	mount_point = input_mount_point
+	root = input_root
+	start_of_current_input = input_start_of_current_input
+	last_command = input_last_command
+	typed = input_typed
 	return find_auto_completion_options()
 
 # depending on last_word calls completion for commands or arguments
 # return: string seperated by a \n, every line is one possible completion 
 #		option
 def find_auto_completion_options():
-	global last_word, start_of_input
-	key_last_word = get_key(last_word)
+	global last_command, start_of_current_input
 	completion = []
-	with kdb.KDB() as k:
-		ks = kdb.KeySet()
-		k.get(ks, mount_point)
-		root_key = ks.lookup(mount_point)
-		root = root_key.getMeta('root').value
-	# case: last_word is a command => first get all completion options
-	# 		for arguments, then completion options for all commands
-	if key_last_word != None and last_word != root:
-		argument_completion = complete_arguments(key_last_word)
-		completion.extend(argument_completion)
-		option_completion = complete_options(key_last_word)
-		completion.extend(option_completion)
-		# TODO - this should be changed as soon as opt/arg is added - for 
-		#		opt/arg=required this should not be run 
-		command_completion = []
-		if start_of_input is None or len(start_of_input.strip()) <=0:
-			command_completion = complete_commands(None)
-		else:
-			command_completion = complete_commands(start_of_input)
-		completion.extend(command_completion)
-	# case 2: last_word is not a command => complete commands
-	else:
-		command_completion = complete_commands(start_of_input)
-		completion.extend(command_completion)
+	if last_command is not None:
+		completion.extend(complete_options())
+	completion.extend(complete_commands(start_of_current_input))
 	completion = '\n'.join(completion)
 	return completion
+
 
 # input:  start_of_input
 # searches for commands starting with start_of_input
 # return: list of all possible commands for completion
 def complete_commands(start_of_input):
-	global mount_point
+	global mount_point, root
 	with kdb.KDB() as k:
 		ks = kdb.KeySet()
 		k.get(ks, mount_point)
-		root_key = ks.lookup(mount_point)
-		root = root_key.getMeta('root').value
 		len_path_mount_point = len(mount_point.split('/'))
 		completion_options = []
 		for key in ks:
@@ -105,7 +110,7 @@ def complete_commands(start_of_input):
 
 # searches for arguments starting with start_of_input
 # return: list of all possible arguments
-def complete_arguments(key_path):
+'''def complete_arguments(key_path):
 	global start_of_input
 	completion_options = []
 	with kdb.KDB() as k:
@@ -127,27 +132,30 @@ def complete_arguments(key_path):
 					completion_options.extend(shell_command_completion)
 				# TODO: add more types of arguments
 		k.close()
-	return completion_options
+	return completion_options'''
 
 # searches for options starting with start_of_input belonging to last_word
 # return: list of all possible arguments
-def complete_options(key_path):
-	global start_of_input
+def complete_options():
+	global start_of_current_input, last_command
 	completion_options = []
 	with kdb.KDB() as k:
 		ks = kdb.KeySet()
 		k.get(ks, mount_point)
-		key = ks.lookup(key_path)
-		len_opts = int((key.getMeta(name='opt').value)[1:])
+		key = ks.lookup(last_command)
+		meta_opt = key.getMeta(name='opt')
+		len_opts = 0
+		if meta_opt:
+			len_opts = int((meta_opt.value)[1:])
 		i = 0
 		while i <= len_opts:
 			i+=1
 			opt = key.getMeta(name='opt/#{}'.format(i))
 			opt_long = key.getMeta(name='opt/#{}/long'.format(i))
-			if start_of_input != None:
-				if opt_long and opt_long.value.startswith(start_of_input):
+			if start_of_current_input != None:
+				if opt_long and opt_long.value.startswith(start_of_current_input):
 					completion_options.append(opt_long.value)
-				elif opt and opt.value.startswith(start_of_input):
+				elif opt and opt.value.startswith(start_of_current_input):
 					completion_options.append(opt.value)
 			else:
 				if opt_long:
@@ -189,3 +197,8 @@ if __name__ == '__main__':
 	get_command_line_arguments()
 	result = find_auto_completion_options()
 	print(result)
+
+
+
+
+
