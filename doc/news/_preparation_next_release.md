@@ -334,7 +334,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added [Dockerfile for Ubuntu Bionic](../../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
 - We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). _(René Schwaiger)_
 - We added a basic [Dockerfile for Arch Linux](../../scripts/docker/arch/Dockerfile). _(René Schwaiger)_
-- <<TODO>>
+- We updated the [Dockerfile for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
 
 ### Vagrant
 
@@ -370,6 +370,8 @@ you up to date with the multi-language support provided by Elektra.
 
   - that the [man pages](../man) are up to date, and
   - that building the PDF version of the Doxygen documentation works. _(René Schwaiger)_
+
+- The new build job `🐧 Fedora` builds and tests Elektra on Fedora Linux. _(René Schwaiger)_
 
 ### Jenkins
 

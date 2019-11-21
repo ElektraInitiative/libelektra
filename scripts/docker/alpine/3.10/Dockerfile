@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.10
 
 RUN apk update \
     && apk add --no-cache \
@@ -6,9 +6,11 @@ RUN apk update \
         build-base \
         cmake \
         curl \
+        diffutils \
         file \
         git \
         ninja \
+        ronn \
         yaml-cpp-dev
 
 # Google Test

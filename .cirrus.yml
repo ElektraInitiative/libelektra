@@ -195,12 +195,28 @@ mac_task:
         false
       fi
 
+linux_task:
+  matrix:
+
+    - name: 🐧 Fedora
+      container:
+          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+
+  script:
+    - *create_build_dir
+    - *generate
+    - *build
+    - *install
+
+  tests_script:
+    - *run_tests
+
 link_task:
   matrix:
 
     - name: 🔗 Check
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
@@ -242,7 +258,7 @@ docu_task:
 
     - name: 📚 Check
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
     - *create_build_dir

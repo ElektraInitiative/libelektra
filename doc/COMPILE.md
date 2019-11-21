@@ -14,7 +14,7 @@ sudo apt-get install cmake git build-essential
 Or on RPM based systems (CentOS):
 
 ```sh
-sudo yum install -y cmake3 git gcc-c++
+sudo dnf install -y cmake git gcc-c++ make
 ```
 
 Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
