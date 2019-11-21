@@ -625,7 +625,7 @@ int splitGet (Split * split, Key * warningKey, KDB * handle)
 		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
 		ELEKTRA_LOG_DEBUG ("splitGet : backendUpdateSize thingy");
-		if (backendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
+		if (backendUpdateSize (split, i, split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
 	}
 
 	return ret;
@@ -645,16 +645,16 @@ int splitUpdateSize (Split * split)
 		switch (keyGetNamespace (split->parents[i]))
 		{
 		case KEY_NS_SPEC:
-			split->handles[i]->specsize = ksGetSize (split->keysets[i]);
+			split->specsizes[i] = ksGetSize (split->keysets[i]);
 			break;
 		case KEY_NS_DIR:
-			split->handles[i]->dirsize = ksGetSize (split->keysets[i]);
+			split->dirsizes[i] = ksGetSize (split->keysets[i]);
 			break;
 		case KEY_NS_USER:
-			split->handles[i]->usersize = ksGetSize (split->keysets[i]);
+			split->usersizes[i] = ksGetSize (split->keysets[i]);
 			break;
 		case KEY_NS_SYSTEM:
-			split->handles[i]->systemsize = ksGetSize (split->keysets[i]);
+			split->systemsizes[i] = ksGetSize (split->keysets[i]);
 			break;
 		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:
@@ -741,12 +741,12 @@ int splitSync (Split * split)
 		{
 		case KEY_NS_SPEC:
 			// Check if we are in correct state
-			if (split->handles[i]->specsize == -1)
+			if (split->specsizes[i] == -1)
 			{
 				return -(int) i - 2;
 			}
 			/* Check for spec keyset for removed keys */
-			if (split->handles[i]->specsize != ksGetSize (split->keysets[i]))
+			if (split->specsizes[i] != ksGetSize (split->keysets[i]))
 			{
 				set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
@@ -754,12 +754,12 @@ int splitSync (Split * split)
 			break;
 		case KEY_NS_DIR:
 			// Check if we are in correct state
-			if (split->handles[i]->dirsize == -1)
+			if (split->dirsizes[i] == -1)
 			{
 				return -(int) i - 2;
 			}
 			/* Check for dir keyset for removed keys */
-			if (split->handles[i]->dirsize != ksGetSize (split->keysets[i]))
+			if (split->dirsizes[i] != ksGetSize (split->keysets[i]))
 			{
 				set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
@@ -767,12 +767,12 @@ int splitSync (Split * split)
 			break;
 		case KEY_NS_USER:
 			// Check if we are in correct state
-			if (split->handles[i]->usersize == -1)
+			if (split->usersizes[i] == -1)
 			{
 				return -(int) i - 2;
 			}
 			/* Check for user keyset for removed keys */
-			if (split->handles[i]->usersize != ksGetSize (split->keysets[i]))
+			if (split->usersizes[i] != ksGetSize (split->keysets[i]))
 			{
 				set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
@@ -780,12 +780,12 @@ int splitSync (Split * split)
 			break;
 		case KEY_NS_SYSTEM:
 			// Check if we are in correct state
-			if (split->handles[i]->systemsize == -1)
+			if (split->systemsizes[i] == -1)
 			{
 				return -(int) i - 2;
 			}
 			/* Check for system keyset for removed keys */
-			if (split->handles[i]->systemsize != ksGetSize (split->keysets[i]))
+			if (split->systemsizes[i] != ksGetSize (split->keysets[i]))
 			{
 				set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
@@ -911,7 +911,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "specsize");
-		keySetBinary (key, &(split->handles[i]->specsize), sizeof (ssize_t));
+		keySetBinary (key, &(split->specsizes[i]), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
@@ -919,7 +919,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "dirsize");
-		keySetBinary (key, &(split->handles[i]->dirsize), sizeof (ssize_t));
+		keySetBinary (key, &(split->dirsizes), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
@@ -927,7 +927,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "usersize");
-		keySetBinary (key, &(split->handles[i]->usersize), sizeof (ssize_t));
+		keySetBinary (key, &(split->usersizes[i]), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
@@ -935,7 +935,7 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "systemsize");
-		keySetBinary (key, &(split->handles[i]->systemsize), sizeof (ssize_t));
+		keySetBinary (key, &(split->systemsizes[i]), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
@@ -1006,28 +1006,28 @@ int splitCacheCheckState (Split * split, KeySet * global)
 
 		keySetBaseName (key, "specsize");
 		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->specsize > 0))
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->specsizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "dirsize");
 		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->dirsize > 0))
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->dirsizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "usersize");
 		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->usersize > 0))
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->usersizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "systemsize");
 		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->handles[i]->systemsize > 0))
+		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->systemsizes[i] > 0))
 		{
 			goto error;
 		}
@@ -1110,7 +1110,7 @@ int splitCacheLoadState (Split * split, KeySet * global)
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keyGetBinary (found, &(split->handles[i]->specsize), sizeof (ssize_t));
+			keyGetBinary (found, &(split->specsizes[i]), sizeof (ssize_t));
 		}
 		else
 		{
@@ -1121,7 +1121,7 @@ int splitCacheLoadState (Split * split, KeySet * global)
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keyGetBinary (found, &(split->handles[i]->dirsize), sizeof (ssize_t));
+			keyGetBinary (found, &(split->dirsizes[i]), sizeof (ssize_t));
 		}
 		else
 		{
@@ -1132,7 +1132,7 @@ int splitCacheLoadState (Split * split, KeySet * global)
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keyGetBinary (found, &(split->handles[i]->usersize), sizeof (ssize_t));
+			keyGetBinary (found, &(split->usersizes[i]), sizeof (ssize_t));
 		}
 		else
 		{
@@ -1143,7 +1143,7 @@ int splitCacheLoadState (Split * split, KeySet * global)
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keyGetBinary (found, &(split->handles[i]->systemsize), sizeof (ssize_t));
+			keyGetBinary (found, &(split->systemsizes[i]), sizeof (ssize_t));
 		}
 		else
 		{

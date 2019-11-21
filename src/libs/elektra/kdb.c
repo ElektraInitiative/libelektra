@@ -526,7 +526,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			// no keys in that backend
 			ELEKTRA_LOG_DEBUG ("backend: %s,%s ;; ret: %d", keyName (split->parents[i]), keyString (split->parents[i]), ret);
 
-			backendUpdateSize (backend, split->parents[i], 0);
+			backendUpdateSize (split, i, split->parents[i], 0);
 		}
 		// TODO: set error in else case!
 

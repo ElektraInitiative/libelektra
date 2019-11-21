@@ -309,9 +309,10 @@ Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey)
 
 
 /**
- * @brief Update internal size in backend
+ * @brief Update internal size values of a backend
  *
- * @param backend the backend to update
+ * @param split the split containing the size to be updated
+ * @param index the index of the backend in the split
  * @param parent for parent
  * @param size to update (-1 default, 0 empty, >0 otherwise)
  *
@@ -320,21 +321,21 @@ Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey)
  * @retval -1 if invalid parent (assert)
  * @retval 0 on success
  */
-int backendUpdateSize (Backend * backend, Key * parent, int size)
+int backendUpdateSize (Split * split, int index, Key * parent, int size)
 {
 	switch (keyGetNamespace (parent))
 	{
 	case KEY_NS_SPEC:
-		backend->specsize = size;
+		split->specsizes[index] = size;
 		break;
 	case KEY_NS_DIR:
-		backend->dirsize = size;
+		split->dirsizes[index] = size;
 		break;
 	case KEY_NS_USER:
-		backend->usersize = size;
+		split->usersizes[index] = size;
 		break;
 	case KEY_NS_SYSTEM:
-		backend->systemsize = size;
+		split->systemsizes[index] = size;
 		break;
 	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
@@ -345,10 +346,10 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		return -1;
 	}
 
-	ELEKTRA_LOG_DEBUG ("spec: %zd", backend->specsize);
-	ELEKTRA_LOG_DEBUG ("dir: %zd", backend->dirsize);
-	ELEKTRA_LOG_DEBUG ("user: %zd", backend->usersize);
-	ELEKTRA_LOG_DEBUG ("system: %zd", backend->systemsize);
+	ELEKTRA_LOG_DEBUG ("spec: %zd", split->specsizes[index]);
+	ELEKTRA_LOG_DEBUG ("dir: %zd", split->dirsizes[index]);
+	ELEKTRA_LOG_DEBUG ("user: %zd", split->usersizes[index]);
+	ELEKTRA_LOG_DEBUG ("system: %zd", split->systemsizes[index]);
 
 	return 0;
 }

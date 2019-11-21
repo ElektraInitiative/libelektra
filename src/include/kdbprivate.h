@@ -449,6 +449,19 @@ struct _Split
 				Is either the mountpoint of the backend
 				or "user", "system", "spec" for the split root/cascading backends */
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
+
+	ssize_t * specsizes;   /*!< The size of the spec key from the previous get for each backend in the split.
+	    -1 if still uninitialized.
+	    Needed to know if a key was removed from a keyset. */
+	ssize_t * dirsizes;    /*!< The size of the dir key from the previous get for each backend in the split.
+	    -1 if still uninitialized.
+	    Needed to know if a key was removed from a keyset. */
+	ssize_t * usersizes;   /*!< The size of the users key from the previous get for each backend in the split.
+	    -1 if still uninitialized.
+	    Needed to know if a key was removed from a keyset. */
+	ssize_t * systemsizes; /*!< The size of the systems key from the previous get for each backend in the split.
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
 };
 
 // clang-format on
@@ -494,7 +507,7 @@ Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
 Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey);
 Key * backendGetMountpoint (Plugin * backend);
 
-int backendUpdateSize (Plugin * backend, Key * parent, int size);
+int backendUpdateSize (Split * split, int index, Key * parent, int size);
 
 /*Plugin handling*/
 Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
