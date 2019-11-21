@@ -7,6 +7,7 @@
 
 #include "utility.h"
 #include "write.h"
+#include "null_indicator.h"
 
 typedef enum
 {
@@ -297,6 +298,12 @@ static int writeScalar (Key * key, Writer * writer)
 {
 	printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
 	int result = 0;
+	if (keyGetValueSize(key) == 0) {
+		result |= fputc ('\'', writer->f) == EOF;
+		result |= fputs(NULL_INDICATOR, writer->f) == EOF;
+		result |= fputc ('\'', writer->f) == EOF;
+		return result;
+	}
 	keyRewindMeta (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
 	if (origValue != NULL)
@@ -306,7 +313,10 @@ static int writeScalar (Key * key, Writer * writer)
 	else
 	{
 		const char * valueStr = keyString (key);
-		if (isNumber (valueStr) || isFloat(valueStr))	// TODO: isDate
+		if (elektraStrLen(valueStr) == 1) {
+			result |= fputs("''", writer->f) == EOF;
+		}
+		else if (isNumber (valueStr) || isFloat(valueStr))	// TODO: isDate
 		{
 			result |= fputs (valueStr, writer->f) == EOF;
 		}
