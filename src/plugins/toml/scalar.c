@@ -341,7 +341,7 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 		{
 			if (outPos > 0 || (outPos == 0 && *str != '\n'))
 			{
-				outStr[outPos++] = *(str++);
+				outStr[outPos++] = *str++;
 			}
 			else
 			{
@@ -378,6 +378,19 @@ static const char * skipLineEndingBackslash (const char * str)
 		break;
 	}
 	return str;
+}
+
+
+char * stripTerminators(const char * str, size_t count) {
+	char * stripped = elektraCalloc (elektraStrLen(str) - 2 * count);
+	if (stripped == NULL) {
+		return NULL;
+	}
+	size_t len = elektraStrLen (str) - 1 - count;
+	for (size_t i = count; i < len; i++) {
+		stripped[i - count] = str[i];
+	}
+	return stripped;
 }
 
 static const char * skipUntilNonWhitespace (const char * str)

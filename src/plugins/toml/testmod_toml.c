@@ -19,10 +19,7 @@
 static void testPositiveCompareKeySets (void);
 static void testNegativeCompareErrors (void);
 static void testReadCompare (const char * filename, KeySet * expected);
-static void testReadCompareError (const char * filename, KeySet * expected);
-static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName);
-static void testCompareErrors (Key * expected, Key * found);
-// static void testWriteRead (KeySet * expected);
+static void testReadMustError (const char * filename);
 
 int main (int argc, char ** argv)
 {
@@ -83,158 +80,44 @@ static void testPositiveCompareKeySets (void)
 
 static void testNegativeCompareErrors (void)
 {
-	testReadCompareError ("toml/negative/duplicate_key_01.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/duplicate_key_02.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/duplicate_key_03.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/empty_assignment.toml",
-#include "toml/error/syntax.h"
-	);
-	testReadCompareError ("toml/negative/bare_string_rhs.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/array_missing_closing_brackets.toml",
-#include "toml/error/syntax.h"
-	);
-	testReadCompareError ("toml/negative/date_invalid_day.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/date_invalid_month.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/date_invalid_year.toml",
-#include "toml/error/semantic.h"
-	);
-	testReadCompareError ("toml/negative/date_invalid_feb.toml",
-#include "toml/error/semantic.h"
-	);
+	testReadMustError ("toml/negative/duplicate_key_01.toml");
+	testReadMustError ("toml/negative/duplicate_key_02.toml");
+	testReadMustError ("toml/negative/duplicate_key_03.toml");
+	testReadMustError ("toml/negative/empty_assignment.toml");
+	testReadMustError ("toml/negative/bare_string_rhs.toml");
+	testReadMustError ("toml/negative/array_missing_closing_brackets.toml");
+	testReadMustError ("toml/negative/date_invalid_day.toml");
+	testReadMustError ("toml/negative/date_invalid_month.toml");
+	testReadMustError ("toml/negative/date_invalid_year.toml");
+	testReadMustError ("toml/negative/date_invalid_feb.toml");
 }
-
-/*static void testWriteRead (KeySet * expected)
-{
-	const char * filename = "storage_toml_test.toml";
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("toml");
-	Key * root = ksLookupByName (expected, PREFIX, KDB_O_POP);
-	if (root != NULL)
-	{
-		if (strcmp (keyString (root), "@CONFIG_FILEPATH@") == 0)
-		{
-			keySetString (root, srcdir_file (filename));
-			ksAppendKey (expected, root);
-		}
-	}
-	succeed_if (plugin->kdbSet (plugin, expected, root) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
-		    "Expected kdbGet to succeed, but got failure.");
-	
-	KeySet * ks = ksNew (0, KS_END);
-	succeed_if (plugin->kdbGet (plugin, ks, root) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
-		    "Expected kdbGet to succeed, but got failure.");
-	compare_keyset (expected, ks);
-
-	ksDel (ks);
-	keyDel (root);
-	PLUGIN_CLOSE ();
-	ksDel (expected);
-}*/
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {
+	printf ("Reading '%s'\n", filename);
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
-	Key * root = ksLookupByName (expected, PREFIX, KDB_O_POP);
-	if (root != NULL)
-	{
-		if (strcmp (keyString (root), "@CONFIG_FILEPATH@") == 0)
-		{
-			keySetString (root, srcdir_file (filename));
-			ksAppendKey (expected, root);
-		}
-	}
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 		    "Expected kdbGet to succeed, but got failure.");
 	compare_keyset (expected, ks);
 
 	ksDel (ks);
-	keyDel (root);
 	PLUGIN_CLOSE ();
 	ksDel (expected);
 }
 
-static void testReadCompareError (const char * filename, KeySet * expected)
+static void testReadMustError (const char * filename)
 {
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
-	Key * root = ksLookupByName (expected, PREFIX, KDB_O_POP);
-	if (root != NULL)
-	{
-		if (strcmp (keyString (root), "@CONFIG_FILEPATH@") == 0)
-		{
-			keySetString (root, srcdir_file (filename));
-			ksAppendKey (expected, root);
-		}
-	}
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "Expected kdbGet to fail, but got success.");
 
-	Key * foundRoot = ksLookupByName (ks, PREFIX, 0);
-	succeed_if (foundRoot != NULL, "Could not find root key");
-	testCompareErrors (root, foundRoot);
-
 	ksDel (ks);
-	keyDel (root);
 	PLUGIN_CLOSE ();
-	ksDel (expected);
-}
-
-static void testCompareErrors (Key * expected, Key * found)
-{
-	ELEKTRA_ASSERT (expected != NULL, "Expected key is NULL");
-	ELEKTRA_ASSERT (found != NULL, "Found key is NULL");
-	char * metaNames[] = { "error/module", "error/description", NULL };
-	for (int i = 0; metaNames[i] != NULL; i++)
-	{
-		testCompareMetakey (expected, found, metaNames[i]);
-	}
-}
-
-static void testCompareMetakey (Key * expected, Key * found, const char * metaKeyName)
-{
-	keyRewindMeta (expected);
-	keyRewindMeta (found);
-	const Key * metaExpected = keyNextMeta (expected);
-	const Key * metaFound = keyNextMeta (found);
-	while (metaExpected != NULL)
-	{
-		if (strcmp (keyName (metaExpected), metaKeyName) == 0)
-		{
-			break;
-		}
-		metaExpected = keyNextMeta (expected);
-	}
-	while (metaFound != NULL)
-	{
-		if (strcmp (keyName (metaFound), metaKeyName) == 0)
-		{
-			break;
-		}
-		metaFound = keyNextMeta (found);
-	}
-	succeed_if (metaExpected != NULL, "Could not find metakey in expected key");
-	succeed_if (metaFound != NULL, "Could not find metakey in found key");
-	if (metaExpected == NULL || metaFound == NULL)
-	{
-		return;
-	}
-	succeed_if (strcmp (keyString (metaExpected), keyString (metaFound)) == 0, "Different metakey values");
 }

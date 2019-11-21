@@ -1,7 +1,5 @@
 // clang-format off
 ksNew (16,
-	keyNew (PREFIX, KEY_VALUE, "@CONFIG_FILEPATH@", KEY_END),
-
 	keyNew (PREFIX "/array_1",
 		KEY_META, "order", "0",
 		KEY_META, "array", "#4",

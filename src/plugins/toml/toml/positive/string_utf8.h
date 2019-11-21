@@ -1,13 +1,8 @@
 // clang-format off
 ksNew (16,
-	keyNew (PREFIX,
-		KEY_VALUE, "@CONFIG_FILEPATH@",
-	KEY_END),
-
 	keyNew (PREFIX "/emojis",
 		KEY_VALUE, "😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾",
 		KEY_META, "type", "string",
-		KEY_META, "origvalue", "\"😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾\"",
 		KEY_META, "order", "0", 
 	KEY_END),
 
@@ -64,6 +59,16 @@ ksNew (16,
 			"И лес, неведомый лучам\n"
 			"В тумане спрятанного солнца,\n"
 			"Кругом шумел.",
+		KEY_META, "origvalue",
+			"\nИ вдаль глядел. Пред ним широко\n"
+			"Река неслася; бедный чёлн\n"
+			"По ней стремился одиноко.\n"
+			"По мшистым, топким берегам\n"
+			"Чернели избы здесь и там,\n"
+			"Приют убогого чухонца;\n"
+			"И лес, неведомый лучам\n"
+			"В тумане спрятанного солнца,\n"
+			"Кругом шумел.",
 		KEY_META, "type", "string",
 		KEY_META, "order", "5",
 		KEY_META, "comment/#1",
@@ -98,7 +103,7 @@ ksNew (16,
 
 	keyNew (PREFIX "/in_table/georgian/ვეპხის",
 		KEY_META, "order", "8",
-		KEY_META, "type", "simpletable",
+		KEY_META, "tomltype", "simpletable",
 	KEY_END),
 
 	keyNew (PREFIX "/in_table/georgian/ვეპხის/more_georgian",
@@ -113,7 +118,7 @@ ksNew (16,
 
 	keyNew (PREFIX "/in_table_array/sanskrit/ ﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥ ",
 		KEY_META, "order", "10",
-		KEY_META, "type" , "tablearray",
+		KEY_META, "tomltype" , "tablearray",
 		KEY_META, "array", "#0",
 	KEY_END),
 

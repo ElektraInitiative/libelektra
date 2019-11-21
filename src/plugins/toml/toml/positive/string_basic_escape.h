@@ -1,9 +1,5 @@
 // clang-format off
 ksNew (16,
-	keyNew (PREFIX,
-		KEY_VALUE, "@CONFIG_FILEPATH@",
-	KEY_END),
-
 	keyNew (PREFIX "/basic_escapes",
 		KEY_VALUE,
 			"backspace\b\n"

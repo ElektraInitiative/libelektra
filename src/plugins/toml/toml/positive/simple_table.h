@@ -1,9 +1,5 @@
 // clang-format off
 ksNew (16,
-	keyNew (PREFIX,
-		KEY_VALUE, "@CONFIG_FILEPATH@",
-	KEY_END),
-
 	keyNew (PREFIX "/x",
 		KEY_VALUE, "1",
 		KEY_META, "type", "long_long",
@@ -11,7 +7,7 @@ ksNew (16,
 	KEY_END),
 
 	keyNew (PREFIX "/table_1",
-		KEY_META, "type", "simpletable",
+		KEY_META, "tomltype", "simpletable",
 		KEY_META, "order", "1",
 	KEY_END),
 
@@ -28,7 +24,7 @@ ksNew (16,
 	KEY_END),
 
 	keyNew (PREFIX "/table_2/sub_1/sub_2",
-		KEY_META, "type", "simpletable",
+		KEY_META, "tomltype", "simpletable",
 		KEY_META, "order", "4",
 	KEY_END),
 

@@ -1,10 +1,5 @@
 // clang-format off
 ksNew (16,
-
-	keyNew (PREFIX,
-		KEY_VALUE, "@CONFIG_FILEPATH@",
-	KEY_END),
-
 	keyNew (PREFIX "/table_array",
 		KEY_META, "array", "#1",
 		KEY_META, "tomltype", "tablearray",
