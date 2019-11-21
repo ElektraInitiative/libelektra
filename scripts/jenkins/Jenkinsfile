@@ -1029,8 +1029,8 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
   // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
-  tasks << buildWebsite()
-  tasks << buildWebUI()
+  // tasks << buildWebsite()
+  // tasks << buildWebUI()
   return tasks
 }
 
