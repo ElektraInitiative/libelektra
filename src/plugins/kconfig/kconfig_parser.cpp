@@ -2,6 +2,8 @@
 #include "base.hpp"
 #include "kconfig_parser_exception.hpp"
 
+namespace kconfig
+{
 KConfigParser::KConfigParser (FileUtility & fileUtilityParam, CppKeySet & keySetParam)
 : fileUtility{ fileUtilityParam }, keySet{ keySetParam }
 {
@@ -195,4 +197,5 @@ void KConfigParser::appendIfNotGroup (CppKey const & key, CppKey const & group)
 	{
 		keySet.append (key);
 	}
+}
 }
