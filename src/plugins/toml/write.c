@@ -1,13 +1,15 @@
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "null_indicator.h"
+#include "type.h"
 #include "utility.h"
 #include "write.h"
-#include "null_indicator.h"
 
 typedef enum
 {
@@ -22,6 +24,7 @@ typedef struct
 	FILE * f;
 	Key * rootKey;
 	KeySet * keys;
+	TypeChecker * checker;
 } Writer;
 
 typedef struct CommentList_
@@ -56,8 +59,6 @@ static CommentList * collectComments (Key * key);
 static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
 static bool isBoolean (const char * str);
-static bool isNumber (const char * str);
-static bool isFloat (const char * str);
 static bool isTrue (const char * boolStr);
 
 int tomlWrite (KeySet * keys, Key * parent)
@@ -105,6 +106,12 @@ static Writer * createWriter (Key * rootKey, KeySet * keys)
 	}
 	writer->rootKey = rootKey;
 	writer->keys = keys;
+	writer->checker = createTypeChecker ();
+	if (writer->checker == NULL)
+	{
+		destroyWriter (writer);
+		return NULL;
+	}
 
 	return writer;
 }
@@ -123,6 +130,7 @@ static void destroyWriter (Writer * writer)
 			fclose (writer->f);
 			writer->f = NULL;
 		}
+		destroyTypeChecker (writer->checker);
 	}
 }
 
@@ -285,11 +293,31 @@ static int writeValue (Key * key, Writer * writer)
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	char * relativeName = getRelativeKeyName (parent, key);
-	if (relativeName != NULL)
+	bool placeDot = false;
+	size_t len = keyGetUnescapedNameSize (key) - keyGetUnescapedNameSize (parent);
+	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
+	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
+	while (keyPart < keyStop)
 	{
-		result |= fputs (relativeName, writer->f) == EOF;
-		elektraFree (relativeName);
+		if (placeDot)
+		{
+			result |= fputc ('.', writer->f) == EOF;
+		}
+		else
+		{
+			placeDot = true;
+		}
+		bool bare = isBareString (writer->checker, keyPart);
+		if (!bare)
+		{
+			result |= fputc ('"', writer->f) == EOF;
+		}
+		result |= fputs (keyPart, writer->f) == EOF;
+		if (!bare)
+		{
+			result |= fputc ('"', writer->f) == EOF;
+		}
+		keyPart += elektraStrLen (keyPart);
 	}
 	return result;
 }
@@ -298,9 +326,10 @@ static int writeScalar (Key * key, Writer * writer)
 {
 	printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
 	int result = 0;
-	if (keyGetValueSize(key) == 0) {
+	if (keyGetValueSize (key) == 0)
+	{
 		result |= fputc ('\'', writer->f) == EOF;
-		result |= fputs(NULL_INDICATOR, writer->f) == EOF;
+		result |= fputs (NULL_INDICATOR, writer->f) == EOF;
 		result |= fputc ('\'', writer->f) == EOF;
 		return result;
 	}
@@ -313,10 +342,11 @@ static int writeScalar (Key * key, Writer * writer)
 	else
 	{
 		const char * valueStr = keyString (key);
-		if (elektraStrLen(valueStr) == 1) {
-			result |= fputs("''", writer->f) == EOF;
+		if (elektraStrLen (valueStr) == 1)
+		{
+			result |= fputs ("''", writer->f) == EOF;
 		}
-		else if (isNumber (valueStr) || isFloat(valueStr))	// TODO: isDate
+		else if (isNumber (writer->checker, valueStr)) // TODO: isDate
 		{
 			result |= fputs (valueStr, writer->f) == EOF;
 		}
@@ -339,146 +369,6 @@ static int writeScalar (Key * key, Writer * writer)
 		}
 	}
 	return result;
-}
-
-static bool isNumber (const char * str)
-{
-	int base = 10;
-	const char * ptr = str;
-	if (*ptr == '0')
-	{
-		switch (*++ptr)
-		{
-		case 'b':
-			base = 2;
-			break;
-		case 'o':
-			base = 8;
-			break;
-		case 'x':
-			base = 16;
-			break;
-		case 0:
-			return true;
-		default:
-			return false;
-		}
-		ptr++;
-	}
-	else if (*ptr == '+' || *ptr == '-')
-	{
-		ptr++;
-		str++;
-		if (*ptr == 0)
-		{
-			return false;
-		}
-	}
-
-	while (*ptr != 0)
-	{
-		if (base == 10)
-		{
-			if (*ptr == '0' && ptr == str && *(ptr + 1) != 0)
-			{
-				return false;
-			}
-			else if (*ptr == '_')
-			{
-				if (ptr == str || *(ptr + 1) == '_')
-				{
-					return false;
-				}
-				else
-				{
-					ptr++;
-					continue;
-				}
-			}
-		}
-		if (base <= 10)
-		{
-			if (!(*ptr >= '0' && *ptr < '0' + base))
-			{
-				return false;
-			}
-		}
-		else if (base == 16)
-		{
-			if (!((*ptr >= '0' && *ptr <= '9') || (*ptr >= 'a' && *ptr <= 'f') || (*ptr >= 'A' && *ptr <= 'F')))
-			{
-				return false;
-			}
-		}
-
-		ptr++;
-	}
-	return true;
-}
-
-static bool isFloat (const char * str)
-{
-	const char * ptr = str;
-	const char * dot = NULL;
-	const char * exponent = NULL;
-	if (*ptr == '+' || *ptr == '-')
-	{
-		ptr++;
-		str++;
-	}
-	while (*ptr != 0)
-	{
-		if (*ptr >= '1' && *ptr <= '9')
-		{
-		}
-		else if (*ptr == '.')
-		{
-			if (exponent != NULL || dot != NULL)
-			{
-				return false;
-			}
-			else
-			{
-				dot = ptr;
-			}
-		}
-		else if (*ptr == 'e' || *ptr == 'E')
-		{
-			if (exponent != NULL)
-			{
-				return false;
-			}
-			else if (ptr == str)
-			{
-				return false;
-			}
-			exponent = ptr;
-			if (*(exponent + 1) == '+' || *(exponent + 1) == '-')
-			{
-				ptr++;
-			}
-		}
-		else if (*ptr == '0')
-		{
-			if (dot == NULL)
-			{
-				if (ptr == str && *(ptr + 1) != '.')
-				{
-					return false; // no leading zeros, except for 0.*
-				}
-			}
-
-			if (exponent != NULL)
-			{
-				if (ptr - 1 == exponent || *(ptr - 1) == '+' || *(ptr - 1) == '-')
-				{
-					return false;
-				}
-			}
-		}
-		ptr++;
-	}
-	return true;
 }
 
 static bool isTrue (const char * boolStr)
@@ -715,5 +605,14 @@ static void freeComments (CommentList * comments)
 		CommentList * next = comments->next;
 		elektraFree (comments);
 		comments = next;
+	}
+}
+
+static void checkArrayKeys (KeySet * keys)
+{
+	ksRewind (keys);
+	Key * key;
+	while ((key = ksNext (keys)) != NULL)
+	{
 	}
 }
