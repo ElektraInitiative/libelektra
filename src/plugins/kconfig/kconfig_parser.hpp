@@ -8,6 +8,8 @@
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
+namespace kconfig
+{
 class KConfigParser
 {
 private:
@@ -60,6 +62,6 @@ public:
 	 */
 	void parse (CppKey const & parent);
 };
-
+}
 
 #endif // ELEKTRA_KCONFIGPARSER_HPP

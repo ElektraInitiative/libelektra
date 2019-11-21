@@ -4,8 +4,9 @@
 #include <exception>
 #include <string>
 
+namespace kconfig
+{
 class FileUtility;
-
 class KConfigParserException : std::exception
 {
 private:
@@ -26,7 +27,7 @@ private:
 	 * @param message This string contains a specific error message
 	 * @return
 	 */
-	static std::string generateErrorMessage (std::string filename, int lineNumber, std::string message);
+	static std::string generateErrorMessage (std::string const & filename, int lineNumber, std::string const & message);
 
 public:
 	/**
@@ -57,5 +58,6 @@ public:
 	 */
 	std::string getMessage () const;
 };
+}
 
 #endif // ELEKTRA_KCONFIG_PARSER_EXCEPTION_HPP
