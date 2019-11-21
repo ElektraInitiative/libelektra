@@ -1,7 +1,10 @@
 # Contributing
 
 We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this project. First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
-If you are looking for a IDE you can use [CLion](https://www.jetbrains.com/clion/) ([setup tutorial](/doc/tutorials/contributing-clion.md)) or [Visual Studio Code](https://code.visualstudio.com/).
+If you are interested to use an IDE, there are two IDEs which Elektra developers currently use:
+
+- [CLion](https://www.jetbrains.com/clion/) with a [setup tutorial](/doc/tutorials/contributing-clion.md)
+- [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Configure Git
 
@@ -26,7 +29,7 @@ $ git push origin master --force
 
 ## Issues
 
-Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues) and filter the list by pre-defined labels like _good first issue_ or _help wanted_.Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
+Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues) and filter the list by pre-defined labels like [good first issue](https://github.com/ElektraInitiative/libelektra/labels/good%20first%20issue).Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
 
 ## Creating a Pull-Request
 
