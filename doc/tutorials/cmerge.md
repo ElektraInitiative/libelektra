@@ -216,3 +216,8 @@ There are two tools of which cmerge is the central tool:
 1. [`kdb install-config-file`](/doc/help/kdb-install-config-file.md) installs or merges configuration files from the file system into
    Elektra. There is [a tutorial](/doc/tutorials/install-config-files.md) for this tool, too.
 2. [`kdb cmerge-config-files`](/doc/help/kdb-cmerge-config-files) performs a three-way merge on three files using Elektra
+
+## Calling the API
+
+All the tools that use the merge library rely on the same API.
+An exemplary call to this API can be found in the [examples folder](/examples/kdbset.c).

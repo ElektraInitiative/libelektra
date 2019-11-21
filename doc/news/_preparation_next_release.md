@@ -303,6 +303,7 @@ you up to date with the multi-language support provided by Elektra.
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
 - We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
 - Corrected buildserver documentation. _(Djordje Bulatovic)_
+- Add merge library into kdbset example. _(Dominic Jäger)_
 
 ## Tests
 
