@@ -153,15 +153,15 @@ def complete_options():
 			opt = key.getMeta(name='opt/#{}'.format(i))
 			opt_long = key.getMeta(name='opt/#{}/long'.format(i))
 			if start_of_current_input != None:
-				if opt_long and opt_long.value.startswith(start_of_current_input):
-					completion_options.append(opt_long.value)
-				elif opt and opt.value.startswith(start_of_current_input):
-					completion_options.append(opt.value)
+				if opt_long and opt_long.value.startswith(start_of_current_input.replace('-', '')):
+					completion_options.append('--' + opt_long.value)
+				elif opt and opt.value.startswith(start_of_current_input.replace('-', '')):
+					completion_options.append('-' + opt.value)
 			else:
 				if opt_long:
-					completion_options.append(opt_long.value)
+					completion_options.append('--' + opt_long.value)
 				elif opt:
-					completion_options.append(opt.value)
+					completion_options.append('-' + opt.value)
 	return completion_options
 
 # input: command, a string that should be a shell command
