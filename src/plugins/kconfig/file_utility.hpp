@@ -2,7 +2,6 @@
 #define ELEKTRA_FILEUTILITY_HPP
 
 #include "kconfig_parser_exception.hpp"
-#include <fstream>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -11,7 +10,7 @@ class FileUtility
 {
 private:
 	/* This file is the file stream that we want to parse  */
-	std::ifstream file;
+	std::istream& file;
 	/* This stringBuffer is used when reading strings from file so that we don't initialize a stringstream each time */
 	std::stringstream stringBuffer;
 	/* This int is used to save the current line number for the purpose of better error messages */
@@ -25,10 +24,10 @@ public:
 	 * file
 	 * @param filename This string contains the absolute/relative path to the file
 	 */
-	explicit FileUtility (const std::string & filenameParam);
+	explicit FileUtility (const std::string & filenameParam, std::istream &fileParam);
 
 	/**
-	 * \copydoc std::ifstream::peek()
+	 * \copydoc std::istream::peek()
 	 */
 	char peekNextChar ();
 
@@ -79,6 +78,8 @@ public:
 	 * @brief This method is used to skip empty lines or lines that start with a `#` character
 	 */
 	void skipLineIfEmptyOrComment ();
+
+	inline void readEscapedChar(std::ostream & str);
 
 	/**
 	 * @brief This method is used to read characters into a buffer until (exclusive) a given delimiter, new line or end of file
