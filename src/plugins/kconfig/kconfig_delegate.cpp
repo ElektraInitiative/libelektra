@@ -10,6 +10,7 @@
 #include "kconfig_delegate.hpp"
 #include "file_utility.hpp"
 #include "kconfig_parser.hpp"
+#include <fstream>
 
 using kdb::Key;
 using kdb::KeySet;
@@ -38,22 +39,29 @@ kdb::KeySet KconfigDelegate::getConfig (Key const & parent)
 {
 	KeySet keys{ 0, KS_END };
 
+
+	ELEKTRA_LOG_DEBUG ("Parse `%s` using the kconfig plugin", parent.getString ().c_str ());
+	std::ifstream file{ parent.getString () };
+	if (!file.is_open ())
+	{
+		throw std::runtime_error ("Could not open the file.");
+	}
+
+	ELEKTRA_LOG_DEBUG ("The file opened successfully. Start parsing");
 	try
 	{
-		ELEKTRA_LOG_DEBUG ("Parse `%s` using the kconfig plugin", parent.getString ().c_str ());
-		FileUtility fileUtility{ parent.getString () };
-
-		ELEKTRA_LOG_DEBUG ("The file opened successfully. Start parsing");
+		FileUtility fileUtility{ parent.getString (), file };
 		KConfigParser parser{ fileUtility, keys };
 		parser.parse (parent);
-
 		ELEKTRA_LOG_DEBUG ("Parsing finished successfully");
 	}
 	catch (KConfigParserException & e)
 	{
+		file.close ();
 		// TODO: Handle the error properly
 		throw std::runtime_error (e.getMessage ());
 	}
+	file.close ();
 
 	return keys;
 }

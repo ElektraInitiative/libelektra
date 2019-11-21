@@ -2,13 +2,9 @@
 #include "base.hpp"
 #include "kconfig_parser_exception.hpp"
 
-FileUtility::FileUtility (const std::string & filenameParam)
-: file{ filenameParam }, stringBuffer{}, currentLine{ 1 }, filename{ filenameParam }
+FileUtility::FileUtility (const std::string & filenameParam, std::istream & fileParam)
+: file{ fileParam }, stringBuffer{}, currentLine{ 1 }, filename{ filenameParam }
 {
-	if (!(this->file).is_open ())
-	{
-		throw KConfigParserException (*this, "Could not open the file.");
-	}
 }
 
 char FileUtility::peekNextChar ()
@@ -18,7 +14,7 @@ char FileUtility::peekNextChar ()
 
 bool FileUtility::isNextCharEOF ()
 {
-	return peekNextChar () == EOF;
+	return this->file.eof ();
 }
 
 bool FileUtility::isNextCharNewline ()
@@ -76,9 +72,10 @@ void FileUtility::skipLine ()
 			if (peekNextChar () == character_newline) skipChar ();
 			return;
 		case EOF:
-			// Not sure if the following line is needed
-			// (this->file).putback (EOF);
-			return;
+			if (isNextCharEOF ())
+			{
+				return;
+			}
 		}
 	}
 }
@@ -100,18 +97,50 @@ void FileUtility::skipLineIfEmptyOrComment ()
 	}
 }
 
+inline void FileUtility::readEscapedChar (std::ostream & str)
+{
+	switch (this->file.get ())
+	{
+	case 'n':
+		str << '\n';
+		break;
+	case 't':
+		str << '\t';
+		break;
+	case 'r':
+		str << '\r';
+		break;
+	case '\\':
+		str << '\\';
+	default:
+		throw KConfigParserException::expect (*this, "valid escape character code ('n', 't', 'r' or '\\')");
+	}
+}
+
 void FileUtility::readUntilChar (std::ostream & str, const char & delimiter)
 {
 	char c;
 	while (true)
 	{
+		if (isNextCharEOF ())
+		{
+			break;
+		}
+
 		c = this->file.get ();
-		if (c == EOF || c == character_newline || c == character_carriage_return || c == delimiter)
+		if (c == character_newline || c == character_carriage_return || c == delimiter)
 		{
 			this->file.putback (c);
 			break;
 		}
-		str << c;
+		else if (c == character_escape)
+		{
+			readEscapedChar (str);
+		}
+		else
+		{
+			str << c;
+		}
 	}
 }
 
@@ -120,13 +149,25 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiterA, co
 	char c;
 	while (true)
 	{
+		if (isNextCharEOF ())
+		{
+			break;
+		}
+
 		c = this->file.get ();
-		if (c == EOF || c == character_newline || c == character_carriage_return || c == delimiterA || c == delimiterB)
+		if (c == character_newline || c == character_carriage_return || c == delimiterA || c == delimiterB)
 		{
 			this->file.putback (c);
 			break;
 		}
-		str << c;
+		else if (c == character_escape)
+		{
+			readEscapedChar (str);
+		}
+		else
+		{
+			str << c;
+		}
 	}
 }
 

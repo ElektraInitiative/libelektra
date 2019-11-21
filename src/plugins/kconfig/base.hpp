@@ -5,6 +5,7 @@
 
 static const char character_newline = '\n';
 static const char character_carriage_return = '\r';
+static const char character_escape = '\\';
 static const char character_equals_sign = '=';
 static const char character_dollar_sign = '$';
 static const char character_hash_sign = '#';
