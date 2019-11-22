@@ -32,7 +32,7 @@ The plugin supports null keys. They are represented as special string of value '
 		
 ## TODOs
 	- Document functions
-	- ORDER on writing file
+	- directory value
 	- Error checks for writing
 	- Replace existing keyRel calls
 	- Maybe preserve spaces
