@@ -178,8 +178,8 @@ static void testWriteReadDate (void)
 
 static void testWriteReadBoolean (void)
 {
-	// can't check without active type plugin
-	/*TEST_RW_HEAD("boolean");
+	// can't check without active type plugin, must check how to add plugin dependency to tests
+	/* TEST_RW_HEAD("boolean");
 	ADD_KEY_PAIR_ORIG("bool1", "1", "true");
 	ADD_KEY_PAIR_ORIG("bool2", "0", "false");
 	TEST_RW_FOOT;*/

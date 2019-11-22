@@ -411,7 +411,6 @@ static char * stripUnderscores (const char * num)
 		num++;
 	}
 	*ptr = 0;
-	printf("STRIPPED = %s\n", dup);
 	return dup;
 }
 

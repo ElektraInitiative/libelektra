@@ -1,4 +1,6 @@
+#include <kdb.h>
 #include <kdbassert.h>
+#include <kdbmeta.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <regex.h>
@@ -23,7 +25,9 @@ typedef struct
 	char * filename;
 	FILE * f;
 	Key * rootKey;
-	KeySet * keys;
+	Key ** keyArray;
+	size_t arraySize;
+	size_t cursor;
 	TypeChecker * checker;
 } Writer;
 
@@ -44,7 +48,7 @@ typedef struct ArrayInfo_
 } ArrayInfo;
 
 
-static Writer * createWriter (Key * rootKey, KeySet * keys);
+static Writer * createWriter (Key * rootKey, Key ** keyArray, size_t arraySize);
 static void destroyWriter (Writer * writer);
 static int writeKeys (Key * parent, Writer * writer);
 static int writeAssignment (Key * parent, Key * key, Writer * writer);
@@ -69,27 +73,45 @@ static KeyType getKeyType (Key * key);
 static bool isBoolean (const char * str);
 static bool isTrue (const char * boolStr);
 static void addMissingArrayKeys (KeySet * keys, Key * parent);
-static void pruneInvalidArrayKeys(KeySet * keys);
+static void pruneInvalidArrayKeys (KeySet * keys);
 static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index);
+static int keyCmpOrderWrapper (const void * a, const void * b);
+static Key * getCurrentKey (Writer * writer);
+static Key * getNextKey (Writer * writer);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
 	// dumpKS (keys);
+	addMissingArrayKeys (keys, parent);
+	pruneInvalidArrayKeys (keys);
 	ksRewind (keys);
 
-	Writer * w = createWriter (parent, keys);
+	size_t arraySize = ksGetSize (keys);
+	Key ** keyArray = elektraCalloc (arraySize * sizeof (Key *));
+	if (keyArray == NULL)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "elektraCalloc");
+		return 1;
+	}
+
+	if (elektraKsToMemArray (keys, keyArray) < 0)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "elektraKsToMemArray");
+		return 1;
+	}
+	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
+
+	Writer * w = createWriter (parent, keyArray, arraySize);
 	if (w == NULL)
 	{
 		ELEKTRA_SET_RESOURCE_ERROR (parent, keyString (parent));
 		return 1;
 	}
-	addMissingArrayKeys(keys, parent);
-	pruneInvalidArrayKeys(keys);
+
 	int result = 0;
-	ksRewind (w->keys);
-	if (keyCmp (ksNext (w->keys), parent) == 0)
+	if (keyCmp (getCurrentKey(w), parent) == 0)
 	{
-		ksNext (w->keys);
+		getNextKey(w);
 	}
 	result |= writeKeys (parent, w);
 	CommentList * comments = collectComments (parent);
@@ -101,7 +123,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 	return result;
 }
 
-static Writer * createWriter (Key * rootKey, KeySet * keys)
+static Writer * createWriter (Key * rootKey, Key ** keyArray, size_t arraySize)
 {
 	Writer * writer = elektraCalloc (sizeof (Writer));
 	writer->filename = elektraStrDup (keyString (rootKey));
@@ -118,7 +140,9 @@ static Writer * createWriter (Key * rootKey, KeySet * keys)
 		return NULL;
 	}
 	writer->rootKey = rootKey;
-	writer->keys = keys;
+	writer->keyArray = keyArray;
+	writer->arraySize = arraySize;
+	writer->cursor = 0;
 	writer->checker = createTypeChecker ();
 	if (writer->checker == NULL)
 	{
@@ -143,14 +167,33 @@ static void destroyWriter (Writer * writer)
 			fclose (writer->f);
 			writer->f = NULL;
 		}
+		if (writer->keyArray != NULL)
+		{
+			elektraFree (writer->keyArray);
+		}
 		destroyTypeChecker (writer->checker);
 	}
+}
+
+static Key * getCurrentKey (Writer * writer)
+{
+	if (writer->cursor >= writer->arraySize)
+	{
+		return NULL;
+	}
+	return writer->keyArray[writer->cursor];
+}
+
+static Key * getNextKey (Writer * writer)
+{
+	writer->cursor++;
+	return getCurrentKey (writer);
 }
 
 static int writeKeys (Key * parent, Writer * writer)
 {
 	// printf ("*** WRITE KEYS FOR %s\n", keyName (parent));
-	Key * key = ksCurrent (writer->keys);
+	Key * key = getCurrentKey(writer);
 
 	int result = 0;
 
@@ -169,7 +212,7 @@ static int writeKeys (Key * parent, Writer * writer)
 			result |= writeTableArray (parent, key, writer);
 			break;
 		}
-		key = ksCurrent (writer->keys);
+		key =getCurrentKey(writer);;
 	}
 	return result;
 }
@@ -191,7 +234,7 @@ static int writeSimpleTable (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
 	result |= writeSimpleTableHeader (parent, key, writer);
-	ksNext (writer->keys);
+	getNextKey(writer);
 	result |= writeKeys (key, writer);
 
 	return result;
@@ -203,7 +246,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 	Key * arrayRoot = key;
 	size_t maxIndex = getArrayMax (arrayRoot);
 	size_t nextIndex = 0;
-	key = ksNext (writer->keys);
+	key = getNextKey(writer);
 
 	while (result == 0 && nextIndex <= maxIndex)
 	{
@@ -233,13 +276,13 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 
 			if (keyCmp (elementRoot, key) == 0) // holds for table array entries with comments
 			{
-				ksNext (writer->keys);
+				getNextKey(writer);
 			}
 			result |= writeKeys (elementRoot, writer);
 			nextIndex++;
 
 			keyDel (elementRoot);
-			key = ksCurrent (writer->keys);
+			key = getCurrentKey(writer);
 		}
 		else
 		{
@@ -266,19 +309,20 @@ static int writeArrayBody (Key * key, Writer * writer)
 static int writeArrayElements (Key * parent, Writer * writer)
 {
 	int result = 0;
-	Key * key = ksNext (writer->keys);
+	Key * key = getNextKey(writer);
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
 		CommentList * comments = collectComments (key);
 		result |= writePrecedingComments (comments, writer);
 		result |= writeValue (key, writer);
-		key = ksCurrent (writer->keys);
+		key = getCurrentKey (writer);
 		if (keyIsDirectlyBelow (parent, key) == 1)
 		{
 			result |= fputs (", ", writer->f) == EOF;
 		}
 		result |= writeInlineComment (comments, writer);
-		if (comments != NULL && comments->index == 0) {
+		if (comments != NULL && comments->index == 0)
+		{
 			result |= writeNewline (writer);
 		}
 		freeComments (comments);
@@ -300,7 +344,7 @@ static int writeValue (Key * key, Writer * writer)
 	else
 	{
 		result |= writeScalar (key, writer);
-		ksNext (writer->keys);
+		getNextKey(writer);
 	}
 	return result;
 }
@@ -339,7 +383,7 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 
 static int writeScalar (Key * key, Writer * writer)
 {
-	//printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
+	// printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
 	int result = 0;
 	if (keyGetValueSize (key) == 0)
 	{
@@ -417,7 +461,7 @@ static int writeInlineTableBody (Key * key, Writer * writer)
 static int writeInlineTableElements (Key * parent, Writer * writer)
 {
 	int result = 0;
-	Key * key = ksNext (writer->keys);
+	Key * key = getNextKey(writer);
 	bool firstElement = true;
 	while (keyIsBelow (parent, key) == 1)
 	{
@@ -430,7 +474,7 @@ static int writeInlineTableElements (Key * parent, Writer * writer)
 			result |= fputs (", ", writer->f) == EOF;
 		}
 		result |= writeAssignment (parent, key, writer);
-		key = ksCurrent (writer->keys);
+		key = getCurrentKey(writer);
 	}
 	return result;
 }
@@ -630,7 +674,7 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	Key * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
-		Key * name = keyNew(keyName(key), KEY_END);
+		Key * name = keyNew (keyName (key), KEY_END);
 		if (name == NULL)
 		{
 			// set parent error
@@ -646,15 +690,19 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 			}
 			keyAddName (name, "..");
 		} while (keyCmp (parent, name) != 0);
-		keyDel(name);
+		keyDel (name);
 	}
-	while (arrays != NULL) {
-		Key * arrayRoot = ksLookup(keys, arrays->name, 0);
-		if (arrayRoot == NULL) {
-			keyUpdateArrayMetakey(arrays->name, arrays->maxIndex);
-			ksAppendKey(keys, arrays->name);
-		} else {
-			keyDel(arrays->name);
+	while (arrays != NULL)
+	{
+		Key * arrayRoot = ksLookup (keys, arrays->name, 0);
+		if (arrayRoot == NULL)
+		{
+			keyUpdateArrayMetakey (arrays->name, arrays->maxIndex);
+			ksAppendKey (keys, arrays->name);
+		}
+		else
+		{
+			keyDel (arrays->name);
 		}
 		ArrayInfo * next = arrays->next;
 		elektraFree (arrays);
@@ -662,32 +710,40 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	}
 }
 
-static void pruneInvalidArrayKeys(KeySet * keys) {
-	ksRewind(keys);
-	KeySet * pruneSet = ksNew(8, KS_END);
-	Key * key = ksNext(keys);
-	while (key != NULL) {
-		const Key * meta = findMetaKey(key, "array"); 
-		if (meta != NULL) {
+static void pruneInvalidArrayKeys (KeySet * keys)
+{
+	ksRewind (keys);
+	KeySet * pruneSet = ksNew (8, KS_END);
+	Key * key = ksNext (keys);
+	while (key != NULL)
+	{
+		const Key * meta = findMetaKey (key, "array");
+		if (meta != NULL)
+		{
 			Key * sub;
-			while ((sub = ksNext(keys)) != NULL && keyIsBelow(key, sub) == 1) {
-				char * directSub = getDirectSubKeyName(key, sub);
-				if (!isArrayIndex(directSub)) {
-					ksAppendKey(pruneSet, key);
+			while ((sub = ksNext (keys)) != NULL && keyIsBelow (key, sub) == 1)
+			{
+				char * directSub = getDirectSubKeyName (key, sub);
+				if (!isArrayIndex (directSub))
+				{
+					ksAppendKey (pruneSet, key);
 					break;
 				}
-				elektraFree(directSub);
+				elektraFree (directSub);
 			}
-			key = ksCurrent(keys);
-		} else {
-			key = ksNext(keys);
+			key = ksCurrent (keys);
+		}
+		else
+		{
+			key = ksNext (keys);
 		}
 	}
-	ksRewind(pruneSet);
-	while ((key = ksNext(pruneSet)) != NULL) {
-		Key * prune = ksLookup(keys, key, KDB_O_POP);
-		ELEKTRA_ASSERT(prune != NULL, "Key must exist in keyset");
-		keyDel(prune);
+	ksRewind (pruneSet);
+	while ((key = ksNext (pruneSet)) != NULL)
+	{
+		Key * prune = ksLookup (keys, key, KDB_O_POP);
+		ELEKTRA_ASSERT (prune != NULL, "Key must exist in keyset");
+		keyDel (prune);
 	}
 }
 
@@ -711,8 +767,13 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
 	{
 		return NULL;
 	}
-	element->name = keyDup(name);
+	element->name = keyDup (name);
 	element->maxIndex = index;
 	element->next = root;
 	return element;
+}
+
+static int keyCmpOrderWrapper (const void * a, const void * b)
+{
+	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));
 }
