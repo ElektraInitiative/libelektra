@@ -28,6 +28,11 @@ if (DEPENDENCY_PHASE)
 	set (AUGEAS_PLUGIN_LIBRARIES ${LIBAUGEAS_LIBRARIES} ${LIBXML2_LIBRARIES})
 endif ()
 
+# ——————————————————————————————————————————————————————————
+# TODO: Remove this after we enabled `-Wconversion` globally
+set_source_files_properties (aug.h augeas.c PROPERTIES COMPILE_FLAGS "-Wconversion")
+# ——————————————————————————————————————————————————————————
+
 # ~~~
 # The unit test for the plugin fails on an ASAN enabled macOS build, if we do not disable container overflow detection.
 # Reference: https://travis-ci.org/sanssecours/elektra/jobs/418554628
