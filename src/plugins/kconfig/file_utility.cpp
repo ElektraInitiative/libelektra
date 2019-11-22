@@ -125,13 +125,13 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiter)
 	char c;
 	while (true)
 	{
-		if (isNextCharEOF ())
+		c = this->file->get ();
+
+		if (c == EOF && isNextCharEOF ())
 		{
 			break;
 		}
-
-		c = this->file->get ();
-		if (c == character_newline || c == character_carriage_return || c == delimiter)
+		else if (c == character_newline || c == character_carriage_return || c == delimiter)
 		{
 			this->file->putback (c);
 			break;
@@ -152,13 +152,12 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiterA, co
 	char c;
 	while (true)
 	{
-		if (isNextCharEOF ())
+		c = this->file->get ();
+		if (c == EOF && isNextCharEOF ())
 		{
 			break;
 		}
-
-		c = this->file->get ();
-		if (c == character_newline || c == character_carriage_return || c == delimiterA || c == delimiterB)
+		else if (c == character_newline || c == character_carriage_return || c == delimiterA || c == delimiterB)
 		{
 			this->file->putback (c);
 			break;
