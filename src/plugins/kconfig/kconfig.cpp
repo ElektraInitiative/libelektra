@@ -92,8 +92,6 @@ int elektraKconfigGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 
-
-
 	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
 
 	try
