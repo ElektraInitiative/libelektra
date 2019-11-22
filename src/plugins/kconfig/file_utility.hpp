@@ -35,28 +35,32 @@ public:
 	/**
 	 * @brief This method is used to check if the next character in the buffer is end of file
 	 *
-	 * @retval true next character is end of file
+	 * @retval true if the next character is end of file
+	 * @retval false otherwise
 	 */
 	bool isNextCharEOF ();
 
 	/**
 	 * @brief This method is used to check if the next character in the buffer is a new line
 	 *
-	 * @retval true next character is new line
+	 * @retval true if the next character is new line
+	 * @retval false otherwise
 	 */
 	bool isNextCharNewline ();
 
 	/**
 	 * @brief This method is used to check if the next character in the buffer is a new line or end of file
 	 *
-	 * @retval true next character is new line or end of file
+	 * @retval true if the next character is new line or end of file
+	 * @retval false otherwise
 	 */
 	bool isNextCharNewlineOrEOF ();
 
 	/**
 	 * @brief This method is used to check if the next character in the buffer is any of special characters used to specify a token
 	 *
-	 * @retval true the next character is used to specify a token
+	 * @retval true if the next character is used to specify a token
+	 * @retval false otherwise
 	 */
 	bool isNextCharToken ();
 
