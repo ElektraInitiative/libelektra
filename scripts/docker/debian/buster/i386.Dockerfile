@@ -14,19 +14,13 @@ RUN dpkg --add-architecture i386 \
         cmake \
         pkg-config \
         gcc-multilib \
+        googletest \
         g++-multilib \
         file \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
-ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
-RUN mkdir -p ${GTEST_ROOT} \
-    && cd /tmp \
-    && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
-    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
-    && rm gtest.tar.gz
+ENV GTEST_ROOT=/usr/src/googletest
 
 # Handle Java
 RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
