@@ -86,16 +86,36 @@ int elektraKconfigGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (parent.getName () == "system/elektra/modules/kconfig")
 	{
 		keys.append (getContract ());
+		parent.release ();
+		keys.release ();
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	else
+
+
+
+
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+
+	try
 	{
-		// This is only an example, to show you how to call a method of the delegate
 		keys.append (delegator::get (handle)->getConfig (parent));
+		status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+	catch (std::overflow_error const & exception)
+	{
+		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to read data from file '%s'. Reason: %s",
+					     parent.getString ().c_str (), exception.what ());
+	}
+	catch (std::runtime_error const & exception)
+	{
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parent.getKey (), "Unable to parse file '%s'. Reason: %s",
+							 parent.getString ().c_str (), exception.what ());
 	}
 
 	parent.release ();
 	keys.release ();
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+
+	return status;
 }
 
 /** @see elektraDocSet */
