@@ -41,6 +41,3 @@ add_plugin (
 	LINK_ELEKTRA elektra-meta elektra-proposal
 	LINK_LIBRARIES ${AUGEAS_PLUGIN_LIBRARIES}
 	TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0")
-if (ADDTESTING_PHASE)
-	include (LibAddMacros)
-endif ()
