@@ -186,6 +186,7 @@ install (FILES kdbextension.h
 	       elektra.h
 	       kdbendian.h
 	       kdbmacros.h
+	       kdbmerge.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 add_custom_target (elektra_config_headers ALL
