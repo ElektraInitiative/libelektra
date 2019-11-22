@@ -5,8 +5,6 @@ set (TEST_ARGUMENTS ADD_TEST CPP_TEST INSTALL_TEST_DATA)
 add_plugin (kconfig
 	    CPP
 	    ${TEST_ARGUMENTS}
-	    ADD_TEST
-	    CPP_TEST
 	    TEST_README
 	    SOURCES kconfig.hpp
 		    kconfig.cpp
