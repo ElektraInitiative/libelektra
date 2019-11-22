@@ -10,6 +10,7 @@ typedef struct {
 	regex_t regexDec;
 	regex_t regexHex;
 	regex_t regexFloat;
+	regex_t regexFloatSpecial;
 	regex_t regexBare;
 	regex_t regexOffsetDt;
 	regex_t regexLocalDt;

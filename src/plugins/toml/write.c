@@ -339,7 +339,7 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 
 static int writeScalar (Key * key, Writer * writer)
 {
-	// printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
+	//printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
 	int result = 0;
 	if (keyGetValueSize (key) == 0)
 	{
