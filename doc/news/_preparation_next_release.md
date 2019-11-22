@@ -331,7 +331,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Compilation
 
 - We now have a [setup for proper symbol versioning](../dev/symbol-versioning.md). _(Klemens Böswirth)_
-- We do not use implicit typing in the code of the `conditionals` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+- We do not use implicit typing in the code of the `conditionals` and `yamlcpp` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
 - JNA and JNI are not built concurrently anymore to avoid [dependency resolution fails](https://jira.apache.org/jira/browse/MDEP-518). _(Michael Zronek)_
 
 ### Docker
@@ -372,6 +372,7 @@ you up to date with the multi-language support provided by Elektra.
 - The macOS build jobs now use Ruby `2.6`. _(René Schwaiger)_
 - We do not call `ninja` directly anymore. Instead we use `cmake --build`. This has the advantage that we do not have to care about the Generator used by CMake. _(René Schwaiger)_
 - We added the build job `😈 ASAN`, which builds and executes Elektra on FreeBSD with enabled [AddressSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizer). _(René Schwaiger)_
+- We now store common commands in one place at the top of the configuration file. This makes it easier to selectively disable certain build jobs. _(René Schwaiger)_
 - The new job `📚 Check` checks
 
   - that the [man pages](../man) are up to date, and

@@ -952,8 +952,8 @@ inline std::string Key::getFullName () const
 		return "";
 	}
 
-	std::string str (csize - 1, '\0');
-	ckdb::keyGetFullName (getKey (), &str[0], csize);
+	std::string str (static_cast<size_t> (csize - 1), '\0');
+	ckdb::keyGetFullName (getKey (), &str[0], static_cast<size_t> (csize));
 	return str;
 }
 
@@ -1149,8 +1149,8 @@ inline std::string Key::getString () const
 		return "";
 	}
 
-	std::string str (csize - 1, '\0');
-	if (ckdb::keyGetString (getKey (), &str[0], csize) == -1)
+	std::string str (static_cast<size_t> (csize - 1), '\0');
+	if (ckdb::keyGetString (getKey (), &str[0], static_cast<size_t> (csize)) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1255,8 +1255,8 @@ inline std::string Key::getBinary () const
 		return "";
 	}
 
-	std::string str (csize, '\0');
-	if (ckdb::keyGetBinary (getKey (), &str[0], csize) == -1)
+	std::string str (static_cast<size_t> (csize), '\0');
+	if (ckdb::keyGetBinary (getKey (), &str[0], static_cast<size_t> (csize)) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}

@@ -29,11 +29,7 @@ add_msr_test (tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install
 			       resolver
 			       ENVIRONMENT
 			       KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
-if (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-	message (STATUS "Excluding storage tutorial MSR test, since it currently fails for ASan macOS builds in Cirrus CI")
-else (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-	add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
-endif (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
+add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
 add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md"
 	      REQUIRED_PLUGINS hosts
 			       line
