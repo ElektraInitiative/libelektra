@@ -21,7 +21,8 @@ Information about the syntax:
 - Can contain multiple keys with different locales (`keyName[en]` and `keyName[de]`)
 - Cannot contain multiple keys with different metadata (either `keyname[$a]` or `keyname[$b]`).
 - If a key `keyname[$metavalue]` is parsed, it will be represented as a Key with name `parent/keyname` and meta `kconfig` as `metavalue`
-- Group names begin have a `[` symbol at the beginning of a line and every key that follows them is part of this group (until the next group is declared)
+- Group names begin have a `[` symbol at the beginning of a line and every key that follows them is part of this group (until the next
+  group is declared)
 
 ## Usage
 
