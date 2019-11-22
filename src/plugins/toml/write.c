@@ -361,7 +361,7 @@ static int writeScalar (Key * key, Writer * writer)
 		{
 			result |= fputs ("''", writer->f) == EOF;
 		}
-		else if (isNumber (writer->checker, valueStr)) // TODO: isDate
+		else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
 		{
 			result |= fputs (valueStr, writer->f) == EOF;
 		}
