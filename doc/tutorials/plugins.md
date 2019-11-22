@@ -362,7 +362,7 @@ We haven't discussed `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR` yet. Because Elektra is
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR` does. The `<CONCRETE_TYPE>` in the
 text means the concrete error type such as `RESOURCE`, `INSTALLATION`, etc. There are also abstract error types
 which are not instantiable. You can read more about concrete and abstract error types in the
-[error-categorization.md](/doc/dev/error-categorization.m) guideline. Note that you also have a varargs macro with `...ERRORF`
+[error-categorization.md](/doc/dev/error-categorization.md) guideline. Note that you also have a varargs macro with `...ERRORF`
 that allows you to insert a string and substitute parts with variables.
 You can see all available error types as well as their categorization guidelines [here](/doc/dev/error-categorization.md).
 Because the parentKey always exists
