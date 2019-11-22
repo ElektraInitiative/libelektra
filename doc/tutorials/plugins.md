@@ -356,11 +356,13 @@ and write each key as its own line in the file. Since we don't care about the na
 the value of `keyString` for each `Key` as a new line in the file. That's it. Now, each time the mounted `KeySet` is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
-#### `ELEKTRA_SET_<CONCRETE>_ERROR`
+#### `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR`
 
-We haven't discussed `ELEKTRA_SET_<CONCRETE>_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
-and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_<CONCRETE>_ERROR` does. The `<CONCRETE>` in the
-text means the concrete error type such as `RESOURCE`, `INSTALLATION`, etc. Note that you also have a varargs macro with `...ERRORF`
+We haven't discussed `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
+and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR` does. The `<CONCRETE_TYPE>` in the
+text means the concrete error type such as `RESOURCE`, `INSTALLATION`, etc. There are also abstract error types
+which are not instantiable. You can read more about concrete and abstract error types in the
+[error-categorization.md](/doc/dev/error-categorization.m) guideline. Note that you also have a varargs macro with `...ERRORF`
 that allows you to insert a string and substitute parts with variables.
 You can see all available error types as well as their categorization guidelines [here](/doc/dev/error-categorization.md).
 Because the parentKey always exists
@@ -424,7 +426,7 @@ keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_
 Within the `checkconf` function all of the plugin configuration values should be validated.
 Errors should be reported via Elektra's error handling mechanism (see section [ELEKTRA*SET*<CONCRETE>\_ERROR](#elektra_set_concrete_error) for further details).
 If `checkconf` encounters a configuration value, that is not strictly invalid but can not be parsed by the plugin (e.g. a parameter which is not part of the plugin configuration),
-then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_<CONCRETE>_WARNING`. You also have a `...WARNINGF` vararg macro that
+then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_<CONCRETE_TYPE>_WARNING`. You also have a `...WARNINGF` vararg macro that
 allows you to substitute parts of the message with variables.
 
 ### `ELEKTRA_PLUGIN_EXPORT`
