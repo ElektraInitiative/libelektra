@@ -1335,7 +1335,7 @@ def cnokdbtest() {
  * @param p Pattern to scan for
  */
 def xunitUpload(p = 'build/Testing/**/*.xml') {
-  step([$class: 'XUnitBuilder',
+  step([$class: 'XUnitPublisher',
     thresholds: [
       [$class: 'SkippedThreshold', failureThreshold: '0'],
       [$class: 'FailedThreshold', failureThreshold: '0']
