@@ -24,6 +24,7 @@ const char * decStr = "^[+-]?" SEP_NUM_NZERO_START "$";
 const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START ")"			// PRE-DOT
 						"(\\." SEPARATED_DIGITS("[0-9]") ")?"		// OPTIONAL DOT
 						"([eE][+-]?" SEP_NUM_NZERO_START ")?$";		// OPTIONAL EXPONENT
+const char * floatSpecialStr = "^[+-]?(nan|inf)$";
 const char * bareStr = "^[a-zA-Z0-9_-]+$";
 
 
@@ -59,6 +60,8 @@ TypeChecker * createTypeChecker (void)
 
 	result |= regcomp (&typeChecker->regexFloat, floatStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Float regex could not be compiled: '%s'", floatStr);
+	result |= regcomp (&typeChecker->regexFloatSpecial, floatSpecialStr, REG_EXTENDED);
+	ELEKTRA_ASSERT (result == 0, "Special Floats regex could not be compiled: '%s'", floatSpecialStr);
 
 	result |= regcomp (&typeChecker->regexBare, bareStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Bare regex could not be compiled: '%s'", bareStr);
@@ -85,6 +88,7 @@ void destroyTypeChecker (TypeChecker * checker)
 		regfree (&checker->regexDec);
 		regfree (&checker->regexHex);
 		regfree (&checker->regexFloat);
+		regfree (&checker->regexFloatSpecial);
 		regfree (&checker->regexBare);
 		regfree (&checker->regexOffsetDt);
 		regfree (&checker->regexLocalDt);
@@ -122,7 +126,8 @@ bool isHexadecimal (TypeChecker * checker, const char * str)
 
 bool isFloat (TypeChecker * checker, const char * str)
 {
-	return regexec (&checker->regexFloat, str, 0, NULL, 0) == 0;
+	return regexec (&checker->regexFloat, str, 0, NULL, 0) == 0 ||
+		   regexec (&checker->regexFloatSpecial, str, 0, NULL, 0) == 0;
 }
 
 bool isBareString (TypeChecker * checker, const char * str)

@@ -173,7 +173,7 @@ static char * convertDecimal(const char * str) {
 static char * convertHex(const char * str) {
 	unsigned long long n = 0;
 	char * stripped = stripUnderscores (str);
-	if (sscanf(str, "0x%llx", &n) != 1) {
+	if (sscanf(stripped, "0x%llx", &n) != 1) {
 		elektraFree(stripped);
 		ELEKTRA_ASSERT(0, "str must be convertible as long long hex");
 		return NULL;
@@ -185,7 +185,7 @@ static char * convertHex(const char * str) {
 static char * convertOctal(const char * str) {
 	unsigned long long n = 0;
 	char * stripped = stripUnderscores (str);
-	if (sscanf(str, "0o%llo", &n) != 1) {
+	if (sscanf(stripped, "0o%llo", &n) != 1) {
 		elektraFree(stripped);
 		ELEKTRA_ASSERT(0, "str must be convertible as long long octal");
 		return NULL;
@@ -403,13 +403,15 @@ static char * stripUnderscores (const char * num)
 	char * ptr = dup;
 	while (*num != 0)
 	{
-		if (*num != '_')
-		{
-			*ptr = *num;
-			ptr++;
+		while(*num == '_') {
+			num++;
 		}
+		*ptr = *num;
+		ptr++;
 		num++;
 	}
+	*ptr = 0;
+	printf("STRIPPED = %s\n", dup);
 	return dup;
 }
 
