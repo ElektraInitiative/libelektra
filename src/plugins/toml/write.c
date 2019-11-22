@@ -149,7 +149,7 @@ static void destroyWriter (Writer * writer)
 
 static int writeKeys (Key * parent, Writer * writer)
 {
-	printf ("*** WRITE KEYS FOR %s\n", keyName (parent));
+	// printf ("*** WRITE KEYS FOR %s\n", keyName (parent));
 	Key * key = ksCurrent (writer->keys);
 
 	int result = 0;
@@ -273,12 +273,14 @@ static int writeArrayElements (Key * parent, Writer * writer)
 		result |= writePrecedingComments (comments, writer);
 		result |= writeValue (key, writer);
 		key = ksCurrent (writer->keys);
-		if (keyIsDirectlyBelow (parent, key))
+		if (keyIsDirectlyBelow (parent, key) == 1)
 		{
 			result |= fputs (", ", writer->f) == EOF;
 		}
 		result |= writeInlineComment (comments, writer);
-		result |= writeNewline (writer);
+		if (comments != NULL && comments->index == 0) {
+			result |= writeNewline (writer);
+		}
 		freeComments (comments);
 	}
 	return result;
@@ -337,7 +339,7 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 
 static int writeScalar (Key * key, Writer * writer)
 {
-	printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
+	// printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
 	int result = 0;
 	if (keyGetValueSize (key) == 0)
 	{
@@ -596,7 +598,7 @@ static CommentList * collectComments (Key * key)
 					{
 						if (sscanf (keyString (meta), "%lu", &commentBack->spaces) == EOF)
 						{
-							printf ("[ERROR] Cant read space value: %s\n", keyString (meta));
+							// printf ("[ERROR] Cant read space value: %s\n", keyString (meta));
 							freeComments (commentRoot);
 							return NULL;
 						}
