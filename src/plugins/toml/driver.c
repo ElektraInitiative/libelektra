@@ -10,9 +10,9 @@
 
 #include "driver.h"
 #include "error.h"
+#include "null_indicator.h"
 #include "parser.h"
 #include "utility.h"
-#include "null_indicator.h"
 
 extern int yyparse (Driver * driver);
 extern FILE * yyin;
