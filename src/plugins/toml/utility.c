@@ -76,6 +76,19 @@ size_t arrayStringToIndex (const char * indexStr)
 	return val;
 }
 
+bool isArrayIndex(const char * basename) {
+	if (*basename++ != '#') {
+		return false;
+	}
+	while (*basename == '_') {
+		basename++;
+	}
+	while (*basename >= '0' && *basename <= '9') {
+		basename++;
+	}
+	return *basename == 0;
+}
+
 bool isEmptyArray(Key * key) {
 	const Key * meta = findMetaKey (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
