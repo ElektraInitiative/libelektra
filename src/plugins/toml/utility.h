@@ -11,6 +11,7 @@ Key * keyAppendIndex (size_t index, const Key * parent);
 void keyUpdateArrayMetakey (Key * key, size_t newIndex);
 char * indexToArrayString (size_t index);
 size_t arrayStringToIndex (const char * indexStr);
+bool isArrayIndex(const char * basename);
 void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 char * intToStr (size_t i);
 void setOrderForKey (Key * key, size_t order);

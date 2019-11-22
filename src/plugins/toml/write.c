@@ -36,6 +36,14 @@ typedef struct CommentList_
 	struct CommentList_ * next;
 } CommentList;
 
+typedef struct ArrayInfo_
+{
+	Key * name;
+	size_t maxIndex;
+	struct ArrayInfo_ * next;
+} ArrayInfo;
+
+
 static Writer * createWriter (Key * rootKey, KeySet * keys);
 static void destroyWriter (Writer * writer);
 static int writeKeys (Key * parent, Writer * writer);
@@ -60,6 +68,9 @@ static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
 static bool isBoolean (const char * str);
 static bool isTrue (const char * boolStr);
+static void addMissingArrayKeys (KeySet * keys, Key * parent);
+static void pruneInvalidArrayKeys(KeySet * keys);
+static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -72,6 +83,8 @@ int tomlWrite (KeySet * keys, Key * parent)
 		ELEKTRA_SET_RESOURCE_ERROR (parent, keyString (parent));
 		return 1;
 	}
+	addMissingArrayKeys(keys, parent);
+	pruneInvalidArrayKeys(keys);
 	int result = 0;
 	ksRewind (w->keys);
 	if (keyCmp (ksNext (w->keys), parent) == 0)
@@ -608,11 +621,96 @@ static void freeComments (CommentList * comments)
 	}
 }
 
-static void checkArrayKeys (KeySet * keys)
+static void addMissingArrayKeys (KeySet * keys, Key * parent)
 {
+	ArrayInfo * arrays = NULL;
 	ksRewind (keys);
 	Key * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
+		Key * name = keyNew(keyName(key), KEY_END);
+		if (name == NULL)
+		{
+			// set parent error
+			return;
+		}
+		do
+		{
+			if (isArrayIndex (keyBaseName (name)))
+			{
+				size_t index = arrayStringToIndex (keyBaseName (name));
+				keyAddName (name, "..");
+				arrays = updateArrayInfo (arrays, name, index);
+			}
+			keyAddName (name, "..");
+		} while (keyCmp (parent, name) != 0);
+		keyDel(name);
 	}
+	while (arrays != NULL) {
+		Key * arrayRoot = ksLookup(keys, arrays->name, 0);
+		if (arrayRoot == NULL) {
+			keyUpdateArrayMetakey(arrays->name, arrays->maxIndex);
+			ksAppendKey(keys, arrays->name);
+		} else {
+			keyDel(arrays->name);
+		}
+		ArrayInfo * next = arrays->next;
+		elektraFree (arrays);
+		arrays = next;
+	}
+}
+
+static void pruneInvalidArrayKeys(KeySet * keys) {
+	ksRewind(keys);
+	KeySet * pruneSet = ksNew(8, KS_END);
+	Key * key = ksNext(keys);
+	while (key != NULL) {
+		const Key * meta = findMetaKey(key, "array"); 
+		if (meta != NULL) {
+			Key * sub;
+			while ((sub = ksNext(keys)) != NULL && keyIsBelow(key, sub) == 1) {
+				char * directSub = getDirectSubKeyName(key, sub);
+				if (!isArrayIndex(directSub)) {
+					ksAppendKey(pruneSet, key);
+					break;
+				}
+				elektraFree(directSub);
+			}
+			key = ksCurrent(keys);
+		} else {
+			key = ksNext(keys);
+		}
+	}
+	ksRewind(pruneSet);
+	while ((key = ksNext(pruneSet)) != NULL) {
+		Key * prune = ksLookup(keys, key, KDB_O_POP);
+		ELEKTRA_ASSERT(prune != NULL, "Key must exist in keyset");
+		keyDel(prune);
+	}
+}
+
+static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
+{
+	ArrayInfo * ptr = root;
+	while (ptr != NULL)
+	{
+		if (keyCmp (ptr->name, name) == 0)
+		{
+			if (index > ptr->maxIndex)
+			{
+				ptr->maxIndex = index;
+			}
+			return root;
+		}
+		ptr = ptr->next;
+	}
+	ArrayInfo * element = elektraCalloc (sizeof (ArrayInfo));
+	if (element == NULL)
+	{
+		return NULL;
+	}
+	element->name = keyDup(name);
+	element->maxIndex = index;
+	element->next = root;
+	return element;
 }
