@@ -33,18 +33,6 @@
 	it says how much can actually be stored.*/
 #define KEYSET_SIZE 16
 
-/** How many plugins can exist in an backend. */
-#define NR_OF_PLUGINS 10
-
-/** The index of the commit plugin */
-#define COMMIT_PLUGIN 7
-
-/** The index of the storage plugin */
-#define STORAGE_PLUGIN 5
-
-/** The index of the resolver plugin */
-#define RESOLVER_PLUGIN 0
-
 #define NR_OF_GET_PLUGINS 4
 #define NR_OF_SET_PLUGINS 6
 #define NR_OF_ERROR_PLUGINS 3
