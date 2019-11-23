@@ -345,17 +345,19 @@ void output_trie (Trie * trie)
 	int i;
 	for (i = 0; i < KDB_MAX_UCHAR; ++i)
 	{
+		Key * mountpoint = backendGetMountpoint (trie->value[i]);
 		if (trie->value[i])
 		{
-			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (trie->value[i]->mountpoint),
-				keyString (trie->value[i]->mountpoint), i);
+			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (mountpoint),
+				keyString (mountpoint), i);
 		}
 		if (trie->children[i]) output_trie (trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
-		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (trie->empty_value->mountpoint),
-			keyString (trie->empty_value->mountpoint));
+		Key * mountpoint = backendGetMountpoint (trie->value[i]);
+		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (mountpoint),
+			keyString (mountpoint));
 	}
 }
 
@@ -369,8 +371,8 @@ void output_split (Split * split)
 			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
 				i, ksGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
-				keyName (split->parents[i]), keyString (split->parents[i]), split->handles[i]->specsize,
-				split->handles[i]->dirsize, split->handles[i]->usersize, split->handles[i]->systemsize);
+				keyName (split->parents[i]), keyString (split->parents[i]), split->specsizes[i],
+				split->dirsizes[i], split->usersizes[i], split->systemsizes[i]);
 		}
 		else
 		{
