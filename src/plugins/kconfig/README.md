@@ -35,7 +35,7 @@ Information about the syntax:
   greeting[de] = Hallo
   ```
 - Keys can have meta
-data. Those are one byte long, start with `$` and are surrounded with `[` and `]`.
+  data. Those are one byte long, start with `$` and are surrounded with `[` and `]`.
 - The same key name can't be used multiple times with different metadata (different to locales). The following example is invalid:
   ```
   key.name[$a] = Something
