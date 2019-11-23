@@ -478,8 +478,7 @@ void driverEnterArray (Driver * driver)
 	driver->indexStack = pushIndex (driver->indexStack, 0);
 	const Key * meta = findMetaKey(driver->parentStack->key, "array");	// check for nested arrays
 	if (meta != NULL) {
-		const char * index = keyString(meta);
-		ELEKTRA_ASSERT(elektraStrCmp(index, "") != 0, "Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
+		ELEKTRA_ASSERT(elektraStrCmp(keyString(meta), "") != 0, "Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
 		Key * key = keyAppendIndex(0, driver->parentStack->key);
 		driver->parentStack = pushParent(driver->parentStack, key);
 	}
