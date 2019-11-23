@@ -638,7 +638,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	{
 		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 
-		if (cur->meta)
+		if (cur->meta && cur->meta->size > 0)
 		{
 			++mmapMetaData->numKeySets;
 
@@ -668,7 +668,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		{
 			dataBlocksSize += (globalKey->keySize + globalKey->keyUSize + globalKey->dataSize);
 
-			if (globalKey->meta)
+			if (globalKey->meta && globalKey->meta->size > 0)
 			{
 				++mmapMetaData->numKeySets;
 
@@ -786,7 +786,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynArray)
 {
 	// write the meta KeySet
-	if (!key->meta) return 0;
+	if (!key->meta || !(key->meta->size > 0)) return 0;
 
 	KeySet * newMeta = (KeySet *) mmapAddr->metaKsPtr;
 	mmapAddr->metaKsPtr += SIZEOF_KEYSET;
