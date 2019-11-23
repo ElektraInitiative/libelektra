@@ -160,13 +160,13 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  // stage("Deploy Website") {
-  //   deployWebsite()
-  // }
+  stage("Deploy Website") {
+    deployWebsite()
+  }
 
-  // maybeStage("Deploy Web UI", isMaster()) {
-  //   deployWebUI()
-  // }
+  maybeStage("Deploy Web UI", isMaster()) {
+    deployWebUI()
+  }
 }
 
 try {
@@ -1029,8 +1029,8 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
   // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
-  // tasks << buildWebsite()
-  // tasks << buildWebUI()
+  tasks << buildWebsite()
+  tasks << buildWebUI()
   return tasks
 }
 
@@ -1077,7 +1077,7 @@ def buildDebianPackage(stageName, image) {
               sh "gbp buildpackage -sa"
             }
             if(isMaster()) {
-              // publishDebianPackages()
+              publishDebianPackages()
             }
           }
         }
