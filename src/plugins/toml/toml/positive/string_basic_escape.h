@@ -9,7 +9,6 @@ ksNew (16,
 			"carriage return\r\n"
 			"quote\"\n"
 			"backslash\\\n",
-		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\n"
 			"backspace\\b\n"
@@ -40,7 +39,6 @@ ksNew (16,
 			"15A4A: \xF0\x95\xA9\x8A\n"
 			"1da8b: \xF0\x9D\xAA\x8B\n"
 			"1fffd: \xF0\x9F\xBF\xBD\n",
-		KEY_META, "type", "string",
 		KEY_META, "origvalue",
 			"\n"
 			"0030: \\u0030\n"

@@ -147,7 +147,7 @@ ArrayList	:	AnyCommentNL ArrayElement
 			|	ArrayList COMMA AnyCommentNL ArrayElement
 			;
 
-ArrayElement	:	Value { driverExitArrayElement (driver); }
+ArrayElement	:	{driverEnterArrayElement(driver); } Value { driverExitArrayElement (driver); }
 				;
 
 ArrayEpilogue	:	AnyCommentNL
