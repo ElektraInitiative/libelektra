@@ -476,6 +476,13 @@ void driverEnterArray (Driver * driver)
 		return;
 	}
 	driver->indexStack = pushIndex (driver->indexStack, 0);
+	const Key * meta = findMetaKey(driver->parentStack->key, "array");	// check for nested arrays
+	if (meta != NULL) {
+		const char * index = keyString(meta);
+		ELEKTRA_ASSERT(elektraStrCmp(index, "") != 0, "Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
+		Key * key = keyAppendIndex(0, driver->parentStack->key);
+		driver->parentStack = pushParent(driver->parentStack, key);
+	}
 	keySetMeta (driver->parentStack->key, "array", "");
 }
 
@@ -538,7 +545,7 @@ void driverExitArrayElement (Driver * driver)
 	{
 		return;
 	}
-	driverEnterArrayElement (driver);
+	// driverEnterArrayElement (driver);
 	if (driver->lastScalar != NULL) // NULL can happen on eg inline tables as elements
 	{
 		driverCommitLastScalarToParentKey (driver);
@@ -827,7 +834,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		keySetString (driver->parentStack->key, elektraStr);
 
 		const char * type = getTypeCheckerType (driver->lastScalar);
-		keySetMeta (driver->parentStack->key, "type", type);
+		// keySetMeta (driver->parentStack->key, "type", type);
 
 		switch (driver->lastScalar->type)
 		{

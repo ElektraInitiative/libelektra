@@ -6,7 +6,7 @@
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
-- infos/metadata = order comment/# comment/#/start comment/#/space
+- infos/metadata = order comment/# comment/#/start comment/#/space type
 - infos/description = This storage plugin reads and writes TOML files, using Flex and Bison.
 
 # TODO: Documentation
@@ -34,6 +34,7 @@ The plugin supports null keys. They are represented as special string of value '
 	- Document functions
 	- directory value
 	- Error checks for writing
+	- Correct string handling (which type of string, do in type.c)
 	- Replace existing keyRel calls
 	- Maybe preserve spaces
 		- Before array values
