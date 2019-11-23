@@ -38,8 +38,7 @@ KconfigDelegate::KconfigDelegate (KeySet config)
  */
 kdb::KeySet KconfigDelegate::getConfig (Key const & parent)
 {
-	KeySet keys{ 0, KS_END };
-
+	KeySet keys;
 
 	ELEKTRA_LOG_DEBUG ("Parse `%s` using the kconfig plugin", parent.getString ().c_str ());
 	auto filePtr = new std::ifstream{ parent.getString () };
