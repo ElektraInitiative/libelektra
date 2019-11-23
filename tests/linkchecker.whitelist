@@ -5,7 +5,7 @@
 #
 # The following link only works if you are logged into the build server
 # See also: https://github.com/ElektraInitiative/libelektra/issues/2674
-https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax
+https://build.libelektra.org/job/libelektra/pipeline-syntax
 # Webdemo doesn't work right now
 # see https://github.com/ElektraInitiative/libelektra/issues/2913
 http://webdemo.libelektra.org

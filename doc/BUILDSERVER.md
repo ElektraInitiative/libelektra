@@ -48,14 +48,14 @@ Currently Elektra uses two different files.
 #### Jenkinsfile.daily
 
 - [Jenkinsfile.daily](/scripts/jenkins/Jenkinsfile.daily) contains daily maintenance tasks, like cleaning up build servers.
-- [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
+- [Buildjob: libelektra-daily](https://build.libelektra.org/job/libelektra-daily/)
 - [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
 
 #### Jenkinsfile
 
 - Triggered on code changes and is for testing changes to the codebase.
 - [Jenkinsfile](/scripts/jenkins/Jenkinsfile) contains descriptions how to build, test and deploy Elektra.
-- [Buildjob: libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
+- [Buildjob: libelektra](https://build.libelektra.org/job/libelektra/)
 - [Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile)
 
 #### DSL
@@ -68,7 +68,7 @@ is executed in a sandbox which might block certain calls.
 Since plugins might extend the pool of available commands or variables a full
 list of currently available syntax can be seen in
 [pipeline
-syntax](https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax/)
+syntax](https://build.libelektra.org/job/libelektra/pipeline-syntax/)
 after a login to the build server.
 Some functionality is not covered by this page when the responsible plugin is
 not implementing it.
@@ -185,7 +185,7 @@ verified or added to build Elektra correctly:
 - `Advanced clone behaviors` should be added and the path to the git mirror
   needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
   This reference repository is created and maintained by our
-  [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).
+  [daily buildjob](https://build.libelektra.org/job/libelektra-daily/).
 - Under Property strategy you can add `Trigger build on pull request comment`.
   `jenkins build (libelektra|all) please` is a good starting point.
   This functionality is provided by the
@@ -223,8 +223,8 @@ To reliable determine which stages failed it is best to look over the build
 results in the Jenkins Blue Ocean view.
 It is the default View opened when accessing the build results from GitHub.
 For libelektra the URLs are
-https://build.libelektra.org/jenkins/job/libelektra/ and
-https://build.libelektra.org/jenkins/blue/organizations/jenkins/libelektra/branches/
+https://build.libelektra.org/job/libelektra/ and
+https://build.libelektra.org/blue/organizations/jenkins/libelektra/branches/
 .
 
 Failed stages are marked in red.
@@ -280,7 +280,7 @@ sure to test any modifications locally first.
 
 All Triggers are described in the configuration of the respective build jobs.
 
-The [libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
+The [libelektra](https://build.libelektra.org/job/libelektra/)
 build is triggered for all branches of the libelektra repository except for
 `debian`.
 Additionally all open branches in forks targeting libelektra's repository via
@@ -288,16 +288,15 @@ PRs are going to be build.
 Pushes to any of those branches will trigger a new build automatically.
 
 The
-[daily build](https://build.libelektra.org/jenkins/job/libelektra-daily/)
+[daily build](https://build.libelektra.org/job/libelektra-daily/)
 is executed according to a cron schedule.
 
 The following phrases can be used as comments to manually trigger a specific
 build:
 
-- jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
-- jenkins build [website](https://build.libelektra.org/job/elektra-website/) please
-- jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
-- jenkins build [monthly](https://build.libelektra.org/jenkins/job/libelektra-monthly/) please
+- jenkins build [libelektra](https://build.libelektra.org/job/libelektra/) please
+- jenkins build [daily](https://build.libelektra.org/job/libelektra-daily/) please
+- jenkins build [monthly](https://build.libelektra.org/job/libelektra-monthly/) please
 
 Additionally `jenkins build all please` can be used to trigger all build jobs
 relevant for PR's.
