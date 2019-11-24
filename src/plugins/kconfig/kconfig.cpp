@@ -9,7 +9,9 @@
 
 #include "kconfig.hpp"
 #include "kconfig_delegate.hpp"
+#include "kconfig_serializer.hpp"
 
+#include <fstream>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
@@ -117,9 +119,31 @@ int elektraKconfigGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 /** @see elektraDocSet */
-int elektraKconfigSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraKconfigSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	CppKeySet keys{ returned };
+	CppKey parent{ parentKey };
+
+	ELEKTRA_LOG_DEBUG ("Save `%s` using the kconfig plugin", parent.getFullName ().c_str ());
+	auto filePtr = new std::ofstream{ parent.getString () };
+	if (!filePtr->is_open ())
+	{
+		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to save data to file '%s'. Reason: %s", parent.getString ().c_str (),
+					     "Could not open the file.");
+		parent.release ();
+		keys.release ();
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	ELEKTRA_LOG_DEBUG ("File opened successfully, start saving the data.");
+
+	KConfigSerializer serializer{ keys, parent, std::unique_ptr<std::ofstream> (filePtr) };
+	serializer.save ();
+
+	ELEKTRA_LOG_DEBUG ("Data succesfully stored into `%s`.", parent.getFullName ().c_str ());
+
+	parent.release ();
+	keys.release ();
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /** @see elektraDocError */
