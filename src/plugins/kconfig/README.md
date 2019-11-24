@@ -11,7 +11,7 @@
 
 ## Introduction
 
-This plugin can be used to parse a [KConfig](https://cgit.kde.org/kconfig.git) INI file into a KeySet, and also write a KeySet to a file in 
+This plugin can be used to parse a [KConfig](https://cgit.kde.org/kconfig.git) INI file into a KeySet, and also write a KeySet to a file in
 such a format.
 
 Information about the syntax:
