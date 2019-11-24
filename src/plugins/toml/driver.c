@@ -832,7 +832,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	{
 		keySetString (driver->parentStack->key, elektraStr);
 
-		const char * type = getTypeCheckerType (driver->lastScalar);
+		//const char * type = getTypeCheckerType (driver->lastScalar);
 		// keySetMeta (driver->parentStack->key, "type", type);
 
 		switch (driver->lastScalar->type)
