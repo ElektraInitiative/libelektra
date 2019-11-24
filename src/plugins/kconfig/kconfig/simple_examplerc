@@ -1,0 +1,9 @@
+# Ignore comment
+# Ignore other comment with escape character\
+groupless.key=Simple Value With Spaces
+[empty][group]
+[example][group]
+#Ignore comment before empty space
+
+#Ignore comment after empty space
+example.key=Key\nWith\tEscaped\\Characters

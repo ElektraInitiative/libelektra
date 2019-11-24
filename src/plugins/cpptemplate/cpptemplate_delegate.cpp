@@ -37,7 +37,7 @@ CppTemplateDelegate::CppTemplateDelegate (KeySet config)
  */
 kdb::KeySet CppTemplateDelegate::getConfig (Key const & parent)
 {
-	KeySet keys{ 0, KS_END };
+	KeySet keys;
 
 	for (auto configKey : configuration)
 	{

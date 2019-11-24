@@ -86,6 +86,10 @@ plugins. _(René Schwaiger)_
   of the string in `argv`. _(Klemens Böswirth)_
 - Increase test timeout from 120s to 240s. _(Mihael Pranjić)_
 
+### KConfig
+
+- We added a plugin which can be used to parse kconfig ini files into a keyset and save keysets to such files. _(Dardan Haxhimustafa)_
+
 ### Mmapstorage
 
 - We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
