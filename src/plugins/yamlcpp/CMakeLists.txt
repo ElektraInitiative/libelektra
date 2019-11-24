@@ -1,8 +1,8 @@
 if (DEPENDENCY_PHASE)
 	find_package (yaml-cpp QUIET 0.6)
-	if (NOT YAML-CPP_FOUND)
+	if (NOT yaml-cpp_FOUND)
 		remove_plugin (yamlcpp "yaml-cpp (libyaml-cpp-dev >= 0.6) not found")
-	endif (NOT YAML-CPP_FOUND)
+	endif (NOT yaml-cpp_FOUND)
 
 	# AdressSanitizer enabled builds of the plugin report runtime errors about member calls, which do not point to an object of type
 	# `_Sp_counted_base` inside the system header file `shared_ptr_base.h`. In Clang builds of the plugin we ignore this error in our
@@ -24,16 +24,26 @@ if (DEPENDENCY_PHASE)
 
 endif (DEPENDENCY_PHASE)
 
-set (TEST_ARGUMENTS ADD_TEST CPP_TEST INSTALL_TEST_DATA)
-if (BUILD_SHARED AND APPLE AND DEFINED ENV{CIRRUS_CI})
-	message (STATUS "Excluding unit test for YAML CPP plugin, since it currently fails for shared builds in Cirrus CI")
-	set (TEST_ARGUMENTS "")
-endif (BUILD_SHARED AND APPLE AND DEFINED ENV{CIRRUS_CI})
+# ——————————————————————————————————————————————————————————
+# TODO: Remove this after we enabled `-Wconversion` globally
+set_source_files_properties (yamlcpp.hpp
+			     yamlcpp.cpp
+			     read.hpp
+			     read.cpp
+			     write.hpp
+			     write.cpp
+			     log.hpp
+			     log.cpp
+			     PROPERTIES
+			     COMPILE_FLAGS
+			     "-Wconversion")
+# ——————————————————————————————————————————————————————————
 
 add_plugin (yamlcpp
 	    CPP
-	    ${TEST_ARGUMENTS}
-	    ${ASAN_DISABLE_CONTAINER_OVERFLOW_CHECK}
+	    ADD_TEST
+	    CPP_TEST
+	    INSTALL_TEST_DATA
 	    TEST_README
 	    TEST_REQUIRED_PLUGINS base64 directoryvalue
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0"
@@ -45,6 +55,6 @@ add_plugin (yamlcpp
 		    write.cpp
 		    log.hpp
 		    log.cpp
-	    INCLUDE_SYSTEM_DIRECTORIES ${YAML-CPP_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${YAML-CPP_LIBRARIES}
+	    INCLUDE_SYSTEM_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${yaml-cpp_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease)

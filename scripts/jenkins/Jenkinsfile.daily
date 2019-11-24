@@ -1,5 +1,5 @@
 // vim: ts=2:sw=2:expandtab:syntax=groovy
-/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/ */
+/* https://build.libelektra.org/job/elektra-jenkinsfile-daily/ */
 
 // Set properties for buildjob
 properties([

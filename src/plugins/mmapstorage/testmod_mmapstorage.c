@@ -661,6 +661,43 @@ static void test_mmap_meta_get_after_reopen (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_filter_meta (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = metaTestKeySet ();
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	KeySet * returned = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+
+	Key * current;
+	ksRewind (returned);
+	while ((current = ksNext (returned)) != 0)
+	{
+		succeed_if (current->meta != 0, "key had no metadata, but metadata was expected");
+		ksClear (current->meta);
+	}
+
+	succeed_if (plugin->kdbSet (plugin, returned, parentKey) == 1, "kdbSet was not successful");
+	ksDel (returned);
+
+	returned = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	ksRewind (returned);
+	while ((current = ksNext (returned)) != 0)
+	{
+		succeed_if (current->meta == 0, "key had metadata, but metadata was expected to be filtered");
+	}
+
+	ksDel (returned);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_metacopy (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -1101,6 +1138,9 @@ int main (int argc, char ** argv)
 	test_mmap_meta_get_after_reopen (tmpFile);
 
 	test_mmap_metacopy (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_filter_meta (tmpFile);
 
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);

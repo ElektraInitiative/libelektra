@@ -67,6 +67,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - We unified the name of the config check function of the plugins to `nameOfPluginCheckConf`. Before this update some plugins used the name `nameOfPluginCheckConfig` instead. _(René Schwaiger)_
 - We improved the error messages in `crypto`, `fcrypt`, and `gpgme` plugins. _(Peter Nirschl)_
 - Handle return codes (error codes) of `execv` in the GPG module. _(Peter Nirschl)_
+- Improved the documentation of `ksAppendKey` regarding ownership of keys. _(Raphael Gruber)_
 
 ### Camel
 
@@ -85,11 +86,16 @@ plugins. _(René Schwaiger)_
   of the string in `argv`. _(Klemens Böswirth)_
 - Increase test timeout from 120s to 240s. _(Mihael Pranjić)_
 
+### KConfig
+
+- We added a plugin which can be used to parse kconfig ini files into a keyset and save keysets to such files. _(Dardan Haxhimustafa)_
+
 ### Mmapstorage
 
 - We now store the OPMPHM inside of the mmap format. _(Mihael Pranjić)_
 - The storage format was changed and many sanity checks were improved or added. _(Mihael Pranjić)_
 - Enforce consistency by writing the magic file footer last. _(Mihael Pranjić)_
+- Filter empty meta KeySets to save space. _(Mihael Pranjić)_
 
 ### Noresolver
 
@@ -228,10 +234,13 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
+- `KDB_EXEC_PATH`, which can be used to add further external tools to `kdb`, now supports `:` to separate paths.
+  `kdb list-tools` and `run_env` were improved to take advantage of this. _(Markus Raab)_
 - Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
 - add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - [elektrad](../../src/tools/web/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` commandline tool on every request. _(Raphael Gruber)_
 - Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
+- Removed `kdb vset` as it does not properly put meta-data to the spec namespace. _(Michael Zronek)_
 - Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab`. _(Philipp Gackstatter)_
 - Renamed kdb meta commands:
   - `kdb getmeta` is now `kdb meta-get`
@@ -300,6 +309,13 @@ you up to date with the multi-language support provided by Elektra.
 - Fixed some typos and links in the documentation and add new iterate example. _(Philipp Gackstatter)_
 - Clarified warnings metadata in the [error-handling guideline](../dev/error-handling.md). _(Michael Zronek)_
 - We fixed minor spelling mistakes in the documentation. _(René Schwaiger)_
+- Corrected buildserver documentation. _(Djordje Bulatovic)_
+- Add merge library into kdbset example. _(Dominic Jäger)_
+- We updated links for the INI parsing library Nickel. _(René Schwaiger)_
+- Added a new [Get Started](../../doc/GETSTARTED.md). _(Hani Torabi)_
+- Added some informations about [contributing](../../.github/CONTRIBUTING.md) to Elektra. _(Hani Torabi)_
+- Further imporvement on buildserver documentation. _(Djordje Bulatovic)_
+- Further improvement of the buildserver documentation. _(Djordje Bulatovic)_
 
 ## Tests
 
@@ -322,7 +338,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Compilation
 
 - We now have a [setup for proper symbol versioning](../dev/symbol-versioning.md). _(Klemens Böswirth)_
-- We do not use implicit typing in the code of the `conditionals` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+- We do not use implicit typing in the code of the `conditionals` and `yamlcpp` plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
 - JNA and JNI are not built concurrently anymore to avoid [dependency resolution fails](https://jira.apache.org/jira/browse/MDEP-518). _(Michael Zronek)_
 
 ### Docker
@@ -330,7 +346,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added [Dockerfile for Ubuntu Bionic](../../scripts/docker/ubuntu/bionic/Dockerfile) _(Djordje Bulatovic)_
 - We removed all Haskell packages from the Dockerfiles in the folder [scripts/docker](../../scripts/docker). _(René Schwaiger)_
 - We added a basic [Dockerfile for Arch Linux](../../scripts/docker/arch/Dockerfile). _(René Schwaiger)_
-- <<TODO>>
+- We updated the [Dockerfile for Alpine Linux](../../scripts/docker/alpine). _(René Schwaiger)_
 
 ### Vagrant
 
@@ -339,13 +355,18 @@ you up to date with the multi-language support provided by Elektra.
 ### Other
 
 - The reformatting script now checks that the correct version of `cmake-format` is used. _(Klemens Böswirth, René Schwaiger)_
+- Fixed augeas crash if fopen fails. _(Michael Zronek)_
 - The reformatting scripts now run in parallel. _(Markus Raab)_
 - Improved various error messages and synchronized documentations. _(Michael Zronek)_
 - Improved `range` plugin error message. _(Michael Zronek)_
 - Improved error codes documentation to clarify the hierarchy for developers. _(Michael Zronek)_
+- Out of memory error messages are now uniform. _(Michael Zronek)_
 - Release notes now use git's union merge driver. _(Dominic Jäger)_
 - Please remove me. I'm only here for the build server. _(Dominic Jäger)_
 - I'm only here for the build server. This PR contains only fix ups. _(Dominic Jäger)_
+- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
+- Please remove me. I'm only here for the build server. _(Dominic Jäger)_
+- Add pkg-config file for kdbmerge. _(Raphael Gruber)_
 
 ## Infrastructure
 
@@ -358,10 +379,13 @@ you up to date with the multi-language support provided by Elektra.
 - The macOS build jobs now use Ruby `2.6`. _(René Schwaiger)_
 - We do not call `ninja` directly anymore. Instead we use `cmake --build`. This has the advantage that we do not have to care about the Generator used by CMake. _(René Schwaiger)_
 - We added the build job `😈 ASAN`, which builds and executes Elektra on FreeBSD with enabled [AddressSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizer). _(René Schwaiger)_
+- We now store common commands in one place at the top of the configuration file. This makes it easier to selectively disable certain build jobs. _(René Schwaiger)_
 - The new job `📚 Check` checks
 
   - that the [man pages](../man) are up to date, and
   - that building the PDF version of the Doxygen documentation works. _(René Schwaiger)_
+
+- The new build job `🐧 Fedora` builds and tests Elektra on Fedora Linux. _(René Schwaiger)_
 
 ### Jenkins
 
@@ -370,7 +394,7 @@ you up to date with the multi-language support provided by Elektra.
 - Enable WebUI build job again. _(Markus Raab)_
 - Improve docu. _(Markus Raab)_
 - Jenkins does not auto cancel build jobs of the `master` branch anymore. _(René Schwaiger)_
-- <<TODO>>
+- Updated xUnit plugin in Jenkinsfile. _(Djordje Bulatovic)_
 - <<TODO>>
 
 ### Restyled
@@ -391,6 +415,8 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - The website now lives in the folders [website-frontend](/src/tools/website-frontend) and [website-backend](/src/tools/website-backend) to avoid confusion with the REST backend of the Web-UI. _(Markus Raab)_
 - Improve mainpage of website, restructure getting started. _(Markus Raab)_
+- Renamed the sub menu _Getting Started_ in the menu _Documentation_ to _About Elektra_ and removed the sub-sub-menus _Compiling_, _Installation_ and _Tutorials_. These sub-sub-menus are now sub-menus of _Documentation_. A new sub menu labeled _Get Started_ added to the menu _Documentation_ with some newcomer-friendly informations. Renamed the _Getting Started_ sub menu in _Development_ to _Contribute to Elektra_. The green button on the main page is routed to the new _Get Started_ page. _(Hani Torabi)_
+- Improve main page of website, restructure getting started. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 

@@ -73,7 +73,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	if (!saltHexString)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
@@ -223,7 +223,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	{
 		memset (keyBuffer, 0, sizeof (keyBuffer));
 		memset (ivBuffer, 0, sizeof (ivBuffer));
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 
@@ -307,7 +307,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	encrypted = BIO_new (BIO_s_mem ());
 	if (!encrypted)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		pthread_mutex_unlock (&mutex_ssl);
 		elektraFree (salt);
 		return -1;
@@ -433,7 +433,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	BIO * decrypted = BIO_new (BIO_s_mem ());
 	if (!decrypted)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		pthread_mutex_unlock (&mutex_ssl);
 		return -1;
 	}
@@ -535,7 +535,7 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 	}
 	if (!encoded)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 	}
 	return encoded;
 }

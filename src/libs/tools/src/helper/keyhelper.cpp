@@ -80,6 +80,38 @@ void removeNamespace (Key & key)
 	}
 }
 
+Key prependNamespace (Key const & root, std::string const & ns)
+{
+	Key ret = root.dup ();
+	if (ret.isCascading ())
+	{
+		ret.setName (ns + root.getName ());
+	}
+	return ret;
+}
+
+KeySet prependNamespace (KeySet const & resultKeys, std::string const & ns)
+{
+	KeySet ret;
+	for (auto const & k : resultKeys)
+	{
+		ret.append (prependNamespace (k, ns));
+	}
+	return ret;
+}
+
+void copyAllMeta (KeySet & to, KeySet const & from)
+{
+	for (auto k : to)
+	{
+		Key b = from.lookup (k, 0);
+		if (b)
+		{
+			k.copyAllMeta (b);
+		}
+	}
+}
+
 Key commonKeyName (Key key1, Key key2)
 {
 	// do not let removed namespaces escape

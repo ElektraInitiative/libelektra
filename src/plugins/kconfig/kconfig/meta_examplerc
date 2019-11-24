@@ -1,0 +1,6 @@
+meta_key[$i]=Some meta
+
+[empty_group][with_meta][$a]
+[group_with][localizations]
+localized[en]=Hello
+localized[de]=Hallo

@@ -4,6 +4,26 @@ env:
 container:
   memory: 12
 
+# We store common commands here, so we can reference them in the build jobs below.
+commands:
+  - &create_build_dir mkdir "$BUILD_DIR"
+  - &print_cmake_options |
+      printf '—— CMake Config ——\n'
+      for option; do printf '%s\n' "$option"; done
+  - &generate | # We need to specify the source directory (`.`) explicitly for Alpine linux (`🔗 Check`).
+    cmake "$@" -G Ninja -B "$BUILD_DIR" .
+  - &build cmake --build "$BUILD_DIR"
+  - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
+  - &run_tests | # Run tests
+    if [ "$ENABLE_ASAN" = 'ON' ]; then
+      cmake --build "$BUILD_DIR" --target run_nocheckshell
+    else
+      [ "$BUILD_FULL" = 'ON' ] && KDB=kdb-full || KDB=kdb
+      # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
+      # if we do not add the alternative `false`.
+      cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
+    fi
+
 bsd_task:
   matrix:
 
@@ -33,7 +53,7 @@ bsd_task:
       yaml-cpp
 
   script:
-    - &create_build_dir mkdir "$BUILD_DIR"
+    - *create_build_dir
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
       -DBINDINGS='ALL;-io_glib'
@@ -44,26 +64,15 @@ bsd_task:
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
       -DPLUGINS=ALL
       -DTARGET_PLUGIN_FOLDER=''
-    - &print_cmake_options |
-      printf '—— CMake Config ——\n'
-      for option; do printf '%s\n' "$option"; done
-    - &generate | # We need to specify the source directory (`.`) explicitly for Alpine linux (`🔗 Check`).
-      cmake "$@" -G Ninja -B "$BUILD_DIR" .
-    - &build cmake --build "$BUILD_DIR"
-    - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
+    - *print_cmake_options
+    - *generate
+    - *build
+    - *install
 
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
-    - &run_tests | # Run tests
-      if [ "$ENABLE_ASAN" = 'ON' ]; then
-        cmake --build "$BUILD_DIR" --target run_nocheckshell
-      else
-        [ "$BUILD_FULL" = 'ON' ] && KDB=kdb-full || KDB=kdb
-        # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
-        # if we do not add the alternative `false`.
-        cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
-      fi
+    - *run_tests
 
 mac_task:
   env:
@@ -73,7 +82,7 @@ mac_task:
 
     - name: 🍎 Clang
       osx_instance:
-        image: mojave-xcode-11.1
+        image: mojave-xcode-11.2.1
       env:
         ENABLE_LOGGER: ON
         USE_LLVM: OFF
@@ -81,7 +90,7 @@ mac_task:
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: mojave-xcode-11.1
+        image: mojave-xcode-11.2.1
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -90,14 +99,14 @@ mac_task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: mojave-xcode-11.1
+        image: mojave-xcode-11.2.1
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
 
     - name: 🍎 MMap
       osx_instance:
-        image: mojave-xcode-11.1
+        image: mojave-xcode-11.2.1
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
@@ -141,8 +150,16 @@ mac_task:
       tree
       xerces-c
       yajl
-      yaml-cpp
       zeromq
+    - | # We install yaml-cpp manually, since Homebrew currently does not install the shared version of the library.
+      git clone --branch yaml-cpp-0.6.3 --depth 1 https://github.com/jbeder/yaml-cpp.git
+      cd yaml-cpp
+      mkdir build
+      cmake -GNinja -DYAML_BUILD_SHARED_LIBS=ON -DYAML_CPP_BUILD_TESTS=OFF -Bbuild
+      cmake --build build
+      sudo cmake --build build --target install
+      cd ..
+      rm -r yaml-cpp
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - > # Start D-Bus session bus
@@ -201,12 +218,28 @@ mac_task:
         false
       fi
 
+linux_task:
+  matrix:
+
+    - name: 🐧 Fedora
+      container:
+          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+
+  script:
+    - *create_build_dir
+    - *generate
+    - *build
+    - *install
+
+  tests_script:
+    - *run_tests
+
 link_task:
   matrix:
 
     - name: 🔗 Check
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
@@ -248,7 +281,7 @@ docu_task:
 
     - name: 📚 Check
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
     - *create_build_dir

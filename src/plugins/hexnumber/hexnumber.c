@@ -91,7 +91,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	char * decValue = elektraMalloc (length);
 	if (!decValue)
 	{
-		ELEKTRA_MALLOC_ERROR (parentKey, length);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -160,7 +160,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	char * hexValue = elektraMalloc (length);
 	if (!hexValue)
 	{
-		ELEKTRA_MALLOC_ERROR (parentKey, length);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

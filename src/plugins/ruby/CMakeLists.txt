@@ -22,8 +22,8 @@ if (DEPENDENCY_PHASE)
 
 	# ~~~
 	# Disable on GCC 4 and earlier:
-	# - https://build.libelektra.org/jenkins/job/elektra-gcc47-all
-	# - https://build.libelektra.org/jenkins/job/elektra-gcc-configure-debian-wheezy
+	# - https://build.libelektra.org/job/elektra-gcc47-all
+	# - https://build.libelektra.org/job/elektra-gcc-configure-debian-wheezy
 	# ~~~
 	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
 

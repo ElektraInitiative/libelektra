@@ -227,7 +227,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 			ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Cannot create Java VM: JNI version error");
 			return -1;
 		case JNI_ENOMEM:
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Cannot create Java VM: Not enough memory");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 			return -1;
 		case JNI_EEXIST:
 			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot create Java VM: VM already created");

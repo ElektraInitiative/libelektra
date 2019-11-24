@@ -147,7 +147,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	/* init new lua state */
 	if ((data->L = lua_newstate (Lua_alloc, NULL)) == NULL)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Unable to create new lua state");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Unable to create new lua state");
 		goto error;
 	}
 

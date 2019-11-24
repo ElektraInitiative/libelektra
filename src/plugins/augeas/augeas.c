@@ -415,7 +415,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 
 memoryerror:
 	elektraFree (keyArray);
-	ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Unable to allocate memory while saving the augeas tree");
+	ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 	return -1;
 }
 
@@ -432,7 +432,7 @@ int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 
 		if (ret >= 0)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Unable to allocate memory for a detailed augeas error message");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 			return -1;
 		}
 
@@ -505,6 +505,8 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		fclose (fh);
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle));
+		errno = errnosave;
+		return -1;
 	}
 
 	/* convert the augeas tree to an Elektra KeySet */
@@ -519,7 +521,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!conversionData)
 	{
 		fclose (fh);
-		ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "Out of memory. Errno: %s", strerror (errno));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 	}
 
 	conversionData->currentOrder = 0;
@@ -535,6 +537,8 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		fclose (fh);
 		ksDel (append);
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle));
+		errno = errnosave;
+		return -1;
 	}
 
 	fclose (fh);
@@ -587,6 +591,8 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			fclose (fh);
 			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle));
+			errno = errnosave;
+			return -1;
 		}
 	}
 
