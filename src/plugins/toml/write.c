@@ -1,6 +1,7 @@
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbmeta.h>
+#include <kdbproposal.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <regex.h>
@@ -81,9 +82,9 @@ static Key * getNextKey (Writer * writer);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
-	// dumpKS (keys);
 	addMissingArrayKeys (keys, parent);
 	pruneInvalidArrayKeys (keys);
+	dumpKS (keys);
 	ksRewind (keys);
 
 	size_t arraySize = ksGetSize (keys);

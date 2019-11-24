@@ -97,6 +97,6 @@ endif (DEPENDENCY_PHASE)
 add_plugin (toml
 		ADD_TEST
 		INSTALL_TEST_DATA
-		LINK_ELEKTRA elektra-ease elektra-meta
+		LINK_ELEKTRA elektra-meta
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})

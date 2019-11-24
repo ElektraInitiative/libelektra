@@ -22,7 +22,7 @@ static void destroyDriver (Driver * driver);
 static int driverParse (Driver * driver);
 static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount);
 static void driverClearCommentList (Driver * driver);
-static void driverDrainCommentsToKey (Key * key, Driver * driver);
+static bool driverDrainCommentsToKey (Key * key, Driver * driver);
 static void firstCommentAsInlineToPrevKey (Driver * driver);
 static void driverCommitLastScalarToParentKey (Driver * driver);
 static void driverClearLastScalar (Driver * driver);
@@ -254,9 +254,12 @@ void driverExitOptCommentTable (Driver * driver)
 		if (!driver->simpleTableActive) // if we're here and not in a simple table, we exited an table array
 		{
 			// We need to emit the table array key ending with /#n (having no value)
+			// If non is existing yet (because of preceding comments)
 			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
-			setOrderForKey (driver->parentStack->key, driver->order++);
-			ksAppendKey (driver->keys, driver->parentStack->key);
+			if (ksLookup(driver->keys, driver->parentStack->key, 0) == NULL) {
+				setOrderForKey (driver->parentStack->key, driver->order++);
+				ksAppendKey (driver->keys, driver->parentStack->key);
+			}
 		}
 	}
 }
@@ -468,7 +471,10 @@ void driverExitTableArray (Driver * driver)
 	// setOrderForKey (key, driver->order++);
 	driver->parentStack = pushParent (driver->parentStack, key);
 
-	driverDrainCommentsToKey (driver->parentStack->key, driver);
+	if (driverDrainCommentsToKey (driver->parentStack->key, driver)) {	// we have to emit the array index key, because it has comments in previous lines
+		setOrderForKey (driver->parentStack->key, driver->order++);
+		ksAppendKey(driver->keys, driver->parentStack->key);
+	}
 	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
 }
 
@@ -692,7 +698,7 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 	}
 }
 
-static void driverDrainCommentsToKey (Key * key, Driver * driver)
+static bool driverDrainCommentsToKey (Key * key, Driver * driver)
 {
 	if (driver->newlineCount > 0)
 	{
@@ -718,7 +724,9 @@ static void driverDrainCommentsToKey (Key * key, Driver * driver)
 			driverErrorGeneric (driver, err, "driverDrainCommentsToKey", "keyAddCommentList");
 		}
 	}
+	bool drainedComments = driver->commentRoot != NULL;
 	driverClearCommentList (driver);
+	return drainedComments;
 }
 
 static void pushCurrKey (Driver * driver)
