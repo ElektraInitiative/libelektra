@@ -89,6 +89,7 @@ plugins. _(René Schwaiger)_
 ### KConfig
 
 - We added a plugin which can be used to parse kconfig ini files into a keyset and save keysets to such files. _(Dardan Haxhimustafa)_
+- We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
 
 ### Mmapstorage
 

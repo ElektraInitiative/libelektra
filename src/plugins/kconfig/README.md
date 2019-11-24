@@ -7,11 +7,12 @@
 - infos/placements = getstorage setstorage
 - infos/status = recommended maintained compatible specific experimental unfinished nodoc concept
 - infos/metadata =
-- infos/description = Reads the KConfig INI format
+- infos/description = Reads and writes the KConfig INI format
 
 ## Introduction
 
-This plugin can be used to parse a [KConfig](https://cgit.kde.org/kconfig.git) INI file into a KeySet.
+This plugin can be used to parse a [KConfig](https://cgit.kde.org/kconfig.git) INI file into a KeySet, and also write a KeySet to a file in 
+such a format.
 
 Information about the syntax:
 
@@ -72,6 +73,14 @@ echo 'key=Value' > `kdb file /tests/kconfig`
 # Retrieve the new value
 kdb get /tests/kconfig/key
 #> Value
+
+# Set the value to Example
+kdb set /tests/kconfig/key Example
+#> Set string to "Example"
+
+# Verify that the value has changed in the file too
+cat `kdb file /tests/kconfig`
+#> key=Example
 
 # Manually add a gorup to the database
 echo '[group][subgroup]' >> `kdb file /tests/kconfig`
