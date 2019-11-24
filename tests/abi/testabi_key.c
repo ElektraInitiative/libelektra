@@ -180,17 +180,6 @@ static void test_keyNewSystem (void)
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner not null");
 	keyDel (key);
 
-	key = keyNew ("user/abc", KEY_OWNER, "huhu", KEY_END);
-	succeed_if_same_string (keyName (key), "user/abc");
-	succeed_if (keyGetNameSize (key) == 9, "empty name size");
-	succeed_if_same_string (keyString (keyGetMeta (key, "owner")), "huhu");
-	keyDel (key);
-
-	key = keyNew ("user:lost/abc", KEY_OWNER, "huhu", KEY_END);
-	succeed_if_same_string (keyName (key), "user/abc");
-	succeed_if (keyGetNameSize (key) == 9, "empty name size");
-	succeed_if_same_string (keyString (keyGetMeta (key, "owner")), "huhu");
-	keyDel (key);
 
 	key = keyNew ("user:huhu/abc", KEY_END);
 	succeed_if_same_string (keyName (key), "user/abc");
@@ -1535,8 +1524,7 @@ static void test_keyDup (void)
 	succeed_if (keyDup (0) == 0, "could not duplicate null");
 
 	// Create test key
-	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID,
-		       456, KEY_MODE, 0644, KEY_END);
+	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_END);
 
 
 	// Dup the key
@@ -1583,8 +1571,7 @@ static void test_keyCopy (void)
 	printf ("Test key copy\n");
 
 	// Create test key
-	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID,
-		       456, KEY_MODE, 0644, KEY_END);
+	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_END);
 
 
 	// Copy the key

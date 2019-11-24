@@ -388,11 +388,13 @@ static void test_appendowner (void)
 	printf ("Append Keys with owner");
 
 	key = keyNew ("system/sw/new", KEY_VALUE, "abc", KEY_END);
-	s1 = keyNew ("system/sw/new", KEY_VALUE, "xyz1", KEY_OWNER, "s1", KEY_END);
-	s2 = keyNew ("system/sw/new", KEY_VALUE, "xyz2", KEY_OWNER, "s2", KEY_END);
-	s3 = keyNew ("system/sw/new", KEY_VALUE, "xyz3", KEY_OWNER, "s3", KEY_END);
+	s1 = keyNew ("system/sw/new", KEY_VALUE, "xyz1", KEY_END);
+	s2 = keyNew ("system/sw/new", KEY_VALUE, "xyz2", KEY_END);
+	s3 = keyNew ("system/sw/new", KEY_VALUE, "xyz3", KEY_END);
 	ks = ksNew (0, KS_END);
-
+	keySetOwner(s1, "s1");
+	keySetOwner(s2, "s2");
+	keySetOwner(s3, "s3");
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
 	succeed_if (ks->array[0] == key, "key not on position 0");

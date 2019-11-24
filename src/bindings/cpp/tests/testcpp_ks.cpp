@@ -391,10 +391,14 @@ TEST (ks, permutations)
 TEST (ks, appendOwner)
 {
 	KeySet ks;
+	Key k1, k2, k3;
+	k1.setName("user:markus/s/1");
+	k2.setName("user/s/1");
+	k3.setName("user:max/s/1");
 	std::vector<Key> v (3);
-	ks.append (v[1] = Key ("user/s/1", KEY_OWNER, "markus", KEY_END));
-	ks.append (v[0] = Key ("user/s/1", KEY_END));
-	ks.append (v[2] = Key ("user/s/1", KEY_OWNER, "max", KEY_END));
+	ks.append (v[1] = k1);
+	ks.append (v[0] = k2);
+	ks.append (v[2] = k3);
 
 	ks.rewind ();
 	for (ssize_t i = 0; i < ks.size (); ++i)
@@ -406,9 +410,16 @@ TEST (ks, appendOwner)
 TEST (ks, permutateOwner)
 {
 	vector<Key> solution;
-	solution.push_back (Key ("user/s", KEY_END));
-	solution.push_back (Key ("user/s", KEY_OWNER, "albert", KEY_END));
-	solution.push_back (Key ("user/s", KEY_OWNER, "barbara", KEY_END));
+	Key k1, k2, k3, k4, k5, k6;
+	k1.setName("user/s");
+	k2.setName("user:albert/s");
+	k3.setName("user:barbara/s");
+	k4.setName("user:markus/s");
+	k5.setName("user:max/s");
+	k6.setName("user:patrick/s");
+	solution.push_back (k1);
+	solution.push_back (k2);
+	solution.push_back (k3);
 
 	vector<Key> permutation (solution);
 
@@ -425,7 +436,7 @@ TEST (ks, permutateOwner)
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back (Key ("user/s", KEY_OWNER, "markus", KEY_END));
+	solution.push_back (k4);
 	permutation.push_back (solution[3]); // need a copy of same key, otherwise name is not the same string
 	sort (permutation.begin (), permutation.end ());
 
@@ -443,7 +454,7 @@ TEST (ks, permutateOwner)
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back (Key ("user/s", KEY_OWNER, "max", KEY_END));
+	solution.push_back (k5);
 	permutation.push_back (solution[4]);
 	sort (permutation.begin (), permutation.end ());
 
@@ -462,7 +473,7 @@ TEST (ks, permutateOwner)
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back (Key ("user/s", KEY_OWNER, "patrick", KEY_END));
+	solution.push_back (k6);
 	permutation.push_back (solution[5]);
 	sort (permutation.begin (), permutation.end ());
 
@@ -481,7 +492,7 @@ TEST (ks, permutateOwner)
 			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
-}
+} 
 
 TEST (ks, comparision)
 {

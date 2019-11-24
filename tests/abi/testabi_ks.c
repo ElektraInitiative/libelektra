@@ -993,23 +993,28 @@ static void test_ksLookup (void)
 	KeySet * ks = ksNew (
 		30,
 		/* keys that are searched */
-		k[0] = keyNew ("user/rem3", KEY_DIR, KEY_END), k[1] = keyNew ("user/rem2", KEY_DIR, KEY_END),
+		//k[0] = keyNew ("user/rem3", KEY_DIR, KEY_END), 
+		//k[1] = keyNew ("user/rem2", KEY_DIR, KEY_END),
 		k[2] = keyNew ("user/rem1/key2", KEY_END), k[3] = keyNew ("user/rem1/key1", KEY_END),
-		k[4] = keyNew ("user/rem1", KEY_DIR, KEY_END), k[5] = keyNew ("user/dir1", KEY_DIR, KEY_END),
+		//k[4] = keyNew ("user/rem1", KEY_DIR, KEY_END), k[5] = keyNew ("user/dir1", KEY_DIR, KEY_END),
 		k[6] = keyNew ("user/dir1/key1", KEY_VALUE, "value1", KEY_END),
 		k[7] = keyNew ("user/dir1/key2", KEY_VALUE, "value2", KEY_END),
 		k[8] = keyNew ("user/dir1/key3", KEY_VALUE, "value3", KEY_END),
 		k[9] = keyNew ("user/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		k[10] = keyNew ("user/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		k[11] = keyNew ("user/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
-		k[12] = keyNew ("user:max/dir2", KEY_DIR, KEY_END), k[13] = keyNew ("user:max/dir2/key1", KEY_VALUE, "value1", KEY_END),
+		//k[10] = keyNew ("user/dir1/.inactive1", KEY_META, "comment", "key is inactive", KEY_END),
+		//k[11] = keyNew ("user/dir1/.inactive2", KEY_META, "comment", "additional information", KEY_END),
+		//k[12] = keyNew ("user:max/dir2", KEY_DIR, KEY_END), 
+		k[13] = keyNew ("user:max/dir2/key1", KEY_VALUE, "value1", KEY_END),
 		k[14] = keyNew ("user/dir2/key2", KEY_VALUE, "value2", KEY_END),
 		k[15] = keyNew ("user/dir2/key3", KEY_VALUE, "value3", KEY_END),
-		k[16] = keyNew ("user:hugo/dir2/key4", KEY_VALUE, "value4", KEY_END), k[17] = keyNew ("user/dir3", KEY_DIR, KEY_END),
+		k[16] = keyNew ("user:hugo/dir2/key4", KEY_VALUE, "value4", KEY_END), 
+		//k[17] = keyNew ("user/dir3", KEY_DIR, KEY_END),
 		k[18] = keyNew ("user/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		k[19] = keyNew ("user:sb/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		k[20] = keyNew ("user/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
-		k[21] = keyNew ("user/dir4", KEY_DIR, KEY_END), k[22] = keyNew ("user/dir5", KEY_DIR, KEY_END), KS_END);
+		//k[19] = keyNew ("user:sb/dir3/.inactive1", KEY_META, "comment", "key is inactive", KEY_END),
+		//k[20] = keyNew ("user/dir3/.inactive2", KEY_META, "comment", "a users comment", KEY_END),
+		//k[21] = keyNew ("user/dir4", KEY_DIR, KEY_END), 
+		//k[22] = keyNew ("user/dir5", KEY_DIR, KEY_END), 
+		KS_END);
 
 	KeySet * lookupKeys =
 		ksNew (30,
@@ -1059,25 +1064,26 @@ static void test_ksLookupByName (void)
 	char * name[1000];
 	Key * k[1000];
 	KeySet * ks =
-		ksNew (30, k[0] = keyNew (name[0] = "user/rem3", KEY_DIR, KEY_END), k[1] = keyNew (name[1] = "user/rem2", KEY_DIR, KEY_END),
+		ksNew (30, 
+			//k[0] = keyNew (name[0] = "user/rem3", KEY_DIR, KEY_END), k[1] = keyNew (name[1] = "user/rem2", KEY_DIR, KEY_END),
 		       k[2] = keyNew (name[2] = "user/rem1/key2", KEY_END), k[3] = keyNew (name[3] = "user/rem1/key1", KEY_END),
-		       k[4] = keyNew (name[4] = "user/rem1", KEY_DIR, KEY_END), k[5] = keyNew (name[5] = "user/dir1", KEY_DIR, KEY_END),
+		       //k[4] = keyNew (name[4] = "user/rem1", KEY_DIR, KEY_END), k[5] = keyNew (name[5] = "user/dir1", KEY_DIR, KEY_END),
 		       k[6] = keyNew (name[6] = "user/dir1/key1", KEY_VALUE, "value1", KEY_END),
 		       k[7] = keyNew (name[7] = "user/dir1/key2", KEY_VALUE, "value2", KEY_END),
 		       k[8] = keyNew (name[8] = "user/dir1/key3", KEY_VALUE, "value3", KEY_END),
 		       k[9] = keyNew (name[9] = "user/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		       k[10] = keyNew (name[10] = "user/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[11] = keyNew (name[11] = "user/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
-		       k[12] = keyNew (name[12] = "user:max/dir2", KEY_DIR, KEY_END),
+		       //k[10] = keyNew (name[10] = "user/dir1/.inactive1", KEY_META, "comment", "key is inactive", KEY_END),
+		       //k[11] = keyNew (name[11] = "user/dir1/.inactive2", KEY_META, "comment", "additional information", KEY_END),
+		       //k[12] = keyNew (name[12] = "user:max/dir2", KEY_DIR, KEY_END),
 		       k[13] = keyNew (name[13] = "user:max/dir2/key1", KEY_VALUE, "value1", KEY_END),
 		       k[14] = keyNew (name[14] = "user/dir2/key2", KEY_VALUE, "value2", KEY_END),
 		       k[15] = keyNew (name[15] = "user/dir2/key3", KEY_VALUE, "value3", KEY_END),
 		       k[16] = keyNew (name[16] = "user:hugo/dir2/key4", KEY_VALUE, "value4", KEY_END),
-		       k[17] = keyNew (name[17] = "user/dir3", KEY_DIR, KEY_END),
+		       //k[17] = keyNew (name[17] = "user/dir3", KEY_DIR, KEY_END),
 		       k[18] = keyNew (name[18] = "user/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		       k[19] = keyNew (name[19] = "user:sb/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[20] = keyNew (name[20] = "user/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
-		       k[21] = keyNew (name[21] = "user/dir4", KEY_DIR, KEY_END), k[22] = keyNew (name[22] = "user/dir5", KEY_DIR, KEY_END),
+		       //k[19] = keyNew (name[19] = "user:sb/dir3/.inactive1", KEY_META, "comment", "key is inactive", KEY_END),
+		       //k[20] = keyNew (name[20] = "user/dir3/.inactive2", KEY_META, "comment", "a users comment", KEY_END),
+		       //k[21] = keyNew (name[21] = "user/dir4", KEY_DIR, KEY_END), k[22] = keyNew (name[22] = "user/dir5", KEY_DIR, KEY_END),
 		       KS_END);
 
 	name[23] = "user/DiR1";
@@ -1131,7 +1137,7 @@ static void test_ksLookupName (void)
 
 	printf ("Test lookup functions\n");
 
-	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
+	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user/single/key", KEY_VALUE, "singlevalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system/named/syskey", KEY_VALUE, "syskey", KEY_END));
@@ -1366,22 +1372,24 @@ static void test_ksExample (void)
 				 KEY_END));				 // end of args
 
 	ksAppendKey (ks, keyNew ("user/tmp/ex2", KEY_VALUE, "some data", // with a simple value
-				 KEY_MODE, 0777,			 // permissions
+				 //KEY_MODE, 0777,			 // permissions
 				 KEY_END));				 // end of args
 
 	ksAppendKey (ks, keyNew ("user/tmp/ex4",
 				 KEY_BINARY,					       // key type
 				 KEY_SIZE, 7,					       // assume binary length 7
 				 KEY_VALUE, "some data",			       // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated", KEY_OWNER, "root", // owner (not uid) is root
-				 KEY_UID, 0,					       // root uid
+				 //KEY_META, "comment", "value is truncated", 
+				 //KEY_OWNER, "root", // owner (not uid) is root
+				 //KEY_UID, 0,					       // root uid
 				 KEY_END));					       // end of args
 
 	ksAppendKey (ks, keyNew ("user/tmp/ex5",
 				 KEY_BINARY,					       // binary value
 				 KEY_SIZE, 7, KEY_VALUE, "some data",		       // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated", KEY_OWNER, "root", // owner (not uid) is root
-				 KEY_UID, 0,					       // root uid
+				 //KEY_META, "comment", "value is truncated", 
+				 //KEY_OWNER, "root", // owner (not uid) is root
+				 //KEY_UID, 0,					       // root uid
 				 KEY_END));					       // end of args
 
 	ksRewind (ks);
@@ -1725,7 +1733,7 @@ static void test_ksLookupPop (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
+	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user/single/key", KEY_VALUE, "singlevalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system/named/skey", KEY_VALUE, "syskey", KEY_END));
@@ -2705,7 +2713,7 @@ static void test_nsLookup (void)
 
 		for (int i = 0; i < NUMBER_OF_NAMESPACES; ++i)
 	{
-		Key * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_COMMENT, "comment1", KEY_END);
+		Key * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_END);
 		keyAddName (searchKey, "test/keyset/dir7/key1");
 
 		Key * lookupKey = keyNew (namespaces[i], KEY_END);

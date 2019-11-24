@@ -672,17 +672,8 @@ static void test_keyNewExtensions (void)
 	succeed_if (keyIsSystem (key) == 0, "empty user key?");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
 
-	// Key with name + UID/GID
-	key = keyNew ("system/sw/test", KEY_UID, 123, KEY_GID, 456, KEY_END);
-	succeed_if (key != NULL, "keyNew: Unable to create a key with name + UID + GID");
-	succeed_if (keyGetUID (key) == 123, "keyNew: UID no set correctly");
-	succeed_if (keyGetGID (key) == 456, "keyNew: GID not set correctly");
-	succeed_if (keyIsUser (key) == 0, "not user");
-	succeed_if (keyIsSystem (key) == 1, "is system");
-	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + UID + GID");
-
 	// Key with name + MODE
-	key = keyNew ("system/sw/test", KEY_MODE, 0644, KEY_END);
+	key = keyNew ("system/sw/test", KEY_META, "mode", "0644", KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name + mode");
 	succeed_if (keyGetMode (key) == 0644, "keyNew: mode no set correctly");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
@@ -726,7 +717,8 @@ static void test_owner (void)
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	// Key with name + owner
-	key = keyNew ("user/test/test", KEY_OWNER, "yl", KEY_END);
+	key = keyNew ("user/test/test", KEY_END);
+	keySetOwner(key, "yl");
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name + owner");
 	succeed_if_same_string (keyOwner (key), "yl");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + owner");
@@ -943,49 +935,6 @@ static void test_keyOwner (void)
 	succeed_if (keyDel (key) == 0, "could not delete key");
 }
 
-static void test_keyDir (void)
-{
-	mode_t i;
-	Key * key = keyNew ("user", KEY_END);
-
-	printf ("Test directory keys\n");
-
-	succeed_if (keyGetMode (key) == 0600, "new key not 0600 by default");
-
-	succeed_if (keySetMode (key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyGetMode (key) == 0644, "key is not 0644, but was set");
-
-	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
-
-	for (i = 0; i <= 0777; i++)
-	{
-		succeed_if (keySetMode (key, i) == 0, "could not set to 0000 <= i <= 0777");
-		succeed_if (keyGetMode (key) == i, "key is not correct 0000 <= i <= 0777");
-
-		succeed_if (keySetDir (key) == 0, "could not set directory key");
-	}
-	keyDel (key);
-
-	key = keyNew ("user", KEY_DIR, KEY_END);
-	succeed_if (keyGetMode (key) == 0700, "new key with KEY_DIR not 0700 by default");
-
-	succeed_if (keySetMode (key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyGetMode (key) == 0644, "key is not 0644, but was set");
-
-	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyGetMode (key) == 0744, "key is not 0644, but was set");
-	keyDel (key);
-
-	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
-	succeed_if (keyGetMode (key) == 0544, "0444 set by keyNew");
-	keyDel (key);
-
-	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
-	succeed_if (keyGetMode (key) == 0544, "0555 set by keyNew");
-	keyDel (key);
-}
-
 static void test_keyTime (void)
 {
 	Key * key = keyNew (0);
@@ -1108,17 +1057,6 @@ static void test_keyMeta (void)
 	succeed_if (keyGetGID (key) == 0, "gid not set to 21");
 	keyDel (key);
 
-	key = keyNew (0);
-	succeed_if (keyGetMode (key) == KDB_FILE_MODE, "new key does not have default mode");
-	succeed_if (keySetDir (key) == 0, "could not set dir");
-	succeed_if (keyGetMode (key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
-	keyDel (key);
-
-	key = keyNew ("user/dir", KEY_DIR, KEY_END);
-	succeed_if (keyGetMode (key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
-	succeed_if (keySetDir (key) == 0, "could not set dir");
-	succeed_if (keyGetMode (key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
-	keyDel (key);
 }
 
 static void test_elektraKeySetName (void)
@@ -1668,7 +1606,6 @@ int main (int argc, char ** argv)
 	test_keyComment ();
 	test_keyOwner ();
 	test_keyComment ();
-	test_keyDir ();
 	test_keyTime ();
 	test_keyMeta ();
 	test_owner ();

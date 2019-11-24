@@ -28,59 +28,7 @@ static void test_ro (void)
 	keyDel (key);
 }
 
-static void test_uid (void)
-{
-	Key * key;
 
-	key = keyNew ("user/uid", KEY_UID, 100, KEY_END);
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "100");
-	succeed_if (keyGetUID (key) == 100, "uid was not set correctly");
-
-	succeed_if (keySetUID (key, 101) == 0, "could not set uid");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "101");
-	succeed_if (keyGetUID (key) == 101, "uid was not set correctly");
-
-	succeed_if (keySetUID (key, 0) == 0, "could not set uid");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "0");
-	succeed_if (keyGetUID (key) == 0, "uid was not set correctly");
-
-	succeed_if (keySetUID (key, (uid_t) -1) == 0, "could not set uid");
-	warn_if_fail (!strcmp (keyValue (keyGetMeta (key, "uid")), "-1"),
-		      "this is for 64bit, other platforms might have other results here");
-	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
-
-	succeed_if (keySetMeta (key, "uid", "102") == sizeof ("102"), "could not set meta");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "102");
-	succeed_if (keyGetUID (key) == 102, "uid was not set correctly");
-
-	succeed_if (keySetMeta (key, "uid", "x") == sizeof ("x"), "could not set meta");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "x");
-	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
-
-	succeed_if (keySetMeta (key, "uid", "x1") == sizeof ("x1"), "could not set meta");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "x1");
-	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
-
-	succeed_if (keySetMeta (key, "uid", "2000000") == sizeof ("2000000"), "could not set large uid");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "2000000");
-	succeed_if (keyGetUID (key) == 2000000, "large uid was not set correctly");
-
-	succeed_if (keySetMeta (key, "uid", "1x") == sizeof ("1x"), "could not set meta");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "1x");
-	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
-
-	succeed_if (keySetMeta (key, "uid", "50x") == sizeof ("50x"), "could not set meta");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "50x");
-	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
-
-	keyDel (key);
-
-	key = keyNew ("user/uid", KEY_END);
-	succeed_if (keyValue (keyGetMeta (key, "uid")) == 0, "got value, but uid was not set up to now");
-	succeed_if (keyGetUID (key) == (uid_t) -1, "got value, but uid was not set up to now");
-
-	keyDel (key);
-}
 
 
 static void test_comment (void)
@@ -168,8 +116,8 @@ static void test_mode (void)
 {
 	Key * key;
 
-	key = keyNew ("user/mode", KEY_MODE, 0100, KEY_END);
-	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "100");
+	key = keyNew ("user/mode", KEY_META, "mode", "0100", KEY_END);
+	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "0100");
 	succeed_if (keyGetMode (key) == 0100, "mode was not set correctly");
 
 	succeed_if (keySetMode (key, 0101) == 0, "could not set mode");
@@ -516,7 +464,6 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 	test_ro ();
 
-	test_uid ();
 	test_comment ();
 	test_owner ();
 	test_mode ();

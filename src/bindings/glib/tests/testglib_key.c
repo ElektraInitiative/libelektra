@@ -82,7 +82,7 @@ static GElektraKey * g_bkey = NULL;
 
 static void create_global_keys (void)
 {
-	g_key = gelektra_key_new ("user/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT, "mycomment",
+	g_key = gelektra_key_new ("user:myowner/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT, "mycomment",
 				  GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME, 123,
 				  GELEKTRA_KEY_MTIME, "456", GELEKTRA_KEY_CTIME, 789, GELEKTRA_KEY_DIR, GELEKTRA_KEY_META, "by", "manuel",
 				  GELEKTRA_KEY_END);
