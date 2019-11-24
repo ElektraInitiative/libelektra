@@ -84,7 +84,6 @@ int tomlWrite (KeySet * keys, Key * parent)
 {
 	addMissingArrayKeys (keys, parent);
 	pruneInvalidArrayKeys (keys);
-	dumpKS (keys);
 	ksRewind (keys);
 
 	size_t arraySize = ksGetSize (keys);
