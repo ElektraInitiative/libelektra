@@ -59,11 +59,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
 
-### <<Plugin3>>
+### Yan LR
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 
 ## Libraries
 
