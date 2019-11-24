@@ -133,6 +133,7 @@ char * intToStr (size_t i)
 
 void setOrderForKey (Key * key, size_t order)
 {
+	printf("Set order for %s to %lu\n", keyName(key), order);
 	setPlainIntMeta (key, "order", order);
 }
 

@@ -391,38 +391,36 @@ static int writeScalar (Key * key, Writer * writer)
 	}
 	keyRewindMeta (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
+	const char * valueStr = keyString(key);
 	if (origValue != NULL)
 	{
-		result |= fputs (keyString (origValue), writer->f) == EOF;
+		valueStr = keyString(origValue);
 	}
-	else
+
+	if (elektraStrLen (valueStr) == 1)
 	{
-		const char * valueStr = keyString (key);
-		if (elektraStrLen (valueStr) == 1)
+		result |= fputs ("''", writer->f) == EOF;
+	}
+	else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
+	{
+		result |= fputs (valueStr, writer->f) == EOF;
+	}
+	else if (isBoolean (valueStr))
+	{
+		if (isTrue (valueStr))
 		{
-			result |= fputs ("''", writer->f) == EOF;
-		}
-		else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
-		{
-			result |= fputs (valueStr, writer->f) == EOF;
-		}
-		else if (isBoolean (valueStr))
-		{
-			if (isTrue (valueStr))
-			{
-				result |= fputs ("true", writer->f) == EOF;
-			}
-			else
-			{
-				result |= fputs ("false", writer->f) == EOF;
-			}
+			result |= fputs ("true", writer->f) == EOF;
 		}
 		else
 		{
-			result |= fputc ('"', writer->f) == EOF;
-			result |= fputs (valueStr, writer->f) == EOF;
-			result |= fputc ('"', writer->f) == EOF;
+			result |= fputs ("false", writer->f) == EOF;
 		}
+	}
+	else
+	{
+		result |= fputc ('"', writer->f) == EOF;
+		result |= fputs (valueStr, writer->f) == EOF;
+		result |= fputc ('"', writer->f) == EOF;
 	}
 	return result;
 }

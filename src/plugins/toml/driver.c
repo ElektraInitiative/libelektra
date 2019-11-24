@@ -255,6 +255,7 @@ void driverExitOptCommentTable (Driver * driver)
 		{
 			// We need to emit the table array key ending with /#n (having no value)
 			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
+			setOrderForKey (driver->parentStack->key, driver->order++);
 			ksAppendKey (driver->keys, driver->parentStack->key);
 		}
 	}
@@ -443,12 +444,13 @@ void driverExitTableArray (Driver * driver)
 		}
 	}
 	driver->parentStack = popParent (driver->parentStack); // pop key name without any indices (was pushed after exiting key)
-	driver->order--;				       // Undo order increment, table array entries are ordered by their index
+	driver->order--;				       // Undo order increment
 
 	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
 	Key * rootNameKey = keyDup (key);
 	keyAddName (rootNameKey, "..");
 	Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
+
 	if (existingRoot == NULL)
 	{
 		existingRoot = rootNameKey;
@@ -463,6 +465,7 @@ void driverExitTableArray (Driver * driver)
 		keyUpdateArrayMetakey (existingRoot, driver->tableArrayStack->currIndex);
 	}
 
+	// setOrderForKey (key, driver->order++);
 	driver->parentStack = pushParent (driver->parentStack, key);
 
 	driverDrainCommentsToKey (driver->parentStack->key, driver);
@@ -895,7 +898,8 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 				elektraFree (orig);
 			}
 			break;
-		case SCALAR_BOOLEAN: // done by type plugin
+		case SCALAR_BOOLEAN:
+			keySetMeta(driver->parentStack->key, "type", "boolean");
 			break;
 		default:
 			if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
