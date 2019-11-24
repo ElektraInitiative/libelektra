@@ -19,7 +19,7 @@ bool isEmptyArray(Key * key);
 size_t getArrayMax (Key * key);
 const Key * findMetaKey (Key * key, const char * metakeyName);
 bool isArray (Key * key);
-bool isType (Key * key, const char * type);
+bool isTomlType (Key * key, const char * type);
 bool isTableArray (Key * key);
 bool isInlineTable (Key * key);
 char * getRelativeKeyName (const Key * parent, const Key * key);

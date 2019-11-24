@@ -142,17 +142,17 @@ bool isArray (Key * key)
 
 bool isInlineTable (Key * key)
 {
-	return isType (key, "inlinetable");
+	return isTomlType (key, "inlinetable");
 }
 
 bool isTableArray (Key * key)
 {
-	return isType (key, "tablearray");
+	return isTomlType (key, "tablearray");
 }
 
-bool isType (Key * key, const char * type)
+bool isTomlType (Key * key, const char * type)
 {
-	const Key * meta = findMetaKey (key, "type");
+	const Key * meta = findMetaKey (key, "tomltype");
 	if (meta == NULL)
 	{
 		return false;
