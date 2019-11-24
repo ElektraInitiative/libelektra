@@ -9,7 +9,7 @@
 #ifndef KDBERRORS_H
 #define KDBERRORS_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbmacros.h>
