@@ -480,6 +480,7 @@ void driverEnterArray (Driver * driver)
 	if (meta != NULL) {
 		ELEKTRA_ASSERT(elektraStrCmp(keyString(meta), "") != 0, "Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
 		Key * key = keyAppendIndex(0, driver->parentStack->key);
+		setOrderForKey (key, driver->order++);
 		driver->parentStack = pushParent(driver->parentStack, key);
 	}
 	keySetMeta (driver->parentStack->key, "array", "");
@@ -529,6 +530,7 @@ void driverEnterArrayElement (Driver * driver)
 	}
 
 	Key * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
+	setOrderForKey(key, driver->order++);
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);
