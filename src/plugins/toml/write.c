@@ -192,7 +192,6 @@ static Key * getNextKey (Writer * writer)
 
 static int writeKeys (Key * parent, Writer * writer)
 {
-	// printf ("*** WRITE KEYS FOR %s\n", keyName (parent));
 	Key * key = getCurrentKey(writer);
 
 	int result = 0;
@@ -382,7 +381,6 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 
 static int writeScalar (Key * key, Writer * writer)
 {
-	// printf ("**** Writing scalar: Key = '%s', Value = '%s'\n", keyName (key), keyString (key));
 	int result = 0;
 	if (keyGetValueSize (key) == 0)
 	{
