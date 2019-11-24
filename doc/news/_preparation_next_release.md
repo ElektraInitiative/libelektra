@@ -122,6 +122,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
+- We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
