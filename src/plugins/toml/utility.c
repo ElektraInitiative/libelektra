@@ -6,17 +6,16 @@
 #include <string.h>
 
 void dumpKS(KeySet * keys) {
+	FILE * f = fopen("keys.txt", "w");
 	ksRewind (keys);
-	printf ("***PRINT KEYS***\n");
 	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
 	{
-		printf ("KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
+		fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
 		keyRewindMeta (key);
 		for (const Key * meta = keyNextMeta(key); meta != NULL; meta = keyNextMeta(key)) {
-			printf ("\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
+			fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
 		}
 	}
-	printf ("***END PRINT KEYS***\n");
 	ksRewind (keys);
 }
 

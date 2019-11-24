@@ -888,7 +888,7 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 	if (kam) aorder = atoi (keyString (kam));
 	if (kbm) border = atoi (keyString (kbm));
 
-	if (aorder > 0 && border > 0) return aorder - border;
+	if (aorder >= 0 && border >= 0) return aorder - border;
 
 	if (aorder < 0 && border < 0) return 0;
 
