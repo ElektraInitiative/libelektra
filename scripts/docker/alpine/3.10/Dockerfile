@@ -9,19 +9,13 @@ RUN apk update \
         diffutils \
         file \
         git \
+        gtest-dev \
         ninja \
         ronn \
         yaml-cpp-dev
 
 # Google Test
-ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.10.0
-RUN mkdir -p ${GTEST_ROOT} \
-    && cd /tmp \
-    && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
-    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
-    && rm gtest.tar.gz
+ENV GTEST_ROOT=/usr/include/gtest
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
