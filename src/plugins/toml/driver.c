@@ -419,16 +419,16 @@ void driverExitTableArray (Driver * driver)
 	{
 		return;
 	}
-	int rel = driver->tableArrayStack == NULL ? -1 : keyRel (driver->tableArrayStack->key, driver->parentStack->key);
-	if (rel == 0) // same table array name -> next element
+	
+	if (driver->tableArrayStack != NULL && keyCmp(driver->tableArrayStack->key, driver->parentStack->key) == 0) // same table array name -> next element
 	{
 		driver->tableArrayStack->currIndex++;
 	}
-	else if (rel > 0) // below top name -> push new sub table array
+	else if (driver->tableArrayStack != NULL && keyIsBelow(driver->tableArrayStack->key, driver->parentStack->key)) // below top name -> push new sub table array
 	{
 		driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
 	}
-	else if (rel < 0) // no relation, pop table array stack until some relation exists (or NULL)
+	else // no relation, pop table array stack until some relation exists (or NULL)
 	{
 		while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->parentStack->key) < 0)
 		{
