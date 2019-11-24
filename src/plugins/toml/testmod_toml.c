@@ -222,7 +222,6 @@ static void testReadCompare (const char * filename, KeySet * expected)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 		    "Expected kdbGet to succeed, but got failure.");
 
-	dumpKS (ks);
 	compare_keyset (expected, ks);
 
 	ksDel (ks);
