@@ -1,20 +1,12 @@
 include (LibAddMacros)
 
-file (GLOB
-      HDR_FILES
-      *.hpp
-      gen/*.hpp
-      gen/*/*.hpp)
+file (GLOB HDR_FILES *.hpp gen/*.hpp gen/*/*.hpp)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-file (GLOB
-      SRC_FILES
-      *.cpp
-      gen/*.cpp
-      gen/*/*.cpp)
+file (GLOB SRC_FILES *.cpp gen/*.cpp gen/*/*.cpp)
 list (REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/gen/templates/collect.cpp")
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
@@ -29,12 +21,7 @@ if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
 	add_dependencies (kdb kdb_gen_templates_generated)
 
-	target_link_libraries (kdb
-			       elektra-core
-			       elektra-kdb
-			       elektratools
-			       elektra-opts
-			       elektra-merge)
+	target_link_libraries (kdb elektra-core elektra-kdb elektratools elektra-opts elektra-merge)
 
 	install (TARGETS kdb DESTINATION bin)
 endif (BUILD_SHARED)

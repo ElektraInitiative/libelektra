@@ -10,7 +10,8 @@ if (DEPENDENCY_PHASE)
 	endif (NOT HAVE_FTS_H)
 endif (DEPENDENCY_PHASE)
 
-add_plugin (multifile
-	    SOURCES multifile.h multifile.c
-	    LINK_ELEKTRA elektra-kdb elektra-invoke
-	    TEST_README)
+add_plugin (
+	multifile
+	SOURCES multifile.h multifile.c
+	LINK_ELEKTRA elektra-kdb elektra-invoke
+	TEST_README)

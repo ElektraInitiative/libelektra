@@ -7,9 +7,10 @@ if (DEPENDENCY_PHASE)
 
 	# Make sure we use the correct Python version on macOS
 	if (APPLE AND PYTHON2INTERP_FOUND)
-		execute_process (COMMAND ${PYTHON2_EXECUTABLE}-config --prefix
-				 OUTPUT_VARIABLE PYTHON2_LIBRARY_PREFIX
-				 OUTPUT_STRIP_TRAILING_WHITESPACE)
+		execute_process (
+			COMMAND ${PYTHON2_EXECUTABLE}-config --prefix
+			OUTPUT_VARIABLE PYTHON2_LIBRARY_PREFIX
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
 		set (PYTHON2_LIBRARY ${PYTHON2_LIBRARY_PREFIX}/lib/libpython${PYTHON2_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
 		set (PYTHON2_INCLUDE_DIR ${PYTHON2_LIBRARY_PREFIX}/include/python${PYTHON2_VERSION})
 	endif (APPLE AND PYTHON2INTERP_FOUND)
@@ -17,23 +18,20 @@ if (DEPENDENCY_PHASE)
 	find_package (Python2Libs ${PYTHON2_VERSION} QUIET)
 	find_package (Pluginprocess)
 	find_swig ()
-	check_binding_included ("swig_python2"
-				BINDING_WAS_ADDED
-				SUBDIRECTORY
-				"swig/python2"
-				SILENT)
+	check_binding_included ("swig_python2" BINDING_WAS_ADDED SUBDIRECTORY "swig/python2" SILENT)
 
 	if (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 		remove_plugin (python2 "python2 is for python 2.7 only and not ${PYTHON2LIBS_VERSION_STRING}")
-	elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND PLUGINPROCESS_FOUND AND NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX))
+	elseif (
+		PYTHON2LIBS_FOUND
+		AND SWIG_FOUND
+		AND BINDING_WAS_ADDED
+		AND PLUGINPROCESS_FOUND
+		AND NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX))
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
-				    COMMAND ${SWIG_EXECUTABLE}
-					    -c++
-					    -python
-					    -external-runtime
-					    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h)
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime
+											 ${CMAKE_CURRENT_BINARY_DIR}/runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
@@ -42,17 +40,15 @@ if (DEPENDENCY_PHASE)
 		elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
 		endif ()
-		set_source_files_properties ("python.cpp"
-					     PROPERTIES
-					     COMPILE_FLAGS
-					     "${SWIG_COMPILE_FLAGS}")
+		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 		set (PYTHON_PLUGIN_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}/python2")
 		set (PYTHON_GET_MODULES_DIR_COMMAND
 		     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
-		execute_process (COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
-				 OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
-				 OUTPUT_STRIP_TRAILING_WHITESPACE)
+		execute_process (
+			COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+			OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 		configure_file (config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -70,18 +66,13 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (python2 CPP
-	    SOURCES python.hpp
-		    python.cpp
-		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
-		    ${CMAKE_CURRENT_BINARY_DIR}/config.h
-	    INCLUDE_DIRECTORIES ${PYTHON2_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${PYTHON2_LIBRARIES}
-	    LINK_ELEKTRA elektra-pluginprocess
-	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb
-				SWIG_RUNTIME=\"runtime.h\"
-				PYTHON_PLUGIN_NAME=python2
-				PYTHON_PLUGIN_SYMBOL_NAME=Python2)
+add_plugin (
+	python2 CPP
+	SOURCES python.hpp python.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h ${CMAKE_CURRENT_BINARY_DIR}/config.h
+	INCLUDE_DIRECTORIES ${PYTHON2_INCLUDE_DIRS}
+	LINK_LIBRARIES ${PYTHON2_LIBRARIES}
+	LINK_ELEKTRA elektra-pluginprocess
+	COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb SWIG_RUNTIME=\"runtime.h\" PYTHON_PLUGIN_NAME=python2 PYTHON_PLUGIN_SYMBOL_NAME=Python2)
 
 if (DEPENDENCY_PHASE)
 

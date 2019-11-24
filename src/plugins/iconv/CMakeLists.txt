@@ -11,8 +11,9 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (iconv
-	    SOURCES conv.h iconv.c
-	    INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${Iconv_LIBRARIES}
-	    ADD_TEST TEST_README)
+add_plugin (
+	iconv
+	SOURCES conv.h iconv.c
+	INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
+	LINK_LIBRARIES ${Iconv_LIBRARIES}
+	ADD_TEST TEST_README)

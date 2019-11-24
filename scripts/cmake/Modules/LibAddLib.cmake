@@ -3,7 +3,10 @@ function (set_additional_compile_definitions shortname)
 		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_MODULE_NAME=${shortname}")
 	endif ()
 
-	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
+	set (
+		ADDITIONAL_COMPILE_DEFINITIONS
+		"${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}"
+		PARENT_SCOPE)
 	unset (ADDITIONAL_COMPILE_DEFINITIONS_PARTS)
 endfunction (set_additional_compile_definitions)
 
@@ -13,7 +16,7 @@ function (add_lib name)
 		"CPP" # optional keywords
 		"" # one value keywords
 		"SOURCES;LINK_LIBRARIES;LINK_ELEKTRA;INCLUDE_DIRECTORIES;INCLUDE_SYSTEM_DIRECTORIES;COMPILE_DEFINITIONS" # multi value
-															 # keywords
+		# keywords
 		${ARGN})
 	add_headers (ARG_SOURCES)
 	if (ARG_CPP)
@@ -29,9 +32,10 @@ function (add_lib name)
 
 	set_additional_compile_definitions (${name})
 
-	set_property (TARGET elektra-${name}-objects
-		      APPEND
-		      PROPERTY COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
+	set_property (
+		TARGET elektra-${name}-objects
+		APPEND
+		PROPERTY COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
 
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED $<TARGET_OBJECTS:elektra-${name}-objects>)
@@ -47,8 +51,8 @@ function (add_lib name)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
 
 		if (${LD_ACCEPTS_VERSION_SCRIPT})
-			set_target_properties (elektra-${name}
-					       PROPERTIES LINK_FLAGS "-Wl,--version-script='${CMAKE_BINARY_DIR}/src/libs/symbols.map'")
+			set_target_properties (elektra-${name} PROPERTIES LINK_FLAGS
+									  "-Wl,--version-script='${CMAKE_BINARY_DIR}/src/libs/symbols.map'")
 		endif ()
 
 		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)

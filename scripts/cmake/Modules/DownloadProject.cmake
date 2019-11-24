@@ -96,23 +96,20 @@ include (CMakeParseArguments)
 function (download_project)
 
 	set (options QUIET)
-	set (oneValueArgs
-	     PROJ
-	     PREFIX
-	     DOWNLOAD_DIR
-	     SOURCE_DIR
-	     BINARY_DIR # Prevent the following from being passed through
-	     CONFIGURE_COMMAND
-	     BUILD_COMMAND
-	     INSTALL_COMMAND
-	     TEST_COMMAND)
+	set (
+		oneValueArgs
+		PROJ
+		PREFIX
+		DOWNLOAD_DIR
+		SOURCE_DIR
+		BINARY_DIR # Prevent the following from being passed through
+		CONFIGURE_COMMAND
+		BUILD_COMMAND
+		INSTALL_COMMAND
+		TEST_COMMAND)
 	set (multiValueArgs "")
 
-	cmake_parse_arguments (DL_ARGS
-			       "${options}"
-			       "${oneValueArgs}"
-			       "${multiValueArgs}"
-			       ${ARGN})
+	cmake_parse_arguments (DL_ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	# Hide output if requested
 	if (DL_ARGS_QUIET)
@@ -127,11 +124,7 @@ function (download_project)
 	if (NOT DL_ARGS_PREFIX)
 		set (DL_ARGS_PREFIX "${CMAKE_BINARY_DIR}")
 	else ()
-		get_filename_component (DL_ARGS_PREFIX
-					"${DL_ARGS_PREFIX}"
-					ABSOLUTE
-					BASE_DIR
-					"${CMAKE_CURRENT_BINARY_DIR}")
+		get_filename_component (DL_ARGS_PREFIX "${DL_ARGS_PREFIX}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 	endif ()
 	if (NOT DL_ARGS_DOWNLOAD_DIR)
 		set (DL_ARGS_DOWNLOAD_DIR "${DL_ARGS_PREFIX}/${DL_ARGS_PROJ}-download")
@@ -144,8 +137,14 @@ function (download_project)
 	if (NOT DL_ARGS_BINARY_DIR)
 		set (DL_ARGS_BINARY_DIR "${DL_ARGS_PREFIX}/${DL_ARGS_PROJ}-build")
 	endif ()
-	set (${DL_ARGS_PROJ}_SOURCE_DIR "${DL_ARGS_SOURCE_DIR}" PARENT_SCOPE)
-	set (${DL_ARGS_PROJ}_BINARY_DIR "${DL_ARGS_BINARY_DIR}" PARENT_SCOPE)
+	set (
+		${DL_ARGS_PROJ}_SOURCE_DIR
+		"${DL_ARGS_SOURCE_DIR}"
+		PARENT_SCOPE)
+	set (
+		${DL_ARGS_PROJ}_BINARY_DIR
+		"${DL_ARGS_BINARY_DIR}"
+		PARENT_SCOPE)
 
 	# The way that CLion manages multiple configurations, it causes a copy of the CMakeCache.txt to be copied across due to it not
 	# expecting there to be a project within a project.  This causes the hard-coded paths in the cache to be copied and builds to fail.
@@ -157,20 +156,17 @@ function (download_project)
 	# cause anything to be updated, so extra rebuilds of the project won't occur. Make sure to pass through CMAKE_MAKE_PROGRAM in case
 	# the main project has this set to something not findable on the PATH.
 	configure_file ("${_DownloadProjectDir}/DownloadProject.CMakeLists.cmake.in" "${DL_ARGS_DOWNLOAD_DIR}/CMakeLists.txt")
-	execute_process (COMMAND ${CMAKE_COMMAND}
-				 -G
-				 "${CMAKE_GENERATOR}"
-				 -D
-				 "CMAKE_MAKE_PROGRAM:FILE=${CMAKE_MAKE_PROGRAM}"
-				 .
-			 RESULT_VARIABLE result ${OUTPUT_QUIET}
-			 WORKING_DIRECTORY "${DL_ARGS_DOWNLOAD_DIR}")
+	execute_process (
+		COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -D "CMAKE_MAKE_PROGRAM:FILE=${CMAKE_MAKE_PROGRAM}" .
+		RESULT_VARIABLE result ${OUTPUT_QUIET}
+		WORKING_DIRECTORY "${DL_ARGS_DOWNLOAD_DIR}")
 	if (result)
 		message (FATAL_ERROR "CMake step for ${DL_ARGS_PROJ} failed: ${result}")
 	endif ()
-	execute_process (COMMAND ${CMAKE_COMMAND} --build .
-			 RESULT_VARIABLE result ${OUTPUT_QUIET}
-			 WORKING_DIRECTORY "${DL_ARGS_DOWNLOAD_DIR}")
+	execute_process (
+		COMMAND ${CMAKE_COMMAND} --build .
+		RESULT_VARIABLE result ${OUTPUT_QUIET}
+		WORKING_DIRECTORY "${DL_ARGS_DOWNLOAD_DIR}")
 	if (result)
 		message (FATAL_ERROR "Build step for ${DL_ARGS_PROJ} failed: ${result}")
 	endif ()

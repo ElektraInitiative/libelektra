@@ -48,29 +48,37 @@ include (LibAddMacros)
 #   endif ()
 # ~~~
 function (check_binding_included BINDING_NAME OUTVARIABLE)
-	cmake_parse_arguments (ARG
-			       "SILENT" # optional keywords
-			       "" # one value keywords
-			       "" # multi value keywords
-			       ${ARGN})
+	cmake_parse_arguments (
+		ARG
+		"SILENT" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN})
 
-	check_item_is_excluded (IS_EXCLUDED
-				BINDINGS
-				${BINDING_NAME}
-				SUBDIRECTORY
-				${BINDING_NAME}
-				BASEDIRECTORY
-				"${CMAKE_SOURCE_DIR}/src/bindings"
-				ENABLE_PROVIDES
-				${ARGN})
+	check_item_is_excluded (
+		IS_EXCLUDED
+		BINDINGS
+		${BINDING_NAME}
+		SUBDIRECTORY
+		${BINDING_NAME}
+		BASEDIRECTORY
+		"${CMAKE_SOURCE_DIR}/src/bindings"
+		ENABLE_PROVIDES
+		${ARGN})
 	if (IS_EXCLUDED)
 		if (ARG_SILENT) # make sure that the exclusion message is not printed
 			set (IS_EXCLUDED "silent")
 		endif ()
 		exclude_binding (${BINDING_NAME} ${IS_EXCLUDED})
-		set (${OUTVARIABLE} "NO" PARENT_SCOPE)
+		set (
+			${OUTVARIABLE}
+			"NO"
+			PARENT_SCOPE)
 	else ()
-		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
+		set (
+			${OUTVARIABLE}
+			"YES"
+			PARENT_SCOPE)
 	endif ()
 endfunction (check_binding_included)
 
@@ -87,19 +95,26 @@ endfunction (check_binding_included)
 #    add_binding ("anynameyouwant")
 # ~~~
 function (add_binding BINDING_NAME)
-	cmake_parse_arguments (ARG
-			       "ONLY_SHARED" # optional keywords
-			       "" # one value keywords
-			       "" # multi value keywords
-			       ${ARGN})
+	cmake_parse_arguments (
+		ARG
+		"ONLY_SHARED" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN})
 
 	if (ADDED_BINDINGS)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
 		list (SORT TMP)
 		list (REMOVE_DUPLICATES TMP)
-		set (ADDED_BINDINGS "${TMP}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
+		set (
+			ADDED_BINDINGS
+			"${TMP}"
+			CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	else ()
-		set (ADDED_BINDINGS "${BINDING_NAME}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
+		set (
+			ADDED_BINDINGS
+			"${BINDING_NAME}"
+			CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	endif ()
 
 	set (STATUS_MESSAGE "Include Binding ${BINDING_NAME}")
@@ -129,11 +144,12 @@ endfunction (add_binding)
 #  exclude_binding (fstab "mntent is missing")
 # ~~~
 function (exclude_binding name reason)
-	cmake_parse_arguments (ARG
-			       "REMOVE" # optional keywords
-			       "" # one value keywords
-			       "" # multi value keywords
-			       ${ARGN})
+	cmake_parse_arguments (
+		ARG
+		"REMOVE" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN})
 
 	if (NOT ${reason} STREQUAL "silent")
 		message (STATUS "Exclude Binding ${name} because ${reason}")
@@ -142,7 +158,10 @@ function (exclude_binding name reason)
 		if (ADDED_BINDINGS)
 			set (TMP ${ADDED_BINDINGS})
 			list (REMOVE_ITEM TMP ${name})
-			set (ADDED_BINDINGS ${TMP} CACHE STRING ${ADDED_BINDINGS_DOC} FORCE)
+			set (
+				ADDED_BINDINGS
+				${TMP}
+				CACHE STRING ${ADDED_BINDINGS_DOC} FORCE)
 		endif ()
 	else ()
 		list (FIND ADDED_BINDINGS "${name}" FOUND_NAME)
@@ -175,9 +194,15 @@ endfunction (exclude_binding)
 function (check_binding_was_added BINDING_NAME OUTVARIABLE)
 	list (FIND ADDED_BINDINGS ${BINDING_NAME} FINDEX)
 	if (FINDEX GREATER -1)
-		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
+		set (
+			${OUTVARIABLE}
+			"YES"
+			PARENT_SCOPE)
 	else ()
-		set (${OUTVARIABLE} "NO" PARENT_SCOPE)
+		set (
+			${OUTVARIABLE}
+			"NO"
+			PARENT_SCOPE)
 	endif ()
 endfunction (check_binding_was_added)
 
@@ -214,27 +239,34 @@ endfunction (check_binding_was_added)
 # 		remove_something ("io_uv" ${IS_EXCLUDED})
 # 	endif ()
 # ~~~
-function (check_item_is_excluded
-	  OUTVARIABLE
-	  LIST
-	  ITEM_NAME)
-	cmake_parse_arguments (ARG
-			       "ENABLE_PROVIDES;NO_CATEGORIES" # optional keywords
-			       "SUBDIRECTORY;BASEDIRECTORY" # one value keywords
-			       "" # multi value keywords
-			       ${ARGN})
-	set (${OUTVARIABLE} "NO" PARENT_SCOPE)
+function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
+	cmake_parse_arguments (
+		ARG
+		"ENABLE_PROVIDES;NO_CATEGORIES" # optional keywords
+		"SUBDIRECTORY;BASEDIRECTORY" # one value keywords
+		"" # multi value keywords
+		${ARGN})
+	set (
+		${OUTVARIABLE}
+		"NO"
+		PARENT_SCOPE)
 
 	list (FIND ${LIST} "-${ITEM_NAME}" FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
-		set (${OUTVARIABLE} "explicitly excluded" PARENT_SCOPE) # let explicit exclusion win
+		set (
+			${OUTVARIABLE}
+			"explicitly excluded"
+			PARENT_SCOPE) # let explicit exclusion win
 
 		return ()
 	endif ()
 
 	list (FIND ${LIST} "${ITEM_NAME}" FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
-		set (${OUTVARIABLE} "silent" PARENT_SCOPE) # maybe it is included by category
+		set (
+			${OUTVARIABLE}
+			"silent"
+			PARENT_SCOPE) # maybe it is included by category
 
 	else ()
 
@@ -260,36 +292,14 @@ function (check_item_is_excluded
 		message (WARNING "readme file does not exist at ${README_FILE}")
 	else ()
 		file (READ ${README_FILE} contents)
-		string (REGEX MATCH
-			      "- +infos/status *= *([-a-zA-Z0-9 ]*)"
-			      CATEGORIES
-			      "${contents}")
-		string (REGEX
-			REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)"
-				"\\1"
-				CATEGORIES
-				"${CATEGORIES}")
-		string (REGEX
-			REPLACE " "
-				";"
-				CATEGORIES
-				"${CATEGORIES}")
+		string (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
+		string (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+		string (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
 
 		if (ARG_ENABLE_PROVIDES)
-			string (REGEX MATCH
-				      "- +infos/provides *= *([a-zA-Z0-9/ ]*)"
-				      PROVIDES
-				      "${contents}")
-			string (REGEX
-				REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)"
-					"\\1"
-					PROVIDES
-					"${PROVIDES}")
-			string (REGEX
-				REPLACE " "
-					";"
-					PROVIDES
-					"${PROVIDES}")
+			string (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
+			string (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
+			string (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
 			split_plugin_providers (PROVIDES)
 			list (APPEND CATEGORIES "${PROVIDES}")
 		endif ()
@@ -301,7 +311,10 @@ function (check_item_is_excluded
 	foreach (CAT ${CATEGORIES})
 		list (FIND ${LIST} "-${CAT}" FOUND_EXCLUDE_CATEGORY)
 		if (FOUND_EXCLUDE_CATEGORY GREATER -1)
-			set (${OUTVARIABLE} "excluded by category ${CAT}" PARENT_SCOPE)
+			set (
+				${OUTVARIABLE}
+				"excluded by category ${CAT}"
+				PARENT_SCOPE)
 			return ()
 		endif ()
 	endforeach ()
@@ -309,7 +322,10 @@ function (check_item_is_excluded
 	foreach (CAT ${CATEGORIES})
 		list (FIND ${LIST} "${CAT}" FOUND_CATEGORY)
 		if (FOUND_CATEGORY GREATER -1)
-			set (${OUTVARIABLE} "" PARENT_SCOPE)
+			set (
+				${OUTVARIABLE}
+				""
+				PARENT_SCOPE)
 			return ()
 		endif ()
 	endforeach ()

@@ -15,15 +15,16 @@ else () # Build library
 
 	set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 
-	add_lib (io-${BINDING_VARIANT}
-		 SOURCES
-		 ${SOURCES}
-		 LINK_ELEKTRA
-		 elektra-io
-		 LINK_LIBRARIES
-		 ${LIBEV_LIBRARIES}
-		 INCLUDE_SYSTEM_DIRECTORIES
-		 ${LIBEV_INCLUDE_DIRS})
+	add_lib (
+		io-${BINDING_VARIANT}
+		SOURCES
+		${SOURCES}
+		LINK_ELEKTRA
+		elektra-io
+		LINK_LIBRARIES
+		${LIBEV_LIBRARIES}
+		INCLUDE_SYSTEM_DIRECTORIES
+		${LIBEV_INCLUDE_DIRS})
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)
@@ -48,19 +49,15 @@ else () # Build library
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (${testexename} PUBLIC SYSTEM ${LIBEV_INCLUDE_DIRS})
 
-	target_link_elektra (${testexename}
-			     elektra-kdb
-			     elektra-plugin
-			     elektra-io
-			     ${IO_VARIANT_LIBRARY}
-			     m)
+	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
 		target_link_libraries (${testexename} ${LIBEV_LIBRARIES})
 	endif ()
 
-	add_test (NAME ${testexename}
-		  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+	add_test (
+		NAME ${testexename}
+		COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
+		WORKING_DIRECTORY "${WORKING_DIRECTORY}")
 
 	add_subdirectory (example)
 endif ()
