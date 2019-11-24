@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include <benchmarks.h>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <unistd.h>
 
 #define NUM_RUNS 30
