@@ -1029,7 +1029,7 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
   // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
-  // tasks << buildWebsite()
+  tasks << buildWebsite()
   // tasks << buildWebUI()
   return tasks
 }
@@ -1077,7 +1077,7 @@ def buildDebianPackage(stageName, image) {
               sh "gbp buildpackage -sa"
             }
             if(isMaster()) {
-              // publishDebianPackages()
+              publishDebianPackages()
             }
           }
         }
@@ -1335,7 +1335,7 @@ def cnokdbtest() {
  * @param p Pattern to scan for
  */
 def xunitUpload(p = 'build/Testing/**/*.xml') {
-  step([$class: 'XUnitBuilder',
+  step([$class: 'XUnitPublisher',
     thresholds: [
       [$class: 'SkippedThreshold', failureThreshold: '0'],
       [$class: 'FailedThreshold', failureThreshold: '0']
