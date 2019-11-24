@@ -144,7 +144,7 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - <<TODO>>
-- <<TODO>>
+- The CMake code of the code generation does not print warnings about unknown regex operators any more. _(René Schwaiger)_
 - <<TODO>>
 
 ### Docker
