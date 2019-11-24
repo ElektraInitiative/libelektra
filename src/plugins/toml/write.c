@@ -402,10 +402,6 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		result |= fputs ("''", writer->f) == EOF;
 	}
-	else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
-	{
-		result |= fputs (valueStr, writer->f) == EOF;
-	}
 	else if (isBoolean (valueStr))
 	{
 		if (isTrue (valueStr))
@@ -416,6 +412,10 @@ static int writeScalar (Key * key, Writer * writer)
 		{
 			result |= fputs ("false", writer->f) == EOF;
 		}
+	}
+	else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
+	{
+		result |= fputs (valueStr, writer->f) == EOF;
 	}
 	else
 	{
