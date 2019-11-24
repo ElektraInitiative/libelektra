@@ -296,7 +296,6 @@ you up to date with the multi-language support provided by Elektra.
 
 - Fix TODOs. _(Markus Raab)_
 - The [Markdown Shell Recorder][] now also works correctly on FreeBSD. _(René Schwaiger)_
-- Removed deprecated keyNew Flags (KEY\_NAME, KEY\_OWNER, KEY\_COMMENT, KEY\_GID, KEY\_UID, KEY\_DIR, KEY\_CTIME, KEY\_MODE, KEY\_MTIME, KEY\_ATIME) _(Hani Torabi)_
 
 ## Documentation
 
@@ -333,7 +332,6 @@ you up to date with the multi-language support provided by Elektra.
 - We disabled the test `testmod_zeromqsend` from the command `kdb run_all`, since it caused timeouts in high load scenarios. _(Mihael Pranjić)_
 - The (Markdown) [Shell Recorder](../../tests/shell/shell_recorder/README.md) now prints the protocol for a failed test, even if the test modified the database permanently. _(René Schwaiger)_
 - We rerun ctest twice to ignore temporary build failures. _(Markus Raab)_
-- Cleanup deprecated kewNew flag test cases. _(Hani Torabi)_
 
 ## Build
 
@@ -491,4 +489,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
