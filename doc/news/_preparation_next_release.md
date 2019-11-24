@@ -97,8 +97,7 @@ plugins. _(René Schwaiger)_
 - Enforce consistency by writing the magic file footer last. _(Mihael Pranjić)_
 - Filter empty meta KeySets to save space. _(Mihael Pranjić)_
 
-
-- We added a plugin which can be used to parse kconfig ini files into a keyset and save keysets to such files. _(Dardan Haxhimustafa)_
+* We added a plugin which can be used to parse kconfig ini files into a keyset and save keysets to such files. _(Dardan Haxhimustafa)_
 
 ### Mmapstorage
 
