@@ -1,10 +1,6 @@
 function (add_shell_recorder_test FILENAME)
 	set (multiValueArgs REQUIRED_PLUGINS)
-	cmake_parse_arguments (ARG
-			       "${options}"
-			       "${oneValueArgs}"
-			       "${multiValueArgs}"
-			       ${ARGN})
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
 		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
@@ -37,10 +33,7 @@ if (ENABLE_KDB_TESTING)
 
 	add_shell_recorder_test (db_changes.esr)
 	add_shell_recorder_test (host.esr REQUIRED_PLUGINS hosts)
-	add_shell_recorder_test (listtest.esr
-				 REQUIRED_PLUGINS
-				 dump
-				 list)
+	add_shell_recorder_test (listtest.esr REQUIRED_PLUGINS dump list)
 	add_shell_recorder_test (mathcheck.esr REQUIRED_PLUGINS math)
 	add_shell_recorder_test (profiletest.esr)
 	add_shell_recorder_test (script.esr)
@@ -51,13 +44,11 @@ if (ENABLE_KDB_TESTING)
 		foreach (file ${REPLAY_TESTS})
 			get_filename_component (directory ${file} DIRECTORY)
 			get_filename_component (name_without_extension ${file} NAME_WE)
-			add_test (testshell_replay_${name_without_extension}
-				  "${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
-				  "${file}"
+			add_test (testshell_replay_${name_without_extension} "${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh" "${file}"
 				  "${directory}/${name_without_extension}.epf")
 			set_property (TEST testshell_replay_${name_without_extension} PROPERTY LABELS memleak kdbtests)
-			set_property (TEST testshell_replay_${name_without_extension}
-				      PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib)
+			set_property (TEST testshell_replay_${name_without_extension} PROPERTY ENVIRONMENT
+											       LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib)
 			set_property (TEST testshell_replay_${name_without_extension} PROPERTY RUN_SERIAL TRUE)
 		endforeach (file ${SCRIPT_TESTS})
 	endif (ENABLE_REPLAY_TESTS)

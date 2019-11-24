@@ -5,22 +5,16 @@ if (DEPENDENCY_PHASE)
 	find_package (PythonLibs 3 QUIET)
 	find_package (Pluginprocess)
 	find_swig ()
-	check_binding_included ("swig_python"
-				BINDING_WAS_ADDED
-				SUBDIRECTORY
-				"swig/python"
-				SILENT)
+	check_binding_included ("swig_python" BINDING_WAS_ADDED SUBDIRECTORY "swig/python" SILENT)
 
-	if (PYTHONLIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND PLUGINPROCESS_FOUND)
+	if (PYTHONLIBS_FOUND
+	    AND SWIG_FOUND
+	    AND BINDING_WAS_ADDED
+	    AND PLUGINPROCESS_FOUND)
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
-				    COMMAND ${SWIG_EXECUTABLE}
-					    -c++
-					    -python
-					    -py3
-					    -external-runtime
-					    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h)
+				    COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime ${CMAKE_CURRENT_BINARY_DIR}/runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-missing-field-initializers")
@@ -29,17 +23,15 @@ if (DEPENDENCY_PHASE)
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
 		endif ()
 
-		set_source_files_properties ("python.cpp"
-					     PROPERTIES
-					     COMPILE_FLAGS
-					     "${SWIG_COMPILE_FLAGS}")
+		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 		set (PYTHON_PLUGIN_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}/python")
 		set (PYTHON_GET_MODULES_DIR_COMMAND
 		     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
-		execute_process (COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
-				 OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
-				 OUTPUT_STRIP_TRAILING_WHITESPACE)
+		execute_process (
+			COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+			OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 		configure_file (config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 	elseif (NOT PYTHONLIBS_FOUND)
@@ -53,18 +45,13 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (python CPP
-	    SOURCES python.hpp
-		    python.cpp
-		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
-		    ${CMAKE_CURRENT_BINARY_DIR}/config.h
-	    INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${PYTHON_LIBRARIES}
-	    LINK_ELEKTRA elektra-pluginprocess
-	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb
-				SWIG_RUNTIME=\"runtime.h\"
-				PYTHON_PLUGIN_NAME=python
-				PYTHON_PLUGIN_SYMBOL_NAME=Python)
+add_plugin (
+	python CPP
+	SOURCES python.hpp python.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h ${CMAKE_CURRENT_BINARY_DIR}/config.h
+	INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS}
+	LINK_LIBRARIES ${PYTHON_LIBRARIES}
+	LINK_ELEKTRA elektra-pluginprocess
+	COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb SWIG_RUNTIME=\"runtime.h\" PYTHON_PLUGIN_NAME=python PYTHON_PLUGIN_SYMBOL_NAME=Python)
 
 if (ADDTESTING_PHASE)
 	# bindings are required for tests

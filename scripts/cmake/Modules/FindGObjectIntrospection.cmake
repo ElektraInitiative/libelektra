@@ -19,25 +19,21 @@
 # ~~~
 
 macro (_GIR_GET_PKGCONFIG_VAR _outvar _varname)
-	execute_process (COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=${_varname} gobject-introspection-1.0
-			 OUTPUT_VARIABLE _result
-			 RESULT_VARIABLE _null)
+	execute_process (
+		COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=${_varname} gobject-introspection-1.0
+		OUTPUT_VARIABLE _result
+		RESULT_VARIABLE _null)
 
 	if (_null)
 
 	else ()
-		string (REGEX
-			REPLACE "[\r\n]"
-				" "
-				_result
-				"${_result}")
-		string (REGEX
-			REPLACE " +$"
-				""
-				_result
-				"${_result}")
+		string (REGEX REPLACE "[\r\n]" " " _result "${_result}")
+		string (REGEX REPLACE " +$" "" _result "${_result}")
 		separate_arguments (_result)
-		set (${_outvar} ${_result} CACHE INTERNAL "")
+		set (
+			${_outvar}
+			${_result}
+			CACHE INTERNAL "")
 	endif ()
 endmacro (_GIR_GET_PKGCONFIG_VAR)
 
@@ -60,11 +56,12 @@ if (PKG_CONFIG_FOUND)
 	endif ()
 endif ()
 
-mark_as_advanced (INTROSPECTION_SCANNER
-		  INTROSPECTION_COMPILER
-		  INTROSPECTION_GENERATE
-		  INTROSPECTION_GIRDIR
-		  INTROSPECTION_TYPELIBDIR
-		  INTROSPECTION_CFLAGS
-		  INTROSPECTION_LIBS
-		  INTROSPECTION_VERSION)
+mark_as_advanced (
+	INTROSPECTION_SCANNER
+	INTROSPECTION_COMPILER
+	INTROSPECTION_GENERATE
+	INTROSPECTION_GIRDIR
+	INTROSPECTION_TYPELIBDIR
+	INTROSPECTION_CFLAGS
+	INTROSPECTION_LIBS
+	INTROSPECTION_VERSION)

@@ -6,10 +6,11 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (dbus
-	    SOURCES dbus.h dbus.c sendmessage.c
-	    INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
-	    LINK_LIBRARIES ${DBUS_LIBRARIES})
+add_plugin (
+	dbus
+	SOURCES dbus.h dbus.c sendmessage.c
+	INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
+	LINK_LIBRARIES ${DBUS_LIBRARIES})
 
 add_plugintest (dbus testmod_dbus.c receivemessage.c INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
 

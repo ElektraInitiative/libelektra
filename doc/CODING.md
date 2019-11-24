@@ -264,15 +264,15 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
 ```sh
-# Install cmake format `0.5.4` with support for YAML config files
-pip install cmake-format[yaml]==0.5.4
+# Install cmake format `0.6` with support for YAML config files
+pip install cmake-format[yaml]==0.6
 ```
 
-. Please make sure, that you install the correct version (`0.5.4`) of cmake format:
+. Please make sure, that you install the correct version (`0.6.0`) of cmake format:
 
 ```sh
 cmake-format --version
-#> 0.5.4
+#> 0.6.0
 ```
 
 , since otherwise the formatted code might look quite different.

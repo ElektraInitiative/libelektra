@@ -5,9 +5,15 @@ install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATIO
 
 if (INSTALL_SYSTEM_FILES)
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/local/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+		set (
+			BASH_COMPLETION_COMPLETIONSDIR
+			"/usr/local/share/bash-completion/completions"
+			CACHE INTERNAL "bash completions dir")
 	else ()
-		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+		set (
+			BASH_COMPLETION_COMPLETIONSDIR
+			"/usr/share/bash-completion/completions"
+			CACHE INTERNAL "bash completions dir")
 	endif ()
 	find_package (bash-completion QUIET)
 	unset (bash-completion_DIR CACHE)
@@ -21,7 +27,10 @@ if (INSTALL_SYSTEM_FILES)
 			endif ()
 		endif ()
 	endif ()
-	install (FILES kdb-bash-completion DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR} RENAME kdb)
+	install (
+		FILES kdb-bash-completion
+		DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR}
+		RENAME kdb)
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		set (FISH_COMPLETION_COMPLETIONSDIR "/usr/local/share/fish/completions")
 	else ()
@@ -41,10 +50,16 @@ if (INSTALL_SYSTEM_FILES)
 
 		# On macOS we need to copy this into another folder. Because of "System Integrity Protection", we need to use a /usr/local
 		# path
-		install (FILES kdb_zsh_completion DESTINATION /usr/local/share/zsh/site-functions RENAME _kdb)
+		install (
+			FILES kdb_zsh_completion
+			DESTINATION /usr/local/share/zsh/site-functions
+			RENAME _kdb)
 	else ()
 
 		# This Folder is at least the valid folder for Debian
-		install (FILES kdb_zsh_completion DESTINATION /usr/share/zsh/vendor-completions RENAME _kdb)
+		install (
+			FILES kdb_zsh_completion
+			DESTINATION /usr/share/zsh/vendor-completions
+			RENAME _kdb)
 	endif ()
 endif ()

@@ -9,18 +9,19 @@ if (DEPENDENCY_PHASE)
 	endif (NOT YAJL_FOUND)
 endif ()
 
-add_plugin (yajl
-	    SOURCES yajl.c
-		    iterator.c
-		    yajl_gen.c
-		    yajl_gen_open.c
-		    yajl_gen_close.c
-		    yajl_parse.c
-		    name.c
-		    "${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
-	    ADD_TEST TEST_README
-	    TEST_REQUIRED_PLUGINS directoryvalue
-	    INSTALL_TEST_DATA
-	    INCLUDE_DIRECTORIES "${INCL}"
-	    LINK_ELEKTRA elektra-ease
-	    LINK_LIBRARIES ${YAJL_LIBRARIES})
+add_plugin (
+	yajl
+	SOURCES yajl.c
+		iterator.c
+		yajl_gen.c
+		yajl_gen_open.c
+		yajl_gen_close.c
+		yajl_parse.c
+		name.c
+		"${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
+	ADD_TEST TEST_README
+	TEST_REQUIRED_PLUGINS directoryvalue
+	INSTALL_TEST_DATA
+	INCLUDE_DIRECTORIES "${INCL}"
+	LINK_ELEKTRA elektra-ease
+	LINK_LIBRARIES ${YAJL_LIBRARIES})

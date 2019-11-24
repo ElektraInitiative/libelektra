@@ -15,11 +15,7 @@ elseif (NOT BUILD_SHARED)
 	remove_tool (${tool} "Shared build disabled")
 else ()
 
-	string (REGEX
-		REPLACE "[^a-zA-Z]"
-			""
-			tool_name_simplified
-			${tool})
+	string (REGEX REPLACE "[^a-zA-Z]" "" tool_name_simplified ${tool})
 	set (config_root "/sw/elektra/${tool_name_simplified}/#0/")
 	set (config_default_profile "current")
 
@@ -53,19 +49,17 @@ else ()
 	add_library (tmp_${tool} OBJECT ${website-backend_SRCS})
 	add_library (tmp_${tool}_main OBJECT main.cpp)
 	add_executable (${tool} $<TARGET_OBJECTS:tmp_${tool}> $<TARGET_OBJECTS:tmp_${tool}_main>)
-	target_link_libraries (${tool}
-			       ${CPPCMS_LIBRARY}
-			       ${Boost_LIBRARIES}
-			       ${LIBJWT_LIBRARY}
-			       ${OPENSSL_LIBRARIES})
+	target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
 	target_link_libraries (${tool} elektra-core elektratools)
 
 	install (TARGETS ${tool} DESTINATION ${install_directory})
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-			  ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
-		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+			  ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini DESTINATION ${KDB_DB_SPEC} RENAME ${tool}-spec.ini)
+	install (
+		FILES ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini
+		DESTINATION ${KDB_DB_SPEC}
+		RENAME ${tool}-spec.ini)
 
 	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 

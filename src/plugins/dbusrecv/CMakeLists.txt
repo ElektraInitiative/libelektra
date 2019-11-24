@@ -8,12 +8,13 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (dbusrecv
-	    SOURCES dbusrecv.h dbusrecv.c receivemessage.c
-	    OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-dbus>
-	    INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
-	    LINK_ELEKTRA elektra-io elektra-invoke
-	    LINK_LIBRARIES ${DBUS_LIBRARIES})
+add_plugin (
+	dbusrecv
+	SOURCES dbusrecv.h dbusrecv.c receivemessage.c
+	OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-dbus>
+	INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
+	LINK_ELEKTRA elektra-io elektra-invoke
+	LINK_LIBRARIES ${DBUS_LIBRARIES})
 
 set (NOT_INCLUDED "")
 plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
@@ -46,10 +47,11 @@ if (ADDTESTING_PHASE)
 			set (STATIC_LIBRARIES ${libuv_LIBRARIES}) # libuv is present; otherwise io_uv bindings would not be added
 		endif ()
 
-		add_plugintest (dbusrecv
-				TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
-				TEST_LINK_ELEKTRA elektra-io-uv
-				INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
+		add_plugintest (
+			dbusrecv
+			TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
+			TEST_LINK_ELEKTRA elektra-io-uv
+			INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC)

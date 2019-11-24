@@ -12,10 +12,7 @@ find_path (Libgcrypt_INCLUDE_DIR NAMES gcrypt.h)
 find_library (Libgcrypt_LIBRARY NAMES gcrypt)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Libgcrypt
-				   REQUIRED_VARS
-				   Libgcrypt_LIBRARY
-				   Libgcrypt_INCLUDE_DIR)
+find_package_handle_standard_args (Libgcrypt REQUIRED_VARS Libgcrypt_LIBRARY Libgcrypt_INCLUDE_DIR)
 
 mark_as_advanced (Libgcrypt_INCLUDE_DIR Libgcrypt_LIBRARY Libgcrypt_VERSION)
 

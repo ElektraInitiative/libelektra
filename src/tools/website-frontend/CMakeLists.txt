@@ -5,11 +5,7 @@ if (NOT NPM_EXECUTABLE)
 else ()
 
 	# create simplified tool name without special characters
-	string (REGEX
-		REPLACE "[^a-zA-Z]"
-			""
-			tool_name_simplified
-			${tool})
+	string (REGEX REPLACE "[^a-zA-Z]" "" tool_name_simplified ${tool})
 
 	# define configuration path
 	set (config_root "/sw/elektra/${tool_name_simplified}/#0/")
@@ -31,22 +27,16 @@ else ()
 
 	# install files to destination
 	install (DIRECTORY public resources DESTINATION ${install_directory})
-	install (FILES package.json
-		       README.md
-		       ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js
-		       application-config.json.tpl
+	install (FILES package.json README.md ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js application-config.json.tpl
 		 DESTINATION ${install_directory})
-	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool}
-			  ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-			  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
-			  ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
+	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
+			  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool} ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
 		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	# attempt to install npm dependencies
 	install (
-		CODE
-			"execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
-		)
+		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
+	)
 
 	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 

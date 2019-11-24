@@ -36,21 +36,15 @@ endif (NOT HAS_CXX_STD)
 # check if -Wl,--version-script linker option is supported TODO: darwin ld only supports -Wl,-exported_symbols_list + the file syntax is
 # different
 #
-try_compile (ELEKTRA_SYMVER_SUPPORTED
-	     ${CMAKE_BINARY_DIR}/src/symvertest/build
-	     ${CMAKE_SOURCE_DIR}/src/symvertest
-	     symvertest)
+try_compile (ELEKTRA_SYMVER_SUPPORTED ${CMAKE_BINARY_DIR}/src/symvertest/build ${CMAKE_SOURCE_DIR}/src/symvertest symvertest)
 if (ELEKTRA_SYMVER_SUPPORTED)
 	set (ELEKTRA_SYMVER_COMMAND "__asm__(\".symver \" arg1 \", \" arg2);")
 	set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
 else (ELEKTRA_SYMVER_SUPPORTED)
 	set (ELEKTRA_SYMVER_COMMAND "")
 
-	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED
-		     ${CMAKE_BINARY_DIR}/src/symvertest/build
-		     ${CMAKE_SOURCE_DIR}/src/symvertest
-		     symvertest
-		     basic)
+	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED ${CMAKE_BINARY_DIR}/src/symvertest/build ${CMAKE_SOURCE_DIR}/src/symvertest
+		     symvertest basic)
 	if (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
 		set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
 	else (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
@@ -153,7 +147,7 @@ if (ENABLE_ASAN)
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fuse-ld=gold")
 
 		find_package (Threads QUIET) # this is needed because of wrong pthread detection
-					     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
+		# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
 		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")

@@ -13,15 +13,13 @@ if (DEPENDENCY_PHASE)
 	if (OPENSSL_FOUND AND CURL_FOUND)
 		set (CURLGET_INCLUDE_DIRS ${CURL_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
 		set (CURLGET_LIBRARY_DIRS ${CURL_LIBRARIES} ${OPENSSL_LIBRARIES})
-		set_source_files_properties (curlget.c
-					     PROPERTIES
-					     COMPILE_FLAGS
-					     "-Wno-unused-result")
+		set_source_files_properties (curlget.c PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
 	endif ()
 endif ()
 
-add_plugin (curlget
-	    SOURCES curlget.h curlget.c
-	    LINK_ELEKTRA elektra-invoke
-	    INCLUDE_DIRECTORIES ${CURLGET_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${CURLGET_LIBRARY_DIRS})
+add_plugin (
+	curlget
+	SOURCES curlget.h curlget.c
+	LINK_ELEKTRA elektra-invoke
+	INCLUDE_DIRECTORIES ${CURLGET_INCLUDE_DIRS}
+	LINK_LIBRARIES ${CURLGET_LIBRARY_DIRS})
