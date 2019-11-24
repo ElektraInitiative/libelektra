@@ -353,7 +353,6 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
 	bool placeDot = false;
-	size_t len = keyGetUnescapedNameSize (key) - keyGetUnescapedNameSize (parent);
 	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
 	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
 	while (keyPart < keyStop)
