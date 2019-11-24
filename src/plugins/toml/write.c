@@ -392,6 +392,7 @@ static int writeScalar (Key * key, Writer * writer)
 	}
 	keyRewindMeta (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
+	const Key * type = findMetaKey (key, "type");
 	const char * valueStr = keyString(key);
 	if (origValue != NULL)
 	{
@@ -402,7 +403,7 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		result |= fputs ("''", writer->f) == EOF;
 	}
-	else if (isBoolean (valueStr))
+	else if (isBoolean (valueStr) && type != NULL && elektraStrCmp(keyString(type), "boolean") == 0)
 	{
 		if (isTrue (valueStr))
 		{
