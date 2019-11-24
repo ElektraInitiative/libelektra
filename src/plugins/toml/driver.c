@@ -779,7 +779,6 @@ static void extendCurrKey (Driver * driver, const char * name)
 
 static ParentList * pushParent (ParentList * top, Key * key)
 {
-	// printf ("PUSH %s\n", keyName (key));
 	ParentList * parent = elektraCalloc (sizeof (ParentList));
 	parent->key = key;
 	keyIncRef (key);
@@ -789,7 +788,6 @@ static ParentList * pushParent (ParentList * top, Key * key)
 
 static ParentList * popParent (ParentList * top)
 {
-	// printf ("POP %s -> %s\n", keyName (top->key), top->next == NULL ? "NULL" : keyName (top->next->key));
 	ParentList * newTop = top->next;
 	keyDecRef (top->key);
 	keyDel (top->key);
