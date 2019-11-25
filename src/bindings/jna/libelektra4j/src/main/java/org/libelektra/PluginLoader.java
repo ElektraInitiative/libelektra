@@ -13,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class can be used to load Plugins from Elektra.
  * It also loads self implemented Java plugins.
  */
-public class PluginLoader {
+public class PluginLoader
+{
 
 	private Key errorKey;
 	private final Map<String, Plugin> loadedJavaPlugins;
@@ -24,20 +25,22 @@ public class PluginLoader {
 	 * Instantiates a new PluginLoader with the possibility to add a custom error key
 	 * @param errorKey The custom error key
 	 */
-	public PluginLoader(Key errorKey) {
-		this.loadedElektraPlugins = new ConcurrentHashMap<>();
-		this.loadedJavaPlugins = new ConcurrentHashMap<>();
+	public PluginLoader (Key errorKey)
+	{
+		this.loadedElektraPlugins = new ConcurrentHashMap<> ();
+		this.loadedJavaPlugins = new ConcurrentHashMap<> ();
 		this.errorKey = errorKey;
 	}
 
 	/**
 	 * Instantiates a new PluginLoader with a default error key which is empty
 	 */
-	public PluginLoader() {
-		this.loadedElektraPlugins = new ConcurrentHashMap<>();
-		this.loadedJavaPlugins = new ConcurrentHashMap<>();
-		this.errorKey = Key.create("");
-		modules = KeySet.create();
+	public PluginLoader ()
+	{
+		this.loadedElektraPlugins = new ConcurrentHashMap<> ();
+		this.loadedJavaPlugins = new ConcurrentHashMap<> ();
+		this.errorKey = Key.create ("");
+		modules = KeySet.create ();
 	}
 
 	/**
@@ -47,29 +50,35 @@ public class PluginLoader {
 	 * @return the Plugin
 	 * @throws InstallationException if the plugin does not exist
 	 */
-	public Plugin loadJavaPlugin(String name) throws InstallationException {
-		if (loadedJavaPlugins.containsKey(name)) {
-			return loadedJavaPlugins.get(name);
+	public Plugin loadJavaPlugin (String name) throws InstallationException
+	{
+		if (loadedJavaPlugins.containsKey (name))
+		{
+			return loadedJavaPlugins.get (name);
 		}
 		Plugin plugin = null;
-		if (name.equals(Echo.PLUGIN_NAME)) {
-			plugin = new Echo();
+		if (name.equals (Echo.PLUGIN_NAME))
+		{
+			plugin = new Echo ();
 		}
-		if (name.equals(PropertiesStorage.PLUGIN_NAME)) {
-			plugin = new PropertiesStorage();
+		if (name.equals (PropertiesStorage.PLUGIN_NAME))
+		{
+			plugin = new PropertiesStorage ();
 		}
-		if (name.equals(Return.PLUGIN_NAME)) {
-			plugin = new Return();
+		if (name.equals (Return.PLUGIN_NAME))
+		{
+			plugin = new Return ();
 		}
-		if (plugin != null) {
-			loadedJavaPlugins.put(name, plugin);
+		if (plugin != null)
+		{
+			loadedJavaPlugins.put (name, plugin);
 			return plugin;
 		}
 
-		Key error = Key.create("");
-		error.setMeta("error/number", InstallationException.errorNumber());
-		error.setMeta("error/reason", String.format("I could not find java plugin '%s'", name));
-		throw new InstallationException(error);
+		Key error = Key.create ("");
+		error.setMeta ("error/number", InstallationException.errorNumber ());
+		error.setMeta ("error/reason", String.format ("I could not find java plugin '%s'", name));
+		throw new InstallationException (error);
 	}
 
 	/**
@@ -79,12 +88,14 @@ public class PluginLoader {
 	 * @return the Plugin
 	 * @throws InstallationException if the plugin does not exist
 	 */
-	public Plugin loadElektraPlugin(String name) throws InstallationException {
-		if (loadedElektraPlugins.containsKey(name)) {
-			return loadedElektraPlugins.get(name);
+	public Plugin loadElektraPlugin (String name) throws InstallationException
+	{
+		if (loadedElektraPlugins.containsKey (name))
+		{
+			return loadedElektraPlugins.get (name);
 		}
-		Plugin plugin = new NativePlugin(name, errorKey, modules);
-		loadedElektraPlugins.put(name, plugin);
+		Plugin plugin = new NativePlugin (name, errorKey, modules);
+		loadedElektraPlugins.put (name, plugin);
 		return plugin;
 	}
 }

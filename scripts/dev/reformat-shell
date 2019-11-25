@@ -26,10 +26,10 @@ additional_files=$(
 		'scripts/completion/install-sh-completion.in' \
 		'scripts/kdb/list-tools.in' \
 		'scripts/make-source-package.in' \
-		'scripts/run_all.in' \
-		'scripts/run_memcheck.in' \
-		'scripts/run_nocheckshell.in' \
-		'scripts/run_nokdbtests.in'; do
+		'scripts/dev/run_all.in' \
+		'scripts/dev/run_memcheck.in' \
+		'scripts/dev/run_nocheckshell.in' \
+		'scripts/dev/run_nokdbtests.in'; do
 		printf '%s\n' "$filepath"
 	done
 )
