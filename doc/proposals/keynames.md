@@ -185,20 +185,50 @@ type = string
 
 ## Results
 
-- `putE(k, lastE(k))` is a no-op on `k`.
-- `putU(k, lastU(k)` is a no-op on `k`.
-- `putL(k, lastU(k)[1:])` is a no-op on `k`, if `lastU(k) = \`.
-- Calling `load(k1, S, store(S, u))` for each unescaped part `u` (after namespace) of the key `k` turns `k1` into a key with name identical to `k`, if `k1` started as the root of `k`'s namespace.
-  In other words `store` and `load` allow round-tripping through deconstruction/re-construction.
-- Arbitrary unescaped key parts are no longer possible.
-- However, adding arbitrary strings in an encoded form as unescaped key parts is still possible.
-- Storage plugins can still accept (almost) arbitrary names in their input files.
-- The rules for names in storage files are easy.
-  If you want name `n` you do:
-  - If `n[0]` in `R` but not in `S`, use `\:n`, unless you want the name to have the meaning defined by `n[0]`, in which case the name MUST be valid to that interpretation.
-  - Otherwise, use `n` directly.
-- Applications looking for an arbitrary name e.g. part of the name is an SSID, should construct a lookup key in a way that all arbitrary parts that should have no meaning are added with `pushL`.
-- If a `ksLookup` is not possible or wanted and an application instead wants to compare unescaped key parts against a string e.g. SSID, a leading `\` should be ignored in the comparison.
+1. `putE(k, lastE(k))` is a no-op on `k`.
+2. `putU(k, lastU(k)` is a no-op on `k`.
+3. `putL(k, lastU(k)[1:])` is a no-op on `k`, if `lastU(k)[0] = \`.
+4. `store` and `load` allow round-tripping through deconstruction/re-construction in storage plugins.
+5. Arbitrary unescaped key parts are no longer possible.
+6. However, adding arbitrary strings in an encoded form as unescaped key parts is still possible.
+7. Storage plugins can still accept (almost) arbitrary names in their input files.
+8. The rules for names in storage files are easy.
+   If you want name `n` you do:
+   - If `n[0]` in `R` but not in `S`, use `\:n`, unless you want the name to have the meaning defined by `n[0]`, in which case the name MUST be valid to that interpretation.
+   - Otherwise, use `n` directly.
+9. Applications looking for an arbitrary name e.g. part of the name is an SSID, should construct a lookup key in a way that all arbitrary parts that should have no meaning are added with `pushL`.
+10. If a `ksLookup` is not possible or wanted and an application instead wants to compare unescaped key parts against a string e.g. SSID, a leading `\` should be ignored in the comparison.
+
+## Proofs
+
+Proofs for some of the results above.
+
+1. Since the second argument to `putE` comes from `lastE`, we know that it is _e-part-valid_.
+   We also know that for each `e` there is only one `u` such that `u = I(e)`.
+   Wich means `I(lastE(k)) = lastU(k)`.
+   In total: `putE(k, lastE(k)) = put(k, lastE(k), lastU(k))`, where `put` removes the last part of the escaped and the last part of the unescaped name and then calls `push`.
+   This is obviously a no-op on `k`.
+2. We know that for each `u` there is only one `e` such that `u = I(e)`.
+   The rest of the proof is analogous to 1.
+3. Since `lastU(k)` is always _u-part-valid_, `lastU(k)[0] = \` implies that `lastU(k)[1]` is in `R`.
+   Therefore `putL(k, lastU(k)[1:])` falls into the first case of `pushL` and we have `putL(k, lastU(k)[1:]) = putU(k, \:lastU(k)[1:]) = putU(k, lastU(k))`.
+   We already proved that this is a no-op on `k`.
+4. We look at an arbitray unescaped part `u` of the key `k` under the assumption that `pushU(k1, u)` turns `k1` into `k`.
+   In other words, `k1` is the last key we wrote to the file, `k` is the next key we want to write and `u` is what needs to be stored.
+   Let `n` be the string we use as the next field name.
+   If `u[0]` is not in `S`, we have `store(S, u) != NULL` and define `n := store(S, u)`.
+   Otherwise we are not writing a normal field and have to do some special handling (e.g. write array).
+   When reading back the file we find a field name `m`.
+   We know this is a normal field written with a name from `store`, otherwise we would do some special handling (e.g. parsing array).
+   Therefore, `m = store(S, v)` for some `v`.
+   We have two cases:
+   - `m[0]` is in `R` (but not in `S`): By definition of `store` this means `v = \:m`.
+   - `m[0]` is not in `R`: By definition of `store`, `v = m`.
+     Looking at the definitions of `load` and `pushL`, we see that: `v = u` and therefore `load(k1, m) = load(k1, store(S, u)) = pushU(k1, u)`.
+     This means we can reconstruct `k1` to be the same as `k` after desconstructing it and writing it to a file.
+5. e.g. `#abc` and `\abc` are invalid
+6. `\#abc` and `\\abc` are valid
+7. Only those names that start with a character `c` in `R` but not in `S`, cannot be accepted. For example most plugins won't accept `\abc`; those that handle arrays will accept `#abc` and `\#abc`.
 
 ## Notes
 
