@@ -332,3 +332,5 @@ If you have issues that are related to the build system you can open a normal
 issue and tag it with `build` and `question`.
 If you feel like your inquiry does not warrant an issue on its own, please use
 [our buildserver issue](https://issues.libelektra.org/160).
+
+Test for Jenkins build triggers.
