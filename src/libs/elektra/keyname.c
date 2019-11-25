@@ -1718,7 +1718,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 static const char * elektraKeyFindBaseNamePtr (Key * key)
 {
-	// TODO (kodebach): start from back
+	// TODO (kodebach): document
 	const char * colon = strchr (key->key, ':');
 	const char * start = colon == NULL ? key->key : colon + 1;
 	++start; // start after first slash
@@ -1727,17 +1727,27 @@ static const char * elektraKeyFindBaseNamePtr (Key * key)
 
 	if (cur == start) return NULL; // no base name
 
-	do
+	while (cur >= start)
 	{
 		--cur;
-
 		while (cur >= start && *cur != '/')
 		{
 			--cur;
 		}
-	} while (cur > start && *(cur - 1) == '\\');
 
-	return cur;
+		size_t backslashes = 0;
+		while(*(cur - backslashes - 1) == '\\')
+		{
+			++backslashes;
+		}
+
+		if(backslashes % 2 == 0)
+		{
+			break;
+		}
+	}
+
+	return cur < start - 1 ? NULL : cur;
 }
 
 /**
