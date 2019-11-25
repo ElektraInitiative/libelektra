@@ -23,7 +23,6 @@
 #include <vector>
 
 #include <kdbmodule.h>
-#include <kdbprivate.h>
 
 using namespace std;
 using namespace kdb;
