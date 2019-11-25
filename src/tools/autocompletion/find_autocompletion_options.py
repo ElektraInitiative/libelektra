@@ -23,20 +23,6 @@ mount_point = None
 # gets arguments passed to the script and sets last_word and start_of_current_input
 def get_command_line_arguments():
 	global mount_point, root, typed, start_of_current_input, last_command
-	with kdb.KDB() as k:
-		mount_point = 'spec/tests/autocomplete'
-		ks = kdb.KeySet()
-		k.get(ks, mount_point)
-		for i in ks:
-			len_path_mount_point = len(mount_point.split('/'))
-			len_path_key = len(str(i))
-			if str(i) != mount_point and len_path_mount_point < len_path_key:
-				key_split = str(i).split('/')
-				root = key_split[len_path_mount_point]
-				break
-	if root is None:
-		print('getting root failed')
-		sys.exit(2)
 	try:
 		opts, args = getopt.getopt(sys.argv[1:],'s:m:')
 	except getopt.GetoptError:
@@ -50,17 +36,34 @@ def get_command_line_arguments():
 		if opt == '-m':
 			if arg.strip():
 				mount_point = arg.strip()
-	if len(args) > 0:
-		typed = args[0].split()
-		for i in reversed(typed):
-			if last_command is not None:
+	if mount_point is None:
+		print('no mount point, pass mount point with -m')
+		sys.exit(2)
+	with kdb.KDB() as k:
+		ks = kdb.KeySet()
+		k.get(ks, mount_point)
+		for i in ks:
+			len_path_mount_point = len(mount_point.split('/'))
+			len_path_key = len(str(i))
+			if str(i) != mount_point and len_path_mount_point < len_path_key:
+				key_split = str(i).split('/')
+				root = key_split[len_path_mount_point]
 				break
-			for j in ks:
-				if str(j).split('/')[-1] == i:
-					last_command = str(j)
+		if len(args) > 0:
+			typed = args[0].split()
+			for i in reversed(typed):
+				if last_command is not None:
 					break
-	
+				for j in ks:
+					if str(j).split('/')[-1] == i:
+						last_command = str(j)
+						break
+		k.close()
+	if root is None:
+		print('getting root failed')
+		sys.exit(2)
 
+	
 # input: input_start_of_input, the string that should be used to complete
 #		input_last_word, the last typed string
 # sets start of word and calls find_auto_completion_options
@@ -80,9 +83,8 @@ def set_input_and_run(input_mount_point, input_root, input_start_of_current_inpu
 def find_auto_completion_options():
 	global last_command, start_of_current_input
 	completion = []
-	if last_command is not None:
-		completion.extend(complete_options())
-	completion.extend(complete_commands(start_of_current_input))
+	completion.extend(complete_options())
+	#completion.extend(complete_commands(start_of_current_input))
 	completion = '\n'.join(completion)
 	return completion
 
@@ -137,12 +139,56 @@ def complete_commands(start_of_input):
 # searches for options starting with start_of_input belonging to last_word
 # return: list of all possible arguments
 def complete_options():
-	global start_of_current_input, last_command
+	global last_command
+	completion_options = []
+	if last_command is not None:
+		completion_options.extend(complete_options_opt_array(last_command))
+	else:
+		completion_options.extend(complete_options_single())
+	return completion_options
+
+def complete_options_single():
+	global mount_point, start_of_current_input
+	completion_options = []
+	if start_of_current_input is not None:
+		start_of_word = start_of_current_input.replace('-', '')
+		len_of_word = len(start_of_current_input.strip())
+	k = kdb.KDB()
+	ks = kdb.KeySet()
+	k.get(ks, mount_point)
+	for key in ks:
+		path = str(key).split('/')
+		meta_opt = key.getMeta(name='opt')
+		if meta_opt and meta_opt.value.startswith('#'):
+			len_opts = int((meta_opt.value)[1:])
+			i = 0
+			while i <= len_opts:
+				i+=1
+				opt = key.getMeta(name='opt/#{}'.format(i))
+				opt_long = key.getMeta(name='opt/#{}/long'.format(i))
+				if start_of_current_input is None or len_of_word == 0:
+					if opt_long:
+						
+						completion_options.append('--' + opt_long.value)
+					if opt:
+						completion_options.append('-' + opt.value)
+				else:
+					if opt_long and opt_long.value.startswith(start_of_word):
+						completion_options.append('--' + opt_long.value)
+					if opt and opt.value.startswith(start_of_word):
+						completion_options.append('-' + opt.value)
+		elif meta_opt:
+			# TODO no list
+			pass
+	k.close()
+	return completion_options
+
+def complete_options_opt_array(path):
 	completion_options = []
 	with kdb.KDB() as k:
 		ks = kdb.KeySet()
 		k.get(ks, mount_point)
-		key = ks.lookup(last_command)
+		key = ks.lookup(path)
 		meta_opt = key.getMeta(name='opt')
 		len_opts = 0
 		if meta_opt:
@@ -152,7 +198,7 @@ def complete_options():
 			i+=1
 			opt = key.getMeta(name='opt/#{}'.format(i))
 			opt_long = key.getMeta(name='opt/#{}/long'.format(i))
-			if start_of_current_input != None:
+			if start_of_current_input is not None:
 				if opt_long and opt_long.value.startswith(start_of_current_input.replace('-', '')):
 					completion_options.append('--' + opt_long.value)
 				elif opt and opt.value.startswith(start_of_current_input.replace('-', '')):
@@ -162,6 +208,7 @@ def complete_options():
 					completion_options.append('--' + opt_long.value)
 				elif opt:
 					completion_options.append('-' + opt.value)
+		k.close()
 	return completion_options
 
 # input: command, a string that should be a shell command
