@@ -33,9 +33,10 @@ The plugin supports null keys. They are represented as special string of value '
 ## TODOs
 	- Document functions
 	- directory value
+	- base64 for binary k/v
+	- check why space restoration in front of comments not working
 	- Error checks for writing
 	- Correct string handling (which type of string, do in type.c)
-	- Replace existing keyRel calls
 	- Maybe preserve spaces
 		- Before array values
 		- Before assignment/simple table header/table array header
