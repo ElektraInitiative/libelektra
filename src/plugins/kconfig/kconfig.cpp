@@ -130,6 +130,7 @@ int elektraKconfigSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to save data to file '%s'. Reason: %s", parent.getString ().c_str (),
 					     "Could not open the file.");
+		delete filePtr;
 		parent.release ();
 		keys.release ();
 		return ELEKTRA_PLUGIN_STATUS_ERROR;

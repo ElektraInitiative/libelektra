@@ -107,7 +107,7 @@ TEST (kconfig, simple_file_set)
 	CppKeySet config{ 0, KS_END };
 	CppKey pluginParent{ "system/elektra/modules/kconfig", KEY_END };
 	elektraModulesInit (modules.getKeySet (), 0);
-	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), pluginParent.getKey());
+	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), pluginParent.getKey ());
 	exit_if_fail (plugin != NULL, "Could not open kconfig plugin"); //! OCLint (empty if, too few branches switch)
 
 	// Create parent key
@@ -126,11 +126,12 @@ TEST (kconfig, simple_file_set)
 
 
 	// Save the KeySet to the file stored in the parent key
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), parent.getKey()), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbSet` failed");
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), parent.getKey ()), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 "Call of `kdbSet` failed");
 
 
 	// Load the file and verify that it has the correct format
-	std::ifstream file {filePath};
+	std::ifstream file{ filePath };
 	std::string tmp;
 
 	getline (file, tmp);
@@ -142,8 +143,12 @@ TEST (kconfig, simple_file_set)
 	getline (file, tmp);
 	succeed_if_same (tmp, "title=KConfig Test", "");
 
-	file.close();
 
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose (modules.getKeySet (), 0);
+
+	ksDel (modules.release ());
+	config.release ();
 }
 
 TEST (kconfig, meta_file_get)

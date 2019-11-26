@@ -22,7 +22,7 @@ void KConfigSerializer::save ()
 		{
 			if (k.getName ().rfind (groupCandidate->getName (), 0) == 0)
 			{
-				saveGroupKeyOut (groupCandidate->getName ());
+				saveGroupKey (*groupCandidate);
 				lastPrintedGroup = groupCandidate->getName ();
 			}
 			else
@@ -90,7 +90,24 @@ void KConfigSerializer::saveAndEscapeString (const std::string & val, bool isGro
 	}
 }
 
-void KConfigSerializer::saveGroupKeyOut (std::string const & group)
+void KConfigSerializer::saveGroupKey (CppKey const & k)
+{
+	saveGroupKeyWithoutMeta (k.getName (), false);
+
+	std::string metadata{ k.getMeta<std::string> (KCONFIG_METADATA_KEY) };
+
+	std::ostream & out = *o;
+	if (!metadata.empty ())
+	{
+
+		out << character_open_bracket;
+		out << metadata;
+		out << character_close_bracket;
+	}
+	out << character_newline;
+}
+
+void KConfigSerializer::saveGroupKeyWithoutMeta (std::string const & group, bool newline)
 {
 	std::ostream & out = *o;
 	std::size_t skipChars = parentKeyNameSize;
@@ -110,7 +127,11 @@ void KConfigSerializer::saveGroupKeyOut (std::string const & group)
 
 		out << character_open_bracket;
 		saveAndEscapeString (outstr, true);
-		out << character_close_bracket << character_newline;
+		out << character_close_bracket;
+		if (newline)
+		{
+			out << character_newline;
+		}
 	}
 }
 
@@ -119,13 +140,13 @@ void KConfigSerializer::saveLeafKeyWithGroupCandidate (CppKey const & k)
 	std::string currentGroupName{ groupNameFromLeaf (k.getName ()) };
 	if (lastPrintedGroup != currentGroupName)
 	{
-		saveGroupKeyOut (currentGroupName);
+		saveGroupKeyWithoutMeta (currentGroupName);
 		lastPrintedGroup = currentGroupName;
 	}
-	saveLeafKeyOut (k);
+	saveLeafKey (k);
 }
 
-void KConfigSerializer::saveLeafKeyOut (CppKey const & key)
+void KConfigSerializer::saveLeafKey (CppKey const & key)
 {
 	std::ostream & out = *o;
 	isFirstKey = false;

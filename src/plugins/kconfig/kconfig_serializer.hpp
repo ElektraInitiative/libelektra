@@ -35,10 +35,17 @@ private:
 	void saveAndEscapeString (const std::string & val, bool isGroupKey);
 
 	/**
-	 * @brief This method is used to serialize a group key.
-	 * @param group This string contains the group name
+	 * @brief This method is used to serialize a key as in the group format.
+	 * @param k This CppKey contains the group name including its' metadata
 	 */
-	void saveGroupKeyOut (std::string const & group);
+	void saveGroupKey (CppKey const & k);
+
+	/**
+	 * @brief This method is used to serialize a group key while ignoring its' metadata.
+	 * @param group This string contains the group name
+	 * @param newline This bool is set to true if a newline must be saved after the group key
+	 */
+	void saveGroupKeyWithoutMeta (std::string const & group, bool newline = true);
 
 	/**
 	 * @brief This method serializes a key, and if it's group is not serialized yet, it does that first
@@ -50,7 +57,7 @@ private:
 	 * @brief This method serializes a leaf key into the output stream
 	 * @param key This CppKey contains the key, metadata and value that we want to serialize
 	 */
-	void saveLeafKeyOut (CppKey const & key);
+	void saveLeafKey (CppKey const & key);
 
 	/**
 	 * @brief This method finds the position where the last slash is located. Escaped slashes (sequence `\/`) are ignored.
