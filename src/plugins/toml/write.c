@@ -536,7 +536,7 @@ static int writeInlineComment (const CommentList * commentList, Writer * writer)
 static int writeComment (const CommentList * comment, Writer * writer)
 {
 	int result = 0;
-	for (size_t i = 0; i < (comment->index == 0 ? 4 : 0); i++) // TODO: do with comment->spaces
+	for (size_t i = 0; i < comment->spaces; i++) // TODO: do with comment->spaces
 	{
 		result |= fputc (' ', writer->f) == EOF;
 	}
