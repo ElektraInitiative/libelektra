@@ -192,6 +192,8 @@
     fullname = property(_kdb.Key__getFullName)
 
     def __hash__(self):
+      if not self.isNameLocked():
+        raise TypeError("Unhashable instance: '%r'. Lock the name first)" % self)
       return hash(self.name)
 
     def __str__(self):

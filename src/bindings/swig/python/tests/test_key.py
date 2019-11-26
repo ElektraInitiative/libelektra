@@ -91,6 +91,9 @@ class Key(unittest.TestCase):
 		self.assertEqual(repr(self.key),  "kdb.Key('user/foo/bar')")
 		self.assertEqual(repr(self.bkey), "kdb.Key('system/bkey')")
 
+		with self.assertRaises(TypeError):
+                    hash(kdb.Key("user/not_name_locked"))
+
 	def test_properties(self):
 		self.assertEqual(self.key.name,      "user/foo/bar")
 		self.assertEqual(self.key.value,     "value")
@@ -127,6 +130,9 @@ class Key(unittest.TestCase):
 		self.assertTrue(self.key.isString())
 		self.assertTrue(self.bkey.isBinary())
 		self.assertTrue(self.key.isBelow(kdb.Key("user/foo")))
+		self.assertFalse(self.key.isNameLocked())
+		self.assertFalse(self.key.isValueLocked())
+		self.assertFalse(self.key.isMetaLocked())
 
 		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
 		self.assertEqual(k.get(), "value")
@@ -138,6 +144,9 @@ class Key(unittest.TestCase):
 		self.assertEqual(self.key.getMeta("owner").name,  "owner")
 		self.assertEqual(self.key.getMeta("owner").value, "myowner")
 		self.assertEqual(self.key.getMeta("by").value,    "manuel")
+		self.assertTrue(self.key.getMeta("by").isNameLocked())
+		self.assertTrue(self.key.getMeta("by").isValueLocked())
+		self.assertTrue(self.key.getMeta("by").isMetaLocked())
 
 		self.assertFalse(self.key.hasMeta("doesnt_exist"))
 		self.assertIsNone(self.key.getMeta("doesnt_exist"))

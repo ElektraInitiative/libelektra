@@ -39,6 +39,10 @@ assert(ks["user/doesnt_exist"] == nil)
 assert(ks[kdb.Key("system/key2")] == kdb.Key("system/key2"))
 assert(ks[kdb.Key("user/doesnt_exist")] == nil)
 
+assert(ks[0]:isNameLocked()  == true)
+assert(ks[0]:isValueLocked() == false)
+assert(ks[0]:isMetaLocked()  == false)
+
 -- functions
 assert(ks:lookup("user/key3") == kdb.Key("user/key3"))
 assert(ks:lookup(kdb.Key("system/key2")) == kdb.Key("system/key2"))
