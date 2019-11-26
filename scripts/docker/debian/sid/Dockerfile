@@ -18,6 +18,7 @@ RUN apt-get update && apt-get -y install \
         default-jdk \
         dh-lua \
         ed \
+        flex \
         gawk \
         git \
         gnupg2 \

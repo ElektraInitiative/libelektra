@@ -70,6 +70,7 @@ RUN apt-get update \
         dnsutils \
         virtualenv \
         bison \
+        flex \
         uuid-dev \
         ninja-build \
     && rm -rf /var/lib/apt/lists/*
