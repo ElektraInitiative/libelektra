@@ -19,7 +19,7 @@
 #include <string.h>
 #endif
 
-#include <kdbproposal.h>
+#include <kdbprivate.h>
 
 #include <tests_plugin.h>
 
@@ -128,22 +128,22 @@ static void test_hostLensDelete (char * sourceFile, char * compFile)
 
 	Key * key = ksLookupByName (ks, "user/tests/augeas-hosts/1", 0);
 	exit_if_fail (key, "localhost not found");
-	ksPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/ipaddr", 0);
 	exit_if_fail (key, "ip address of localhost not found");
-	ksPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/canonical", 0);
 	exit_if_fail (key, "canonical of localhost not found");
-	ksPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/#comment", 0);
 	exit_if_fail (key, "comment of localhost not found");
-	ksPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
 
 	keySetString (parentKey, elektraFilename ());

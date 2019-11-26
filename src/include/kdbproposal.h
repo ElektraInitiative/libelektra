@@ -22,7 +22,6 @@ extern "C" {
 // this might become the new keySetName
 ssize_t elektraKeySetName (Key * key, const char * newName, elektraKeyFlags options);
 
-Key * ksPopAtCursor (KeySet * ks, cursor_t c);
 
 #ifdef __cplusplus
 }

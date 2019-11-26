@@ -90,30 +90,3 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
 
 	return ksDup (key->meta);
 }
-
-
-/**
- * @brief Pop key at given cursor position
- *
- * @param ks the keyset to pop key from
- * @param c where to pop
- *
- * The internal cursor will be rewinded using ksRewind(). You can use
- * ksGetCursor() and ksSetCursor() jump back to the previous position.
- * e.g. to pop at current position within ksNext() loop:
- * @code
- * elektraCursor c = ksGetCursor(ks);
- * keyDel (ksPopAtCursor(ks, c));
- * ksSetCursor(ks, c);
- * ksPrev(ks); // to have correct key after next ksNext()
- * @endcode
- *
- * @warning do not use, will be superseded by external iterator API
- *
- * @return the popped key
- * @retval 0 if ks is 0
- */
-Key * ksPopAtCursor (KeySet * ks, elektraCursor pos)
-{
-	return elektraKsPopAtCursor (ks, pos);
-}
