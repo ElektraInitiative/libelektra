@@ -30,6 +30,7 @@
 #include <regex.h>
 
 #include <kdbinternal.h>
+#include <kdbprivate.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -330,35 +331,6 @@ void output_plugin (Plugin * plugin)
 
 	printf ("Name: %s [%zu]\n", plugin->name, plugin->refcounter);
 	output_keyset (plugin->config);
-}
-
-void output_backend (Backend * backend)
-{
-	if (!backend) return;
-
-	printf ("us: %zd, ss: %zd\n", backend->usersize, backend->systemsize);
-	output_key (backend->mountpoint);
-}
-
-void output_trie (Trie * trie)
-{
-	int i;
-	for (i = 0; i < KDB_MAX_UCHAR; ++i)
-	{
-		Key * mountpoint = backendGetMountpoint (trie->value[i]);
-		if (trie->value[i])
-		{
-			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (mountpoint),
-				keyString (mountpoint), i);
-		}
-		if (trie->children[i]) output_trie (trie->children[i]);
-	}
-	if (trie->empty_value)
-	{
-		Key * mountpoint = backendGetMountpoint (trie->value[i]);
-		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (mountpoint),
-			keyString (mountpoint));
-	}
 }
 
 void output_split (Split * split)

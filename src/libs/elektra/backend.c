@@ -34,7 +34,7 @@
 
 #include <kdbinternal.h>
 
-Key * backendGetMountpoint (Plugin * backend)
+Key * backendGetMountpoint (const Plugin * backend)
 {
 	Key * mp = ksLookupByName (backend->config, "system/mountpoint", 0);
 
@@ -150,17 +150,7 @@ Plugin * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global,
 
 		ksRewind (elektraConfig);
 
-		Key * cur;
-		char * mp = 0;
-
-		while ((cur = ksNext (elektraConfig)) != 0)
-		{
-			if (!strcmp (keyBaseName (cur), "mountpoint"))
-			{
-				mp = elektraMalloc (sizeof (keyString (cur)));
-				strcpy (mp, keyString (cur));
-			}
-		}
+		Key * mp = backendGetMountpoint (backend);
 
 		if (mp)
 		{
@@ -224,6 +214,7 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 		elektraFree (backend);
 		return 0;
 	}
+	backend->global = global;
 
 	return backend;
 }

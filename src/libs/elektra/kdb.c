@@ -593,7 +593,7 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 			int ret = 0;
 			if (backend && backend->kdbGet)
 			{
-				ret = backend->kdbGet (backend->kdbGet, split->keysets[i], parentKey);
+				ret = backend->kdbGet (backend, split->keysets[i], parentKey);
 			}
 
 			if (ret == -1)
@@ -1891,7 +1891,7 @@ static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, K
  * @retval 0 on error, warnings will be logged
  * @retval 1 on success
  */
-static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const char * pluginName, Key * errorKey)
+static int ensurePluginUnmounted (KDB * handle ELEKTRA_UNUSED, const char * mountpoint ELEKTRA_UNUSED, const char * pluginName ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	return 0;
 

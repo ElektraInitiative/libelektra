@@ -1,55 +1,10 @@
 
 
 #include "backend.h"
+#include "backendprivate.h"
 
 #include <kdberrors.h>
 #include <kdbprivate.h>
-
-typedef struct _BackendHandle BackendHandle;
-typedef struct _Slot Slot;
-
-struct _Slot
-{
-	Plugin * value;
-	Slot * next;
-};
-
-/**
- * Holds all information related to a backend.
- *
- * Since Elektra 0.8 a Backend consists of many plugins.
- * A backend is responsible for everything related to the process
- * of writing out or reading in configuration.
- *
- * So this holds a list of set and get plugins.
- *
- * Backends are put together through the configuration
- * in system/elektra/mountpoints
- *
- * See kdb mount tool to mount new backends.
- *
- * To develop a backend you have first to develop plugins and describe
- * through dependencies how they belong together.
- *
- * @ingroup backend
- */
-struct _BackendHandle
-{
-	Key * mountpoint; /*!< The mountpoint where the backend resides.
-	  The keyName() is the point where the backend was mounted.
-	  The keyValue() is the name of the backend without pre/postfix, e.g.
-	  filesys. */
-
-	Slot * setplugins[NR_OF_SET_PLUGINS];
-	Slot * getplugins[NR_OF_GET_PLUGINS];
-	Slot * errorplugins[NR_OF_ERROR_PLUGINS];
-
-	ssize_t getposition;
-
-	ssize_t setposition;
-
-	ssize_t errorposition;
-};
 
 int setMountpoint (BackendHandle * bh, KeySet * config, Key * errorKey)
 {
@@ -663,31 +618,31 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	}
 
 	ksDel (setPluginsSet);
+//
+//	Key * errorPluginsKey = keyDup (root);
+//	keyAddBaseName (errorPluginsKey, "error");
+//	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
+//	keyDel (errorPluginsKey);
 
-	Key * errorPluginsKey = keyDup (root);
-	keyAddBaseName (errorPluginsKey, "error");
-	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
-	keyDel (errorPluginsKey);
-
-	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
-
-	if (!errorPlugins)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
-	{
-		bh->errorplugins[a] = errorPlugins[a];
-	}
-
-	ksDel (errorPluginsSet);
-
-	// TODO Open missing backend instead of returning errors
-	// TODO set global keyset
-
-	elektraPluginSetData (handle, bh);
+//	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
+//
+//	if (!errorPlugins)
+//	{
+//		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
+//		return ELEKTRA_PLUGIN_STATUS_ERROR;
+//	}
+//
+//	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
+//	{
+//		bh->errorplugins[a] = errorPlugins[a];
+//	}
+//
+//	ksDel (errorPluginsSet);
+//
+//	// TODO Open missing backend instead of returning errors
+//	// TODO set global keyset
+//
+//	elektraPluginSetData (handle, bh);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 

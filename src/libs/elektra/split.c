@@ -62,6 +62,9 @@ Split * splitNew (void)
 	ret->handles = elektraCalloc (sizeof (KDB *) * ret->alloc);
 	ret->parents = elektraCalloc (sizeof (Key *) * ret->alloc);
 	ret->syncbits = elektraCalloc (sizeof (int) * ret->alloc);
+	ret->systemsizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
+	ret->usersizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
+	ret->dirsizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
 
 	return ret;
 }
@@ -473,14 +476,14 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin *
 
 	const size_t sizeOfStaticText = 300;
 
-	char * curHandleMountpoint = backendGetMountpoint (curHandle);
-	char * otherHandleMountpoint = backendGetMountpoint (otherHandle);
+	Key * curHandleMountpoint = backendGetMountpoint (curHandle);
+	Key * otherHandleMountpoint = backendGetMountpoint (otherHandle);
 
-	size_t size = keyGetNameSize (curHandleMountpoint) + keyGetValueSize (curHandleMountpoint) + keyGetNameSize (k) + strlen (msg) +
+	size_t size = keyGetValueSize (curHandleMountpoint)*2 + keyGetNameSize (k) + strlen (msg) +
 		      sizeOfStaticText;
 	if (otherHandle)
 	{
-		size += keyGetNameSize (otherHandleMountpoint) + keyGetValueSize (otherHandleMountpoint);
+		size += keyGetValueSize (otherHandleMountpoint)*2;
 	}
 	char * warningMsg = elektraMalloc (size);
 	strcpy (warningMsg, "drop key ");
@@ -494,14 +497,10 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin *
 		strcat (warningMsg, "(no name)");
 	}
 	strcat (warningMsg, " not belonging to \"");
-	strcat (warningMsg, keyName (curHandleMountpoint));
-	strcat (warningMsg, "\" with name \"");
 	strcat (warningMsg, keyString (curHandleMountpoint));
 	if (otherHandle)
 	{
 		strcat (warningMsg, "\" but instead to \"");
-		strcat (warningMsg, keyName (otherHandleMountpoint));
-		strcat (warningMsg, "\" with name \"");
 		strcat (warningMsg, keyString (otherHandleMountpoint));
 	}
 	strcat (warningMsg, "\" because ");

@@ -530,7 +530,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  */
 int mountVersion (KDB * kdb, Key * errorKey)
 {
-	Plugin * backend = backendOpenVersion (kdb->global, errorKey);
+	Plugin * backend = backendOpenVersion (kdb->global, kdb->modules, errorKey);
 	mountBackend (kdb, backend, errorKey);
 
 	return 0;
@@ -555,12 +555,14 @@ int mountVersion (KDB * kdb, Key * errorKey)
 int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 {
 
-	Key * mountpoint = backendGetMountpoint (backend);
+	Key * mp = backendGetMountpoint (backend);
+
+	char * mountpoint = elektraMalloc (sizeof keyString (mp));
 
 	/* Note that you must set the refcounter to the number of insertions
 	   into the trie */
 
-	if (!strcmp (keyName (mountpoint), ""))
+	if (!strcmp (keyString (mp), ""))
 	{
 		/* Default backend */
 		sprintf (mountpoint, "system/elektra/");
@@ -568,7 +570,7 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 		splitAppend (kdb->split, backend, keyNew ("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
 		backend->refcounter = 1;
 	}
-	else if (!strcmp (keyName (mountpoint), "/"))
+	else if (!strcmp (keyString (mp), "/"))
 	{
 		/* Root backend */
 		backend->refcounter = 0;
@@ -577,25 +579,25 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				sprintf (mountpoint, "spec%s", keyName (mountpoint));
+				sprintf (mountpoint, "spec%s", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("spec", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_DIR:
-				sprintf (mountpoint, "dir%s", keyName (mountpoint));
+				sprintf (mountpoint, "dir%s", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("dir", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
-				sprintf (mountpoint, "user%s", keyName (mountpoint));
+				sprintf (mountpoint, "user%s", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("user", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
-				sprintf (mountpoint, "system%s", keyName (mountpoint));
+				sprintf (mountpoint, "system%s", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
@@ -609,7 +611,7 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 			}
 		}
 	}
-	else if (keyName (mountpoint)[0] == '/')
+	else if (keyString (mp)[0] == '/')
 	{
 		/* Cascading Backend */
 		backend->refcounter = 0;
@@ -618,21 +620,21 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 			switch (ns)
 			{
 			case KEY_NS_DIR:
-				sprintf (mountpoint, "dir%s/", keyName (mountpoint));
+				sprintf (mountpoint, "dir%s/", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mountpoint), KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mp), KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
-				sprintf (mountpoint, "user%s/", keyName (mountpoint));
+				sprintf (mountpoint, "user%s/", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mountpoint), KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mp), KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
-				sprintf (mountpoint, "system%s/", keyName (mountpoint));
+				sprintf (mountpoint, "system%s/", keyString (mp));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mountpoint), KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mp), KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SPEC:
@@ -650,9 +652,9 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 	else
 	{
 		/* Common single mounted backend */
-		sprintf (mountpoint, "%s/", keyName (mountpoint));
+		sprintf (mountpoint, "%s/", keyString (mp));
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		splitAppend (kdb->split, backend, keyDup (mountpoint), 0);
+		splitAppend (kdb->split, backend, keyDup (mp), 0);
 		backend->refcounter = 1;
 	}
 

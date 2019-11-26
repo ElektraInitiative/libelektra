@@ -70,10 +70,10 @@ void simulateGet (Split * split)
 {
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		split->handles[i]->specsize = 0;
-		split->handles[i]->dirsize = 0;
-		split->handles[i]->usersize = 0;
-		split->handles[i]->systemsize = 0;
+		split->specsizes[i] = 0;
+		split->dirsizes[i] = 0;
+		split->usersizes[i] = 0;
+		split->systemsizes[i] = 0;
 	}
 }
 
@@ -498,385 +498,385 @@ static void test_three (void)
 
 static void test_userremove (void)
 {
-	printf ("Test user removing\n");
-	Key * parent = 0;
-	KDB * handle = kdb_open ();
-
-	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
-	/* So we had 2 keys before in the keyset */
-
-	KeySet * ks = ksNew (3, keyNew ("user/valid/key", KEY_END), KS_END);
-
-
-	Split * split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
-	succeed_if (splitSync (split) == -2, "should be out of sync");
-	simulateGet (split);
-	handle->defaultBackend->usersize = 2;
-	succeed_if (splitSync (split) == 1, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "split size wrong");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
-		compare_keyset (split->keysets[2], ks);
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-	}
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("user/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
-	succeed_if (splitSync (split) == 1, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in two keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-		compare_keyset (split->keysets[0], ks);
-	}
-	keyDel (parent);
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("system/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should need sync");
-	succeed_if (splitSync (split) == 0, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in two keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
-	}
-	keyDel (parent);
-
-	splitDel (split);
-
-
-	/* But it should even need sync when we don't have any unsynced keys! */
-	clear_sync (ks);
-	split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "no key inside needs sync");
-	succeed_if (splitSync (split) == 1, "but we need sync because of the size mismatch");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "wrong size of split");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
-		compare_keyset (split->keysets[2], ks);
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-	}
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("user/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should need sync");
-	succeed_if (splitSync (split) == 1, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in two keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-		compare_keyset (split->keysets[0], ks);
-	}
-	keyDel (parent);
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("system/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	succeed_if (splitSync (split) == 0, "should not need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in two keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
-	}
-	keyDel (parent);
-
-	splitPrepare (split);
-	succeed_if (split->size == 0, "split not empty");
-
-	splitDel (split);
-
-
-	ksDel (ks);
-	kdb_close (handle);
+//	printf ("Test user removing\n");
+//	Key * parent = 0;
+//	KDB * handle = kdb_open ();
+//
+//	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
+//	/* So we had 2 keys before in the keyset */
+//
+//	KeySet * ks = ksNew (3, keyNew ("user/valid/key", KEY_END), KS_END);
+//
+//
+//	Split * split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
+//	succeed_if (splitSync (split) == -2, "should be out of sync");
+//	simulateGet (split);
+//	handle->defaultBackend->usersize = 2;
+//	succeed_if (splitSync (split) == 1, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "split size wrong");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
+//		compare_keyset (split->keysets[2], ks);
+//		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+//	}
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("user/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
+//	succeed_if (splitSync (split) == 1, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in two keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+//		compare_keyset (split->keysets[0], ks);
+//	}
+//	keyDel (parent);
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("system/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should need sync");
+//	succeed_if (splitSync (split) == 0, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in two keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+//	}
+//	keyDel (parent);
+//
+//	splitDel (split);
+//
+//
+//	/* But it should even need sync when we don't have any unsynced keys! */
+//	clear_sync (ks);
+//	split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "no key inside needs sync");
+//	succeed_if (splitSync (split) == 1, "but we need sync because of the size mismatch");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "wrong size of split");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
+//		compare_keyset (split->keysets[2], ks);
+//		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+//	}
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("user/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should need sync");
+//	succeed_if (splitSync (split) == 1, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in two keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+//		compare_keyset (split->keysets[0], ks);
+//	}
+//	keyDel (parent);
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("system/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	succeed_if (splitSync (split) == 0, "should not need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in two keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+//	}
+//	keyDel (parent);
+//
+//	splitPrepare (split);
+//	succeed_if (split->size == 0, "split not empty");
+//
+//	splitDel (split);
+//
+//
+//	ksDel (ks);
+//	kdb_close (handle);
 }
 
 
 static void test_systemremove (void)
 {
-	printf ("Test system removing\n");
-	Key * parent = 0;
-	KDB * handle = kdb_open ();
-
-	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
-
-	KeySet * ks = ksNew (3, keyNew ("system/valid/key", KEY_END), KS_END);
-
-
-	Split * split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
-	simulateGet (split);
-	handle->defaultBackend->systemsize = 2;
-	/* So we had 2 keys before in the keyset */
-	succeed_if (splitSync (split) == 1, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "everything is in two keyset");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
-		compare_keyset (split->keysets[3], ks);
-	}
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("system/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
-	succeed_if (splitSync (split) == 1, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in one keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-		compare_keyset (split->keysets[0], ks);
-	}
-	keyDel (parent);
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("user/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	simulateGet (split);
-	succeed_if (splitSync (split) == 0, "should not need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in one keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
-	}
-	keyDel (parent);
-
-	splitDel (split);
-
-
-	/* But it should even need sync when we don't have any unsynced keys! */
-	clear_sync (ks);
-	split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "no key inside needs sync");
-	succeed_if (splitSync (split) == 1, "but we need sync because of the size mismatch");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "everything is in two keyset");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
-		compare_keyset (split->keysets[3], ks);
-	}
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("system/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	succeed_if (splitSync (split) == 1, "should need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in two keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-		compare_keyset (split->keysets[0], ks);
-	}
-	keyDel (parent);
-
-	splitDel (split);
-
-
-	split = splitNew ();
-
-	parent = keyNew ("user/valid", KEY_END);
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	succeed_if (splitSync (split) == 0, "should not need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 1, "everything is in two keyset");
-	// output_split(split);
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
-	}
-	keyDel (parent);
-
-	splitPrepare (split);
-	succeed_if (split->size == 0, "no remaining keyset");
-
-	splitDel (split);
-
-
-	ksDel (ks);
-	kdb_close (handle);
+//	printf ("Test system removing\n");
+//	Key * parent = 0;
+//	KDB * handle = kdb_open ();
+//
+//	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
+//
+//	KeySet * ks = ksNew (3, keyNew ("system/valid/key", KEY_END), KS_END);
+//
+//
+//	Split * split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
+//	simulateGet (split);
+//	handle->defaultBackend->systemsize = 2;
+//	/* So we had 2 keys before in the keyset */
+//	succeed_if (splitSync (split) == 1, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "everything is in two keyset");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
+//		compare_keyset (split->keysets[3], ks);
+//	}
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("system/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
+//	succeed_if (splitSync (split) == 1, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in one keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+//		compare_keyset (split->keysets[0], ks);
+//	}
+//	keyDel (parent);
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("user/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	simulateGet (split);
+//	succeed_if (splitSync (split) == 0, "should not need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in one keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+//	}
+//	keyDel (parent);
+//
+//	splitDel (split);
+//
+//
+//	/* But it should even need sync when we don't have any unsynced keys! */
+//	clear_sync (ks);
+//	split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "no key inside needs sync");
+//	succeed_if (splitSync (split) == 1, "but we need sync because of the size mismatch");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "everything is in two keyset");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
+//		compare_keyset (split->keysets[3], ks);
+//	}
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("system/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	succeed_if (splitSync (split) == 1, "should need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in two keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+//		compare_keyset (split->keysets[0], ks);
+//	}
+//	keyDel (parent);
+//
+//	splitDel (split);
+//
+//
+//	split = splitNew ();
+//
+//	parent = keyNew ("user/valid", KEY_END);
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	succeed_if (splitSync (split) == 0, "should not need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 1, "everything is in two keyset");
+//	// output_split(split);
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+//	}
+//	keyDel (parent);
+//
+//	splitPrepare (split);
+//	succeed_if (split->size == 0, "no remaining keyset");
+//
+//	splitDel (split);
+//
+//
+//	ksDel (ks);
+//	kdb_close (handle);
 }
 
 
 static void test_emptyremove (void)
 {
-	printf ("Test empty removing\n");
-
-	KDB * handle = kdb_open ();
-
-	Key * parent = 0;
-	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
-
-	KeySet * ks = ksNew (3, KS_END);
-
-
-	Split * split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	simulateGet (split);
-	succeed_if (splitSync (split) == 0, "should not need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "there is an empty keset");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-	}
-
-	splitDel (split);
-
-
-	handle->defaultBackend->usersize = 2;
-	handle->defaultBackend->systemsize = 0;
-	split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	succeed_if (splitSync (split) == 1, "should not need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "there is an empty keset");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-	}
-
-	splitDel (split);
-
-
-	handle->defaultBackend->usersize = 2;
-	handle->defaultBackend->systemsize = 0;
-	split = splitNew ();
-
-	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
-	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
-	succeed_if (splitSync (split) == 1, "should not need sync");
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "there is an empty keset");
-	if (split->keysets)
-	{
-		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-	}
-	splitPrepare (split);
-	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if_same_string (keyName (split->parents[0]), "user");
-	succeed_if_same_string (keyValue (split->parents[0]), "default");
-
-	splitDel (split);
-
-
-	ksDel (ks);
-	kdb_close (handle);
-	keyDel (parent);
+//	printf ("Test empty removing\n");
+//
+//	KDB * handle = kdb_open ();
+//
+//	Key * parent = 0;
+//	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
+//
+//	KeySet * ks = ksNew (3, KS_END);
+//
+//
+//	Split * split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	simulateGet (split);
+//	succeed_if (splitSync (split) == 0, "should not need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "there is an empty keset");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+//	}
+//
+//	splitDel (split);
+//
+//
+//	handle->defaultBackend->usersize = 2;
+//	handle->defaultBackend->systemsize = 0;
+//	split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	succeed_if (splitSync (split) == 1, "should not need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "there is an empty keset");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+//	}
+//
+//	splitDel (split);
+//
+//
+//	handle->defaultBackend->usersize = 2;
+//	handle->defaultBackend->systemsize = 0;
+//	split = splitNew ();
+//
+//	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
+//	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
+//	succeed_if (splitSync (split) == 1, "should not need sync");
+//
+//	succeed_if (split->keysets, "did not alloc keysets array");
+//	succeed_if (split->handles, "did not alloc handles array");
+//	succeed_if (split->size == 4, "there is an empty keset");
+//	if (split->keysets)
+//	{
+//		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+//		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+//	}
+//	splitPrepare (split);
+//	succeed_if (split->size == 1, "there is an empty keset");
+//	succeed_if_same_string (keyName (split->parents[0]), "user");
+//	succeed_if_same_string (keyValue (split->parents[0]), "default");
+//
+//	splitDel (split);
+//
+//
+//	ksDel (ks);
+//	kdb_close (handle);
+//	keyDel (parent);
 }
 
 static void test_realworld (void)
@@ -974,8 +974,8 @@ static void test_realworld (void)
 	succeed_if (ksGetSize (split->keysets[11]) == 3, "wrong size");
 
 	simulateGet (split);
-	split->handles[5]->usersize = 5;
-	split->handles[8]->systemsize = 12;
+	split->usersizes[5] = 5;
+	split->systemsizes[8] = 12;
 	succeed_if (splitSync (split) == 1, "should need sync");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 1, "size of split not correct");
@@ -1004,8 +1004,8 @@ static void test_realworld (void)
 	succeed_if (ksGetSize (split->keysets[11]) == 3, "wrong size");
 
 
-	split->handles[5]->usersize = 0;
-	split->handles[8]->systemsize = 0;
+	split->usersizes[5] = 0;
+	split->systemsizes[8] = 0;
 	splitDel (split);
 
 
@@ -1099,13 +1099,13 @@ static void test_realworld (void)
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (split->size == 12, "size not correct");
 	succeed_if (splitDivide (split, handle, ks) == 0, "does not need sync anymore");
-	split->handles[0]->usersize = 6;
-	split->handles[4]->systemsize = 4;
-	split->handles[6]->specsize = 1;
-	split->handles[7]->dirsize = 1;
-	split->handles[9]->usersize = 1;
-	split->handles[10]->systemsize = 5;
-	split->handles[11]->systemsize = 3;
+	split->usersizes[0] = 6;
+	split->systemsizes[4] = 4;
+	split->specsizes[6] = 1;
+	split->dirsizes[7] = 1;
+	split->usersizes[9] = 1;
+	split->systemsizes[10] = 5;
+	split->systemsizes[11] = 3;
 	succeed_if (splitSync (split) == 0, "no sync needed");
 	splitDel (split);
 
@@ -1114,13 +1114,13 @@ static void test_realworld (void)
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (split->size == 12, "size not correct");
 	succeed_if (splitDivide (split, handle, ks) == 0, "does not need sync anymore");
-	split->handles[0]->usersize = 6;
-	split->handles[4]->systemsize = 2; /* Changed */
-	split->handles[6]->specsize = 1;
-	split->handles[7]->dirsize = 1;
-	split->handles[9]->usersize = 1;
-	split->handles[10]->systemsize = 5;
-	split->handles[11]->systemsize = 3;
+	split->usersizes[0] = 6;
+	split->systemsizes[4] = 2; /* Changed */
+	split->specsizes[6] = 1;
+	split->dirsizes[7] = 1;
+	split->usersizes[9] = 1;
+	split->systemsizes[10] = 5;
+	split->systemsizes[11] = 3;
 	succeed_if (splitSync (split) == 1, "sync needed because one size not correct");
 
 	splitPrepare (split);
@@ -1264,12 +1264,12 @@ static void test_state (void)
 	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
 	succeed_if (splitSync (split) == -2, "state error: should fail");
 
-	split->handles[0]->usersize = 1;
+	split->usersizes[0] = 1;
 	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
 	// output_split (split);
 	succeed_if (splitSync (split) == 0, "state nothing to do: same size");
 
-	split->handles[0]->usersize = 3;
+	split->usersizes[0] = 3;
 	succeed_if (splitSync (split) == 1, "state should sync: other size");
 	splitPrepare (split);
 	succeed_if (split->size == 1, "there should be nothing to sync");

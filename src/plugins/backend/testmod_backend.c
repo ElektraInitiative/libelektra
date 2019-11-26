@@ -7,39 +7,13 @@
  *
  */
 
+#include "backendprivate.h"
 #include <stdlib.h>
 #include <string.h>
 
 #include <kdbconfig.h>
 
 #include <tests_plugin.h>
-
-typedef struct _BackendHandle BackendHandle;
-typedef struct _Slot Slot;
-
-struct _Slot
-{
-	Plugin * value;
-	Slot * next;
-};
-
-struct _BackendHandle
-{
-	Key * mountpoint; /*!< The mountpoint where the backend resides.
-	  The keyName() is the point where the backend was mounted.
-	  The keyValue() is the name of the backend without pre/postfix, e.g.
-	  filesys. */
-
-	Slot * setplugins[NR_OF_SET_PLUGINS];
-	Slot * getplugins[NR_OF_GET_PLUGINS];
-	Slot * errorplugins[NR_OF_ERROR_PLUGINS];
-
-	ssize_t getposition;
-
-	ssize_t setposition;
-
-	ssize_t errorposition;
-};
 
 KeySet * set_simple (void)
 {
@@ -49,8 +23,8 @@ KeySet * set_simple (void)
 		      keyNew ("system/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
 		      keyNew ("system/elektra/mountpoints/simple/config/more", KEY_END),
 		      keyNew ("system/elektra/mountpoints/simple/config/more/config", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/config/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
 		      keyNew ("system/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+		      keyNew ("system/elektra/mountpoints/simple/config/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
 		      keyNew ("system/elektra/mountpoints/simple/config/path", KEY_END),
 
 		      keyNew ("system/elektra/mountpoints/simple/error", KEY_END),
@@ -76,10 +50,55 @@ KeySet * set_simple (void)
 		      KS_END);
 }
 
+KeySet * set_default (void)
+{
+	return ksNew (30, keyNew ("default", KEY_END), keyNew ("default/config", KEY_END),
+		keyNew ("default/config/mountpoint", KEY_VALUE, "default", KEY_END),
+		keyNew ("default/config/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+		keyNew ("default/error", KEY_END),
+		keyNew ("default/error/rollback", KEY_END),
+		keyNew ("default/error/rollback/#0", KEY_END),
+		keyNew ("default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("default/get", KEY_END),
+		keyNew ("default/get/getresolver", KEY_END),
+		keyNew ("default/get/getresolver/#0", KEY_END),
+		keyNew ("default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("default/get/getstorage", KEY_END),
+		keyNew ("default/get/getstorage/#0", KEY_END),
+		keyNew ("default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
+		keyNew ("default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
+		keyNew ("default/set", KEY_END),
+		keyNew ("default/set/commit", KEY_END),
+		keyNew ("default/set/commit/#0", KEY_END),
+		keyNew ("default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("default/set/setresolver", KEY_END),
+		keyNew ("default/set/setresolver/#0", KEY_END),
+		keyNew ("default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("default/set/setstorage", KEY_END),
+		keyNew ("default/set/setstorage/#0", KEY_END),
+		keyNew ("default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
+}
+
+Plugin * open_default (KeySet * modules, KeySet * global)
+{
+	Plugin * backend = elektraPluginOpen ("backend", modules, set_default (), 0);
+	backend->global = global;
+	return backend;
+}
+
+Plugin * open_backend (KeySet * config, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	Plugin * backend = elektraPluginOpen ("backend", modules, config, errorKey);
+	backend->global = global;
+	return backend;
+}
+
 KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
-		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END), keyNew ("system/path", KEY_END),
+		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END), keyNew ("system/path", KEY_END),
 		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user/more", KEY_END),
 		      keyNew ("user/more/config", KEY_END), keyNew ("user/more/config/below", KEY_END), keyNew ("user/path", KEY_END),
 		      KS_END);
@@ -121,98 +140,103 @@ static void test_simple (void)
 
 	KeySet * global = ksNew (0, KS_END);
 	Key * errorKey = 0;
-	Plugin * backend = backendOpen (set_simple (), modules, global, errorKey);
-
-	BackendHandle * bh = elektraPluginGetData (backend);
-
-	succeed_if (check_null_in_slot (bh->errorplugins[0], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->errorplugins[0], 2), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->errorplugins[1], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->errorplugins[2], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->errorplugins[2], 1), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->errorplugins[2], 0), "there should be no plugin");
-	exit_if_fail (check_null_in_slot (bh->errorplugins[0], 1) == 0, "there should be a plugin");
-
-	succeed_if (check_null_in_slot (bh->getplugins[0], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[1], 1), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[1], 2), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[2], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[3], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[3], 1), "there should be no plugin");
-	exit_if_fail (check_null_in_slot (bh->getplugins[1], 0) == 0, "there should be a plugin");
-
-	succeed_if (check_null_in_slot (bh->setplugins[0], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[1], 1), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[1], 2), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[2], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[2], 1), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[3], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[3], 1), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[4], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[4], 1), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[5], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[5], 1), "there should be no plugin");
-	exit_if_fail (check_null_in_slot (bh->setplugins[1], 0) == 0, "there should be a plugin");
-
-	Key * mp;
-	succeed_if ((mp = backendGetMountpoint (backend)) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "system/elektra/mountpoints/simple/config/mountpoint");
-	succeed_if_same_string (keyString (mp), "user/tests/backend/simple");
-
-	Plugin * plugin = bh->getplugins[1]->value;
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
-
-	succeed_if (plugin->kdbGet != 0, "no get pointer");
-	succeed_if (plugin->kdbSet != 0, "no set pointer");
-
-	elektraPluginClose (backend, errorKey);
-	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	ksDel (global);
+	Plugin * backend = open_backend (set_simple (), modules, global, errorKey);
+//
+//	BackendHandle * bh = elektraPluginGetData (backend);
+//
+//	succeed_if (bh != 0, "no backend handle found");
+//	succeed_if (check_null_in_slot (bh->errorplugins[0], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->errorplugins[0], 2), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->errorplugins[1], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->errorplugins[2], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->errorplugins[2], 1), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->errorplugins[2], 0), "there should be no plugin");
+//	exit_if_fail (check_null_in_slot (bh->errorplugins[0], 1) == 0, "there should be a plugin");
+//
+//	succeed_if (check_null_in_slot (bh->getplugins[0], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[1], 1), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[1], 2), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[2], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[3], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[3], 1), "there should be no plugin");
+//	exit_if_fail (check_null_in_slot (bh->getplugins[1], 0) == 0, "there should be a plugin");
+//
+//	succeed_if (check_null_in_slot (bh->setplugins[0], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[1], 1), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[1], 2), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[2], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[2], 1), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[3], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[3], 1), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[4], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[4], 1), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[5], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[5], 1), "there should be no plugin");
+//	exit_if_fail (check_null_in_slot (bh->setplugins[1], 0) == 0, "there should be a plugin");
+//
+//	Key * mp;
+//	succeed_if ((mp = bh->mountpoint) != 0, "no mountpoint found");
+//	succeed_if_same_string (keyName (mp), "system/elektra/mountpoints/simple/config/mountpoint");
+//	succeed_if_same_string (keyString (mp), "user/tests/backend/simple");
+//
+//	Plugin * plugin = bh->getplugins[1]->value;
+//
+//	KeySet * test_config = set_pluginconf ();
+//	KeySet * config = elektraPluginGetConfig (plugin);
+//	succeed_if (config != 0, "there should be a config");
+//	compare_keyset (config, test_config);
+//	ksDel (test_config);
+//
+//	succeed_if (plugin->kdbGet != 0, "no get pointer");
+//	succeed_if (plugin->kdbSet != 0, "no set pointer");
+//
+//	elektraPluginClose (backend, errorKey);
+//	elektraModulesClose (modules, 0);
+//	ksDel (modules);
+//	ksDel (global);
 }
-
+//
 static void test_default (void)
 {
-	printf ("Test default " KDB_DEFAULT_STORAGE "\n");
-
-	KeySet * modules = ksNew (0, KS_END);
-	elektraModulesInit (modules, 0);
-
-
-	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_pluginconf (), 0);
-	exit_if_fail (plugin, "KDB_DEFAULT_STORAGE: " KDB_DEFAULT_STORAGE " plugin could not be loaded");
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
-
-	succeed_if (plugin->kdbGet != 0, "no get pointer");
-	succeed_if (plugin->kdbSet != 0, "no set pointer");
-
-	elektraPluginClose (plugin, 0);
-
-	KeySet * global = ksNew (0, KS_END);
-	Plugin * backend = backendOpenDefault (modules, global, KDB_DB_FILE, 0);
-
-	Key * mp;
-	succeed_if ((mp = backendGetMountpoint (backend)) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "default/config/mountpoint");
-	succeed_if_same_string (keyString (mp), "default");
-
-	elektraPluginClose (backend, 0);
-	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	ksDel (global);
+//	printf ("Test default " KDB_DEFAULT_STORAGE "\n");
+//
+//	KeySet * modules = ksNew (0, KS_END);
+//	elektraModulesInit (modules, 0);
+//
+//
+//	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_pluginconf (), 0);
+//	exit_if_fail (plugin, "KDB_DEFAULT_STORAGE: " KDB_DEFAULT_STORAGE " plugin could not be loaded");
+//
+//	KeySet * test_config = set_pluginconf ();
+//	KeySet * config = elektraPluginGetConfig (plugin);
+//	succeed_if (config != 0, "there should be a config");
+//	compare_keyset (config, test_config);
+//	ksDel (test_config);
+//
+//	succeed_if (plugin->kdbGet != 0, "no get pointer");
+//	succeed_if (plugin->kdbSet != 0, "no set pointer");
+//
+//	elektraPluginClose (plugin, 0);
+//
+//	KeySet * global = ksNew (0, KS_END);
+//	Plugin * backend = open_default (modules, global);
+//
+//	BackendHandle * bh = elektraPluginGetData (backend);
+//
+//	succeed_if (bh != 0, "no backend handle found");
+//
+//	Key * mp;
+//	succeed_if ((mp = bh->mountpoint) != 0, "no mountpoint found");
+//	succeed_if_same_string (keyName (mp), "default/config/mountpoint");
+//	succeed_if_same_string (keyString (mp), "default");
+//
+//	elektraPluginClose (backend, 0);
+//	elektraModulesClose (modules, 0);
+//	ksDel (modules);
+//	ksDel (global);
 }
-
-
+//
+//
 KeySet * set_backref (void)
 {
 	return ksNew (
@@ -249,63 +273,66 @@ KeySet * set_backref (void)
 		keyNew ("system/elektra/mountpoints/backref/set/presetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
 		KS_END);
 }
-
+//
 static void test_backref (void)
 {
-	printf ("Test back references\n");
-
-	KeySet * modules = ksNew (0, KS_END);
-	elektraModulesInit (modules, 0);
-
-	KeySet * global = ksNew (0, KS_END);
-	Plugin * backend = backendOpen (set_backref (), modules, global, 0);
-	BackendHandle * bh = elektraPluginGetData (backend);
-
-	succeed_if (backend != 0, "there should be a backend");
-	succeed_if (check_null_in_slot (bh->getplugins[0], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[0], 1), "there should be no plugin");
-	exit_if_fail (check_null_in_slot (bh->getplugins[1], 0) == 0, "there should be a plugin");
-	succeed_if (check_null_in_slot (bh->getplugins[1], 1), "there should be no plugin");
-
-	succeed_if (check_null_in_slot (bh->setplugins[0], 0), "there should be no plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[0], 1), "there should be no plugin");
-	exit_if_fail (check_null_in_slot (bh->setplugins[1], 0) == 0, "there should be a plugin");
-	succeed_if (check_null_in_slot (bh->setplugins[1], 1), "there should be no plugin");
-
-	Key * mp;
-	succeed_if ((mp = backendGetMountpoint (backend)) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "system/elektra/mountpoints/backref/config/mountpoint");
-	succeed_if_same_string (keyString (mp), "user/tests/backend/backref");
-
-	Plugin * plugin1 = bh->getplugins[1]->value;
-	Plugin * plugin2 = bh->setplugins[1]->value;
-	Plugin * plugin3 = bh->errorplugins[1]->value;
-
-	succeed_if (plugin1 != 0, "there should be a plugin");
-	succeed_if (plugin2 != 0, "there should be a plugin");
-	succeed_if (plugin3 != 0, "there should be a plugin");
-
-	succeed_if (plugin1 == plugin2, "it should be the same plugin");
-	succeed_if (plugin2 == plugin3, "it should be the same plugin");
-	succeed_if (plugin1 == plugin3, "it should be the same plugin");
-
-	succeed_if (plugin1->refcounter == 3, "ref counter should be 3");
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin1);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
-
-	succeed_if (plugin1->kdbGet != 0, "no get pointer");
-	succeed_if (plugin1->kdbSet != 0, "no set pointer");
-	succeed_if (plugin2->kdbGet != 0, "no get pointer");
-	succeed_if (plugin2->kdbSet != 0, "no set pointer");
-
-	elektraPluginClose (backend, 0);
-	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	ksDel (global);
+//	printf ("Test back references\n");
+//
+//	KeySet * modules = ksNew (0, KS_END);
+//	elektraModulesInit (modules, 0);
+//
+//	KeySet * global = ksNew (0, KS_END);
+//	Plugin * backend = open_backend (set_backref (), modules, global, 0);
+//
+//	succeed_if (backend != 0, "there should be a backend");
+//
+//	BackendHandle * bh = elektraPluginGetData (backend);
+//
+//	succeed_if (bh != 0, "no backend handle found");
+//	succeed_if (check_null_in_slot (bh->getplugins[0], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[0], 1), "there should be no plugin");
+//	exit_if_fail (check_null_in_slot (bh->getplugins[1], 0) == 0, "there should be a plugin");
+//	succeed_if (check_null_in_slot (bh->getplugins[1], 1), "there should be no plugin");
+//
+//	succeed_if (check_null_in_slot (bh->setplugins[0], 0), "there should be no plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[0], 1), "there should be no plugin");
+//	exit_if_fail (check_null_in_slot (bh->setplugins[1], 0) == 0, "there should be a plugin");
+//	succeed_if (check_null_in_slot (bh->setplugins[1], 1), "there should be no plugin");
+//
+//	Key * mp;
+//	succeed_if ((mp = bh->mountpoint) != 0, "no mountpoint found");
+//	succeed_if_same_string (keyName (mp), "system/elektra/mountpoints/backref/config/mountpoint");
+//	succeed_if_same_string (keyString (mp), "user/tests/backend/backref");
+//
+//	Plugin * plugin1 = bh->getplugins[1]->value;
+//	Plugin * plugin2 = bh->setplugins[1]->value;
+//	Plugin * plugin3 = bh->errorplugins[1]->value;
+//
+//	succeed_if (plugin1 != 0, "there should be a plugin");
+//	succeed_if (plugin2 != 0, "there should be a plugin");
+//	succeed_if (plugin3 != 0, "there should be a plugin");
+//
+//	succeed_if (plugin1 == plugin2, "it should be the same plugin");
+//	succeed_if (plugin2 == plugin3, "it should be the same plugin");
+//	succeed_if (plugin1 == plugin3, "it should be the same plugin");
+//
+//	succeed_if (plugin1->refcounter == 3, "ref counter should be 3");
+//
+//	KeySet * test_config = set_pluginconf ();
+//	KeySet * config = elektraPluginGetConfig (plugin1);
+//	succeed_if (config != 0, "there should be a config");
+//	compare_keyset (config, test_config);
+//	ksDel (test_config);
+//
+//	succeed_if (plugin1->kdbGet != 0, "no get pointer");
+//	succeed_if (plugin1->kdbSet != 0, "no set pointer");
+//	succeed_if (plugin2->kdbGet != 0, "no get pointer");
+//	succeed_if (plugin2->kdbSet != 0, "no set pointer");
+//
+//	elektraPluginClose (backend, 0);
+//	elektraModulesClose (modules, 0);
+//	ksDel (modules);
+//	ksDel (global);
 }
 
 
