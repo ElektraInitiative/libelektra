@@ -1,9 +1,9 @@
 #include <kdb.h>
 #include <kdbassert.h>
-#include <kdbmeta.h>
-#include <kdbproposal.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbmeta.h>
+#include <kdbproposal.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -79,6 +79,8 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index);
 static int keyCmpOrderWrapper (const void * a, const void * b);
 static Key * getCurrentKey (Writer * writer);
 static Key * getNextKey (Writer * writer);
+static Key * getPreviousKey (Writer * writer);
+static int keyCmpCustom (const Key * a, const Key * b);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -109,9 +111,9 @@ int tomlWrite (KeySet * keys, Key * parent)
 	}
 
 	int result = 0;
-	if (keyCmp (getCurrentKey(w), parent) == 0)
+	if (keyCmp (getCurrentKey (w), parent) == 0)
 	{
-		getNextKey(w);
+		getNextKey (w);
 	}
 	result |= writeKeys (parent, w);
 	CommentList * comments = collectComments (parent);
@@ -190,9 +192,17 @@ static Key * getNextKey (Writer * writer)
 	return getCurrentKey (writer);
 }
 
+static Key * getPreviousKey (Writer * writer)
+{
+	if (writer->cursor > 0) {
+		writer->cursor--;
+	}
+	return getCurrentKey (writer);
+}
+
 static int writeKeys (Key * parent, Writer * writer)
 {
-	Key * key = getCurrentKey(writer);
+	Key * key = getCurrentKey (writer);
 
 	int result = 0;
 
@@ -205,13 +215,20 @@ static int writeKeys (Key * parent, Writer * writer)
 			result |= writeNewline (writer);
 			break;
 		case KEY_TYPE_SIMPLE_TABLE:
+			if (keyCmp(parent, writer->rootKey) != 0) {
+				return result;
+			}
 			result |= writeSimpleTable (parent, key, writer);
 			break;
 		case KEY_TYPE_TABLE_ARRAY:
+			if (keyCmp(parent, writer->rootKey) != 0) {
+				return result;
+			}
 			result |= writeTableArray (parent, key, writer);
 			break;
 		}
-		key =getCurrentKey(writer);;
+		key = getCurrentKey (writer);
+		;
 	}
 	return result;
 }
@@ -233,7 +250,7 @@ static int writeSimpleTable (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
 	result |= writeSimpleTableHeader (parent, key, writer);
-	getNextKey(writer);
+	getNextKey (writer);
 	result |= writeKeys (key, writer);
 
 	return result;
@@ -245,7 +262,7 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 	Key * arrayRoot = key;
 	size_t maxIndex = getArrayMax (arrayRoot);
 	size_t nextIndex = 0;
-	key = getNextKey(writer);
+	key = getNextKey (writer);
 
 	while (result == 0 && nextIndex <= maxIndex)
 	{
@@ -275,13 +292,13 @@ static int writeTableArray (Key * parent, Key * key, Writer * writer)
 
 			if (keyCmp (elementRoot, key) == 0) // holds for table array entries with comments
 			{
-				getNextKey(writer);
+				getNextKey (writer);
 			}
 			result |= writeKeys (elementRoot, writer);
 			nextIndex++;
 
 			keyDel (elementRoot);
-			key = getCurrentKey(writer);
+			key = getCurrentKey (writer);
 		}
 		else
 		{
@@ -308,7 +325,7 @@ static int writeArrayBody (Key * key, Writer * writer)
 static int writeArrayElements (Key * parent, Writer * writer)
 {
 	int result = 0;
-	Key * key = getNextKey(writer);
+	Key * key = getNextKey (writer);
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
 		CommentList * comments = collectComments (key);
@@ -343,7 +360,7 @@ static int writeValue (Key * key, Writer * writer)
 	else
 	{
 		result |= writeScalar (key, writer);
-		getNextKey(writer);
+		getNextKey (writer);
 	}
 	return result;
 }
@@ -392,17 +409,17 @@ static int writeScalar (Key * key, Writer * writer)
 	keyRewindMeta (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
 	const Key * type = findMetaKey (key, "type");
-	const char * valueStr = keyString(key);
+	const char * valueStr = keyString (key);
 	if (origValue != NULL)
 	{
-		valueStr = keyString(origValue);
+		valueStr = keyString (origValue);
 	}
 
 	if (elektraStrLen (valueStr) == 1)
 	{
 		result |= fputs ("''", writer->f) == EOF;
 	}
-	else if (isBoolean (valueStr) && type != NULL && elektraStrCmp(keyString(type), "boolean") == 0)
+	else if (isBoolean (valueStr) && type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
 	{
 		if (isTrue (valueStr))
 		{
@@ -457,7 +474,7 @@ static int writeInlineTableBody (Key * key, Writer * writer)
 static int writeInlineTableElements (Key * parent, Writer * writer)
 {
 	int result = 0;
-	Key * key = getNextKey(writer);
+	Key * key = getNextKey (writer);
 	bool firstElement = true;
 	while (keyIsBelow (parent, key) == 1)
 	{
@@ -470,7 +487,7 @@ static int writeInlineTableElements (Key * parent, Writer * writer)
 			result |= fputs (", ", writer->f) == EOF;
 		}
 		result |= writeAssignment (parent, key, writer);
-		key = getCurrentKey(writer);
+		key = getCurrentKey (writer);
 	}
 	return result;
 }
@@ -663,6 +680,7 @@ static void freeComments (CommentList * comments)
 	}
 }
 
+
 static void addMissingArrayKeys (KeySet * keys, Key * parent)
 {
 	ArrayInfo * arrays = NULL;
@@ -698,6 +716,11 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 		}
 		else
 		{
+			const Key * meta = findMetaKey (arrayRoot, "array");
+			if (meta == NULL)
+			{
+				keyUpdateArrayMetakey (arrayRoot, arrays->maxIndex);
+			}
 			keyDel (arrays->name);
 		}
 		ArrayInfo * next = arrays->next;
@@ -769,7 +792,35 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
 	return element;
 }
 
-static int keyCmpOrderWrapper (const void * a, const void * b)
+static int keyCmpOrderWrapper (const void * va, const void * vb)
 {
-	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));
+	return elektraKeyCmpOrder (*((const Key **) va), *((const Key **) vb));
+}
+
+static int keyCmpCustom (const Key * a, const Key * b)
+{
+	const char * partA = (const char *) keyUnescapedName (a);
+	const char * partB = (const char *) keyUnescapedName (b);
+	const char * stopA = ((const char *) partA) + keyGetUnescapedNameSize (a);
+	const char * stopB = ((const char *) partB) + keyGetUnescapedNameSize (b);
+	while (partA < stopA && partB < stopB)
+	{
+		bool aIndex = isArrayIndex (partA);
+		bool bIndex = isArrayIndex (partB);
+		if (aIndex && bIndex)
+		{
+			int result = elektraStrCmp (partA, partB);
+			if (result != 0)
+			{
+				return result;
+			}
+		}
+		else if (aIndex != bIndex)
+		{
+			return elektraKeyCmpOrder (a, b);
+		}
+		partA += elektraStrLen (partA);
+		partB += elektraStrLen (partB);
+	}
+	return elektraKeyCmpOrder (a, b);
 }

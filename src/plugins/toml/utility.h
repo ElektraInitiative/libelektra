@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 void dumpKS(KeySet * keys);
+void dumpMemKS(Key ** keys, size_t size);
 
 Key * keyAppendIndex (size_t index, const Key * parent);
 void keyUpdateArrayMetakey (Key * key, size_t newIndex);
