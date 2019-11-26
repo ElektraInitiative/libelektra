@@ -32,7 +32,7 @@ The plugin supports null keys. They are represented as special string of value '
 		
 ## TODOs
 	- Document functions
-	- directory value
+	- proper sorting -> arrays
 	- base64 for binary k/v
 	- check why space restoration in front of comments not working
 	- Error checks for writing

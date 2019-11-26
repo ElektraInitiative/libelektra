@@ -1,22 +1,41 @@
 #include "utility.h"
 
-#include <kdbhelper.h>
 #include <kdbassert.h>
+#include <kdbhelper.h>
 #include <stdio.h>
 #include <string.h>
 
-void dumpKS(KeySet * keys) {
-	FILE * f = fopen("keys.txt", "w");
+void dumpKS (KeySet * keys)
+{
+	FILE * f = fopen ("keys.txt", "w");
 	ksRewind (keys);
 	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
 	{
 		fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
 		keyRewindMeta (key);
-		for (const Key * meta = keyNextMeta(key); meta != NULL; meta = keyNextMeta(key)) {
+		for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
+		{
 			fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
 		}
 	}
 	ksRewind (keys);
+}
+
+void dumpMemKS (Key ** keys, size_t size)
+{
+	FILE * f = fopen ("keys_mem.txt", "w");
+	for (size_t i = 0; i < size; i++)
+	{
+		{
+			Key * key = keys[i];
+			fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
+			keyRewindMeta (key);
+			for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
+			{
+				fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
+			}
+		}
+	}
 }
 
 Key * keyAppendIndex (size_t index, const Key * parent)
@@ -75,24 +94,29 @@ size_t arrayStringToIndex (const char * indexStr)
 	return val;
 }
 
-bool isArrayIndex(const char * basename) {
-	if (*basename++ != '#') {
+bool isArrayIndex (const char * basename)
+{
+	if (*basename++ != '#')
+	{
 		return false;
 	}
-	while (*basename == '_') {
+	while (*basename == '_')
+	{
 		basename++;
 	}
-	while (*basename >= '0' && *basename <= '9') {
+	while (*basename >= '0' && *basename <= '9')
+	{
 		basename++;
 	}
 	return *basename == 0;
 }
 
-bool isEmptyArray(Key * key) {
+bool isEmptyArray (Key * key)
+{
 	const Key * meta = findMetaKey (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
-	const char * sizeStr = keyString(meta);
-	return elektraStrLen(sizeStr) == 1;
+	const char * sizeStr = keyString (meta);
+	return elektraStrLen (sizeStr) == 1;
 }
 
 size_t getArrayMax (Key * key)
@@ -100,7 +124,7 @@ size_t getArrayMax (Key * key)
 	const Key * meta = findMetaKey (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 
-	return arrayStringToIndex (keyString(meta));
+	return arrayStringToIndex (keyString (meta));
 }
 
 const Key * findMetaKey (Key * key, const char * metakeyName)
