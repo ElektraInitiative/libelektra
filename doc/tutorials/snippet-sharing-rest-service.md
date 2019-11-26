@@ -101,8 +101,8 @@ other versions of 3+.
 
 After installing the dependencies, we are ready to build the applications.
 To do so, we can follow the steps explained in the [build guide](/doc/COMPILE.md).
-Make sure to include the two tools `rest-backend` and `rest-frontend`, e.g. by
-using the arguments `-DTOOLS="ALL;rest-backend;rest-frontend"`.
+Make sure to include the two tools `website-backend` and `website-frontend`, e.g. by
+using the arguments `-DTOOLS="ALL;website-backend;website-frontend"`.
 
 After building Elektra and the applications, we can use `make install` to install
 them. Further information and troubleshooting can be found in the
@@ -116,7 +116,7 @@ but some settings have to be set manually afterwards.
 ### Backend
 
 After the installation, the configuration specification of the backend has to be mounted
-with the command `kdb mount-rest-backend-config`. You can check if the mounting was successful
+with the command `kdb mount-website-backend-config`. You can check if the mounting was successful
 by issuing `kdb mount`. There should be an entry in the list with a path like
 `spec/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
 If you do not see this mount points, have a look at the mount script in the tool_exec
@@ -173,7 +173,7 @@ not part of the specification. That means it does not get validated.
 
 The frontend does only require small mandatory changes in its configuration.
 Before they can be made, the configuration file has to be mounted though. This can be
-achieved by issuing `kdb mount-rest-frontend-config`. The configuration should then
+achieved by issuing `kdb mount-website-frontend-config`. The configuration should then
 be available at `system/sw/elektra/restfrontend/#0/current`. To get a list of possible
 configuration parameters, use `kdb ls system/sw/elektra/restfrontend/#0/current`.
 
@@ -189,9 +189,9 @@ The parameters that need to be changed in order for the frontend to work correct
 
 As last step we need to run the applications:
 
-- First we start the backend server with `kdb run-rest-backend`. To ensure the backend is accessible, you can use `curl http://localhost:8080/version` (change port to your setting), which should show you some version information in JSON format.
-- Although the frontend was compiled during installation already, we want to have a freshly built homepage and use `kdb build-rest-frontend` to do so.
-- Then we run the frontend analogously with `kdb run-rest-frontend`. It should now be reachable at the configured port.
+- First we start the backend server with `kdb run-website-backend`. To ensure the backend is accessible, you can use `curl http://localhost:8080/version` (change port to your setting), which should show you some version information in JSON format.
+- Although the frontend was compiled during installation already, we want to have a freshly built homepage and use `kdb build-website-frontend` to do so.
+- Then we run the frontend analogously with `kdb run-website-frontend`. It should now be reachable at the configured port.
 
 If everything went smooth, both applications should now be online and reachable.
 
@@ -199,8 +199,8 @@ If everything went smooth, both applications should now be online and reachable.
 
 Both applications can be stopped with a simple command:
 
-- Backend: `kdb stop-rest-backend`
-- Frontend: `kdb stop-rest-frontend`
+- Backend: `kdb stop-website-backend`
+- Frontend: `kdb stop-website-frontend`
 
 ## Additional Tasks
 
@@ -224,8 +224,8 @@ that your API blueprint is still syntax conform. To do so, you can use the tool
 ### Use Other Webserver Than the Built-in Grunt Webserver
 
 Of course it is possible to use another webserver instead of the built-in one.
-To do so, simply run `kdb build-rest-frontend` and copy the content of the
-`/usr/local/share/elektra/tool_data/rest-frontend/public` directory to
+To do so, simply run `kdb build-website-frontend` and copy the content of the
+`/usr/local/share/elektra/tool_data/website-frontend/public` directory to
 your desired target location.
 
 It is required that you set a rewrite rule that serves the `index.html` for every
@@ -247,8 +247,8 @@ As web server we use Debian Jessie’s Apache2.
 Several domains are used for different tasks, whereas only two are relevant for
 the here described service:
 
-- `restapi.libelektra.org` for the API provided by the `rest-backend`
-- `www.libelektra.org` for the website and frontend provided by the `rest-frontend`
+- `restapi.libelektra.org` for the API provided by the `website-backend`
+- `www.libelektra.org` for the website and frontend provided by the `website-frontend`
 
 The server redirects requests on port 80 (non-SSL) to 443 using a very simple
 configuration like
@@ -271,7 +271,7 @@ The secured variant of the configuration looks like
 <VirtualHost *:443>
     ServerName www.libelektra.org
 
-    DocumentRoot "/usr/local/share/elektra/tool_data/rest-frontend/public"
+    DocumentRoot "/usr/local/share/elektra/tool_data/website-frontend/public"
     <Directory />
         FallbackResource /index.html
         Options Indexes MultiViews
@@ -291,7 +291,7 @@ The secured variant of the configuration looks like
 </IfModule>
 ```
 
-Important is the `Directory` configuration because the `rest-frontend` requires the
+Important is the `Directory` configuration because the `website-frontend` requires the
 `FallbackResource` option to function correctly.
 
 For the `restapi.libelektra.org` domain we use an SCGI setup:
@@ -317,7 +317,7 @@ For the `restapi.libelektra.org` domain we use an SCGI setup:
 
 ### Rest-Backend
 
-The `rest-backend` itself is configured normally as described in the configuration
+The `website-backend` itself is configured normally as described in the configuration
 section above, but with CppCMS using SCGI instead of HTTP as API variant.
 This requires setting the keys
 
@@ -343,7 +343,7 @@ kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system
 
 ### Rest-Frontend
 
-Because of the Apache server using the rest-frontend installation directory as
+Because of the Apache server using the website-frontend installation directory as
 document root, there is no further configuration necessary other than already
 explained in the configuration section above.
 
@@ -357,4 +357,4 @@ The build script basically builds the applications, runs tests, installs everyth
 and restarts the backend. Finally, it can run the configuration script for the frontend,
 which updates the website content.
 
-The current build script can be found [here](/scripts/build-homepage).
+The current build script can be found [here](/scripts/deploy/website).

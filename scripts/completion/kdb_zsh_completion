@@ -1,0 +1,279 @@
+#compdef kdb
+# This file needs to be renamed to _kdb to work and must be in the $fpath
+# It must start with #compdef kdb
+#
+# ZSH completion file for KDB
+#
+# Sebastian Bachmann <hello@reox.at>, 2017
+
+_kdb_paths () {
+    # Function to complete a KDB path by using `kdb complete`
+
+    typeset -a paths
+    # The current user input is saved in $PREFIX
+    # we can use kdb complete -M 1 $PREFIX to look up new paths
+    #
+    # as the _values function already completes with a seperator,
+    # we need to remove trailing slashes from the list.
+    paths=($(kdb complete -M 1 $PREFIX | sed 's#/$##'))
+
+    # Check if kdb complete got any result at all
+    if [ $#paths -eq 0 ]; then
+        _message "No key to complete"
+        return
+    fi
+
+    # Check if the supplied path completes to a leaf:
+    kdb complete $PREFIX | grep -q -e '/$'
+    if [ $? -eq 1 ] && [ $#paths -eq 1 ]; then
+        # Leaf
+        _message "$PREFIX is a leaf."
+        # If we have a leaf, we do not add the / seperator but a whitespace
+        _values 'kdb path' $paths
+        return
+    else
+        # Otherwise we add a / seperator
+        _values -s '/' 'kdb path' $paths
+    fi
+}
+
+# These are the functions for each command
+_kdb-plugin-check () {
+    # TODO [plugin]
+}
+
+_kdb-convert () {
+    # TODO [import format] [export format] [import file] [export file]
+}
+
+_kdb-cp () {
+    # TODO src dst
+    _kdb_paths
+}
+
+_kdb-export () {
+    # TODO src [format]
+    _kdb_paths
+}
+
+_kdb-file () {
+    # TODO path
+    _kdb_path
+}
+
+_kdb-fstab () {
+    # TODO key-path fs_spec fs_file fs_vfstype fs_mntops
+    _kdb_path
+}
+
+_kdb-get () {
+    # TODO disallow multiple kdb paths
+    _kdb_paths
+}
+
+_kdb-meta-get () {
+    # TODO key-name metaname
+    _kdb_paths
+}
+
+_kdb-import () {
+    # TODO dst [format]
+    _kdb_paths
+}
+
+_kdb-plugin-info () {
+    # TODO plugin [clause name]
+}
+
+_kdb-plugin-list () {
+    _message -e "No Arguments for list"
+    return
+}
+
+_kdb-ls () {
+    # TODO disallow multiple kdb paths
+    _kdb_paths
+}
+
+_kdb-meta-ls () {
+    _kdb_paths
+}
+
+_kdb-merge () {
+    # TODO ourpath theirpath basepath resultpath
+}
+
+_kdb-mount () {
+    # TODO [path mountpoint] [plugin config] ...
+}
+
+_kdb-mv () {
+    # TODO src dst
+    _kdb_paths
+}
+
+_kdb-remount () {
+    # TODO new-path new-mountpoint existing-mountpoint
+    _kdb_paths
+}
+
+_kdb-rm () {
+    # TODO single path
+    _kdb_paths
+}
+
+_kdb-set () {
+    # TODO after a path comes something else
+    _kdb_paths
+}
+
+_kdb-meta-set () {
+    # TODO key-name metaname metavalue
+    _kdb_paths
+}
+
+_kdb-sget () {
+    # TODO single path and default value
+    _kdb_paths
+}
+
+_kdb-shell () {
+    _message -e "No Arguments for shell"
+    return
+}
+
+_kdb-test () {
+    # TODO path [testname ...]
+    _kdb_paths
+}
+
+_kdb-umount () {
+    # TODO name
+    _kdb_paths
+}
+
+_kdb-help () {
+    # TODO can we get the command list all over again?
+}
+
+_kdb-list-tools () {
+    _message -e "No Arguments for list-tools"
+    return
+}
+
+
+# This function handles the commands of kdb and passes them
+# to the function which actually shows the options.
+
+_kdb_commands () {
+    # TODO Copy&Paste from git completion
+    # I have some clue what is going on here, but need to rewrite that someday
+
+    local -a cmdtypes
+    cmdtypes=(main_commands)
+
+    local -a $cmdtypes
+
+    main_commands=(
+        check:'Do some basic checks on a plugin.'
+        convert:'Convert configuration.'
+        cp:'Copy keys within the key database.'
+        export:'Export configuration from the key database.'
+        file:'Prints the file where a key is located.'
+        fstab:'Create a new fstab entry.'
+        get:'Get the value of an individual key.'
+        getmeta:'Get a metavalue.'
+        import:'Import configuration to the key database.'
+        info:'Print information about a plugin.'
+        list:'List available plugins.'
+        ls:'List the names of keys below a given name.'
+        lsmeta:'Get all meta information of an individual key.'
+        merge:'Three-way merge of KeySets.'
+        mount:'Mount a new backend.'
+        mv:'Move configuration within the key database.'
+        remount:'Remount an existing backend with a different filename.'
+        rm:'Remove key(s) from key database.'
+        set:'Set the value of an individual key.'
+        setmeta:'Set a metavalue.'
+        sget:'Get the value of an individual key within a shell script.'
+        shell:'Start a kdb shell.'
+        test:'Run key database test suite.'
+        umount:'Unmount backend from key database.'
+        help:'View the man page of a tool'
+        list-tools:'List all external tools')
+
+  zstyle -a :completion:$curcontext: user-commands user_commands
+
+  local -a aliases
+  aliases=()
+  local cmdtype len dup sep
+  local -a allcmds allmatching alts disp expl
+
+  zstyle -s ":completion:${curcontext}:" list-separator sep || sep=--
+  for cmdtype in $cmdtypes aliases; do
+    if [[ $cmdtype = aliases ]]; then
+      for dup in ${${aliases%:*}:*allcmds}; do
+	aliases=( ${aliases:#$dup:*} )
+      done
+    fi
+    local -a ${cmdtype}_m
+    set -A ${cmdtype}_m ${(P)cmdtype%%:*}
+    allcmds+=( ${(P)${:-${cmdtype}_m}} )
+  done
+  zstyle -T ":completion:${curcontext}:" verbose && disp=(-ld '${cmdtype}_d')
+  _description '' expl '' # get applicable matchers
+  compadd "$expl[@]" -O allmatching -a allcmds
+  len=${#${(O)allmatching//?/.}[1]} # length of longest match
+  for cmdtype in aliases $cmdtypes; do
+    local -a ${cmdtype}_d
+    (( $#disp )) && set -A ${cmdtype}_d \
+        ${${(r.COLUMNS-4.)${(P)cmdtype}/(#s)(#m)[^:]##:/${(r.len.)MATCH[1,-2]} $sep }%% #}
+    alts+=( "${cmdtype//_/-}:${${cmdtype//_/ }%%(e|)s}:compadd ${(e)disp} -a ${cmdtype}_m" )
+  done
+
+  _alternative $alts
+}
+
+
+# Main Function
+_kdb () {
+    local curcontext=$curcontext state line
+
+    integer ret=1
+
+    _arguments -C \
+                   '-H[show the man page]'\
+                   '--help[show the man page]'\
+                   '-V[Print version info]'\
+                   '--version[Print version info]'\
+                   '-v[Explain what is happening]'\
+                   '--verbose[Explain what is happening]'\
+                   '-C[Print never/auto(default)/always colored output]:when'\
+                   '--color=-[Print never/auto(default)/always colored output]: :'\
+                   '-p[Use a different kdb profile]:profile'\
+                   '--profile=-[Use a different kdb profile]: :'\
+                   '(-): :->command' \
+                   '(-)*:: :->option-or-argument' && return
+
+    case $state in
+        (command)
+            _kdb_commands
+        ;;
+        (option-or-argument)
+            curcontext=${curcontext%:*:*}:kdb-$words[1]:
+
+            if ! _call_function ret _kdb-$words[1]; then
+                if zstyle -T :completion:$curcontext: use-fallback; then
+                    _default && ret=0
+                else
+                    _message "unknown sub-command: $words[1]"
+                fi
+            fi
+        ;;
+
+    esac
+
+    return
+}
+
+_kdb

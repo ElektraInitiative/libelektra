@@ -21,8 +21,6 @@
 
 #include <kdbproposal.h>
 
-#define MAX_SPACE_BUFFER = 16;
-
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
 
 /*

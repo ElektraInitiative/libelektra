@@ -9,8 +9,14 @@ macro (do_python_test source)
 	set_property (TEST ${name} PROPERTY LABELS memleak bindings)
 
 	if (${name} MATCHES ".*_kdb")
-		set_property (TEST ${name} APPEND PROPERTY LABELS kdbtests)
-		set_property (TEST ${name} APPEND PROPERTY RUN_SERIAL TRUE)
+		set_property (
+			TEST ${name}
+			APPEND
+			PROPERTY LABELS kdbtests)
+		set_property (
+			TEST ${name}
+			APPEND
+			PROPERTY RUN_SERIAL TRUE)
 	endif ()
 endmacro (do_python_test)
 

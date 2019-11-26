@@ -62,10 +62,28 @@ additional_commands:
 
   add_msr_test:
     kwargs:
+      ENVIRONMENT: +
       REQUIRED_PLUGINS: +
+      REQUIRED_TOOLS: +
+
+  add_msr_test_plugin:
+    kwargs:
+      ENVIRONMENT: +
+      REQUIRED_PLUGINS: +
+      REQUIRED_TOOLS: +
 
   download_project:
     kwargs:
       PROJ: 1
       GIT_REPOSITORY: 1
       GIT_TAG: 1
+
+  elektra_kdb_gen:
+    kwargs:
+      pargs: 3
+      OUTPUT_DIR: 1
+      KDB: 1
+      INPUT: 2
+      PARTS: +
+      PARAMS: +
+      OPTIONS: +

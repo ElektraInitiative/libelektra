@@ -19,10 +19,6 @@
 #include <kdbplugin.h>
 #include <memory>
 
-using namespace ckdb;
-using namespace Botan;
-using std::unique_ptr;
-
 extern "C" {
 
 #include "botan_operations.h"
@@ -32,6 +28,10 @@ extern "C" {
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <string.h>
+
+using namespace ckdb;
+using namespace Botan;
+using std::unique_ptr;
 
 /**
  * @brief derive the cryptographic key and IV for a given (Elektra) Key k
@@ -66,7 +66,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		}
 		if (!saltHexString)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 			return -1;
 		}
 		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
@@ -152,7 +152,7 @@ int elektraCryptoBotanInit (Key * errorKey)
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Botan initialization failed. Reason: %s", e.what ());
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Botan initialization failed. Reason: %s", e.what ());
 		return -1; // failure
 	}
 	return 1; // success

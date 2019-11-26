@@ -28,6 +28,8 @@ needed for bootstrapping plugins.
 
 ## Decision
 
+Rejected: keep default plugins as-is
+
 ## Rationale
 
 ## Implications

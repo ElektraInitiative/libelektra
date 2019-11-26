@@ -44,12 +44,6 @@ RUN apt-get update \
         libuv1-dev \
         libev-dev \
         libzmq3-dev \
-        ghc \
-        ghc-dynamic \
-        cabal-install \
-        alex \
-        happy \
-        c2hs \
         checkinstall \
         openjdk-8-jdk \
         maven \
@@ -80,8 +74,6 @@ RUN apt-get update \
         uuid-dev \
         ninja-build \
     && rm -rf /var/lib/apt/lists/*
-
-RUN cabal update && cabal install hspec QuickCheck
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
@@ -122,28 +114,6 @@ RUN cd /tmp \
     && ninja install \
     && cd /tmp \
     && rm -r antlr4
-
-# PEGTL
-ARG PEGTL_VERSION=2.7.1
-RUN cd /tmp \
-    && git clone --branch ${PEGTL_VERSION} --depth 1 https://github.com/taocpp/PEGTL.git \
-    && cp -R PEGTL/include/tao /usr/local/include \
-    && rm -rf PEGTL
-
-# YAEP
-ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
-RUN cd /tmp \
-    && mkdir yaep \
-    && curl -o yaep.tar.gz \
-       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
-    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
-    && cd yaep \
-    && mkdir build \
-    && cd build \
-    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
-    && make install \
-    && cd ../.. \
-    && rm -r yaep yaep.tar.gz
 
 # yaml-cpp
 RUN cd /tmp \
@@ -191,7 +161,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-RUN pip install cmake-format[yaml]==0.5.4
+RUN pip install cmake-format[yaml]==0.6
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls
@@ -204,16 +174,3 @@ RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
 
-# Handle Haskell dependencies
-ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
-RUN mkdir -p $HASKELL_SHARED_SANDBOX \
-    && cd $HASKELL_SHARED_SANDBOX \
-    && cabal update \
-    && cabal sandbox init \
-    && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
-        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
-        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls
-# Workaround for issue [#2139](http://issues.libelektra.org/2139)
-RUN mkdir -p /home/jenkins/.cabal/lib

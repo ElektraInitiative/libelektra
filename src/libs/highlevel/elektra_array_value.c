@@ -8,7 +8,6 @@
 
 #include "elektra.h"
 #include "elektra/conversion.h"
-#include "elektra/errors.h"
 #include "kdbease.h"
 #include "kdbhelper.h"
 #include "kdbprivate.h"
@@ -97,6 +96,8 @@ kdb_long_long_t elektraArraySize (Elektra * elektra, const char * name)
  * @param index   The index of the array element.
  * @param type    The expected type metadata value.
  * @return the Key referenced by @p name or NULL, if a fatal error occurs and the fatal error handler returns to this function
+ *   The returned pointer remains valid until the KeySet inside @p elektra is modified. Calls to elektraSet*() functions may
+ *   cause such modifications. In any case, it becomes invalid when elektraClose() is called on @p elektra.
  */
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type)
 {
@@ -136,6 +137,8 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long
  * @return the resolved version of the reference stored in the specified key (relative to the parent key of @p elektra)
  * or NULL, if the key was not found, or the reference resolves two a key not below the parent key. The empty string is
  * returned, if the value was the empty string (no resolution is attempted).
+ *   The returned pointer becomes invalid when this function is called again (even with the same arguments). It is also
+ *   invalidated when elektraFindReference() or elektraClose() are called on @p elektra.
  */
 const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index)
 {
@@ -194,6 +197,9 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, kdb
  * @param name    The (relative) name of the array.
  * @param index   The index of the array element.
  * @return the raw value of the specified key, or NULL if the key was not found
+ *   The returned pointer remains valid until the internal state of @p elektra is modified.
+ *   Calls to elektraSet*() functions may cause such modifications. In any case, it becomes
+ *   invalid when elektraClose() is called on @p elektra.
  */
 const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index)
 {
@@ -253,6 +259,9 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
  * @param keyname The (relative) name of the array to look up.
  * @param index   The index of the array element to look up.
  * @return the string stored at the given array element
+ *   The returned pointer remains valid until the internal state of @p elektra is modified.
+ *   Calls to elektraSet*() functions may cause such modifications. In any case, it becomes
+ *   invalid when elektraClose() is called on @p elektra.
  */
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {

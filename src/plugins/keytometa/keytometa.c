@@ -50,7 +50,8 @@ static Key * findNearestParent (Key * key, KeySet * ks)
 {
 	Key * current;
 	ksSetCursor (ks, ksGetSize (ks) - 1);
-	while ((current = ksPrev (ks)) != 0)
+
+	for (cursor_t cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
 	{
 		if (keyIsBelow (current, key))
 		{
@@ -253,7 +254,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (ret < 0)
 	{
 		elektraFree (keyArray);
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		errno = errnosave;
 		return 0;
 	}

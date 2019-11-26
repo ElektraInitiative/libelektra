@@ -17,6 +17,7 @@
 #include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdbinternal.h>
+#include <kdbmacros.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
@@ -269,7 +270,7 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 	Key * cutKey = keyNew ("/child", KEY_END);
 	KeySet * childConfig = ksCut (config, cutKey);
 	keyDel (cutKey);
-	mc->childConfig = elektraRenameKeys (childConfig, "system");
+	mc->childConfig = ksRenameKeys (childConfig, "system");
 	ksAppend (config, childConfig);
 	ksDel (childConfig);
 	mc->childBackends = ksNew (0, KS_END);
@@ -407,7 +408,7 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found,
 	{
 		if (ret == GLOB_NOSPACE)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (parentKey, "Glob(%s) ran out of memory", pattern);
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		}
 		else if (ret == GLOB_ABORTED)
 		{
@@ -614,8 +615,9 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 			keyNew ("system/elektra/modules/multifile/exports/close", KEY_FUNC, elektraMultifileClose, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/get", KEY_FUNC, elektraMultifileGet, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/set", KEY_FUNC, elektraMultifileSet, KEY_END),
+			keyNew ("system/elektra/modules/multifile/exports/commit", KEY_FUNC, elektraMultifileCommit, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/error", KEY_FUNC, elektraMultifileError, KEY_END),
-			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConfig, KEY_END),
+			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConf, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/checkfile", KEY_FUNC, elektraMultifileCheckFile, KEY_END),
 
 #include ELEKTRA_README
@@ -917,7 +919,12 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return 1; // success
 }
 
-int elektraMultifileCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraMultifileCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraMultifileSet (handle, returned, parentKey);
+}
+
+int elektraMultifileCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional
@@ -938,6 +945,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	    ELEKTRA_PLUGIN_GET,	&elektraMultifileGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraMultifileSet,
 	    ELEKTRA_PLUGIN_ERROR,	&elektraMultifileError,
+	    ELEKTRA_PLUGIN_COMMIT,      &elektraMultifileCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

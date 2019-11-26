@@ -5,7 +5,7 @@
 - infos/provides = storage/specload
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained nodep libc configurable experimental unfinished
+- infos/status = maintained nodep libc configurable unfinished
 - infos/metadata =
 - infos/description = loads a specification from an external application
 
@@ -31,7 +31,7 @@ The plugin relies heavily on the `quickdump` plugin. It is used for storing the 
 To check whether `quickdump` is available you can use:
 
 ```
-kdb list quickdump
+kdb plugin-list quickdump
 #> quickdump
 ```
 
@@ -75,18 +75,28 @@ ksDel (specloadConf);
 The code above will automatically print the KeySet `ks` to stdout in exactly the way `specload` expects it.
 
 Once the mounting is done you can inspect you specification like you would with any other mounted configuration. If you call `kdb set`
-(or `kdb setmeta` or anything else that calls `kdbSet()`), however, `specload` will verify that the modifications you made are compatible
+(or `kdb meta-set` or anything else that calls `kdbSet()`), however, `specload` will verify that the modifications you made are compatible
 with the original specification. Currently this verification is very restrictive and doesn't allow a lot of changes that would be safe.
 This is because the necessary verification becomes very complex very quickly. For example adding `opt/arg` is only safe, if `opt` was also
 added by the user, because the application might rely on the default `opt/arg=none`. See also [Limitations](#limitations).
+
+### Direct File Mode
+
+Instead of loading the specification via `stdin`/`stdout` from another app, you can also instruct `specload` to directly
+load a `quickdump` file. This can be done by setting the `file` config key instead of `app`. The provided path must be
+absolute, same as an `app` path.
+
+Note: If `file` is specified, `app` will be ignored.
 
 ## Examples
 
 This assumes you compiled the file [`testapp.c`](testapp.c) and it is available as the executable `testapp` in the current folder.
 
 ```
-# Mount as readonly storage
 sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "app=$(pwd)/testapp"
+
+kdb meta-ls spec/tests/specload/mykey
+#> default
 
 kdb get /tests/specload/mykey
 #> 7
@@ -95,13 +105,27 @@ sudo kdb umount spec/tests/specload
 
 ```
 
+Or in direct file mode:
+
+```sh
+# This assumes that `$PWD` is the root of the Elektra source tree.
+sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "file=$(pwd)/src/plugins/specload/specload/spec.quickdump"
+
+kdb meta-ls spec/tests/specload/mykey
+#> default
+
+kdb get /tests/specload/mykey
+#> 7
+
+sudo kdb umount spec/tests/specload
+```
+
 ## Limitations
 
-- The plugin would technically allow the following modifications right now:
-
+- The plugin only allows the following modifications right now:
   - add/edit/remove `description` or `opt/help`
   - add/edit `default`
   - add `type`
-
-  However, because the default `resolver` is not compatible with plugins that produce a KeySet without a file present, you can only use
-  `noresolver`. This means that you cannot set any values. (You will get an error about a non-existent file, if you try.)
+- The plugin must be mounted using `noresolver` or another resolver that always calls the storage plugin. To work around
+  this limitation, `specload` prefixes relative paths with `KDB_DB_SPEC` before passing the path on to `quickdump`. This
+  means that your overlay files will be stored in the same directory as any other `spec` configurations.

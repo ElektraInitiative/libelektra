@@ -11,7 +11,7 @@ if ! git diff --exit-code; then
 	exit 0
 fi
 
-scripts/fix-spelling
+scripts/dev/fix-spelling
 git diff --exit-code
 
 succeed_if 'Please commit the spelling fixes before pushing.

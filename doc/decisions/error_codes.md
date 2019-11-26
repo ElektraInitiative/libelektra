@@ -85,12 +85,12 @@ is the abbreviation for "Code".
 
 - Permanent errors C01000
   - Resource C01100
-    - Memory Allocation C01110
+    - Out of Memory C01110
   - Installation C01200
   - Logical C01300
-    - Assertion C01310
+    - Internal C01310
     - Interface C01320
-    - Plugin is Broken C01330
+    - Plugin Misbehavior C01330
 - Conflicting State C02000
 - Validation C03000
   - Syntactic C03100

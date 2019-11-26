@@ -15,11 +15,12 @@
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
-using namespace ckdb; // required for kdberrors.h
-using namespace xerces;
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
+
+using namespace ckdb;
+using namespace xerces;
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -65,7 +66,7 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 	}
 	catch (const XMLException & e)
 	{
@@ -103,7 +104,7 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	catch (const OutOfMemoryException & e)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, asCStr (e.getMessage ()));
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 	}
 	catch (const XMLException & e)
 	{

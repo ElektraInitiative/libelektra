@@ -48,7 +48,7 @@ kdb get user/test/file
 #> foo
 kdb get user/test/file/bar
 #> bar
-kdb getmeta user/test/file/bar meta
+kdb meta-get user/test/file/bar meta
 #> da_ta
 ```
 
@@ -64,9 +64,11 @@ the mount point, then it uses the mount point's name instead.
 
 ## Dependencies
 
-- `Xerces-C++ 3.0.0` or newer (`apt-get install libxerces-c-dev`)
+- `Xerces-C++ 3.0.0` or newer (`apt-get install libxerces-c-dev` or `brew install xerces-c` on macOS)
 - CMake 3.6 or a copy of `FindXercesC.cmake` in
   `/usr/share/cmake-3.0/Modules/`
+
+To include this plugin in a homebrew installation run `brew tap elektrainitiative/elektra` followed by `brew install elektrainitiative/elektra/elektra --with-xerces`
 
 ## Limitations
 
@@ -97,11 +99,11 @@ XSD transformations, schemas or DTDs are not supported yet.
 sudo kdb mount xerces.xml user/tests/xercesfile xerces
 
 kdb set user/tests/xercesfile foo
-kdb setmeta user/tests/xercesfile xerces/rootname xerces
+kdb meta-set user/tests/xercesfile xerces/rootname xerces
 kdb set user/tests/xercesfile/bar bar
-kdb setmeta user/tests/xercesfile/bar meta "da_ta"
+kdb meta-set user/tests/xercesfile/bar meta "da_ta"
 
-kdb getmeta user/tests/xercesfile xerces/rootname
+kdb meta-get user/tests/xercesfile xerces/rootname
 #> xerces
 
 kdb get user/tests/xercesfile/bar

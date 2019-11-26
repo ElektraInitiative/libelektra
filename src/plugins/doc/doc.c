@@ -106,6 +106,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 			       keyNew ("system/elektra/modules/doc/exports/close", KEY_FUNC, elektraDocClose, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/get", KEY_FUNC, elektraDocGet, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/commit", KEY_FUNC, elektraDocCommit, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/checkconf", KEY_FUNC, elektraDocCheckConf, KEY_END),
 #include ELEKTRA_README
@@ -197,6 +198,11 @@ int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 0;
 }
 
+int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return 0;
+}
+
 static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
 {
 	return 0;
@@ -272,6 +278,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
 		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraDocCommit,
 		ELEKTRA_PLUGIN_END);
 }
 //![export]

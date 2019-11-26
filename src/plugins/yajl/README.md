@@ -2,8 +2,8 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
-- infos/needs = directoryvalue
-- infos/recommends = rebase comment type
+- infos/needs = directoryvalue type
+- infos/recommends = rebase comment
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
 - infos/description = JSON using YAJL
@@ -19,7 +19,7 @@ and yajl version 2.0.4-2 from Debian 7.
 Examples of files which are used for testing can be found
 below the folder in "src/plugins/yajl/yajl".
 
-The JSON grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
+The JSON grammar can be found [here](http://www.json.org).
 
 A validator can be found [here](http://jsonlint.com/).
 
@@ -47,7 +47,7 @@ If no metadata `type` is given, the type is either:
 - `string` otherwise
 
 Any other type/value will still be treated as string, but
-the warning `#78` will be added because of the potential
+the warning `C03200` will be added because of the potential
 data loss.
 
 ## Special values
@@ -71,7 +71,7 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
 
 - Only UTF-8 is supported. Use the `iconv` plugin if your locale are
   not UTF-8. When using non-UTF-8 the plugin will be able to write
-  the file, but cannot parse it back again. You will error #77,
+  the file, but cannot parse it back again. You will error C03100,
   invalid bytes in UTF8 string.
 - Everything is string if not tagged by metakey "type"
   Only valid JSON types can be used in type, otherwise there are some
@@ -102,7 +102,7 @@ kdb get /tests/yajl/number
 #> 1337
 
 # Determine the data type of the value
-kdb getmeta /tests/yajl/number type
+kdb meta-get /tests/yajl/number type
 #> double
 
 # Add another key-value pair
@@ -185,12 +185,39 @@ kdb get user/tests/yajl/roots/bloody/roots
 # Check array
 kdb get user/tests/yajl/now
 #> , Now
-kdb getmeta user/tests/yajl/now array
+kdb meta-get user/tests/yajl/now array
 #> #1
 kdb get user/tests/yajl/now/#0
 #> Neighbors
 kdb get user/tests/yajl/now/#1
 #> Threads
+
+# Undo modifications to the database
+kdb rm -r user/tests/yajl
+sudo kdb umount user/tests/yajl
+```
+
+### Booleans
+
+The YAJL plugin maps "1" and "true" to its true bool type, and "0" and "false" to its false bool type.
+However, it always returns 1 or 0.
+
+You can take advantage of the [type](../type/README.md) plugin to map arbitrary values to true and false.
+
+```sh
+# Type plugin is automatically mounted since yajl depends on it
+kdb mount conf.json user/tests/yajl yajl
+kdb set user/tests/yajl 1
+kdb get user/tests/yajl
+#> 1
+kdb meta-set user/tests/yajl type boolean
+kdb set user/tests/yajl on
+kdb get user/tests/yajl
+#> 1
+kdb set user/tests/yajl/subkey disable
+kdb meta-set user/tests/yajl/subkey type boolean
+kdb get user/tests/yajl/subkey
+#> 0
 
 # Undo modifications to the database
 kdb rm -r user/tests/yajl

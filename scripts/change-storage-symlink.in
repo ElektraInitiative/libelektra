@@ -18,7 +18,7 @@ if [ "$STORAGE" = "storage" ]; then
 	exit 1
 fi
 
-INFO="$($KDB info "$STORAGE" 2> /dev/null)"
+INFO="$($KDB plugin-info "$STORAGE" 2> /dev/null)"
 
 if [ "$?" -ne 0 ]; then
 	echo "$STORAGE is not a valid plugin"

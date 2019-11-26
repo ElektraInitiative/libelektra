@@ -6,18 +6,19 @@ if (SHARED_ONLY_PLUGINS)
 endif (SHARED_ONLY_PLUGINS)
 
 include (ExportPluginSymbols)
-elektra_export_plugin_symbols (SOURCE
-			       ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
-			       HEADER
-			       ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
-			       RESOLVER
-			       ${KDB_DEFAULT_RESOLVER}
-			       STORAGE
-			       ${KDB_DEFAULT_STORAGE}
-			       PLUGINS
-			       ${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
+elektra_export_plugin_symbols (
+	SOURCE
+	${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
+	HEADER
+	${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
+	RESOLVER
+	${KDB_DEFAULT_RESOLVER}
+	STORAGE
+	${KDB_DEFAULT_STORAGE}
+	PLUGINS
+	${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
 
-# Include the shared header files of the elektra project
+# Include the shared header files of the Elektra project
 include (LibAddMacros)
 add_headers (HDR_FILES)
 
@@ -53,24 +54,25 @@ list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
 # the targets built to export
 set (targets_built)
 
-set (__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektra-symbols.map)
+set (__symbols_file "${CMAKE_BINARY_DIR}/src/libs/symbols.map")
 
 if (BUILD_SHARED)
-	file (GLOB
-	      KDB_FILES
-	      backend.c
-	      kdb.c
-	      mount.c
-	      split.c
-	      trie.c
-	      plugin.c)
+	file (
+		GLOB
+		KDB_FILES
+		backend.c
+		kdb.c
+		mount.c
+		split.c
+		trie.c
+		plugin.c)
 	set (CORE_FILES ${SOURCES})
 	list (REMOVE_ITEM CORE_FILES ${KDB_FILES})
 	set (KDB_FILES ${KDB_FILES} ${HDR_FILES})
 
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra-core SHARED ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra-core kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (elektra-core generate_version_script)
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
 	target_link_libraries (elektra-core ${elektra-shared_LIBRARIES})
@@ -79,42 +81,27 @@ if (BUILD_SHARED)
 	include_directories (${elektra-shared_INCLUDES})
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
-	add_dependencies (elektra-kdb kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (elektra-kdb generate_version_script)
 	target_link_libraries (elektra-kdb elektra-core)
 
-	# ~~~
-	# message(STATUS "ignore the following ADD_LIBRARY warning")
-	# add_library (elektra INTERFACE) # no SOVERSION?
-	# ~~~
-	add_library (elektra SHARED ${KDB_FILES} ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra kdberrors_generated elektra_error_codes_generated)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
-	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
 
-	# ~~~
-	# target_link_libraries (elektra ${elektra-extension_LIBRARIES})
-	# target_link_libraries (elektra elektra-core elektra-kdb)
-	# set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "--copy-dt-needed-entries")
-	# ~~~
-	set_target_properties (elektra PROPERTIES LINKER_LANGUAGE C)
-
-	set (elektra-all_LIBRARIES
-	     elektra-core
-	     elektra-kdb
-	     elektra
-	     ${elektra-extension_LIBRARIES})
-	set_target_properties (${elektra-all_LIBRARIES}
-			       PROPERTIES COMPILE_DEFINITIONS
-					  "HAVE_KDBCONFIG_H"
-					  VERSION
-					  ${KDB_VERSION}
-					  SOVERSION
-					  ${SO_VERSION}
-					  CLEAN_DIRECT_OUTPUT
-					  1)
+	set (elektra-all_LIBRARIES elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
+	set_target_properties (
+		${elektra-all_LIBRARIES}
+		PROPERTIES COMPILE_DEFINITIONS
+			   "HAVE_KDBCONFIG_H"
+			   VERSION
+			   ${KDB_VERSION}
+			   SOVERSION
+			   ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT
+			   1
+			   LINK_DEPENDS
+			   "${__symbols_file}")
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	# ~~~
@@ -126,12 +113,7 @@ if (BUILD_SHARED)
 	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 	set_target_properties (${elektra-all_LIBRARIES} PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
-	install (TARGETS elektra-core
-			 elektra-kdb
-			 elektra
-			 DESTINATION
-			 lib${LIB_SUFFIX}
-		 EXPORT ElektraTargetsLibelektra)
+	install (TARGETS elektra-core elektra-kdb DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built ${elektra-all_LIBRARIES})
 endif (BUILD_SHARED)
@@ -153,28 +135,28 @@ if (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_FULL)
-	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c
-				     PROPERTIES
-				     GENERATED
-				     ON)
+	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-full SHARED ${SOURCES})
-	add_dependencies (elektra-full kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (elektra-full generate_version_script)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
-	set_target_properties (elektra-full
-			       PROPERTIES COMPILE_DEFINITIONS
-					  "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-					  VERSION
-					  ${KDB_VERSION}
-					  SOVERSION
-					  ${SO_VERSION}
-					  CLEAN_DIRECT_OUTPUT
-					  1
-					  LINKER_LANGUAGE
-					  CXX)
+	set_target_properties (
+		elektra-full
+		PROPERTIES COMPILE_DEFINITIONS
+			   "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+			   VERSION
+			   ${KDB_VERSION}
+			   SOVERSION
+			   ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT
+			   1
+			   LINKER_LANGUAGE
+			   CXX
+			   LINK_DEPENDS
+			   "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
@@ -183,28 +165,28 @@ if (BUILD_FULL)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
-	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c
-				     PROPERTIES
-				     GENERATED
-				     ON)
+	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-static STATIC ${SOURCES})
-	add_dependencies (elektra-static kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (elektra-static generate_version_script)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 
-	set_target_properties (elektra-static
-			       PROPERTIES COMPILE_DEFINITIONS
-					  "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-					  VERSION
-					  ${KDB_VERSION}
-					  SOVERSION
-					  ${SO_VERSION}
-					  CLEAN_DIRECT_OUTPUT
-					  1
-					  LINKER_LANGUAGE
-					  CXX)
+	set_target_properties (
+		elektra-static
+		PROPERTIES COMPILE_DEFINITIONS
+			   "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+			   VERSION
+			   ${KDB_VERSION}
+			   SOVERSION
+			   ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT
+			   1
+			   LINKER_LANGUAGE
+			   CXX
+			   LINK_DEPENDS
+			   "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
 	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)

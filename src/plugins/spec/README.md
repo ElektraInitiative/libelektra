@@ -133,6 +133,10 @@ The allowed values for the conflict keys are always the same:
   `logs/spec/info` is an array, each element is one conflict.
 - any other value ignores the conflict, this includes if the conflict key is not given (i.e. the default)
 
+There is also the special key `missing/log`. If it is set to `1`, the plugin will create the meta array `logs/spec/missing/#`.
+This array will contain a list of the missing keys. The key `missing/log` can only be part of the main plugin configuration,
+not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
+
 ## Examples
 
 Ini files can be found in [/examples/spec](/examples/spec) which should be PWD
@@ -154,8 +158,8 @@ everything still works after the source is removed):
 cp battery.ini $(dirname $(kdb file spec))
 kdb mount battery.ini spec/example/battery ni
 kdb spec-mount /example/battery
-kdb lsmeta /example/battery/level    # we see it has a check/enum
-kdb getmeta /example/battery/level check/enum    # now we know allowed values
+kdb meta-ls /example/battery/level    # we see it has a check/enum
+kdb meta-get /example/battery/level check/enum    # now we know allowed values
 kdb set /example/battery/level low   # success, low is ok!
 kdb set /example/battery/level x     # fails, not one of the allowed values!
 
@@ -165,7 +169,7 @@ kdb spec-mount /freedesktop/openicc
 
 kdb ls /freedesktop/openicc # lets see the whole configuration
 kdb export spec/freedesktop/openicc ni   # give us details about the specification
-kdb lsmeta /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
+kdb meta-ls /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
 ```

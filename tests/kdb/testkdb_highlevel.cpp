@@ -130,12 +130,12 @@ protected:
 		throw std::runtime_error (msg.str ());
 	}
 
-	void createElektra (ckdb::KeySet * defaults = nullptr)
+	void createElektra (ckdb::KeySet * defaults = nullptr, ckdb::KeySet * contract = nullptr)
 	{
 		closeElektra ();
 
 		ElektraError * error = nullptr;
-		elektra = elektraOpen (("user" + testRoot).c_str (), defaults, &error);
+		elektra = elektraOpen (("user" + testRoot).c_str (), defaults, contract, &error);
 
 		ASSERT_NE (elektra, nullptr) << "elektraOpen failed" << &error << std::endl;
 

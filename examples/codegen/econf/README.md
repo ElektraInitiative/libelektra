@@ -1,4 +1,4 @@
-# EConf example
+# EConf Example
 
 This example application reads its configuration from the KDB using code-generated functions.
 It then prints an EditorConfig file created from the configuration inside the KDB.
@@ -9,16 +9,12 @@ It then prints an EditorConfig file created from the configuration inside the KD
 
 ```sh
 # execute in the current directory or replace $PWD accordingly
-DIR=$PWD
-
-mkdir "$DIR/cmake/build" && cd "$DIR/cmake/build"
+mkdir "$PWD/cmake/build" && cd "$PWD/cmake/build"
 
 cmake ..
 cmake --build .
 
-cd "$DIR"
-
-sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$DIR/cmake/build/application"
+sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/econf/#0/current"
 ```
 
@@ -26,15 +22,11 @@ sudo kdb spec-mount "/sw/example/econf/#0/current"
 
 ```sh
 # execute in the current directory or replace $PWD accordingly
-DIR=$PWD
-
-cd "$DIR/pkgconfig/build"
+cd "$PWD/pkgconfig"
 
 make
 
-cd "$DIR"
-
-sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$DIR/pkgconfig/application"
+sudo kdb mount -R noresolver codegen_econf_example.conf "spec/sw/example/econf/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/econf/#0/current"
 ```
 
@@ -42,17 +34,18 @@ sudo kdb spec-mount "/sw/example/econf/#0/current"
 
 To run the application, simply execute:
 
+### CMake
+
 ```sh
 # execute in the current directory or replace $PWD accordingly
-DIR=$PWD
+"$PWD/cmake/build/application"
+```
 
-# for CMake
-LOC="cmake/build"
+### Pkgconfig
 
-# for Pkgconfig
-# LOC="pkgconfig"
-
-"$DIR/$LOC/application"
+```sh
+# execute in the current directory or replace $PWD accordingly
+# "$PWD/pkgconfig/application"
 ```
 
 ## Configuration
@@ -65,7 +58,7 @@ create an entry in the array `format/#`. The pattern used to match files is give
 The other keynames used are similar to the keys used by EditorConfig, so they should be self-explanatory.
 The values however are sometimes different, to fit Elektra's type system:
 
-- then general `unset` option is not supported everywhere
+- the general `unset` option is not supported everywhere
 - `format/#/indent/size` uses `0` instead of `tab`
 - `format/#/tabwidth` allows `0`, but this is equivalent to `unset`.
 - `1` and `0` are used for booleans instead of `true`/`false`

@@ -29,12 +29,12 @@ public:
 
 	std::string getShortHelpText () override
 	{
-		return ""; // TODO
+		return "Execute a code-generator template.";
 	}
 
 	std::string getLongHelpText () override
 	{
-		return ""; // TODO
+		return "For a list of available templates and their parameters see kdb-gen(1).\n\nOptions:";
 	}
 
 	int execute (Cmdline const & cmdline) override;

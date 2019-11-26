@@ -9,16 +9,12 @@ It then prints a tree defined inside the KDB.
 
 ```sh
 # execute in the current directory or replace $PWD accordingly
-DIR=$PWD
-
-mkdir "$DIR/cmake/build" && cd "$DIR/cmake/build"
+mkdir "$PWD/cmake/build" && cd "$PWD/cmake/build"
 
 cmake ..
 cmake --build .
 
-cd "$DIR"
-
-sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$DIR/cmake/build/application"
+sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/tree/#0/current"
 ```
 
@@ -26,15 +22,11 @@ sudo kdb spec-mount "/sw/example/tree/#0/current"
 
 ```sh
 # execute in the current directory or replace $PWD accordingly
-DIR=$PWD
-
-cd "$DIR/pkgconfig"
+cd "$PWD/pkgconfig"
 
 make
 
-cd "$DIR"
-
-sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$DIR/pkgconfig/application"
+sudo kdb mount -R noresolver codegen_tree_example.conf "spec/sw/example/tree/#0/current" specload "app=$PWD/application"
 sudo kdb spec-mount "/sw/example/tree/#0/current"
 ```
 
@@ -42,17 +34,18 @@ sudo kdb spec-mount "/sw/example/tree/#0/current"
 
 To run the application, simply execute:
 
+### CMake
+
 ```sh
 # execute in the current directory or replace $PWD accordingly
-DIR=$PWD
+"$PWD/cmake/build/application"
+```
 
-# for CMake
-LOC="cmake/build"
+### Pkgconfig
 
-# for Pkgconfig
-# LOC="pkgconfig"
-
-"$DIR/$LOC/application"
+```sh
+# execute in the current directory or replace $PWD accordingly
+# "$PWD/pkgconfig/application"
 ```
 
 ## Configuration

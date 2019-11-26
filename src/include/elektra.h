@@ -10,7 +10,6 @@
 #define ELEKTRA_H
 
 #include <elektra/error.h>
-#include <elektra/errors.h>
 #include <elektra/types.h>
 #include <kdb.h>
 #include <kdbmacros.h>
@@ -63,10 +62,10 @@ typedef struct _Elektra Elektra;
  *
  **************************************/
 
-Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
-void elektraClose (Elektra * elektra);
+Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, KeySet * defaults, ElektraError ** error);
 
-void elektraEnsure (Elektra * elektra, KeySet * contract, ElektraError ** error);
+Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error);
+void elektraClose (Elektra * elektra);
 
 // endregion Basics
 

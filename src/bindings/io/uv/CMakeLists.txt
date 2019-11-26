@@ -27,17 +27,18 @@ else ()
 		set (HAVE_LIBUV_VERSION "HAVE_LIBUV1")
 	endif ()
 
-	add_lib (io-${BINDING_VARIANT}
-		 SOURCES
-		 ${SOURCES}
-		 LINK_ELEKTRA
-		 elektra-io
-		 LINK_LIBRARIES
-		 ${libuv_LIBRARIES}
-		 INCLUDE_SYSTEM_DIRECTORIES
-		 ${libuv_INCLUDE_DIRS}
-		 COMPILE_DEFINITIONS
-		 ${HAVE_LIBUV_VERSION})
+	add_lib (
+		io-${BINDING_VARIANT}
+		SOURCES
+		${SOURCES}
+		LINK_ELEKTRA
+		elektra-io
+		LINK_LIBRARIES
+		${libuv_LIBRARIES}
+		INCLUDE_SYSTEM_DIRECTORIES
+		${libuv_INCLUDE_DIRS}
+		COMPILE_DEFINITIONS
+		${HAVE_LIBUV_VERSION})
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_UV_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc" @ONLY)
 
@@ -54,20 +55,14 @@ else ()
 
 	if (BUILD_FULL OR BUILD_STATIC)
 		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>) # add sources for elektra-io-uv for static and full
-										      # builds
+		# builds
 	endif ()
 
 	add_executable (${TESTEXENAME} ${TEST_SOURCES})
-	add_dependencies (${TESTEXENAME} kdberrors_generated elektra_error_codes_generated)
 
 	target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
 
-	target_link_elektra (${TESTEXENAME}
-			     elektra-kdb
-			     elektra-plugin
-			     elektra-io
-			     ${IO_UV_LIBRARY}
-			     m)
+	target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
 		target_link_libraries (${TESTEXENAME} "${libuv_LIBRARIES}" m)
 	endif ()
@@ -78,9 +73,10 @@ else ()
 		target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV1")
 	endif ()
 
-	add_test (NAME ${TESTEXENAME}
-		  COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+	add_test (
+		NAME ${TESTEXENAME}
+		COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
+		WORKING_DIRECTORY "${WORKING_DIRECTORY}")
 	set_property (TEST ${TESTEXENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	add_subdirectory (example)

@@ -113,6 +113,60 @@ Most likely, you have to include this dependency as well:
 
 [here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file.
 
+### Using Elektra Plugins
+
+The `PluginLoader` can be used to load a native Elektra plugin which is written in C/C++.
+You can load a native Elektra Plugin like the following:
+
+```java
+PluginLoader pluginLoader = new PluginLoader();
+Plugin errorPlugin = pluginLoader.loadElektraPlugin("error");
+```
+
+Now you can pass a KeySet and let the Plugin do its work. E.g., the code below tests if the `error` plugin.
+
+```java
+Key errorKey = Key.create("user/tests/myError");
+errorKey.setMeta(errorMeta, OutOfMemoryException.errorNumber());
+final KeySet ks = KeySet.create(10, KeySet.KS_END);
+ks.append(errorKey);
+errorPlugin.kdbSet(ks, parentKey);
+\\ OutOfMemoryException is thrown
+```
+
+Another example is the `range` plugin which throws the equivalent Java exception:
+
+```java
+PluginLoader pluginLoader = new PluginLoader();
+Plugin rangePlugin = pluginLoader.loadElektraPlugin("range");
+Key rangeKey = Key.create("user/tests/myError", "30");
+rangeKey.setMeta("check/range", "1-20");
+final KeySet ks = KeySet.create(10, KeySet.KS_END);
+ks.append(rangeKey);
+rangePlugin.kdbSet(ks, parentKey);
+//org.libelektra.exception.SemanticValidationException: Sorry, module range issued error C03200:
+//Value '30' of key 'user/tests/myError' not within range 1-20
+//Configfile: user/tests/javabinding
+//Mountpoint: user/tests/javabinding
+//At: .../elektra/src/plugins/range/range.c:447
+```
+
+Note that the `PluginLoader` can also load Plugins written in Java such as the `PropertiesStorage` plugin:
+
+```java
+PluginLoader pluginLoader = new PluginLoader();
+Plugin propertiesStoragePlugin = pluginLoader.loadJavaPlugin(PropertiesStorage.PLUGIN_NAME);
+```
+
+### Implementing Plugins
+
+The `Plugin` interface can be used to develop your _own_ Elektra plugins written in Java.
+You have to implement the necessary methods which are of interest to you such as
+`set(KeySet ks, Key parentKey)` for plugins which should change the key database.
+We added a tutorial with more details for you [here](../../../doc/tutorials/java-plugins.md).
+You can see various examples in the [plugin folder](src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin
+which can be used to save and load `.properties` files into Elektra.
+
 ## Testing
 
 ### Command Line

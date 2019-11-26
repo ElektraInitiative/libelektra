@@ -36,7 +36,7 @@
 #define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES) /*TODO: Solution*/                                                                                    \
+		if (errno == EACCES)                                                                                                       \
 			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
 				parentKey,                                                                                                 \
 				"Insufficient permissions to open configuration file %s for reading. Reason: %s. You might want "          \
@@ -50,7 +50,7 @@
 #define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		if (errno == EACCES) /*TODO: Solution*/                                                                                    \
+		if (errno == EACCES)                                                                                                       \
 			ELEKTRA_SET_RESOURCE_ERRORF (                                                                                      \
 				parentKey,                                                                                                 \
 				"Insufficient permissions to open configuration file %s for writing. You might want to retry as "          \
@@ -60,8 +60,6 @@
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open file %s for writing. Reason: %s", keyString (parentKey),   \
 						     strerror (errno));                                                                    \
 	} while (0)
-
-#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_OUT_OF_MEMORY_ERRORF (key, "Unable to allocate %zu bytes", size);
 
 /**
  * @brief Sets error if info != returned
@@ -122,5 +120,43 @@
 #else
 #define ELEKTRA_ATTRIBUTE_NO_RETURN
 #endif
+
+#ifdef __GNUC__
+/** Declares a parameter as unused. */
+#define ELEKTRA_UNUSED __attribute__ ((unused))
+#else
+#define ELEKTRA_UNUSED
+#endif
+
+#ifdef __GNUC__
+/** Declares a switch fallthrough case. */
+#define ELEKTRA_FALLTHROUGH __attribute__ ((fallthrough))
+#else
+#define ELEKTRA_FALLTHROUGH
+#endif
+
+#ifdef __GNUC__
+/** Declares an API as deprecated. */
+#define ELEKTRA_DEPRECATED __attribute__ ((deprecated))
+#else
+#define ELEKTRA_DEPRECATED
+#endif
+
+/**
+ * Helper macro to create a versioned name of a symbol.
+ *
+ * @param sym  unversioned name of the symbol
+ * @param impl version suffix
+ */
+#define ELEKTRA_SYMVER(sym, impl) sym##_##impl
+
+/**
+ * Declares another version of a symbol using the `.symver` assembler pseudo command
+ *
+ * @param ver  the version name as declared versions.def
+ * @param sym  the unversioned name of the symbol
+ * @param impl the version suffix to use for this version
+ */
+#define ELEKTRA_SYMVER_DECLARE(ver, sym, impl) ELEKTRA_SYMVER_COMMAND (ELEKTRA_STRINGIFY (ELEKTRA_SYMVER (sym, impl)), #sym "@" ver)
 
 #endif

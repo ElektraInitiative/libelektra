@@ -10,6 +10,7 @@ endforeach (file ${TESTS})
 include_directories ("${CMAKE_SOURCE_DIR}/src/libs/elektra")
 
 target_link_elektra (test_array elektra-ease)
+target_link_elektra (test_conversion elektra-ease)
 target_link_elektra (test_backend elektra-plugin)
 target_link_elektra (test_keyname elektra-ease)
 
@@ -22,6 +23,7 @@ target_link_elektra (test_splitset elektra-plugin)
 
 target_link_elektra (test_meta elektra-meta)
 target_link_elektra (test_meta elektra-proposal)
+target_link_elektra (test_ks elektra-ease)
 target_link_elektra (test_key elektra-meta)
 target_link_elektra (test_key elektra-proposal)
 
@@ -35,3 +37,8 @@ target_link_elektra (test_utility elektra-utility)
 target_link_elektra (test_globbing elektra-globbing)
 
 target_link_elektra (test_opts elektra-opts)
+
+target_link_elektra (test_cmerge elektra-merge)
+
+# LibGit leaks memory
+set_property (TEST test_cmerge PROPERTY LABELS memleak)

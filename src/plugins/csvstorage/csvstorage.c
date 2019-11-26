@@ -18,7 +18,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h> // for ksRenameKeys
+#include <kdbprivate.h> // for ksRenameKeys
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -457,7 +457,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				Key * renameKey = keyNew (keyName (dirKey), 0);
 				keySetBaseName (renameKey, keyString (indexKey));
 				ksRewind (tmpKs);
-				KeySet * renamedKs = ksRenameKeys (tmpKs, renameKey);
+				KeySet * renamedKs = ksRenameKeys (tmpKs, keyName (renameKey));
 				ksAppendKey (renamedKs, keyDup (renameKey));
 				ksRewind (renamedKs);
 				keyDel (lookupKey);
@@ -635,7 +635,7 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyRel (parentKey, cur) != 1) continue;
+		if (keyIsDirectlyBelow (parentKey, cur) != 1) continue;
 		colCounter = 0;
 		if (useHeader)
 		{

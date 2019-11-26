@@ -18,6 +18,7 @@
 
 #include <kdbconfig.h>
 #include <kdbgetenv.h>
+#include <kdbmacros.h>
 
 #include <kdbcontext.hpp>
 

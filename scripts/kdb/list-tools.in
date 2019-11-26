@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# @tags org
+
+EXEC_PATH="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
+
+# list all installed tools
+IFS=:
+for i in $EXEC_PATH $KDB_EXEC_PATH; do
+	echo "External tools located in $i:"
+	ls "$i"
+	echo
+done

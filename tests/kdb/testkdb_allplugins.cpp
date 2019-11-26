@@ -47,9 +47,13 @@ std::vector<std::string> getAllPlugins ()
 	{
 		try
 		{
+#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
 			__lsan_disable ();
+#endif
 			auto status = mpd.lookupInfo (PluginSpec (plugin), "status");
+#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
 			__lsan_enable ();
+#endif
 			if (status.find ("memleak")) pluginsWithMemoryLeaks.push_back (plugin);
 		}
 		catch (std::exception const & error)

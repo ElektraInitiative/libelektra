@@ -41,4 +41,4 @@ echo "What to do next"
 kdb
 kdb --help
 kdb find-tools
-kdb info resolver
+kdb plugin-info resolver

@@ -55,7 +55,7 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	ASAN='@ENABLE_ASAN@'
 	if [ "$ASAN" = 'ON' ]; then
 		# Do not check plugins with known memory leaks in ASAN enabled build
-		"$KDB" info "$PLUGIN" status 2> /dev/null | egrep -q 'memleak' && continue
+		"$KDB" plugin-info "$PLUGIN" status 2> /dev/null | egrep -q 'memleak' && continue
 
 		case "$PLUGIN" in
 		'augeas') # Reference: https://travis-ci.org/sanssecours/elektra/jobs/418524229
@@ -65,7 +65,7 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	fi
 
 	> $FILE
-	"$KDB" check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	"$KDB" plugin-check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
 	succeed_if "check of plugin $PLUGIN with args $ARGS failed"
 
 	test ! -s $FILE

@@ -1,5 +1,5 @@
 // vim: ts=2:sw=2:expandtab:syntax=groovy
-/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/
+/* https://build.libelektra.org/job/elektra-jenkinsfile/
  * This file describes how the elektra-jenkinsfile buildjob should be
  * executed.
  *
@@ -14,7 +14,7 @@
  * A Snippet generator is available to the public at
  * https://qa.nuxeo.org/jenkins/pipeline-syntax/.
  * A list of available commands on the build server can be found after a login at
- * https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/pipeline-syntax/.
+ * https://build.libelektra.org/job/elektra-jenkinsfile/pipeline-syntax/.
  */
 
 // TODO have a per plugin/binding deps in Dockerfile for easier maintenance
@@ -36,8 +36,9 @@ properties([
   )
 ])
 
-// If previous run is still running, cancel it
-abortPreviousRun()
+// If previous run is still running, cancel it unless we are building
+// code from the `master` branch.
+abortPreviousRunUnlessMaster()
 
 // Globals
 DOCKER_NODE_LABEL = 'docker'
@@ -159,15 +160,13 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  /*
-  maybeStage("Deploy Homepage", isMaster()) {
-    deployHomepage()
-  }
+  // stage("Deploy Website") {
+  //   deployWebsite()
+  // }
 
-  maybeStage("Deploy Web UI", isMaster()) {
-    deployWebUI()
-  }
-  */
+  // maybeStage("Deploy Web UI", isMaster()) {
+  //   deployWebUI()
+  // }
 }
 
 try {
@@ -329,29 +328,36 @@ def dockerInit() {
      */
     DOCKER_IMAGES.alpine = createDockerImageDesc(
       "alpine", this.&idTesting,
-      "./scripts/docker/alpine/3.9",
-      "./scripts/docker/alpine/3.9/Dockerfile"
+      "./scripts/docker/alpine/3.10",
+      "./scripts/docker/alpine/3.10/Dockerfile"
+    )
+
+    /* Ubuntu bionic image*/
+    DOCKER_IMAGES.bionic = createDockerImageDesc(
+      "bionic", this.&idTesting,
+      "./scripts/docker/ubuntu/bionic",
+      "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
     /* Image building the libelektra.org frontend */
-    DOCKER_IMAGES.homepage_frontend = createDockerImageDesc(
-      "homepage-frontend", this.&idHomepage,
+    DOCKER_IMAGES.website_frontend = createDockerImageDesc(
+      "website-frontend", this.&idWebsite,
       ".",
-      "./scripts/docker/homepage/frontend/Dockerfile",
+      "./scripts/docker/website/frontend/Dockerfile",
       false
     )
 
     /* Image building the libelektra.org backend */
-    DOCKER_IMAGES.homepage_backend = createDockerImageDesc(
-      "homepage-backend", this.&idHomepage,
+    DOCKER_IMAGES.website_backend = createDockerImageDesc(
+      "website-backend", this.&idWebsite,
       ".",
-      "./scripts/docker/homepage/backend/Dockerfile",
+      "./scripts/docker/website/backend/Dockerfile",
       false
     )
 
     /* Image building elektra web base image */
     DOCKER_IMAGES.webui_base = createDockerImageDesc(
-      "web-base", this.&idHomepage,
+      "web-base", this.&idWebsite,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       false
@@ -359,7 +365,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektrad-demo", this.&idHomepage,
+      "elektrad-demo", this.&idWebsite,
       "./scripts/docker/webui/elektrad-demo/",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
@@ -367,7 +373,7 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "webd-demo", this.&idHomepage,
+      "webd-demo", this.&idWebsite,
       "./scripts/docker/webui/webd-demo/",
       "./scripts/docker/webui/webd-demo/Dockerfile",
       false
@@ -471,6 +477,20 @@ def generateMainBuildStages() {
   tasks << buildAndTest(
     "debian-stretch-full",
     DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
+  // Add a task that should build the whole project to catch all test errors
+  // in a standard environment
+  tasks << buildAndTest(
+    "debian-buster-full",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -695,8 +715,6 @@ def buildTodo() {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         openTasks pattern: openTaskPatterns,
-                  high: 'XXX',
-                  normal: 'FIXME',
                   low: 'TODO'
         archive(["sloccount.sc"])
         deleteDir()
@@ -711,7 +729,7 @@ def buildCheckReleaseNotes() {
   return [(stageName): {
     maybeStage(stageName, !isMaster()) {
       withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
-        sh "scripts/run_check_release_notes"
+        sh "scripts/build/run_check_release_notes"
         deleteDir()
       }
     }
@@ -724,7 +742,7 @@ def buildIcheck() {
   return [(stageName): {
     stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
-        sh "scripts/run_icheck"
+        sh "scripts/build/run_icheck"
         deleteDir()
       }
     }
@@ -870,7 +888,7 @@ def buildAndTestMingwW64() {
       withDockerEnv(DOCKER_IMAGES.buster) {
         dir('build') {
           deleteDir()
-          sh '../scripts/configure-mingw-w64 ..'
+          sh '../scripts/dev/configure-mingw-w64 ..'
           sh 'make'
           def destdir='elektra'
           withEnv(["DESTDIR=${destdir}"]){
@@ -979,22 +997,18 @@ coveralls -b '${buildDir}' \
           -t '${REPO_TOKEN}' \
           -e .idea -e benchmarks -e doc -e examples -e install -e libelektra -e system -e tests \
           -E '.*${buildDir}/(CMakeFiles|include)/.*' \
-          -E '.*${buildDir}/src/bindings/(glib|haskell|intercept)/.*' \
+          -E '.*${buildDir}/src/bindings/(glib|intercept)/.*' \
           -E '.*${buildDir}/src/include/elektra/.*' \
           -E '.*${buildDir}/src/include/(kdb|kdbconfig|kdbversion)\\.h' \
           -E '.*${buildDir}/src/(libs|tools)/.*' \
           -E '.*${buildDir}/src/plugins/\
 (?!\
 constants/constants\\.c|\
-(haskell|regexdispatcher|typechecker)/haskell\\.c|\
 (lua|ruby)/runtime\\.h|\
 yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
-yawn/yaml_grammar\\.h|\
-yaypeg/parser\\.hpp\
 ).*' \
           -E '.*/src/error/.*' \
-          -E '.*/src/plugins/yaypeg/parser.in.hpp' \
 """)
               }
             }
@@ -1013,19 +1027,21 @@ yaypeg/parser\\.hpp\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildPackageDebianStretch()
-  /*
-  tasks << buildHomepage()
-  tasks << buildWebUI()
-  */
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
+  tasks << buildWebsite()
+  // tasks << buildWebUI()
   return tasks
 }
 
-def buildPackageDebianStretch() {
-  def stageName = "buildPackage/debian/stretch"
+/* Merges into debian branch and runs gbp buildpackage
+ *
+ * stageName: e.g. buildPackage/debian/<codename>
+ * image: must be one of DOCKER_IMAGES */
+def buildDebianPackage(stageName, image) {
   return [(stageName): {
     stage(stageName) {
-      return withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      return withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
@@ -1046,6 +1062,9 @@ def buildPackageDebianStretch() {
               userRemoteConfigs: scm.userRemoteConfigs
             ]
             dir(targetDir) {
+              sh "git config --global user.name jenkins-builder"
+              sh "git config --global user.email jenkins@libelektra.org"
+
               sh "git checkout -B temp"
               sh "git tag -f $VERSION"
 
@@ -1088,24 +1107,24 @@ def deployDockerContainer(name, imageDesc, hostName) {
   }
 }
 
-def deployHomepage() {
+def deployWebsite() {
   deployDockerContainer(
     "elektra-backend",
-    DOCKER_IMAGES.homepage_backend,
+    DOCKER_IMAGES.website_backend,
     "restapi.libelektra.org"
   )
   deployDockerContainer(
     "elektra-frontend",
-    DOCKER_IMAGES.homepage_frontend,
+    DOCKER_IMAGES.website_frontend,
     "www.libelektra.org"
   )
 }
 
-def buildHomepage() {
-  def homepageTasks = [:]
-  homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
-  homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
-  return homepageTasks
+def buildWebsite() {
+  def websiteTasks = [:]
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website_frontend)
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website_backend)
+  return websiteTasks
 }
 
 def deployWebUI() {
@@ -1249,7 +1268,7 @@ def withDockerEnv(image, opts=[], cl) {
     }
     docker.withRegistry("https://${REGISTRY}",
                         'docker-hub-elektra-jenkins') {
-      timeout(activity: true, time: 10, unit: 'MINUTES') {
+      timeout(activity: true, time: 15, unit: 'MINUTES') {
         def cpu_count = cpuCount()
         withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'",
@@ -1316,7 +1335,7 @@ def cnokdbtest() {
  * @param p Pattern to scan for
  */
 def xunitUpload(p = 'build/Testing/**/*.xml') {
-  step([$class: 'XUnitBuilder',
+  step([$class: 'XUnitPublisher',
     thresholds: [
       [$class: 'SkippedThreshold', failureThreshold: '0'],
       [$class: 'FailedThreshold', failureThreshold: '0']
@@ -1332,7 +1351,7 @@ def xunitUpload(p = 'build/Testing/**/*.xml') {
  * @param name Name of the image, will be extended with registry, a common
  *             prefix and a tag
  * @param idFun Closure describing how the image id should be formatted
- *                      (see idTesting() / idHomepage())
+ *                      (see idTesting() / idWebsite())
  * @param context Build context for the docker build (base directory that will
  *                be sent to the docker agent). Relative to the current working
  *                directory.
@@ -1368,11 +1387,11 @@ def idTesting(imageMap) {
   return imageMap
 }
 
-/* Build id for homepage
+/* Build id for website
  *
  * @param imageMap Map identifying an docker image
  */
-def idHomepage(imageMap) {
+def idWebsite(imageMap) {
   imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
   return imageMap
 }
@@ -1475,7 +1494,9 @@ def apiary(input, output) {
   sh "apiary preview --path=${input} --output=${output}"
 }
 
-def abortPreviousRun() {
+def abortPreviousRunUnlessMaster() {
+  // We never want to abort builds of the master branch
+  if (isMaster()) return;
   def exec = currentBuild
              ?.rawBuild
              ?.getPreviousBuildInProgress()

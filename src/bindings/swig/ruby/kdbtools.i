@@ -459,7 +459,7 @@ UNIQUE_PTR_VALUE_WRAPPER(
 %constant const int PLUGIN_STATUS_MISSING =
         kdb::tools::PluginDatabase::Status::missing;
 
-/* TODO, be more explicite if known */
+/* TODO, be more explicit if known */
 %catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::listAllPlugins;
 %catches(kdb::tools::ToolException)

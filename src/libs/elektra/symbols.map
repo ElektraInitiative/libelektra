@@ -1,0 +1,222 @@
+libelektra_0.8 {
+	# kdbmodule.h
+	elektraModulesClose;
+	elektraModulesInit;
+	elektraModulesLoad;
+
+	# plugin loading:
+	elektraPluginOpen;
+	elektraPluginClose;
+	elektraPluginGetFunction;
+
+	# kdbhelper.h
+	elektraCalloc;
+	elektraFormat;
+	elektraFree;
+	elektraMalloc;
+	elektraMemCaseCmp;
+	elektraRealloc;
+	elektraStrCaseCmp;
+	elektraStrCmp;
+	elektraStrDup;
+	elektraStrLen;
+	elektraStrNCaseCmp;
+	elektraStrNCmp;
+	elektraStrNDup;
+	elektraVFormat;
+	elektraWriteArrayNumber;
+
+	# kdbmeta.h
+	keyGetOwner;
+	keyGetOwnerSize;
+	keyOwner;
+	keySetOwner;
+
+	# kdbease.h
+	keyCompare;
+	keyCompareMeta;
+
+	# kdb.h
+	## KDB functions
+	kdbClose;
+	kdbEnsure;
+	kdbGet;
+	kdbOpen;
+	kdbSet;
+
+	## Key functions
+	keyAddBaseName;
+	keyAddName;
+	keyBaseName;
+	keyClear;
+	keyCmp;
+
+	keyCopy;
+	keyCopyAllMeta;
+	keyCopyMeta;
+	keyCurrentMeta;
+	keyDecRef;
+	keyDel;
+	keyDup;
+	keyGetBaseName;
+	keyGetBaseNameSize;
+	keyGetBinary;
+	keyGetFullName;
+	keyGetFullNameSize;
+	keyGetMeta;
+	keyGetName;
+	keyGetNameSize;
+	keyGetNamespace;
+	keyGetRef;
+	keyGetString;
+	keyGetUnescapedNameSize;
+	keyGetValueSize;
+	keyIncRef;
+	keyIsBelow;
+	keyIsBelowOrSame;
+	keyIsBinary;
+	keyIsDirectlyBelow;
+	keyIsInactive;
+	keyIsString;
+	keyName;
+	keyNeedSync;
+	keyNew;
+	keyNextMeta;
+	keyRewindMeta;
+	keySetBaseName;
+	keySetBinary;
+	keySetMeta;
+	keySetName;
+	keySetString;
+	keyString;
+	keyUnescapedName;
+	keyValue;
+	keyVNew;
+
+	## KeySet functions
+	ksAppend;
+	ksAppendKey;
+	ksAtCursor;
+	ksClear;
+	ksClose;
+	ksCopy;
+	ksCopyInternal;
+	ksCurrent;
+	ksCut;
+	ksDeepDup;
+	ksDel;
+	ksDup;
+	ksGetAlloc;
+	ksGetCursor;
+	ksGetSize;
+	ksHead;
+	ksInit;
+	ksLookup;
+	ksLookupByName;
+	ksNeedSync;
+	ksNew;
+	ksNext;
+	ksPop;
+	ksResize;
+	ksRewind;
+	ksSearchInternal;
+	ksSetCursor;
+	ksTail;
+	ksVNew;
+
+	# kdbobsolete.h
+	keyNameGetOneLevel;
+
+	# kdbproposal.h
+	elektraKeySetName;
+};
+
+libelektra_1.0 {
+	# kdberrors.h
+	ELEKTRA_ERROR_RESOURCE;
+	ELEKTRA_ERROR_OUT_OF_MEMORY;
+	ELEKTRA_ERROR_INSTALLATION;
+	ELEKTRA_ERROR_INTERNAL;
+	ELEKTRA_ERROR_INTERFACE;
+	ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR;
+	ELEKTRA_ERROR_CONFLICTING_STATE;
+	ELEKTRA_ERROR_VALIDATION_SYNTACTIC;
+	ELEKTRA_ERROR_VALIDATION_SEMANTIC;
+
+	ELEKTRA_WARNING_RESOURCE;
+	ELEKTRA_WARNING_OUT_OF_MEMORY;
+	ELEKTRA_WARNING_INSTALLATION;
+	ELEKTRA_WARNING_INTERNAL;
+	ELEKTRA_WARNING_INTERFACE;
+	ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR;
+	ELEKTRA_WARNING_CONFLICTING_STATE;
+	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
+	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
+
+	keyMeta;
+	keyLock;
+	keyIsLocked;
+};
+
+libelektraprivate_1.0 {
+	# kdbprivate.h
+	elektraAbort;
+	elektraEscapeKeyNamePart;
+	elektraGlobalError;
+	elektraGlobalGet;
+	elektraGlobalSet;
+	elektraKsPopAtCursor;
+	elektraUnescapeKeyName;
+	elektraUnescapeKeyNamePart;
+	elektraValidateKeyName;
+	ksRenameKeys;
+	keyClearSync;
+	keyIsDir;
+	keyIsProc;
+	keyIsSpec;
+	keyIsSystem;
+	keyIsUser;
+	keyNameIsDir;
+	keyNameIsProc;
+	keyNameIsSpec;
+	keyNameIsSystem;
+	keyNameIsUser;
+	keySetRaw;
+	elektraPluginFindGlobal;
+	elektraPluginMissing;
+	elektraPluginVersion;
+	elektraProcessPlugin;
+	elektraProcessPlugins;
+
+	# kdblogger.h
+	elektraLog;
+
+	# kdbrand.h
+	elektraRand;
+	elektraRandGetInitSeed;
+
+	#kdberrors.h
+	elektraSetErrorRESOURCE;
+	elektraSetErrorOUT_OF_MEMORY;
+	elektraSetErrorINSTALLATION;
+	elektraSetErrorINTERNAL;
+	elektraSetErrorINTERFACE;
+	elektraSetErrorPLUGIN_MISBEHAVIOR;
+	elektraSetErrorCONFLICTING_STATE;
+	elektraSetErrorVALIDATION_SYNTACTIC;
+	elektraSetErrorVALIDATION_SEMANTIC;
+
+	elektraAddWarningRESOURCE;
+	elektraAddWarningOUT_OF_MEMORY;
+	elektraAddWarningINSTALLATION;
+	elektraAddWarningINTERNAL;
+	elektraAddWarningINTERFACE;
+	elektraAddWarningPLUGIN_MISBEHAVIOR;
+	elektraAddWarningCONFLICTING_STATE;
+	elektraAddWarningVALIDATION_SYNTACTIC;
+	elektraAddWarningVALIDATION_SEMANTIC;
+
+	elektraErrorSpecification;
+	elektraTriggerError;
+	elektraTriggerWarnings;
+};

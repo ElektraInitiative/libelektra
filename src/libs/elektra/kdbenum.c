@@ -35,9 +35,23 @@ enum keyswitch_t
 	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
 	KEY_META=1<<15,		/*!< Flag for metadata */
 	KEY_NULL=1<<16,		/*!< Is *not* a flag, only as return value @deprecated do not use */
+	// see elektraLockOptions
 	KEY_CASCADING_NAME=1<<20,	/*!< Is default, no need to use it @deprecated do not use */
 	KEY_META_NAME=1<<21,	/*!< Allow any key names (not only with known namespaces+cascading */
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
+};
+
+/**
+ * Lock options
+ *
+ * @ingroup key
+ * @see keyLock(), keyIsLocked()
+ */
+enum elektraLockOptions
+{
+	KEY_LOCK_NAME=1<<17,  ///< lock the name of a key
+	KEY_LOCK_VALUE=1<<18, ///< lock the value of a key
+	KEY_LOCK_META=1<<19   ///< lock the meta data of a key
 };
 
 
@@ -101,79 +115,6 @@ enum option_t
  *
  * @see ksPop().
  */
-	KDB_O_POP=1<<1,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_NODIR=1<<2,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_DIRONLY=1<<3,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_NOREMOVE=1<<6,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_REMOVEONLY=1<<7,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_INACTIVE=1<<8,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_SYNC=1<<9,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_SORT=1<<10,
-/**
- * Feature not available
- *
- * TODO: remove for 1.0
- */
-	KDB_O_NORECURSIVE=1<<11,
-/** Ignore case.
- *
- * do not use without KDB_O_NOALL
- *
- * TODO: remove for 1.0
- *
- * @see ksLookup()
- * */
-	KDB_O_NOCASE=1<<12,
-/** Search with owner.
- *
- * The owner concept is deprecated, do not use.
- *
- * TODO: remove for 1.0
- *
- * @see ksLookup()
- * */
-	KDB_O_WITHOWNER=1<<13,
-/** Linear search from start -> cursor to cursor -> end.
- *
- * TODO: remove for 1.0
- *
- * @see ksLookup()
- * */
-	KDB_O_NOALL=1<<14
+	KDB_O_POP=1<<1
 };
 

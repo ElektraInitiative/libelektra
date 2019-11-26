@@ -1,3 +1,29 @@
+env:
+  BUILD_DIR: build
+
+container:
+  memory: 12
+
+# We store common commands here, so we can reference them in the build jobs below.
+commands:
+  - &create_build_dir mkdir "$BUILD_DIR"
+  - &print_cmake_options |
+      printf '—— CMake Config ——\n'
+      for option; do printf '%s\n' "$option"; done
+  - &generate | # We need to specify the source directory (`.`) explicitly for Alpine linux (`🔗 Check`).
+    cmake "$@" -G Ninja -B "$BUILD_DIR" .
+  - &build cmake --build "$BUILD_DIR"
+  - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
+  - &run_tests | # Run tests
+    if [ "$ENABLE_ASAN" = 'ON' ]; then
+      cmake --build "$BUILD_DIR" --target run_nocheckshell
+    else
+      [ "$BUILD_FULL" = 'ON' ] && KDB=kdb-full || KDB=kdb
+      # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
+      # if we do not add the alternative `false`.
+      cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
+    fi
+
 bsd_task:
   matrix:
 
@@ -9,57 +35,60 @@ bsd_task:
       freebsd_instance:
         image: freebsd-12-0-release-amd64
 
+    - name: 😈 ASAN
+      freebsd_instance:
+        image: freebsd-12-0-release-amd64
+      env:
+        ENABLE_ASAN: ON
+
   install_script:
     - >
       pkg install -y
       bison
       cmake
       git
+      libgit2
       ninja
       yajl
       yaml-cpp
 
   script:
-    - &create_and_chage_to_build_dir mkdir build && cd build
+    - *create_build_dir
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
-      cmake
+      set --
       -DBINDINGS='ALL;-io_glib'
       -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
+      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
       -DPLUGINS=ALL
       -DTARGET_PLUGIN_FOLDER=''
-      -GNinja
-      ..
-    - &build ninja
-    - &install output="$(ninja install 2>&1)" || printf '%s' "$output"
+    - *print_cmake_options
+    - *generate
+    - *build
+    - *install
 
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
-    - &run_tests | # Run tests
-      cd build
-      if [ "$ENABLE_ASAN" == 'ON' ]; then
-        ninja run_nocheckshell
-      elif [ "$BUILD_FULL" == 'ON' ]; then
-        # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
-        # if we do not add the alternative `false`.
-        ninja run_all && kdb-full run_all || false
-      else
-        ninja run_all && kdb run_all || false
-      fi
+    - *run_tests
 
 mac_task:
+  env:
+    INSTALL_DIR: install
+
   matrix:
 
     - name: 🍎 Clang
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.2.1
+      env:
+        ENABLE_LOGGER: ON
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.2.1
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -68,22 +97,20 @@ mac_task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.2.1
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
 
     - name: 🍎 MMap
       osx_instance:
-        image: mojave-xcode-10.1
+        image: mojave-xcode-11.2.1
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
         KDB_DB_INIT: elektra.mmap
 
   install_script:
-    - > # Add external Homebrew taps
-      brew tap sanssecours/yaep
     - > # Install Homebrew casks
       brew cask install java oclint
     - > # Install Homebrew formulas
@@ -111,7 +138,6 @@ mac_task:
       moreutils
       ninja
       openssl
-      pegtl
       pkg-config
       prettier
       qt
@@ -119,10 +145,17 @@ mac_task:
       swig
       tree
       xerces-c
-      yaep
       yajl
-      yaml-cpp
       zeromq
+    - | # We install yaml-cpp manually, since Homebrew currently does not install the shared version of the library.
+      git clone --branch yaml-cpp-0.6.3 --depth 1 https://github.com/jbeder/yaml-cpp.git
+      cd yaml-cpp
+      mkdir build
+      cmake -GNinja -DYAML_BUILD_SHARED_LIBS=ON -DYAML_CPP_BUILD_TESTS=OFF -Bbuild
+      cmake --build build
+      sudo cmake --build build --target install
+      cd ..
+      rm -r yaml-cpp
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - > # Start D-Bus session bus
@@ -131,56 +164,50 @@ mac_task:
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
     - | # Install Python packages
-      pip install cmake-format[yaml]==0.5.4
-    - | # Install Ruby
-      brew install ruby@2.5
+      pip install cmake-format[yaml]==0.6
+    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
+      brew install ruby@2.6
+      export PATH="/usr/local/opt/ruby@2.6/bin:/usr/local/lib/ruby/gems/2.6.0/bin:$PATH"
     - | # Install Ruby gems
-      gem install ronn test-unit --user-install --no-document
+      sudo gem install ronn test-unit --no-document
 
   script:
     - > # Use latest version of LLVM to translate Elektra
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-    - SYSTEM_DIR="$PWD/kdbsystem"
-    - INSTALL_DIR="$PWD/install"
-    - *create_and_chage_to_build_dir
-    - |
-      CMAKE_OPTIONS=(
-        -DBINDINGS="${BINDINGS:-ALL}"
-        -DBUILD_FULL="${BUILD_FULL:-OFF}"
-        -DBUILD_SHARED="${BUILD_SHARED:-ON}"
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
-        -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
-        -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-        -DENABLE_DEBUG=ON
-        -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
-        -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
-        -DKDB_DB_SYSTEM="$SYSTEM_DIR"
-        -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
-        -DPLUGINS="${PLUGINS:-ALL}"
-        -DTOOLS="${TOOLS:-ALL}"
-        -GNinja
-        ..
-      )
-    - |
-      printf '—— CMake Config ——\n'
-      for option in "${CMAKE_OPTIONS[@]}"; do printf '%s\n' "$option"; done
-    - cmake ${CMAKE_OPTIONS[@]}
+    - *create_build_dir
+    - >
+      set --
+      -DBINDINGS="${BINDINGS:-ALL}"
+      -DBUILD_FULL="${BUILD_FULL:-OFF}"
+      -DBUILD_SHARED="${BUILD_SHARED:-ON}"
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/$INSTALL_DIR"
+      -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+      -DENABLE_LOGGER="${ENABLE_LOGGER:-OFF}"
+      -DENABLE_DEBUG=ON
+      -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+      -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
+      -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
+      -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+      -DPLUGINS="${PLUGINS:-ALL}"
+      -DTOOLS="${TOOLS:-ALL}"
+    - *print_cmake_options
+    - *generate
     - *build
     - *install
 
   tests_script:
     # Remove files produced by `ronn`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
     - git checkout .
-    - export PATH=$PATH:"$PWD/install/bin:/usr/local/opt/llvm/bin"
+    - export PATH=$PATH:"$CIRRUS_WORKING_DIR/$INSTALL_DIR/bin:/usr/local/opt/llvm/bin"
     - *run_tests
     - | # Uninstall Elektra
-      output="$(ninja uninstall 2>&1)" || printf '%s' "$output"
+      output="$(cmake --build "$BUILD_DIR" --target uninstall 2>&1)" || printf '%s' "$output"
     - | # Make sure uninstalling removes all files
-      cd ../install
-      if find . -name '*' | grep -Eqv '^.$'; then
-        printf 'The command `ninja uninstall` did not uninstall all files:\n'
-        tree .
+      if find "$INSTALL_DIR" -name '*' -not -name "$INSTALL_DIR" | grep -Eqv '^.$'; then
+        printf 'The command `cmake --build "%s" --target uninstall` did not uninstall all files:\n' "$BUILD_DIR"
+        tree "$INSTALL_DIR"
         printf '. Please add the files shown above to `ElektraUninstall.cmake`.\n'
         false
       fi
@@ -188,20 +215,49 @@ mac_task:
 linux_task:
   matrix:
 
-    - name: 🔗 Check
+    - name: 🐧 Fedora
       container:
-          dockerfile: scripts/docker/cirrus/Dockerfile
+          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
-    - mkdir build && cd build
+    - *create_build_dir
+    - *generate
+    - *build
+    - *install
+
+  tests_script:
+    - *run_tests
+
+link_task:
+  matrix:
+
+    - name: 🔗 Check
+      container:
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
+
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git \
+                $CIRRUS_WORKING_DIR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    else
+      git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+      git config user.email "nobody@example.com"
+      git config user.name "nobody"
+      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
+    fi
+
+  script:
+    - *create_build_dir
     - >
-      cmake -GNinja ..
+      set --
       -DBUILD_FULL=OFF
       -DBUILD_SHARED=OFF
       -DBUILD_STATIC=OFF
       -DBUILD_TESTING=OFF
-    - cd ..
-    - ninja -C build 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+    - *generate
+    - cmake --build "$BUILD_DIR" 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
     - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
 
   tests_script:
@@ -213,3 +269,41 @@ linux_task:
         printf >&2 '—————————————\n'
         false
       fi
+
+docu_task:
+  matrix:
+
+    - name: 📚 Check
+      container:
+          dockerfile: scripts/docker/cirrus/arch/Dockerfile
+
+  script:
+    - *create_build_dir
+    - >
+      set --
+      -DBUILD_PDF=ON
+      -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
+      -DTOOLS='ALL;web;website-frontend;website-backend'
+    - *generate
+    - *build
+
+  tests_script:
+    - |
+      git_diff_output="$(git diff -p 2>&1)"
+      if [ -n "$git_diff_output" ]; then
+        printf >&2 -- 'It looks like you modified a source file of a man page, but did not commit the updated man page.\n'
+        printf >&2 -- 'Please either:\n\n'
+        printf >&2 -- '- build the man pages with `ronn` and commit the result, or\n'
+        printf >&2 -- '- use the `patch` command after this message to update the man pages.\n\n'
+        printf >&2 -- 'For the second option, please\n\n'
+        printf >&2 -- '1. copy the lines between the long dashes (`—`), and\n'
+        printf >&2 -- '2. store them in a file called `man.patch` **in the root of the repository**.\n\n'
+        printf >&2 -- 'After that use the command:\n\n'
+        printf >&2 -- '\tcat man.patch | patch -p1\n\n'
+        printf >&2 -- 'to apply the changes.\n'
+        printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
+        printf >&2 -- '%s' "$git_diff_output"
+        printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
+        false
+      fi
+

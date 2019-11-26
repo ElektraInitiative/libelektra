@@ -1,0 +1,32 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+/*%# enums %*/
+/*%# generate_typedef? %*/
+typedef enum
+{
+	/*%# values %*/
+	/*%& name %*/ = /*%& value %*/,
+	/*%/ values %*/
+} /*%& native_type %*/;
+
+/*%/ generate_typedef? %*/
+/*%/ enums %*/
+
+#define ELEKTRA_TO_CONST_STRING(typeName) ELEKTRA_CONCAT (ELEKTRA_CONCAT (elektra, typeName), ToConstString)
+#define ELEKTRA_TO_CONST_STRING_SIGNATURE(cType, typeName) const char * ELEKTRA_TO_CONST_STRING (typeName) (cType value)
+
+/*%# enums %*/
+ELEKTRA_KEY_TO_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_TO_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_TO_CONST_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+/*%# generate_setters? %*/
+ELEKTRA_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+/*%/ generate_setters? %*/
+
+/*%/ enums %*/

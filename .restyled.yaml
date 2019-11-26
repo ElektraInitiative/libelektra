@@ -1,6 +1,17 @@
+restylers_version: '20191031'
 auto: true
 restylers:
-  - prettier
+
+  # TODO: Uncomment the lines below, when we switch to `clang-format` 9.
+  # - clang-format:
+  #     image: restyled/restyler-clang-format:v9.0.0
+
+  # TODO: Enable `prettier` again, after Restyled offers Prettier 1.19
+  # See also: https://github.com/restyled-io/restylers/blob/master/prettier/Dockerfile
+  # - prettier
+
+  - prettier-markdown:
+      arguments: []
   - shfmt:
       arguments:
         - -s

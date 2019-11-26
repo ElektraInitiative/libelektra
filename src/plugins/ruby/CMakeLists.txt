@@ -14,28 +14,22 @@ if (DEPENDENCY_PHASE)
 	endif ()
 	find_package (Ruby QUIET)
 	find_swig ()
-	check_binding_included ("swig_ruby"
-				BINDING_WAS_ADDED
-				SUBDIRECTORY
-				"swig/ruby"
-				SILENT)
+	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 
 	# ~~~
 	# Disable on GCC 4 and earlier:
-	# - https://build.libelektra.org/jenkins/job/elektra-gcc47-all
-	# - https://build.libelektra.org/jenkins/job/elektra-gcc-configure-debian-wheezy
+	# - https://build.libelektra.org/job/elektra-gcc47-all
+	# - https://build.libelektra.org/job/elektra-gcc-configure-debian-wheezy
 	# ~~~
 	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
 
-	if (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER})
+	if (RUBY_FOUND
+	    AND SWIG_FOUND
+	    AND BINDING_WAS_ADDED
+	    AND ${SUPPORTED_COMPILER})
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT runtime.h
-				    COMMAND ${SWIG_EXECUTABLE}
-					    -c++
-					    -ruby
-					    -external-runtime
-					    runtime.h)
+		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter")
@@ -52,10 +46,7 @@ if (DEPENDENCY_PHASE)
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-pedantic")
 		endif ()
 
-		set_source_files_properties ("ruby.cpp"
-					     PROPERTIES
-					     COMPILE_FLAGS
-					     "${SWIG_COMPILE_FLAGS}")
+		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT RUBY_FOUND)
 		remove_plugin (ruby "ruby not found")
 	elseif (NOT ${SUPPORTED_COMPILER})
@@ -67,11 +58,12 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (ruby CPP
-	    SOURCES ruby.hpp ruby.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
-	    INCLUDE_SYSTEM_DIRECTORIES ${RUBY_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${RUBY_LIBRARY}
-	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb SWIG_RUNTIME=\"runtime.h\")
+add_plugin (
+	ruby CPP
+	SOURCES ruby.hpp ruby.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
+	INCLUDE_SYSTEM_DIRECTORIES ${RUBY_INCLUDE_DIRS}
+	LINK_LIBRARIES ${RUBY_LIBRARY}
+	COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb SWIG_RUNTIME=\"runtime.h\")
 
 if (ADDTESTING_PHASE)
 	# bindings are required for tests

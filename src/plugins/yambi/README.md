@@ -72,7 +72,7 @@ kdb set user/tests/yambi/friends/#0 Thumper
 kdb set user/tests/yambi/friends/#1 Flower
 
 # Retrieve last array index
-kdb getmeta user/tests/yambi/friends array
+kdb meta-get user/tests/yambi/friends array
 #> #1
 
 kdb get user/tests/yambi/friends/#0

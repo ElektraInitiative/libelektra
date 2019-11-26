@@ -116,7 +116,7 @@ static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
 	char * result = elektraMalloc (resultLen);
 	if (!result)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return NULL;
 	}
 	snprintf (result, resultLen, "%s/%s", dir, file);
@@ -146,7 +146,7 @@ static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
 		char * path = elektraMalloc (envPathLen);
 		if (!path)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 			return -1;
 		}
 		memcpy (path, envPath, envPathLen);
@@ -196,7 +196,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 			*gpgBin = elektraMalloc (configPathLen + 1);
 			if (!(*gpgBin))
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 				return -1;
 			}
 			strncpy (*gpgBin, configPath, configPathLen);
@@ -237,7 +237,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
 		if (!(*gpgBin))
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 			return -1;
 		}
 		return 1;
@@ -249,7 +249,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key *
 		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
 		if (!(*gpgBin))
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 			return -1;
 		}
 		return 1;
@@ -645,7 +645,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 	// estimated maximum output size = 2 * input (including headers, etc.)
 	if (msgKey && !(buffer = elektraMalloc (bufferSize)))
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -702,6 +702,8 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		// finally call the gpg executable
 		if (execv (argv[0], argv) < 0)
 		{
+			// errno is set according to the man page of execv
+			fprintf (stderr, "%d", errno);
 			exit (GPG_CALL_EXECV);
 		}
 		// end of the child process
@@ -764,7 +766,16 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgK
 		break;
 
 	case GPG_CALL_EXECV:
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary: %s", argv[0]);
+		outputLen = read (pipe_stderr[0], errorBuffer, sizeof (errorBuffer));
+		if (outputLen < 1)
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary \"%s\"", argv[0]);
+		}
+		else
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Failed to start the gpg binary \"%s\", reason: %s", argv[0],
+							 strerror (atoi (errorBuffer)));
+		}
 		break;
 
 	default:

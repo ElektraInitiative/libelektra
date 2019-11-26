@@ -27,7 +27,7 @@ execute() {
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(printf '%s' "$proto" | sed -e "s~kdb\ ~$KDB ~g" \
+	command=$(printf '%s' "$proto" | sed \
 		-e "s~\$Mountpoint~${Mountpoint}~g" \
 		-e "s~\$File~${DBFile}~g" \
 		-e "s~\$Storage~${Storage}~g" \
@@ -37,6 +37,8 @@ execute() {
 
 	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
+
+	command=$(printf '%s' "$command" | sed "s~kdb\ ~\"$KDB\" ~g")
 
 	# ===============
 	# = INTERACTIVE =
@@ -285,12 +287,6 @@ run_script
 "$KDB" rm -r "$MountpointRoot" 2> /dev/null
 "$KDB" import "$MountpointRoot" dump 2> /dev/null < "$TMPFILE"
 
-# We disable the cleanup procedure temporarily, since we still need the exported configuration,
-# if the tests changed the configuration permanently.
-trap - EXIT
-export_check "$EXPORT_DIR" 'Test'
-trap cleanup EXIT
-
 EVAL=0
 
 if [ "$#" -eq '1' ]; then
@@ -314,6 +310,12 @@ if [ "$EVAL" -ne 0 ] || [ $printProtocol = 'true' ]; then
 	printerr '————————————————————————————————————————————————————————————————\n'
 fi
 rm -f "$OutFile"
+
+# We disable the cleanup procedure temporarily, since we still need the exported configuration,
+# if the tests changed the configuration permanently.
+trap - EXIT
+export_check "$EXPORT_DIR" 'Test'
+trap cleanup EXIT
 
 rm "${TMPFILE}"
 exit "$EVAL"

@@ -52,9 +52,10 @@
 /* handle exceptions */
 %{
   #define KEY_EXCEPTIONS \
+    KDB_CATCH_EX(kdb, KeyNotFoundException) \
     KDB_CATCH_EX(kdb, KeyTypeMismatch) \
-    KDB_CATCH_EX(kdb, KeyInvalidName) \
     KDB_CATCH_EX(kdb, KeyTypeConversion) \
+    KDB_CATCH_EX(kdb, KeyInvalidName) \
     KDB_CATCH_EX(kdb, KeyException) \
     KDB_CATCH_EX(kdb, Exception)
 
@@ -90,6 +91,9 @@
 %ignore kdb::Key::Key (const char *keyName, ...);
 %ignore kdb::Key::Key (const std::string keyName, ...);
 %ignore kdb::Key::Key (const char *keyName, va_list ap);
+
+// ignore functions we also provide char* signatures
+%ignore kdb::Key::setString(const std::string&);
 
 // reference handling
 %ignore kdb::Key::operator++(int) const;
@@ -132,6 +136,13 @@
 %ignore kdb::KeySet::KeySet (size_t alloc, ...);
 %ignore kdb::KeySet::KeySet (Key, ...);
 %ignore kdb::KeySet::operator=;
+
+// deprecated. ignores can be removed after function removal
+%ignore kdb::KeySet::rewind;
+%ignore kdb::KeySet::next;
+%ignore kdb::KeySet::current;
+%ignore kdb::KeySet::getCursor;
+%ignore kdb::KeySet::setCursor;
 
 // iterators
 // we hide all iterator classes. users should use pairs/ipairs

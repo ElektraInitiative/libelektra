@@ -36,11 +36,6 @@
 #define CHECK_INVALID (value == 0)
 #endif
 
-#ifndef ELEKTRA_CONCAT
-#define ELEKTRA_CONCAT(X, Y) ELEKTRA_CONCAT2 (X, Y)
-#define ELEKTRA_CONCAT2(X, Y) X##Y
-#endif
-
 #define REGISTER_FUNC_NAME(TYPE_NAME) ELEKTRA_CONCAT (internalnotificationRegister, TYPE_NAME)
 
 #define TEST_CASE_UPDATE_SIGNATURE(TYPE_NAME) static void TEST_CASE_UPDATE_NAME (TYPE_NAME) (void)
@@ -92,9 +87,6 @@ TEST_CASE_NO_UPDATE_SIGNATURE (TYPE_NAME)
 	PLUGIN_CLOSE ();
 }
 #endif
-
-#undef ELEKTRA_CONCAT
-#undef ELEKTRA_CONCAT2
 
 #undef TYPE
 #undef TYPE_NAME

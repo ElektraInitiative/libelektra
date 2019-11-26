@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @author Kurt Micheli <kurt.micheli@libelektra.org>, Klemens Böswirth <k.boeswirth+git@gmail.com>
 # @brief Checks http, https and ftp links if they are broken.
 # @date 05.09.2016
 # @tags validation
@@ -10,31 +10,70 @@ if [ -z "$1" ]; then
 	exit
 fi
 
+SCRIPT_DIR="$(dirname "$0")"
+
+LINKFILE=$(mktemp)
+awk -F '|' '
+# Ignore links that contain version placeholder
+!/doc\/news\/_preparation_next_release\.md.*<<VERSION>>/ {
+	if($2 ~ /.*\//) {
+		sub("/$", "", $2)
+	}
+	sub("\\+", "%2B", $2)
+	print $2 "|"  $1
+}' "$1" | sort -t '|' -k1 | awk -F "|" '
+key != $1 || NR == 1 {
+	key = $1
+	if(data) {
+		print data
+	}
+	data = $0
+	next
+}
+
+{
+	sub($1,"",$0)
+	data = data""$0
+}
+
+END {
+	print data
+}' > "$LINKFILE"
+
+WHITELIST=$(mktemp)
+grep -v '^#' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
+
 NUMTHREADS=10
+TIMEOUT=20
+TRIES=5
 
 check() {
-	# Ignore links that contain version placeholder
-	echo "$1" | grep -Eq 'doc/news/_preparation_next_release\.md.*<<VERSION>>' && return
-	# The following link only works if you are logged into the build server
-	# See also: https://github.com/ElektraInitiative/libelektra/issues/2674
-	echo "$1" | grep -Eq 'https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax' && return
-	link=$(echo "$1" | grep -oE "(https|http|ftp):.*")
+	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
+	files=$(echo "$1" | grep -oE "\|.*" | sed 's/|/ /g')
+
+	if grep -Fxq "$link" "$WHITELIST"; then
+		echo "whitelisted: $link"
+		printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
+		return
+	fi
 	if [ -z "$link" ]; then
 		echo "check the link format of $1"
 		return
 	fi
-	wget --spider --quiet "$link"
+	wget --spider --quiet --timeout=$TIMEOUT --tries=$TRIES "$link"
 	if [ "$?" -ne "0" ]; then
-		wget -O - --quiet "$link" > /dev/null
+		wget -O - --quiet --timeout=$TIMEOUT --tries=$TRIES "$link" > /dev/null
 		if [ "$?" -ne "0" ]; then
-			echo >&2 "$1"
+			for file in $files; do
+				echo >&2 "$file $link"
+			done
 		fi
 	fi
 }
 
 COUNTLINKS=0
 THREADCOUNT=0
-NUMLINKS=$(wc -l < "$1")
+NUMLINKS=$(wc -l < "$LINKFILE")
 PIDS=""
 
 while read -r line; do
@@ -50,7 +89,7 @@ while read -r line; do
 		PIDS=""
 		THREADCOUNT=1
 	fi
-done < "$1"
+done < "$LINKFILE"
 
 for pid in $PIDS; do
 	wait "$pid"

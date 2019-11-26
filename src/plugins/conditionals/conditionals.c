@@ -17,7 +17,6 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbmeta.h>
-#include <kdbproposal.h> //keyRel2
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>
@@ -77,7 +76,7 @@ static int isNumber (const char * s, const Key * suffixList)
 {
 	char * endPtr = NULL;
 	int ret;
-	ret = strtol (s, &endPtr, 10);
+	ret = (int) strtol (s, &endPtr, 10);
 	if (*endPtr != 0 && isValidSuffix (endPtr, suffixList))
 	{
 		return 1;
@@ -92,7 +91,7 @@ static int isNumber (const char * s, const Key * suffixList)
 	}
 	else if (*endPtr == '.')
 	{
-		ret = strtof (s, &endPtr);
+		ret = (int) strtof (s, &endPtr);
 		if (*endPtr != 0 && isValidSuffix (endPtr, suffixList))
 		{
 			return 2;
@@ -151,7 +150,7 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 			float s2Value = strtof (s2, &s2EndPtr);
 			if (!strcmp (s1EndPtr, s2EndPtr) || *s1EndPtr == 0 || *s2EndPtr == 0)
 			{
-				result = (fabs (s1Value - s2Value));
+				result = (float) fabs (s1Value - s2Value);
 				if (result < EPSILON)
 				{
 					retval = 0;
@@ -168,12 +167,11 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 		}
 		else
 		{
-			int s1Value = strtol (s1, &s1EndPtr, 10);
-			int s2Value = strtol (s2, &s2EndPtr, 10);
+			int s1Value = (int) strtol (s1, &s1EndPtr, 10);
+			int s2Value = (int) strtol (s2, &s2EndPtr, 10);
 			if (!strcmp (s1EndPtr, s2EndPtr) || *s1EndPtr == 0 || *s2EndPtr == 0)
 			{
-				result = s1Value - s2Value;
-				retval = result;
+				retval = (int) (s1Value - s2Value);
 			}
 			else
 			{
@@ -207,37 +205,37 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 				result = ERROR;
 				goto Cleanup;
 			}
-			if (elektraRealloc ((void **) &compareTo, endPos - rightSide) < 0)
+			if (elektraRealloc ((void **) &compareTo, (size_t) (endPos - rightSide)) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 				result = ERROR;
 				goto Cleanup;
 			}
-			memset (compareTo, 0, endPos - rightSide);
-			strncat (compareTo, rightSide + 1, endPos - rightSide - 1);
+			memset (compareTo, 0, (size_t) (endPos - rightSide));
+			strncat (compareTo, rightSide + 1, (size_t) (endPos - rightSide - 1));
 		}
 		else if (rightSide && elektraStrLen (rightSide) > 1)
 		{
 			// not a literal, it has to be a key
 			if (rightSide[0] == '@')
-				len = keyGetNameSize (parentKey) + elektraStrLen (rightSide);
+				len = (int) ((size_t) keyGetNameSize (parentKey) + elektraStrLen (rightSide));
 			else if (!strncmp (rightSide, "..", 2) || (rightSide[0] == '.'))
-				len = keyGetNameSize (curKey) + elektraStrLen (rightSide);
+				len = (int) ((size_t) keyGetNameSize (curKey) + elektraStrLen (rightSide));
 			else
-				len = elektraStrLen (rightSide);
+				len = (int) elektraStrLen (rightSide);
 
-			if (elektraRealloc ((void **) &lookupName, len) < 0)
+			if (elektraRealloc ((void **) &lookupName, (size_t) len) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 				result = ERROR;
 				goto Cleanup;
 			}
 			if (rightSide[0] == '@')
-				snprintf (lookupName, len, "%s/%s", keyName (parentKey), rightSide + 1);
+				snprintf (lookupName, (size_t) len, "%s/%s", keyName (parentKey), rightSide + 1);
 			else if (rightSide[0] == '.') // either starts with . or .., doesn't matter at this point
-				snprintf (lookupName, len, "%s/%s", keyName (curKey), rightSide);
+				snprintf (lookupName, (size_t) len, "%s/%s", keyName (curKey), rightSide);
 			else
-				snprintf (lookupName, len, "%s", rightSide);
+				snprintf (lookupName, (size_t) len, "%s", rightSide);
 
 			key = ksLookupByName (ks, lookupName, 0);
 			if (!key)
@@ -251,9 +249,9 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 				result = FALSE;
 				goto Cleanup;
 			}
-			if (elektraRealloc ((void **) &compareTo, keyGetValueSize (key)) < 0)
+			if (elektraRealloc ((void **) &compareTo, (size_t) keyGetValueSize (key)) < 0)
 			{
-				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 				result = ERROR;
 				goto Cleanup;
 			}
@@ -261,24 +259,24 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 		}
 	}
 	if (leftSide[0] == '@')
-		len = keyGetNameSize (parentKey) + elektraStrLen (leftSide);
+		len = (int) ((size_t) keyGetNameSize (parentKey) + elektraStrLen (leftSide));
 	else if (!strncmp (leftSide, "..", 2) || (leftSide[0] == '.'))
-		len = keyGetNameSize (curKey) + elektraStrLen (leftSide);
+		len = (int) ((size_t) keyGetNameSize (curKey) + elektraStrLen (leftSide));
 	else
-		len = elektraStrLen (leftSide);
+		len = (int) elektraStrLen (leftSide);
 
-	if (elektraRealloc ((void **) &lookupName, len) < 0)
+	if (elektraRealloc ((void **) &lookupName, (size_t) len) < 0)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, "Out of memory");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		result = ERROR;
 		goto Cleanup;
 	}
 	if (leftSide[0] == '@')
-		snprintf (lookupName, len, "%s/%s", keyName (parentKey), leftSide + 1);
+		snprintf (lookupName, (size_t) len, "%s/%s", keyName (parentKey), leftSide + 1);
 	else if (leftSide[0] == '.') // either . or .., doesn't matter here
-		snprintf (lookupName, len, "%s/%s", keyName (curKey), leftSide);
+		snprintf (lookupName, (size_t) len, "%s/%s", keyName (curKey), leftSide);
 	else
-		snprintf (lookupName, len, "%s", leftSide);
+		snprintf (lookupName, (size_t) len, "%s", leftSide);
 	key = ksLookupByName (ks, lookupName, 0);
 	if (cmpOp == NEX)
 	{
@@ -341,7 +339,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 Cleanup:
 	if (lookupName) elektraFree (lookupName);
 	if (compareTo) elektraFree (compareTo);
-	return result;
+	return (CondResult) result;
 }
 
 
@@ -415,7 +413,7 @@ static CondResult parseSingleCondition (const Key * key, const char * condition,
 		return ERROR;
 	}
 
-	int opLen;
+	size_t opLen;
 	if (cmpOp == LT || cmpOp == GT || cmpOp == NEX)
 	{
 		opLen = 1;
@@ -452,10 +450,10 @@ static CondResult parseSingleCondition (const Key * key, const char * condition,
 		--ptr;
 		++endPos;
 	}
-	int len = opStr - condition - endPos - startPos + 2;
-	char * leftSide = elektraMalloc (len);
+	int len = (int) ((unsigned long) (opStr - condition) - endPos - startPos + 2);
+	char * leftSide = elektraMalloc ((size_t) len);
 	char * rightSide = NULL;
-	strncpy (leftSide, condition + startPos, len - 2);
+	strncpy (leftSide, condition + startPos, (size_t) (len - 2));
 	leftSide[len - 2] = '\0';
 	startPos = 0;
 	endPos = 0;
@@ -475,9 +473,9 @@ static CondResult parseSingleCondition (const Key * key, const char * condition,
 		--ptr;
 		++endPos;
 	}
-	len = elektraStrLen (condition) - (opStr - condition) - opLen - endPos - startPos;
-	rightSide = elektraMalloc (len);
-	strncpy (rightSide, opStr + opLen + startPos, len - 1);
+	len = (int) (elektraStrLen (condition) - (unsigned long) (opStr - condition) - opLen - endPos - startPos);
+	rightSide = elektraMalloc ((size_t) len);
+	strncpy (rightSide, opStr + opLen + startPos, (size_t) (len - 1));
 	rightSide[len - 1] = '\0';
 	CondResult ret;
 
@@ -501,7 +499,7 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		if (lastPtr <= firstPtr)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", expr);
+				parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", expr);
 			return NULL;
 		}
 		*(lastPtr + 1) = '\0';
@@ -539,14 +537,14 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		if (firstPtr == lastPtr) // only one quote in the assign string, invalid syntax
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", expr);
+				parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", expr);
 			return NULL;
 		}
 		char * nextMark = strchr (firstPtr + 1, '\'');
 		if (nextMark != lastPtr) // more than two quotes, invalid syntax too
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", expr);
+				parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", expr);
 			return NULL;
 		}
 		*lastPtr = '\0';
@@ -564,8 +562,7 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 
 	if ((regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE)))
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey,
-						 "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
@@ -573,7 +570,7 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 	}
 
 	char * localCondition = elektraStrDup (condition);
-	int subMatches = 4;
+	size_t subMatches = 4;
 	regmatch_t m[subMatches];
 	char * ptr = localCondition;
 	while (1)
@@ -590,10 +587,10 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 		}
 		int startPos;
 		int endPos;
-		startPos = m[3].rm_so + (ptr - localCondition);
-		endPos = m[3].rm_eo + (ptr - localCondition);
-		char * singleCondition = elektraMalloc (endPos - startPos + 1);
-		strncpy (singleCondition, localCondition + startPos, endPos - startPos);
+		startPos = (int) (m[3].rm_so + (ptr - localCondition));
+		endPos = (int) (m[3].rm_eo + (ptr - localCondition));
+		char * singleCondition = elektraMalloc ((size_t) (endPos - startPos + 1));
+		strncpy (singleCondition, localCondition + startPos, (size_t) (endPos - startPos));
 		singleCondition[endPos - startPos] = '\0';
 		result = parseSingleCondition (key, singleCondition, suffixList, ks, parentKey);
 		for (int i = startPos - 1; i < endPos + 1; ++i)
@@ -619,8 +616,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	CondResult ret;
 	if ((ret = regcomp (&regex1, regexString1, REGEX_FLAGS_CONDITION)))
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey,
-						 "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
@@ -628,8 +624,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if ((ret = regcomp (&regex2, regexString2, REGEX_FLAGS_CONDITION)))
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey,
-						 "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
@@ -638,8 +633,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if ((ret = regcomp (&regex3, regexString3, REGEX_FLAGS_CONDITION)))
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey,
-						 "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
@@ -647,13 +641,13 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	int subMatches = 6;
+	size_t subMatches = 6;
 	regmatch_t m[subMatches];
 	int nomatch = regexec (&regex1, conditionString, subMatches, m, 0);
 	if (nomatch)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-			parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", conditionString);
+			parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -663,25 +657,25 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	if (m[1].rm_so == -1)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-			parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", conditionString);
+			parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
 		ksDel (ks);
 		return ERROR;
 	}
-	int startPos = m[1].rm_so;
-	int endPos = m[1].rm_eo;
-	char * condition = elektraMalloc (endPos - startPos + 1);
+	int startPos = (int) m[1].rm_so;
+	int endPos = (int) m[1].rm_eo;
+	char * condition = elektraMalloc ((size_t) (endPos - startPos + 1));
 	char * thenexpr = NULL;
 	char * elseexpr = NULL;
-	strncpy (condition, conditionString + startPos, endPos - startPos);
+	strncpy (condition, conditionString + startPos, (size_t) (endPos - startPos));
 	condition[endPos - startPos] = '\0';
 	nomatch = regexec (&regex2, conditionString, subMatches, m, 0);
 	if (nomatch)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-			parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", conditionString);
+			parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -691,7 +685,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	if (m[1].rm_so == -1)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-			parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", conditionString);
+			parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", conditionString);
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
@@ -699,10 +693,10 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		return ERROR;
 	}
 
-	startPos = m[1].rm_so;
-	endPos = m[1].rm_eo;
-	thenexpr = elektraMalloc (endPos - startPos + 1);
-	strncpy (thenexpr, conditionString + startPos, endPos - startPos);
+	startPos = (int) m[1].rm_so;
+	endPos = (int) m[1].rm_eo;
+	thenexpr = elektraMalloc ((size_t) (endPos - startPos + 1));
+	strncpy (thenexpr, conditionString + startPos, (size_t) (endPos - startPos));
 	thenexpr[endPos - startPos] = '\0';
 
 	nomatch = regexec (&regex3, conditionString, subMatches, m, 0);
@@ -711,18 +705,19 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		if (m[1].rm_so == -1)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", conditionString);
+				parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information",
+				conditionString);
 			regfree (&regex1);
 			regfree (&regex2);
 			regfree (&regex3);
 			ksDel (ks);
 			return ERROR;
 		}
-		thenexpr[strlen (thenexpr) - ((m[0].rm_eo - m[0].rm_so))] = '\0';
-		startPos = m[1].rm_so;
-		endPos = m[1].rm_eo;
-		elseexpr = elektraMalloc (endPos - startPos + 1);
-		strncpy (elseexpr, conditionString + startPos, endPos - startPos);
+		thenexpr[strlen (thenexpr) - (size_t) ((m[0].rm_eo - m[0].rm_so))] = '\0';
+		startPos = (int) m[1].rm_so;
+		endPos = (int) m[1].rm_eo;
+		elseexpr = elektraMalloc ((size_t) (endPos - startPos + 1));
+		strncpy (elseexpr, conditionString + startPos, (size_t) (endPos - startPos));
 		elseexpr[endPos - startPos] = '\0';
 	}
 
@@ -756,7 +751,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			else if (ret == ERROR)
 			{
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-					parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information",
+					parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information",
 					thenexpr);
 			}
 		}
@@ -793,7 +788,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 				else if (ret == ERROR)
 				{
 					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-						parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information",
+						parentKey,
+						"Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information",
 						elseexpr);
 				}
 			}
@@ -806,7 +802,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	else if (ret == ERROR)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-			parentKey, "Invalid syntax: '%s'. Check kdb info conditionals for additional information", condition);
+			parentKey, "Invalid syntax: '%s'. Check kdb plugin-info conditionals for additional information", condition);
 	}
 
 CleanUp:

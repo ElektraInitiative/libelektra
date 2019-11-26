@@ -1,0 +1,20 @@
+libelektra_0.8 {
+	# kdbinvoke.hs
+	elektraDeferredCall;
+	elektraDeferredCallAdd;
+	elektraDeferredCallCreateList;
+	elektraDeferredCallDeleteList;
+	elektraDeferredCallsExecute;
+	elektraInvoke2Args;
+	elektraInvokeCallDeferable;
+	elektraInvokeClose;
+	elektraInvokeExecuteDeferredCalls;
+	elektraInvokeGetExports;
+	elektraInvokeGetFunction;
+	elektraInvokeGetModules;
+	elektraInvokeGetPluginConfig;
+	elektraInvokeGetPluginData;
+	elektraInvokeGetPluginName;
+	elektraInvokeInitialize;
+	elektraInvokeOpen;
+};

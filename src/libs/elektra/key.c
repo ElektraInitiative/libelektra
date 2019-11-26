@@ -11,9 +11,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
@@ -29,6 +27,7 @@
 
 #include "kdb.h"
 #include "kdbprivate.h"
+#include <kdbassert.h>
 
 
 /**
@@ -72,23 +71,6 @@
  * It can be a very powerful feature, e.g. if you need your own-defined
  * ordering or different Models of your configuration.
  */
-
-
-/*
- * @internal
- *
- * Allocates and initializes a key
- * @returns 0 if allocation did not work, the key otherwise
- */
-static Key * elektraKeyMalloc (void)
-{
-	Key * key = (Key *) elektraMalloc (sizeof (Key));
-	if (!key) return 0;
-	keyInit (key);
-
-	return key;
-}
-
 
 /**
  * A practical way to fully create a Key object in one step.
@@ -188,7 +170,7 @@ Key * keyNew (const char * name, ...)
 
 	if (!name)
 	{
-		k = elektraKeyMalloc ();
+		k = elektraCalloc (sizeof (Key));
 	}
 	else
 	{
@@ -203,6 +185,38 @@ Key * keyNew (const char * name, ...)
 
 
 /**
+ * @internal
+ */
+static int elektraSetMetaInt (Key * key, const char * meta, int value)
+{
+	char * str = 0;
+	if ((str = elektraFormat ("%d", value)) == 0)
+	{
+		return -1;
+	}
+
+	keySetMeta (key, meta, str);
+	elektraFree (str);
+	return 0;
+}
+
+// duplicate of keySetMode in meta/meta.c
+static int elektraSetMode (Key * key, mode_t mode)
+{
+	char str[MAX_LEN_INT];
+	if (!key) return -1;
+
+	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta (key, "mode", str);
+
+	return 0;
+}
+
+/**
  * @copydoc keyNew
  *
  * @pre caller must use va_start and va_end on va
@@ -210,9 +224,113 @@ Key * keyNew (const char * name, ...)
  */
 Key * keyVNew (const char * name, va_list va)
 {
-	Key * key = elektraKeyMalloc ();
-	if (!key) return 0;
-	keyVInit (key, name, va);
+	Key * key = elektraCalloc (sizeof (Key));
+
+	keyInit (key);
+	if (name)
+	{
+		keyswitch_t action = 0;
+		size_t value_size = 0;
+		void * value = 0;
+		void (*func) (void) = 0;
+		int flags = 0;
+		char * owner = 0;
+		int mode = 0;
+		int hasMode = 0;
+
+		while ((action = va_arg (va, keyswitch_t)))
+		{
+			switch (action)
+			{
+			/* flags with an argument */
+			case KEY_SIZE:
+				value_size = va_arg (va, size_t);
+				break;
+			case KEY_VALUE:
+				value = va_arg (va, void *);
+				if (value_size && keyIsBinary (key))
+					keySetBinary (key, value, value_size);
+				else if (keyIsBinary (key))
+					keySetBinary (key, value, elektraStrLen (value));
+				else
+					keySetString (key, value);
+				break;
+			case KEY_FUNC:
+				func = va_arg (va, void (*) (void));
+				keySetBinary (key, &func, sizeof (func));
+				break;
+			case KEY_META:
+				value = va_arg (va, char *);
+				/* First parameter is name */
+				keySetMeta (key, value, va_arg (va, char *));
+				break;
+
+			/* flags without an argument */
+			case KEY_FLAGS:
+				flags |= va_arg (va, int); // FALLTHROUGH
+			case KEY_BINARY:
+			case KEY_LOCK_NAME:
+			case KEY_LOCK_VALUE:
+			case KEY_LOCK_META:
+			case KEY_CASCADING_NAME:
+			case KEY_META_NAME:
+			case KEY_EMPTY_NAME:
+				if (action != KEY_FLAGS) flags |= action;
+				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+				break;
+
+			/* deprecated flags */
+			case KEY_NAME:
+				name = va_arg (va, char *);
+				break;
+			case KEY_OWNER:
+				owner = va_arg (va, char *);
+				break;
+			case KEY_COMMENT:
+				keySetMeta (key, "comment", va_arg (va, char *));
+				break;
+			case KEY_UID:
+				elektraSetMetaInt (key, "uid", va_arg (va, int));
+				break;
+			case KEY_GID:
+				elektraSetMetaInt (key, "gid", va_arg (va, int));
+				break;
+			case KEY_DIR:
+				mode |= KDB_DIR_MODE;
+				break;
+			case KEY_MODE:
+				hasMode = 1;
+				mode |= va_arg (va, int);
+				break;
+			case KEY_ATIME:
+				elektraSetMetaInt (key, "atime", va_arg (va, time_t));
+				break;
+			case KEY_MTIME:
+				elektraSetMetaInt (key, "mtime", va_arg (va, time_t));
+				break;
+			case KEY_CTIME:
+				elektraSetMetaInt (key, "ctime", va_arg (va, time_t));
+				break;
+
+			default:
+				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew",
+						(kdb_unsigned_long_long_t) action);
+				break;
+			}
+		}
+
+		option_t name_options = flags & (KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
+		elektraKeySetName (key, name, name_options);
+
+		if (!hasMode && mode == KDB_DIR_MODE)
+			elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
+		else if (mode != 0)
+			elektraSetMode (key, mode);
+
+		if (owner) keySetOwner (key, owner);
+
+		(void) keyLock (key, flags);
+	}
 	return key;
 }
 
@@ -236,8 +354,8 @@ int f (const Key * source)
 }
  * @endcode
  *
- * Like for a new key after keyNew() a subsequent ksAppend()
- * makes a KeySet to take care of the lifecycle of the key.
+ * Like for a new key after keyNew() a subsequent ksAppendKey()
+ * makes a KeySet take care of the lifecycle of the key.
  *
  * @code
 int g (const Key * source, KeySet * ks)
@@ -259,7 +377,7 @@ int g (const Key * source, KeySet * ks)
  * @param source has to be an initialized source Key
  * @retval 0 failure or on NULL pointer
  * @return a fully copy of source on success
- * @see ksAppend(), keyDel(), keyNew()
+ * @see ksAppendKey(), keyDel(), keyNew()
  * @ingroup key
  */
 Key * keyDup (const Key * source)
@@ -268,7 +386,7 @@ Key * keyDup (const Key * source)
 
 	if (!source) return 0;
 
-	dest = elektraKeyMalloc ();
+	dest = keyNew (0, KEY_END);
 	if (!dest) return 0;
 
 	/* Copy the struct data */
@@ -462,6 +580,8 @@ int keyDel (Key * key)
 
 	rc = keyClear (key);
 
+	ksDel (key->meta);
+
 	if (!keyInMmap)
 	{
 		elektraFree (key);
@@ -514,7 +634,8 @@ int keyClear (Key * key)
 
 	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
 	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
-	if (key->meta) ksDel (key->meta);
+
+	ksDel (key->meta);
 
 	keyInit (key);
 
@@ -639,4 +760,56 @@ ssize_t keyGetRef (const Key * key)
 	if (!key) return -1;
 
 	return key->ksReference;
+}
+
+
+/**
+ * @brief Permanently locks a part of the key
+ *
+ * This can be:
+ * - KEY_LOCK_NAME to lock the name
+ * - KEY_LOCK_VALUE to lock the value
+ * - KEY_LOCK_META to lock the metadata
+ *
+ * To unlock the key, duplicate it.
+ *
+ * It is also possible to lock when the key is created with
+ * keyNew().
+ *
+ * Some data structures need to lock the key (most likely
+ * its name), so that the ordering does not get confused.
+ *
+ * @param key which name should be locked
+ *
+ * @see keyNew(), keyDup(), ksAppendKey()
+ * @retval >0 the bits that were successfully locked
+ * @retval 0 if everything was locked before
+ * @retval -1 if it could not be locked (nullpointer)
+ * @ingroup key
+ */
+int keyLock (Key * key, option_t what)
+{
+	if (!key) return -1;
+	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+	what >>= 16; // to KEY_FLAG_RO_xyz
+	int ret = test_bit (~key->flags, what);
+	set_bit (key->flags, what);
+	return (ret << 16);
+}
+
+/**
+ * @brief Tests if a part of a key is locked
+ *
+ * @see keyLock() for more details
+ * @retval >0 the bits that are locked
+ * @retval 0 if everything is unlocked
+ * @retval -1 on error (nullpointer)
+ * @ingroup key
+ */
+int keyIsLocked (const Key * key, option_t what)
+{
+	if (!key) return -1;
+	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+	what >>= 16; // to KEY_FLAG_RO_xyz
+	return (test_bit (key->flags, what) << 16);
 }

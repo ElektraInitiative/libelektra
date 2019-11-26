@@ -50,7 +50,7 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 		}
 		else if (status == -2)
 		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent.getKey (), "Parsing failed due to memory exhaustion");
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent.getKey ());
 		}
 		else if (status == -1)
 		{

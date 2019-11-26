@@ -38,7 +38,8 @@
  * @c ELEKTRA_PLUGIN_CLOSE,
  * @c ELEKTRA_PLUGIN_GET,
  * @c ELEKTRA_PLUGIN_SET and optionally
- * @c ELEKTRA_PLUGIN_ERROR.
+ * @c ELEKTRA_PLUGIN_ERROR and
+ * @c ELEKTRA_PLUGIN_COMMIT.
  *
  * The list is terminated with
  * @c ELEKTRA_PLUGIN_END.
@@ -83,6 +84,9 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 			break;
 		case ELEKTRA_PLUGIN_ERROR:
 			returned->kdbError = va_arg (va, kdbErrorPtr);
+			break;
+		case ELEKTRA_PLUGIN_COMMIT:
+			returned->kdbCommit = va_arg (va, kdbCommitPtr);
 			break;
 		default:
 			ELEKTRA_ASSERT (0, "plugin passed something unexpected");

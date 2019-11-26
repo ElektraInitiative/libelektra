@@ -18,7 +18,7 @@ fi
 
 reformat() {
 	reformat_command=$1
-	reformat_command_output="$(scripts/$reformat_command 2>&1)" || {
+	reformat_command_output="$(scripts/dev/$reformat_command 2>&1)" || {
 		printf >&2 -- '————————————————————————————————————————————————————————————\n'
 		printf >&2 -- 'Warning — Reformatting command `%s` failed\n' "$reformat_command"
 		printf >&2 -- '\n%s\n' "$reformat_command_output"
@@ -26,10 +26,12 @@ reformat() {
 	}
 }
 
-reformat reformat-source &
+reformat reformat-c &
 reformat reformat-cmake &
+reformat reformat-java &
+reformat reformat-javascript &
 reformat reformat-markdown &
-reformat reformat-shfmt &
+reformat reformat-shell &
 wait
 
 error_message="$(
@@ -37,17 +39,19 @@ error_message="$(
 The reformatting check detected code that **does not** fit the guidelines given in `doc/CODING.md`.
 If you see this message on one of the build servers, you can either install one or multiple of the following tools:
 
-- [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format C and C++ source code,
+- [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format C, C++ and Java source code,
 - [`cmake_format`](https://github.com/cheshirekow/cmake_format) to format CMake code,
-- [`prettier`](https://prettier.io) to format Markdown code, and
+- [`prettier`](https://prettier.io) to format JavaScript & Markdown code, and
 - [`shfmt`](https://github.com/mvdan/sh) to format Shell code
 
 . Afterwards you can use the following scripts to fix the formatting problems
 
-- `reformat-source` to format C/C++ source files,
+- `reformat-c` to format C/C++ source files,
 - `reformat-cmake` to format CMake files,
+- `reformat-java` to format Java files,
+- `reformat-javascript` to format JavaScript files,
 - `reformat-markdown` to format Markdown files, and
-- `reformat-shfmt` to format files that contain shell code
+- `reformat-shell` to format files that contain shell code
 
 . If you do not want to install any of the tools listed above you can also use the `patch` command after this message
 to fix the formatting problems. For that please
@@ -66,13 +70,21 @@ to fix the formatting problems. For that please
 EOF
 )"
 
-git diff --quiet
-succeed_if "$error_message"
+git_diff_output="$(git diff -p 2>&1)"
 
-git diff --quiet || {
+if [ $? -ne 0 ]; then
+	error_message="$(printf 'Unable to create diff: %s' "$git_diff_output" 2>&1)"
+	false
+	exit_if_fail "$error_message"
+fi
+
+if [ -n "$git_diff_output" ]; then
+	false
+	succeed_if "$error_message"
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
-	git diff -p
+	printf '%s' "$git_diff_output"
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
-}
+
+fi
 
 end_script

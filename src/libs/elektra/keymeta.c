@@ -369,7 +369,7 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
-	if (source->meta)
+	if (ksGetSize (source->meta) > 0)
 	{
 		/*Make sure that dest also does not have metaName*/
 		if (dest->meta)
@@ -439,7 +439,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * Will add a new Pair for meta-information if metaName was
  * not added up to now.
  *
- * It will modify an existing Pair of meta-information if the
+ * It will modify an existing Pair of meta-information if
  * the metaName was inserted already.
  *
  * It will remove a meta information if newMetaString is 0.
@@ -534,4 +534,36 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	ksAppendKey (key->meta, toSet);
 	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;
+}
+
+/** Returns the keyset holding the given key's metadata
+ *
+ * Use keySetMeta() to populate the meta-keyset of a key.
+ *
+ * @snippet keyMetaKeySet.c Basic keyMeta
+ *
+ * Iterate the meta-keyset like any other KeySet.
+ *
+ * @snippet keyMetaKeySet.c Iterate keyMeta
+ *
+ * Use ksLookup() or keyGetMeta() to retrieve a value for a given key.
+ *
+ * @snippet keyMetaKeySet.c Lookup keyMeta
+ *
+ * @note You are not allowed to modify the name of keyset's keys or delete them.
+ * @note You must not delete the returned KeySet.
+ * @note Adding a key with metakeys to the KeySet is an error.
+ *
+ * @param key the key object to work with
+ * @retval 0 if the key is 0
+ * @return the keyset holding the metakeys
+ * @see keySetMeta(), keyGetMeta()
+ * @ingroup keymeta
+ **/
+KeySet * keyMeta (Key * key)
+{
+	if (!key) return 0;
+	if (!key->meta) key->meta = ksNew (0, KS_END);
+
+	return key->meta;
 }

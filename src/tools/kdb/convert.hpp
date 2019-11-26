@@ -44,7 +44,7 @@ public:
 		       "The key database is not touched.\n"
 		       "\n"
 		       "Example:\n"
-		       "cat sw.ecf | kdb convert dump xmltool > sw.xml\n"
+		       "cat sw.ecf | kdb convert dump xml > sw.xml\n"
 		       "To convert an Elektra dump file to xml.";
 	}
 

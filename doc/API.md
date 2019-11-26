@@ -66,7 +66,6 @@ Read about [compiling elektra](/doc/COMPILE.md).
 
 - [Application Integration](/doc/tutorials/application-integration.md)
 - [Compilation Variants](/doc/tutorials/compilation-variants.md)
-- [Merge Integration](/doc/tutorials/elektra-merge-integration.md)
 - [Export](/doc/tutorials/export.md)
 - [Import](/doc/tutorials/import.md)
 - [Merge](/doc/tutorials/merge.md)

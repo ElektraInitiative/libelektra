@@ -115,17 +115,22 @@ You can also change how values shall be restored in `kdbSet`:
 sudo kdb mount typetest.dump user/tests/type dump type booleans=#0 booleans/#0/true=true booleans/#0/false=false boolean/restoreas=#0
 ```
 
-The config key `boolean/restoreas` must be a valid index of the `booleans` array. If `boolean/restoreas` was set the chosen boolean pair
-will be used when values are restored in `kdbSet`. So in the above example the plugin accepts `1`, `true`, `0` and `false` as boolean values,
-on `kdbGet` it turns `true` into `1` and `false` into `0` and on `kdbSet` it turns `1` into `true` and `0` into `false`.
+The config key `boolean/restoreas` must be a valid index of the `booleans` array or the special value `none`. If
+`boolean/restoreas` was set to an index, the chosen boolean pair will be used when values are restored in `kdbSet`. So
+in the above example the plugin accepts `1`, `true`, `0` and `false` as boolean values, on `kdbGet` it turns `true` into
+`1` and `false` into `0` and on `kdbSet` it turns `1` into `true` and `0` into `false`.
 
-If no `booleans` array was given the allowed values for `boolean/restore` are:
+If no `booleans` array was given the allowed values for `boolean/restoreas` are:
 
 - `#0` for `yes`/`no`
 - `#1` for `true`/`false`
 - `#2` for `on`/`off`
 - `#3` for `enabled`/`disabled`
 - `#4` for `enable`/`disable`
+
+The special value `boolean/restoreas=none` completely disables the restore procedure. In other words, `kdbSet` will
+always return either `0` or `1` for boolean values. This is useful, if a storage format with built-in support for boolean
+values is used.
 
 ### Enums
 
@@ -181,7 +186,7 @@ sudo kdb mount typetest.dump user/tests/type dump type
 kdb set user/tests/type/key a
 
 #Only allow character values
-kdb setmeta user/tests/type/key type char
+kdb meta-set user/tests/type/key type char
 kdb get user/tests/type/key
 #> a
 
@@ -211,16 +216,16 @@ sudo kdb mount typeenum.ecf user/tests/type dump type
 
 # valid initial value + setup valid enum list
 kdb set user/tests/type/value middle
-kdb setmeta user/tests/type/value check/enum '#2'
-kdb setmeta user/tests/type/value 'check/enum/#0' 'low'
-kdb setmeta user/tests/type/value 'check/enum/#1' 'middle'
-kdb setmeta user/tests/type/value 'check/enum/#2' 'high'
-kdb setmeta user/tests/type/value type enum
+kdb meta-set user/tests/type/value check/enum '#2'
+kdb meta-set user/tests/type/value 'check/enum/#0' 'low'
+kdb meta-set user/tests/type/value 'check/enum/#1' 'middle'
+kdb meta-set user/tests/type/value 'check/enum/#2' 'high'
+kdb meta-set user/tests/type/value type enum
 
 # should succeed
 kdb set user/tests/type/value low
 
-# should fail with error 52
+# should fail with error C03200
 kdb set user/tests/type/value no
 # RET:5
 # ERROR:C03200
@@ -231,18 +236,18 @@ Or with multi-enums:
 ```sh
 # valid initial value + setup array with valid enums
 kdb set user/tests/type/multivalue middle_small
-kdb setmeta user/tests/type/multivalue check/enum/#0 small
-kdb setmeta user/tests/type/multivalue check/enum/#1 middle
-kdb setmeta user/tests/type/multivalue check/enum/#2 large
-kdb setmeta user/tests/type/multivalue check/enum/#3 huge
-kdb setmeta user/tests/type/multivalue check/enum/delimiter _
-kdb setmeta user/tests/type/multivalue check/enum "#3"
-kdb setmeta user/tests/type/multivalue type enum
+kdb meta-set user/tests/type/multivalue check/enum/#0 small
+kdb meta-set user/tests/type/multivalue check/enum/#1 middle
+kdb meta-set user/tests/type/multivalue check/enum/#2 large
+kdb meta-set user/tests/type/multivalue check/enum/#3 huge
+kdb meta-set user/tests/type/multivalue check/enum/delimiter _
+kdb meta-set user/tests/type/multivalue check/enum "#3"
+kdb meta-set user/tests/type/multivalue type enum
 
 # should succeed
 kdb set user/tests/type/multivalue small_middle
 
-# should fail with error 52
+# should fail with error C03200
 kdb set user/tests/type/multivalue all_small
 # RET:5
 # ERROR:C03200
@@ -260,7 +265,7 @@ sudo kdb mount config.ecf user/tests/type dump type
 
 # By default the plugin uses `1` (true) and `0` (false) to represent boolean values
 kdb set user/tests/type/truthiness false
-kdb setmeta user/tests/type/truthiness type boolean
+kdb meta-set user/tests/type/truthiness type boolean
 kdb get user/tests/type/truthiness
 #> 0
 
@@ -277,7 +282,7 @@ sudo kdb umount user/tests/type
 ```sh
 sudo kdb mount config.ecf user/tests/type dump type
 kdb set user/tests/type/truthiness 0
-kdb setmeta user/tests/type/truthiness type boolean
+kdb meta-set user/tests/type/truthiness type boolean
  kdb set user/tests/type/truthiness yes
 # RET: 0
  # Undo changes

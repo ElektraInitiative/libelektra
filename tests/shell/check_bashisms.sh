@@ -14,29 +14,35 @@ cd "@CMAKE_SOURCE_DIR@"
 # Use (non-emacs) extended regex for GNU find or BSD find
 find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'
 
-# - The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
-#   See also: https://unix.stackexchange.com/questions/151925
-# - The script `reformat-source` uses `command -v`, which is optional in POSIX. However, since `which` is not part of POSIX at all
-#   `command -v` is probably the most portable solution to detect the location of a command.
-#   See also: https://stackoverflow.com/questions/592620
-scripts=$(
+# - The scripts `reformat-c`, `reformat-java` and `install-config-file` use `command -v`,
+# which was optional in POSIX until issue 7. Since `which` is not part of POSIX
+# at all `command -v` is probably the most portable solution to detect the
+# location of a command.
+set $(
 	$FIND -type f -not \( \
-		-path '*check-env-dep' -or \
+		-path '*COPYING-CMAKE-SCRIPTS' -or \
 		-path '*find-tools' -or \
+		-path '*freebsd/provision.sh' -or \
 		-path '*gitignore' -or \
 		-path '*kdb_zsh_completion' -or \
 		-path '*kdb-zsh-noglob' -or \
-		-path '*reformat-source' -or \
-		-path '*run_dev_env' -or \
+		-path '*install-config-file' -or \
+		-path '*reformat-c' -or \
+		-path '*reformat-java' -or \
+		-path '*run_env' -or \
 		-path '*sed' -or \
 		-path '*update-infos-status' -or \
 		-path '*zsh' -or \
 		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
-		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|hs|rb)$' \
-		\) | xargs
+		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|rb)$' \
+		\) | sort
 )
 exit_if_fail 'Unable to locate shell scripts via `find`'
-checkbashisms $scripts
+printf 'Checking Scripts\n'
+printf '————————————————\n\n'
+for file; do printf '%s\n' "$file"; done
+printf '\n'
+checkbashisms "$@"
 ret=$?
 # 2 means skipped file, e.g. README.md, that is fine
 # only 1, 3 and 4 are actually bad

@@ -6,10 +6,11 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (line
-	    SOURCES line.h line.c
-	    LINK_ELEKTRA elektra-ease
-	    INSTALL_TEST_DATA TEST_README)
+add_plugin (
+	line
+	SOURCES line.h line.c
+	LINK_ELEKTRA elektra-ease
+	INSTALL_TEST_DATA TEST_README)
 
 if (ADDTESTING_PHASE)
 	add_plugintest (line INSTALL_TEST_DATA)

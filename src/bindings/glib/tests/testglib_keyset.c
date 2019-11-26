@@ -101,20 +101,13 @@ static void test_iterating (void)
 	g_object_ref (key2);
 	ks = gelektra_keyset_new (3, key1, gelektra_key_new ("user/b", GELEKTRA_KEY_END), key2, GELEKTRA_KEYSET_END);
 
-	guint cnt = 0;
-	gelektra_keyset_rewind (ks);
-	while ((tmpkey = gelektra_keyset_next (ks)) != NULL)
+	gssize pos = 0;
+	while ((tmpkey = gelektra_keyset_at (ks, pos)) != NULL)
 	{
-		GElektraKey * curkey = gelektra_keyset_current (ks);
-		succeed_if (gelektra_key_cmp (tmpkey, curkey) == 0, "iterators returned different keys");
-		g_object_unref (curkey);
-
-		succeed_if (gelektra_keyset_getcursor (ks) == cnt, "cursor is at unexpected position");
-
-		++cnt;
+		++pos;
 		g_object_unref (tmpkey);
 	}
-	succeed_if (cnt == 3, "some keys are missing");
+	succeed_if (pos == 3, "some keys are missing");
 
 	tmpkey = gelektra_keyset_head (ks);
 	succeed_if (gelektra_key_cmp (tmpkey, key1) == 0, "keyset_head returned unexpected key");
@@ -124,12 +117,9 @@ static void test_iterating (void)
 	succeed_if (gelektra_key_cmp (tmpkey, key2) == 0, "keyset_tail returned unexpected key");
 	g_object_unref (tmpkey);
 
-	tmpkey = gelektra_keyset_atcursor (ks, 0);
+	tmpkey = gelektra_keyset_at (ks, 0);
 	succeed_if (gelektra_key_cmp (tmpkey, key1) == 0, "keyset_atcursor returned unexpected key");
 	g_object_unref (tmpkey);
-
-	gelektra_keyset_setcursor (ks, 1);
-	succeed_if (gelektra_keyset_getcursor (ks) == 1, "cursor is at unexpected position");
 
 	g_object_unref (key1);
 	g_object_unref (key2);

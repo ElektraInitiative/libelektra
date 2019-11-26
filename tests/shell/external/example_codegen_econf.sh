@@ -1,7 +1,7 @@
 @INCLUDE_COMMON@
 
 echo
-echo ELEKTRA CHECK EXTERNAL
+echo ELEKTRA CHECK EXTERNAL CODEGEN ECONF
 echo
 
 if command -v pkg-config; then
@@ -34,7 +34,7 @@ do_tests() {
 	succeed_if "application could not read default config (spec)"
 
 	"$KDB" set "$UKEY/root" "1"
-	"$KDB" setmeta "$UKEY/format" array "#2"
+	"$KDB" meta-set "$UKEY/format" array "#2"
 
 	"$KDB" set "$UKEY/format/#0/pattern" "*.txt"
 	"$KDB" set "$UKEY/format/#0/indent/style" "tab"

@@ -347,7 +347,7 @@
 
 // metadata
 %template(_getMeta) kdb::Key::getMeta<const kdb::Key>;
-%template(setMeta) kdb::Key::setMeta<std::string>;
+%template(setMeta) kdb::Key::setMeta<const char *>;
 
 // clear exception handler
 %exception;
@@ -357,10 +357,6 @@
  * keyset.hpp
  */
 %ignore kdb::KeySet::size;
-
-%rename("_%s") kdb::KeySet::rewind;
-%rename("_%s") kdb::KeySet::next;
-%rename("_%s") kdb::KeySet::current;
 
 %rename("_%s") kdb::KeySet::lookup;
 %rename("_lookup") kdb::KeySet::at;

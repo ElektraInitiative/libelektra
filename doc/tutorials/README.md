@@ -24,14 +24,13 @@ provides.
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
+- [High Level API](highlevel.md)
+- [Command Line Options](command-line-options.md)
 - [Python Bindings](python-kdb.md)
 - [Java Bindings](java-kdb.md)
 - [Java Plugins](java-plugins.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
-- [Code Generation](../../src/tools/pythongen/README.md)
 - [Notifications](notifications.md)
-- [High Level API](/src/libs/highlevel/README.md)
-- [Command Line Options](command-line-options.md)
 
 ## System Administrators
 
@@ -45,14 +44,7 @@ already somehow integrated with Elektra.
 - [Intercept File System](/src/bindings/intercept/fs/README.md)
 - [Merge Configuration](merge.md)
 - [Validate Configuration](validation.md)
-- [Encrypt Configurations](crypto.md)
-
-## Package Maintainers
-
-For these tutorials we assume that you maintain
-upstream packages.
-
-- [Merge Configuration Files](elektra-merge-integration.md)
+- [Encrypt Configuration](crypto.md)
 
 ## Elektra Developers
 
@@ -64,6 +56,8 @@ Elektra:
 - [Profiling](profiling.md)
 - [Run all Tests with Docker](run_all_tests_with_docker.md)
 - [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
+- [Language Bindings](language-bindings.md)
+- [Code generator](code-generator.md)
 
 ## Installation Manuals
 

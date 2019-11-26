@@ -27,8 +27,8 @@
 #include <libgen.h>
 #include <mutex>
 
-using namespace ckdb;
 #include <kdberrors.h>
+using namespace ckdb;
 
 #define PYTHON_PLUGIN_NAME_STR2(x) ELEKTRA_QUOTE (x)
 #define PYTHON_PLUGIN_NAME_STR PYTHON_PLUGIN_NAME_STR2 (PYTHON_PLUGIN_NAME)
@@ -212,7 +212,6 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 				return ELEKTRA_PLUGIN_STATUS_SUCCESS; // by convention: success if /module exists
 			}
 
-			// TODO: Solution
 			ELEKTRA_SET_INTERFACE_ERROR (errorKey, "No python script set, please pass a filename via /script");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

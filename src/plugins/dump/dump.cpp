@@ -8,8 +8,6 @@
 
 #include "dump.hpp"
 
-using namespace ckdb;
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -20,6 +18,8 @@ using namespace ckdb;
 
 #include <kdberrors.h>
 #include <kdblogger.h>
+
+using namespace ckdb;
 
 namespace dump
 {
@@ -188,10 +188,9 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else
 		{
-			// TODO: Solution
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 				errorKey,
-				"Unknown command detected in dumpfile: %s.\nMaybe you use a different file format? "
+				"Unknown command detected in dumpfile: %s.\nMaybe the file is not in dump configuration file format? "
 				"Try to remount with another plugin (eg. ini, ni, etc.)",
 				command.c_str ());
 			return -1;
@@ -233,7 +232,7 @@ extern "C" {
 int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	Key * root = ckdb::keyNew ("system/elektra/modules/dump", KEY_END);
-	if (keyRel (root, parentKey) >= 0)
+	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
 		KeySet * n = ksNew (50, keyNew ("system/elektra/modules/dump", KEY_VALUE, "dump plugin waits for your orders", KEY_END),

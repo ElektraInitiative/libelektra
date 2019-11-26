@@ -5,13 +5,9 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (tcl CPP
-	    INCLUDE_SYSTEM_DIRECTORIES ${Boost_INCLUDE_DIR}
-	    SOURCES tcl.hpp
-		    tcl.cpp
-		    action.hpp
-		    action.cpp
-		    printer.hpp
-		    printer.cpp
-	    LINK_ELEKTRA elektra-ease
-	    TEST_README)
+add_plugin (
+	tcl CPP
+	INCLUDE_SYSTEM_DIRECTORIES ${Boost_INCLUDE_DIRS}
+	SOURCES tcl.hpp tcl.cpp action.hpp action.cpp printer.hpp printer.cpp
+	LINK_ELEKTRA elektra-ease
+	TEST_README)

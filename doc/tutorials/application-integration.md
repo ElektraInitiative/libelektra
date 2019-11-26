@@ -12,10 +12,15 @@ In Elektra different forms of application integrations are possible:
    - [Intercept File System](/src/bindings/intercept/fs/README.md)
 3. Integration where applications directly use Elektra to read and
    store settings.
+   1. Using the low-level API.
+   2. Using the high-level API.
 
-In this tutorial we will discuss (3), i.e., how to
+In this tutorial we will discuss (3.1), i.e., how to
 extend an application to directly access Elektra’s
-key database.
+key database. If you are new to Elektra, we recommend you familiarize
+yourself with the basic concepts using this guide, but when it comes
+to elektrifying your application (3.2) is mostly likely the better option.
+So take a look at [how to use the high-level API](highlevel.md).
 
 When the application is fully integrated in Elektra’s ecosystem
 following benefits arise:
@@ -231,7 +236,7 @@ You can use those features like following:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb setmeta spec/test override/#0 /overrides/test
+sudo kdb meta-set spec/test override/#0 /overrides/test
 ```
 
 This technique provides complete transparency how a program will fetch a
@@ -255,7 +260,7 @@ we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
 So we specify:
 
 ```sh
-kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key \
+kdb meta-set spec/sw/org/myapp/#0/current/section/subsection/key \
     "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
 ```
 
@@ -289,7 +294,7 @@ cat << HERE | kdb import spec/sw/org/myapp/#0/current ni  \
 fallback/#0=/sw/otherorg/otherapp/#0/current/section/subsection/key  \
 description = A description of the key     \
 HERE
-kdb lsmeta spec/sw/org/myapp/#0/current # verify if specification is present now
+kdb meta-ls spec/sw/org/myapp/#0/current # verify if specification is present now
 #> infos/plugins
 #> mountpoint
 ```

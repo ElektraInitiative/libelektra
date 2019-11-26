@@ -47,17 +47,17 @@ The value of the metadata needs to contain the number of the requested
 error or warning.
 
 So an error and warnings can be injected directly with the kdb tool.
-E.g. the warning number 3:
+E.g. the warning number C01330:
 
 ```sh
-kdb setmeta system/error/key trigger/warnings 3
+kdb meta-set system/error/key trigger/warnings C01330
 ```
 
-or the error number 10 (will not modify the KDB because `kdbSet()` will
+or the error number C01200 (will not modify the KDB because `kdbSet()` will
 fail for the error plugin then):
 
 ```sh
-kdb setmeta user/error/key trigger/error 10
+kdb meta-set user/error/key trigger/error C01200
 ```
 
 ### By config
@@ -75,7 +75,7 @@ on_open/error
 E.g. you can use:
 
 ```sh
-kdb mount error.dump /error error on_open/error=10 dump
+kdb mount error.dump /error error on_open/error=C03100 dump
 ```
 
 Then you get an error on any access, e.g.:
@@ -84,7 +84,7 @@ Then you get an error on any access, e.g.:
 kdb ls system/error
 ```
 
-Will yield error #63:
+Will yield error C01200:
 
 ```
 Description: Tried to get a key from a missing backend

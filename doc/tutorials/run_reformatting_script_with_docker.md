@@ -35,6 +35,7 @@ The build process depends on your Internet connection speed and the overall perf
 5 minutes. Please be patient. Once you have built the image, you can reuse it multiple times.
 
 The image tag `buildelektra-sid` we suggested can be replaced by a name of your own choosing.
+Note that currently our `sid` image is the only one with all the necessary tools installed.
 
 ### 2. Run the Docker Container
 

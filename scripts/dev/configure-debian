@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Configure a debian build. As developer please prefer -debug or -log.
+# @date 02.09.2014
+# @tags configure, debian
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/configure-common"
+
+cd $BUILD
+cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+	-DPLUGINS="ALL" \
+	-DTOOLS="ALL" \
+	-DENABLE_DEBUG="OFF" \
+	-DENABLE_LOGGER="OFF" \
+	-DGTEST_ROOT="/usr/src/googletest/googletest" \
+	$*

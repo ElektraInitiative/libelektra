@@ -75,10 +75,10 @@ kdb set user/tests/conditionals/fkey 3.0
 kdb set user/tests/conditionals/hkey hello
 
 # will succeed
-kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
 
 # will fail
-kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERROR:C03200
 ```
@@ -87,7 +87,7 @@ Assignment example:
 
 ```sh
 kdb set user/tests/conditionals/hkey Hello
-kdb setmeta user/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+kdb meta-set user/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
 
 kdb get user/tests/conditionals/hkey
@@ -120,9 +120,6 @@ echo "key=false" > `kdb file /tests/conditionals/sub`
 
 # should fail and yield an error
 kdb export /tests/conditionals ini
-#> sub/key=false
-#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
-#> key1=val1
 # ERROR:C03200
 # Sorry, module conditionals issued the error C03200:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)

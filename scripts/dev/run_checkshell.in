@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Run all shell checks
+# @date 31.10.2018
+# @tags development, helper
+
+if [ $# -ne 1 ]; then
+	echo 'No build config found. Please use `@CMAKE_MAKE_PROGRAM_BASENAME@ run_shellcheck` to run this script.'
+	exit 1
+fi
+
+ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process --rerun-failed --output-on-failure -R testscr_check --build-config $1"
+ctest $ARGS || ctest $ARGS --rerun-failed

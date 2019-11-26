@@ -232,6 +232,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
+			keyNew ("system/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -405,6 +406,11 @@ int elektraBlockresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned
 	return 1; // success
 }
 
+int elektraBlockresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return elektraBlockresolverSet (handle, returned, parentKey);
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -413,6 +419,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	    ELEKTRA_PLUGIN_ERROR, &elektraBlockresolverError,
 	    ELEKTRA_PLUGIN_GET,	&elektraBlockresolverGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraBlockresolverSet,
+	    ELEKTRA_PLUGIN_COMMIT, &elektraBlockresolverCommit,
 	    ELEKTRA_PLUGIN_END);
 }
 

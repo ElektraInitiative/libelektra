@@ -42,6 +42,91 @@ set (CMAKE_EXTRA_INCLUDE_FILES "sys/stat.h")
 check_type_size ("((struct stat*)0)->st_size" SIZEOF_STAT_ST_SIZE)
 set (CMAKE_EXTRA_INCLUDE_FILES)
 
+if (SIZEOF_LONG EQUAL 4)
+	set (INT32_T "long")
+	set (UINT32_T "unsigned long")
+	set (PRI_I32 "\"ld\"")
+	set (PRI_U32 "\"lu\"")
+elseif (SIZEOF_INT EQUAL 4)
+	set (INT32_T "int")
+	set (UINT32_T "unsigned int")
+	set (PRI_I32 "\"d\"")
+	set (PRI_U32 "\"u\"")
+else ()
+	message (FATAL_ERROR "Couldn't find a 32-bit integer type for use as kdb_long_t")
+endif ()
+
+if (SIZEOF_LONG EQUAL 8)
+	set (INT64_T "long")
+	set (UINT64_T "unsigned long")
+	set (PRI_I64 "\"ld\"")
+	set (PRI_U64 "\"lu\"")
+	set (STRTOLL "strtol")
+	set (STRTOULL "strtoul")
+elseif (HAVE_SIZEOF_LONG_LONG AND SIZEOF_LONG_LONG EQUAL 8)
+	set (INT64_T "long long")
+	set (UINT64_T "unsigned long long")
+	set (PRI_I64 "\"lld\"")
+	set (PRI_U64 "\"llu\"")
+	set (STRTOLL "strtoll")
+	set (STRTOULL "strtoull")
+else ()
+	message (FATAL_ERROR "Couldn't find a 64-bit integer type for use as kdb_long_long_t")
+endif ()
+
+if (HAVE_SIZEOF_LONG_DOUBLE AND SIZEOF_LONG_DOUBLE GREATER 9)
+	set (ELEKTRA_HAVE_KDB_LONG_DOUBLE "1")
+endif ()
+
+if (SIZEOF_TV_USEC EQUAL SIZEOF_LONG)
+	set (ELEKTRA_TIME_USEC_F "\"%ld\"")
+elseif (SIZEOF_TV_USEC EQUAL SIZEOF_LONG_LONG)
+	set (ELEKTRA_TIME_USEC_F "\"%lld\"")
+else ()
+	set (ELEKTRA_TIME_USEC_F "\"%d\"")
+endif ()
+
+# Unfortunately `long` and `long long` have the same size (8 bytes) on `amd64` architectures in macOS and Debian GNU/Linux. This means we
+# can not differentiate these types only based on their size. Consequently we set the `long long` format specifier for `st_size` on macOS,
+# and hope that all other operating systems, either use differently sized types for `long` and `long long`, or just use `long` as data type
+# for `st_size`.
+if (APPLE)
+	set (ELEKTRA_STAT_ST_SIZE_F "\"%llu\"")
+elseif (SIZEOF_STAT_ST_SIZE EQUAL SIZEOF_LONG)
+	set (ELEKTRA_STAT_ST_SIZE_F "\"%lu\"")
+elseif (SIZEOF_STAT_ST_SIZE EQUAL SIZEOF_LONG_LONG)
+	set (ELEKTRA_STAT_ST_SIZE_F "\"%llu\"")
+else ()
+	set (ELEKTRA_STAT_ST_SIZE_F "\"%u\"")
+endif ()
+
+if (NOT SIZEOF_FLOAT EQUAL 4)
+	message (FATAL_ERROR "float must be a 32-bit type")
+endif ()
+
+if (NOT SIZEOF_DOUBLE EQUAL 8)
+	message (FATAL_ERROR "double must be a 64-bit type")
+endif ()
+
+if (SIZEOF_SIZE_T EQUAL 8)
+	set (KDB_OPMPHM_MAX_N "4294967295") # = (2^32) - 1
+else ()
+	set (KDB_OPMPHM_MAX_N "795364313") # bound by opmphm->size max value
+endif ()
+
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbtypes.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h")
+
+unset (INT32_T)
+unset (UINT32_T)
+unset (INT64_T)
+unset (UINT64_T)
+unset (PRI_I32)
+unset (PRI_U32)
+unset (PRI_I64)
+unset (PRI_U64)
+unset (STRTOLL)
+unset (STRTOULL)
+
 set (BUILTIN_EXEC_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (BUILTIN_DATA_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}")
 set (BUILTIN_PLUGIN_FOLDER "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
@@ -78,33 +163,35 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in" "${CMAKE_CURRENT_BI
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h")
 
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
-	       kdbextension.h
-	       kdbmeta.h
-	       kdbease.h
-	       kdbtypes.h
-	       kdbhelper.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	       kdbmodule.h
-	       kdbos.h
-	       kdbopts.h
-	       kdbplugin.h
-	       kdbpluginprocess.h
-	       kdbprivate.h
-	       kdbproposal.h
-	       kdbinvoke.h
-	       kdbutility.h
-	       kdbio.h
-	       kdbnotification.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
-	       elektra.h
-	       kdbendian.h
-	       kdbmacros.h
-	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
+# DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
+install (
+	FILES kdbextension.h
+	      kdbmeta.h
+	      kdbease.h
+	      "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
+	      kdbhelper.h
+	      "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
+	      kdbmodule.h
+	      kdbos.h
+	      kdbopts.h
+	      kdbplugin.h
+	      kdbpluginprocess.h
+	      kdbprivate.h
+	      kdbproposal.h
+	      kdbinvoke.h
+	      kdbutility.h
+	      kdbio.h
+	      kdbnotification.h
+	      kdbglobbing.h
+	      "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
+	      elektra.h
+	      kdbendian.h
+	      kdbmacros.h
+	      kdbmerge.h
+	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
-add_custom_target (elektra_config_headers ALL
-		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
-			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
+add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
+						      ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
 
 add_subdirectory (kdbio)
 add_subdirectory (elektra)

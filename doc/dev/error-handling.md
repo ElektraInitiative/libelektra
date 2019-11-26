@@ -124,7 +124,7 @@ The idea is to add the error and warning information as metadata to
 this key. This approach does not limit flexibility, because a key can
 hold a potentially unlimited number of metakeys.
 
-The error information is categorised in metadata as follows:
+The error information is categorized in metadata as follows:
 
 - [error] indicates that a faulty state is present. The value
   of the metakey contains the name of all the subkeys that are used for
@@ -150,6 +150,21 @@ Additional metakeys yield all the details.
   comes.
 
 - [error/line] represents the exact line of that source file.
+
+Beside errors, Elektra can also emit warnings metadata. While only a single error can be set
+on a specific error key, warnings can be up to 100 entries (#00 - #99):
+
+- [warnings] indicate that at least one warning is present. The value of the metakey contains
+  the number of warnings which can be accessed.
+
+Additional metakeys yield all the details. The warnings are stored in a special array format
+which range from 00 to 99. E.g., the first warning number can be accessed by getting the key `warnings/#00/number`.
+The following metadatas are available and have the same semantics as the error metadata:
+`[warnings/<number>/number]`, `[warnings/<number>/description]`,
+`[warnings/<number>/reason]`, `[warnings/<number>/module]`,
+`[warnings/<number>/file]`, `[warnings/<number>/line]`
+
+If there are more than 100 warnings, the information will be overwritten from the start again.
 
 As we see, the system is powerful because any other text or information
 can be added in a flexible manner by using additional metakeys.

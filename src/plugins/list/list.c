@@ -101,7 +101,7 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	int rc = 0;
 	while ((cur = ksNext (cutKS)) != NULL)
 	{
-		if (keyRel (key, cur) != 1)
+		if (keyIsDirectlyBelow (key, cur) != 1)
 		{
 			continue;
 		}
@@ -332,10 +332,10 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				KeySet * userConfigAll = ksCut (config, userCutPoint);
 				KeySet * pluginConfig = ksCut (userConfigAll, current);
 				// replace "user/plugins/#X" with "user/"
-				KeySet * pluginConfigWithConfigPrefix = elektraRenameKeys (pluginConfig, "user");
+				KeySet * pluginConfigWithConfigPrefix = ksRenameKeys (pluginConfig, "user");
 				ksDel (pluginConfig);
 				// append config below "/config" to all plugins
-				KeySet * globalPluginConfig = elektraRenameKeys (globalConfigAll, "user/config");
+				KeySet * globalPluginConfig = ksRenameKeys (globalConfigAll, "user/config");
 				ksAppend (pluginConfigWithConfigPrefix, globalPluginConfig);
 				ksDel (globalPluginConfig);
 				// remove "placements" from plugin config
@@ -349,7 +349,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				keyDel (globalConfCutPoint);
 				keyDel (toRemove);
 				// replace "user/config/" with "user/"
-				realPluginConfig = elektraRenameKeys (pluginConfigWithConfigPrefix, "user");
+				realPluginConfig = ksRenameKeys (pluginConfigWithConfigPrefix, "user");
 				ksDel (pluginConfigWithConfigPrefix);
 				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
 				ksDel (realPluginConfig);
@@ -717,11 +717,24 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	Key * configBase = keyNew ("user/plugins", KEY_END);
 	KeySet * array = elektraArrayGet (configBase, config);
 	Key * pluginItem = elektraArrayGetNextKey (array);
-	ELEKTRA_NOT_NULL (pluginItem);
+
+	if (pluginItem == NULL)
+	{
+		pluginItem = keyNew ("user/plugins/#0", KEY_END);
+	}
+
 	keySetString (pluginItem, pluginName);
+
 	keyDel (configBase);
+	ksDel (array);
 
 	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, pluginConfig, errorKey);
+
+	if (plugin == NULL)
+	{
+		keyDel (pluginItem);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	// Store key with plugin handle
 	Key * searchKey = keyNew ("/", KEY_END);
@@ -772,7 +785,6 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * p
 	}
 	elektraFree (errorPlacementsString);
 	elektraFree (placementList);
-	ksDel (array);
 
 	// reload configuration
 	resetPlugins (handle, errorKey);

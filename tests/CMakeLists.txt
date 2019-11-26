@@ -25,14 +25,19 @@ if (ENABLE_TESTING)
 			set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 		endif ()
 
-		download_project (PROJ googletest
-				  GIT_REPOSITORY https://github.com/google/googletest.git
-				  GIT_TAG release-1.8.1
-				  QUIET ${UPDATE_DISCONNECTED_IF_AVAILABLE})
+		download_project (
+			PROJ googletest
+			GIT_REPOSITORY https://github.com/google/googletest.git
+			GIT_TAG release-1.8.1
+				QUIET
+				${UPDATE_DISCONNECTED_IF_AVAILABLE})
 	endif (DEFINED GOOGLETEST_ROOT)
 
 	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
-	set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	set (
+		gtest_force_shared_crt
+		ON
+		CACHE BOOL "" FORCE)
 
 	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
@@ -48,7 +53,6 @@ macro (do_test source)
 	add_headers (SOURCES)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -66,34 +70,35 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.2)
 	set (USES_TERMINAL USES_TERMINAL)
 endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
 
-add_custom_target (run_all
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_all" "$<CONFIGURATION>"
-		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-		   ${USES_TERMINAL})
+add_custom_target (
+	run_all
+	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_all" "$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" ${USES_TERMINAL})
 
-add_custom_target (run_checkshell
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_checkshell" "$<CONFIGURATION>"
-		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-		   ${USES_TERMINAL})
+add_custom_target (
+	run_checkshell
+	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_checkshell" "$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" ${USES_TERMINAL})
 
-add_custom_target (run_nocheckshell
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nocheckshell" "$<CONFIGURATION>"
-		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-		   ${USES_TERMINAL})
+add_custom_target (
+	run_nocheckshell
+	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_nocheckshell" "$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" ${USES_TERMINAL})
 
-add_custom_target (run_nokdbtests
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
-		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+add_custom_target (
+	run_nokdbtests
+	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_nokdbtests" "$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-add_custom_target (run_memcheck
-		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_memcheck" "$<CONFIGURATION>"
-		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+add_custom_target (
+	run_memcheck
+	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_memcheck" "$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 include_directories (data)
 
 add_subdirectory (cframework)
 add_subdirectory (shell)
-add_subdirectory (shell/shell_recorder)
 add_subdirectory (abi)
 add_subdirectory (ctest)
 if (ENABLE_KDB_TESTING)

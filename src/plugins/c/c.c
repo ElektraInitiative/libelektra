@@ -175,9 +175,6 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
 	while ((key = ksNext (cks)) != 0)
 	{
-		if (options & KDB_O_INACTIVE)
-			if (key && keyIsInactive (key)) continue;
-
 		keyGenerate (key, stream, options);
 		fprintf (stream, ",\n");
 	}
@@ -195,7 +192,7 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 					   keyNew ("system/elektra/modules/c/exports", KEY_END),
 					   keyNew ("system/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
 					   keyNew ("system/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConfig, KEY_END),
+					   keyNew ("system/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
 #include ELEKTRA_README
 					   keyNew ("system/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -224,7 +221,7 @@ int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 	return 1; // success
 }
 
-int elektraCCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraCCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional

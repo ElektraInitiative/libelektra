@@ -1,5 +1,4 @@
 #include "gelektra-key.h"
-#include <kdbprivate.h>
 #include <string.h>
 
 enum
@@ -21,7 +20,8 @@ static void gelektra_key_init (GElektraKey * self)
 	keyIncRef (self->key);
 }
 
-static void gelektra_key_set_property (GObject * object, guint property_id, const GValue * value ELEKTRA_UNUSED, GParamSpec * pspec)
+static void gelektra_key_set_property (GObject * object, guint property_id, const GValue * value __attribute__ ((unused)),
+				       GParamSpec * pspec)
 {
 	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
 }
@@ -118,9 +118,12 @@ GElektraKey * gelektra_key_new (const gchar * name, ...)
 	if (name)
 	{
 		va_start (va, name);
-		keyVInit (key->key, name, va);
-		keyIncRef (key->key); // keyVInit cleared the refcount
+		Key * newkey = keyVNew (name, va);
 		va_end (va);
+		if (newkey == NULL) return NULL;
+
+		Key * old = gelektra_key_swap (key, newkey);
+		keyDel (old);
 	}
 	return key;
 }
@@ -160,9 +163,12 @@ static void gelektra_key_gi_init_va (GElektraKey * key, const gchar * name, ...)
 	if (!name) return;
 	va_list va;
 	va_start (va, name);
-	keyVInit (key->key, name, va);
-	keyIncRef (key->key); // keyVInit cleared the refcount
+	Key * newkey = keyVNew (name, va);
 	va_end (va);
+	if (newkey == NULL) return;
+
+	Key * old = gelektra_key_swap (key, newkey);
+	keyDel (old);
 }
 
 /**
@@ -514,5 +520,5 @@ gboolean gelektra_key_isbeloworsame (const GElektraKey * key, const GElektraKey 
 
 gboolean gelektra_key_isdirectbelow (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyIsDirectBelow (other->key, key->key);
+	return keyIsDirectlyBelow (other->key, key->key);
 }

@@ -26,6 +26,9 @@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
+/* ENABLE_OPTIMIZATIONS */
+#cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -54,6 +57,9 @@ enum {
 	KEY_DIR=1<<14,
 	KEY_META=1<<15,
 	KEY_NULL=1<<16,
+	KEY_LOCK_NAME=1<<17,
+	KEY_LOCK_VALUE=1<<18,
+	KEY_LOCK_META=1<<19,
 	KEY_CASCADING_NAME=1<<20,
 	KEY_META_NAME=1<<21,
 	KEY_END=0,
@@ -62,22 +68,10 @@ enum {
 enum {
 	KDB_O_NONE=0,
 	KDB_O_DEL=1,
-	KDB_O_POP=1<<1,
-	KDB_O_NODIR=1<<2,
-	KDB_O_DIRONLY=1<<3,
-	KDB_O_NOREMOVE=1<<6,
-	KDB_O_REMOVEONLY=1<<7,
-	KDB_O_INACTIVE=1<<8,
-	KDB_O_SYNC=1<<9,
-	KDB_O_SORT=1<<10,
-	KDB_O_NORECURSIVE=1<<11,
-	KDB_O_NOCASE=1<<12,
-	KDB_O_WITHOWNER=1<<13,
-	KDB_O_NOALL=1<<14
+	KDB_O_POP=1<<1
 };
 
-enum
-{
+enum {
 	KEY_NS_NONE=0,
 	KEY_NS_EMPTY=1,
 	KEY_NS_META=2,
@@ -151,17 +145,16 @@ int keyCopyAllMeta(Key *dest, const Key *source);
 const Key *keyGetMeta(const Key *key, const char* metaName);
 ssize_t    keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString);
-
+KeySet * keyMeta (Key * key);
 
 /* Methods for Making Tests */
 int keyCmp(const Key *k1, const Key *k2);
-int keyRel (const Key *k1, const Key *k2);
 
 int keyNeedSync(const Key *key);
 
 int keyIsBelow(const Key *key, const Key *check);
 int keyIsBelowOrSame(const Key *key, const Key *check);
-int keyIsDirectBelow(const Key *key, const Key *check);
+int keyIsDirectlyBelow(const Key *key, const Key *check);
 
 int keyIsInactive(const Key *key);
 
@@ -202,7 +195,8 @@ ssize_t keySetString(Key *key, const char *newString);
 ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
-
+int keyLock (Key * key, option_t what);
+int keyIsLocked (const Key * key, option_t what);
 
 /**************************************
  *

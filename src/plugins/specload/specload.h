@@ -15,6 +15,7 @@
 
 typedef struct
 {
+	char * directFile;
 	char * app;
 	char ** argv;
 	KeySet * quickDumpConfig;
@@ -25,7 +26,7 @@ int elektraSpecloadOpen (Plugin * handle, Key * errorKey);
 int elektraSpecloadClose (Plugin * handle, Key * errorKey);
 int elektraSpecloadGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSpecloadSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf);
+int elektraSpecloadCheckConf (Key * errorKey, KeySet * conf);
 
 int elektraSpecloadSendSpec (Plugin * handle, KeySet * spec, Key * parentKey);
 

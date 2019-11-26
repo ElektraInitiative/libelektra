@@ -175,7 +175,8 @@ public:
 	inline void set (T x);
 
 	inline std::string getString () const;
-	inline void setString (std::string newString);
+	inline void setString (const char * newString);
+	inline void setString (const std::string & newString);
 	inline ssize_t getStringSize () const;
 
 	typedef void (*func_t) ();
@@ -231,6 +232,10 @@ public:
 	inline bool isBelow (const Key & k) const;
 	inline bool isBelowOrSame (const Key & k) const;
 	inline bool isDirectBelow (const Key & k) const;
+
+	inline bool isNameLocked () const;
+	inline bool isValueLocked () const;
+	inline bool isMetaLocked () const;
 
 private:
 	inline int del ();
@@ -951,8 +956,8 @@ inline std::string Key::getFullName () const
 		return "";
 	}
 
-	std::string str (csize - 1, '\0');
-	ckdb::keyGetFullName (getKey (), &str[0], csize);
+	std::string str (static_cast<size_t> (csize - 1), '\0');
+	ckdb::keyGetFullName (getKey (), &str[0], static_cast<size_t> (csize));
 	return str;
 }
 
@@ -1093,58 +1098,6 @@ inline T Key::get () const
 	return x;
 }
 
-/*
-// TODO: are locale dependent
-//   + throw wrong exception (easy to fix though)
-template <>
-inline int Key::get<int>() const
-{
-	return stoi(getString());
-}
-
-template <>
-inline long Key::get<long>() const
-{
-	return stol(getString());
-}
-
-template <>
-inline long long Key::get<long long>() const
-{
-	return stoll(getString());
-}
-
-template <>
-inline unsigned long Key::get<unsigned long>() const
-{
-	return stoul(getString());
-}
-
-template <>
-inline unsigned long long Key::get<unsigned long long>() const
-{
-	return stoull(getString());
-}
-
-template <>
-inline float Key::get<float>() const
-{
-	return stof(getString());
-}
-
-template <>
-inline double Key::get<double>() const
-{
-	return stod(getString());
-}
-
-template <>
-inline long double Key::get<long double>() const
-{
-	return stold(getString());
-}
-*/
-
 
 template <>
 inline std::string Key::get () const
@@ -1171,63 +1124,6 @@ inline void Key::set (T x)
 	}
 	setString (ost.str ());
 }
-
-/*
-// TODO: are locale dependent
-template <>
-inline void Key::set(int val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(long long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(unsigned val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(unsigned long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(unsigned long long val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(float val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(double val)
-{
-	setString(std::to_string(val));
-}
-
-template <>
-inline void Key::set(long double val)
-{
-	setString(std::to_string(val));
-}
-*/
 
 
 /**
@@ -1257,8 +1153,8 @@ inline std::string Key::getString () const
 		return "";
 	}
 
-	std::string str (csize - 1, '\0');
-	if (ckdb::keyGetString (getKey (), &str[0], csize) == -1)
+	std::string str (static_cast<size_t> (csize - 1), '\0');
+	if (ckdb::keyGetString (getKey (), &str[0], static_cast<size_t> (csize)) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1314,9 +1210,14 @@ inline void Key::setCallback (callback_t fct)
 /**
  * @copydoc keySetString
  */
-inline void Key::setString (std::string newString)
+inline void Key::setString (const char * newString)
 {
-	ckdb::keySetString (getKey (), newString.c_str ());
+	ckdb::keySetString (getKey (), newString);
+}
+
+inline void Key::setString (const std::string & newString)
+{
+	setString (newString.c_str ());
 }
 
 /**
@@ -1358,8 +1259,8 @@ inline std::string Key::getBinary () const
 		return "";
 	}
 
-	std::string str (csize, '\0');
-	if (ckdb::keyGetBinary (getKey (), &str[0], csize) == -1)
+	std::string str (static_cast<size_t> (csize), '\0');
+	if (ckdb::keyGetBinary (getKey (), &str[0], static_cast<size_t> (csize)) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1723,13 +1624,37 @@ inline bool Key::isBelowOrSame (const Key & k) const
  * @param k the other key
  * @return true if our key is direct below k
  *
- * @copydoc keyIsDirectBelow
+ * @copydoc keyIsDirectlyBelow
  */
 inline bool Key::isDirectBelow (const Key & k) const
 {
-	int ret = ckdb::keyIsDirectBelow (k.getKey (), key);
+	int ret = ckdb::keyIsDirectlyBelow (k.getKey (), key);
 	if (ret == -1) return false;
 	return ret;
+}
+
+/**
+ * @return true if the name of our key has been locked
+ */
+inline bool Key::isNameLocked () const
+{
+	return ckdb::keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME;
+}
+
+/**
+ * @return true if the value of our key has been locked
+ */
+inline bool Key::isValueLocked () const
+{
+	return ckdb::keyIsLocked (key, KEY_LOCK_VALUE) == KEY_LOCK_VALUE;
+}
+
+/**
+ * @return true if the metadata of our key has been locked
+ */
+inline bool Key::isMetaLocked () const
+{
+	return ckdb::keyIsLocked (key, KEY_LOCK_META) == KEY_LOCK_META;
 }
 
 /**

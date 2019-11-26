@@ -108,7 +108,7 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  *
  * @retval 0	on success, this is the only case in which @p ks will be modified
  * @retval -1	on error, the error will be set as metadata in @p errorKey
- * @retval 1	if a help option (-h, --help) was found, use elektraGetOptsHelpMessage() access the
+ * @retval 1	if the help option `--help` was found, use elektraGetOptsHelpMessage() access the
  * 		generated help message
  */
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey)
@@ -132,13 +132,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		return -1;
 	}
 
-	Key * helpKey = ksLookupByName (options, "/short/h", 0);
-	if (helpKey == NULL)
-	{
-		helpKey = ksLookupByName (options, "/long/help", 0);
-	}
-
-	if (helpKey != NULL)
+	if (ksLookupByName (options, "/long/help", 0) != NULL)
 	{
 		// show help
 		const char * progname = argv[0];
@@ -267,10 +261,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 {
 	KeySet * usedEnvVars = ksNew (0, KS_END);
 	spec->options = ksNew (
-		2,
-		keyNew ("/short/h", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_META, "longopt",
-			"/long/help", KEY_END),
-		keyNew ("/long/help", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END), KS_END);
+		1, keyNew ("/long/help", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END),
+		KS_END);
 	spec->keys = ksNew (0, KS_END);
 
 	spec->hasOpts = false;
@@ -560,15 +552,6 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
 							"Character '-' cannot be used as a short option. It would collide with the "
 							"special string '--'. Offending key: %s",
-							keyName (key));
-		return false;
-	}
-
-	if (shortOpt == 'h')
-	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
-							"Character 'h' cannot be used as a short option. It would collide with the "
-							"help option '-h'. Offending key: %s",
 							keyName (key));
 		return false;
 	}

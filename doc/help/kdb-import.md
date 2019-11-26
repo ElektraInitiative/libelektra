@@ -10,7 +10,7 @@ Where `destination` is the destination where the user wants the keys to be impor
 ## DESCRIPTION
 
 If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key. By default, that key is set to the `storage` format.
-The `format` attribute relies on Elektra’s plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.
+The `format` attribute relies on Elektra’s plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-plugin-list(1) command. To learn about any plugin, the user can simply use the kdb-plugin-info(1) command.
 
 This command allows a user to import an existing configuration into the key database.
 The configuration that the user wants to import is read from `stdin`.
@@ -81,6 +81,35 @@ To import a configuration stored in the `ini` format in a file called `example.i
 
 To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:<br>
 `cat sw.ecf | kdb import system/sw`
+
+To import a sample `xml` content with the `xerces` plugin:
+
+```sh
+# import two keys from a xml string
+kdb import user/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+
+# get the values and verify they got imported correctly
+kdb get user/tests/kdb-import/one
+#> one
+kdb get user/tests/kdb-import/two
+#> two
+kdb rm -r user/tests/kdb-import
+```
+
+To import a sample `xml` content via specifying the file format directly:
+
+```sh
+# import two keys from a xml string
+kdb import user/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+
+# get the values and verify they got imported correctly
+kdb get user/tests/kdb-import/one
+#> one
+kdb get user/tests/kdb-import/two
+#> two
+
+kdb rm -r user/tests/kdb-import
+```
 
 ## SEE ALSO
 

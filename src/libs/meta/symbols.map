@@ -1,0 +1,25 @@
+libelektra_0.8 {
+	# kdbmeta.h
+	elektraKeyCmpOrder;
+	elektraMetaArrayAdd;
+	elektraMetaArrayToKS;
+	elektraMetaArrayToString;
+	elektraSortTopology;
+	keyComment;
+	keyGetATime;
+	keyGetComment;
+	keyGetCommentSize;
+	keyGetCTime;
+	keyGetGID;
+	keyGetMode;
+	keyGetMTime;
+	keyGetUID;
+	keySetATime;
+	keySetComment;
+	keySetCTime;
+	keySetDir;
+	keySetGID;
+	keySetMode;
+	keySetMTime;
+	keySetUID;
+};

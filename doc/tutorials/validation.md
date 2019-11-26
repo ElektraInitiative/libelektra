@@ -42,43 +42,18 @@ described in this tutorial, e.g.:
 The most direct way to validate keys is
 
 ```sh
-sudo kdb mount validation.dump user/tests/together dump validation
-kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
-kdb set user/tests/together/test abc
-# STDERR: Sorry, module validation issued the error.*
-# ERROR:C03100
-# RET:5
-```
-
-For all other plugins (except `validation`) the convenience tool `kdb vset`
-is missing. Let us see what `kdb vset` actually did:
-
-```sh
-kdb lsmeta user/tests/together/test
-#> check/validation
-#> check/validation/match
-#> check/validation/message
-```
-
-So it only appended some metadata (data describing the data) next to the key,
-which we also could do by:
-
-```sh
-# Following lines are (except for error conditions) identical to
-# kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
-kdb setmeta user/tests/together/test check/validation "[1-9][0-9]*"
-kdb setmeta user/tests/together/test check/validation/match LINE
-kdb setmeta user/tests/together/test check/validation/message "Not a number"
+kdb meta-set user/tests/together/test check/validation "[1-9][0-9]*"
+kdb meta-set user/tests/together/test check/validation/match LINE
+kdb meta-set user/tests/together/test check/validation/message "Not a number"
 kdb set user/tests/together/test 123
 #> Set string to "123"
 
 # Undo modifications
 kdb rm -r user/tests/together
-sudo kdb umount user/tests/together
 ```
 
 The approach is not limited to validation via regular expressions, but
-any values-validation plugin can be used, e.g. [enum](/src/plugins/enum).
+any values-validation plugin can be used, e.g. [type](/src/plugins/type).
 For a full list refer to the section "Value Validation" in the
 [list of all plugins](/src/plugins/README.md).
 
@@ -92,9 +67,6 @@ The drawbacks of this approach are:
   the key which won't work with most configuration files.
   This is the reason why we explicitly used `dump` as storage in `kdb mount`.
 - After the key is removed, the validation information is gone, too.
-- It only works for the [namespace](/doc/tutorials/namespaces.md) where `vset` was used.
-  In the example above we could override the cascading key `/tutorial/together/test`
-  with the unvalidated key `dir/tutorial/together/test`.
 - You cannot validate structure of which keys must be present or absent.
 
 ## Get Started with `spec`
@@ -121,29 +93,29 @@ kdb export user dump > $(kdb get system/tests/userbackup)
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
 
 ```sh
-kdb setmeta spec/tests/spec/test hello world
+kdb meta-set spec/tests/spec/test hello world
 kdb set /tests/spec/test value
 # STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Create a new key (user|system)/tests/spec/test with string "value"
-kdb lsmeta spec/tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls spec/tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb getmeta /tests/spec/test hello
+kdb meta-get /tests/spec/test hello
 #> world
 
 # The default namespace for a non-root user is `user`, while
 # for root users a cascading key usually refers to the `system` namespace.
-kdb getmeta user/tests/spec/test hello || kdb getmeta system/tests/spec/test hello
+kdb meta-get user/tests/spec/test hello || kdb meta-get system/tests/spec/test hello
 #> world
 ```
 
 But it also supports globbing (`_` for any key, `?` for any char, `[]` for character classes):
 
 ```sh
-kdb setmeta "spec/tests/spec/_" new metaval
+kdb meta-set "spec/tests/spec/_" new metaval
 kdb set /tests/spec/test value
 # STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Set string to "value"
-kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
@@ -156,9 +128,9 @@ So let us combine this functionality with validation plugins.
 So we would specify:
 
 ```sh
-kdb setmeta spec/tests/spec/test check/validation "[1-9][0-9]*"
-kdb setmeta spec/tests/spec/test check/validation/match LINE
-kdb setmeta spec/tests/spec/test check/validation/message "Not a number"
+kdb meta-set spec/tests/spec/test check/validation "[1-9][0-9]*"
+kdb meta-set spec/tests/spec/test check/validation/match LINE
+kdb meta-set spec/tests/spec/test check/validation/message "Not a number"
 ```
 
 If we now set a new key with
@@ -171,7 +143,7 @@ kdb set /tests/spec/test "not a number"
 this key has adopted all metadata from the spec namespace:
 
 ```sh
-kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
+kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -235,7 +207,7 @@ check/validation/match=LINE              \
 check/validation/message=not a valid URL \
 description=A link to some website       \
 HERE
-kdb lsmeta spec/tests/tutorial
+kdb meta-ls spec/tests/tutorial
 #> infos/plugins
 #> mountpoint
 ```
@@ -298,7 +270,7 @@ There are many ways to do so directly supported by [the spec plugin](/src/plugin
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
 ```sh
-kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error C03200
+kdb meta-set /tests/tutorial/spec/should_not_be_here trigger/error C03200
 #> Using keyname spec/tests/tutorial/spec/should_not_be_here
 kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
@@ -329,67 +301,4 @@ rm $(kdb get system/tests/specbackup)
 rm $(kdb get system/tests/userbackup)
 kdb rm system/tests/specbackup
 kdb rm system/tests/userbackup
-```
-
-## Customized Schemas
-
-Sometimes we already have configuration specifications given in some other format
-which is more compact and more directed to the needs of an individual application.
-We can write a plugin that parses that format and transform the content to key-value
-_and_ metadata (describing how to validate).
-
-For example, let us assume we have enum validations in the file `schema.txt`:
-
-```
-cat > "$PWD/schema.txt" << HERE           \
-%: notation TBD ? graph text semi         \
-%: tool-support* TBD ? none compiler ide  \
-%: applied-to TBD ? none small real-world \
-mountpoint file.txt                       \
-plugins required                          \
-HERE
-```
-
-And by convention for keys ending with `*`, multiple values are allowed.
-So we want to transform above syntax to:
-
-```
-%:notation TBD ? graph text semi
-%:tool-support* TBD ? none compiler ide
-%:applied-to TBD ? none small real-world
-```
-
-Lucky, we already have a plugin which allows us to so:
-
-```
-kdb mount "$PWD/schema.txt" spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
-kdb spec-mount /tutorial/schema
-```
-
-We configure the plugin `simplespeclang` so that it conforms to our "weird" syntax.
-Because in `schema.txt` we have the line `mountpoint file.txt` we can also mount the
-schema using `spec-mount`.
-
-Now we have enforced that the 3 configuration options `notation tool-support* applied-to`
-need to be present (and no other). For example, we can import (note simpleini is not
-available on every platform):
-
-```
-kdb import -s validate -c "format=% : %" /tutorial/schema simpleini << HERE \
-notation : graph                                                            \
-tool-support : ? none                                                       \
-applied-to : small                                                          \
-HERE                                                                        \
-```
-
-Or (afterwards) setting individual values:
-
-```
-kdb set /tutorial/schema/applied-to smal # fails, not a valid enum
-```
-
-Or (in `visudo` fashion):
-
-```
-kdb editor -s validate /tutorial/schema simpleini
 ```

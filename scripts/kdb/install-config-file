@@ -1,0 +1,89 @@
+#!/bin/sh
+
+# @author Dominic Jäger <e1634025@student.tuwien.ac.at>
+# @brief Installs or merges a configuration file in Elektra
+# @date 2019-08-20
+# @tags creator
+
+# This is a part of the preserved base path
+specialPathStart="system/elektra/merge/preserve/"
+# This is the path where a config file is loaded temporarily for merging
+# cannot use user/elektra here and use mount at the same time
+tempPath="system/tmp/merge"
+
+our=$1
+their=$2
+
+if [ "$#" -eq 2 ]; then
+	format="line"
+elif [ "$#" -eq 3 ]; then
+	format=$3
+else
+	echo "Usage is $0 <elektra path> <config file> [<format>]. It has to be called as root." >&2
+	exit 1
+fi
+
+# different binaries are installed depending on the build options
+# path could contain spaces => call later with ""
+if command -v kdb; then
+	kdbBinary=$(command -v kdb)
+elif command -v kdb-static; then
+	kdbBinary=$(command -v kdb-static)
+elif command -v kdb-full; then
+	kdbBinary=$(command -v kdb-full)
+else
+	echo "ERROR: Could not find a kdb binary."
+	exit 29
+fi
+
+# use the file name (without path) of <config file> as special path
+# in Elektra
+specialPathEnd=$(basename $their)
+if [ -z "$specialPathEnd" ]; then
+	specialPathEnd=$their
+fi
+base="${specialPathStart}${specialPathEnd}"
+
+# check if something is in <elektra path>
+contentOfElektraPath=$("$kdbBinary" ls $our)
+if [ $? -ne 0 ]; then
+	echo "ERROR: Could not use kdb ls on $our." >&2
+	exit 30
+fi
+if [ -z "$contentOfElektraPath" ]; then
+	"$kdbBinary" mount $their $our $format
+	if ! [ $? -eq 0 ]; then
+		echo "Could not mount file $their to $our with $format." >&2
+		exit 31
+	fi
+	resolvedLocation=$("$kdbBinary" file $our)
+	if ! [ -f $resolvedLocation ]; then
+		echo "Could not import file $resolvedLocation as it does not exist!" >&2
+		exit 32
+	fi
+	cat $resolvedLocation | "$kdbBinary" import $base $format
+	if ! [ $? -eq 0 ]; then
+		echo "Could not import file from $resolvedLocation to $base." >&2
+		exit 33
+	fi
+else
+	# we could also import and export at this place
+	# however, mounting a second time gives a more consistent user experience
+	# as like this the resolver is used for <config file> each time the script
+	# is called
+	"$kdbBinary" mount -q $their $tempPath $format
+	if ! [ $? -eq 0 ]; then
+		echo "Could not mount file $their. Got code $?" >&2
+		exit 34
+	fi
+	"$kdbBinary" cmerge -f $our $tempPath $base $our $format
+	if ! [ $? -eq 0 ]; then
+		echo "Merging $our, $tempPath and $base into $our failed." >&2
+		exit 35
+	fi
+	"$kdbBinary" umount $tempPath
+	if ! [ $? -eq 0 ]; then
+		echo "umount $tempPath failed." >&2
+		exit 36
+	fi
+fi

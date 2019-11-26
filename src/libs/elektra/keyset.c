@@ -166,22 +166,33 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * You can use an arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
- * your last parameter must be KEY_END.
+ * your last parameter must be KS_END.
  *
  * So, terminate with ksNew(0, KS_END) or ksNew(20, ..., KS_END)
  *
  * @warning Never use ksNew(0, keyNew(...), KS_END).
  * If the first parameter is 0, other arguments are ignored.
  *
+ * The first parameter @p alloc defines how many keys can be added
+ * without reallocation.
+ * If you pass any alloc size greater than 0, but less than 16,
+ * it will default to 16.
+ *
  * For most uses
  *
  * @snippet ksNew.c Simple
  *
- * will be fine, the alloc size will be 16, defined in kdbprivate.h.
- * The alloc size will be doubled whenever size reaches alloc size,
- * so it also performs well with large keysets.
+ * will be fine. The alloc size will be 16 and will double whenever
+ * size reaches alloc size, so it also performs well with large keysets.
  *
- * But if you have any clue how large your keyset may be you should
+ * You can defer the allocation of the internal array that holds
+ * the keys, by passing 0 as the alloc size. This is useful if it is
+ * unclear whether your keyset will actually hold any keys
+ * and you want to avoid a malloc call.
+ *
+ * @snippet ksNew.c No Allocation
+ *
+ * But if you have any clue how large your keyset may be, you should
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
@@ -241,7 +252,10 @@ KeySet * ksVNew (size_t alloc, va_list va)
 		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
+
 	ksInit (keyset);
+
+	if (alloc == 0) return keyset;
 
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
@@ -257,7 +271,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 	keyset->array[0] = 0;
 
-	if (alloc != 1) // is >0 because of increment earlier
+	if (alloc != 0)
 	{
 		Key * key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key)
@@ -268,7 +282,6 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	}
 
 	ksRewind (keyset); // ksAppendKey changed the internal cursor
-
 	return keyset;
 }
 
@@ -281,7 +294,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
  * so you need to ksDel() the returned pointer.
  *
  * A flat copy is made, so the keys will not be duplicated,
- * but there reference counter is updated, so both keysets
+ * but their reference counter is updated, so both keysets
  * need ksDel().
  *
  * @param source has to be an initialized source KeySet
@@ -358,7 +371,7 @@ KeySet * ksDeepDup (const KeySet * source)
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
  * But in some situations you need to copy a
- * keyset to an existing keyset, for that this function
+ * keyset to an existing keyset, for which this function
  * exists.
  *
  * @note You can also use it to clear a keyset when you pass
@@ -527,51 +540,6 @@ static int keyCompareByName (const void * p1, const void * p2)
 }
 
 /**
- * @brief Compare by unescaped name only, ignoring case
- *
- * @internal
- *
- * @param p1
- * @param p2
- *
- * @return
- */
-static int keyCompareByNameCase (const void * p1, const void * p2)
-{
-	Key * key1 = *(Key **) p1;
-	Key * key2 = *(Key **) p2;
-	const void * name1 = key1->key + key1->keySize;
-	const void * name2 = key2->key + key2->keySize;
-	size_t const nameSize1 = key1->keyUSize;
-	size_t const nameSize2 = key2->keyUSize;
-	int ret = 0;
-	if (nameSize1 == nameSize2)
-	{
-		ret = elektraMemCaseCmp (name1, name2, nameSize2);
-	}
-	else
-	{
-		if (nameSize1 < nameSize2)
-		{
-			ret = elektraMemCaseCmp (name1, name2, nameSize1);
-			if (ret == 0)
-			{
-				ret = -1;
-			}
-		}
-		else
-		{
-			ret = elektraMemCaseCmp (name1, name2, nameSize2);
-			if (ret == 0)
-			{
-				ret = 1;
-			}
-		}
-	}
-	return ret;
-}
-
-/**
  * @brief Compare only the owner of two keys (not the name)
  *
  * @return comparison result
@@ -611,18 +579,6 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
 }
 
 
-static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
-{
-	int result = keyCompareByNameCase (p1, p2);
-
-	if (result == 0)
-	{
-		return keyCompareByOwner (p1, p2);
-	}
-	return result;
-}
-
-
 /**
  * Compare the name of two keys.
  *
@@ -652,11 +608,6 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * If both don't have an owner, 0 is returned.
  *
  * @note the owner will only be used if the names are equal.
- *
- * Often is enough to know if the other key is
- * less then or greater than the other one.
- * But Sometimes you need more precise information,
- * see keyRel().
  *
  * Given any Keys k1 and k2 constructed with keyNew(), following
  * equation hold true:
@@ -837,12 +788,9 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 /**
  * Appends a Key to the end of @p ks.
  *
- * Will take ownership of the key @p toAppend.
- * That means ksDel(ks) will remove the key unless
- * the key:
- * - was duplicated before inserting
- * - got its refcount incremented by keyIncRef() before inserting
- * - was also inserted into another keyset with ksAppendKey()
+ * Hands the ownership of the key @p toAppend to the KeySet @p ks.
+ * ksDel(ks) uses keyDel(k) to delete every key unless it got its refcount
+ * incremented by keyIncRef(), e.g. by another keyset that contains this key.
  *
  * The reference counter of the key will be incremented
  * to show this ownership, and thus @p toAppend is not const.
@@ -854,9 +802,13 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * If the keyname already existed in the keyset, it will be replaced with
  * the new key.
  *
+ * ksAppendKey() will also lock the key's name from `toAppend`.
+ * This is necessary so that the order of the KeySet cannot
+ * be destroyed via calls to keySetName().
+ *
  * The KeySet internal cursor will be set to the new key.
  *
- * It is save to directly append newly created keys:
+ * It is safe to directly append newly created keys:
  * @snippet keyset.c simple append
  *
  * If you want the key to outlive the keyset, make sure to
@@ -868,9 +820,9 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * @snippet keyset.c dup append
  *
  *
- * @return the size of the KeySet after insertion
+ * @return the size of the KeySet after appending
  * @retval -1 on NULL pointers
- * @retval -1 if insertion failed, the key will be deleted then.
+ * @retval -1 if appending failed (only on memory problems), the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
@@ -890,7 +842,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		return -1;
 	}
 
-	elektraKeyLock (toAppend, KEY_LOCK_NAME);
+	keyLock (toAppend, KEY_LOCK_NAME);
 
 	result = ksSearchInternal (ks, toAppend);
 
@@ -899,7 +851,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* Seems like the key already exist. */
 		if (toAppend == ks->array[result])
 		{
-			/* user tried to insert the same key again */
+			/* user tried to insert the key with same identity */
 			return ks->size;
 		}
 
@@ -921,10 +873,23 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		++ks->size;
 		if (ks->size >= ks->alloc)
 		{
-			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+
+			size_t newSize = ks->alloc == 0 ? KEYSET_SIZE : ks->alloc * 2;
+			--newSize;
+
+			if (ksResize (ks, newSize) == -1)
 			{
+				keyDel (toAppend);
 				--ks->size;
 				return -1;
+			}
+
+			/* If the array was null before ksResize,
+			it was newly allocated and the size is 0.
+			So we redo the increment from earlier */
+			if (ks->size == 0)
+			{
+				++ks->size;
 			}
 		}
 		keyIncRef (toAppend);
@@ -981,9 +946,15 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!toAppend) return -1;
 
 	if (toAppend->size == 0) return ks->size;
+	if (toAppend->array == NULL) return ks->size;
+
+	if (ks->array == NULL)
+		toAlloc = KEYSET_SIZE;
+	else
+		toAlloc = ks->alloc;
 
 	/* Do only one resize in advance */
-	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
+	for (; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
 	ksResize (ks, toAlloc - 1);
 
@@ -1171,6 +1142,8 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 
+	if (!ks->array) return ksNew (0, KS_END);
+
 	char * name = cutpoint->key;
 	if (!name) return 0;
 	// if (strcmp(name, "")) return 0;
@@ -1262,7 +1235,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	returned = ksNew (newsize, KS_END);
 	elektraMemcpy (returned->array, ks->array + found, newsize);
 	returned->size = newsize;
-	returned->array[returned->size] = 0;
+	if (returned->size > 0) returned->array[returned->size] = 0;
 
 	ksCopyInternal (ks, found, it);
 
@@ -1541,6 +1514,19 @@ int f (KeySet *ks)
  * ksRewind(). When you set an invalid cursor ksCurrent()
  * is 0 and ksNext() == ksHead().
  *
+ * @section cursor_directly Using Cursor directly
+ *
+ * You can also use the cursor directly
+ * by initializing it to some index in the Keyset
+ * and then incrementing or decrementing it, to
+ * iterate over the keyset.
+ *
+ * @snippet ksIterate.c iterate for
+ *
+ * You can also use a while loop if you need access to the last cursor position.
+ *
+ * @snippet ksIterate.c iterate while
+ *
  * @note Only use a cursor for the same keyset which it was
  * made for.
  *
@@ -1560,10 +1546,12 @@ cursor_t ksGetCursor (const KeySet * ks)
 }
 
 /**
- * @brief return key at given cursor position
+ * @brief return key at given position
  *
- * @param ks the keyset to pop key from
- * @param pos where to get
+ * The position is a number starting from 0.
+ *
+ * @param ks the keyset to access
+ * @param pos where to get the key
  * @return the key at the cursor position on success
  * @retval NULL on NULL pointer, negative cursor position
  * or a position that does not lie within the keyset
@@ -1581,7 +1569,7 @@ Key * ksAtCursor (KeySet * ks, cursor_t pos)
  * Set the KeySet internal cursor.
  *
  * Use it to set the cursor to a stored position.
- * ksCurrent() will then be the position which you got with.
+ * ksCurrent() will then return the key at the position of the supplied cursor.
  *
  * @warning Cursors may get invalid when the key
  * was ksPop()ed or ksLookup() was used together
@@ -1954,37 +1942,6 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	return found;
 }
 
-static Key * elektraLookupLinearSearch (KeySet * ks, Key * key, option_t options)
-{
-	cursor_t cursor = 0;
-	cursor = ksGetCursor (ks);
-	Key * current;
-	if (!(options & KDB_O_NOALL)) ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
-	{
-		if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-		{
-			if (!keyCompareByNameOwnerCase (&key, &current)) break;
-		}
-		else if (options & KDB_O_WITHOWNER)
-		{
-			if (!keyCompareByNameOwner (&key, &current)) break;
-		}
-		else if (options & KDB_O_NOCASE)
-		{
-			if (!keyCompareByNameCase (&key, &current)) break;
-		}
-		else if (!keyCompareByName (&key, &current))
-			break;
-	}
-	if (current == 0)
-	{
-		/*Reset Cursor to old position*/
-		ksSetCursor (ks, cursor);
-	}
-	return current;
-}
-
 static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t options)
 {
 	cursor_t cursor = 0;
@@ -1992,14 +1949,8 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 	Key ** found;
 	size_t jump = 0;
 	/*If there is a known offset in the beginning jump could be set*/
-	if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameOwnerCase);
-	else if (options & KDB_O_WITHOWNER)
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameOwner);
-	else if (options & KDB_O_NOCASE)
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameCase);
-	else
-		found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByName);
+	found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByName);
+
 	if (found)
 	{
 		cursor = found - ks->array;
@@ -2172,14 +2123,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// flags incompatible with OPMPHM
-	if (test_bit (options, (KDB_O_WITHOWNER | KDB_O_NOCASE)))
-	{
-		// remove KDB_O_OPMPHM and set KDB_O_BINSEARCH
-		clear_bit (options, KDB_O_OPMPHM);
-		set_bit (options, KDB_O_BINSEARCH);
-	}
-
 	if (!ks->opmphmPredictor && ks->size > opmphmPredictorActionLimit)
 	{
 		// lazy loading of predictor when over action limit
@@ -2363,21 +2306,6 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  * @par KDB_O_DEL
  * Passing ::KDB_O_DEL will cause the deletion of the parameter @p key using keyDel().
  *
- * @par KDB_O_NOALL (deprecated)
- * When ::KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
- * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
- * always set properly after searching a key, so you can go on searching
- * another key after the found key.
- * \n
- * When ::KDB_O_NOALL is not set the cursor will stay untouched and all keys
- * are considered. A much more efficient binary search will be used then.
- *
- * @par KDB_O_WITHOWNER (deprecated)
- * Also consider correct owner (needs ::KDB_O_NOALL).
- *
- * @par KDB_O_NOCASE (deprecated)
- * Lookup ignoring case (needs ::KDB_O_NOALL).
- *
  *
  * @par Hybrid search
  * When Elektra is compiled with `ENABLE_OPTIMIZATIONS=ON` a hybrid search decides
@@ -2427,13 +2355,6 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
 			keyDel (lookupKey);
 		}
 	}
-	else if ((options & KDB_O_NOALL)
-		 // || (options & KDB_O_NOCASE)
-		 // || (options & KDB_O_WITHOWNER)
-		 ) // TODO binary search with nocase won't work
-	{
-		ret = elektraLookupLinearSearch (ks, key, options & mask);
-	}
 	else
 	{
 		ret = elektraLookupSearch (ks, key, options & mask);
@@ -2473,7 +2394,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 	if (!ks->size) return 0;
 
 	struct _Key key;
-
+	key.meta = NULL;
 	keyInit (&key);
 	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
 
@@ -2482,140 +2403,6 @@ Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }
-
-
-/*
- * Lookup for a Key contained in @p ks KeySet that matches @p value,
- * starting from ks' ksNext() position.
- *
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor won't move, and a NULL pointer is
- * returned.
- *
- * This method skips binary keys.
- *
- * @par Example:
- * @code
-ksRewind(ks);
-while (key=ksLookupByString(ks,"my value",0))
-{
-	// show all keys which value="my value"
-	keyToStream(key,stdout,0);
-}
- * @endcode
- *
- * @param ks where to look for
- * @param value the value which owner key you want to find
- * @param options some @p KDB_O_* option bits. Currently supported:
- * 	- @p KDB_O_NOALL @n
- * 		Only search from ksCurrent() to end of keyset, see ksLookup().
- * 	- @p KDB_O_NOCASE @n
- * 	  Lookup ignoring case.
- * @return the Key found, 0 otherwise
- * @see ksLookupByBinary()
- * @see keyCompare() for very powerful Key lookups in KeySets
- * @see ksCurrent(), ksRewind(), ksNext()
- */
-Key * ksLookupByString (KeySet * ks, const char * value, option_t options)
-{
-	cursor_t init = 0;
-	Key * current = 0;
-
-	if (!ks) return 0;
-
-	if (!(options & KDB_O_NOALL))
-	{
-		ksRewind (ks);
-		init = ksGetCursor (ks);
-	}
-
-	if (!value) return 0;
-
-	while ((current = ksNext (ks)) != 0)
-	{
-		if (!keyIsString (current)) continue;
-
-		/*fprintf (stderr, "Compare %s with %s\n", keyValue(current), value);*/
-
-		if ((options & KDB_O_NOCASE) && !elektraStrCaseCmp (keyValue (current), value))
-			break;
-		else if (!strcmp (keyValue (current), value))
-			break;
-	}
-
-	/* reached end of KeySet */
-	if (!(options & KDB_O_NOALL))
-	{
-		ksSetCursor (ks, init);
-	}
-
-	return current;
-}
-
-
-/*
- * Lookup for a Key contained in @p ks KeySet that matches the binary @p value,
- * starting from ks' ksNext() position.
- *
- * If found, @p ks internal cursor will be positioned in the matched key.
- * That means it is also accessible by ksCurrent(). A pointer to the Key
- * is returned. If not found, @p ks internal cursor won't move, and a
- * NULL pointer is returned.
- *
- * This method skips string keys.
- *
- * @param ks where to look for
- * @param value the value which owner key you want to find
- * @param size the size of @p value
- * @param options some @p KDB_O_* option bits:
- * 	- @p KDB_O_NOALL @n
- * 		Only search from ksCurrent() to end of keyset, see above text.
- * @return the Key found, NULL otherwise
- * @retval 0 on NULL pointer
- * @see ksLookupByString()
- * @see keyCompare() for very powerful Key lookups in KeySets
- * @see ksCurrent(), ksRewind(), ksNext()
- */
-Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t options)
-{
-	cursor_t init = 0;
-	Key * current = 0;
-
-	if (!ks) return 0;
-
-	if (!(options & KDB_O_NOALL))
-	{
-		ksRewind (ks);
-		init = ksGetCursor (ks);
-	}
-
-	while ((current = ksNext (ks)))
-	{
-		if (!keyIsBinary (current)) continue;
-
-		if (size != current->dataSize) continue;
-
-		if (!value)
-		{
-			if (!current->data.v)
-				break;
-			else
-				continue;
-		}
-
-		if (current->data.v && !memcmp (current->data.v, value, size)) break;
-	}
-
-	/* reached end of KeySet */
-	if (!(options & KDB_O_NOALL))
-	{
-		ksSetCursor (ks, init);
-	}
-
-	return 0;
-}
-
 
 /*********************************************************************
  *                Data constructors (protected)                      *
@@ -2755,7 +2542,7 @@ int ksInit (KeySet * ks)
 /**
  * @internal
  *
- * KeySet object initializer.
+ * KeySet object destructor.
  *
  * @see ksDel(), ksNew(), keyInit()
  * @retval 0 on success

@@ -30,43 +30,40 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 endif ()
 
-set (CRYPTO_COMMON_FILES
-     helper.h
-     helper.c
-     gpg.h
-     gpg.c
-     crypto.h
-     crypto.c)
+set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
 
 #
 # Compile Variant: libgcrypt
 #
-add_plugin (crypto_gcrypt
-	    SOURCES gcrypt_operations.h gcrypt_operations.c ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${Libgcrypt_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${Libgcrypt_LIBRARIES}
-	    LINK_ELEKTRA elektra-invoke
-	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=gcrypt ELEKTRA_CRYPTO_API_GCRYPT)
+add_plugin (
+	crypto_gcrypt
+	SOURCES gcrypt_operations.h gcrypt_operations.c ${CRYPTO_COMMON_FILES}
+	INCLUDE_DIRECTORIES ${Libgcrypt_INCLUDE_DIRS}
+	LINK_LIBRARIES ${Libgcrypt_LIBRARIES}
+	LINK_ELEKTRA elektra-invoke
+	COMPILE_DEFINITIONS ELEKTRA_VARIANT=gcrypt ELEKTRA_CRYPTO_API_GCRYPT)
 
 #
 # Compile Variant: OpenSSL
 #
-add_plugin (crypto_openssl
-	    SOURCES openssl_operations.h openssl_operations.c ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIR}
-	    LINK_LIBRARIES ${OPENSSL_LIBRARIES}
-	    LINK_ELEKTRA elektra-invoke
-	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=openssl ELEKTRA_CRYPTO_API_OPENSSL)
+add_plugin (
+	crypto_openssl
+	SOURCES openssl_operations.h openssl_operations.c ${CRYPTO_COMMON_FILES}
+	INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIR}
+	LINK_LIBRARIES ${OPENSSL_LIBRARIES}
+	LINK_ELEKTRA elektra-invoke
+	COMPILE_DEFINITIONS ELEKTRA_VARIANT=openssl ELEKTRA_CRYPTO_API_OPENSSL)
 
 #
 # Compile Variant: Botan
 #
-add_plugin (crypto_botan
-	    SOURCES botan_operations.h botan_operations.cpp ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${Botan_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${Botan_LIBRARIES}
-	    LINK_ELEKTRA elektra-invoke
-	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=botan ELEKTRA_CRYPTO_API_BOTAN)
+add_plugin (
+	crypto_botan
+	SOURCES botan_operations.h botan_operations.cpp ${CRYPTO_COMMON_FILES}
+	INCLUDE_DIRECTORIES ${Botan_INCLUDE_DIRS}
+	LINK_LIBRARIES ${Botan_LIBRARIES}
+	LINK_ELEKTRA elektra-invoke
+	COMPILE_DEFINITIONS ELEKTRA_VARIANT=botan ELEKTRA_CRYPTO_API_BOTAN)
 
 if (ADDTESTING_PHASE)
 	if (HAS_OPENSSL_4SURE)

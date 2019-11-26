@@ -299,7 +299,7 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 		while ((cur = ksNext (config)) != 0)
 		{
 			/* ignore all keys not direct below */
-			if (keyRel (root, cur) == 1)
+			if (keyIsDirectlyBelow (root, cur) == 1)
 			{
 				/* ignore invalid size */
 				if (keyGetBaseNameSize (cur) != 3) continue;

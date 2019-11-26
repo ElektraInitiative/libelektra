@@ -13,6 +13,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+using ckdb::keyNew;
 using std::exception;
 
 using elektra::CppTemplateDelegate;
@@ -38,7 +39,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/cpptemplate/exports/get", KEY_FUNC, elektraCppTemplateGet, KEY_END),
 			  keyNew ("system/elektra/modules/cpptemplate/exports/set", KEY_FUNC, elektraCppTemplateSet, KEY_END),
 			  keyNew ("system/elektra/modules/cpptemplate/exports/error", KEY_FUNC, elektraCppTemplateError, KEY_END),
-			  keyNew ("system/elektra/modules/cpptemplate/exports/checkconf", KEY_FUNC, elektraCppTemplateCheckConfig, KEY_END),
+			  keyNew ("system/elektra/modules/cpptemplate/exports/checkconf", KEY_FUNC, elektraCppTemplateCheckConf, KEY_END),
 #include ELEKTRA_README
 			  keyNew ("system/elektra/modules/cpptemplate/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
@@ -110,7 +111,7 @@ int elektraCppTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 }
 
 /** @see elektraDocCheckConf */
-int elektraCppTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraCppTemplateCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }

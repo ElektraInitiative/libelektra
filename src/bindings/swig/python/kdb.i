@@ -28,6 +28,7 @@
 
 %pythoncode {
   import warnings
+  import collections
 }
 
 %exceptionclass kdb::Exception;
@@ -57,6 +58,11 @@
   if len(args) and isinstance(args[0], str):
     arg0, args = args[0], args[1:]
 
+    # add support for kdb.Key(name, value, { meta } )
+    if len(args) and isinstance(args[0], (str, bytes)):
+      value = args[0]
+      args = args[1:]
+
     flags = 0
     args = iter(args)
     for arg in args:
@@ -75,6 +81,8 @@
       elif arg == KEY_META:
         k = next(args)
         meta[k] = next(args)
+      elif isinstance(arg, dict):
+        meta.update(arg)
       elif isinstance(arg, int):
         warnings.warn("Deprecated option in keyNew: {0}".format(arg),
           DeprecationWarning)
@@ -133,6 +141,11 @@
     return ckdb::keyCmp($self->getKey(), o->getKey());
   }
 
+  // swig doesnt understand kdb::NameIterator::difference_type
+  size_t __len__() {
+    return std::distance($self->begin(), $self->end());
+  }
+
   kdb::Key *__copy__() {
     return new kdb::Key($self->dup());
   }
@@ -179,11 +192,26 @@
     fullname = property(_kdb.Key__getFullName)
 
     def __hash__(self):
+      if not self.isNameLocked():
+        raise TypeError("Unhashable instance: '%r'. Lock the name first)" % self)
       return hash(self.name)
 
     def __str__(self):
       return self.name
-  %}
+
+    def __repr__(self):
+      return "kdb.Key(" + repr(self.name) + ")"
+
+    # some helpers
+    Array = collections.namedtuple('Array', 'index name basename')
+    def array_elements(self):
+      basename = self.basename
+      if basename[0] != '#':
+        raise ValueError("Not an array element")
+      x = Key(self.name)
+      x.delBaseName()
+      return Key.Array(int(basename[1:].strip("_")), x.name, x.basename)
+ %}
 };
 
 // define traits needed by SwigPyIterator
@@ -206,7 +234,7 @@
 
 // metadata
 %template(_getMeta) kdb::Key::getMeta<const kdb::Key>;
-%template(_setMeta) kdb::Key::setMeta<std::string>;
+%template(_setMeta) kdb::Key::setMeta<const char *>;
 
 // clear exception handler
 %exception;
@@ -226,16 +254,13 @@
   for arg in orig:
     if arg is KS_END:
       break
-    self.append(arg)
+    _kdb.KeySet__append(self, arg)
 %}
 
 %rename(__len__) kdb::KeySet::size;
 
-%ignore kdb::KeySet::rewind;
-%ignore kdb::KeySet::next;
-%ignore kdb::KeySet::current;
-
 %rename("_%s") kdb::KeySet::lookup;
+%rename("_%s") kdb::KeySet::append;
 %rename("_lookup") kdb::KeySet::at;
 
 %extend kdb::KeySet {
@@ -265,6 +290,17 @@
       key = self._lookup(name)
       return key if key else None
 
+    def append(self, *args):
+      if isinstance(args[0], (str, bytes)):
+        args = [ Key(*args) ]
+      ret = 0
+      for item in args:
+        ret = _kdb.KeySet__append(self, item)
+      return ret
+
+    def extend(self, list):
+      return self.append(*list)
+
     def __getitem__(self, key):
       """See lookup(...) for details.
       Slices and negative indexes are supported as well.
@@ -289,6 +325,28 @@
         key = self._lookup(item)
         return True if key else False
       raise TypeError("Invalid argument type")
+
+    def __str__(self):
+      """print the keyset in array style"""
+      return str(list(map(lambda k: str(k), self)))
+
+    def __repr__(self):
+      items = list(map(lambda k: repr(k), self))
+      return "kdb.KeySet({}, {})".format(len(self), ", ".join(items))
+
+    # some helpers
+    def filter(self, func):
+      items = list(filter(func, self))
+      return KeySet(len(items), *items)
+
+    def filter_below(self, where):
+      return self.filter(lambda k: k.isDirectBelow(where))
+
+    def unpack_names(self):
+      return set(map(lambda k: k.name, self))
+
+    def unpack_basenames(self):
+      return set(map(lambda k: k.basename, self))
   %}
 }
 

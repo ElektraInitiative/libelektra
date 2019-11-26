@@ -1,5 +1,6 @@
 if (BUILD_DOCUMENTATION)
 	find_program (RONN_LOC ronn)
+	find_program (DIFF_COMMAND diff)
 
 	if (RONN_LOC)
 		add_custom_target (man ALL)
@@ -9,13 +10,19 @@ if (BUILD_DOCUMENTATION)
 	endif (RONN_LOC)
 endif (BUILD_DOCUMENTATION)
 
-file (GLOB KDBNAMES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} kdb*.md)
+file (
+	GLOB KDBNAMES
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	kdb*.md)
 foreach (FULLNAME ${KDBNAMES})
 	get_filename_component (NAME ${FULLNAME} NAME_WE)
 	generate_manpage (${NAME})
 endforeach ()
 
-file (GLOB KDBNAMES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} elektra*.md)
+file (
+	GLOB KDBNAMES
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	elektra*.md)
 foreach (FULLNAME ${KDBNAMES})
 	get_filename_component (NAME ${FULLNAME} NAME_WE)
 	generate_manpage (${NAME} SECTION 7)

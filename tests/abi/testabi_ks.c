@@ -1033,15 +1033,9 @@ static void test_ksLookup (void)
 		ksUnsort (ks);
 		for (j = 0; j < 23; j++)
 			succeed_if (ksLookup (ks, k[j], 0) == k[j], "did not find key");
-		succeed_if (ksLookup (ks, k[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookup (ks, k[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookup (ks, k[24], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookup (ks, k[24], 0) == 0, "found wrong key");
-		succeed_if (ksLookup (ks, k[25], KDB_O_NOCASE) == k[6], "did not find key");
-		succeed_if (ksLookup (ks, k[25], KDB_O_WITHOWNER | KDB_O_NOCASE) == 0, "found wrong key");
 		succeed_if (ksLookup (ks, k[28], 0) == k[6], "did not find key");
-		succeed_if (ksLookup (ks, k[28], KDB_O_WITHOWNER) == 0, "found wrong key");
-		succeed_if (ksLookup (ks, k[31], KDB_O_WITHOWNER) == k[13], "did not find key");
 		succeed_if (ksLookup (ks, k[32], 0) == k[6], "did not find key");
 		succeed_if (ksLookup (ks, k[33], 0) == 0, "found wrong key");
 
@@ -1112,15 +1106,9 @@ static void test_ksLookupByName (void)
 		ksUnsort (ks);
 		for (j = 0; j < 23; j++)
 			succeed_if (ksLookupByName (ks, name[j], 0) == k[j], "did not find key");
-		succeed_if (ksLookupByName (ks, name[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookupByName (ks, name[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookupByName (ks, name[24], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookupByName (ks, name[24], 0) == 0, "found wrong key");
-		succeed_if (ksLookupByName (ks, name[25], KDB_O_NOCASE) == k[6], "did not find key");
-		succeed_if (ksLookupByName (ks, name[25], KDB_O_WITHOWNER | KDB_O_NOCASE) == 0, "found wrong key");
 		succeed_if (ksLookupByName (ks, name[28], 0) == k[6], "did not find key");
-		succeed_if (ksLookupByName (ks, name[28], KDB_O_WITHOWNER) == 0, "found wrong key");
-		succeed_if (ksLookupByName (ks, name[31], KDB_O_WITHOWNER) == k[13], "did not find key");
 		for (int n = 32; n < 38; ++n)
 			succeed_if (ksLookupByName (ks, name[n], 0) == k[5], "did not find key");
 		/* Empty lines to add more tests:
@@ -1228,25 +1216,6 @@ static void test_ksLookupName (void)
 	succeed_if_same_string (keyName (found), "user/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
-	printf ("Test nocase lookup functions\n");
-	found = ksLookupByName (ks, "user/named/key", KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find same key again, nocase");
-	succeed_if_same_string (keyName (found), "user/named/key");
-	succeed_if_same_string (keyValue (found), "myvalue");
-
-	found = ksLookupByName (ks, "user/NameD/KeY", KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
-	succeed_if_same_string (keyValue (found), "myvalue");
-
-	found = ksLookupByName (ks, "user/NameD/KEY", KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
-	succeed_if_same_string (keyValue (found), "myvalue");
-
 	ksDel (ks);
 }
 
@@ -1274,12 +1243,6 @@ static void test_ksLookupNameCascading (void)
 	succeed_if_same_string (keyName (found), "user/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
-	found = ksLookupByName (ks, "/single/Key", KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "user/single/key");
-	succeed_if_same_string (keyValue (found), "singlevalue");
-
 	found = ksLookupByName (ks, "/sysonly/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find same key again, nocase used");
@@ -1297,12 +1260,6 @@ static void test_ksLookupNameCascading (void)
 	succeed_if (found != 0, "cascading search failed");
 	succeed_if_same_string (keyName (found), "user/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
-
-	found = ksLookupByName (ks, "////single/Key", KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "user/single/key");
-	succeed_if_same_string (keyValue (found), "singlevalue");
 
 	found = ksLookupByName (ks, "//sysonly/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
@@ -1323,24 +1280,6 @@ static void test_ksLookupNameCascading (void)
 	succeed_if_same_string (keyValue (found), "myvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "///named/Otherkey", KDB_O_NOCASE | KDB_O_POP);
-	succeed_if (ksGetSize (ks) == 3, "did not pop key");
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "user/named/otherkey");
-	succeed_if_same_string (keyValue (found), "singlevalue");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	found = ksLookupByName (ks, "///sysonly/key", KDB_O_POP);
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (ksGetSize (ks) == 2, "did not pop key");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "system/sysonly/key");
-	succeed_if_same_string (keyValue (found), "sysonlykey");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	succeed_if (ksLookupByName (ks, "///named/", KDB_O_POP) == 0, "found part of key with cascading");
-	succeed_if (ksLookupByName (ks, "///named/keyd", KDB_O_POP) == 0, "found part of key with cascading, bad postfix");
 	ksDel (ks);
 
 
@@ -1412,265 +1351,6 @@ static void test_ksLookupNameCascading (void)
 	keyDel (k2);
 	ksDel (ks);
 }
-
-static void test_ksLookupNameDomain (void)
-{
-	Key * found;
-	KeySet * ks = ksNew (0, KS_END);
-
-	printf ("Test domain lookup functions\n");
-
-	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
-
-	found = ksLookupByName (ks, "user:markus/domain/key", KDB_O_WITHOWNER);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find domain key");
-	succeed_if_same_string (keyValue (found), "domainvalue");
-	succeed_if (ksLookupByName (ks, "user:hugo/domain/key", KDB_O_WITHOWNER) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:y/domain/key", KDB_O_WITHOWNER) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:markuss/domain/key", KDB_O_WITHOWNER) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:marku/domain/key", KDB_O_WITHOWNER) == 0, "found key in wrong domain");
-
-	ksAppendKey (ks, keyNew ("user:markus/domain/key", KEY_VALUE, "domainvalue", KEY_END));
-	found = ksLookupByName (ks, "user:markus/domain/key", KDB_O_WITHOWNER | KDB_O_POP);
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (ksGetSize (ks) == 0, "did not pop key");
-	succeed_if (found != 0, "could not find domain key");
-	succeed_if_same_string (keyValue (found), "domainvalue");
-	succeed_if (ksLookupByName (ks, "user:hugo/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:y/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:markuss/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:marku/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksGetSize (ks) == 0, "did not pop key");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	ksDel (ks);
-}
-
-static void test_ksLookupNameAll (void)
-{
-	Key * found;
-	cursor_t cursor;
-	KeySet * ks = ksNew (0, KS_END);
-	printf ("Test lookup functions with KDB_O_NOALL\n");
-	ksAppendKey (ks, keyNew ("user/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user/00", KEY_DIR, KEY_END));
-	ksAppendKey (ks, keyNew ("user/00/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/00/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/00/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/01", KEY_DIR, KEY_END));
-	ksAppendKey (ks, keyNew ("user/01/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/01/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/01/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/01/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user/02", KEY_DIR, KEY_END));
-	ksAppendKey (ks, keyNew ("user/02/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/02/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/02/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/02/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user/02/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user/02/f", KEY_END));
-
-	found = ksLookupByName (ks, "user/e", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/e");
-
-	found = ksLookupByName (ks, "user/e", KDB_O_NOALL);
-	succeed_if (found == 0, "should not find");
-
-	ksRewind (ks);
-	found = ksLookupByName (ks, "user/a", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/a");
-
-	found = ksLookupByName (ks, "user/e", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/e");
-
-	ksRewind (ks);
-	found = ksLookupByName (ks, "user/00", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/00");
-
-	found = ksLookupByName (ks, "user/01", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/01");
-
-	found = ksNext (ks);
-	succeed_if (found != 0, "could not get next key");
-	succeed_if_same_string (keyName (found), "user/01/a");
-
-	found = ksLookupByName (ks, "user/02", KDB_O_NOALL);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/02");
-
-	cursor = ksGetCursor (ks);
-	found = ksLookupByName (ks, "user/01", KDB_O_NOALL);
-	succeed_if (ksGetCursor (ks) == cursor, "cursor should not change");
-	succeed_if (found == 0, "should not find");
-
-	ksRewind (ks);
-	found = ksLookupByName (ks, "user/a", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/a");
-
-	found = ksLookupByName (ks, "user/E", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/e");
-
-	ksRewind (ks);
-	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/00");
-
-	found = ksLookupByName (ks, "user/01", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/01");
-
-	found = ksNext (ks);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not get next key");
-	succeed_if_same_string (keyName (found), "user/01/a");
-
-	found = ksLookupByName (ks, "user/02", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/02");
-
-	found = ksLookupByName (ks, "user/02/F", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/02/f");
-
-	cursor = ksGetCursor (ks);
-	found = ksLookupByName (ks, "user/02", KDB_O_NOALL | KDB_O_NOCASE);
-	succeed_if (ksGetCursor (ks) == cursor, "cursor should stay as is if not found");
-	succeed_if (found == 0, "should not find");
-
-	ksRewind (ks);
-	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/00");
-
-	found = ksLookupByName (ks, "user/01", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/01");
-
-	found = ksNext (ks);
-	succeed_if (found != 0, "could not get next key");
-	succeed_if_same_string (keyName (found), "user/01/a");
-
-	found = ksLookupByName (ks, "user/02", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/02");
-
-	found = ksLookupByName (ks, "user/a", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/a");
-
-	found = ksLookupByName (ks, "user/E", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if_same_string (keyName (found), "user/e");
-
-
-	found = ksLookupByName (ks, "user:notvalid/02/F", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found == 0, "should not find key");
-
-	ksDel (ks);
-}
-
-/*
-static void test_ksLookupValue(void)
-{
-	KeySet *ks = ksNew(0, KS_END);
-	Key *found;
-	printf ("test lookups for values\n");
-
-	ksAppendKey(ks, keyNew("user/1",  KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey(ks, keyNew("user/2",   KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey(ks, keyNew("user/3", KEY_VALUE, "syskey",  KEY_END));
-
-	ksAppendKey(ks, keyNew("user/b1", KEY_BINARY, KEY_SIZE, 10,
-		KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey(ks, keyNew("user/b2", KEY_BINARY, KEY_SIZE, 10,
-		KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey(ks, keyNew("user/b3", KEY_BINARY, KEY_SIZE, 10,
-		KEY_VALUE, "sy\1\33\12\32skey", KEY_END));
-	succeed_if(ksGetSize(ks) == 6, "could not append keys");
-
-	succeed_if (ksLookupByString (ks, "value", 0) == 0, "found part of value");
-	succeed_if (ksLookupByString (ks, " singlevalue", 0) == 0, "prefix of value");
-	succeed_if (ksLookupByString (ks, "/singlevalue", 0) == 0, "prefix of value");
-	succeed_if (ksLookupByString (ks, "singlevalue ", 0) == 0, "postfix of value");
-
-	found = ksLookupByString(ks, "singlevalue", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	found = ksLookupByString(ks, "singlevalue", 0);
-	succeed_if (found != 0, "could not find value again");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	found = ksLookupByString(ks, "myvalue", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/2");
-
-	found = ksLookupByString(ks, "syskey", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	ksRewind(ks);
-	found = ksLookupByString(ks, "singlevalue", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	found = ksLookupByString(ks, "singlevalue", 0);
-	succeed_if (found != 0, "could not find value again");
-	succeed_if_same_string (keyName(found), "user/1");
-
-	ksRewind(ks);
-	found = ksLookupByString(ks, "myvalue", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/2");
-
-	found = ksLookupByString(ks, "syskey", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	// TODO: BUG found = ksLookupByString(ks, "singlevalue", KDB_O_NOALL);
-	// succeed_if (found == 0, "could find value");
-
-	// found = ksLookupByString(ks, "singlevalue", KDB_O_NOALL);
-	// succeed_if (found == 0, "found value again");
-
-	ksRewind(ks);
-	found = ksLookupByString(ks, "myvalue", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/2");
-
-	found = ksLookupByString(ks, "syskey", 0);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	found = ksLookupByString(ks, "syskey", KDB_O_NOALL);
-	succeed_if (found != 0, "could not find value");
-	succeed_if_same_string (keyName(found), "user/3");
-
-	found = ksLookupByString(ks, "syskey", KDB_O_NOALL);
-	succeed_if (found == 0, "found value");
-
-	ksDel(ks);
-}
-*/
 
 static void test_ksExample (void)
 {
@@ -1760,7 +1440,7 @@ static void test_ksAppend (void)
 		Key * current;
 		while ((current = ksPop (returned)) != 0)
 		{
-			if (keyIsDirectBelow (parentKey[i], current))
+			if (keyIsDirectlyBelow (parentKey[i], current))
 			{
 				ksAppendKey (keys, current);
 			}
@@ -1911,7 +1591,7 @@ int below_a (Key * check)
 }
 int direct_below_a (Key * check)
 {
-	return keyIsDirectBelow (global_a, check);
+	return keyIsDirectlyBelow (global_a, check);
 }
 
 int sum_helper (Key * check)
@@ -2139,30 +1819,6 @@ static void test_ksLookupPop (void)
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found == 0, "could find same key again");
 
-	printf ("Test nocase lookup functions\n");
-	found = ksLookupByName (ks, "user/named/key", KDB_O_NOCASE | KDB_O_POP);
-	succeed_if (ksGetSize (ks) == 4, "key");
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (found == 0, "could find same key again, nocase");
-
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
-	found = ksLookupByName (ks, "user/NameD/KeY", KDB_O_NOCASE | KDB_O_POP);
-	succeed_if (ksGetSize (ks) == 4, "did not pop key");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
-	succeed_if_same_string (keyValue (found), "myvalue");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
-	found = ksLookupByName (ks, "user/NameD/KEY", KDB_O_NOCASE | KDB_O_POP);
-	succeed_if (ksGetSize (ks) == 4, "did not pop key");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
-	succeed_if_same_string (keyValue (found), "myvalue");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
 	// cascading
 
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
@@ -2173,39 +1829,6 @@ static void test_ksLookupPop (void)
 	succeed_if (found != 0, "cascading search failed");
 	succeed_if_same_string (keyName (found), "user/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	found = ksLookupByName (ks, "/named/Otherkey", KDB_O_NOCASE | KDB_O_POP);
-	succeed_if (ksGetSize (ks) == 3, "did not pop key");
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "user/named/otherkey");
-	succeed_if_same_string (keyValue (found), "singlevalue");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	found = ksLookupByName (ks, "/sysonly/key", KDB_O_POP);
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (ksGetSize (ks) == 2, "did not pop key");
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "system/sysonly/key");
-	succeed_if_same_string (keyValue (found), "sysonlykey");
-	succeed_if (keyDel (found) == 0, "could not del popped key");
-
-	succeed_if (ksLookupByName (ks, "/named/", KDB_O_POP) == 0, "found part of key with cascading");
-	succeed_if (ksLookupByName (ks, "/named/keyd", KDB_O_POP) == 0, "found part of key with cascading, bad postfix");
-
-	ksAppendKey (ks, keyNew ("user:markus/domain/key", KEY_VALUE, "domainvalue", KEY_END));
-	printf ("Test domain lookup functions\n");
-	found = ksLookupByName (ks, "user:markus/domain/key", KDB_O_WITHOWNER | KDB_O_POP);
-	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if (ksGetSize (ks) == 2, "did not pop key");
-	succeed_if (found != 0, "could not find domain key");
-	succeed_if_same_string (keyValue (found), "domainvalue");
-	succeed_if (ksLookupByName (ks, "user:hugo/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:y/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:markuss/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksLookupByName (ks, "user:marku/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
-	succeed_if (ksGetSize (ks) == 2, "did not pop key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	ksDel (ks);
@@ -2533,6 +2156,15 @@ static void test_cut (void)
 	Key * cutpoint;
 	KeySet * result;
 	KeySet * real_orig;
+
+	orig = ksNew (0, KS_END);
+	cutpoint = keyNew ("user/b", KEY_END);
+	result = ksCut (orig, cutpoint);
+	succeed_if (result, "result is null");
+	succeed_if (ksGetSize (result) == 0, "result not empty");
+	ksDel (orig);
+	ksDel (result);
+	keyDel (cutpoint);
 
 	orig = set_oa ();
 	cutpoint = keyNew ("user/a", KEY_END);
@@ -3229,8 +2861,6 @@ int main (int argc, char ** argv)
 #ifndef __SANITIZE_ADDRESS__
 	test_ksLookupName ();
 #endif
-	test_ksLookupNameDomain ();
-	test_ksLookupNameAll ();
 	test_ksLookupNameCascading ();
 	test_ksExample ();
 	test_ksAppend ();
@@ -3263,9 +2893,6 @@ int main (int argc, char ** argv)
 	test_nsLookup ();
 	test_ksAppend2 ();
 	test_ksAppend3 ();
-
-	// BUGS:
-	// test_ksLookupValue();
 
 	printf ("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

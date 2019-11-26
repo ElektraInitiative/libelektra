@@ -1,0 +1,142 @@
+# ~~~
+# - Config file for Elektra
+#
+# Variables for the Elektra library:
+#
+# Elektra_INCLUDE_DIRS  - where to find kdb.h, etc.
+# Elektra_LIBRARIES     - List of libraries when using Elektra.
+#
+# Find the kdb tools:
+#
+# Elektra_TEMPLATES_DIR - Folder where to find templates for kdb gen
+# ~~~
+
+include (CMakeParseArguments)
+
+# Compute paths
+get_filename_component (ELEKTRA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if (NOT elektra_imported_targets)
+	include ("${ELEKTRA_CMAKE_DIR}/ElektraTargetsLibelektra.cmake")
+	set (elektra_imported_targets TRUE)
+endif ()
+
+set (Elektra_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@")
+set (Elektra_LIBRARIES @Elektra_LIBRARIES@)
+
+set (ElektraHighlevel_LIBRARIES @ElektraHighlevel_LIBRARIES@)
+set (ElektraCodegen_LIBRARIES @ElektraCodegen_LIBRARIES@)
+
+find_path (Elektra_TEMPLATES_DIR NAMES template.h PATHS @CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@ NO_DEFAULT_PATH)
+
+# Set compatibility variables for existing users
+set (ELEKTRA_FOUND TRUE)
+set (ELEKTRA_LIBRARY ${Elektra_LIBRARIES})
+set (ELEKTRA_LIBRARIES ${Elektra_LIBRARIES})
+set (ELEKTRA_INCLUDE_DIR ${Elektra_INCLUDE_DIRS})
+set (ELEKTRA_INCLUDE_DIRS ${Elektra_INCLUDE_DIRS})
+set (ELEKTRA_TEMPLATES ${Elektra_TEMPLATES_DIR})
+set (ELEKTRA_VERSION ${Elektra_VERSION})
+set (ELEKTRA_VERSION_MAJOR ${Elektra_VERSION_MAJOR})
+set (ELEKTRA_VERSION_MINOR ${Elektra_VERSION_MINOR})
+set (ELEKTRA_VERSION_MICRO ${Elektra_VERSION_MICRO})
+
+# Set build type of Elektra
+set (Elektra_BUILD_TYPE @Elektra_BUILD_TYPE@)
+set (Elektra_SHARED @BUILD_SHARED@)
+set (Elektra_FULL @BUILD_FULL@)
+set (Elektra_STATIC @BUILD_STATIC@)
+
+# ~~~
+# Invoke the `kdb gen` during the build.
+#
+# elektra_kdb_gen (<template> <parent_key> <output_name>
+#                  INPUT <plugin> <file>
+#                  [OUTPUT_DIR <output_dir>]
+#                  [KDB <kdb>]
+#                  [PARAMS <params>...]
+#                  [OPTIONS <options>...])
+#
+# This will call `add_custom_command` to define the command 
+# `<kdb> gen -F <plugin>=<file> <options>... <template> <parent_key> <output_name> <params>...` with working directory
+# <output_dir>. The relevant output files of `kdb gen` are automatically detected at configure time. Therefore `kdb gen`
+# is automatically called, if any target requires one of the output files as an input.
+#
+# The default value for <kdb> is just 'kdb' (i.e. the system default Elektra instance).
+# If <output_dir> is not set explicitly, it defaults to `CMAKE_CURRENT_BINARY_DIR`.
+# `<params>...` and `<options>...` are omitted from the `kdb gen` call, if they aren't defined. 
+#
+# Full examples can be found online: https://master.libelektra.org/examples/codegen
+# ~~~
+function (elektra_kdb_gen
+	  template
+	  parent_key
+	  output_name)
+	cmake_parse_arguments (ARG
+			       "" # optional keywords
+			       "OUTPUT_DIR;KDB" # one value keywords
+			       "INPUT;PARAMS;OPTIONS" # multi value keywords
+			       ${ARGN})
+
+	list (LENGTH ARG_INPUT INPUT_LENGTH)
+	if (NOT INPUT_LENGTH EQUAL 2)
+		message (FATAL_ERROR "elektra_kdb_gen: Please set the input file via the 'INPUT <plugin> <file>' keyword.")
+	endif (NOT INPUT_LENGTH EQUAL 2)
+
+	list (GET ARG_INPUT 0 INPUT_PLUGIN)
+	list (GET ARG_INPUT 1 INPUT_FILE)
+
+	if (NOT ARG_OUTPUT_DIR)
+		set (ARG_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+	endif (NOT ARG_OUTPUT_DIR)
+
+	if (NOT ARG_KDB)
+		set (ARG_KDB kdb)
+	endif (NOT ARG_KDB)
+
+	set (PARAMS "")
+	foreach (param ${ARG_PARAMS})
+		if (NOT param MATCHES "^[^=]+=.*$")
+			message (FATAL_ERROR "elektra_kdb_gen: params must be of the form <name>=<value> not '${param}'")
+		endif (NOT param MATCHES "^[^=]+=.*$")
+		list (APPEND PARAMS "${param}")
+	endforeach (param ${ARG_PARAMS})
+
+	execute_process (COMMAND ${KDB}
+				 gen
+				 "${template}"
+				 -
+				 "${output_name}"
+				 ${PARAMS}
+			 OUTPUT_VARIABLE PARTS_LINES)
+	string (REPLACE "\n"
+			";"
+			PARTS
+			${PARTS_LINES})
+
+	set (OUTPUTS "")
+	foreach (part ${PARTS})
+		list (APPEND OUTPUTS "${ARG_OUTPUT_DIR}/${part}")
+	endforeach (part ${PARTS})
+
+	foreach (option ${ARG_OPTIONS})
+		if (NOT option MATCHES "^-.*$")
+			message (FATAL_ERROR "elektra_kdb_gen: options must start with '-', but '${option}' doesn't.")
+		endif (NOT option MATCHES "^-.*$")
+	endforeach (option ${ARG_OPTIONS})
+
+	add_custom_command (OUTPUT ${OUTPUTS}
+			    COMMAND ${ARG_KDB}
+				    ARGS
+				    gen
+				    -F
+				    "${INPUT_PLUGIN}=${INPUT_FILE}"
+				    ${ARG_OPTIONS}
+				    "${template}"
+				    "${parent_key}"
+				    "${output_name}"
+				    ${PARAMS}
+			    MAIN_DEPENDENCY "${input_file}"
+			    WORKING_DIRECTORY "${ARG_OUTPUT_DIR}")
+
+endfunction (elektra_kdb_gen)

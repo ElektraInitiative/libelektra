@@ -58,7 +58,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	}
 	if (!saltHexString)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
@@ -205,7 +205,7 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 		memset (ivBuffer, 0, sizeof (ivBuffer));
 		keyDel (key);
 		keyDel (iv);
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 
@@ -233,8 +233,7 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 error:
 	memset (keyBuffer, 0, sizeof (keyBuffer));
 	memset (ivBuffer, 0, sizeof (ivBuffer));
-	// TODO: Correct??
-	ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create handle. Reason: %s", gcry_strerror (gcry_err));
+	ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to setup libgcrypt. Reason: %s", gcry_strerror (gcry_err));
 	gcry_cipher_close (**handle);
 	elektraFree (*handle);
 	(*handle) = NULL;
@@ -294,7 +293,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_octet_t * output = elektraMalloc (outputLen);
 	if (!output)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		elektraFree (salt);
 		return -1;
 	}
@@ -317,8 +316,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	gcry_err = gcry_cipher_encrypt (*handle, current, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, NULL, 0);
 	if (gcry_err != 0)
 	{
-		// TODO: Correct??
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption failed. Reason: %s", gcry_strerror (gcry_err));
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Encryption failed. Reason: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
 		elektraFree (salt);
@@ -333,8 +331,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	gcry_err = gcry_cipher_encrypt (*handle, current, dataLen, NULL, 0);
 	if (gcry_err != 0)
 	{
-		// TODO: Correct??
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Encryption failed. Reason: %s", gcry_strerror (gcry_err));
+		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Encryption failed. Reason: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
 		elektraFree (salt);
@@ -376,7 +373,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_octet_t * output = elektraMalloc (payloadLen);
 	if (!output)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
 
@@ -449,7 +446,7 @@ char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_s
 	}
 	if (!encoded)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Memory allocation failed");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 	}
 	return encoded;
 }

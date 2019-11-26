@@ -22,7 +22,7 @@ int elektraCppTemplateClose (Plugin * handle, Key * errorKey);
 int elektraCppTemplateGet (Plugin * handle, KeySet * returned, Key * parentKey);
 int elektraCppTemplateSet (Plugin * handle, KeySet * returned, Key * parentKey);
 int elektraCppTemplateError (Plugin * handle, KeySet * conf, Key * parentKey);
-int elektraCppTemplateCheckConfig (Key * errorKey, KeySet * conf);
+int elektraCppTemplateCheckConf (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"

@@ -57,14 +57,14 @@ kdb set user/tests/storage/null
 #> Create a new key user/tests/storage/null with null value
 kdb get user/tests/storage/null
 #>
-kdb lsmeta user/tests/storage/null
+kdb meta-ls user/tests/storage/null
 #> binary
 
 kdb set user/tests/storage/empty ''
 #> Create a new key user/tests/storage/empty with string ""
 kdb get user/tests/storage/empty
 #>
-kdb lsmeta user/tests/storage/empty
+kdb meta-ls user/tests/storage/empty
 #>
 
 # Undo modifications to the key database
@@ -74,16 +74,16 @@ sudo kdb umount user/tests/storage
 
 ## Convert Boolean Data
 
-Elektra uses [`0` and `1` to represent binary data](../decisions/bool.md). A storage plugin that uses other values (e.g. `false` and `true`) needs to convert these values to `0` and `1`. The [Markdown Shell Recorder][] test below shows that [YAML CPP](../../src/plugins/yamlcpp/README.md) handles the conversion from and to [YAML’s boolean type](https://yaml.org/spec/1.2/spec.html#id2803629) properly. In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to makes sure that YAML CPP interacts correctly with this essential plugin.
+Elektra uses [`0` and `1` to represent binary data](../decisions/boolean.md). A storage plugin that uses other values (e.g. `false` and `true`) needs to convert these values to `0` and `1`. The [Markdown Shell Recorder][] test below shows that [YAML CPP](../../src/plugins/yamlcpp/README.md) handles the conversion from and to [YAML’s boolean type](https://yaml.org/spec/1.2/spec.html#id2803629) properly. In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to makes sure that YAML CPP interacts correctly with this essential plugin.
 
 ```sh
 # Mount plugin
-kdb mount config.yaml user/tests/storage yamlcpp type
+sudo kdb mount config.yaml user/tests/storage yamlcpp type
 kdb set user/tests/storage/bool/value true
 kdb get user/tests/storage/bool/value
 #> 1
 
-kdb setmeta user/tests/storage/bool/value type boolean
+kdb meta-set user/tests/storage/bool/value type boolean
 kdb set user/tests/storage/bool/value 1
 kdb get user/tests/storage/bool/value
 #> 1
@@ -195,24 +195,24 @@ kdb set user/tests/storage/array/#1 two
 
 # The plugin creates an array parent key
 # that stores the basename of the last element
-kdb getmeta user/tests/storage/array array
+kdb meta-get user/tests/storage/array array
 #> #1
 
 # Add an array that contains a single element
 kdb set user/tests/storage/map/#0
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 #> #0
 
 # After we add `user/tests/storage/map/key`,
 # `user/tests/storage/map` is not an array any more.
 kdb set user/tests/storage/map/key three
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 # RET: 1
 
 # Adding a another key that uses array syntax below
 # `user/tests/storage/map` does not change this.
 kdb set user/tests/storage/map/#1 four
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 # RET: 1
 
 # If we remove the key `user/tests/storage/map/key`, then
@@ -222,7 +222,7 @@ kdb ls user/tests/storage/map
 #> user/tests/storage/map
 #> user/tests/storage/map/#0
 #> user/tests/storage/map/#1
-kdb getmeta user/tests/storage/map array
+kdb meta-get user/tests/storage/map array
 #> #1
 
 # Undo modifications to the key database

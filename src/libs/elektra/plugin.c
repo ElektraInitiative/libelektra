@@ -155,7 +155,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 
 	while ((cur = ksNext (config)) != 0)
 	{
-		if (keyRel (root, cur) == 1)
+		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
 			char * pluginName = 0;
 			char * referenceName = 0;
@@ -176,11 +176,11 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				KeySet * cutConfig = ksCut (config, key);
 				keyDel (key);
 
-				KeySet * pluginConfig = elektraRenameKeys (cutConfig, "user");
+				KeySet * pluginConfig = ksRenameKeys (cutConfig, "user");
 				ksDel (cutConfig);
 				if (!pluginConfig) return -1;
 				ksAppend (pluginConfig, systemConfig);
-				ksRewind (pluginConfig); /* TODO: bug ksAppend invalidates cursor */
+				ksRewind (pluginConfig);
 
 				/* case 1, we create a new plugin,
 				   note that errorKey is not passed here, because it would set error information

@@ -6,12 +6,26 @@ if (SHARED_ONLY_PLUGINS)
 	list (REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
 endif (SHARED_ONLY_PLUGINS)
 
+# We prefer `kdb` over `kdb-full` over `kdb-static`. Some tests, such as the Markdown Shell Recorder test for the `typechecker` plugin
+# (which only supports shared builds), will fail otherwise.
+if (BUILD_SHARED)
+	set (KDB_COMMAND_BASENAME kdb)
+elseif (BUILD_FULL)
+	set (KDB_COMMAND_BASENAME kdb-full)
+elseif (BUILD_STATIC)
+	set (KDB_COMMAND_BASENAME kdb-static)
+elseif (ENABLE_KDB_TESTING)
+	message (SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+endif (BUILD_SHARED)
+
 set (IS_INSTALLED "YES")
+set (KDB_COMMAND "${KDB_COMMAND_BASENAME}")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" @ONLY)
 
 file (READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" INCLUDE_COMMON_INSTALLED_FILE)
 
 set (IS_INSTALLED "NO")
+set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/${KDB_COMMAND_BASENAME}")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" @ONLY)
 
 file (READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" INCLUDE_COMMON_FILE)
@@ -38,73 +52,50 @@ function (add_scripttest testname)
 		if (TARGET)
 			if (INSTALL_TESTING)
 
-				set (excluded_tests
-				     check_bashisms
-				     check_posix
-				     check_formatting
-				     check_gen
-				     check_oclint
-				     check_plugins
-				     check_spelling)
+				set (
+					excluded_tests
+					check_bashisms
+					check_posix
+					check_formatting
+					check_gen
+					check_oclint
+					check_plugins
+					check_spelling)
 
 				list (FIND excluded_tests "${testname_we}" index_excluded)
 				if (index_excluded EQUAL -1)
-					if (BUILD_FULL)
-						set (KDB_COMMAND "kdb-full")
-					else (BUILD_FULL)
-						if (BUILD_STATIC)
-							set (KDB_COMMAND "kdb-static")
-						else (BUILD_STATIC)
-							set (KDB_COMMAND "kdb")
-						endif (BUILD_STATIC)
-					endif (BUILD_FULL)
 					set (RACE_COMMAND "$KDB race")
-					set (INCLUDE_COMMON
-					     "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
+					set (INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}")
 					configure_file ("${filename}" "${CMAKE_CURRENT_BINARY_DIR}/${testname}" @ONLY)
-					install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
-						 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
-						 PERMISSIONS OWNER_READ
-							     OWNER_WRITE
-							     OWNER_EXECUTE
-							     GROUP_READ
-							     GROUP_EXECUTE
-							     WORLD_READ
-							     WORLD_EXECUTE
-						 RENAME ${testname_we})
+					install (
+						FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
+						DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+						PERMISSIONS
+							OWNER_READ
+							OWNER_WRITE
+							OWNER_EXECUTE
+							GROUP_READ
+							GROUP_EXECUTE
+							WORLD_READ
+							WORLD_EXECUTE
+						RENAME ${testname_we})
 				endif (index_excluded EQUAL -1)
 
 			endif (INSTALL_TESTING)
 		else (TARGET)
 			if (ENABLE_KDB_TESTING)
 				if (NOT ${testname_we} STREQUAL "run_all")
-					if (BUILD_FULL)
-						set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-full")
-					elseif (BUILD_STATIC)
-						set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-static")
-					elseif (BUILD_SHARED)
-						set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb")
-					else ()
-						message (
-							SEND_ERROR
-								"no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
-					endif (BUILD_FULL)
 					set (RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
-					set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}KDB=\"${KDB_COMMAND}\"")
+					set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}")
 					set (testscriptname "${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}")
 					configure_file ("${filename}" "${testscriptname}" @ONLY)
 					add_test (testscr_${testname_we} "${testscriptname}") # dash does memleak:
 					set_property (TEST testscr_${testname_we} PROPERTY LABELS memleak kdbtests)
-					set_property (TEST testscr_${testname_we}
-						      PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+					set_property (TEST testscr_${testname_we} PROPERTY ENVIRONMENT
+											   "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-					set (parallel_tests
-					     check_bashisms
-					     check_doc
-					     check_formatting
-					     check_oclint
-					     check_plugins
-					     check_posix)
+					set (parallel_tests check_bashisms check_doc check_formatting check_oclint check_plugins
+							    check_posix)
 					list (FIND parallel_tests "${testname_we}" index_parallel)
 					if (index_parallel EQUAL -1)
 						set_property (TEST testscr_${testname_we} PROPERTY RUN_SERIAL TRUE)
@@ -131,3 +122,4 @@ endforeach (file ${SCRIPT_TESTS})
 
 add_subdirectory (gen)
 add_subdirectory (external)
+add_subdirectory (shell_recorder)

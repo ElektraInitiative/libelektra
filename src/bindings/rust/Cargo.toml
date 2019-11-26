@@ -1,0 +1,3 @@
+[workspace]
+members = ["elektra", "elektra-sys"]
+exclude = ["example"]

@@ -1,0 +1,6 @@
+libelektra_0.8 {
+        # kdbmerge.h
+	elektraMerge;
+	getConflicts;
+};
+

@@ -12,10 +12,8 @@
 #endif
 
 #include "lua.hpp"
-#ifndef HAVE_KDBCONFIG
-#include <kdbconfig.h>
-#endif
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 
 #include <key.hpp>
 #include <keyset.hpp>
@@ -27,8 +25,8 @@ extern "C" {
 }
 #include "runtime.h"
 
-using namespace ckdb;
 #include <kdberrors.h>
+using namespace ckdb;
 
 #ifndef LUA_OK
 #define LUA_OK 0
@@ -149,7 +147,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	/* init new lua state */
 	if ((data->L = lua_newstate (Lua_alloc, NULL)) == NULL)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey, "Unable to create new lua state");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Unable to create new lua state");
 		goto error;
 	}
 

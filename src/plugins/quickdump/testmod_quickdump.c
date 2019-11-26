@@ -122,6 +122,54 @@ static void test_basics (void)
 	ksDel (ks);
 }
 
+static void test_noParent (void)
+{
+	printf ("test noparent\n");
+
+	KeySet * input = ksNew (2, keyNew ("", KEY_VALUE, "value", KEY_END), keyNew ("/a", KEY_VALUE, "value1", KEY_END), KS_END);
+	KeySet * expected = ksNew (2, keyNew ("dir/tests/bench", KEY_VALUE, "value", KEY_END),
+				   keyNew ("dir/tests/bench/a", KEY_VALUE, "value1", KEY_END), KS_END);
+	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
+
+	{
+		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (1, keyNew ("user/noparent", KEY_END), KS_END);
+		PLUGIN_OPEN ("quickdump");
+
+		succeed_if (plugin->kdbSet (plugin, input, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (check_binary_file (outfile, test_quickdump_noParent_data, test_quickdump_noParent_dataSize) == 0,
+			    "files differ");
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("quickdump");
+
+
+		KeySet * actual = ksNew (0, KS_END);
+		succeed_if (plugin->kdbGet (plugin, actual, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, actual);
+
+		ksDel (actual);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	remove (outfile);
+
+	elektraFree (outfile);
+	ksDel (input);
+	ksDel (expected);
+}
+
 static void test_readV1 (void)
 {
 	printf ("test update v1 to current\n");
@@ -330,6 +378,7 @@ int main (int argc, char ** argv)
 	test_varint ();
 
 	test_basics ();
+	test_noParent ();
 	test_readV1 ();
 	test_readV2 ();
 	test_parentKeyValue ();

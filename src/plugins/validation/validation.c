@@ -111,7 +111,8 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char buffer[1000];
 		regerror (ret, &regex, buffer, 999);
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not compile regex. Reason: %s", buffer);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not compile regex '%s' of the key '%s'. Reason: %s",
+							 keyString (regexMeta), keyName (key), buffer);
 		regfree (&regex);
 		if (freeString) elektraFree (regexString);
 		return 0;
@@ -145,7 +146,9 @@ static int validateKey (Key * key, Key * parentKey)
 		const Key * msg = keyGetMeta (key, "check/validation/message");
 		if (msg)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Key value failed to validate. Reason: %s", keyString (msg));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+								 "The key '%s' with value '%s' does not confirm to '%s'. Reason: %s",
+								 keyName (key), keyString (key), regexString, keyString (msg));
 			regfree (&regex);
 			if (freeString) elektraFree (regexString);
 			return 0;
@@ -154,7 +157,9 @@ static int validateKey (Key * key, Key * parentKey)
 		{
 			char buffer[1000];
 			regerror (ret, &regex, buffer, 999);
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Key value failed to validate. Reason: %s", buffer);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+								 "The key '%s' with value '%s' does not confirm to '%s'. Reason: %s",
+								 keyName (key), keyString (key), regexString, buffer);
 			regfree (&regex);
 			if (freeString) elektraFree (regexString);
 			return 0;

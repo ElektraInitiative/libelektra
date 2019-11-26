@@ -9,6 +9,7 @@
 #include "resolver.h"
 
 #include <kdbassert.h>
+#include <kdbconfig.h>
 #include <kdbhelper.h>  // elektraStrDup
 #include <kdbprivate.h> // KDB_CACHE_PREFIX
 #include <kdbproposal.h>
@@ -519,7 +520,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 {
 	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
-	if (keyRel (root, parentKey) >= 0)
+	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
 		KeySet * info =
@@ -1185,6 +1186,11 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED,
 	return 0;
 }
 
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	return ELEKTRA_PLUGIN_FUNCTION (set) (handle, returned, parentKey);
+}
+
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
@@ -1195,6 +1201,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
             ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(get),
             ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(set),
             ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(error),
+            ELEKTRA_PLUGIN_COMMIT, &ELEKTRA_PLUGIN_FUNCTION (commit),
             ELEKTRA_PLUGIN_END);
 }
 

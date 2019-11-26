@@ -55,8 +55,8 @@ and `ELEKTRA_EXPORT_PLUGIN`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called [`template`](/src/plugins/template/) and a new plugin can be created by calling the
-[copy-template script](/scripts/copy-template) .
-For example, the author of the [line plugin](/src/plugins/line/) used the command `scripts/copy-template line` to create the initial version of the plugin. Afterwards two
+[copy-template script](/scripts/dev/copy-template) .
+For example, the author of the [line plugin](/src/plugins/line/) used the command `scripts/dev/copy-template line` to create the initial version of the plugin. Afterwards two
 important things are left to be done:
 
 - remove all functions (and their exports) from the plugin that are not needed. For example not every plugin actually makes use of the `elektraPluginOpen()` function.
@@ -67,11 +67,11 @@ After these two steps your plugin is ready to be compiled, installed and mounted
 
 #### C++ Based Plugins
 
-If you want to use C++ instead of C for plugin development you can use [`copy-template`](/scripts/copy-template) to create a plugin based
+If you want to use C++ instead of C for plugin development you can use [`copy-template`](/scripts/dev/copy-template) to create a plugin based
 on [`cpptemplate`](/src/plugins/cpptemplate/). For example, to create a new plugin called `pluginbaby` use the command:
 
 ```sh
-scripts/copy-template -p pluginbaby
+scripts/dev/copy-template -p pluginbaby
 ```
 
 .
@@ -160,9 +160,9 @@ below `system/elektra/modules/plugin` is requested:
 ```c
 if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 {
-	KeySet *moduleConfig = elektraPluginContract();
-	ksAppend(returned, moduleConfig);
-	ksDel(moduleConfig);
+	KeySet *moduleConf = elektraPluginContract();
+	ksAppend(returned, moduleConf);
+	ksDel(moduleConf);
 	return 1;
 }
 ```
@@ -214,7 +214,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 For every plugin you have to write a `CMakeLists.txt`. If your plugin has
 no dependencies, you can skip this section. The full documentation of
-`add_plugin` is available [here](/cmake/Modules/LibAddPlugin.cmake).
+`add_plugin` is available [here](/scripts/cmake/Modules/LibAddPlugin.cmake).
 
 In order to understand how to write the `CMakeLists.txt`, you need to know that
 the same file is included multiple times for different reasons.
@@ -240,22 +240,22 @@ So usually you would have:
 
 ```cmake
 if (DEPENDENCY_PHASE)
-	find_package (LibXml2 QUIET)
-	if (LIBXML2_FOUND)
+	find_package (MyLib QUIET)
+	if (MYLIB_FOUND)
 		# add testdata, test cases...
 	else ()
-		remove_plugin (xmltool "libxml2 not found")
+		remove_plugin (myplugin "mylib not found")
 	endif ()
 endif ()
 ```
 
 So if you are in the second phase (`DEPENDENCY_PHASE`), you will search for all
-dependencies, in this case `LibXml2`. If all dependencies are satisfied, you add
+dependencies, in this case `MyLib`. If all dependencies are satisfied, you add
 everything needed for the plugin, except the plugin itself.
 This happens after `endif ()`:
 
 ```cmake
-add_plugin (xmltool
+add_plugin (myplugin
 	SOURCES
 		...
 	LINK_LIBRARIES
@@ -356,17 +356,20 @@ and write each key as its own line in the file. Since we don't care about the na
 the value of `keyString` for each `Key` as a new line in the file. That's it. Now, each time the mounted `KeySet` is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
-#### `ELEKTRA_SET_ERROR`
+#### `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR`
 
-We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
-and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
+We haven't discussed `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
+and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_<CONCRETE_TYPE>_ERROR` does. The `<CONCRETE_TYPE>` in the
+text means the concrete error type such as `RESOURCE`, `INSTALLATION`, etc. There are also abstract error types
+which are not instantiable. You can read more about concrete and abstract error types in the
+[error-categorization.md](/doc/dev/error-categorization.md) guideline. Note that you also have a varargs macro with `...ERRORF`
+that allows you to insert a string and substitute parts with variables.
+You can see all available error types as well as their categorization guidelines [here](/doc/dev/error-categorization.md).
+Because the parentKey always exists
 even if a critical error occurs, we write the error to the parentKey. The error does not necessarily have to be in a configuration.
 If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`.
 
-The first parameter of `ELEKTRA_SET_ERROR` is an id specifying the general error that occurred.
-A listing of existing errors together with a short description and a categorization can be found at
-[error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
-The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
+The second parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
 caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
 
@@ -381,7 +384,7 @@ hand `elektraPluginClose` is run after other functions of the plugin and can be 
 The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount-time. The signature of the function is:
 
 ```c
-int elektraLineCheckConfig (Key * errorKey, KeySet * conf);
+int elektraLineCheckConf (Key * errorKey, KeySet * conf);
 ```
 
 The configuration of the plugin is provided as `conf`. The function may report an error or warnings using the `errorKey` and the return value.
@@ -395,7 +398,7 @@ The following convention was established for the return value of `elektraPluginC
 The following example demonstrates how to limit the length of the values within the plugin configuration to 3 characters.
 
 ```c
-int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+int elektraLineCheckConf (Key * errorKey, KeySet * conf)
 {
 	Key * cur;
 	ksRewind (conf);
@@ -417,12 +420,14 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 The `elektraPluginCheckConf` function is exported via the plugin's contract. The following example demonstrates how to export the `checkconf` function (see section [Contract](#contract) for further details):
 
 ```c
-keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConfig, KEY_END),
+keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConf, KEY_END);
 ```
 
 Within the `checkconf` function all of the plugin configuration values should be validated.
-Errors should be reported via Elektra's error handling mechanism (see section [ELEKTRA_SET_ERROR](#elektra_set_error) for further details).
-If `checkconf` encounters a configuration value, that is not strictly invalid but can not be parsed by the plugin (e.g. a parameter which is not part of the plugin configuration), then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_WARNING`.
+Errors should be reported via Elektra's error handling mechanism (see section [ELEKTRA*SET*<CONCRETE>\_ERROR](#elektra_set_concrete_error) for further details).
+If `checkconf` encounters a configuration value, that is not strictly invalid but can not be parsed by the plugin (e.g. a parameter which is not part of the plugin configuration),
+then a warning should be appended to `errorKey`, using `ELEKTRA_ADD_<CONCRETE_TYPE>_WARNING`. You also have a `...WARNINGF` vararg macro that
+allows you to substitute parts of the message with variables.
 
 ### `ELEKTRA_PLUGIN_EXPORT`
 

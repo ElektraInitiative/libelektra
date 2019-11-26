@@ -1,0 +1,32 @@
+# Each group below represents a version
+# Only versions defined here may be used in the symbols.map files.
+#
+# Only the newest version may change. After each release a new version has to be created.
+
+libelektra_0.8 {
+};
+
+libelektra_0.9 {
+} libelektra_0.8;
+
+libelektra_1.0 {
+} libelektra_0.9;
+
+# This is used for private symbols, which shall only be used by Elektra itself.
+# In future this may be used for ABI-checking tools.
+#
+# The contents of this group may change at any time. Only symbols that are actually
+# used outside their library should be contained.
+# For example:
+# If keySetupNew is declared in kdbprivate.h but only used inside of elektra-core,
+# we don't declare it here. This way only elektra-core can use keySetupNew. Anything
+# that has to be linked against elektra-core will not be able to use keySetupNew.
+#
+# The version should never be changed, but the based version (second line)
+# should always refer to the newest version.
+#
+# The 'private' suffix marks this version as private. This has the effect that a
+# 'local: *' part is generated.
+#
+libelektraprivate_1.0 private {
+} libelektra_0.9;

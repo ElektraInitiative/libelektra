@@ -14,7 +14,7 @@ This command can also be used to view full key(s) including their values.<br>
 
 Where `source` is the path of the key(s) you want to export.
 Additionally, the user can specify a format to use by passing it as the option argument `format`.<br>
-The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.<br>
+The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-plugin-list(1) command. To learn about any plugin, the user can simply use the kdb-plugin-info(1) command.<br>
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
 
 ## OPTIONS
@@ -57,6 +57,47 @@ To backup a keyset stored in `user/keyset` in the `ini` format to a file called 
 
 Change default format to `simpleini`:<br>
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
+
+Create two key values and export them as `xml`:
+
+```sh
+kdb set user/tests/kdb-export/one one
+kdb set user/tests/kdb-export/two two
+
+kdb export user/tests/kdb-export/ xml
+#> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+#> <kdb-export>
+#>
+#>   <one>one</one>
+#>
+#>   <two>two</two>
+#>
+#> </kdb-export>
+
+
+kdb rm -r user/tests
+# cleanup
+```
+
+Create two key values and export them with the `xerces` plugin:
+
+```sh
+kdb set user/tests/kdb-export/one one
+kdb set user/tests/kdb-export/two two
+
+kdb export user/tests/kdb-export/ xerces
+#> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+#> <kdb-export>
+#>
+#>   <one>one</one>
+#>
+#>   <two>two</two>
+#>
+#> </kdb-export>
+
+kdb rm -r user/tests
+# cleanup
+```
 
 ## Note
 

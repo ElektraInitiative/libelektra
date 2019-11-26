@@ -3,8 +3,8 @@
 ## Dependencies
 
 For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
-[git](https://git-scm.com/), and essential build tools
-(make, gcc, and some standard Unix tools; alternatively ninja and
+[git](https://git-scm.com/), a C99 compiler and essential build tools
+(make and some standard Unix tools; alternatively ninja and
 clang are also supported but not described here):
 
 ```sh
@@ -14,7 +14,7 @@ sudo apt-get install cmake git build-essential
 Or on RPM based systems (CentOS):
 
 ```sh
-sudo yum install -y cmake3 git gcc-c++
+sudo dnf install -y cmake git gcc-c++ make
 ```
 
 Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
@@ -36,8 +36,8 @@ mkdir build
 cd build
 cmake ..  # watch output to see if everything needed is included
 ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
-make -j 5
-make run_nokdbtests  # optional: run tests
+cmake --build build -- -j5
+cmake --build build --target run_nokdbtests # optional: run tests
 ```
 
 The last line only runs tests not writing into your system.
@@ -124,8 +124,16 @@ Some scripts in the folder of the same name may help you running cmake.
 
 ### Compilers
 
-For supported compilers have a look at the automatic build farm on
-https://build.libelektra.org/
+You should be able to compile Elektra with any C99 compiler.
+For a list of compilers we test with have a look at:
+
+- our [Docker containers](/scripts/docker) orchestrated
+  by our [Jenkinsfile](/scripts/jenkins/Jenkinsfile) being built
+  on [our build server](https://build.libelektra.org/)
+- [Travis](/.travis.yml)
+- [Cirrus](/.cirrus.yml)
+
+Here is a list of compilers used by developers or build servers:
 
 | Compiler | Version                     | Target              |
 | -------- | --------------------------- | ------------------- |
@@ -138,6 +146,7 @@ https://build.libelektra.org/
 | clang    | 8.0                         | macOS               |
 | gcc      | 9.1                         | macOS               |
 | gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
+| mingw    | 6.0.0-3                     | amd64               |
 | clang    | 6.0.0                       | freebsd 11          |
 | clang    | 6.0.1                       | freebsd 12          |
 
@@ -368,8 +377,6 @@ you can use:
 -DBINDINGS=MAINTAINED;-EXPERIMENTAL
 ```
 
-Note that the same languages are sometimes available over GI and SWIG.
-In this case, the SWIG bindings are preferred.
 The SWIG executable may be specified with:
 
 ```sh
@@ -378,11 +385,6 @@ The SWIG executable may be specified with:
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-To build GI bindings (deprecated) and gsettings (experimental) use:
-
-```sh
--DBINDINGS="GI;gsettings"
-```
 
 Some bindings provide different APIs (and not a different language), e.g:
 
@@ -694,8 +696,8 @@ and install the build tools:
 cmake -DINSTALL_BUILD_TOOLS=ON \
       -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
       ..
-make -j 5
-make install -j 5
+cmake --build . -- -j5
+cmake --build . --target install
 ```
 
 Where `$(STAGING_DIR_HOST)` must be a directory to be found in the later

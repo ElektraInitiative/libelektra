@@ -25,15 +25,38 @@ This plugin uses ANTLR to generate a parser for the [YAML](http://yaml.org) seri
 
 The plugin requires
 
-- [ANTLR](https://www.antlr.org) `4.6` or later ([`antlr4`](https://repology.org/metapackage/antlr4)), and
-- [ANTLR 4’s C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp)
-  ([`antlr4-cpp-runtime`](https://repology.org/metapackage/antlr4-cpp-runtime) or [`libantlr4-runtime-dev`](https://packages.debian.org/search?searchon=names&keywords=libantlr4-runtime-dev))
+- [ANTLR](https://www.antlr.org) `4.6` or later, and
+- [ANTLR 4’s C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp).
 
-. If packages for those libraries are not available for your system, you can install them manually. For more information about that please
+If packages for those libraries are not available for your system, you can install them manually. For more information about that please
 take a look [at ANTLR’s homepage](https://www.antlr.org) and at the
 [ReadMe of the ANTLR C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp).
 
 Please note that we only tested the plugin with ANTLR `4.7.1` (and later versions of ANTLR).
+
+### Arch Linux
+
+In [Arch Linux](https://www.archlinux.org) the required packages are called [`antlr4`](https://www.archlinux.org/packages/extra/any/antlr4) and [`antlr4-runtime`](https://www.archlinux.org/packages/community/x86_64/antlr4-runtime).
+
+```
+pacman -Sy --noconfirm antlr4 antlr4-runtime
+```
+
+### Debian Linux
+
+In Debian Linux you need the packages [`antlr4`](https://packages.debian.org/sid/antlr4) and [`libantlr4-runtime-dev`](https://packages.debian.org/sid/libantlr4-runtime-dev).
+
+```
+apt-get -y install antlr4 libantlr4-runtime-dev
+```
+
+### macOS
+
+To install the dependencies of the plugin using [Homebrew](https://brew.sh), please use the command below.
+
+```
+brew install antlr antlr4-cpp-runtime
+```
 
 ## Examples
 
@@ -106,7 +129,7 @@ kdb ls user/tests/yanlr
 kdb set user/tests/yanlr/primes/#3 seven
 
 # Retrieve index of last array element
-kdb getmeta user/tests/yanlr/primes array
+kdb meta-get user/tests/yanlr/primes array
 #> #3
 
 # Undo modifications to the key database
@@ -142,7 +165,7 @@ sudo kdb mount config.yaml user/tests/yanlr yanlr
 printf '"null":' > `kdb file user/tests/yanlr`
 
 # Elektra adds the metakey `binary` for empty keys
-kdb lsmeta user/tests/yanlr/null
+kdb meta-ls user/tests/yanlr/null
 #> binary
 
 # Undo modifications to the key database
@@ -216,6 +239,27 @@ sudo kdb umount user/tests/yanlr
   .
 
 - Yan LR does not provide write support for data. Please use the [YAML Smith](../yamlsmith/) plugin for that purpose.
+
+### Input Restrictions
+
+The plugin should, but does not, limit the amount
+
+- of **nesting levels**,
+- the **length of numbers**, and
+- the **length of scalars**
+
+. These restrictions would make it less easy to crash the parser, by feeding it unrestricted data.
+
+### Duplicate Keys
+
+Currently the plugin parses the input
+
+```yaml
+duplicate: one
+duplicate: two
+```
+
+storing the value `two`. According to the YAML specification the parser should not allow duplicated keys, and instead fail with an error, for the input above.
 
 ### Comments
 

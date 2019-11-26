@@ -73,7 +73,9 @@ Thus please use following techniques (in order of preference):
    Read [HERE](/doc/dev/logging.md) for how to enable the logger.
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
-   comments.
+   comments. Use `TODO` to indicate that something is not yet done.
+   Before merging, relevant `TODO`s should be fixed or
+   [issues](https://issues.libelektra.org) created for left-overs.
 
 ### Coding Style
 
@@ -112,9 +114,11 @@ Thus please use following techniques (in order of preference):
   - Use space before and after `*` from Pointers.
   - Use space after `,` of every function argument.
 
-The [reformat script](/scripts/reformat-source) can ensure most code style rules,
-but it is obviously not capable of ensuring everything (e.g. naming conventions).
-So do not give this responsibility out of hands entirely.
+The [reformat script](/scripts/dev/reformat-c) can ensure most code style rules,
+but it is obviously not capable of ensuring everything (e.g. naming
+conventions). So do not give this responsibility out of hands entirely. You
+can [use docker](/doc/tutorials/run_reformatting_script_with_docker.md) to
+ensure that you have the correct version of all our reformatting tools at hand.
 
 ### C Guidelines
 
@@ -192,10 +196,10 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
-. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-source`](../scripts/reformat-source) that reformats all C and C++ code in Elektra’s code base
+. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-c`](../scripts/dev/reformat-c) that reformats all C and C++ code in Elektra’s code base
 
 ```sh
-scripts/reformat-source # This script will probably take some seconds to execute
+scripts/dev/reformat-c # This script will probably take some seconds to execute
 ```
 
 .
@@ -260,20 +264,20 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
 ```sh
-# Install cmake format `0.5.4` with support for YAML config files
-pip install cmake-format[yaml]==0.5.4
+# Install cmake format `0.6` with support for YAML config files
+pip install cmake-format[yaml]==0.6
 ```
 
-. Please make sure, that you install the correct version (`0.5.4`) of cmake format:
+. Please make sure, that you install the correct version (`0.6.0`) of cmake format:
 
 ```sh
 cmake-format --version
-#> 0.5.4
+#> 0.6.0
 ```
 
 , since otherwise the formatted code might look quite different.
 
-We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/reformat-cmake), which you can install on macOS using [Homebrew][]:
+We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/dev/reformat-cmake), which you can install on macOS using [Homebrew][]:
 
 ```sh
 brew install moreutils
@@ -289,17 +293,17 @@ apt-get install moreutils
 
 ##### Usage
 
-If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/reformat-cmake):
+If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/dev/reformat-cmake):
 
 ```sh
-scripts/reformat-cmake # Running this script for the whole code base takes some time.
+scripts/dev/reformat-cmake # Running this script for the whole code base takes some time.
 ```
 
 . To reformat specific files add a list of file paths after the command:
 
 ```sh
 # The command below reformats the file `cmake/CMakeLists.txt`.
-scripts/reformat-cmake cmake/CMakeLists.txt
+scripts/dev/reformat-cmake cmake/CMakeLists.txt
 ```
 
 .
@@ -349,17 +353,117 @@ While TextMate does not support cmake format directly, you can quickly create a 
 
    in a file called [`.tm_properties`](https://macromates.com/blog/2011/git-style-configuration) in the root of Elektra’s repository.
 
-### Java / Groovy Guidelines
+### Groovy Guidelines
 
 Please follow
 [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
-for Java and Groovy (used by Jenkins) files.
+for Groovy (used by Jenkins) files.
 
 Most notably use:
 
 - 2 spaces for indentation
 - Variable and function names in lowerCamelCase
 - K & R style brackets
+
+### Java
+
+We use a similar style for Java and C/C++ code. This means we also use `clang-format` to format Java code. For more information on how to install `clang-format`, please take a look at the subheading “Clang Format” of the **“C Guidelines”**.
+
+#### Clang Format
+
+##### Usage
+
+If you want to reformat all Java files in the repository you can use the script [`reformat-java`](../scripts/dev/reformat-java):
+
+```sh
+scripts/dev/reformat-java
+```
+
+. To reformat specific files add a list of file paths after the command:
+
+```sh
+# The command below reformats the file `cmake/CMakeLists.txt`.
+scripts/dev/reformat-java src/bindings/jna/libelektra4j/src/main/java/org/libelektra/KDB.java
+```
+
+.
+
+###### TextMate
+
+The steps below show you how to create a [TextMate][] command that formats a documents with [`clang-format`][] every time you save it.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.java` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_CLANG_FORMAT:-clang-format}" \
+      	-style="${TM_CLANG_FORMAT_STYLE:-file}" \
+      	-assume-filename="${TM_FILEPATH}"; then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
+
+### JavaScript Guidelines
+
+#### Prettier
+
+We use [`prettier`][] to format JavaScript files.
+
+##### Installation
+
+###### macOS
+
+On macOS you can install [`prettier`][] using [Homebrew][]:
+
+```sh
+brew install prettier
+```
+
+.
+
+###### General
+
+To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
+
+```sh
+npm install --global prettier@1.19.1
+```
+
+.
+
+##### Usage
+
+To format all JavaScript files in the repository you can use the script [`reformat-javascript`](../scripts/dev/reformat-javascript):
+
+```sh
+scripts/dev/reformat-javascript
+```
+
+. To format only some files, please specify a list of filenames after the command:
+
+```sh
+scripts/dev/reformat-markdown src/tools/qt-gui/qml/ErrorDialogCreator.js # Reformat this file
+```
+
+.
 
 ### Markdown Guidelines
 
@@ -389,38 +493,20 @@ that you can
 
 ##### Installation
 
-###### macOS
-
-On macOS you can install [`prettier`][] using [Homebrew][]:
-
-```sh
-brew install prettier
-```
-
-.
-
-###### General
-
-To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
-
-```sh
-npm install --global prettier@1.17.1
-```
-
-.
+For information on how to install the tool, please take a look at “JavaScript Guidelines” → “Prettier” → “Installation”.
 
 ##### Usage
 
-You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/reformat-markdown):
+You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/dev/reformat-markdown):
 
 ```sh
-scripts/reformat-markdown
+scripts/dev/reformat-markdown
 ```
 
 . To format only some files, please specify a list of filenames after the command:
 
 ```sh
-scripts/reformat-markdown doc/CODING.md # Reformat this file
+scripts/dev/reformat-markdown doc/CODING.md # Reformat this file
 ```
 
 .
@@ -503,16 +589,16 @@ export PATH=$PATH:"$HOME/bin"
 
 ##### Usage
 
-We provide the script [`reformat-shfmt`](../scripts/reformat-shfmt) that formats the whole codebase with [`shfmt`][]:
+We provide the script [`reformat-shell`](../scripts/dev/reformat-shell) that formats the whole codebase with [`shfmt`][]:
 
 ```sh
-scripts/reformat-shfmt
+scripts/dev/reformat-shell
 ```
 
 . You can also reformat specific files by listing filenames after the script:
 
 ```sh
-scripts/reformat-shfmt scripts/reformat-shfmt # Reformat the source of `reformat-shfmt`
+scripts/dev/reformat-shell scripts/dev/reformat-shell # Reformat the source of `reformat-shell`
 ```
 
 .

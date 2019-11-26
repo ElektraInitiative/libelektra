@@ -43,9 +43,9 @@ sudo kdb mount config.tcl user/tests/tcl tcl ccode null base64
 # Add a key value pair to the database
 kdb set user/tests/tcl/key value
 # The Tcl plugin also supports metadata
-kdb setmeta user/tests/tcl/key comment "This key contains example data."
+kdb meta-set user/tests/tcl/key comment "This key contains example data."
 # A known limitation of the plugin is that it discards whitespace characters
-kdb getmeta user/tests/tcl/key comment
+kdb meta-get user/tests/tcl/key comment
 #> Thiskeycontainsexampledata.
 
 kdb export user/tests/tcl tcl

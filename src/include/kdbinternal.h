@@ -20,4 +20,19 @@
 #include <kdbprivate.h>
 #include <kdbproposal.h>
 
+#ifdef __cplusplus
+namespace ckdb
+{
+extern "C" {
+#endif
+
+// can be made simply without elektra's internals, so better keep it as
+// extension.
+ssize_t keySetStringF (Key * key, const char * format, ...);
+
+#ifdef __cplusplus
+}
+}
+#endif
+
 #endif

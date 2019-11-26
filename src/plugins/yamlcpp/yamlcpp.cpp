@@ -16,11 +16,12 @@
 using namespace yamlcpp;
 
 #include <kdb.hpp>
-using namespace ckdb;
 #include <kdberrors.h>
 #include <kdblogger.h>
 
 #include "yaml-cpp/yaml.h"
+
+using namespace ckdb;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -53,6 +54,9 @@ kdb::KeySet contractYamlCpp (void)
 
 /** @see elektraDocGet */
 int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+#endif
 {
 	kdb::Key parent = kdb::Key (parentKey);
 	kdb::KeySet keys = kdb::KeySet (returned);
@@ -87,6 +91,10 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to read data from file '%s'. Reason: %s",
 					     parent.getString ().c_str (), exception.what ());
+	}
+	catch (std::exception const & exception)
+	{
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (*parent, "Uncaught Exception: '%s'", exception.what ());
 	}
 
 	parent.release ();
@@ -123,6 +131,10 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parent.getKey (),
 						       "Something went wrong while emitting YAML data to file '%s'. Reason: %s.",
 						       parent.getString ().c_str (), exception.what ());
+	}
+	catch (std::exception const & exception)
+	{
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (*parent, "Uncaught Exception: '%s'", exception.what ());
 	}
 
 	parent.release ();

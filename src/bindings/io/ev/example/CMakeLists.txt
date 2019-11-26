@@ -14,14 +14,10 @@ endif ()
 set (example exampleio_ev)
 
 add_executable (${example} ${SOURCES})
-add_dependencies (${example} kdberrors_generated elektra_error_codes_generated)
 
 target_include_directories (${example} SYSTEM PUBLIC ${LIBEV_INCLUDE_DIRS})
 
-target_link_elektra (${example}
-		     elektra-kdb
-		     elektra-io
-		     elektra-io-ev)
+target_link_elektra (${example} elektra-kdb elektra-io elektra-io-ev)
 if (BUILD_FULL OR BUILD_STATIC)
 	target_link_libraries (${example} ${LIBEV_LIBRARIES})
 endif ()

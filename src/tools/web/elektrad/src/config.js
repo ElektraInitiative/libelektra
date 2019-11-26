@@ -6,4 +6,4 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-export const PORT = process.env.PORT || 33333
+export const PORT = process.env.PORT || 33333;

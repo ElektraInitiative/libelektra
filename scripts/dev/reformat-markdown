@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Reformat Markdown files
+# @date 13.02.2019
+# @tags reformat
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+cd "$SOURCE" || {
+	printf 'Unable to change into source directory'
+	exit 1
+}
+
+PRETTIER="$(which prettier)"
+
+if [ -z "${PRETTIER}" ]; then
+	printf 2>&1 'Please install `prettier` (npm install --global prettier@1.19.1)\n'
+	exit 1
+fi
+
+if [ $# -gt 0 ]; then
+	markdown_files=$(printf "%s\n" "$@" | grep -x '.*\.md')
+	if [ -z "$markdown_files" ]; then
+		exit 0
+	fi
+else
+	markdown_files=$(git ls-files '*.md')
+fi
+printf "%s\n" "$markdown_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${PRETTIER}" --write -- > /dev/null

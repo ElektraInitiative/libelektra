@@ -3,16 +3,12 @@ include (LibAddMacros)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-set_source_files_properties (benchmark_getenv.cpp
-			     PROPERTIES
-			     COMPILE_FLAGS
-			     "-Wno-unused-result")
+set_source_files_properties (benchmark_getenv.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
 
 macro (do_benchmark source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (${source})
 
