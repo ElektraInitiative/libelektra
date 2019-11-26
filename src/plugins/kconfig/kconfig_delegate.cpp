@@ -45,6 +45,7 @@ kdb::KeySet KconfigDelegate::getConfig (Key const & parent)
 	auto filePtr = new std::ifstream{ parent.getString () };
 	if (!filePtr->is_open ())
 	{
+		delete filePtr;
 		throw std::runtime_error ("Could not open the file.");
 	}
 
