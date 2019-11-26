@@ -207,10 +207,19 @@ you up to date with the multi-language support provided by Elektra.
 - Warnings about cmake policies are avoided. _(Markus Raab)_
 - We removed the Haskell and GI bindings. _(Markus Raab)_
 - Avoid unnecessary copying std::string where possible (setString and setMeta only). _(Manuel Mausz)_
+- CPP: add `Key::is{Name,Value,Meta}Locked`. _(Manuel Mausz)_
 - GLIB: removed `gelektra_keyset_resize`. _(Manuel Mausz)_
 - GLIB: removed `gelektra_keyset_rewind`, `gelektra_keyset_next`, `gelektra_keyset_current`, `gelektra_keyset_getcursor`, `gelektra_keyset_setcursor`. _(Manuel Mausz)_
 - GLIB: renamed `gelektra_keyset_atcursor` to `gelektra_keyset_at`. _(Manuel Mausz)_
 - gsettings: adapt iterator. _(Manuel Mausz)_
+- SWIG: Add `KeyNotFoundException` exception. _(Manuel Mausz)_
+- SWIG: Fix KeySet equality operators. _(Manuel Mausz)_
+- SWIG/Python: `hash(key)` will throw unless the key name is locked. _(Manuel Mausz)_
+- SWIG/Python: Add operator overloadings for `len(Key)`, `repr(Key)`, `str(KeySet)`, `repr(KeySet)`. _(Manuel Mausz)_
+- SWIG/Python: Add alternative Key constructor `Key(name, value, [dict])`. _(Manuel Mausz)_
+- SWIG/Python: Add `KeySet.extend([key1, key2,...])` and `KeySet.append(key1, key2, ...)`. _(Manuel Mausz)_
+- SWIG/Python: Add `KeySet.append(key_name, key_value, key_opts)` which directly creates and appends a key. _(Manuel Mausz)_
+- SWIG/Python: Add `KeySet.unpack_names()`, `KeySet.unpack_basenames()`, `KeySet.filter(func)`, `KeySet.filter_below(where)`, `Key.array_elements()`. _(Manuel Mausz)_
 
 ### Java
 
