@@ -41,6 +41,8 @@ libelektra_0.9 {
 	elektraKeyToUnsignedLong;
 	elektraKeyToUnsignedLongLong;
 	elektraKeyToUnsignedShort;
+
+	elektraKsToMemArray;
 };
 
 libelektraprivate_1.0 {
