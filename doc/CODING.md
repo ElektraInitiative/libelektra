@@ -264,15 +264,15 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
 ```sh
-# Install cmake format `0.5.4` with support for YAML config files
-pip install cmake-format[yaml]==0.5.4
+# Install cmake format `0.6` with support for YAML config files
+pip install cmake-format[yaml]==0.6
 ```
 
-. Please make sure, that you install the correct version (`0.5.4`) of cmake format:
+. Please make sure, that you install the correct version (`0.6.0`) of cmake format:
 
 ```sh
 cmake-format --version
-#> 0.5.4
+#> 0.6.0
 ```
 
 , since otherwise the formatted code might look quite different.
@@ -353,17 +353,73 @@ While TextMate does not support cmake format directly, you can quickly create a 
 
    in a file called [`.tm_properties`](https://macromates.com/blog/2011/git-style-configuration) in the root of Elektra’s repository.
 
-### Java / Groovy Guidelines
+### Groovy Guidelines
 
 Please follow
 [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
-for Java and Groovy (used by Jenkins) files.
+for Groovy (used by Jenkins) files.
 
 Most notably use:
 
 - 2 spaces for indentation
 - Variable and function names in lowerCamelCase
 - K & R style brackets
+
+### Java
+
+We use a similar style for Java and C/C++ code. This means we also use `clang-format` to format Java code. For more information on how to install `clang-format`, please take a look at the subheading “Clang Format” of the **“C Guidelines”**.
+
+#### Clang Format
+
+##### Usage
+
+If you want to reformat all Java files in the repository you can use the script [`reformat-java`](../scripts/dev/reformat-java):
+
+```sh
+scripts/dev/reformat-java
+```
+
+. To reformat specific files add a list of file paths after the command:
+
+```sh
+# The command below reformats the file `cmake/CMakeLists.txt`.
+scripts/dev/reformat-java src/bindings/jna/libelektra4j/src/main/java/org/libelektra/KDB.java
+```
+
+.
+
+###### TextMate
+
+The steps below show you how to create a [TextMate][] command that formats a documents with [`clang-format`][] every time you save it.
+
+1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
+2. Create a new command:
+   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
+   2. Select “Command”
+   3. Press the button “Create”
+3. Configure your new command
+
+   1. Use “Reformat Document” or a similar text as “Name”
+   2. Enter `source.java` in the field “Scope Selector”
+   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
+   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
+   5. Select “Document” as “Input”
+   6. Select “Replace Input” in the dropdown menu for the option “Output”
+   7. Select “Line Interpolation” in the menu “Caret Placement”
+   8. Copy the following code into the text field:
+
+      ```sh
+      #!/bin/bash
+
+      if ! "${TM_CLANG_FORMAT:-clang-format}" \
+      	-style="${TM_CLANG_FORMAT_STYLE:-file}" \
+      	-assume-filename="${TM_FILEPATH}"; then
+      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
+      	exit_show_tool_tip
+      fi
+      ```
+
+   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
 
 ### JavaScript Guidelines
 

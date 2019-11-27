@@ -17,7 +17,10 @@ if (NOT OPENSSL_FOUND)
 
 	# Use Homebrew version of OpenSSL on macOS, if OpenSSL is installed and `OPENSSL_ROOT_DIR` is not set.
 	if (APPLE AND NOT DEFINED OPENSSL_ROOT_DIR)
-		execute_process (COMMAND brew list openssl RESULT_VARIABLE FAILURE OUTPUT_QUIET ERROR_QUIET)
+		execute_process (
+			COMMAND brew list openssl
+			RESULT_VARIABLE FAILURE
+			OUTPUT_QUIET ERROR_QUIET)
 		if (NOT FAILURE)
 			set (OPENSSL_ROOT_DIR /usr/local/opt/openssl)
 		endif (NOT FAILURE)

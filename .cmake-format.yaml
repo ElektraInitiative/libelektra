@@ -62,7 +62,15 @@ additional_commands:
 
   add_msr_test:
     kwargs:
+      ENVIRONMENT: +
       REQUIRED_PLUGINS: +
+      REQUIRED_TOOLS: +
+
+  add_msr_test_plugin:
+    kwargs:
+      ENVIRONMENT: +
+      REQUIRED_PLUGINS: +
+      REQUIRED_TOOLS: +
 
   download_project:
     kwargs:

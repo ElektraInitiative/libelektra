@@ -7,7 +7,8 @@ import org.libelektra.exception.KDBException;
 /**
  * Represents session with the Key database. Close after usage, or simply use a try-with-resources statement.
  */
-public class KDB implements AutoCloseable {
+public class KDB implements AutoCloseable
+{
 
 	private final Pointer kdb;
 
@@ -16,7 +17,8 @@ public class KDB implements AutoCloseable {
 	 *
 	 * @param p Pointer to another KDB object
 	 */
-	public KDB(final Pointer p) {
+	public KDB (final Pointer p)
+	{
 		kdb = p;
 	}
 
@@ -27,17 +29,18 @@ public class KDB implements AutoCloseable {
 	 * @param parentKey Parent key being used for this KDB session; it is used to store warning and error information
 	 * @return New KDB session object
 	 */
-	public static KDB open(final Key parentKey) {
-		return new KDB(Elektra.INSTANCE.kdbOpen(parentKey.get()));
+	public static KDB open (final Key parentKey)
+	{
+		return new KDB (Elektra.INSTANCE.kdbOpen (parentKey.get ()));
 	}
 
 	/**
 	 * Clean-up function initiating closing of the KDB session
 	 */
-	@Override
-	public void close() {
-		final Key k = Key.create("");
-		close(k);
+	@Override public void close ()
+	{
+		final Key k = Key.create ("");
+		close (k);
 	}
 
 	/*
@@ -51,10 +54,12 @@ public class KDB implements AutoCloseable {
 	 * @param parentKey Root key which name will be used to fetch keys below it
 	 * @throws KDBException In case of an error when loading keys
 	 */
-	public void get(final KeySet ks, final Key parentKey) throws KDBException {
-		final int ret = Elektra.INSTANCE.kdbGet(kdb, ks.get(), parentKey.get());
-		if (ret == -1) {
-			throw ExceptionMapperService.getMappedException(parentKey);
+	public void get (final KeySet ks, final Key parentKey) throws KDBException
+	{
+		final int ret = Elektra.INSTANCE.kdbGet (kdb, ks.get (), parentKey.get ());
+		if (ret == -1)
+		{
+			throw ExceptionMapperService.getMappedException (parentKey);
 		}
 	}
 
@@ -66,10 +71,12 @@ public class KDB implements AutoCloseable {
 	 * @param parentKey Is used to add warnings and set an error, if necessary
 	 * @throws KDBException In case of an error when storing keys
 	 */
-	public void set(final KeySet ks, final Key parentKey) throws KDBException {
-		final int ret = Elektra.INSTANCE.kdbSet(kdb, ks.get(), parentKey.get());
-		if (ret == -1) {
-			throw ExceptionMapperService.getMappedException(parentKey);
+	public void set (final KeySet ks, final Key parentKey) throws KDBException
+	{
+		final int ret = Elektra.INSTANCE.kdbSet (kdb, ks.get (), parentKey.get ());
+		if (ret == -1)
+		{
+			throw ExceptionMapperService.getMappedException (parentKey);
 		}
 	}
 
@@ -78,8 +85,9 @@ public class KDB implements AutoCloseable {
 	 *
 	 * @param parentKey Key holding error and warning information
 	 */
-	public void close(final Key parentKey) {
-		Elektra.INSTANCE.kdbClose(kdb, parentKey.get());
+	public void close (final Key parentKey)
+	{
+		Elektra.INSTANCE.kdbClose (kdb, parentKey.get ());
 	}
 
 	/**
@@ -87,8 +95,8 @@ public class KDB implements AutoCloseable {
 	 *
 	 * @return Native pointer object
 	 */
-	protected Pointer get() {
+	protected Pointer get ()
+	{
 		return kdb;
 	}
-
 }

@@ -17,7 +17,8 @@ import java.util.List;
 /**
  * This class can be used to load native Elektra Plugins to be used by Java directly
  */
-public class NativePlugin implements Plugin {
+public class NativePlugin implements Plugin
+{
 
 	private ElektraPlugin elektraPlugin;
 
@@ -27,19 +28,22 @@ public class NativePlugin implements Plugin {
 	 * @param errorKey The errorKey
 	 * @throws InstallationException if the plugin does not exist
 	 */
-	public NativePlugin(String pluginName, Key errorKey, KeySet modules) throws InstallationException {
-		KeySet config = KeySet.create();
-		elektraPlugin = Elektra.INSTANCE.elektraPluginOpen(pluginName, modules.get(), config.get(), errorKey.get());
-		if (elektraPlugin == null) {
-			Key temporaryError = Key.create("user/temporary/errorkey");
-			temporaryError.setMeta("error/number", InstallationException.errorNumber());
-			temporaryError.setMeta("error/reason", String.format("I could not find plugin '%s'", pluginName));
-			throw new InstallationException(temporaryError);
+	public NativePlugin (String pluginName, Key errorKey, KeySet modules) throws InstallationException
+	{
+		KeySet config = KeySet.create ();
+		elektraPlugin = Elektra.INSTANCE.elektraPluginOpen (pluginName, modules.get (), config.get (), errorKey.get ());
+		if (elektraPlugin == null)
+		{
+			Key temporaryError = Key.create ("user/temporary/errorkey");
+			temporaryError.setMeta ("error/number", InstallationException.errorNumber ());
+			temporaryError.setMeta ("error/reason", String.format ("I could not find plugin '%s'", pluginName));
+			throw new InstallationException (temporaryError);
 		}
 	}
 
-	public NativePlugin(String pluginName, KeySet modules, KeySet config, Key errorKey) {
-		elektraPlugin = Elektra.INSTANCE.elektraPluginOpen(pluginName, modules.get(), config.get(), errorKey.get());
+	public NativePlugin (String pluginName, KeySet modules, KeySet config, Key errorKey)
+	{
+		elektraPlugin = Elektra.INSTANCE.elektraPluginOpen (pluginName, modules.get (), config.get (), errorKey.get ());
 	}
 
 	/**
@@ -47,13 +51,14 @@ public class NativePlugin implements Plugin {
 	 *
 	 * @return A KeySet containing the configuration of the plugin
 	 */
-	public KeySet getConfig() {
-		return new KeySet(elektraPlugin.config);
+	public KeySet getConfig ()
+	{
+		return new KeySet (elektraPlugin.config);
 	}
 
-	@Override
-	public int open(KeySet conf, Key errorKey) {
-		return kdbOpen(errorKey);
+	@Override public int open (KeySet conf, Key errorKey)
+	{
+		return kdbOpen (errorKey);
 	}
 
 	/**
@@ -62,8 +67,9 @@ public class NativePlugin implements Plugin {
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @retval 0 if success or -1 otherwise
 	 */
-	public int kdbOpen(Key errorKey) {
-		return elektraPlugin.kdbOpen.invoke(elektraPlugin, errorKey.get());
+	public int kdbOpen (Key errorKey)
+	{
+		return elektraPlugin.kdbOpen.invoke (elektraPlugin, errorKey.get ());
 	}
 
 	/**
@@ -72,8 +78,9 @@ public class NativePlugin implements Plugin {
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @retval 0 if success or -1 otherwise
 	 */
-	public int close(Key errorKey) {
-		return elektraPlugin.kdbClose.invoke(elektraPlugin, errorKey.get());
+	public int close (Key errorKey)
+	{
+		return elektraPlugin.kdbClose.invoke (elektraPlugin, errorKey.get ());
 	}
 
 	/**
@@ -84,11 +91,13 @@ public class NativePlugin implements Plugin {
 	 * @retval 0 if success or -1 otherwise
 	 * @throws KDBException if return value was -1
 	 */
-	public int set(KeySet keySet, Key errorKey) throws KDBException {
-		keySet.rewind();
-		int returnValue = elektraPlugin.kdbSet.invoke(elektraPlugin, keySet.get(), errorKey.get());
-		if (returnValue == -1) {
-			throw ExceptionMapperService.getMappedException(errorKey);
+	public int set (KeySet keySet, Key errorKey) throws KDBException
+	{
+		keySet.rewind ();
+		int returnValue = elektraPlugin.kdbSet.invoke (elektraPlugin, keySet.get (), errorKey.get ());
+		if (returnValue == -1)
+		{
+			throw ExceptionMapperService.getMappedException (errorKey);
 		}
 		return returnValue;
 	}
@@ -101,11 +110,13 @@ public class NativePlugin implements Plugin {
 	 * @retval 0 if success or -1 otherwise
 	 * @throws KDBException if return value was -1
 	 */
-	public int get(KeySet keySet, Key errorKey) throws KDBException {
-		keySet.rewind();
-		int returnValue = elektraPlugin.kdbGet.invoke(elektraPlugin, keySet.get(), errorKey.get());
-		if (returnValue == -1) {
-			throw ExceptionMapperService.getMappedException(errorKey);
+	public int get (KeySet keySet, Key errorKey) throws KDBException
+	{
+		keySet.rewind ();
+		int returnValue = elektraPlugin.kdbGet.invoke (elektraPlugin, keySet.get (), errorKey.get ());
+		if (returnValue == -1)
+		{
+			throw ExceptionMapperService.getMappedException (errorKey);
 		}
 		return returnValue;
 	}
@@ -117,9 +128,10 @@ public class NativePlugin implements Plugin {
 	 * @param errorKey ust be a valid key, e.g. created with Key.create() and contains error information
 	 * @retval 0 if success or -1 otherwise
 	 */
-	public int error(KeySet keySet, Key errorKey) {
-		keySet.rewind();
-		return elektraPlugin.kdbError.invoke(elektraPlugin, keySet.get(), errorKey.get());
+	public int error (KeySet keySet, Key errorKey)
+	{
+		keySet.rewind ();
+		return elektraPlugin.kdbError.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 	}
 
 	/**
@@ -127,30 +139,32 @@ public class NativePlugin implements Plugin {
 	 *
 	 * @return plugin name
 	 */
-	public String getName() {
+	public String getName ()
+	{
 		return elektraPlugin.name;
 	}
 
-	public static class ElektraPlugin extends Structure {
+	public static class ElektraPlugin extends Structure
+	{
 
 		public interface KdbOpen extends Callback {
-			int invoke(ElektraPlugin elektraPlugin, Pointer errorKey);
+			int invoke (ElektraPlugin elektraPlugin, Pointer errorKey);
 		}
 
 		public interface KdbClose extends Callback {
-			int invoke(ElektraPlugin elektraPlugin, Pointer errorKey);
+			int invoke (ElektraPlugin elektraPlugin, Pointer errorKey);
 		}
 
 		public interface KdbGet extends Callback {
-			int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
+			int invoke (ElektraPlugin handle, Pointer returned, Pointer parentKey);
 		}
 
 		public interface KdbSet extends Callback {
-			int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
+			int invoke (ElektraPlugin handle, Pointer returned, Pointer parentKey);
 		}
 
 		public interface KdbError extends Callback {
-			int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
+			int invoke (ElektraPlugin handle, Pointer returned, Pointer parentKey);
 		}
 
 		public Pointer config;
@@ -162,20 +176,17 @@ public class NativePlugin implements Plugin {
 		public String name;
 
 
-		@Override
-		protected List<String> getFieldOrder() {
-			List<String> list = new ArrayList<>();
-			list.add("config");
-			list.add("kdbOpen");
-			list.add("kdbClose");
-			list.add("kdbGet");
-			list.add("kdbSet");
-			list.add("kdbError");
-			list.add("name");
+		@Override protected List<String> getFieldOrder ()
+		{
+			List<String> list = new ArrayList<> ();
+			list.add ("config");
+			list.add ("kdbOpen");
+			list.add ("kdbClose");
+			list.add ("kdbGet");
+			list.add ("kdbSet");
+			list.add ("kdbError");
+			list.add ("name");
 			return list;
 		}
 	}
-
 }
-
-

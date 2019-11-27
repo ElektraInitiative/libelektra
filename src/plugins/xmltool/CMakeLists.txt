@@ -6,16 +6,13 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (xmltool
-	    SOURCES xmltool.h
-		    xmltool.c
-		    stream.c
-		    kdbtools.c
-		    kscompare.c
-	    INSTALL_TEST_DATA
-	    INCLUDE_DIRECTORIES ${LIBXML2_INCLUDE_DIR}
-	    LINK_ELEKTRA elektra-meta
-	    LINK_LIBRARIES ${LIBXML2_LIBRARIES})
+add_plugin (
+	xmltool
+	SOURCES xmltool.h xmltool.c stream.c kdbtools.c kscompare.c
+	INSTALL_TEST_DATA
+	INCLUDE_DIRECTORIES ${LIBXML2_INCLUDE_DIR}
+	LINK_ELEKTRA elektra-meta
+	LINK_LIBRARIES ${LIBXML2_LIBRARIES})
 
 if (ADDTESTING_PHASE)
 	include (LibAddMacros)

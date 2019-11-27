@@ -18,17 +18,16 @@ if (ADDTESTING_PHASE)
 	return ()
 endif ()
 
-generate_manpage (elektra-plugins
-		  FILENAME
-		  ${CMAKE_CURRENT_SOURCE_DIR}/README.md
-		  SECTION
-		  7)
+generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
 
 set (COLLECTION_PHASE ON)
 set (DEPENDENCY_PHASE OFF)
 set (ADDTESTING_PHASE OFF)
 
-file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+file (
+	GLOB DIRECTORIES
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 foreach (plugin ${DIRECTORIES})
 
@@ -67,7 +66,7 @@ if (output EQUAL -1)
 	message (
 		SEND_ERROR
 			"selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS"
-		)
+	)
 endif ()
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
@@ -75,16 +74,21 @@ if (output EQUAL -1)
 	message (
 		SEND_ERROR
 			"selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS"
-		)
+	)
 endif ()
 
 list (FIND ADDED_PLUGINS list output)
-if (output EQUAL -1 AND ENABLE_TESTING AND BUILD_TESTING)
+if (output EQUAL -1
+    AND ENABLE_TESTING
+    AND BUILD_TESTING)
 	message (SEND_ERROR "The required plugin `list` is not selected in PLUGINS but needed for testing, please add `list` to PLUGINS")
 endif ()
 
 list (FIND ADDED_PLUGINS spec output)
-if (output EQUAL -1 AND (NOT MINGW) AND ENABLE_TESTING AND BUILD_TESTING)
+if (output EQUAL -1
+    AND (NOT MINGW)
+    AND ENABLE_TESTING
+    AND BUILD_TESTING)
 	message (SEND_ERROR "The required plugin `spec` is not selected in PLUGINS but needed for testing, please add `spec` to PLUGINS")
 endif ()
 

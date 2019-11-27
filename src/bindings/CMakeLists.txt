@@ -19,7 +19,10 @@ add_subdirectory (swig)
 
 check_binding_included ("glib" IS_INCLUDED)
 check_binding_included ("gsettings" IS_GSETTINGS_INCLUDED)
-if (IS_INCLUDED OR IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED OR IS_GSETTINGS_INCLUDED)
+if (IS_INCLUDED
+    OR IS_PYTHON_INCLUDED
+    OR IS_LUA_INCLUDED
+    OR IS_GSETTINGS_INCLUDED)
 	add_subdirectory (glib)
 endif ()
 

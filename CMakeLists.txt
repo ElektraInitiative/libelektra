@@ -5,7 +5,7 @@ set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/scripts/cmake/Platform.
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 9)
-set (KDB_VERSION_MICRO 0)
+set (KDB_VERSION_MICRO 1)
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 
 set (ELEKTRA_DESCRIPTION
@@ -15,9 +15,16 @@ set (ELEKTRA_HOMEPAGE_URL "https://www.libelektra.org")
 if (CMAKE_VERSION VERSION_LESS 3.9)
 	project (Elektra VERSION "${KDB_VERSION}")
 elseif (CMAKE_VERSION VERSION_LESS 3.12)
-	project (Elektra VERSION ${KDB_VERSION} DESCRIPTION ${ELEKTRA_DESCRIPTION})
+	project (
+		Elektra
+		VERSION ${KDB_VERSION}
+		DESCRIPTION ${ELEKTRA_DESCRIPTION})
 else (CMAKE_VERSION VERSION_LESS 3.12)
-	project (Elektra VERSION ${KDB_VERSION} DESCRIPTION ${ELEKTRA_DESCRIPTION} HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
+	project (
+		Elektra
+		VERSION ${KDB_VERSION}
+		DESCRIPTION ${ELEKTRA_DESCRIPTION}
+		HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
 endif (CMAKE_VERSION VERSION_LESS 3.9)
 
 # fix macOS RPATH issues
@@ -41,21 +48,24 @@ endif (ENABLE_TESTING)
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
-		message (FATAL_ERROR "In-source builds are not permitted.\n"
-				     "Make a separate folder for building:\n"
-				     "    mkdir build && cd build && cmake ..\n"
-				     "Before that, remove the files already created:\n"
-				     "    rm -rf CMakeCache.txt CMakeFiles\n"
-				     "If you really know what you are doing\n"
-				     "(will overwrite original files!) use:\n"
-				     "    cmake -DFORCE_IN_SOURCE_BUILD=ON\n")
+		message (
+			FATAL_ERROR
+				"In-source builds are not permitted.\n"
+				"Make a separate folder for building:\n"
+				"    mkdir build && cd build && cmake ..\n"
+				"Before that, remove the files already created:\n"
+				"    rm -rf CMakeCache.txt CMakeFiles\n"
+				"If you really know what you are doing\n"
+				"(will overwrite original files!) use:\n"
+				"    cmake -DFORCE_IN_SOURCE_BUILD=ON\n")
 	endif (NOT FORCE_IN_SOURCE_BUILD)
 endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
 if (NOT CMAKE_BUILD_TYPE)
-	set (CMAKE_BUILD_TYPE
-	     RelWithDebInfo
-	     CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+	set (
+		CMAKE_BUILD_TYPE
+		RelWithDebInfo
+		CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -96,7 +106,9 @@ endif (BUILD_DOCUMENTATION)
 add_subdirectory (scripts)
 
 # is there anything to build except documentation?
-if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
+if (BUILD_FULL
+    OR BUILD_STATIC
+    OR BUILD_SHARED)
 	if (BUILD_TESTING)
 		find_package (GTest)
 	endif (BUILD_TESTING)

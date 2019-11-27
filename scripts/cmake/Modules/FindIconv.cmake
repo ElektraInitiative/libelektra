@@ -53,14 +53,18 @@ The following cache variables may also be set:
 
 # iconv can only be provided in libc on a POSIX system. If any cache variable is already set, we'll skip this test.
 if (NOT DEFINED Iconv_IS_BUILT_IN)
-	if (UNIX AND NOT DEFINED Iconv_INCLUDE_DIR AND NOT DEFINED Iconv_LIBRARY)
+	if (UNIX
+	    AND NOT DEFINED Iconv_INCLUDE_DIR
+	    AND NOT DEFINED Iconv_LIBRARY)
 		cmake_push_check_state (RESET)
 		# We always suppress the message here: Otherwise on supported systems not having iconv in their C library (e.g. those using
 		# libiconv) would always display a confusing "Looking for iconv - not found" message
 		set (CMAKE_FIND_QUIETLY TRUE)
 		# The following code will not work, but it's sufficient to see if it compiles. Note: libiconv will define the iconv
 		# functions as macros, so CheckSymbolExists will not yield correct results.
-		set (Iconv_IMPLICIT_TEST_CODE "
+		set (
+			Iconv_IMPLICIT_TEST_CODE
+			"
       #include <stddef.h>
       #include <iconv.h>
       int main() {
@@ -84,23 +88,29 @@ if (NOT DEFINED Iconv_IS_BUILT_IN)
 endif ()
 
 if (NOT Iconv_IS_BUILT_IN)
-	find_path (Iconv_INCLUDE_DIR NAMES "iconv.h" DOC "iconv include directory")
+	find_path (
+		Iconv_INCLUDE_DIR
+		NAMES "iconv.h"
+		DOC "iconv include directory")
 	set (Iconv_LIBRARY_NAMES "iconv" "libiconv")
 else ()
-	set (Iconv_INCLUDE_DIR "" CACHE FILEPATH "iconv include directory")
+	set (
+		Iconv_INCLUDE_DIR
+		""
+		CACHE FILEPATH "iconv include directory")
 	set (Iconv_LIBRARY_NAMES "c")
 endif ()
 
-find_library (Iconv_LIBRARY NAMES ${Iconv_LIBRARY_NAMES} DOC "iconv library (potentially the C library)")
+find_library (
+	Iconv_LIBRARY
+	NAMES ${Iconv_LIBRARY_NAMES}
+	DOC "iconv library (potentially the C library)")
 
 mark_as_advanced (Iconv_INCLUDE_DIR)
 mark_as_advanced (Iconv_LIBRARY)
 
 if (NOT Iconv_IS_BUILT_IN)
-	find_package_handle_standard_args (Iconv
-					   REQUIRED_VARS
-					   Iconv_LIBRARY
-					   Iconv_INCLUDE_DIR)
+	find_package_handle_standard_args (Iconv REQUIRED_VARS Iconv_LIBRARY Iconv_INCLUDE_DIR)
 else ()
 	find_package_handle_standard_args (Iconv REQUIRED_VARS Iconv_LIBRARY)
 endif ()

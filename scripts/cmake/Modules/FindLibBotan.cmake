@@ -15,30 +15,29 @@
 
 find_package (PkgConfig QUIET)
 if (PKG_CONFIG_FOUND)
-	pkg_search_module (PC_Botan
-			   QUIET
-			   botan-1.10
-			   botan-1.9
-			   botan-1.8
-			   botan-2
-			   botan)
+	pkg_search_module (
+		PC_Botan
+		QUIET
+		botan-1.10
+		botan-1.9
+		botan-1.8
+		botan-2
+		botan)
 endif (PKG_CONFIG_FOUND)
 
-find_path (Botan_INCLUDE_DIR NAMES botan/botan.h HINTS ${PC_Botan_INCLUDEDIR} ${PC_Botan_INCLUDE_DIRS} PATH_SUFFIXES botan-2 botan)
+find_path (
+	Botan_INCLUDE_DIR
+	NAMES botan/botan.h
+	HINTS ${PC_Botan_INCLUDEDIR} ${PC_Botan_INCLUDE_DIRS}
+	PATH_SUFFIXES botan-2 botan)
 
-find_library (Botan_LIBRARY
-	      NAMES botan-1.10
-		    botan-1.9
-		    botan-1.8
-		    botan-2
-		    botan
-	      HINTS ${PC_Botan_LIBDIR} ${PC_Botan_LIBRARY_DIRS})
+find_library (
+	Botan_LIBRARY
+	NAMES botan-1.10 botan-1.9 botan-1.8 botan-2 botan
+	HINTS ${PC_Botan_LIBDIR} ${PC_Botan_LIBRARY_DIRS})
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Botan
-				   REQUIRED_VARS
-				   Botan_LIBRARY
-				   Botan_INCLUDE_DIR)
+find_package_handle_standard_args (Botan REQUIRED_VARS Botan_LIBRARY Botan_INCLUDE_DIR)
 
 mark_as_advanced (Botan_INCLUDE_DIR Botan_LIBRARY)
 

@@ -17,12 +17,17 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 # ~~~
 
-if (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
+if (DBUS_INCLUDE_DIR
+    AND DBUS_ARCH_INCLUDE_DIR
+    AND DBUS_LIBRARIES)
 
 	# in cache already
 	set (DBUS_FOUND TRUE)
 
-else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
+else (
+	DBUS_INCLUDE_DIR
+	AND DBUS_ARCH_INCLUDE_DIR
+	AND DBUS_LIBRARIES)
 
 	if (NOT WIN32)
 		find_package (PkgConfig QUIET)
@@ -33,28 +38,32 @@ else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 		endif (PKG_CONFIG_FOUND)
 	endif (NOT WIN32)
 
-	find_path (DBUS_INCLUDE_DIR
-		   dbus/dbus.h
-		   ${_DBUS_PC_INCLUDE_DIRS}
-		   /usr/include
-		   /usr/include/dbus-1.0
-		   /usr/local/include)
+	find_path (DBUS_INCLUDE_DIR dbus/dbus.h ${_DBUS_PC_INCLUDE_DIRS} /usr/include /usr/include/dbus-1.0 /usr/local/include)
 
-	find_path (DBUS_ARCH_INCLUDE_DIR
-		   dbus/dbus-arch-deps.h
-		   ${_DBUS_PC_INCLUDE_DIRS}
-		   /usr/lib${LIB_SUFFIX}/include
-		   /usr/lib${LIB_SUFFIX}/dbus-1.0/include
-		   /usr/lib64/include
-		   /usr/lib64/dbus-1.0/include
-		   /usr/lib/include
-		   /usr/lib/dbus-1.0/include)
+	find_path (
+		DBUS_ARCH_INCLUDE_DIR
+		dbus/dbus-arch-deps.h
+		${_DBUS_PC_INCLUDE_DIRS}
+		/usr/lib${LIB_SUFFIX}/include
+		/usr/lib${LIB_SUFFIX}/dbus-1.0/include
+		/usr/lib64/include
+		/usr/lib64/dbus-1.0/include
+		/usr/lib/include
+		/usr/lib/dbus-1.0/include)
 
-	find_library (DBUS_LIBRARIES NAMES dbus-1 dbus PATHS ${_DBUS_PC_LIBDIR})
+	find_library (
+		DBUS_LIBRARIES
+		NAMES dbus-1 dbus
+		PATHS ${_DBUS_PC_LIBDIR})
 
-	if (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
+	if (DBUS_INCLUDE_DIR
+	    AND DBUS_ARCH_INCLUDE_DIR
+	    AND DBUS_LIBRARIES)
 		set (DBUS_FOUND TRUE)
-	endif (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
+	endif (
+		DBUS_INCLUDE_DIR
+		AND DBUS_ARCH_INCLUDE_DIR
+		AND DBUS_LIBRARIES)
 
 	if (DBUS_FOUND)
 		if (NOT DBus_FIND_QUIETLY)
@@ -68,4 +77,7 @@ else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 
 	mark_as_advanced (DBUS_INCLUDE_DIR DBUS_ARCH_INCLUDE_DIR DBUS_LIBRARIES)
 
-endif (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
+endif (
+	DBUS_INCLUDE_DIR
+	AND DBUS_ARCH_INCLUDE_DIR
+	AND DBUS_LIBRARIES)

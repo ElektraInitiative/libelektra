@@ -7,21 +7,24 @@ if (PYTHON2INTERP_FOUND)
 	set (SETUP_PY ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 	configure_file (setup.py.in ${SETUP_PY})
 
-	install (CODE "execute_process(COMMAND
+	install (
+		CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE}
 			\"${CMAKE_CURRENT_SOURCE_DIR}/pythongen\"
 			-p tests/lift.ini
 			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.c\"
 			-o \"${CMAKE_CURRENT_BINARY_DIR}/util.py\")")
 
-	install (CODE "execute_process(COMMAND
+	install (
+		CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE}
 			\"${CMAKE_CURRENT_SOURCE_DIR}/pythongen\"
 			-p tests/lift.ini
 			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp\"
 			-o \"${CMAKE_CURRENT_BINARY_DIR}/cpp_util.py\")")
 
-	install (CODE "execute_process(COMMAND
+	install (
+		CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE} \"${SETUP_PY}\"
 			--no-user-cfg
 			--quiet

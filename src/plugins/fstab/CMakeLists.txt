@@ -6,7 +6,8 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (fstab
-	    SOURCES fstab.c fstab.h
-	    LINK_ELEKTRA elektra-meta
-	    ADD_TEST INSTALL_TEST_DATA)
+add_plugin (
+	fstab
+	SOURCES fstab.c fstab.h
+	LINK_ELEKTRA elektra-meta
+	ADD_TEST INSTALL_TEST_DATA)

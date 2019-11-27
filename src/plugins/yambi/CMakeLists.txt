@@ -7,39 +7,53 @@
 # and defines the macro `bison_target`. If the function was unsuccessful it sets `FOUND_DEPENDENCIES` to `FALSE` and stores the reason for
 # the failure in the variable `FAILURE_MESSAGE`.
 function (check_dependencies)
-	set (FOUND_DEPENDENCIES FALSE PARENT_SCOPE)
+	set (
+		FOUND_DEPENDENCIES
+		FALSE
+		PARENT_SCOPE)
 
 	include (CheckIncludeFileCXX)
 	set (CMAKE_REQUIRED_QUIET ON)
 	check_include_file_cxx (codecvt HAVE_CODECVT)
 	if (NOT HAVE_CODECVT)
-		set (FAILURE_MESSAGE "because the current C++ library does not provide header file `codecvt`" PARENT_SCOPE)
+		set (
+			FAILURE_MESSAGE
+			"because the current C++ library does not provide header file `codecvt`"
+			PARENT_SCOPE)
 		return ()
 	endif (NOT HAVE_CODECVT)
 
 	# Add path to Homebrew version of Bison, if it exists.
-	set (USE_HOMEBREW_BISON
-	     ${APPLE}
-	     AND
-	     EXISTS
-	     /usr/local/opt/bison)
+	set (USE_HOMEBREW_BISON ${APPLE} AND EXISTS /usr/local/opt/bison)
 	if (USE_HOMEBREW_BISON)
 		list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/bison")
 	endif (USE_HOMEBREW_BISON)
 	find_package (BISON 3 QUIET)
 
 	if (NOT BISON_FOUND)
-		set (FAILURE_MESSAGE "Bison 3 (bison) not found" PARENT_SCOPE)
+		set (
+			FAILURE_MESSAGE
+			"Bison 3 (bison) not found"
+			PARENT_SCOPE)
 		return ()
 	endif (NOT BISON_FOUND)
 
 	if (BISON_VERSION VERSION_LESS 3)
-		set (FAILURE_MESSAGE "Bison version 3 or later required (found version ${BISON_VERSION})" PARENT_SCOPE)
+		set (
+			FAILURE_MESSAGE
+			"Bison version 3 or later required (found version ${BISON_VERSION})"
+			PARENT_SCOPE)
 		return ()
 	endif (BISON_VERSION VERSION_LESS 3)
 
-	set (BISON_VERSION "${BISON_VERSION}" PARENT_SCOPE)
-	set (FOUND_DEPENDENCIES TRUE PARENT_SCOPE)
+	set (
+		BISON_VERSION
+		"${BISON_VERSION}"
+		PARENT_SCOPE)
+	set (
+		FOUND_DEPENDENCIES
+		TRUE
+		PARENT_SCOPE)
 
 endfunction (check_dependencies)
 
@@ -54,7 +68,10 @@ endfunction (check_dependencies)
 # `FAILURE_MESSAGE`.
 function (generate_code)
 
-	set (GENERATED_CODE FALSE PARENT_SCOPE)
+	set (
+		GENERATED_CODE
+		FALSE
+		PARENT_SCOPE)
 
 	if (BISON_VERSION VERSION_LESS 3.3)
 		set (PARSER_NAME_DIRECTIVE "parser_class_name")
@@ -67,13 +84,25 @@ function (generate_code)
 	bison_target (YAMBI ${CMAKE_CURRENT_BINARY_DIR}/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
 
 	if (NOT BISON_YAMBI_DEFINED)
-		set (FAILURE_MESSAGE "generating the parser code failed" PARENT_SCOPE)
+		set (
+			FAILURE_MESSAGE
+			"generating the parser code failed"
+			PARENT_SCOPE)
 		return ()
 	endif (NOT BISON_YAMBI_DEFINED)
 
-	set (GENERATED_CODE TRUE PARENT_SCOPE)
-	set (BISON_YAMBI_OUTPUT_SOURCE ${BISON_YAMBI_OUTPUT_SOURCE} PARENT_SCOPE)
-	set (BISON_YAMBI_OUTPUT_HEADER ${BISON_YAMBI_OUTPUT_HEADER} PARENT_SCOPE)
+	set (
+		GENERATED_CODE
+		TRUE
+		PARENT_SCOPE)
+	set (
+		BISON_YAMBI_OUTPUT_SOURCE
+		${BISON_YAMBI_OUTPUT_SOURCE}
+		PARENT_SCOPE)
+	set (
+		BISON_YAMBI_OUTPUT_HEADER
+		${BISON_YAMBI_OUTPUT_HEADER}
+		PARENT_SCOPE)
 
 endfunction (generate_code)
 
@@ -90,41 +119,30 @@ if (DEPENDENCY_PHASE)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 
-	set (LIBSTDCPP
-	     CMAKE_COMPILER_IS_GNUCXX
-	     OR
-	     ${CMAKE_SYSTEM_NAME}
-	     STREQUAL
-	     "Linux")
+	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	if (ENABLE_ASAN AND ${LIBSTDCPP})
 		# Ignore runtime error about member call on address, which does not point to object of type `__codecvt_abstract_base` in
 		# `libstdc++`. See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81068
-		set_source_files_properties (${SOURCE_FILES_INPUT}
-					     PROPERTIES
-					     COMPILE_FLAGS
-					     "-fno-sanitize=undefined")
+		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
 	endif (ENABLE_ASAN AND ${LIBSTDCPP})
 
-	set (SOURCE_FILES
-	     convert.hpp
-	     convert.cpp
-	     driver.hpp
-	     driver.cpp
-	     lexer.hpp
-	     lexer.cpp
-	     yambi.hpp
-	     yambi.cpp
-	     ${SOURCE_FILES_INPUT}
-	     ${BISON_YAMBI_OUTPUT_SOURCE}
-	     ${BISON_YAMBI_OUTPUT_HEADER})
+	set (
+		SOURCE_FILES
+		convert.hpp
+		convert.cpp
+		driver.hpp
+		driver.cpp
+		lexer.hpp
+		lexer.cpp
+		yambi.hpp
+		yambi.cpp
+		${SOURCE_FILES_INPUT}
+		${BISON_YAMBI_OUTPUT_SOURCE}
+		${BISON_YAMBI_OUTPUT_HEADER})
 endif (DEPENDENCY_PHASE)
 
-add_plugin (yambi
-	    CPP
-	    ADD_TEST
-	    CPP_TEST
-	    INSTALL_TEST_DATA
-	    TEST_README
-	    TEST_REQUIRED_PLUGINS directoryvalue yamlsmith
-	    SOURCES ${SOURCE_FILES}
-	    INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
+add_plugin (
+	yambi CPP ADD_TEST CPP_TEST INSTALL_TEST_DATA TEST_README
+	TEST_REQUIRED_PLUGINS directoryvalue yamlsmith
+	SOURCES ${SOURCE_FILES}
+	INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})

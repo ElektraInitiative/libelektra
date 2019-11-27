@@ -103,6 +103,10 @@ public:
 	template <typename T>
 	T get (std::string const & name, const option_t options = KDB_O_NONE) const;
 
+	// operators
+	inline bool operator== (const KeySet & ks) const;
+	inline bool operator!= (const KeySet & ks) const;
+
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef KeySetIterator iterator;
 	typedef KeySetIterator const_iterator;
@@ -863,15 +867,15 @@ inline T KeySet::get (std::string const & name, option_t const options) const
 	return typeWrapper (*this, name, options);
 }
 
-inline bool operator== (const KeySet & lhs, const KeySet & rhs)
+inline bool KeySet::operator== (const KeySet & o) const
 {
-	return lhs.size () == rhs.size () && std::equal (lhs.begin (), lhs.end (), rhs.begin ());
+	return size () == o.size () && std::equal (begin (), end (), o.begin ());
 }
 
 
-inline bool operator!= (const KeySet & lhs, const KeySet & rhs)
+inline bool KeySet::operator!= (const KeySet & o) const
 {
-	return !(lhs == rhs);
+	return !(*this == o);
 }
 
 

@@ -98,6 +98,10 @@ strict digraph G {
 	jni [shape=Mdiamond];
 	logging [shape=Mdiamond];
 	journald -> logging;
+	storage [shape=Mdiamond];
+	kconfig -> storage;
+	kconfig [shape=Mdiamond];
+	kconfig -> kconfig;
 	conv [shape=Mdiamond];
 	keytometa -> conv;
 	storage [shape=Mdiamond];

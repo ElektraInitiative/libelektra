@@ -4,11 +4,7 @@
 # copy_file or directory
 # ~~~
 macro (copy_file src dest)
-	execute_process (COMMAND ${CMAKE_COMMAND}
-				 -E
-				 copy
-				 "${src}"
-				 "${dest}")
+	execute_process (COMMAND ${CMAKE_COMMAND} -E copy "${src}" "${dest}")
 endmacro (copy_file)
 
 # ~~~
@@ -20,17 +16,14 @@ endmacro (copy_file)
 # ~~~
 macro (create_lib_symlink src dest)
 
-	cmake_parse_arguments (ARG
-			       "PLUGIN" # optional keywords
-			       "" # one value keywords
-			       "" # multi value keywords
-			       ${ARGN})
+	cmake_parse_arguments (
+		ARG
+		"PLUGIN" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN})
 
-	execute_process (COMMAND ${CMAKE_COMMAND}
-				 -E
-				 create_symlink
-				 "${src}"
-				 "${dest}"
+	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink "${src}" "${dest}"
 			 WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
@@ -43,7 +36,8 @@ macro (create_lib_symlink src dest)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
 	endif ()
 
-	install (CODE "
+	install (
+		CODE "
 		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest} -> ${src}\")
 		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E make_directory
 			\"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
@@ -70,10 +64,7 @@ endmacro (create_lib_symlink src dest)
 # mkdir dir
 # ~~~
 macro (mkdir dir)
-	execute_process (COMMAND ${CMAKE_COMMAND}
-				 -E
-				 make_directory
-				 "${dir}")
+	execute_process (COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}")
 endmacro (mkdir)
 
 macro (add_testheaders HDR_FILES)
@@ -98,11 +89,7 @@ endfunction ()
 
 function (target_link_elektratools TARGET)
 	if (BUILD_SHARED)
-		target_link_libraries (${TARGET}
-				       elektratools
-				       elektra-kdb
-				       elektra-core
-				       ${ARGN})
+		target_link_libraries (${TARGET} elektratools elektra-kdb elektra-core ${ARGN})
 	elseif (BUILD_FULL)
 		target_link_libraries (${TARGET} elektratools-full)
 	elseif (BUILD_STATIC)
@@ -116,10 +103,7 @@ endfunction ()
 # for tools (not tests) use this function to link against elektra
 macro (tool_link_elektra TARGET)
 	if (BUILD_SHARED)
-		target_link_libraries (${TARGET}
-				       elektra-core
-				       elektra-kdb
-				       ${ARGN})
+		target_link_libraries (${TARGET} elektra-core elektra-kdb ${ARGN})
 	elseif (BUILD_FULL)
 		target_link_libraries (${TARGET} elektra-full)
 	elseif (BUILD_STATIC)
@@ -189,10 +173,7 @@ endmacro (find_swig)
 # 		ARGS ${EXE_SYM_ARG} ... other arguments
 # 		)
 # ~~~
-function (find_util
-	  util
-	  output_loc
-	  output_arg)
+function (find_util util output_loc output_arg)
 	if (CMAKE_CROSSCOMPILING)
 		if (WIN32)
 			find_program (${util}_EXE_LOC wine)
@@ -207,8 +188,14 @@ function (find_util
 	else (CMAKE_CROSSCOMPILING)
 		set (${util}_EXE_LOC $<TARGET_FILE:${util}>)
 	endif (CMAKE_CROSSCOMPILING)
-	set (${output_loc} ${${util}_EXE_LOC} PARENT_SCOPE)
-	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
+	set (
+		${output_loc}
+		${${util}_EXE_LOC}
+		PARENT_SCOPE)
+	set (
+		${output_arg}
+		${ARG_LOC}
+		PARENT_SCOPE)
 endfunction (find_util util output)
 
 # ~~~
@@ -238,18 +225,8 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h
-				     PROPERTIES
-				     GENERATED
-				     ON
-				     SKIP_AUTOMOC
-				     ON)
-	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra/errors.h
-				     PROPERTIES
-				     GENERATED
-				     ON
-				     SKIP_AUTOMOC
-				     ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra/errors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
@@ -293,19 +270,31 @@ macro (remove_plugin name reason)
 	if (ADDED_PLUGINS)
 		set (TMP ${ADDED_PLUGINS})
 		list (REMOVE_ITEM TMP ${name})
-		set (ADDED_PLUGINS ${TMP} CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
+		set (
+			ADDED_PLUGINS
+			${TMP}
+			CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
 	endif (ADDED_PLUGINS)
 
 	if (ADDED_DIRECTORIES)
 		set (TMP ${ADDED_DIRECTORIES})
 		list (REMOVE_ITEM TMP ${name})
-		set (ADDED_DIRECTORIES ${TMP} CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
+		set (
+			ADDED_DIRECTORIES
+			${TMP}
+			CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
 	endif (ADDED_DIRECTORIES)
 
 	if (REMOVED_PLUGINS)
-		set (REMOVED_PLUGINS "${REMOVED_PLUGINS};${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+		set (
+			REMOVED_PLUGINS
+			"${REMOVED_PLUGINS};${name}"
+			CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
 	else ()
-		set (REMOVED_PLUGINS "${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+		set (
+			REMOVED_PLUGINS
+			"${name}"
+			CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
 	endif ()
 endmacro (remove_plugin)
 
@@ -313,13 +302,22 @@ macro (remove_tool name reason)
 	set (TMP ${TOOLS})
 	message (STATUS "Exclude tool ${name} because ${reason}")
 	list (REMOVE_ITEM TMP ${name})
-	set (TOOLS ${TMP} CACHE STRING ${TOOLS_DOC} FORCE)
+	set (
+		TOOLS
+		${TMP}
+		CACHE STRING ${TOOLS_DOC} FORCE)
 
 	# save removed tools for dependency resolving later on
 	if (REMOVED_TOOLS)
-		set (REMOVED_TOOLS "${REMOVED_TOOLS};${name}" CACHE STRING "${REMOVED_TOOLS_DOC}" FORCE)
+		set (
+			REMOVED_TOOLS
+			"${REMOVED_TOOLS};${name}"
+			CACHE STRING "${REMOVED_TOOLS_DOC}" FORCE)
 	else ()
-		set (REMOVED_TOOLS "${name}" CACHE STRING "${REMOVED_TOOLS_DOC}" FORCE)
+		set (
+			REMOVED_TOOLS
+			"${name}"
+			CACHE STRING "${REMOVED_TOOLS_DOC}" FORCE)
 	endif ()
 endmacro (remove_tool)
 
@@ -347,21 +345,27 @@ function (list_filter result regex)
 			list (APPEND newlist ${r})
 		endif ()
 	endforeach ()
-	set (${result} ${newlist} PARENT_SCOPE)
+	set (
+		${result}
+		${newlist}
+		PARENT_SCOPE)
 endfunction ()
 
 # ~~~
 # find string in list with regex
 # ~~~
-function (list_find
-	  input_list
-	  regexp_var
-	  output) # Reset output variable  Extract input list from arguments
-	set (${output} "0" PARENT_SCOPE)
+function (list_find input_list regexp_var output) # Reset output variable  Extract input list from arguments
+	set (
+		${output}
+		"0"
+		PARENT_SCOPE)
 	foreach (LIST_FILTER_item ${${input_list}})
 		foreach (LIST_FILTER_regexp ${${regexp_var}}) # message("try to match ${LIST_FILTER_regexp} with ${LIST_FILTER_item}")
 			if (${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-				set (${output} "1" PARENT_SCOPE)
+				set (
+					${output}
+					"1"
+					PARENT_SCOPE)
 			endif (${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
 		endforeach (LIST_FILTER_regexp ${regexp_var})
 	endforeach (LIST_FILTER_item)
@@ -413,12 +417,16 @@ endfunction (list_find)
 #                   with all plugins built-in (excludes elektra-shared)
 # ~~~
 function (add_sources target) # define the <target>_SRCS properties if necessary
-	get_property (prop_defined GLOBAL PROPERTY ${target}_SRCS DEFINED)
+	get_property (
+		prop_defined GLOBAL
+		PROPERTY ${target}_SRCS
+		DEFINED)
 	if (NOT prop_defined)
-		define_property (GLOBAL
-				 PROPERTY ${target}_SRCS
-				 BRIEF_DOCS "Sources for the ${target} target"
-				 FULL_DOCS "List of source files for the ${target} target")
+		define_property (
+			GLOBAL
+			PROPERTY ${target}_SRCS
+			BRIEF_DOCS "Sources for the ${target} target"
+			FULL_DOCS "List of source files for the ${target} target")
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (SRCS)
 	foreach (src ${ARGN})
@@ -441,12 +449,16 @@ endfunction (add_sources)
 # include_directories (${elektra_INCLUDES})
 # ~~~
 function (add_includes target) # define the <target>_INCLUDES properties if necessary
-	get_property (prop_defined GLOBAL PROPERTY ${target}_INCLUDES DEFINED)
+	get_property (
+		prop_defined GLOBAL
+		PROPERTY ${target}_INCLUDES
+		DEFINED)
 	if (NOT prop_defined)
-		define_property (GLOBAL
-				 PROPERTY ${target}_INCLUDES
-				 BRIEF_DOCS "Sources for the ${target} target"
-				 FULL_DOCS "List of source files for the ${target} target")
+		define_property (
+			GLOBAL
+			PROPERTY ${target}_INCLUDES
+			BRIEF_DOCS "Sources for the ${target} target"
+			FULL_DOCS "List of source files for the ${target} target")
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (INCLUDES)
 	foreach (src ${ARGN})
@@ -467,12 +479,16 @@ endfunction (add_includes)
 #
 # ~~~
 function (add_libraries target) # define the <target>_LIBRARIES properties if necessary
-	get_property (prop_defined GLOBAL PROPERTY ${target}_LIBRARIES DEFINED)
+	get_property (
+		prop_defined GLOBAL
+		PROPERTY ${target}_LIBRARIES
+		DEFINED)
 	if (NOT prop_defined)
-		define_property (GLOBAL
-				 PROPERTY ${target}_LIBRARIES
-				 BRIEF_DOCS "Sources for the ${target} target"
-				 FULL_DOCS "List of source files for the ${target} target")
+		define_property (
+			GLOBAL
+			PROPERTY ${target}_LIBRARIES
+			BRIEF_DOCS "Sources for the ${target} target"
+			FULL_DOCS "List of source files for the ${target} target")
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (LIBRARIES)
 	foreach (src ${ARGN})
@@ -509,10 +525,7 @@ macro (remember_for_removal ELEMENTS TO_REMOVE_ELEMENTS)
 			list (REMOVE_ITEM MY_ELEMENTS ${B})
 			string (LENGTH ${B} B_LENGTH)
 			math (EXPR L ${B_LENGTH}-1)
-			string (SUBSTRING ${B}
-					  1
-					  ${L}
-					  B_OUT)
+			string (SUBSTRING ${B} 1 ${L} B_OUT)
 			list (APPEND MY_REMOVE_ELEMENTS ${B_OUT})
 		endif ()
 	endforeach (B)
@@ -533,11 +546,12 @@ endmacro ()
 
 function (generate_manpage NAME)
 	if (BUILD_DOCUMENTATION)
-		cmake_parse_arguments (ARG
-				       "" # optional keywords
-				       "SECTION;FILENAME" # one value keywords
-				       "" # multi value keywords
-				       ${ARGN})
+		cmake_parse_arguments (
+			ARG
+			"" # optional keywords
+			"SECTION;FILENAME" # one value keywords
+			"" # multi value keywords
+			${ARGN})
 
 		if (ARG_SECTION)
 			set (SECTION ${ARG_SECTION})
@@ -555,26 +569,20 @@ function (generate_manpage NAME)
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
 		if (RONN_LOC)
-			add_custom_command (OUTPUT ${OUTFILE}
-					    DEPENDS ${MDFILE}
-					    COMMAND ${CMAKE_COMMAND}
-						    ARGS
-						    -D
-						    RONN_COMMAND=${RONN_LOC}
-						    -D
-						    DIFF_COMMAND=${DIFF_COMMAND}
-						    -D
-						    MDFILE=${MDFILE}
-						    -D
-						    MANPAGE=${OUTFILE}
-						    -P
-						    ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
+			add_custom_command (
+				OUTPUT ${OUTFILE}
+				DEPENDS ${MDFILE}
+				COMMAND
+					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DIFF_COMMAND=${DIFF_COMMAND} -D
+					MDFILE=${MDFILE} -D MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)
 
 		if (NOT EXISTS "${OUTFILE}")
-			message (WARNING "\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
+			message (
+				WARNING
+					"\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
 If you have not done so already, please install `ronn`. \
 Afterwards make sure you set the CMake option `BUILD_DOCUMENTATION` to ON, \
 and generate “${NAME}.${SECTION}” using the current build system (${CMAKE_GENERATOR}). \
@@ -590,17 +598,10 @@ endfunction ()
 
 macro (split_plugin_providers PROVIDES)
 	foreach (PROVIDER "${${PROVIDES}}")
-		string (REGEX MATCH
-			      "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)"
-			      PROVIDER_PARTS
-			      "${PROVIDER}")
+		string (REGEX MATCH "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" PROVIDER_PARTS "${PROVIDER}")
 		string (LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
 		if (PROVIDER_PARTS_LENGTH GREATER 0)
-			string (REGEX
-				REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)"
-					"\\1;\\2"
-					PROVIDER_PARTS
-					"${PROVIDER_PARTS}")
+			string (REGEX REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" "\\1;\\2" PROVIDER_PARTS "${PROVIDER_PARTS}")
 			list (APPEND ${PROVIDES} "${PROVIDER_PARTS}")
 		endif ()
 	endforeach ()
@@ -624,135 +625,66 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 
 	# read
 	file (READ ${CMAKE_CURRENT_BINARY_DIR}/README.out contents)
-	string (REGEX
-		REPLACE "\\\\"
-			"\\\\\\\\"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\""
-			"\\\\\""
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\n"
-			"\\\\n\"\n\""
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
+	string (REGEX REPLACE "\\\\" "\\\\\\\\" contents "${contents}")
+	string (REGEX REPLACE "\"" "\\\\\"" contents "${contents}")
+	string (REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
+	string (REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
+			      "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
+			      "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
+			      "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 
-	string (REGEX MATCH
-		      "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
-		      PROVIDES
-		      "${contents}")
-	string (REGEX
-		REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"\\1"
-			PROVIDES
-			"${PROVIDES}")
-	string (REGEX
-		REPLACE " "
-			";"
-			PROVIDES
-			"${PROVIDES}")
+	string (REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
+	string (REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
+	string (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
 	split_plugin_providers (PROVIDES)
-	string (REGEX
-		REPLACE ";"
-			" "
-			PROVIDES
-			"${PROVIDES}")
-	string (REGEX
+	string (REGEX REPLACE ";" " " PROVIDES "${PROVIDES}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END),"
-			contents
+			"keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents
 			"${contents}")
 
 	string (REGEX
 		REPLACE "\"- +infos/placements *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
+			"keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
+			"keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
+			"keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/stacking *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
+			"keyNew(\"system/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\""
+			      "keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
-		string (REGEX
+		string (
+			REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
-				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END),"
-				contents
+				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END)," contents
 				"${contents}")
 	else ()
-		string (REGEX
+		string (
+			REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
-				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END),"
-				contents
+				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END)," contents
 				"${contents}")
 	endif ()
 	string (REGEX
 		REPLACE "\"- +infos/metadata *= *([/#a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}")
+			"keyNew(\"system/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
+			      "keyNew(\"system/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END),"
-			contents
-			"${contents}") # allow macros:
-	string (REGEX
-		REPLACE "\" *#ifdef ([^\\]*)\\\\n\""
-			"#ifdef \\1"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\" *#ifndef ([^\\]*)\\\\n\""
-			"#ifndef \\1"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\" *#else\\\\n\""
-			"#else"
-			contents
-			"${contents}")
-	string (REGEX
-		REPLACE "\" *#endif\\\\n\""
-			"#endif"
-			contents
-			"${contents}")
+			"keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}"
+	)# allow macros:
+	string (REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
+	string (REGEX REPLACE "\" *#ifndef ([^\\]*)\\\\n\"" "#ifndef \\1" contents "${contents}")
+	string (REGEX REPLACE "\" *#else\\\\n\"" "#else" contents "${contents}")
+	string (REGEX REPLACE "\" *#endif\\\\n\"" "#endif" contents "${contents}")
 	file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c "${contents}\n")
 endfunction ()

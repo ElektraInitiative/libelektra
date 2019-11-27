@@ -6,11 +6,7 @@ if (PROCESSOR_COUNT EQUAL 0)
 endif (PROCESSOR_COUNT EQUAL 0)
 
 set (CMAKE_MAKE_PROGRAM_BASENAME ${CMAKE_MAKE_PROGRAM})
-string (REGEX
-	REPLACE ".*/([^/]+)$"
-		"\\1"
-		CMAKE_MAKE_PROGRAM_BASENAME
-		${CMAKE_MAKE_PROGRAM_BASENAME})
+string (REGEX REPLACE ".*/([^/]+)$" "\\1" CMAKE_MAKE_PROGRAM_BASENAME ${CMAKE_MAKE_PROGRAM_BASENAME})
 
 install (PROGRAMS benchmark-createtree DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
@@ -38,11 +34,12 @@ install (PROGRAMS reset DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS reset-elektra DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-add_custom_target (source-package
-		   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
-		   COMMENT "Make a elektra source package by using git"
-		   VERBATIM
-		   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+add_custom_target (
+	source-package
+	COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
+	COMMENT "Make a elektra source package by using git"
+	VERBATIM
+	WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoop.in" "${CMAKE_CURRENT_BINARY_DIR}/randoop/randoop" @ONLY)
 file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoopClasses.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/randoop/")

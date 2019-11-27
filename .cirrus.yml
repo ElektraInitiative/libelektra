@@ -168,7 +168,7 @@ mac_task:
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
     - | # Install Python packages
-      pip install cmake-format[yaml]==0.5.4
+      pip install cmake-format[yaml]==0.6
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
       brew install ruby@2.6
       export PATH="/usr/local/opt/ruby@2.6/bin:/usr/local/lib/ruby/gems/2.6.0/bin:$PATH"

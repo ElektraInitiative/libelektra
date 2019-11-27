@@ -10,7 +10,8 @@ import java.util.Collection;
 /**
  * This exception wraps Elektra errors into the corresponding Java Exceptions
  */
-public abstract class KDBException extends Exception {
+public abstract class KDBException extends Exception
+{
 
 	private final transient Key errorKey;
 	private Collection<WarningEntry> warnings;
@@ -19,16 +20,19 @@ public abstract class KDBException extends Exception {
 	 * KDBException which holds the errorKey
 	 * @param k The errorKey
 	 */
-	public KDBException(final Key k) {
+	public KDBException (final Key k)
+	{
 		errorKey = k;
-		Key warningsKey = k.getMeta("warnings");
-		warnings = new ArrayList<>();
-		if (warningsKey.isNull()) {
+		Key warningsKey = k.getMeta ("warnings");
+		warnings = new ArrayList<> ();
+		if (warningsKey.isNull ())
+		{
 			return;
 		}
-		final int nr = warningsKey.getInteger();
-		for (int i = 0; i <= nr; i++) {
-			warnings.add(new WarningEntry(k, nr));
+		final int nr = warningsKey.getInteger ();
+		for (int i = 0; i <= nr; i++)
+		{
+			warnings.add (new WarningEntry (k, nr));
 		}
 	}
 
@@ -37,7 +41,8 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return ErrorKey from Elektra
 	 */
-	public Key getErrorKey() {
+	public Key getErrorKey ()
+	{
 		return errorKey;
 	}
 
@@ -46,8 +51,9 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return ErrorNumber from Elektra
 	 */
-	public String getErrorNumber() {
-		return errorKey.getMeta("error/number").getString();
+	public String getErrorNumber ()
+	{
+		return errorKey.getMeta ("error/number").getString ();
 	}
 
 	/**
@@ -56,12 +62,14 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return either the configuration file or if empty the parent key name
 	 */
-	public String getConfigFile() {
-		Key configKey = errorKey.getMeta("error/configfile");
-		if (!configKey.isNull() && !configKey.getString().isEmpty()) {
-			return configKey.getString();
+	public String getConfigFile ()
+	{
+		Key configKey = errorKey.getMeta ("error/configfile");
+		if (!configKey.isNull () && !configKey.getString ().isEmpty ())
+		{
+			return configKey.getString ();
 		}
-		return errorKey.getName();
+		return errorKey.getName ();
 	}
 
 	/**
@@ -69,8 +77,9 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return the mountpoint of the configuration
 	 */
-	public String getMountpoint() {
-		return errorKey.getMeta("error/mountpoint").getString();
+	public String getMountpoint ()
+	{
+		return errorKey.getMeta ("error/mountpoint").getString ();
 	}
 
 	/**
@@ -78,9 +87,10 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return Elektra specific debug information in the form of "At: file:line"
 	 */
-	public String getDebugInformation() {
-		return String.format("At: %s:%s", errorKey.getMeta("error/file").getString(),
-				errorKey.getMeta("error/line").getString());
+	public String getDebugInformation ()
+	{
+		return String.format ("At: %s:%s", errorKey.getMeta ("error/file").getString (),
+				      errorKey.getMeta ("error/line").getString ());
 	}
 
 	/**
@@ -88,43 +98,47 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return the module which has thrown the error
 	 */
-	public String getModule() {
-		return errorKey.getMeta("error/module").getString();
+	public String getModule ()
+	{
+		return errorKey.getMeta ("error/module").getString ();
 	}
 
 	/**
 	 * @see this.getMessage()
 	 */
-	@Override
-	public String getLocalizedMessage() {
-		return getMessage();
+	@Override public String getLocalizedMessage ()
+	{
+		return getMessage ();
 	}
 
 	/**
 	 * Returns the error reason which is written to the `error/reason` metakey of the errorkey
 	 * @return The reason for the error
 	 */
-	public String getReason() {
-		return errorKey.getMeta("error/reason").getString();
+	public String getReason ()
+	{
+		return errorKey.getMeta ("error/reason").getString ();
 	}
 
 	/**
 	 * getMessage() returns the thrown Elektra error in the same format as it would be printed in the terminal
 	 * @return The complete error information in a String with configfile, moutpoint and debuginformation
 	 */
-	@Override
-	public String getMessage() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("Sorry, module %s issued error %s:", getModule(), getErrorNumber())).append("\n");
-		builder.append(getReason()).append("\n");
-		builder.append("Configfile: ").append(getConfigFile()).append("\n");
-		if (!errorKey.getMeta("error/mountpoint").isNull()) {
-			builder.append("Mountpoint: ").append(getMountpoint()).append("\n");
+	@Override public String getMessage ()
+	{
+		StringBuilder builder = new StringBuilder ();
+		builder.append (String.format ("Sorry, module %s issued error %s:", getModule (), getErrorNumber ())).append ("\n");
+		builder.append (getReason ()).append ("\n");
+		builder.append ("Configfile: ").append (getConfigFile ()).append ("\n");
+		if (!errorKey.getMeta ("error/mountpoint").isNull ())
+		{
+			builder.append ("Mountpoint: ").append (getMountpoint ()).append ("\n");
 		}
-		if (!errorKey.getMeta("error/file").isNull()) {
-			builder.append(getDebugInformation()).append("\n");
+		if (!errorKey.getMeta ("error/file").isNull ())
+		{
+			builder.append (getDebugInformation ()).append ("\n");
 		}
-		return builder.toString();
+		return builder.toString ();
 	}
 
 	/**
@@ -133,8 +147,9 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return true if additional warnings were emitted
 	 */
-	public boolean hasWarnings() {
-		return !warnings.isEmpty();
+	public boolean hasWarnings ()
+	{
+		return !warnings.isEmpty ();
 	}
 
 	/**
@@ -142,7 +157,8 @@ public abstract class KDBException extends Exception {
 	 *
 	 * @return the warnings collection
 	 */
-	public Collection<WarningEntry> getWarnings() {
+	public Collection<WarningEntry> getWarnings ()
+	{
 		return warnings;
 	}
 }

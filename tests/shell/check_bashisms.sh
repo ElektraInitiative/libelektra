@@ -14,7 +14,7 @@ cd "@CMAKE_SOURCE_DIR@"
 # Use (non-emacs) extended regex for GNU find or BSD find
 find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'
 
-# - The scripts `reformat-c` and `install-config-file` use `command -v`,
+# - The scripts `reformat-c`, `reformat-java` and `install-config-file` use `command -v`,
 # which was optional in POSIX until issue 7. Since `which` is not part of POSIX
 # at all `command -v` is probably the most portable solution to detect the
 # location of a command.
@@ -28,6 +28,7 @@ set $(
 		-path '*kdb-zsh-noglob' -or \
 		-path '*install-config-file' -or \
 		-path '*reformat-c' -or \
+		-path '*reformat-java' -or \
 		-path '*run_env' -or \
 		-path '*sed' -or \
 		-path '*update-infos-status' -or \

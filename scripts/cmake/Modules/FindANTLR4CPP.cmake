@@ -9,14 +9,14 @@
 #
 # This script is a modified version of the code available here: https://cmake.org/Wiki/CMake:How_To_Find_Libraries#Writing_find_modules
 
-find_path (ANTLR4CPP_INCLUDE_DIR NAMES antlr4-runtime.h PATH_SUFFIXES antlr4-runtime)
+find_path (
+	ANTLR4CPP_INCLUDE_DIR
+	NAMES antlr4-runtime.h
+	PATH_SUFFIXES antlr4-runtime)
 find_library (ANTLR4CPP_LIBRARY NAMES antlr4-runtime)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (ANTLR4CPP
-				   DEFAULT_MSG
-				   ANTLR4CPP_LIBRARY
-				   ANTLR4CPP_INCLUDE_DIR)
+find_package_handle_standard_args (ANTLR4CPP DEFAULT_MSG ANTLR4CPP_LIBRARY ANTLR4CPP_INCLUDE_DIR)
 
 mark_as_advanced (ANTLR4CPP_INCLUDE_DIR ANTLR4CPP_LIBRARY)
 

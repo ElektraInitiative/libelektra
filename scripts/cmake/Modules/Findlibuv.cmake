@@ -12,44 +12,42 @@ if (PKG_CONFIG_FOUND)
 	pkg_check_modules (PC_libuv QUIET libuv)
 endif (PKG_CONFIG_FOUND)
 
-find_path (libuv_INCLUDE_DIR NAMES uv.h HINTS ${PC_libuv_INCLUDEDIR} ${PC_libuv_INCLUDE_DIRS})
-find_library (libuv_LIBRARY NAMES uv HINTS ${PC_libuv_LIBDIR} ${PC_libuv_LIBRARY_DIRS})
+find_path (
+	libuv_INCLUDE_DIR
+	NAMES uv.h
+	HINTS ${PC_libuv_INCLUDEDIR} ${PC_libuv_INCLUDE_DIRS})
+find_library (
+	libuv_LIBRARY
+	NAMES uv
+	HINTS ${PC_libuv_LIBDIR} ${PC_libuv_LIBRARY_DIRS})
 
 set (libuv_VERSION 0)
 find_file (libuv_VERSION_HEADER NAMES uv/version.h uv-version.h)
 if (NOT libuv_VERSION_HEADER STREQUAL libuv_VERSION_HEADER-NOTFOUND)
 
-	file (STRINGS ${libuv_VERSION_HEADER} libuv_VERSION_MAJOR REGEX "#define UV_VERSION_MAJOR [0-9]+" LIMIT_COUNT 1)
-	string (REGEX
-		REPLACE "[^0-9]*([0-9]+)$"
-			"\\1"
-			libuv_VERSION_MAJOR
-			${libuv_VERSION_MAJOR})
+	file (
+		STRINGS ${libuv_VERSION_HEADER} libuv_VERSION_MAJOR
+		REGEX "#define UV_VERSION_MAJOR [0-9]+"
+		LIMIT_COUNT 1)
+	string (REGEX REPLACE "[^0-9]*([0-9]+)$" "\\1" libuv_VERSION_MAJOR ${libuv_VERSION_MAJOR})
 
-	file (STRINGS ${libuv_VERSION_HEADER} libuv_VERSION_MINOR REGEX "#define UV_VERSION_MINOR [0-9]+" LIMIT_COUNT 1)
-	string (REGEX
-		REPLACE "[^0-9]*([0-9]+)$"
-			"\\1"
-			libuv_VERSION_MINOR
-			${libuv_VERSION_MINOR})
+	file (
+		STRINGS ${libuv_VERSION_HEADER} libuv_VERSION_MINOR
+		REGEX "#define UV_VERSION_MINOR [0-9]+"
+		LIMIT_COUNT 1)
+	string (REGEX REPLACE "[^0-9]*([0-9]+)$" "\\1" libuv_VERSION_MINOR ${libuv_VERSION_MINOR})
 
-	file (STRINGS ${libuv_VERSION_HEADER} libuv_VERSION_PATCH REGEX "#define UV_VERSION_PATCH [0-9]+" LIMIT_COUNT 1)
-	string (REGEX
-		REPLACE "[^0-9]*([0-9]+)$"
-			"\\1"
-			libuv_VERSION_PATCH
-			${libuv_VERSION_PATCH})
+	file (
+		STRINGS ${libuv_VERSION_HEADER} libuv_VERSION_PATCH
+		REGEX "#define UV_VERSION_PATCH [0-9]+"
+		LIMIT_COUNT 1)
+	string (REGEX REPLACE "[^0-9]*([0-9]+)$" "\\1" libuv_VERSION_PATCH ${libuv_VERSION_PATCH})
 
 	set (libuv_VERSION "${libuv_VERSION_MAJOR}.${libuv_VERSION_MINOR}.${libuv_VERSION_PATCH}")
 endif (NOT libuv_VERSION_HEADER STREQUAL libuv_VERSION_HEADER-NOTFOUND)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (libuv
-				   REQUIRED_VARS
-				   libuv_LIBRARY
-				   libuv_INCLUDE_DIR
-				   VERSION_VAR
-				   libuv_VERSION)
+find_package_handle_standard_args (libuv REQUIRED_VARS libuv_LIBRARY libuv_INCLUDE_DIR VERSION_VAR libuv_VERSION)
 
 mark_as_advanced (libuv_INCLUDE_DIR libuv_LIBRARY libuv_VERSION)
 

@@ -1,9 +1,10 @@
 include (LibAddMacros)
 
-add_plugin (specload
-	    SOURCES specload.h specload.c
-	    LINK_ELEKTRA elektra-ease elektra-invoke elektra-proposal
-	    TEST_README)
+add_plugin (
+	specload
+	SOURCES specload.h specload.c
+	LINK_ELEKTRA elektra-ease elektra-invoke elektra-proposal
+	TEST_README)
 
 if (DEPENDENCY_PHASE AND BUILD_SHARED)
 	add_dependencies (elektra-specload elektra-quickdump)
@@ -26,16 +27,16 @@ if (ADDTESTING_PHASE)
 	target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
-	add_test (NAME test_elektra-specload-testapp
-		  COMMAND "${CMAKE_BINARY_DIR}/bin/test_elektra-specload-testapp" "${CMAKE_CURRENT_SOURCE_DIR}"
-		  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
-	set_tests_properties (test_elektra-specload-testapp
-			      PROPERTIES TIMEOUT
-					 30
-					 ENVIRONMENT
-					 "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	add_test (
+		NAME test_elektra-specload-testapp
+		COMMAND "${CMAKE_BINARY_DIR}/bin/test_elektra-specload-testapp" "${CMAKE_CURRENT_SOURCE_DIR}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+	set_tests_properties (test_elektra-specload-testapp PROPERTIES TIMEOUT 30 ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-	add_plugintest (specload INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 120)
+	add_plugintest (
+		specload INSTALL_TEST_DATA
+		INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
+		TIMEOUT 120)
 
 	if (BUILD_SHARED)
 		add_dependencies (elektra-specload-testapp elektra-quickdump)

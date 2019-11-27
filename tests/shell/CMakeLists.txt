@@ -52,30 +52,33 @@ function (add_scripttest testname)
 		if (TARGET)
 			if (INSTALL_TESTING)
 
-				set (excluded_tests
-				     check_bashisms
-				     check_posix
-				     check_formatting
-				     check_gen
-				     check_oclint
-				     check_plugins
-				     check_spelling)
+				set (
+					excluded_tests
+					check_bashisms
+					check_posix
+					check_formatting
+					check_gen
+					check_oclint
+					check_plugins
+					check_spelling)
 
 				list (FIND excluded_tests "${testname_we}" index_excluded)
 				if (index_excluded EQUAL -1)
 					set (RACE_COMMAND "$KDB race")
 					set (INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}")
 					configure_file ("${filename}" "${CMAKE_CURRENT_BINARY_DIR}/${testname}" @ONLY)
-					install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
-						 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
-						 PERMISSIONS OWNER_READ
-							     OWNER_WRITE
-							     OWNER_EXECUTE
-							     GROUP_READ
-							     GROUP_EXECUTE
-							     WORLD_READ
-							     WORLD_EXECUTE
-						 RENAME ${testname_we})
+					install (
+						FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
+						DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+						PERMISSIONS
+							OWNER_READ
+							OWNER_WRITE
+							OWNER_EXECUTE
+							GROUP_READ
+							GROUP_EXECUTE
+							WORLD_READ
+							WORLD_EXECUTE
+						RENAME ${testname_we})
 				endif (index_excluded EQUAL -1)
 
 			endif (INSTALL_TESTING)
@@ -88,16 +91,11 @@ function (add_scripttest testname)
 					configure_file ("${filename}" "${testscriptname}" @ONLY)
 					add_test (testscr_${testname_we} "${testscriptname}") # dash does memleak:
 					set_property (TEST testscr_${testname_we} PROPERTY LABELS memleak kdbtests)
-					set_property (TEST testscr_${testname_we}
-						      PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+					set_property (TEST testscr_${testname_we} PROPERTY ENVIRONMENT
+											   "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-					set (parallel_tests
-					     check_bashisms
-					     check_doc
-					     check_formatting
-					     check_oclint
-					     check_plugins
-					     check_posix)
+					set (parallel_tests check_bashisms check_doc check_formatting check_oclint check_plugins
+							    check_posix)
 					list (FIND parallel_tests "${testname_we}" index_parallel)
 					if (index_parallel EQUAL -1)
 						set_property (TEST testscr_${testname_we} PROPERTY RUN_SERIAL TRUE)

@@ -6,7 +6,8 @@ import java.util.NoSuchElementException;
 /**
  * An {@link Iterator} over a {@link KeySet} resulting in {@link Key}s.
  */
-public class KeySetIterator implements Iterator<Key> {
+public class KeySetIterator implements Iterator<Key>
+{
 
 	private int pos = 0;
 	private final KeySet con;
@@ -17,7 +18,8 @@ public class KeySetIterator implements Iterator<Key> {
 	 *
 	 * @param container KeySet which is used in iterator
 	 */
-	KeySetIterator(final KeySet container) {
+	KeySetIterator (final KeySet container)
+	{
 		con = container;
 	}
 
@@ -26,9 +28,9 @@ public class KeySetIterator implements Iterator<Key> {
 	 *
 	 * @return Boolean if another value is available
 	 */
-	@Override
-	public boolean hasNext() {
-		return pos != con.length();
+	@Override public boolean hasNext ()
+	{
+		return pos != con.length ();
 	}
 
 	/**
@@ -36,13 +38,14 @@ public class KeySetIterator implements Iterator<Key> {
 	 *
 	 * @return Next Key in iteration
 	 */
-	@Override
-	public Key next() {
-		if (pos == con.length()) {
-			throw new NoSuchElementException("End of KeySet reached");
+	@Override public Key next ()
+	{
+		if (pos == con.length ())
+		{
+			throw new NoSuchElementException ("End of KeySet reached");
 		}
 
-		current = con.at(pos);
+		current = con.at (pos);
 		++pos;
 		return current;
 	}
@@ -50,10 +53,10 @@ public class KeySetIterator implements Iterator<Key> {
 	/**
 	 * Removes the element of the iteration.
 	 */
-	@Override
-	public void remove() {
-		final Key key = con.lookup(current, KeySet.KDB_O_POP);
-		key.release();
+	@Override public void remove ()
+	{
+		final Key key = con.lookup (current, KeySet.KDB_O_POP);
+		key.release ();
 		--pos;
 	}
 }
