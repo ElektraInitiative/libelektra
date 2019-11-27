@@ -155,10 +155,10 @@ def main() {
 //     parallel generateFullBuildStages()
 //   }
 // 
-//   stage("Build artifacts") {
-//     milestone label: "artifacts"
-//     parallel generateArtifactStages()
-//   }
+   stage("Build artifacts") {
+     milestone label: "artifacts"
+     parallel generateArtifactStages()
+   }
 
   stage("Deploy Website") {
     deployWebsite()
