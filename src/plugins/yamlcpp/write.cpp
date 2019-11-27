@@ -321,7 +321,7 @@ YAML::Node createLeafNode (Key & key)
 			dataNode.SetTag ("tag:yaml.org,2002:binary");
 			continue;
 		}
-		metaNode[meta.getName ().substr (sizeof ("meta:/" - 1))] = meta.getString ();
+		metaNode[meta.getName ().substr (sizeof ("meta:/") - 1)] = meta.getString ();
 		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
 	}
 
