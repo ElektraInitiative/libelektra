@@ -566,16 +566,16 @@ void test_reverseLevel (void)
 		switch (level)
 		{
 		case 4:
-			succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			succeed_if_same_string (buffer, "user:");
 			break;
 		case 3:
-			succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct");
+			succeed_if_same_string (buffer, "abc");
 			break;
 		case 2:
-			succeed_if (strcmp (buffer, "defghi") == 0, "keyNameGetOneLevel not correct");
+			succeed_if_same_string (buffer, "defghi");
 			break;
 		case 1:
-			succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct");
+			succeed_if_same_string (buffer, "jkl");
 			break;
 		default:
 			succeed_if (0, "should not reach case statement");
@@ -597,7 +597,7 @@ void test_reverseLevel (void)
 		switch (level)
 		{
 		case 4:
-			succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			succeed_if (strcmp (buffer, "user:") == 0, "keyNameGetOneLevel not correct");
 			break;
 		case 3:
 			succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct");

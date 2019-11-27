@@ -125,9 +125,6 @@ public:
 	inline void addBaseName (const std::string & baseName);
 	inline void delBaseName ();
 
-	inline ssize_t getFullNameSize () const;
-	inline std::string getFullName () const;
-
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef NameIterator iterator;
 	typedef NameIterator const_iterator;
@@ -931,37 +928,6 @@ inline void Key::delBaseName ()
 }
 
 /**
- * @copydoc keyGetFullNameSize
- */
-inline ssize_t Key::getFullNameSize () const
-{
-	return ckdb::keyGetFullNameSize (getKey ());
-}
-
-/**
- * @copydoc keyGetFullName
- *
- * @throw KeyException if key is null
- */
-inline std::string Key::getFullName () const
-{
-	ssize_t csize = getFullNameSize ();
-	if (csize == -1)
-	{
-		throw KeyException ();
-	}
-
-	if (csize == 0)
-	{
-		return "";
-	}
-
-	std::string str (static_cast<size_t> (csize - 1), '\0');
-	ckdb::keyGetFullName (getKey (), &str[0], static_cast<size_t> (csize));
-	return str;
-}
-
-/**
  * @copydoc keyCmp
  *
  * @retval true == 0
@@ -1484,8 +1450,7 @@ inline const Key Key::currentMeta () const
  */
 inline bool Key::isValid () const
 {
-	// TODO (kodebach): always valid?
-	return ckdb::keyGetNameSize (getKey ()) > 1;
+	return key != nullptr;
 }
 
 /**

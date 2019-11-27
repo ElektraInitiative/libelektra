@@ -590,12 +590,6 @@ int keyIsDir (const Key * key);
 int keyIsSystem (const Key * key);
 int keyIsUser (const Key * key);
 
-int keyNameIsSpec (const char * keyname);
-int keyNameIsProc (const char * keyname);
-int keyNameIsDir (const char * keyname);
-int keyNameIsSystem (const char * keyname);
-int keyNameIsUser (const char * keyname);
-
 ssize_t keySetNamespace (Key * key, elektraNamespace ns);
 
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);

@@ -182,8 +182,6 @@
  * may change after keySetName() and similar functions. If you need a copy of the name,
  * consider using keyGetName().
  *
- * The name will be without owner, see keyGetFullName() if
- * you need the name with its owner.
  *
  * @retval "" when there is no keyName. The reason is
  * @code
@@ -207,7 +205,6 @@ keyDel(key);
  * @retval "" when there is no (an empty) keyname
  * @retval 0 on NULL pointer
  * @see keyGetNameSize() for the string length
- * @see keyGetFullName(), keyGetFullNameSize() to get the full name
  * @see keyGetName() as alternative to get a copy
  * @see keyOwner() to get a pointer to owner
  * @see keyUnescapedName to get an unescaped key name
@@ -232,7 +229,7 @@ const char * keyName (const Key * key)
  * 	without owner
  * @retval 1 if there is is no key Name
  * @retval -1 on NULL pointer
- * @see keyGetName(), keyGetFullNameSize()
+ * @see keyGetName()
  * @see keyGetUnescapedNameSize to get size of unescaped name
  * @ingroup keyname
  */
@@ -314,7 +311,7 @@ keyGetName(key, getBack, keyGetNameSize(key));
  * @param key the key object to work with
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
- * @see keyGetNameSize(), keyGetFullName(), keyGetFullNameSize()
+ * @see keyGetNameSize()
  * @ingroup keyname
  */
 ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
@@ -341,7 +338,7 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 		return -1;
 	}
 
-	strncpy (returnedName, key->key, maxSize); // TODO (kodebach): memcpy
+	memcpy (returnedName, key->key, maxSize);
 
 	return key->keySize;
 }
@@ -367,29 +364,6 @@ size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize
 
 	return key->keySize;
 }
-
-
-/*static void elektraHandleUserName (Key * key, const char * newName) // TODO (kodebach): needed??
-{
-	const size_t userLength = sizeof ("user");
-	key->keyUSize = key->keySize = userLength;
-
-	const char delim = newName[userLength - 1];
-	// no owner, we are finished
-	if (delim == '/' || delim == '\0') return;
-	ELEKTRA_ASSERT (delim == ':', "delimiter in user-name not `:' but `%c'", delim);
-
-	// handle owner (compatibility, to be removed)
-	keyNameGetOneLevel (newName, &key->keyUSize);
-	const size_t ownerLength = key->keyUSize - userLength;
-	++key->keyUSize;
-	char * owner = elektraMalloc (ownerLength + 1);
-	if (!owner) return; // out of memory, ok for owner
-	strncpy (owner, newName + userLength, ownerLength);
-	owner[ownerLength] = 0;
-	keySetOwner (key, owner);
-	elektraFree (owner);
-}*/
 
 /**
  * Set a new name to a key.
@@ -424,7 +398,7 @@ size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize
  * @param key the key object to work with
  * @param newName the new key name
  * @see keyNew(), keySetOwner()
- * @see keyGetName(), keyGetFullName(), keyName()
+ * @see keyGetName(), keyName()
  * @see keySetBaseName(), keyAddBaseName() to manipulate a name
  * @ingroup keyname
  */
@@ -740,6 +714,10 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 				++skip;
 			}
 
+
+			digits = 0;
+			underscores = 0;
+
 			state = PART_END;
 		}
 
@@ -995,6 +973,9 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 				++skip;
 			}
 
+			digits = 0;
+			underscores = 0;
+
 			state = PART_END;
 		}
 
@@ -1138,103 +1119,6 @@ ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 	if (!(options & KEY_META_NAME) && keyGetNamespace (key) != KEY_NS_META) keySetOwner (key, NULL);
 	return key->keySize;
 }
-
-
-/**
- * Bytes needed to store the key name including user domain and ending NULL.
- *
- * @param key the key object to work with
- * @return number of bytes needed to store key name including user domain
- * @retval 1 on empty name
- * @retval -1 on NULL pointer
- * @see keyGetFullName(), keyGetNameSize()
- * @ingroup keyname
- */
-ssize_t keyGetFullNameSize (const Key * key)
-{
-	size_t returnedSize = 0;
-
-	if (!key) return -1;
-
-	if (!key->key) return 1;
-
-	returnedSize = elektraStrLen (key->key);
-
-	if (keyNameIsUser (key->key) && keyGetMeta (key, "owner")) returnedSize += keyGetOwnerSize (key);
-
-	/*
-	   After 2 elektraStrLen() calls looks like we counted one more NULL.
-	   But we need this byte count because a full key name has an
-	   additional ':' char.
-	*/
-
-	return returnedSize;
-}
-
-
-/**
- * Get key full name, including the user domain name.
- *
- * @return number of bytes written
- * @retval 1 on empty name
- * @retval -1 on NULL pointers
- * @retval -1 if maxSize is 0 or larger than SSIZE_MAX
- * @param key the key object
- * @param returnedName pre-allocated memory to write the key name
- * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
- * @ingroup keyname
- */
-ssize_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)
-{
-	// TODO (kodebach): remove?
-	size_t userSize = sizeof ("user") - 1;
-	ssize_t length;
-	ssize_t maxSSize;
-	char * cursor;
-
-	if (!key) return -1;
-	if (!returnedName) return -1;
-	if (!maxSize) return -1;
-
-	if (maxSize > SSIZE_MAX) return -1;
-	maxSSize = maxSize;
-
-	length = keyGetFullNameSize (key);
-	if (length == 1)
-	{
-		/*errno=KDB_ERR_NOKEY;*/
-		returnedName[0] = 0;
-		return length;
-	}
-	else if (length < 0)
-		return length;
-	else if (length > maxSSize)
-	{
-		/* errno=KDB_ERR_TRUNC; */
-		return -1;
-	}
-
-	cursor = returnedName;
-	if (keyIsUser (key))
-	{
-		strncpy (cursor, key->key, userSize);
-		cursor += userSize;
-		if (keyGetMeta (key, "owner"))
-		{
-			*cursor = '/';
-			++cursor;
-			size_t ownerSize = keyGetValueSize (keyGetMeta (key, "owner")) - 1;
-			strncpy (cursor, keyValue (keyGetMeta (key, "owner")), ownerSize);
-			cursor += ownerSize;
-		}
-		strcpy (cursor, key->key + userSize);
-	}
-	else
-		strcpy (cursor, key->key);
-
-	return length;
-}
-
 
 /**
  * @brief Returns a pointer to the internal unescaped key name where the @p basename starts.
@@ -1736,12 +1620,12 @@ static const char * elektraKeyFindBaseNamePtr (Key * key)
 		}
 
 		size_t backslashes = 0;
-		while(*(cur - backslashes - 1) == '\\')
+		while (*(cur - backslashes - 1) == '\\')
 		{
 			++backslashes;
 		}
 
-		if(backslashes % 2 == 0)
+		if (backslashes % 2 == 0)
 		{
 			break;
 		}

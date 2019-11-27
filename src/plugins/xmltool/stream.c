@@ -174,7 +174,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 		if (options & KDB_O_FULLNAME)
 		{
 			char buffer[KDB_MAX_PATH_LENGTH];
-			keyGetFullName (key, buffer, sizeof (buffer));
+			keyGetName (key, buffer, sizeof (buffer));
 			written += fprintf (stream, "<key name=\"%s\"", buffer);
 		}
 		else

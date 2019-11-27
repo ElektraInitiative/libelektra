@@ -629,38 +629,6 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 	closeStoragePlugin (storagePlugin);
 }
 
-static void test_keyGetFullName (const size_t storagePlugin, const char * tmpFile)
-{
-	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
-	open_storage_plugin (storagePlugin);
-	Plugin * plugin = plugins[storagePlugin];
-
-	KeySet * ks = metaTestKeySet ();
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-
-	const char * name = "user:/tests/storage/a";
-	Key * found = ksLookupByName (ks, name, 0);
-	succeed_if (found, "did not find key");
-
-	ssize_t fullNameSize = keyGetFullNameSize (found);
-	char * fullName = elektraMalloc (fullNameSize);
-	ssize_t ret = keyGetFullName (found, fullName, fullNameSize);
-	if (ret < 1)
-	{
-		yield_error ("Key full name NULL or size error");
-	}
-	else
-	{
-		succeed_if ((size_t) ret >= elektraStrLen (name), "Key full name size too small");
-	}
-
-	elektraFree (fullName);
-	keyDel (parentKey);
-	ksDel (ks);
-	closeStoragePlugin (storagePlugin);
-}
-
 static void test_keyGetBaseName (const size_t storagePlugin, const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -677,7 +645,7 @@ static void test_keyGetBaseName (const size_t storagePlugin, const char * tmpFil
 
 	const char * constBaseName = "a";
 	size_t constBaseNameSize = elektraStrLen (constBaseName);
-	ssize_t baseNameSize = keyGetFullNameSize (found);
+	ssize_t baseNameSize = keyGetBaseNameSize (found);
 	char * baseName = elektraMalloc (baseNameSize);
 	ssize_t ret = keyGetBaseName (found, baseName, baseNameSize);
 	if (ret < 1)
@@ -1010,9 +978,6 @@ int main (int argc, char ** argv)
 
 		clearStorage (plugin, tmpFile);
 		test_keySetName (plugin, tmpFile);
-
-		clearStorage (plugin, tmpFile);
-		test_keyGetFullName (plugin, tmpFile);
 
 		clearStorage (plugin, tmpFile);
 		test_keyGetBaseName (plugin, tmpFile);

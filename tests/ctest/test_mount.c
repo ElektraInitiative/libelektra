@@ -501,60 +501,6 @@ static void test_endings (void)
 	kdb_del (kdb);
 }
 
-/*
-KeySet * oldroot_config (void)
-{
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
-}
-
-static void test_oldroot (void)
-{
-	printf ("Test mounting with old root\n");
-
-	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew ("/", KEY_END);
-	KeySet * modules = modules_config ();
-	succeed_if (mountOpen (kdb, oldroot_config (), modules, errorKey) == 0, "root should be mounted as default");
-
-	succeed_if (output_warnings (errorKey), "warnings found");
-	succeed_if (output_error (errorKey), "error found");
-
-	exit_if_fail (kdb->trie, "trie was not build up successfully");
-
-	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
-	Backend * backend = trieLookup (kdb->trie, "user:/");
-	succeed_if (!backend, "there should be no root backend");
-
-
-	Key * mp = keyNew ("user:/tests/simple", KEY_VALUE, "simple", KEY_END);
-	backend = trieLookup (kdb->trie, "user:/tests/simple");
-	succeed_if (backend, "there should be a backend");
-	if (backend) compare_key (backend->mountpoint, mp);
-
-
-	Backend * b2 = trieLookup (kdb->trie, "user:/tests/simple/below");
-	succeed_if (b2, "there should be a backend");
-	succeed_if (backend == b2, "should be same backend");
-	if (b2) compare_key (b2->mountpoint, mp);
-
-
-	b2 = trieLookup (kdb->trie, "user:/tests/simple/deep/below");
-	succeed_if (b2, "there should be a backend");
-	succeed_if (backend == b2, "should be same backend");
-	if (b2) compare_key (b2->mountpoint, mp);
-
-	keyDel (mp);
-	keyDel (rmp);
-
-	kdb_del (kdb);
-	keyDel (errorKey);
-	ksDel (modules);
-}
-*/
-
 KeySet * cascading_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
@@ -956,7 +902,6 @@ int main (int argc, char ** argv)
 	test_two ();
 	test_us ();
 	test_endings ();
-	// TODO (kodebach): test_oldroot (); // not supported
 	test_cascading ();
 	test_root ();
 	test_default ();

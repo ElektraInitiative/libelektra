@@ -173,9 +173,6 @@ ssize_t keyAddName(Key *key, const char *addName);
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
 
-ssize_t keyGetFullNameSize(const Key *key);
-ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
-
 const char *keyBaseName(const Key *key);
 ssize_t keyGetBaseNameSize(const Key *key);
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);

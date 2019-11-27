@@ -43,15 +43,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
         unsafe { elektra_sys::keyGetBaseNameSize(self.as_ref()) }
     }
 
-    /// Bytes needed to store the key name including user domain and ending NULL.
-    fn fullname_size(&self) -> usize {
-        unsafe {
-            elektra_sys::keyGetFullNameSize(self.as_ref())
-                .try_into()
-                .unwrap()
-        }
-    }
-
     /// Return how many references the key has.
     fn get_ref(&self) -> isize {
         unsafe { elektra_sys::keyGetRef(self.as_ref()) }
@@ -61,27 +52,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     fn current_meta(&self) -> ReadOnly<StringKey> {
         let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
         unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) }
-    }
-
-    /// Get key full name, including the user domain name.
-    fn fullname(&self) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(self.fullname_size());
-
-        let ret_val = unsafe {
-            elektra_sys::keyGetFullName(
-                self.as_ref(),
-                vec.as_mut_ptr() as *mut std::os::raw::c_char,
-                vec.capacity(),
-            )
-        };
-        unsafe { vec.set_len(ret_val.try_into().unwrap()) };
-        // Elektra strings are guaranteed not to contain NUL bytes
-        unsafe {
-            CStr::from_bytes_with_nul_unchecked(&vec)
-                .to_string_lossy()
-                .to_owned()
-                .to_string()
-        }
     }
 
     /// Returns the namespace of the name of this key.

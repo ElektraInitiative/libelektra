@@ -126,6 +126,9 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/abc/#_10/ghi", NULL, 0, 14, 15);
 	TEST_VALIDATE_OK ("user:/abc/#_10/ghi", NULL, 0, 19, 15);
 
+	TEST_VALIDATE_OK ("/abc/#1/#_10", NULL, 0, 13, 14);
+	TEST_VALIDATE_OK ("user:/abc/#1/#_10", NULL, 0, 18, 14);
+
 	TEST_VALIDATE_OK ("/abc/#____10000/ghi", NULL, 0, 20, 21);
 	TEST_VALIDATE_OK ("user:/abc/#____10000/ghi", NULL, 0, 25, 21);
 
@@ -439,6 +442,9 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("/abc/#10/ghi", "", "/abc/#_10/ghi");
 	TEST_CANONICALIZE_OK ("user:/abc/#10/ghi", "", "user:/abc/#_10/ghi");
 
+	TEST_CANONICALIZE_OK ("/abc/#1/#_10", "", "/abc/#1/#_10");
+	TEST_CANONICALIZE_OK ("user:/abc/#1/#_10", "", "user:/abc/#1/#_10");
+
 	TEST_CANONICALIZE_OK ("/abc/\\%/def", "", "/abc/\\%/def");
 	TEST_CANONICALIZE_OK ("user:/abc/\\%/def", "", "user:/abc/\\%/def");
 
@@ -655,6 +661,9 @@ static void test_unescape (void)
 
 	TEST_UNESCAPE_OK ("/abc/\\#__10/ghi", KEY_NS_CASCADING, "\0abc\0#__10\0ghi");
 	TEST_UNESCAPE_OK ("user:/abc/\\#_100/ghi", KEY_NS_USER, "\0abc\0#_100\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/#1/#_10", KEY_NS_CASCADING, "\0abc\0#1\0#_10");
+	TEST_UNESCAPE_OK ("user:/abc/#1/#_10", KEY_NS_USER, "\0abc\0#1\0#_10");
 
 	TEST_UNESCAPE_OK ("/%", KEY_NS_CASCADING, "\0");
 	TEST_UNESCAPE_OK ("/\\%", KEY_NS_CASCADING, "\0%");

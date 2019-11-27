@@ -8,6 +8,50 @@
 
 #include "yajl_gen.h"
 
+// TODO: use unesacped names instead
+static char * keyNameGetOneLevel (const char * name, size_t * size)
+{
+	char * real = (char *) name;
+	size_t cursor = 0;
+	int end = 0;	 // bool to check for end of level
+	int escapeCount = 0; // counter to check if / was escaped
+
+	/* skip all repeating '/' in the beginning */
+	while (*real && *real == KDB_PATH_SEPARATOR)
+	{
+		++real;
+	}
+
+	/* now see where this basename ends handling escaped chars with '\' */
+	while (real[cursor] && !end)
+	{
+		switch (real[cursor])
+		{
+		case KDB_PATH_ESCAPE:
+			++escapeCount;
+			break;
+		case KDB_PATH_SEPARATOR:
+			if (!(escapeCount % 2))
+			{
+				end = 1;
+			}
+		// fallthrough
+		default:
+			escapeCount = 0;
+		}
+		++cursor;
+	}
+
+	/* if a '/' stopped our loop, balance the counter */
+	if (end)
+	{
+		--cursor;
+	}
+
+	*size = cursor;
+	return real;
+}
+
 /**
  * @brief Iterate over string and open everything
  *
@@ -104,7 +148,7 @@ static void elektraGenOpenLast (yajl_gen g, const Key * key)
 
 	ELEKTRA_LOG_DEBUG ("last startup entry: \"%.*s\"", (int) last.size, last.current);
 
-	if (last.current[0] == '#' && strcmp (last.current, "###empty_array"))
+	if (last.current[0] == '#' && strcmp (last.current, "###empty_array") != 0)
 	{
 		// is an array, but not an empty one
 		ELEKTRA_LOG_DEBUG ("GEN array open last");

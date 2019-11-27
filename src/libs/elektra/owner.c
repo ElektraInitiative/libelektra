@@ -61,7 +61,6 @@ keyOwner(key); // you would expect "" here
  * @see keyGetOwnerSize() for the size of the string with concluding 0
  * @see keyGetOwner(), keySetOwner()
  * @see keyName() for name without owner
- * @see keyGetFullName() for name with owner
  */
 const char * keyOwner (const Key * key)
 {
@@ -140,7 +139,7 @@ ssize_t keyGetOwnerSize (const Key * key)
  * @retval 1 if there is no owner
  * @retval -1 on NULL pointers
  * @retval -1 when maxSize is 0, larger than SSIZE_MAX or too small for ownername
- * @see keySetName(), keySetOwner(), keyOwner(), keyGetFullName()
+ * @see keySetName(), keySetOwner(), keyOwner()
  */
 ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
 {
@@ -187,7 +186,7 @@ ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
  * @return the number of bytes actually saved including final NULL
  * @retval 1 when owner is freed (by setting 0 or "")
  * @retval -1 on null pointer or memory problems
- * @see keySetName(), keyGetOwner(), keyGetFullName()
+ * @see keySetName(), keyGetOwner()
  */
 ssize_t keySetOwner (Key * key, const char * newOwner)
 {

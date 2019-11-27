@@ -68,7 +68,7 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 		const Key resolvedBookmark = cl.resolveBookmark (argument);
 		if (resolvedBookmark.isValid ())
 		{
-			complete (resolvedBookmark.getFullName (), cl);
+			complete (resolvedBookmark.getName (), cl);
 		}
 		else
 		{ // Bookmark not resolvable, so try a bookmark completion
@@ -134,7 +134,7 @@ void CompleteCommand::completeNormal (string const & argument, Key const & parse
 
 	const auto nameFilter = root.isCascading () ? filterCascading : filterName;
 	// Let elektra handle the escaping of the input for us
-	const string argumentEscaped = parsedArgument.getFullName ();
+	const string argumentEscaped = parsedArgument.getName ();
 	const auto filter = [&](const pair<Key, pair<int, int>> & c) {
 		return filterDepth (cl.minDepth + offset,
 				    max (cl.maxDepth, cl.maxDepth > INT_MAX - offset ? INT_MAX : cl.maxDepth + offset), c) &&
@@ -296,7 +296,7 @@ void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline con
 	{
 		if (mountpoint.isDirectBelow (mountpointPath))
 		{
-			const string actualName = mountpoints.lookup (mountpoint.getFullName () + "/mountpoint").getString ();
+			const string actualName = mountpoints.lookup (mountpoint.getName () + "/mountpoint").getString ();
 			Key mountpointKey (actualName, KEY_END);
 			// If the mountpoint already has some contents, its expanded with a namespace, so leave it out then
 			if (mountpointKey.isBelow (root) && !KeySet (ks).cut (mountpointKey).size ())
@@ -364,7 +364,7 @@ bool CompleteCommand::filterDepth (const int minDepth, const int maxDepth, pair<
 bool CompleteCommand::filterCascading (string const & argument, pair<Key, pair<int, int>> const & current)
 {
 	// For a cascading key completion, ignore the preceding namespace
-	const string test = current.first.getFullName ();
+	const string test = current.first.getName ();
 	size_t cascadationOffset = test.find ("/");
 	if (cascadationOffset == string::npos)
 	{
@@ -376,7 +376,7 @@ bool CompleteCommand::filterCascading (string const & argument, pair<Key, pair<i
 
 bool CompleteCommand::filterName (string const & argument, pair<Key, pair<int, int>> const & current)
 {
-	const string test = current.first.getFullName ();
+	const string test = current.first.getName ();
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin ());
 }
 
@@ -423,9 +423,9 @@ void CompleteCommand::printBookmarkResult (pair<Key, pair<int, int>> const & cur
 
 void CompleteCommand::printResult (pair<Key, pair<int, int>> const & current, const bool verbose)
 {
-	auto name = current.first.getFullName ();
+	auto name = current.first.getName ();
 	cout << name;
-	if (current.second.first > 1 && name[name.length() - 1] != '/')
+	if (current.second.first > 1 && name[name.length () - 1] != '/')
 	{
 		cout << "/";
 	}

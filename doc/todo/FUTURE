@@ -75,8 +75,6 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyIsBinary
 - keyIsString
 - keyName
-- keyGetFullNameSize
-- keyGetFullName
 - keyGetBaseNameSize
 - keyGetBaseName
 - keyValue

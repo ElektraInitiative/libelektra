@@ -253,8 +253,14 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
 {
 	string const name = *nameIterator;
 	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
-	auto const isArrayElement = offsetIndex >= 1;
-	return { isArrayElement, isArrayElement ? stoull (name.substr (static_cast<size_t> (offsetIndex))) : 0 };
+
+	if (offsetIndex < 1)
+	{
+		return { false, 0 };
+	}
+
+	auto arrayIndex = stoull (name.substr (static_cast<size_t> (offsetIndex)));
+	return { true, arrayIndex };
 }
 
 /**
@@ -309,13 +315,13 @@ YAML::Node createLeafNode (Key & key)
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())
 	{
-		if (meta.getName () == "array" || meta.getName () == "binary") continue;
-		if (meta.getName () == "type" && meta.getString () == "binary")
+		if (meta.getName () == "meta:/array" || meta.getName () == "meta:/binary") continue;
+		if (meta.getName () == "meta:/type" && meta.getString () == "binary")
 		{
 			dataNode.SetTag ("tag:yaml.org,2002:binary");
 			continue;
 		}
-		metaNode[meta.getName ()] = meta.getString ();
+		metaNode[meta.getName ().substr (sizeof ("meta:/" - 1))] = meta.getString ();
 		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
 	}
 

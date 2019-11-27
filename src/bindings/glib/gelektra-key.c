@@ -38,21 +38,6 @@ static void gelektra_key_get_property (GObject * object, guint property_id, GVal
 	case PROP_KEY_BASENAME:
 		g_value_set_string (value, keyBaseName (self->key));
 		break;
-	case PROP_KEY_FULLNAME:
-	{
-		gssize size = keyGetFullNameSize (self->key);
-		if (size == 0)
-			g_value_set_static_string (value, "");
-		else if (size > 0)
-		{
-			gchar * val = g_malloc0 (size);
-			keyGetFullName (self->key, &val[0], size);
-			g_value_take_string (value, val);
-		}
-		else
-			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-	}
-	break;
 	default:
 		/* We don't have any other property... */
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -284,11 +269,6 @@ gssize gelektra_key_getnamesize (const GElektraKey * key)
 gssize gelektra_key_getbasenamesize (const GElektraKey * key)
 {
 	return keyGetBaseNameSize (key->key);
-}
-
-gssize gelektra_key_getfullnamesize (const GElektraKey * key)
-{
-	return keyGetFullNameSize (key->key);
 }
 
 /* value operations */

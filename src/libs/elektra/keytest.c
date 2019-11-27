@@ -356,21 +356,19 @@ int keyIsInactive (const Key * key)
 {
 	if (!key) return -1;
 
-	const char * p = keyName (key);
-	if (!p) return -1;
-	if (p[0] == '\0') return -1;
+	const char * uname = keyUnescapedName (key);
+	size_t size = keyGetUnescapedNameSize (key);
 
-	size_t size = 0;
+	const char * cur = uname + 1; // skip namespace
 
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
+	while (cur != NULL && cur <= uname + size)
 	{
-		if (size > 0)
+		++cur;
+		if (cur[0] == '.')
 		{
-			if (p[0] == '.')
-			{
-				return 1;
-			}
+			return 1;
 		}
+		cur = strchr (cur, '\0');
 	}
 
 	return 0;

@@ -61,8 +61,6 @@ libelektra_0.8 {
 	keyGetBaseName;
 	keyGetBaseNameSize;
 	keyGetBinary;
-	keyGetFullName;
-	keyGetFullNameSize;
 	keyGetMeta;
 	keyGetName;
 	keyGetNameSize;
@@ -124,9 +122,6 @@ libelektra_0.8 {
 	ksTail;
 	ksVNew;
 
-	# kdbobsolete.h
-	keyNameGetOneLevel;
-
 	# kdbproposal.h
 	elektraKeySetName;
 };
@@ -177,11 +172,6 @@ libelektraprivate_1.0 {
 	keyIsSpec;
 	keyIsSystem;
 	keyIsUser;
-	keyNameIsDir;
-	keyNameIsProc;
-	keyNameIsSpec;
-	keyNameIsSystem;
-	keyNameIsUser;
 	keySetRaw;
 	elektraPluginFindGlobal;
 	elektraPluginMissing;

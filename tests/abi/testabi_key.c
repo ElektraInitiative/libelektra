@@ -362,33 +362,6 @@ static void test_keyName (void)
 
 	succeed_if (keySetName (0, ret) == -1, "Null pointer");
 
-	/* TODO (kodebach): remove?
-		printf ("Test Key Full Name\n");
-
-		key = keyNew (testFullName, KEY_END);
-		succeed_if (keyGetFullName (0, ret, 100) == -1, "null pointer");
-		succeed_if (keyGetFullName (key, 0, 100) == -1, "string null pointer");
-		succeed_if (keyGetFullName (key, ret, 0) == -1, "length checking");
-		for (i = 1; i < sizeof (testFullName); i++)
-		{
-			succeed_if (keyGetFullName (key, ret, i) == -1, "length checking too short");
-		}
-		for (i = sizeof (testFullName); i < sizeof (testFullName) * 2; i++)
-		{
-			succeed_if (keyGetFullName (key, ret, i) == sizeof (testFullName), "length checking longer");
-		}
-		succeed_if (keyGetFullName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
-		keyDel (key);
-
-		key = keyNew ("/", KEY_END);
-		succeed_if (keyGetFullName (key, ret, 1000) == 1, "get empty name");
-		succeed_if_same_string (ret, "");
-		succeed_if (keyGetFullName (key, ret, 0) == -1, "get empty name");
-		keyDel (key);
-
-		succeed_if (keySetName (0, ret) == -1, "Null pointer");
-	*/
-
 	printf ("Test Key Base Name\n");
 
 	key = keyNew (testName, KEY_END);

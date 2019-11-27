@@ -440,7 +440,7 @@ void TreeViewModel::insertMetaRow (int row, Key key, const QString & name)
 		QString keyName;
 
 		if (key)
-			keyName = QString::fromStdString (key.getFullName ());
+			keyName = QString::fromStdString (key.getName ());
 		else
 			keyName = name;
 

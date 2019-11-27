@@ -96,10 +96,6 @@ public interface Elektra extends Library {
 
 	int keyGetUnescapedNameSize (Pointer key);
 
-	int keyGetFullNameSize (Pointer key); // not implemented
-
-	int keyGetFullName (Pointer key, String returnedName, int maxSize); // not implemented
-
 	String keyBaseName (Pointer key); // not implemented
 
 	int keyGetBaseNameSize (Pointer key); // not implemented

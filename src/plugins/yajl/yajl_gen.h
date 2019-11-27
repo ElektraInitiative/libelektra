@@ -16,7 +16,6 @@
 
 #include <kdberrors.h>
 #include <kdbmacros.h>
-#include <kdbobsolete.h>
 
 #include <yajl/yajl_gen.h>
 

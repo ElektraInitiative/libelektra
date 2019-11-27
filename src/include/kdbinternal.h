@@ -15,7 +15,6 @@
 #include <kdbextension.h>
 #include <kdblogger.h>
 #include <kdbmodule.h>
-#include <kdbobsolete.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
 #include <kdbproposal.h>

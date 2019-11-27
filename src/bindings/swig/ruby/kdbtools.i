@@ -252,9 +252,6 @@ UNIQUE_PTR_VALUE_WRAPPER(
 /* %predicate kdb::tools::PluginSpec::isRefNumber; */
 
 /* getter/setter */
-%rename("fullname") kdb::tools::PluginSpec::getFullName;
-%rename("fullname=") kdb::tools::PluginSpec::setFullName;
-
 %rename("name") kdb::tools::PluginSpec::getName;
 %rename("name=") kdb::tools::PluginSpec::setName;
 
@@ -271,11 +268,6 @@ UNIQUE_PTR_VALUE_WRAPPER(
          kdb::tools::PluginCheckException,
          kdb::tools::ToolException
 ) kdb::tools::PluginSpec::PluginSpec;
-
-%catches(kdb::tools::BadPluginName,
-         kdb::tools::PluginCheckException,
-         kdb::tools::ToolException
-) kdb::tools::PluginSpec::setFullName;
 
 %catches(kdb::tools::BadPluginName,
          kdb::tools::PluginCheckException,

@@ -550,7 +550,7 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 		kdb::Key bookmark = resolveBookmark (name);
 		if (!bookmark.isValid ())
 		{
-			throw invalid_argument ("cannot find bookmark " + bookmark.getFullName ());
+			throw invalid_argument ("cannot find bookmark " + bookmark.getName ());
 		}
 		root = bookmark;
 	}
