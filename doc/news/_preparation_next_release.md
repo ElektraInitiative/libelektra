@@ -128,6 +128,12 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Build
 
+## Other
+
+- Improved error message for augeas to show lensPath. _(Michael Zronek)_
+- <<TODO>>
+- <<TODO>>
+
 ### CMake
 
 - <<TODO>>
