@@ -19,18 +19,6 @@ file (READ "${MANIFEST}" files)
 set (PYTHON_GET_MODULES_DIR_COMMAND
      "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 
-find_package (Python2Interp 2.7 QUIET)
-find_package (Python2Libs 2.7 QUIET)
-
-if (PYTHON2INTERP_FOUND)
-	execute_process (
-		COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
-		OUTPUT_VARIABLE PYTHON2_SITE_PACKAGES
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
-	string (APPEND files "\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info"
-		"\n${PYTHON2_SITE_PACKAGES}/__pycache__/kdb.cpython-27.pyc")
-endif (PYTHON2INTERP_FOUND)
-
 find_package (PythonInterp 3 QUIET)
 find_package (PythonLibs 3 QUIET)
 
@@ -94,9 +82,6 @@ set (
 	"${CMAKE_INSTALL_PREFIX}/share/doc/elektra-api"
 	"${CMAKE_INSTALL_PREFIX}/share/elektra"
 	"${CMAKE_INSTALL_PREFIX}/share/share/elektra")
-if (${PYTHON2_SITE_PACKAGES})
-	list (APPEND DIRECTORIES "${PYTHON2_SITE_PACKAGES}/support")
-endif (${PYTHON2_SITE_PACKAGES})
 if (${PYTHON_SITE_PACKAGES})
 	list (APPEND DIRECTORIES "${PYTHON_SITE_PACKAGES}/support")
 endif (${PYTHON_SITE_PACKAGES})
@@ -113,9 +98,6 @@ set (
 	"${CMAKE_INSTALL_PREFIX}/lib/lua/5.2"
 	"${CMAKE_INSTALL_PREFIX}/lib/lua"
 	"${CMAKE_INSTALL_PREFIX}/lib/pkgconfig"
-	"${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages"
-	"${CMAKE_INSTALL_PREFIX}/lib/python2.7/__pycache__"
-	"${CMAKE_INSTALL_PREFIX}/lib/python2.7"
 	"${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/__pycache__"
 	"${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages"
 	"${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}"

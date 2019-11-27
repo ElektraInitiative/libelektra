@@ -20,35 +20,12 @@ static void init_env (void)
 	setenv ("PYTHONDONTWRITEBYTECODE", "1", 1);
 }
 
-char filebuf[KDB_MAX_PATH_LENGTH + 1];
-static char * srcdir_rewrite = NULL;
-static char * python_file (const char * filename)
-{
-	if (!srcdir_rewrite)
-	{
-		/* no rewrite. just append our plugin name */
-		strcpy (filebuf, ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
-		strcat (strcat (filebuf, "/"), filename);
-		return srcdir_file (filebuf);
-	}
-
-	/* wipe old value */
-	*srcdir_rewrite = '\0';
-
-	/* append plugin name and delete last character */
-	strcat (strcat (filebuf, "/"), ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
-	*(filebuf + strlen (filebuf) - 1) = '\0';
-
-	strcat (strcat (filebuf, "/"), filename);
-	return filebuf;
-}
-
 // test simple variable passing
 static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
+	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file ("python/python_plugin.py"), KEY_END),
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/print", KEY_END),
 			       keyNew ("user/python/path", KEY_VALUE, ".", KEY_END), KS_END);
 	PLUGIN_OPEN (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
@@ -73,11 +50,11 @@ static void test_two_scripts (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
+	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("python/python_plugin.py"), KEY_END),
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
 			       keyNew ("user/print", KEY_END), KS_END);
 
-	KeySet * conf2 = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin2.py"), KEY_END),
+	KeySet * conf2 = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("python/python_plugin2.py"), KEY_END),
 				keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
 				keyNew ("user/print", KEY_END), KS_END);
 
@@ -106,7 +83,7 @@ static void test_fail (void)
 {
 	printf ("Testing return values from python functions...\n");
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin_fail.py"), KEY_END),
+	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("python/python_plugin_fail.py"), KEY_END),
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
 			       keyNew ("user/print", KEY_END), KS_END);
 	PLUGIN_OPEN (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
@@ -132,7 +109,7 @@ static void test_wrong (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin_wrong.py"), KEY_END),
+	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, srcdir_file ("python/python_plugin_wrong.py"), KEY_END),
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/python/path", KEY_VALUE, ".", KEY_END),
 			       keyNew ("user/print", KEY_END), KS_END);
 
@@ -153,18 +130,6 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
-	if (argc > 1)
-	{
-		strncpy (filebuf, argv[1], sizeof (filebuf) - 1);
-		/* our files are in pythons plugin directory
-		 * -> rewrite srcdir from xxx/python2 to xxx/python
-		 */
-		if (strlen (filebuf) > strlen ("python2") && !strcmp (filebuf + strlen (filebuf) - strlen ("python2"), "python2"))
-		{
-			srcdir_rewrite = filebuf + strlen (filebuf) - 1;
-			*srcdir_rewrite = '\0';
-		}
-	}
 	init_env ();
 
 	test_variable_passing ();

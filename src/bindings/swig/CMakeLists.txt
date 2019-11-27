@@ -11,11 +11,6 @@ if (ENABLE_ASAN)
 	return ()
 endif (ENABLE_ASAN)
 
-check_binding_included ("swig_python2" IS_INCLUDED SUBDIRECTORY "swig/python2")
-if (IS_INCLUDED)
-	add_subdirectory (python2)
-endif ()
-
 check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
 if (IS_INCLUDED)
 	add_subdirectory (python)
