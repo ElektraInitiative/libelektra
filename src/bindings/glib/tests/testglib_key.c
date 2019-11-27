@@ -158,7 +158,6 @@ static void test_name_manipulation (void)
 {
 	succeed_if (gelektra_key_getnamesize (g_key) == sizeof ("user:/key"), "wrong size");
 	succeed_if (gelektra_key_getbasenamesize (g_key) == sizeof ("key"), "wrong size");
-	succeed_if (gelektra_key_getfullnamesize (g_key) == sizeof ("user:myowner/key"), "wrong size");
 }
 
 
