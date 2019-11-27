@@ -166,7 +166,7 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - Re-enable website auto-deployment. _(Mihael Pranjić)_
-- <<TODO>>
+- Update docker images for website frontend and backend to debian buster. Update dependencies to newer versions. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Outlook
