@@ -43,7 +43,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Improved error message for augeas to show lensPath. _(Michael Zronek)_
 
-
 ### <<Plugin1>>
 
 - <<TODO>>
@@ -132,7 +131,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 
 ## Build
-
 
 ### CMake
 
