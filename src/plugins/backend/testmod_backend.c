@@ -52,32 +52,33 @@ KeySet * set_simple (void)
 
 KeySet * set_default (void)
 {
-	return ksNew (30, keyNew ("default", KEY_END), keyNew ("default/config", KEY_END),
-		keyNew ("default/config/mountpoint", KEY_VALUE, "default", KEY_END),
-		keyNew ("default/config/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
-		keyNew ("default/error", KEY_END),
-		keyNew ("default/error/rollback", KEY_END),
-		keyNew ("default/error/rollback/#0", KEY_END),
-		keyNew ("default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("default/get", KEY_END),
-		keyNew ("default/get/getresolver", KEY_END),
-		keyNew ("default/get/getresolver/#0", KEY_END),
-		keyNew ("default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("default/get/getstorage", KEY_END),
-		keyNew ("default/get/getstorage/#0", KEY_END),
-		keyNew ("default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
-		keyNew ("default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
-		keyNew ("default/set", KEY_END),
-		keyNew ("default/set/commit", KEY_END),
-		keyNew ("default/set/commit/#0", KEY_END),
-		keyNew ("default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("default/set/setresolver", KEY_END),
-		keyNew ("default/set/setresolver/#0", KEY_END),
-		keyNew ("default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("default/set/setstorage", KEY_END),
-		keyNew ("default/set/setstorage/#0", KEY_END),
-		keyNew ("default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
+	return ksNew (30, keyNew ("system/elektra/mountpoints/default", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getresolver", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/commit", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/commit/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setresolver", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setstorage", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
 }
 
 Plugin * open_backend (KeySet * config, KeySet * modules, KeySet * global, Key * errorKey)
@@ -97,13 +98,51 @@ Plugin * open_default (KeySet * modules, KeySet * global)
 }
 
 
-KeySet * set_pluginconf (void)
+KeySet * set_simpleconf (void)
 {
-	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
-		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END),
-		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END), keyNew ("system/path", KEY_END),
-		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user/more", KEY_END),
-		      keyNew ("user/more/config", KEY_END), keyNew ("user/more/config/below", KEY_END), keyNew ("user/path", KEY_END),
+	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system/more", KEY_END),
+		      keyNew ("system/more/config", KEY_END),
+		      keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+		      keyNew ("system/path", KEY_END),
+		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("user/more", KEY_END),
+		      keyNew ("user/more/config", KEY_END),
+		      keyNew ("user/more/config/below", KEY_END),
+		      keyNew ("user/path", KEY_END),
+		      KS_END);
+}
+
+KeySet * set_backrefconf (void)
+{
+	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system/more", KEY_END),
+		      keyNew ("system/more/config", KEY_END),
+		      keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
+		      keyNew ("system/path", KEY_END),
+		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("user/more", KEY_END),
+		      keyNew ("user/more/config", KEY_END),
+		      keyNew ("user/more/config/below", KEY_END),
+		      keyNew ("user/path", KEY_END),
+		      KS_END);
+}
+
+KeySet * set_defaultconf (void)
+{
+	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system/more", KEY_END),
+		      keyNew ("system/more/config", KEY_END),
+		      keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END),
+		      keyNew ("system/path", KEY_END),
+		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("user/more", KEY_END),
+		      keyNew ("user/more/config", KEY_END),
+		      keyNew ("user/more/config/below", KEY_END),
+		      keyNew ("user/path", KEY_END),
 		      KS_END);
 }
 
@@ -115,18 +154,14 @@ int check_null_in_slot (Slot * slot, int index)
 
 	for (int a = 0; a <= index; a++)
 	{
-		printf ("index: %d\n", a);
 		if (!curSlot)
 		{
-			printf ("Not curslot\n");
 			return 1;
 		}
 		if (a == index)
 		{
-			printf ("a is index %d\n",a);
 			if (curSlot->value)
 			{
-				printf ("curslot value is not null, return 0\n");
 				return 0;
 			}
 			return 1;
@@ -185,12 +220,12 @@ static void test_simple (void)
 
 	Key * mp;
 	succeed_if ((mp = bh->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyString (mp), "system/elektra/mountpoints/simple/config/mountpoint");
-	succeed_if_same_string (keyString (mp), "user/tests/backend/simple");
+	succeed_if_same_string (keyName (mp), "user/tests/backend/simple");
+	succeed_if_same_string (keyString (mp), "simple");
 
 	Plugin * plugin = bh->getplugins[1]->value;
 
-	KeySet * test_config = set_pluginconf ();
+	KeySet * test_config = set_simpleconf ();
 	KeySet * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
@@ -200,8 +235,10 @@ static void test_simple (void)
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 	elektraPluginClose (backend, errorKey);
+
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
+
 	ksDel (global);
 }
 
@@ -212,10 +249,10 @@ static void test_default (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_pluginconf (), 0);
+	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_defaultconf (), 0);
 	exit_if_fail (plugin, "KDB_DEFAULT_STORAGE: " KDB_DEFAULT_STORAGE " plugin could not be loaded");
 
-	KeySet * test_config = set_pluginconf ();
+	KeySet * test_config = set_defaultconf ();
 	KeySet * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
@@ -229,7 +266,7 @@ static void test_default (void)
 	KeySet * global = ksNew (0, KS_END);
 	Plugin * backend = open_default (modules, global);
 
-	succeed_if (backend != 0, "no backend found");
+	exit_if_fail (backend != 0, "no backend found");
 
 	BackendHandle * bh = elektraPluginGetData (backend);
 
@@ -237,7 +274,7 @@ static void test_default (void)
 
 	Key * mp;
 	succeed_if ((mp = bh->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "default/config/mountpoint");
+	succeed_if_same_string (keyName (mp), "user/tests/backend/default");
 	succeed_if_same_string (keyString (mp), "default");
 
 	elektraPluginClose (backend, 0);
@@ -294,11 +331,11 @@ static void test_backref (void)
 	KeySet * global = ksNew (0, KS_END);
 	Plugin * backend = open_backend (set_backref (), modules, global, 0);
 
-	succeed_if (backend != 0, "there should be a backend");
+	exit_if_fail (backend != 0, "there should be a backend");
 
 	BackendHandle * bh = elektraPluginGetData (backend);
 
-	succeed_if (bh != 0, "no backend handle found");
+	exit_if_fail (bh != 0, "no backend handle found");
 	succeed_if (check_null_in_slot (bh->getplugins[0], 0), "there should be no plugin");
 	succeed_if (check_null_in_slot (bh->getplugins[0], 1), "there should be no plugin");
 	exit_if_fail (check_null_in_slot (bh->getplugins[1], 0) == 0, "there should be a plugin");
@@ -309,14 +346,19 @@ static void test_backref (void)
 	exit_if_fail (check_null_in_slot (bh->setplugins[1], 0) == 0, "there should be a plugin");
 	succeed_if (check_null_in_slot (bh->setplugins[1], 1), "there should be no plugin");
 
+	succeed_if (check_null_in_slot (bh->errorplugins[0], 1), "there should be no plugin");
+	exit_if_fail (check_null_in_slot (bh->errorplugins[0], 0) == 0, "there should be a plugin");
+	succeed_if (check_null_in_slot (bh->errorplugins[1], 0), "there should be no plugin");
+	succeed_if (check_null_in_slot (bh->errorplugins[1], 1), "there should be no plugin");
+
 	Key * mp;
 	succeed_if ((mp = bh->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "system/elektra/mountpoints/backref/config/mountpoint");
-	succeed_if_same_string (keyString (mp), "user/tests/backend/backref");
+	succeed_if_same_string (keyName (mp), "user/tests/backend/backref");
+	succeed_if_same_string (keyString (mp), "backref");
 
 	Plugin * plugin1 = bh->getplugins[1]->value;
 	Plugin * plugin2 = bh->setplugins[1]->value;
-	Plugin * plugin3 = bh->errorplugins[1]->value;
+	Plugin * plugin3 = bh->errorplugins[0]->value;
 
 	succeed_if (plugin1 != 0, "there should be a plugin");
 	succeed_if (plugin2 != 0, "there should be a plugin");
@@ -328,7 +370,7 @@ static void test_backref (void)
 
 	succeed_if (plugin1->refcounter == 3, "ref counter should be 3");
 
-	KeySet * test_config = set_pluginconf ();
+	KeySet * test_config = set_backrefconf ();
 	KeySet * config = elektraPluginGetConfig (plugin1);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);

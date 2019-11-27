@@ -5,16 +5,17 @@
 
 #include <kdberrors.h>
 #include <kdbprivate.h>
+#include <stdio.h>
 
-int setMountpoint (BackendHandle * bh, KeySet * config, Key * errorKey)
+int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
 {
-	Key * root;
+	Key * configRoot;
 
 	ksRewind (config);
 
-	root = ksNext (config);
+	configRoot = ksNext (config);
 
-	Key * searchMountpoint = keyDup (root);
+	Key * searchMountpoint = keyDup (configRoot);
 	keyAddBaseName (searchMountpoint, "mountpoint");
 	Key * foundMountpoint = ksLookup (config, searchMountpoint, 0);
 
@@ -22,7 +23,7 @@ int setMountpoint (BackendHandle * bh, KeySet * config, Key * errorKey)
 
 	if (!foundMountpoint)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not find mountpoint within root %s", keyName (root));
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not find mountpoint within root %s", keyName (configRoot));
 		return -1;
 	}
 
@@ -42,9 +43,9 @@ int setMountpoint (BackendHandle * bh, KeySet * config, Key * errorKey)
 	return 0;
 }
 
-KeySet * processConfig (BackendHandle * bh, KeySet * config, Key * errorKey)
+KeySet * processConfig (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
 {
-	if (setMountpoint (bh, config, errorKey) == -1)
+	if (setMountpoint (bh, root, config, errorKey) == -1)
 	{
 		return NULL;
 	}
@@ -57,7 +58,7 @@ KeySet * processConfig (BackendHandle * bh, KeySet * config, Key * errorKey)
 
 int linkedListPosition (Key * cur, Key * errorKey)
 {
-	char * name = elektraMalloc (sizeof (keyBaseName (cur)));
+	char * name = elektraCalloc (strlen (keyBaseName (cur)) + 1);
 	strcpy (name, keyBaseName (cur));
 
 	if (name[0] != '#')
@@ -99,9 +100,6 @@ int linkedListPosition (Key * cur, Key * errorKey)
 
 int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginConfig, char ** referenceName, Key * errorKey)
 {
-	*name = elektraMalloc (sizeof (keyBaseName (cur)));
-	strcpy (*name, keyBaseName (cur));
-
 	// This key will be used to find the configuration of the plugin, if it exists
 	Key * pluginConfigSearchKey = keyDup (cur);
 	keyAddBaseName (pluginConfigSearchKey, "config");
@@ -116,7 +114,7 @@ int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginCon
 
 	// This key will be used to find the plugin's reference name, which is the label it was first set with
 	Key * refSearchKey = keyDup (cur);
-	keyAddBaseName (refSearchKey, "ref");
+	keyAddBaseName (refSearchKey, "reference");
 
 	KeySet * cutPluginConfig = ksCut (config, pluginConfigSearchKey);
 	keyDel (pluginConfigSearchKey);
@@ -156,10 +154,10 @@ int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginCon
 		}
 
 		char prefixReferenceName[] = "system/elektra/plugins/";
-		char * keyName = elektraMalloc (sizeof (keyString (refKey)));
+		char * keyName = elektraCalloc (strlen (keyString (refKey)) + 1);
 		strcpy (keyName, keyString (refKey));
 
-		*referenceName = elektraMalloc (sizeof (prefixReferenceName) + sizeof (keyName) - 1);
+		*referenceName = elektraCalloc (strlen (prefixReferenceName) + strlen (keyName) + 1);
 		strcpy (*referenceName, prefixReferenceName);
 		strcat (*referenceName, keyName);
 
@@ -167,13 +165,20 @@ int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginCon
 	}
 	else if (nameKey != 0) // A new plugin will be created
 	{
-		*name = elektraMalloc (sizeof (keyString (nameKey)));
+		*name = elektraCalloc (strlen (keyString (nameKey)) + 1);
 		strcpy (*name, keyString (nameKey));
 		if (labelKey != 0)
 		{
 			// A label will be defined for later referencing
-			*referenceName = elektraMalloc (sizeof (keyString (labelKey)));
-			strcpy (*referenceName, keyString (labelKey));
+
+			char prefixReferenceName[] = "system/elektra/plugins/";
+			char * keyName = elektraCalloc (strlen (keyString (labelKey)) + 1);
+			strcpy (keyName, keyString (labelKey));
+
+			*referenceName = elektraCalloc (strlen (prefixReferenceName) + strlen (keyString (labelKey)) + 1);
+			strcpy (*referenceName, prefixReferenceName);
+			strcat (*referenceName, keyName);
+
 			return 3;
 		}
 		return 1;
@@ -235,7 +240,7 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 
 			if (!slot)
 			{
-				slot = elektraMalloc (sizeof (Slot));
+				slot = elektraCalloc (sizeof (Slot));
 				slot->next = 0;
 			}
 
@@ -289,7 +294,7 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 				{
 					if (!curSlot->next)
 					{
-						curSlot->next = elektraMalloc (sizeof (Slot));
+						curSlot->next = elektraCalloc (sizeof (Slot));
 					}
 					curSlot = curSlot->next;
 				}
@@ -310,7 +315,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 {
 	Key * root;
 	Key * cur;
-	Slot ** slots = elektraMalloc (sizeof (Slot *) * NR_OF_GET_PLUGINS);
+	Slot ** slots = elektraCalloc (sizeof (Slot *) * NR_OF_GET_PLUGINS);
 
 	ksRewind (config);
 
@@ -387,7 +392,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 {
 	Key * root;
 	Key * cur;
-	Slot ** slots = elektraMalloc (sizeof (Slot *) * NR_OF_SET_PLUGINS);
+	Slot ** slots = elektraCalloc (sizeof (Slot *) * NR_OF_SET_PLUGINS);
 
 	ksRewind (config);
 
@@ -486,7 +491,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 {
 	Key * root;
 	Key * cur;
-	Slot ** slots = elektraMalloc (sizeof (Slot *) * NR_OF_ERROR_PLUGINS);
+	Slot ** slots = elektraCalloc (sizeof (Slot *) * NR_OF_ERROR_PLUGINS);
 
 	ksRewind (config);
 
@@ -547,7 +552,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 
 int elektraBackendOpen (Plugin * handle, Key * errorKey)
 {
-	BackendHandle * bh = elektraMalloc (sizeof (BackendHandle));
+	BackendHandle * bh = elektraCalloc (sizeof (BackendHandle));
 
 	elektraPluginSetData (handle, bh);
 
@@ -567,13 +572,33 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	KeySet * configSet = ksCut (handle->config, configKey);
 	keyDel (configKey);
 
-	systemConfig = processConfig (bh, configSet, errorKey);
+	systemConfig = processConfig (bh, root, configSet, errorKey);
 
 	if (systemConfig == 0)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not generate system config");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	Key * errorPluginsKey = keyDup (root);
+	keyAddBaseName (errorPluginsKey, "error");
+	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
+	keyDel (errorPluginsKey);
+
+	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
+
+	if (!errorPlugins)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
+	{
+		bh->errorplugins[a] = errorPlugins[a];
+	}
+
+	ksDel (errorPluginsSet);
 
 	Key * getPluginsKey = keyDup (root);
 	keyAddBaseName (getPluginsKey, "get");
@@ -615,26 +640,6 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	ksDel (setPluginsSet);
 
-	Key * errorPluginsKey = keyDup (root);
-	keyAddBaseName (errorPluginsKey, "error");
-	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
-	keyDel (errorPluginsKey);
-
-	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
-
-	if (!errorPlugins)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
-	{
-		bh->errorplugins[a] = errorPlugins[a];
-	}
-
-	ksDel (errorPluginsSet);
-
 	// TODO Open missing backend instead of returning errors
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -647,27 +652,36 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	--handle->refcounter;
-
-	if (handle->refcounter > 0)
-	{
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	}
-
 	int error = 0;
 
 	BackendHandle * bh = elektraPluginGetData (handle);
-	if (bh)
+	if (!bh)
 	{
-		elektraFree (bh);
-		elektraPluginSetData (handle, 0);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	keyDecRef (bh->mountpoint);
-	keySetName (errorKey, keyName (bh->mountpoint));
 	keyDel (bh->mountpoint);
 
 	for (int a = 0; a < NR_OF_GET_PLUGINS; a++)
+	{
+		Slot * cur = bh->getplugins[a];
+		if (!cur)
+		{
+			continue;
+		}
+
+		while (cur)
+		{
+			int ret = elektraPluginClose (cur->value, errorKey);
+			if (ret == -1)
+			{
+				++error;
+			}
+			cur = cur->next;
+		}
+	}
+
+	for (int a = 0; a < NR_OF_SET_PLUGINS; a++)
 	{
 		Slot * cur = bh->setplugins[a];
 		if (!cur)
@@ -684,6 +698,31 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 			}
 			cur = cur->next;
 		}
+	}
+
+	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
+	{
+		Slot * cur = bh->getplugins[a];
+		if (!cur)
+		{
+			continue;
+		}
+
+		while (cur)
+		{
+			int ret = elektraPluginClose (cur->value, errorKey);
+			if (ret == -1)
+			{
+				++error;
+			}
+			cur = cur->next;
+		}
+	}
+
+	if (bh)
+	{
+		elektraFree (bh);
+		elektraPluginSetData (handle, 0);
 	}
 
 	if (error)
