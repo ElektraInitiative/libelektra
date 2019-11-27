@@ -5,7 +5,6 @@ set (
 	loader
 	ease
 	globbing
-	proposal
 	meta
 	plugin
 	pluginprocess

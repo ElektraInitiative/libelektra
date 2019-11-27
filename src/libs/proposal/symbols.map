@@ -1,7 +1,0 @@
-libelektra_0.8 {
-	# kdbproposal.h
-	keyAsCascading;
-	keyGetLevelsBelow;
-	keyRel2;
-	ksPopAtCursor;
-};
