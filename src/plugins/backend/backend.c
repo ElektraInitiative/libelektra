@@ -233,16 +233,16 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 				return NULL;
 			}
 
+			if (!slot)
+			{
+				slot = elektraMalloc (sizeof (Slot));
+				slot->next = 0;
+			}
+
 			Slot * curSlot = slot;
 
 			for (int a = 0; a <= position; a++)
 			{
-				// Allocate new slot if it is null
-				if (!curSlot)
-				{
-					curSlot = elektraMalloc (sizeof (Slot));
-				}
-
 				// Insert the plugin into its slot
 				if (a == position)
 				{
@@ -261,8 +261,6 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 
 							return 0;
 						}
-
-						// TODO set global keyset
 
 						if (referenceName)
 						{
@@ -289,12 +287,13 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 				}
 				else
 				{
+					if (!curSlot->next)
+					{
+						curSlot->next = elektraMalloc (sizeof (Slot));
+					}
 					curSlot = curSlot->next;
 				}
 			}
-
-			elektraFree (name);
-			elektraFree (referenceName);
 		}
 		else
 		{
@@ -303,11 +302,6 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 	}
 
 	ksDel (config);
-
-	if (!slot)
-	{
-		slot = elektraMalloc (sizeof (Slot));
-	}
 
 	return slot;
 }
@@ -555,6 +549,8 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 {
 	BackendHandle * bh = elektraMalloc (sizeof (BackendHandle));
 
+	elektraPluginSetData (handle, bh);
+
 	bh->getposition = GET_GETRESOLVER;
 	bh->setposition = SET_SETRESOLVER;
 	bh->errorposition = ERROR_PREROLLBACK;
@@ -618,31 +614,29 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	}
 
 	ksDel (setPluginsSet);
-//
-//	Key * errorPluginsKey = keyDup (root);
-//	keyAddBaseName (errorPluginsKey, "error");
-//	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
-//	keyDel (errorPluginsKey);
 
-//	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
-//
-//	if (!errorPlugins)
-//	{
-//		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
-//		return ELEKTRA_PLUGIN_STATUS_ERROR;
-//	}
-//
-//	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
-//	{
-//		bh->errorplugins[a] = errorPlugins[a];
-//	}
-//
-//	ksDel (errorPluginsSet);
-//
-//	// TODO Open missing backend instead of returning errors
-//	// TODO set global keyset
-//
-//	elektraPluginSetData (handle, bh);
+	Key * errorPluginsKey = keyDup (root);
+	keyAddBaseName (errorPluginsKey, "error");
+	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
+	keyDel (errorPluginsKey);
+
+	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
+
+	if (!errorPlugins)
+	{
+		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
+	{
+		bh->errorplugins[a] = errorPlugins[a];
+	}
+
+	ksDel (errorPluginsSet);
+
+	// TODO Open missing backend instead of returning errors
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
