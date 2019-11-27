@@ -95,7 +95,7 @@ TEST_F (test_contextual_update, notifyAllEventsChange)
 	ASSERT_EQ (x, 133);
 	ASSERT_EQ (ks.lookup ("/other/key").getString (), "133") << "nothing done, so its not changed";
 	ASSERT_EQ (ks.size (), 4);
-	
+
 	EXPECT_EQ (ks.at (0).getName (), "user:/ignore/id") << "nothing done, so its not changed";
 	EXPECT_EQ (ks.at (0).getString (), "other") << "nothing done, so its not changed";
 	EXPECT_EQ (ks.at (1).getName (), "default:/%/key") << "nothing done, so its not changed";

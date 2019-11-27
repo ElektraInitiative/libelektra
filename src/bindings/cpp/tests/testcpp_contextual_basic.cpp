@@ -528,8 +528,8 @@ TYPED_TEST (test_contextual_basic, groups)
 	EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP/serial_number");
 	c.template with<KeyValueLayer> ("type", "Notebook") ([&] {
 		EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
-		c.template without<KeyValueLayer> ("type",
-						   "") ([&] { EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP/serial_number"); });
+		c.template without<KeyValueLayer> ("type", "") (
+			[&] { EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP/serial_number"); });
 		EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 	});
 }

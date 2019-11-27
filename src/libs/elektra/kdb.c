@@ -1051,7 +1051,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (cacheParent == NULL || elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
+		if (cacheParent == NULL ||
+		    elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
 		{
 			goto cachemiss;
 		}
