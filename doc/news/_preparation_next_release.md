@@ -39,6 +39,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### Augeas
+
+- Improved error message for augeas to show lensPath. _(Michael Zronek)_
+
 ### <<Plugin1>>
 
 - <<TODO>>
