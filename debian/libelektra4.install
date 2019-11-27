@@ -45,7 +45,6 @@ usr/lib/*/libelektraintercept.so
 usr/lib/*/libelektra-kdb.so*
 usr/lib/*/libelektra-meta.so*
 usr/lib/*/libelektra-plugin.so*
-usr/lib/*/libelektra-proposal.so*
 usr/lib/*/libelektra-utility.so*
 usr/lib/*/libelektra-pluginprocess.so*
 usr/lib/*/libelektra-highlevel.so*
