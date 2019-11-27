@@ -630,8 +630,9 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	string (REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
 	string (REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
 			      "keyNew(\"system:/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system:/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX
+		REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
 			      "keyNew(\"system:/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 
@@ -676,8 +677,9 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	string (REGEX
 		REPLACE "\"- +infos/metadata *= *([/#a-zA-Z0-9 ]*)\\\\n\""
 			"keyNew(\"system:/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system:/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX
+		REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\""
 			"keyNew(\"system:/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}"

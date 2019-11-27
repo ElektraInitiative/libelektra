@@ -214,19 +214,20 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 static void array_conflict_number_test (void)
 {
 	printf ("Executing %s\n", __func__);
-	Key * our_root = keyNew ("user/our", KEY_END);
-	Key * their_root = keyNew ("user/their", KEY_END);
-	Key * base_root = keyNew ("user/base", KEY_END);
-	Key * result_root = keyNew ("user/result", KEY_END);
+	Key * our_root = keyNew ("user:/our", KEY_END);
+	Key * their_root = keyNew ("user:/their", KEY_END);
+	Key * base_root = keyNew ("user:/base", KEY_END);
+	Key * result_root = keyNew ("user:/result", KEY_END);
 	Key * informationKey = keyNew (0, KEY_END);
-	KeySet * our = ksNew (5, keyNew ("user/our/#0", KEY_VALUE, "a", KEY_END), keyNew ("user/our/#1", KEY_VALUE, "0", KEY_END),
-			      keyNew ("user/our/#2", KEY_VALUE, "1", KEY_END), keyNew ("user/our/#3", KEY_VALUE, "2", KEY_END),
-			      keyNew ("user/our/#4", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * our = ksNew (5, keyNew ("user:/our/#0", KEY_VALUE, "a", KEY_END), keyNew ("user:/our/#1", KEY_VALUE, "0", KEY_END),
+			      keyNew ("user:/our/#2", KEY_VALUE, "1", KEY_END), keyNew ("user:/our/#3", KEY_VALUE, "2", KEY_END),
+			      keyNew ("user:/our/#4", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * their =
-		ksNew (4, keyNew ("user/their/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/their/#1", KEY_VALUE, "1", KEY_END),
-		       keyNew ("user/their/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/their/#3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * base = ksNew (4, keyNew ("user/base/#0", KEY_VALUE, "0", KEY_END), keyNew ("user/base/#1", KEY_VALUE, "1", KEY_END),
-			       keyNew ("user/base/#2", KEY_VALUE, "2", KEY_END), keyNew ("user/base/#3", KEY_VALUE, "3", KEY_END), KS_END);
+		ksNew (4, keyNew ("user:/their/#0", KEY_VALUE, "0", KEY_END), keyNew ("user:/their/#1", KEY_VALUE, "1", KEY_END),
+		       keyNew ("user:/their/#2", KEY_VALUE, "2", KEY_END), keyNew ("user:/their/#3", KEY_VALUE, "3", KEY_END), KS_END);
+	KeySet * base =
+		ksNew (4, keyNew ("user:/base/#0", KEY_VALUE, "0", KEY_END), keyNew ("user:/base/#1", KEY_VALUE, "1", KEY_END),
+		       keyNew ("user:/base/#2", KEY_VALUE, "2", KEY_END), keyNew ("user:/base/#3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * result =
 		elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
 
@@ -244,28 +245,28 @@ static void array_conflict_number_test (void)
 static void testValuesWithGivenLength (int size)
 {
 	printf ("Executing %s with size %d\n", __func__, size);
-	Key * our_root = keyNew ("user/tests/our", KEY_END);
-	Key * their_root = keyNew ("user/tests/their", KEY_END);
-	Key * base_root = keyNew ("user/tests/base", KEY_END);
-	Key * result_root = keyNew ("user/tests/result", KEY_END);
+	Key * our_root = keyNew ("user:/tests/our", KEY_END);
+	Key * their_root = keyNew ("user:/tests/their", KEY_END);
+	Key * base_root = keyNew ("user:/tests/base", KEY_END);
+	Key * result_root = keyNew ("user:/tests/result", KEY_END);
 	Key * informationKey = keyNew (0, KEY_END);
 	char * value = elektraCalloc (size);
 	memset (value, 'a', size - 1); // leave the last element \0
 	// clang-format off
 	KeySet * our = ksNew (3,
-		keyNew ("user/tests/our/#0", KEY_VALUE, value, KEY_END),
-		keyNew ("user/tests/our/#1", KEY_VALUE, value, KEY_END),
-		keyNew ("user/tests/our/#2", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/our/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/our/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/our/#2", KEY_VALUE, value, KEY_END),
 		KS_END);
 	KeySet * their = ksNew (3,
-		keyNew ("user/tests/their/#0", KEY_VALUE, value, KEY_END),
-		keyNew ("user/tests/their/#1", KEY_VALUE, value, KEY_END),
-		keyNew ("user/tests/their/#2", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/their/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/their/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/their/#2", KEY_VALUE, value, KEY_END),
 		KS_END);
 	KeySet * base = ksNew (3,
-		keyNew ("user/tests/base/#0", KEY_VALUE, value, KEY_END),
-		keyNew ("user/tests/base/#1", KEY_VALUE, value, KEY_END),
-		keyNew ("user/tests/base/#2", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/base/#0", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/base/#1", KEY_VALUE, value, KEY_END),
+		keyNew ("user:/tests/base/#2", KEY_VALUE, value, KEY_END),
 		KS_END);
 	// clang-format on
 	elektraFree (value);

@@ -23,7 +23,7 @@ using CppKey = kdb::Key;
 
 
 // BEGIN: COPY UTIL FUNCTIONS FROM testmod_yamlcpp.cpp
-#define PREFIX "user/unit_tests/kconfig/"
+#define PREFIX "user:/unit_tests/kconfig/"
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
 	CppKeySet modules{ 0, KS_END };                                                                                                    \
 	CppKeySet config{ 0, KS_END };                                                                                                     \
@@ -75,7 +75,7 @@ TEST (kconfig, basics)
 	CppKeySet keys{ 0, KS_END };
 	elektraModulesInit (modules.getKeySet (), 0);
 
-	CppKey parent{ "system/elektra/modules/kconfig", KEY_END };
+	CppKey parent{ "system:/elektra/modules/kconfig", KEY_END };
 	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open kconfig plugin"); //! OCLint (empty if, too few branches switch)
 

@@ -274,12 +274,12 @@ int main (int argc, char ** argv)
 		KDB first;
 		KeySet firstReturned;
 		first.get (firstReturned, parent);
-		firstReturned.append (Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+		firstReturned.append (Key ("system:/" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
 
 		KDB second;
 		KeySet secondReturned;
 		second.get (secondReturned, parent);
-		secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+		secondReturned.append (Key ("system:/" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 
 		second.set (secondReturned, parent);
 		// first.set(firstReturned, parent); // exception expected

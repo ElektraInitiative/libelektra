@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 class App
 {
 
-	private final static String MOUNT_SPACE = "user";
+	private final static String MOUNT_SPACE = "user:/";
 	private final static String KEY_PREFIX = MOUNT_SPACE + "/sw/clock/central/";
 
 	public static void main (String[] args)

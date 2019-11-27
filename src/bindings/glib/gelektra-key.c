@@ -465,12 +465,12 @@ gboolean gelektra_key_isvalid (const GElektraKey * key)
 
 gboolean gelektra_key_issystem (const GElektraKey * key)
 {
-	return !strncmp (keyName (key->key), "system", sizeof ("system") - 1);
+	return !strncmp (keyName (key->key), "system:/", sizeof ("system:/") - 1);
 }
 
 gboolean gelektra_key_isuser (const GElektraKey * key)
 {
-	return !strncmp (keyName (key->key), "user", sizeof ("user") - 1);
+	return !strncmp (keyName (key->key), "user:/", sizeof ("user:/") - 1);
 }
 
 gboolean gelektra_key_isstring (const GElektraKey * key)

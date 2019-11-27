@@ -27,4 +27,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ dismissError }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(ErrorSnackbar);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ErrorSnackbar);

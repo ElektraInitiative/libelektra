@@ -86,29 +86,29 @@ To import a sample `xml` content with the `xerces` plugin:
 
 ```sh
 # import two keys from a xml string
-kdb import user/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+kdb import user:/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb-import/one
+kdb get user:/tests/kdb-import/one
 #> one
-kdb get user/tests/kdb-import/two
+kdb get user:/tests/kdb-import/two
 #> two
-kdb rm -r user/tests/kdb-import
+kdb rm -r user:/tests/kdb-import
 ```
 
 To import a sample `xml` content via specifying the file format directly:
 
 ```sh
 # import two keys from a xml string
-kdb import user/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+kdb import user:/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb-import/one
+kdb get user:/tests/kdb-import/one
 #> one
-kdb get user/tests/kdb-import/two
+kdb get user:/tests/kdb-import/two
 #> two
 
-kdb rm -r user/tests/kdb-import
+kdb rm -r user:/tests/kdb-import
 ```
 
 ## SEE ALSO

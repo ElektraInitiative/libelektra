@@ -78,7 +78,7 @@ Here an example of how you can easily check if a key exists:
 import kdb
 
 with kdb.KDB() as k:
-    namespace = "user"
+    namespace = "user:/"
     path = '{}/test'.format(namespace)
 
     ks = kdb.KeySet()

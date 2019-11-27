@@ -44,6 +44,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
 ### Quickdump
 
 - Support for the old quickdump v1 and v2 formats has been removed. _(Klemens Böswirth)_

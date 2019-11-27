@@ -52,7 +52,7 @@ kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
 KeySet * base = ksDup (myConfig);     // save a copy of original keyset
 
 // change the keys within myConfig
-ksAppendKey (myConfig, keyNew ("system/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
+ksAppendKey (myConfig, keyNew ("system:/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
 
 KeySet * ours = ksDup (myConfig); // save a copy of our keyset
 KeySet * theirs;		  // needed for 3-way merging

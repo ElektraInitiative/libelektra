@@ -19,7 +19,7 @@ int main (void)
 	KDB * handles[NUM_RUNS];
 	KeySet * keysets[NUM_RUNS];
 
-	Key * parentKey = keyNew ("user", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_END);
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{

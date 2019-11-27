@@ -23,7 +23,7 @@ cat /home/markus/.config/hello.ini
 sudo kdb umount /hello
 
 echo "Now let us change something.. With validation"
-sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
+sudo kdb mount --with-recommends /etc/hosts system:/hosts hosts
 sudo kdb get system:/hosts/ipv4/localhost
 sudo kdb set system:/hosts/ipv4/my 88.198.134.1777
 sudo kdb set system:/hosts/ipv4/my 88.198.134.177

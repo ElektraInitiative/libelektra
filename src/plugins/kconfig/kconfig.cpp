@@ -32,16 +32,16 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/kconfig", KEY_VALUE, "kconfig plugin waits for your orders", KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports", KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/open", KEY_FUNC, elektraKconfigOpen, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/close", KEY_FUNC, elektraKconfigClose, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/get", KEY_FUNC, elektraKconfigGet, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/set", KEY_FUNC, elektraKconfigSet, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/error", KEY_FUNC, elektraKconfigError, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/checkconf", KEY_FUNC, elektraKconfigCheckConf, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig", KEY_VALUE, "kconfig plugin waits for your orders", KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports", KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/open", KEY_FUNC, elektraKconfigOpen, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/close", KEY_FUNC, elektraKconfigClose, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/get", KEY_FUNC, elektraKconfigGet, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/set", KEY_FUNC, elektraKconfigSet, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/error", KEY_FUNC, elektraKconfigError, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/checkconf", KEY_FUNC, elektraKconfigCheckConf, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/kconfig/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
 
@@ -83,7 +83,7 @@ int elektraKconfigGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 
-	if (parent.getName () == "system/elektra/modules/kconfig")
+	if (parent.getName () == "system:/elektra/modules/kconfig")
 	{
 		keys.append (getContract ());
 		parent.release ();

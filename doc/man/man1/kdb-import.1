@@ -114,14 +114,14 @@ To import a sample \fBxml\fR content with the \fBxerces\fR plugin:
 .nf
 
 # import two keys from a xml string
-kdb import user/tests/kdb\-import/ xerces <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+kdb import user:/tests/kdb\-import/ xerces <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb\-import/one
+kdb get user:/tests/kdb\-import/one
 #> one
-kdb get user/tests/kdb\-import/two
+kdb get user:/tests/kdb\-import/two
 #> two
-kdb rm \-r user/tests/kdb\-import
+kdb rm \-r user:/tests/kdb\-import
 .
 .fi
 .
@@ -135,15 +135,15 @@ To import a sample \fBxml\fR content via specifying the file format directly:
 .nf
 
 # import two keys from a xml string
-kdb import user/tests/kdb\-import/ xml <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+kdb import user:/tests/kdb\-import/ xml <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb\-import/one
+kdb get user:/tests/kdb\-import/one
 #> one
-kdb get user/tests/kdb\-import/two
+kdb get user:/tests/kdb\-import/two
 #> two
 
-kdb rm \-r user/tests/kdb\-import
+kdb rm \-r user:/tests/kdb\-import
 .
 .fi
 .

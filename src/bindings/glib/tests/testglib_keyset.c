@@ -58,7 +58,7 @@ static void test_basic (void)
 	succeed_if (gelektra_keyset_len (ks1) == 1, "len must be 1 again");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("user", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("user:/", GELEKTRA_KEY_END);
 	ks2 = gelektra_keyset_cut (ks1, key);
 	succeed_if (gelektra_keyset_len (ks2) == 1, "len must be 1");
 	g_object_unref (key);

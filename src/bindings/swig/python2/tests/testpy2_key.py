@@ -89,11 +89,11 @@ class Key(unittest.TestCase):
 		self.assertEqual(len(self.key),  3)
 		self.assertEqual(len(self.bkey), 2)
 
-		self.assertEqual(repr(self.key),  "kdb.Key('user/foo/bar')")
-		self.assertEqual(repr(self.bkey), "kdb.Key('system/bkey')")
+		self.assertEqual(repr(self.key),  "kdb.Key('user:/foo/bar')")
+		self.assertEqual(repr(self.bkey), "kdb.Key('system:/bkey')")
 
 		with self.assertRaises(TypeError):
-                    hash(kdb.Key("user/not_name_locked"))
+                    hash(kdb.Key("user:/not_name_locked"))
 
 	def test_properties(self):
 		self.assertEqual(self.key.name,      "user:/foo/bar")
@@ -155,7 +155,7 @@ class Key(unittest.TestCase):
 		k.setMeta("foo", "bar")
 		self.assertEqual(k.getMeta("foo").value, "bar")
 
-		k = kdb.Key("user/key1", { "foo2": "bar2", "foo3": "bar3" })
+		k = kdb.Key("user:/key1", { "foo2": "bar2", "foo3": "bar3" })
 		self.assertEqual(k.getMeta("foo2").value, "bar2")
 		self.assertEqual(k.getMeta("foo3").value, "bar3")
 
@@ -178,10 +178,10 @@ class Key(unittest.TestCase):
 
 	def test_helpers(self):
 		with self.assertRaises(ValueError):
-			kdb.Key("user/noarray").array_elements()
-		parts = kdb.Key("user/some/array/#_12").array_elements()
+			kdb.Key("user:/noarray").array_elements()
+		parts = kdb.Key("user:/some/array/#_12").array_elements()
 		self.assertEqual(parts.index,    12)
-		self.assertEqual(parts.name,     "user/some/array")
+		self.assertEqual(parts.name,     "user:/some/array")
 		self.assertEqual(parts.basename, "array")
 
 if __name__ == '__main__':

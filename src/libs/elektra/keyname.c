@@ -1167,7 +1167,7 @@ const char * keyBaseName (const Key * key)
 /**
  * Calculates number of bytes needed to store basename of @p key.
  *
- * Key names that have only root names (e.g. @c "system" or @c "user"
+ * Key names that have only root names (e.g. @c "system:/" or @c "user:/"
  * or @c "user:domain" ) does not have basenames, thus the function will
  * return 1 bytes to store "".
  *

@@ -7,6 +7,7 @@
  */
 
 
+#include "kdblogger.h"
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -305,14 +306,14 @@ Key * keyVNew (const char * name, va_list va)
 			break;
 
 		default:
-			ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew",
-					(kdb_unsigned_long_long_t) action);
+			ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew", (kdb_unsigned_long_long_t) action);
 			break;
 		}
 	}
 
 	if (keySetName (key, name) < 0)
 	{
+		ELEKTRA_LOG_WARNING ("Invalid name: %s", name);
 		elektraFree (key);
 		return NULL;
 	}

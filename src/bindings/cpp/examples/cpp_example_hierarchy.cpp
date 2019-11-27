@@ -201,11 +201,11 @@ public:
 	void add (Key k)
 	{
 		// update root nodes
-		if (k.getName () == "user")
+		if (k.getName () == "user:/")
 		{
 			m_userRootNode.m_self = k;
 		}
-		else if (k.getName () == "system")
+		else if (k.getName () == "system:/")
 		{
 			m_systemRootNode.m_self = k;
 		}
@@ -231,9 +231,9 @@ public:
 	 */
 	void accept (Visitor & visitor)
 	{
-		visitor.visit ("user", 0, m_userRootNode.m_self);
+		visitor.visit ("user:/", 0, m_userRootNode.m_self);
 		m_userRootNode.accept (visitor);
-		visitor.visit ("system", 0, m_systemRootNode.m_self);
+		visitor.visit ("system:/", 0, m_systemRootNode.m_self);
 		m_systemRootNode.accept (visitor);
 	}
 
@@ -288,6 +288,6 @@ int main ()
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system", KEY_VALUE, "root value", KEY_END));
+	kh.add (Key ("system:/", KEY_VALUE, "root value", KEY_END));
 	kh.accept (pv);
 }
