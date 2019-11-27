@@ -61,7 +61,7 @@ ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2)
 	const char * pcmp2 = keyUnescapedName (cmp2);
 
 	size_t size1 = keyGetUnescapedNameSize (cmp1);
-	size_t size2 = keyGetUnescapedNameSize (cmp1);
+	size_t size2 = keyGetUnescapedNameSize (cmp2);
 
 	size_t counter = 0;
 	const char * cur1 = pcmp1;
@@ -71,7 +71,7 @@ ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2)
 		const char * next1 = strchr (cur1, '\0');
 		const char * next2 = strchr (cur2, '\0');
 
-		if (pcmp1 + size1 <= cur1 && pcmp2 + size2 <= cur2)
+		if (pcmp1 + size1 <= cur1 || pcmp2 + size2 <= cur2)
 		{
 			break;
 		}

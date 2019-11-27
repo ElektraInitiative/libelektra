@@ -107,7 +107,7 @@ kdb meta-get /tests/yajl/number type
 
 # Add another key-value pair
 kdb set /tests/yajl/key value
-# STDOUT-REGEX: .*Create a new key (user|system)/tests/yajl/key with string "value"
+# STDOUT-REGEX: .*Create a new key (user|system):/tests/yajl/key with string "value"
 
 # Retrieve the new value
 kdb get /tests/yajl/key
