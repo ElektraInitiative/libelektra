@@ -145,16 +145,16 @@ def main() {
     }
   }
 
-//   stage("Main builds") {
-//     milestone label: "Main builds"
-//     parallel generateMainBuildStages()
-//   }
-// 
-//   stage("Full builds") {
-//     milestone label: "Full builds"
-//     parallel generateFullBuildStages()
-//   }
-// 
+  stage("Main builds") {
+    milestone label: "Main builds"
+    parallel generateMainBuildStages()
+  }
+
+  stage("Full builds") {
+    milestone label: "Full builds"
+    parallel generateFullBuildStages()
+  }
+
    stage("Build artifacts") {
      milestone label: "artifacts"
      parallel generateArtifactStages()
