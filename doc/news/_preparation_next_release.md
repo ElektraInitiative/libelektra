@@ -165,7 +165,7 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
+- Re-enable website auto-deployment. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
