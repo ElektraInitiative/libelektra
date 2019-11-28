@@ -42,7 +42,7 @@ include (LibAddMacros)
 # Default for SUBDIRECTORY is BINDING_NAME
 #
 # Example:
-#   check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
+#   check_binding_included ("python" IS_INCLUDED SUBDIRECTORY "swig/python")
 #   if (IS_INCLUDED)
 #     add_subdirectory (python)
 #   endif ()
@@ -186,9 +186,9 @@ endfunction (exclude_binding)
 #   variable that is set to true if binding was added
 #
 # Example:
-#   check_binding_was_added ("swig_python" WAS_ADDED)
+#   check_binding_was_added ("python" WAS_ADDED)
 #   if (NOT WAS_ADDED)
-#     message (WARNING "swig_python bindings are required for testing, test deactivated")
+#     message (WARNING "python bindings are required for testing, test deactivated")
 #   endif ()
 # ~~~
 function (check_binding_was_added BINDING_NAME OUTVARIABLE)

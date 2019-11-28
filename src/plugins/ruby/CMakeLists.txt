@@ -14,7 +14,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 	find_package (Ruby QUIET)
 	find_swig ()
-	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
+	check_binding_included ("ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 
 	# ~~~
 	# Disable on GCC 4 and earlier:
@@ -54,7 +54,7 @@ if (DEPENDENCY_PHASE)
 	elseif (NOT SWIG_FOUND)
 		remove_plugin (ruby "swig not found")
 	elseif (NOT BINDING_WAS_ADDED)
-		remove_plugin (ruby "swig_ruby binding is required")
+		remove_plugin (ruby "ruby binding is required")
 	endif ()
 endif ()
 
@@ -67,7 +67,7 @@ add_plugin (
 
 if (ADDTESTING_PHASE)
 	# bindings are required for tests
-	check_binding_was_added ("swig_ruby" BINDING_WAS_ADDED)
+	check_binding_was_added ("ruby" BINDING_WAS_ADDED)
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
 		add_plugintest (ruby MEMLEAK
 				ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/src/bindings/swig/ruby:${CMAKE_SOURCE_DIR}/src/bindings/swig/ruby")
@@ -76,6 +76,6 @@ if (ADDTESTING_PHASE)
 			install (DIRECTORY ruby/ruby_test_scripts DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		endif ()
 	else ()
-		message (WARNING "swig_ruby bindings are required for testing, test deactivated")
+		message (WARNING "ruby bindings are required for testing, test deactivated")
 	endif ()
 endif ()

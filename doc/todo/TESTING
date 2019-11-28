@@ -109,7 +109,7 @@ mount spec step an memory leak is detected which fails the test.
 
 ## bindings
 
-- swig_ruby excluded due to failing tests (see #1770)
+- ruby excluded due to failing tests (see #1770)
 
 
 == ABI compatibility tests ==
