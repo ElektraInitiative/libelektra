@@ -61,7 +61,7 @@ pub trait WriteableKey: ReadableKey {
         Ok(key)
     }
 
-    /// Construct a new nameless key.
+    /// Construct a new key with name "/".
     /// 
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
@@ -69,7 +69,8 @@ pub trait WriteableKey: ReadableKey {
     where
         Self: Sized,
     {
-        let key_ptr = unsafe { elektra_sys::keyNew(std::ptr::null()) };
+        let cstr = CString::new("/").unwrap();
+        let key_ptr = unsafe { elektra_sys::keyNew(cstr.as_ptr(), elektra_sys::KEY_END) };
         unsafe { Self::from_ptr(key_ptr) }
     }
 

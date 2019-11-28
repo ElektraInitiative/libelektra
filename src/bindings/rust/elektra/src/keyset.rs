@@ -560,16 +560,16 @@ mod tests {
         // Test append
         ks.append(&ks2);
         assert_eq!(ks.size(), 2);
-        assert_eq!(ks.tail().unwrap().name(), "user:/test/key");
-        assert_eq!(ks.tail().unwrap().value(), "");
+        assert_eq!(ks.head().unwrap().name(), "user:/test/key");
+        assert_eq!(ks.head().unwrap().value(), "");
 
         // Test extend from the Extend trait
         let mut ksext = setup_keyset();
         ksext.extend(ks2.iter_mut());
 
         assert_eq!(ksext.size(), 2);
-        assert_eq!(ksext.tail().unwrap().name(), "user:/test/key");
-        assert_eq!(ksext.tail().unwrap().value(), "");
+        assert_eq!(ksext.head().unwrap().name(), "user:/test/key");
+        assert_eq!(ksext.head().unwrap().value(), "");
     }
 
     #[test]
@@ -579,7 +579,8 @@ mod tests {
         let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
         assert_eq!(ret_val.unwrap().name(), "user:/test/key");
         assert_eq!(ks.size(), 2);
-        assert_eq!(ks.tail().unwrap().name(), "user:/test/key");
+        assert_eq!(ks.head().unwrap().name(), "user:/test/key");
+        assert_eq!(ks.tail().unwrap().name(), "system:/test/key");
     }
 
     #[test]
@@ -604,7 +605,8 @@ mod tests {
                 .unwrap()
                 .duplicate();
             assert_eq!(ks.size(), 2);
-            assert_eq!(ks.head().unwrap().name(), "system:/test/key");
+            assert_eq!(ks.head().unwrap().name(), "user:/test/key");
+            assert_eq!(ks.tail().unwrap().name(), "system:/test/key");
         }
         assert_eq!(key.name(), "user:/test/key");
         Ok(())

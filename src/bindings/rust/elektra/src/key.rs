@@ -517,7 +517,7 @@ mod tests {
     #[test]
     fn can_iterate_key() {
         let mut key = StringKey::new_empty();
-        let meta = [("meta1", "val1"), ("meta2", "val2")];
+        let meta = [("meta:/meta1", "val1"), ("meta:/meta2", "val2")];
         key.set_meta(meta[0].0, meta[0].1).unwrap();
         key.set_meta(meta[1].0, meta[1].1).unwrap();
 
@@ -553,30 +553,19 @@ mod tests {
     }
 
     #[test]
-    fn can_get_fullname() -> Result<(), KeyNameInvalidError> {
-        let name = "user:/test/fulltest";
-        let key: StringKey = KeyBuilder::new(name)?
-            .meta("metaname", "metavalue")?
-            .meta("owner", "me")?
-            .build();
-        assert_eq!(key.fullname(), "user:me/test/fulltest");
-        Ok(())
-    }
-
-    #[test]
     fn can_iterate_name() -> Result<(), KeyNameInvalidError> {
-        let names = ["user", "test", "fulltest"];
+        let names = ["user:", "test", "fulltest"];
         let key = StringKey::new(&names.join("/"))?;
         let mut did_iterate = false;
-        for (i, name) in key.name_iter().enumerate() {
+        for (i, name) in key.name_iter().enumerate().skip(1) {
             did_iterate = true;
             assert_eq!(name, names[i]);
         }
         assert!(did_iterate);
 
-        let nameless_key = StringKey::new_empty();
-        let mut iter = nameless_key.name_iter();
-        assert_eq!(iter.next(), None);
+        let root_key = StringKey::new_empty();
+        let mut iter = root_key.name_iter();
+        assert_eq!(iter.next().unwrap(), "\u{1}"); // TODO: use KEY_NS_CASCADING instead of hardcoded value
 
         Ok(())
     }
