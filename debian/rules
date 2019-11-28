@@ -6,7 +6,7 @@
 # Which plugins and tools should be built
 ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;-jni;-ruby;-haskell;-yamlcpp'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;swig_lua;swig_python;swig_python2;INTERCEPT'
+ELEKTRA_BINDINGS='cpp;lua;python;INTERCEPT'
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
@@ -54,7 +54,7 @@ PKGS_ALL_PLUGINS = $(subst $(SPACE),$(COMMA_SPACE),$(filter libelektra4-%,$(shel
 export DEB_LDFLAGS_MAINT_APPEND := -Wl,--as-needed
 
 %:
-	dh $@ --parallel --buildsystem=cmake --with lua,python3,python2
+	dh $@ --parallel --buildsystem=cmake --with lua,python3
 
 override_dh_auto_configure:
 	dh_auto_configure --buildsystem=cmake -- $(CMAKE_ARGS)
