@@ -46,6 +46,7 @@ already somehow integrated with Elektra.
 - [Merge Configuration](merge.md) (deprecated)
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
+- [Understanding Error Messages](Understanding-error-messages.md)
 
 ## Elektra Developers
 
