@@ -56,11 +56,12 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_
 	itKey.rewindMeta ();
 	while (Key const & meta = itKey.nextMeta ())
 	{
-		if (meta.getName () != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME)
+		auto metaName = meta.getName ().substr (sizeof ("meta:/") - 1);
+		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME)
 		{
-			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), name.c_str (),
+			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", metaName.c_str (), name.c_str (),
 					   meta.get<string> ().c_str ());
-			elem.setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
+			elem.setAttribute (asXMLCh (metaName), asXMLCh (meta.get<string> ()));
 		}
 	}
 }
