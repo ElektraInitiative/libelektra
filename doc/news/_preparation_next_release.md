@@ -141,6 +141,16 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Build
 
+### Compilation
+
+- We do not use implicit typing in the code of the
+
+  - `augeas`,
+  - `base64`, and
+  - `blockresolver`
+
+  plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+
 ### CMake
 
 - We fixed warnings about CMake policy [CMP0078](https://cmake.org/cmake/help/latest/policy/CMP0078.html) and [CMP0086](https://cmake.org/cmake/help/latest/policy/CMP0086.html). _(René Schwaiger)_
