@@ -605,7 +605,7 @@ inline Key::Key (const char * keyName, ...)
 	key = ckdb::keyVNew (keyName, ap);
 	va_end (ap);
 
-	if (!key) throw std::bad_alloc ();
+	if (!key) throw KeyInvalidName (keyName, "");
 
 	operator++ ();
 }

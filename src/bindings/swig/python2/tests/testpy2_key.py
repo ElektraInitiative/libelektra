@@ -45,12 +45,11 @@ class Key(unittest.TestCase):
 
 		k = kdb.Key()
 		self.assertIsInstance(k, kdb.Key)
-		self.assertFalse(k.isValid())
+		self.assertTrue(k.isValid())
 
-		k = kdb.Key("wrongname")
-		self.assertIsInstance(k, kdb.Key)
-		self.assertFalse(k.isValid())
-
+		with self.assertRaises(kdb.KeyInvalidName):
+			k = kdb.Key("wrongname")
+		
 		k = kdb.Key("user:/foo")
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
@@ -99,12 +98,10 @@ class Key(unittest.TestCase):
 		self.assertEqual(self.key.name,      "user:/foo/bar")
 		self.assertEqual(self.key.value,     "value")
 		self.assertEqual(self.key.basename,  "bar")
-		self.assertEqual(self.key.fullname,  "user:myowner/foo/bar")
 
 		self.assertEqual(self.bkey.name,     "system:/bkey")
 		self.assertEqual(self.bkey.value,    "bvalue\0\0")
 		self.assertEqual(self.bkey.basename, "bkey")
-		self.assertEqual(self.bkey.fullname, "system:/bkey")
 
 		k = kdb.Key("user:/key1", kdb.KEY_VALUE, "value")
 		self.assertFalse(k.isBinary())
@@ -139,7 +136,7 @@ class Key(unittest.TestCase):
 
 	def test_meta(self):
 		self.assertIsInstance(self.key.getMeta("owner"), kdb.Key)
-		self.assertEqual(self.key.getMeta("owner").name,  "owner")
+		self.assertEqual(self.key.getMeta("owner").name,  "meta:/owner")
 		self.assertEqual(self.key.getMeta("owner").value, "myowner")
 		self.assertEqual(self.key.getMeta("by").value,    "manuel")
 		self.assertTrue(self.key.getMeta("by").isNameLocked())
@@ -173,7 +170,7 @@ class Key(unittest.TestCase):
 		k = kdb.Key("user:/a\/b/c")
 		self.assertEqual(sum(1 for _ in k),           3)
 		self.assertEqual(sum(1 for _ in reversed(k)), 3)
-		self.assertEqual(iter(k).value(),     "user")
+		self.assertEqual(iter(k).value(), "".join(chr(kdb.KEY_NS_USER)))
 		self.assertEqual(reversed(k).value(), "c")
 
 	def test_helpers(self):
