@@ -3,6 +3,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbmeta.h>
+#include <kdbease.h>
 #include <kdbproposal.h>
 #include <regex.h>
 #include <stdbool.h>
@@ -79,8 +80,7 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index);
 static int keyCmpOrderWrapper (const void * a, const void * b);
 static Key * getCurrentKey (Writer * writer);
 static Key * getNextKey (Writer * writer);
-static Key * getPreviousKey (Writer * writer);
-static int keyCmpCustom (const Key * a, const Key * b);
+// static int keyCmpCustom (const Key * a, const Key * b);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -189,14 +189,6 @@ static Key * getCurrentKey (Writer * writer)
 static Key * getNextKey (Writer * writer)
 {
 	writer->cursor++;
-	return getCurrentKey (writer);
-}
-
-static Key * getPreviousKey (Writer * writer)
-{
-	if (writer->cursor > 0) {
-		writer->cursor--;
-	}
 	return getCurrentKey (writer);
 }
 
@@ -797,7 +789,7 @@ static int keyCmpOrderWrapper (const void * va, const void * vb)
 	return elektraKeyCmpOrder (*((const Key **) va), *((const Key **) vb));
 }
 
-static int keyCmpCustom (const Key * a, const Key * b)
+/* static int keyCmpCustom (const Key * a, const Key * b)
 {
 	const char * partA = (const char *) keyUnescapedName (a);
 	const char * partB = (const char *) keyUnescapedName (b);
@@ -823,4 +815,4 @@ static int keyCmpCustom (const Key * a, const Key * b)
 		partB += elektraStrLen (partB);
 	}
 	return elektraKeyCmpOrder (a, b);
-}
+}*/
