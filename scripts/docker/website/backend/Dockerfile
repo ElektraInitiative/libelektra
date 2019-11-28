@@ -8,7 +8,7 @@ RUN apt-get update && apt-get -y install \
     libboost-all-dev \
     libpcre3-dev \
     zlib1g-dev \
-    libgcrypt11-dev \
+    libgcrypt20-dev \
     libicu-dev \
     python \
     libssl-dev \
