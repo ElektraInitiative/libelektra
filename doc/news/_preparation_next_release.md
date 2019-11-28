@@ -122,7 +122,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
