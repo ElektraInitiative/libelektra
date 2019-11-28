@@ -20,7 +20,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k = Kdb::Key.new
       assert_not_nil k
       assert_instance_of Kdb::Key, k
-      assert ! k.is_valid?
+      assert k.is_valid?
 
       kname = "user:/tmp/k1"
       k = Kdb::Key.new kname
@@ -38,7 +38,9 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert Kdb::Key.new("dir:/tmp/ks1").is_valid?
       assert Kdb::Key.new("user:/tmp/ks1").is_valid?
       assert Kdb::Key.new("system:/tmp/ks1").is_valid?
-      assert ! Kdb::Key.new("invalidname").is_valid?
+    end
+    assert_raise do
+      assert Kdb::Key.new("invalidname")
     end
   end
 
@@ -203,7 +205,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
   def test_key_get_name
     assert_nothing_raised do
       k = Kdb::Key.new
-      assert_equal "", k.name
+      assert_equal "/", k.name
 
       name = "user:/tmp/k1"
       k.name = name
@@ -213,52 +215,25 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
       k.add_basename "b1"
       assert_equal "b1", k.basename
-      assert_equal "#{name}/b1", k.fullname
+      assert_equal "#{name}/b1", k.name
 
       k.add_basename "bb2"
       assert_equal "bb2", k.basename
-      assert_equal "#{name}/b1/bb2", k.fullname
+      assert_equal "#{name}/b1/bb2", k.name
 
       k.add_name "n1/n2"
       assert_equal "n2", k.basename
-      assert_equal "#{name}/b1/bb2/n1/n2", k.fullname
+      assert_equal "#{name}/b1/bb2/n1/n2", k.name
 
       k.add_name "../../../../new1"
       assert_equal "new1", k.basename
-      assert_equal "#{name}/new1", k.fullname
+      assert_equal "#{name}/new1", k.name
 
       k.add_name "..\\/escaped_name\\/k"
       assert_equal "../escaped_name/k", k.basename
-      assert_equal "#{name}/new1/..\\/escaped_name\\/k", k.fullname
+      assert_equal "#{name}/new1/..\\/escaped_name\\/k", k.name
 
     end
-  end
-
-  def test_throw_KeyInvalidName_exception_invalid_name
-    k = Kdb::Key.new
-
-    assert_raise Kdb::KeyInvalidName do
-      k.name = "invalidname"
-    end
-
-    assert_raise Kdb::KeyInvalidName do
-      k.add_name "x"
-    end
-
-    assert_raise Kdb::KeyInvalidName do
-      k.basename= "x"
-    end
-
-    assert_raise Kdb::KeyInvalidName do
-      k.add_basename "x"
-    end
-
-    assert_nothing_raised do
-      k.name = "user:/keyname"
-      assert_equal "user:/keyname", k.name
-    end
-
-
   end
 
   def test_throw_KeyTypeMismatch_on_wrong_get_method
@@ -391,27 +366,27 @@ class KdbKeyTestCases < Test::Unit::TestCase
       mk = k.next_meta
       assert_instance_of Kdb::Key, mk
       assert_equal "hello", mk.value
-      assert_equal "comment", mk.name
+      assert_equal "meta:/comment", mk.name
       assert_equal "hello", k.current_meta.value
-      assert_equal "comment", k.current_meta.name
+      assert_equal "meta:/comment", k.current_meta.name
 
       mk = k.next_meta
       assert_equal "meta1 value", mk.value
-      assert_equal "meta1", mk.name
+      assert_equal "meta:/meta1", mk.name
       assert_equal "meta1 value", k.current_meta.value
-      assert_equal "meta1", k.current_meta.name
+      assert_equal "meta:/meta1", k.current_meta.name
 
       mk = k.next_meta
       assert_equal "othermeta value", mk.value
-      assert_equal "othermeta", mk.name
+      assert_equal "meta:/othermeta", mk.name
       assert_equal "othermeta value", k.current_meta.value
-      assert_equal "othermeta", k.current_meta.name
+      assert_equal "meta:/othermeta", k.current_meta.name
 
       mk = k.next_meta
       assert_equal "me", mk.value
-      assert_equal "owner", mk.name
+      assert_equal "meta:/owner", mk.name
       assert_equal "me", k.current_meta.value
-      assert_equal "owner", k.current_meta.name
+      assert_equal "meta:/owner", k.current_meta.name
 
       assert_nil k.next_meta
       assert_nil k.current_meta
@@ -419,7 +394,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       # test Ruby-style meta iterator
       assert_instance_of Kdb::KeySet, k.meta
 
-      a = ["comment", "meta1", "othermeta", "owner"]
+      a = ["meta:/comment", "meta:/meta1", "meta:/othermeta", "meta:/owner"]
       i = 0;
       k.meta.each { |m|
         assert_equal a[i], m.name
@@ -432,7 +407,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       k = Kdb::Key.new
 
-      assert_equal ": ", k.to_s
+      assert_equal "/: ", k.to_s
 
       k = Kdb::Key.new "user:/key1", value: "somevalue"
 
@@ -457,7 +432,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       end
 
       expected = <<EOF
-key ''
+key '/'
   string value: 
   key has no meta data
 EOF
