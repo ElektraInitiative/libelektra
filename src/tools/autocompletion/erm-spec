@@ -62,5 +62,6 @@ description = output version information and exit
 
 [files/#]
 args = remaining
+completion/shell = ls
 env = FILES
 description = the files that shall be deleted

@@ -15,28 +15,6 @@ start_of_current_input = ''
 mount_point = None
 
 
-# input_start_of_input - string typed before pressing TAB
-# input_root - name of the program
-# input_start_of_current_input - string typed before pressing TAB
-# input_last_command - last command (not option or argument) typed
-# input_typed - list of previously typed commands, options and arguments
-# 
-# used for testing, this can be run from python: 
-#
-# from find_autocompletion_options import *
-# set_input_and_run(...)
-#
-# for this import to work, the scripts need to be in the same directory
-def set_input_and_run(input_mount_point, input_root, input_start_of_current_input, 
-	input_last_command, input_typed):
-	global mount_point, root, last_command, typed, start_of_current_input
-	mount_point = input_mount_point
-	root = input_root
-	start_of_current_input = input_start_of_current_input
-	last_command = input_last_command
-	typed = input_typed
-	return find_auto_completion_options()
-
 # ARUGUMENTS
 # not optional
 # -m .. pass mount moint 
@@ -101,10 +79,86 @@ def get_command_line_arguments():
 def find_auto_completion_options():
 	global last_command, start_of_current_input
 	completion = []
-	completion.extend(complete_options())
+	arg_needed = False
+	# TODO check if last command needs an argument
+	# TODO check if last option needs an argument
+	if arg_needed:
+		# TODO implement me
+		pass
+	else:
+		completion.extend(complete_args())
+		completion.extend(complete_options())
 	#completion.extend(complete_commands(start_of_current_input))
 	completion = '\n'.join(completion)
 	return completion
+
+# input - command, a string that should be a shell command
+# executes the shell command and returns the output
+# returns list of strings with the result of the executed command
+# ls does not work completely yet
+def execute_shell_command(command):
+	global start_of_current_input
+	output = []
+	complete_command = command + ' ' + start_of_current_input
+	try:
+		process = subprocess.Popen(complete_command.split(), stdout=subprocess.PIPE)
+		output, error = process.communicate()
+		p_status = process.wait()
+		if p_status == 0:
+			output = output.decode('utf-8')
+			output = output.splitlines()
+	except Exception as e:
+		# TODO what to do here
+		#print(e)
+		pass
+	return output
+
+# complete arguments not belonging to specific options
+# if a command to execute is given, will execute said command and returns the result
+# at the moment only args = remaining is supported
+# TODO add args = single
+# TODO add args = multiple
+#
+# expect one argument
+#	[path]
+# 	args = single 
+# only allowed once per specification file
+# if args = single is used, multiple or remaining can't be used
+#
+# expect multiple arguments, specific amount
+#	[path]
+# 	args = multiple
+#	args/index = 3
+# index is the last index of the array
+# args = multiple with args/index = 0 is equivalent to args = single
+#
+# expect multiple arguments, any amount
+#	[path/#]
+#	args = remaining
+# only allowed once per specification file
+# args = remaining and args = multiple can be used together, remaining are those that are left after
+#	multiple have all been completed
+#
+# returns list of completion options for arguments
+def complete_args():
+	global start_of_current_input, mount_point
+	completion_arguments = []
+	word = start_of_current_input.strip()
+	while word.startswith('-'):
+		word = word[1:]
+	k = kdb.KDB()
+	ks = kdb.KeySet()
+	k.get(ks, mount_point)
+	for key in ks:
+		args = key.getMeta(name='args')
+		if not args:
+			continue
+		if args.value == 'remaining':
+			shell_command = key.getMeta(name='completion/shell')
+			if shell_command:
+				completion_arguments.extend(execute_shell_command(shell_command.value))
+	k.close()
+	return completion_arguments
 
 # decides what kind of options should be completed
 # considers start_of_current_input
@@ -154,18 +208,19 @@ def complete_short_options():
 	k.get(ks, mount_point)
 	for key in ks:
 		opt = key.getMeta(name='opt')
+		word = start_of_current_input.strip()
+		while word.startswith('-'):
+			word = word[1:]
 		if opt and opt.value.startswith('#'):
 			try:
 				len_opts = int((opt.value)[1:])
 			except:
 				continue
 			for i in range(len_opts+1):
-				opt = key.getMeta(name='opt/#{}'.format(i))
-				word = start_of_current_input.strip().replace('-', '')
+				opt = key.getMeta(name='opt/#{}'.format(i))	
 				if opt and opt.value.startswith(word):
 					completion_options.append('-' + opt.value)
 		elif opt:
-			word = start_of_current_input.strip().replace('-', '')
 			if opt.value.startswith(word):
 				completion_options.append('-' + opt.value)
 	k.close()
@@ -186,7 +241,9 @@ def complete_long_options():
 		long_opt = key.getMeta(name='opt/long')
 		opt = key.getMeta(name='opt')
 		if long_opt:
-			word = start_of_current_input.strip().replace('-', '')
+			word = start_of_current_input.strip()
+			while word.startswith('-'):
+				word = word[1:]
 			if long_opt.value.startswith(word):
 				completion_options.append('--' + long_opt.value)
 		elif opt and opt.value.startswith('#'):
@@ -197,7 +254,6 @@ def complete_long_options():
 			for i in range(len_opts+1):
 				long_opt = None
 				long_opt = key.getMeta(name='opt/#{}/long'.format(i))
-				word = start_of_current_input.strip().replace('-', '')
 				if long_opt and long_opt.value.startswith(word):
 					completion_options.append('--' + long_opt.value)
 	k.close()
@@ -226,77 +282,27 @@ def complete_commands(start_of_input):
 		k.close()
 		return completion_commands
 
-# TODO am I needed in this way
-'''
-def complete_options_opt_array(path):
-	completion_options = []
-	with kdb.KDB() as k:
-		ks = kdb.KeySet()
-		k.get(ks, mount_point)
-		key = ks.lookup(path)
-		meta_opt = key.getMeta(name='opt')
-		len_opts = 0
-		if meta_opt:
-			len_opts = int((meta_opt.value)[1:])
-		i = 0
-		while i <= len_opts:
-			i+=1
-			opt = key.getMeta(name='opt/#{}'.format(i))
-			opt_long = key.getMeta(name='opt/#{}/long'.format(i))
-			if start_of_current_input is not None:
-				if opt_long and opt_long.value.startswith(start_of_current_input.replace('-', '')):
-					completion_options.append('--' + opt_long.value)
-				elif opt and opt.value.startswith(start_of_current_input.replace('-', '')):
-					completion_options.append('-' + opt.value)
-			else:
-				if opt_long:
-					completion_options.append('--' + opt_long.value)
-				elif opt:
-					completion_options.append('-' + opt.value)
-		k.close()
-	return completion_options
-'''
-
-# TODO fixme
-'''
-def complete_arguments(key_path):
-	global start_of_input
-	completion_options = []
-	with kdb.KDB() as k:
-		ks = kdb.KeySet()
-		k.get(ks, mount_point)
-		key = ks.lookup(key_path)
-		# opt/arg/check can contain the name of a type defined in the 
-		#		specification file
-		argument_type = key.getMeta(name='opt/arg/check')
-		if argument_type:
-			type_key = ks.lookup(mount_point + '/' + argument_type.value)
-			if type_key:
-				shell_command = type_key.getMeta(name='completion/shell')
-				if shell_command:
-					execute = shell_command.value
-					if start_of_input != None:
-						execute += ' '+start_of_input
-					shell_command_completion = execute_shell_command(execute)
-					completion_options.extend(shell_command_completion)
-				# TODO: add more types of arguments
-		k.close()
-	return completion_options
-'''
-
-# input: command, a string that should be a shell command
-#		seperator, a char that seperates every result in the result 
-# executes the shell command and returns the output
-# return: list of strings with the result of the executed command
-def execute_shell_command(command):
-	global start_of_input
-	complete_command = command if start_of_input is None else (command + ' ' + start_of_input)
-	process = subprocess.Popen(complete_command.split(), stdout=subprocess.PIPE)
-	output, error = process.communicate()
-	output = output.decode('utf-8')
-	output = output.splitlines()
-	return output
-
+# input_start_of_input - string typed before pressing TAB
+# input_root - name of the program
+# input_start_of_current_input - string typed before pressing TAB
+# input_last_command - last command (not option or argument) typed
+# input_typed - list of previously typed commands, options and arguments
+# 
+# used for testing, this can be run from python: 
+#
+# from find_autocompletion_options import *
+# set_input_and_run(...)
+#
+# for this import to work, the scripts need to be in the same directory
+def set_input_and_run(input_mount_point, input_root, input_start_of_current_input, 
+	input_last_command, input_typed):
+	global mount_point, root, last_command, typed, start_of_current_input
+	mount_point = input_mount_point
+	root = input_root
+	start_of_current_input = input_start_of_current_input
+	last_command = input_last_command
+	typed = input_typed
+	return find_auto_completion_options()
 
 if __name__ == '__main__':
 	get_command_line_arguments()
