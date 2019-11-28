@@ -30,8 +30,8 @@ assert(ks ~= kdb.KeySet(0))
 assert(#ks            == 4)
 assert(#kdb.KeySet(0) == 0)
 
-assert(ks[0] == kdb.Key("system:/key1"))
-assert(ks[-1] == kdb.Key("user:/key4"))
+assert(ks[0] == kdb.Key("user:/key3"))
+assert(ks[-1] == kdb.Key("system:/key2"))
 
 assert(ks["user:/key3"] == kdb.Key("user:/key3"))
 assert(ks["user:/doesnt_exist"] == nil)
@@ -46,8 +46,8 @@ assert(ks[0]:isMetaLocked()  == false)
 -- functions
 assert(ks:lookup("user:/key3") == kdb.Key("user:/key3"))
 assert(ks:lookup(kdb.Key("system:/key2")) == kdb.Key("system:/key2"))
-assert(ks:lookup(0)  == kdb.Key("system:/key1"))
-assert(ks:lookup(-1) == kdb.Key("user:/key4"))
+assert(ks:lookup(0)  == kdb.Key("user:/key3"))
+assert(ks:lookup(-1) == kdb.Key("system:/key2"))
 
 local t = kdb.KeySet(0)
 t:append(kdb.Key("user:/foo"))
