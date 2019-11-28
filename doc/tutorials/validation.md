@@ -1,10 +1,3 @@
----
-author: Markus Raab <elektra@markus-raab.org>
-brief: Describes validation capabilities of Elektra.
-tags: validation, spec, metadata
-review: pending
----
-
 # Validation
 
 ## Introduction
