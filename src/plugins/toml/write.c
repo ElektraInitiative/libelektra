@@ -92,13 +92,13 @@ int tomlWrite (KeySet * keys, Key * parent)
 	Key ** keyArray = elektraCalloc (arraySize * sizeof (Key *));
 	if (keyArray == NULL)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "elektraCalloc");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
 		return 1;
 	}
 
 	if (elektraKsToMemArray (keys, keyArray) < 0)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent, "elektraKsToMemArray");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
 		return 1;
 	}
 	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);

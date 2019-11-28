@@ -64,7 +64,7 @@ static void emitElektraError (Key * root, int err, const char * msg)
 		ELEKTRA_SET_INTERNAL_ERROR (root, msg);
 		break;
 	case ERROR_MEMORY:
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (root, msg);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (root);
 		break;
 	case ERROR_SYNTACTIC:
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (root, msg);
