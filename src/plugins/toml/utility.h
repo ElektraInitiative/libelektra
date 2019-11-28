@@ -1,5 +1,5 @@
 #ifndef ELEKTRA_PLUGIN_TOML_UTILITY_H
-#define ELEKTRA_PLUGIN_TOML_UTILTIY_H
+#define ELEKTRA_PLUGIN_TOML_UTILITY_H
 
 #include <kdb.h>
 #include <stddef.h>

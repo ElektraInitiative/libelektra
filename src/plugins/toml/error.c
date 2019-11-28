@@ -3,6 +3,7 @@
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
+#include <kdbhelper.h>
 
 #include "driver.h"
 
@@ -24,7 +25,7 @@ void driverError (Driver * driver, int err, int lineno, const char * format, ...
 	if (lineno > 0)
 	{
 		snprintf (msg, 256, "Line ~%d: ", lineno);
-		size_t len = strlen (msg);
+		size_t len = elektraStrLen (msg) - 1;
 		vsnprintf (msg + len, 256 - len, format, args);
 	}
 	else

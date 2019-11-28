@@ -17,7 +17,6 @@ static char * stripUnderscores (const char * num);
 static const char * skipLineEndingBackslash (const char * str);
 static const char * skipUntilNonWhitespace (const char * str);
 
-static char * numToStr(long long num);
 static char * uNumToStr(unsigned long long num);
 static char * convertDecimal(const char * str);
 static char * convertHex(const char * str);
@@ -147,15 +146,6 @@ char * translateScalar (const Scalar * scalar)
 		ELEKTRA_ASSERT (0, "All possible scalar enums must be handeled, but got into default branch");
 		return NULL;
 	}
-}
-
-static char * numToStr(long long num) {
-	char * ret = elektraCalloc(100);
-	if (ret == NULL) {
-		return NULL;
-	}
-	snprintf(ret, 100, "%lld", num);
-	return ret;
 }
 
 static char * uNumToStr(unsigned long long num) {
