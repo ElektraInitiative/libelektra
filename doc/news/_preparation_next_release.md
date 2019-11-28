@@ -120,7 +120,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- improved formating of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
+- improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - <<TODO>>
 - <<TODO>>
 
