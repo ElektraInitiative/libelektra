@@ -433,7 +433,7 @@ void driverExitTableArray (Driver * driver)
 	}
 	else // no relation, pop table array stack until some relation exists (or NULL)
 	{
-		while (driver->tableArrayStack != NULL && keyRel (driver->tableArrayStack->key, driver->parentStack->key) < 0)
+		while (driver->tableArrayStack != NULL && keyCmp (driver->tableArrayStack->key, driver->parentStack->key) != 0)
 		{
 			driver->tableArrayStack = popTableArray (driver->tableArrayStack);
 		}

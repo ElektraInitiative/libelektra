@@ -87,7 +87,7 @@ static char * getChildFraction (const Key * parent, const Key * child)
 			snprintf (fraction, fracSize, "%s/%s", baseName, fracDup);
 			elektraFree (fracDup);
 			keyAddName (childDup, "..");
-		} while (keyRel (parent, childDup) != 0);
+		} while (keyCmp (parent, childDup) != 0);
 		fraction[elektraStrLen (fraction) - 2] = 0;
 		keyDel (childDup);
 		return fraction;
