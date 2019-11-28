@@ -836,8 +836,10 @@ static char * elektraStrConcat (const char * a, const char * b)
 void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
 {
 	Key * mountPoint = mountGetMountpoint (handle, keyName (parentKey));
-	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
-	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
+	const char * mountPointName = mountPoint == NULL ? "" : keyName (mountPoint);
+	const char * mountPointValue = mountPoint == NULL ? "default" : keyString (mountPoint);
+	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, mountPointName, KEY_END);
+	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, mountPointValue, KEY_END);
 	Key * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
 	Key * lastSplitSize =
 		keyNew (KDB_CACHE_PREFIX "/lastSplitSize", KEY_BINARY, KEY_SIZE, sizeof (size_t), KEY_VALUE, &(split->size), KEY_END);
@@ -965,7 +967,7 @@ int splitCacheCheckState (Split * split, KeySet * global)
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		if (split->handles[i]->mountpoint != NULL)
 		{
 			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
 		}
@@ -1066,7 +1068,7 @@ int splitCacheLoadState (Split * split, KeySet * global)
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+		if (split->handles[i]->mountpoint != NULL)
 		{
 			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
 		}

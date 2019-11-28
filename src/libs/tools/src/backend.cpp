@@ -592,6 +592,7 @@ void GlobalPlugins::serialize (kdb::KeySet & ret)
 	ret.append (Key ("system:/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END));
 	ret.append (Key ("system:/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END));
 	ret.append (Key ("system:/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END));
 }
 
 void ImportExportBackend::status (std::ostream & os) const
