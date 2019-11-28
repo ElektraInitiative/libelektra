@@ -2,7 +2,12 @@ function (check_dependencies)
 	set (FOUND_DEPENDENCIES FALSE PARENT_SCOPE)
 
 	find_package (FLEX QUIET)
-	find_package (BISON QUIET)
+
+	set (USE_HOMEBREW_BISON ${APPLE} AND EXISTS /usr/local/opt/bison) 
+	if (USE_HOMEBREW_BISON) 
+		list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/bison") 
+	endif (USE_HOMEBREW_BISON)
+	find_package (BISON 3 QUIET)
 
 	if ((NOT FLEX_FOUND) AND (NOT BISON_FOUND))
 		set (FAILURE_MESSAGE "Flex and Bison could not be found" PARENT_SCOPE)
