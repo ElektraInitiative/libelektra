@@ -16,18 +16,16 @@ static void test_ctor (void)
 
 	key = gelektra_key_new (NULL);
 	succeed_if (key != NULL, "unable to create key");
-	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
+	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	g_object_unref (key);
 
 	key = g_object_new (GELEKTRA_TYPE_KEY, NULL);
 	succeed_if (key != NULL, "unable to create key");
-	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
+	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	g_object_unref (key);
 
 	key = gelektra_key_new ("wrongname", GELEKTRA_KEY_END);
-	succeed_if (key != NULL, "unable to create key");
-	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
-	g_object_unref (key);
+	succeed_if (key == NULL, "created invalid key");
 
 	Key * ckey = keyNew ("/", KEY_END);
 	key = gelektra_key_make (ckey);
@@ -98,14 +96,12 @@ static void create_global_keys (void)
 
 static void test_props (void)
 {
-	gchar *name, *basename, *fullname;
-	g_object_get (g_key, "name", &name, "basename", &basename, "fullname", &fullname, NULL);
+	gchar *name, *basename;
+	g_object_get (g_key, "name", &name, "basename", &basename, NULL);
 	succeed_if (!strcmp (name, "user:/key"), "wrong value");
 	succeed_if (!strcmp (basename, "key"), "wrong value");
-	succeed_if (!strcmp (fullname, "user:myowner/key"), "wrong value");
 	g_free (name);
 	g_free (basename);
-	g_free (fullname);
 
 	GElektraKey * key = g_object_new (GELEKTRA_TYPE_KEY, NULL);
 	gelektra_key_setname (key, "user:/foo");
@@ -137,7 +133,7 @@ static void test_basic (void)
 
 	gelektra_key_clear (key);
 	g_object_get (key, "name", &name, NULL);
-	succeed_if (!strcmp (name, ""), "wrong value");
+	succeed_if (!strcmp (name, "/"), "wrong value");
 	g_free (name);
 
 	g_object_unref (key);

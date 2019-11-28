@@ -20,11 +20,11 @@ static void test_open_close (void)
 	/* open */
 	kdb = gelektra_kdb_open (error);
 	succeed_if (kdb != NULL, "unable to open kdb");
-	succeed_if (!gelektra_key_isvalid (error), "unexpected error");
+	succeed_if (!gelektra_key_hasmeta(error, "error"), "unexpected error");
 
 	/* close */
 	gelektra_kdb_close (kdb, error);
-	succeed_if (!gelektra_key_isvalid (error), "unexpected error");
+	succeed_if (!gelektra_key_hasmeta(error, "error"), "unexpected error");
 	g_object_unref (kdb);
 
 	/* open + close */
