@@ -3,7 +3,7 @@
 ## Basic idea
 
 Not all byte sequences are unescaped key names anymore.
-Some C-strings are no longer valid unescaped key name parts.
+Some C strings are no longer valid unescaped key name parts.
 
 This makes a future proof 1:1 relation of escaped and unescaped key names possible.
 Strings may become valid unescaped key parts, but once a string is valid it cannot become invalid anymore.
