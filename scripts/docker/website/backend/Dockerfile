@@ -94,8 +94,8 @@ COPY --from=0 /usr/local /usr/local
 RUN echo '/usr/local/lib/elektra/' > /etc/ld.so.conf.d/elektra.conf \
     && ldconfig
 RUN apt-get update && apt-get install -y \
-         libasan3 \
-         libubsan0 \
+         libasan5 \
+         libubsan1 \
          libboost-system1.67.0 \
          libboost-filesystem1.67.0 \
          libboost-thread1.67.0 \
