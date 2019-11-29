@@ -135,6 +135,8 @@ static void testNegativeCompareErrors (void)
 	testReadMustError ("toml/bad_date_invalid_month.toml");
 	testReadMustError ("toml/bad_date_invalid_year.toml");
 	testReadMustError ("toml/bad_date_invalid_feb.toml");
+	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
+	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
 }
 
 static void testWriteReadString (void)

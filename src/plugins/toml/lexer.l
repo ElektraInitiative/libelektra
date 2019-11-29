@@ -270,7 +270,11 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 			}
 			terminatorCount++;
 		}
-		else if (isMultiline ? validMultilineAscii (c) : validAscii (c))
+		else if (!isMultiline && c == '\n') {
+			driverError (driver, ERROR_SYNTACTIC, yylineno,
+				     "Malformed Input: Found newline in non-multiline string, but is only allowed in multiline strings");
+		}
+		else if (validAscii (c))
 		{
 			bufferAddChar (buffer, c, driver);
 			if (c == ESCAPE_CHAR)
