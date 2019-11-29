@@ -7,12 +7,21 @@ KConfigSerializer::KConfigSerializer (CppKeySet & keySetParam, CppKey & parentPa
 : o{ std::move (oParam) }, keySet{ keySetParam }, parent{ parentParam }, parentKeyNameSize{ parentParam.getName ().size () + 1 },
   lastPrintedGroup{ "" }, isFirstKey{ true }
 {
+	std::string parentKeyName = parentParam.getName ();
+	if (parentKeyName == "/")
+	{
+		parentKeyNameSize = 1;
+	}
+	else
+	{
+		parentKeyNameSize = parentKeyName.size () + 1;
+	}
 }
 
 void KConfigSerializer::save ()
 {
 	std::vector<CppKey> keys{ keySet.begin (), keySet.end () };
-	std::sort (keys.begin (), keys.end (), KConfigSerializer::KeyNameComparator{ parent });
+	//	std::sort (keys.begin (), keys.end (), KConfigSerializer::KeyNameComparator{ parent });
 
 	const CppKey * groupCandidate{ nullptr };
 
@@ -101,6 +110,7 @@ void KConfigSerializer::saveGroupKey (CppKey const & k)
 	{
 
 		out << character_open_bracket;
+		out << character_dollar_sign;
 		out << metadata;
 		out << character_close_bracket;
 	}
