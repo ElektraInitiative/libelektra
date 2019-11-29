@@ -3,7 +3,6 @@
 src/plugins/lua/CMakeLists.txt  for APPLE
 src/plugins/jni/CMakeLists.txt
 src/plugins/python/CMakeLists.txt
-src/plugins/python2/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
 doc/help/kdb-get.md   for INI
@@ -110,7 +109,7 @@ mount spec step an memory leak is detected which fails the test.
 
 ## bindings
 
-- swig_ruby excluded due to failing tests (see #1770)
+- ruby excluded due to failing tests (see #1770)
 
 
 == ABI compatibility tests ==

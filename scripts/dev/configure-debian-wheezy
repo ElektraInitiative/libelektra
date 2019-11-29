@@ -11,6 +11,6 @@ SCRIPTS_DIR=$(dirname "$0")
 cd $BUILD
 cmake -DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="cpp;swig_python2;swig_python;jna" \
+	-DBINDINGS="cpp;python;jna" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
 	$*

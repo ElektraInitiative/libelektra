@@ -30,7 +30,7 @@ RUN mkdir build \
     && cd build \
     && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
-             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;yajl" \
+             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;file;yajl" \
              -DTOOLS="kdb;website-frontend" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \
              -DCMAKE_CXX_FLAGS="$C_FLAGS" \

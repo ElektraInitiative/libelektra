@@ -43,11 +43,13 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Improved error message for augeas to show lensPath. _(Michael Zronek)_
 
-### <<Plugin1>>
+### SWIG
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
+
+### SWIG/python2
+
+- Removed. _(Manuel Mausz)_
 
 ### <<Plugin2>>
 
@@ -100,11 +102,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### python2
 
-### <<Binding2>>
-
-### <<Binding3>>
+- Removed. _(Manuel Mausz)_
 
 ## Tools
 

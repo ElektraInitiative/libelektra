@@ -150,7 +150,6 @@ strict digraph G {
 	process [shape=Mdiamond];
 	profile [shape=Mdiamond];
 	python [shape=Mdiamond];
-	python2 [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	quickdump -> storage;
 	quickdump [shape=Mdiamond];

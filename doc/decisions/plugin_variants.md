@@ -140,7 +140,6 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
   - jni
   - lua
   - python
-  - python2
 - `PluginDatabase` needs an extension to list all plugin variants
 - `kdb plugin-list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`

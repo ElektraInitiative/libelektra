@@ -4,7 +4,7 @@ if (DEPENDENCY_PHASE)
 	set (LUA_REQUIRED_VERSION 5.1)
 	find_package (Lua ${LUA_REQUIRED_VERSION} QUIET)
 	find_swig ()
-	check_binding_included ("swig_lua" BINDING_WAS_ADDED SUBDIRECTORY "swig/lua" SILENT)
+	check_binding_included ("lua" BINDING_WAS_ADDED SUBDIRECTORY "swig/lua" SILENT)
 
 	if (LUA_FOUND
 	    AND SWIG_FOUND
@@ -19,7 +19,7 @@ if (DEPENDENCY_PHASE)
 	elseif (NOT LUA_FOUND)
 		remove_plugin (lua "Lua libs (>= liblua${LUA_REQUIRED_VERSION}-dev) not found")
 	elseif (NOT BINDING_WAS_ADDED)
-		remove_plugin (lua "swig_lua binding is required")
+		remove_plugin (lua "lua binding is required")
 	else ()
 		remove_plugin (lua "swig not found")
 	endif ()
@@ -42,7 +42,7 @@ if (ADDTESTING_PHASE)
 		return ()
 	endif ()
 
-	check_binding_was_added ("swig_lua" BINDING_WAS_ADDED) # bindings are required for tests
+	check_binding_was_added ("lua" BINDING_WAS_ADDED) # bindings are required for tests
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
 
 		# test environment clears env so setting LUA_CPATH is no option we workaround this by changing the current directory to our
@@ -53,6 +53,6 @@ if (ADDTESTING_PHASE)
 			INSTALL_TEST_DATA)
 
 	else ()
-		message (WARNING "swig_lua bindings are required for testing, test deactivated")
+		message (WARNING "lua bindings are required for testing, test deactivated")
 	endif ()
 endif ()
