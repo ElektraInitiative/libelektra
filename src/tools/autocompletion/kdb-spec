@@ -1,6 +1,7 @@
 []
+complete=command
 
-[kdb/get]
+[get]
 opt=#6
 opt/#0=H
 opt/#0/long=help
@@ -17,7 +18,7 @@ opt/#5/long=no-newline
 opt/#6=d
 opt/#6/long=debug
 
-[kdb/ls]
+[ls]
 opt=#8
 opt/#0=H
 opt/#0/long=help
@@ -38,9 +39,9 @@ opt/#7/long=debug
 opt/#8=0
 opt/#8/long=null
 
-[kdb/list-tools]
+[list-tools]
 
-[kdb/plugin-info]
+[plugin-info]
 opt=#5
 opt/#0=H
 opt/#0/long=help
@@ -55,7 +56,7 @@ opt/#4/long=load
 opt/#5=c
 opt/#5/long=plugins-config
 
-[kdb/plugin-list]
+[plugin-list]
 opt=#6
 opt/#0=H
 opt/#0/long=help
@@ -72,7 +73,7 @@ opt/#5/long=debug
 opt/#6=0
 opt/#6/long=null
 
-[kdb/set]
+[set]
 opt=#7
 opt/#0=H
 opt/#0/long=help

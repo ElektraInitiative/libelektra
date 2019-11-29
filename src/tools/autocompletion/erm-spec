@@ -2,7 +2,6 @@
 opt = f
 opt/long = force
 opt/arg = none
-description = ignore nonexistent files and arguments, never prompt
 
 [interactive]
 opt = #1
@@ -13,25 +12,18 @@ opt/#0/flagvalue = always
 opt/#1 = I
 opt/#1/flagvalue = once
 opt/#1/arg = none
-opt/arg/name = WHEN
-description = prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
 
 [singlefs]
 opt/long = one-file-system
 opt/arg = none
-description = when removing a hierarchy recursively, skip any directory that is on a file system different from that of the corresponding line argument
 
 [nopreserve]
 opt/long = no-preserve-root
 opt/arg = none
-description = do not treat '/' specially
 
 [preserve]
 opt/long = preserve-root
 opt/arg = optional
-opt/arg/name = all
-opt/flagvalue = root
-description = do not remove '/' (default); with 'all', reject any command line argument on a separate device from its parent
 
 [recursive]
 opt = #1
@@ -40,28 +32,21 @@ opt/#0/long = recursive
 opt/#0/arg = none
 opt/#1 = R
 opt/#1/arg = none
-description = remove directories and their contents recursively
 
 [emptydirs]
 opt = d
 opt/long = dir
 opt/arg = none
-description = remove empty directories
 
 [verbose]
 opt = v
 opt/long = verbose
 opt/arg = none
-env = VERBOSE
-description = explain what is being done
 
 [showversion]
 opt/long = version
 opt/arg = none
-description = output version information and exit
 
 [files/#]
 args = remaining
-completion/shell = ls
-env = FILES
-description = the files that shall be deleted
+completion/shell = ./complete_files.sh

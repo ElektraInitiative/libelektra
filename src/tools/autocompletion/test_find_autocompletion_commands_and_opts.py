@@ -15,7 +15,7 @@ def run_test(start_of_input, last_word, name_of_test_case):
 	global passed, failed, tests_run
 	tests_run+=1
 	# get the result from executing autocompletion
-	result = sorted(set_input_and_run('spec/tests/autocomplete', 'kdb', start_of_input, last_word, []).split())
+	result = sorted(set_input_and_run('spec/tests/autocomplete/kdb', 'kdb', start_of_input, last_word, [], True).split())
 	if not silent:
 		print('TESTCASE: ' + name_of_test_case)
 		print('RESULTS:')

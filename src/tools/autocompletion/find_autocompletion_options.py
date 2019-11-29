@@ -3,17 +3,25 @@ import sys
 import subprocess
 import getopt
 
+# mount point of config for program
+mount_point = None
 # name of program requesting completion
 root = None
 # list of previously typed commands, options and arguments
 typed = []
 # last command (not option or argument) typed
 last_command = None
+# last option (not command or argument) typed
+last_option = None
+# meta key of last option
+last_option_meta = None
 # string typed before pressing TAB
 start_of_current_input = ''
-# mount point of config for program
-mount_point = None
-
+# complete options or commands, will complete options if this is False
+command_or_option = False
+# should completion be run for arguments for the last option
+# possible: none, optional, required
+opt_arg = 'none'
 
 # ARUGUMENTS
 # not optional
@@ -29,7 +37,7 @@ mount_point = None
 #	- no mount point given
 #	- no root was found
 def get_command_line_arguments():
-	global mount_point, root, typed, start_of_current_input, last_command
+	global mount_point, root, typed, start_of_current_input, last_command, last_option, last_option_meta, command_or_option, opt_arg
 	try:
 		opts, args = getopt.getopt(sys.argv[1:],'s:m:')
 	except getopt.GetoptError:
@@ -40,32 +48,73 @@ def get_command_line_arguments():
 			s = arg.strip()
 			if s:
 				start_of_current_input = s
+				print(start_of_current_input)
 		if opt == '-m':
 			m = arg.strip()
 			if m:
 				mount_point = m
+				root = mount_point.split('/')[-1]
 	if mount_point is None:
 		print('no mount point, pass mount point with -m')
 		sys.exit(2)
 	k = kdb.KDB()
 	ks = kdb.KeySet()
-	k.get(ks, mount_point)
+	k.get(ks, mount_point) 
 	for i in ks:
 		len_path_mount_point = len(mount_point.split('/'))
 		len_path_key = len(str(i))
-		if str(i) != mount_point and len_path_mount_point < len_path_key:
-			key_split = str(i).split('/')
-			root = key_split[len_path_mount_point]
-			break
+		if str(i) == mount_point:
+			get_complete = i.getMeta(name='complete')
+			if get_complete and get_complete.value == 'command':
+				command_or_option = True
 	if len(args) > 0:
 		typed = args[0].split()
+		if command_or_option:
+			for i in reversed(typed):
+				for j in ks:
+					if str(j).split('/')[-1] == i:
+						last_command = str(j)
+						break
+					if last_command is not None:
+						break
 		for i in reversed(typed):
-			if last_command is not None:
-				break
+			if not i.startswith('-'):
+				continue
+			word = i.strip()
+			while word.startswith('-'):
+				word = word[1:]
 			for j in ks:
-				if str(j).split('/')[-1] == i:
-					last_command = str(j)
+				opt = j.getMeta(name='opt')
+				long_opt = j.getMeta(name='opt/long')
+				if long_opt and long_opt.value == word:
+					last_option = str(j)
+					last_option_meta = 'opt/long'
+				elif opt and not opt.value.startswith('#'):
+					if opt and opt.value == word:
+						last_option = str(j)
+						last_option_meta = 'opt'
+				elif opt and opt.value.startswith('#'):
+					try:
+						len_opts = int((opt.value)[1:])
+					except:
+						continue
+					for l in range(len_opts+1):
+						opt_loop = None
+						opt_loop = j.getMeta(name='opt/#{}'.format(l))
+						long_opt_loop = None
+						long_opt_loop = j.getMeta(name='opt/#{}/long'.format(l))
+						if opt_loop and opt_loop.value == word:
+							last_option = str(j)
+							last_option_meta = 'opt/#{}'.format(l)
+						if long_opt_loop and long_opt_loop.value == word:
+							last_option = str(j)
+							last_option_meta = 'opt/#{}/long'.format(l)
+				if last_option is not None and last_option_meta is not None:
+					opt_arg_meta = j.getMeta(name=last_option_meta+'/arg')
+					if opt_arg_meta:
+						opt_arg = opt_arg_meta.value
 					break
+
 	k.close()
 	if root is None:
 		print('getting root failed')
@@ -77,17 +126,20 @@ def get_command_line_arguments():
 # TODO add completion for commands
 # returns string with completions options seperated by \n
 def find_auto_completion_options():
-	global last_command, start_of_current_input
+	global last_command, start_of_current_input, command_or_option, opt_arg
 	completion = []
-	arg_needed = False
 	# TODO check if last command needs an argument
-	# TODO check if last option needs an argument
-	if arg_needed:
+	if opt_arg != 'none':
 		# TODO implement me
 		pass
+	if opt_arg == 'required':
+		return completion
+	if command_or_option and last_command is None:
+		completion.extend(complete_commands(start_of_current_input))
 	else:
-		completion.extend(complete_args())
-		completion.extend(complete_options())
+		if not start_of_current_input.strip().startswith('-'):
+			completion.extend(complete_program_args())
+		completion.extend(complete_options())		
 	#completion.extend(complete_commands(start_of_current_input))
 	completion = '\n'.join(completion)
 	return completion
@@ -101,7 +153,7 @@ def execute_shell_command(command):
 	output = []
 	complete_command = command + ' ' + start_of_current_input
 	try:
-		process = subprocess.Popen(complete_command.split(), stdout=subprocess.PIPE)
+		process = subprocess.Popen(complete_command.split(), stdout=subprocess.PIPE, shell=True)
 		output, error = process.communicate()
 		p_status = process.wait()
 		if p_status == 0:
@@ -140,7 +192,7 @@ def execute_shell_command(command):
 #	multiple have all been completed
 #
 # returns list of completion options for arguments
-def complete_args():
+def complete_program_args():
 	global start_of_current_input, mount_point
 	completion_arguments = []
 	word = start_of_current_input.strip()
@@ -182,18 +234,14 @@ def complete_options():
 	# options are declared and [program/command] where options for that specific command
 	# are specified, the program currently assumes that anything written after program/
 	# is an option
-	if last_command is None:
-		one_hyphen = start_of_current_input.strip().startswith('-')
-		two_hyphen = start_of_current_input.strip().startswith('--')
-		if two_hyphen:
-			one_hyphen = False
-		if len(start_of_current_input.strip()) == 0 or one_hyphen:
-			completion_options.extend(complete_short_options())
-		elif two_hyphen:
-			completion_options.extend(complete_long_options())
-	else:
-		# TODO implement me
-		pass
+	one_hyphen = start_of_current_input.strip().startswith('-')
+	two_hyphen = start_of_current_input.strip().startswith('--')
+	if two_hyphen:
+		one_hyphen = False
+	if len(start_of_current_input.strip()) == 0 or one_hyphen:
+		completion_options.extend(complete_short_options())
+	elif two_hyphen:
+		completion_options.extend(complete_long_options())
 	return completion_options
 
 # searches for all short options starting with start_of_current_input
@@ -201,16 +249,18 @@ def complete_options():
 # skips over blocks where after opt=# is something other than an int
 # returns list of all short options matching start_of_current_input
 def complete_short_options():
-	global start_of_current_input, mount_point
+	global start_of_current_input, mount_point, last_command
 	completion_options = []
 	k = kdb.KDB()
 	ks = kdb.KeySet()
 	k.get(ks, mount_point)
+	word = start_of_current_input.strip()
+	while word.startswith('-'):
+		word = word[1:]
 	for key in ks:
+		if last_command and last_command != str(key):
+			continue
 		opt = key.getMeta(name='opt')
-		word = start_of_current_input.strip()
-		while word.startswith('-'):
-			word = word[1:]
 		if opt and opt.value.startswith('#'):
 			try:
 				len_opts = int((opt.value)[1:])
@@ -232,18 +282,20 @@ def complete_short_options():
 # if more than two hyphens have been typed, complete will automatically remove them
 # returns list of all long options matching start_of_current_input
 def complete_long_options():
-	global start_of_current_input, mount_point
+	global start_of_current_input, mount_point, last_command
 	completion_options = []
 	k = kdb.KDB()
 	ks = kdb.KeySet()
 	k.get(ks, mount_point)
+	word = start_of_current_input.strip()
+	while word.startswith('-'):
+		word = word[1:]
 	for key in ks:
+		if last_command and last_command != str(key):
+			continue
 		long_opt = key.getMeta(name='opt/long')
 		opt = key.getMeta(name='opt')
 		if long_opt:
-			word = start_of_current_input.strip()
-			while word.startswith('-'):
-				word = word[1:]
 			if long_opt.value.startswith(word):
 				completion_options.append('--' + long_opt.value)
 		elif opt and opt.value.startswith('#'):
@@ -273,7 +325,7 @@ def complete_commands(start_of_input):
 		completion_commands = []
 		for key in ks:
 			path = str(key).split('/')
-			if len(path) <= len_path_mount_point or path[len_path_mount_point] != root:
+			if len(path) <= len_path_mount_point:
 				continue
 			if start_of_input is None:
 				completion_commands.append(path[-1])
@@ -287,6 +339,7 @@ def complete_commands(start_of_input):
 # input_start_of_current_input - string typed before pressing TAB
 # input_last_command - last command (not option or argument) typed
 # input_typed - list of previously typed commands, options and arguments
+# input_command_or_option - complete options or commands
 # 
 # used for testing, this can be run from python: 
 #
@@ -295,13 +348,14 @@ def complete_commands(start_of_input):
 #
 # for this import to work, the scripts need to be in the same directory
 def set_input_and_run(input_mount_point, input_root, input_start_of_current_input, 
-	input_last_command, input_typed):
-	global mount_point, root, last_command, typed, start_of_current_input
+	input_last_command, input_typed, input_command_or_option):
+	global mount_point, root, last_command, typed, start_of_current_input, command_or_option
 	mount_point = input_mount_point
 	root = input_root
 	start_of_current_input = input_start_of_current_input
 	last_command = input_last_command
 	typed = input_typed
+	command_or_option = input_command_or_option
 	return find_auto_completion_options()
 
 if __name__ == '__main__':
