@@ -130,16 +130,15 @@ def find_auto_completion_options():
 	global last_command, start_of_current_input, command_or_option, opt_arg
 	completion = []
 	# TODO check if last command needs an argument
-	print(command_or_option)
 	if opt_arg != 'none':
 		completion.extend(complete_opt_args())
 	if opt_arg == 'required':
 		return completion
-	if command_or_option and last_command is None:
+	if command_or_option:
 		completion.extend(complete_commands(start_of_current_input))
 	if not command_or_option:
 		completion.extend(complete_options())
-	if not command_or_option and not start_of_current_input.strip().startswith('-'):
+	if not start_of_current_input.strip().startswith('-'):
 		completion.extend(complete_program_args())
 	completion = '\n'.join(completion)
 	return completion
@@ -153,17 +152,19 @@ def execute_shell_command(command):
 	output = []
 	complete_command = command + ' ' + start_of_current_input
 	try:
-		process = subprocess.Popen("exec " + complete_command, stdout=subprocess.PIPE, shell=True)
+		process = subprocess.Popen(complete_command, stdout=subprocess.PIPE, shell=True)
 		output, error = process.communicate()
 		p_status = process.wait()
 		if p_status == 0:
 			output = output.decode('utf-8')
 			output = output.splitlines()
+		process.kill()
 	except:
-		kill(process.pid)
+		process.kill()
 	return output
 
 def complete_opt_args():
+	# TODO only add as many arguments as needed
 	global start_of_current_input, mount_point, last_option, last_option_meta
 	completion_arguments = []
 	word = start_of_current_input.strip()
@@ -212,6 +213,7 @@ def complete_opt_args():
 #
 # returns list of completion options for arguments
 def complete_program_args():
+	# TODO only add as many arguments as needed
 	global start_of_current_input, mount_point
 	completion_arguments = []
 	word = start_of_current_input.strip()

@@ -1,8 +1,8 @@
 #/usr/bin/env bash
 
 in=''
-if (($# >= 1)); then
-	in="$(args[1])"
+if ! [ -z "$1" ]; then
+	in="$1"
 fi
 
 output="$(python3 complete_files.py ${in})"

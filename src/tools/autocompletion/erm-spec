@@ -49,4 +49,4 @@ opt/arg = none
 
 [files/#]
 args = remaining
-completion/shell = bash complete_files.sh
+completion/shell = ./complete_files.sh
