@@ -225,6 +225,13 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
+void initializeLexer(FILE * file) {
+	yylineno = 1;
+	BEGIN(0);
+	yyin = file;
+	yy_flush_buffer(YY_CURRENT_BUFFER);
+}
+
 static inline bool validAscii (char c)
 {
 	return c == '\t' || (c >= 0x20 && c <= 0x7E);
@@ -273,6 +280,7 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 		else if (!isMultiline && c == '\n') {
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
 				     "Malformed Input: Found newline in non-multiline string, but is only allowed in multiline strings");
+			return bufferConsume(buffer);
 		}
 		else if (validAscii (c))
 		{

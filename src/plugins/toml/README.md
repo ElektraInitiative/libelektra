@@ -23,3 +23,12 @@ The plugin supports null keys. They are represented as special string of value '
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Only spaces in front of comments are preserved.
+
+
+## TODOs:
+
+	- Write documentation
+	- Error checks in write.c
+	- Don't depend on order metakey when comparing array elements.
+	- Include directoryvalue, base64, null plugins. (and maybe use date plugin for dates)
+	- Write used metakeys in METADATA.ini
