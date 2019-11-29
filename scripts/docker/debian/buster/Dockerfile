@@ -26,6 +26,7 @@ RUN apt-get update \
         git \
         git-buildpackage \
         gobject-introspection \
+        googletest \
         graphviz \
         icheck \
         lcov \
@@ -84,14 +85,7 @@ RUN apt-get update \
 
 
 # Google Test
-ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
-RUN mkdir -p ${GTEST_ROOT} \
-    && cd /tmp \
-    && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
-    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
-    && rm gtest.tar.gz
+ENV GTEST_ROOT=/usr/src/googletest
 
 # Update cache for shared libraries
 RUN ldconfig
