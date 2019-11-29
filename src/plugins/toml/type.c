@@ -21,9 +21,9 @@ const char * octStr = "^0o" SEPARATED_DIGITS ("[0-7]") "$";
 const char * hexStr = "^0x" SEPARATED_DIGITS ("[0-9a-fA-F]") "$";
 
 const char * decStr = "^[+-]?" SEP_NUM_NZERO_START "$";
-const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START ")"			// PRE-DOT
-						"(\\." SEPARATED_DIGITS("[0-9]") ")?"		// OPTIONAL DOT
-						"([eE][+-]?" SEP_NUM_NZERO_START ")?$";		// OPTIONAL EXPONENT
+const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START ")"			// PRE-DOT DIGITS
+						"(\\." SEPARATED_DIGITS("[0-9]") ")?"		// OPTIONAL AFTER-DOT DIGITS
+						"([eE][+-]?" SEP_NUM_NZERO_START ")?$";		// OPTIONAL EXPONENT DIGITS
 const char * floatSpecialStr = "^[+-]?(nan|inf)$";
 const char * bareStr = "^[a-zA-Z0-9_-]+$";
 

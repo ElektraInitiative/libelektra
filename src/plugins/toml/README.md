@@ -16,28 +16,10 @@ The plugin supports null keys. They are represented as special string of value '
 
 ## Requirements:
 
-    - The plugin needs Flex (TODO: min version) and Bison (TODO: min version).
+    - The plugin needs Flex (TODO: min version) and Bison (minimal version 3).
 
 ## Limitations:
 
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Only spaces in front of comments are preserved.
-
-## Questions
-
-    - Don't know where/how exactly to store trailing array comments/newline info
-        * Can't associate those info to array top key in the way like file ending comments are preserved
-        * Maybe add own metakey (eg. epilogue/comment/#1)?
-		
-## TODOs
-	- Document functions
-	- proper sorting -> arrays
-	- base64 for binary k/v
-	- check why space restoration in front of comments not working
-	- Error checks for writing
-	- Correct string handling (which type of string, do in type.c)
-	- Maybe preserve spaces
-		- Before array values
-		- Before assignment/simple table header/table array header
-    - Maybe use date plugin

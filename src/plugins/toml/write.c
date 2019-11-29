@@ -1,9 +1,9 @@
 #include <kdb.h>
 #include <kdbassert.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbmeta.h>
-#include <kdbease.h>
 #include <kdbproposal.h>
 #include <regex.h>
 #include <stdbool.h>
@@ -62,6 +62,7 @@ static int writeArrayBody (Key * key, Writer * writer);
 static int writeArrayElements (Key * parent, Writer * writer);
 static int writeValue (Key * key, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
+static int writeQuoted (const char * value, char quoteChar, int quouteCount, Writer * writer);
 static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer);
 static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * writer);
 static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer);
@@ -72,7 +73,7 @@ static int writeNewline (Writer * writer);
 static CommentList * collectComments (Key * key);
 static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
-static bool isBoolean (const char * str);
+static bool isMultilineString (const char * str);
 static bool isTrue (const char * boolStr);
 static void addMissingArrayKeys (KeySet * keys, Key * parent);
 static void pruneInvalidArrayKeys (KeySet * keys);
@@ -207,13 +208,15 @@ static int writeKeys (Key * parent, Writer * writer)
 			result |= writeNewline (writer);
 			break;
 		case KEY_TYPE_SIMPLE_TABLE:
-			if (keyCmp(parent, writer->rootKey) != 0) {
+			if (keyCmp (parent, writer->rootKey) != 0)
+			{
 				return result;
 			}
 			result |= writeSimpleTable (parent, key, writer);
 			break;
 		case KEY_TYPE_TABLE_ARRAY:
-			if (keyCmp(parent, writer->rootKey) != 0) {
+			if (keyCmp (parent, writer->rootKey) != 0)
+			{
 				return result;
 			}
 			result |= writeTableArray (parent, key, writer);
@@ -411,15 +414,26 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		result |= fputs ("''", writer->f) == EOF;
 	}
-	else if (isBoolean (valueStr) && type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
+	else if (type != NULL)
 	{
-		if (isTrue (valueStr))
+		if (elektraStrCmp (keyString (type), "boolean") == 0)
 		{
-			result |= fputs ("true", writer->f) == EOF;
+			if (isTrue (valueStr))
+			{
+				result |= fputs ("true", writer->f) == EOF;
+			}
+			else
+			{
+				result |= fputs ("false", writer->f) == EOF;
+			}
+		}
+		else if (elektraStrCmp (keyString (type), "string") == 0)
+		{
+			result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
 		}
 		else
 		{
-			result |= fputs ("false", writer->f) == EOF;
+			result |= fputs (valueStr, writer->f) == EOF;
 		}
 	}
 	else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
@@ -428,9 +442,22 @@ static int writeScalar (Key * key, Writer * writer)
 	}
 	else
 	{
-		result |= fputc ('"', writer->f) == EOF;
-		result |= fputs (valueStr, writer->f) == EOF;
-		result |= fputc ('"', writer->f) == EOF;
+		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
+	}
+	return result;
+}
+
+static int writeQuoted (const char * value, char quoteChar, int quouteCount, Writer * writer)
+{
+	int result = 0;
+	for (int i = 0; i < quouteCount; i++)
+	{
+		result |= fputc (quoteChar, writer->f) == EOF;
+	}
+	result |= fputs (value, writer->f) == EOF;
+	for (int i = 0; i < quouteCount; i++)
+	{
+		result |= fputc (quoteChar, writer->f) == EOF;
 	}
 	return result;
 }
@@ -447,11 +474,16 @@ static bool isTrue (const char * boolStr)
 	}
 }
 
-
-static bool isBoolean (const char * str)
+static bool isMultilineString (const char * str)
 {
-	return elektraStrCmp (str, "true") == 0 || elektraStrCmp (str, "false") == 0 || elektraStrCmp (str, "0") == 0 ||
-	       elektraStrCmp (str, "1") == 0;
+	while (*str != 0)
+	{
+		if (*str++ == '\n')
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 static int writeInlineTableBody (Key * key, Writer * writer)
