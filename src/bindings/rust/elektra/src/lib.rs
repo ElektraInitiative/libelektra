@@ -1,14 +1,20 @@
 //! # Elektra
-//! Safe bindings for libelektra.
-//! 
+//! Safe bindings for [libelektra](https://www.libelektra.org).
+//!
 //! See the [project's readme](https://master.libelektra.org/src/bindings/rust) for an introduction and examples.
+//!
+//! The crate consists of three major parts.
+//!
+//! - The [keys](key/index.html) that encapsulate name, value and metainfo
+//! - A [`KeySet`](keyset/index.html) holds a set of `StringKey`s, since these are the most common type of key
+//! - [`KDB`](kdb/index.html) allows access to the persistent key database by reading or writing `KeySet`s
+//!
+//! Refer to the documentation of the modules to learn more about each.
 
 extern crate bitflags;
 extern crate elektra_sys;
 
-/// `StringKey` and `BinaryKey` are the essential structs that encapsulate name, value and metainfo.
 pub mod key;
-/// `KeyBuilder` can easily build keys with many meta values.
 pub mod keybuilder;
 /// Trait to read values from a key.
 pub mod readable;
@@ -16,9 +22,7 @@ pub mod readable;
 pub mod readonly;
 /// Trait to write values to a key.
 pub mod writeable;
-/// `KeySet` is a set of keys.
 pub mod keyset;
-/// General methods to access the Key database.
 pub mod kdb;
 
 pub use self::key::{BinaryKey, StringKey, MetaIter, NameIter, KeyNameInvalidError, KeyNameReadOnlyError, KeyNotFoundError};
