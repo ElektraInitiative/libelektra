@@ -94,7 +94,7 @@ kdb get /tests/kconfig/group/subgroup/key.name
 kdb meta-get /tests/kconfig/group/subgroup/key.name kconfig
 #> ai
 
-# Manually add a group and a localized key 
+# Manually add a group and a localized key
 echo '[localized keys]' >> `kdb file /tests/kconfig`
 echo 'greeting[en]=Hello' >> `kdb file /tests/kconfig`
 echo 'greeting[de]=Hallo' >> `kdb file /tests/kconfig`
