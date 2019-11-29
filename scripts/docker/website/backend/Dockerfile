@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:stretch
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get -y install \
     libboost-all-dev \
     libpcre3-dev \
     zlib1g-dev \
-    libgcrypt20-dev \
+    libgcrypt11-dev \
     libicu-dev \
     python \
     libssl-dev \
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get -y install \
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
+ARG GTEST_VER=release-1.10.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -31,7 +31,7 @@ RUN mkdir -p ${GTEST_ROOT} \
 
 ARG PARALLEL=2
 WORKDIR /app/deps
-ARG CPPCMS_VERSION="1.2.1"
+ARG CPPCMS_VERSION="1.2.0"
 RUN curl -o cppcms-${CPPCMS_VERSION}.tar.bz -L \
         "https://sourceforge.net/projects/cppcms/files/cppcms/${CPPCMS_VERSION}/cppcms-${CPPCMS_VERSION}.tar.bz2/download" \
     && tar -xjvf cppcms-${CPPCMS_VERSION}.tar.bz \
@@ -42,7 +42,7 @@ RUN curl -o cppcms-${CPPCMS_VERSION}.tar.bz -L \
     && make install \
     && cd /app/deps \
     && rm -Rf cppcms-${CPPCMS_VERSION}
-ARG JANSSON_VERSION="2.12"
+ARG JANSSON_VERSION="2.11"
 RUN curl -O http://www.digip.org/jansson/releases/jansson-${JANSSON_VERSION}.tar.gz \
     && tar -xvzf jansson-${JANSSON_VERSION}.tar.gz \
     && cd jansson-${JANSSON_VERSION} \
@@ -53,7 +53,7 @@ RUN curl -O http://www.digip.org/jansson/releases/jansson-${JANSSON_VERSION}.tar
     && make install \
     && cd /app/deps \
     && rm -Rf jansson-${JANSSON_VERSION}
-ARG LIBJWT_VERSION="1.11.0"
+ARG LIBJWT_VERSION="1.9.0"
 RUN curl -o libjwt-v${LIBJWT_VERSION}.tar.gz -L \
         "https://github.com/benmcollins/libjwt/archive/v${LIBJWT_VERSION}.tar.gz" \
     && tar -xvzf libjwt-v${LIBJWT_VERSION}.tar.gz \
@@ -74,7 +74,7 @@ RUN ldconfig \
     && cd build \
     && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
-             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;yajl" \
+             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;file;yajl" \
              -DTOOLS="kdb;website-backend" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \
              -DCMAKE_CXX_FLAGS="$C_FLAGS" \
@@ -85,7 +85,7 @@ RUN ldconfig \
     && make install
 
 
-FROM debian:buster
+FROM debian:stretch
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -94,13 +94,13 @@ COPY --from=0 /usr/local /usr/local
 RUN echo '/usr/local/lib/elektra/' > /etc/ld.so.conf.d/elektra.conf \
     && ldconfig
 RUN apt-get update && apt-get install -y \
-         libasan5 \
-         libubsan1 \
-         libboost-system1.67.0 \
-         libboost-filesystem1.67.0 \
-         libboost-thread1.67.0 \
+         libasan3 \
+         libubsan0 \
+         libboost-system1.62.0 \
+         libboost-filesystem1.62.0 \
+         libboost-thread1.62.0 \
          libssl1.1 \
-         libicu63 \
+         libicu57 \
          libyajl2 \
          pwgen \
     && rm -rf /var/lib/apt/lists/*
