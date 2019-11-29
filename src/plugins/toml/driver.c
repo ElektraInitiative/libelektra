@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -15,7 +16,8 @@
 #include "utility.h"
 
 extern int yyparse (Driver * driver);
-extern FILE * yyin;
+
+void initializeLexer(FILE * file);
 
 static Driver * createDriver (Key * parent, KeySet * keys);
 static void destroyDriver (Driver * driver);
@@ -52,8 +54,6 @@ int tomlRead (KeySet * keys, Key * parent)
 		status = 1;
 	}
 
-
-	// dumpKS(keys);
 	ksRewind (keys);
 	return status;
 }
@@ -108,14 +108,13 @@ static void destroyDriver (Driver * driver)
 
 static int driverParse (Driver * driver)
 {
-	// ksAppendKey (driver->keys, driver->root);
 	FILE * file = fopen (driver->filename, "rb");
 	if (file == NULL)
 	{
 		ELEKTRA_SET_RESOURCE_ERROR (driver->root, keyString (driver->root));
 		return 1;
 	}
-	yyin = file;
+	initializeLexer(file);
 	int yyResult = yyparse (driver);
 	fclose (file);
 	return driver->errorSet == true || yyResult != 0;
