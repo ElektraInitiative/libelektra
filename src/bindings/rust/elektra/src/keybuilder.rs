@@ -1,6 +1,37 @@
 use crate::{WriteableKey, KeyNameInvalidError};
 
-/// A builder to easily construct a new key.
+/// Use the `KeyBuilder` to easily build a key with many meta values.
+/// # Example
+/// ```
+/// # use elektra::{KeyBuilder,StringKey,WriteableKey,ReadableKey};
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let key: StringKey = 
+///     KeyBuilder::new("user/test/newkey")?
+///         .value("0xff")
+///         .meta("type", "octet")?
+///         .meta("unit/base", "hex")?
+///         .build();
+/// assert_eq!(key.name(), "user/test/newkey");
+/// assert_eq!(key.value(), "0xff");
+/// assert_eq!(key.meta("type")?.value(), "octet");
+/// assert_eq!(key.meta("unit/base")?.value(), "hex");
+/// #
+/// #     Ok(())
+/// # }
+/// ```
+/// In a `keyset!` definition, it is useful to use the "turbofish" syntax for type annotation.
+/// ```
+/// # use elektra::{KeyBuilder,keyset,KeySet,StringKey,WriteableKey,ReadableKey};
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let ks = keyset![ 
+///     KeyBuilder::<StringKey>::new("user/test/newkey")?
+///         .value("0xff")
+///         .build()
+/// ];
+/// # assert_eq!(ks.head().unwrap().value(), "0xff");
+/// # Ok(())
+/// # }
+/// ```
 pub struct KeyBuilder<T: WriteableKey> {
     key: T,
 }
