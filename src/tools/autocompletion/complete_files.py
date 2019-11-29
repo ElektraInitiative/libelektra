@@ -7,24 +7,35 @@ import sys
 # if no argument passed will return all files and directorys in working directory
 # returns string seperated with \n as expected from all scripts being called by find_autocompletion_options.py
 def complete(word):
+	print('RUNNING')
 	completion_options = []
 	path = './'
-	if word is not None and (os.path.isfile(word) or os.path.isdir(word)):
-		path = word
+	overwritten = False
+	prefix = ''
+	remove_prefix_word = word
+	if word is not None:
+		prefix = word.split('/')
+		prefix = '/'.join(prefix[:-1])
+		prefix += '/'
+		path = prefix
+		overwritten = True
+		remove_prefix_word = word.replace(prefix, '')
 	for root, directorys, files in os.walk(path):
 		for f in files:
 			file_path = os.path.join(root, f)
-			if len(file_path) > 0 and (word is None or file_path.startswith(word)):
+			if not overwritten:
+				file_path = file_path[2:]
+			remove_prefix_file_path = file_path.replace(prefix, '')
+			if word is None or remove_prefix_file_path.startswith(remove_prefix_word):
 				if len(path.split(os.path.sep)) >= len(file_path.split(os.path.sep)):
-					if file_path.startswith('./'):
-						file_path = file_path[2:]
 					completion_options.append(file_path)
 		for d in directorys:
 			dir_path = os.path.join(root, d)
-			if len(dir_path) > 0 and (word is None or dir_path.startswith(word)):
+			if not overwritten:
+				dir_path = dir_path[2:]
+			remove_prefix_dir_path = dir_path.replace(prefix, '')
+			if word is None or dir_path.startswith(word):	
 				if len(path.split(os.path.sep))+1 >= len(dir_path.split(os.path.sep)):
-					if dir_path.startswith('./'):
-						dir_path = dir_path[2:]
 					completion_options.append(dir_path + os.path.sep)
 	return('\n'.join(completion_options))
 
