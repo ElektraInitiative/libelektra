@@ -143,7 +143,7 @@ char * translateScalar (const Scalar * scalar)
 	case SCALAR_STRING_BARE:
 		return elektraStrDup (scalar->str);
 	default:
-		ELEKTRA_ASSERT (0, "All possible scalar enums must be handeled, but got into default branch");
+		ELEKTRA_ASSERT (0, "All possible scalar enums must be handled, but got into default branch");
 		return NULL;
 	}
 }

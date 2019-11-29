@@ -7,7 +7,7 @@
 
 void dumpKS (KeySet * keys)
 {
-	FILE * f = fopen ("keys.txt", "w");
+	FILE * f = stdout;//fopen ("keys.txt", "w");
 	ksRewind (keys);
 	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
 	{

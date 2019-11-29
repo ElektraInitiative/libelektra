@@ -849,6 +849,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		switch (driver->lastScalar->type)
 		{
 		case SCALAR_STRING_LITERAL:
+			keySetMeta(driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 1))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 1);
@@ -863,6 +864,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_STRING_ML_LITERAL:
+			keySetMeta(driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 3))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 3);
@@ -877,6 +879,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_STRING_BASIC:
+			keySetMeta(driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '"', 1))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 1);
@@ -891,6 +894,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_STRING_ML_BASIC:
+			keySetMeta(driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '"', 3))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 3);
