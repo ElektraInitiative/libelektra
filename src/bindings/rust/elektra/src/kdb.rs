@@ -1,11 +1,13 @@
+//! General methods to access the Key database.
+//! 
+//! For example usage see the [Readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/rust).
+
 use crate::ReadableKey;
 use crate::{KeySet, StringKey, WriteableKey};
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 
-/// General methods to access the Key database.
-/// For example usage see [the Readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/rust).
 #[derive(Debug)]
 pub struct KDB {
     ptr: NonNull<elektra_sys::KDB>,
