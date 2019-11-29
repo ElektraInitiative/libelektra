@@ -1,4 +1,6 @@
-//! `StringKey` and `BinaryKey` are equivalent, except for the values that they hold.
+//! `StringKey` and `BinaryKey` are the essential structs that encapsulate name, value and metainfo.
+//!
+//! They are equivalent, except for the values that they hold.
 //! Their common functionality is split into two traits, [`ReadableKey`](../readable/trait.ReadableKey.html)
 //! and [`WriteableKey`](../writeable/trait.WriteableKey.html). Usually, you
 //! will have to import both to make use of the methods they provide.
