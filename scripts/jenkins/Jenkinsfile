@@ -160,7 +160,7 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  stage("Deploy Website") {
+  maybeStage("Deploy Website", isMaster()) {
     deployWebsite()
   }
 
