@@ -18,17 +18,47 @@ The plugin supports null keys. They are represented as special string of value '
 
     - The plugin needs Flex (TODO: min version) and Bison (minimal version 3).
 
+## Strings
+Although the plugin can read any kind of TOML string (bare, basic, literal, basic multiline, literal multiline) it will write back literal strings as basic strings. Multiline literal strings are mapped to multiline basic strings.
+Therefore, you must treat any string you set with `kdb set` as a basic string and mind possible escape sequences and special meaning of quotation characters. Also be carful to not create invalid escape sequences, which lead to invalid TOML files.
+
+Example
+```
+# Mount TOML file
+sudo kdb mount test_strings.toml user/tests/storage toml type
+
+# setting a string containing a newline escape sequence
+kdb set 'user/tests/storage/string' 'I am a basic string\not a literal one.'
+
+
+kdb get 'user/tests/storage/string'
+# > I am a basic string
+# > ot a literal one
+
+# setting the string again, but escape the slash with another slash
+kdb set 'user/tests/storage/string' 'I am a basic string\\not a literal one.'
+
+kdb get 'user/tests/storage/string'
+# > I am a basic string/not a literal one
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
+
+
+
 ## Limitations:
 
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Only spaces in front of comments are preserved.
 
-
 ## TODOs:
 
 	- Write documentation
 	- Error checks in write.c
 	- Don't depend on order metakey when comparing array elements.
-	- Include directoryvalue, base64, null plugins. (and maybe use date plugin for dates)
+	- Include directoryvalue, base64, null (+ maybe date) plugins
+	- Make distinction on writing basic and literal strings
 	- Write used metakeys in METADATA.ini
