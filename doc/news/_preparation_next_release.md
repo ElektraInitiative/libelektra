@@ -106,6 +106,10 @@ you up to date with the multi-language support provided by Elektra.
 
 - Removed. _(Manuel Mausz)_
 
+### Rust
+
+- Published `elektra` and `elektra-sys` versions `0.9.1` to crates.io. _(Philipp Gackstatter)_
+
 ## Tools
 
 - <<TODO>>
