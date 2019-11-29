@@ -10,11 +10,15 @@ _erm_find_completions() {
 	if ! [ -z "${cur}" ]; then
 		cur_str="-s ${cur}"
 	fi
-	in=" "
+	local in=" "
 	for ((i = 1; i < COMP_CWORD; i++)); do
 		in+=" ${COMP_WORDS[i]}"
 	done
-	output="$(python3 find_autocompletion_options.py -m spec/tests/autocomplete/erm ${cur_str} ${in})"
+	echo "START" >> ${output_file}
+	{ time "$(python3 find_autocompletion_options.py -m spec/tests/autocomplete/erm ${cur_str} ${in})" ; } 2> ${output_file}
+	output="$(python3 find_autocompletion_options.py -m spec/tests/autocomplete/erm ${cur_str} ${in})" 
+	echo ${output} >> ${output_file}
+	echo "END" >> ${output_file}
 	COMPREPLY=($(compgen -W "${output}"))
 }
 complete -F _erm_find_completions erm
