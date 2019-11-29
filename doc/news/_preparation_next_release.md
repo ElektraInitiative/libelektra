@@ -136,7 +136,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- Added alpine linux docker image with latest elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/repository/docker/elektra/elektra/). We will update the image for each elektra release such that novices can easily test elektra without compiling or installing. _(Mihael Pranjić)_
+- Added alpine linux docker image with latest elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra). We will update the image for each elektra release such that novices can easily test elektra without compiling or installing. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
