@@ -130,10 +130,10 @@ def find_auto_completion_options():
 	completion = []
 	# TODO check if last command needs an argument
 	if opt_arg != 'none':
-		# TODO implement me
-		pass
+		completion.extend(complete_opt_args())
 	if opt_arg == 'required':
 		return completion
+	print(command_or_option)
 	if command_or_option and last_command is None:
 		completion.extend(complete_commands(start_of_current_input))
 	else:
@@ -164,6 +164,27 @@ def execute_shell_command(command):
 		#print(e)
 		pass
 	return output
+
+def complete_opt_args():
+	global start_of_current_input, mount_point, last_option, last_option_meta
+	print('HERE')
+	completion_arguments = []
+	word = start_of_current_input.strip()
+	while word.startswith('-'):
+		word = word[1:]
+	k = kdb.KDB()
+	ks = kdb.KeySet()
+	k.get(ks, last_option)
+	for key in ks:
+		opt = key.getMeta(name='opt')
+		opt_arg = key.getMeta(name='opt/arg')
+		if opt:
+			print(opts)
+		if opt_arg:
+			print(opt_arg.value)
+
+	k.close()
+	return completion_arguments
 
 # complete arguments not belonging to specific options
 # if a command to execute is given, will execute said command and returns the result
@@ -227,6 +248,7 @@ def complete_program_args():
 # returns list of all possible options
 def complete_options():
 	global last_command, start_of_current_input
+	print('options')
 	completion_options = []
 	# if no last command exists, only options specified as [program/option] will be
 	# considered, in that block there may either be an option array
@@ -340,6 +362,7 @@ def complete_commands(start_of_input):
 # input_last_command - last command (not option or argument) typed
 # input_typed - list of previously typed commands, options and arguments
 # input_command_or_option - complete options or commands
+# input_opt_arg - complete arguments of options or not
 # 
 # used for testing, this can be run from python: 
 #
@@ -348,14 +371,18 @@ def complete_commands(start_of_input):
 #
 # for this import to work, the scripts need to be in the same directory
 def set_input_and_run(input_mount_point, input_root, input_start_of_current_input, 
-	input_last_command, input_typed, input_command_or_option):
-	global mount_point, root, last_command, typed, start_of_current_input, command_or_option
+	input_last_command, input_typed, input_command_or_option, input_opt_arg, input_last_option, input_last_option_meta):
+	global mount_point, root, last_command, typed, start_of_current_input, command_or_option, last_option, last_option_meta
 	mount_point = input_mount_point
 	root = input_root
 	start_of_current_input = input_start_of_current_input
 	last_command = input_last_command
 	typed = input_typed
 	command_or_option = input_command_or_option
+	opt_arg = input_opt_arg
+	last_option = input_last_option
+	last_option_meta = input_last_option_meta
+	print('start')
 	return find_auto_completion_options()
 
 if __name__ == '__main__':

@@ -6,8 +6,6 @@ import sys
 # if word passed will return all files and directorys in working directory starting with argv[1]
 # if no argument passed will return all files and directorys in working directory
 # returns string seperated with \n as expected from all scripts being called by find_autocompletion_options.py
-
-
 def complete(word):
 	completion_options = []
 	path = './'
