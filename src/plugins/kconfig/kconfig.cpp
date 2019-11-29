@@ -126,18 +126,20 @@ int elektraKconfigSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 	ELEKTRA_LOG_DEBUG ("Save `%s` using the kconfig plugin", parent.getFullName ().c_str ());
 	auto filePtr = new std::ofstream{ parent.getString () };
-	if (!filePtr->is_open ())
+	bool isFileOpen = filePtr->is_open ();
+	std::unique_ptr<std::ostream> file{ filePtr };
+
+	if (!isFileOpen)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parent.getKey (), "Unable to save data to file '%s'. Reason: %s", parent.getString ().c_str (),
 					     "Could not open the file.");
-		delete filePtr;
 		parent.release ();
 		keys.release ();
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	ELEKTRA_LOG_DEBUG ("File opened successfully, start saving the data.");
 
-	KConfigSerializer serializer{ keys, parent, std::unique_ptr<std::ofstream> (filePtr) };
+	KConfigSerializer serializer{ keys, parent, std::move (file) };
 	serializer.save ();
 
 	ELEKTRA_LOG_DEBUG ("Data succesfully stored into `%s`.", parent.getFullName ().c_str ());

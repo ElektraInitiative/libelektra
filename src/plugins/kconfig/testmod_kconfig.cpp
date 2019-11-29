@@ -24,12 +24,11 @@ using CppKey = kdb::Key;
 
 
 // BEGIN: COPY UTIL FUNCTIONS FROM testmod_yamlcpp.cpp
-#define PREFIX "user/unit_tests/kconfig/"
-#define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
+#define OPEN_KCONFIG_PLUGIN()                                                                                                              \
 	CppKeySet modules{ 0, KS_END };                                                                                                    \
 	CppKeySet config{ 0, KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
+	CppKey parent{ "system/elektra/modules/kconfig", KEY_END };                                                                        \
 	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), *parent);                               \
 	exit_if_fail (plugin != NULL, "Could not open kconfig plugin")
 #define CLOSE_PLUGIN()                                                                                                                     \
@@ -38,126 +37,179 @@ using CppKey = kdb::Key;
 	ksDel (modules.release ());                                                                                                        \
 	config.release ()
 
-void update_parent (CppKeySet expected, string const filepath)
+static void test_files_equal (string const & filenameA, string const & filenameB)
 {
-	// We replace the value of the parent key of expected keyset, if the header file specifies the value @CONFIG_FILEPATH@.
-	// We could also do that via CMake, but the current solution should be easier for now.
-	CppKey root = expected.lookup (PREFIX, KDB_O_POP);
-	if (root)
+	std::ifstream fileA{ filenameA };
+	std::ifstream fileB{ filenameB };
+
+	succeed_if_same (true, fileA.is_open (), "Could not open " + filenameA);
+	succeed_if_same (true, fileB.is_open (), "Could not open " + filenameB);
+
+	std::size_t counter{ 0 };
+	std::string lineA;
+	std::string lineB;
+
+	while (true)
 	{
-		if (root.getString () == "@CONFIG_FILEPATH@") root.setString (filepath);
-		expected.append (root);
+		counter++;
+		bool isEndOfFileA = fileA.eof ();
+		bool isEndOfFileB = fileB.eof ();
+
+		stringstream errorMessageStream;
+		errorMessageStream << "Difference in line " << counter << " when comparing " << filenameA << " to " << filenameB;
+		string errorMessage{ errorMessageStream.str () };
+
+		succeed_if_same (isEndOfFileA, isEndOfFileB, errorMessage);
+
+		if (isEndOfFileA || isEndOfFileB) break;
+
+		getline (fileA, lineA);
+		getline (fileB, lineB);
+
+		succeed_if_same (lineA, lineB, errorMessage);
 	}
 }
 
-static void test_read (string const & filename, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
-#ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress")))
-#endif
+static void read_from_kconfig_file (CppKey & loadParent, CppKeySet & loadKeySet)
 {
-	string filepath = srcdir_file (filename.c_str ());
-	update_parent (expected, filepath);
+	OPEN_KCONFIG_PLUGIN ();
 
-	OPEN_PLUGIN (PREFIX, filepath.c_str ());
-
-	CppKeySet keys;
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbGet` failed");
-
-	compare_keyset (keys, expected);
+	succeed_if_same (plugin->kdbGet (plugin, loadKeySet.getKeySet (), *loadParent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 "Call of `kdbGet` failed");
 
 	CLOSE_PLUGIN ();
 }
-// END: COPY UTIL FUNCTIONS FROM testmod_yamlcpp.cpp
 
-TEST (kconfig, basics)
+static void check_read_from_kconfig_file_fails (CppKey & loadParent)
 {
-	CppKeySet modules{ 0, KS_END };
-	CppKeySet config{ 0, KS_END };
-	CppKeySet keys{ 0, KS_END };
-	elektraModulesInit (modules.getKeySet (), 0);
+	OPEN_KCONFIG_PLUGIN ();
 
-	CppKey parent{ "system/elektra/modules/kconfig", KEY_END };
-	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), *parent);
-	exit_if_fail (plugin != NULL, "Could not open kconfig plugin"); //! OCLint (empty if, too few branches switch)
+	CppKeySet loadKeySet;
 
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` failed");
+	succeed_if_same (plugin->kdbGet (plugin, loadKeySet.getKeySet (), *loadParent), ELEKTRA_PLUGIN_STATUS_ERROR,
+			 "Call of `kdbGet` failed");
 
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_ERROR, "Call of `kdbSet` failed");
-
-	succeed_if_same (plugin->kdbError (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbError` failed");
-
-	elektraPluginClose (plugin, 0);
-	elektraModulesClose (modules.getKeySet (), 0);
-
-	ksDel (modules.release ());
-	config.release ();
+	CLOSE_PLUGIN ();
 }
 
-TEST (kconfig, simple_file_get)
+static void save_to_kconfig_file (CppKey & saveParent, CppKeySet & saveKeySet)
 {
-	test_read ("kconfig/simple_examplerc",
-#include "kconfig/simple_example.h"
-	);
+	OPEN_KCONFIG_PLUGIN ();
+
+	succeed_if_same (plugin->kdbSet (plugin, saveKeySet.getKeySet (), *saveParent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 "Call of `kdbGet` failed");
+
+	CLOSE_PLUGIN ();
 }
 
-TEST (kconfig, simple_file_set)
+static void test_write (CppKey & parent, CppKeySet & expected)
 {
-	// LOAD KConfig module
-	CppKeySet modules{ 0, KS_END };
-	CppKeySet config{ 0, KS_END };
-	CppKey pluginParent{ "system/elektra/modules/kconfig", KEY_END };
-	elektraModulesInit (modules.getKeySet (), 0);
-	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), pluginParent.getKey ());
-	exit_if_fail (plugin != NULL, "Could not open kconfig plugin"); //! OCLint (empty if, too few branches switch)
-
-	// Create parent key
 	string filePath = elektraFilename ();
-	CppKey parent{ "user/namespace", KEY_END };
-	parent.setString (filePath);
 
-	// Create KeySet that we want to save
-	CppKey key1{ "user/namespace/group/title", KEY_VALUE, "KConfig Test", KEY_END };
-	CppKey key2{ "user/namespace/group/key[en]", KEY_VALUE, "Hello", KEY_META, "kconfig", "ei", KEY_END };
-	CppKey key3{ "user/namespace/group/key[de]", KEY_VALUE, "Hallo", KEY_END };
-	CppKeySet keys;
-	keys.append (key1);
-	keys.append (key2);
-	keys.append (key3);
+	CppKey newParent = parent.dup ();
+	newParent.setString (filePath);
 
+	save_to_kconfig_file (newParent, expected);
 
-	// Save the KeySet to the file stored in the parent key
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), parent.getKey ()), ELEKTRA_PLUGIN_STATUS_SUCCESS,
-			 "Call of `kdbSet` failed");
-
-
-	// Load the file and verify that it has the correct format
-	std::ifstream file{ filePath };
-	std::string tmp;
-
-	getline (file, tmp);
-	succeed_if_same (tmp, "[group]", "");
-	getline (file, tmp);
-	succeed_if_same (tmp, "key[de]=Hallo", "");
-	getline (file, tmp);
-	succeed_if_same (tmp, "key[en][$e][$i]=Hello", "");
-	getline (file, tmp);
-	succeed_if_same (tmp, "title=KConfig Test", "");
-
-
-	elektraPluginClose (plugin, 0);
-	elektraModulesClose (modules.getKeySet (), 0);
-
-	ksDel (modules.release ());
-	config.release ();
+	test_files_equal (srcdir_file (parent.getString ().c_str ()), filePath);
 }
 
-TEST (kconfig, meta_file_get)
+static void test_read (CppKey & parent, CppKeySet & expected)
 {
-	test_read ("kconfig/meta_examplerc",
+	CppKeySet result;
+	CppKey loadParent = parent.dup ();
+	loadParent.setString (srcdir_file (parent.getString ().c_str ()));
+	read_from_kconfig_file (loadParent, result);
+	compare_keyset (expected, result);
+}
+
+static void test_read_fails (std::string const & content)
+{
+	string filePath = elektraFilename ();
+	ofstream file{ filePath };
+	file << content;
+	file.close ();
+
+	CppKey loadParent;
+	loadParent.setString (filePath);
+	check_read_from_kconfig_file_fails (loadParent);
+}
+
+static void test_read_and_write (CppKey & parent, CppKeySet & expected)
+{
+	test_write (parent, expected);
+	test_read (parent, expected);
+}
+
+
+TEST (kconfig, read_and_write_test)
+{
+	// Test without prefix
+	{
+
+#define TEST_VALID_PREFIX ""
+		CppKeySet keys{
+#include "kconfig/test_valid.h"
+		};
+
+		CppKey parent;
+		parent.setString ("kconfig/test_validrc");
+		test_read_and_write (parent, keys);
+	}
+	// Test with prefix
+	{
+
+#undef TEST_VALID_PREFIX
+#define TEST_VALID_PREFIX "/kconfig/prefix"
+		CppKeySet keys{
+#include "kconfig/test_valid.h"
+		};
+
+		CppKey parent{ "/kconfig/prefix", KEY_END };
+		parent.setString ("kconfig/test_validrc");
+		test_read_and_write (parent, keys);
+	}
+}
+
+TEST (kconfig, read_tests)
+{
+	{
+		CppKeySet keys{
 #include "kconfig/meta_example.h"
+		};
+
+		CppKey parent;
+		parent.setString ("kconfig/meta_examplerc");
+		test_read (parent, keys);
+	}
+	{
+		CppKeySet keys{
+#include "kconfig/simple_example.h"
+		};
+
+		CppKey parent;
+		parent.setString ("kconfig/simple_examplerc");
+		test_read (parent, keys);
+	}
+}
+
+
+TEST (kconfig, invalid_read_tests)
+{
+	test_read_fails ("[openGroupName");
+	test_read_fails ("multiple.locales[en][de]" //
+	);
+	test_read_fails ("[content after the group]name\n");
+	test_read_fails ("[content after the group name] \n");
+	test_read_fails ("content after[locale] textt" //
+	);
+	test_read_fails ("[invalid escape \\character]" //
+	);
+	test_read_fails ("invalid escape \\character in=key name" //
+	);
+	test_read_fails ("invalid escape=\\character in key value" //
 	);
 }
-
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
 

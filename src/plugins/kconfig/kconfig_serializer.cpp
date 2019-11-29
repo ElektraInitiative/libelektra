@@ -4,15 +4,24 @@
 #include <vector>
 
 KConfigSerializer::KConfigSerializer (CppKeySet & keySetParam, CppKey & parentParam, std::unique_ptr<std::ostream> oParam)
-: o{ std::move (oParam) }, keySet{ keySetParam }, parent{ parentParam }, parentKeyNameSize{ parentParam.getName ().size () + 1 },
-  lastPrintedGroup{ "" }, isFirstKey{ true }
+: o{ std::move (oParam) }, keySet{ keySetParam }, parentKeyNameSize{ parentParam.getName ().size () + 1 }, lastPrintedGroup{ "" },
+  isFirstKey{ true }
 {
+	std::string parentKeyName = parentParam.getName ();
+	if (parentKeyName == "/")
+	{
+		parentKeyNameSize = 1;
+	}
+	else
+	{
+		parentKeyNameSize = parentKeyName.size () + 1;
+	}
 }
 
 void KConfigSerializer::save ()
 {
 	std::vector<CppKey> keys{ keySet.begin (), keySet.end () };
-	std::sort (keys.begin (), keys.end (), KConfigSerializer::KeyNameComparator{ parent });
+	//	std::sort (keys.begin (), keys.end (), KConfigSerializer::KeyNameComparator{ parent });
 
 	const CppKey * groupCandidate{ nullptr };
 
@@ -101,6 +110,7 @@ void KConfigSerializer::saveGroupKey (CppKey const & k)
 	{
 
 		out << character_open_bracket;
+		out << character_dollar_sign;
 		out << metadata;
 		out << character_close_bracket;
 	}
@@ -192,7 +202,7 @@ std::string KConfigSerializer::groupNameFromLeaf (std::string const & leafKeyNam
 
 KConfigSerializer::KeyNameComparator::KeyNameComparator (CppKey const & parent)
 {
-	auto iter{ parent.begin () };
+	auto iter = parent.begin ();
 	parentKeyCount = 0;
 
 	while (iter != parent.end ())
@@ -204,15 +214,15 @@ KConfigSerializer::KeyNameComparator::KeyNameComparator (CppKey const & parent)
 
 bool KConfigSerializer::KeyNameComparator::operator() (CppKey const & keyA, CppKey const & keyB)
 {
-	auto itA{ keyA.begin () };
-	auto itB{ keyB.begin () };
+	auto itA = keyA.begin ();
+	auto itB = keyB.begin ();
 
 	// Don't compare the parent
-	skipParent (itA);
-	skipParent (itB);
+	this->skipParent (itA);
+	this->skipParent (itB);
 
-	auto endA{ keyA.end () };
-	auto endB{ keyB.end () };
+	auto endA = keyA.end ();
+	auto endB = keyB.end ();
 
 	while (true)
 	{

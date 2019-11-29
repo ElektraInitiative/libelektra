@@ -3,6 +3,7 @@
 
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
+#include <memory>
 
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
@@ -14,8 +15,6 @@ private:
 	std::unique_ptr<std::ostream> o;
 	/* This CppKeySet contains all the keys that we want to serialize*/
 	CppKeySet & keySet;
-	/* This CppKey contains the common parent of all the keys in the keySet */
-	CppKey & parent;
 	/* This std::size_t stores the size of the full path of the parent key*/
 	std::size_t parentKeyNameSize;
 	/* This string is used to store the last group that we saved in the output stream */
