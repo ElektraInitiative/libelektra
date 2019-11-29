@@ -15,7 +15,7 @@ pub mod readable;
 /// A wrapper Trait to make keys readonly.
 pub mod readonly;
 /// Trait to write values to a key.
-pub mod writable;
+pub mod writeable;
 /// `KeySet` is a set of keys.
 pub mod keyset;
 /// General methods to access the Key database.
@@ -25,6 +25,6 @@ pub use self::key::{BinaryKey, StringKey, MetaIter, NameIter, KeyNameInvalidErro
 pub use self::keybuilder::KeyBuilder;
 pub use self::readable::ReadableKey;
 pub use self::readonly::ReadOnly;
-pub use self::writable::WriteableKey;
+pub use self::writeable::WriteableKey;
 pub use self::keyset::{KeySet, ReadOnlyStringKeyIter, StringKeyIter, Cursor, LookupOption};
 pub use self::kdb::{KDB, KDBError};
