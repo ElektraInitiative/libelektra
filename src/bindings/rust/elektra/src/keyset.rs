@@ -1,3 +1,57 @@
+//! A `KeySet` is a set of `StringKey`s.
+//! 
+//! You can think of it as a specialized version of `Vec`.
+//! 
+//! While you can also store Keys in a `Vec`, you will need to
+//! use the `KeySet` to interact with the key database.
+//! 
+//! # Example
+//! You can use the [`keyset!`](../macro.keyset.html) macro to create a KeySet. It works just like `vec!`.
+//! ```
+//! # use elektra::{KeyBuilder, keyset, KeySet, StringKey, WriteableKey, ReadableKey};
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! let keyset = keyset![
+//!     KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
+//!         .value("localhost")
+//!         .build(),
+//!     KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
+//!         .value("8080")
+//!         .build(),
+//! ];
+//! # Ok(())
+//! # }
+//! ```
+//! 
+//! ## BinaryKeys
+//! 
+//! A KeySet only holds `StringKey`s because they are by far the most
+//! common type of key when interacting with the key database. In a typical
+//! setup where you read configuration values from the kdb, you will not
+//! encounter any BinaryKeys, especially if you set it up yourself.
+//! However since the underlying KeySet holds generic `Key`s, `BinaryKey`s
+//! can occur. You can cast between the two keys, using `from`. This is safe
+//! memory-wise, but can be unsafe if you cast a `BinaryKey` holding arbitrary
+//! bytes to a `StringKey`. You can use `is_string` or `is_binary` to find out
+//! if the cast is safe.
+//! 
+//! ## Example
+//! ```
+//! # use elektra::{BinaryKey, StringKey, WriteableKey, ReadableKey};
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # let mut s_key = StringKey::new("user/test/language")?;
+//! # s_key.set_value("rust".into());
+//! # let key = BinaryKey::from(s_key);
+//! // Assume we have an arbitrary key that is actually a StringKey
+//! if key.is_string() {
+//!     let str_key = StringKey::from(key);
+//!     assert_eq!(str_key.value(), "rust")
+//! } else {
+//!     panic!("Was not a StringKey!");
+//! }
+//! # Ok(())
+//! # }
+//! ```
+
 use crate::{ReadOnly, ReadableKey, StringKey, WriteableKey};
 use bitflags::bitflags;
 use std::convert::TryInto;
@@ -157,18 +211,18 @@ impl KeySet {
         unsafe { Self::from_ptr(ks_ptr) }
     }
 
-    /// Replace the content of a keyset with another one.
-    /// Copies the contents of source into self
+    /// Replace the contents of a keyset with those of `source`.
+    /// Copies the contents of `source` into self.
     pub fn copy(&mut self, source: &Self) {
         unsafe { elektra_sys::ksCopy(self.as_ptr(), source.as_ref()) };
     }
 
-    /// Return the number of keys that ks contains.
+    /// Return the number of keys that the keyset contains.
     pub fn size(&self) -> usize {
         unsafe { elektra_sys::ksGetSize(self.as_ref()).try_into().unwrap() }
     }
 
-    /// Rewinds the KeySet internal cursor.
+    /// Rewinds the KeySet's internal cursor.
     pub fn rewind(&mut self) {
         unsafe {
             elektra_sys::ksRewind(self.as_ptr());
