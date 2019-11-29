@@ -4,13 +4,28 @@
 - infos/provides =
 - infos/description =
 
-# Rust Bindings
+# Rust Bindings for Elektra
 
-Rust bindings for libelektra.
+<div align="center">
+  <!-- Crates version -->
+  <a href="https://crates.io/crates/elektra">
+    <img src="https://img.shields.io/crates/v/elektra.svg"
+    alt="Crates.io version" />
+  </a>
+  <!-- docs.rs docs -->
+  <a href="https://docs.rs/elektra">
+    <img src="https://img.shields.io/badge/docs-latest-blue.svg"
+      alt="docs.rs docs" />
+  </a>
+</div>
+
+_Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database._
+
+For more information about elektra itself, visit the [website](https://libelektra.org).
 
 ## Build
 
-Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with a package manager, you should use the crates from [crates.io](https://crates.io/). If built libelektra locally, you should use the bindings that are built in the `build` directory.
+Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with a package manager, you should use the crates from [crates.io](https://crates.io/). If you built libelektra locally, you should use the bindings that are built in the `build` directory.
 
 ### Package Manager
 
@@ -209,7 +224,7 @@ fn main() {
 
 ## Documentation
 
-Can be accessed for [elektra](https://docs.rs/elektra/0.9.0/elektra/) and [elektra-sys](https://docs.rs/elektra/0.9.0/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
+Is automatically built on `docs.rs` for [elektra](https://docs.rs/elektra) and [elektra-sys](https://docs.rs/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
 
 Documentation can also be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 
