@@ -49,7 +49,6 @@ def get_command_line_arguments():
 			s = arg.strip()
 			if s:
 				start_of_current_input = s
-				print(start_of_current_input)
 		if opt == '-m':
 			m = arg.strip()
 			if m:
@@ -140,6 +139,7 @@ def find_auto_completion_options():
 		completion.extend(complete_options())
 	if not start_of_current_input.strip().startswith('-'):
 		completion.extend(complete_program_args())
+	#completion.append('|'.join(sys.argv))
 	completion = '\n'.join(completion)
 	return completion
 
@@ -280,6 +280,8 @@ def complete_short_options():
 		word = word[1:]
 	for key in ks:
 		if last_command and last_command != str(key):
+			continue
+		if str(key) == mount_point:
 			continue
 		opt = key.getMeta(name='opt')
 		if opt and opt.value.startswith('#'):

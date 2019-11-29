@@ -7,7 +7,6 @@ import sys
 # if no argument passed will return all files and directorys in working directory
 # returns string seperated with \n as expected from all scripts being called by find_autocompletion_options.py
 def complete(word):
-	print('RUNNING')
 	completion_options = []
 	path = './'
 	overwritten = False
@@ -17,20 +16,22 @@ def complete(word):
 		prefix = word.split('/')
 		prefix = '/'.join(prefix[:-1])
 		prefix += '/'
-		path = prefix
+		if os.path.isdir(prefix):
+			path = prefix
 		overwritten = True
 		remove_prefix_word = word.replace(prefix, '')
-	for root, directorys, files in os.walk(path):
-		for f in files:
-			file_path = os.path.join(root, f)
+	assert os.path.isdir(path) or os.path.isfile(path)
+	for item in os.listdir(path):
+		if os.path.isfile(os.path.join(path, item)):
+			file_path = os.path.join(path, item)
 			if not overwritten:
 				file_path = file_path[2:]
 			remove_prefix_file_path = file_path.replace(prefix, '')
 			if word is None or remove_prefix_file_path.startswith(remove_prefix_word):
 				if len(path.split(os.path.sep)) >= len(file_path.split(os.path.sep)):
 					completion_options.append(file_path)
-		for d in directorys:
-			dir_path = os.path.join(root, d)
+		if os.path.isdir(os.path.join(path, item)):
+			dir_path = os.path.join(path, item)
 			if not overwritten:
 				dir_path = dir_path[2:]
 			remove_prefix_dir_path = dir_path.replace(prefix, '')

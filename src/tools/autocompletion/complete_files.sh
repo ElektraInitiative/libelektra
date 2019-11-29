@@ -6,5 +6,4 @@ if ! [ -z "$1" ]; then
 fi
 
 output="$(python3 complete_files.py ${in})"
-
 echo "${output}"
