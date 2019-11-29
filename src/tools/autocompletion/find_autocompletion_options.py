@@ -38,6 +38,7 @@ opt_arg = 'none'
 #	- no root was found
 def get_command_line_arguments():
 	global mount_point, root, typed, start_of_current_input, last_command, last_option, last_option_meta, command_or_option, opt_arg
+	wipe()
 	try:
 		opts, args = getopt.getopt(sys.argv[1:],'s:m:')
 	except getopt.GetoptError:
@@ -129,18 +130,17 @@ def find_auto_completion_options():
 	global last_command, start_of_current_input, command_or_option, opt_arg
 	completion = []
 	# TODO check if last command needs an argument
+	print(command_or_option)
 	if opt_arg != 'none':
 		completion.extend(complete_opt_args())
 	if opt_arg == 'required':
 		return completion
-	print(command_or_option)
 	if command_or_option and last_command is None:
 		completion.extend(complete_commands(start_of_current_input))
-	else:
-		if not start_of_current_input.strip().startswith('-'):
-			completion.extend(complete_program_args())
-		completion.extend(complete_options())		
-	#completion.extend(complete_commands(start_of_current_input))
+	if not command_or_option:
+		completion.extend(complete_options())
+	if not command_or_option and not start_of_current_input.strip().startswith('-'):
+		completion.extend(complete_program_args())
 	completion = '\n'.join(completion)
 	return completion
 
@@ -153,36 +153,34 @@ def execute_shell_command(command):
 	output = []
 	complete_command = command + ' ' + start_of_current_input
 	try:
-		process = subprocess.Popen(complete_command.split(), stdout=subprocess.PIPE, shell=True)
+		process = subprocess.Popen("exec " + complete_command, stdout=subprocess.PIPE, shell=True)
 		output, error = process.communicate()
 		p_status = process.wait()
 		if p_status == 0:
 			output = output.decode('utf-8')
 			output = output.splitlines()
-	except Exception as e:
-		# TODO what to do here
-		#print(e)
-		pass
+	except:
+		kill(process.pid)
 	return output
 
 def complete_opt_args():
 	global start_of_current_input, mount_point, last_option, last_option_meta
-	print('HERE')
 	completion_arguments = []
 	word = start_of_current_input.strip()
 	while word.startswith('-'):
 		word = word[1:]
 	k = kdb.KDB()
 	ks = kdb.KeySet()
-	k.get(ks, last_option)
+	if last_option is None or last_option_meta is None:
+		return completion_options
+	k.get(ks, mount_point)
 	for key in ks:
-		opt = key.getMeta(name='opt')
-		opt_arg = key.getMeta(name='opt/arg')
-		if opt:
-			print(opts)
-		if opt_arg:
-			print(opt_arg.value)
-
+		if str(key) != last_option:
+			continue
+		opt_arg = key.getMeta(name=last_option_meta)
+		opt_arg_complete = key.getMeta(name=last_option_meta + '/completion/shell')
+		if opt_arg and opt_arg.value != 'none' and opt_arg_complete:
+			 completion_arguments.extend(execute_shell_command(opt_arg_complete.value))
 	k.close()
 	return completion_arguments
 
@@ -248,7 +246,6 @@ def complete_program_args():
 # returns list of all possible options
 def complete_options():
 	global last_command, start_of_current_input
-	print('options')
 	completion_options = []
 	# if no last command exists, only options specified as [program/option] will be
 	# considered, in that block there may either be an option array
@@ -372,7 +369,8 @@ def complete_commands(start_of_input):
 # for this import to work, the scripts need to be in the same directory
 def set_input_and_run(input_mount_point, input_root, input_start_of_current_input, 
 	input_last_command, input_typed, input_command_or_option, input_opt_arg, input_last_option, input_last_option_meta):
-	global mount_point, root, last_command, typed, start_of_current_input, command_or_option, last_option, last_option_meta
+	global mount_point, root, last_command, typed, start_of_current_input, command_or_option, last_option, last_option_meta, opt_arg
+	wipe()
 	mount_point = input_mount_point
 	root = input_root
 	start_of_current_input = input_start_of_current_input
@@ -382,8 +380,19 @@ def set_input_and_run(input_mount_point, input_root, input_start_of_current_inpu
 	opt_arg = input_opt_arg
 	last_option = input_last_option
 	last_option_meta = input_last_option_meta
-	print('start')
 	return find_auto_completion_options()
+
+def wipe():
+	global mount_point, root, last_command, typed, start_of_current_input, command_or_option, last_option, last_option_meta, opt_arg
+	mount_point = None
+	root = None
+	typed = []
+	last_command = None
+	last_option = None
+	last_option_meta = None
+	start_of_current_input = ''
+	command_or_option = False
+	opt_arg = 'none'
 
 if __name__ == '__main__':
 	get_command_line_arguments()
