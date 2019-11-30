@@ -28,7 +28,7 @@ WORKDIR /app/kdb
 ADD . /app/kdb/
 RUN mkdir build \
     && cd build \
-    && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
+    && cmake -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
              -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;file;yajl" \
              -DTOOLS="kdb;website-frontend" \
