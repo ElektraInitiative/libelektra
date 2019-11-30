@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "error.h"
 #include "null_indicator.h"
 #include "type.h"
 #include "utility.h"
@@ -31,6 +32,7 @@ typedef struct
 	size_t arraySize;
 	size_t cursor;
 	TypeChecker * checker;
+	bool errorSet;
 } Writer;
 
 typedef struct CommentList_
@@ -70,7 +72,7 @@ static int writePrecedingComments (const CommentList * commentList, Writer * wri
 static int writeInlineComment (const CommentList * commentList, Writer * writer);
 static int writeComment (const CommentList * comment, Writer * writer);
 static int writeNewline (Writer * writer);
-static CommentList * collectComments (Key * key);
+static CommentList * collectComments (Key * key, Writer * writer);
 static void freeComments (CommentList * comments);
 static KeyType getKeyType (Key * key);
 static bool isMultilineString (const char * str);
@@ -81,6 +83,7 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index);
 static int keyCmpOrderWrapper (const void * a, const void * b);
 static Key * getCurrentKey (Writer * writer);
 static Key * getNextKey (Writer * writer);
+static void writerError (Writer * writer, int err, const char * format, ...);
 // static int keyCmpCustom (const Key * a, const Key * b);
 
 int tomlWrite (KeySet * keys, Key * parent)
@@ -117,7 +120,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 		getNextKey (w);
 	}
 	result |= writeKeys (parent, w);
-	CommentList * comments = collectComments (parent);
+	CommentList * comments = collectComments (parent, w);
 	writePrecedingComments (comments, w);
 	freeComments (comments);
 
@@ -129,13 +132,17 @@ int tomlWrite (KeySet * keys, Key * parent)
 static Writer * createWriter (Key * rootKey, Key ** keyArray, size_t arraySize)
 {
 	Writer * writer = elektraCalloc (sizeof (Writer));
+	if (writer == NULL)
+	{
+		return NULL;
+	}
 	writer->filename = elektraStrDup (keyString (rootKey));
-	ELEKTRA_LOG_DEBUG ("Writing file %s\n", writer->filename);
-	if (writer->filename == 0)
+	if (writer->filename == NULL)
 	{
 		destroyWriter (writer);
 		return NULL;
 	}
+	ELEKTRA_LOG_DEBUG ("Writing file %s\n", writer->filename);
 	writer->f = fopen (writer->filename, "w");
 	if (writer->f == NULL)
 	{
@@ -146,6 +153,7 @@ static Writer * createWriter (Key * rootKey, Key ** keyArray, size_t arraySize)
 	writer->keyArray = keyArray;
 	writer->arraySize = arraySize;
 	writer->cursor = 0;
+	writer->errorSet = false;
 	writer->checker = createTypeChecker ();
 	if (writer->checker == NULL)
 	{
@@ -223,7 +231,6 @@ static int writeKeys (Key * parent, Writer * writer)
 			break;
 		}
 		key = getCurrentKey (writer);
-		;
 	}
 	return result;
 }
@@ -231,7 +238,7 @@ static int writeKeys (Key * parent, Writer * writer)
 static int writeAssignment (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	CommentList * comments = collectComments (key);
+	CommentList * comments = collectComments (key, writer);
 	result |= writePrecedingComments (comments, writer);
 	result |= writeRelativeKeyName (parent, key, writer);
 	result |= fputs (" = ", writer->f) == EOF;
@@ -323,7 +330,7 @@ static int writeArrayElements (Key * parent, Writer * writer)
 	Key * key = getNextKey (writer);
 	while (keyIsDirectlyBelow (parent, key) == 1)
 	{
-		CommentList * comments = collectComments (key);
+		CommentList * comments = collectComments (key, writer);
 		result |= writePrecedingComments (comments, writer);
 		result |= writeValue (key, writer);
 		key = getCurrentKey (writer);
@@ -519,7 +526,7 @@ static int writeInlineTableElements (Key * parent, Writer * writer)
 static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * writer)
 {
 	int result = 0;
-	CommentList * comments = (key != NULL ? collectComments (key) : NULL);
+	CommentList * comments = (key != NULL ? collectComments (key, writer) : NULL);
 
 	result |= writePrecedingComments (comments, writer);
 	result |= fputs ("[[", writer->f) == EOF;
@@ -533,7 +540,7 @@ static int writeTableArrayHeader (Key * parent, Key * root, Key * key, Writer * 
 static int writeSimpleTableHeader (Key * parent, Key * key, Writer * writer)
 {
 	int result = 0;
-	CommentList * comments = collectComments (key);
+	CommentList * comments = collectComments (key, writer);
 	result |= writePrecedingComments (comments, writer);
 	result |= fputc ('[', writer->f) == EOF;
 	result |= writeRelativeKeyName (parent, key, writer);
@@ -615,7 +622,7 @@ static KeyType getKeyType (Key * key)
 	return KEY_TYPE_ASSIGNMENT;
 }
 
-static CommentList * collectComments (Key * key)
+static CommentList * collectComments (Key * key, Writer * writer)
 {
 	keyRewindMeta (key);
 	const Key * meta;
@@ -640,6 +647,7 @@ static CommentList * collectComments (Key * key)
 						if (nextComment == NULL)
 						{
 							freeComments (commentRoot);
+							writerError (writer, ERROR_MEMORY, NULL);
 							return NULL;
 						}
 						if (commentBack != NULL)
@@ -715,7 +723,6 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 		Key * name = keyNew (keyName (key), KEY_END);
 		if (name == NULL)
 		{
-			// set parent error
 			return;
 		}
 		do
@@ -816,35 +823,77 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
 	return element;
 }
 
+
+/*
+TODO: proper extraction of array elements
+idea:
+extract array roots + it's elements into a struct (Root Key + KeySet of direct elements?)
+Sort other keys into mem array, afterwards make sorted merge of mem array + Arrays in another memarray
+static KeySet * extractArrayElements (KeySet * keys)
+{
+	KeySet * elements = ksNew (0, KS_END);
+	if (elements == NULL)
+	{
+		return NULL;
+	}
+	ksRewind (keys);
+	Key * key;
+	while ((key = ksNext (keys)) != NULL)
+	{
+		const char * part = (const char *) keyUnescapedName (key);
+		const char * stop = ((const char *) part) + keyGetUnescapedNameSize (key);
+		while (part < stop)
+		{
+			if (isArrayIndex(part) ||
+				findMetaKey(key, "array") != NULL) {
+				ksAppendKey(array, key);
+				break;
+			}
+			part += elektraStrLen (part);
+		}
+	}
+}*/
+
+static void writerError (Writer * writer, int err, const char * format, ...)
+{
+	if (format != NULL)
+	{
+		va_list args;
+		char msg[512];
+		va_start (args, format);
+		if (writer->cursor < writer->arraySize)
+		{
+			snprintf (msg, 512, "Key '%s': ", keyName (getCurrentKey (writer)));
+			size_t len = elektraStrLen (msg) - 1;
+			vsnprintf (msg + len, 512 - len, format, args);
+		}
+		else
+		{
+			vsnprintf (msg, 512, format, args);
+		}
+		va_end (args);
+		if (!writer->errorSet)
+		{
+			writer->errorSet = true;
+			emitElektraError (writer->rootKey, err, msg);
+			ELEKTRA_LOG_DEBUG ("Error: %s", msg);
+		}
+		else
+		{
+			ELEKTRA_LOG_DEBUG ("Additional Error: %s", msg);
+		}
+	}
+	else
+	{
+		if (!writer->errorSet)
+		{
+			writer->errorSet = true;
+			emitElektraError (writer->rootKey, err, NULL);
+		}
+	}
+}
+
 static int keyCmpOrderWrapper (const void * va, const void * vb)
 {
 	return elektraKeyCmpOrder (*((const Key **) va), *((const Key **) vb));
 }
-
-/* static int keyCmpCustom (const Key * a, const Key * b)
-{
-	const char * partA = (const char *) keyUnescapedName (a);
-	const char * partB = (const char *) keyUnescapedName (b);
-	const char * stopA = ((const char *) partA) + keyGetUnescapedNameSize (a);
-	const char * stopB = ((const char *) partB) + keyGetUnescapedNameSize (b);
-	while (partA < stopA && partB < stopB)
-	{
-		bool aIndex = isArrayIndex (partA);
-		bool bIndex = isArrayIndex (partB);
-		if (aIndex && bIndex)
-		{
-			int result = elektraStrCmp (partA, partB);
-			if (result != 0)
-			{
-				return result;
-			}
-		}
-		else if (aIndex != bIndex)
-		{
-			return elektraKeyCmpOrder (a, b);
-		}
-		partA += elektraStrLen (partA);
-		partB += elektraStrLen (partB);
-	}
-	return elektraKeyCmpOrder (a, b);
-}*/

@@ -48,6 +48,7 @@ int tomlRead (KeySet * keys, Key * parent);
 
 void driverError (Driver * driver, int err, int lineno, const char * format, ...);
 void driverErrorGeneric (Driver * driver, int err, const char * caller, const char * callee);
+int yyerror (Driver * driver, const char * msg);
 
 void driverExitToml (Driver * driver);
 void driverEnterKey (Driver * driver);
@@ -78,5 +79,6 @@ void driverEmptyInlineTable (Driver * driver);
 
 void driverExitComment (Driver * driver, Scalar * comment);
 void driverExitNewline (Driver * driver);
+
 
 #endif // ELEKTRA_PLUGIN_TOML_DRIVER_H
