@@ -127,6 +127,8 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
+- Added a tutorial for understanding Elektra's error message.
+  Take a look [here](../tutorials/understanding-error-messages.md) _(Michael Zronek)_
 - <<TODO>>
 - <<TODO>>
 
