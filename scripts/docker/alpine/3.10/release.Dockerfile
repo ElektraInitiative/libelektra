@@ -10,7 +10,8 @@ RUN apk update \
         git \
         ninja \
         tcl \
-        yaml-cpp-dev
+        yaml-cpp-dev \
+        sudo
 
 # Google Test (TODO: update before 0.9.2 to gtest 1.10.0, but does not work with elektra 0.9.1)
 ENV GTEST_ROOT=/opt/gtest
@@ -32,10 +33,7 @@ RUN mkdir -p ${ELEKTRA_ROOT} \
     && rm elektra.tar.gz
 
 ARG USERID=1000
-RUN adduser \
-    -u ${USERID} \
-    -D \
-    elektra
+RUN adduser -u ${USERID} -G wheel -D elektra
 
 ARG PARALLEL=8
 WORKDIR ${ELEKTRA_ROOT}
@@ -50,25 +48,40 @@ RUN mkdir build \
              -DKDB_DB_HOME='/home/elektra/.config/kdb/home' \
              .. \
     && make -j ${PARALLEL} \
-    && ctest -T Test --output-on-failure -j ${PARALLEL}
+    && ctest -T Test --output-on-failure -j ${PARALLEL} \
+    && rm -Rf '/home/elektra/.config' '/home/elektra/.cache' \
+    && cmake -DBUILD_TESTING=OFF -UKDB_DB_SYSTEM -UKDB_DB_SPEC -UKDB_DB_HOME . \
+    && make -j ${PARALLEL}
 
 
 FROM alpine:3.10
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
+ARG USERID=1000
 
 ENV ELEKTRA_ROOT=/opt/elektra
 WORKDIR ${ELEKTRA_ROOT}
 RUN cd build \
     && make install \
     && ldconfig /usr/local/lib/elektra/ \
-    && rm -Rf ${ELEKTRA_ROOT}
+    && rm -Rf ${ELEKTRA_ROOT} \
+    && rm -Rf ${GTEST_ROOT}
 
-RUN echo "alias sudo='' # in this image we do not need to be root" >> /etc/profile
+RUN apk del \
+        bison \
+        build-base \
+        cmake \
+        git \
+        tcl \
+        && rm -rf /var/cache/apk/*
+
+RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+RUN echo "alias sudo='sudo -i' # in this image we do not need to be root" >> /etc/profile
 RUN echo "export PS1='\u $ '" >> /etc/profile
-ENV LD_LIBRARY_PATH=/usr/local/lib/elektra/
-ENV ENV="/etc/profile"
+RUN echo "export LD_LIBRARY_PATH=/usr/local/lib/elektra/" >> /etc/profile
 
-ARG USERID=1000
 USER ${USERID}
 WORKDIR /home/elektra
+
+CMD ["/bin/ash","-l"]
