@@ -87,6 +87,8 @@ if (DEPENDENCY_PHASE)
 	     utility.c
 		 write.h
 		 write.c
+		 sort.h
+		 sort.c
 		 type.h
 		 type.c
 	     error.h

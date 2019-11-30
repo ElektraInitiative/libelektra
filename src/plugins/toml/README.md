@@ -35,7 +35,7 @@ kdb get 'user/tests/storage/string'
 # > ot a literal one
 
 
-# setting the string again, but escape the backslash with another backslash
+# setting the string again, but escape the backslash with another backslash so that the \not gets written out
 kdb set 'user/tests/storage/string' 'I am a basic string\\not a literal one.'
 
 kdb get 'user/tests/storage/string'
@@ -51,7 +51,7 @@ sudo kdb umount user/tests/storage
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Only spaces in front of comments are preserved.
-	- Currently, Elektra's sparse arrays are not preserved on writing.
+	- Currently, Elektra's sparse arrays are not preserved on writing (they get a continuous array without index holes).
 
 ## TODOs:
 
