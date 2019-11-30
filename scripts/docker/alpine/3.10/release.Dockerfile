@@ -43,6 +43,7 @@ RUN mkdir build \
              -DTOOLS="ALL" \
              -DENABLE_DEBUG="OFF" \
              -DENABLE_LOGGER="OFF" \
+             -DCMAKE_BUILD_TYPE="Release" \
              -DKDB_DB_SYSTEM='/home/elektra/.config/kdb/system' \
              -DKDB_DB_SPEC='/home/elektra/.config/kdb/spec' \
              -DKDB_DB_HOME='/home/elektra/.config/kdb/home' \
@@ -51,7 +52,8 @@ RUN mkdir build \
     && ctest -T Test --output-on-failure -j ${PARALLEL} \
     && rm -Rf '/home/elektra/.config' '/home/elektra/.cache' \
     && cmake -DBUILD_TESTING=OFF -UKDB_DB_SYSTEM -UKDB_DB_SPEC -UKDB_DB_HOME . \
-    && make -j ${PARALLEL}
+    && make -j ${PARALLEL} \
+    && rm -Rf ${GTEST_ROOT}
 
 
 FROM alpine:3.10
