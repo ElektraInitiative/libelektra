@@ -11,7 +11,6 @@
 
 #include "driver.h"
 #include "error.h"
-#include "null_indicator.h"
 #include "parser.h"
 #include "utility.h"
 
@@ -840,89 +839,82 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
 		return;
 	}
-	if (elektraStrCmp (elektraStr, NULL_INDICATOR) == 0)
-	{
-		keySetBinary (driver->parentStack->key, NULL, 0);
-	}
-	else
-	{
-		keySetString (driver->parentStack->key, elektraStr);
+	keySetString (driver->parentStack->key, elektraStr);
 
-		// const char * type = getTypeCheckerType (driver->lastScalar);
-		// keySetMeta (driver->parentStack->key, "type", type);
+	// const char * type = getTypeCheckerType (driver->lastScalar);
+	// keySetMeta (driver->parentStack->key, "type", type);
 
-		switch (driver->lastScalar->type)
+	switch (driver->lastScalar->type)
+	{
+	case SCALAR_STRING_LITERAL:
+		keySetMeta (driver->parentStack->key, "type", "string");
+		if (!sameString (driver->lastScalar->str, elektraStr, '\'', 1))
 		{
-		case SCALAR_STRING_LITERAL:
-			keySetMeta (driver->parentStack->key, "type", "string");
-			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 1))
+			char * orig = stripTerminators (driver->lastScalar->str, 1);
+			if (orig == NULL)
 			{
-				char * orig = stripTerminators (driver->lastScalar->str, 1);
-				if (orig == NULL)
-				{
-					elektraFree (elektraStr);
-					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-					return;
-				}
-				keySetMeta (driver->parentStack->key, "origvalue", orig);
-				elektraFree (orig);
+				elektraFree (elektraStr);
+				driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+				return;
 			}
-			break;
-		case SCALAR_STRING_ML_LITERAL:
-			keySetMeta (driver->parentStack->key, "type", "string");
-			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 3))
-			{
-				char * orig = stripTerminators (driver->lastScalar->str, 3);
-				if (orig == NULL)
-				{
-					elektraFree (elektraStr);
-					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-					return;
-				}
-				keySetMeta (driver->parentStack->key, "origvalue", orig);
-				elektraFree (orig);
-			}
-			break;
-		case SCALAR_STRING_BASIC:
-			keySetMeta (driver->parentStack->key, "type", "string");
-			if (!sameString (driver->lastScalar->str, elektraStr, '"', 1))
-			{
-				char * orig = stripTerminators (driver->lastScalar->str, 1);
-				if (orig == NULL)
-				{
-					elektraFree (elektraStr);
-					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-					return;
-				}
-				keySetMeta (driver->parentStack->key, "origvalue", orig);
-				elektraFree (orig);
-			}
-			break;
-		case SCALAR_STRING_ML_BASIC:
-			keySetMeta (driver->parentStack->key, "type", "string");
-			if (!sameString (driver->lastScalar->str, elektraStr, '"', 3))
-			{
-				char * orig = stripTerminators (driver->lastScalar->str, 3);
-				if (orig == NULL)
-				{
-					elektraFree (elektraStr);
-					driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
-					return;
-				}
-				keySetMeta (driver->parentStack->key, "origvalue", orig);
-				elektraFree (orig);
-			}
-			break;
-		case SCALAR_BOOLEAN:
-			keySetMeta (driver->parentStack->key, "type", "boolean");
-			break;
-		default:
-			if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
-			{
-				keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
-			}
-			break;
+			keySetMeta (driver->parentStack->key, "origvalue", orig);
+			elektraFree (orig);
 		}
+		break;
+	case SCALAR_STRING_ML_LITERAL:
+		keySetMeta (driver->parentStack->key, "type", "string");
+		if (!sameString (driver->lastScalar->str, elektraStr, '\'', 3))
+		{
+			char * orig = stripTerminators (driver->lastScalar->str, 3);
+			if (orig == NULL)
+			{
+				elektraFree (elektraStr);
+				driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+				return;
+			}
+			keySetMeta (driver->parentStack->key, "origvalue", orig);
+			elektraFree (orig);
+		}
+		break;
+	case SCALAR_STRING_BASIC:
+		keySetMeta (driver->parentStack->key, "type", "string");
+		if (!sameString (driver->lastScalar->str, elektraStr, '"', 1))
+		{
+			char * orig = stripTerminators (driver->lastScalar->str, 1);
+			if (orig == NULL)
+			{
+				elektraFree (elektraStr);
+				driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+				return;
+			}
+			keySetMeta (driver->parentStack->key, "origvalue", orig);
+			elektraFree (orig);
+		}
+		break;
+	case SCALAR_STRING_ML_BASIC:
+		keySetMeta (driver->parentStack->key, "type", "string");
+		if (!sameString (driver->lastScalar->str, elektraStr, '"', 3))
+		{
+			char * orig = stripTerminators (driver->lastScalar->str, 3);
+			if (orig == NULL)
+			{
+				elektraFree (elektraStr);
+				driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for stripped string");
+				return;
+			}
+			keySetMeta (driver->parentStack->key, "origvalue", orig);
+			elektraFree (orig);
+		}
+		break;
+	case SCALAR_BOOLEAN:
+		keySetMeta (driver->parentStack->key, "type", "boolean");
+		break;
+	default:
+		if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
+		{
+			keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
+		}
+		break;
 	}
 	elektraFree (elektraStr);
 
