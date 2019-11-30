@@ -45,7 +45,7 @@ With this in place, the bindings should be built when you run `cargo build`.
 
 ### Local Build
 
-To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](https://master.libelektra.org/doc/COMPILE.md) and the bindings will be built as part of this process.
+To build the bindings explicitly as part of the Elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](https://master.libelektra.org/doc/COMPILE.md) and the bindings will be built as part of this process.
 
 Your Cargo.toml dependencies might then look like this
 
