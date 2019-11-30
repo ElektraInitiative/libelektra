@@ -401,13 +401,8 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 static int writeScalar (Key * key, Writer * writer)
 {
 	int result = 0;
-	if (keyGetValueSize (key) == 0)
-	{
-		result |= fputc ('\'', writer->f) == EOF;
-		result |= fputs (NULL_INDICATOR, writer->f) == EOF;
-		result |= fputc ('\'', writer->f) == EOF;
-		return result;
-	}
+	ELEKTRA_ASSERT(keyGetUnescapedNameSize(key) != 0, "NULL keys should have been handled by null plugin");
+
 	keyRewindMeta (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
 	const Key * type = findMetaKey (key, "type");
@@ -416,12 +411,8 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		valueStr = keyString (origValue);
 	}
-
-	if (elektraStrLen (valueStr) == 1)
-	{
-		result |= fputs ("''", writer->f) == EOF;
-	}
-	else if (type != NULL)
+	ELEKTRA_ASSERT(elektraStrLen(valueStr) > 1, "Empty strings should have been handled by null plugin");
+	if (type != NULL)
 	{
 		if (elektraStrCmp (keyString (type), "boolean") == 0)
 		{
