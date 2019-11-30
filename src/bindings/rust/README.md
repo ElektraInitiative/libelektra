@@ -21,7 +21,7 @@
 
 _Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database._
 
-For more information about elektra itself, visit the [website](https://libelektra.org).
+For more information about Elektra itself, visit the [website](https://libelektra.org).
 
 ## Build
 
