@@ -2,7 +2,7 @@
 - infos/author = Jakob Fischer <jakobfischer93@gmail.com>
 - infos/licence = BSD
 - infos/provides = storage/toml
-- infos/needs =
+- infos/needs = directoryvalue base64 null
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
@@ -11,16 +11,16 @@
 
 # TODO: Documentation
 
-## NULL keys
-The plugin supports null keys. They are represented as special string of value '!ELEKTRA_NULL!' in a toml file, since toml doesn't support empty assignments. Be aware that a string of that value (full string must match exactly) will always be translated into a null key.
+## NULL/empty keys
+The plugin supports null and empty keys with the help of the [null](../null/README.md) plugin.
 
 ## Requirements:
 
     - The plugin needs Flex (TODO: min version) and Bison (minimal version 3).
 
 ## Strings
-Although the plugin can read any kind of TOML string (bare, basic, literal, basic multiline, literal multiline) it will write back literal strings as basic strings. Multiline literal strings are mapped to multiline basic strings.
-Therefore, you must treat any string you set with `kdb set` as a basic string and mind possible escape sequences and special meaning of quotation characters. Also be carful to not create invalid escape sequences, which lead to invalid TOML files.
+Although the plugin can read any kind of TOML string (bare, basic, literal, basic multiline, literal multiline) it will write back all non-bare strings as basic strings (and it's multiline version of it).
+Therefore, any string set with `kdb set` must be treated as a basic string and possible escape sequences and special meanings of quotation characters must be taken care of.
 
 Example
 ```
@@ -46,20 +46,21 @@ kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
-
-
 ## Limitations:
 
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Only spaces in front of comments are preserved.
+	- Currently, Elektra's sparse arrays are not preserved on writing.
 
 ## TODOs:
 
 	- Write documentation
 	- Don't depend on order metakey when comparing array elements.
+	- Check, how used plugins are chained (I heard something about wrapper plugin?). Order of filter plugins may be relevant in writeScalar()
 	- Error checks in write.c
-	- Handle sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
-	- Include directoryvalue, base64, null (+ maybe date) plugins
+	- Handle writing of sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
+	- Don't discard trailing array comments
+	- Maybe use date plugin
 	- Make distinction on writing basic and literal strings
 	- Write used metakeys in METADATA.ini
