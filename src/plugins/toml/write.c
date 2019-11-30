@@ -11,7 +11,6 @@
 #include <string.h>
 
 #include "error.h"
-#include "null_indicator.h"
 #include "type.h"
 #include "utility.h"
 #include "write.h"
