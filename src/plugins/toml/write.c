@@ -702,7 +702,6 @@ static void freeComments (CommentList * comments)
 	}
 }
 
-
 static void addMissingArrayKeys (KeySet * keys, Key * parent)
 {
 	ArrayInfo * arrays = NULL;
