@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,8 +16,8 @@
 #include "utility.h"
 
 extern int yyparse (Driver * driver);
-
-void initializeLexer(FILE * file);
+extern int yylineno;
+extern void initializeLexer (FILE * file);
 
 static Driver * createDriver (Key * parent, KeySet * keys);
 static void destroyDriver (Driver * driver);
@@ -114,7 +114,7 @@ static int driverParse (Driver * driver)
 		ELEKTRA_SET_RESOURCE_ERROR (driver->root, keyString (driver->root));
 		return 1;
 	}
-	initializeLexer(file);
+	initializeLexer (file);
 	int yyResult = yyparse (driver);
 	fclose (file);
 	return driver->errorSet == true || yyResult != 0;
@@ -253,9 +253,10 @@ void driverExitOptCommentTable (Driver * driver)
 		if (!driver->simpleTableActive) // if we're here and not in a simple table, we exited an table array
 		{
 			// We need to emit the table array key ending with /#n (having no value)
-			// If non is existing yet (because of preceding comments)
+			// if none is existing yet (because of preceding comments)
 			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
-			if (ksLookup(driver->keys, driver->parentStack->key, 0) == NULL) {
+			if (ksLookup (driver->keys, driver->parentStack->key, 0) == NULL)
+			{
 				setOrderForKey (driver->parentStack->key, driver->order++);
 				ksAppendKey (driver->keys, driver->parentStack->key);
 			}
@@ -275,7 +276,7 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 		return;
 	}
 
-	// scalar must be singline line literal/basic string or bare string
+	// scalar must be single line literal/basic string or bare string
 	// if we got int/float/boolean/date, we must check, if it fits the
 	// criteria for a BARE_STRING
 	switch (name->type)
@@ -421,12 +422,14 @@ void driverExitTableArray (Driver * driver)
 	{
 		return;
 	}
-	
-	if (driver->tableArrayStack != NULL && keyCmp(driver->tableArrayStack->key, driver->parentStack->key) == 0) // same table array name -> next element
+
+	if (driver->tableArrayStack != NULL &&
+	    keyCmp (driver->tableArrayStack->key, driver->parentStack->key) == 0) // same table array name -> next element
 	{
 		driver->tableArrayStack->currIndex++;
 	}
-	else if (driver->tableArrayStack != NULL && keyIsBelow(driver->tableArrayStack->key, driver->parentStack->key)) // below top name -> push new sub table array
+	else if (driver->tableArrayStack != NULL &&
+		 keyIsBelow (driver->tableArrayStack->key, driver->parentStack->key)) // below top name -> push new sub table array
 	{
 		driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
 	}
@@ -470,9 +473,10 @@ void driverExitTableArray (Driver * driver)
 	// setOrderForKey (key, driver->order++);
 	driver->parentStack = pushParent (driver->parentStack, key);
 
-	if (driverDrainCommentsToKey (driver->parentStack->key, driver)) {	// we have to emit the array index key, because it has comments in previous lines
+	if (driverDrainCommentsToKey (driver->parentStack->key, driver))
+	{ // we have to emit the array index key, because it has comments in previous lines
 		setOrderForKey (driver->parentStack->key, driver->order++);
-		ksAppendKey(driver->keys, driver->parentStack->key);
+		ksAppendKey (driver->keys, driver->parentStack->key);
 	}
 	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
 }
@@ -484,12 +488,14 @@ void driverEnterArray (Driver * driver)
 		return;
 	}
 	driver->indexStack = pushIndex (driver->indexStack, 0);
-	const Key * meta = findMetaKey(driver->parentStack->key, "array");	// check for nested arrays
-	if (meta != NULL) {
-		ELEKTRA_ASSERT(elektraStrCmp(keyString(meta), "") != 0, "Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
-		Key * key = keyAppendIndex(0, driver->parentStack->key);
+	const Key * meta = findMetaKey (driver->parentStack->key, "array"); // check for nested arrays
+	if (meta != NULL)
+	{
+		ELEKTRA_ASSERT (elektraStrCmp (keyString (meta), "") != 0,
+				"Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
+		Key * key = keyAppendIndex (0, driver->parentStack->key);
 		setOrderForKey (key, driver->order++);
-		driver->parentStack = pushParent(driver->parentStack, key);
+		driver->parentStack = pushParent (driver->parentStack, key);
 	}
 	keySetMeta (driver->parentStack->key, "array", "");
 }
@@ -538,7 +544,7 @@ void driverEnterArrayElement (Driver * driver)
 	}
 
 	Key * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
-	setOrderForKey(key, driver->order++);
+	setOrderForKey (key, driver->order++);
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);
@@ -842,13 +848,13 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	{
 		keySetString (driver->parentStack->key, elektraStr);
 
-		//const char * type = getTypeCheckerType (driver->lastScalar);
+		// const char * type = getTypeCheckerType (driver->lastScalar);
 		// keySetMeta (driver->parentStack->key, "type", type);
 
 		switch (driver->lastScalar->type)
 		{
 		case SCALAR_STRING_LITERAL:
-			keySetMeta(driver->parentStack->key, "type", "string");
+			keySetMeta (driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 1))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 1);
@@ -863,7 +869,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_STRING_ML_LITERAL:
-			keySetMeta(driver->parentStack->key, "type", "string");
+			keySetMeta (driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '\'', 3))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 3);
@@ -878,7 +884,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_STRING_BASIC:
-			keySetMeta(driver->parentStack->key, "type", "string");
+			keySetMeta (driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '"', 1))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 1);
@@ -893,7 +899,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_STRING_ML_BASIC:
-			keySetMeta(driver->parentStack->key, "type", "string");
+			keySetMeta (driver->parentStack->key, "type", "string");
 			if (!sameString (driver->lastScalar->str, elektraStr, '"', 3))
 			{
 				char * orig = stripTerminators (driver->lastScalar->str, 3);
@@ -908,7 +914,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 			}
 			break;
 		case SCALAR_BOOLEAN:
-			keySetMeta(driver->parentStack->key, "type", "boolean");
+			keySetMeta (driver->parentStack->key, "type", "boolean");
 			break;
 		default:
 			if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
@@ -947,8 +953,55 @@ static bool sameString (const char * raw, const char * transformed, char termina
 	return *raw == 0 && *transformed == 0;
 }
 
+
 static void driverClearLastScalar (Driver * driver)
 {
 	freeScalar (driver->lastScalar);
 	driver->lastScalar = NULL;
+}
+
+int yyerror (Driver * driver, const char * msg)
+{
+	driverError (driver, ERROR_SYNTACTIC, yylineno, msg);
+	return 0;
+}
+
+void driverError (Driver * driver, int err, int lineno, const char * format, ...)
+{
+	va_list args;
+	char msg[256];
+	va_start (args, format);
+	if (lineno > 0)
+	{
+		snprintf (msg, 256, "Line ~%d: ", lineno);
+		size_t len = elektraStrLen (msg) - 1;
+		vsnprintf (msg + len, 256 - len, format, args);
+	}
+	else
+	{
+		vsnprintf (msg, 256, format, args);
+	}
+	va_end (args);
+	if (!driver->errorSet)
+	{
+		driver->errorSet = true;
+		emitElektraError (driver->root, err, msg);
+		ELEKTRA_LOG_DEBUG ("Error: %s", msg);
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("Additional Error: %s", msg);
+	}
+}
+
+void driverErrorGeneric (Driver * driver, int err, const char * caller, const char * callee)
+{
+	if (!driver->errorSet)
+	{
+		char msg[256];
+		driver->errorSet = true;
+		snprintf (msg, 256, "%s: Error during call of %s", caller, callee);
+		emitElektraError (driver->root, err, msg);
+		ELEKTRA_LOG_DEBUG ("Error: %s\n", msg);
+	}
 }

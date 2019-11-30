@@ -6,7 +6,7 @@
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
-- infos/metadata = order comment/# comment/#/start comment/#/space type
+- infos/metadata = order comment/# comment/#/start comment/#/space type tomltype
 - infos/description = This storage plugin reads and writes TOML files, using Flex and Bison.
 
 # TODO: Documentation
@@ -30,16 +30,16 @@ sudo kdb mount test_strings.toml user/tests/storage toml type
 # setting a string containing a newline escape sequence
 kdb set 'user/tests/storage/string' 'I am a basic string\not a literal one.'
 
-
 kdb get 'user/tests/storage/string'
 # > I am a basic string
 # > ot a literal one
 
-# setting the string again, but escape the slash with another slash
+
+# setting the string again, but escape the backslash with another backslash
 kdb set 'user/tests/storage/string' 'I am a basic string\\not a literal one.'
 
 kdb get 'user/tests/storage/string'
-# > I am a basic string/not a literal one
+# > I am a basic string\not a literal one
 
 # Cleanup
 kdb rm -r user/tests/storage
@@ -57,8 +57,9 @@ sudo kdb umount user/tests/storage
 ## TODOs:
 
 	- Write documentation
-	- Error checks in write.c
 	- Don't depend on order metakey when comparing array elements.
+	- Error checks in write.c
+	- Handle sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
 	- Include directoryvalue, base64, null (+ maybe date) plugins
 	- Make distinction on writing basic and literal strings
 	- Write used metakeys in METADATA.ini
