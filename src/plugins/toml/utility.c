@@ -7,7 +7,7 @@
 
 void dumpKS (KeySet * keys)
 {
-	FILE * f = stdout;//fopen ("keys.txt", "w");
+	FILE * f = stdout; // fopen ("keys.txt", "w");
 	ksRewind (keys);
 	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
 	{
@@ -109,6 +109,20 @@ bool isArrayIndex (const char * basename)
 		basename++;
 	}
 	return *basename == 0;
+}
+
+bool isArrayElement (const Key * key)
+{
+	const char * part = (const char *) keyUnescapedName (key);
+	const char * stop = part + keyGetUnescapedNameSize (key);
+	while (part < stop) {
+		if (isArrayIndex (part))
+		{
+			return true;
+		}
+		part += elektraStrLen (part);
+	}
+	return false;
 }
 
 bool isEmptyArray (Key * key)
@@ -218,4 +232,48 @@ char * getDirectSubKeyName (const Key * parent, const Key * key)
 	}
 	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
 	return elektraStrDup (keyPart);
+}
+
+void keySetDiff (KeySet * whole, KeySet * part)
+{
+	if (whole == NULL || part == NULL) {
+		return;
+	}
+	ksRewind (part);
+	Key * key;
+	while ((key = ksNext (part)) != NULL)
+	{
+		ksLookup (whole, key, KDB_O_POP);
+	}
+}
+
+KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *))
+{
+	KeySet * predicateKeys = ksNew (0, KS_END);
+	if (predicateKeys == NULL)
+	{
+		return NULL;
+	}
+	ksRewind (ks);
+	Key * key;
+	while ((key = ksNext (ks)) != NULL)
+	{
+		if ((*pred) (key))
+		{
+			ksAppendKey (predicateKeys, key);
+		}
+	}
+	return predicateKeys;
+}
+
+KeySet * collectSubKeys(KeySet * ks, Key * parent) {
+	KeySet * subKeys = ksNew(0, KS_END);
+	ksRewind(ks);
+	Key * key;
+	while((key = ksNext(ks)) != NULL) {
+		if (keyIsBelow(parent, key) == 1) {
+			ksAppendKey(subKeys, key);
+		}
+	}
+	return subKeys;
 }

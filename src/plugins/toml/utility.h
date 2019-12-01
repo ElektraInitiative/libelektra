@@ -16,6 +16,7 @@ bool isArrayIndex(const char * basename);
 void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
 char * intToStr (size_t i);
 void setOrderForKey (Key * key, size_t order);
+bool isArrayElement(const Key * key);
 bool isEmptyArray(Key * key);
 size_t getArrayMax (Key * key);
 const Key * findMetaKey (Key * key, const char * metakeyName);
@@ -25,5 +26,8 @@ bool isTableArray (Key * key);
 bool isInlineTable (Key * key);
 char * getRelativeKeyName (const Key * parent, const Key * key);
 char * getDirectSubKeyName (const Key * parent, const Key * key);
+void keySetDiff(KeySet * whole, KeySet * part);
+KeySet * keysByPredicate(KeySet * ks, bool (*pred)(Key *));
+KeySet * collectSubKeys(KeySet * ks, Key * parent);
 
 #endif // ELEKTRA_PLUGIN_TOML_UTILITY_H
