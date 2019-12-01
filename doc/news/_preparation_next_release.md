@@ -43,6 +43,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Improved error message for augeas to show lensPath. _(Michael Zronek)_
 
+### KConfig
+
+- We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
+
 ### SWIG
 
 - Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
