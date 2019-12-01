@@ -197,18 +197,13 @@ TEST (kconfig, read_tests)
 TEST (kconfig, invalid_read_tests)
 {
 	test_read_fails ("[openGroupName");
-	test_read_fails ("multiple.locales[en][de]" //
-	);
+	test_read_fails ("multiple.locales[en][de]");
 	test_read_fails ("[content after the group]name\n");
 	test_read_fails ("[content after the group name] \n");
-	test_read_fails ("content after[locale] textt" //
-	);
-	test_read_fails ("[invalid escape \\character]" //
-	);
-	test_read_fails ("invalid escape \\character in=key name" //
-	);
-	test_read_fails ("invalid escape=\\character in key value" //
-	);
+	test_read_fails ("content after[locale] textt");
+	test_read_fails ("[invalid escape \\character]");
+	test_read_fails ("invalid escape \\character in=key name");
+	test_read_fails ("invalid escape=\\character in key value");
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
