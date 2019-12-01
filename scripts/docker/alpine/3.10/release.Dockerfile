@@ -1,17 +1,23 @@
-FROM alpine:3.10
+FROM alpine:3.10.3
 
 RUN apk update \
     && apk add --no-cache --upgrade\
+        augeas-dev \
+        bash \
         bison \
+        boost \
+        boost-dev \
         build-base \
         cmake \
         curl \
-        libgit2 \
         git \
+        libgit2 \
+        libgit2-dev \
         ninja \
-        tcl \
-        yaml-cpp-dev \
-        sudo
+        sudo \
+        yajl-dev \
+        yaml-cpp-dev
+
 
 # Google Test (TODO: update before 0.9.2 to gtest 1.10.0, but does not work with elektra 0.9.1)
 ENV GTEST_ROOT=/opt/gtest
@@ -56,7 +62,7 @@ RUN mkdir build \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.10
+FROM alpine:3.10.3
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
@@ -71,10 +77,11 @@ RUN cd build \
 
 RUN apk del \
         bison \
+        boost-dev\
         build-base \
         cmake \
         git \
-        tcl \
+        libgit2-dev \
         && rm -rf /var/cache/apk/*
 
 RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
