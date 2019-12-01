@@ -105,6 +105,8 @@ int tomlWrite (KeySet * keys, Key * parent)
 		return 1;
 	}
 	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
+	//size_t arraySize = ksGetSize(keys);
+	// Key ** keyArray = sortKeySet(keys);
 
 	Writer * w = createWriter (parent, keyArray, arraySize);
 	if (w == NULL)

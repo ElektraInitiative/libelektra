@@ -1,22 +1,32 @@
 #include "sort.h"
 #include "utility.h"
 #include <kdbassert.h>
+#include <kdbease.h>
 #include <kdbhelper.h>
+#include <kdbmeta.h>
 #include <stdlib.h>
 
-typedef struct ArrayStack_
+typedef struct ArrayElement_
 {
-	Key * root;
-	int order;
-	struct ArrayStack_ * next;
-} ArrayStack;
+	Key * element;
+	Key * parent;
+	struct ArrayElement_ * next;
+} ArrayElement;
 
-
+Key ** mergeWithArrayElements (Key ** ksArray, size_t ksSize, ArrayElement * elementList, size_t elementSize);
 static KeySet * collectUnorderedKeys (KeySet * ks);
-static KeySet * extractUnorderedArrayElements (KeySet * unorderedKs);
 static void assignContinuousOrder (KeySet * ksUnordered, int startOrder);
-static void assignElementsOrder (KeySet * ksElements, KeySet * ks);
+static KeySet * extractArrayKeys (KeySet * ks);
+static KeySet * extractArrayElements (KeySet * ks);
 static int getMaxOrder (KeySet * ks);
+static ArrayElement * buildArrayElementList (KeySet * ks, KeySet * elements);
+static ArrayElement * appendArrayElement(Key * parent, Key * element, ArrayElement * back);
+static void freeArrayElementList(ArrayElement * root);
+static Key * getArrayElementParent (KeySet * ks, Key * element);
+static int keyCmpOrderWrapper (const void * va, const void * vb);
+static bool predUnorderedNonArrayIndex (Key * key);
+static bool predIsArray (Key * key);
+static bool predIsArrayElement (Key * key);
 
 Key ** sortKeySet (KeySet * ks)
 {
@@ -25,39 +35,129 @@ Key ** sortKeySet (KeySet * ks)
 	{
 		return NULL;
 	}
-	KeySet * unorderedArrayElements = extractUnorderedArrayElements (unordered);
-	if (unorderedArrayElements == NULL)
-	{
-		return NULL;
-	}
 	int maxOrder = getMaxOrder (ks);
 	assignContinuousOrder (unordered, maxOrder + 1);
 	ksDel (unordered);
+
+	// KeySet * arrays = extractArrayKeys (ks);
+	KeySet * arrayElements = extractArrayElements (ks);
+	ArrayElement * elementList = buildArrayElementList(ks, arrayElements);
+
+	size_t ksSize = ksGetSize (ks);
+	Key ** ksArray = elektraCalloc (sizeof (Key *) * ksSize);
+	if (ksArray == NULL)
+	{
+		ksDel (arrayElements);
+		return NULL;
+	}
+	if (elektraKsToMemArray (ks, ksArray) < 0)
+	{
+		ksDel (arrayElements);
+		elektraFree (ksArray);
+		return NULL;
+	}
+	qsort (ksArray, ksSize, sizeof (Key *), keyCmpOrderWrapper);
+	size_t elementSize = ksGetSize(arrayElements);
+	Key ** fullKsArray = mergeWithArrayElements (ksArray, ksSize, elementList, elementSize);
+	elektraFree (ksArray);
+	ksDel (arrayElements);
+	freeArrayElementList(elementList);
+	return fullKsArray;
 }
 
-static void assignElementsOrder (KeySet * ksElements, KeySet * ks)
+Key ** mergeWithArrayElements (Key ** ksArray, size_t ksSize, ArrayElement * elementList, size_t elementSize)
 {
-	ksRewind (ks);
-	int currOrder = 0;
-	Key * key;
-	Key * arrayParent = NULL;
-	while ((key = ksNext (ks)) != NULL)
+	size_t fullSize = ksSize + elementSize;
+	Key ** fullArray = (Key **) elektraCalloc (sizeof (Key *) * fullSize);
+	if (fullArray == NULL)
 	{
-		if (arrayParent == NULL || keyIsDirectlyBelow (arrayParent, key) == 0)
+		return NULL;
+	}
+	for (size_t i = 0, j = 0; i < ksSize; i++, j++)
+	{
+		if (!isArray (ksArray[i]))
 		{
-			Key * parentName = keyDup (key);
-			keyAddName (parentName, "..");
-			arrayParent = ksLookup (ks, parentName, 0);
-			if (arrayParent == NULL)
-			{
-				arrayParent = ksLookup (ksElements, parentName, 0); // -> nested arrays
+			fullArray[j] = ksArray[i];
+		}
+		else
+		{
+			fullArray[j] = ksArray[i];
+			for (ArrayElement * ptr = elementList; ptr != NULL; ptr = ptr->next) {
+				if (keyCmp(ksArray[i], ptr->parent) == 0) {
+					fullArray[++j] = ptr->element;
+					// TODO unlink used elements from list
+				}
 			}
-			ELEKTRA_ASSERT (arrayParent != NULL, "Array parent must be existent in full ks or element ks, but not found");
-			const Key * meta = findMetaKey (arrayParent, "order");
-			ELEKTRA_ASSERT (meta != NULL, "Array parent key must have an order meta key, but none found");
-			currOrder = atoi (keyString (meta));
 		}
 	}
+	return fullArray;
+}
+
+static ArrayElement * buildArrayElementList (KeySet * ks, KeySet * elements)
+{
+	ArrayElement * root = NULL;
+	ArrayElement * back = NULL;
+	
+	ksRewind (elements);
+	Key * key;
+	while ((key = ksNext (elements)) != NULL)
+	{
+		Key * parent = getArrayElementParent(ks, key);
+		back = appendArrayElement(parent, key, back);
+		if (back == NULL) {
+			freeArrayElementList(root);
+		} else if (root == NULL) {
+			root = back;
+		}
+	}
+	return root;
+}
+
+static ArrayElement * appendArrayElement(Key * parent, Key * element, ArrayElement * back) {
+	ArrayElement * listElement = elektraCalloc (sizeof (ArrayElement));
+	if (listElement == NULL) {
+		return NULL;
+	}
+	listElement->element = element;
+	listElement->parent = parent;
+	if (back != NULL) {
+		back->next = listElement;
+	}
+	return listElement;
+}
+
+static void freeArrayElementList(ArrayElement * root) {
+	while (root != NULL) {
+		ArrayElement * next = root->next;
+		elektraFree(root);
+		root = next;
+	}
+}
+
+static Key * getArrayElementParent (KeySet * ks, Key * element)
+{
+	Key * parentName = keyDup (element);
+	Key * parent;
+	do
+	{
+		keyAddBaseName (parentName, "..");
+		parent = ksLookup (ks, parentName, 0);
+	} while(parent == NULL || !isArray(parent));
+	keyDel(parentName);
+	return parent;
+}
+static KeySet * extractArrayKeys (KeySet * ks)
+{
+	KeySet * arrays = keysByPredicate (ks, predIsArray);
+	keySetDiff (ks, arrays);
+	return arrays;
+}
+
+static KeySet * extractArrayElements (KeySet * ks)
+{
+	KeySet * arrays = keysByPredicate (ks, predIsArrayElement);
+	keySetDiff (ks, arrays);
+	return arrays;
 }
 
 static void assignContinuousOrder (KeySet * ksUnordered, int startOrder)
@@ -93,43 +193,25 @@ static int getMaxOrder (KeySet * ks)
 
 static KeySet * collectUnorderedKeys (KeySet * ks)
 {
-	ksRewind (ks);
-	KeySet * unordered = ksNew (0, KS_END);
-	if (unordered == NULL)
-	{
-		return NULL;
-	}
-	Key * key;
-	while ((key = ksNext (ks)) != NULL)
-	{
-		if (findMetaKey (key, "order") == NULL)
-		{
-			ksAppendKey (unordered, key);
-		}
-	}
-	return unordered;
+	return keysByPredicate (ks, predUnorderedNonArrayIndex);
 }
 
-static KeySet * extractUnorderedArrayElements (KeySet * unorderedKs)
+static int keyCmpOrderWrapper (const void * va, const void * vb)
 {
-	ksRewind (unorderedKs);
-	KeySet * elements = ksNew (0, KS_END);
-	if (elements == NULL)
-	{
-		return NULL;
-	}
-	Key * key;
-	while ((key = ksNext (unorderedKs)) != NULL)
-	{
-		if (isArrayIndex (keyBaseName (key)))
-		{
-			ksAppendKey (elements, key);
-		}
-	}
-	ksRewind (elements);
-	while ((key = ksNext (elements)) != NULL)
-	{
-		ksLookup (unorderedKs, key, KDB_O_POP);
-	}
-	return elements;
+	return elektraKeyCmpOrder (*((const Key **) va), *((const Key **) vb));
+}
+
+static bool predUnorderedNonArrayIndex (Key * key)
+{
+	return findMetaKey (key, "order") == NULL && !isArrayIndex (keyBaseName (key));
+}
+
+static bool predIsArray (Key * key)
+{
+	return findMetaKey (key, "array") != NULL;
+}
+
+static bool predIsArrayElement (Key * key)
+{
+	return isArrayElement (key);
 }
