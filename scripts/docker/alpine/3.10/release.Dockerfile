@@ -39,6 +39,9 @@ RUN mkdir -p ${ELEKTRA_ROOT} \
     && tar -zxvf elektra.tar.gz --strip-components=1 -C ${ELEKTRA_ROOT} \
     && rm elektra.tar.gz
 
+# PATCH YAML ENDLINE (TODO: remove this)
+RUN sed -i '536s/output << data;/output << data << endl;/' ${ELEKTRA_ROOT}/src/plugins/yamlcpp/write.cpp
+
 ARG USERID=1000
 RUN adduser -u ${USERID} -G wheel -D elektra
 
@@ -57,6 +60,7 @@ RUN mkdir build \
              .. \
     && make -j ${PARALLEL} \
     && ctest -T Test --output-on-failure -j ${PARALLEL} \
+    && kdb cache clear \
     && rm -Rf '/home/elektra/.config' '/home/elektra/.cache' \
     && cmake -DBUILD_TESTING=OFF -UKDB_DB_SYSTEM -UKDB_DB_SPEC -UKDB_DB_HOME . \
     && make -j ${PARALLEL} \
