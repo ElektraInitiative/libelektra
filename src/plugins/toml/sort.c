@@ -16,7 +16,6 @@ typedef struct ArrayElement_
 Key ** mergeWithArrayElements (Key ** ksArray, size_t ksSize, ArrayElement * elementList, size_t elementSize);
 static KeySet * collectUnorderedKeys (KeySet * ks);
 static void assignContinuousOrder (KeySet * ksUnordered, int startOrder);
-static KeySet * extractArrayKeys (KeySet * ks);
 static KeySet * extractArrayElements (KeySet * ks);
 static int getMaxOrder (KeySet * ks);
 static ArrayElement * buildArrayElementList (KeySet * ks, KeySet * elements);
@@ -24,7 +23,7 @@ static ArrayElement * appendArrayElement(Key * parent, Key * element, ArrayEleme
 static void freeArrayElementList(ArrayElement * root);
 static Key * getArrayElementParent (KeySet * ks, Key * element);
 static int keyCmpOrderWrapper (const void * va, const void * vb);
-static bool predUnorderedNonArrayIndex (Key * key);
+static bool predNeedsOrder (Key * key);
 static bool predIsArray (Key * key);
 static bool predIsArrayElement (Key * key);
 
@@ -39,7 +38,6 @@ Key ** sortKeySet (KeySet * ks)
 	assignContinuousOrder (unordered, maxOrder + 1);
 	ksDel (unordered);
 
-	// KeySet * arrays = extractArrayKeys (ks);
 	KeySet * arrayElements = extractArrayElements (ks);
 	ArrayElement * elementList = buildArrayElementList(ks, arrayElements);
 
@@ -60,6 +58,7 @@ Key ** sortKeySet (KeySet * ks)
 	size_t elementSize = ksGetSize(arrayElements);
 	Key ** fullKsArray = mergeWithArrayElements (ksArray, ksSize, elementList, elementSize);
 	elektraFree (ksArray);
+	ksAppend(ks, arrayElements);
 	ksDel (arrayElements);
 	freeArrayElementList(elementList);
 	return fullKsArray;
@@ -140,7 +139,7 @@ static Key * getArrayElementParent (KeySet * ks, Key * element)
 	Key * parent;
 	do
 	{
-		keyAddBaseName (parentName, "..");
+		keyAddName (parentName, "..");
 		parent = ksLookup (ks, parentName, 0);
 	} while(parent == NULL || !isArray(parent));
 	keyDel(parentName);
@@ -193,7 +192,7 @@ static int getMaxOrder (KeySet * ks)
 
 static KeySet * collectUnorderedKeys (KeySet * ks)
 {
-	return keysByPredicate (ks, predUnorderedNonArrayIndex);
+	return keysByPredicate (ks, predNeedsOrder);
 }
 
 static int keyCmpOrderWrapper (const void * va, const void * vb)
@@ -201,7 +200,7 @@ static int keyCmpOrderWrapper (const void * va, const void * vb)
 	return elektraKeyCmpOrder (*((const Key **) va), *((const Key **) vb));
 }
 
-static bool predUnorderedNonArrayIndex (Key * key)
+static bool predNeedsOrder (Key * key)
 {
 	return findMetaKey (key, "order") == NULL && !isArrayIndex (keyBaseName (key));
 }
