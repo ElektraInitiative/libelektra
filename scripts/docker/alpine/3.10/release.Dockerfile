@@ -9,8 +9,6 @@ RUN apk update \
         build-base \
         cmake \
         curl \
-        fts \
-        fts-dev \
         git \
         libgit2 \
         libgit2-dev \
@@ -81,7 +79,6 @@ RUN apk del \
         bison \
         build-base \
         cmake \
-        fts-dev \
         git \
         libgit2-dev \
         yajl-dev \
